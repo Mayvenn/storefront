@@ -22,7 +22,7 @@
 (defmethod unconstrained-facet :hair/length
   [{:keys [matching-skus]} facets facet]
   (let [lengths  (->> matching-skus
-                      (map #(get-in % [:attributes :hair/length]))
+                      (map #(get % :hair/length))
                       sort)
         shortest (first lengths)
         longest  (last lengths)]
@@ -53,7 +53,7 @@
   [{:keys [matching-skus criteria/essential] :as product} facets facet]
   [:div
    (let [colors (->> matching-skus
-                     (map #(get-in % [:attributes :hair/color]))
+                     (map #(get % :hair/color))
                      distinct)]
      (when (> (count colors) 1)
        [:p.h6.dark-gray
@@ -70,7 +70,7 @@
        [:p.h6.teal "Bestseller!"]))])
 
 (defn component
-  [{:keys [sku-set/slug
+  [{:keys [page/slug
            representative-sku
            sku-set/name
            sold-out?] :as product}
@@ -82,7 +82,7 @@
      [:a.inherit-color
       ;; TODO: use the representative sku to preselect the options on product details
       (assoc (utils/route-to events/navigate-product-details
-                             {:catalog/product-id (:sku-set/id product)
+                             {:catalog/product-id (:catalog/product-id product)
                               :page/slug          slug
                               :query-params       {:SKU (:sku representative-sku)}})
              :data-test (str "product-" slug))

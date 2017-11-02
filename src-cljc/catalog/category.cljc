@@ -14,7 +14,9 @@
    [storefront.platform.messages :as messages]
    [storefront.accessors.experiments :as experiments]
    [storefront.accessors.auth :as auth]
-   [storefront.request-keys :as request-keys]))
+   [storefront.request-keys :as request-keys]
+   [catalog.products :as products]
+   [catalog.skuers :as skuers]))
 
 (defn filter-tabs [category-criteria {:keys [facets filtered-sku-sets criteria]}]
   (let [sku-set-count        (count filtered-sku-sets)
@@ -108,7 +110,7 @@
        (product-card/component product facets affirm?)))])
 
 (defn ^:private component [{:keys [category filters facets loading-products? affirm? dyed-hair?]} owner opts]
-  (let [category-criteria (:criteria category)]
+  (let [category-criteria (skuers/essentials category)]
     (component/create
      [:div
       (hero-section category)
@@ -141,7 +143,7 @@
      :affirm?           (experiments/affirm? data)
      :dyed-hair?        (experiments/dyed-hair? data)
      :loading-products? (utils/requesting? data (conj request-keys/search-sku-sets
-                                                      (:criteria category)))}))
+                                                      (skuers/essentials category)))}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
@@ -160,15 +162,15 @@
          (do
            (storefront.api/fetch-facets (get-in app-state keypaths/api-cache))
            (storefront.api/search-sku-sets (get-in app-state keypaths/api-cache)
-                                           (:criteria category)
+                                           (skuers/essentials category)
                                            success-fn))
          (effects/redirect events/navigate-home)))))
 
 (defmethod transitions/transition-state events/api-success-sku-sets-for-browse
-  [_ event {:keys [sku-sets] :as response} app-state]
+  [_ event {:keys [sku-sets skus category-id] :as response} app-state]
   (-> app-state
       (assoc-in keypaths/category-filters-for-browse
-                (categories/make-category-filters app-state response))))
+                (categories/make-category-filters app-state category-id))))
 
 (defmethod transitions/transition-state events/control-category-filter-select
   [_ _ {:keys [selected]} app-state]

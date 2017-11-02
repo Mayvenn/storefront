@@ -116,7 +116,7 @@
                             (map #(assoc % :id (:slug %)))
                             (map #(assoc % :selector/essentials (keys (:attributes %))))
                             (map #(merge % (:attributes %)))
-                            (map #(dissoc % :attributes :images)))
+                            (map #(dissoc % :attributes))) ;;TODO dissoc images after we fully normalize skus
                            skus)))
 
 (defn ->skuer-schema
@@ -147,7 +147,8 @@
 (defn normalize-sku-sets [products]
   "Do all things necessary to transform a coll of products into the shape most
    desirable to work with."
-  (maps/index-by :catalog/product-id (map ->skuer-schema products)))
+  (maps/index-by :catalog/product-id
+                 (map ->skuer-schema products)))
 
 (def normalize-sku-set-images-xf
   (comp (mapcat :sku-set/images)

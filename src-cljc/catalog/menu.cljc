@@ -34,7 +34,7 @@
    owner
    opts]
   (component/create
-   (let [{:keys [selectors/electives]} nav-root]
+   (let [{:keys [selector/electives]} nav-root]
      [:div
       [:a.gray.block.py1.px3.h6
        (utils/fake-href events/menu-home)

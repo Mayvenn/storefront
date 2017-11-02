@@ -2,7 +2,8 @@
   (:require [catalog.category-filters :as category-filters]
             [clojure.string :as string]
             [spice.maps :as maps]
-            [storefront.keypaths :as keypaths]))
+            [storefront.keypaths :as keypaths]
+            [catalog.selector :as selector]))
 
 (def new-facet?
   ;; [<facet-slug> <option-slug>]
@@ -43,8 +44,10 @@
                 :name                     "Closures"
                 :page/slug                "closures"
                 :legacy/named-search-slug "closures"
-                :criteria                 {:product/department #{"hair"} :hair/family #{"closures"}}
-                :filter-tabs              [:hair/origin :hair/texture :hair/base-material :hair/color]
+                :product/department       #{"hair"}
+                :hair/family              #{"closures"}
+                :selector/electives       [:hair/origin :hair/texture :hair/base-material :hair/color]
+                :selector/essentials      [:product/department :hair/family]
                 :copy                     {:description (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
                                                               "Our collection of closures and frontals blend seamlessly with our bundles"
                                                               "and can be customized to fit your unique look.")}
@@ -64,8 +67,10 @@
                 :name                     "Frontals"
                 :page/slug                "frontals"
                 :legacy/named-search-slug "frontals"
-                :criteria                 {:product/department #{"hair"} :hair/family #{"frontals"}}
-                :filter-tabs              [:hair/origin :hair/texture :hair/base-material :hair/color]
+                :product/department       #{"hair"}
+                :hair/family              #{"frontals"}
+                :selector/electives       [:hair/origin :hair/texture :hair/base-material :hair/color]
+                :selector/essentials      [:product/department :hair/family]
                 :copy                     {:description (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
                                                               "Our collection of frontals blend seamlessly with our bundles and can be customized to fit your unique look.")}
                 :images                   {:hero {:filename    "Frontals.jpg",
@@ -84,11 +89,11 @@
                 :name                     "360 Frontals"
                 :page/slug                "360-frontals"
                 :legacy/named-search-slug "360-frontals"
-
-                :category/new?             true
-
-                :criteria                 {:product/department #{"hair"} :hair/family #{"360-frontals"}}
-                :filter-tabs              [:hair/origin :hair/texture :hair/base-material :hair/color]
+                :category/new?            true
+                :product/department       #{"hair"}
+                :hair/family              #{"360-frontals"}
+                :selector/electives       [:hair/origin :hair/texture :hair/base-material :hair/color]
+                :selector/essentials      [:product/department :hair/family]
                 :copy                     {:description (copy "From your hairline to nape, we’ve got you covered with our revolutionary 360 Lace Frontal."
                                                               "This one-of-a-kind frontal piece features freestyle parting, baby hairs,"
                                                               "and low-density edges for a naturally flawless look.")}
@@ -109,54 +114,39 @@
                              :name                     "Virgin Closures"
                              :page/slug                "virgin-closures"
                              :legacy/named-search-slug "closures"
+                             :product/department       #{"hair"}
+                             :hair/family              #{"closures"}
+                             :hair/color.process       #{"natural"}
+                             :selector/essentials      [:product/department :hair/family :hair/color.process]
+                             :selector/electives       [:hair/origin :hair/texture :hair/base-material]
+                             :header/order             3
+                             :header/group             1
+                             :copy                     {:description (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
+                                                                           "Our collection of closures and frontals blend seamlessly with our bundles"
+                                                                           "and can be customized to fit your unique look.")}
+                             :images                   {:hero {:filename    "VirginClosures.jpg",
+                                                               :desktop-url "//ucarecdn.com/b1443b91-6dd3-44e7-b7c3-06876def1bd5/",
+                                                               :mobile-url  "//ucarecdn.com/e3d3c5c7-e4dc-4f37-96c0-19bb14785dfb/",
+                                                               :alt         "Virgin Closures"}}
+                             :footer/order             8
 
-                             :criteria {:product/department #{"hair"}
-                                        :hair/family        #{"closures"}
-                                        :hair/color.process #{"natural"}}
-
-                             :product/department #{"hair"}
-                             :hair/family        #{"closures"}
-                             :hair/color.process #{"natural"}
-
-                             :selector/essentials [:product/department :hair/family :hair/color.process]
-                             :selector/electives  [:hair/origin :hair/texture :hair/base-material :hair/color]
-
-                             :header/order 3
-                             :header/group 1
-
-                             :copy         {:description (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
-                                                               "Our collection of closures and frontals blend seamlessly with our bundles"
-                                                               "and can be customized to fit your unique look.")}
-                             :images       {:hero {:filename    "VirginClosures.jpg",
-                                                   :desktop-url "//ucarecdn.com/b1443b91-6dd3-44e7-b7c3-06876def1bd5/",
-                                                   :mobile-url  "//ucarecdn.com/e3d3c5c7-e4dc-4f37-96c0-19bb14785dfb/",
-                                                   :alt         "Virgin Closures"}}
-                             :footer/order 8
-
-                             :seo          (category->seo "Closures"
-                                                          (copy "Lace Closures in Brazilian Straight, Malaysian Body Wave,"
-                                                                "Peruvian Straight, Peruvian Body Wave,"
-                                                                "Peruvian Yaki Straight, Indian Straight Lace and more.")
-                                                          "//ucarecdn.com/12e8ebfe-06cd-411a-a6fb-909041723333/")}
+                             :seo (category->seo "Closures"
+                                                 (copy "Lace Closures in Brazilian Straight, Malaysian Body Wave,"
+                                                       "Peruvian Straight, Peruvian Body Wave,"
+                                                       "Peruvian Yaki Straight, Indian Straight Lace and more.")
+                                                 "//ucarecdn.com/12e8ebfe-06cd-411a-a6fb-909041723333/")}
                             {:catalog/category-id      "17"
                              :name                     "Dyed Virgin Closures"
                              :page/slug                "dyed-virgin-closures"
                              :legacy/named-search-slug "closures"
-
-                             :category/new? true
-                             :criteria     {:product/department #{"hair"}
-                                            :hair/family        #{"closures"}
-                                            :hair/color.process #{"dyed"}}
-
-                             :product/department #{"hair"}
-                             :hair/family        #{"closures"}
-                             :hair/color.process #{"dyed"}
-
-                             :selector/essentials [:product/department :hair/family :hair/color.process]
-                             :selector/electives  [:hair/origin :hair/texture :hair/base-material :hair/color]
-
-                             :header/order 4
-                             :header/group 1
+                             :category/new?            true
+                             :product/department       #{"hair"}
+                             :hair/family              #{"closures"}
+                             :hair/color.process       #{"dyed"}
+                             :selector/essentials      [:product/department :hair/family :hair/color.process]
+                             :selector/electives       [:hair/origin :hair/texture :hair/base-material :hair/color]
+                             :header/order             4
+                             :header/group             1
 
                              :copy         {:description (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
                                                                "Our collection of closures and frontals blend seamlessly with our bundles"
@@ -167,89 +157,72 @@
                                                    :alt         "Dyed Vigin Closures"}}
                              :footer/order 8
 
-                             :seo          (category->seo "Closures"
-                                                          (copy "Lace Closures in Brazilian Straight, Malaysian Body Wave,"
-                                                                "Peruvian Straight, Peruvian Body Wave,"
-                                                                "Peruvian Yaki Straight, Indian Straight Lace and more.")
-                                                          "//ucarecdn.com/12e8ebfe-06cd-411a-a6fb-909041723333/")}
+                             :seo (category->seo "Closures"
+                                                 (copy "Lace Closures in Brazilian Straight, Malaysian Body Wave,"
+                                                       "Peruvian Straight, Peruvian Body Wave,"
+                                                       "Peruvian Yaki Straight, Indian Straight Lace and more.")
+                                                 "//ucarecdn.com/12e8ebfe-06cd-411a-a6fb-909041723333/")}
                             {:catalog/category-id      "1"
                              :name                     "Virgin Frontals"
                              :page/slug                "virgin-frontals"
                              :legacy/named-search-slug "frontals"
 
-                             :criteria {:product/department #{"hair"}
-                                        :hair/family        #{"frontals"}
-                                        :hair/color.process #{"natural"}}
-
-                             :product/department #{"hair"}
-                             :hair/family        #{"frontals"}
-                             :hair/color.process #{"natural"}
-
-                             :header/order 5
-                             :header/group 1
-
-                             :filter-tabs  [:hair/origin :hair/texture :hair/base-material :hair/color]
-                             :copy         {:description (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
-                                                               "Our collection of frontals blend seamlessly with our bundles and can be customized to fit your unique look.")}
-                             :images       {:hero {:filename    "VirginFrontals.jpg",
-                                                   :desktop-url "//ucarecdn.com/2c6c4831-7002-43b9-8bb4-afda60dd213b/",
-                                                   :mobile-url  "//ucarecdn.com/d353eb7b-2b70-4b03-ab9e-9144dc81954e/",
-                                                   :alt         "Virgin Frontals"}}
-                             :footer/order 9
-                             :seo          (category->seo "Frontals"
-                                                          (copy "Brazilian, Peruvian, Indian and Malaysian hair frontals."
-                                                                "Choose from popular textures such as Deep Wave,"
-                                                                "Yaki Straight, Water Wave, Straight and more.")
-                                                          "//ucarecdn.com/0c7d94c3-c00e-4812-9526-7bd669ac679c/")}
+                             :product/department  #{"hair"}
+                             :hair/family         #{"frontals"}
+                             :hair/color.process  #{"natural"}
+                             :header/order        5
+                             :header/group        1
+                             :selector/essentials [:product/department :hair/family :hair/color.process]
+                             :selector/electives  [:hair/origin :hair/texture :hair/base-material]
+                             :copy                {:description (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
+                                                                      "Our collection of frontals blend seamlessly with our bundles and can be customized to fit your unique look.")}
+                             :images              {:hero {:filename    "VirginFrontals.jpg",
+                                                          :desktop-url "//ucarecdn.com/2c6c4831-7002-43b9-8bb4-afda60dd213b/",
+                                                          :mobile-url  "//ucarecdn.com/d353eb7b-2b70-4b03-ab9e-9144dc81954e/",
+                                                          :alt         "Virgin Frontals"}}
+                             :footer/order        9
+                             :seo                 (category->seo "Frontals"
+                                                                 (copy "Brazilian, Peruvian, Indian and Malaysian hair frontals."
+                                                                       "Choose from popular textures such as Deep Wave,"
+                                                                       "Yaki Straight, Water Wave, Straight and more.")
+                                                                 "//ucarecdn.com/0c7d94c3-c00e-4812-9526-7bd669ac679c/")}
                             {:catalog/category-id      "18"
                              :name                     "Dyed Virgin Frontals"
                              :page/slug                "dyed-virgin-frontals"
                              :legacy/named-search-slug "frontals"
+                             :category/new?            true
+                             :product/department       #{"hair"}
+                             :hair/family              #{"frontals"}
+                             :hair/color.process       #{"dyed"}
+                             :header/order             6
+                             :header/group             1
+                             :selector/essentials      [:product/department :hair/family :hair/color.process]
+                             :selector/electives       [:hair/origin :hair/texture :hair/base-material :hair/color]
+                             :copy                     {:description (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
+                                                                           "Our collection of frontals blend seamlessly with our bundles and can be customized to fit your unique look.")}
+                             :images                   {:hero {:filename    "DyedVirginFrontals.jpg",
+                                                               :desktop-url "//ucarecdn.com/d861f26b-6a2f-4bd9-a6e4-d0b0b141527e/",
+                                                               :mobile-url  "//ucarecdn.com/e686f6fe-31a4-408c-84ee-0337f6f0902b/",
+                                                               :alt         "Dyed Virgin Frontals"}}
+                             :footer/order             9
 
-                             :category/new? true
-                             :criteria     {:product/department #{"hair"}
-                                            :hair/family        #{"frontals"}
-                                            :hair/color.process #{"dyed"}}
-
-                             :product/department #{"hair"}
-                             :hair/family        #{"frontals"}
-                             :hair/color.process #{"dyed"}
-
-                             :header/order 6
-                             :header/group 1
-
-                             :selectors/essentials [:product/department :hair/family]
-                             :selectors/electives  [:hair/origin :hair/texture :hair/base-material :hair/color]
-
-                             :filter-tabs  [:hair/origin :hair/texture :hair/base-material :hair/color]
-                             :copy         {:description (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
-                                                               "Our collection of frontals blend seamlessly with our bundles and can be customized to fit your unique look.")}
-                             :images       {:hero {:filename    "DyedVirginFrontals.jpg",
-                                                   :desktop-url "//ucarecdn.com/d861f26b-6a2f-4bd9-a6e4-d0b0b141527e/",
-                                                   :mobile-url  "//ucarecdn.com/e686f6fe-31a4-408c-84ee-0337f6f0902b/",
-                                                   :alt         "Dyed Virgin Frontals"}}
-                             :footer/order 9
-
-                             :seo          (category->seo "Frontals"
-                                                          (copy "Brazilian, Peruvian, Indian and Malaysian hair frontals."
-                                                                "Choose from popular textures such as Deep Wave,"
-                                                                "Yaki Straight, Water Wave, Straight and more.")
-                                                          "//ucarecdn.com/0c7d94c3-c00e-4812-9526-7bd669ac679c/")}
+                             :seo (category->seo "Frontals"
+                                                 (copy "Brazilian, Peruvian, Indian and Malaysian hair frontals."
+                                                       "Choose from popular textures such as Deep Wave,"
+                                                       "Yaki Straight, Water Wave, Straight and more.")
+                                                 "//ucarecdn.com/0c7d94c3-c00e-4812-9526-7bd669ac679c/")}
 
                             {:catalog/category-id      "10"
                              :name                     "Virgin 360 Frontals"
                              :page/slug                "virgin-360-frontals"
                              :legacy/named-search-slug "360-frontals"
 
-                             :criteria           {:product/department #{"hair"} :hair/family #{"360-frontals"}}
                              :product/department #{"hair"}
                              :hair/family        #{"360-frontals"}
                              :hair/color.process #{"natural"}
 
-                             :selectors/essentials [:product/department :hair/family]
-                             :selectors/electives  [:hair/origin :hair/texture :hair/base-material :hair/color]
-
-                             :filter-tabs [:hair/origin :hair/texture :hair/base-material :hair/color]
+                             :selector/essentials [:product/department :hair/family :hair/color.process]
+                             :selector/electives  [:hair/origin :hair/texture :hair/base-material]
 
                              :copy         {:description (copy "From your hairline to nape, we’ve got you covered with our revolutionary 360 Lace Frontal."
                                                                "This one-of-a-kind frontal piece features freestyle parting, baby hairs,"
@@ -273,36 +246,30 @@
                                 :page/slug                "virgin-straight"
                                 :legacy/named-search-slug "straight"
 
-                                :product/department #{"hair"}
-                                :hair/texture       #{"straight"}
-                                :hair/color.process #{"natural"}
-
-                                :criteria {:product/department #{"hair"} :hair/texture #{"straight"}
-                                           :hair/color.process #{"natural"}}
-
-                                :selector/essential [:product/department :hair/texture :hair/color.process]
-                                :selector/electives [:hair/family :hair/origin :hair/base-material :hair/color]
-
-                                :filter-tabs  [:hair/family :hair/origin :hair/base-material :hair/color]
-                                :copy         {:description (copy "For those who want it given to them"
-                                                                  "straight, our collection of 100% virgin straight hair"
-                                                                  "is your go-to for a sleek look with"
-                                                                  "minimal effort.")}
-                                :images       {:hero {:filename    "VirginStraight.jpg",
-                                                      :desktop-url "//ucarecdn.com/5be83577-fc62-42fd-b7aa-cd35c09fa32a/",
-                                                      :mobile-url  "//ucarecdn.com/9ca3c6e7-1414-4702-be7b-6ea3428320de/",
-                                                      :alt         "Virgin Straight"}
-                                               :home {:filename "StraightExtensionsMayvenn.jpg",
-                                                      :url      "//ucarecdn.com/3a7983df-318e-41d7-a247-bb1d12c623d2/",
-                                                      :alt      "Straight Hair Extensions Mayvenn"}}
-                                :home/order   0
-                                :footer/order 0
-                                :header/order 0
-                                :header/group 0
-                                :seo          (category->seo "Natural Straight Extensions"
-                                                             (copy "Straight Brazilian weave, straight Indian hair and straight Peruvian hair."
-                                                                   "Our straight bundles are sleek from root to tip.")
-                                                             "//ucarecdn.com/61662cc7-59f5-454b-8031-538516557eb0/")}
+                                :product/department  #{"hair"}
+                                :hair/texture        #{"straight"}
+                                :hair/color.process  #{"natural"}
+                                :selector/essentials [:product/department :hair/texture :hair/color.process]
+                                :selector/electives  [:hair/family :hair/origin :hair/base-material]
+                                :copy                {:description (copy "For those who want it given to them"
+                                                                         "straight, our collection of 100% virgin straight hair"
+                                                                         "is your go-to for a sleek look with"
+                                                                         "minimal effort.")}
+                                :images              {:hero {:filename    "VirginStraight.jpg",
+                                                             :desktop-url "//ucarecdn.com/5be83577-fc62-42fd-b7aa-cd35c09fa32a/",
+                                                             :mobile-url  "//ucarecdn.com/9ca3c6e7-1414-4702-be7b-6ea3428320de/",
+                                                             :alt         "Virgin Straight"}
+                                                      :home {:filename "StraightExtensionsMayvenn.jpg",
+                                                             :url      "//ucarecdn.com/3a7983df-318e-41d7-a247-bb1d12c623d2/",
+                                                             :alt      "Straight Hair Extensions Mayvenn"}}
+                                :home/order          0
+                                :footer/order        0
+                                :header/order        0
+                                :header/group        0
+                                :seo                 (category->seo "Natural Straight Extensions"
+                                                                    (copy "Straight Brazilian weave, straight Indian hair and straight Peruvian hair."
+                                                                          "Our straight bundles are sleek from root to tip.")
+                                                                    "//ucarecdn.com/61662cc7-59f5-454b-8031-538516557eb0/")}
                                {:catalog/category-id      "3"
                                 :name                     "Virgin Yaki Straight"
                                 :page/slug                "virgin-yaki-straight"
@@ -312,82 +279,60 @@
                                 :hair/texture       #{"yaki-straight"}
                                 :hair/color.process #{"natural"}
 
-                                :selector/essential [:product/department :hair/texture :hair/color.process]
-                                :selector/electives [:hair/family :hair/origin :hair/base-material :hair/color]
-
-                                :criteria {:product/department #{"hair"}
-                                           :hair/texture       #{"yaki-straight"}
-                                           :hair/color.process #{"natural"}}
-
-                                :filter-tabs  [:hair/family :hair/origin :hair/base-material :hair/color]
-                                :copy         {:description (copy "Tired of having to break out the hot"
-                                                                  "tools for a textured straight look? Our Yaki"
-                                                                  "Straight hair collection is here to save your"
-                                                                  "strands! Yaki Straight hair matches the rhythm of"
-                                                                  "your natural hair that's been pressed straight or"
-                                                                  "freshly relaxed. Your flat iron has been officially"
-                                                                  "cancelled.")}
-                                :images       {:hero {:filename    "VirginYakiStraight.jpg",
-                                                      :desktop-url "//ucarecdn.com/a49ac151-ff04-4bf5-895a-0636dc2dacd8/",
-                                                      :mobile-url  "//ucarecdn.com/249749df-11d7-4e1b-8ca7-f877af3b9c11/",
-                                                      :alt         "Virgin Yaki Straight"}}
-                                :footer/order 1
-                                :header/order 1
-                                :header/group 0
-                                :seo          (category->seo "Yaki Straight Extensions"
-                                                             (copy "Our Yaki Straight hair collection features both Peruvian and Brazilian straight hair bundles."
-                                                                   "With Lace Closure or Lace Frontals in different lengths.")
-                                                             "//ucarecdn.com/98e8b217-73ee-475a-8f5e-2c3aaa56af42/")}
+                                :selector/essentials [:product/department :hair/texture :hair/color.process]
+                                :selector/electives  [:hair/family :hair/origin :hair/base-material]
+                                :copy                {:description (copy "Tired of having to break out the hot"
+                                                                         "tools for a textured straight look? Our Yaki"
+                                                                         "Straight hair collection is here to save your"
+                                                                         "strands! Yaki Straight hair matches the rhythm of"
+                                                                         "your natural hair that's been pressed straight or"
+                                                                         "freshly relaxed. Your flat iron has been officially"
+                                                                         "cancelled.")}
+                                :images              {:hero {:filename    "VirginYakiStraight.jpg",
+                                                             :desktop-url "//ucarecdn.com/a49ac151-ff04-4bf5-895a-0636dc2dacd8/",
+                                                             :mobile-url  "//ucarecdn.com/249749df-11d7-4e1b-8ca7-f877af3b9c11/",
+                                                             :alt         "Virgin Yaki Straight"}}
+                                :footer/order        1
+                                :header/order        1
+                                :header/group        0
+                                :seo                 (category->seo "Yaki Straight Extensions"
+                                                                    (copy "Our Yaki Straight hair collection features both Peruvian and Brazilian straight hair bundles."
+                                                                          "With Lace Closure or Lace Frontals in different lengths.")
+                                                                    "//ucarecdn.com/98e8b217-73ee-475a-8f5e-2c3aaa56af42/")}
                                {:catalog/category-id      "4"
                                 :name                     "Virgin Kinky Straight"
                                 :page/slug                "virgin-kinky-straight"
                                 :legacy/named-search-slug "kinky-straight"
-
-                                :product/department #{"hair"}
-                                :hair/texture       #{"kinky-straight"}
-                                :hair/color.process #{"natural"}
-
-                                :selectors/essential [:product/department :hair/texture :hair/color.process]
-                                :selectors/electives [:hair/family :hair/origin :hair/base-material :hair/color]
-
-                                :criteria {:product/department #{"hair"}
-                                           :hair/texture       #{"kinky-straight"}
-                                           :hair/color.process #{"natural"}}
-
-                                :filter-tabs  [:hair/family :hair/origin :hair/base-material :hair/color]
-                                :copy         {:description (copy "Blending is a breeze with our Kinky Straight"
-                                                                  "hair collection! Like a fresh blow out, the"
-                                                                  "Kinky Straight hair texture moves freely and gives"
-                                                                  "a naturally flawless look that mimics your own"
-                                                                  "locks.")}
-                                :images       {:hero {:filename    "VirginKinkyStraight.jpg",
-                                                      :desktop-url "//ucarecdn.com/09d70755-37d5-401c-b483-c7a3dd1ef588/",
-                                                      :mobile-url  "//ucarecdn.com/297659dd-3b82-4f47-89ea-cdaf6045d923/",
-                                                      :alt         "Virgin Kinky Straight"}}
-                                :footer/order 2
-                                :header/order 2
-                                :header/group 0
-                                :seo          (category->seo "Kinky Straight Extensions"
-                                                             (copy "100% human hair bundles and extensions from Mayvenn."
-                                                                   "Peruvian and Brazilian Kinky Straight Lace Closures and Frontals.")
-                                                             "//ucarecdn.com/7fe5f90f-4dad-454a-aa4b-b453fc4da3c4/")}
+                                :product/department       #{"hair"}
+                                :hair/texture             #{"kinky-straight"}
+                                :hair/color.process       #{"natural"}
+                                :selector/essentials      [:product/department :hair/texture :hair/color.process]
+                                :selector/electives       [:hair/family :hair/origin :hair/base-material]
+                                :copy                     {:description (copy "Blending is a breeze with our Kinky Straight"
+                                                                              "hair collection! Like a fresh blow out, the"
+                                                                              "Kinky Straight hair texture moves freely and gives"
+                                                                              "a naturally flawless look that mimics your own"
+                                                                              "locks.")}
+                                :images                   {:hero {:filename    "VirginKinkyStraight.jpg",
+                                                                  :desktop-url "//ucarecdn.com/09d70755-37d5-401c-b483-c7a3dd1ef588/",
+                                                                  :mobile-url  "//ucarecdn.com/297659dd-3b82-4f47-89ea-cdaf6045d923/",
+                                                                  :alt         "Virgin Kinky Straight"}}
+                                :footer/order             2
+                                :header/order             2
+                                :header/group             0
+                                :seo                      (category->seo "Kinky Straight Extensions"
+                                                                         (copy "100% human hair bundles and extensions from Mayvenn."
+                                                                               "Peruvian and Brazilian Kinky Straight Lace Closures and Frontals.")
+                                                                         "//ucarecdn.com/7fe5f90f-4dad-454a-aa4b-b453fc4da3c4/")}
                                {:catalog/category-id      "5"
                                 :name                     "Virgin Body Wave"
                                 :page/slug                "virgin-body-wave"
                                 :legacy/named-search-slug "body-wave"
-
-                                :product/department #{"hair"}
-                                :hair/texture       #{"body-wave"}
-                                :hair/color.process #{"natural"}
-
-                                :selector/essential [:product/department :hair/texture :hair/color.process]
-                                :selector/electives [:hair/family :hair/origin :hair/base-material :hair/color]
-
-                                :criteria {:product/department #{"hair"}
-                                           :hair/texture       #{"body-wave"}
-                                           :hair/color.process #{"natural"}}
-
-                                :filter-tabs              [:hair/family :hair/origin :hair/base-material :hair/color]
+                                :product/department       #{"hair"}
+                                :hair/texture             #{"body-wave"}
+                                :hair/color.process       #{"natural"}
+                                :selector/essentials      [:product/department :hair/texture :hair/color.process]
+                                :selector/electives       [:hair/family :hair/origin :hair/base-material]
                                 :copy                     {:description (copy "Step into the spotlight with our collection of luscious Body Wave hair."
                                                                               "Body Wave is unbelievably soft and goes from straight to wavy and back again with ease.")}
                                 :images                   {:hero {:filename    "VirginBodyWave.jpg",
@@ -409,19 +354,11 @@
                                 :name                     "Virgin Loose Wave"
                                 :page/slug                "virgin-loose-wave"
                                 :legacy/named-search-slug "loose-wave"
-
-                                :product/department #{"hair"}
-                                :hair/texture       #{"loose-wave"}
-                                :hair/color.process #{"natural"}
-
-                                :selector/essential [:product/department :hair/texture :hair/color.process]
-                                :selector/electives [:hair/family :hair/origin :hair/base-material :hair/color]
-
-                                :criteria {:product/department #{"hair"}
-                                           :hair/texture       #{"loose-wave"}
-                                           :hair/color.process #{"natural"}}
-
-                                :filter-tabs              [:hair/family :hair/origin :hair/base-material :hair/color]
+                                :product/department       #{"hair"}
+                                :hair/texture             #{"loose-wave"}
+                                :hair/color.process       #{"natural"}
+                                :selector/essentials      [:product/department :hair/texture :hair/color.process]
+                                :selector/electives       [:hair/family :hair/origin :hair/base-material]
                                 :copy                     {:description (copy "For hair that holds a curl beautifully,"
                                                                               "our collection of 100% virgin Loose Wave hair"
                                                                               "is the perfect foundation for all your carefree,"
@@ -445,19 +382,11 @@
                                 :name                     "Virgin Water Wave"
                                 :page/slug                "Virgin-water-wave"
                                 :legacy/named-search-slug "water-wave"
-
-                                :product/department #{"hair"}
-                                :hair/texture       #{"water-wave"}
-                                :hair/color.process #{"natural"}
-
-                                :selector/essential [:product/department :hair/texture :hair/color.process]
-                                :selector/electives [:hair/family :hair/origin :hair/base-material :hair/color]
-
-                                :criteria {:product/department #{"hair"}
-                                           :hair/texture       #{"water-wave"}
-                                           :hair/color.process #{"natural"}}
-
-                                :filter-tabs              [:hair/family :hair/origin :hair/base-material :hair/color]
+                                :product/department       #{"hair"}
+                                :hair/texture             #{"water-wave"}
+                                :hair/color.process       #{"natural"}
+                                :selector/essentials      [:product/department :hair/texture :hair/color.process]
+                                :selector/electives       [:hair/family :hair/origin :hair/base-material]
                                 :copy                     {:description (copy "Ride the lush, carefree waves of the bundles,"
                                                                               "closures, and frontals in our Water Wave hair"
                                                                               "collection. For curls you can rock everywhere from"
@@ -479,19 +408,11 @@
                                 :name                     "Virgin Deep Wave"
                                 :page/slug                "virgin-deep-wave"
                                 :legacy/named-search-slug "deep-wave"
-
-                                :product/department #{"hair"}
-                                :hair/texture       #{"deep-wave"}
-                                :hair/color.process #{"natural"}
-
-                                :selector/essential [:product/department :hair/texture :hair/color.process]
-                                :selector/electives [:hair/family :hair/origin :hair/base-material :hair/color]
-
-                                :criteria {:product/department #{"hair"}
-                                           :hair/texture       #{"deep-wave"}
-                                           :hair/color.process #{"natural"}}
-
-                                :filter-tabs              [:hair/family :hair/origin :hair/base-material :hair/color]
+                                :product/department       #{"hair"}
+                                :hair/texture             #{"deep-wave"}
+                                :hair/color.process       #{"natural"}
+                                :selector/essentials      [:product/department :hair/texture :hair/color.process]
+                                :selector/electives       [:hair/family :hair/origin :hair/base-material]
                                 :copy                     {:description (copy "Reigning supreme in versatility, the Deep Wave hair collection features"
                                                                               "a soft, spiral wave full of body and bounce. Our deep wave hair is perfect"
                                                                               "for those who want big waves that make an even bigger splash.")}
@@ -514,19 +435,11 @@
                                 :name                     "Virgin Curly"
                                 :page/slug                "virgin-curly"
                                 :legacy/named-search-slug "curly"
-
-                                :product/department #{"hair"}
-                                :hair/texture       #{"curly"}
-                                :hair/color.process #{"natural"}
-
-                                :selector/essential [:product/department :hair/texture :hair/color.process]
-                                :selector/electives [:hair/family :hair/origin :hair/base-material :hair/color]
-
-                                :criteria {:product/department #{"hair"}
-                                           :hair/texture       #{"curly"}
-                                           :hair/color.process #{"natural"}}
-
-                                :filter-tabs              [:hair/family :hair/origin :hair/base-material :hair/color]
+                                :product/department       #{"hair"}
+                                :hair/texture             #{"curly"}
+                                :hair/color.process       #{"natural"}
+                                :selector/essentials      [:product/department :hair/texture :hair/color.process]
+                                :selector/electives       [:hair/family :hair/origin :hair/base-material]
                                 :copy                     {:description (copy "Let your bold, beautiful curls take center stage! Our curly hair collection is a tight,"
                                                                               "kinky curl perfect for creating voluminous coily styles that mimic natural 3C hair textures.")}
                                 :images                   {:hero {:filename    "VirginCurly.jpg",
@@ -551,7 +464,7 @@
                          :header/order        0
                          :header/group        2
 
-                         :category/new?        true
+                         :category/new? true
 
                          :name                "Wigs"
                          :page/slug           "wigs"
@@ -564,25 +477,25 @@
                                                       :desktop-url "//ucarecdn.com/5f2f6800-7b35-4471-9653-42455d7cf76d/"
                                                       :mobile-url  "//ucarecdn.com/dd01c16f-983b-44a1-a1de-101b9430666f/"
                                                       :alt         "Wigs"}}
-                         :criteria            {:product/department #{"hair"}
-                                               :hair/family        #{"360-wigs" "lace-front-wigs"}}
-                         :filter-tabs         [:hair/family :hair/texture :hair/origin :hair/color]
-
-                         :seo {:title          "Human Hair Wigs | Mayvenn"
-                               :og-title       (copy "Mayvenn 360 and Lace Frontal Wigs - Free shipping."
-                                                     "Free 30 day returns. Made with 100% virgin human hair.")
-                               :description    (copy "Mayvenn’s Natural Lace Front Wigs and 360 Wigs."
-                                                     "Comes in different variations such as Brazilian and Malaysian, straight, deep wave and loose wave.")
-                               :og-description (copy "100% virgin human hair, machine-wefted and backed by our"
-                                                     "30 Day Quality Guarantee, our Wigs can be customized to fit"
-                                                     "your unique look using the built-in combs and adjustable strap.")
-                               :image-url      "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/"}}])
+                         :product/department  #{"hair"}
+                         :hair/family         #{"360-wigs" "lace-front-wigs"}
+                         :selector/essentials [:product/family :product/department]
+                         :selector/electives  [:hair/family :hair/texture :hair/origin :hair/color]
+                         :seo                 {:title          "Human Hair Wigs | Mayvenn"
+                                               :og-title       (copy "Mayvenn 360 and Lace Frontal Wigs - Free shipping."
+                                                                     "Free 30 day returns. Made with 100% virgin human hair.")
+                                               :description    (copy "Mayvenn’s Natural Lace Front Wigs and 360 Wigs."
+                                                                     "Comes in different variations such as Brazilian and Malaysian, straight, deep wave and loose wave.")
+                                               :og-description (copy "100% virgin human hair, machine-wefted and backed by our"
+                                                                     "30 Day Quality Guarantee, our Wigs can be customized to fit"
+                                                                     "your unique look using the built-in combs and adjustable strap.")
+                                               :image-url      "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/"}}])
 (def wigs [{:catalog/category-id "13"
             :footer/order        20
             :header/order        20
             :header/group        1
 
-            :category/new?        true
+            :category/new? true
 
             :name                "Wigs"
             :page/slug           "wigs"
@@ -595,9 +508,10 @@
                                          :desktop-url "//ucarecdn.com/5f2f6800-7b35-4471-9653-42455d7cf76d/"
                                          :mobile-url  "//ucarecdn.com/dd01c16f-983b-44a1-a1de-101b9430666f/"
                                          :alt         "Wigs"}}
-            :criteria            {:product/department #{"hair"}
-                                  :hair/family        #{"360-wigs" "lace-front-wigs"}}
-            :filter-tabs         [:hair/family :hair/texture :hair/origin :hair/color]
+            :product/department  #{"hair"}
+            :hair/family         #{"360-wigs" "lace-front-wigs"}
+            :selector/essentials [:product/family :product/department]
+            :selector/electives  [:hair/family :hair/texture :hair/origin :hair/color]
 
             :seo {:title          "Human Hair Wigs | Mayvenn"
                   :og-title       (copy "Mayvenn 360 and Lace Frontal Wigs - Free shipping."
@@ -608,12 +522,15 @@
                                         "30 Day Quality Guarantee, our Wigs can be customized to fit"
                                         "your unique look using the built-in combs and adjustable strap.")
                   :image-url      "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/"}}])
+
 (def textures [{:catalog/category-id      "2"
                 :name                     "Straight"
                 :page/slug                "straight"
                 :legacy/named-search-slug "straight"
-                :criteria                 {:product/department #{"hair"} :hair/texture #{"straight"}}
-                :filter-tabs              [:hair/family :hair/origin :hair/base-material :hair/color]
+                :product/department       #{"hair"}
+                :hair/texture             #{"straight"}
+                :selector/electives       [:hair/family :hair/origin :hair/base-material :hair/color]
+                :selector/essentials      [:product/department :hair/texture]
                 :copy                     {:description (copy "For those who want it given to them"
                                                               "straight, our collection of 100% virgin straight hair"
                                                               "is your go-to for a sleek look with"
@@ -637,8 +554,10 @@
                 :name                     "Yaki Straight"
                 :page/slug                "yaki-straight"
                 :legacy/named-search-slug "yaki-straight"
-                :criteria                 {:product/department #{"hair"} :hair/texture #{"yaki-straight"}}
-                :filter-tabs              [:hair/family :hair/origin :hair/base-material :hair/color]
+                :product/department       #{"hair"}
+                :hair/texture             #{"yaki-straight"}
+                :selector/electives       [:hair/family :hair/origin :hair/base-material :hair/color]
+                :selector/essentials      [:product/department :hair/texture]
                 :copy                     {:description (copy "Tired of having to break out the hot"
                                                               "tools for a textured straight look? Our Yaki"
                                                               "Straight hair collection is here to save your"
@@ -661,8 +580,10 @@
                 :name                     "Kinky Straight"
                 :page/slug                "kinky-straight"
                 :legacy/named-search-slug "kinky-straight"
-                :criteria                 {:product/department #{"hair"} :hair/texture #{"kinky-straight"}}
-                :filter-tabs              [:hair/family :hair/origin :hair/base-material :hair/color]
+                :product/department       #{"hair"}
+                :hair/texture             #{"kinky-straight"}
+                :selector/electives       [:hair/family :hair/origin :hair/base-material :hair/color]
+                :selector/essentials      [:product/department :hair/texture]
                 :copy                     {:description (copy "Blending is a breeze with our Kinky Straight"
                                                               "hair collection! Like a fresh blow out, the"
                                                               "Kinky Straight hair texture moves freely and gives"
@@ -684,8 +605,10 @@
                 :name                     "Body Wave"
                 :page/slug                "body-wave"
                 :legacy/named-search-slug "body-wave"
-                :criteria                 {:product/department #{"hair"} :hair/texture #{"body-wave"}}
-                :filter-tabs              [:hair/family :hair/origin :hair/base-material :hair/color]
+                :product/department       #{"hair"}
+                :hair/texture             #{"body-wave"}
+                :selector/electives       [:hair/family :hair/origin :hair/base-material :hair/color]
+                :selector/essentials      [:product/department :hair/texture]
                 :copy                     {:description (copy "Step into the spotlight with our collection of luscious Body Wave hair."
                                                               "Body Wave is unbelievably soft and goes from straight to wavy and back again with ease.")}
                 :images                   {:hero {:filename    "BodyWave.jpg",
@@ -707,8 +630,10 @@
                 :name                     "Loose Wave"
                 :page/slug                "loose-wave"
                 :legacy/named-search-slug "loose-wave"
-                :criteria                 {:product/department #{"hair"} :hair/texture #{"loose-wave"}}
-                :filter-tabs              [:hair/family :hair/origin :hair/base-material :hair/color]
+                :product/department       #{"hair"}
+                :hair/texture             #{"loose-wave"}
+                :selector/electives       [:hair/family :hair/origin :hair/base-material :hair/color]
+                :selector/essentials      [:product/department :hair/texture]
                 :copy                     {:description (copy "For hair that holds a curl beautifully,"
                                                               "our collection of 100% virgin Loose Wave hair"
                                                               "is the perfect foundation for all your carefree,"
@@ -732,8 +657,10 @@
                 :name                     "Water Wave"
                 :page/slug                "water-wave"
                 :legacy/named-search-slug "water-wave"
-                :criteria                 {:product/department #{"hair"} :hair/texture #{"water-wave"}}
-                :filter-tabs              [:hair/family :hair/origin :hair/base-material :hair/color]
+                :product/department       #{"hair"}
+                :hair/texture             #{"water-wave"}
+                :selector/electives       [:hair/family :hair/origin :hair/base-material :hair/color]
+                :selector/essentials      [:product/department :hair/texture]
                 :copy                     {:description (copy "Ride the lush, carefree waves of the bundles,"
                                                               "closures, and frontals in our Water Wave hair"
                                                               "collection. For curls you can rock everywhere from"
@@ -755,8 +682,10 @@
                 :name                     "Deep Wave"
                 :page/slug                "deep-wave"
                 :legacy/named-search-slug "deep-wave"
-                :criteria                 {:product/department #{"hair"} :hair/texture #{"deep-wave"}}
-                :filter-tabs              [:hair/family :hair/origin :hair/base-material :hair/color]
+                :product/department       #{"hair"}
+                :hair/texture             #{"deep-wave"}
+                :selector/electives       [:hair/family :hair/origin :hair/base-material :hair/color]
+                :selector/essentials      [:product/department :hair/texture]
                 :copy                     {:description (copy "Reigning supreme in versatility, the Deep Wave hair collection features"
                                                               "a soft, spiral wave full of body and bounce. Our deep wave hair is perfect"
                                                               "for those who want big waves that make an even bigger splash.")}
@@ -779,8 +708,10 @@
                 :name                     "Curly"
                 :page/slug                "curly"
                 :legacy/named-search-slug "curly"
-                :criteria                 {:product/department #{"hair"} :hair/texture #{"curly"}}
-                :filter-tabs              [:hair/family :hair/origin :hair/base-material :hair/color]
+                :product/department       #{"hair"}
+                :hair/texture             #{"curly"}
+                :selector/electives       [:hair/family :hair/origin :hair/base-material :hair/color]
+                :selector/essentials      [:product/department :hair/texture]
                 :copy                     {:description (copy "Let your bold, beautiful curls take center stage! Our curly hair collection is a tight,"
                                                               "kinky curl perfect for creating voluminous coily styles that mimic natural 3C hair textures.")}
                 :images                   {:hero {:filename    "Curly.jpg",
@@ -799,138 +730,115 @@
                                                                "Peruvian Curly Lace closures and Curly Lace frontals."
                                                                "Perfect for creating voluminous coily styles.")
                                                          "//ucarecdn.com/128b68e2-bf3a-4d72-8e39-0c71662f9c86/")}])
-(def stylist-exclusives [{:catalog/category-id    "14"
-                          :auth/requires          #{:stylist}
-                          :footer/order           30
-                          :header/order           30
-                          :header/group           1
-                          :name                   "Stylist Exclusives"
-                          :page/slug              "stylist-exclusives"
-                          :direct-to-details/id   "49"
-                          :direct-to-details/slug "rings-kits"
-                          :criteria               {:product/department #{"stylist-exclusives"}, :kits/contents #{"rings"}, :stylist-exclusives/family #{"kits"}}
-                          :filter-tabs            []
-                          :seo                    {:title          "Stylist Exclusives | Mayvenn"
-                                                   :og-title       (copy "Stylist Exclusives - Free shipping."
-                                                                         "Free 30 day returns. Made with 100% virgin human hair.")
-                                                   :description    (copy "")
-                                                   :og-description (copy "")}}])
+(def stylist-exclusives [{:catalog/category-id       "14"
+                          :auth/requires             #{:stylist}
+                          :footer/order              30
+                          :header/order              30
+                          :header/group              1
+                          :name                      "Stylist Exclusives"
+                          :page/slug                 "stylist-exclusives"
+                          :direct-to-details/id      "49"
+                          :direct-to-details/slug    "rings-kits"
+                          :product/department        #{"stylist-exclusives"},
+                          :kits/contents             #{"rings"},
+                          :stylist-exclusives/family #{"kits"}
+                          :selector/electives        []
+                          :selector/essentials       [:product/department :kits/contents :stylist-exclusives/family]
+                          :seo                       {:title          "Stylist Exclusives | Mayvenn"
+                                                      :og-title       (copy "Stylist Exclusives - Free shipping."
+                                                                            "Free 30 day returns. Made with 100% virgin human hair.")
+                                                      :description    (copy "")
+                                                      :og-description (copy "")}}])
 
-(def experimental-stylist-exclusives [{:catalog/category-id    "14"
-                                       :auth/requires          #{:stylist}
-                                       :footer/order           30
-                                       :header/order           30
-                                       :header/group           2
-                                       :name                   "Stylist Exclusives"
-                                       :page/slug              "stylist-exclusives"
-                                       :direct-to-details/id   "49"
-                                       :direct-to-details/slug "rings-kits"
-                                       :criteria               {:product/department #{"stylist-exclusives"}, :kits/contents #{"rings"}, :stylist-exclusives/family #{"kits"}}
-                                       :filter-tabs            []
-                                       :seo                    {:title          "Stylist Exclusives | Mayvenn"
-                                                                :og-title       (copy "Stylist Exclusives - Free shipping."
-                                                                                      "Free 30 day returns. Made with 100% virgin human hair.")
-                                                                :description    (copy "")
-                                                                :og-description (copy "")}}])
+(def experimental-stylist-exclusives [{:catalog/category-id       "14"
+                                       :auth/requires             #{:stylist}
+                                       :footer/order              30
+                                       :header/order              30
+                                       :header/group              2
+                                       :name                      "Stylist Exclusives"
+                                       :page/slug                 "stylist-exclusives"
+                                       :direct-to-details/id      "49"
+                                       :direct-to-details/slug    "rings-kits"
+                                       :product/department        #{"stylist-exclusives"},
+                                       :kits/contents             #{"rings"},
+                                       :stylist-exclusives/family #{"kits"}
+                                       :selector/electives        []
+                                       :selector/essentials       [:product/department :kits/contents :stylist-exclusives/family]
+                                       :seo                       {:title          "Stylist Exclusives | Mayvenn"
+                                                                   :og-title       (copy "Stylist Exclusives - Free shipping."
+                                                                                         "Free 30 day returns. Made with 100% virgin human hair.")
+                                                                   :description    (copy "")
+                                                                   :og-description (copy "")}}])
 
 (def control-nav-roots [{:catalog/category-id "11"
                          :name                "Hair"
                          :page/slug           "hair"
-
-                         :criteria           {:product/department #{"hair"}}
-                         :filter-tabs        [:hair/texture]
-                         :product/department #{"hair"}
-
-                         :hamburger/order 0}
+                         :product/department  #{"hair"}
+                         :selector/essentials [:product/department]
+                         :selector/electives  [:hair/texture]
+                         :hamburger/order     0}
                         {:catalog/category-id "12"
                          :name                "Closures & Frontals"
                          :page/slug           "closures-and-frontals"
-
-                         :criteria        {:product/department #{"hair"} :hair/family #{"closures" "frontals" "360-frontals"}}
-                         :filter-tabs     [:hair/family]
-                         :copy            {:description (copy "Save your precious strands and top your look"
-                                                              "off with the ultimate tool in protective weave"
-                                                              "styling. Our collection of closures and frontals blend"
-                                                              "seamlessly with our bundles and can be customized"
-                                                              "to fit your unique look.")}
-                         :hamburger/order 1}])
+                         :product/department  #{"hair"}
+                         :hair/family         #{"closures" "frontals" "360-frontals"}
+                         :selector/electives  [:hair/family]
+                         :selector/essentials [:product/department :hair/family]
+                         :copy                {:description (copy "Save your precious strands and top your look"
+                                                                  "off with the ultimate tool in protective weave"
+                                                                  "styling. Our collection of closures and frontals blend"
+                                                                  "seamlessly with our bundles and can be customized"
+                                                                  "to fit your unique look.")}
+                         :hamburger/order     1}])
 
 (def dyed-hair-nav-roots [{:catalog/category-id "15"
                            :name                "Virgin Hair"
                            :page/slug           "virgin-hair"
-
-                           :product/department #{"hair"}
-                           :hair/color.process #{"natural"}
-                           :hair/family        :query/missing
-
-                           :selector/essentials [:product/department :hair/color.process :hair/family]
+                           :product/department  #{"hair"}
+                           :hair/color.process  #{"natural"}
+                           :hair/family         :query/missing
+                           :selector/essentials [:product/department :hair/color.process]
                            :selector/electives  []
-
-
-                           :criteria {:product/department #{"hair"}
-                                      :hair/color.process #{"natural"}}
-
-                           :seo {:title          ""
-                                 :og-title       (copy ""
-                                                       "")
-                                 :description    (copy "")
-                                 :og-description (copy "")}}
+                           :seo                 {:title          ""
+                                                 :og-title       (copy ""
+                                                                       "")
+                                                 :description    (copy "")
+                                                 :og-description (copy "")}}
                           {:catalog/category-id "16"
-
-                           :name          "Dyed Virgin Hair"
-                           :page/slug     "dyed-virgin-hair"
-                           :category/new? true
-
-                           :product/department #{"hair"}
-                           :hair/family        #{"bundles"}
-                           :hair/color.process #{"dyed"}
-
-                           :hamburger/order 1
-                           :header/order    8
-                           :header/group    0
-
+                           :name                "Dyed Virgin Hair"
+                           :page/slug           "dyed-virgin-hair"
+                           :category/new?       true
+                           :product/department  #{"hair"}
+                           :hair/family         #{"bundles"}
+                           :hair/color.process  #{"dyed"}
+                           :hamburger/order     1
+                           :header/order        8
+                           :header/group        0
                            :selector/essentials [:product/department :hair/family :hair/color.process]
                            :selector/electives  []
-
-                           :filter-tabs [:hair/family :hair/texture :hair/origin :hair/color]
-                           :criteria    {:product/department #{"hair"}
-                                         :hair/family        #{"bundles"}
-                                         :hair/color.process #{"dyed"}}
-
-                           :images {:hero {:filename    "DyedVirginHair.jpg"
-                                           :desktop-url "//ucarecdn.com/ffec1ede-b869-44f4-86e8-3615a78cf046/"
-                                           :mobile-url  "//ucarecdn.com/0bec1329-ba01-4ece-a66f-4ad303311bf3/"
-                                           :alt         "Dyed Virgin Hair"}}
-                           :copy   {:description (copy "When natural brown isn’t cutting it,"
-                                                       "find your true color match with our Dyed Virgin Hair."
-                                                       "Save time and skip the hassle of fussing with toner and"
-                                                       "bleach for the convenience of pre-dyed hair extensions.")}
-                           :seo    {:title          ""
-                                    :og-title       (copy ""
-                                                          "")
-                                    :description    (copy "")
-                                    :og-description (copy "")}}
+                           :images              {:hero {:filename    "DyedVirginHair.jpg"
+                                                        :desktop-url "//ucarecdn.com/ffec1ede-b869-44f4-86e8-3615a78cf046/"
+                                                        :mobile-url  "//ucarecdn.com/0bec1329-ba01-4ece-a66f-4ad303311bf3/"
+                                                        :alt         "Dyed Virgin Hair"}}
+                           :copy                {:description (copy "When natural brown isn’t cutting it,"
+                                                                    "find your true color match with our Dyed Virgin Hair."
+                                                                    "Save time and skip the hassle of fussing with toner and"
+                                                                    "bleach for the convenience of pre-dyed hair extensions.")}
+                           :seo                 {:title          ""
+                                                 :og-title       (copy ""
+                                                                       "")
+                                                 :description    (copy "")
+                                                 :og-description (copy "")}}
 
                           {:catalog/category-id "12"
-
                            :name      "Closures & Frontals"
                            :page/slug "closures-and-frontals"
-
                            :product/department #{"hair"}
                            :hair/family        #{"closures" "frontals" "360-frontals"}
                            :hair/color.process #{"dyed" "natural"}
                            :hamburger/order    1
-
-                           :criteria {:product/department #{"hair"}
-                                      :hair/family        #{"closures" "frontals" "360-frontals"}
-                                      :hair/color.process #{"dyed" "natural"}}
-
                            :selector/essentials [:product/department :hair/family :hair/color.process]
                            :selector/electives  []
-
-                           ;; in some process of deprecation
-                           :filter-tabs [:experiment/dyed-hair]
-
                            :copy {:description (copy "Save your precious strands and top your look"
                                                      "off with the ultimate tool in protective weave"
                                                      "styling. Our collection of closures and frontals blend"
@@ -978,8 +886,13 @@
       (update :criteria #(maps/map-values set %))
       (assoc :sku-set/full-skus (map #(get id->skus %) (:sku-set/skus sku-set)))))
 
-(defn make-category-filters [app-state {:keys [sku-sets skus category-id]}]
-  (category-filters/init
-   (id->category category-id (get-in app-state keypaths/categories))
-   (map (partial hydrate-sku-set (maps/index-by :sku skus)) sku-sets)
-   (get-in app-state keypaths/facets)))
+(defn make-category-filters [app-state category-id]
+  (let [category (id->category category-id (get-in app-state keypaths/categories))
+        sku-sets (get-in app-state keypaths/sku-sets)
+        skus     (get-in app-state keypaths/skus)
+        facets (get-in app-state keypaths/facets)]
+    (category-filters/init
+     category
+     sku-sets
+     skus
+     facets)))
