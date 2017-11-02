@@ -148,6 +148,7 @@
                                        :focused      focused
                                        :field-errors field-errors}
                                       opts)
+         "missing"   [:div]
 
          "mayvenn_debit" [:p.ml1.mb3.h6 "A prepaid Visa debit card will be mailed to the address entered here"]
          "check"         [:p.ml1.mb3.h6 "Checks will mail to the address entered here"]
@@ -239,7 +240,11 @@
   (cond-> [["Venmo" "venmo"]
            ["PayPal" "paypal"]
            ["Check" "check"]
-           ["Mayvenn InstaPay" "green_dot"] ]
+           ["Mayvenn InstaPay" "green_dot"]]
+
+    (= original-payout-method "missing")
+    (conj ["Select Payout Method" "missing"])
+
     (= original-payout-method "mayvenn_debit")
     (conj ["Mayvenn Debit" "mayvenn_debit"])))
 
