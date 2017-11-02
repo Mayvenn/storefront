@@ -157,11 +157,17 @@
                                                    :alt         "Dyed Vigin Closures"}}
                              :footer/order 8
 
-                             :seo (category->seo "Closures"
-                                                 (copy "Lace Closures in Brazilian Straight, Malaysian Body Wave,"
-                                                       "Peruvian Straight, Peruvian Body Wave,"
-                                                       "Peruvian Yaki Straight, Indian Straight Lace and more.")
-                                                 "//ucarecdn.com/12e8ebfe-06cd-411a-a6fb-909041723333/")}
+                             :seo                 {:title          "Dyed Virgin Closures | Mayvenn"
+                                               :og-title       (copy "Mayvenn Dyed Virgin Hair Closures - Free shipping."
+                                                                     "Free 30 day returns. Made with 100% dyed human hair.")
+                                               :description    (copy "Save time and skip the hassle of fussing with toner"
+                                                                     "and bleach for the convenience of pre-dyed Closures."
+                                                                     "Free shipping. Free 30 day returns. Made with 100% dyed"
+                                                                     "virgin human hair extensions.")
+                                               :og-description (copy "100% dyed virgin human hair closures, machine-wefted and backed by our"
+                                                                     "30 Day Quality Guarantee, our dyed virgin closure extensions save time"
+                                                                     "and skip the hassle of fussing with toner and bleach.")
+                                               :image-url      "//ucarecdn.com/7082d52d-3a68-422c-9a81-47fba51c1c55/"}}])
                             {:catalog/category-id      "1"
                              :name                     "Virgin Frontals"
                              :page/slug                "virgin-frontals"
@@ -206,11 +212,17 @@
                                                                :alt         "Dyed Virgin Frontals"}}
                              :footer/order             9
 
-                             :seo (category->seo "Frontals"
-                                                 (copy "Brazilian, Peruvian, Indian and Malaysian hair frontals."
-                                                       "Choose from popular textures such as Deep Wave,"
-                                                       "Yaki Straight, Water Wave, Straight and more.")
-                                                 "//ucarecdn.com/0c7d94c3-c00e-4812-9526-7bd669ac679c/")}
+                             :seo                 {:title          "Dyed Virgin Frontals | Mayvenn"
+                                               :og-title       (copy "Mayvenn Dyed Virgin Hair Frontals - Free shipping."
+                                                                     "Free 30 day returns. Made with 100% dyed human hair.")
+                                               :description    (copy "Save time and skip the hassle of fussing with toner"
+                                                                     "and bleach for the convenience of pre-dyed Frontals."
+                                                                     "Free shipping. Free 30 day returns. Made with 100% dyed"
+                                                                     "virgin human hair extensions.")
+                                               :og-description (copy "100% dyed virgin human hair frontals, machine-wefted and backed by our"
+                                                                     "30 Day Quality Guarantee, our dyed virgin frontal extensions save time"
+                                                                     "and skip the hassle of fussing with toner and bleach.")
+                                               :image-url      "//ucarecdn.com/e014902e-3fdb-46ba-ad63-581a4caa8ab0/"}}])
 
                             {:catalog/category-id      "10"
                              :name                     "Virgin 360 Frontals"
@@ -824,11 +836,14 @@
                                                                     "find your true color match with our Dyed Virgin Hair."
                                                                     "Save time and skip the hassle of fussing with toner and"
                                                                     "bleach for the convenience of pre-dyed hair extensions.")}
-                           :seo                 {:title          ""
-                                                 :og-title       (copy ""
+                           :seo                 {:title          "Dyed Virgin Hair Extensions | Mayvenn"
+                                                 :og-title       (copy "Mayvenn Dyed Virgin Hair Extensions - Free shipping."
+                                                                       "Free 30 day returns. Made with 100% dyed virgin human hair extensions."
                                                                        "")
-                                                 :description    (copy "")
-                                                 :og-description (copy "")}}
+                                                 :description    (copy "When natural brown isn’t cutting it, find your true color match with"
+                                                                       "our Dyed Virgin Hair. Free shipping. Free 30 day returns. Made with 100% dyed virgin human hair extensions.")
+                                                 :og-description (copy "100% dyed virgin human hair extensions, machine-wefted and backed by our 30 Day"
+                                                                       "Quality Guarantee, our dyed virgin hair extensions save time and skip the hassle of fussing with toner and bleach.")}}
 
                           {:catalog/category-id "12"
                            :name      "Closures & Frontals"
