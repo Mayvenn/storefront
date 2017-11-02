@@ -3,6 +3,7 @@
             [clojure.string :as string]
             [catalog.selector :as selector]
             [catalog.products :as products]
+            [catalog.skuers :as skuers]
             [catalog.keypaths]
             [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
@@ -336,12 +337,9 @@
 (defn skuer->selectors [{:keys [selector/essentials selector/electives]}]
   (set/union (set essentials) (set electives)))
 
-(defn sku-electives [product sku]
-  (select-keys sku (:selector/electives product)))
-
 (defn determine-relevant-skus
   [skus selected-sku product product-options]
-  (let [electives      (sku-electives product selected-sku)
+  (let [electives      (skuers/electives product selected-sku)
         step-choosable (set/difference (set (:selector/electives product))
                                        (set (keys product-options)))]
     (selector/query skus (apply dissoc
@@ -487,7 +485,7 @@
 (defn determine-sku-from-selections [app-state]
   (let [product      (products/current-product app-state)
         skus         (get-in app-state catalog.keypaths/detailed-product-product-skus)
-        selections   (sku-electives product (get-in app-state catalog.keypaths/detailed-product-selected-sku))
+        selections   (skuers/electives product (get-in app-state catalog.keypaths/detailed-product-selected-sku))
         selected-sku (selector/query skus selections)]
     (first-when-only selected-sku)))
 
@@ -504,10 +502,10 @@
 (defn determine-selected-length [app-state selected-option]
   (let [product    (products/current-product app-state)
         skus       (get-in app-state catalog.keypaths/detailed-product-product-skus)
-        selections (sku-electives product
-                                  (cond-> (get-in app-state catalog.keypaths/detailed-product-selected-sku)
-                                    (= selected-option :hair/color)
-                                    (dissoc :hair/length)))]
+        selections (skuers/electives product
+                                     (cond-> (get-in app-state catalog.keypaths/detailed-product-selected-sku)
+                                       (= selected-option :hair/color)
+                                       (dissoc :hair/length)))]
     (determine-cheapest-length (selector/query skus selections {:in-stock? #{true}}))))
 
 (defn assoc-default-length [app-state selected-option]
