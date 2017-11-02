@@ -15,7 +15,8 @@
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
    [storefront.platform.messages :as messages]
-   [storefront.transitions :as transitions]))
+   [storefront.transitions :as transitions]
+   [catalog.skuers :as skuers]))
 
 (def ^:private slug->jump-out
   {"360-frontals" {:catalog/category-id "10"
@@ -141,7 +142,7 @@
        (api/fetch-facets (get-in app-state keypaths/api-cache)))))
 
 (defmethod transitions/transition-state events/menu-traverse-descend
-  [_ _ {:keys [catalog/category-id current-step selected-option down-step]} app-state]
+  [_ _ {:keys [catalog/category-id current-step selected-option down-step] :as temp} app-state]
   (if category-id
     (assoc-in app-state keypaths/current-traverse-nav-id category-id)
     (update-in app-state keypaths/category-filters-for-nav
@@ -177,7 +178,7 @@
            selected-products (selector/query products-db criteria)]
        (if (> (count selected-products) 1)
          (history/enqueue-navigate events/navigate-category
-                                   (-> (filter #(= criteria (:criteria %))
+                                   (-> (filter #(= criteria (skuers/essentials %))
                                                categories/old-initial-categories)
                                        first-and-only-category
                                        (select-keys [:catalog/category-id :page/slug])))
@@ -188,7 +189,7 @@
 
 (defmethod transitions/transition-state events/api-success-sku-sets-for-nav
   [_ event response app-state]
-  (let [filters (categories/make-category-filters app-state response)]
+  (let [filters (categories/make-category-filters app-state (:category-id response))]
     (assoc-in app-state keypaths/category-filters-for-nav
               (category-filters/open filters (-> filters
                                                  :facets
