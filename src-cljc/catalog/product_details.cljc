@@ -85,6 +85,7 @@
                                               {:sku sku
                                                :quantity quantity})
                    :data-test "add-to-bag"
+                   :disabled? (nil? sku)
                    :spinning? adding-to-bag?}
                   "Add to bag"))
 
@@ -386,11 +387,11 @@
         facets          (->> (get-in data keypaths/facets)
                              (map #(update % :facet/options (partial maps/index-by :option/slug)))
                              (maps/index-by :facet/slug))
-        carousel-images (when selected-sku
-                          (->> {:use-case "carousel"
-                                :image/of #{"model" "product"}}
-                               (selector/select (get-in data keypaths/db-images) selected-sku)
-                               (sort-by :order)))
+        carousel-images (->> {:use-case "carousel"
+                              :image/of #{"model" "product"}}
+                             (selector/select (get-in data keypaths/db-images)
+                                              (or selected-sku (first product-skus)))
+                             (sort-by :order))
         ugc             (ugc-query product selected-sku  data)]
     {:reviews           (add-review-eligibility (review-component/query data) product)
      :ugc               ugc
