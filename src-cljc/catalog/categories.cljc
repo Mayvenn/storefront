@@ -228,8 +228,8 @@
                                                                "This one-of-a-kind frontal piece features freestyle parting, baby hairs,"
                                                                "and low-density edges for a naturally flawless look.")}
                              :images       {:hero {:filename    "360Frontals.jpg"
-                                                   :desktop-url "//ucarecdn.com/b3df4ee4-2a8e-4226-b5ab-2e5158835b0d/"
-                                                   :mobile-url  "//ucarecdn.com/65261bbd-672a-4b0f-8172-8fd49b1ad273/"
+                                                   :desktop-url "//ucarecdn.com/4f2075cf-ea01-4c85-a96a-928fc6a03cf8/"
+                                                   :mobile-url  "//ucarecdn.com/3fccae53-99a7-4e3a-b52a-54086b6eef22/"
                                                    :alt         "360 Frontals"}}
                              :footer/order 10
                              :header/order 7
