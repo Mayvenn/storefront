@@ -241,26 +241,25 @@
                          (:catalog/category-id category))
                (html-response render-ctx)))))))
 
-
 (defn render-product-details [{:keys [environment] :as render-ctx}
                               data
                               {:keys [params] :as req}
                               {:keys [catalog/product-id
                                       page/slug]}]
-  (let [product    (products/->skuer-schema (get-in data (conj keypaths/sku-sets product-id)))
-        sku-id     (product-details/determine-sku-id data product (:SKU params))
-        images     (into #{} products/normalize-sku-set-images-xf (vals (get-in data keypaths/sku-sets)))
-        sku        (get-in data (conj keypaths/skus sku-id))
-        redirect?  (or (not= slug (:page/slug product))
-                       (and sku-id (not sku)))
-        permitted? (auth/permitted-product? data product)]
-    (when-let [{:keys [:catalog/product-id :page/slug]} product]
+  (when-let [product (products/->skuer-schema (get-in data (conj keypaths/sku-sets product-id)))]
+    (let [sku-id         (product-details/determine-sku-id data product (:SKU params))
+          sku            (get-in data (conj keypaths/skus sku-id))
+          images         (into #{} products/normalize-sku-set-images-xf (vals (get-in data keypaths/sku-sets)))
+          canonical-slug (:page/slug product)
+          redirect?      (or (not= slug canonical-slug)
+                             (and sku-id (not sku)))
+          permitted?     (auth/permitted-product? data product)]
       (cond
         (not permitted?)
         (redirect-to-home environment req)
 
         redirect?
-        (let [path (products/path-for-sku product-id slug sku-id)]
+        (let [path (products/path-for-sku product-id canonical-slug sku-id)]
           (util.response/redirect path))
 
         :else
