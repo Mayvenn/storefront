@@ -799,7 +799,15 @@
                            :product/department  #{"hair"}
                            :hair/color.process  #{"natural"}
                            :hair/family         :query/missing
-                           :selector/essentials [:product/department :hair/color.process]
+                           :hair/texture        #{"straight"
+                                                  "kinky-straight"
+                                                  "yaki-straight"
+                                                  "body-wave"
+                                                  "deep-wave"
+                                                  "water-wave"
+                                                  "loose-wave"
+                                                  "curly"}
+                           :selector/essentials [:product/department :hair/color.process :hair/texture]
                            :selector/electives  []
                            :seo                 {:title          ""
                                                  :og-title       (copy ""
