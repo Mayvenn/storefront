@@ -481,7 +481,7 @@
                                                       :alt         "Wigs"}}
                          :product/department  #{"hair"}
                          :hair/family         #{"360-wigs" "lace-front-wigs"}
-                         :selector/essentials [:product/family :product/department]
+                         :selector/essentials [:hair/family :product/department]
                          :selector/electives  [:hair/family :hair/texture :hair/origin :hair/color]
                          :seo                 {:title          "Human Hair Wigs | Mayvenn"
                                                :og-title       (copy "Mayvenn 360 and Lace Frontal Wigs - Free shipping."
@@ -512,7 +512,7 @@
                                          :alt         "Wigs"}}
             :product/department  #{"hair"}
             :hair/family         #{"360-wigs" "lace-front-wigs"}
-            :selector/essentials [:product/family :product/department]
+            :selector/essentials [:hair/family :product/department]
             :selector/electives  [:hair/family :hair/texture :hair/origin :hair/color]
 
             :seo {:title          "Human Hair Wigs | Mayvenn"
