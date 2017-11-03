@@ -142,7 +142,7 @@
        (api/fetch-facets (get-in app-state keypaths/api-cache)))))
 
 (defmethod transitions/transition-state events/menu-traverse-descend
-  [_ _ {:keys [catalog/category-id current-step selected-option down-step] :as temp} app-state]
+  [_ _ {:keys [catalog/category-id current-step selected-option down-step]} app-state]
   (if category-id
     (assoc-in app-state keypaths/current-traverse-nav-id category-id)
     (update-in app-state keypaths/category-filters-for-nav
