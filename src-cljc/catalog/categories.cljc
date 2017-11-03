@@ -157,17 +157,17 @@
                                                    :alt         "Dyed Vigin Closures"}}
                              :footer/order 8
 
-                             :seo                 {:title          "Dyed Virgin Closures | Mayvenn"
-                                               :og-title       (copy "Mayvenn Dyed Virgin Hair Closures - Free shipping."
-                                                                     "Free 30 day returns. Made with 100% dyed human hair.")
-                                               :description    (copy "Save time and skip the hassle of fussing with toner"
-                                                                     "and bleach for the convenience of pre-dyed Closures."
-                                                                     "Free shipping. Free 30 day returns. Made with 100% dyed"
-                                                                     "virgin human hair extensions.")
-                                               :og-description (copy "100% dyed virgin human hair closures, machine-wefted and backed by our"
-                                                                     "30 Day Quality Guarantee, our dyed virgin closure extensions save time"
-                                                                     "and skip the hassle of fussing with toner and bleach.")
-                                               :image-url      "//ucarecdn.com/7082d52d-3a68-422c-9a81-47fba51c1c55/"}}])
+                             :seo {:title          "Dyed Virgin Closures | Mayvenn"
+                                   :og-title       (copy "Mayvenn Dyed Virgin Hair Closures - Free shipping."
+                                                         "Free 30 day returns. Made with 100% dyed human hair.")
+                                   :description    (copy "Save time and skip the hassle of fussing with toner"
+                                                         "and bleach for the convenience of pre-dyed Closures."
+                                                         "Free shipping. Free 30 day returns. Made with 100% dyed"
+                                                         "virgin human hair extensions.")
+                                   :og-description (copy "100% dyed virgin human hair closures, machine-wefted and backed by our"
+                                                         "30 Day Quality Guarantee, our dyed virgin closure extensions save time"
+                                                         "and skip the hassle of fussing with toner and bleach.")
+                                   :image-url      "//ucarecdn.com/7082d52d-3a68-422c-9a81-47fba51c1c55/"}}
                             {:catalog/category-id      "1"
                              :name                     "Virgin Frontals"
                              :page/slug                "virgin-frontals"
@@ -212,17 +212,17 @@
                                                                :alt         "Dyed Virgin Frontals"}}
                              :footer/order             9
 
-                             :seo                 {:title          "Dyed Virgin Frontals | Mayvenn"
-                                               :og-title       (copy "Mayvenn Dyed Virgin Hair Frontals - Free shipping."
-                                                                     "Free 30 day returns. Made with 100% dyed human hair.")
-                                               :description    (copy "Save time and skip the hassle of fussing with toner"
-                                                                     "and bleach for the convenience of pre-dyed Frontals."
-                                                                     "Free shipping. Free 30 day returns. Made with 100% dyed"
-                                                                     "virgin human hair extensions.")
-                                               :og-description (copy "100% dyed virgin human hair frontals, machine-wefted and backed by our"
-                                                                     "30 Day Quality Guarantee, our dyed virgin frontal extensions save time"
-                                                                     "and skip the hassle of fussing with toner and bleach.")
-                                               :image-url      "//ucarecdn.com/e014902e-3fdb-46ba-ad63-581a4caa8ab0/"}}])
+                             :seo {:title          "Dyed Virgin Frontals | Mayvenn"
+                                   :og-title       (copy "Mayvenn Dyed Virgin Hair Frontals - Free shipping."
+                                                         "Free 30 day returns. Made with 100% dyed human hair.")
+                                   :description    (copy "Save time and skip the hassle of fussing with toner"
+                                                         "and bleach for the convenience of pre-dyed Frontals."
+                                                         "Free shipping. Free 30 day returns. Made with 100% dyed"
+                                                         "virgin human hair extensions.")
+                                   :og-description (copy "100% dyed virgin human hair frontals, machine-wefted and backed by our"
+                                                         "30 Day Quality Guarantee, our dyed virgin frontal extensions save time"
+                                                         "and skip the hassle of fussing with toner and bleach.")
+                                   :image-url      "//ucarecdn.com/e014902e-3fdb-46ba-ad63-581a4caa8ab0/"}}
 
                             {:catalog/category-id      "10"
                              :name                     "Virgin 360 Frontals"
@@ -846,19 +846,19 @@
                                                                        "Quality Guarantee, our dyed virgin hair extensions save time and skip the hassle of fussing with toner and bleach.")}}
 
                           {:catalog/category-id "12"
-                           :name      "Closures & Frontals"
-                           :page/slug "closures-and-frontals"
-                           :product/department #{"hair"}
-                           :hair/family        #{"closures" "frontals" "360-frontals"}
-                           :hair/color.process #{"dyed" "natural"}
-                           :hamburger/order    1
+                           :name                "Closures & Frontals"
+                           :page/slug           "closures-and-frontals"
+                           :product/department  #{"hair"}
+                           :hair/family         #{"closures" "frontals" "360-frontals"}
+                           :hair/color.process  #{"dyed" "natural"}
+                           :hamburger/order     1
                            :selector/essentials [:product/department :hair/family :hair/color.process]
                            :selector/electives  []
-                           :copy {:description (copy "Save your precious strands and top your look"
-                                                     "off with the ultimate tool in protective weave"
-                                                     "styling. Our collection of closures and frontals blend"
-                                                     "seamlessly with our bundles and can be customized"
-                                                     "to fit your unique look.")}}])
+                           :copy                {:description (copy "Save your precious strands and top your look"
+                                                                    "off with the ultimate tool in protective weave"
+                                                                    "styling. Our collection of closures and frontals blend"
+                                                                    "seamlessly with our bundles and can be customized"
+                                                                    "to fit your unique look.")}}])
 
 (def dyed-hair-experiment-categories
   (concat experimental-virgin-hair
