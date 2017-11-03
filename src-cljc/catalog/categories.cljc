@@ -119,8 +119,9 @@
                              :hair/color.process       #{"natural"}
                              :selector/essentials      [:product/department :hair/family :hair/color.process]
                              :selector/electives       [:hair/origin :hair/texture :hair/base-material]
-                             :header/order             3
+                             :header/order             0
                              :header/group             1
+                             :footer/order             9
                              :copy                     {:description (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
                                                                            "Our collection of closures and frontals blend seamlessly with our bundles"
                                                                            "and can be customized to fit your unique look.")}
@@ -128,92 +129,12 @@
                                                                :desktop-url "//ucarecdn.com/b1443b91-6dd3-44e7-b7c3-06876def1bd5/",
                                                                :mobile-url  "//ucarecdn.com/e3d3c5c7-e4dc-4f37-96c0-19bb14785dfb/",
                                                                :alt         "Virgin Closures"}}
-                             :footer/order             9
 
                              :seo (category->seo "Closures"
                                                  (copy "Lace Closures in Brazilian Straight, Malaysian Body Wave,"
                                                        "Peruvian Straight, Peruvian Body Wave,"
                                                        "Peruvian Yaki Straight, Indian Straight Lace and more.")
                                                  "//ucarecdn.com/12e8ebfe-06cd-411a-a6fb-909041723333/")}
-                            {:catalog/category-id      "17"
-                             :name                     "Dyed Virgin Closures"
-                             :page/slug                "dyed-virgin-closures"
-                             :legacy/named-search-slug "closures"
-                             :category/new?            true
-                             :product/department       #{"hair"}
-                             :hair/family              #{"closures"}
-                             :hair/color.process       #{"dyed"}
-                             :selector/essentials      [:product/department :hair/family :hair/color.process]
-                             :selector/electives       [:hair/origin :hair/texture :hair/base-material :hair/color]
-                             :header/order             4
-                             :header/group             1
-
-                             :copy         {:description (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
-                                                               "Our collection of closures and frontals blend seamlessly with our bundles"
-                                                               "and can be customized to fit your unique look.")}
-                             :images       {:hero {:filename    "DyedVirginClosures.jpg",
-                                                   :desktop-url "//ucarecdn.com/8bb50b5c-dfc5-4565-8461-7e2a68a7733e/",
-                                                   :mobile-url  "//ucarecdn.com/8ae295fc-0252-499f-910a-73b29348414e/",
-                                                   :alt         "Dyed Vigin Closures"}}
-                             :footer/order 10
-
-                             :seo (category->seo "Dyed Virgin Closures"
-                                                 (copy "Save time and skip the hassle of fussing with toner"
-                                                       "and bleach for the convenience of pre-dyed Closures."
-                                                       "Free shipping. Free 30 day returns. Made with 100% dyed"
-                                                       "virgin human hair extensions.")
-                                                 "//ucarecdn.com/7082d52d-3a68-422c-9a81-47fba51c1c55/")}
-                            {:catalog/category-id      "1"
-                             :name                     "Virgin Frontals"
-                             :page/slug                "virgin-frontals"
-                             :legacy/named-search-slug "frontals"
-
-                             :product/department  #{"hair"}
-                             :hair/family         #{"frontals"}
-                             :hair/color.process  #{"natural"}
-                             :header/order        5
-                             :header/group        1
-                             :selector/essentials [:product/department :hair/family :hair/color.process]
-                             :selector/electives  [:hair/origin :hair/texture :hair/base-material]
-                             :copy                {:description (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
-                                                                      "Our collection of frontals blend seamlessly with our bundles and can be customized to fit your unique look.")}
-                             :images              {:hero {:filename    "VirginFrontals.jpg",
-                                                          :desktop-url "//ucarecdn.com/2c6c4831-7002-43b9-8bb4-afda60dd213b/",
-                                                          :mobile-url  "//ucarecdn.com/d353eb7b-2b70-4b03-ab9e-9144dc81954e/",
-                                                          :alt         "Virgin Frontals"}}
-                             :footer/order        11
-                             :seo                 (category->seo "Frontals"
-                                                                 (copy "Brazilian, Peruvian, Indian and Malaysian hair frontals."
-                                                                       "Choose from popular textures such as Deep Wave,"
-                                                                       "Yaki Straight, Water Wave, Straight and more.")
-                                                                 "//ucarecdn.com/0c7d94c3-c00e-4812-9526-7bd669ac679c/")}
-                            {:catalog/category-id      "18"
-                             :name                     "Dyed Virgin Frontals"
-                             :page/slug                "dyed-virgin-frontals"
-                             :legacy/named-search-slug "frontals"
-                             :category/new?            true
-                             :product/department       #{"hair"}
-                             :hair/family              #{"frontals"}
-                             :hair/color.process       #{"dyed"}
-                             :header/order             6
-                             :header/group             1
-                             :selector/essentials      [:product/department :hair/family :hair/color.process]
-                             :selector/electives       [:hair/origin :hair/texture :hair/base-material :hair/color]
-                             :copy                     {:description (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
-                                                                           "Our collection of frontals blend seamlessly with our bundles and can be customized to fit your unique look.")}
-                             :images                   {:hero {:filename    "DyedVirginFrontals.jpg",
-                                                               :desktop-url "//ucarecdn.com/d861f26b-6a2f-4bd9-a6e4-d0b0b141527e/",
-                                                               :mobile-url  "//ucarecdn.com/e686f6fe-31a4-408c-84ee-0337f6f0902b/",
-                                                               :alt         "Dyed Virgin Frontals"}}
-                             :footer/order             12
-
-                             :seo (category->seo "Dyed Virgin Frontals"
-                                                 (copy "Save time and skip the hassle of fussing with toner"
-                                                       "and bleach for the convenience of pre-dyed Frontals."
-                                                       "Free shipping. Free 30 day returns. Made with 100% dyed"
-                                                       "virgin human hair extensions.")
-                                                 "//ucarecdn.com/e014902e-3fdb-46ba-ad63-581a4caa8ab0/")}
-
                             {:catalog/category-id      "10"
                              :name                     "Virgin 360 Frontals"
                              :page/slug                "virgin-360-frontals"
@@ -233,14 +154,89 @@
                                                    :desktop-url "//ucarecdn.com/4f2075cf-ea01-4c85-a96a-928fc6a03cf8/"
                                                    :mobile-url  "//ucarecdn.com/3fccae53-99a7-4e3a-b52a-54086b6eef22/"
                                                    :alt         "360 Frontals"}}
-                             :footer/order 12
-                             :header/order 7
+                             :footer/order 10
+                             :header/order 1
                              :header/group 1
                              :seo          (category->seo "360 Frontals"
                                                           (copy "Mayvenn’s bundles and extensions with a naturally flawless look."
                                                                 "These are our 360 Lace Frontals - Brazilian, Peruvian and Malaysian,"
                                                                 "as Body, Straight and Loose Wave.")
-                                                          "//ucarecdn.com/7837332a-2ca5-40dd-aa0e-86a2417cd723/")}])
+                                                          "//ucarecdn.com/7837332a-2ca5-40dd-aa0e-86a2417cd723/")}
+                            {:catalog/category-id      "1"
+                             :name                     "Virgin Frontals"
+                             :page/slug                "virgin-frontals"
+                             :legacy/named-search-slug "frontals"
+
+                             :product/department  #{"hair"}
+                             :hair/family         #{"frontals"}
+                             :hair/color.process  #{"natural"}
+                             :header/order        2
+                             :header/group        1
+                             :footer/order        11
+                             :selector/essentials [:product/department :hair/family :hair/color.process]
+                             :selector/electives  [:hair/origin :hair/texture :hair/base-material]
+                             :copy                {:description (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
+                                                                      "Our collection of frontals blend seamlessly with our bundles and can be customized to fit your unique look.")}
+                             :images              {:hero {:filename    "VirginFrontals.jpg",
+                                                          :desktop-url "//ucarecdn.com/2c6c4831-7002-43b9-8bb4-afda60dd213b/",
+                                                          :mobile-url  "//ucarecdn.com/d353eb7b-2b70-4b03-ab9e-9144dc81954e/",
+                                                          :alt         "Virgin Frontals"}}
+                             :seo                 (category->seo "Frontals"
+                                                                 (copy "Brazilian, Peruvian, Indian and Malaysian hair frontals."
+                                                                       "Choose from popular textures such as Deep Wave," "Yaki Straight, Water Wave, Straight and more.")
+                                                                 "//ucarecdn.com/0c7d94c3-c00e-4812-9526-7bd669ac679c/")}
+                            {:catalog/category-id      "17"
+                             :name                     "Dyed Virgin Closures"
+                             :page/slug                "dyed-virgin-closures"
+                             :legacy/named-search-slug "closures"
+                             :category/new?            true
+                             :product/department       #{"hair"}
+                             :hair/family              #{"closures"}
+                             :hair/color.process       #{"dyed"}
+                             :selector/essentials      [:product/department :hair/family :hair/color.process]
+                             :selector/electives       [:hair/origin :hair/texture :hair/base-material :hair/color]
+                             :header/order             3
+                             :header/group             1
+                             :footer/order 12
+                             :copy         {:description (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
+                                                               "Our collection of closures and frontals blend seamlessly with our bundles"
+                                                               "and can be customized to fit your unique look.")}
+                             :images       {:hero {:filename    "DyedVirginClosures.jpg",
+                                                   :desktop-url "//ucarecdn.com/8bb50b5c-dfc5-4565-8461-7e2a68a7733e/",
+                                                   :mobile-url  "//ucarecdn.com/8ae295fc-0252-499f-910a-73b29348414e/",
+                                                   :alt         "Dyed Vigin Closures"}}
+                             :seo (category->seo "Dyed Virgin Closures"
+                                                 (copy "Save time and skip the hassle of fussing with toner"
+                                                       "and bleach for the convenience of pre-dyed Closures."
+                                                       "Free shipping. Free 30 day returns. Made with 100% dyed"
+                                                       "virgin human hair extensions.")
+                                                 "//ucarecdn.com/7082d52d-3a68-422c-9a81-47fba51c1c55/")}
+                            {:catalog/category-id      "18"
+                             :name                     "Dyed Virgin Frontals"
+                             :page/slug                "dyed-virgin-frontals"
+                             :legacy/named-search-slug "frontals"
+                             :category/new?            true
+                             :product/department       #{"hair"}
+                             :hair/family              #{"frontals"}
+                             :hair/color.process       #{"dyed"}
+                             :header/order             4
+                             :header/group             1
+                             :footer/order             13
+                             :selector/essentials      [:product/department :hair/family :hair/color.process]
+                             :selector/electives       [:hair/origin :hair/texture :hair/base-material :hair/color]
+                             :copy                     {:description (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
+                                                                           "Our collection of frontals blend seamlessly with our bundles and can be customized to fit your unique look.")}
+                             :images                   {:hero {:filename    "DyedVirginFrontals.jpg",
+                                                               :desktop-url "//ucarecdn.com/d861f26b-6a2f-4bd9-a6e4-d0b0b141527e/",
+                                                               :mobile-url  "//ucarecdn.com/e686f6fe-31a4-408c-84ee-0337f6f0902b/",
+                                                               :alt         "Dyed Virgin Frontals"}}
+
+                             :seo (category->seo "Dyed Virgin Frontals"
+                                                 (copy "Save time and skip the hassle of fussing with toner"
+                                                       "and bleach for the convenience of pre-dyed Frontals."
+                                                       "Free shipping. Free 30 day returns. Made with 100% dyed"
+                                                       "virgin human hair extensions.")
+                                                 "//ucarecdn.com/e014902e-3fdb-46ba-ad63-581a4caa8ab0/")}])
 
 
 (def experimental-virgin-hair [{:catalog/category-id      "2"
