@@ -173,7 +173,7 @@
   (when expanded?
     (let [show?   (fn [category]
                     (or (auth/stylist? signed-in)
-                        (not (-> category :criteria :product/department (contains? "stylist-exclusives")))))
+                        (not (-> category :product/department (contains? "stylist-exclusives")))))
           columns (->> (filter :header/order categories)
                        (filter show?)
                        (sort-by :header/group)
