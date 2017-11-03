@@ -188,7 +188,7 @@
     (api/add-promotion-code (get-in app-state keypaths/session-id) number token pending-promo-code true)))
 
 ;; FIXME:(jm) This is all triggered on pages we're redirecting through. :(
-(defmethod perform-effects events/navigate [_ event {:keys [query-params nav-stack-item] :as args} _ app-state]
+(defmethod perform-effects events/navigate [_ event {:keys [query-params nav-stack-item] :as args} prev-app-state app-state]
   (let [args (dissoc args :nav-stack-item)]
     (handle-message events/control-menu-collapse-all)
     (refresh-account app-state)
@@ -198,7 +198,8 @@
                          (get-in app-state keypaths/pending-promo-code)))
 
     (seo/set-tags app-state)
-    (when (or (not= event events/navigate-product-details)
+    (when (or (not= (get-in prev-app-state keypaths/navigation-event)
+                    events/navigate-product-details)
               (not (:SKU query-params)))
       (let [restore-scroll-top (:final-scroll nav-stack-item 0)]
         (if (zero? restore-scroll-top)
