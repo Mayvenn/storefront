@@ -107,7 +107,9 @@
            :let [product-experiment-set (set (:experiment.dyed-hair/presence product))]
            :when (contains? product-experiment-set
                             (if dyed-hair? "experiment" "control"))]
-       (product-card/component product facets affirm?)))])
+       (product-card/component
+        (cond-> product dyed-hair? (assoc :sku-set/name (:experiment.dyed-hair/title product)))
+        facets affirm?)))])
 
 (defn ^:private component [{:keys [category filters facets loading-products? affirm? dyed-hair?]} owner opts]
   (let [category-criteria (skuers/essentials category)]

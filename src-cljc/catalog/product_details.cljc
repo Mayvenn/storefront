@@ -399,8 +399,12 @@
      :bagged-skus       (get-in data keypaths/browse-recently-added-skus)
      :sku-quantity      (get-in data keypaths/browse-sku-quantity 1)
      :options           (generate-options facets product product-skus selected-sku)
-     :product           product
-     :selected-sku      selected-sku
+     :product           (cond-> product
+                          (experiments/dyed-hair? data)
+                          (assoc :sku-set/name (:experiment.dyed-hair/title product)))
+     :selected-sku      (cond-> selected-sku
+                          (experiments/dyed-hair? data)
+                          (assoc :sku/name (:experiment.dyed-hair/title selected-sku)))
      :cheapest-price    (lowest-sku-price product-skus)
      :carousel-images   carousel-images
      :affirm?           (experiments/affirm? data)}))
