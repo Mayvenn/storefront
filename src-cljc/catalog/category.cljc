@@ -104,7 +104,7 @@
    (if (empty? sku-sets)
      (product-cards-empty-state loading?)
      (for [product sku-sets
-           :let [product-experiment-set (set (:experiment/dyed-hair product))]
+           :let [product-experiment-set (set (:experiment.dyed-hair/presence product))]
            :when (contains? product-experiment-set
                             (if dyed-hair? "experiment" "control"))]
        (product-card/component product facets affirm?)))])
