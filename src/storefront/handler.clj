@@ -38,7 +38,8 @@
             [catalog.products :as products]
             [storefront.accessors.auth :as auth]
             [clojure.set :as set]
-            [spice.core :as spice]))
+            [spice.core :as spice]
+            [catalog.skuers :as skuers]))
 
 (defn storefront-site-defaults
   [environment]
@@ -333,7 +334,7 @@
         {:keys [skus sku-sets]
          :as   response} (api/fetch-sku-sets storeback-config (spice.maps/map-values
                                                                first
-                                                               (:criteria category)))
+                                                               (skuers/essentials category)))
         {:keys [facets]} (api/fetch-facets storeback-config)
         data             (-> data
                              (assoc-in keypaths/facets (map #(update % :facet/slug keyword) facets))

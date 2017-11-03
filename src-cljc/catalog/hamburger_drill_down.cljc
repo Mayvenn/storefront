@@ -154,7 +154,7 @@
      (when category-id
        (let [category (categories/current-traverse-nav app-state)]
          (api/search-sku-sets (get-in app-state keypaths/api-cache)
-                              (:criteria category)
+                              (skuers/essentials category)
                               #(messages/handle-message events/api-success-sku-sets-for-nav
                                                         (assoc %
                                                                :category-id category-id
