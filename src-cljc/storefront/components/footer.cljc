@@ -34,7 +34,7 @@
     [:div.col-12
      [:div.medium.border-bottom.border-gray.mb1 "Shop"]
      [:nav.clearfix {:aria-label "Shop Products"}
-      (for [link-column (partition-all 8 links)]
+      (for [link-column (partition-all 9 links)]
         [:div.col.col-6 {:key (str "footer-column-" (-> link-column first :slug))}
          (for [{:keys [title nav-message slug]} link-column]
            [:a.block.py1.dark-gray.light.titleize

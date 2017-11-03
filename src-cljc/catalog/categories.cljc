@@ -55,7 +55,7 @@
                                                   :desktop-url "//ucarecdn.com/8d0f63d5-495f-4fa5-a1d0-eb8f95e59235/",
                                                   :mobile-url  "//ucarecdn.com/a4812b2f-d314-4aaa-9ea7-6a770e82c3c1/",
                                                   :alt         "Closures"}}
-                :footer/order             8
+                :footer/order             9
                 :header/order             8
                 :header/group             1
                 :seo                      (category->seo "Closures"
@@ -77,7 +77,7 @@
                                                   :desktop-url "//ucarecdn.com/20a24c49-9216-4445-8a49-47ea53f88d32/",
                                                   :mobile-url  "//ucarecdn.com/923e0942-7a07-49c3-9fbb-2efe0835221f/",
                                                   :alt         "Frontals"}}
-                :footer/order             9
+                :footer/order             10
                 :header/order             9
                 :header/group             1
                 :seo                      (category->seo "Frontals"
@@ -101,7 +101,7 @@
                                                   :desktop-url "//ucarecdn.com/b3df4ee4-2a8e-4226-b5ab-2e5158835b0d/"
                                                   :mobile-url  "//ucarecdn.com/65261bbd-672a-4b0f-8172-8fd49b1ad273/"
                                                   :alt         "360 Frontals"}}
-                :footer/order             10
+                :footer/order             11
                 :header/order             10
                 :header/group             1
                 :seo                      (category->seo "360 Frontals"
@@ -128,7 +128,7 @@
                                                                :desktop-url "//ucarecdn.com/b1443b91-6dd3-44e7-b7c3-06876def1bd5/",
                                                                :mobile-url  "//ucarecdn.com/e3d3c5c7-e4dc-4f37-96c0-19bb14785dfb/",
                                                                :alt         "Virgin Closures"}}
-                             :footer/order             8
+                             :footer/order             9
 
                              :seo (category->seo "Closures"
                                                  (copy "Lace Closures in Brazilian Straight, Malaysian Body Wave,"
@@ -155,7 +155,7 @@
                                                    :desktop-url "//ucarecdn.com/8bb50b5c-dfc5-4565-8461-7e2a68a7733e/",
                                                    :mobile-url  "//ucarecdn.com/8ae295fc-0252-499f-910a-73b29348414e/",
                                                    :alt         "Dyed Vigin Closures"}}
-                             :footer/order 8
+                             :footer/order 10
 
                              :seo (category->seo "Dyed Virgin Closures"
                                                  (copy "Save time and skip the hassle of fussing with toner"
@@ -181,7 +181,7 @@
                                                           :desktop-url "//ucarecdn.com/2c6c4831-7002-43b9-8bb4-afda60dd213b/",
                                                           :mobile-url  "//ucarecdn.com/d353eb7b-2b70-4b03-ab9e-9144dc81954e/",
                                                           :alt         "Virgin Frontals"}}
-                             :footer/order        9
+                             :footer/order        11
                              :seo                 (category->seo "Frontals"
                                                                  (copy "Brazilian, Peruvian, Indian and Malaysian hair frontals."
                                                                        "Choose from popular textures such as Deep Wave,"
@@ -205,7 +205,7 @@
                                                                :desktop-url "//ucarecdn.com/d861f26b-6a2f-4bd9-a6e4-d0b0b141527e/",
                                                                :mobile-url  "//ucarecdn.com/e686f6fe-31a4-408c-84ee-0337f6f0902b/",
                                                                :alt         "Dyed Virgin Frontals"}}
-                             :footer/order             9
+                             :footer/order             12
 
                              :seo (category->seo "Dyed Virgin Frontals"
                                                  (copy "Save time and skip the hassle of fussing with toner"
@@ -233,7 +233,7 @@
                                                    :desktop-url "//ucarecdn.com/4f2075cf-ea01-4c85-a96a-928fc6a03cf8/"
                                                    :mobile-url  "//ucarecdn.com/3fccae53-99a7-4e3a-b52a-54086b6eef22/"
                                                    :alt         "360 Frontals"}}
-                             :footer/order 10
+                             :footer/order 12
                              :header/order 7
                              :header/group 1
                              :seo          (category->seo "360 Frontals"
@@ -824,6 +824,7 @@
                            :hamburger/order     1
                            :header/order        8
                            :header/group        0
+                           :footer/order        8
                            :selector/essentials [:product/department :hair/family :hair/color.process]
                            :selector/electives  []
                            :images              {:hero {:filename    "DyedVirginHair.jpg"
