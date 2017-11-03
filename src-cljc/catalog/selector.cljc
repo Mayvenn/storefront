@@ -1,7 +1,6 @@
 (ns catalog.selector
   (:require [clojure.set :as set]
-            [clojure.test :refer [deftest testing is]]
-            [spice.maps :as maps]))
+            [clojure.test :refer [deftest is testing]]))
 
 (defn contains-or-equal [key search-value item]
   (let [item-value (get item key :query/missing)]

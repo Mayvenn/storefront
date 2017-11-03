@@ -1,11 +1,11 @@
 (ns catalog.products
   (:require [catalog.keypaths :as k]
+            [clojure.set :as set]
             [spice.maps :as maps]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.transitions :refer [transition-state]]
-            [clojure.set :as set]
-            [storefront.routes :as routes]))
+            [storefront.routes :as routes]
+            [storefront.transitions :refer [transition-state]]))
 
 (defn product-by-id [app-state product-id]
   (get-in app-state (conj keypaths/sku-sets product-id)))
