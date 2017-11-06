@@ -293,7 +293,9 @@
 (defn query [data]
   (let [black-friday-start 1511499600000
         black-friday-end   1511586000000
-        black-friday?      (< black-friday-start (date/to-millis (date/now)) black-friday-end)]
+        black-friday?      (< black-friday-start
+                              (date/to-millis (date/now))
+                              black-friday-end)]
     {:store      (marquee/query data)
      :signed-in  (auth/signed-in data)
      :categories (->> (get-in data keypaths/categories)
