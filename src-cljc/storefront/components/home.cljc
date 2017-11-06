@@ -9,7 +9,8 @@
             [storefront.components.marquee :as marquee]
             [storefront.assets :as assets]
             [storefront.config :as config]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [spice.date :as date]))
 
 (defn product-image
   [{:keys [resizable_url resizable_filename alt]}]
@@ -86,6 +87,19 @@
           alt       "Fall in love with you! Shop our looks."]
       (hero-image {:mobile-url  "//ucarecdn.com/d651221c-581b-4916-9001-6af866a26f68/"
                    :desktop-url "//ucarecdn.com/b1922d1a-a0a5-4973-89c5-a3740bd8914d/"
+                   :file-name   file-name
+                   :alt         alt}))]])
+
+;; Awaiting assets
+(defn hero-black-friday [store-slug]
+  [:h1.h2
+   [:a
+    (assoc (utils/route-to events/navigate-category {:page/slug "wigs" :catalog/category-id "13"})
+           :data-test "home-banner")
+    (let [file-name "Shop-Now-Bright-Pink-Homepage.jpg"
+          alt       "Fall in love with you! Shop our looks."]
+      (hero-image {:mobile-url  "//ucarecdn.com/0d80edc3-afb2-4a6f-aee1-1cceff1cf93d/"
+                   :desktop-url "//ucarecdn.com/54c13e5b-99cd-4dd4-ae00-9f47fc2158e9/"
                    :file-name   file-name
                    :alt         alt}))]])
 
@@ -265,10 +279,10 @@
                       :file-name   "talkable_banner.jpg"
                       :alt         "refer friends, earn rewards, get 20% off"})]]))
 
-(defn component [{:keys [signed-in store categories]} owner opts]
+(defn component [{:keys [signed-in store categories hero-fn]} owner opts]
   (component/create
    [:div.m-auto
-    [:section (hero (:store-slug store))]
+    [:section (hero-fn (:store-slug store))]
     [:section feature-blocks]
     [:section.hide-on-tb-dt (store-info signed-in store)]
     [:section (popular-grid categories)]
@@ -277,11 +291,15 @@
     [:section talkable-banner]]))
 
 (defn query [data]
-  {:store      (marquee/query data)
-   :signed-in  (auth/signed-in data)
-   :categories (->> (get-in data keypaths/categories)
-                    (filter :home/order)
-                    (sort-by :home/order))})
+  (let [black-friday-start 1511499600000
+        black-friday-end   1511586000000
+        black-friday?      (< black-friday-start (date/to-millis (date/now)) black-friday-end)]
+    {:store      (marquee/query data)
+     :signed-in  (auth/signed-in data)
+     :categories (->> (get-in data keypaths/categories)
+                      (filter :home/order)
+                      (sort-by :home/order))
+     :hero-fn    (if black-friday? hero-black-friday hero)}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
