@@ -641,7 +641,8 @@
                         (get-in app-state keypaths/reset-password-password)
                         (get-in app-state keypaths/reset-password-token)
                         (get-in app-state keypaths/order-number)
-                        (get-in app-state keypaths/order-token))))
+                        (get-in app-state keypaths/order-token)
+                        (get-in app-state keypaths/store-stylist-id))))
 
 (defmethod perform-effects events/facebook-success-reset [_ event facebook-response _ app-state]
   (api/facebook-reset-password (get-in app-state keypaths/session-id)
@@ -650,7 +651,8 @@
                                (-> facebook-response :authResponse :accessToken)
                                (get-in app-state keypaths/reset-password-token)
                                (get-in app-state keypaths/order-number)
-                               (get-in app-state keypaths/order-token)))
+                               (get-in app-state keypaths/order-token)
+                               (get-in app-state keypaths/store-stylist-id)))
 
 (defmethod perform-effects events/control-account-profile-submit [_ event args _ app-state]
   (when (empty? (get-in app-state keypaths/errors))

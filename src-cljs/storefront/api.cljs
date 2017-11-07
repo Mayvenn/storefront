@@ -290,7 +290,7 @@
                                   select-auth-keys
                                   (assoc :flow "email-password")))}))
 
-(defn reset-password [session-id browser-id password reset-token order-number order-token]
+(defn reset-password [session-id browser-id password reset-token order-number order-token stylist-id]
   (api-req
    POST
    "/v2/reset_password"
@@ -301,14 +301,15 @@
      :password password
      :reset_password_token reset-token
      :order-number order-number
-     :order-token order-token}
+     :order-token order-token
+     :stylist-id stylist-id}
     :handler
     #(messages/handle-message events/api-success-auth-reset-password
                               (-> %
                                   select-auth-keys
                                   (assoc :flow "email-password")))}))
 
-(defn facebook-reset-password [session-id browser-id uid access-token reset-token order-number order-token]
+(defn facebook-reset-password [session-id browser-id uid access-token reset-token order-number order-token stylist-id]
   (api-req
    POST
    "/v2/reset_facebook"
@@ -320,7 +321,8 @@
      :access-token access-token
      :reset-password-token reset-token
      :order-number order-number
-     :order-token order-token}
+     :order-token order-token
+     :stylist-id stylist-id}
     :handler
     #(messages/handle-message events/api-success-auth-reset-password
                               (-> %
