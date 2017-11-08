@@ -50,15 +50,17 @@
                    :data-test (str "menu-step-" slug))
             [:span.flex-auto.titleize
              (when new? [:span.teal "NEW "])
-             (or (get category (first electives))
-                 (:name category))])])]]])))
+             (:name category)])])]]])))
 
 (defn query [data]
   (let [{:keys [selector/essentials] :as nav-root} (categories/current-traverse-nav data)
-        {:keys [facets]}                            (get-in data keypaths/category-filters-for-nav)]
+        {:keys [facets]}                           (get-in data keypaths/category-filters-for-nav)
+        dyed-hair-experiment?                      (experiments/dyed-hair? data)]
     {:nav-root nav-root
      :facets   facets
-     :options  (selector/strict-query categories/dyed-hair-experiment-categories
+     :options  (selector/strict-query (if dyed-hair-experiment?
+                                        categories/dyed-hair-experiment-categories
+                                        categories/control-categories)
                                       (select-keys nav-root essentials))}))
 
 (defmethod transitions/transition-state events/menu-home

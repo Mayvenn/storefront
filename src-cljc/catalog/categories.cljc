@@ -598,7 +598,6 @@
                                                          (copy "100% human hair bundles and extensions from Mayvenn."
                                                                "Peruvian and Brazilian Kinky Straight Lace Closures and Frontals.")
                                                          "//ucarecdn.com/7fe5f90f-4dad-454a-aa4b-b453fc4da3c4/")}
-
                {:catalog/category-id      "5"
                 :name                     "Body Wave"
                 :page/slug                "body-wave"
@@ -772,7 +771,15 @@
                          :name                "Hair"
                          :page/slug           "hair"
                          :product/department  #{"hair"}
-                         :selector/essentials [:product/department]
+                         :hair/texture        #{"straight"
+                                                "kinky-straight"
+                                                "yaki-straight"
+                                                "body-wave"
+                                                "deep-wave"
+                                                "water-wave"
+                                                "loose-wave"
+                                                "curly"}
+                         :selector/essentials [:product/department :hair/texture]
                          :selector/electives  [:hair/texture]
                          :hamburger/order     0}
                         {:catalog/category-id "12"
@@ -854,6 +861,10 @@
 (def dyed-hair-experiment-categories
   (concat experimental-virgin-hair
           experimental-closures))
+
+(def control-categories
+  (concat closures
+          textures))
 
 (def old-initial-categories
   (concat closures

@@ -1,6 +1,5 @@
 (ns storefront.components.slideout-nav
-  (:require [catalog.hamburger-drill-down :as drill-down]
-            [catalog.menu :as menu]
+  (:require [catalog.menu :as menu]
             [storefront.accessors.auth :as auth]
             [storefront.accessors.stylists :as stylists]
             [storefront.assets :as assets]
@@ -185,25 +184,18 @@
                                   :data-test "menu-shop-dyed-virgin-hair")
                            [:span.teal.pr1 "NEW"]
                            [:span.medium.flex-auto "Shop Dyed Virgin Hair"])]]
-     [:li (major-menu-row (assoc (utils/fake-href events/menu-traverse-descend
+     [:li (major-menu-row (assoc (utils/fake-href events/menu-list
                                                   {:page/slug           "bundles"
                                                    :catalog/category-id "11"})
                                  :data-test "menu-shop-bundles")
                           [:span.medium.flex-auto "Shop Hair"]
                           ui/forward-caret)])
-   (if dyed-hair-experiment?
-     [:li (major-menu-row (assoc (utils/fake-href events/menu-list
-                                                  {:page/slug           "closures-and-frontals"
-                                                   :catalog/category-id "12"})
-                                 :data-test "menu-shop-closures")
-                          [:span.medium.flex-auto "Shop Closures & Frontals"]
-                          ui/forward-caret)]
-     [:li (major-menu-row (assoc (utils/fake-href events/menu-traverse-descend
-                                                  {:page/slug           "closures-and-frontals"
-                                                   :catalog/category-id "12"})
-                                 :data-test "menu-shop-closures")
-                          [:span.medium.flex-auto "Shop Closures & Frontals"]
-                          ui/forward-caret)])
+   [:li (major-menu-row (assoc (utils/fake-href events/menu-list
+                                                {:page/slug           "closures-and-frontals"
+                                                 :catalog/category-id "12"})
+                               :data-test "menu-shop-closures")
+                        [:span.medium.flex-auto "Shop Closures & Frontals"]
+                        ui/forward-caret)]
    [:li (major-menu-row (assoc (utils/route-to events/navigate-category
                                                 {:page/slug           "wigs"
                                                  :catalog/category-id "13"})
@@ -257,7 +249,7 @@
        sign-out-area])]))
 
 (defn component
-  [{:keys [promo-data cart dyed-hair-experiment? on-taxon? menu-data drill-down-data] :as data}
+  [{:keys [promo-data cart dyed-hair-experiment? on-taxon? menu-data] :as data}
    owner
    opts]
   (component/create
@@ -266,9 +258,7 @@
      (promo-bar promo-data)
      (burger-header cart)]
     (if on-taxon?
-      (if dyed-hair-experiment?
-        (component/build menu/component menu-data nil)
-        (component/build drill-down/component drill-down-data nil))
+      (component/build menu/component menu-data nil)
       (component/build root-menu data nil))]))
 
 (defn basic-query [data]
@@ -284,7 +274,6 @@
   (-> (basic-query data)
       (assoc-in [:user :store-credit] (get-in data keypaths/user-total-available-store-credit))
       (assoc-in [:promo-data] (promotion-banner/query data))
-      (assoc-in [:drill-down-data] (drill-down/query data))
       (assoc-in [:cart :quantity]  (orders/product-quantity (get-in data keypaths/order)))
       (assoc-in [:menu-data] (menu/query data))))
 
