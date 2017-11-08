@@ -363,7 +363,7 @@
   (testing "redirect to default resolve if lead id is provided without a flow-id"
     (let [fake-lead {:id "MOCK-LEAD-ID"}]
       (with-standalone-server [storeback (standalone-server (constantly {:status 200
-                                                                         :body   (generate-string fake-lead)}))]
+                                                                         :body   (generate-string {:lead fake-lead})}))]
         (with-handler handler
           (let [resp (handler (-> (mock/request :get "https://welcome.mayvenn.com/stylists/thank-you")
                                   (mock/header "Cookie" lead-awaiting-call-cookie)))]
@@ -374,7 +374,7 @@
   (testing "redirect to registration details if lead id is provided with a step-id of 'details'"
     (let [fake-lead {:id "MOCK-LEAD-ID" :flow-id "2" :step-id "details"}]
       (with-standalone-server [storeback (standalone-server (constantly {:status 200
-                                                                         :body   (generate-string fake-lead)}))]
+                                                                         :body   (generate-string {:lead fake-lead})}))]
         (with-handler handler
           (let [resp (handler (-> (mock/request :get "https://welcome.mayvenn.com/stylists/flows/2/details")
                                   (mock/header "Cookie" stylist-created-cookie)))]
@@ -385,7 +385,7 @@
   (testing "redirect to registration resolve if lead id is provided with a step-id of 'thank-you'"
     (let [fake-lead {:id "MOCK-LEAD-ID" :flow-id "2" :step-id "thank-you"}]
       (with-standalone-server [storeback (standalone-server (constantly {:status 200
-                                                                         :body   (generate-string fake-lead)}))]
+                                                                         :body   (generate-string {:lead fake-lead})}))]
         (with-handler handler
           (let [resp (handler (-> (mock/request :get "https://welcome.mayvenn.com/stylists/flows/2/thank-you")
                                   (mock/header "Cookie" self-reg-in-progress-cookie)))]
