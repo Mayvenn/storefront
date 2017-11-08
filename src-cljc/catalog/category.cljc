@@ -18,8 +18,11 @@
    [catalog.products :as products]
    [catalog.skuers :as skuers]))
 
-(defn filter-tabs [category-criteria {:keys [facets filtered-sku-sets criteria]}]
-  (let [sku-set-count        (count filtered-sku-sets)
+(defn filter-tabs [category-criteria {:keys [facets filtered-sku-sets criteria]} dyed-hair?]
+  (let [product-count        (->> filtered-sku-sets
+                                  (filter #(contains? (set (:experiment.dyed-hair/presence %))
+                                                      (if dyed-hair? "experiment" "control")))
+                                  count)
         applied-filter-count (->> (apply dissoc criteria (keys category-criteria))
                                   (map (comp count val))
                                   (apply +))]
@@ -31,7 +34,7 @@
                             0 "Filter by:"
                             1 "1 filter applied:"
                             (str applied-filter-count " filters applied:"))]
-         [:p.h6.dark-gray (str sku-set-count " Item" (when (not= 1 sku-set-count) "s"))]]
+         [:p.h6.dark-gray (str product-count " Item" (when (not= 1 product-count) "s"))]]
         (into [:div.border.h6.border-teal.rounded.flex.center]
               (map-indexed
                (fn [idx {:keys [slug title selected?]}]
@@ -104,11 +107,11 @@
        [:a.teal (utils/fake-href events/control-category-criteria-cleared) "Clear all filters"]
        " to see more hair."]])])
 
-(defn product-cards [loading? sku-sets facets affirm? dyed-hair?]
+(defn product-cards [loading? products facets affirm? dyed-hair?]
   [:div.flex.flex-wrap.mxn1
-   (if (empty? sku-sets)
+   (if (empty? products)
      (product-cards-empty-state loading?)
-     (for [product sku-sets
+     (for [product products
            :let [product-experiment-set (set (:experiment.dyed-hair/presence product))]
            :when (contains? product-experiment-set
                             (if dyed-hair? "experiment" "control"))]
@@ -133,13 +136,13 @@
                                      first)]
           [:div
            [:div.hide-on-tb-dt.px2.z4.fixed.overlay.overflow-auto.bg-white
-            (filter-tabs category-criteria filters)
+            (filter-tabs category-criteria filters dyed-hair?)
             (filter-panel selected-facet)]
            [:div.hide-on-mb
-            (filter-tabs category-criteria filters)
+            (filter-tabs category-criteria filters dyed-hair?)
             (filter-panel selected-facet)]]
           [:div
-           (filter-tabs category-criteria filters)])]
+           (filter-tabs category-criteria filters dyed-hair?)])]
        (product-cards loading-products? (:filtered-sku-sets filters) facets affirm? dyed-hair?)]])))
 
 (defn ^:private query [data]
