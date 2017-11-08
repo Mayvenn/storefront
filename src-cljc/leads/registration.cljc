@@ -355,9 +355,8 @@
        (history/enqueue-navigate events/navigate-leads-registration-resolve))))
 
 (defmethod transitions/transition-state events/api-success-lead-registered
-  [_ event {:keys [lead user-id token] :as old-lead} app-state]
-  (let [lead (or lead old-lead)] ;; GROT old-lead once leads is deployed
-    (-> app-state
-        (assoc-in keypaths/remote-lead lead)
-        (assoc-in keypaths/remote-user-token token)
-        (assoc-in keypaths/remote-user-id user-id))))
+  [_ event {:keys [lead user-id token]} app-state]
+  (-> app-state
+      (assoc-in keypaths/remote-lead lead)
+      (assoc-in keypaths/remote-user-token token)
+      (assoc-in keypaths/remote-user-id user-id)))
