@@ -40,6 +40,7 @@
                    (if selected?
                      (utils/fake-href events/control-category-filters-close)
                      (utils/fake-href events/control-category-filter-select {:selected slug}))
+                   :data-test (str "filter-" (name slug))
                    :key slug
                    :class (if selected? "bg-teal white" "dark-gray"))
                   [:div.border-teal.my1
@@ -53,9 +54,11 @@
      [:div.flex-on-tb-dt.justify-around
       (for [{:keys [slug label represented? selected?]} options]
         [:div.py1.mr4
-         {:key (str "filter-option-" slug)}
+         {:key       (str "filter-option-" slug)
+          :data-test (str "filter-option-" slug)}
          (ui/check-box {:label     [:span
-                                    (when (categories/new-facet? [(:slug selected-facet) slug]) [:span.mr1.teal "NEW"])
+                                    (when (categories/new-facet? [(:slug selected-facet) slug])
+                                      [:span.mr1.teal "NEW"])
                                     label]
                         :value     selected?
                         :disabled  (not represented?)
@@ -68,11 +71,13 @@
    [:div.clearfix.mxn3.px1.py4.hide-on-tb-dt
     [:div.col.col-6.px3
      (ui/teal-ghost-button
-      (utils/fake-href events/control-category-criteria-cleared)
+      (merge (utils/fake-href events/control-category-criteria-cleared)
+             {:data-test "filters-clear-all"})
       "Clear all")]
     [:div.col.col-6.px3
      (ui/teal-button
-      (utils/fake-href events/control-category-filters-close)
+      (merge (utils/fake-href events/control-category-filters-close)
+             {:data-test "filters-done"})
       "Done")]]])
 
 (defn hero-section [category]
