@@ -83,10 +83,10 @@
    [:a
     (assoc (utils/route-to events/navigate-category {:page/slug "wigs" :catalog/category-id "13"})
            :data-test "home-banner")
-    (let [file-name "Shop-Now-Bright-Pink-Homepage.jpg"
+    (let [file-name "Fall-in-love-soul-Homepage.jpg"
           alt       "Fall in love with you! Shop our looks."]
-      (hero-image {:mobile-url  "//ucarecdn.com/d651221c-581b-4916-9001-6af866a26f68/"
-                   :desktop-url "//ucarecdn.com/b1922d1a-a0a5-4973-89c5-a3740bd8914d/"
+      (hero-image {:mobile-url  "//ucarecdn.com/28bf6da5-5f69-424f-893e-6fed5ce62619/"
+                   :desktop-url "//ucarecdn.com/09024176-fc65-426d-8e66-cc32f58799b8/"
                    :file-name   file-name
                    :alt         alt}))]])
 
