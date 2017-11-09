@@ -17,7 +17,8 @@
 
 (def spinner-content
   [:div {:style "height:100vh;"}
-   [:div {:style "margin:auto; width:50%; position: relative; top: 50%; transform: translateY(-50%);"} (raw mayvenn-logo-splash)
+   [:div {:style "margin:auto; width:50%; position: relative; top: 50%; transform: translateY(-50%);"}
+    (raw mayvenn-logo-splash)
     [:div {:style (str "height: 2em;"
                        "margin-top: 2em;"
                        "background-image: url('/images/spinner.svg');"
