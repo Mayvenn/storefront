@@ -472,8 +472,8 @@
                                                                   "from 100% virgin human hair, and customizable"
                                                                   "to fit your unique look.")}
                          :images              {:hero {:filename    "Wigs.jpg"
-                                                      :desktop-url "//ucarecdn.com/5f2f6800-7b35-4471-9653-42455d7cf76d/"
-                                                      :mobile-url  "//ucarecdn.com/dd01c16f-983b-44a1-a1de-101b9430666f/"
+                                                      :desktop-url "//ucarecdn.com/0ce6c31c-1e35-47c7-a6aa-039ba57e19be/"
+                                                      :mobile-url  "//ucarecdn.com/9f7ce79a-867f-4455-adc5-5a784ba17e41/"
                                                       :alt         "Wigs"}}
                          :product/department  #{"hair"}
                          :hair/family         #{"360-wigs" "lace-front-wigs"}
@@ -503,8 +503,8 @@
                                                      "from 100% virgin human hair, and customizable"
                                                      "to fit your unique look.")}
             :images              {:hero {:filename    "Wigs.jpg"
-                                         :desktop-url "//ucarecdn.com/5f2f6800-7b35-4471-9653-42455d7cf76d/"
-                                         :mobile-url  "//ucarecdn.com/dd01c16f-983b-44a1-a1de-101b9430666f/"
+                                         :desktop-url "//ucarecdn.com/0ce6c31c-1e35-47c7-a6aa-039ba57e19be/"
+                                         :mobile-url  "//ucarecdn.com/9f7ce79a-867f-4455-adc5-5a784ba17e41/"
                                          :alt         "Wigs"}}
             :product/department  #{"hair"}
             :hair/family         #{"360-wigs" "lace-front-wigs"}

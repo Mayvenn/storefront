@@ -6,9 +6,7 @@
 .gray          { color: var(--gray); }
 .dark-gray     { color: var(--dark-gray); }
 .black         { color: var(--black); }
-.bcp-pink      { color: var(--bcp-pink); }
 .inherit-color { color: inherit; }
-
 
 
 :root {
@@ -20,5 +18,4 @@
   --gray:         #666666;
   --dark-gray:    #333333;
   --black:        #000000;
-  --bcp-pink:     #D80974;
 }
