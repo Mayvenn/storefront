@@ -94,7 +94,7 @@
 (defn hero-black-friday [store-slug]
   [:h1.h2
    [:a
-    (assoc (utils/route-to events/navigate-category {:page/slug "wigs" :catalog/category-id "13"})
+    (assoc (utils/route-to events/navigate-shop-by-look)
            :data-test "home-banner")
     (let [file-name "Shop-Now-Bright-Pink-Homepage.jpg"
           alt       "Fall in love with you! Shop our looks."]
