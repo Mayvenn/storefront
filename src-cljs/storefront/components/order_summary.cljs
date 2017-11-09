@@ -109,7 +109,7 @@
 
 (defn display-adjustable-line-items [line-items products update-line-item-requests delete-line-item-requests]
   (for [{:keys [product-id quantity] variant-id :id :as line-item} line-items]
-    (let [updating? (get update-line-item-requests variant-id)
+    (let [updating? (get update-line-item-requests (:sku line-item))
           removing? (get delete-line-item-requests variant-id)]
       (display-line-item
        line-item
@@ -121,7 +121,8 @@
         [:.h3
          (when-let [variant (query/get {:id variant-id}
                                        (:variants (get products product-id)))]
-           (ui/counter quantity
-                       updating?
+           (ui/counter {:spinning? updating?
+                        :data-test (:sku variant)}
+                       quantity
                        (utils/send-event-callback events/control-cart-line-item-dec {:variant variant})
                        (utils/send-event-callback events/control-cart-line-item-inc {:variant variant})))]]))))

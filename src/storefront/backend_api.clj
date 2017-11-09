@@ -103,6 +103,14 @@
     (when (not-404 response)
       (:body response))))
 
+(defn fetch-skus [storeback-config criteria-or-id]
+  (let [response (storeback-fetch storeback-config "/skus"
+                                  {:query-params (if (map? criteria-or-id)
+                                                   (criteria->query-params criteria-or-id)
+                                                   {:id criteria-or-id})})]
+    (when (not-404 response)
+      (:body response))))
+
 (defn lookup-lead [storeback-config lead-id]
   (when lead-id
     (let [response (storeback-fetch storeback-config (str "/leads/" lead-id) {})]

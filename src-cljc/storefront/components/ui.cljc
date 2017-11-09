@@ -415,11 +415,11 @@
                          :data-test "line-item-quantity"}
    (if spinning? spinner value)])
 
-(defn counter [value spinning? dec-fn inc-fn]
+(defn counter [{:keys [data-test spinning?]} value dec-fn inc-fn]
   [:div
-   (counter-button spinning? "quantity-dec" dec-fn svg/counter-dec)
+   (counter-button spinning? (str "quantity-dec-" data-test) dec-fn svg/counter-dec)
    (counter-value spinning? value)
-   (counter-button spinning? "quantity-inc" inc-fn svg/counter-inc)])
+   (counter-button spinning? (str "quantity-inc-" data-test) inc-fn svg/counter-inc)])
 
 (defn note-box [{:keys [color data-test]} contents]
   [:div.border.rounded

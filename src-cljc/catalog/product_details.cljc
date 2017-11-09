@@ -72,8 +72,9 @@
   (if can-supply?
     [:div
      [:link {:item-prop "availability" :href "http://schema.org/InStock"}]
-     (ui/counter quantity
-                 false
+     (ui/counter {:spinning? false
+                  :data-test "pdp"}
+                 quantity
                  (utils/send-event-callback events/control-counter-dec
                                             {:path keypaths/browse-sku-quantity})
                  (utils/send-event-callback events/control-counter-inc
@@ -393,7 +394,7 @@
      :ugc               ugc
      :fetching-product? (utils/requesting? data (conj request-keys/search-sku-sets
                                                       (:catalog/product-id product)))
-     :adding-to-bag?    (utils/requesting? data request-keys/add-to-bag)
+     :adding-to-bag?    (utils/requesting? data (conj request-keys/add-to-bag (:sku selected-sku)))
      :bagged-skus       (get-in data keypaths/browse-recently-added-skus)
      :sku-quantity      (get-in data keypaths/browse-sku-quantity 1)
      :options           (generate-options facets product product-skus selected-sku)

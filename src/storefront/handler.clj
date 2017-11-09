@@ -39,7 +39,9 @@
             [storefront.accessors.auth :as auth]
             [clojure.set :as set]
             [spice.core :as spice]
-            [catalog.skuers :as skuers]))
+            [catalog.skuers :as skuers]
+            [storefront.accessors.orders :as orders]
+            [spice.maps :as maps]))
 
 (defn storefront-site-defaults
   [environment]
@@ -375,6 +377,13 @@
       (assoc-in keypaths/user-store-slug (cookies/get req "store-slug"))
       (assoc-in keypaths/user-email (cookies/get req "email"))))
 
+(defn assoc-cart-route-data [data storeback-config]
+  (let [order                   (get-in data keypaths/order)
+        {:keys [skus sku-sets]} (api/fetch-sku-sets storeback-config {:sku (map :sku (orders/product-items order))})]
+    (-> data
+        (update-in keypaths/sku-sets merge (products/normalize-sku-sets sku-sets))
+        (update-in keypaths/skus merge (products/normalize-skus skus)))))
+
 (defn frontend-routes [{:keys [storeback-config leads-config environment client-version] :as ctx}]
   (fn [{:keys [store nav-message] :as req}]
     (let [[nav-event params] nav-message
@@ -396,6 +405,9 @@
               data                  (cond-> data
                                       true
                                       (assoc-user-info req)
+
+                                      (= events/navigate-cart nav-event)
+                                      (assoc-cart-route-data storeback-config)
 
                                       (= events/navigate-category nav-event)
                                       (assoc-category-route-data storeback-config params)

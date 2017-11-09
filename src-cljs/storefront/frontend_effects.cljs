@@ -618,18 +618,6 @@
 (defmethod perform-effects events/control-sign-out [_ event args _ app-state]
   (handle-message events/sign-out))
 
-(defmethod perform-effects events/control-add-to-bag
-  [dispatch event {:keys [variant quantity] :as args} _ app-state]
-  (api/add-to-bag
-   (get-in app-state keypaths/session-id)
-   {:variant variant
-    :quantity quantity
-    :stylist-id (get-in app-state keypaths/store-stylist-id)
-    :token (get-in app-state keypaths/order-token)
-    :number (get-in app-state keypaths/order-number)
-    :user-id (get-in app-state keypaths/user-id)
-    :user-token (get-in app-state keypaths/user-token)}))
-
 (defmethod perform-effects events/control-forgot-password-submit [_ event args _ app-state]
   (api/forgot-password (get-in app-state keypaths/session-id) (get-in app-state keypaths/forgot-password-email)))
 
@@ -677,7 +665,18 @@
                           (get-in app-state keypaths/order-token)))
 
 (defmethod perform-effects events/control-cart-line-item-inc [_ event {:keys [variant]} _ app-state]
-  (api/inc-line-item (get-in app-state keypaths/session-id) (get-in app-state keypaths/order) {:variant variant}))
+  (let [sku (get (get-in app-state keypaths/skus) (:sku variant))
+        order    (get-in app-state keypaths/order)
+        quantity 1]
+    (api/add-sku-to-bag (get-in app-state keypaths/session-id)
+                        {:sku      sku
+                         :token    (:token order)
+                         :number   (:number order)
+                         :quantity quantity}
+                        #(handle-message events/api-success-add-sku-to-bag
+                                         {:order    %
+                                          :quantity quantity
+                                          :sku      sku}))))
 
 (defmethod perform-effects events/control-create-order-from-shared-cart [_ event {:keys [shared-cart-id]} _ app-state]
   (api/create-order-from-cart (get-in app-state keypaths/session-id)
@@ -687,7 +686,13 @@
                               (get-in app-state keypaths/store-stylist-id)))
 
 (defmethod perform-effects events/control-cart-line-item-dec [_ event {:keys [variant]} _ app-state]
-  (api/dec-line-item (get-in app-state keypaths/session-id) (get-in app-state keypaths/order) {:variant variant}))
+  (let [order (get-in app-state keypaths/order)]
+    (api/remove-line-item (get-in app-state keypaths/session-id)
+                          {:number     (:number order)
+                           :token      (:token order)
+                           :variant-id (:id variant)
+                           :sku-code   (:sku variant)}
+                          #(handle-message events/api-success-add-to-bag {:order %}))))
 
 (defmethod perform-effects events/control-cart-remove [_ event variant-id _ app-state]
   (api/delete-line-item (get-in app-state keypaths/session-id) (get-in app-state keypaths/order) variant-id))

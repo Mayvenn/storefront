@@ -41,8 +41,6 @@
 
 (def update-cart [:update-cart])
 (def update-line-item [:update-line-item])
-(def increment-line-item [:update-line-item])
-(def decrement-line-item [:update-line-item])
 (def delete-line-item [:delete-line-item])
 (def update-order [:update-order])
 (def update-addresses [:update-addresses])

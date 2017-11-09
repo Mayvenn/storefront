@@ -600,46 +600,40 @@
                                        {:order %
                                         :navigate events/navigate-order-complete})}))
 
-(defn inc-line-item [session-id order {:keys [variant]}]
-  (api-req
-   POST
-   "/v2/add-to-bag"
-   (conj request-keys/increment-line-item (:id variant))
-   {:params (merge (select-keys order [:number :token])
-                   {:session-id session-id
-                    :variant-id (:id variant)
-                    :quantity 1})
-    :handler #(messages/handle-message events/api-success-add-to-bag
-                                       {:order %
-                                        :variant variant
-                                        :quantity 1})}))
 
-(defn dec-line-item [session-id order {:keys [variant]}]
+(defn ^:private remove-from-bag [request-key session-id {:keys [variant-id number token quantity]} handler]
   (api-req
    POST
    "/v2/remove-from-bag"
-   (conj request-keys/decrement-line-item (:id variant))
-   {:params (merge (select-keys order [:number :token])
-                   {:session-id session-id
-                    :variant-id (:id variant)
-                    :quantity 1})
-    :handler #(messages/handle-message events/api-success-add-to-bag
-                                       {:order %})}))
+   request-key
+   {:params {:session-id session-id
+             :quantity quantity
+             :variant-id variant-id
+             :number number
+             :token token}
+    :handler handler}))
+
+(defn remove-line-item [session-id {:keys [variant-id number token sku-code]} handler]
+  (remove-from-bag
+   (conj request-keys/update-line-item sku-code)
+   session-id {:variant-id variant-id
+               :number number
+               :token token
+               :quantity 1}
+   handler))
 
 (defn delete-line-item [session-id order variant-id]
-  (api-req
-   POST
-   "/v2/remove-from-bag"
+  (remove-from-bag
    (conj request-keys/delete-line-item variant-id)
-   {:params (merge (select-keys order [:number :token])
-                   {:session-id session-id
-                    :variant-id variant-id
-                    :quantity (->> order
-                                   orders/product-items
-                                   (orders/line-item-by-id variant-id)
-                                   :quantity)})
-    :handler #(messages/handle-message events/api-success-remove-from-bag
-                                       {:order %})}))
+   session-id
+   (merge (select-keys order [:number :token])
+          {:session-id session-id
+           :variant-id variant-id
+           :quantity (->> order
+                          orders/product-items
+                          (orders/line-item-by-id variant-id)
+                          :quantity)})
+   #(messages/handle-message events/api-success-remove-from-bag {:order %})))
 
 (defn update-addresses [session-id order]
   (api-req
@@ -765,25 +759,12 @@
                                                    (assoc (waiter-style->std-error response-body) :promo-code promo-code))
                           (default-error-handler %))))}))
 
-(defn add-to-bag [session-id {:keys [token number variant] :as params}]
-  (api-req
-   POST
-   "/v2/add-to-bag"
-   request-keys/add-to-bag
-   {:params (merge (select-keys params [:quantity :stylist-id :user-id :user-token])
-                   {:session-id session-id
-                    :variant-id (:id variant)}
-                   (when (and token number) {:token token :number number}))
-    :handler #(messages/handle-message events/api-success-add-to-bag
-                                       {:order %
-                                        :quantity (:quantity params)
-                                        :variant (:variant params)})}))
-
+;; TODO(jeff): rename sku to sku-code and pass only in the sku-code
 (defn add-sku-to-bag [session-id {:keys [token number sku] :as params} handler]
   (api-req
    POST
    "/v2/add-to-bag"
-   request-keys/add-to-bag
+   (conj request-keys/add-to-bag (:sku sku))
    {:params (merge (select-keys params [:quantity :stylist-id :user-id :user-token])
                    {:session-id session-id
                     :sku (:sku sku)}

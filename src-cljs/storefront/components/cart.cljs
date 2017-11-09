@@ -292,7 +292,10 @@ Thanks,
                                      (seq (get-in data keypaths/shipping-methods))
                                      (seq (get-in data keypaths/states)))
      :disable-apple-pay-button? (get-in data keypaths/disable-apple-pay-button?)
-     :update-line-item-requests (variants-requests data request-keys/update-line-item variant-ids)
+     :update-line-item-requests (merge-with
+                                 #(or %1 %2)
+                                 (variants-requests data request-keys/add-to-bag (map :sku line-items))
+                                 (variants-requests data request-keys/update-line-item (map :sku line-items)))
      :delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)
      :field-errors              (get-in data keypaths/field-errors)
      :focused                   (get-in data keypaths/ui-focus)
