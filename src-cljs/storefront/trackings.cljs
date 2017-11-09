@@ -1,6 +1,7 @@
 (ns storefront.trackings
   (:require [storefront.events :as events]
             [storefront.keypaths :as keypaths]
+            [catalog.selector :as selector]
             [storefront.routes :as routes]
             [storefront.hooks.facebook-analytics :as facebook-analytics]
             [storefront.hooks.google-analytics :as google-analytics]
@@ -117,48 +118,87 @@
                                                :is_stylist_store (not (#{"store" "shop" "internal"} store-slug))}))))
 
 (defn order-product-items->enriched-products
-  [products-db product-items]
+  "From the Products key with a quantity"
+  [products-db line-items]
   (mapv
    (fn [{:keys [id product-id quantity]}]
      (assoc
       (query/get {:id id}
                  (:variants (get products-db product-id)))
       :quantity quantity))
-   product-items))
+   line-items))
+
+(defn line-item->cart-item [products-db line-item]
+  (let [cellar-variant (query/get {:id (:id line-item)}
+                                  (:variants (get products-db (:product-id line-item))))
+        attrs (:variant_attrs cellar-variant)]
+    {:variant_id       (:id cellar-variant)
+     :variant_sku      (:sku cellar-variant)
+     :variant_price    (:unit-price line-item)
+     :variant_quantity (:quantity line-item)
+     :variant_name     (:variant-name cellar-variant)
+     :variant_origin   (:origin attrs)
+     :variant_style    (:style attrs)
+     :variant_color    (:color attrs)
+     :variant_length   (:length attrs)
+     :variant_material (:material attrs)
+     :variant_image    (products/product-img-with-size cellar-variant :product)}))
 
 (defn- ->cart-item
   "Makes a flattened key version of variants"
-  [variant]
-  (let [attrs (or (:variant-attrs variant)
-                  (:variant_attrs variant))]
-    {:variant_id       (or (:variant_id variant)
-                           (:id variant))
-     :variant_sku      (or (:variant_sku variant)
-                           (:sku variant))
-     :variant_price    (or (:unit-price variant)
-                           (:price variant))
-     :variant_quantity (or (:variant_quantity variant)
-                           (:quantity variant))
-     :variant_name     (or (:variant_name variant)
-                           (:variant-name variant))
-     :variant_origin   (or (:variant_origin variant)
+  [variant-or-sku]
+  (let [attrs (:variant-attrs variant-or-sku)]
+    {:variant_id       (or (:variant_id variant-or-sku)
+                           (:legacy/variant-id variant-or-sku))
+     :variant_sku      (or (:variant_sku variant-or-sku)
+                           (:catalog/sku-id variant-or-sku))
+     :variant_price    (or (:unit-price variant-or-sku)
+                           (:sku/price variant-or-sku))
+     :variant_quantity (or (:variant_quantity variant-or-sku)
+                           (:quantity variant-or-sku)
+                           1)
+     :variant_name     (or (:variant_name variant-or-sku)
+                           (:variant-name variant-or-sku))
+     :variant_origin   (or (:variant_origin variant-or-sku)
                            (:origin attrs))
-     :variant_style    (or (:variant_style variant)
+     :variant_style    (or (:variant_style variant-or-sku)
                            (:style attrs))
-     :variant_color    (or (:variant_color variant)
+     :variant_color    (or (:variant_color variant-or-sku)
                            (:color attrs))
-     :variant_length   (or (:variant_length variant)
+     :variant_length   (or (:variant_length variant-or-sku)
                            (:length attrs))
-     :variant_material (or (:variant_material variant)
+     :variant_material (or (:variant_material variant-or-sku)
                            (:material attrs))
-     :variant_image    (products/product-img-with-size variant :product)}))
+     :variant_image    (products/product-img-with-size variant-or-sku :product)}))
 
-(defn- sku->cart-item
-  "Makes a flattened key version of variants"
-  [variants sku quantity]
-  (let [sku-id (:sku sku)
-        variant (variants sku-id)]
-    {:variant_sku      sku-id
+(defn- line-items->cart-items
+  [products-db line-items]
+  (mapv (partial line-item->cart-item products-db) line-items))
+
+(defmethod perform-track events/api-success-add-to-bag
+  [_ _ {:keys [variant quantity] :as args} app-state]
+  (when variant
+    (let [order         (get-in app-state keypaths/order)
+          product-items (orders/product-items order)
+          products-db   (get-in app-state keypaths/products)
+          cart-items    (line-items->cart-items products-db product-items)]
+      (stringer/track-event "add_to_cart" (merge (-> variant ->cart-item)
+                                                 {:order_number   (get-in app-state keypaths/order-number)
+                                                  :order_total    (get-in app-state keypaths/order-total)
+                                                  :order_quantity (orders/product-quantity order)
+                                                  :quantity       quantity
+                                                  :context        {:cart-items cart-items}})))))
+
+(defn product-image [images sku]
+  (->> {:use-case "catalog" :image/of #{"product"}}
+       (selector/select images sku)
+       first))
+
+(defn- sku->cart-item [images sku quantity]
+  (let [{:keys [url alt filename] :as image} (->> {:use-case "catalog" :image/of #{"product"}}
+                                                  (selector/select images sku)
+                                                  first)]
+    {:variant_sku      (:sku sku)
      :variant_price    (:price sku)
      :variant_quantity quantity
      :variant_name     (:sku/name sku)
@@ -167,40 +207,20 @@
      :variant_color    (:hair/color sku)
      :variant_length   (:hair/length sku)
      :variant_material (:hair/base-material sku)
-     :variant_image    (products/product-img-with-size variant :product)
-     :variant_id       (:id variant)}))
-
-(defn- ->cart-items
-  [products-db product-items]
-  (->> (order-product-items->enriched-products products-db product-items)
-       (mapv ->cart-item)))
-
-(defmethod perform-track events/api-success-add-to-bag
-  [_ _ {:keys [variant quantity] :as args} app-state]
-  (when variant
-    (let [order         (get-in app-state keypaths/order)
-          product-items (orders/product-items order)
-          products-db   (get-in app-state keypaths/products)
-          cart-items    (->cart-items products-db product-items)]
-      (stringer/track-event "add_to_cart" (merge (-> variant ->cart-item)
-                                                 {:order_number   (get-in app-state keypaths/order-number)
-                                                  :order_total    (get-in app-state keypaths/order-total)
-                                                  :order_quantity (orders/product-quantity order)
-                                                  :quantity       quantity
-                                                  :context        {:cart-items cart-items}})))))
+     :variant_image    {:src (str "https:" url filename) :alt alt}
+     :variant_id       (:legacy/variant-id sku)}))
 
 (defmethod perform-track events/api-success-add-sku-to-bag
   [_ _ {:keys [quantity sku] :as args} app-state]
   (when sku
-    (let [order         (get-in app-state keypaths/order)
-          product-items (orders/product-items order)
-          products-db   (get-in app-state keypaths/products)
-          cart-items    (->cart-items products-db product-items)
-          variants (->> (get-in app-state keypaths/products)
-                        (map val)
-                        (mapcat :variants)
-                        (maps/index-by :sku))]
-      (stringer/track-event "add_to_cart" (merge (sku->cart-item variants sku quantity)
+    (let [order      (get-in app-state keypaths/order)
+          line-items (orders/product-items order)
+          images     (get-in app-state keypaths/db-images)
+          cart-items (mapv (comp (partial apply (partial sku->cart-item images))
+                                 (juxt (comp (get-in app-state keypaths/skus) :sku)
+                                       :quantity))
+                           line-items)]
+      (stringer/track-event "add_to_cart" (merge (sku->cart-item images sku quantity)
                                                  {:order_number   (get-in app-state keypaths/order-number)
                                                   :order_total    (get-in app-state keypaths/order-total)
                                                   :order_quantity (orders/product-quantity order)
