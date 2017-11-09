@@ -64,18 +64,6 @@
   (let [new-criteria (update criteria facet-slug (fnil conj #{}) option-slug)]
     (apply-criteria filters new-criteria)))
 
-(defn undo-criterion [{:keys [previous-criteria] :as filters}]
-  (let [new-criteria      (last previous-criteria)]
-    (-> filters
-        (apply-criteria new-criteria)
-        (update :previous-criteria pop))))
-
-(defn replace-criterion [{:keys [criteria] :as filters} facet-slug option-slug]
-  (let [new-criteria (assoc criteria facet-slug #{option-slug})]
-    (->
-     (apply-criteria filters new-criteria)
-     (update :previous-criteria (fnil conj []) criteria))))
-
 (defn clear-criteria [filters]
   (apply-criteria filters {}))
 
@@ -83,17 +71,6 @@
   (update filters :facets (fn [facets]
                             (map #(assoc % :selected? false)
                                  facets))))
-
-(defn step [filters {facet-slug :slug}]
-  (update filters :facets
-          (fn [facets]
-            (let [selected-idx (count (take-while (comp not #{facet-slug} :slug) facets))
-                  found (< selected-idx (count facets))]
-              (if found
-                (map-indexed (fn [idx facet]
-                               (assoc facet :selected? (<= idx selected-idx)))
-                             facets)
-                facets)))))
 
 (defn open [filters facet-slug]
   (update filters :facets (fn [facets]
