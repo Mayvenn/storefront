@@ -53,6 +53,17 @@
     (slurp css)))
 (def css-styles (memoize read-css))
 
+(defn prefetch-image [name src]
+  (format "var %s=new Image();%s.src=%s"
+          name
+          name
+          (assets/path src)))
+
+(def prefetch-script
+  (format "(function(){%s;%s;})();"
+          (prefetch-image "spinner" "/images/spinner.svg")
+          (prefetch-image "large_spinner" "/images/large-spinner.svg")))
+
 (defn layout [{:keys [storeback-config environment client-version]} data initial-content]
   (html5 {:lang "en"}
    [:head
@@ -68,14 +79,7 @@
     [:link {:rel "dns-prefetch" :href (:endpoint storeback-config)}]
     [:link {:rel "dns-prefetch" :href "//www.sendsonar.com"}]
     [:link {:rel "dns-prefetch" :href "//ucarecdn.com"}]
-    [:script {:type "text/javascript"}
-     ;; Preload spinner images
-     (raw (str "(function(){"
-                 "var spinner = new Image();"
-                 "var large_spinner = new Image();"
-                 "spinner.src='/images/spinner.svg';"
-                 "large_spinner.src='/images/large-spinner.svg';"
-               "})();"))]
+    [:script {:type "text/javascript"} (raw prefetch-script)]
     [:script {:type "text/javascript"}
      (raw (str "var assetManifest=" (generate-string asset-mappings/image-manifest) ";"
                "var cdnHost=" (generate-string asset-mappings/cdn-host) ";"
