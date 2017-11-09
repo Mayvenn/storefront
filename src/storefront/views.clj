@@ -69,6 +69,14 @@
     [:link {:rel "dns-prefetch" :href "//www.sendsonar.com"}]
     [:link {:rel "dns-prefetch" :href "//ucarecdn.com"}]
     [:script {:type "text/javascript"}
+     ;; Preload spinner images
+     (raw (str "(function(){"
+                 "var spinner = new Image();"
+                 "var large_spinner = new Image();"
+                 "spinner.src='/images/spinner.svg';"
+                 "large_spinner.src='/images/large-spinner.svg';"
+               "})();"))]
+    [:script {:type "text/javascript"}
      (raw (str "var assetManifest=" (generate-string asset-mappings/image-manifest) ";"
                "var cdnHost=" (generate-string asset-mappings/cdn-host) ";"
                ;; need to make sure the edn which has double quotes is validly escaped as
