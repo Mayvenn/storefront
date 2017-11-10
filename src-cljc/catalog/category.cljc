@@ -2,7 +2,6 @@
   (:require
    #?(:cljs [storefront.component :as component]
       :clj  [storefront.component-shim :as component])
-   [catalog.category-filters :as category-filters]
    [catalog.categories :as categories]
    [catalog.product-card :as product-card]
    [storefront.components.ui :as ui]
@@ -16,70 +15,84 @@
    [storefront.accessors.auth :as auth]
    [storefront.request-keys :as request-keys]
    [catalog.products :as products]
-   [catalog.skuers :as skuers]))
+   [catalog.keypaths]
+   [catalog.skuers :as skuers]
+   [spice.maps :as maps]
+   [catalog.selector :as selector]
+   [clojure.set :as set]))
 
-(defn filter-tabs [category-criteria {:keys [facets filtered-sku-sets criteria]} dyed-hair?]
-  (let [product-count        (->> filtered-sku-sets
-                                  (filter #(contains? (set (:experiment.dyed-hair/presence %))
-                                                      (if dyed-hair? "experiment" "control")))
-                                  count)
-        applied-filter-count (->> (apply dissoc criteria (keys category-criteria))
-                                  (map (comp count val))
-                                  (apply +))]
+(defn filter-tabs [{:keys [selector/essentials selector/electives]}
+                   facets
+                   product-cards
+                   selections
+                   open-panel
+                   dyed-hair?]
+  (let [product-count    (count product-cards)
+        selections-count (->> (apply dissoc selections essentials)
+                              (map (comp count val))
+                              (apply +))]
     [:div.py4
-     (when (seq facets)
+     (when (seq electives)
        [:div
         [:div.pb1.flex.justify-between
-         [:p.h6.dark-gray (case applied-filter-count
+         [:p.h6.dark-gray (case selections-count
                             0 "Filter by:"
                             1 "1 filter applied:"
-                            (str applied-filter-count " filters applied:"))]
+                            (str selections-count " filters applied:"))]
          [:p.h6.dark-gray (str product-count " Item" (when (not= 1 product-count) "s"))]]
         (into [:div.border.h6.border-teal.rounded.flex.center]
               (map-indexed
-               (fn [idx {:keys [slug title selected?]}]
-                 [:a.flex-auto.x-group-item.rounded-item
-                  (assoc
-                   (if selected?
-                     (utils/fake-href events/control-category-filters-close)
-                     (utils/fake-href events/control-category-filter-select {:selected slug}))
-                   :data-test (str "filter-" (name slug))
-                   :key slug
-                   :class (if selected? "bg-teal white" "dark-gray"))
-                  [:div.border-teal.my1
-                   {:class (when-not (zero? idx) "border-left")}
-                   title]])
-               facets))])]))
+               (fn [idx elective]
+                 (let [facet (elective facets)
+                       selected? (= open-panel elective)
+                       title (:facet/name facet)]
+                   [:a.flex-auto.x-group-item.rounded-item
+                    (assoc
+                     (if selected?
+                       (utils/fake-href events/control-category-panel-close)
+                       (utils/fake-href events/control-category-panel-open {:selected elective}))
+                     :data-test (str "filter-" (name elective))
+                     :key elective
+                     :class (if selected? "bg-teal white" "dark-gray"))
+                    [:div.border-teal.my1
+                     {:class (when-not (zero? idx) "border-left")}
+                     title]]))
+               electives))])]))
 
-(defn filter-panel [selected-facet]
+(defn filter-panel [facets represented-options selections open-panel]
   [:div.px1
-   (for [options (partition-all 4 (:options selected-facet))]
+   (for [options (partition-all 4 (:facet/options (open-panel facets)))]
      [:div.flex-on-tb-dt.justify-around
-      (for [{:keys [slug label represented? selected?]} options]
-        [:div.py1.mr4
-         {:key       (str "filter-option-" slug)
-          :data-test (str "filter-option-" slug)}
-         (ui/check-box {:label     [:span
-                                    (when (categories/new-facet? [(:slug selected-facet) slug])
-                                      [:span.mr1.teal "NEW"])
-                                    label]
-                        :value     selected?
-                        :disabled  (not represented?)
-                        :on-change #(let [event-handler (if selected?
-                                                          events/control-category-criterion-deselected
-                                                          events/control-category-criterion-selected)]
-                                      (messages/handle-message event-handler
-                                                               {:filter (:slug selected-facet)
-                                                                :option slug}))})])])
+      (for [option options]
+        (let [selected?    (contains? (open-panel selections)
+                                      (:option/slug option))
+              slug         (:option/slug option)
+              represented? (contains? (open-panel represented-options) slug)]
+          ;;{:keys [slug label represented? selected?]}
+          [:div.py1.mr4
+           {:key       (str "filter-option-" slug)
+            :data-test (str "filter-option-" slug)}
+           (ui/check-box {:label     [:span
+                                      (when (categories/new-facet? [open-panel slug])
+                                        [:span.mr1.teal "NEW"])
+                                      (:option/name option)]
+                          :value     selected?
+                          :disabled  (not represented?)
+                          :on-change #(let [event-handler (if selected?
+                                                            events/control-category-option-unselect
+                                                            events/control-category-option-select)]
+                                        (messages/handle-message event-handler
+                                                                 {:facet  open-panel
+                                                                  :option slug}))})]))])
    [:div.clearfix.mxn3.px1.py4.hide-on-tb-dt
     [:div.col.col-6.px3
      (ui/teal-ghost-button
-      (merge (utils/fake-href events/control-category-criteria-cleared)
+      (merge (utils/fake-href events/control-category-options-clear)
              {:data-test "filters-clear-all"})
       "Clear all")]
     [:div.col.col-6.px3
      (ui/teal-button
-      (merge (utils/fake-href events/control-category-filters-close)
+      (merge (utils/fake-href events/control-category-panel-close)
              {:data-test "filters-done"})
       "Done")]]])
 
@@ -104,63 +117,82 @@
       [:p.h1.py4 "😞"]
       [:p.h2.dark-gray.py6 "Sorry, we couldn’t find any matches."]
       [:p.h4.dark-gray.mb10.pb10
-       [:a.teal (utils/fake-href events/control-category-criteria-cleared) "Clear all filters"]
+       [:a.teal (utils/fake-href events/control-category-options-clear) "Clear all filters"]
        " to see more hair."]])])
 
-(defn product-cards [loading? products facets affirm? dyed-hair?]
+(defn render-product-cards [loading? product-cards]
   [:div.flex.flex-wrap.mxn1
-   (if (empty? products)
+   (if (empty? product-cards)
      (product-cards-empty-state loading?)
-     (for [product products
-           :let [product-experiment-set (set (:experiment.dyed-hair/presence product))]
-           :when (contains? product-experiment-set
-                            (if dyed-hair? "experiment" "control"))]
-       (product-card/component
-        (cond-> product dyed-hair? (assoc :sku-set/name (:experiment.dyed-hair/title product)))
-        facets affirm?)))])
+     (map product-card/component product-cards))])
 
-(defn ^:private component [{:keys [category filters facets loading-products? affirm? dyed-hair?]} owner opts]
-  (let [category-criteria (skuers/essentials category)]
-    (component/create
-     [:div
-      (hero-section category)
-      [:div.max-960.col-12.mx-auto.px2-on-mb
-       (copy-section category)
-       [:div.bg-white.sticky
-        ;; The -5px prevents a sliver of the background from being visible above the filters
-        ;; (when sticky) on android (and sometimes desktop chrome when using the inspector)
-        {:style {:top "-5px"}}
-        (if-let [selected-facet (->> filters
-                                     :facets
-                                     (filter :selected?)
-                                     first)]
-          [:div
-           [:div.hide-on-tb-dt.px2.z4.fixed.overlay.overflow-auto.bg-white
-            (filter-tabs category-criteria filters dyed-hair?)
-            (filter-panel selected-facet)]
-           [:div.hide-on-mb
-            (filter-tabs category-criteria filters dyed-hair?)
-            (filter-panel selected-facet)]]
-          [:div
-           (filter-tabs category-criteria filters dyed-hair?)])]
-       (product-cards loading-products? (:filtered-sku-sets filters) facets affirm? dyed-hair?)]])))
+(defn in-experiment? [dyed-hair? product]
+  (contains? (set (:experiment.dyed-hair/presence product))
+             (if dyed-hair? "experiment" "control")))
+
+(defn ^:private component [{:keys [category facets loading-products? affirm? dyed-hair?
+                                   selections represented-options open-panel product-cards options]} owner opts]
+  (component/create
+   [:div
+    (hero-section category)
+    [:div.max-960.col-12.mx-auto.px2-on-mb
+     (copy-section category)
+     [:div.bg-white.sticky
+      ;; The -5px prevents a sliver of the background from being visible above the filters
+      ;; (when sticky) on android (and sometimes desktop chrome when using the inspector)
+      {:style {:top "-5px"}}
+      (if open-panel
+        [:div
+         [:div.hide-on-tb-dt.px2.z4.fixed.overlay.overflow-auto.bg-white
+          (filter-tabs category facets product-cards options open-panel dyed-hair?)
+          (filter-panel facets represented-options selections open-panel)]
+         [:div.hide-on-mb
+          (filter-tabs category facets product-cards options open-panel dyed-hair?)
+          (filter-panel facets represented-options selections open-panel)]]
+        [:div
+         (filter-tabs category facets product-cards options open-panel dyed-hair?)])]
+     (render-product-cards loading-products? product-cards)]]))
 
 (defn ^:private query [data]
-  (let [category (categories/current-category data)]
-    {:category          category
-     :filters           (get-in data keypaths/category-filters-for-browse)
-     :facets            (get-in data keypaths/facets)
-     :affirm?           (experiments/affirm? data)
-     :dyed-hair?        (experiments/dyed-hair? data)
-     :loading-products? (utils/requesting? data (conj request-keys/search-sku-sets
-                                                      (skuers/essentials category)))}))
-
+  (let [category      (categories/current-category data)
+        category-skus (selector/strict-query (vals (get-in data keypaths/skus))
+                                             (skuers/essentials category))
+        selections    (get-in data catalog.keypaths/category-selections)
+        dyed-hair?    (experiments/dyed-hair? data)
+        sku-sets      (->> (selector/strict-query (vals (get-in data keypaths/sku-sets))
+                                                  (skuers/essentials category)
+                                                  selections
+                                                  {:hair/color #{:query/missing}})
+                           (filter (fn [sku-set]
+                                     (seq (selector/query category-skus
+                                                          (skuers/essentials sku-set)
+                                                          selections))))
+                           (filter (partial in-experiment? dyed-hair?)))]
+    (prn selections)
+    {:category            category
+     :represented-options (->> category-skus
+                               (map (fn [sku]
+                                      (select-keys sku (concat (:selector/essentials category)
+                                                               (:selector/electives category)))))
+                               maps/into-multimap)
+     :facets              (maps/index-by :facet/slug (get-in data keypaths/facets))
+     :selections          selections
+     :product-cards       (map (partial product-card/query data) sku-sets)
+     :open-panel          (get-in data catalog.keypaths/category-panel)
+     :affirm?             (experiments/affirm? data)
+     :dyed-hair?          dyed-hair?
+     :loading-products?   (utils/requesting? data (conj request-keys/search-sku-sets
+                                                        (skuers/essentials category)))}))
 (defn built-component [data opts]
   (component/build component (query data) opts))
 
 (defmethod transitions/transition-state events/navigate-category
-  [_ event {:keys [catalog/category-id]} app-state]
-  (assoc-in app-state keypaths/current-category-id category-id))
+  [_ event {:keys [catalog/category-id query-params]} app-state]
+  (-> app-state
+      (assoc-in catalog.keypaths/category-id category-id)
+      ;;TODO transform query-params back into proper query format.
+      ;;TODO validate that the new query-params are allowed selections (ie keys are in the set of category electives)
+      (assoc-in catalog.keypaths/category-selections query-params)))
 
 #?(:cljs
    (defmethod effects/perform-effects events/navigate-category
@@ -178,36 +210,29 @@
 
 (defmethod transitions/transition-state events/api-success-sku-sets-for-browse
   [_ event {:keys [sku-sets skus category-id] :as response} app-state]
-  (-> app-state
-      (assoc-in keypaths/category-filters-for-browse
-                (categories/make-category-filters app-state category-id))))
+  app-state)
 
-(defmethod transitions/transition-state events/control-category-filter-select
+(defmethod transitions/transition-state events/control-category-panel-open
   [_ _ {:keys [selected]} app-state]
-  (update-in app-state
-             keypaths/category-filters-for-browse
-             category-filters/open selected))
+  (assoc-in app-state catalog.keypaths/category-panel selected))
 
-(defmethod transitions/transition-state events/control-category-filters-close
+(defmethod transitions/transition-state events/control-category-panel-close
   [_ _ _ app-state]
-  (update-in app-state
-             keypaths/category-filters-for-browse
-             category-filters/close))
+  (assoc-in app-state catalog.keypaths/category-panel nil))
 
-(defmethod transitions/transition-state events/control-category-criterion-selected
-  [_ _ {:keys [filter option]} app-state]
-  (update-in app-state
-             keypaths/category-filters-for-browse
-             category-filters/select-criterion filter option))
+(defmethod transitions/transition-state events/control-category-option-select
+  [_ _ {:keys [facet option]} app-state]
+  (update-in app-state (conj catalog.keypaths/category-selections facet) set/union #{option}))
 
-(defmethod transitions/transition-state events/control-category-criterion-deselected
-  [_ _ {:keys [filter option]} app-state]
-  (update-in app-state
-             keypaths/category-filters-for-browse
-             category-filters/deselect-criterion filter option))
+(defmethod transitions/transition-state events/control-category-option-unselect
+  [_ _ {:keys [facet option]} app-state]
+  (let [facet-path (conj catalog.keypaths/category-selections facet)
+        facet-selections (set/difference (get-in app-state facet-path)
+                                         #{option})]
+    (if (empty? facet-selections)
+      (update-in app-state catalog.keypaths/category-selections dissoc facet)
+      (assoc-in app-state facet-path facet-selections))))
 
-(defmethod transitions/transition-state events/control-category-criteria-cleared
+(defmethod transitions/transition-state events/control-category-options-clear
   [_ _ _ app-state]
-  (update-in app-state
-             keypaths/category-filters-for-browse
-             category-filters/clear-criteria))
+  (assoc-in app-state catalog.keypaths/category-selections {}))

@@ -9,5 +9,10 @@
 (def detailed-product-selected-sku (conj detailed-product :selected-sku))
 (def detailed-product-selected-sku-id (conj detailed-product-selected-sku :sku))
 
+(def category (conj ui :category))
+(def category-panel (conj ui :panel))
+(def category-id (conj ui :id))
+(def category-selections (conj category :selections))
+
 (def initial (-> {}
                  (assoc-in detailed-product {})))

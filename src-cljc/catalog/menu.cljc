@@ -4,7 +4,6 @@
        :cljs [[storefront.api :as api]
               [storefront.component :as component]])
    [catalog.categories :as categories]
-   [catalog.category-filters :as category-filters]
    [catalog.selector :as selector]
    [clojure.set :as set]
    [storefront.components.ui :as ui]
@@ -30,7 +29,7 @@
    (into [:a.block.inherit-color.flex.items-center] content)])
 
 (defn component
-  [{:keys [nav-root options facets]}
+  [{:keys [nav-root options]}
    owner
    opts]
   (component/create
@@ -54,10 +53,8 @@
 
 (defn query [data]
   (let [{:keys [selector/essentials] :as nav-root} (categories/current-traverse-nav data)
-        {:keys [facets]}                           (get-in data keypaths/category-filters-for-nav)
         dyed-hair-experiment?                      (experiments/dyed-hair? data)]
     {:nav-root nav-root
-     :facets   facets
      :options  (selector/strict-query (if dyed-hair-experiment?
                                         categories/dyed-hair-experiment-categories
                                         categories/control-categories)
@@ -68,10 +65,7 @@
   (update-in app-state keypaths/current-traverse-nav dissoc :id))
 
 (defmethod effects/perform-effects events/menu-home
-  [_ _ _ _ app-state]
-  #?(:cljs
-     ;; preload menus
-     (api/fetch-facets (get-in app-state keypaths/api-cache))))
+  [_ _ _ _ app-state])
 
 (defmethod transitions/transition-state events/menu-list
   [_ _ {:keys [catalog/category-id]} app-state]

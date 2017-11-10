@@ -107,9 +107,6 @@
 (def product-details-url-sku-code (conj product-details :url-sku-code))
 (def product-details-sku-set-id (conj product-details :sku-set/id))
 
-(def category-filters-for-nav (conj ui :category-filters :nav))
-(def category-filters-for-browse (conj ui :category-filters :browse))
-
 (def captured-email (conj ui :captured-email))
 
 (def account (conj ui :account))

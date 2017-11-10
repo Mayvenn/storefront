@@ -51,15 +51,15 @@
         (stringer/track-page)
         (facebook-analytics/track-page path)))))
 
-(defmethod perform-track events/control-category-filter-select
+(defmethod perform-track events/control-category-panel-open
   [_ event {:keys [selected]} app-state]
   (stringer/track-event "category_page_filter-select"
                         {:filter_name (pr-str selected)}))
 
-(defmethod perform-track events/control-category-criterion-selected
-  [_ event {:keys [filter option]} app-state]
+(defmethod perform-track events/control-category-option-select
+  [_ event {:keys [facet option]} app-state]
   (stringer/track-event "category_page_option-select"
-                        {:filter_name     (pr-str filter)
+                        {:filter_name     (pr-str facet)
                          :selected_option option}))
 
 (defmethod perform-track events/api-success-lead-created

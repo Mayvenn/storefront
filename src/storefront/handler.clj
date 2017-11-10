@@ -337,14 +337,12 @@
          :as   response} (api/fetch-sku-sets storeback-config (spice.maps/map-values
                                                                first
                                                                (skuers/essentials category)))
-        {:keys [facets]} (api/fetch-facets storeback-config)
-        data             (-> data
-                             (assoc-in keypaths/facets (map #(update % :facet/slug keyword) facets))
-                             (update-in keypaths/sku-sets merge (products/normalize-sku-sets sku-sets))
-                             (update-in keypaths/skus merge (products/normalize-skus skus)))]
-    (assoc-in data
-              keypaths/category-filters-for-browse
-              (categories/make-category-filters data (:catalog/category-id params)))))
+        {:keys [facets]} (api/fetch-facets storeback-config)]
+    (-> data
+        (assoc-in catalog.keypaths/category-id (:catalog/category-id params))
+        (assoc-in keypaths/facets (map #(update % :facet/slug keyword) facets))
+        (update-in keypaths/sku-sets merge (products/normalize-sku-sets sku-sets))
+        (update-in keypaths/skus merge (products/normalize-skus skus)))))
 
 (defn- assoc-product-details-route-data [data storeback-config params]
   (let [{:keys [skus sku-sets]} (api/fetch-sku-sets storeback-config (:catalog/product-id params))

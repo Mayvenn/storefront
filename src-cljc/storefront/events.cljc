@@ -17,6 +17,7 @@
 (defpath navigate)
 (defpath navigate-home)
 (defpath navigate-category)
+(defpath navigate-category-update)
 (defpath navigate-legacy-named-search)
 (defpath navigate-named-search)
 (defpath navigate-ugc-named-search)
@@ -201,15 +202,12 @@
 
 (defpath control-commission-order-expand)
 
-(defpath control-category-filter-select)
-(defpath control-category-filters-close)
+(defpath control-category-panel-open)
+(defpath control-category-panel-close)
 
-(defpath control-category-criterion-selected)
-(defpath control-category-criterion-deselected)
-(defpath control-category-criteria-cleared)
-
-(defpath control-hamburger-shop-bundles)
-(defpath control-hamburger-shop-closures-and-frontals)
+(defpath control-category-option-select)
+(defpath control-category-option-unselect)
+(defpath control-category-options-clear)
 
 (defpath video-played)
 

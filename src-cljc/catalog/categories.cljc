@@ -1,8 +1,8 @@
 (ns catalog.categories
-  (:require [catalog.category-filters :as category-filters]
-            [clojure.string :as string]
+  (:require [clojure.string :as string]
             [spice.maps :as maps]
             [storefront.keypaths :as keypaths]
+            [catalog.keypaths]
             [catalog.selector :as selector]))
 
 (def new-facet?
@@ -895,21 +895,10 @@
                 (get-in data keypaths/categories)))
 
 (defn current-category [data]
-  (id->category (get-in data keypaths/current-category-id)
+  (id->category (get-in data catalog.keypaths/category-id)
                 (get-in data keypaths/categories)))
 
 (defn- hydrate-sku-set [id->skus sku-set]
   (-> sku-set
       (update :criteria #(maps/map-values set %))
       (assoc :sku-set/full-skus (map #(get id->skus %) (:sku-set/skus sku-set)))))
-
-(defn make-category-filters [app-state category-id]
-  (let [category (id->category category-id (get-in app-state keypaths/categories))
-        sku-sets (get-in app-state keypaths/sku-sets)
-        skus     (get-in app-state keypaths/skus)
-        facets (get-in app-state keypaths/facets)]
-    (category-filters/init
-     category
-     sku-sets
-     skus
-     facets)))

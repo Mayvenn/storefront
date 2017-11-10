@@ -105,8 +105,6 @@
      :api-cache {}
      :ugc {}
 
-     :category-filters {}
-
      :billing-address {:firstname ""
                        :lastname ""
                        :address1 ""
