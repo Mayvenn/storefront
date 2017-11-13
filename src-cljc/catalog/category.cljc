@@ -168,7 +168,6 @@
                                                           (skuers/essentials sku-set)
                                                           selections))))
                            (filter (partial in-experiment? dyed-hair?)))]
-    (prn selections)
     {:category            category
      :represented-options (->> category-skus
                                (map (fn [sku]
