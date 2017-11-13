@@ -9,7 +9,6 @@
    [storefront.events :as events]
    [storefront.keypaths :as keypaths]
    [catalog.keypaths]
-   [storefront.utils.query :as query]
    [catalog.selector :as selector]))
 
 (defn slug->facet [facet facets]
@@ -75,8 +74,7 @@
        [:p.h6.teal "Bestseller!"]))])
 
 (defn query [data product]
-  (let [dyed-hair? (experiments/dyed-hair? data)
-        selections (get-in data catalog.keypaths/category-selections)
+  (let [selections (get-in data catalog.keypaths/category-selections)
         skus       (vals (select-keys (get-in data keypaths/skus)
                                       (:selector/skus product)))
         epitome    (first (sort-by :price (selector/query skus
@@ -86,9 +84,7 @@
      :skus      skus
      :epitome   epitome
      :sold-out? (nil? epitome)
-     :title     (if dyed-hair?
-                  (:experiment.dyed-hair/title product)
-                  (:sku-set/name product))
+     :title     (:sku-set/title product)
      :slug      (:page/slug product)
      :image     (->> epitome :images (filter (comp #{"catalog"} :use-case)) first)
      :facets    (get-in data keypaths/facets)

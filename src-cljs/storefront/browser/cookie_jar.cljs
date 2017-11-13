@@ -56,12 +56,6 @@
    :optional-keys ["onboarding-status"]
    :required-keys ["lead-id"]})
 
-(def experiments
-  {:domain        (root-domain)
-   :max-age       week
-   :optional-keys ["experiments.dyed-hair"]
-   :required-keys []})
-
 (def email-capture-session
   {:domain        nil
    :max-age       1800
@@ -121,7 +115,6 @@
 (def retrieve-utm-params (partial retrieve utm-params))
 (def retrieve-leads-utm-params (partial retrieve leads-utm-params))
 (def retrieve-lead (partial retrieve lead))
-(def retrieve-experiments (partial retrieve experiments))
 
 (def retrieve-email-capture-session (comp :popup-session (partial retrieve email-capture-session)))
 
@@ -159,7 +152,6 @@
 (def save-utm-params (partial save-cookie utm-params))
 (def save-leads-utm-params (partial save-cookie leads-utm-params))
 (def save-lead (partial save-cookie lead))
-(def save-experiments (partial save-cookie experiments))
 
 (defn save-telligent-cookie [cookie contents max-age]
   (save-cookie (assoc telligent-session :max-age max-age) cookie {"AuthenticatedUser" contents}))

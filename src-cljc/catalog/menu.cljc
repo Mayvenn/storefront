@@ -52,12 +52,9 @@
              (:name category)])])]]])))
 
 (defn query [data]
-  (let [{:keys [selector/essentials] :as nav-root} (categories/current-traverse-nav data)
-        dyed-hair-experiment?                      (experiments/dyed-hair? data)]
+  (let [{:keys [selector/essentials] :as nav-root} (categories/current-traverse-nav data)]
     {:nav-root nav-root
-     :options  (selector/strict-query (if dyed-hair-experiment?
-                                        categories/dyed-hair-experiment-categories
-                                        categories/control-categories)
+     :options  (selector/strict-query categories/dyed-hair-experiment-categories
                                       (select-keys nav-root essentials))}))
 
 (defmethod transitions/transition-state events/menu-home

@@ -165,31 +165,24 @@
   [:div.h4.border-bottom.border-gray.py3
    (into [:a.block.inherit-color.flex.items-center] content)])
 
-(defn ^:private shopping-area [signed-in bundle-deals-2? dyed-hair-experiment?]
+(defn ^:private shopping-area [signed-in bundle-deals-2?]
   [:div
    (when bundle-deals-2?
      [:li (major-menu-row (utils/route-to events/navigate-shop-bundle-deals) [:span.medium "Shop Bundle Deals"])])
    [:li (major-menu-row (utils/route-to events/navigate-shop-by-look) [:span.medium "Shop Looks"])]
-   (if dyed-hair-experiment?
-     [:div
-      [:li (major-menu-row (assoc (utils/fake-href events/menu-list
-                                                  {:page/slug           "virgin-hair"
-                                                   :catalog/category-id "15"})
-                                  :data-test "menu-shop-virgin-hair")
-                           [:span.medium.flex-auto "Shop Virgin Hair"]
-                           ui/forward-caret)]
-      [:li (major-menu-row (assoc (utils/route-to events/navigate-category
-                                                  {:page/slug           "dyed-virgin-hair"
-                                                   :catalog/category-id "16"})
-                                  :data-test "menu-shop-dyed-virgin-hair")
-                           [:span.teal.pr1 "NEW"]
-                           [:span.medium.flex-auto "Shop Dyed Virgin Hair"])]]
-     [:li (major-menu-row (assoc (utils/fake-href events/menu-list
-                                                  {:page/slug           "bundles"
-                                                   :catalog/category-id "11"})
-                                 :data-test "menu-shop-bundles")
-                          [:span.medium.flex-auto "Shop Hair"]
-                          ui/forward-caret)])
+   [:div
+    [:li (major-menu-row (assoc (utils/fake-href events/menu-list
+                                                 {:page/slug           "virgin-hair"
+                                                  :catalog/category-id "15"})
+                                :data-test "menu-shop-virgin-hair")
+                         [:span.medium.flex-auto "Shop Virgin Hair"]
+                         ui/forward-caret)]
+    [:li (major-menu-row (assoc (utils/route-to events/navigate-category
+                                                {:page/slug           "dyed-virgin-hair"
+                                                 :catalog/category-id "16"})
+                                :data-test "menu-shop-dyed-virgin-hair")
+                         [:span.teal.pr1 "NEW"]
+                         [:span.medium.flex-auto "Shop Dyed Virgin Hair"])]]
    [:li (major-menu-row (assoc (utils/fake-href events/menu-list
                                                 {:page/slug           "closures-and-frontals"
                                                  :catalog/category-id "12"})
@@ -209,9 +202,9 @@
                                  :data-test "menu-stylist-products")
                           [:span.medium.flex-auto "Shop Stylist Exclusives"])])])
 
-(defn ^:private menu-area [signed-in bundle-deals-2? dyed-hair-experiment?]
+(defn ^:private menu-area [signed-in bundle-deals-2?]
   [:ul.list-reset.mb3
-   (shopping-area signed-in bundle-deals-2? dyed-hair-experiment?)
+   (shopping-area signed-in bundle-deals-2?)
    [:li (minor-menu-row (assoc (utils/route-to events/navigate-content-guarantee)
                                :data-test "content-guarantee")
                         "Our guarantee")]
@@ -234,7 +227,7 @@
                      "Sign out")
     [:div])))
 
-(defn ^:private root-menu [{:keys [user signed-in store bundle-deals-2? dyed-hair-experiment?]} owner opts]
+(defn ^:private root-menu [{:keys [user signed-in store bundle-deals-2?]} owner opts]
   (component/create
    [:div
     [:div.px6.border-bottom.border-gray
@@ -243,13 +236,13 @@
      [:div.my3.dark-gray
       (actions-marquee signed-in)]]
     [:div.px6
-     (menu-area signed-in bundle-deals-2? dyed-hair-experiment?)]
+     (menu-area signed-in bundle-deals-2?)]
     (when (-> signed-in ::auth/at-all)
       [:div.px6.border-top.border-gray
        sign-out-area])]))
 
 (defn component
-  [{:keys [promo-data cart dyed-hair-experiment? on-taxon? menu-data] :as data}
+  [{:keys [promo-data cart on-taxon? menu-data] :as data}
    owner
    opts]
   (component/create
@@ -265,7 +258,6 @@
   {:signed-in             (auth/signed-in data)
    :on-taxon?             (get-in data keypaths/current-traverse-nav-id)
    :bundle-deals-2?       (experiments/bundle-deals-2? data)
-   :dyed-hair-experiment? (experiments/dyed-hair? data)
    :user                  {:email (get-in data keypaths/user-email)}
    :store                 (marquee/query data)
    :shopping              {:categories (get-in data keypaths/categories)}})

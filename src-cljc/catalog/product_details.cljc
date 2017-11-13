@@ -268,7 +268,7 @@
            [:div.hide-on-mb (component/build ugc/component ugc opts)]]
           [:div
            [:div.center
-            (title (:sku-set/name product))
+            (title (:sku-set/title product))
             (when review? (reviews-summary reviews opts))
             [:meta {:item-prop "image" :content (first carousel-images)}]
             (full-bleed-narrow (carousel carousel-images product))
@@ -362,7 +362,7 @@
   (when-let [ugc (get-in data keypaths/ugc)]
     (when-let [images (pixlee/images-in-album ugc (:legacy/named-search-slug product))]
       {:carousel-data {:product-id   (:catalog/product-id product)
-                       :product-name (:sku-set/name product)
+                       :product-name (:sku-set/title product)
                        :page-slug    (:page/slug product)
                        :sku-id       (:sku sku)
                        :album        images}
@@ -398,12 +398,8 @@
      :bagged-skus       (get-in data keypaths/browse-recently-added-skus)
      :sku-quantity      (get-in data keypaths/browse-sku-quantity 1)
      :options           (generate-options facets product product-skus selected-sku)
-     :product           (cond-> product
-                          (experiments/dyed-hair? data)
-                          (assoc :sku-set/name (:experiment.dyed-hair/title product)))
-     :selected-sku      (cond-> selected-sku
-                          (experiments/dyed-hair? data)
-                          (assoc :sku/name (:experiment.dyed-hair/title selected-sku)))
+     :product           product
+     :selected-sku      (assoc selected-sku :sku/name (:experiment.dyed-hair/title selected-sku))
      :cheapest-price    (lowest-sku-price product-skus)
      :carousel-images   carousel-images
      :affirm?           (experiments/affirm? data)}))

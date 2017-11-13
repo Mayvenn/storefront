@@ -1,13 +1,9 @@
 (ns storefront.accessors.experiments
   (:require [storefront.keypaths :as keypaths]))
 
-(defn determine-features [data dyed-hair-experiment?]
-  (cond-> data
-    dyed-hair-experiment?
-    (update-in keypaths/features (fnil conj #{}) "dyed-hair"))
-  ;; NOTE: Ryan wants kinky-straight disabled under further review
-  ;;       But this is still a good example of bucketing?
-  #_(let [stylist-id    (get-in data keypaths/store-stylist-id)
+#_ (defn bucketing-example
+  [data]
+  (let [stylist-id    (get-in data keypaths/store-stylist-id)
         store-slug    (get-in data keypaths/store-slug)
         bucket-offset (mod stylist-id 3)]
     (assoc-in data
@@ -18,6 +14,10 @@
                 (= bucket-offset 0)    #{"kinky-straight-2"}
                 (= bucket-offset 1)    #{"kinky-straight-2-curly-move"}
                 (= bucket-offset 2)    #{"kinky-straight-2-control"}))))
+
+(defn determine-features [data]
+  #_(bucketing-example data)
+  data)
 
 (defn str->int [s radix]
   #?(:clj  (java.lang.Integer/parseInt s radix)
@@ -56,9 +56,6 @@
 
 (defn bundle-deals-2? [data]
   (display-feature? data "bundle-deals-2"))
-
-(defn dyed-hair? [data]
-  (display-feature? data "dyed-hair"))
 
 (defn affirm? [data]
   (display-feature? data "affirm"))

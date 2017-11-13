@@ -125,8 +125,7 @@
   "keys to dealt with in the future:
    :sku-set/seo
    :sku-set/copy
-   :sku-set/images
-   :sku-set/name"
+   :sku-set/images "
   (let [essentials (maps/map-values set (:criteria/essential product))
         electives (mapv keyword (:criteria/selectors product))]
     (-> product

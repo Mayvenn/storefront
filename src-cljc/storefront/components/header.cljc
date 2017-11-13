@@ -152,24 +152,22 @@
                 :on-mouse-enter close-shopping}
      "Real Beautiful")]))
 
-(defn shopping-column [dyed-hair-experiment? items col-count]
+(defn shopping-column [items col-count]
   {:pre [(zero? (mod 12 col-count))]}
   [:ul.list-reset.col.px2
    {:class (str "col-" (/ 12 col-count))}
    (for [{:keys [page/slug name category/new?] :as category} items]
      [:li {:key slug}
-      [:a.inherit-color.block.pyp2
-       (merge
-        (when dyed-hair-experiment? {:class "titleize"})
-        (if (:direct-to-details/id category)
-          (utils/route-to events/navigate-product-details
-                          {:catalog/product-id (:direct-to-details/id category)
-                           :page/slug          (:direct-to-details/slug category)})
-          (utils/route-to events/navigate-category category)))
+      [:a.inherit-color.block.pyp2.titleize
+       (if (:direct-to-details/id category)
+         (utils/route-to events/navigate-product-details
+                         {:catalog/product-id (:direct-to-details/id category)
+                          :page/slug          (:direct-to-details/slug category)})
+         (utils/route-to events/navigate-category category))
        (when new? [:span.teal "NEW "])
        (string/capitalize name)]])])
 
-(defn shopping-flyout [signed-in {:keys [dyed-hair-experiment? expanded? categories]}]
+(defn shopping-flyout [signed-in {:keys [expanded? categories]}]
   (when expanded?
     (let [show?   (fn [category]
                     (or (auth/stylist? signed-in)
@@ -180,15 +178,11 @@
                        (group-by :header/group)
                        vals
                        (map (partial sort-by :header/order))
-                       (mapcat (partial partition-all (if dyed-hair-experiment? 9 6))))]
+                       (mapcat (partial partition-all 9)))]
       [:div.absolute.bg-white.col-12.z3.border-bottom.border-gray
-       [:div.mx-auto.clearfix.my6
-        (merge (when-not dyed-hair-experiment?
-                 {:style {:width "580px"}})
-               (when dyed-hair-experiment?
-                 {:class "col-10"}))
+       [:div.mx-auto.clearfix.my6.col-10
         (for [items columns]
-          (shopping-column dyed-hair-experiment? items (count columns)))]])))
+          (shopping-column items (count columns)))]])))
 
 (defn component [{:keys [store user cart shopping signed-in bundle-deals-2?]} _ _]
   (component/create
@@ -224,8 +218,7 @@
   (-> (slideout-nav/basic-query data)
       (assoc-in [:user :expanded?]     (get-in data keypaths/account-menu-expanded))
       (assoc-in [:shopping :expanded?] (get-in data keypaths/shop-menu-expanded))
-      (assoc-in [:cart :quantity]      (orders/product-quantity (get-in data keypaths/order)))
-      (assoc-in [:shopping :dyed-hair-experiment?] (experiments/dyed-hair? data))))
+      (assoc-in [:cart :quantity]      (orders/product-quantity (get-in data keypaths/order)))))
 
 (defn built-component [data opts]
   (if (nav/minimal-events (get-in data keypaths/navigation-event))

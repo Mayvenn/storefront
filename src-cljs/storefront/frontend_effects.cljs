@@ -131,9 +131,7 @@
   (facebook-analytics/remove-tracking)
   (pinterest/remove-tracking))
 
-(defmethod perform-effects events/enable-feature [_ event {:keys [feature]} _ app-state]
-  (when (= feature "dyed-hair")
-    (cookie-jar/save-experiments (get-in app-state keypaths/cookie) {"experiments.dyed-hair" true})))
+(defmethod perform-effects events/enable-feature [_ event {:keys [feature]} _ app-state])
 
 (defmethod perform-effects events/external-redirect-welcome [_ event args _ app-state]
   (set! (.-location js/window) (get-in app-state keypaths/welcome-url)))

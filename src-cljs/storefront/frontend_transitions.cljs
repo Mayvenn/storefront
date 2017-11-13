@@ -632,9 +632,6 @@
                         (get-in app-state keypaths/user))]
     (cond-> (update-in app-state keypaths/features conj feature)
 
-      (= feature "dyed-hair")
-      (assoc-in keypaths/categories categories/initial-categories)
-
       (and (= feature "affirm") fully-covered?) ;; GROT this when affirm experiment finishes
       (assoc-in keypaths/checkout-selected-payment-methods
                 (orders/form-payment-methods (get-in app-state keypaths/order-total)

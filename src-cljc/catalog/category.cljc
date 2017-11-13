@@ -25,8 +25,7 @@
                    facets
                    product-cards
                    selections
-                   open-panel
-                   dyed-hair?]
+                   open-panel]
   (let [product-count    (count product-cards)
         selections-count (->> (apply dissoc selections essentials)
                               (map (comp count val))
@@ -126,12 +125,16 @@
      (product-cards-empty-state loading?)
      (map product-card/component product-cards))])
 
-(defn in-experiment? [dyed-hair? product]
-  (contains? (set (:experiment.dyed-hair/presence product))
-             (if dyed-hair? "experiment" "control")))
-
-(defn ^:private component [{:keys [category facets loading-products? affirm? dyed-hair?
-                                   selections represented-options open-panel product-cards options]} owner opts]
+(defn ^:private component
+  [{:keys [category
+           facets
+           loading-products?
+           affirm?
+           selections
+           represented-options
+           open-panel
+           product-cards
+           options]} owner opts]
   (component/create
    [:div
     (hero-section category)
@@ -144,13 +147,13 @@
       (if open-panel
         [:div
          [:div.hide-on-tb-dt.px2.z4.fixed.overlay.overflow-auto.bg-white
-          (filter-tabs category facets product-cards options open-panel dyed-hair?)
+          (filter-tabs category facets product-cards options open-panel)
           (filter-panel facets represented-options selections open-panel)]
          [:div.hide-on-mb
-          (filter-tabs category facets product-cards options open-panel dyed-hair?)
+          (filter-tabs category facets product-cards options open-panel)
           (filter-panel facets represented-options selections open-panel)]]
         [:div
-         (filter-tabs category facets product-cards options open-panel dyed-hair?)])]
+         (filter-tabs category facets product-cards options open-panel)])]
      (render-product-cards loading-products? product-cards)]]))
 
 (defn ^:private query [data]
@@ -158,16 +161,13 @@
         category-skus (selector/strict-query (vals (get-in data keypaths/skus))
                                              (skuers/essentials category))
         selections    (get-in data catalog.keypaths/category-selections)
-        dyed-hair?    (experiments/dyed-hair? data)
+        essentials    (dissoc (skuers/essentials category) :hair/color.process)
         sku-sets      (->> (selector/strict-query (vals (get-in data keypaths/sku-sets))
-                                                  (skuers/essentials category)
+                                                  essentials
                                                   selections
                                                   {:hair/color #{:query/missing}})
                            (filter (fn [sku-set]
-                                     (seq (selector/query category-skus
-                                                          (skuers/essentials sku-set)
-                                                          selections))))
-                           (filter (partial in-experiment? dyed-hair?)))]
+                                     (seq (selector/query category-skus essentials selections)))))]
     {:category            category
      :represented-options (->> category-skus
                                (map (fn [sku]
@@ -179,7 +179,6 @@
      :product-cards       (map (partial product-card/query data) sku-sets)
      :open-panel          (get-in data catalog.keypaths/category-panel)
      :affirm?             (experiments/affirm? data)
-     :dyed-hair?          dyed-hair?
      :loading-products?   (utils/requesting? data (conj request-keys/search-sku-sets
                                                         (skuers/essentials category)))}))
 (defn built-component [data opts]
