@@ -60,4 +60,6 @@
 (defn affirm? [data]
   (display-feature? data "affirm"))
 
+(defn black-friday? [data]
+  (display-feature? data "black-friday"))
 
