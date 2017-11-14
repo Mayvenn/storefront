@@ -151,7 +151,7 @@
     [:span.block.overflow-hidden.dark-gray.h5.regular
      (:option/name (first (filter :checked? options)))]]
    [:div.flex.flex-wrap.content-stretch.mxnp3
-    (for [option options]
+    (for [option (sort-by :option/order options)]
       [:div.flex.flex-column.justify-center.pp3.col-4
        {:key   (string/replace (str "option-" (hash option)) #"\W+" "-")
         :style {:height "72px"}}
@@ -325,6 +325,7 @@
             (fn [existing]
               {:option/name (:option/name facet-option)
                :option/slug (:option/slug facet-option)
+               :option/order (:filter/order facet-option)
                :stocked?    (or (:in-stock? sku)
                                 (:stocked? existing false))
                :image       image
