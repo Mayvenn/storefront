@@ -44,7 +44,8 @@
             [storefront.routes :as routes]
             [spice.maps :as maps]
             [storefront.hooks.pinterest :as pinterest]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [storefront.platform.messages :as messages]))
 
 (defn changed? [previous-app-state app-state keypath]
   (not= (get-in previous-app-state keypath)
@@ -76,6 +77,11 @@
                              stylist-id))))
 
 (defn refresh-products [app-state product-ids]
+  ;;TODO Fix this hack (was done to get dyed-hair out the door)
+  ;;     Should not be fetching all of the products
+  (api/search-sku-sets (get-in app-state keypaths/api-cache)
+                       {}
+                       (partial messages/handle-message events/api-success-sku-sets))
   (when (seq product-ids)
     (api/get-products-by-ids product-ids
                              (get-in app-state keypaths/user-id)

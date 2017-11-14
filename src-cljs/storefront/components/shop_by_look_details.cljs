@@ -51,7 +51,7 @@
     (catch :default e
       title)))
 
-(defn component [{:keys [creating-order? sold-out? look shared-cart products back fetching-shared-cart? discount-warning?]} owner opts]
+(defn component [{:keys [creating-order? sold-out? look shared-cart products sku-sets skus back fetching-shared-cart? discount-warning?]} owner opts]
   (om/component
    (html
     (let [shared-cart-type-copy (or (:short-name back) "look")]
@@ -81,26 +81,31 @@
                   item-count (->> line-items (map :quantity) (reduce +))]
               [:div.col-on-tb-dt.col-6-on-tb-dt.px2.px3-on-tb-dt
                [:div.p2.center.h3.medium.border-bottom.border-gray (str item-count " items in this " shared-cart-type-copy)]
-               (order-summary/display-line-items line-items products)
+               (order-summary/display-line-items-sku-sets line-items sku-sets skus)
                (when discount-warning? [:div.center.teal.medium.mt2 "*Discounts applied at check out"])
                [:div.mt2
                 (add-to-cart-button sold-out? creating-order? shared-cart)]])))]]))))
 
-(defn sold-out? [variant-ids product]
-  (->> product
-       :variants
-       (filter (comp variant-ids :id))
-       (not-every? :in_stock)))
+(defn sold-out? [variant-ids skus]
+  (->> skus
+       (filter (fn [sku]
+                 (contains? variant-ids (:legacy/variant-id sku))))
+       (not-every? :in-stock?)))
+
 
 (defn query [data]
   (let [shared-cart (get-in data keypaths/shared-cart-current)
         variant-ids (set (map :id (:line-items shared-cart)))
+        skus        (get-in data keypaths/skus)
         products    (get-in data keypaths/products)]
+    (prn (keys (first (vals skus))))
     {:shared-cart           shared-cart
      :look                  (pixlee/selected-look data)
      :creating-order?       (utils/requesting? data request-keys/create-order-from-shared-cart)
      :products              products
-     :sold-out?             (some (partial sold-out? variant-ids) (vals products))
+     :sku-sets              (get-in data keypaths/sku-sets)
+     :skus                  skus
+     :sold-out?             (some (partial sold-out? variant-ids) (vals skus))
      :fetching-shared-cart? (utils/requesting? data request-keys/fetch-shared-cart)
      :back                  (first (get-in data keypaths/navigation-undo-stack))
      :discount-warning?     (experiments/bundle-deals-2? data)}))

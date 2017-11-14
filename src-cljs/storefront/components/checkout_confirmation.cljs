@@ -17,7 +17,7 @@
             [storefront.request-keys :as request-keys]
             [storefront.effects :as effects]
             [storefront.trackings :as trackings]
-            [storefront.accessors.products :refer [medium-img]]
+            [storefront.accessors.products :refer [old-medium-img]]
             [catalog.products :as products]
             [storefront.hooks.affirm :as affirm]
             [storefront.components.affirm :as affirm-components]
@@ -43,6 +43,8 @@
            payment delivery order
            placing-order?
            products
+           sku-sets
+           skus
            requires-additional-payment?
            saving-card?
            updating-shipping?]}
@@ -58,7 +60,7 @@
 
        [:div.my2
         {:data-test "confirmation-line-items"}
-        (summary/display-line-items (orders/product-items order) products)]]
+        (summary/display-line-items-sku-sets (orders/product-items order) sku-sets skus)]]
 
       [:.col-on-tb-dt.col-6-on-tb-dt.px3
        (om/build checkout-delivery/component delivery)
@@ -89,6 +91,8 @@
            payment delivery order
            placing-order?
            products
+           sku-sets
+           skus
            requires-additional-payment?
            saving-card?
            updating-shipping?]}
@@ -104,7 +108,7 @@
 
        [:div.my2
         {:data-test "confirmation-line-items"}
-        (summary/display-line-items (orders/product-items order) products)]]
+        (summary/display-line-items-sku-sets (orders/product-items order) sku-sets skus)]]
 
       [:.col-on-tb-dt.col-6-on-tb-dt.px3
        (om/build checkout-delivery/component delivery)
@@ -142,25 +146,44 @@
 (defn- absolute-url [& path]
   (apply str (.-protocol js/location) "//" (.-host js/location) path))
 
-(defn ->affirm-line-item [products {:keys [product-id product-name sku unit-price quantity]}]
-  (let [{:keys [slug]} (get products product-id)]
+(defn find-sku-set-by-sku [sku-sets line-item-sku]
+  ;;TODO copied from order-summary (pull this out!!!)
+  (->> (vals sku-sets)
+       (filter (fn [sku-set]
+                 (contains? (set (:selector/skus sku-set))
+                            line-item-sku)))
+       first))
+
+(defn medium-img [sku-set sku]
+  ;;TODO fix this!!! PLEASE!!! (should be using selector and doing something more clever than this.)
+  (let [image  (->> sku-set
+                    :sku-set/images
+                    (filter #(= (:hair/color (:criteria/attributes %)) (:hair/color sku)))
+                    (filter #(= (:image/of (:criteria/attributes %)) "product"))
+                    first)]
+    {:src (:url image)
+     :alt (:sku-set/title sku-set)}))
+
+(defn ->affirm-line-item [sku-sets skus {:keys [sku product-name sku unit-price quantity]}]
+  (let [sku-set (find-sku-set-by-sku sku-sets sku)
+        slug    (:page/slug sku-set)]
     {:display_name   product-name
      :sku            sku
      :unit_price     (* 100 unit-price)
      :qty            quantity
-     :item_image_url (str "https:" (:src (medium-img products product-id)))
-     :item_url       (absolute-url (products/path-for-sku product-id slug sku))}))
+     :item_image_url (str "https:" (:src (medium-img sku-set (get skus sku))))
+     :item_url       (absolute-url (products/path-for-sku (:catalog/product-id sku-set) slug sku))}))
 
 (defn promotion->affirm-discount [{:keys [amount promotion] :as promo}]
   (when (seq promo)
     {(:name promotion) {:discount_amount       (Math/abs amount)
                         :discount_display_name (:name promotion)}}))
 
-(defn order->affirm [products order]
-  (let [email         (-> order :user :email)
-        product-items (orders/product-items order)
-        line-items    (mapv (partial ->affirm-line-item products) product-items)
-        promotions    (distinct (mapcat :applied-promotions product-items))]
+(defn order->affirm [sku-sets skus order]
+  (let [email              (-> order :user :email)
+        product-line-items (orders/product-items order)
+        line-items         (mapv (partial ->affirm-line-item sku-sets skus) product-line-items)
+        promotions         (distinct (mapcat :applied-promotions product-line-items))]
     {:merchant {:user_confirmation_url        (absolute-url "/orders/" (:number order) "/affirm/" (url-encode (:token order)))
                 :user_cancel_url              (absolute-url "/checkout/payment?error=affirm-incomplete")
                 :user_confirmation_url_action "POST"
@@ -209,7 +232,8 @@
                           events/stringer-tracked-sent-to-affirm)))
 
 (defmethod effects/perform-effects events/stringer-tracked-sent-to-affirm [_ _ _ _ app-state]
-  (affirm/checkout (order->affirm (get-in app-state keypaths/products)
+  (affirm/checkout (order->affirm (get-in app-state keypaths/sku-sets)
+                                  (get-in app-state keypaths/skus)
                                   (get-in app-state keypaths/order))))
 
 (def ^:private affirm->error-path
@@ -282,7 +306,8 @@
                                        (utils/requesting? data request-keys/affirm-place-order))
      :requires-additional-payment? (requires-additional-payment? data)
      :checkout-steps               (checkout-steps/query data)
-     :products                     (get-in data keypaths/products)
+     :sku-sets                     (get-in data keypaths/sku-sets)
+     :skus                         (get-in data keypaths/skus)
      :order                        order
      :payment                      (checkout-credit-card/query data)
      :delivery                     (checkout-delivery/query data)

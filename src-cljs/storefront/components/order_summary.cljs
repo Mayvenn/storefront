@@ -100,14 +100,14 @@
       [:div.pyp2 "Price Each: " (as-money-without-cents unit-price)]
       quantity-line]]]])
 
-(defn display-line-items [line-items products]
+(defn old-display-line-items [line-items products]
   (for [{:keys [quantity product-id] :as line-item} line-items]
     (display-line-item
      line-item
      (products/medium-img products product-id)
      [:div.pyp2 "Quantity: " quantity])))
 
-(defn display-adjustable-line-items [line-items products update-line-item-requests delete-line-item-requests]
+(defn old-display-adjustable-line-items [line-items products update-line-item-requests delete-line-item-requests]
   (for [{:keys [product-id quantity] variant-id :id :as line-item} line-items]
     (let [updating? (get update-line-item-requests (:sku line-item))
           removing? (get delete-line-item-requests variant-id)]
@@ -126,3 +126,53 @@
                        quantity
                        (utils/send-event-callback events/control-cart-line-item-dec {:variant variant})
                        (utils/send-event-callback events/control-cart-line-item-inc {:variant variant})))]]))))
+
+(defn adjustable-quantity-line [line-item sku removing? updating?]
+  [:.mt1.flex.items-center.justify-between
+   (if removing?
+     [:.h3 {:style {:width "1.2em"}} ui/spinner]
+     [:a.gray.medium (utils/fake-href events/control-cart-remove (:id line-item)) "Remove"])
+   [:.h3
+    (ui/counter {:spinning? updating?
+                 :data-test (:sku sku)}
+                (:quantity line-item)
+                (utils/send-event-callback events/control-cart-line-item-dec {:variant line-item})
+                (utils/send-event-callback events/control-cart-line-item-inc {:variant line-item}))]])
+
+(defn find-sku-set-by-sku [sku-sets line-item-sku]
+  (->> (vals sku-sets)
+       (filter (fn [sku-set]
+                 (contains? (set (:selector/skus sku-set))
+                            line-item-sku)))
+       first))
+
+(defn medium-img [sku-set sku]
+  ;;TODO fix this!!! PLEASE!!! (should be using selector and doing something more clever than this.)
+  (let [image  (->> sku-set
+                    :sku-set/images
+                    (filter #(= (:hair/color (:criteria/attributes %)) (:hair/color sku)))
+                    (filter #(= (:image/of (:criteria/attributes %)) "product"))
+                    first)]
+    {:src (:url image)
+     :alt (:sku-set/title sku-set)}))
+
+(defn display-line-items-sku-sets [line-items sku-sets skus]
+  (for [{:keys [quantity product-id] :as line-item} line-items]
+    (let [sku-set       (find-sku-set-by-sku sku-sets (:sku line-item))
+          line-item-sku (get skus (:sku line-item))]
+      (display-line-item
+       line-item
+       (medium-img sku-set line-item-sku)
+       [:div.pyp2 "Quantity: " quantity]))))
+
+(defn display-adjustable-line-items-sku-sets [line-items sku-sets skus update-line-item-requests delete-line-item-requests]
+  (for [{:keys [product-id quantity] variant-id :id :as line-item} line-items]
+    (let [sku-set       (find-sku-set-by-sku sku-sets (:sku line-item))
+          line-item-sku (get skus (:sku line-item))]
+      (display-line-item
+       line-item
+       (medium-img sku-set line-item-sku)
+       (adjustable-quantity-line line-item
+                                 line-item-sku
+                                 (get delete-line-item-requests variant-id)
+                                 (get update-line-item-requests (:sku line-item)))))))
