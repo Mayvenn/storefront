@@ -131,13 +131,15 @@
    (merge opts {:style {:padding-left "24px" :padding-right "24px"}})
    text])
 
-(defn menu [bundle-deals-2?]
+(defn menu [bundle-deals-2? black-friday?]
   (component/html
    [:div.center
     (when bundle-deals-2?
       (menu-link (assoc (utils/route-to events/navigate-shop-bundle-deals)
                         :on-mouse-enter close-shopping)
-                 "Black friday deals"))
+                 (if black-friday?
+                   "Black friday deals"
+                   "Shop bundle deals")))
     (menu-link (assoc (utils/route-to events/navigate-shop-by-look)
                       :on-mouse-enter close-shopping)
      "Shop looks")
@@ -184,7 +186,7 @@
         (for [items columns]
           (shopping-column items (count columns)))]])))
 
-(defn component [{:keys [store user cart shopping signed-in bundle-deals-2?]} _ _]
+(defn component [{:keys [store user cart shopping signed-in bundle-deals-2? black-friday?]} _ _]
   (component/create
    [:div
     [:div.hide-on-mb.relative
@@ -200,7 +202,7 @@
                                  cart)]]]
        [:div.absolute.bottom-0.left-0.right-0
         [:div.mb4 (slideout-nav/logo "desktop-header-logo" "60px")]
-        [:div.mb1 (menu bundle-deals-2?)]]]]
+        [:div.mb1 (menu bundle-deals-2? black-friday?)]]]]
      (shopping-flyout signed-in shopping)]
     [:div.hide-on-tb-dt.border-bottom.border-gray.flex.items-center
      hamburger
