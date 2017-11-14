@@ -81,12 +81,12 @@
 (defn hero [store-slug]
   [:h1.h2
    [:a
-    (assoc (utils/route-to events/navigate-shop-by-look)
+    (assoc (utils/route-to events/navigate-category {:page/slug "dyed-virgin-hair" :catalog/category-id "16"})
            :data-test "home-banner")
-    (let [file-name "Fall-in-love-soul-Homepage.jpg"
-          alt       "Fall in love with you! Shop our looks."]
-      (hero-image {:mobile-url  "//ucarecdn.com/28bf6da5-5f69-424f-893e-6fed5ce62619/"
-                   :desktop-url "//ucarecdn.com/09024176-fc65-426d-8e66-cc32f58799b8/"
+    (let [file-name "Classics-Made-Colorful.jpg"
+          alt       "Dyed Virgin Hair is here! Shop dyed virgin hair."]
+      (hero-image {:mobile-url  "//ucarecdn.com/138de0ea-3b6e-444e-8215-b869fb48ceab/"
+                   :desktop-url "//ucarecdn.com/bb90862b-e578-46dd-9315-ac78c437b3af/"
                    :file-name   file-name
                    :alt         alt}))]])
 
