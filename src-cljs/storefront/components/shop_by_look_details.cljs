@@ -98,7 +98,6 @@
         variant-ids (set (map :id (:line-items shared-cart)))
         skus        (get-in data keypaths/skus)
         products    (get-in data keypaths/products)]
-    (prn (keys (first (vals skus))))
     {:shared-cart           shared-cart
      :look                  (pixlee/selected-look data)
      :creating-order?       (utils/requesting? data request-keys/create-order-from-shared-cart)
