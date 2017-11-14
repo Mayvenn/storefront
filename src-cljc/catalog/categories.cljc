@@ -461,7 +461,7 @@
                            :page/slug           "dyed-virgin-hair"
                            :category/new?       true
                            :product/department  #{"hair"}
-                           :hair/family         #{"bundles"}
+                           :hair/family         #{"bundles" "closures" "frontals"}
                            :hair/color.process  #{"dyed"}
                            :hamburger/order     1
                            :header/order        8
