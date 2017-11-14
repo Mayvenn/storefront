@@ -66,13 +66,7 @@
           [:img.mx1.border-light-gray
            {:width  10
             :height 10
-            :src    (first color-url)}])]))
-   #_
-   (let [origin (some-> product :hair/origin first)
-         family (some-> product :hair/family first)]
-     (when (and (#{"brazilian" "malaysian"} origin)
-                (not (#{"lace-front-wigs" "360-wigs"} family)))
-       [:p.h6.teal "Bestseller!"]))])
+            :src    (first color-url)}])]))])
 
 (defn query [data product]
   (let [selections (get-in data catalog.keypaths/category-selections)
