@@ -166,12 +166,10 @@
   [:div.h4.border-bottom.border-gray.py3
    (into [:a.block.inherit-color.flex.items-center] content)])
 
-(defn ^:private shopping-area [signed-in bundle-deals-2? black-friday?]
+(defn ^:private shopping-area [signed-in bundle-deals-2?]
   [:div
    (when bundle-deals-2?
-     [:li (major-menu-row (utils/route-to events/navigate-shop-bundle-deals) [:span.medium (if black-friday?
-                                                                                             "Black Friday Deals"
-                                                                                             "Shop Bundle Deals")])])
+     [:li (major-menu-row (utils/route-to events/navigate-shop-bundle-deals) [:span.medium "Black Friday Deals"])])
    [:li (major-menu-row (utils/route-to events/navigate-shop-by-look) [:span.medium "Shop Looks"])]
    [:div
     [:li (major-menu-row (assoc (utils/fake-href events/menu-list
@@ -205,9 +203,9 @@
                                  :data-test "menu-stylist-products")
                           [:span.medium.flex-auto "Shop Stylist Exclusives"])])])
 
-(defn ^:private menu-area [signed-in bundle-deals-2? black-friday?]
+(defn ^:private menu-area [signed-in bundle-deals-2?]
   [:ul.list-reset.mb3
-   (shopping-area signed-in bundle-deals-2? black-friday?)
+   (shopping-area signed-in bundle-deals-2?)
    [:li (minor-menu-row (assoc (utils/route-to events/navigate-content-guarantee)
                                :data-test "content-guarantee")
                         "Our guarantee")]
@@ -230,7 +228,7 @@
                      "Sign out")
     [:div])))
 
-(defn ^:private root-menu [{:keys [user signed-in store bundle-deals-2? black-friday?]} owner opts]
+(defn ^:private root-menu [{:keys [user signed-in store bundle-deals-2?]} owner opts]
   (component/create
    [:div
     [:div.px6.border-bottom.border-gray
@@ -239,7 +237,7 @@
      [:div.my3.dark-gray
       (actions-marquee signed-in)]]
     [:div.px6
-     (menu-area signed-in bundle-deals-2? black-friday?)]
+     (menu-area signed-in bundle-deals-2?)]
     (when (-> signed-in ::auth/at-all)
       [:div.px6.border-top.border-gray
        sign-out-area])]))
@@ -258,19 +256,12 @@
       (component/build root-menu data nil))]))
 
 (defn basic-query [data]
-  (let [black-friday-start 1511499600000
-        black-friday-end   1511586000000
-        black-friday?      (< black-friday-start
-                              (date/to-millis (date/now))
-                              black-friday-end)]
-    {:signed-in             (auth/signed-in data)
-     :on-taxon?             (get-in data keypaths/current-traverse-nav-id)
-     :bundle-deals-2?       (experiments/bundle-deals-2? data)
-     :black-friday?         (or black-friday?
-                                (experiments/black-friday? data))
-     :user                  {:email (get-in data keypaths/user-email)}
-     :store                 (marquee/query data)
-     :shopping              {:categories (get-in data keypaths/categories)}}))
+  {:signed-in             (auth/signed-in data)
+   :on-taxon?             (get-in data keypaths/current-traverse-nav-id)
+   :bundle-deals-2?       (experiments/bundle-deals-2? data)
+   :user                  {:email (get-in data keypaths/user-email)}
+   :store                 (marquee/query data)
+   :shopping              {:categories (get-in data keypaths/categories)}})
 
 (defn query [data]
   (-> (basic-query data)
