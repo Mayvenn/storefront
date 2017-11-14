@@ -161,13 +161,19 @@
         category-skus (selector/strict-query (vals (get-in data keypaths/skus))
                                              (skuers/essentials category))
         selections    (get-in data catalog.keypaths/category-selections)
-        essentials    (dissoc (skuers/essentials category) :hair/color.process)
-        sku-sets      (->> (selector/strict-query (vals (get-in data keypaths/sku-sets))
-                                                  essentials
+        products      (->> (selector/strict-query (vals (get-in data keypaths/sku-sets))
+                                                  (skuers/essentials category)
                                                   selections
                                                   {:hair/color #{:query/missing}})
-                           (filter (fn [sku-set]
-                                     (seq (selector/query category-skus essentials selections)))))]
+                           (filter (fn skus-exist-for-product
+                                     [product]
+                                     (seq (selector/query category-skus
+                                                          (skuers/essentials product)
+                                                          selections))))
+                           (sort-by #(->> (select-keys (get-in data keypaths/skus) (:selector/skus %))
+                                          vals
+                                          (apply min-key :price)
+                                          :price)))]
     {:category            category
      :represented-options (->> category-skus
                                (map (fn [sku]
@@ -176,11 +182,12 @@
                                maps/into-multimap)
      :facets              (maps/index-by :facet/slug (get-in data keypaths/facets))
      :selections          selections
-     :product-cards       (map (partial product-card/query data) sku-sets)
+     :product-cards       (map (partial product-card/query data) products)
      :open-panel          (get-in data catalog.keypaths/category-panel)
      :affirm?             (experiments/affirm? data)
      :loading-products?   (utils/requesting? data (conj request-keys/search-sku-sets
                                                         (skuers/essentials category)))}))
+
 (defn built-component [data opts]
   (component/build component (query data) opts))
 
