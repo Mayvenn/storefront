@@ -54,7 +54,7 @@
 (def css-styles (memoize read-css))
 
 (defn prefetch-image [name src]
-  (format "var %s=new Image();%s.src=%s"
+  (format "var %s=new Image();%s.src=\"%s\";"
           name
           name
           (assets/path src)))
