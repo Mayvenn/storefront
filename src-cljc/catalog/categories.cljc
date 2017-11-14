@@ -468,7 +468,7 @@
                            :header/group        0
                            :footer/order        8
                            :selector/essentials [:product/department :hair/family :hair/color.process]
-                           :selector/electives  []
+                           :selector/electives  [:hair/origin :hair/texture :hair/color]
                            :images              {:hero {:filename    "DyedVirginHair.jpg"
                                                         :desktop-url "//ucarecdn.com/ffec1ede-b869-44f4-86e8-3615a78cf046/"
                                                         :mobile-url  "//ucarecdn.com/0bec1329-ba01-4ece-a66f-4ad303311bf3/"
