@@ -67,6 +67,7 @@
            {:width  10
             :height 10
             :src    (first color-url)}])]))
+   #_
    (let [origin (some-> product :hair/origin first)
          family (some-> product :hair/family first)]
      (when (and (#{"brazilian" "malaysian"} origin)
