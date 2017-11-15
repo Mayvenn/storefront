@@ -57,43 +57,43 @@
       title)))
 
 (defn component [{:keys [creating-order? sold-out? look shared-cart products sku-sets skus back fetching-shared-cart? discount-warning?
-                         black-friday-run-up? bundle-deal?]} owner opts]
+                         show-run-up-button? bundle-deal-look? shared-cart-type-copy back-copy]} owner opts]
   (om/component
    (html
-    (let [shared-cart-type-copy (or (:short-name back) "look")]
-      [:div.container.mb4
-       [:div.clearfix
-        [:div.col-6-on-tb-dt
-         [:a.p2.px3-on-tb-dt.left.col-12.dark-gray
-          (utils/route-back-or-to back events/navigate-shop-by-look)
-          [:span
-           [:img.px1.mbnp4 {:style {:height "1.25rem"}
-                            :src   (assets/path "/images/icons/caret-left.png")}]
-           (or (:back-copy back) "back")]]
+    [:div.container.mb4
+     [:div.clearfix
+      [:div.col-6-on-tb-dt
+       [:a.p2.px3-on-tb-dt.left.col-12.dark-gray
+        (if bundle-deal-look?
+          (utils/route-to events/navigate-shop-bundle-deals)
+          (utils/route-back-or-to back events/navigate-shop-by-look))
+        [:span
+         [:img.px1.mbnp4 {:style {:height "1.25rem"}
+                          :src   (assets/path "/images/icons/caret-left.png")}]
+         back-copy]]
 
-         [:h1.h3.medium.center.dark-gray.mb2 (str "Get this " shared-cart-type-copy)]]]
-
-       [:div.clearfix
-        (when look
-          [:div.col-on-tb-dt.col-6-on-tb-dt.px3-on-tb-dt
-           (carousel (imgs look shared-cart products))
-           [:div.px3.py2.mbp1.bg-light-gray (ugc/user-attribution look)]
-           (when-not (str/blank? (:title look))
-             [:p.h5.px3.py1.dark-gray.bg-light-gray (decode-title (:title look))])])
-        (if fetching-shared-cart?
-          [:div.flex.justify-center.items-center (ui/large-spinner {:style {:height "4em"}})]
-          (when shared-cart
-            (let [line-items (:line-items shared-cart)
-                  item-count (->> line-items (map :quantity) (reduce +))]
-              [:div.col-on-tb-dt.col-6-on-tb-dt.px2.px3-on-tb-dt
-               [:div.p2.center.h3.medium.border-bottom.border-gray (str item-count " items in this " shared-cart-type-copy)]
-               (order-summary/display-line-items-sku-sets line-items sku-sets skus)
-               (when bundle-deal?
-                 [:div.center.teal.medium.mt2 "*Discounts applied at check out"])
-               [:div.mt2
-                (if (and black-friday-run-up? bundle-deal?)
-                  black-friday-run-up-button
-                  (add-to-cart-button sold-out? creating-order? shared-cart))]])))]]))))
+       [:h1.h3.medium.center.dark-gray.mb2 (str "Get this " shared-cart-type-copy)]]]
+     [:div.clearfix
+      (when look
+        [:div.col-on-tb-dt.col-6-on-tb-dt.px3-on-tb-dt
+         (carousel (imgs look shared-cart products))
+         [:div.px3.py2.mbp1.bg-light-gray (ugc/user-attribution look)]
+         (when-not (str/blank? (:title look))
+           [:p.h5.px3.py1.dark-gray.bg-light-gray (decode-title (:title look))])])
+      (if fetching-shared-cart?
+        [:div.flex.justify-center.items-center (ui/large-spinner {:style {:height "4em"}})]
+        (when shared-cart
+          (let [line-items (:line-items shared-cart)
+                item-count (->> line-items (map :quantity) (reduce +))]
+            [:div.col-on-tb-dt.col-6-on-tb-dt.px2.px3-on-tb-dt
+             [:div.p2.center.h3.medium.border-bottom.border-gray (str item-count " items in this " shared-cart-type-copy)]
+             (order-summary/display-line-items-sku-sets line-items sku-sets skus)
+             (when bundle-deal-look?
+               [:div.center.teal.medium.mt2 "*Discounts applied at check out"])
+             [:div.mt2
+              (if show-run-up-button?
+                black-friday-run-up-button
+                (add-to-cart-button sold-out? creating-order? shared-cart))]])))]])))
 
 (defn sold-out? [variant-ids skus]
   (->> skus
@@ -102,27 +102,35 @@
        (not-every? :in-stock?)))
 
 (defn query [data]
-  (let [shared-cart     (get-in data keypaths/shared-cart-current)
-        variant-ids     (set (map :id (:line-items shared-cart)))
-        skus            (get-in data keypaths/skus)
-        products        (get-in data keypaths/products)
-        look            (pixlee/selected-look data)
-        bundle-deal-ids (->> (pixlee/images-in-album (get-in data keypaths/ugc) :bundle-deals)
-                             (remove (comp #{"video"} :content-type))
-                             (mapv :id)
-                             set)
-        bundle-deal?    (boolean (bundle-deal-ids (:id look)))]
+  (let [shared-cart       (get-in data keypaths/shared-cart-current)
+        variant-ids       (set (map :id (:line-items shared-cart)))
+        skus              (get-in data keypaths/skus)
+        products          (get-in data keypaths/products)
+        look              (pixlee/selected-look data)
+        bundle-deal-ids   (->> (pixlee/images-in-album (get-in data keypaths/ugc) :bundle-deals)
+                               (remove (comp #{"video"} :content-type))
+                               (mapv :id)
+                               set)
+        bundle-deal-look? (boolean (bundle-deal-ids (:id look)))
+        back              (first (get-in data keypaths/navigation-undo-stack))]
     {:shared-cart           shared-cart
      :look                  look
-     :bundle-deal?          bundle-deal?
-     :black-friday-run-up?  (experiments/black-friday? data)
+     :bundle-deal-look?     bundle-deal-look?
+     :show-run-up-button?   (and (experiments/black-friday-run-up? data)
+                                 bundle-deal-look?)
      :creating-order?       (utils/requesting? data request-keys/create-order-from-shared-cart)
      :products              products
      :sku-sets              (get-in data keypaths/sku-sets)
      :skus                  skus
      :sold-out?             (some (partial sold-out? variant-ids) (vals skus))
      :fetching-shared-cart? (utils/requesting? data request-keys/fetch-shared-cart)
-     :back                  (first (get-in data keypaths/navigation-undo-stack))}))
+     :back                  (first (get-in data keypaths/navigation-undo-stack))
+     :back-copy             (:back-copy back (if bundle-deal-look?
+                                               "back to bundle deals"
+                                               "back"))
+     :shared-cart-type-copy (:short-name back (if bundle-deal-look?
+                                                "deal"
+                                                "look"))}))
 
 (defn built-component [data opts]
   (om/build component (query data) opts))
