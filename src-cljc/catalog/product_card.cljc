@@ -54,19 +54,24 @@
        (map :option/image)))
 
 (defmethod unconstrained-facet :hair/color
-  [product skus facets facet]
-  [:div
-   (let [colors (->> skus
-                     (map #(get % :hair/color))
-                     distinct)]
-     (when (> (count colors) 1)
+  [product skus facets facet-slug]
+  (let [product-colors (set (map #(get % :hair/color) skus))
+        sorted-product-colors (->> facets
+                                   (filter #(= (:facet/slug %) :hair/color))
+                                   first
+                                   :facet/options
+                                   (sort-by :filter/order)
+                                   (map :option/slug)
+                                   (filter product-colors))]
+    [:div
+     (when (> (count sorted-product-colors) 1)
        [:p.h6.dark-gray
-        (for [color-url (map #(facet-image facets facet %)
-                             colors)]
+        (for [color-url (map #(facet-image facets facet-slug %)
+                             sorted-product-colors)]
           [:img.mx1.border-light-gray
            {:width  10
             :height 10
-            :src    (first color-url)}])]))])
+            :src    (first color-url)}])])]))
 
 (defn query [data product]
   (let [selections (get-in data catalog.keypaths/category-selections)

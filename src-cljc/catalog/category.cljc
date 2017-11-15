@@ -60,7 +60,11 @@
 
 (defn filter-panel [facets represented-options selections open-panel]
   [:div.px1
-   (for [options (partition-all 4 (:facet/options (open-panel facets)))]
+   (for [options (->> facets
+                      open-panel
+                      :facet/options
+                      (sort-by :option/order)
+                      (partition-all 4))]
      [:div.flex-on-tb-dt.justify-around
       (for [option options]
         (let [selected?    (contains? (open-panel selections)
