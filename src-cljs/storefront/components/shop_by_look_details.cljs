@@ -26,7 +26,7 @@
      "Add items to bag")))
 
 (def black-friday-run-up-button
-  [:div.btn.col-12.h5.btn-primary.bg-gray.white
+  [:div.btn.mb1.col-12.h5.btn-primary.bg-gray.white
    {:on-click nil}
    "Get this deal on Black Friday"])
 
