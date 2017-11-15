@@ -25,6 +25,11 @@
             :spinning? creating-order?)
      "Add items to bag")))
 
+(def black-friday-run-up-button
+  [:div.btn.col-12.h5.btn-primary.bg-gray.white
+   {:on-click nil}
+   "Get this deal on Black Friday"])
+
 (defn carousel [imgs]
   (om/build carousel/component
             {:slides   imgs
@@ -51,7 +56,8 @@
     (catch :default e
       title)))
 
-(defn component [{:keys [creating-order? sold-out? look shared-cart products sku-sets skus back fetching-shared-cart? discount-warning?]} owner opts]
+(defn component [{:keys [creating-order? sold-out? look shared-cart products sku-sets skus back fetching-shared-cart? discount-warning?
+                         black-friday-run-up? bundle-deal?]} owner opts]
   (om/component
    (html
     (let [shared-cart-type-copy (or (:short-name back) "look")]
@@ -84,7 +90,9 @@
                (order-summary/display-line-items-sku-sets line-items sku-sets skus)
                (when discount-warning? [:div.center.teal.medium.mt2 "*Discounts applied at check out"])
                [:div.mt2
-                (add-to-cart-button sold-out? creating-order? shared-cart)]])))]]))))
+                (if (and black-friday-run-up? bundle-deal?)
+                  black-friday-run-up-button
+                  (add-to-cart-button sold-out? creating-order? shared-cart))]])))]]))))
 
 (defn sold-out? [variant-ids skus]
   (->> skus
@@ -92,14 +100,21 @@
                  (contains? variant-ids (:legacy/variant-id sku))))
        (not-every? :in-stock?)))
 
-
 (defn query [data]
-  (let [shared-cart (get-in data keypaths/shared-cart-current)
-        variant-ids (set (map :id (:line-items shared-cart)))
-        skus        (get-in data keypaths/skus)
-        products    (get-in data keypaths/products)]
+  (let [shared-cart     (get-in data keypaths/shared-cart-current)
+        variant-ids     (set (map :id (:line-items shared-cart)))
+        skus            (get-in data keypaths/skus)
+        products        (get-in data keypaths/products)
+        look            (pixlee/selected-look data)
+        bundle-deal-ids (->> (pixlee/images-in-album (get-in data keypaths/ugc) :bundle-deals)
+                             (remove (comp #{"video"} :content-type))
+                             (mapv :id)
+                             set)
+        bundle-deal?    (boolean (bundle-deal-ids (:id look)))]
     {:shared-cart           shared-cart
-     :look                  (pixlee/selected-look data)
+     :look                  look
+     :bundle-deal?          bundle-deal?
+     :black-friday-run-up?  (experiments/black-friday? data)
      :creating-order?       (utils/requesting? data request-keys/create-order-from-shared-cart)
      :products              products
      :sku-sets              (get-in data keypaths/sku-sets)
