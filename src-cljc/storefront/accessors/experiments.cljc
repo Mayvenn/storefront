@@ -54,9 +54,6 @@
 (defn display-feature? [data feature]
   (contains? (set (get-in data keypaths/features)) feature))
 
-(defn bundle-deals-2? [data]
-  (display-feature? data "bundle-deals-2"))
-
 (defn affirm? [data]
   (display-feature? data "affirm"))
 

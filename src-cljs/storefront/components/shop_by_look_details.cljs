@@ -88,7 +88,8 @@
               [:div.col-on-tb-dt.col-6-on-tb-dt.px2.px3-on-tb-dt
                [:div.p2.center.h3.medium.border-bottom.border-gray (str item-count " items in this " shared-cart-type-copy)]
                (order-summary/display-line-items-sku-sets line-items sku-sets skus)
-               (when discount-warning? [:div.center.teal.medium.mt2 "*Discounts applied at check out"])
+               (when bundle-deal?
+                 [:div.center.teal.medium.mt2 "*Discounts applied at check out"])
                [:div.mt2
                 (if (and black-friday-run-up? bundle-deal?)
                   black-friday-run-up-button
@@ -121,8 +122,7 @@
      :skus                  skus
      :sold-out?             (some (partial sold-out? variant-ids) (vals skus))
      :fetching-shared-cart? (utils/requesting? data request-keys/fetch-shared-cart)
-     :back                  (first (get-in data keypaths/navigation-undo-stack))
-     :discount-warning?     (experiments/bundle-deals-2? data)}))
+     :back                  (first (get-in data keypaths/navigation-undo-stack))}))
 
 (defn built-component [data opts]
   (om/build component (query data) opts))
