@@ -63,11 +63,11 @@ Holds a natural tight curl beautifully.
 Each bundle weighs 3.5 ounces. Available in a natural dark brown color equivalent to color 1B. These hair extensions can be colored (consult a licensed cosmetologist). Excessive flat-ironing will loosen the curls over time.
 Lengths: 12\" to 28\""
                   :data-image-url   "http://s3.amazonaws.com/yotpo-images-production/Product/6414708/6154343/thumb.jpg"}
-   :closures     {:data-product-id  90
+   :closures     {:data-product-id  601
                   :data-name        "Brazilian Natural Straight Lace Closure"
                   :data-description "Our 4x4 lace closures create an illusion of a scalp with a natural density, and is used to leave more of your own natural hair protected. The lace closure has a natural brown scalp color and can be restyled, re-parted, cut, and colored."
                   :data-image-url   "http://s3.amazonaws.com/yotpo-images-production/Product/6575214/6319000/thumb.jpg"}
-   :frontals     {:data-product-id  90
+   :frontals     {:data-product-id  601
                   :data-name        "Brazilian Natural Straight Lace Closure"
                   :data-description "Our 4x4 lace closures create an illusion of a scalp with a natural density, and is used to leave more of your own natural hair protected. The lace closure has a natural brown scalp color and can be restyled, re-parted, cut, and colored."
                   :data-image-url   "http://s3.amazonaws.com/yotpo-images-production/Product/6575214/6319000/thumb.jpg"}
@@ -78,7 +78,11 @@ Lengths: 12\" to 28\""
    :wigs         {:data-product-id  698
                   :data-name        "Brazilian Natural Straight 360 Wig"
                   :data-description "Designed for those who want all-around protection, our 360 Lace Frontal Wig in Straight has you covered from front to back. No more waiting hours to get an install - our 360 Straight unit provides the versatility of style that can be achieved in an instant! Our wigs are made from 100% virgin human hair and can be customized to fit your unique look using the built-in clips and adjustable strap. They feature natural density throughout and can be parted from ear-to-ear or worn up in a ponytail with our 360 lace frontal construction."
-                  :data-image-url   "http://ucarecdn.com/10b9786e-846e-4e74-a6ac-d7b3b89beaed/-/scale_crop/250x227/Straight-360-Wig.jpg"}})
+                  :data-image-url   "http://ucarecdn.com/10b9786e-846e-4e74-a6ac-d7b3b89beaed/-/scale_crop/250x227/Straight-360-Wig.jpg"}
+   :dyed         {:data-product-id  90
+                  :data-name        "Dyed Virgin Indian Straight Lace Frontal"
+                  :data-description "100% human hair, hand-tied and backed by our 30 Day Quality Guarantee, our 13\" x 4\" lace frontals mimic a natural hairline and offer versatile parting options as well as small hairline hairs that can be tweezed to achieve your desired look. "
+                  :data-image-url   "http://ucarecdn.com/c9b721df-802a-4cd6-990e-2b81d20e7aa5/-/scale_crop/250x227/yotpo_dyed_frontal"}})
 
 (defn product-options-for [slug]
   (get product-options-by-named-search (keyword slug)))

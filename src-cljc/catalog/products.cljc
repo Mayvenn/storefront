@@ -128,17 +128,18 @@
    :sku-set/images "
   (let [essentials (maps/map-values set (:criteria/essential product))
         electives (mapv keyword (:criteria/selectors product))]
-    (-> product
-        (dissoc :criteria/essential)
-        (clojure.set/rename-keys
-         {:sku-set/id          :catalog/product-id
-          :sku-set/launched-at :catalog/launched-at
-          :sku-set/skus        :selector/skus
-          :sku-set/slug        :page/slug})
-        (merge essentials)
-        (assoc :legacy/named-search-slug (id->named-search (:sku-set/id product)))
-        (assoc :selector/electives electives)
-        (assoc :selector/essentials (keys essentials)))))
+    (cond-> (-> product
+               (dissoc :criteria/essential)
+               (clojure.set/rename-keys
+                {:sku-set/id          :catalog/product-id
+                 :sku-set/launched-at :catalog/launched-at
+                 :sku-set/skus        :selector/skus
+                 :sku-set/slug        :page/slug})
+               (merge essentials)
+               (assoc :selector/electives electives)
+               (assoc :selector/essentials (keys essentials)))
+      (empty? (:legacy/named-search-slug product))
+      (assoc :legacy/named-search-slug (id->named-search (:sku-set/id product))))))
 
 (defn current-product [app-state]
   (product-by-id app-state (get-in app-state k/detailed-product-id)))
