@@ -168,9 +168,8 @@
 
 (defn ^:private shopping-area [signed-in black-friday-run-up?]
   [:div
-   [:li (major-menu-row (utils/route-to events/navigate-shop-bundle-deals) [:span.medium (if black-friday-run-up?
-                                                                                           "Black Friday Deals"
-                                                                                           "Shop Bundle Deals")])]
+   (when black-friday-run-up?
+     [:li (major-menu-row (utils/route-to events/navigate-shop-bundle-deals) [:span.medium "Black Friday Deals"])])
    [:li (major-menu-row (utils/route-to events/navigate-shop-by-look) [:span.medium "Shop Looks"])]
    [:div
     [:li (major-menu-row (assoc (utils/fake-href events/menu-list

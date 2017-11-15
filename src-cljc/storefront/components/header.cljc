@@ -134,11 +134,10 @@
 (defn menu [black-friday-run-up?]
   (component/html
    [:div.center
-    (menu-link (assoc (utils/route-to events/navigate-shop-bundle-deals)
-                      :on-mouse-enter close-shopping)
-               (if black-friday-run-up?
-                 "Black friday deals"
-                 "Shop bundle deals"))
+    (when black-friday-run-up?
+      (menu-link (assoc (utils/route-to events/navigate-shop-bundle-deals)
+                        :on-mouse-enter close-shopping)
+                 "Black friday deals"))
     (menu-link (assoc (utils/route-to events/navigate-shop-by-look)
                       :on-mouse-enter close-shopping)
      "Shop looks")
