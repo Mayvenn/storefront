@@ -323,16 +323,16 @@
         image        (:option/image facet-option)]
     (update options-for-option-kw option-name
             (fn [existing]
-              {:option/name (:option/name facet-option)
-               :option/slug (:option/slug facet-option)
+              {:option/name  (:option/name facet-option)
+               :option/slug  (:option/slug facet-option)
                :option/order (:filter/order facet-option)
-               :stocked?    (or (:in-stock? sku)
-                                (:stocked? existing false))
-               :image       image
-               :price       (:price sku)
-               :price-delta (- (get cheapest-for-option-kw option-name) cheapest-price)
-               :checked?    (= (option-kw sku-skuer)
-                               (option-kw sku))}))))
+               :stocked?     (or (:in-stock? sku)
+                                 (:stocked? existing false))
+               :image        image
+               :price        (:price sku)
+               :price-delta  (- (get cheapest-for-option-kw option-name) cheapest-price)
+               :checked?     (= (option-kw sku-skuer)
+                                (option-kw sku))}))))
 
 (defn skuer->selectors [{:keys [selector/essentials selector/electives]}]
   (set/union (set essentials) (set electives)))
