@@ -201,7 +201,7 @@
       (assoc-in catalog.keypaths/category-id category-id)
       ;;TODO transform query-params back into proper query format.
       ;;TODO validate that the new query-params are allowed selections (ie keys are in the set of category electives)
-      (assoc-in catalog.keypaths/category-selections query-params)))
+      (assoc-in catalog.keypaths/category-selections {})))
 
 #?(:cljs
    (defmethod effects/perform-effects events/navigate-category
