@@ -139,6 +139,7 @@
                 (utils/send-event-callback events/control-cart-line-item-dec {:variant line-item})
                 (utils/send-event-callback events/control-cart-line-item-inc {:variant line-item}))]])
 
+;; TODO Move into shared ns
 (defn find-sku-set-by-sku [sku-sets line-item-sku]
   (->> (vals sku-sets)
        (filter (fn [sku-set]
@@ -152,6 +153,7 @@
                     :sku-set/images
                     (filter #(= (:hair/color (:criteria/attributes %)) (:hair/color sku)))
                     (filter #(= (:image/of (:criteria/attributes %)) "product"))
+                    (sort-by #(not= (:use-case %) "catalog"))
                     first)]
     {:src (:url image)
      :alt (:sku-set/title sku-set)}))

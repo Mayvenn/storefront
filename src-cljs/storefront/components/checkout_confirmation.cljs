@@ -146,32 +146,14 @@
 (defn- absolute-url [& path]
   (apply str (.-protocol js/location) "//" (.-host js/location) path))
 
-(defn find-sku-set-by-sku [sku-sets line-item-sku]
-  ;;TODO copied from order-summary (pull this out!!!)
-  (->> (vals sku-sets)
-       (filter (fn [sku-set]
-                 (contains? (set (:selector/skus sku-set))
-                            line-item-sku)))
-       first))
-
-(defn medium-img [sku-set sku]
-  ;;TODO fix this!!! PLEASE!!! (should be using selector and doing something more clever than this.)
-  (let [image  (->> sku-set
-                    :sku-set/images
-                    (filter #(= (:hair/color (:criteria/attributes %)) (:hair/color sku)))
-                    (filter #(= (:image/of (:criteria/attributes %)) "product"))
-                    first)]
-    {:src (:url image)
-     :alt (:sku-set/title sku-set)}))
-
 (defn ->affirm-line-item [sku-sets skus {:keys [sku product-name sku unit-price quantity]}]
-  (let [sku-set (find-sku-set-by-sku sku-sets sku)
+  (let [sku-set (summary/find-sku-set-by-sku sku-sets sku)
         slug    (:page/slug sku-set)]
     {:display_name   product-name
      :sku            sku
      :unit_price     (* 100 unit-price)
      :qty            quantity
-     :item_image_url (str "https:" (:src (medium-img sku-set (get skus sku))))
+     :item_image_url (str "https:" (:src (summary/medium-img sku-set (get skus sku))))
      :item_url       (absolute-url (products/path-for-sku (:catalog/product-id sku-set) slug sku))}))
 
 (defn promotion->affirm-discount [{:keys [amount promotion] :as promo}]
