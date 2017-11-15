@@ -258,19 +258,13 @@
       (component/build root-menu data nil))]))
 
 (defn basic-query [data]
-  (let [black-friday-start 1511499600000
-        black-friday-end   1511586000000
-        black-friday?      (< black-friday-start
-                              (date/to-millis (date/now))
-                              black-friday-end)]
-    {:signed-in             (auth/signed-in data)
-     :on-taxon?             (get-in data keypaths/current-traverse-nav-id)
-     :bundle-deals-2?       (experiments/bundle-deals-2? data)
-     :black-friday?         (or black-friday?
-                                (experiments/black-friday? data))
-     :user                  {:email (get-in data keypaths/user-email)}
-     :store                 (marquee/query data)
-     :shopping              {:categories (get-in data keypaths/categories)}}))
+  {:signed-in             (auth/signed-in data)
+   :on-taxon?             (get-in data keypaths/current-traverse-nav-id)
+   :bundle-deals-2?       (experiments/bundle-deals-2? data)
+   :black-friday?         (experiments/black-friday? data)
+   :user                  {:email (get-in data keypaths/user-email)}
+   :store                 (marquee/query data)
+   :shopping              {:categories (get-in data keypaths/categories)}})
 
 (defn query [data]
   (-> (basic-query data)
