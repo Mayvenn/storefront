@@ -97,10 +97,10 @@
 (defn hero-black-friday [store-slug]
   [:h1.h2
    [:a
-    (assoc (utils/route-to events/navigate-shop-by-look)
+    (assoc (utils/route-to events/navigate-shop-bundle-deals)
            :data-test "home-banner")
-    (let [file-name "Shop-Now-Bright-Pink-Homepage.jpg"
-          alt       "Fall in love with you! Shop our looks."]
+    (let [file-name "FILENAME-TO-COME.jpg"
+          alt       "ALT-TEXT-TO-COME"]
       (hero-image {:mobile-url  "//ucarecdn.com/0d80edc3-afb2-4a6f-aee1-1cceff1cf93d/"
                    :desktop-url "//ucarecdn.com/54c13e5b-99cd-4dd4-ae00-9f47fc2158e9/"
                    :file-name   file-name
@@ -109,10 +109,10 @@
 (defn hero-cyber-monday [store-slug]
   [:h1.h2
    [:a
-    (assoc (utils/route-to events/navigate-shop-by-look)
+    (assoc (utils/route-to events/navigate-shop-bundle-deals)
            :data-test "home-banner")
-    (let [file-name "Shop-Now-Bright-Pink-Homepage.jpg"
-          alt       "Fall in love with you! Shop our looks."]
+    (let [file-name "FILENAME-TO-COME.jpg"
+          alt       "ALT-TEXT-TO-COME"]
       (hero-image {:mobile-url  "//ucarecdn.com/dc7a8c34-ab77-45b2-bc5d-ffe48be3f8e6/"
                    :desktop-url "//ucarecdn.com/979eb309-adbd-40c4-9b10-44c3e866983a/"
                    :file-name   file-name
