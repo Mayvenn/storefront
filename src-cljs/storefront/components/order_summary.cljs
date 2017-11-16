@@ -152,8 +152,13 @@
   (let [image  (->> sku-set
                     :sku-set/images
                     (filter #(= (:hair/color (:criteria/attributes %)) (:hair/color sku)))
-                    (filter #(= (:image/of (:criteria/attributes %)) "product"))
-                    (sort-by #(not= (:use-case %) "catalog"))
+                    (filter #(or
+                              (= (:image/of (:criteria/attributes %)) "product") ;; FIXME Please remove once we add cart use cases to all images
+                              (= (:use-case %) "cart")))
+                    (sort-by #(case (:use-case %)
+                                "cart" 0
+                                "catalog" 1
+                                5))
                     first)]
     {:src (:url image)
      :alt (:sku-set/title sku-set)}))
