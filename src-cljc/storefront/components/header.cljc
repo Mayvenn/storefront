@@ -138,8 +138,8 @@
       (menu-link (assoc (utils/route-to events/navigate-shop-bundle-deals)
                         :on-mouse-enter close-shopping)
                  (if (= :cyber-monday black-friday-stage)
-                   "Cyber monday deals"
-                   "Black friday deals")))
+                   "Cyber Monday Deals"
+                   "Black Friday Deals")))
     (menu-link (assoc (utils/route-to events/navigate-shop-by-look)
                       :on-mouse-enter close-shopping)
      "Shop looks")
