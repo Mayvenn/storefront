@@ -138,22 +138,45 @@
                        :src-set (str mobile-url "-/format/auto/-/resize/750x/-/quality/lightest/" file-name " 2x")
                        :alt     alt}]])
 
+(def feature-block-advertising-black-friday
+  [:a ;; Black Friday Ad, needs assets
+   (utils/route-to events/navigate-shop-bundle-deals)
+   (feature-image {:mobile-url  ""
+                   :desktop-url ""
+                   :file-name   ""
+                   :alt         "Advertisement for Black Friday deals"})])
+
+(def default-left-feature-block
+  [:a
+   (utils/route-to events/navigate-shop-by-look-details {:look-id (:left config/feature-block-look-ids)})
+   (feature-image {:mobile-url  "//ucarecdn.com/0d80edc3-afb2-4a6f-aee1-1cceff1cf93d/"
+                   :desktop-url "//ucarecdn.com/54c13e5b-99cd-4dd4-ae00-9f47fc2158e9/"
+                   :file-name   "Shop-Brazilian-Straight-10-inch-3-Bundle-Deal.png"
+                   :alt         "Shop Brazilian Straight 10 inch 3 Bundle Deal"})])
+
+(def feature-block-to-be-shown-on-black-friday
+  [:a
+   ;; Needs Asset
+   ;; Will link to some new page
+   (utils/route-to events/navigate-shop-by-look-details {:look-id (:left config/feature-block-look-ids)})
+   (feature-image {:mobile-url  ""
+                   :desktop-url ""
+                   :file-name   ""
+                   :alt         "Advertisement for something else to be shown during Black Friday"})])
+
 (defn feature-blocks [black-friday-stage]
+  (let [_ (prn black-friday-stage)])
   [:div.container.border-top.border-white
    [:div.col.col-6.border.border-white
-    (if (#{:black-friday :cyber-monday} black-friday-stage)
-      [:a
-       (utils/route-to events/navigate-shop-by-look-details {:look-id (:left config/feature-block-look-ids)})
-       (feature-image {:mobile-url  "//ucarecdn.com/0d80edc3-afb2-4a6f-aee1-1cceff1cf93d/"
-                       :desktop-url "//ucarecdn.com/54c13e5b-99cd-4dd4-ae00-9f47fc2158e9/"
-                       :file-name   "Shop-Brazilian-Straight-10-inch-3-Bundle-Deal.png"
-                       :alt         "Shop Brazilian Straight 10 inch 3 Bundle Deal"})]
-      [:a ;; Black Friday Ad, needs assets
-       (utils/route-to events/navigate-shop-bundle-deals)
-       (feature-image {:mobile-url  ""
-                       :desktop-url ""
-                       :file-name   ""
-                       :alt         "Black Friday Ad asset required"})])]
+    (cond
+      (#{:black-friday :cyber-monday} black-friday-stage)
+      feature-block-to-be-shown-on-black-friday
+
+      (= :black-friday-run-up black-friday-stage) ;; Make this the :else case before deploy
+      feature-block-advertising-black-friday
+
+      :else
+      default-left-feature-block)]
     [:div.col.col-6.border.border-white
      [:a
       (utils/route-to events/navigate-shop-by-look-details {:look-id (:right config/feature-block-look-ids)})
