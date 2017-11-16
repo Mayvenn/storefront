@@ -21,10 +21,10 @@
        (filter (fn [{:keys [:option/slug]}] (= slug option)))
        first))
 
-(defmulti unconstrained-facet (fn [product skus facets facet] facet))
+(defmulti unconstrained-facet (fn [color-order-map product skus facets facet] facet))
 
 (defmethod unconstrained-facet :hair/length
-  [product skus facets facet]
+  [_color-order-map product skus facets facet]
   (let [lengths  (->> skus
                       (map #(get % :hair/length))
                       sort)
@@ -54,15 +54,10 @@
        (map :option/image)))
 
 (defmethod unconstrained-facet :hair/color
-  [product skus facets facet-slug]
-  (let [product-colors (set (map #(get % :hair/color) skus))
-        sorted-product-colors (->> facets
-                                   (filter #(= (:facet/slug %) :hair/color))
-                                   first
-                                   :facet/options
-                                   (sort-by :filter/order)
-                                   (map :option/slug)
-                                   (filter product-colors))]
+  [color-order-map product skus facets facet-slug]
+  (let [sorted-product-colors (set (->> skus
+                                        (map #(get % :hair/color))
+                                        (sort-by color-order-map)))]
     [:div
      (when (> (count sorted-product-colors) 1)
        [:p.h6.dark-gray
@@ -74,25 +69,39 @@
             :src    (first color-url)}])])]))
 
 (defn query [data product]
-  (let [selections (get-in data catalog.keypaths/category-selections)
-        skus       (vals (select-keys (get-in data keypaths/skus)
-                                      (:selector/skus product)))
-        epitome    (first (sort-by :price (selector/query skus
-                                                          selections
-                                                          {:in-stock? #{true}})))]
-    {:product   product
-     :skus      skus
-     :epitome   epitome
-     :sold-out? (nil? epitome)
-     :title     (:sku-set/title product)
-     :slug      (:page/slug product)
-     :image     (->> epitome :images (filter (comp #{"catalog"} :use-case)) first)
-     :facets    (get-in data keypaths/facets)
-     :affirm?   (experiments/affirm? data)
-     :selections (get-in data catalog.keypaths/category-selections)}))
+  (let [selections      (get-in data catalog.keypaths/category-selections)
+        skus            (vals (select-keys (get-in data keypaths/skus)
+                                           (:selector/skus product)))
+        facets          (get-in data keypaths/facets)
+        color-order-map (->> facets
+                             (filter #(= (:facet/slug %) :hair/color))
+                             first
+                             :facet/options
+                             (sort-by :filter/order)
+                             (map :option/slug)
+                             (map-indexed (fn [idx slug] [slug idx]))
+                             (into {}))
+        epitome         (->> (selector/query skus selections {:in-stock? #{true}})
+                             (group-by :price)
+                             (sort-by first)
+                             vals
+                             first
+                             (sort-by (comp color-order-map :hair/color))
+                             first)]
+    {:product         product
+     :skus            skus
+     :epitome         epitome
+     :color-order-map color-order-map
+     :sold-out?       (nil? epitome)
+     :title           (:sku-set/title product)
+     :slug            (:page/slug product)
+     :image           (->> epitome :images (filter (comp #{"catalog"} :use-case)) first)
+     :facets          facets
+     :affirm?         (experiments/affirm? data)
+     :selections      (get-in data catalog.keypaths/category-selections)}))
 
 (defn component
-  [{:keys [product skus epitome sold-out? title slug image facets affirm?]}]
+  [{:keys [product skus epitome sold-out? title slug image facets affirm? color-order-map]}]
   [:div.col.col-6.col-4-on-tb-dt.px1
    {:key slug}
    [:a.inherit-color
@@ -111,7 +120,7 @@
        [:div
         (for [selector (reverse (:selector/electives product))]
           [:div {:key selector}
-           (unconstrained-facet product skus facets selector)])
+           (unconstrained-facet color-order-map product skus facets selector)])
         [:p.h6 "Starting at " (mf/as-money-without-cents (:price epitome 0))]])]]
    [:p.mb10.center
     (when affirm?
