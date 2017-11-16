@@ -165,7 +165,6 @@
                    :alt         "Advertisement for something else to be shown during Black Friday"})])
 
 (defn feature-blocks [black-friday-stage]
-  (let [_ (prn black-friday-stage)])
   [:div.container.border-top.border-white
    [:div.col.col-6.border.border-white
     (cond
