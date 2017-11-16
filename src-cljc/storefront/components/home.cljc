@@ -138,22 +138,29 @@
                        :src-set (str mobile-url "-/format/auto/-/resize/750x/-/quality/lightest/" file-name " 2x")
                        :alt     alt}]])
 
-(def feature-blocks
+(defn feature-blocks [black-friday-stage]
   [:div.container.border-top.border-white
    [:div.col.col-6.border.border-white
-    [:a
-     (utils/route-to events/navigate-shop-by-look-details {:look-id (:left config/feature-block-look-ids)})
-     (feature-image {:mobile-url  "//ucarecdn.com/0d80edc3-afb2-4a6f-aee1-1cceff1cf93d/"
-                     :desktop-url "//ucarecdn.com/54c13e5b-99cd-4dd4-ae00-9f47fc2158e9/"
-                     :file-name   "Shop-Brazilian-Straight-10-inch-3-Bundle-Deal.png"
-                     :alt         "Shop Brazilian Straight 10 inch 3 Bundle Deal"})]]
-   [:div.col.col-6.border.border-white
-    [:a
-     (utils/route-to events/navigate-shop-by-look-details {:look-id (:right config/feature-block-look-ids)})
-     (feature-image {:mobile-url  "//ucarecdn.com/dc7a8c34-ab77-45b2-bc5d-ffe48be3f8e6/"
-                     :desktop-url "//ucarecdn.com/979eb309-adbd-40c4-9b10-44c3e866983a/"
-                     :file-name   "Shop-Malaysian-Body-Wave-10-inch-3-Bundle-Deal.png"
-                     :alt         "Shop Malaysian Body Wave 10 inch 3 Bundle Deal"})]]])
+    (if (#{:black-friday :cyber-monday} black-friday-stage)
+      [:a
+       (utils/route-to events/navigate-shop-by-look-details {:look-id (:left config/feature-block-look-ids)})
+       (feature-image {:mobile-url  "//ucarecdn.com/0d80edc3-afb2-4a6f-aee1-1cceff1cf93d/"
+                       :desktop-url "//ucarecdn.com/54c13e5b-99cd-4dd4-ae00-9f47fc2158e9/"
+                       :file-name   "Shop-Brazilian-Straight-10-inch-3-Bundle-Deal.png"
+                       :alt         "Shop Brazilian Straight 10 inch 3 Bundle Deal"})]
+      [:a ;; Black Friday Ad, needs assets
+       (utils/route-to events/navigate-shop-bundle-deals)
+       (feature-image {:mobile-url  ""
+                       :desktop-url ""
+                       :file-name   ""
+                       :alt         "Black Friday Ad asset required"})])]
+    [:div.col.col-6.border.border-white
+     [:a
+      (utils/route-to events/navigate-shop-by-look-details {:look-id (:right config/feature-block-look-ids)})
+      (feature-image {:mobile-url  "//ucarecdn.com/dc7a8c34-ab77-45b2-bc5d-ffe48be3f8e6/"
+                      :desktop-url "//ucarecdn.com/979eb309-adbd-40c4-9b10-44c3e866983a/"
+                      :file-name   "Shop-Malaysian-Body-Wave-10-inch-3-Bundle-Deal.png"
+                      :alt         "Shop Malaysian Body Wave 10 inch 3 Bundle Deal"})]]])
 
 (defn drop-down-row [opts & content]
   (into [:a.inherit-color.block.center.h5.flex.items-center.justify-center
@@ -294,11 +301,11 @@
                       :file-name   "talkable_banner.jpg"
                       :alt         "refer friends, earn rewards, get 20% off"})]]))
 
-(defn component [{:keys [signed-in store categories hero-fn]} owner opts]
+(defn component [{:keys [signed-in store categories hero-fn black-friday-stage]} owner opts]
   (component/create
    [:div.m-auto
     [:section (hero-fn (:store-slug store))]
-    [:section feature-blocks]
+    [:section (feature-blocks black-friday-stage)]
     [:section.hide-on-tb-dt (store-info signed-in store)]
     [:section (popular-grid categories)]
     [:section video-autoplay]
@@ -306,15 +313,17 @@
     [:section talkable-banner]]))
 
 (defn query [data]
-  {:store      (marquee/query data)
-   :signed-in  (auth/signed-in data)
-   :categories (->> (get-in data keypaths/categories)
-                    (filter :home/order)
-                    (sort-by :home/order))
-   :hero-fn    (condp = (black-friday/stage data)
-                 :black-friday hero-black-friday
-                 :cyber-monday hero-cyber-monday
-                 hero)})
+  (let [black-friday-stage (black-friday/stage data)]
+    {:store              (marquee/query data)
+     :signed-in          (auth/signed-in data)
+     :categories         (->> (get-in data keypaths/categories)
+                              (filter :home/order)
+                              (sort-by :home/order))
+     :black-friday-stage black-friday-stage
+     :hero-fn            (condp = black-friday-stage
+                           :black-friday hero-black-friday
+                           :cyber-monday hero-cyber-monday
+                           hero)}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
