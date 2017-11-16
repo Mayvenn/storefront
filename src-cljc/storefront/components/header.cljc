@@ -184,7 +184,7 @@
         (for [items columns]
           (shopping-column items (count columns)))]])))
 
-(defn component [{:keys [store user cart shopping signed-in black-friday-run-up?]} _ _]
+(defn component [{:keys [store user cart shopping signed-in show-black-friday-link?]} _ _]
   (component/create
    [:div
     [:div.hide-on-mb.relative
@@ -200,7 +200,7 @@
                                  cart)]]]
        [:div.absolute.bottom-0.left-0.right-0
         [:div.mb4 (slideout-nav/logo "desktop-header-logo" "60px")]
-        [:div.mb1 (menu black-friday-run-up?)]]]]
+        [:div.mb1 (menu show-black-friday-link?)]]]]
      (shopping-flyout signed-in shopping)]
     [:div.hide-on-tb-dt.border-bottom.border-gray.flex.items-center
      hamburger

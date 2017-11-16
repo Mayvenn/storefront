@@ -166,9 +166,9 @@
   [:div.h4.border-bottom.border-gray.py3
    (into [:a.block.inherit-color.flex.items-center] content)])
 
-(defn ^:private shopping-area [signed-in black-friday-run-up?]
+(defn ^:private shopping-area [signed-in show-black-friday-link?]
   [:div
-   (when black-friday-run-up?
+   (when show-black-friday-link?
      [:li (major-menu-row (utils/route-to events/navigate-shop-bundle-deals) [:span.medium "Black Friday Deals"])])
    [:li (major-menu-row (utils/route-to events/navigate-shop-by-look) [:span.medium "Shop Looks"])]
    [:div
@@ -203,9 +203,9 @@
                                  :data-test "menu-stylist-products")
                           [:span.medium.flex-auto "Shop Stylist Exclusives"])])])
 
-(defn ^:private menu-area [signed-in black-friday-run-up?]
+(defn ^:private menu-area [signed-in show-black-friday-link?]
   [:ul.list-reset.mb3
-   (shopping-area signed-in black-friday-run-up?)
+   (shopping-area signed-in show-black-friday-link?)
    [:li (minor-menu-row (assoc (utils/route-to events/navigate-content-guarantee)
                                :data-test "content-guarantee")
                         "Our guarantee")]
@@ -228,7 +228,7 @@
                      "Sign out")
     [:div])))
 
-(defn ^:private root-menu [{:keys [user signed-in store black-friday-run-up?]} owner opts]
+(defn ^:private root-menu [{:keys [user signed-in store show-black-friday-link?]} owner opts]
   (component/create
    [:div
     [:div.px6.border-bottom.border-gray
@@ -237,7 +237,7 @@
      [:div.my3.dark-gray
       (actions-marquee signed-in)]]
     [:div.px6
-     (menu-area signed-in black-friday-run-up?)]
+     (menu-area signed-in show-black-friday-link?)]
     (when (-> signed-in ::auth/at-all)
       [:div.px6.border-top.border-gray
        sign-out-area])]))
@@ -256,12 +256,13 @@
       (component/build root-menu data nil))]))
 
 (defn basic-query [data]
-  {:signed-in            (auth/signed-in data)
-   :on-taxon?            (get-in data keypaths/current-traverse-nav-id)
-   :black-friday-run-up? (experiments/black-friday? data)
-   :user                 {:email (get-in data keypaths/user-email)}
-   :store                (marquee/query data)
-   :shopping             {:categories (get-in data keypaths/categories)}})
+  {:signed-in               (auth/signed-in data)
+   :on-taxon?               (get-in data keypaths/current-traverse-nav-id)
+   :show-black-friday-link? (or (experiments/black-friday-run-up? data)
+                                (experiments/black-friday? data))
+   :user                    {:email (get-in data keypaths/user-email)}
+   :store                   (marquee/query data)
+   :shopping                {:categories (get-in data keypaths/categories)}})
 
 (defn query [data]
   (-> (basic-query data)
