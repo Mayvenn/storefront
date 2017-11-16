@@ -42,6 +42,12 @@
             [storefront.accessors.orders :as orders]
             [spice.maps :as maps]))
 
+(defn ^:private str->int [s]
+  (try
+    (Integer/parseInt s)
+    (catch NumberFormatException _
+      nil)))
+
 (defn storefront-site-defaults
   [environment]
   (if (config/development? environment)
@@ -363,7 +369,7 @@
 
 (defn assoc-user-info [data req]
   (-> data
-      (assoc-in keypaths/user-id (cookies/get req "id"))
+      (assoc-in keypaths/user-id (str->int (cookies/get req "id")))
       (assoc-in keypaths/user-token (cookies/get req "user-token"))
       (assoc-in keypaths/user-store-slug (cookies/get req "store-slug"))
       (assoc-in keypaths/user-email (cookies/get req "email"))))
