@@ -11,7 +11,8 @@
             [storefront.config :as config]
             [clojure.string :as string]
             [spice.date :as date]
-            [storefront.accessors.experiments :as experiments]))
+            [storefront.accessors.experiments :as experiments]
+            [storefront.accessors.black-friday :as black-friday]))
 
 (defn product-image
   [{:keys [resizable_url resizable_filename alt]}]
@@ -48,6 +49,7 @@
         (grid-block slug
                     [:a.absolute.overlay.overflow-hidden.flex.items-center
                      (merge {:data-test (str "category-" slug)}
+
                             (utils/route-to events/navigate-category category))
                      (category-image (:home images))
                      [:h3.h2.white.absolute.col-12.titleize.mt1
@@ -101,6 +103,18 @@
           alt       "Fall in love with you! Shop our looks."]
       (hero-image {:mobile-url  "//ucarecdn.com/0d80edc3-afb2-4a6f-aee1-1cceff1cf93d/"
                    :desktop-url "//ucarecdn.com/54c13e5b-99cd-4dd4-ae00-9f47fc2158e9/"
+                   :file-name   file-name
+                   :alt         alt}))]])
+
+(defn hero-cyber-monday [store-slug]
+  [:h1.h2
+   [:a
+    (assoc (utils/route-to events/navigate-shop-by-look)
+           :data-test "home-banner")
+    (let [file-name "Shop-Now-Bright-Pink-Homepage.jpg"
+          alt       "Fall in love with you! Shop our looks."]
+      (hero-image {:mobile-url  "//ucarecdn.com/dc7a8c34-ab77-45b2-bc5d-ffe48be3f8e6/"
+                   :desktop-url "//ucarecdn.com/979eb309-adbd-40c4-9b10-44c3e866983a/"
                    :file-name   file-name
                    :alt         alt}))]])
 
@@ -297,8 +311,9 @@
    :categories (->> (get-in data keypaths/categories)
                     (filter :home/order)
                     (sort-by :home/order))
-   :hero-fn    (if (experiments/black-friday? data)
-                 hero-black-friday
+   :hero-fn    (condp = (black-friday/stage data)
+                 :black-friday hero-black-friday
+                 :cyber-monday hero-cyber-monday
                  hero)})
 
 (defn built-component [data opts]

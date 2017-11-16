@@ -131,13 +131,15 @@
    (merge opts {:style {:padding-left "24px" :padding-right "24px"}})
    text])
 
-(defn menu [black-friday-run-up?]
+(defn menu [show-black-friday-link? black-friday-stage]
   (component/html
    [:div.center
-    (when black-friday-run-up?
+    (when show-black-friday-link?
       (menu-link (assoc (utils/route-to events/navigate-shop-bundle-deals)
                         :on-mouse-enter close-shopping)
-                 "Black friday deals"))
+                 (if (= :cyber-monday black-friday-stage)
+                   "Cyber monday deals"
+                   "Black friday deals")))
     (menu-link (assoc (utils/route-to events/navigate-shop-by-look)
                       :on-mouse-enter close-shopping)
      "Shop looks")
@@ -184,7 +186,7 @@
         (for [items columns]
           (shopping-column items (count columns)))]])))
 
-(defn component [{:keys [store user cart shopping signed-in show-black-friday-link?]} _ _]
+(defn component [{:keys [store user cart shopping signed-in show-black-friday-link? black-friday-stage]} _ _]
   (component/create
    [:div
     [:div.hide-on-mb.relative
@@ -200,7 +202,7 @@
                                  cart)]]]
        [:div.absolute.bottom-0.left-0.right-0
         [:div.mb4 (slideout-nav/logo "desktop-header-logo" "60px")]
-        [:div.mb1 (menu show-black-friday-link?)]]]]
+        [:div.mb1 (menu show-black-friday-link? black-friday-stage)]]]]
      (shopping-flyout signed-in shopping)]
     [:div.hide-on-tb-dt.border-bottom.border-gray.flex.items-center
      hamburger

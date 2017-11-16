@@ -13,7 +13,8 @@
             [storefront.accessors.pixlee :as pixlee]
             [storefront.components.order-summary :as order-summary]
             [clojure.string :as str]
-            [storefront.accessors.products :as products]))
+            [storefront.accessors.products :as products]
+            [storefront.accessors.black-friday :as black-friday]))
 
 (defn add-to-cart-button [sold-out? creating-order? {:keys [number]}]
   (if sold-out?
@@ -102,21 +103,22 @@
        (not-every? :in-stock?)))
 
 (defn query [data]
-  (let [shared-cart       (get-in data keypaths/shared-cart-current)
-        variant-ids       (set (map :id (:line-items shared-cart)))
-        skus              (get-in data keypaths/skus)
-        products          (get-in data keypaths/products)
-        look              (pixlee/selected-look data)
-        bundle-deal-ids   (->> (pixlee/images-in-album (get-in data keypaths/ugc) :bundle-deals)
-                               (remove (comp #{"video"} :content-type))
-                               (mapv :id)
-                               set)
-        bundle-deal-look? (boolean (bundle-deal-ids (:id look)))
-        back              (first (get-in data keypaths/navigation-undo-stack))]
+  (let [shared-cart        (get-in data keypaths/shared-cart-current)
+        variant-ids        (set (map :id (:line-items shared-cart)))
+        skus               (get-in data keypaths/skus)
+        products           (get-in data keypaths/products)
+        look               (pixlee/selected-look data)
+        bundle-deal-ids    (->> (pixlee/images-in-album (get-in data keypaths/ugc) :bundle-deals)
+                                (remove (comp #{"video"} :content-type))
+                                (mapv :id)
+                                set)
+        bundle-deal-look?  (boolean (bundle-deal-ids (:id look)))
+        black-friday-stage (black-friday/stage data)
+        back               (first (get-in data keypaths/navigation-undo-stack))]
     {:shared-cart           shared-cart
      :look                  look
      :bundle-deal-look?     bundle-deal-look?
-     :show-run-up-button?   (and (experiments/black-friday-run-up? data)
+     :show-run-up-button?   (and (not (#{:cyber-monday :black-friday} black-friday-stage))
                                  bundle-deal-look?)
      :creating-order?       (utils/requesting? data request-keys/create-order-from-shared-cart)
      :products              products

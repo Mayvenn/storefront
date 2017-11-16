@@ -58,29 +58,11 @@
 (defn affirm? [data]
   (display-feature? data "affirm"))
 
-(def run-up-start (date/date-time 2017 11 20 5))
-(def black-friday-start (date/date-time 2017 11 24 5))
-(def black-friday-end (date/date-time 2017 11 25 5))
-
-(defn black-friday-stage []
-  (let [now (date/now)]
-    (cond
-      (date/after? now black-friday-end)
-      :post-black-friday
-
-      (date/after? now black-friday-start)
-      :black-friday
-
-      (date/after? now run-up-start)
-      :black-friday-run-up
-
-      :else nil)))
-
 (defn black-friday-run-up? [data]
-  (or (display-feature? data "black-friday-run-up")
-      (= (black-friday-stage) :black-friday-run-up)))
+  (display-feature? data "black-friday-run-up"))
 
 (defn black-friday? [data]
-  (or (display-feature? data "black-friday")
-      (= (black-friday-stage) :black-friday)))
+  (display-feature? data "black-friday"))
 
+(defn cyber-monday? [data]
+  (display-feature? data "cyber-monday"))
