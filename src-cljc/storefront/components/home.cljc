@@ -154,13 +154,12 @@
 
 (def feature-block-to-be-shown-on-black-friday
   [:a
-   ;; Needs Asset
-   ;; Will link to some new page
-   (utils/route-to events/navigate-shop-by-look-details {:look-id (:left config/feature-block-look-ids)})
-   (feature-image {:mobile-url  ""
-                   :desktop-url ""
-                   :file-name   ""
-                   :alt         "Advertisement for something else to be shown during Black Friday"})])
+   (utils/route-to events/navigate-category {:catalog/category-id "16"
+                                             :page/slug           "dyed-virgin-hair"})
+   (feature-image {:mobile-url  "//ucarecdn.com/163230da-c4a8-4352-96de-d025df1eff5d/"
+                   :desktop-url "//ucarecdn.com/d7cf940b-1f49-4452-813e-fc1ff474b07e/"
+                   :file-name   "Dyed-Virgin-Hair-Is-Here.png"
+                   :alt         "Dyed Virgin Hair Is Here!"})])
 
 (defn feature-blocks [black-friday-stage]
   [:div.container.border-top.border-white
