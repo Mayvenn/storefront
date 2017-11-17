@@ -16,7 +16,9 @@
                      "Black Friday Deals")]
       [:div.img-shop-by-bundle-deal-icon.bg-no-repeat.bg-contain.mx-auto.my2
        {:style {:width "101px" :height "85px"}} ]
-      [:p.dark-gray.col-10.col-6-on-tb-dt.mx-auto "Save more when you bundle up! We wrapped our most popular textures into packaged bundle deals so you can shop with ease."]]
+      [:p.dark-gray.col-10.col-6-on-tb-dt.mx-auto
+       "It’s the biggest sale of the year! Shop our most popular bundle deals
+at their lowest prices ever. Don't miss out — these discounts won’t last long!"]]
      (om/build ugc/component {:looks bundle-deals} {:opts {:copy {:back-copy   "back to bundle deals"
                                                                   :short-name  "deal"
                                                                   :button-copy "View this deal"}}})])))
