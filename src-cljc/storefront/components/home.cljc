@@ -168,11 +168,11 @@
       black-friday-deals-preview-feature-block)]
     [:div.col.col-6.border.border-white
      [:a
-      (utils/route-to events/navigate-shop-by-look-details {:look-id (:right config/feature-block-look-ids)})
-      (feature-image {:mobile-url  "//ucarecdn.com/dc7a8c34-ab77-45b2-bc5d-ffe48be3f8e6/"
-                      :desktop-url "//ucarecdn.com/979eb309-adbd-40c4-9b10-44c3e866983a/"
-                      :file-name   "Shop-Malaysian-Body-Wave-10-inch-3-Bundle-Deal.png"
-                      :alt         "Shop Malaysian Body Wave 10 inch 3 Bundle Deal"})]]])
+      (utils/route-to events/navigate-category {:page/slug "wigs" :catalog/category-id "13"})
+      (feature-image {:mobile-url  "//ucarecdn.com/87426013-0612-4c04-95e1-c2e4779a0856/"
+                      :desktop-url "//ucarecdn.com/18f073e7-2d40-4b78-8e39-bb5dc0ba4e51/"
+                      :file-name   "wigs-are-here.png"
+                      :alt         "Wigs are here!"})]]])
 
 (defn drop-down-row [opts & content]
   (into [:a.inherit-color.block.center.h5.flex.items-center.justify-center
