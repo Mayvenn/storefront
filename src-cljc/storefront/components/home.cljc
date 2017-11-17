@@ -47,19 +47,18 @@
      [:div
       (for [{:keys [page/slug images name] :as category} categories]
         (grid-block slug
-                    [:a.absolute.overlay.overflow-hidden.flex.items-center
+                    [:a.absolute.overlay.overflow-hidden
                      (merge {:data-test (str "category-" slug)}
-
                             (utils/route-to events/navigate-category category))
                      (category-image (:home images))
                      [:h3.h2.white.absolute.col-12.titleize.mt1
-                      {:style {:text-shadow "black 0px 0px 25px, black 0px 0px 25px"}}
+                      {:style {:text-shadow "black 0px 0px 25px, black 0px 0px 25px"
+                               :transform "translateY(-50%)"
+                               :top "50%"}}
                       (let [[first-word & last-words] (string/split name #" ")]
-                        (if (= "Virgin" first-word)
-                          [:div
-                           [:div "Virgin"]
-                           [:div (string/join " " last-words)]]
-                          name))]]))
+                        [:div
+                         [:div first-word]
+                         [:div (string/join " " last-words)]])]]))
       (grid-block "spare-block"
                   [:a.bg-light-teal.white.absolute.overlay
                    (assoc (utils/route-to events/navigate-shop-by-look)
