@@ -109,10 +109,10 @@
    [:a
     (assoc (utils/route-to events/navigate-shop-bundle-deals)
            :data-test "home-banner")
-    (let [file-name "FILENAME-TO-COME.jpg"
-          alt       "ALT-TEXT-TO-COME"]
-      (hero-image {:mobile-url  "//ucarecdn.com/dc7a8c34-ab77-45b2-bc5d-ffe48be3f8e6/"
-                   :desktop-url "//ucarecdn.com/979eb309-adbd-40c4-9b10-44c3e866983a/"
+    (let [file-name "Cyber-Monday-Deals-Are-Here.jpg"
+          alt       "Cyber Monday Deals Are Here!"]
+      (hero-image {:mobile-url  "//ucarecdn.com/02c35bae-dafd-4327-b6a6-d8728b0a7da3/"
+                   :desktop-url "//ucarecdn.com/b5343ac2-0b15-47c3-ac8b-be669be9927b/"
                    :file-name   file-name
                    :alt         alt}))]])
 
