@@ -200,10 +200,9 @@
 
 (defmethod transition-state events/navigate-checkout-payment [_ event args app-state]
   (cond-> (default-credit-card-name app-state (get-in app-state (conj keypaths/order :billing-address)))
-    (and (experiments/affirm? app-state)
-         (orders/fully-covered-by-store-credit?
-          (get-in app-state keypaths/order)
-          (get-in app-state keypaths/user)))
+    (orders/fully-covered-by-store-credit?
+     (get-in app-state keypaths/order)
+     (get-in app-state keypaths/user))
     (assoc-in (conj keypaths/checkout-selected-payment-methods :store-credit) {})))
 
 (defmethod transition-state events/pixlee-api-success-fetch-album [_ event {:keys [album-data album-name]} app-state]

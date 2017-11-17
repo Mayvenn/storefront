@@ -133,7 +133,6 @@
   [{:keys [category
            facets
            loading-products?
-           affirm?
            selections
            represented-options
            open-panel
@@ -188,7 +187,6 @@
      :selections          selections
      :product-cards       (map (partial product-card/query data) products)
      :open-panel          (get-in data catalog.keypaths/category-panel)
-     :affirm?             (experiments/affirm? data)
      :loading-products?   (utils/requesting? data (conj request-keys/search-sku-sets
                                                         (skuers/essentials category)))}))
 

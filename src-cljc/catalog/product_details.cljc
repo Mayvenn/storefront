@@ -247,8 +247,7 @@
            reviews
            selected-sku
            sku-quantity
-           ugc
-           affirm?]}
+           ugc]}
    owner
    opts]
   (let [review?        (:review? reviews)]
@@ -285,9 +284,8 @@
                             :sku-quantity sku-quantity})]
              (when (products/eligible-for-triple-bundle-discount? product)
                triple-bundle-upsell)
-             (when affirm?
-               (affirm/as-low-as-box {:amount (:price selected-sku)
-                                      :middle-copy "Just select Affirm at check out."}))
+             (affirm/as-low-as-box {:amount (:price selected-sku)
+                                    :middle-copy "Just select Affirm at check out."})
              (add-to-bag-button adding-to-bag?
                                 selected-sku
                                 sku-quantity)
@@ -402,8 +400,7 @@
      :product           product
      :selected-sku      (assoc selected-sku :sku/name (:experiment.dyed-hair/title selected-sku))
      :cheapest-price    (lowest-sku-price product-skus)
-     :carousel-images   carousel-images
-     :affirm?           (experiments/affirm? data)}))
+     :carousel-images   carousel-images}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

@@ -157,8 +157,7 @@ Thanks,
                               disable-apple-pay-button?
                               update-line-item-requests
                               delete-line-item-requests
-                              field-errors
-                              affirm?]} owner]
+                              field-errors]} owner]
   (om/component
    (html
     [:div.container.p2
@@ -205,9 +204,8 @@ Thanks,
 
        [:form
         {:on-submit (utils/send-event-callback events/control-checkout-cart-submit)}
-        (when affirm?
-          (affirm/as-low-as-box {:amount      (:total order)
-                                 :middle-copy "Just 'Check Out' below."}))
+        (affirm/as-low-as-box {:amount      (:total order)
+                               :middle-copy "Just 'Check Out' below."})
         (ui/submit-button "Check out" {:spinning? false
                                        :disabled? updating?
                                        :data-test "start-checkout-button"})]
@@ -302,8 +300,7 @@ Thanks,
                                  (variants-requests data request-keys/update-line-item (map :sku line-items)))
      :delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)
      :field-errors              (get-in data keypaths/field-errors)
-     :focused                   (get-in data keypaths/ui-focus)
-     :affirm?                   (experiments/affirm? data)}))
+     :focused                   (get-in data keypaths/ui-focus)}))
 
 (defn empty-cart-query [data]
   {:promotions (get-in data keypaths/promotions)})

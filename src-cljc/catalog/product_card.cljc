@@ -97,11 +97,10 @@
      :slug            (:page/slug product)
      :image           (->> epitome :images (filter (comp #{"catalog"} :use-case)) first)
      :facets          facets
-     :affirm?         (experiments/affirm? data)
      :selections      (get-in data catalog.keypaths/category-selections)}))
 
 (defn component
-  [{:keys [product skus epitome sold-out? title slug image facets affirm? color-order-map]}]
+  [{:keys [product skus epitome sold-out? title slug image facets color-order-map]}]
   [:div.col.col-6.col-4-on-tb-dt.px1
    {:key slug}
    [:a.inherit-color
@@ -123,7 +122,6 @@
            (unconstrained-facet color-order-map product skus facets selector)])
         [:p.h6 "Starting at " (mf/as-money-without-cents (:price epitome 0))]])]]
    [:p.mb10.center
-    (when affirm?
-      [:div.h6.dark-gray
-       (component/build affirm/as-low-as-component {:amount (:price epitome)
-                                                    :type   :text-only} {})])]])
+    [:div.h6.dark-gray
+     (component/build affirm/as-low-as-component {:amount (:price epitome)
+                                                  :type   :text-only} {})]]])
