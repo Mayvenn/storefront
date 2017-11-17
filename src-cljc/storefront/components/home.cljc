@@ -92,16 +92,15 @@
                    :file-name   file-name
                    :alt         alt}))]])
 
-;; Awaiting assets
 (defn hero-black-friday [store-slug]
   [:h1.h2
    [:a
     (assoc (utils/route-to events/navigate-shop-bundle-deals)
            :data-test "home-banner")
-    (let [file-name "FILENAME-TO-COME.jpg"
-          alt       "ALT-TEXT-TO-COME"]
-      (hero-image {:mobile-url  "//ucarecdn.com/0d80edc3-afb2-4a6f-aee1-1cceff1cf93d/"
-                   :desktop-url "//ucarecdn.com/54c13e5b-99cd-4dd4-ae00-9f47fc2158e9/"
+    (let [file-name "Black-Friday-Deals-Are-Here.jpg"
+          alt       "Black Friday Deals Are Here!"]
+      (hero-image {:mobile-url  "//ucarecdn.com/a6762023-6285-458a-95a6-0084893958a7/"
+                   :desktop-url "//ucarecdn.com/a74795b3-496a-4200-9966-684474459fb8/"
                    :file-name   file-name
                    :alt         alt}))]])
 
@@ -138,7 +137,7 @@
                        :alt     alt}]])
 
 (def black-friday-deals-preview-feature-block
-  [:a ;; Black Friday Ad, needs assets
+  [:a
    (utils/route-to events/navigate-shop-bundle-deals)
    (feature-image {:mobile-url  "//ucarecdn.com/8ab2db52-1fb4-4309-ab3c-007e5c6b7912/"
                    :desktop-url "//ucarecdn.com/9c2a515c-8cef-41ef-b665-34c01f88930b/"
