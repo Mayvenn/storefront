@@ -137,13 +137,13 @@
                        :src-set (str mobile-url "-/format/auto/-/resize/750x/-/quality/lightest/" file-name " 2x")
                        :alt     alt}]])
 
-(def feature-block-advertising-black-friday
+(def black-friday-deals-preview-feature-block
   [:a ;; Black Friday Ad, needs assets
    (utils/route-to events/navigate-shop-bundle-deals)
-   (feature-image {:mobile-url  ""
-                   :desktop-url ""
-                   :file-name   ""
-                   :alt         "Advertisement for Black Friday deals"})])
+   (feature-image {:mobile-url  "//ucarecdn.com/8ab2db52-1fb4-4309-ab3c-007e5c6b7912/"
+                   :desktop-url "//ucarecdn.com/9c2a515c-8cef-41ef-b665-34c01f88930b/"
+                   :file-name   "Black-Friday-Deals-Preview.png"
+                   :alt         "Black Friday Deals Preview"})])
 
 (def default-left-feature-block
   [:a
@@ -171,7 +171,7 @@
       feature-block-to-be-shown-on-black-friday
 
       (= :black-friday-run-up black-friday-stage) ;; Make this the :else case before deploy
-      feature-block-advertising-black-friday
+      black-friday-deals-preview-feature-block
 
       :else
       default-left-feature-block)]
