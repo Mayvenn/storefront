@@ -32,7 +32,7 @@
      :data-learnmore-show (or (:show-learnmore data) false)}
     "Learn more."]))
 
-(defn as-low-as-component [data owner]
+(defn as-low-as-component [data owner _]
   #?(:cljs (reify
              om/IDidUpdate
              (did-update [this _ _]
@@ -45,7 +45,7 @@
                (as-low-as-html data)))
      :clj (as-low-as-html data)))
 
-(defn modal-component [data owner]
+(defn modal-component [data owner _]
   #?(:cljs (reify
              om/IDidUpdate
              (did-update [this _ _]
