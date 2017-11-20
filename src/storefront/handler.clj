@@ -250,13 +250,14 @@
                               {:keys [params] :as req}
                               {:keys [catalog/product-id
                                       page/slug]}]
-  (when-let [product (products/->skuer-schema (get-in data (conj keypaths/sku-sets product-id)))]
+  (when-let [product (get-in data (conj keypaths/sku-sets product-id))]
     (let [sku-id         (product-details/determine-sku-id data product (:SKU params))
           sku            (get-in data (conj keypaths/skus sku-id))
           images         (into #{} products/normalize-sku-set-images-xf (vals (get-in data keypaths/sku-sets)))
           canonical-slug (:page/slug product)
-          redirect?      (or (not= slug canonical-slug)
-                             (and sku-id (not sku)))
+          redirect?      (and canonical-slug
+                              (or (not= slug canonical-slug)
+                                  (and sku-id (not sku))))
           permitted?     (auth/permitted-product? data product)]
       (cond
         (not permitted?)

@@ -458,6 +458,56 @@
       (is (= "/products/12-indian-straight-bundles?SKU=INSDB14"
              (get-in resp [:headers "Location"]))))))
 
+(deftest server-side-renders-product-details-page
+  (testing "when the product does not exist storefront returns 404"
+    (let [number "W123456"
+          token "iA1bjIUAqCfyS3cuvdNYindmlRZ3ICr3g+vSfzvUM1c="
+          [storeback-requests storeback-handler] (with-requests-chan (routes
+                                                                      (GET "/v2/orders/:number" req {:status 404
+                                                                                                     :body "{}"})
+                                                                      (GET "/sku-sets" req
+                                                                           {:status 200
+                                                                            :body (generate-string {:sku-sets []})})
+                                                                      (GET "/named-searches" req {:status 200
+                                                                                                  :body "{}"})
+                                                                      (GET "/store" req storeback-stylist-response)))]
+      (with-standalone-server [storeback (standalone-server storeback-handler)]
+        (with-handler handler
+          (let [resp (handler (mock/request :get "https://bob.mayvenn.com/products/99-red-balloons"))]
+            (is (= 404 (:status resp))))))))
+  (testing "when the product exists"
+    (let [number "W123456"
+          token "iA1bjIUAqCfyS3cuvdNYindmlRZ3ICr3g+vSfzvUM1c="
+          [storeback-requests storeback-handler] (with-requests-chan (routes
+                                                                      (GET "/v2/orders/:number" req {:status 404
+                                                                                                     :body "{}"})
+                                                                      (GET "/sku-sets" req
+                                                                           {:status 200
+                                                                            :body (generate-string {:sku-sets [{:sku-set/id "99"
+                                                                                                                :sku-set/slug "balloons"
+                                                                                                                :sku-set/skus ["BAL"]}]
+                                                                                                    :skus [{:sku "BAL"
+                                                                                                            :price 124
+                                                                                                            :sku/name "A balloon"
+                                                                                                            :images []
+                                                                                                            :in-stock? true
+                                                                                                            :disabled? false
+                                                                                                            :attributes {}
+                                                                                                            :launched-at "2016-01-01T00:00:00.000Z"
+                                                                                                            :sku/title "A balloon"
+                                                                                                            :legacy/variant-id 999
+                                                                                                            :legacy/product-name "A balloon"
+                                                                                                            :stylist-only? false
+                                                                                                            :promo.triple-bundle/eligible true
+                                                                                                            :legacy/product-id 99}]})})
+                                                                      (GET "/named-searches" req {:status 200
+                                                                                                  :body "{}"})
+                                                                      (GET "/store" req storeback-stylist-response)))]
+      (with-standalone-server [storeback (standalone-server storeback-handler)]
+        (with-handler handler
+          (let [resp (handler (mock/request :get "https://bob.mayvenn.com/products/99-balloons"))]
+            (is (= 200 (:status resp)))))))))
+
 (deftest server-side-fetching-of-orders
   (testing "storefront retrieves an order from storeback"
     (let [number "W123456"
