@@ -102,7 +102,7 @@
 (def best-seller-badge
   [:div.circle.absolute.top-0.right-0.bg-teal.flex.justify-center.mp6
    {:style {:width "45px" :height "45px"}}
-   [:span.h7.white.letter-spacing-0.medium.self-center
+   [:span.h7.white.letter-spacing-0.bold.self-center
     {:style {:line-height "11px"}}
     "Best" [:br] "Seller"]])
 
@@ -116,11 +116,11 @@
                             :page/slug          slug
                             :query-params       {:SKU (:sku epitome)}})
            :data-test (str "product-" slug))
-    [:div.center.relative
+    [:div.center
      ;; TODO: when adding aspect ratio, also use srcset/sizes to scale these images.
      [:img.block.col-12 {:src (str (:url image) "-/format/auto/" (:filename image))
                          :alt (:alt image)}]
-     (let [origin (some-> product :hair/origin first)]
+     #_(let [origin (some-> product :hair/origin first)]
        (when (#{"brazilian" "malaysian"} origin) best-seller-badge))
      [:h2.h4.mt3.mb1 title]
      (if sold-out?
