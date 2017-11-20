@@ -173,10 +173,11 @@
 (defn wrap-preferred-store-redirect [handler environment]
   (fn [{:keys [subdomains] :as req}]
     (if-let [preferred-store-slug (cookies/get req "preferred-store-slug")]
-      (if (and (#{"store" "shop" "internal"} (last subdomains))
-               (not (#{nil "" "store" "shop" "internal"} preferred-store-slug)))
-        (util.response/redirect (store-url preferred-store-slug environment req))
-        (handler req))
+      (let [loading-mayvenn-owned-store? (#{"store" "shop" "internal"} (last subdomains))
+            have-a-preferred-store? (not (contains? #{nil "" "store" "shop" "internal"} preferred-store-slug))]
+        (if (and loading-mayvenn-owned-store? have-a-preferred-store?)
+          (util.response/redirect (store-url preferred-store-slug environment req))
+          (handler req)))
       (handler req))))
 
 (defn wrap-fetch-store [h storeback-config]
