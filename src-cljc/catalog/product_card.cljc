@@ -99,6 +99,13 @@
      :facets          facets
      :selections      (get-in data catalog.keypaths/category-selections)}))
 
+(def best-seller-badge
+  [:div.circle.absolute.top-0.right-0.bg-teal.flex.justify-center.mp6
+   {:style {:width "45px" :height "45px"}}
+   [:span.h7.white.letter-spacing-0.medium.self-center
+    {:style {:line-height "11px"}}
+    "Best" [:br] "Seller"]])
+
 (defn component
   [{:keys [product skus epitome sold-out? title slug image facets color-order-map]}]
   [:div.col.col-6.col-4-on-tb-dt.px1
@@ -109,10 +116,12 @@
                             :page/slug          slug
                             :query-params       {:SKU (:sku epitome)}})
            :data-test (str "product-" slug))
-    [:div.center
+    [:div.center.relative
      ;; TODO: when adding aspect ratio, also use srcset/sizes to scale these images.
      [:img.block.col-12 {:src (str (:url image) "-/format/auto/" (:filename image))
                          :alt (:alt image)}]
+     (let [origin (some-> product :hair/origin first)]
+       (when (#{"brazilian" "malaysian"} origin) best-seller-badge))
      [:h2.h4.mt3.mb1 title]
      (if sold-out?
        [:p.h6.dark-gray "Out of stock"]
