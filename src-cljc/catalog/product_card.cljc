@@ -116,11 +116,11 @@
                             :page/slug          slug
                             :query-params       {:SKU (:sku epitome)}})
            :data-test (str "product-" slug))
-    [:div.center
+    [:div.center.relative
      ;; TODO: when adding aspect ratio, also use srcset/sizes to scale these images.
      [:img.block.col-12 {:src (str (:url image) "-/format/auto/" (:filename image))
                          :alt (:alt image)}]
-     #_(let [origin (some-> product :hair/origin first)]
+     (let [origin (some-> product :hair/origin first)]
        (when (#{"brazilian" "malaysian"} origin) best-seller-badge))
      [:h2.h4.mt3.mb1 title]
      (if sold-out?

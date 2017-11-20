@@ -143,7 +143,7 @@
     (hero-section category)
     [:div.max-960.col-12.mx-auto.px2-on-mb
      (copy-section category)
-     [:div.bg-white.sticky
+     [:div.bg-white.sticky.z1
       ;; The -5px prevents a sliver of the background from being visible above the filters
       ;; (when sticky) on android (and sometimes desktop chrome when using the inspector)
       {:style {:top "-5px"}}
