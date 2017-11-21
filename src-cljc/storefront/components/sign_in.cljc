@@ -44,7 +44,9 @@
                      :value   show-password?})]
 
      [:div.right.col-6.right-align
-      [:a.dark-gray (utils/route-to events/navigate-forgot-password) "Forgot Password?"]]]
+      [:a.dark-gray
+       (merge {:data-test "forgot-password"}
+              (utils/route-to events/navigate-forgot-password)) "Forgot Password?"]]]
     [:div.col-12.col-6-on-tb-dt
      (ui/submit-button "Sign In"
                        {:data-test "user-submit"})]]))

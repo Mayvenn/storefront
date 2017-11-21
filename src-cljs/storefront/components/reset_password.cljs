@@ -16,6 +16,7 @@
       [:form.col-12
        {:on-submit (utils/send-event-callback events/control-reset-password-submit)}
        (ui/text-field {:errors     (get field-errors ["password"])
+                       :data-test "reset-password-password"
                        :keypath    keypaths/reset-password-password
                        :focused    focused
                        :label      "Password"
@@ -31,7 +32,7 @@
                        :value   show-password?})]
 
        [:div.col-12.col-6-on-tb-dt.mx-auto
-        (ui/submit-button "Update")]]
+        (ui/submit-button "Update" {:data-test "reset-password-submit"})]]
       [:.h5.center.dark-gray.light.my2 "OR"]
 
       [:div.col-12.col-6-on-tb-dt.mx-auto

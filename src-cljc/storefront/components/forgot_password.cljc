@@ -15,17 +15,18 @@
 
      [:form.col-12.flex.flex-column.items-center
       {:on-submit (utils/send-event-callback events/control-forgot-password-submit)}
-      (ui/text-field {:errors     (get field-errors ["email"])
-                      :keypath    keypaths/forgot-password-email
-                      :focused    focused
-                      :label      "Email"
-                      :name       "email"
-                      :required   true
-                      :type       "email"
-                      :value      email})
+      (ui/text-field {:errors    (get field-errors ["email"])
+                      :data-test "forgot-password-email"
+                      :keypath   keypaths/forgot-password-email
+                      :focused   focused
+                      :label     "Email"
+                      :name      "email"
+                      :required  true
+                      :type      "email"
+                      :value     email})
 
       [:div.col-12.col-6-on-tb-dt.mx-auto
-       (ui/submit-button "Reset my password")]]
+       (ui/submit-button "Reset my password" {:data-test "forgot-password-submit"})]]
 
      [:div.h5.center.dark-gray.light.my2 "OR"]
 
