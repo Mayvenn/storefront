@@ -121,8 +121,11 @@
      ;; TODO: when adding aspect ratio, also use srcset/sizes to scale these images.
      [:img.block.col-12 {:src (str (:url image) "-/format/auto/" (:filename image))
                          :alt (:alt image)}]
-     (let [origin (some-> product :hair/origin first)]
-       (when (and bestseller? (#{"brazilian" "malaysian"} origin)) best-seller-badge))
+     (let [origin (some-> product :hair/origin first)
+           family (some-> product :hair/family first)]
+       (when (and bestseller?
+                  (#{"brazilian" "malaysian"} origin)
+                  (not (#{"lace-front-wigs" "360-wigs"} family))) best-seller-badge))
      [:h2.h4.mt3.mb1 title]
      (if sold-out?
        [:p.h6.dark-gray "Out of stock"]
