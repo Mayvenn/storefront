@@ -97,7 +97,8 @@
      :slug            (:page/slug product)
      :image           (->> epitome :images (filter (comp #{"catalog"} :use-case)) first)
      :facets          facets
-     :selections      (get-in data catalog.keypaths/category-selections)}))
+     :selections      (get-in data catalog.keypaths/category-selections)
+     :bestseller?     (experiments/bestseller? data)}))
 
 (def best-seller-badge
   [:div.circle.absolute.top-0.right-0.bg-teal.flex.justify-center.mp6
@@ -107,7 +108,7 @@
     "Best" [:br] "Seller"]])
 
 (defn component
-  [{:keys [product skus epitome sold-out? title slug image facets color-order-map]}]
+  [{:keys [product skus epitome sold-out? title slug image facets color-order-map bestseller?]}]
   [:div.col.col-6.col-4-on-tb-dt.px1
    {:key slug}
    [:a.inherit-color
@@ -121,7 +122,7 @@
      [:img.block.col-12 {:src (str (:url image) "-/format/auto/" (:filename image))
                          :alt (:alt image)}]
      (let [origin (some-> product :hair/origin first)]
-       (when (#{"brazilian" "malaysian"} origin) best-seller-badge))
+       (when (and bestseller? (#{"brazilian" "malaysian"} origin)) best-seller-badge))
      [:h2.h4.mt3.mb1 title]
      (if sold-out?
        [:p.h6.dark-gray "Out of stock"]
