@@ -98,8 +98,8 @@
            :data-test "home-banner")
     (let [file-name "Black-Friday-Deals-Are-Here.jpg"
           alt       "Black Friday Deals Are Here!"
-          mob-uuid "057b5c9d-38f9-4c38-9469-7a3f9f23fe64"
-          dsk-uuid "89a24e48-93e6-450a-b573-5f981453bd90"]
+          mob-uuid  "057b5c9d-38f9-4c38-9469-7a3f9f23fe64"
+          dsk-uuid  "89a24e48-93e6-450a-b573-5f981453bd90"]
       (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
                    :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
                    :file-name   file-name
