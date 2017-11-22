@@ -98,8 +98,8 @@
            :data-test "home-banner")
     (let [file-name "Black-Friday-Deals-Are-Here.jpg"
           alt       "Black Friday Deals Are Here!"]
-      (hero-image {:mobile-url  "//ucarecdn.com/a6762023-6285-458a-95a6-0084893958a7/"
-                   :desktop-url "//ucarecdn.com/a74795b3-496a-4200-9966-684474459fb8/"
+      (hero-image {:mobile-url  "//ucarecdn.com/6c57fbca-1c10-4d18-a7fb-d967dfc22754/"
+                   :desktop-url "//ucarecdn.com/51fd23e2-06a4-4236-bf6b-a7f171407975/"
                    :file-name   file-name
                    :alt         alt}))]])
 
