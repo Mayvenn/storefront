@@ -49,7 +49,7 @@
     [:div.py1
      [:span.hide-on-tb-dt (ui/link :link/phone :a.dark-gray {} call-number)] ;; mobile
      [:span.hide-on-mb call-number] ;; desktop
-     " | 9am-5pm PST M-F"]
+     " | 8am-5pm PST M-F"]
     (ui/link :link/email :a.block.py1.dark-gray {} contact-email)]
 
    [:div.py1.hide-on-tb-dt
@@ -149,7 +149,7 @@
       [:div.dark-gray.light.h5
        [:span.hide-on-tb-dt (ui/link :link/phone :a.dark-gray {} config/mayvenn-leads-call-number)]
        [:span.hide-on-mb config/mayvenn-leads-call-number]
-       " | 9am-5pm PST M-F"]
+       " | 8am-5pm PST M-F"]
       [:div.my1.dark-silver.h6
        (footer-links true)]]]]))
 
