@@ -97,9 +97,11 @@
     (assoc (utils/route-to events/navigate-shop-bundle-deals)
            :data-test "home-banner")
     (let [file-name "Black-Friday-Deals-Are-Here.jpg"
-          alt       "Black Friday Deals Are Here!"]
-      (hero-image {:mobile-url  "//ucarecdn.com/6c57fbca-1c10-4d18-a7fb-d967dfc22754/"
-                   :desktop-url "//ucarecdn.com/51fd23e2-06a4-4236-bf6b-a7f171407975/"
+          alt       "Black Friday Deals Are Here!"
+          mob-uuid "057b5c9d-38f9-4c38-9469-7a3f9f23fe64"
+          dsk-uuid "89a24e48-93e6-450a-b573-5f981453bd90"]
+      (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
+                   :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
                    :file-name   file-name
                    :alt         alt}))]])
 
