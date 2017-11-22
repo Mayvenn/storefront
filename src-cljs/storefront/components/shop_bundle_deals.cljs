@@ -17,8 +17,7 @@
       [:div.img-shop-by-bundle-deal-icon.bg-no-repeat.bg-contain.mx-auto.my2
        {:style {:width "101px" :height "85px"}} ]
       [:p.dark-gray.col-10.col-6-on-tb-dt.mx-auto
-       "It’s the biggest sale of the year! Shop our most popular bundle deals
-at their lowest prices ever. Don't miss out — these discounts won’t last long!"]]
+       "Get 25% off everything on our site, and an extra 10% off purchases of 3 bundles or more. Save some time and shop our 3-bundle deals below!"]]
      (om/build ugc/component {:looks bundle-deals} {:opts {:copy {:back-copy   "back to bundle deals"
                                                                   :short-name  "deal"
                                                                   :button-copy "View this deal"}}})])))
