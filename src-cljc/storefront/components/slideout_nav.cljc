@@ -259,12 +259,11 @@
       (component/build root-menu data nil))]))
 
 (defn basic-query [data]
-  (let [black-friday-stage (black-friday/stage data)
-        show-black-friday-link? (not (nil? black-friday-stage))] ;; change to TRUE on black friday run up deploy
+  (let [black-friday-stage (black-friday/stage data)]
     {:signed-in               (auth/signed-in data)
      :on-taxon?               (get-in data keypaths/current-traverse-nav-id)
      :black-friday-stage      black-friday-stage
-     :show-black-friday-link? show-black-friday-link? ;; change to TRUE on black friday run up deploy
+     :show-black-friday-link? true
      :user                    {:email (get-in data keypaths/user-email)}
      :store                   (marquee/query data)
      :shopping                {:categories (get-in data keypaths/categories)}}))

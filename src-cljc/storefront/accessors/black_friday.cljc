@@ -8,15 +8,10 @@
 (defn stage [data]
   (let [now (date/now)]
     (cond
-      (or (date/after? now cyber-monday-start)
-          (experiments/cyber-monday? data))
+      (date/after? now cyber-monday-start)
       :cyber-monday
 
-      (or (date/after? now black-friday-start)
-          (experiments/black-friday? data))
+      (date/after? now black-friday-start)
       :black-friday
-
-      (experiments/black-friday-run-up? data)
-      :black-friday-run-up
 
       :else nil)))

@@ -11,7 +11,6 @@
             [storefront.config :as config]
             [clojure.string :as string]
             [spice.date :as date]
-            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.black-friday :as black-friday]))
 
 (defn product-image
@@ -164,15 +163,9 @@
 (defn feature-blocks [black-friday-stage]
   [:div.container.border-top.border-white
    [:div.col.col-6.border.border-white
-    (cond
-      (#{:black-friday :cyber-monday} black-friday-stage)
+    (if (#{:black-friday :cyber-monday} black-friday-stage)
       feature-block-to-be-shown-on-black-friday
-
-      (= :black-friday-run-up black-friday-stage) ;; Make this the :else case before deploy
-      black-friday-deals-preview-feature-block
-
-      :else
-      default-left-feature-block)]
+      black-friday-deals-preview-feature-block)]
     [:div.col.col-6.border.border-white
      [:a
       (utils/route-to events/navigate-shop-by-look-details {:look-id (:right config/feature-block-look-ids)})

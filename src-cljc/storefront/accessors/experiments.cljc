@@ -58,9 +58,6 @@
 (defn affirm? [data]
   (display-feature? data "affirm"))
 
-(defn black-friday-run-up? [data]
-  (display-feature? data "black-friday-run-up"))
-
 (defn black-friday? [data]
   (display-feature? data "black-friday"))
 
