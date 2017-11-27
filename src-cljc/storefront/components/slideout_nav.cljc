@@ -171,7 +171,7 @@
   [:div
    (when show-black-friday-link?
      [:li (major-menu-row (utils/route-to events/navigate-shop-bundle-deals) [:span.medium (if (= :cyber-monday black-friday-stage)
-                                                                                             "Cyber Monday Deals"
+                                                                                             "Cyber Monday Deals Extended"
                                                                                              "Black Friday Deals")])])
    [:li (major-menu-row (utils/route-to events/navigate-shop-by-look) [:span.medium "Shop Looks"])]
    [:div

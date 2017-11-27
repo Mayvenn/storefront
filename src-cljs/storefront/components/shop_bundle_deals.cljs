@@ -12,7 +12,7 @@
     [:div
      [:div.center.bg-light-gray.py3
       [:h1.h2.navy (if (= :cyber-monday black-friday-stage)
-                     "cyber monday deals"
+                     "cyber monday deals extended"
                      "black friday deals")]
       [:div.img-shop-by-bundle-deal-icon.bg-no-repeat.bg-contain.mx-auto.my2
        {:style {:width "101px" :height "85px"}} ]
