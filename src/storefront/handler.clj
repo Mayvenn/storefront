@@ -66,6 +66,12 @@
 (defn cookie-root-domain [server-name]
   (str "." (parse-root-domain server-name)))
 
+;; Until @weavejester merges a PR
+;; https://github.com/ring-clojure/ring-codec/pull/18
+(extend-protocol codec/FormEncodeable
+  nil
+  (form-encode* [x encoding] ""))
+
 (defn query-string [{:keys [query-params query-string] :as req}]
   (cond
     (and (contains? req :query-params)
