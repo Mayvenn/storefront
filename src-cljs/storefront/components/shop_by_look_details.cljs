@@ -118,7 +118,7 @@
     {:shared-cart           shared-cart
      :look                  look
      :bundle-deal-look?     bundle-deal-look?
-     :show-run-up-button?   (and (not (#{:cyber-monday :black-friday} black-friday-stage))
+     :show-run-up-button?   (and (not (#{:cyber-monday :black-friday :cyber-monday-extended} black-friday-stage))
                                  bundle-deal-look?)
      :creating-order?       (utils/requesting? data request-keys/create-order-from-shared-cart)
      :products              products

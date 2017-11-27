@@ -137,8 +137,9 @@
     (when show-black-friday-link?
       (menu-link (assoc (utils/route-to events/navigate-shop-bundle-deals)
                         :on-mouse-enter close-shopping)
-                 (if (= :cyber-monday black-friday-stage)
-                   "Cyber Monday Deals Extended"
+                 (condp = black-friday-stage
+                   :cyber-monday-extended "Cyber Monday Deals Extended"
+                   :cyber-monday "Cyber Monday Deals"
                    "Black Friday Deals")))
     (menu-link (assoc (utils/route-to events/navigate-shop-by-look)
                       :on-mouse-enter close-shopping)

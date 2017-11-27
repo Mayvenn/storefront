@@ -119,6 +119,20 @@
                    :file-name   file-name
                    :alt         alt}))]])
 
+(defn hero-cyber-monday-extended [store-slug]
+  [:h1.h2
+   [:a
+    (assoc (utils/route-to events/navigate-shop-bundle-deals)
+           :data-test "home-banner")
+    (let [file-name "Cyber-Monday-Extended-Deals-Are-Here.jpg"
+          alt       "Cyber Monday Extended Deals Are Here!"
+          mob-uuid  "80e46438-7f49-4c0c-b119-ee3ef248737f"
+          dsk-uuid  "3fe19071-5c05-4f4b-9fa4-64e79be49ce6"]
+      (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
+                   :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
+                   :file-name   file-name
+                   :alt         alt}))]])
+
 (defn feature-image [{:keys [desktop-url mobile-url file-name alt]}]
   ;; Assumptions: 2 up, within a .container. Does not account for 1px border.
   ;;          Large End
@@ -167,7 +181,7 @@
 (defn feature-blocks [black-friday-stage]
   [:div.container.border-top.border-white
    [:div.col.col-6.border.border-white
-    (if (#{:black-friday :cyber-monday} black-friday-stage)
+    (if (#{:black-friday :cyber-monday :cyber-monday-extended} black-friday-stage)
       feature-block-to-be-shown-on-black-friday
       black-friday-deals-preview-feature-block)]
     [:div.col.col-6.border.border-white
@@ -339,6 +353,7 @@
      :hero-fn            (condp = black-friday-stage
                            :black-friday hero-black-friday
                            :cyber-monday hero-cyber-monday
+                           :cyber-monday-extended hero-cyber-monday-extended
                            hero)}))
 
 (defn built-component [data opts]
