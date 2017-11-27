@@ -196,9 +196,9 @@
      :metadata {}
 
      :order_id        (:number order)
-     :shipping_amount (-> order orders/shipping-item :unit-price (* 100) int)
-     :tax_amount      (-> order :tax-total (* 100) int)
-     :total           (-> order :total (* 100) int)}))
+     :shipping_amount (-> order orders/shipping-item :unit-price (* 100) js/Math.round)
+     :tax_amount      (-> order :tax-total (* 100) js/Math.round)
+     :total           (-> order :total (* 100) js/Math.round)}))
 
 (defmethod effects/perform-effects events/control-checkout-affirm-confirmation-submit
   [_ _ _ _ app-state]
