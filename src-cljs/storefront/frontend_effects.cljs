@@ -218,6 +218,10 @@
        pending-promo-code)
       (redirect event (update-in args [:query-params] dissoc :sha)))
 
+    (when-let [show (:show query-params)]
+      (case show
+        "financing" (affirm/show-modal)))
+
     (when-let [order (get-in app-state keypaths/order)]
       (ensure-products app-state (map :product-id (orders/product-items order)))
       (if (orders/incomplete? order)
@@ -260,10 +264,11 @@
 
     (update-email-capture-session app-state)))
 
-(defmethod perform-effects events/navigate-home [_ _ _ _ app-state]
+(defmethod perform-effects events/navigate-home [_ _ {:keys [query-params]} _ app-state]
   (when (= "welcome" (get-in app-state keypaths/store-slug))
     (redirect events/navigate-leads-home))
-  (potentially-show-email-popup app-state))
+  (when-not (:show query-params)
+    (potentially-show-email-popup app-state)))
 
 (defmethod perform-effects events/navigate-content [_ [_ _ & static-content-id :as event] _ _ app-state]
   (when-not (= static-content-id
