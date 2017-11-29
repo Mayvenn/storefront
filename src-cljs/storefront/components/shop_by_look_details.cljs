@@ -37,21 +37,18 @@
              :settings {:dots true}}
             {:react-key "look-carousel"}))
 
-(defn distinct-product-imgs [shared-cart products skus]
+(defn distinct-product-imgs [shared-cart products]
   (->> shared-cart
        :line-items
-       (map :sku)
-       (map (fn [sku-id]
-              [(products/find-product-by-sku-id products sku-id)
-               (get skus sku-id)]))
-       (map (fn [[product sku]] (products/large-img product sku)))
+       (map :product-id)
+       (map (partial products/large-img products))
        (remove nil?)
        distinct
        (map (fn [img] [:img.col-12 img]))))
 
-(defn imgs [look shared-cart products skus]
+(defn imgs [look shared-cart products]
   (cons (ugc/content-view look)
-        (distinct-product-imgs shared-cart products skus)))
+        (distinct-product-imgs shared-cart products)))
 
 (defn decode-title [title]
   (try
@@ -60,7 +57,7 @@
     (catch :default e
       title)))
 
-(defn component [{:keys [creating-order? sold-out? look shared-cart products skus back fetching-shared-cart? discount-warning?
+(defn component [{:keys [creating-order? sold-out? look shared-cart products sku-sets skus back fetching-shared-cart? discount-warning?
                          show-run-up-button? bundle-deal-look? shared-cart-type-copy back-copy]} owner opts]
   (om/component
    (html
@@ -80,7 +77,7 @@
      [:div.clearfix
       (when look
         [:div.col-on-tb-dt.col-6-on-tb-dt.px3-on-tb-dt
-         (carousel (imgs look shared-cart products skus))
+         (carousel (imgs look shared-cart products))
          [:div.px3.py2.mbp1.bg-light-gray (ugc/user-attribution look)]
          (when-not (str/blank? (:title look))
            [:p.h5.px3.py1.dark-gray.bg-light-gray (decode-title (:title look))])])
@@ -91,7 +88,7 @@
                 item-count (->> line-items (map :quantity) (reduce +))]
             [:div.col-on-tb-dt.col-6-on-tb-dt.px2.px3-on-tb-dt
              [:div.p2.center.h3.medium.border-bottom.border-gray (str item-count " items in this " shared-cart-type-copy)]
-             (order-summary/display-line-items-products line-items products skus)
+             (order-summary/display-line-items-sku-sets line-items sku-sets skus)
              (when bundle-deal-look?
                [:div.center.teal.medium.mt2 "*Discounts applied at check out"])
              [:div.mt2
@@ -103,13 +100,13 @@
   (->> skus
        (filter (fn [sku]
                  (contains? variant-ids (:legacy/variant-id sku))))
-       (not-every? :inventory/in-stock?)))
+       (not-every? :in-stock?)))
 
 (defn query [data]
   (let [shared-cart        (get-in data keypaths/shared-cart-current)
         variant-ids        (set (map :id (:line-items shared-cart)))
-        skus               (get-in data keypaths/v2-skus)
-        products           (get-in data keypaths/v2-products)
+        skus               (get-in data keypaths/skus)
+        products           (get-in data keypaths/products)
         look               (pixlee/selected-look data)
         bundle-deal-ids    (->> (pixlee/images-in-album (get-in data keypaths/ugc) :bundle-deals)
                                 (remove (comp #{"video"} :content-type))
@@ -125,6 +122,7 @@
                                  bundle-deal-look?)
      :creating-order?       (utils/requesting? data request-keys/create-order-from-shared-cart)
      :products              products
+     :sku-sets              (get-in data keypaths/sku-sets)
      :skus                  skus
      :sold-out?             (some (partial sold-out? variant-ids) (vals skus))
      :fetching-shared-cart? (utils/requesting? data request-keys/fetch-shared-cart)

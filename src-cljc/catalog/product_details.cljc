@@ -1,6 +1,7 @@
 (ns catalog.product-details
   (:require [clojure.set :as set]
             [clojure.string :as string]
+            [catalog.selector :as selector]
             [catalog.products :as products]
             [catalog.skuers :as skuers]
             [catalog.keypaths]
@@ -12,7 +13,6 @@
             [storefront.components.ui :as ui]
             [spice.maps :as maps]
             [spice.core :as spice]
-            [spice.selector :as selector]
             [storefront.config :as config]
             [storefront.effects :as effects]
             [storefront.events :as events]
@@ -48,8 +48,8 @@
     [:div.hide-on-mb wide-left]]
    [:div.col-on-tb-dt.col-5-on-tb-dt.px2 wide-right-and-narrow]])
 
-(defn title [title]
-  [:h1.h2.medium.titleize.navy {:item-prop "name"} title])
+(defn title [name]
+  [:h1.h2.medium.titleize.navy {:item-prop "name"} name])
 
 (defn full-bleed-narrow [body]
   ;; The mxn2 pairs with the p2 of the container, to make the body full width
@@ -98,7 +98,7 @@
    "Added to bag: "
    (spice/number->word quantity)
    " "
-   (:sku/title sku)])
+   (:sku/name sku)])
 
 (def checkout-button
   (component/html
@@ -114,7 +114,7 @@
      checkout-button]))
 
 (defn option-html
-  [selector {:keys [option/name option/slug image price-delta checked? stocked?] :as thing}]
+  [selector {:keys [option/name option/slug image price-delta checked? stocked?]}]
   [:label.btn.p1.flex.flex-column.justify-center.items-center.container-size.letter-spacing-0
    {:data-test (str "option-" slug)
     :class     (cond
@@ -171,9 +171,9 @@
    quantity-and-price])
 
 (defn sku-summary [{:keys [sku sku-quantity]}]
-  (let [{:keys [inventory/in-stock? sku/price]} sku]
+  (let [{:keys [in-stock? price]} sku]
     (summary-structure
-     (some-> sku :sku/title string/upper-case)
+     (some-> sku :sku/name string/upper-case)
      (quantity-and-price-structure
       (counter-or-out-of-stock in-stock? sku-quantity)
       (item-price price)))))
@@ -187,7 +187,7 @@
     "Free shipping & 30 day guarantee"]))
 
 (defn product-description
-  [{:keys [copy/description copy/colors copy/weights copy/materials copy/summary]}]
+  [{{:keys [description colors weights materials summary]} :sku-set/copy}]
   (when (seq description)
     [:div.border.border-dark-gray.mt2.p2.rounded
      [:h2.h3.medium.navy.shout "Description"]
@@ -267,7 +267,7 @@
            [:div.hide-on-mb (component/build ugc/component ugc opts)]]
           [:div
            [:div.center
-            (title (:page/title product))
+            (title (:sku-set/title product))
             (when review? (reviews-summary reviews opts))
             [:meta {:item-prop "image" :content (first carousel-images)}]
             (full-bleed-narrow (carousel carousel-images product))
@@ -276,7 +276,7 @@
             [:div schema-org-offer-props
              [:div.my2
               [:div
-               (when (contains? (:catalog/department product) "hair")
+               (when (contains? (:product/department product) "hair")
                  (for [facet (:selector/electives product)]
                    (selector-html {:selector facet
                                    :options  (get options facet)})))]
@@ -284,7 +284,7 @@
                             :sku-quantity sku-quantity})]
              (when (products/eligible-for-triple-bundle-discount? product)
                triple-bundle-upsell)
-             (affirm/as-low-as-box {:amount (:sku/price selected-sku)
+             (affirm/as-low-as-box {:amount (:price selected-sku)
                                     :middle-copy "Just select Affirm at check out."})
              (add-to-bag-button adding-to-bag?
                                 selected-sku
@@ -306,17 +306,17 @@
   (reduce (partial min-of-maps k) ms))
 
 (defn lowest-sku-price [skus]
-  (:sku/price (lowest :sku/price skus)))
+  (:price (lowest :price skus)))
 
 (defn lowest-sku-price-for-option-kw [skus option-kw]
   (into {}
         (map (fn [[option-kw skus]]
-               {(first option-kw)
+               {option-kw
                 (lowest-sku-price skus)})
              (group-by option-kw skus))))
 
 (defn ^:private construct-option [option-kw facets sku-skuer cheapest-for-option-kw cheapest-price options-for-option-kw sku]
-  (let [option-name  (first (option-kw sku))
+  (let [option-name  (option-kw sku)
         facet-option (get-in facets [option-kw :facet/options option-name])
         image        (:option/image facet-option)]
     (update options-for-option-kw option-name
@@ -324,10 +324,10 @@
               {:option/name  (:option/name facet-option)
                :option/slug  (:option/slug facet-option)
                :option/order (:filter/order facet-option)
-               :stocked?     (or (:inventory/in-stock? sku)
+               :stocked?     (or (:in-stock? sku)
                                  (:stocked? existing false))
                :image        image
-               :price        (:sku/price sku)
+               :price        (:price sku)
                :price-delta  (- (get cheapest-for-option-kw option-name) cheapest-price)
                :checked?     (= (option-kw sku-skuer)
                                 (option-kw sku))}))))
@@ -340,11 +340,9 @@
   (let [electives      (skuers/electives product selected-sku)
         step-choosable (set/difference (set (:selector/electives product))
                                        (set (keys product-options)))]
-    (selector/match-all {}
-                        (apply dissoc
-                               electives
-                               step-choosable)
-                        skus)))
+    (selector/query skus (apply dissoc
+                                electives
+                                step-choosable))))
 
 (defn skus->options
   "Reduces this product's skus down to options for selection
@@ -357,15 +355,15 @@
     (merge product-options
            {option-kw (->> (reduce sku->option {} relevant-skus)
                            vals
-                           (sort-by :sku/price))})))
+                           (sort-by :price))})))
 
 (defn ugc-query [product sku data]
   (when-let [ugc (get-in data keypaths/ugc)]
     (when-let [images (pixlee/images-in-album ugc (:legacy/named-search-slug product))]
       {:carousel-data {:product-id   (:catalog/product-id product)
-                       :product-name (:page/title product)
+                       :product-name (:sku-set/title product)
                        :page-slug    (:page/slug product)
-                       :sku-id       (:catalog/sku-id sku)
+                       :sku-id       (:sku sku)
                        :album        images}
        :offset (get-in data keypaths/ui-ugc-category-popup-offset)
        :back   (first (get-in data keypaths/navigation-undo-stack))})))
@@ -378,35 +376,29 @@
 (defn add-review-eligibility [review-data product]
   (assoc review-data :review? (products/eligible-for-reviews? product)))
 
-(defn find-carousel-images [product product-skus selected-sku]
-  (->> (selector/match-all {}
-                           (or selected-sku (first product-skus))
-                           (:selector/images product))
-       (selector/match-all {:selector/strict? true}
-                           {:use-case #{"carousel"}
-                            :image/of #{"model" "product"}})
-
-       (sort-by :order)))
-
 (defn query [data]
   (let [selected-sku    (get-in data catalog.keypaths/detailed-product-selected-sku)
         product         (products/current-product data)
         product-skus    (get-in data catalog.keypaths/detailed-product-product-skus)
-        facets          (->> (get-in data keypaths/v2-facets)
+        facets          (->> (get-in data keypaths/facets)
                              (map #(update % :facet/options (partial maps/index-by :option/slug)))
                              (maps/index-by :facet/slug))
-        carousel-images (find-carousel-images product product-skus selected-sku)
-        ugc             (ugc-query product selected-sku data)]
+        carousel-images (->> {:use-case "carousel"
+                              :image/of #{"model" "product"}}
+                             (selector/select (get-in data keypaths/db-images)
+                                              (or selected-sku (first product-skus)))
+                             (sort-by :order))
+        ugc             (ugc-query product selected-sku  data)]
     {:reviews           (add-review-eligibility (review-component/query data) product)
      :ugc               ugc
-     :fetching-product? (utils/requesting? data (conj request-keys/search-v2-products
+     :fetching-product? (utils/requesting? data (conj request-keys/search-sku-sets
                                                       (:catalog/product-id product)))
-     :adding-to-bag?    (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
+     :adding-to-bag?    (utils/requesting? data (conj request-keys/add-to-bag (:sku selected-sku)))
      :bagged-skus       (get-in data keypaths/browse-recently-added-skus)
      :sku-quantity      (get-in data keypaths/browse-sku-quantity 1)
      :options           (generate-options facets product product-skus selected-sku)
      :product           product
-     :selected-sku      selected-sku
+     :selected-sku      (assoc selected-sku :sku/name (:experiment.dyed-hair/title selected-sku))
      :cheapest-price    (lowest-sku-price product-skus)
      :carousel-images   carousel-images}))
 
@@ -420,40 +412,34 @@
       #?(:cljs (pixlee-hooks/fetch-album album-id named-search-slug)
          :clj nil))))
 
-(defn get-valid-product-skus [product all-skus]
+(defn get-valid-product-skus [app-state product]
   (->> product
        :selector/skus
-       (select-keys all-skus)
+       (select-keys (get-in app-state keypaths/skus))
        vals
-       (filter :inventory/in-stock?)))
+       (filter :in-stock?)))
 
 (defn determine-sku-id
   ([app-state product]
    (determine-sku-id app-state product nil))
-  ([app-state product new-sku-id]
+  ([app-state product sku-id]
    (let [prev-sku-id        (get-in app-state catalog.keypaths/detailed-product-selected-sku-id)
-         valid-product-skus (get-valid-product-skus product (get-in app-state keypaths/v2-skus))
-         valid-sku-ids      (set (map :catalog/sku-id valid-product-skus))]
-     (or (when (seq new-sku-id)
-           (valid-sku-ids new-sku-id))
+         valid-product-skus (get-valid-product-skus app-state product)
+         valid-sku-ids      (set (map :sku valid-product-skus))]
+     (or (when sku-id (valid-sku-ids sku-id))
          (valid-sku-ids prev-sku-id)
-         (:catalog/sku-id (lowest :sku/price valid-product-skus))))))
-
-(defn extract-product-skus [app-state product]
-  (->> (select-keys (get-in app-state keypaths/v2-skus)
-                    (:selector/skus product))
-       vals
-       (sort-by :sku/price)))
+         (:sku (lowest :price valid-product-skus))))))
 
 (defmethod transitions/transition-state events/navigate-product-details
   [_ event {:keys [catalog/product-id query-params]} app-state]
   (let [product      (products/product-by-id app-state product-id)
         sku-id       (determine-sku-id app-state product (:SKU query-params))
-        sku          (get-in app-state (conj keypaths/v2-skus sku-id))
-
-        product-skus (extract-product-skus app-state product)]
+        sku          (get-in app-state (conj keypaths/skus sku-id))
+        product-skus (->> (selector/select (vals (get-in app-state keypaths/skus)) product)
+                          (sort-by :price))]
     (-> app-state
         (assoc-in keypaths/ui-ugc-category-popup-offset (:offset query-params))
+        (assoc-in catalog.keypaths/detailed-product-selected-sku-id sku-id)
         (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
         (assoc-in catalog.keypaths/detailed-product-product-skus product-skus)
         (assoc-in catalog.keypaths/detailed-product-id product-id)
@@ -463,11 +449,11 @@
 #?(:cljs
    (defmethod effects/perform-effects events/navigate-product-details
      [_ _ {:keys [catalog/product-id]} _ app-state]
-     (api/search-v2-products (get-in app-state keypaths/api-cache)
-                             {:catalog/product-id product-id}
-                             (partial messages/handle-message
-                                      events/api-success-v2-products-for-details))
-     (api/fetch-v2-facets (get-in app-state keypaths/api-cache))
+     (api/search-sku-sets (get-in app-state keypaths/api-cache)
+                          product-id
+                          (partial messages/handle-message
+                                   events/api-success-sku-sets-for-details))
+     (api/fetch-facets (get-in app-state keypaths/api-cache))
 
      (if-let [current-product (products/current-product app-state)]
        (if (auth/permitted-product? app-state current-product)
@@ -476,15 +462,15 @@
            (review-hooks/insert-reviews))
          (effects/redirect events/navigate-home)))))
 
-(defmethod effects/perform-effects events/api-success-v2-products-for-details
+(defmethod effects/perform-effects events/api-success-sku-sets-for-details
   [_ _ _ _ app-state]
   (fetch-product-album (products/current-product app-state)))
 
-(defmethod transitions/transition-state events/api-success-v2-products-for-details
+(defmethod transitions/transition-state events/api-success-sku-sets-for-details
   ;; for pre-selecting skus by url
   [_ event {:keys [skus]} app-state]
   (let [product      (products/current-product app-state)
-        skus         (products/index-skus skus)
+        skus         (products/normalize-skus skus)
         sku-id       (determine-sku-id app-state product)
         sku          (get skus sku-id)]
     (assoc-in app-state catalog.keypaths/detailed-product-selected-sku sku)))
@@ -497,7 +483,7 @@
   (let [product      (products/current-product app-state)
         skus         (get-in app-state catalog.keypaths/detailed-product-product-skus)
         selections   (skuers/electives product (get-in app-state catalog.keypaths/detailed-product-selected-sku))
-        selected-sku (selector/match-all {} selections skus)]
+        selected-sku (selector/query skus selections)]
     (first-when-only selected-sku)))
 
 (defn assoc-sku-from-selections [app-state]
@@ -505,7 +491,8 @@
             (determine-sku-from-selections app-state)))
 
 (defn determine-cheapest-length [skus]
-  (-> (sort-by :sku/price skus)
+  (-> :price
+      (sort-by skus)
       first
       :hair/length))
 
@@ -516,9 +503,7 @@
                                      (cond-> (get-in app-state catalog.keypaths/detailed-product-selected-sku)
                                        (= selected-option :hair/color)
                                        (dissoc :hair/length)))]
-    (determine-cheapest-length (selector/match-all {}
-                                                   (merge selections {:inventory/in-stock? #{true}})
-                                                   skus))))
+    (determine-cheapest-length (selector/query skus selections {:in-stock? #{true}}))))
 
 (defn assoc-default-length [app-state selected-option]
   (assoc-in app-state (conj catalog.keypaths/detailed-product-selected-sku :hair/length)

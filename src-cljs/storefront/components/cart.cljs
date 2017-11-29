@@ -144,7 +144,7 @@ Thanks,
 
 (defn full-component [{:keys [focused
                               order
-                              products
+                              sku-sets
                               skus
                               coupon-code
                               promotion-banner
@@ -174,8 +174,8 @@ Thanks,
       [:div.col-on-tb-dt.col-6-on-tb-dt.px3.mb3
        {:data-test "cart-line-items"}
        summary/essence-faux-line-item
-       (summary/display-adjustable-line-items-products (orders/product-items order)
-                                                       products
+       (summary/display-adjustable-line-items-sku-sets (orders/product-items order)
+                                                       sku-sets
                                                        skus
                                                        update-line-item-requests
                                                        delete-line-item-requests)]
@@ -280,8 +280,9 @@ Thanks,
         line-items  (orders/product-items order)
         variant-ids (map :id line-items)]
     {:order                     order
-     :products                  (get-in data keypaths/v2-products)
-     :skus                      (get-in data keypaths/v2-skus)
+     :products                  (get-in data keypaths/products)
+     :sku-sets                  (get-in data keypaths/sku-sets)
+     :skus                      (get-in data keypaths/skus)
      :coupon-code               (get-in data keypaths/cart-coupon-code)
      :promotion-banner          (promotion-banner/query data)
      :updating?                 (update-pending? data)

@@ -50,10 +50,9 @@
 
 (def named-searches [:named-searches])
 (def products [:products])
-
-(def v2-products [:v2 :products])
-(def v2-skus [:v2 :skus])
-(def v2-facets [:v2 :facets])
+;;TODO use this instead of initial-sku-sets
+(def sku-sets [:sku-sets])
+(def skus [:skus])
 
 (def db [:db])
 (def db-images (conj db :images))

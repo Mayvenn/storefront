@@ -167,23 +167,23 @@
                v]))
        (into {})))
 
-(defn search-v2-products [cache criteria-or-id handler]
+(defn search-sku-sets [cache criteria-or-id handler]
   (cache-req
    cache
    GET
-   "/v2/products"
-   (conj request-keys/search-v2-products criteria-or-id)
+   "/sku-sets"
+   (conj request-keys/search-sku-sets criteria-or-id)
    {:params (if (map? criteria-or-id)
               (criteria->query-params criteria-or-id)
               {:id criteria-or-id})
     :handler handler}))
 
-(defn fetch-v2-facets [cache]
+(defn fetch-facets [cache]
   (cache-req
    cache
    GET
-   "/v2/facets"
-   request-keys/fetch-v2-facets
+   "/facets"
+   request-keys/fetch-facets
    {:params {}
     :handler #(messages/handle-message events/api-success-facets %)}))
 
@@ -759,6 +759,7 @@
                                                    (assoc (waiter-style->std-error response-body) :promo-code promo-code))
                           (default-error-handler %))))}))
 
+;; TODO(jeff): rename sku to sku-code and pass only in the sku-code
 (defn add-sku-to-bag [session-id {:keys [token number sku] :as params} handler]
   (api-req
    POST
@@ -766,7 +767,7 @@
    (conj request-keys/add-to-bag (:sku sku))
    {:params (merge (select-keys params [:quantity :stylist-id :user-id :user-token])
                    {:session-id session-id
-                    :sku (:catalog/sku-id sku)}
+                    :sku (:sku sku)}
                    (when (and token number) {:token token :number number}))
     :handler handler}))
 

@@ -28,25 +28,31 @@
            :content "Mayvenn is the recommended and trusted source for quality hair by 60,000 stylists across the country. Mayvenn's 100% virgin human hair is backed by a 30 Day Quality Guarantee & includes FREE shipping!"}]])
 
 (defn category-tags [data]
-  (let [category (categories/current-category data)]
-    [[:title {} (:page/title category)]
-     [:meta {:name "description" :content (:page.meta/description category)}]
-     [:meta {:property "og:title" :content (:opengraph/title category)}]
+  (let [{:keys [title og-title description og-description image-url]} (:seo (categories/current-category data))]
+    [[:title {} title]
+     [:meta {:name "description" :content description}]
+     [:meta {:property "og:title" :content og-title}]
      [:meta {:property "og:type" :content "product"}]
-     [:meta {:property "og:image" :content (str "http:" (:category/image-url category))}]
-     [:meta {:property "og:description" :content (:opengraph/description category)}]]))
+     [:meta {:property "og:image" :content (str "http:" image-url)}]
+     [:meta {:property "og:description" :content og-description}]]))
 
 (defn product-details-tags [data]
   (let [product (products/current-product data)
         image   (first (selector/images-matching-product (get-in data keypaths/db-images)
                                                          product
                                                          {:use-case "catalog"}))]
-    [[:title {} (:page/title product)]
-     [:meta {:name "description" :content (:page.meta/description product)}]
-     [:meta {:property "og:title" :content (:opengraph/title product)}]
+    [[:title {} (-> product :sku-set/seo :seo.meta/title)]
+     [:meta {:name "description" :content (-> product
+                                              :sku-set/seo
+                                              :seo.meta/description)}]
+     [:meta {:property "og:title" :content (-> product
+                                               :sku-set/seo
+                                               :seo.og/title)}]
      [:meta {:property "og:type" :content "product"}]
      [:meta {:property "og:image" :content (str "http:" (:url image))}]
-     [:meta {:property "og:description" :content (:opengraph/description product)}]]))
+     [:meta {:property "og:description" :content (-> product
+                                                     :sku-set/seo
+                                                     :seo.og/description)}]]))
 
 (defn tags-for-page [data]
   (->

@@ -127,7 +127,7 @@
                             :alt alt}]]))])
 
 (defn copy-section [category]
-  [:div.mt6.mb2 [:p.py6.max-580.mx-auto.center (:copy/description category)]])
+  [:div.mt6.mb2 [:p.py6.max-580.mx-auto.center (-> category :copy :description)]])
 
 (defn product-cards-empty-state [loading?]
   [:div.col-12.my8.py4.center
@@ -177,10 +177,10 @@
 
 (defn ^:private query [data]
   (let [category      (categories/current-category data)
-        category-skus (selector/strict-query (vals (get-in data keypaths/v2-skus))
+        category-skus (selector/strict-query (vals (get-in data keypaths/skus))
                                              (skuers/essentials category))
         selections    (get-in data catalog.keypaths/category-selections)
-        products      (->> (selector/strict-query (vals (get-in data keypaths/v2-products))
+        products      (->> (selector/strict-query (vals (get-in data keypaths/sku-sets))
                                                   (skuers/essentials category)
                                                   selections
                                                   {:hair/color #{:query/missing}})
@@ -189,23 +189,21 @@
                                      (seq (selector/query category-skus
                                                           (skuers/essentials product)
                                                           selections))))
-                           (sort-by #(->> (select-keys (get-in data keypaths/v2-skus) (:selector/skus %))
+                           (sort-by #(->> (select-keys (get-in data keypaths/skus) (:selector/skus %))
                                           vals
-                                          (apply min-key :sku/price)
-                                          :sku/price)))]
+                                          (apply min-key :price)
+                                          :price)))]
     {:category            category
      :represented-options (->> category-skus
                                (map (fn [sku]
-                                      (->> (select-keys sku
-                                                        (concat (:selector/essentials category)
-                                                                (:selector/electives category)))
-                                           (maps/map-values set))))
-                               (reduce (partial merge-with set/union) {}))
-     :facets              (maps/index-by :facet/slug (get-in data keypaths/v2-facets))
+                                      (select-keys sku (concat (:selector/essentials category)
+                                                               (:selector/electives category)))))
+                               maps/into-multimap)
+     :facets              (maps/index-by :facet/slug (get-in data keypaths/facets))
      :selections          selections
      :product-cards       (map (partial product-card/query data) products)
      :open-panel          (get-in data catalog.keypaths/category-panel)
-     :loading-products?   (utils/requesting? data (conj request-keys/search-v2-products
+     :loading-products?   (utils/requesting? data (conj request-keys/search-sku-sets
                                                         (skuers/essentials category)))}))
 
 (defn built-component [data opts]
@@ -223,18 +221,18 @@
    (defmethod effects/perform-effects events/navigate-category
      [_ event {:keys [catalog/category-id slug]} _ app-state]
      (let [category   (categories/current-category app-state)
-           success-fn #(messages/handle-message events/api-success-v2-products-for-browse
+           success-fn #(messages/handle-message events/api-success-sku-sets-for-browse
                                                 (assoc % :category-id category-id))]
        (if (auth/permitted-category? app-state category)
          (do
-           (storefront.api/fetch-v2-facets (get-in app-state keypaths/api-cache))
-           (storefront.api/search-v2-products (get-in app-state keypaths/api-cache)
-                                              (skuers/essentials category)
-                                              success-fn))
+           (storefront.api/fetch-facets (get-in app-state keypaths/api-cache))
+           (storefront.api/search-sku-sets (get-in app-state keypaths/api-cache)
+                                           (skuers/essentials category)
+                                           success-fn))
          (effects/redirect events/navigate-home)))))
 
-(defmethod transitions/transition-state events/api-success-v2-products-for-browse
-  [_ event {:keys [products skus category-id] :as response} app-state]
+(defmethod transitions/transition-state events/api-success-sku-sets-for-browse
+  [_ event {:keys [sku-sets skus category-id] :as response} app-state]
   app-state)
 
 (defmethod transitions/transition-state events/control-category-panel-open

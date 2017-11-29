@@ -17,7 +17,7 @@
             [storefront.request-keys :as request-keys]
             [storefront.effects :as effects]
             [storefront.trackings :as trackings]
-            [storefront.accessors.products :as accessors.products]
+            [storefront.accessors.products :refer [old-medium-img]]
             [catalog.products :as products]
             [storefront.hooks.affirm :as affirm]
             [storefront.components.affirm :as affirm-components]
@@ -37,13 +37,13 @@
      ;; is total covered by remaining store-credit?
      (> order-total store-credit-amount))))
 
-;; TODO merge with affirm component (if possible)
-(defn component
+(defn old-component
   [{:keys [available-store-credit
            checkout-steps
            payment delivery order
            placing-order?
            products
+           sku-sets
            skus
            requires-additional-payment?
            saving-card?
@@ -60,7 +60,7 @@
 
        [:div.my2
         {:data-test "confirmation-line-items"}
-        (summary/display-line-items-products (orders/product-items order) products skus)]]
+        (summary/display-line-items-sku-sets (orders/product-items order) sku-sets skus)]]
 
       [:.col-on-tb-dt.col-6-on-tb-dt.px3
        (om/build checkout-delivery/component delivery)
@@ -85,12 +85,13 @@
                                           :disabled? updating-shipping?
                                           :data-test "confirm-form-submit"})]]]]])))
 
-(defn affirm-component
+(defn component
   [{:keys [available-store-credit
            checkout-steps
            payment delivery order
            placing-order?
            products
+           sku-sets
            skus
            requires-additional-payment?
            saving-card?
@@ -107,7 +108,7 @@
 
        [:div.my2
         {:data-test "confirmation-line-items"}
-        (summary/display-line-items-products (orders/product-items order) products skus)]]
+        (summary/display-line-items-sku-sets (orders/product-items order) sku-sets skus)]]
 
       [:.col-on-tb-dt.col-6-on-tb-dt.px3
        (om/build checkout-delivery/component delivery)
@@ -145,25 +146,25 @@
 (defn- absolute-url [& path]
   (apply str (.-protocol js/location) "//" (.-host js/location) path))
 
-(defn ->affirm-line-item [products skus {:keys [sku product-name sku unit-price quantity]}]
-  (let [product (accessors.products/find-product-by-sku-id products sku)
-        slug    (:page/slug product)]
+(defn ->affirm-line-item [sku-sets skus {:keys [sku product-name sku unit-price quantity]}]
+  (let [sku-set (summary/find-sku-set-by-sku sku-sets sku)
+        slug    (:page/slug sku-set)]
     {:display_name   product-name
      :sku            sku
      :unit_price     (* 100 unit-price)
      :qty            quantity
-     :item_image_url (str "https:" (:src (accessors.products/medium-img product (get skus sku))))
-     :item_url       (absolute-url (products/path-for-sku (:catalog/product-id product) slug sku))}))
+     :item_image_url (str "https:" (:src (summary/medium-img sku-set (get skus sku))))
+     :item_url       (absolute-url (products/path-for-sku (:catalog/product-id sku-set) slug sku))}))
 
 (defn promotion->affirm-discount [{:keys [amount promotion] :as promo}]
   (when (seq promo)
     {(:name promotion) {:discount_amount       (Math/abs amount)
                         :discount_display_name (:name promotion)}}))
 
-(defn order->affirm [products skus order]
+(defn order->affirm [sku-sets skus order]
   (let [email              (-> order :user :email)
         product-line-items (orders/product-items order)
-        line-items         (mapv (partial ->affirm-line-item products skus) product-line-items)
+        line-items         (mapv (partial ->affirm-line-item sku-sets skus) product-line-items)
         promotions         (distinct (mapcat :applied-promotions product-line-items))]
     {:merchant {:user_confirmation_url        (absolute-url "/orders/" (:number order) "/affirm/" (url-encode (:token order)))
                 :user_cancel_url              (absolute-url "/checkout/payment?error=affirm-incomplete")
@@ -213,8 +214,8 @@
                           events/stringer-tracked-sent-to-affirm)))
 
 (defmethod effects/perform-effects events/stringer-tracked-sent-to-affirm [_ _ _ _ app-state]
-  (affirm/checkout (order->affirm (get-in app-state keypaths/v2-products)
-                                  (get-in app-state keypaths/v2-skus)
+  (affirm/checkout (order->affirm (get-in app-state keypaths/sku-sets)
+                                  (get-in app-state keypaths/skus)
                                   (get-in app-state keypaths/order))))
 
 (def ^:private affirm->error-path
@@ -287,8 +288,8 @@
                                        (utils/requesting? data request-keys/affirm-place-order))
      :requires-additional-payment? (requires-additional-payment? data)
      :checkout-steps               (checkout-steps/query data)
-     :products                     (get-in data keypaths/v2-products)
-     :skus                         (get-in data keypaths/v2-skus)
+     :sku-sets                     (get-in data keypaths/sku-sets)
+     :skus                         (get-in data keypaths/skus)
      :order                        order
      :payment                      (checkout-credit-card/query data)
      :delivery                     (checkout-delivery/query data)
@@ -296,7 +297,7 @@
 
 (defn built-component [data opts]
   (om/build (if (get-in data keypaths/order-cart-payments-affirm)
-              affirm-component
-              component)
+              component
+              old-component)
             (query data)
             opts))

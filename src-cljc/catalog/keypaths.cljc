@@ -7,7 +7,7 @@
 (def detailed-product-id (conj detailed-product :id))
 (def detailed-product-product-skus (conj detailed-product :product-skus))
 (def detailed-product-selected-sku (conj detailed-product :selected-sku))
-(def detailed-product-selected-sku-id (conj detailed-product-selected-sku :catalog/sku-id))
+(def detailed-product-selected-sku-id (conj detailed-product-selected-sku :sku))
 
 (def category (conj ui :category))
 (def category-panel (conj ui :panel))

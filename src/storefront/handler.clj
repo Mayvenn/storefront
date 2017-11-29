@@ -230,7 +230,6 @@
 (defn redirect-to-cart [query-params]
   (util.response/redirect (str "/cart?" (codec/form-encode query-params))))
 
-;; TODO refactor from v0 -> v2
 (defn redirect-product->canonical-url
   "Checks that the product exists, and redirects to its canonical url"
   [{:keys [storeback-config]} req {:keys [product-slug]}]
@@ -265,10 +264,10 @@
                               {:keys [params] :as req}
                               {:keys [catalog/product-id
                                       page/slug]}]
-  (when-let [product (get-in data (conj keypaths/v2-products product-id))]
+  (when-let [product (get-in data (conj keypaths/sku-sets product-id))]
     (let [sku-id         (product-details/determine-sku-id data product (:SKU params))
-          sku            (get-in data (conj keypaths/v2-skus sku-id))
-          images         (into #{} products/normalize-selector-images-xf (vals (get-in data keypaths/v2-products)))
+          sku            (get-in data (conj keypaths/skus sku-id))
+          images         (into #{} products/normalize-sku-set-images-xf (vals (get-in data keypaths/sku-sets)))
           canonical-slug (:page/slug product)
           redirect?      (and canonical-slug
                               (or (not= slug canonical-slug)
@@ -350,24 +349,25 @@
 (defn- assoc-category-route-data [data storeback-config params]
   (let [category         (categories/id->category (:catalog/category-id params)
                                                   (get-in data keypaths/categories))
-        {:keys [skus products]
-         :as   response} (api/fetch-v2-products storeback-config (spice.maps/map-values
+        {:keys [skus sku-sets]
+         :as   response} (api/fetch-sku-sets storeback-config (spice.maps/map-values
                                                                first
                                                                (skuers/essentials category)))
-        {:keys [facets]} (api/fetch-v2-facets storeback-config)]
+        {:keys [facets]} (api/fetch-facets storeback-config)]
     (-> data
         (assoc-in catalog.keypaths/category-id (:catalog/category-id params))
-        (assoc-in keypaths/v2-facets (map #(update % :facet/slug keyword) facets))
-        (update-in keypaths/v2-products merge (products/index-products products))
-        (update-in keypaths/v2-skus merge (products/index-skus skus)))))
+        (assoc-in keypaths/facets (map #(update % :facet/slug keyword) facets))
+        (update-in keypaths/sku-sets merge (products/normalize-sku-sets sku-sets))
+        (update-in keypaths/skus merge (products/normalize-skus skus)))))
 
 (defn- assoc-product-details-route-data [data storeback-config params]
-  (let [{:keys [skus products]} (api/fetch-v2-products storeback-config (:catalog/product-id params))
-        {:keys [facets]}        (api/fetch-v2-facets storeback-config)]
+  (let [{:keys [skus sku-sets]} (api/fetch-sku-sets storeback-config (:catalog/product-id params))
+        sku-sets                (map products/->skuer-schema sku-sets)
+        {:keys [facets]}        (api/fetch-facets storeback-config)]
     (-> data
-        (assoc-in keypaths/v2-facets (map #(update % :facet/slug keyword) facets))
-        (update-in keypaths/v2-products merge (products/index-products products))
-        (update-in keypaths/v2-skus merge (products/index-skus skus)))))
+        (assoc-in keypaths/facets (map #(update % :facet/slug keyword) facets))
+        (update-in keypaths/sku-sets merge (index-by :catalog/product-id sku-sets))
+        (update-in keypaths/skus merge (products/normalize-skus skus)))))
 
 (defn required-data
   [{:keys [environment leads-config storeback-config nav-event nav-message store order-number order-token]}]
@@ -392,10 +392,10 @@
 
 (defn assoc-cart-route-data [data storeback-config]
   (let [order                   (get-in data keypaths/order)
-        {:keys [skus products]} (api/fetch-v2-products storeback-config {:sku (map :sku (orders/product-items order))})]
+        {:keys [skus sku-sets]} (api/fetch-sku-sets storeback-config {:sku (map :sku (orders/product-items order))})]
     (-> data
-        (update-in keypaths/v2-products merge (products/index-products products))
-        (update-in keypaths/v2-skus merge (products/index-skus skus)))))
+        (update-in keypaths/sku-sets merge (products/normalize-sku-sets sku-sets))
+        (update-in keypaths/skus merge (products/normalize-skus skus)))))
 
 (defn frontend-routes [{:keys [storeback-config leads-config environment client-version] :as ctx}]
   (fn [{:keys [store nav-message] :as req}]
@@ -472,8 +472,8 @@
 (defn sitemap [{:keys [storeback-config]} {:keys [subdomains] :as req}]
   (if (and (seq subdomains)
            (not= "welcome" (first subdomains)))
-    (let [{:keys [products]} (api/fetch-v2-products storeback-config {})]
-      (if products
+    (let [{:keys [sku-sets]} (api/fetch-sku-sets storeback-config {})]
+      (if sku-sets
         (letfn [(url [[location priority]]
                   {:tag :url :content (cond-> [{:tag :loc :content [(str location)]}]
                                         priority (conj {:tag :priority :content [(str priority)]}))})]
@@ -500,8 +500,8 @@
                                               ["https://shop.mayvenn.com/categories/12-closures-and-frontals" "0.80"]
                                               ["https://shop.mayvenn.com/categories/13-wigs"                  "0.80"]
                                               ["https://shop.mayvenn.com/shop/look"                           "0.80"]]
-                                             (for [{:keys [catalog/product-id page/slug]} products]
-                                               [(str "https://shop.mayvenn.com/products/" product-id "-" slug) "0.80"]))
+                                             (for [{:keys [sku-set/id sku-set/slug]} sku-sets]
+                                               [(str "https://shop.mayvenn.com/products/" id "-" slug) "0.80"]))
                                        (mapv url))})
               with-out-str
               util.response/response

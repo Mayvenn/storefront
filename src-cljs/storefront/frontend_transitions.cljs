@@ -333,7 +333,7 @@
 
 (defmethod transition-state events/api-success-facets
   [_ event {:keys [facets]} app-state]
-  (assoc-in app-state keypaths/v2-facets (map #(update % :facet/slug keyword) facets)))
+  (assoc-in app-state keypaths/facets (map #(update % :facet/slug keyword) facets)))
 
 (defmethod transition-state events/api-success-states [_ event {:keys [states]} app-state]
   (assoc-in app-state keypaths/states states))

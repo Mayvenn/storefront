@@ -26,7 +26,7 @@
 (defmethod unconstrained-facet :hair/length
   [_color-order-map product skus facets facet]
   (let [lengths  (->> skus
-                      (mapcat #(get % :hair/length))
+                      (map #(get % :hair/length))
                       sort)
         shortest (first lengths)
         longest  (last lengths)]
@@ -56,7 +56,7 @@
 (defmethod unconstrained-facet :hair/color
   [color-order-map product skus facets facet-slug]
   (let [sorted-product-colors (set (->> skus
-                                        (mapcat #(get % :hair/color))
+                                        (map #(get % :hair/color))
                                         (sort-by color-order-map)))]
     [:div
      (when (> (count sorted-product-colors) 1)
@@ -70,9 +70,9 @@
 
 (defn query [data product]
   (let [selections      (get-in data catalog.keypaths/category-selections)
-        skus            (vals (select-keys (get-in data keypaths/v2-skus)
+        skus            (vals (select-keys (get-in data keypaths/skus)
                                            (:selector/skus product)))
-        facets          (get-in data keypaths/v2-facets)
+        facets          (get-in data keypaths/facets)
         color-order-map (->> facets
                              (filter #(= (:facet/slug %) :hair/color))
                              first
@@ -81,8 +81,8 @@
                              (map :option/slug)
                              (map-indexed (fn [idx slug] [slug idx]))
                              (into {}))
-        epitome         (->> (selector/query skus selections {:inventory/in-stock? #{true}})
-                             (group-by :sku/price)
+        epitome         (->> (selector/query skus selections {:in-stock? #{true}})
+                             (group-by :price)
                              (sort-by first)
                              vals
                              first
@@ -93,9 +93,9 @@
      :epitome         epitome
      :color-order-map color-order-map
      :sold-out?       (nil? epitome)
-     :title           (:page/title product)
+     :title           (:sku-set/title product)
      :slug            (:page/slug product)
-     :image           (->> epitome :selector/images (filter (comp #{"catalog"} :use-case)) first)
+     :image           (->> epitome :images (filter (comp #{"catalog"} :use-case)) first)
      :facets          facets
      :selections      (get-in data catalog.keypaths/category-selections)
      :bestseller?     (experiments/bestseller? data)}))
@@ -115,7 +115,7 @@
     (assoc (utils/route-to events/navigate-product-details
                            {:catalog/product-id (:catalog/product-id product)
                             :page/slug          slug
-                            :query-params       {:SKU (:catalog/sku-id epitome)}})
+                            :query-params       {:SKU (:sku epitome)}})
            :data-test (str "product-" slug))
     [:div.center.relative
      ;; TODO: when adding aspect ratio, also use srcset/sizes to scale these images.
@@ -133,8 +133,8 @@
         (for [selector (reverse (:selector/electives product))]
           [:div {:key selector}
            (unconstrained-facet color-order-map product skus facets selector)])
-        [:p.h6 "Starting at " (mf/as-money-without-cents (:sku/price epitome 0))]])]]
+        [:p.h6 "Starting at " (mf/as-money-without-cents (:price epitome 0))]])]]
    [:p.mb10.center
     [:div.h6.dark-gray
-     (component/build affirm/as-low-as-component {:amount (:sku/price epitome)
+     (component/build affirm/as-low-as-component {:amount (:price epitome)
                                                   :type   :text-only} {})]]])
