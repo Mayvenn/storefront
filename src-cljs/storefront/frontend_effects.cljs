@@ -202,9 +202,17 @@
                          (get-in app-state keypaths/pending-promo-code)))
 
     (seo/set-tags app-state)
-    (when (or (not= (get-in prev-app-state keypaths/navigation-event)
-                    events/navigate-product-details)
-              (not (:SKU query-params)))
+    (when (or (not (contains? #{events/navigate-product-details events/navigate-category}
+                              (get-in prev-app-state keypaths/navigation-event)))
+              (empty? (select-keys query-params [:SKU
+                                                 :grade
+                                                 :family
+                                                 :origin
+                                                 :texture
+                                                 :base-material
+                                                 :color
+                                                 :length
+                                                 :color.process])))
       (let [restore-scroll-top (:final-scroll nav-stack-item 0)]
         (if (zero? restore-scroll-top)
           ;; We can always snap to 0, so just do it immediately. (HEAT is unhappy if the page is scrolling underneath it.)
