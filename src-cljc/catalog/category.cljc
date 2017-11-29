@@ -1,7 +1,8 @@
 (ns catalog.category
   (:require
-   #?(:cljs [storefront.component :as component]
-      :clj  [storefront.component-shim :as component])
+   #?@(:cljs [[storefront.component :as component]
+              [storefront.history :as history]]
+       :clj  [[storefront.component-shim :as component]])
    [catalog.categories :as categories]
    [catalog.product-card :as product-card]
    [storefront.components.ui :as ui]
@@ -19,7 +20,23 @@
    [catalog.skuers :as skuers]
    [spice.maps :as maps]
    [catalog.selector :as selector]
-   [clojure.set :as set]))
+   [clojure.set :as set]
+   [clojure.string :as string]))
+
+(def ^:private query-param-separator "~")
+
+(def ^:private query-params->facet-slugs
+  {:grade         :hair/grade
+   :family        :hair/family
+   :origin        :hair/origin
+   :texture       :hair/texture
+   :base-material :hair/base-material
+   :color         :hair/color
+   :length        :hair/length
+   :color.process :hair/color.process})
+
+(def ^:private facet-slugs->query-params
+  (set/map-invert query-params->facet-slugs))
 
 (defn filter-tabs [{:keys [selector/essentials selector/electives]}
                    facets
@@ -90,7 +107,7 @@
    [:div.clearfix.mxn3.px1.py4.hide-on-tb-dt
     [:div.col.col-6.px3
      (ui/teal-ghost-button
-      (merge (utils/fake-href events/control-category-options-clear)
+      (merge (utils/fake-href events/control-category-option-clear)
              {:data-test "filters-clear-all"})
       "Clear all")]
     [:div.col.col-6.px3
@@ -120,7 +137,7 @@
       [:p.h1.py4 "😞"]
       [:p.h2.dark-gray.py6 "Sorry, we couldn’t find any matches."]
       [:p.h4.dark-gray.mb10.pb10
-       [:a.teal (utils/fake-href events/control-category-options-clear) "Clear all filters"]
+       [:a.teal (utils/fake-href events/control-category-option-clear) "Clear all filters"]
        " to see more hair."]])])
 
 (defn render-product-cards [loading? product-cards]
@@ -197,9 +214,9 @@
   [_ event {:keys [catalog/category-id query-params]} app-state]
   (-> app-state
       (assoc-in catalog.keypaths/category-id category-id)
-      ;;TODO transform query-params back into proper query format.
-      ;;TODO validate that the new query-params are allowed selections (ie keys are in the set of category electives)
-      (assoc-in catalog.keypaths/category-selections {})))
+      (assoc-in catalog.keypaths/category-selections
+                (->> (maps/select-rename-keys query-params query-params->facet-slugs)
+                     (maps/map-values #(set (string/split % query-param-separator)))))))
 
 #?(:cljs
    (defmethod effects/perform-effects events/navigate-category
@@ -227,6 +244,18 @@
   [_ _ _ app-state]
   (assoc-in app-state catalog.keypaths/category-panel nil))
 
+#?(:cljs
+   (defmethod effects/perform-effects events/control-category-option
+     [_ _ _ _ app-state]
+     (let [{:keys [catalog/category-id page/slug]}   (categories/current-category app-state)]
+       (->> (get-in app-state catalog.keypaths/category-selections)
+            (maps/map-values (fn [s] (string/join query-param-separator s)))
+            (maps/map-keys facet-slugs->query-params)
+            (assoc {:catalog/category-id category-id
+                    :page/slug           slug}
+                   :query-params)
+            (history/enqueue-redirect events/navigate-category)))))
+
 (defmethod transitions/transition-state events/control-category-option-select
   [_ _ {:keys [facet option]} app-state]
   (update-in app-state (conj catalog.keypaths/category-selections facet) set/union #{option}))
@@ -240,6 +269,6 @@
       (update-in app-state catalog.keypaths/category-selections dissoc facet)
       (assoc-in app-state facet-path facet-selections))))
 
-(defmethod transitions/transition-state events/control-category-options-clear
+(defmethod transitions/transition-state events/control-category-option-clear
   [_ _ _ app-state]
   (assoc-in app-state catalog.keypaths/category-selections {}))
