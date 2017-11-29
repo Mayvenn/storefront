@@ -153,8 +153,7 @@
            selections
            represented-options
            open-panel
-           product-cards
-           options]} owner opts]
+           product-cards]} owner opts]
   (component/create
    [:div
     (hero-section category)
@@ -167,13 +166,13 @@
       (if open-panel
         [:div
          [:div.hide-on-tb-dt.px2.z4.fixed.overlay.overflow-auto.bg-white
-          (filter-tabs category facets product-cards options open-panel)
+          (filter-tabs category facets product-cards selections open-panel)
           (filter-panel facets represented-options selections open-panel)]
          [:div.hide-on-mb
-          (filter-tabs category facets product-cards options open-panel)
+          (filter-tabs category facets product-cards selections open-panel)
           (filter-panel facets represented-options selections open-panel)]]
         [:div
-         (filter-tabs category facets product-cards options open-panel)])]
+         (filter-tabs category facets product-cards selections open-panel)])]
      (render-product-cards loading-products? product-cards)]]))
 
 (defn ^:private query [data]
