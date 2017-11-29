@@ -79,13 +79,9 @@
 (defn refresh-products [app-state product-ids]
   ;;TODO Fix this hack (was done to get dyed-hair out the door)
   ;;     Should not be fetching all of the products
-  (api/search-sku-sets (get-in app-state keypaths/api-cache)
-                       {}
-                       (partial messages/handle-message events/api-success-sku-sets))
-  (when (seq product-ids)
-    (api/get-products-by-ids product-ids
-                             (get-in app-state keypaths/user-id)
-                             (get-in app-state keypaths/user-token))))
+  (api/search-v2-products (get-in app-state keypaths/api-cache)
+                          {}
+                          (partial messages/handle-message events/api-success-v2-products)))
 
 (defn ensure-products [app-state product-ids]
   (let [not-cached (remove (products/loaded-ids app-state) (set product-ids))]
@@ -673,7 +669,7 @@
                           (get-in app-state keypaths/order-token)))
 
 (defmethod perform-effects events/control-cart-line-item-inc [_ event {:keys [variant]} _ app-state]
-  (let [sku (get (get-in app-state keypaths/skus) (:sku variant))
+  (let [sku      (get (get-in app-state keypaths/v2-skus) (:sku variant))
         order    (get-in app-state keypaths/order)
         quantity 1]
     (api/add-sku-to-bag (get-in app-state keypaths/session-id)

@@ -104,7 +104,7 @@
                                                                       (mapcat :line-items)
                                                                       orders/line-item-quantity)
                                                :currency         "USD"
-                                               :department       (:product/department sku)
+                                               :department       (:catalog/department sku)
                                                :product_name     (:sku/name sku)
                                                :quantity         quantity
                                                :category         (:hair/family sku)
@@ -198,10 +198,10 @@
   (let [{:keys [url alt filename] :as image} (->> {:use-case "catalog" :image/of #{"product"}}
                                                   (selector/select images sku)
                                                   first)]
-    {:variant_sku      (:sku sku)
-     :variant_price    (:price sku)
+    {:variant_sku      (:catalog/sku-id sku)
+     :variant_price    (:sku/price sku)
      :variant_quantity quantity
-     :variant_name     (:sku/name sku)
+     :variant_name     (:sku/title sku)
      :variant_origin   (:hair/origin sku)
      :variant_style    (:hair/texture sku)
      :variant_color    (:hair/color sku)
@@ -216,8 +216,9 @@
     (let [order      (get-in app-state keypaths/order)
           line-items (orders/product-items order)
           images     (get-in app-state keypaths/db-images)
+          ;; TODO Investigate further
           cart-items (mapv (comp (partial apply (partial sku->cart-item images))
-                                 (juxt (comp (get-in app-state keypaths/skus) :sku)
+                                 (juxt (comp (get-in app-state keypaths/v2-skus) :sku)
                                        :quantity))
                            line-items)]
       (stringer/track-event "add_to_cart" (merge (sku->cart-item images sku quantity)
