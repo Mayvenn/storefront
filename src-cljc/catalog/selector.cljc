@@ -6,7 +6,7 @@
   (let [item-value (get item key :query/missing)]
     (cond
       (and (coll? item-value) (coll? search-value))
-      (set/subset? (set item-value) (set search-value))
+      (seq (set/intersection (set item-value) (set search-value)))
 
       (and (coll? search-value) (> (count search-value) 1))
       ((set search-value) item-value)
@@ -25,7 +25,7 @@
       true
 
       (and (coll? item-value) (coll? search-value))
-      (set/subset? (set item-value) (set search-value))
+      (seq (set/intersection (set item-value) (set search-value)))
 
       (and (coll? search-value) (> (count search-value) 1))
       ((set search-value) item-value)

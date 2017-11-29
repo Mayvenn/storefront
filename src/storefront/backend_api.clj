@@ -48,6 +48,7 @@
     (when (not-404 response)
       (:products (:body response)))))
 
+;;TODO Remove (old)
 (defn product [storeback-config product-slug user-id user-token]
   (let [response (storeback-fetch storeback-config "/products"
                                   {:query-params {:slug product-slug
@@ -81,11 +82,6 @@
     (when-not (<= 200 status 299)
       (-> body :error-code (or "affirm-incomplete")))))
 
-(defn fetch-facets [storeback-config]
-  (let [response (storeback-fetch storeback-config "/facets" {})]
-    (when (not-404 response)
-      (:body response))))
-
 (defn criteria->query-params [criteria]
   (->> criteria
        (map (fn [[k v]]
@@ -95,19 +91,16 @@
                v]))
        (into {})))
 
-(defn fetch-sku-sets [storeback-config criteria-or-id]
-  (let [response (storeback-fetch storeback-config "/sku-sets"
+(defn fetch-v2-products [storeback-config criteria-or-id]
+  (let [response (storeback-fetch storeback-config "/v2/products"
                                   {:query-params (if (map? criteria-or-id)
                                                    (criteria->query-params criteria-or-id)
-                                                   {:id criteria-or-id})})]
+                                                   {:catalog/product-id criteria-or-id})})]
     (when (not-404 response)
       (:body response))))
 
-(defn fetch-skus [storeback-config criteria-or-id]
-  (let [response (storeback-fetch storeback-config "/skus"
-                                  {:query-params (if (map? criteria-or-id)
-                                                   (criteria->query-params criteria-or-id)
-                                                   {:id criteria-or-id})})]
+(defn fetch-v2-facets [storeback-config]
+  (let [response (storeback-fetch storeback-config "/v2/facets" {})]
     (when (not-404 response)
       (:body response))))
 

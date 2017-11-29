@@ -224,10 +224,12 @@
 
 (defpath api-success-products)
 (defpath api-success-states)
-(defpath api-success-sku-sets)
-(defpath api-success-sku-sets-for-nav)
-(defpath api-success-sku-sets-for-browse)
-(defpath api-success-sku-sets-for-details)
+
+(defpath api-success-v2-products)
+(defpath api-success-v2-products-for-nav)
+(defpath api-success-v2-products-for-browse)
+(defpath api-success-v2-products-for-details)
+
 (defpath api-success-facets)
 
 (defpath api-success-one-time-auth)

@@ -40,7 +40,7 @@
        [:span.mr1 back-caret] "Back"]
       [:div.px6
        (major-menu-row
-        [:div.h2.flex-auto.center "Shop " (:name nav-root)])
+        [:div.h2.flex-auto.center "Shop " (:copy/title nav-root)])
        [:ul.list-reset
         (for [{:keys [page/slug category/new?] :as category} options]
           [:li {:key slug}
@@ -49,7 +49,7 @@
                    :data-test (str "menu-step-" slug))
             [:span.flex-auto.titleize
              (when new? [:span.teal "NEW "])
-             (:name category)])])]]])))
+             (:copy/title category)])])]]])))
 
 (defn query [data]
   (let [{:keys [selector/essentials] :as nav-root} (categories/current-traverse-nav data)]
