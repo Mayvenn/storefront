@@ -13,8 +13,7 @@
             [storefront.accessors.pixlee :as pixlee]
             [storefront.components.order-summary :as order-summary]
             [clojure.string :as str]
-            [storefront.accessors.products :as products]
-            [storefront.accessors.black-friday :as black-friday]))
+            [storefront.accessors.products :as products]))
 
 (defn add-to-cart-button [sold-out? creating-order? {:keys [number]}]
   (if sold-out?
@@ -25,11 +24,6 @@
      (assoc (utils/fake-href events/control-create-order-from-shared-cart {:shared-cart-id number})
             :spinning? creating-order?)
      "Add items to bag")))
-
-(def black-friday-run-up-button
-  [:div.btn.mb1.col-12.h5.btn-primary.bg-gray.white
-   {:on-click nil}
-   "Get this deal on Black Friday"])
 
 (defn carousel [imgs]
   (om/build carousel/component
@@ -58,7 +52,7 @@
       title)))
 
 (defn component [{:keys [creating-order? sold-out? look shared-cart products sku-sets skus back fetching-shared-cart? discount-warning?
-                         show-run-up-button? bundle-deal-look? shared-cart-type-copy back-copy]} owner opts]
+                         bundle-deal-look? shared-cart-type-copy back-copy]} owner opts]
   (om/component
    (html
     [:div.container.mb4
@@ -92,9 +86,7 @@
              (when bundle-deal-look?
                [:div.center.teal.medium.mt2 "*Discounts applied at check out"])
              [:div.mt2
-              (if show-run-up-button?
-                black-friday-run-up-button
-                (add-to-cart-button sold-out? creating-order? shared-cart))]])))]])))
+              (add-to-cart-button sold-out? creating-order? shared-cart)]])))]])))
 
 (defn sold-out? [variant-ids skus]
   (->> skus
@@ -113,13 +105,10 @@
                                 (mapv :id)
                                 set)
         bundle-deal-look?  (boolean (bundle-deal-ids (:id look)))
-        black-friday-stage (black-friday/stage data)
         back               (first (get-in data keypaths/navigation-undo-stack))]
     {:shared-cart           shared-cart
      :look                  look
      :bundle-deal-look?     bundle-deal-look?
-     :show-run-up-button?   (and (not (#{:cyber-monday :black-friday :cyber-monday-extended} black-friday-stage))
-                                 bundle-deal-look?)
      :creating-order?       (utils/requesting? data request-keys/create-order-from-shared-cart)
      :products              products
      :sku-sets              (get-in data keypaths/sku-sets)

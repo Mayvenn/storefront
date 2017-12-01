@@ -3,18 +3,13 @@
             [sablono.core :refer [html]]
             [storefront.accessors.pixlee :as pixlee]
             [storefront.components.ugc :as ugc]
-            [storefront.keypaths :as keypaths]
-            [storefront.accessors.black-friday :as black-friday]))
+            [storefront.keypaths :as keypaths]))
 
-(defn component [{:keys [bundle-deals black-friday-stage]} owner opts]
+(defn component [{:keys [bundle-deals]} owner opts]
   (om/component
    (html
     [:div
      [:div.center.bg-light-gray.py3
-      [:h1.h2.navy (condp = black-friday-stage
-                       :cyber-monday-extended "cyber monday deals extended"
-                       :cyber-monday "cyber monday deals"
-                       "black friday deals")]
       [:div.img-shop-by-bundle-deal-icon.bg-no-repeat.bg-contain.mx-auto.my2
        {:style {:width "101px" :height "85px"}} ]
       [:p.dark-gray.col-10.col-6-on-tb-dt.mx-auto
@@ -26,8 +21,7 @@
 (defn query [data]
   (let [bundle-deals (->> (pixlee/images-in-album (get-in data keypaths/ugc) :bundle-deals)
                           (remove (comp #{"video"} :content-type)))]
-    {:bundle-deals       bundle-deals
-     :black-friday-stage (black-friday/stage data)}))
+    {:bundle-deals       bundle-deals}))
 
 (defn built-component [data opts]
   (om/build component (query data) opts))

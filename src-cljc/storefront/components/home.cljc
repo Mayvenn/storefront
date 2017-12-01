@@ -10,8 +10,7 @@
             [storefront.assets :as assets]
             [storefront.config :as config]
             [clojure.string :as string]
-            [spice.date :as date]
-            [storefront.accessors.black-friday :as black-friday]))
+            [spice.date :as date]))
 
 (defn product-image
   [{:keys [resizable_url resizable_filename alt]}]
@@ -82,50 +81,10 @@
 (defn hero [store-slug]
   [:h1.h2
    [:a
-    (assoc (utils/route-to events/navigate-category {:page/slug "dyed-virgin-hair" :catalog/category-id "16"})
+    (assoc (utils/route-to events/navigate-shop-by-look)
            :data-test "home-banner")
     (let [file-name "Classics-Made-Colorful.jpg"
-          alt       "Dyed Virgin Hair is here! Shop dyed virgin hair."]
-      (hero-image {:mobile-url  "//ucarecdn.com/138de0ea-3b6e-444e-8215-b869fb48ceab/"
-                   :desktop-url "//ucarecdn.com/bb90862b-e578-46dd-9315-ac78c437b3af/"
-                   :file-name   file-name
-                   :alt         alt}))]])
-
-(defn hero-black-friday [store-slug]
-  [:h1.h2
-   [:a
-    (assoc (utils/route-to events/navigate-shop-bundle-deals)
-           :data-test "home-banner")
-    (let [file-name "Black-Friday-Deals-Are-Here.jpg"
-          alt       "Black Friday Deals Are Here!"
-          mob-uuid  "057b5c9d-38f9-4c38-9469-7a3f9f23fe64"
-          dsk-uuid  "89a24e48-93e6-450a-b573-5f981453bd90"]
-      (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
-                   :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
-                   :file-name   file-name
-                   :alt         alt}))]])
-
-(defn hero-cyber-monday [store-slug]
-  [:h1.h2
-   [:a
-    (assoc (utils/route-to events/navigate-shop-bundle-deals)
-           :data-test "home-banner")
-    (let [file-name "Cyber-Monday-Deals-Are-Here.jpg"
-          alt       "Cyber Monday Deals Are Here!"
-          mob-uuid  "9a7b086d-aef6-4933-aedb-cfc89c28a96d"
-          dsk-uuid  "4eac2c14-561f-42a2-95c0-2d622a17a875"]
-      (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
-                   :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
-                   :file-name   file-name
-                   :alt         alt}))]])
-
-(defn hero-cyber-monday-extended [store-slug]
-  [:h1.h2
-   [:a
-    (assoc (utils/route-to events/navigate-shop-bundle-deals)
-           :data-test "home-banner")
-    (let [file-name "Cyber-Monday-Extended-Deals-Are-Here.jpg"
-          alt       "Cyber Monday Extended Deals Are Here!"
+          alt       "Dyed Virgin Hair is here! Shop dyed virgin hair."
           mob-uuid  "80e46438-7f49-4c0c-b119-ee3ef248737f"
           dsk-uuid  "3fe19071-5c05-4f4b-9fa4-64e79be49ce6"]
       (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
@@ -153,44 +112,22 @@
                        :src-set (str mobile-url "-/format/auto/-/resize/750x/-/quality/lightest/" file-name " 2x")
                        :alt     alt}]])
 
-(def black-friday-deals-preview-feature-block
-  [:a
-   (utils/route-to events/navigate-shop-bundle-deals)
-   (feature-image {:mobile-url  "//ucarecdn.com/8ab2db52-1fb4-4309-ab3c-007e5c6b7912/"
-                   :desktop-url "//ucarecdn.com/9c2a515c-8cef-41ef-b665-34c01f88930b/"
-                   :file-name   "Black-Friday-Deals-Preview.png"
-                   :alt         "Black Friday Deals Preview"})])
-
-(def default-left-feature-block
-  [:a
-   (utils/route-to events/navigate-shop-by-look-details {:look-id (:left config/feature-block-look-ids)})
-   (feature-image {:mobile-url  "//ucarecdn.com/0d80edc3-afb2-4a6f-aee1-1cceff1cf93d/"
-                   :desktop-url "//ucarecdn.com/54c13e5b-99cd-4dd4-ae00-9f47fc2158e9/"
-                   :file-name   "Shop-Brazilian-Straight-10-inch-3-Bundle-Deal.png"
-                   :alt         "Shop Brazilian Straight 10 inch 3 Bundle Deal"})])
-
-(def feature-block-to-be-shown-on-black-friday
-  [:a
-   (utils/route-to events/navigate-category {:catalog/category-id "16"
-                                             :page/slug           "dyed-virgin-hair"})
-   (feature-image {:mobile-url  "//ucarecdn.com/163230da-c4a8-4352-96de-d025df1eff5d/"
-                   :desktop-url "//ucarecdn.com/d7cf940b-1f49-4452-813e-fc1ff474b07e/"
-                   :file-name   "Dyed-Virgin-Hair-Is-Here.png"
-                   :alt         "Dyed Virgin Hair Is Here!"})])
-
-(defn feature-blocks [black-friday-stage]
+(defn feature-blocks []
   [:div.container.border-top.border-white
    [:div.col.col-6.border.border-white
-    (if (#{:black-friday :cyber-monday :cyber-monday-extended} black-friday-stage)
-      feature-block-to-be-shown-on-black-friday
-      black-friday-deals-preview-feature-block)]
-    [:div.col.col-6.border.border-white
-     [:a
-      (utils/route-to events/navigate-category {:page/slug "wigs" :catalog/category-id "13"})
-      (feature-image {:mobile-url  "//ucarecdn.com/87426013-0612-4c04-95e1-c2e4779a0856/"
-                      :desktop-url "//ucarecdn.com/18f073e7-2d40-4b78-8e39-bb5dc0ba4e51/"
-                      :file-name   "wigs-are-here.png"
-                      :alt         "Wigs are here!"})]]])
+    [:a
+     (utils/route-to events/navigate-shop-by-look-details {:look-id (:left config/feature-block-look-ids)})
+     (feature-image {:mobile-url  "//ucarecdn.com/0d80edc3-afb2-4a6f-aee1-1cceff1cf93d/"
+                     :desktop-url "//ucarecdn.com/54c13e5b-99cd-4dd4-ae00-9f47fc2158e9/"
+                     :file-name   "Shop-Brazilian-Straight-10-inch-3-Bundle-Deal.png"
+                     :alt         "Shop Brazilian Straight 10 inch 3 Bundle Deal"})]]
+   [:div.col.col-6.border.border-white
+    [:a
+     (utils/route-to events/navigate-category {:page/slug "wigs" :catalog/category-id "13"})
+     (feature-image {:mobile-url  "//ucarecdn.com/87426013-0612-4c04-95e1-c2e4779a0856/"
+                     :desktop-url "//ucarecdn.com/18f073e7-2d40-4b78-8e39-bb5dc0ba4e51/"
+                     :file-name   "wigs-are-here.png"
+                     :alt         "Wigs are here!"})]]])
 
 (defn drop-down-row [opts & content]
   (into [:a.inherit-color.block.center.h5.flex.items-center.justify-center
@@ -331,11 +268,11 @@
                       :file-name   "talkable_banner.jpg"
                       :alt         "refer friends, earn rewards, get 20% off"})]]))
 
-(defn component [{:keys [signed-in store categories hero-fn black-friday-stage]} owner opts]
+(defn component [{:keys [signed-in store categories hero-fn]} owner opts]
   (component/create
    [:div.m-auto
     [:section (hero-fn (:store-slug store))]
-    [:section (feature-blocks black-friday-stage)]
+    [:section (feature-blocks)]
     [:section.hide-on-tb-dt (store-info signed-in store)]
     [:section (popular-grid categories)]
     [:section video-autoplay]
@@ -343,18 +280,12 @@
     [:section talkable-banner]]))
 
 (defn query [data]
-  (let [black-friday-stage (black-friday/stage data)]
-    {:store              (marquee/query data)
-     :signed-in          (auth/signed-in data)
-     :categories         (->> (get-in data keypaths/categories)
-                              (filter :home/order)
-                              (sort-by :home/order))
-     :black-friday-stage black-friday-stage
-     :hero-fn            (condp = black-friday-stage
-                           :black-friday hero-black-friday
-                           :cyber-monday hero-cyber-monday
-                           :cyber-monday-extended hero-cyber-monday-extended
-                           hero)}))
+  {:store      (marquee/query data)
+   :signed-in  (auth/signed-in data)
+   :categories (->> (get-in data keypaths/categories)
+                    (filter :home/order)
+                    (sort-by :home/order))
+   :hero-fn    hero})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

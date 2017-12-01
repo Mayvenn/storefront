@@ -131,7 +131,7 @@
    (merge opts {:style {:padding-left "24px" :padding-right "24px"}})
    text])
 
-(defn menu [show-black-friday-link? black-friday-stage]
+(defn menu []
   (component/html
    [:div.center
     (menu-link (assoc (utils/route-to events/navigate-shop-by-look)
@@ -180,7 +180,7 @@
         (for [items columns]
           (shopping-column items (count columns)))]])))
 
-(defn component [{:keys [store user cart shopping signed-in show-black-friday-link? black-friday-stage]} _ _]
+(defn component [{:keys [store user cart shopping signed-in]} _ _]
   (component/create
    [:div
     [:div.hide-on-mb.relative
@@ -195,8 +195,7 @@
                                   :data-test "desktop-cart"}
                                  cart)]]]
        [:div.absolute.bottom-0.left-0.right-0
-        [:div.mb4 (slideout-nav/logo "desktop-header-logo" "60px")]
-        [:div.mb1 (menu show-black-friday-link? black-friday-stage)]]]]
+        [:div.mb4 (slideout-nav/logo "desktop-header-logo" "60px")]]]]
      (shopping-flyout signed-in shopping)]
     [:div.hide-on-tb-dt.border-bottom.border-gray.flex.items-center
      hamburger

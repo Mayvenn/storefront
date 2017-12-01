@@ -12,7 +12,7 @@
   (string/join " " sentences))
 
 (defn component
-  [{:keys [guest? sign-up-data black-friday?]} _]
+  [{:keys [guest?]} _]
   (component/create
    (ui/narrow-container
     [:div.p3
@@ -43,10 +43,8 @@
          (sign-up/form sign-up-data {:sign-up-text "Create my account"})]])])))
 
 (defn query [data]
-  (let [black-friday-start 1511499600000]
-    {:guest?        (not (get-in data keypaths/user-id))
-     :black-friday? (< black-friday-start (date/to-millis (date/now)))
-     :sign-up-data  (sign-up/query data)}))
+  {:guest?        (not (get-in data keypaths/user-id))
+   :sign-up-data  (sign-up/query data)})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
