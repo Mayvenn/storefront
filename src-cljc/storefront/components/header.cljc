@@ -134,13 +134,6 @@
 (defn menu [show-black-friday-link? black-friday-stage]
   (component/html
    [:div.center
-    (when show-black-friday-link?
-      (menu-link (assoc (utils/route-to events/navigate-shop-bundle-deals)
-                        :on-mouse-enter close-shopping)
-                 (condp = black-friday-stage
-                   :cyber-monday-extended "Cyber Monday Deals Extended"
-                   :cyber-monday "Cyber Monday Deals"
-                   "Black Friday Deals")))
     (menu-link (assoc (utils/route-to events/navigate-shop-by-look)
                       :on-mouse-enter close-shopping)
      "Shop looks")
