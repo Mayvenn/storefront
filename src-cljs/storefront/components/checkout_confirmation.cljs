@@ -43,7 +43,6 @@
            checkout-steps
            payment delivery order
            placing-order?
-           products
            skus
            requires-additional-payment?
            saving-card?
@@ -60,7 +59,7 @@
 
        [:div.my2
         {:data-test "confirmation-line-items"}
-        (summary/display-line-items-products (orders/product-items order) products skus)]]
+        (summary/display-line-items (orders/product-items order) skus)]]
 
       [:.col-on-tb-dt.col-6-on-tb-dt.px3
        (om/build checkout-delivery/component delivery)
@@ -90,7 +89,6 @@
            checkout-steps
            payment delivery order
            placing-order?
-           products
            skus
            requires-additional-payment?
            saving-card?
@@ -107,7 +105,7 @@
 
        [:div.my2
         {:data-test "confirmation-line-items"}
-        (summary/display-line-items-products (orders/product-items order) products skus)]]
+        (summary/display-line-items (orders/product-items order) skus)]]
 
       [:.col-on-tb-dt.col-6-on-tb-dt.px3
        (om/build checkout-delivery/component delivery)
@@ -146,14 +144,14 @@
   (apply str (.-protocol js/location) "//" (.-host js/location) path))
 
 (defn ->affirm-line-item [products skus {:keys [sku product-name sku unit-price quantity]}]
-  (let [product (accessors.products/find-product-by-sku-id products sku)
-        slug    (:page/slug product)]
+  (let [{:keys [page/slug catalog/product-id]}
+        (accessors.products/find-product-by-sku-id products sku)]
     {:display_name   product-name
      :sku            sku
      :unit_price     (* 100 unit-price)
      :qty            quantity
-     :item_image_url (str "https:" (:src (accessors.products/medium-img product (get skus sku))))
-     :item_url       (absolute-url (products/path-for-sku (:catalog/product-id product) slug sku))}))
+     :item_image_url (str "https:" (:src (accessors.products/medium-img (get skus sku))))
+     :item_url       (absolute-url (products/path-for-sku product-id slug sku))}))
 
 (defn promotion->affirm-discount [{:keys [amount promotion] :as promo}]
   (when (seq promo)

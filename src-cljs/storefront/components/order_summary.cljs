@@ -112,23 +112,21 @@
                 (utils/send-event-callback events/control-cart-line-item-dec {:variant line-item})
                 (utils/send-event-callback events/control-cart-line-item-inc {:variant line-item}))]])
 
-(defn display-line-items-products [line-items products skus]
-  (for [{:keys [quantity product-id] :as line-item} line-items]
-    (let [product       (products/find-product-by-sku-id products (:sku line-item))
-          line-item-sku (get skus (:sku line-item))]
-      (display-line-item
-       line-item
-       (products/medium-img product line-item-sku)
-       [:div.pyp2 "Quantity: " quantity]))))
+(defn display-line-items [line-items skus]
+  (for [{:keys [quantity] sku-id :sku :as line-item} line-items
+        :let [sku (get skus sku-id)]]
+    (display-line-item
+     line-item
+     (products/medium-img sku)
+     [:div.pyp2 "Quantity: " quantity])))
 
-(defn display-adjustable-line-items-products [line-items products skus update-line-item-requests delete-line-item-requests]
-  (for [{:keys [product-id quantity] variant-id :id :as line-item} line-items]
-    (let [product       (products/find-product-by-sku-id products (:sku line-item))
-          line-item-sku (get skus (:sku line-item))]
-      (display-line-item
-       line-item
-       (products/medium-img product line-item-sku)
-       (adjustable-quantity-line line-item
-                                 line-item-sku
-                                 (get delete-line-item-requests variant-id)
-                                 (get update-line-item-requests (:sku line-item)))))))
+(defn display-adjustable-line-items [line-items skus update-line-item-requests delete-line-item-requests]
+  (for [{sku-id :sku variant-id :id :as line-item} line-items
+        :let [sku (get skus sku-id)]]
+    (display-line-item
+     line-item
+     (products/medium-img sku)
+     (adjustable-quantity-line line-item
+                               sku
+                               (get delete-line-item-requests variant-id)
+                               (get update-line-item-requests sku-id)))))

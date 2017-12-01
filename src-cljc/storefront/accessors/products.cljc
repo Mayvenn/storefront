@@ -34,10 +34,9 @@
                             line-item-sku)))
        first))
 
-(defn medium-img [product sku]
-  (let [image  (->> product
+(defn medium-img [skuer]
+  (let [image  (->> skuer
                     :selector/images
-                    (filter #((:hair/color sku) (:hair/color %)))
                     (filter #(or
                               (= (:image/of %) "product")
                               (= (:use-case %) "cart")))
@@ -47,13 +46,12 @@
                                 5))
                     first)]
     {:src (:url image)
-     :alt (:copy/title product)}))
+     :alt (:copy/title skuer)}))
 
-(defn large-img [product sku]
+(defn large-img [sku]
   ;;TODO fix this!!! PLEASE!!! (should be using selector and doing something more clever than this.)
-  (let [image  (->> product
+  (let [image  (->> sku
                     :selector/images
-                    (filter #((:hair/color sku) (:hair/color %)))
                     #_(filter #(or
                               (= (:image/of (:criteria/attributes %)) "product")
                               ;; FIXME Please remove once we add cart use cases to all images
@@ -61,4 +59,4 @@
                     (filter #(= (:use-case %) "carousel"))
                     first)]
     {:src (:url image)
-     :alt (:copy/title product)}))
+     :alt (:copy/title sku)}))
