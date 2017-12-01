@@ -195,7 +195,8 @@
                                   :data-test "desktop-cart"}
                                  cart)]]]
        [:div.absolute.bottom-0.left-0.right-0
-        [:div.mb4 (slideout-nav/logo "desktop-header-logo" "60px")]]]]
+        [:div.mb4 (slideout-nav/logo "desktop-header-logo" "60px")]
+        [:div.mb1 (menu)]]]]
      (shopping-flyout signed-in shopping)]
     [:div.hide-on-tb-dt.border-bottom.border-gray.flex.items-center
      hamburger
