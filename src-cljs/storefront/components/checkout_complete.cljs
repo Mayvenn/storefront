@@ -26,13 +26,6 @@
       [:p
        (copy "We've received your order and will be processing it right away."
              "Once your order ships we will send you an email confirmation.")]]
-     [:section.mt3.mx4-on-tb-dt.center
-      (if black-friday?
-        [:p.teal
-         (copy "Due to the high volume of orders we are receiving,"
-               "your order may take longer to process."
-               "We are working hard to deliver your order as quickly as possible."
-               "Happy Holidays!")])]
      (when guest?
        [:div.mt3
         [:section.center
