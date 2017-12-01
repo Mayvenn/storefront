@@ -267,7 +267,7 @@
            [:div.hide-on-mb (component/build ugc/component ugc opts)]]
           [:div
            [:div.center
-            (title (:page/title product))
+            (title (:copy/title product))
             (when review? (reviews-summary reviews opts))
             [:meta {:item-prop "image" :content (first carousel-images)}]
             (full-bleed-narrow (carousel carousel-images product))

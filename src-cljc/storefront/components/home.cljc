@@ -43,7 +43,7 @@
       [:h1.h4.order-2.px2 "100% Virgin Human Hair, always fast and free shipping"]
       [:h2.h1.order-1 "Shop our styles"]]
      [:div
-      (for [{:keys [page/slug images name] :as category} categories]
+      (for [{:keys [page/slug images copy/title] :as category} categories]
         (grid-block slug
                     [:a.absolute.overlay.overflow-hidden
                      (merge {:data-test (str "category-" slug)}
@@ -53,7 +53,7 @@
                       {:style {:text-shadow "black 0px 0px 25px, black 0px 0px 25px"
                                :transform "translateY(-50%)"
                                :top "50%"}}
-                      (let [[first-word & last-words] (string/split name #" ")]
+                      (let [[first-word & last-words] (string/split title #" ")]
                         [:div
                          [:div first-word]
                          [:div (string/join " " last-words)]])]]))
