@@ -12,7 +12,7 @@
   (string/join " " sentences))
 
 (defn component
-  [{:keys [guest?]} _]
+  [{:keys [guest? sign-up-data]} _]
   (component/create
    (ui/narrow-container
     [:div.p3
