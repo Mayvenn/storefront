@@ -85,8 +85,8 @@
            :data-test "home-banner")
     (let [file-name "Classics-Made-Colorful.jpg"
           alt       "Dyed Virgin Hair is here! Shop dyed virgin hair."
-          mob-uuid  "80e46438-7f49-4c0c-b119-ee3ef248737f"
-          dsk-uuid  "3fe19071-5c05-4f4b-9fa4-64e79be49ce6"]
+          mob-uuid  "710c1016-11e3-4a92-ad5a-e72a3ad49255"
+          dsk-uuid  "614770c2-954c-48d5-9126-3845f3bbaad9"]
       (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
                    :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
                    :file-name   file-name
