@@ -47,7 +47,7 @@
                                 5))
                     first)]
     {:src (:url image)
-     :alt (:page/title product)}))
+     :alt (:copy/title product)}))
 
 (defn large-img [product sku]
   ;;TODO fix this!!! PLEASE!!! (should be using selector and doing something more clever than this.)
@@ -61,4 +61,4 @@
                     (filter #(= (:use-case %) "carousel"))
                     first)]
     {:src (:url image)
-     :alt (:page/title product)}))
+     :alt (:copy/title product)}))

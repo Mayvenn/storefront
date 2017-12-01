@@ -363,7 +363,7 @@
   (when-let [ugc (get-in data keypaths/ugc)]
     (when-let [images (pixlee/images-in-album ugc (:legacy/named-search-slug product))]
       {:carousel-data {:product-id   (:catalog/product-id product)
-                       :product-name (:page/title product)
+                       :product-name (:copy/title product)
                        :page-slug    (:page/slug product)
                        :sku-id       (:catalog/sku-id sku)
                        :album        images}

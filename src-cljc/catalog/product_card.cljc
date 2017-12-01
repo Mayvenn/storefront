@@ -93,7 +93,7 @@
      :epitome         epitome
      :color-order-map color-order-map
      :sold-out?       (nil? epitome)
-     :title           (:page/title product)
+     :title           (:copy/title product)
      :slug            (:page/slug product)
      :image           (->> epitome :selector/images (filter (comp #{"catalog"} :use-case)) first)
      :facets          facets
