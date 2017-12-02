@@ -1,23 +1,21 @@
 (ns storefront.trackings
-  (:require [storefront.events :as events]
-            [storefront.keypaths :as keypaths]
-            [catalog.selector :as selector]
-            [storefront.routes :as routes]
+  (:require [clojure.string :as string]
+            [leads.accessors :as leads.accessors]
+            [spice.maps :as maps]
+            [storefront.accessors.orders :as orders]
+            [storefront.accessors.products :as products]
+            [storefront.accessors.videos :as videos]
+            [storefront.events :as events]
+            [storefront.hooks.convert :as convert]
             [storefront.hooks.facebook-analytics :as facebook-analytics]
             [storefront.hooks.google-analytics :as google-analytics]
-            [storefront.hooks.convert :as convert]
-            [storefront.hooks.riskified :as riskified]
-            [storefront.hooks.stringer :as stringer]
-            [storefront.hooks.sift :as sift]
-            [storefront.accessors.orders :as orders]
-            [storefront.accessors.videos :as videos]
-            [leads.accessors :as leads.accessors]
-            [storefront.utils.query :as query]
-            [clojure.string :as string]
-            [storefront.accessors.products :as products]
-            [spice.maps :as maps]
             [storefront.hooks.pinterest :as pinterest]
-            [spice.core :as spice]))
+            [storefront.hooks.riskified :as riskified]
+            [storefront.hooks.sift :as sift]
+            [storefront.hooks.stringer :as stringer]
+            [storefront.keypaths :as keypaths]
+            [storefront.routes :as routes]
+            [storefront.utils.query :as query]))
 
 (defn ^:private convert-revenue [{:keys [number total] :as order}]
   {:order-number   number
@@ -117,116 +115,49 @@
                                                :store_slug       store-slug
                                                :is_stylist_store (not (#{"store" "shop" "internal"} store-slug))}))))
 
-(defn order-product-items->enriched-products
-  "From the Products key with a quantity"
-  [products-db line-items]
-  (mapv
-   (fn [{:keys [id product-id quantity]}]
-     (assoc
-      (query/get {:id id}
-                 (:variants (get products-db product-id)))
-      :quantity quantity))
-   line-items))
+(defn waiter-line-items->line-item-skuer
+  "This is a stopgap measure to stand in for when waiter will one day return
+  line items in skuer format. The domain around selling needs to be defined.
 
-(defn line-item->cart-item [products-db line-item]
-  (let [cellar-variant (query/get {:id (:id line-item)}
-                                  (:variants (get products-db (:product-id line-item))))
-        attrs (:variant_attrs cellar-variant)]
-    {:variant_id       (:id cellar-variant)
-     :variant_sku      (:sku cellar-variant)
-     :variant_price    (:unit-price line-item)
-     :variant_quantity (:quantity line-item)
-     :variant_name     (:variant-name cellar-variant)
-     :variant_origin   (:origin attrs)
-     :variant_style    (:style attrs)
-     :variant_color    (:color attrs)
-     :variant_length   (:length attrs)
-     :variant_material (:material attrs)
-     :variant_image    (products/product-img-with-size cellar-variant :product)}))
+  Does not handle shipping line-items."
+  [skus-db line-items]
+  (mapv #(merge (get skus-db (:sku %))
+                (maps/select-rename-keys % {:quantity :item/quantity}))
+        line-items))
 
-(defn- ->cart-item
-  "Makes a flattened key version of variants"
-  [variant-or-sku]
-  (let [attrs (:variant-attrs variant-or-sku)]
-    {:variant_id       (or (:variant_id variant-or-sku)
-                           (:legacy/variant-id variant-or-sku))
-     :variant_sku      (or (:variant_sku variant-or-sku)
-                           (:catalog/sku-id variant-or-sku))
-     :variant_price    (or (:unit-price variant-or-sku)
-                           (:sku/price variant-or-sku))
-     :variant_quantity (or (:variant_quantity variant-or-sku)
-                           (:quantity variant-or-sku)
-                           1)
-     :variant_name     (or (:variant_name variant-or-sku)
-                           (:variant-name variant-or-sku))
-     :variant_origin   (or (:variant_origin variant-or-sku)
-                           (:origin attrs))
-     :variant_style    (or (:variant_style variant-or-sku)
-                           (:style attrs))
-     :variant_color    (or (:variant_color variant-or-sku)
-                           (:color attrs))
-     :variant_length   (or (:variant_length variant-or-sku)
-                           (:length attrs))
-     :variant_material (or (:variant_material variant-or-sku)
-                           (:material attrs))
-     :variant_image    (products/product-img-with-size variant-or-sku :product)}))
-
-(defn- line-items->cart-items
-  [products-db line-items]
-  (mapv (partial line-item->cart-item products-db) line-items))
-
-(defmethod perform-track events/api-success-add-to-bag
-  [_ _ {:keys [variant quantity] :as args} app-state]
-  (when variant
-    (let [order         (get-in app-state keypaths/order)
-          product-items (orders/product-items order)
-          products-db   (get-in app-state keypaths/products)
-          cart-items    (line-items->cart-items products-db product-items)]
-      (stringer/track-event "add_to_cart" (merge (-> variant ->cart-item)
-                                                 {:order_number   (get-in app-state keypaths/order-number)
-                                                  :order_total    (get-in app-state keypaths/order-total)
-                                                  :order_quantity (orders/product-quantity order)
-                                                  :quantity       quantity
-                                                  :context        {:cart-items cart-items}})))))
-
-(defn product-image [images sku]
-  (->> {:use-case "catalog" :image/of #{"product"}}
-       (selector/select images sku)
-       first))
-
-(defn- sku->cart-item [images sku quantity]
-  (let [{:keys [url alt filename] :as image} (->> {:use-case "catalog" :image/of #{"product"}}
-                                                  (selector/select images sku)
-                                                  first)]
-    {:variant_sku      (:catalog/sku-id sku)
-     :variant_price    (:sku/price sku)
-     :variant_quantity quantity
-     :variant_name     (:sku/title sku)
-     :variant_origin   (:hair/origin sku)
-     :variant_style    (:hair/texture sku)
-     :variant_color    (:hair/color sku)
-     :variant_length   (:hair/length sku)
-     :variant_material (:hair/base-material sku)
-     :variant_image    {:src (str "https:" url filename) :alt alt}
-     :variant_id       (:legacy/variant-id sku)}))
+(defn line-item-skuer->stringer-cart-item
+  "Converts line item skuers into the format that stringer expects"
+  [line-item-skuer]
+  (let [image (products/medium-img line-item-skuer)]
+    {:variant_id       (:legacy/variant-id line-item-skuer)
+     :variant_sku      (:catalog/sku-id line-item-skuer)
+     :variant_price    (:sku/price line-item-skuer)
+     :variant_quantity (:item/quantity line-item-skuer)
+     :variant_name     (:legacy/product-name line-item-skuer)
+     :variant_origin   (-> line-item-skuer :hair/origin first)
+     :variant_style    (-> line-item-skuer :hair/texture first)
+     :variant_color    (-> line-item-skuer :hair/color first)
+     :variant_length   (-> line-item-skuer :hair/length first)
+     :variant_material (-> line-item-skuer :hair/base-material first)
+     :variant_image    (update image :src (partial str "https:"))}))
 
 (defmethod perform-track events/api-success-add-sku-to-bag
   [_ _ {:keys [quantity sku] :as args} app-state]
   (when sku
-    (let [order      (get-in app-state keypaths/order)
-          line-items (orders/product-items order)
-          images     (get-in app-state keypaths/db-images)
-          ;; TODO Investigate further
-          cart-items (mapv (comp (partial apply (partial sku->cart-item images))
-                                 (juxt (comp (get-in app-state keypaths/v2-skus) :sku)
-                                       :quantity))
-                           line-items)]
-      (stringer/track-event "add_to_cart" (merge (sku->cart-item images sku quantity)
-                                                 {:order_number   (get-in app-state keypaths/order-number)
-                                                  :order_total    (get-in app-state keypaths/order-total)
-                                                  :order_quantity (orders/product-quantity order)
-                                                  :quantity       quantity
-                                                  :context        {:cart-items cart-items}})))))
+    (let [order (get-in app-state keypaths/order)
+
+          line-item-skuers (waiter-line-items->line-item-skuer
+                            (get-in app-state keypaths/v2-skus)
+                            (orders/product-items order))
+
+          cart-items (mapv line-item-skuer->stringer-cart-item line-item-skuers)]
+      (stringer/track-event "add_to_cart" (merge (line-item-skuer->stringer-cart-item sku)
+                                                 {:order_number     (get-in app-state keypaths/order-number)
+                                                  :order_total      (get-in app-state keypaths/order-total)
+                                                  :order_quantity   (orders/product-quantity order)
+                                                  :variant_quantity quantity
+                                                  :quantity         quantity
+                                                  :context          {:cart-items cart-items}})))))
 
 (defmethod perform-track events/api-success-shared-cart-create [_ _ {:keys [cart]} app-state]
   (let [{:keys [stylist-id number line-items]} cart
@@ -250,17 +181,20 @@
 
 (defmethod perform-track events/api-success-update-order-from-shared-cart
   [_ _ {:keys [order shared-cart-id]} app-state]
-  (let [product-items (orders/product-items order)
-        cart-items    (mapv ->cart-item product-items)]
+  (let [line-item-skuers (waiter-line-items->line-item-skuer
+                          (get-in app-state keypaths/v2-skus)
+                          (orders/product-items order))
+
+        cart-items (mapv line-item-skuer->stringer-cart-item line-item-skuers)]
     (facebook-analytics/track-event "AddToCart" {:content_type "product"
-                                                 :content_ids  (map :sku product-items)
-                                                 :num_items    (->> product-items (map :quantity) (apply +))})
+                                                 :content_ids  (map :catalog/sku-id line-item-skuers)
+                                                 :num_items    (->> line-item-skuers (map :item/quantity) (reduce + 0))})
     (stringer/track-event "bulk_add_to_cart" {:shared_cart_id shared-cart-id
                                               :order_number   (:number order)
                                               :order_total    (get-in app-state keypaths/order-total)
                                               :order_quantity (orders/product-quantity order)
-                                              :skus           (->> product-items (map :sku) (string/join ","))
-                                              :variant_ids    (->> product-items (map :id) (string/join ","))
+                                              :skus           (->> line-item-skuers (map :catalog/sku-id) (string/join ","))
+                                              :variant_ids    (->> line-item-skuers (map :legacy/variant-id) (string/join ","))
                                               :context        {:cart-items cart-items}})))
 
 (defmethod perform-track events/control-cart-share-show [_ event args app-state]
@@ -295,48 +229,37 @@
      :promo_codes             (->> promotion-codes (string/join ","))
      :total_quantity          (orders/product-quantity order)}))
 
-(defn- enriched-product->pinterest-line-item
-  "Makes a flattened key version of variants"
-  [variant]
-  (let [attrs (or (:variant-attrs variant)
-                  (:variant_attrs variant))]
-    {:product_id       (or (:variant_id variant)
-                           (:id variant))
-     :sku              (or (:variant_sku variant)
-                           (:sku variant))
-     :product_price    (or (:unit-price variant)
-                           (:price variant))
-     :product_quantity (or (:variant_quantity variant)
-                           (:quantity variant))
-     :product_name     (or (:variant_name variant)
-                           (:variant-name variant))
-     :category         (or (:category variant)
-                           (:category attrs))
-     :origin           (or (:variant_origin variant)
-                           (:origin attrs))
-     :style            (or (:variant_style variant)
-                           (:style attrs))
-     :color            (or (:variant_color variant)
-                           (:color attrs))
-     :length           (or (:variant_length variant)
-                           (:length attrs))
-     :material         (or (:variant_material variant)
-                           (:material attrs))}))
+(defn- line-item-skuer->pinterest-line-item
+  "Pinterest representation of a line item skuer.
+
+  A Line Item Skuer is expected to be a Sku with an :item/quantity."
+  [skuer]
+  {:product_id       (:legacy/product-id skuer)
+   :sku              (:catalog/sku-id skuer)
+   :product_price    (:sku/price skuer)
+   :product_quantity (:item/quantity skuer)
+   :product_name     (:legacy/product-name skuer)
+   :category         (-> skuer :catalog/department first)
+   :origin           (-> skuer :hair/origin first)
+   :style            (-> skuer :hair/texture first)
+   :color            (-> skuer :hair/color first)
+   :length           (-> skuer :hair/length first)
+   :material         (-> skuer :hair/base-material first)})
 
 (defmethod perform-track events/order-completed [_ event order app-state]
-  (stringer/identify {:id (-> order :user :id)
+  (stringer/identify {:id    (-> order :user :id)
                       :email (-> order :user :email)})
   (stringer/track-event "checkout-complete" (stringer-order-completed order))
-  (let [order-total (:total order)
+  (let [order-total      (:total order)
 
-        product-items     (orders/product-items order)
-        enriched-products (order-product-items->enriched-products
-                           (get-in app-state keypaths/products)
-                           product-items)
+        line-item-skuers (waiter-line-items->line-item-skuer (get-in app-state keypaths/v2-skus)
+                                                             (orders/product-items order))
 
         store-slug (get-in app-state keypaths/store-slug)
         shipping   (orders/shipping-item order)
         user       (get-in app-state keypaths/user)
+
+        order-quantity (->> line-item-skuers (map :item/quantity) (reduce + 0))
 
         shared-fields {:buyer_type            (cond
                                                 (:store-slug user) "stylist"
@@ -352,16 +275,15 @@
                        :used_promotion_codes  (->> order :promotions (map :code))}]
     (facebook-analytics/track-event "Purchase" (merge shared-fields
                                                       {:value        (str order-total) ;; Facebook wants a string
-                                                       :content_ids  (map :sku product-items)
+                                                       :content_ids  (map :catalog/sku-id line-item-skuers)
                                                        :content_type "product"
-                                                       :num_items    (count product-items)}))
+                                                       :num_items    order-quantity}))
 
     (pinterest/track-event "checkout" (merge shared-fields
                                              {:value          order-total ;; Pinterest wants a number
                                               :order_id       (:number order)
-                                              :order_quantity (->> product-items (map :quantity) (apply +))
-                                              :line_items     (mapv enriched-product->pinterest-line-item
-                                                                    enriched-products)}))
+                                              :order_quantity order-quantity
+                                              :line_items     (mapv line-item-skuer->pinterest-line-item line-item-skuers)}))
 
     (convert/track-conversion "place-order")
     (convert/track-revenue (convert-revenue order))
