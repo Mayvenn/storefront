@@ -160,24 +160,24 @@
                                                   :context          {:cart-items cart-items}})))))
 
 (defmethod perform-track events/api-success-shared-cart-create [_ _ {:keys [cart]} app-state]
-  (let [{:keys [stylist-id number line-items]} cart
-        line-items    (map (fn [[k v]]
-                             {:id       (js/parseInt (name k))
-                              :quantity v})
-                           line-items)
-        all-variants  (->> (get-in app-state keypaths/products)
-                           (map val)
-                           (mapcat :variants))
-        ;; not guaranteed that we've loaded the right products yet, so use this sparingly
-        cart-variants (map (fn [{:keys [id]}]
-                             (query/get {:id id} all-variants))
-                           line-items)]
-    (stringer/track-event "shared_cart_created" {:shared_cart_id number
-                                                 :stylist_id     stylist-id
-                                                 :skus           (->> cart-variants (map :sku) (string/join ","))
-                                                 :variant_ids    (->> line-items (map :id) (string/join ","))
-                                                 :quantities     (->> line-items (map :quantity) (string/join ","))
-                                                 :total_quantity (->> line-items (map :quantity) (reduce + 0))})))
+  (let [all-skus                 (get-in app-state keypaths/v2-skus)
+        sku-by-legacy-variant-id (fn [variant-id]
+                                   (->> all-skus
+                                        (filter #(= (:legacy/variant-id %)
+                                                    variant-id))
+                                        first))
+        line-item-skuers         (->> (:line-items cart)
+                                      (map (fn [[k v]]
+                                             (when-let [sku (sku-by-legacy-variant-id (js/parseInt (name k)))]
+                                               (merge sku {:item/quantity v}))))
+                                      (remove nil?))]
+    (stringer/track-event "shared_cart_created"
+                          {:shared_cart_id (-> cart :number)
+                           :stylist_id     (-> cart :stylist-id)
+                           :skus           (->> line-item-skuers (map :catalog/sku-id) (string/join ","))
+                           :variant_ids    (->> line-item-skuers (map :legacy/variant-id) (string/join ","))
+                           :quantities     (->> line-item-skuers (map :item/quantity) (string/join ","))
+                           :total_quantity (->> line-item-skuers (map :item/quantity) (reduce + 0))})))
 
 (defmethod perform-track events/api-success-update-order-from-shared-cart
   [_ _ {:keys [order shared-cart-id]} app-state]
