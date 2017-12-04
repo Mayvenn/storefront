@@ -460,49 +460,42 @@
 
 (deftest server-side-renders-product-details-page
   (testing "when the product does not exist storefront returns 404"
-    (let [number "W123456"
-          token "iA1bjIUAqCfyS3cuvdNYindmlRZ3ICr3g+vSfzvUM1c="
-          [storeback-requests storeback-handler] (with-requests-chan (routes
+    (let [[storeback-requests storeback-handler] (with-requests-chan (routes
                                                                       (GET "/v2/orders/:number" req {:status 404
-                                                                                                     :body "{}"})
-                                                                      (GET "/sku-sets" req
+                                                                                                     :body   "{}"})
+                                                                      (GET "/v2/products" req
                                                                            {:status 200
-                                                                            :body (generate-string {:sku-sets []})})
-                                                                      (GET "/named-searches" req {:status 200
-                                                                                                  :body "{}"})
+                                                                            :body   (generate-string {:products []})})
                                                                       (GET "/store" req storeback-stylist-response)))]
       (with-standalone-server [storeback (standalone-server storeback-handler)]
         (with-handler handler
           (let [resp (handler (mock/request :get "https://bob.mayvenn.com/products/99-red-balloons"))]
             (is (= 404 (:status resp))))))))
   (testing "when the product exists"
-    (let [number "W123456"
-          token "iA1bjIUAqCfyS3cuvdNYindmlRZ3ICr3g+vSfzvUM1c="
-          [storeback-requests storeback-handler] (with-requests-chan (routes
-                                                                      (GET "/v2/orders/:number" req {:status 404
-                                                                                                     :body "{}"})
-                                                                      (GET "/sku-sets" req
-                                                                           {:status 200
-                                                                            :body (generate-string {:sku-sets [{:sku-set/id "99"
-                                                                                                                :sku-set/slug "balloons"
-                                                                                                                :sku-set/skus ["BAL"]}]
-                                                                                                    :skus [{:sku "BAL"
-                                                                                                            :price 124
-                                                                                                            :sku/name "A balloon"
-                                                                                                            :images []
-                                                                                                            :in-stock? true
-                                                                                                            :disabled? false
-                                                                                                            :attributes {}
-                                                                                                            :launched-at "2016-01-01T00:00:00.000Z"
-                                                                                                            :sku/title "A balloon"
-                                                                                                            :legacy/variant-id 999
-                                                                                                            :legacy/product-name "A balloon"
-                                                                                                            :stylist-only? false
-                                                                                                            :promo.triple-bundle/eligible true
-                                                                                                            :legacy/product-id 99}]})})
-                                                                      (GET "/named-searches" req {:status 200
-                                                                                                  :body "{}"})
-                                                                      (GET "/store" req storeback-stylist-response)))]
+    (let [[_ storeback-handler]
+          (with-requests-chan (routes
+                               (GET "/v2/orders/:number" req {:status 404
+                                                              :body   "{}"})
+                               (GET "/v2/products" req
+                                    {:status 200
+                                     :body   (generate-string {:products [{:catalog/product-id "99"
+                                                                           :selector/skus      ["BAL"]
+                                                                           :page/slug          "balloons"}]
+                                                               :skus     [{:catalog/sku-id               "BAL"
+                                                                           :catalog/stylist-only?        false
+                                                                           :catalog/launched-at          "2016-01-01T00:00:00.000Z"
+                                                                           :selector/essentials          []
+                                                                           :selector/electives           []
+                                                                           :selector/images              []
+                                                                           :inventory/in-stock?          true
+                                                                           :sku/price                    124
+                                                                           :sku/title                    "A balloon"
+                                                                           :legacy/product-name          "A balloon"
+                                                                           :legacy/product-id            99
+                                                                           :legacy/variant-id            999
+                                                                           :promo.triple-bundle/eligible true}]})})
+                               (GET "/store" req
+                                    storeback-stylist-response)))]
       (with-standalone-server [storeback (standalone-server storeback-handler)]
         (with-handler handler
           (let [resp (handler (mock/request :get "https://bob.mayvenn.com/products/99-balloons"))]
@@ -536,7 +529,7 @@
 (deftest sitemap-on-a-valid-store-domain
   (let [[requests handler] (with-requests-chan (constantly {:status 200
                                                             :body   (generate-string {:skus []
-                                                                                      :sku-sets []})}))]
+                                                                                      :products []})}))]
     (with-standalone-server [storeback (standalone-server handler)]
       (with-handler handler
         (let [resp (handler (mock/request :get "https://shop.mayvenn.com/sitemap.xml"))]
@@ -545,7 +538,7 @@
 (deftest sitemap-does-not-exist-on-root-domain
   (let [[requests handler] (with-requests-chan (constantly {:status 200
                                                             :body   (generate-string {:skus []
-                                                                                      :sku-sets []})}))]
+                                                                                      :products []})}))]
     (with-standalone-server [storeback (standalone-server handler)]
       (with-handler handler
         (let [resp (handler (mock/request :get "https://mayvenn.com/sitemap.xml"))]
@@ -554,7 +547,7 @@
 (deftest sitemap-does-not-exist-on-welcome-subdomain
   (let [[requests handler] (with-requests-chan (constantly {:status 200
                                                             :body   (generate-string {:skus []
-                                                                                      :sku-sets []})}))]
+                                                                                      :products []})}))]
     (with-standalone-server [storeback (standalone-server handler)]
       (with-handler handler
         (let [resp (handler (mock/request :get "https://welcome.mayvenn.com/sitemap.xml"))]
