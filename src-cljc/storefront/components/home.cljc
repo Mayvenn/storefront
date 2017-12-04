@@ -83,9 +83,9 @@
    [:a
     (assoc (utils/route-to events/navigate-shop-by-look)
            :data-test "home-banner")
-    (let [file-name "Classics-Made-Colorful.jpg"
-          alt       "Dyed Virgin Hair is here! Shop dyed virgin hair."
-          mob-uuid  "710c1016-11e3-4a92-ad5a-e72a3ad49255"
+    (let [file-name "Stealing-Hearts.jpg"
+          alt       "Gift yourself irresistible textures. Shop now!"
+          mob-uuid  "e0cfde2a-4fec-4d20-b534-658d2be2a771"
           dsk-uuid  "614770c2-954c-48d5-9126-3845f3bbaad9"]
       (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
                    :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
