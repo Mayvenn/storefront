@@ -230,17 +230,6 @@
 (defn redirect-to-cart [query-params]
   (util.response/redirect (str "/cart?" (codec/form-encode query-params))))
 
-;; TODO refactor from v0 -> v2
-(defn redirect-product->canonical-url
-  "Checks that the product exists, and redirects to its canonical url"
-  [{:keys [storeback-config]} req {:keys [product-slug]}]
-  (some-> (api/product storeback-config product-slug (cookies/get req "id") (cookies/get req "user-token"))
-          ;; currently, always the category url... better logic would be to
-          ;; util.response/redirect if we're not on the canonical url, though
-          ;; that would require that the cljs code handle event/navigate-old-product
-          :url-path
-          (util.response/redirect :moved-permanently)))
-
 (defn redirect-named-search
   [render-ctx data req {:keys [named-search-slug]}]
   (let [categories (get-in data keypaths/categories)]
