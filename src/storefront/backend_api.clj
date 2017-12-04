@@ -48,15 +48,6 @@
     (when (not-404 response)
       (:products (:body response)))))
 
-;;TODO Remove (old)
-(defn product [storeback-config product-slug user-id user-token]
-  (let [response (storeback-fetch storeback-config "/products"
-                                  {:query-params {:slug product-slug
-                                                  :user-id user-id
-                                                  :user-token user-token}})]
-    (when (not-404 response)
-      (:body response))))
-
 (defn verify-paypal-payment [storeback-config number order-token ip-addr {:strs [sid utm-params]}]
   (let [{:keys [status body]} (storeback-post storeback-config "/v2/place-order"
                                               {:form-params {:number number
