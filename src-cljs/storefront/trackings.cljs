@@ -87,7 +87,7 @@
   (stringer/track-event "select_bundle_option" {:option_name  (name selection)
                                                 :option_value value}))
 
-(defmethod perform-track events/control-add-sku-to-bag [_ event {:keys [sku quantity] :as args} app-state]
+(defmethod perform-track events/control-add-sku-to-bag [_ event {:keys [sku quantity]} app-state]
   (facebook-analytics/track-event "AddToCart" {:content_type "product"
                                                :content_ids  [(:catalog/sku-id sku)]
                                                :num_items    quantity})
