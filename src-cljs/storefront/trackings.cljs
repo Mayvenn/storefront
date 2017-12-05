@@ -157,7 +157,7 @@
                                                   :context          {:cart-items cart-items}})))))
 
 (defmethod perform-track events/api-success-shared-cart-create [_ _ {:keys [cart]} app-state]
-  (let [all-skus                 (get-in app-state keypaths/v2-skus)
+  (let [all-skus                 (vals (get-in app-state keypaths/v2-skus))
         sku-by-legacy-variant-id (fn [variant-id]
                                    (->> all-skus
                                         (filter #(= (:legacy/variant-id %)
