@@ -76,12 +76,16 @@
                              user-token
                              stylist-id))))
 
-(defn refresh-products [app-state product-ids]
+(defn refresh-products
   ;;TODO Fix this hack (was done to get dyed-hair out the door)
   ;;     Should not be fetching all of the products
-  (api/search-v2-products (get-in app-state keypaths/api-cache)
-                          {}
-                          (partial messages/handle-message events/api-success-v2-products)))
+  ;;     We can get rid of this once we can query by legacy/product-id
+  ([app-state]
+   (api/search-v2-products (get-in app-state keypaths/api-cache)
+                           {}
+                           (partial messages/handle-message events/api-success-v2-products)))
+  ([app-state product-ids]
+   (refresh-products app-state)))
 
 (defn ensure-products [app-state product-ids]
   (let [not-cached (remove (products/loaded-ids app-state) (set product-ids))]
@@ -288,6 +292,9 @@
 (defmethod perform-effects events/navigate-shop-by-look [_ event {:keys [look-id]} _ app-state]
   (when-not look-id ;; we are on navigate-shop-by-look, not navigate-shop-by-look-details
     (pixlee/fetch-mosaic)))
+
+(defmethod perform-effects events/navigate-shared-cart [_ event args _ app-state]
+  (refresh-products app-state))
 
 (defmethod perform-effects events/navigate-shop-by-look-details [_ event {:keys [look-id]} _ app-state]
   (pixlee/fetch-bundle-deals)

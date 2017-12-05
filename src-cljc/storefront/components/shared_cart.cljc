@@ -9,7 +9,7 @@
             [storefront.request-keys :as request-keys]
             [storefront.keypaths :as keypaths]))
 
-(defn component [{:keys [shared-cart-id store creating-cart? advertised-promo]} owner opts]
+(defn component [{:keys [shared-cart-id store fetching-products? creating-cart? advertised-promo]} owner opts]
   (component/create
    (let [{:keys [portrait store_nickname]} store]
      [:div.container.p4
@@ -32,13 +32,15 @@
        {:on-submit (utils/send-event-callback events/control-create-order-from-shared-cart {:shared-cart-id shared-cart-id})}
        (ui/submit-button "View your bag"
                          {:data-test "create-order-from-shared-cart"
-                          :spinning? creating-cart?})]])))
+                          :spinning? (or fetching-products?
+                                         creating-cart?)})]])))
 
 (defn query [data]
-  {:shared-cart-id   (get-in data keypaths/shared-cart-id)
-   :store            (get-in data keypaths/store)
-   :advertised-promo (promos/default-advertised-promotion (get-in data keypaths/promotions))
-   :creating-cart?   (utils/requesting? data request-keys/create-order-from-shared-cart)})
+  {:shared-cart-id     (get-in data keypaths/shared-cart-id)
+   :store              (get-in data keypaths/store)
+   :advertised-promo   (promos/default-advertised-promotion (get-in data keypaths/promotions))
+   :fetching-products? (utils/requesting? data (conj request-keys/search-v2-products {}))
+   :creating-cart?     (utils/requesting? data request-keys/create-order-from-shared-cart)})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
