@@ -107,7 +107,7 @@
      [:a.gray.medium (utils/fake-href events/control-cart-remove (:id line-item)) "Remove"])
    [:.h3
     (ui/counter {:spinning? updating?
-                 :data-test (:sku sku)}
+                 :data-test (:catalog/sku-id sku)}
                 (:quantity line-item)
                 (utils/send-event-callback events/control-cart-line-item-dec {:variant line-item})
                 (utils/send-event-callback events/control-cart-line-item-inc {:variant line-item}))]])
