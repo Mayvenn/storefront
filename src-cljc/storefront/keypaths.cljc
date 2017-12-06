@@ -48,8 +48,6 @@
 (def store-stylist-id (conj store :stylist_id))
 (def store-gallery-images (conj store :gallery :images))
 
-(def named-searches [:named-searches])
-
 (def v2-products [:v2 :products])
 (def v2-skus [:v2 :skus])
 (def v2-facets [:v2 :facets])
@@ -85,7 +83,6 @@
 (def navigation-stashed-stack-item (conj ui :navigation-stashed-stack-item))
 (def navigation-undo-stack (conj ui :navigation-undo-stack))
 (def navigation-redo-stack (conj ui :navigation-redo-stack))
-(def browse-named-search-query (conj ui :browse-named-search-query))
 (def browse-variant-quantity (conj ui :browse-variant-quantity))
 (def browse-sku-quantity (conj ui :browse-sku-quantity))
 (def browse-recently-added-variants (conj ui :browse-recently-added-variants))

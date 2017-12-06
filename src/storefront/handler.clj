@@ -366,7 +366,6 @@
       (assoc-in keypaths/store store)
       (assoc-in keypaths/environment environment)
       experiments/determine-features
-      (assoc-in keypaths/named-searches (api/named-searches storeback-config))
       (assoc-in keypaths/order (api/get-order storeback-config order-number order-token))
       (assoc-in keypaths/categories categories/initial-categories)
       (assoc-in keypaths/static (static-page nav-event))
@@ -435,6 +434,7 @@
   {events/navigate-home                       generic-server-render
    events/navigate-category                   render-category
    events/navigate-legacy-named-search        redirect-named-search
+   events/navigate-legacy-ugc-named-search    redirect-named-search
    events/navigate-product-details            render-product-details
    events/navigate-content-help               generic-server-render
    events/navigate-content-about-us           generic-server-render

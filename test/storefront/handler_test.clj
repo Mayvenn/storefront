@@ -509,8 +509,6 @@
                                                                       (GET "/v2/orders/:number" req {:status 200
                                                                                                      ;; TODO: fixme
                                                                                                      :body "{\"number\": \"W123456\"}"})
-                                                                      (GET "/named-searches" req {:status 200
-                                                                                                  :body "{}"})
                                                                       (GET "/store" req storeback-stylist-response)))]
       (with-standalone-server [storeback (standalone-server storeback-handler)]
         (with-handler handler

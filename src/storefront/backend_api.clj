@@ -35,19 +35,6 @@
 
 (def not-404 (comp (partial not= 404) :status))
 
-(defn named-searches [storeback-config]
-  (let [response (storeback-fetch storeback-config "/named-searches" {})]
-    (when (not-404 response)
-      (:searches (:body response)))))
-
-(defn products-by-ids [storeback-config product-ids user-id user-token]
-  (let [response (storeback-fetch storeback-config "/products"
-                                  {:query-params {:ids (sort (distinct product-ids))
-                                                  :user-id user-id
-                                                  :user-token user-token}})]
-    (when (not-404 response)
-      (:products (:body response)))))
-
 (defn verify-paypal-payment [storeback-config number order-token ip-addr {:strs [sid utm-params]}]
   (let [{:keys [status body]} (storeback-post storeback-config "/v2/place-order"
                                               {:form-params {:number number

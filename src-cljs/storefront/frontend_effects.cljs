@@ -8,7 +8,6 @@
             [storefront.accessors.experiments :as experiments]
             [catalog.categories :as categories]
             [storefront.accessors.auth :as auth]
-            [storefront.accessors.named-searches :as named-searches]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.pixlee :as accessors.pixlee]
             [storefront.accessors.products :as products]
@@ -294,21 +293,6 @@
   (if-let [shared-cart-id (:shared-cart-id (accessors.pixlee/selected-look app-state))]
     (api/fetch-shared-cart shared-cart-id)
     (pixlee/fetch-image look-id)))
-
-(defn fetch-current-named-search-album [app-state]
-  (when-let [{:keys [slug]} (named-searches/current-named-search app-state)]
-    (when-let [album-id (get-in config/pixlee [:albums slug])]
-      (pixlee/fetch-album album-id slug))))
-
-(defn hidden-search? [app-state named-search]
-  (and (:stylist_only? named-search)
-       (not (stylists/own-store? app-state))))
-
-(defmethod perform-effects events/navigate-ugc-named-search [_ event args _ app-state]
-  (let [named-search (named-searches/current-named-search app-state)]
-    (if (hidden-search? app-state named-search)
-      (page-not-found)
-      (fetch-current-named-search-album app-state))))
 
 (defmethod perform-effects events/pixlee-api-success-fetch-image [_ event _ _ app-state]
   (when-let [shared-cart-id (:shared-cart-id (accessors.pixlee/selected-look app-state))]

@@ -96,7 +96,6 @@
           :images #{}}
 
      :store {}
-     :named-searches []
      :products {}
      :states []
      :shipping-methods []
@@ -145,7 +144,6 @@
           :navigation-message [events/navigate-home {}]
           :return-navigation-message [events/navigate-home {}]
           :errors {}
-          :browse-named-search-query {}
           :browse-variant-quantity 1
           :browse-recently-added-variants []
           :menu-expanded false

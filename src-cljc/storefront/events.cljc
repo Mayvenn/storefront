@@ -19,7 +19,7 @@
 (defpath navigate-category)
 (defpath navigate-category-update)
 (defpath navigate-legacy-named-search)
-(defpath navigate-ugc-named-search)
+(defpath navigate-legacy-ugc-named-search)
 (defpath navigate-product-details)
 (defpath navigate-sign-in)
 (defpath navigate-sign-out)

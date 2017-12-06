@@ -49,7 +49,7 @@
    ["/categories/hair/" :named-search-slug]
    (edn->bidi events/navigate-legacy-named-search)
    ["/categories/hair/" :named-search-slug "/social"]
-   (edn->bidi events/navigate-ugc-named-search)
+   (edn->bidi events/navigate-legacy-ugc-named-search)
 
    ["/products/" [#"\d+" :catalog/product-id] "-" :page/slug]
    (edn->bidi events/navigate-product-details)})

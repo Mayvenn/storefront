@@ -166,11 +166,6 @@
 (defmethod transition-state events/navigate-sign-out [_ event {{:keys [telligent-url]} :query-params} app-state]
   (assoc-valid-telligent-url app-state telligent-url))
 
-(defmethod transition-state events/navigate-ugc-named-search [_ event {:keys [named-search-slug query-params]} app-state]
-  (-> app-state
-      (assoc-in (conj keypaths/browse-named-search-query :slug) named-search-slug)
-      (assoc-in keypaths/ui-ugc-category-popup-offset (js/parseInt (:offset query-params 0) 10))))
-
 (defmethod transition-state events/navigate-reset-password [_ event {:keys [reset-token]} app-state]
   (assoc-in app-state keypaths/reset-password-token reset-token))
 
