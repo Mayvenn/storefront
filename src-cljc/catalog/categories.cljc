@@ -14,20 +14,6 @@
 (def new-category?
   #{"360-frontals" "wigs"})
 
-(def named-search->category-id
-  {"closures"       "0"
-   "frontals"       "1"
-   "straight"       "2"
-   "yaki-straight"  "3"
-   "kinky-straight" "4"
-   "body-wave"      "5"
-   "loose-wave"     "6"
-   "water-wave"     "7"
-   "deep-wave"      "8"
-   "curly"          "9"
-   "360-frontals"   "10"
-   "wigs"           "13"})
-
 (defn copy [& sentences]
   (string/join " " sentences))
 

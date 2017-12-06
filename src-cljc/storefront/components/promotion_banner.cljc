@@ -7,7 +7,6 @@
 
 (def allowed-navigation-events
   #{events/navigate-home
-    events/navigate-named-search
     events/navigate-cart
     events/navigate-shop-by-look
     events/navigate-shop-by-look-details})

@@ -49,7 +49,6 @@
 (def store-gallery-images (conj store :gallery :images))
 
 (def named-searches [:named-searches])
-(def products [:products])
 
 (def v2-products [:v2 :products])
 (def v2-skus [:v2 :skus])

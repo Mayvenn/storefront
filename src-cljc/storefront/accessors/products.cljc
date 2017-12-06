@@ -3,7 +3,7 @@
             [storefront.utils.query :as query]))
 
 (defn loaded-ids [data]
-  (set (keys (get-in data keypaths/products))))
+  (set (keys (get-in data keypaths/v2-products))))
 
 (defn product-title
   "Prefer variant-name, if available. Otherwise use product name (product-name

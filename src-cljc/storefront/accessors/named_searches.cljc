@@ -11,9 +11,6 @@
   (->> (get-in app-state keypaths/named-searches)
        (query/all (dissoc (get-in app-state keypaths/browse-named-search-query) :slug))))
 
-(defn products-loaded? [app-state named-search]
-  (every? (products/loaded-ids app-state) (:product-ids named-search)))
-
 (defn first-with-product-id [named-searches product-id]
   (->> named-searches
        (filter #(-> % :product-ids set (contains? product-id)))

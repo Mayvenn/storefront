@@ -145,19 +145,6 @@
    {:params {:additional-promo-code promo-code}
     :handler #(messages/handle-message events/api-success-promotions %)}))
 
-(defn get-products-by-ids [product-ids user-id user-token]
-  (let [product-ids (->> product-ids (into (sorted-set)) vec)]
-    (api-req
-     GET
-     "/products"
-     (conj request-keys/get-products product-ids)
-     {:params {:ids        product-ids
-               :user-id    user-id
-               :user-token user-token}
-      :handler
-      #(messages/handle-message events/api-success-products
-                                (select-keys % [:products]))})))
-
 (defn criteria->query-params [criteria]
   (->> criteria
        (map (fn [[k v]]

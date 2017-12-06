@@ -19,7 +19,6 @@
 (defpath navigate-category)
 (defpath navigate-category-update)
 (defpath navigate-legacy-named-search)
-(defpath navigate-named-search)
 (defpath navigate-ugc-named-search)
 (defpath navigate-product-details)
 (defpath navigate-sign-in)
@@ -222,7 +221,6 @@
 (defpath api-success)
 (defpath api-success-cache)
 
-(defpath api-success-products)
 (defpath api-success-states)
 
 (defpath api-success-v2-products)

@@ -6,9 +6,9 @@
             [storefront.effects :refer [perform-effects redirect page-not-found] :as effects]
             [storefront.accessors.credit-cards :refer [parse-expiration filter-cc-number-format]]
             [storefront.accessors.experiments :as experiments]
-            [storefront.accessors.named-searches :as named-searches]
             [catalog.categories :as categories]
             [storefront.accessors.auth :as auth]
+            [storefront.accessors.named-searches :as named-searches]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.pixlee :as accessors.pixlee]
             [storefront.accessors.products :as products]
@@ -87,14 +87,12 @@
   ([app-state product-ids]
    (refresh-products app-state)))
 
+;; TODO Before you fix this, make sure that you are passing in v2-product ids
+;;      This currently just refetches all products from cellar.
 (defn ensure-products [app-state product-ids]
-  (let [not-cached (remove (products/loaded-ids app-state) (set product-ids))]
+  (let [not-cached (set/difference (set product-ids)
+                                   (products/loaded-ids app-state))]
     (refresh-products app-state not-cached)))
-
-(defn refresh-named-search-products
-  "Intentionally bypass ensure-products whenever we navigate to a category"
-  [app-state named-search]
-  (refresh-products app-state (:product-ids named-search)))
 
 (defn update-email-capture-session [app-state]
   (when-let [value (get-in app-state keypaths/email-capture-session)]
@@ -103,12 +101,6 @@
 (defn scroll-promo-field-to-top []
   ;; In a timeout so that changes to the advertised promo aren't changing the scroll too.
   (js/setTimeout #(scroll/scroll-selector-to-top "[data-ref=promo-code]") 0))
-
-(defn redirect-named-search [category]
-  ;; TODO: ensure we have a redirect for all named-searches. Most should go to
-  ;; a category page. Kits should redirect straight to product page.
-  (when category
-    (redirect events/navigate-category category)))
 
 (defmethod perform-effects events/app-start [dispatch event args _ app-state]
   (svg/insert-sprite)
@@ -231,6 +223,7 @@
         "financing" (affirm/show-modal)))
 
     (when-let [order (get-in app-state keypaths/order)]
+      ;; TODO should pass v2-product ids into ensure products
       (ensure-products app-state (map :product-id (orders/product-items order)))
       (if (orders/incomplete? order)
         (do
@@ -310,19 +303,6 @@
 (defn hidden-search? [app-state named-search]
   (and (:stylist_only? named-search)
        (not (stylists/own-store? app-state))))
-
-(defmethod perform-effects events/navigate-named-search [_ event args _ app-state]
-  (if-let [category (categories/named-search->category
-                     (get-in app-state (conj keypaths/navigation-args :named-search-slug))
-                     (get-in app-state keypaths/categories))]
-    (redirect-named-search category)
-    (let [named-search (named-searches/current-named-search app-state)]
-      (if (hidden-search? app-state named-search)
-        (page-not-found)
-        (do
-          (reviews/insert-reviews)
-          (refresh-named-search-products app-state named-search)
-          (fetch-current-named-search-album app-state))))))
 
 (defmethod perform-effects events/navigate-ugc-named-search [_ event args _ app-state]
   (let [named-search (named-searches/current-named-search app-state)]
@@ -406,6 +386,7 @@
   (handle-message events/external-redirect-telligent))
 
 (defmethod perform-effects events/api-success-stylist-commissions [_ event args _ app-state]
+  ;; TODO should pass v2-product ids into ensure products
   (ensure-products app-state
                    (->> (get-in app-state keypaths/stylist-commissions-history)
                         (map :order)
@@ -1056,4 +1037,5 @@
                 (get-in app-state-before keypaths/user-token)))
 
 (defmethod perform-effects events/api-success-shared-cart-fetch [_ event {:keys [cart]} _ app-state]
+  ;; TODO should pass v2-product ids into ensure products
   (ensure-products app-state (map :product-id (:line-items cart))))

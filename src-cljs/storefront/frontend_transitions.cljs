@@ -328,9 +328,6 @@
       :finally
       (update-in keypaths/checkout-credit-card-selected-id #(or % (:id default-card))))))
 
-(defmethod transition-state events/api-success-products [_ event {:keys [products]} app-state]
-  (update-in app-state keypaths/products merge (maps/index-by :id products)))
-
 (defmethod transition-state events/api-success-facets
   [_ event {:keys [facets]} app-state]
   (assoc-in app-state keypaths/v2-facets (map #(update % :facet/slug keyword) facets)))
