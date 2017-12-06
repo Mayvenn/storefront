@@ -15,7 +15,9 @@
             [storefront.request-keys :as request-keys]
             [storefront.keypaths :as keypaths]
             [storefront.utils.query :as query]
-            [goog.string]))
+            [goog.string]
+            [goog.userAgent.product :as product]
+            [spice.core :as spice]))
 
 (defn status-look [status]
   (case status
@@ -23,17 +25,17 @@
     "paid"      "navy"
     "processing" "teal"))
 
-(defn show-item [products {:keys [id product-id unit-price variant-attrs quantity] :as line-item}]
-  (let [variant (query/get {:id id}
-                           (:variants (get products product-id)))]
+(defn show-item [products skus {:keys [id sku product-id unit-price quantity] :as line-item}]
+  (let [product  (get products sku)
+        full-sku (get skus sku)]
     [:div.py2.clearfix {:key id}
      [:img.left.border.border-light-gray.mr3
-      (assoc (products/small-img products product-id)
+      (assoc (products/medium-img full-sku)
              :style {:width "5rem"})]
      [:div.overflow-hidden
-      [:div.h4.medium.titleize (products/product-title variant)]
+      [:div.h4.medium.titleize (:sku/title full-sku)]
       [:div.h5.mt1
-       (when-let [length (:length variant-attrs)]
+       (when-let [length (:hair/length sku)]
          [:div "Length: " length])
        [:div "Price: " (mf/as-money unit-price)]
        [:div "Quantity: " quantity]]]]))
@@ -97,10 +99,10 @@
   [:div.h3.p2.col-12.right-align.navy.border-top.border-light-gray
    (mf/as-money commissionable-amount)])
 
-(defn show-order [products order]
+(defn show-order [products skus order]
   [:div.px2
    (for [item (orders/product-items order)]
-     (show-item products item))
+     (show-item products skus item))
 
    (show-subtotals order)])
 
@@ -158,7 +160,8 @@
 
 (defn show-commission [{:keys [id number order commissionable-amount] :as commission}
                        expanded?
-                       products]
+                       products
+                       skus]
   [:div {:key id}
    (show-collapsed-commission expanded? commission)
    (when order
@@ -169,7 +172,7 @@
                        (when (expanded? number)
                          [:div.transition-3.transition-ease.overflow-auto.commission-order
                           [:.dark-gray.bg-light-gray
-                           (show-order products order)
+                           (show-order products skus order)
                            (show-grand-total commissionable-amount)]
                           (show-payout commission)])))])
 
@@ -198,7 +201,7 @@
    [:div.center.my2.h6
     [:a.dark-gray (utils/route-to events/navigate-content-program-terms) "Mayvenn Program Terms"]]])
 
-(defn component [{:keys [commissions expanded? products fetching?]}]
+(defn component [{:keys [commissions expanded? products skus fetching?]}]
   (om/component
    (let [{:keys [history page pages rate]} commissions]
      (html
@@ -210,16 +213,30 @@
           (when-let [history (seq history)]
             [:div.mb3
              (for [commission history]
-               (show-commission commission expanded? products))
+               (show-commission commission expanded? products skus))
              (pagination/fetch-more events/control-stylist-commissions-fetch fetching? page pages)])
           (when (zero? pages) empty-commissions)]
-
          [:div.col-on-tb-dt.col-3-on-tb-dt
           (when rate (show-commission-rate rate))]
          show-program-terms])))))
 
+(defn all-skus-in-commissions [commissions]
+  (->> (:history commissions)
+       (map :order)
+       (mapcat orders/product-items)
+       (map :sku)))
+
 (defn query [data]
-  {:commissions      (get-in data keypaths/stylist-commissions)
-   :expanded?        (get-in data keypaths/expanded-commission-order-id)
-   :products         (get-in data keypaths/products)
-   :fetching?        (utils/requesting? data request-keys/get-stylist-commissions)})
+  (let [commissions     (get-in data keypaths/stylist-commissions)
+        commission-skus (all-skus-in-commissions commissions)
+        products        (get-in data keypaths/v2-products)
+        skus            (select-keys (get-in data keypaths/v2-skus) commission-skus)
+        products        (into {}
+                              (map (fn [sku-id]
+                                     [sku-id (products/find-product-by-sku-id products sku-id)]))
+                              (all-skus-in-commissions commissions))]
+    {:commissions commissions
+     :expanded?   (get-in data keypaths/expanded-commission-order-id)
+     :products    products
+     :skus        skus
+     :fetching?   (utils/requesting? data request-keys/get-stylist-commissions)}))
