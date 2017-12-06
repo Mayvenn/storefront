@@ -84,6 +84,7 @@
           true              as-money)]]] ]))
 
 (defn ^:private display-line-item [{:keys [id variant-attrs unit-price] :as line-item}
+                                   sku
                                    thumbnail
                                    quantity-line]
   [:div.clearfix.border-bottom.border-gray.py3 {:key id}
@@ -95,8 +96,9 @@
     [:div.ml1
      [:a.medium.titleize.h5 (products/product-title line-item)]
      [:div.h6.mt1.line-height-1
-      (when-let [length (:length variant-attrs)]
-        [:div.pyp2 "Length: " length])
+      (when-let [length (:hair/length sku)]
+        ;; TODO use facets once it's not painful to do so
+        [:div.pyp2 "Length: " length "\""])
       [:div.pyp2 "Price Each: " (as-money-without-cents unit-price)]
       quantity-line]]]])
 
@@ -117,6 +119,7 @@
         :let [sku (get skus sku-id)]]
     (display-line-item
      line-item
+     sku
      (products/medium-img sku)
      [:div.pyp2 "Quantity: " quantity])))
 
@@ -125,6 +128,7 @@
         :let [sku (get skus sku-id)]]
     (display-line-item
      line-item
+     sku
      (products/medium-img sku)
      (adjustable-quantity-line line-item
                                sku
