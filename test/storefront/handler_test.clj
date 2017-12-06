@@ -520,7 +520,7 @@
 
             (testing "storefront properly reads order tokens with pluses in them"
               (let [requests (txfm-requests storeback-requests identity)
-                    waiter-request (nth requests 2)]
+                    waiter-request (nth requests 1)]
                 (is (= "/v2/orders/W123456" (:uri waiter-request)))
                 (is (= {"token" token} (:query-params waiter-request)))))))))))
 
