@@ -4,7 +4,8 @@
             [sablono.core :refer [html]]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.platform.messages :refer [handle-message]]))
+            [storefront.platform.messages :refer [handle-message]]
+            [storefront.routes :as routes]))
 
 (defn ^:private reviews-component-inner
   [{:keys [loaded? yotpo-data-attributes]} owner opts]
@@ -55,10 +56,12 @@
 
 (defn- yotpo-data-attributes
   "Uses the first Sku from a Product to determine Yotpo data- attributes"
-  [{product-sku-ids :selector/skus :keys [:copy/title]} all-skus]
-  (when-let [{:keys [legacy/variant-id]} (get all-skus (first product-sku-ids))]
-    {:data-name       title
-     :data-product-id variant-id}))
+  [product all-skus]
+  (when-let [{:keys [legacy/variant-id]}
+             (some->> product :selector/skus first (get all-skus))]
+    {:data-name       (:copy/title product)
+     :data-product-id variant-id
+     :data-url        (routes/path-for events/navigate-product-details product)}))
 
 (defn query [data]
   (when-let [product (products/current-product data)]
