@@ -648,6 +648,13 @@
                           (get-in app-state keypaths/order-number)
                           (get-in app-state keypaths/order-token)))
 
+(defmethod perform-effects events/control-create-order-from-shared-cart [_ event {:keys [shared-cart-id]} _ app-state]
+  (api/create-order-from-cart (get-in app-state keypaths/session-id)
+                              shared-cart-id
+                              (get-in app-state keypaths/user-id)
+                              (get-in app-state keypaths/user-token)
+                              (get-in app-state keypaths/store-stylist-id)))
+
 (defmethod perform-effects events/control-cart-line-item-inc [_ event {:keys [variant]} _ app-state]
   (let [sku      (get (get-in app-state keypaths/v2-skus) (:sku variant))
         order    (get-in app-state keypaths/order)
@@ -661,13 +668,6 @@
                                          {:order    %
                                           :quantity quantity
                                           :sku      sku}))))
-
-(defmethod perform-effects events/control-create-order-from-shared-cart [_ event {:keys [shared-cart-id]} _ app-state]
-  (api/create-order-from-cart (get-in app-state keypaths/session-id)
-                              shared-cart-id
-                              (get-in app-state keypaths/user-id)
-                              (get-in app-state keypaths/user-token)
-                              (get-in app-state keypaths/store-stylist-id)))
 
 (defmethod perform-effects events/control-cart-line-item-dec [_ event {:keys [variant]} _ app-state]
   (let [order (get-in app-state keypaths/order)]
