@@ -786,7 +786,8 @@
    request-keys/fetch-shared-cart
    {:params  {:shared-cart-id shared-cart-id}
     :handler #(messages/handle-message events/api-success-shared-cart-fetch
-                                       {:cart %})}))
+                                       {:shared-cart (:shared-cart %)
+                                        :skus        (:skus %)})}))
 
 (defn create-order-from-cart [session-id shared-cart-id user-id user-token stylist-id]
   (api-req

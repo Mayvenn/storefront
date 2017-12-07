@@ -13,7 +13,9 @@
             [storefront.accessors.pixlee :as pixlee]
             [storefront.components.order-summary :as order-summary]
             [clojure.string :as str]
-            [storefront.accessors.products :as products]))
+            [storefront.accessors.products :as products]
+            [clojure.set :as set]
+            [spice.maps :as maps]))
 
 (defn add-to-cart-button [sold-out? creating-order? {:keys [number]}]
   (if sold-out?
@@ -85,22 +87,37 @@
              [:div.mt2
               (add-to-cart-button sold-out? creating-order? shared-cart)]])))]])))
 
+(defn put-skus-on-shared-cart [shared-cart skus]
+  (let [shared-cart-variant-ids (into #{}
+                                      (map :legacy/variant-id)
+                                      (:line-items shared-cart))
+        shared-cart-skus        (filterv (fn [sku]
+                                           (contains? shared-cart-variant-ids (:legacy/variant-id sku)))
+                                         (vals skus))]
+    (update shared-cart :line-items
+            #(set/join % shared-cart-skus
+                       {:legacy/variant-id :legacy/variant-id}))))
+
 (defn query [data]
-  (let [shared-cart        (get-in data keypaths/shared-cart-current)
-        skus               (get-in data keypaths/v2-skus)
-        look               (pixlee/selected-look data)
-        bundle-deal-ids    (->> (pixlee/images-in-album (get-in data keypaths/ugc) :bundle-deals)
-                                (remove (comp #{"video"} :content-type))
-                                (mapv :id)
-                                set)
-        bundle-deal-look?  (boolean (bundle-deal-ids (:id look)))
-        back               (first (get-in data keypaths/navigation-undo-stack))]
-    {:shared-cart           shared-cart
+  (let [skus        (get-in data keypaths/v2-skus)
+
+        shared-cart-with-skus (put-skus-on-shared-cart
+                               (get-in data keypaths/shared-cart-current)
+                               skus)
+
+        look              (pixlee/selected-look data)
+        bundle-deal-ids   (->> (pixlee/images-in-album (get-in data keypaths/ugc) :bundle-deals)
+                               (remove (comp #{"video"} :content-type))
+                               (mapv :id)
+                               set)
+        bundle-deal-look? (boolean (bundle-deal-ids (:id look)))
+        back              (first (get-in data keypaths/navigation-undo-stack))]
+    {:shared-cart           shared-cart-with-skus
      :look                  look
      :bundle-deal-look?     bundle-deal-look?
      :creating-order?       (utils/requesting? data request-keys/create-order-from-shared-cart)
      :skus                  skus
-     :sold-out?             (not-every? :inventory/in-stock? (:line-items shared-cart))
+     :sold-out?             (not-every? :inventory/in-stock? (:line-items shared-cart-with-skus))
      :fetching-shared-cart? (utils/requesting? data request-keys/fetch-shared-cart)
      :back                  (first (get-in data keypaths/navigation-undo-stack))
      :back-copy             (:back-copy back (if bundle-deal-look?

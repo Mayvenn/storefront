@@ -2,6 +2,7 @@
   (:require [cemerick.url :as url]
             [clojure.string :as string]
             [catalog.categories :as categories]
+            [catalog.products :as products]
             [storefront.accessors.nav :as nav]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.pixlee :as pixlee]
@@ -441,8 +442,10 @@
       (assoc-in keypaths/shared-cart-url (str (.-protocol js/location) "//" (.-host js/location) "/c/" (:number cart)))
       (assoc-in keypaths/popup :share-cart)))
 
-(defmethod transition-state events/api-success-shared-cart-fetch [_ event {:keys [cart]} app-state]
-  (assoc-in app-state keypaths/shared-cart-current cart))
+(defmethod transition-state events/api-success-shared-cart-fetch [_ event {:keys [shared-cart skus]} app-state]
+  (-> app-state
+      (assoc-in keypaths/shared-cart-current shared-cart)
+      (update-in keypaths/v2-skus merge (products/index-skus skus))))
 
 (defmethod transition-state events/control-stylist-referral-add-another [_ event args app-state]
   (update-in app-state keypaths/stylist-referrals conj state/empty-referral))
