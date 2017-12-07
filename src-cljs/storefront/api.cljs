@@ -750,7 +750,7 @@
   (api-req
    POST
    "/v2/add-to-bag"
-   (conj request-keys/add-to-bag (:sku sku))
+   (conj request-keys/add-to-bag (:catalog/sku-id sku))
    {:params (merge (select-keys params [:quantity :stylist-id :user-id :user-token])
                    {:session-id session-id
                     :sku (:catalog/sku-id sku)}
