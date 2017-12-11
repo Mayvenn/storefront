@@ -100,8 +100,8 @@
            :data-test "home-banner")
     (let [file-name "Flash-Sale-48hrs.jpg"
           alt       "48 Hour Flash Sale 25% Off The Entire Site. Ends 12/15 12AM EST"
-          mob-uuid  "925796e4-c183-4dd8-8f9b-9b7e609ecdaf"
-          dsk-uuid  "48efc2bd-dd75-4eb2-9530-013b051b3c89"]
+          mob-uuid  "2a9c871d-510f-4b81-bfc8-727205cab286"
+          dsk-uuid  "8a10c713-0f7f-46ab-b254-e6c1b818544a"]
       (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
                    :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
                    :file-name   file-name
