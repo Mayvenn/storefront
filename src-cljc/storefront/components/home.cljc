@@ -9,6 +9,7 @@
             [storefront.components.marquee :as marquee]
             [storefront.assets :as assets]
             [storefront.config :as config]
+            [storefront.accessors.flash-sale :as flash-sale]
             [clojure.string :as string]
             [spice.date :as date]))
 
@@ -87,6 +88,20 @@
           alt       "Gift yourself irresistible textures. Shop now!"
           mob-uuid  "e0cfde2a-4fec-4d20-b534-658d2be2a771"
           dsk-uuid  "614770c2-954c-48d5-9126-3845f3bbaad9"]
+      (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
+                   :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
+                   :file-name   file-name
+                   :alt         alt}))]])
+
+(defn flash-sale-hero [store-slug]
+  [:h1.h2
+   [:a
+    (assoc (utils/route-to events/navigate-shop-by-look)
+           :data-test "home-banner")
+    (let [file-name "Flash-Sale-48hrs.jpg"
+          alt       "48 Hour Flash Sale 25% Off The Entire Site. Ends 12/15 12AM EST"
+          mob-uuid  "925796e4-c183-4dd8-8f9b-9b7e609ecdaf"
+          dsk-uuid  "48efc2bd-dd75-4eb2-9530-013b051b3c89"]
       (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
                    :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
                    :file-name   file-name
@@ -286,7 +301,9 @@
    :categories (->> (get-in data keypaths/categories)
                     (filter :home/order)
                     (sort-by :home/order))
-   :hero-fn    hero})
+   :hero-fn    (if (flash-sale/active?)
+                 flash-sale-hero
+                 hero)})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
