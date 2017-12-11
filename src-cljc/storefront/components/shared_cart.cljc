@@ -33,6 +33,8 @@
        (ui/submit-button "View your bag"
                          {:data-test "create-order-from-shared-cart"
                           :spinning? (or fetching-products?
+                                         creating-cart?)
+                          :disabled? (or fetching-products?
                                          creating-cart?)})]])))
 
 (defn query [data]
