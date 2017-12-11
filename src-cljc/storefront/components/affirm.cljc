@@ -58,11 +58,12 @@
      :clj (modal-html data)))
 
 (defn as-low-as-box [data]
-  [:div.py3
-   [:div.center.border.rounded.border-aqua.col-12.py1.mx-auto
-    [:div.mx1.dark-gray.h6.py1
-     [:p.h6 (component/build as-low-as-component data {})]
-     [:p.h6 (:middle-copy data) " " (component/build modal-component data {})]]]])
+  (when (>= (:amount data) 50)  ; Affirm doesn't support items less than $50
+    [:div.py3
+     [:div.center.border.rounded.border-aqua.col-12.py1.mx-auto
+      [:div.mx1.dark-gray.h6.py1
+       [:p.h6 (component/build as-low-as-component data {})]
+       [:p.h6 (:middle-copy data) " " (component/build modal-component data {})]]]]))
 
 (defn ^:private reset-refresh-timeout [timeout f]
   #?(:cljs
