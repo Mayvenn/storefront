@@ -142,7 +142,7 @@
   (let [host       (case (get-in app-state storefront.keypaths/environment)
                      "production" "mayvenn.com"
                      "acceptance" "diva-acceptance.com"
-                     "storefront.dev")
+                     "storefront.localhost")
         store-slug (get-in app-state leads.keypaths/stylist-slug)]
     {:store-link       (str store-slug "." host)
      :token            (get-in app-state leads.keypaths/remote-user-token)

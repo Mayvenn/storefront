@@ -420,7 +420,7 @@
   (let [host-name (case (get-in data storefront.keypaths/environment)
                     "production" "mayvenn.com"
                     "acceptance" "diva-acceptance.com"
-                    "storefront.dev")
+                    "storefront.localhost")
 
         {:keys [flow-id] :as remote-lead} (get-in data keypaths/remote-lead)
         self-reg?                         (= "stylistsfb"

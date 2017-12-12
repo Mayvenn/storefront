@@ -101,7 +101,7 @@
   {:host         (case (get-in data keypaths/environment)
                    "production" "mayvenn.com"
                    "acceptance" "diva-acceptance.com"
-                   "storefront.dev")
+                   "storefront.localhost")
    :store-slug   (:store_slug (get-in data keypaths/store))
    :utm-campaign "stylist_dashboard"})
 
