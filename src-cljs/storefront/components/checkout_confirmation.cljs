@@ -85,7 +85,7 @@
             {:color     "teal"
              :data-test "alternative-payment-required-note"}
             [:.p2.navy
-             "Affirm requires order totals to be greater than $50, please fill out a credit card instead."])
+             "Affirm financing is not available for orders less than $50. To continue, please pay with a credit or debit card below."])
            (om/build checkout-credit-card/component payment)]
 
           :else
