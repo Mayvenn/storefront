@@ -9,7 +9,8 @@
    [storefront.events :as events]
    [storefront.keypaths :as keypaths]
    [catalog.keypaths]
-   [catalog.selector :as selector]))
+   [catalog.selector :as selector]
+   [spice.core :as spice]))
 
 (defn slug->facet [facet facets]
   (->> facets
@@ -81,26 +82,30 @@
                              (map :option/slug)
                              (map-indexed (fn [idx slug] [slug idx]))
                              (into {}))
+        cheapest-sku    (->> (selector/query skus selections {:inventory/in-stock? #{true}})
+                             (sort-by :sku/price)
+                             first)
         epitome         (->> (selector/query skus selections {:inventory/in-stock? #{true}})
-                             (group-by :sku/price)
-                             (sort-by first)
-                             vals
-                             first
-                             (sort-by (comp color-order-map :hair/color))
+                             (sort-by (comp color-order-map first :hair/color))
                              first)]
     {:product         product
      :skus            skus
      :epitome         epitome
+     :cheapest-sku    cheapest-sku
      :color-order-map color-order-map
      :sold-out?       (nil? epitome)
      :title           (:copy/title product)
      :slug            (:page/slug product)
-     :image           (->> epitome :selector/images (filter (comp #{"catalog"} :use-case)) first)
+     :image           (->> epitome
+                           :selector/images
+                           (filter (comp #{"catalog"} :use-case))
+                           (sort-by (comp color-order-map first :hair/color))
+                           first)
      :facets          facets
      :selections      (get-in data catalog.keypaths/category-selections)}))
 
 (defn component
-  [{:keys [product skus epitome sold-out? title slug image facets color-order-map]}]
+  [{:keys [product skus cheapest-sku epitome sold-out? title slug image facets color-order-map]}]
   [:div.col.col-6.col-4-on-tb-dt.px1
    {:key slug}
    [:a.inherit-color
@@ -120,7 +125,7 @@
         (for [selector (reverse (:selector/electives product))]
           [:div {:key selector}
            (unconstrained-facet color-order-map product skus facets selector)])
-        [:p.h6 "Starting at " (mf/as-money-without-cents (:sku/price epitome 0))]])]]
+        [:p.h6 "Starting at " (mf/as-money-without-cents (:sku/price cheapest-sku 0))]])]]
    [:p.mb10.center
     [:div.h6.dark-gray
      (component/build affirm/as-low-as-component {:amount (:sku/price epitome)
