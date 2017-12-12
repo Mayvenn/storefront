@@ -187,7 +187,7 @@
     "Free shipping & 30 day guarantee"]))
 
 (defn product-description
-  [{:keys [copy/description copy/colors copy/weights copy/materials copy/summary]}]
+  [{:keys [copy/description copy/colors copy/weights copy/materials copy/summary]} human-hair?]
   (when (seq description)
     [:div.border.border-dark-gray.mt2.p2.rounded
      [:h2.h3.medium.navy.shout "Description"]
@@ -212,7 +212,10 @@
             [:li.mbp3 {:key (str "item-" idx)} item])]])
       [:div.h5.dark-gray
        (for [[idx item] (map-indexed vector description)]
-         [:p.mt2 {:key (str "product-description-" idx)} item])]]]))
+         [:p.mt2 {:key (str "product-description-" idx)} item])
+       (when human-hair?
+         [:p [:a.teal.underline (utils/route-to events/navigate-content-our-hair)
+              "Learn more about our hair."]])]]]))
 
 (defn image-body [{:keys [filename url alt]}]
   (ui/aspect-ratio
@@ -242,6 +245,7 @@
            cheapest-price
            bagged-skus
            carousel-images
+           human-hair?
            options
            product
            reviews
@@ -291,7 +295,7 @@
                                 sku-quantity)
              (bagged-skus-and-checkout bagged-skus)
              (when (products/stylist-only? product) shipping-and-guarantee)]]
-           (product-description product)
+           (product-description product human-hair?)
            [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])
          (when review?
            (component/build review-component/reviews-component reviews opts))]]))))
@@ -408,7 +412,8 @@
      :product           product
      :selected-sku      selected-sku
      :cheapest-price    (lowest-sku-price product-skus)
-     :carousel-images   carousel-images}))
+     :carousel-images   carousel-images
+     :human-hair? (experiments/human-hair? data)}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
