@@ -11,6 +11,8 @@
    [storefront.keypaths :as keypaths]
    [storefront.effects :as effects]))
 
+(defn valid-order-total? [amount-in-usd]  ; Affirm doesn't support items less than $50
+  (>= amount-in-usd 50))
 
 (defn ^:private type->promo-id [t]
   (get {:text-only "promo_set_category"} t "promo_set_pdp"))
@@ -58,7 +60,7 @@
      :clj (modal-html data)))
 
 (defn as-low-as-box [data]
-  (when (affirm/valid-order-total? (:amount data))
+  (when (valid-order-total? (:amount data))
     [:div.py3
      [:div.center.border.rounded.border-aqua.col-12.py1.mx-auto
       [:div.mx1.dark-gray.h6.py1

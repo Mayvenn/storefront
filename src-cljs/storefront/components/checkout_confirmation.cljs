@@ -299,7 +299,7 @@
      :placing-order?               (or (utils/requesting? data request-keys/place-order)
                                        (utils/requesting? data request-keys/affirm-place-order))
      :selected-affirm?             (get-in data keypaths/order-cart-payments-affirm)
-     :order-valid-for-affirm?    (affirm/valid-order-total? (:total order))
+     :order-valid-for-affirm?      (affirm-components/valid-order-total? (:total order))
      :requires-additional-payment? (requires-additional-payment? data)
      :checkout-steps               (checkout-steps/query data)
      :products                     (get-in data keypaths/v2-products)
