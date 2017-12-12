@@ -132,7 +132,7 @@
    (merge opts {:style {:padding-left "24px" :padding-right "24px"}})
    text])
 
-(defn menu []
+(defn menu [human-hair?]
   (component/html
    [:div.center
     (menu-link (assoc (utils/route-to events/navigate-shop-by-look)
@@ -144,7 +144,11 @@
      "Shop hair")
     (menu-link (assoc (utils/route-to events/navigate-content-guarantee)
                       :on-mouse-enter close-shopping)
-     "Our Guarantee")
+               "Our Guarantee")
+    (when human-hair?
+      (menu-link (assoc (utils/route-to events/navigate-content-our-hair)
+                        :on-mouse-enter close-shopping)
+                 "Our hair"))
     (menu-link {:href           slideout-nav/blog-url
                 :on-mouse-enter close-shopping}
      "Real Beautiful")]))
@@ -199,7 +203,7 @@
                                  cart)]]]
        [:div.absolute.bottom-0.left-0.right-0
         [:div.mb4 (slideout-nav/logo "desktop-header-logo" "60px")]
-        [:div.mb1 (menu)]]]]
+        [:div.mb1 (menu human-hair?)]]]]
      (shopping-flyout signed-in shopping human-hair?)]
     [:div.hide-on-tb-dt.border-bottom.border-gray.flex.items-center
      hamburger
