@@ -54,7 +54,9 @@
                   :always (dissoc :spinning? :disabled?)
                   disabled? (update :class str " is-disabled "))
         content (if spinning? spinner content)]
-    [:a (merge {:href "#"} opts) content]))
+    (if disabled?
+      [:div opts content]
+      [:a (merge {:href "#"} opts) content])))
 
 (defn ^:private button-colors [color-kw]
   (let [color (color-kw {:color/teal        "btn-primary bg-teal white"
