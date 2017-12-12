@@ -177,22 +177,24 @@
 
 (defn ^:private query [data]
   (let [category      (categories/current-category data)
-        category-skus (selector/strict-query (vals (get-in data keypaths/v2-skus))
+        all-skus      (get-in data keypaths/v2-skus)
+        category-skus (selector/strict-query (vals all-skus)
                                              (skuers/essentials category))
         selections    (get-in data catalog.keypaths/category-selections)
         products      (->> (selector/strict-query (vals (get-in data keypaths/v2-products))
                                                   (skuers/essentials category)
                                                   selections
                                                   {:hair/color #{:query/missing}})
-                           (filter (fn skus-exist-for-product
-                                     [product]
-                                     (seq (selector/query category-skus
-                                                          (skuers/essentials product)
-                                                          selections))))
-                           (sort-by #(->> (select-keys (get-in data keypaths/v2-skus) (:selector/skus %))
-                                          vals
-                                          (apply min-key :sku/price)
-                                          :sku/price)))]
+                           (keep (fn skus-exist-for-product
+                                   [product]
+                                   (when-let [skus (seq (select-keys all-skus (:selector/skus product)))]
+                                     (assoc product ::full-skus skus)))) ;; This is an optimization, do not use elsewhere (900msec -> 50msec)
+                           (sort-by (fn sort-products-by-cheapest-sku
+                                      [product]
+                                      (->> (::full-skus product)
+                                           (mapv (comp :sku/price second))
+                                           sort
+                                           first))))]
     {:category            category
      :represented-options (->> category-skus
                                (map (fn [sku]
