@@ -15,7 +15,8 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [clojure.string :as string]
-            [storefront.accessors.experiments :as experiments]))
+            [storefront.accessors.experiments :as experiments]
+            [catalog.menu :as menu]))
 
 (def hamburger
   (component/html
@@ -148,7 +149,7 @@
                 :on-mouse-enter close-shopping}
      "Real Beautiful")]))
 
-(defn shopping-column [items col-count]
+(defn shopping-column [items col-count human-hair?]
   {:pre [(zero? (mod 12 col-count))]}
   [:ul.list-reset.col.px2
    {:class (str "col-" (/ 12 col-count))}
@@ -160,27 +161,29 @@
                          {:catalog/product-id (:direct-to-details/id category)
                           :page/slug          (:direct-to-details/slug category)})
          (utils/route-to events/navigate-category category))
-       (when new? [:span.teal "NEW "])
+       (when (menu/new? human-hair? category)
+         [:span.teal "NEW "])
        (string/capitalize title)]])])
 
-(defn shopping-flyout [signed-in {:keys [expanded? categories]}]
+(defn shopping-flyout [signed-in {:keys [expanded? categories]} human-hair?]
   (when expanded?
     (let [show?   (fn [category]
                     (or (auth/stylist? signed-in)
                         (not (-> category :catalog/department (contains? "stylist-exclusives")))))
           columns (->> (filter :header/order categories)
+                       (menu/maybe-hide-experimental-categories human-hair?)
                        (filter show?)
                        (sort-by :header/group)
                        (group-by :header/group)
                        vals
                        (map (partial sort-by :header/order))
-                       (mapcat (partial partition-all 9)))]
+                       (mapcat (partial partition-all 11)))]
       [:div.absolute.bg-white.col-12.z3.border-bottom.border-gray
        [:div.mx-auto.clearfix.my6.col-10
         (for [items columns]
-          (shopping-column items (count columns)))]])))
+          (shopping-column items (count columns) human-hair?))]])))
 
-(defn component [{:keys [store user cart shopping signed-in]} _ _]
+(defn component [{:keys [store user cart shopping signed-in human-hair?]} _ _]
   (component/create
    [:div
     [:div.hide-on-mb.relative
@@ -197,7 +200,7 @@
        [:div.absolute.bottom-0.left-0.right-0
         [:div.mb4 (slideout-nav/logo "desktop-header-logo" "60px")]
         [:div.mb1 (menu)]]]]
-     (shopping-flyout signed-in shopping)]
+     (shopping-flyout signed-in shopping human-hair?)]
     [:div.hide-on-tb-dt.border-bottom.border-gray.flex.items-center
      hamburger
      [:div.flex-auto.py3 (slideout-nav/logo "header-logo" "40px")]
@@ -212,6 +215,7 @@
 
 (defn query [data]
   (-> (slideout-nav/basic-query data)
+      (assoc :human-hair? (experiments/human-hair? data))
       (assoc-in [:user :expanded?]     (get-in data keypaths/account-menu-expanded))
       (assoc-in [:shopping :expanded?] (get-in data keypaths/shop-menu-expanded))
       (assoc-in [:cart :quantity]      (orders/product-quantity (get-in data keypaths/order)))))

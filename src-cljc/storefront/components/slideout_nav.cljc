@@ -166,7 +166,7 @@
   [:div.h4.border-bottom.border-gray.py3
    (into [:a.block.inherit-color.flex.items-center] content)])
 
-(defn ^:private shopping-area [signed-in]
+(defn ^:private shopping-area [signed-in human-hair?]
   [:div
    [:li (major-menu-row (utils/route-to events/navigate-shop-by-look) [:span.medium "Shop Looks"])]
    [:div
@@ -180,8 +180,16 @@
                                                 {:page/slug           "dyed-virgin-hair"
                                                  :catalog/category-id "16"})
                                 :data-test "menu-shop-dyed-virgin-hair")
-                         [:span.teal.pr1 "NEW"]
-                         [:span.medium.flex-auto "Shop Dyed Virgin Hair"])]]
+                         (when-not human-hair?
+                           [:span.teal.pr1 "NEW"])
+                         [:span.medium.flex-auto "Shop Dyed Virgin Hair"])]
+    (when human-hair?
+      [:li (major-menu-row (assoc (utils/route-to events/navigate-category
+                                                  {:page/slug           "dyed-100-human-hair"
+                                                   :catalog/category-id "19"})
+                                  :data-test "menu-shop-dyed-virgin-hair")
+                           [:span.teal.pr1 "NEW"]
+                           [:span.medium.flex-auto "Shop Dyed 100% Human Hair"])])]
    [:li (major-menu-row (assoc (utils/fake-href events/menu-list
                                                 {:page/slug           "closures-and-frontals"
                                                  :catalog/category-id "12"})
@@ -192,7 +200,8 @@
                                                 {:page/slug           "wigs"
                                                  :catalog/category-id "13"})
                                :data-test "menu-shop-wigs")
-                        [:span.teal.pr1 "NEW"]
+                        (when-not human-hair?
+                          [:span.teal.pr1 "NEW"])
                         [:span.medium.flex-auto "Shop Wigs"])]
    (when (-> signed-in ::auth/as (= :stylist))
      [:li (major-menu-row (assoc (utils/route-to events/navigate-product-details
@@ -201,9 +210,9 @@
                                  :data-test "menu-stylist-products")
                           [:span.medium.flex-auto "Shop Stylist Exclusives"])])])
 
-(defn ^:private menu-area [signed-in]
+(defn ^:private menu-area [signed-in human-hair?]
   [:ul.list-reset.mb3
-   (shopping-area signed-in)
+   (shopping-area signed-in human-hair?)
    [:li (minor-menu-row (assoc (utils/route-to events/navigate-content-guarantee)
                                :data-test "content-guarantee")
                         "Our guarantee")]
@@ -226,7 +235,7 @@
                      "Sign out")
     [:div])))
 
-(defn ^:private root-menu [{:keys [user signed-in store]} owner opts]
+(defn ^:private root-menu [{:keys [user signed-in store human-hair?]} owner opts]
   (component/create
    [:div
     [:div.px6.border-bottom.border-gray
@@ -235,7 +244,7 @@
      [:div.my3.dark-gray
       (actions-marquee signed-in)]]
     [:div.px6
-     (menu-area signed-in)]
+     (menu-area signed-in human-hair?)]
     (when (-> signed-in ::auth/at-all)
       [:div.px6.border-top.border-gray
        sign-out-area])]))
@@ -255,6 +264,7 @@
 
 (defn basic-query [data]
   {:signed-in               (auth/signed-in data)
+   :human-hair?             (experiments/human-hair? data)
    :on-taxon?               (get-in data keypaths/current-traverse-nav-id)
    :user                    {:email (get-in data keypaths/user-email)}
    :store                   (marquee/query data)

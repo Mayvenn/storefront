@@ -55,6 +55,9 @@
 (defn display-feature? [data feature]
   (contains? (set (get-in data keypaths/features)) feature))
 
+(defn human-hair? [data]
+  (display-feature? data "human-hair"))
+
 (defn affirm? [data]
   (display-feature? data "affirm"))
 
