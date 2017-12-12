@@ -1,6 +1,7 @@
 (ns catalog.categories
   (:require [clojure.string :as string]
             [spice.maps :as maps]
+            [spice.core :as spice]
             [storefront.keypaths :as keypaths]
             [catalog.keypaths]
             [catalog.selector :as selector]))
@@ -593,3 +594,12 @@
 (defn current-category [data]
   (id->category (get-in data catalog.keypaths/category-id)
                 (get-in data keypaths/categories)))
+
+;; experiments/human-hair? - GROT when test succeeds
+(defn is-human-hair-product-ids? [product-id]
+  (<= 102 (spice/parse-int product-id) 109))
+
+;; experiments/human-hair? - GROT when test succeeds
+(def human-hair-category-ids-whitelist
+  #{(:catalog/category-id (first dyed-human-hair-closures-category))
+    (:catalog/category-id (first dyed-human-hair-category))})

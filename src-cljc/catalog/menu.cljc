@@ -29,21 +29,16 @@
    (into [:a.block.inherit-color.flex.items-center] content)])
 
 ;; experiments/human-hair? - GROT when test succeeds
-(def human-hair-new-whitelist
-  #{(:catalog/category-id (first categories/dyed-human-hair-closures-category))
-    (:catalog/category-id (first categories/dyed-human-hair-category))})
-
-;; experiments/human-hair? - GROT when test succeeds
 (defn new? [human-hair? category]
   (if human-hair?
-    (boolean (human-hair-new-whitelist (:catalog/category-id category)))
+    (boolean (categories/human-hair-category-ids-whitelist (:catalog/category-id category)))
     (:category/new? category)))
 
 ;; experiments/human-hair? - GROT when test succeeds
 (defn maybe-hide-experimental-categories [human-hair? categories]
   (if human-hair?
     categories
-    (remove (comp human-hair-new-whitelist :catalog/category-id) categories)))
+    (remove (comp categories/human-hair-category-ids-whitelist :catalog/category-id) categories)))
 
 (defn component
   [{:keys [nav-root options human-hair?]}
