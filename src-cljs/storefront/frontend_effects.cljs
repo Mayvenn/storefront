@@ -44,7 +44,8 @@
             [spice.maps :as maps]
             [storefront.hooks.pinterest :as pinterest]
             [clojure.string :as string]
-            [storefront.platform.messages :as messages]))
+            [storefront.platform.messages :as messages]
+            [catalog.menu :as menu]))
 
 (defn changed? [previous-app-state app-state keypath]
   (not= (get-in previous-app-state keypath)
@@ -128,7 +129,12 @@
   (facebook-analytics/remove-tracking)
   (pinterest/remove-tracking))
 
-(defmethod perform-effects events/enable-feature [_ event {:keys [feature]} _ app-state])
+(defmethod perform-effects events/enable-feature [_ event {:keys [feature]} _ app-state]
+  (let [[nav-event {:keys [catalog/category-id]}] (get-in app-state keypaths/navigation-message)]
+    (when (and (experiments/human-hair-control? app-state)
+               (= events/navigate-category nav-event)
+               (contains? menu/human-hair-new-whitelist category-id))
+      (redirect events/navigate-home))))
 
 (defmethod perform-effects events/external-redirect-welcome [_ event args _ app-state]
   (set! (.-location js/window) (get-in app-state keypaths/welcome-url)))
