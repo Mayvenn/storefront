@@ -73,8 +73,7 @@
   (let [selections      (get-in data catalog.keypaths/category-selections)
         skus            (vals (select-keys (get-in data keypaths/v2-skus)
                                            (:selector/skus product)))
-        facets          (get-in data keypaths/v2-facets)
-        color-order-map (->> facets
+        color-order-map (->> (get-in data keypaths/v2-facets)
                              (filter #(= (:facet/slug %) :hair/color))
                              first
                              :facet/options
@@ -82,10 +81,16 @@
                              (map :option/slug)
                              (map-indexed (fn [idx slug] [slug idx]))
                              (into {}))
-        cheapest-sku    (->> (selector/query skus selections {:inventory/in-stock? #{true}})
+        in-stock-skus   (selector/query skus selections {:inventory/in-stock? #{true}})
+        ;; It is technically possible for the cheapest sku to not be the epitome
+        cheapest-sku    (->> in-stock-skus
                              (sort-by :sku/price)
                              first)
-        epitome         (->> (selector/query skus selections {:inventory/in-stock? #{true}})
+        ;; Product definition of epitome is the "first" SKU on the product details page where
+        ;; first is when the first of every facet is selected.
+        ;;
+        ;; We're being lazy and sort by color facet + sku price (which implies sort by hair/length)
+        epitome         (->> in-stock-skus
                              (sort-by (juxt (comp color-order-map first :hair/color)
                                             :sku/price))
                              first)]
