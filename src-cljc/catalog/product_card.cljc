@@ -86,7 +86,8 @@
                              (sort-by :sku/price)
                              first)
         epitome         (->> (selector/query skus selections {:inventory/in-stock? #{true}})
-                             (sort-by (comp color-order-map first :hair/color))
+                             (sort-by (juxt (comp color-order-map first :hair/color)
+                                            :sku/price))
                              first)]
     {:product         product
      :skus            skus
