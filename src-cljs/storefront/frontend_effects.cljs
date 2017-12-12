@@ -199,17 +199,10 @@
                          (get-in app-state keypaths/pending-promo-code)))
 
     (seo/set-tags app-state)
-    (when (or (not (contains? #{events/navigate-product-details events/navigate-category}
-                              (get-in prev-app-state keypaths/navigation-event)))
-              (empty? (select-keys query-params [:SKU
-                                                 :grade
-                                                 :family
-                                                 :origin
-                                                 :texture
-                                                 :base-material
-                                                 :color
-                                                 :length
-                                                 :color.process])))
+    (when (or (not= (get-in prev-app-state keypaths/navigation-event)
+                    (get-in app-state keypaths/navigation-event))
+              (not= (dissoc (get-in prev-app-state keypaths/navigation-args) :query-params)
+                    (dissoc (get-in app-state keypaths/navigation-args) :query-params)))
       (let [restore-scroll-top (:final-scroll nav-stack-item 0)]
         (if (zero? restore-scroll-top)
           ;; We can always snap to 0, so just do it immediately. (HEAT is unhappy if the page is scrolling underneath it.)
@@ -814,6 +807,7 @@
                       (get-in keypaths/order)
                       (select-keys [:token :number])
                       (assoc :cart-payments (get-in app-state keypaths/checkout-selected-payment-methods))
+                      (update :cart-payments select-keys [:stripe :store-credit])
                       (assoc-in [:cart-payments :stripe :source] (:id token))
                       (assoc-in [:cart-payments :stripe :save?] (boolean (and (get-in app-state keypaths/user-id)
                                                                               (get-in app-state keypaths/checkout-credit-card-save)))))

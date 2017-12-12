@@ -44,6 +44,8 @@
            payment delivery order
            placing-order?
            skus
+           selected-affirm?
+           order-valid-for-affirm?
            requires-additional-payment?
            saving-card?
            updating-shipping?]}
@@ -67,14 +69,27 @@
         {:on-submit
          (utils/send-event-callback events/control-checkout-confirmation-submit
                                     {:place-order? requires-additional-payment?})}
-        (when requires-additional-payment?
+        (cond
+          requires-additional-payment?
           [:div
            (ui/note-box
             {:color     "teal"
              :data-test "additional-payment-required-note"}
             [:.p2.navy
              "Please enter an additional payment method below for the remaining total on your order."])
-           (om/build checkout-credit-card/component payment)])
+           (om/build checkout-credit-card/component payment)]
+
+          (and selected-affirm? (not order-valid-for-affirm?))
+          [:div
+           (ui/note-box
+            {:color     "teal"
+             :data-test "alternative-payment-required-note"}
+            [:.p2.navy
+             "Affirm requires order totals to be greater than $50, please fill out a credit card instead."])
+           (om/build checkout-credit-card/component payment)]
+
+          :else
+          nil)
         (summary/display-order-summary order
                                        {:read-only?             true
                                         :use-store-credit?      true
@@ -283,6 +298,8 @@
      :saving-card?                 (checkout-credit-card/saving-card? data)
      :placing-order?               (or (utils/requesting? data request-keys/place-order)
                                        (utils/requesting? data request-keys/affirm-place-order))
+     :selected-affirm?             (get-in data keypaths/order-cart-payments-affirm)
+     :order-valid-for-affirm?    (affirm/valid-order-total? (:total order))
      :requires-additional-payment? (requires-additional-payment? data)
      :checkout-steps               (checkout-steps/query data)
      :products                     (get-in data keypaths/v2-products)
@@ -293,8 +310,10 @@
      :available-store-credit       (get-in data keypaths/user-total-available-store-credit)}))
 
 (defn built-component [data opts]
-  (om/build (if (get-in data keypaths/order-cart-payments-affirm)
-              affirm-component
-              component)
-            (query data)
-            opts))
+  (let [query-data (query data)]
+    (om/build (if (and (:selected-affirm? query-data)
+                       (:order-valid-for-affirm? query-data))
+                affirm-component
+                component)
+              query-data
+              opts)))

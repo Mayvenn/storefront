@@ -58,7 +58,7 @@
      :clj (modal-html data)))
 
 (defn as-low-as-box [data]
-  (when (>= (:amount data) 50)  ; Affirm doesn't support items less than $50
+  (when (affirm/valid-order-total? (:amount data))
     [:div.py3
      [:div.center.border.rounded.border-aqua.col-12.py1.mx-auto
       [:div.mx1.dark-gray.h6.py1

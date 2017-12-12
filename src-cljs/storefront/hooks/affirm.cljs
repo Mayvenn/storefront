@@ -51,3 +51,6 @@
      (fn checkoutOnReady []
        (js/affirm.checkout (clj->js affirm-order))
        (js/affirm.checkout.open)))))
+
+(defn valid-order-total? [amount-in-usd]  ; Affirm doesn't support items less than $50
+  (>= amount-in-usd 50))
