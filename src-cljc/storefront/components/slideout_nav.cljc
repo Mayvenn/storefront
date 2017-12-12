@@ -218,7 +218,7 @@
                         "Our guarantee")]
    (when human-hair?
      [:li (minor-menu-row (assoc (utils/route-to events/navigate-content-our-hair)
-                                 :data-test "our-hair")
+                                 :data-test "content-our-hair")
                           "Our hair")])
    [:li (minor-menu-row {:href blog-url}
                         "Real Beautiful blog")]
