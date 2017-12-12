@@ -63,3 +63,6 @@
 
 (defn affirm? [data]
   (display-feature? data "affirm"))
+
+(defn bestseller? [data]
+  (display-feature? data "bestseller"))

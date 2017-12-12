@@ -39,6 +39,7 @@
 (defpath navigate-content-tos)
 (defpath navigate-content-ugc-usage-terms)
 (defpath navigate-content-program-terms)
+(defpath navigate-content-our-hair)
 
 (defpath navigate-style-guide)
 (defpath navigate-style-guide-color)

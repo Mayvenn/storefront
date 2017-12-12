@@ -34,6 +34,11 @@ Move to uploadcare???
     background-image: url("/images/leads/first-sale-bg.jpg");
 }
 
+.bg-storefront-our-hair {
+    background-image: url("//ucarecdn.com/a38deee0-add3-4588-90fb-923158c90dbe/ourhairvirginhair.png");
+    height: 240px;
+}
+
 @media (min-width: 750px) {
     .leads-bg-hero-hair {
         background-image: url("/images/leads/hero-hair-texture-bg-dsk.jpg");
@@ -50,5 +55,9 @@ Move to uploadcare???
     }
     .bg-first-sale {
         background-image: url("/images/leads/first-sale-bg-dsk.jpg");
+    }
+    .bg-storefront-our-hair {
+        background-image: url("//ucarecdn.com/70c53806-7dae-4537-a6b3-ef35dc7ea4f7/ourhairvirginhair.png");
+        height: 300px;
     }
 }

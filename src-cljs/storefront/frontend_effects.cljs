@@ -508,6 +508,10 @@
 (defmethod perform-effects events/api-success-get-completed-order [_ event order _ app-state]
   (handle-message events/order-completed order))
 
+(defmethod perform-effects events/navigate-content-our-hair [_ event args _ app-state]
+  (when-not (experiments/human-hair? app-state)
+    (redirect events/navigate-home)))
+
 (defn redirect-to-return-navigation [app-state]
   (apply redirect
          (get-in app-state keypaths/return-navigation-message)))

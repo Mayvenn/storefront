@@ -87,6 +87,7 @@
     events/navigate-content-about-us        content/built-component
     events/navigate-content-ugc-usage-terms content/built-component
     events/navigate-content-program-terms   content/built-component
+    events/navigate-content-our-hair        content/built-component
     events/navigate-sign-in                 sign-in/built-component
     events/navigate-sign-up                 sign-up/built-component
     events/navigate-forgot-password         forgot-password/built-component
