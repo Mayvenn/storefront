@@ -52,100 +52,64 @@
    owner]
   (om/component
    (html
-    [:div.container.p2
-     (om/build checkout-steps/component checkout-steps)
+    (let [affirm-selected-but-not-valid?   (and (not order-valid-for-affirm?) selected-affirm?)
+          affirm-selected-and-order-valid? (and selected-affirm? order-valid-for-affirm?)]
+      [:div.container.p2
+       (om/build checkout-steps/component checkout-steps)
 
-     [:.clearfix.mxn3
-      [:.col-on-tb-dt.col-6-on-tb-dt.px3
-       [:.h3.left-align "Order Summary"]
+       [:.clearfix.mxn3
+        [:.col-on-tb-dt.col-6-on-tb-dt.px3
+         [:.h3.left-align "Order Summary"]
 
-       [:div.my2
-        {:data-test "confirmation-line-items"}
-        (summary/display-line-items (orders/product-items order) skus)]]
+         [:div.my2
+          {:data-test "confirmation-line-items"}
+          (summary/display-line-items (orders/product-items order) skus)]]
 
-      [:.col-on-tb-dt.col-6-on-tb-dt.px3
-       (om/build checkout-delivery/component delivery)
-       [:form
-        {:on-submit
-         (utils/send-event-callback events/control-checkout-confirmation-submit
-                                    {:place-order? requires-additional-payment?})}
-        (cond
-          requires-additional-payment?
-          [:div
-           (ui/note-box
-            {:color     "teal"
-             :data-test "additional-payment-required-note"}
-            [:.p2.navy
-             "Please enter an additional payment method below for the remaining total on your order."])
-           (om/build checkout-credit-card/component payment)]
+        [:.col-on-tb-dt.col-6-on-tb-dt.px3
+         (om/build checkout-delivery/component delivery)
+         [:form
+          {:on-submit
+           (if (and order-valid-for-affirm? selected-affirm?)
+             (utils/send-event-callback events/control-checkout-affirm-confirmation-submit)
+             (utils/send-event-callback events/control-checkout-confirmation-submit
+                                        {:place-order?             (or affirm-selected-but-not-valid?
+                                                                       requires-additional-payment?)}))}
+          (cond
+            requires-additional-payment?
+            [:div
+             (ui/note-box
+              {:color     "teal"
+               :data-test "additional-payment-required-note"}
+              [:.p2.navy
+               "Please enter an additional payment method below for the remaining total on your order."])
+             (om/build checkout-credit-card/component payment)]
 
-          (and selected-affirm? (not order-valid-for-affirm?))
-          [:div
-           (ui/note-box
-            {:color     "teal"
-             :data-test "alternative-payment-required-note"}
-            [:.p2.navy
-             "Affirm financing is not available for orders less than $50. To continue, please pay with a credit or debit card below."])
-           (om/build checkout-credit-card/component payment)]
+            affirm-selected-but-not-valid?
+            [:div
+             (ui/note-box
+              {:color     "teal"
+               :data-test "alternative-payment-required-note"}
+              [:.p2.navy
+               "Affirm financing is not available for orders less than $50. To continue, please pay with a credit or debit card below."])
+             (om/build checkout-credit-card/component payment)]
 
-          :else
-          nil)
-        (summary/display-order-summary order
-                                       {:read-only?             true
-                                        :use-store-credit?      true
-                                        :available-store-credit available-store-credit})
-        [:div.col-12.col-6-on-tb-dt.mx-auto
-         (ui/submit-button "Place Order" {:spinning? (or saving-card? placing-order?)
-                                          :disabled? updating-shipping?
-                                          :data-test "confirm-form-submit"})]]]]])))
-
-(defn affirm-component
-  [{:keys [available-store-credit
-           checkout-steps
-           payment delivery order
-           placing-order?
-           skus
-           requires-additional-payment?
-           saving-card?
-           updating-shipping?]}
-   owner]
-  (om/component
-   (html
-    [:div.container.p2
-     (om/build checkout-steps/component checkout-steps)
-
-     [:.clearfix.mxn3
-      [:.col-on-tb-dt.col-6-on-tb-dt.px3
-       [:.h3.left-align "Order Summary"]
-
-       [:div.my2
-        {:data-test "confirmation-line-items"}
-        (summary/display-line-items (orders/product-items order) skus)]]
-
-      [:.col-on-tb-dt.col-6-on-tb-dt.px3
-       (om/build checkout-delivery/component delivery)
-       [:form
-        {:on-submit
-         (utils/send-event-callback events/control-checkout-affirm-confirmation-submit)}
-        (when requires-additional-payment?
-          [:div
-           (ui/note-box
-            {:color     "teal"
-             :data-test "additional-payment-required-note"}
-            [:.p2.navy
-             "Please enter an additional payment method below for the remaining total on your order."])
-           (om/build checkout-credit-card/component payment)])
-        (summary/display-order-summary order
-                                       {:read-only?             true
-                                        :use-store-credit?      false
-                                        :available-store-credit available-store-credit})
-        [:div.col-12.col-6-on-tb-dt.mx-auto
-         (affirm-components/as-low-as-box {:amount (:total order)
-                                           :middle-copy "Continue with Affirm below."})]
-        [:div.col-12.col-6-on-tb-dt.mx-auto
-         (ui/submit-button "Checkout with Affirm" {:spinning? (or saving-card? placing-order?) ;; We need a boolean for affirm request
-                                                   :disabled? updating-shipping?
-                                                   :data-test "confirm-affirm-form-submit"})]]]]])))
+            :else
+            nil)
+          (summary/display-order-summary order
+                                         {:read-only?             true
+                                          :use-store-credit?      (not affirm-selected-and-order-valid?)
+                                          :available-store-credit available-store-credit})
+          (when selected-affirm?
+            [:div.col-12.col-6-on-tb-dt.mx-auto (affirm-components/as-low-as-box {:amount      (:total order)
+                                                                                  :middle-copy "Continue with Affirm below."})])
+          [:div.col-12.col-6-on-tb-dt.mx-auto
+           (if affirm-selected-and-order-valid?
+             (ui/submit-button "Checkout with Affirm" {:spinning? (or saving-card? placing-order?) ;; We need a boolean for affirm request
+                                                       :disabled? updating-shipping?
+                                                       :data-test "confirm-affirm-form-submit"})
+             (ui/submit-button "Place Order" {:spinning? (or saving-card? placing-order?)
+                                              :disabled? updating-shipping?
+                                              :data-test "confirm-form-submit"}))]]]]]))))
 
 (defn ->affirm-address [{:keys [address1 address2 city state zipcode]}]
   {:line1   address1
@@ -311,9 +275,4 @@
 
 (defn built-component [data opts]
   (let [query-data (query data)]
-    (om/build (if (and (:selected-affirm? query-data)
-                       (:order-valid-for-affirm? query-data))
-                affirm-component
-                component)
-              query-data
-              opts)))
+    (om/build component query-data opts)))
