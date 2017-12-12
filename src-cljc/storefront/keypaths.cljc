@@ -261,7 +261,6 @@
 (def experiments [:experiments])
 (def experiments-manual (conj experiments :manual))
 (def experiments-bucketed (conj experiments :bucketed))
-(def experiments-bestseller (conj experiments :bestseller))
 
 (def environment [:environment])
 

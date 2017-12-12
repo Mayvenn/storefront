@@ -97,18 +97,10 @@
      :slug            (:page/slug product)
      :image           (->> epitome :selector/images (filter (comp #{"catalog"} :use-case)) first)
      :facets          facets
-     :selections      (get-in data catalog.keypaths/category-selections)
-     :bestseller?     (experiments/bestseller? data)}))
-
-(def best-seller-badge
-  [:div.circle.absolute.top-0.right-0.bg-teal.flex.justify-center.mp6
-   {:style {:width "45px" :height "45px"}}
-   [:span.h7.white.letter-spacing-0.bold.self-center
-    {:style {:line-height "11px"}}
-    "Best" [:br] "Seller"]])
+     :selections      (get-in data catalog.keypaths/category-selections)}))
 
 (defn component
-  [{:keys [product skus epitome sold-out? title slug image facets color-order-map bestseller?]}]
+  [{:keys [product skus epitome sold-out? title slug image facets color-order-map]}]
   [:div.col.col-6.col-4-on-tb-dt.px1
    {:key slug}
    [:a.inherit-color
@@ -121,11 +113,6 @@
      ;; TODO: when adding aspect ratio, also use srcset/sizes to scale these images.
      [:img.block.col-12 {:src (str (:url image) "-/format/auto/" (:filename image))
                          :alt (:alt image)}]
-     (let [origin (some-> product :hair/origin first)
-           family (some-> product :hair/family first)]
-       (when (and bestseller?
-                  (#{"brazilian" "malaysian"} origin)
-                  (not (#{"lace-front-wigs" "360-wigs"} family))) best-seller-badge))
      [:h2.h4.mt3.mb1 title]
      (if sold-out?
        [:p.h6.dark-gray "Out of stock"]
