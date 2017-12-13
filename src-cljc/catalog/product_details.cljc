@@ -389,11 +389,7 @@
        (selector/match-all {:selector/strict? true}
                            {:use-case #{"carousel"}
                             :image/of #{"model" "product"}})
-       (sort-by (fn [img]
-                  ;; TODO: move this change into cellar
-                  (*
-                   (if (= "model" (-> img :image/of)) 1 10)
-                   (:order img))))))
+       (sort-by :order)))
 
 (defn query [data]
   (let [selected-sku    (get-in data catalog.keypaths/detailed-product-selected-sku)
