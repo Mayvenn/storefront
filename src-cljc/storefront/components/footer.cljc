@@ -12,7 +12,9 @@
             [storefront.platform.date :as date]
             [storefront.platform.numbers :as numbers]
             [storefront.keypaths :as keypaths]
-            [storefront.accessors.auth :as auth]))
+            [storefront.accessors.auth :as auth]
+            [catalog.menu :as menu]
+            [storefront.accessors.experiments :as experiments]))
 
 (defn phone-uri [tel-num]
   (apply str "tel://+" (numbers/digits-only tel-num)))
@@ -159,12 +161,14 @@
    :contact-email "help@mayvenn.com"})
 
 (defn query [data]
-  {:contacts   (contacts-query data)
-   :own-store? (own-store? data)
-   :categories (->> (get-in data keypaths/categories)
-                    (filter :footer/order)
-                    (filter (partial auth/permitted-category? data))
-                    (sort-by :footer/order))})
+  (let [human-hair? (experiments/human-hair? data)]
+    {:contacts   (contacts-query data)
+     :own-store? (own-store? data)
+     :categories (->> (get-in data keypaths/categories)
+                      (filter :footer/order)
+                      (filter (partial auth/permitted-category? data))
+                      (menu/maybe-hide-experimental-categories human-hair?)
+                      (sort-by :footer/order))}))
 
 (defn built-component [data opts]
   (if (nav/minimal-events (get-in data keypaths/navigation-event))
