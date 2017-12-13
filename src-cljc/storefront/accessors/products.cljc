@@ -35,16 +35,16 @@
        first))
 
 (defn medium-img [skuer]
-  (let [image  (->> skuer
-                    :selector/images
-                    (filter #(or
-                              (= (:image/of %) "product")
-                              (= (:use-case %) "cart")))
-                    (sort-by #(case (:use-case %)
-                                "cart" 0
-                                "catalog" 1
-                                5))
-                    first)]
+  (let [image (->> skuer
+                   :selector/images
+                   (filter #(or
+                             (= (:image/of %) "product")
+                             (= (:use-case %) "cart")))
+                   (sort-by #(case (:use-case %)
+                               "cart" 0
+                               "catalog" 1
+                               5))
+                   first)]
     {:src (:url image)
      :alt (:copy/title skuer)}))
 
