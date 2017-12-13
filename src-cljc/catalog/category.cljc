@@ -187,7 +187,8 @@
                                                     {:hair/color #{:query/missing}})
                              (keep (fn skus-exist-for-product
                                      [product]
-                                     (when-let [skus (seq (select-keys all-skus (:selector/skus product)))]
+                                     (when-let [skus (seq (selector/query (vals (select-keys all-skus (:selector/skus product)))
+                                                                          selections))]
                                        (assoc product ::full-skus skus)))) ;; This is an optimization, do not use elsewhere (900msec -> 50msec)
 
                              (sort-by (fn sort-products-by-cheapest-sku
