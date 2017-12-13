@@ -135,6 +135,7 @@
                             "water-wave"     1814288
                             "yaki-straight"  1814286
                             "dyed"           2750237
+                            "wigs"           1880465
                             :bundle-deals    2585224}}
     {:api-key "iiQ27jLOrmKgTfIcRIk"
      :albums  {:mosaic          965034
@@ -149,6 +150,7 @@
                "water-wave"     1912641
                "yaki-straight"  1912642
                "dyed"           2918644
+               "wigs"           2918645
                :bundle-deals    2584964}}))
 
 (def manual-experiments
