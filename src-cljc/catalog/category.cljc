@@ -185,16 +185,18 @@
                                                     (skuers/essentials category)
                                                     selections
                                                     {:hair/color #{:query/missing}})
+
+                             ;; This is an optimization, do not use elsewhere (900msec -> 50msec)
                              (keep (fn skus-exist-for-product
                                      [product]
-                                     (when-let [skus (seq (selector/query (vals (select-keys all-skus (:selector/skus product)))
-                                                                          selections))]
-                                       (assoc product ::full-skus skus)))) ;; This is an optimization, do not use elsewhere (900msec -> 50msec)
+                                     (let [product-skus (vals (select-keys all-skus (:selector/skus product)))]
+                                       (when (seq (selector/query product-skus selections))
+                                         (assoc product ::cached-skus product-skus)))))
 
                              (sort-by (fn sort-products-by-cheapest-sku
                                         [product]
-                                        (->> (::full-skus product)
-                                             (mapv (comp :sku/price second))
+                                        (->> (::cached-skus product)
+                                             (mapv :sku/price)
                                              sort
                                              first))))]
     {:category            category
