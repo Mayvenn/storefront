@@ -45,7 +45,7 @@
            :copy/description         (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
                                            "Our collection of closures and frontals blend seamlessly with our bundles"
                                            "and can be customized to fit your unique look.")
-           :selector/images          {:hero {:filename    "VirginClosures.jpg",
+           :images                   {:hero {:filename    "VirginClosures.jpg",
                                              :desktop-url "//ucarecdn.com/b1443b91-6dd3-44e7-b7c3-06876def1bd5/",
                                              :mobile-url  "//ucarecdn.com/e3d3c5c7-e4dc-4f37-96c0-19bb14785dfb/",
                                              :alt         "Virgin Closures"}}}
