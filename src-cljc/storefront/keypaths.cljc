@@ -102,7 +102,6 @@
 
 (def product-details (conj ui :product-details))
 (def product-details-url-sku-code (conj product-details :url-sku-code))
-(def product-details-sku-set-id (conj product-details :sku-set/id))
 
 (def captured-email (conj ui :captured-email))
 
