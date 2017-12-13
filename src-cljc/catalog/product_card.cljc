@@ -73,7 +73,8 @@
   (let [selections      (get-in data catalog.keypaths/category-selections)
         skus            (vals (select-keys (get-in data keypaths/v2-skus)
                                            (:selector/skus product)))
-        color-order-map (->> (get-in data keypaths/v2-facets)
+        facets          (get-in data keypaths/v2-facets)
+        color-order-map (->> facets
                              (filter #(= (:facet/slug %) :hair/color))
                              first
                              :facet/options
