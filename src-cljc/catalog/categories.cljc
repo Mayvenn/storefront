@@ -169,7 +169,7 @@
            :hair/texture        #{"straight"}
            :hair/color.process  #{"natural"}
            :hair/source         #{"virgin"}
-           :selector/essentials [:catalog/department :hair/family :hair/color.process :hair/source]
+           :selector/essentials [:catalog/department :hair/texture :hair/color.process :hair/source]
            :selector/electives  [:hair/family :hair/origin :hair/base-material]
            :copy/description    (copy "For those who want it given to them"
                                       "straight, our collection of 100% virgin straight hair"
@@ -199,7 +199,7 @@
            :hair/texture        #{"yaki-straight"}
            :hair/color.process  #{"natural"}
            :hair/source         #{"virgin"}
-           :selector/essentials [:catalog/department :hair/family :hair/color.process :hair/source]
+           :selector/essentials [:catalog/department :hair/texture :hair/color.process :hair/source]
            :selector/electives  [:hair/family :hair/origin :hair/base-material]
            :copy/description    (copy "Tired of having to break out the hot"
                                       "tools for a textured straight look? Our Yaki"
@@ -227,7 +227,7 @@
            :hair/texture             #{"kinky-straight"}
            :hair/color.process       #{"natural"}
            :hair/source              #{"virgin"}
-           :selector/essentials      [:catalog/department :hair/family :hair/color.process :hair/source]
+           :selector/essentials      [:catalog/department :hair/texture :hair/color.process :hair/source]
            :selector/electives       [:hair/family :hair/origin :hair/base-material]
            :copy/description         (copy "Blending is a breeze with our Kinky Straight"
                                            "hair collection! Like a fresh blow out, the"
@@ -253,7 +253,7 @@
            :hair/texture             #{"body-wave"}
            :hair/color.process       #{"natural"}
            :hair/source              #{"virgin"}
-           :selector/essentials      [:catalog/department :hair/family :hair/color.process :hair/source]
+           :selector/essentials      [:catalog/department :hair/texture :hair/color.process :hair/source]
            :selector/electives       [:hair/family :hair/origin :hair/base-material]
            :copy/description         (copy "Step into the spotlight with our collection of luscious Body Wave hair."
                                            "Body Wave is unbelievably soft and goes from straight to wavy and back again with ease.")
@@ -280,7 +280,7 @@
            :hair/texture             #{"loose-wave"}
            :hair/color.process       #{"natural"}
            :hair/source              #{"virgin"}
-           :selector/essentials      [:catalog/department :hair/family :hair/color.process :hair/source]
+           :selector/essentials      [:catalog/department :hair/texture :hair/color.process :hair/source]
            :selector/electives       [:hair/family :hair/origin :hair/base-material]
            :copy/description         (copy "For hair that holds a curl beautifully,"
                                            "our collection of 100% virgin Loose Wave hair"
@@ -309,7 +309,7 @@
            :hair/texture             #{"water-wave"}
            :hair/color.process       #{"natural"}
            :hair/source              #{"virgin"}
-           :selector/essentials      [:catalog/department :hair/family :hair/color.process :hair/source]
+           :selector/essentials      [:catalog/department :hair/texture :hair/color.process :hair/source]
            :selector/electives       [:hair/family :hair/origin :hair/base-material]
            :copy/description         (copy "Ride the lush, carefree waves of the bundles,"
                                            "closures, and frontals in our Water Wave hair"
@@ -336,7 +336,7 @@
            :hair/texture             #{"deep-wave"}
            :hair/color.process       #{"natural"}
            :hair/source              #{"virgin"}
-           :selector/essentials      [:catalog/department :hair/family :hair/color.process :hair/source]
+           :selector/essentials      [:catalog/department :hair/texture :hair/color.process :hair/source]
            :selector/electives       [:hair/family :hair/origin :hair/base-material]
            :copy/description         (copy "Reigning supreme in versatility, the Deep Wave hair collection features"
                                            "a soft, spiral wave full of body and bounce. Our deep wave hair is perfect"
@@ -364,7 +364,7 @@
            :hair/texture             #{"curly"}
            :hair/color.process       #{"natural"}
            :hair/source              #{"virgin"}
-           :selector/essentials      [:catalog/department :hair/family :hair/color.process :hair/source]
+           :selector/essentials      [:catalog/department :hair/texture :hair/color.process :hair/source]
            :selector/electives       [:hair/family :hair/origin :hair/base-material]
            :copy/description         (copy "Let your bold, beautiful curls take center stage! Our curly hair collection is a tight,"
                                            "kinky curl perfect for creating voluminous coily styles that mimic natural 3C hair textures.")
