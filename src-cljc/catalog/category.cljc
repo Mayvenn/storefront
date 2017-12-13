@@ -175,6 +175,22 @@
          (filter-tabs category facets product-cards selections open-panel)])]
      (render-product-cards loading-products? product-cards)]]))
 
+(defn- product-meets-selections?
+  [selections product]
+  (seq (selector/query (::cached-skus product) selections)))
+
+(defn- cache-complete-skus [all-skus product]
+  (assoc product
+         ::cached-skus
+         (vals (select-keys all-skus (:selector/skus product)))))
+
+(defn- cache-lowest-price [product]
+  (assoc product ::cached-lowest-price
+         (->> (::cached-skus product)
+              (mapv :sku/price)
+              sort
+              first)))
+
 (defn ^:private query [data]
   (let [category        (categories/current-category data)
         all-skus        (get-in data keypaths/v2-skus)
@@ -186,19 +202,13 @@
                                                     selections
                                                     {:hair/color #{:query/missing}})
 
-                             ;; This is an optimization, do not use elsewhere (900msec -> 50msec)
-                             (keep (fn skus-exist-for-product
-                                     [product]
-                                     (let [product-skus (vals (select-keys all-skus (:selector/skus product)))]
-                                       (when (seq (selector/query product-skus selections))
-                                         (assoc product ::cached-skus product-skus)))))
+                             (into [] (comp
+                                       (map (partial cache-complete-skus all-skus))
+                                       ;; This is an optimization, do not use elsewhere (900msec -> 50msec)
+                                       (filter (partial product-meets-selections? selections))
+                                       (map cache-lowest-price)))
 
-                             (sort-by (fn sort-products-by-cheapest-sku
-                                        [product]
-                                        (->> (::cached-skus product)
-                                             (mapv :sku/price)
-                                             sort
-                                             first))))]
+                             (sort-by ::cached-lowest-price))]
     {:category            category
      :represented-options (->> category-skus
                                (map (fn [sku]
