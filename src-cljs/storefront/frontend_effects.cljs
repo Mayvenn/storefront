@@ -75,23 +75,16 @@
                              user-token
                              stylist-id))))
 
-(defn refresh-products
-  ;;TODO Fix this hack (was done to get dyed-hair out the door)
-  ;;     Should not be fetching all of the products
-  ;;     We can get rid of this once we can query by legacy/product-id
-  ([app-state]
-   (api/search-v2-products (get-in app-state keypaths/api-cache)
-                           {}
-                           (partial messages/handle-message events/api-success-v2-products)))
-  ([app-state product-ids]
-   (refresh-products app-state)))
+(defn- refresh-skus
+  [app-state sku-ids]
+  (when (seq sku-ids)
+    (api/search-v2-skus (get-in app-state keypaths/api-cache)
+                        {:catalog/sku-id sku-ids}
+                        (partial messages/handle-message events/api-success-v2-products))))
 
-;; TODO Before you fix this, make sure that you are passing in v2-product ids
-;;      This currently just refetches all products from cellar.
-(defn ensure-products [app-state product-ids]
-  (let [not-cached (set/difference (set product-ids)
-                                   (products/loaded-ids app-state))]
-    (refresh-products app-state not-cached)))
+(defn- ensure-skus [app-state needed-sku-ids]
+  (let [cached-sku-ids (set (keys (get-in app-state keypaths/v2-skus)))]
+    (refresh-skus app-state (set/difference (set needed-sku-ids) cached-sku-ids))))
 
 (defn update-email-capture-session [app-state]
   (when-let [value (get-in app-state keypaths/email-capture-session)]
@@ -222,8 +215,7 @@
         "financing" (affirm/show-modal)))
 
     (when-let [order (get-in app-state keypaths/order)]
-      ;; TODO should pass v2-product ids into ensure products
-      (ensure-products app-state (map :product-id (orders/product-items order)))
+      (->> order orders/product-items (map :sku) (ensure-skus app-state))
       (if (orders/incomplete? order)
         (do
           (save-cookie app-state)
@@ -284,9 +276,6 @@
 (defmethod perform-effects events/navigate-shop-by-look [_ event {:keys [look-id]} _ app-state]
   (when-not look-id ;; we are on navigate-shop-by-look, not navigate-shop-by-look-details
     (pixlee/fetch-mosaic)))
-
-(defmethod perform-effects events/navigate-shared-cart [_ event args _ app-state]
-  (refresh-products app-state))
 
 (defmethod perform-effects events/navigate-shop-by-look-details [_ event {:keys [look-id]} _ app-state]
   (pixlee/fetch-bundle-deals)
@@ -370,13 +359,12 @@
   (handle-message events/external-redirect-telligent))
 
 (defmethod perform-effects events/api-success-stylist-commissions [_ event args _ app-state]
-  ;; TODO should pass v2-product ids into ensure products
-  (ensure-products app-state
-                   (->> (get-in app-state keypaths/stylist-commissions-history)
-                        (map :order)
-                        (mapcat orders/product-items)
-                        (map :product-id)
-                        set)))
+  (ensure-skus app-state
+               (->> (get-in app-state keypaths/stylist-commissions-history)
+                    (map :order)
+                    (mapcat orders/product-items)
+                    (map :sku)
+                    set)))
 
 (defmethod perform-effects events/navigate-stylist-dashboard [_ event args _ app-state]
   (when-let [user-token (get-in app-state keypaths/user-token)]
@@ -1026,5 +1014,4 @@
                 (get-in app-state-before keypaths/user-token)))
 
 (defmethod perform-effects events/api-success-shared-cart-fetch [_ event {:keys [cart]} _ app-state]
-  ;; TODO should pass v2-product ids into ensure products
-  (ensure-products app-state (map :product-id (:line-items cart))))
+  (->> cart :line-items (map :sku) (ensure-skus app-state)))

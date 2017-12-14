@@ -77,6 +77,12 @@
     (when (not-404 response)
       (:body response))))
 
+(defn fetch-v2-skus [storeback-config criteria-or-id]
+  (let [response (storeback-fetch storeback-config "/v2/skus"
+                                  {:query-params (criteria->query-params criteria-or-id)})]
+    (when (not-404 response)
+      (:body response))))
+
 (defn fetch-v2-facets [storeback-config]
   (let [response (storeback-fetch storeback-config "/v2/facets" {})]
     (when (not-404 response)

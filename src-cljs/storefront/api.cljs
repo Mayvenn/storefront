@@ -165,6 +165,15 @@
               {:id criteria-or-id})
     :handler handler}))
 
+(defn search-v2-skus [cache criteria-or-id handler]
+  (cache-req
+   cache
+   GET
+   "/v2/skus"
+   (conj request-keys/search-v2-skus criteria-or-id)
+   {:params (criteria->query-params criteria-or-id)
+    :handler handler}))
+
 (defn fetch-v2-facets [cache]
   (cache-req
    cache

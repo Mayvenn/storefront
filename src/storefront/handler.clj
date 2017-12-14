@@ -378,11 +378,14 @@
       (assoc-in keypaths/user-email (cookies/get req "email"))))
 
 (defn assoc-cart-route-data [data storeback-config]
-  (let [order                   (get-in data keypaths/order)
-        {:keys [skus products]} (api/fetch-v2-products storeback-config {:sku (map :sku (orders/product-items order))})]
-    (-> data
-        (update-in keypaths/v2-products merge (products/index-products products))
-        (update-in keypaths/v2-skus merge (products/index-skus skus)))))
+  (let [order          (get-in data keypaths/order)
+        sku-ids        (map :sku (orders/product-items order))
+        {:keys [skus]} (when (seq sku-ids)
+                         (api/fetch-v2-skus storeback-config
+                                            {:catalog/sku-id sku-ids}))]
+    (cond-> data
+      (seq skus)
+      (update-in keypaths/v2-skus merge (products/index-skus skus)))))
 
 (defn frontend-routes [{:keys [storeback-config leads-config environment client-version] :as ctx}]
   (fn [{:keys [store nav-message] :as req}]
