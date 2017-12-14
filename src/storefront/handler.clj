@@ -337,13 +337,12 @@
                    render-static-page)}))
 
 (defn- assoc-category-route-data [data storeback-config params]
-  (let [category         (categories/id->category (:catalog/category-id params)
-                                                  (get-in data keypaths/categories))
-        {:keys [skus products]
-         :as   response} (api/fetch-v2-products storeback-config (spice.maps/map-values
-                                                               first
-                                                               (skuers/essentials category)))
-        {:keys [facets]} (api/fetch-v2-facets storeback-config)]
+  (let [category                (categories/id->category (:catalog/category-id params)
+                                                         (get-in data keypaths/categories))
+        {:keys [skus products]} (api/fetch-v2-products storeback-config (spice.maps/map-values
+                                                                         first
+                                                                         (skuers/essentials category)))
+        {:keys [facets]}        (api/fetch-v2-facets storeback-config)]
     (-> data
         (assoc-in catalog.keypaths/category-id (:catalog/category-id params))
         (assoc-in keypaths/v2-facets (map #(update % :facet/slug keyword) facets))
