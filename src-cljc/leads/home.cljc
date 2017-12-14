@@ -264,7 +264,7 @@
        [:div.col-on-tb-dt.col-4-on-tb-dt
         [:div.py6
          [:h3.h2 "Stylist payouts"]
-         [:p.h0 "$4,000,000+"]]
+         [:p.h0 "$5,000,000+"]]
         rule]
        [:div.col-on-tb-dt.col-4-on-tb-dt
         [:div.py6
