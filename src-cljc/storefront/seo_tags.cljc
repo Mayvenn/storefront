@@ -17,7 +17,7 @@
 (def ^:private default-tags
   [[:title {} "Mayvenn - Virgin human hair, bundles, extensions and wigs"]
    [:meta {:name "description"
-           :content "Quality virgin human hair & extensions trusted & recommended by 60,000 stylists, and backed by the only 30-day return policy in the industry. Try Mayvenn hair today!"}]
+           :content "Quality virgin human hair & extensions trusted & recommended by 100,000 stylists, and backed by the only 30-day return policy in the industry. Try Mayvenn hair today!"}]
    [:meta {:property "og:title"
            :content "100% Virgin Hair Extensions With a 30 Day Money Back Guarantee and Free Shipping!"}]
    [:meta {:property "og:type"
@@ -25,7 +25,7 @@
    [:meta {:property "og:image"
            :content (str "http:" assets/canonical-image)}]
    [:meta {:property "og:description"
-           :content "Mayvenn is the recommended and trusted source for quality hair by 60,000 stylists across the country. Mayvenn's 100% virgin human hair is backed by a 30 Day Quality Guarantee & includes FREE shipping!"}]])
+           :content "Mayvenn is the recommended and trusted source for quality hair by 100,000 stylists across the country. Mayvenn's 100% virgin human hair is backed by a 30 Day Quality Guarantee & includes FREE shipping!"}]])
 
 (defn category-tags [data]
   (let [category (categories/current-category data)]

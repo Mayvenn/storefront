@@ -208,7 +208,7 @@
     [:div.clearfix.h5
      [:div.col-on-tb-dt.col-4-on-tb-dt.p3
       [:h3.h2.center.mb3 "stylist recommended"]
-      [:p.h5 "Mayvenn hair is the #1 recommended hair company by over 60,000 hair stylists across the country, making it the most trusted hair brand on the market."]]
+      [:p.h5 "Mayvenn hair is the #1 recommended hair company by over 100,000 hair stylists across the country, making it the most trusted hair brand on the market."]]
 
      [:div.col-on-tb-dt.col-4-on-tb-dt.p3
       [:h3.h2.center.mb3 "30 day guarantee"]

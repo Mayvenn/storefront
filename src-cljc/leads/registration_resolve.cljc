@@ -57,7 +57,7 @@
        [cell
         (icon "//ucarecdn.com/66a2b9d9-371e-4e3d-a9af-49386e16cda8/-/format/auto/iconmeetstylists.png")
         [hed "Meet Fellow Stylists"]
-        [dek "We have a vibrant community of over 60,000 stylists constantly sharing and learning from each other. Join the conversation by introducing yourself!"]
+        [dek "We have a vibrant community of over 100,000 stylists constantly sharing and learning from each other. Join the conversation by introducing yourself!"]
         [cta {:href   "https://community.mayvenn.com/mayvenn-general/f/all-about-you/1724/introduce-yourself-and-your-specialty"
               :target "_blank"}
          "Go to the Mayvenn stylist community"]]

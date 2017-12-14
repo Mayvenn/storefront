@@ -29,7 +29,7 @@
 (defn sign-up-panel [{:keys [focused field-errors first-name last-name phone email call-slot self-reg? call-slot-options spinning?]}]
   [:div.rounded.bg-lighten-4.p3
    [:div.center
-    [:h2 "Join over 60,000 stylists"]
+    [:h2 "Join over 100,000 stylists"]
     [:p.mb2 "Enter your info below to get started."]]
    [:form.col-12.flex.flex-column.items-center
     {:on-submit (utils/send-event-callback events/leads-control-sign-up-submit {})
@@ -259,7 +259,7 @@
        [:div.col-on-tb-dt.col-4-on-tb-dt
         [:div.py6
          [:h3.h2 "Member stylists"]
-         [:p.h0 "60,000+"]]
+         [:p.h0 "100,000+"]]
         rule]
        [:div.col-on-tb-dt.col-4-on-tb-dt
         [:div.py6
