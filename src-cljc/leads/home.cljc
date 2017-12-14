@@ -99,15 +99,15 @@
            (utils/route-to events/navigate-leads-registration-details {:submitted-lead remote-lead}))
     "Finish registration")])
 
-(defn hero-section [{:keys [flow-id sign-up resume-self-reg]}]
+(defn hero-section [{:keys [flow-id sign-up resume-self-reg title]}]
   [:section.px3.py4.bg-cover.leads-bg-hero-hair
    [:div.container
     [:div.flex-on-tb-dt.items-center
      [:div.col-7-on-tb-dt.py4
       [:div.col-9-on-tb-dt.mx-auto.white.center
        [:h1
-        [:span.h0.hide-on-mb "Earn $2,000 a month selling hair with no out of pocket expenses"]
-        [:span.hide-on-tb-dt "Earn $2,000 a month selling hair with no out of pocket expenses"]]]]
+        [:span.h0.hide-on-mb title]
+        [:span.hide-on-tb-dt title]]]]
      [:div.col-5-on-tb-dt.py4
       (if flow-id
         (resume-self-reg-panel resume-self-reg)
@@ -426,7 +426,11 @@
         self-reg?                         (= "stylistsfb"
                                              (string/lower-case (or (get-in data keypaths/lead-utm-content)
                                                                     "")))]
-    {:hero   {:flow-id         flow-id
+    {:hero   {:title           (cond
+                                 (= "movement" (get-in data keypaths/lead-utm-content))
+                                 "Be part of a movement of hair stylists making money on their own terms."
+                                 :else "Earn $2,000 a month selling hair with no out of pocket expenses")
+              :flow-id         flow-id
               :resume-self-reg {:remote-lead remote-lead}
               :sign-up         {:field-errors      (get-in data storefront.keypaths/field-errors)
                                 :first-name        (get-in data keypaths/lead-first-name)
