@@ -7,6 +7,9 @@
 (def offset            (conj root :offset))
 (def tz-abbreviation   (conj root :timezone-abbreviation))
 
+(def copy (conj root :copy))
+(def group (conj root :group))
+
 ;; Working lead
 (def lead              (conj root :lead))
 (def lead-first-name   (conj lead :first-name))

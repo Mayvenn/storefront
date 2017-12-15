@@ -423,12 +423,11 @@
                     "storefront.localhost")
 
         {:keys [flow-id] :as remote-lead} (get-in data keypaths/remote-lead)
-        self-reg?                         (= "stylistsfb"
-                                             (string/lower-case (or (get-in data keypaths/lead-utm-content)
-                                                                    "")))]
+        self-reg?                         (= "stylistsfb" (get-in data keypaths/group))]
     {:hero   {:title           (cond
-                                 (= "movement" (get-in data keypaths/lead-utm-content))
+                                 (= "movement" (get-in data keypaths/copy))
                                  "Be part of a movement of hair stylists making money on their own terms."
+
                                  :else "Earn $2,000 a month selling hair with no out of pocket expenses")
               :flow-id         flow-id
               :resume-self-reg {:remote-lead remote-lead}
@@ -501,13 +500,15 @@
                                     "stylist-created"})
 
 (defmethod transitions/transition-state events/navigate-leads-home
-  [_ _ _ app-state]
+  [_ _ {{:keys [copy group]} :query-params} app-state]
   #?(:cljs
      (let [call-slots        (call-slot/options (get-in app-state keypaths/eastern-offset))
            lead-cookie       (cookie-jar/retrieve-lead (get-in app-state storefront.keypaths/cookie))
            utm-cookies       (cookie-jar/retrieve-leads-utm-params (get-in app-state storefront.keypaths/cookie))
            onboarding-status (get lead-cookie "onboarding-status")
            app-state         (-> app-state
+                                 (assoc-in keypaths/copy (string/lower-case (str copy)))
+                                 (assoc-in keypaths/group (string/lower-case (str group)))
                                  (assoc-in keypaths/call-slot-options call-slots)
                                  (update-in keypaths/lead-utm-content
                                             (fn [existing-param]
