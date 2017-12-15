@@ -270,6 +270,9 @@
 (defmethod perform-effects events/navigate-content-about-us [_ _ _ _ app-state]
   (wistia/load))
 
+(defmethod perform-effects events/navigate-shared-cart [_ _ {:keys [shared-cart-id]} _ app-state]
+  (api/fetch-shared-cart shared-cart-id))
+
 (defmethod perform-effects events/navigate-shop-bundle-deals [_ event _ _ app-state]
   (redirect events/navigate-home))
 
