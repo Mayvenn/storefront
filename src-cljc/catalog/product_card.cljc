@@ -56,9 +56,9 @@
 
 (defmethod unconstrained-facet :hair/color
   [color-order-map product skus facets facet-slug]
-  (let [sorted-product-colors (set (->> skus
-                                        (mapcat #(get % :hair/color))
-                                        (sort-by color-order-map)))]
+  (let [sorted-product-colors (distinct (->> skus
+                                             (mapcat #(get % :hair/color))
+                                             (sort-by color-order-map)))]
     [:div
      (when (> (count sorted-product-colors) 1)
        [:p.h6.dark-gray
