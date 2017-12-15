@@ -423,7 +423,7 @@
                     "storefront.localhost")
 
         {:keys [flow-id] :as remote-lead} (get-in data keypaths/remote-lead)
-        self-reg?                         (= "stylistsfb" (get-in data keypaths/group))]
+        self-reg?                         (= "stylistsfb" (get-in data keypaths/lead-group))]
     {:hero   {:title           (cond
                                  (= "movement" (get-in data keypaths/copy))
                                  "Be part of a movement of hair stylists making money on their own terms."
@@ -454,6 +454,7 @@
     :first-name :last-name
     :phone :email
     :call-slot
+    :group
     :utm-source :utm-medium :utm-campaign :utm-content :utm-term})
 
 (defmethod effects/perform-effects events/leads-control-sign-up-submit
@@ -508,7 +509,8 @@
            onboarding-status (get lead-cookie "onboarding-status")
            app-state         (-> app-state
                                  (assoc-in keypaths/copy (string/lower-case (str copy)))
-                                 (assoc-in keypaths/group (string/lower-case (str group)))
+                                 (assoc-in keypaths/lead-group (or (string/lower-case (str group))
+                                                                   (get utm-cookies "leads.group")))
                                  (assoc-in keypaths/call-slot-options call-slots)
                                  (update-in keypaths/lead-utm-content
                                             (fn [existing-param]

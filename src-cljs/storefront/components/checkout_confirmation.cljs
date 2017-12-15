@@ -134,7 +134,7 @@
 
 (defn promotion->affirm-discount [{:keys [amount promotion] :as promo}]
   (when (seq promo)
-    {(:name promotion) {:discount_amount       (Math/abs amount)
+    {(:name promotion) {:discount_amount       (Math/abs (js/Math.round (* amount 100)))
                         :discount_display_name (:name promotion)}}))
 
 (defn order->affirm [products skus order]

@@ -578,6 +578,7 @@
                                      (assoc-in leads.keypaths/lead-utm-campaign (cookies/get request "leads.utm-campaign"))
                                      (assoc-in leads.keypaths/lead-utm-medium (cookies/get request "leads.utm-medium"))
                                      (assoc-in leads.keypaths/lead-utm-term (cookies/get request "leads.utm-term"))
+                                     (assoc-in leads.keypaths/lead-group (cookies/get request "leads.group"))
                                      (assoc-in leads.keypaths/onboarding-status (cookies/get request "onboarding-status"))
                                      (assoc-in keypaths/store-slug "welcome")
                                      (assoc-in keypaths/environment environment)

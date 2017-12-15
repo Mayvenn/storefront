@@ -8,7 +8,6 @@
 (def tz-abbreviation   (conj root :timezone-abbreviation))
 
 (def copy (conj root :copy))
-(def group (conj root :group))
 
 ;; Working lead
 (def lead              (conj root :lead))
@@ -24,6 +23,7 @@
 (def lead-utm-medium   (conj lead :utm-medium))
 (def lead-utm-source   (conj lead :utm-source))
 (def lead-utm-term     (conj lead :utm-term))
+(def lead-group        (conj lead :group))
 (def lead-id           (conj lead :id))
 (def lead-tracking-id  (conj lead :tracking-id))
 (def lead-flow-id      (conj lead :flow-id))
