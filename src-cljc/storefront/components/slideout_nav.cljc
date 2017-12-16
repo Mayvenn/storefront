@@ -213,23 +213,23 @@
 (defn ^:private menu-area [signed-in human-hair?]
   [:ul.list-reset.mb3
    (shopping-area signed-in human-hair?)
-   [:li (minor-menu-row (assoc (utils/route-to events/navigate-content-guarantee)
+   [:li (major-menu-row (assoc (utils/route-to events/navigate-content-guarantee)
                                :data-test "content-guarantee")
-                        "Our guarantee")]
+                        "Our Guarantee")]
    (when human-hair?
-     [:li (minor-menu-row (assoc (utils/route-to events/navigate-content-our-hair)
+     [:li (major-menu-row (assoc (utils/route-to events/navigate-content-our-hair)
                                  :data-test "content-our-hair")
-                          "Our hair")])
-   [:li (minor-menu-row {:href blog-url}
+                          "Our Hair")])
+   [:li (major-menu-row {:href blog-url}
                         "Real Beautiful blog")]
-   [:li (minor-menu-row (assoc (utils/route-to events/navigate-content-about-us)
+   [:li (major-menu-row (assoc (utils/route-to events/navigate-content-about-us)
                                :data-test "content-about-us")
-                        "About us")]
-   [:li (minor-menu-row {:href "https://jobs.mayvenn.com"}
+                        "About Us")]
+   [:li (major-menu-row {:href "https://jobs.mayvenn.com"}
                         "Careers")]
-   [:li (minor-menu-row (assoc (utils/route-to events/navigate-content-help)
+   [:li (major-menu-row (assoc (utils/route-to events/navigate-content-help)
                                :data-test "content-help")
-                        "Contact us")]])
+                        "Contact Us")]])
 
 (def ^:private sign-out-area
   (component/html
