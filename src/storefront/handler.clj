@@ -490,6 +490,7 @@
                                               ["https://shop.mayvenn.com/categories/10-360-frontals"          "0.80"]
                                               ["https://shop.mayvenn.com/categories/12-closures-and-frontals" "0.80"]
                                               ["https://shop.mayvenn.com/categories/13-wigs"                  "0.80"]
+                                              ["https://shop.mayvenn.com/categories/16-dyed-virgin-hair"      "0.80"]
                                               ["https://shop.mayvenn.com/shop/look"                           "0.80"]]
                                              (for [{:keys [catalog/product-id page/slug]} products]
                                                [(str "https://shop.mayvenn.com/products/" product-id "-" slug) "0.80"]))
