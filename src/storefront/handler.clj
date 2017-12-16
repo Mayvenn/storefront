@@ -431,7 +431,10 @@
                           "Disallow: /m/"
                           "Disallow: /c/"
                           "Disallow: /admin"
-                          "Disallow: /content"])
+                          "Disallow: /content"
+                          "Disallow: /policy/privacy"
+                          "Disallow: /policy/tos"])
+
 (def server-render-pages
   {events/navigate-home                       generic-server-render
    events/navigate-category                   render-category
