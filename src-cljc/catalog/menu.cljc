@@ -30,8 +30,14 @@
 
 ;; experiments/human-hair? - GROT when test succeeds
 (defn new? [human-hair? category]
-  (if human-hair?
-    (boolean (categories/human-hair-category-ids-whitelist (:catalog/category-id category)))
+  (cond
+    (#{"seamless-clip-ins" "tape-ins"} (-> category :hair/family first)) ;; These always get labeled new
+    true
+
+    human-hair?
+    (boolean (or (categories/human-hair-category-ids-whitelist (:catalog/category-id category))))
+
+    :else
     (:category/new? category)))
 
 ;; experiments/human-hair? - GROT when test succeeds
