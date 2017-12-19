@@ -1,8 +1,10 @@
 (ns catalog.selector
   (:require [clojure.set :as set]
-            [clojure.test :refer [deftest is testing]]))
+            [clojure.test :refer [deftest is testing]]
+            [spice.maps :as maps]
+            [spice.selector :as selector]))
 
-(defn contains-or-equal [key search-value item]
+(defn- contains-or-equal [key search-value item]
   (let [item-value (get item key :query/missing)]
     (cond
       (and (coll? item-value) (coll? search-value))
@@ -17,7 +19,7 @@
       :else
       (= item-value search-value))))
 
-(defn missing-contains-or-equal [key search-value item]
+(defn- missing-contains-or-equal [key search-value item]
   (let [item-value (get item key :query/missing)]
     ;; matches items that don't have the property (key) at all
     (cond
@@ -36,13 +38,13 @@
       :else
       (= item-value search-value))))
 
-(defn criteria->strict-query [criteria]
+(defn- criteria->strict-query [criteria]
   (let [xforms (map (fn [[key value]]
                       (filter (partial contains-or-equal key value)))
                     criteria)]
     (apply comp xforms)))
 
-(defn criteria->query [criteria]
+(defn- criteria->query [criteria]
   (let [xforms (map (fn [[key value]]
                       (filter (partial missing-contains-or-equal key value)))
                     criteria)]
@@ -61,13 +63,16 @@
 (defn select [coll skuer & criteria]
   (apply query coll (select-keys skuer (:selector/essentials skuer)) criteria))
 
-(defn images-matching-product [image-db product & criteria]
-  (->> (apply query image-db
-              (-> (:criteria/essential product)
-                  (dissoc :hair/origin))
-              criteria)
-       (sort-by :order)))
+(defn- use-case-then-order-key [img]
+  [(condp = (:use-case img)
+     "seo"      0
+     "carousel" 1
+     2)
+   (:order img)])
 
+(defn seo-image [skuer]
+  (->> (selector/match-essentials skuer (:selector/images skuer))
+       (sort-by use-case-then-order-key)))
 
 ;; Using a set finds equality or a subset
 (deftest selector

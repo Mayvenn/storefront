@@ -1,6 +1,7 @@
 (ns storefront.seo-tags
   (:require [storefront.assets :as assets]
             [storefront.keypaths :as keypaths]
+            [catalog.keypaths :as k]
             [storefront.events :as events]
             [catalog.categories :as categories]
             [catalog.products :as products]
@@ -38,9 +39,8 @@
 
 (defn product-details-tags [data]
   (let [product (products/current-product data)
-        image   (first (selector/images-matching-product (get-in data keypaths/db-images)
-                                                         product
-                                                         {:use-case "catalog"}))]
+        sku     (get-in data k/detailed-product-selected-sku)
+        image   (first (selector/seo-image sku))]
     [[:title {} (:page/title product)]
      [:meta {:name "description" :content (:page.meta/description product)}]
      [:meta {:property "og:title" :content (:opengraph/title product)}]
