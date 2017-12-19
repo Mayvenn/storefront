@@ -547,8 +547,8 @@
            :hair/texture          :query/missing
            :hair/color.process    #{"dyed"}
            :hair/source           #{"human"}
-           :header/order          5
-           :header/group          1
+           :header/order          7
+           :header/group          2
            :footer/order          15
            :selector/essentials   [:catalog/department :hair/family :hair/color.process :hair/source]
            :selector/electives    [:hair/origin :hair/texture :hair/color]
@@ -591,9 +591,9 @@
                     :mobile-url  "//ucarecdn.com/34c3a8c3-a1fe-4475-ae80-c6713e56f6e8/"
                     :alt         "Clip-Ins"}}
 
-    :header/group 1
-    :header/order 5
-    :footer/order 15}])
+    :footer/order 40
+    :header/group 2
+    :header/order 4}])
 
 (def tape-ins-category
   [{:catalog/category-id "22"
@@ -613,8 +613,8 @@
     :direct-to-details/id   "111"
     :direct-to-details/slug "tape-ins"
 
-    :footer/order 15
-    :header/group 1
+    :footer/order 50
+    :header/group 2
     :header/order 5}])
 
 (def menu-categories
