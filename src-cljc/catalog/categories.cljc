@@ -595,10 +595,6 @@
     :header/order 5
     :footer/order 15}])
 
-(spice.maps/map-values
- first
- (skuers/essentials seamless-clip-ins-category))
-
 (def tape-ins-category
   [{:catalog/category-id "22"
     :catalog/department  #{"hair"}
