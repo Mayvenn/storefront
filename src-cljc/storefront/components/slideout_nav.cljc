@@ -182,7 +182,7 @@
       [:li (menu-row (assoc (utils/route-to events/navigate-category
                                             {:page/slug           "dyed-100-human-hair"
                                              :catalog/category-id "19"})
-                            :data-test "menu-shop-dyed-virgin-hair")
+                            :data-test "menu-shop-dyed-100-human-hair")
                      [:span.teal.pr1 "NEW"]
                      [:span.medium.flex-auto "Shop Dyed 100% Human Hair"])])]
    [:li (menu-row (assoc (utils/fake-href events/menu-list

@@ -115,10 +115,13 @@
      (map-indexed display-bagged-sku bagged-skus)
      checkout-button]))
 
+(defn- hacky-fix-of-bad-slugs-on-facets [slug]
+  (string/replace slug #"#" ""))
+
 (defn option-html
   [selector {:keys [option/name option/slug image price-delta checked? stocked?] :as thing}]
   [:label.btn.p1.flex.flex-column.justify-center.items-center.container-size.letter-spacing-0
-   {:data-test (str "option-" slug)
+   {:data-test (str "option-" (hacky-fix-of-bad-slugs-on-facets slug))
     :class     (cond
                  checked? "border-gray bg-teal  white     medium"
                  stocked? "border-gray bg-white dark-gray light"
