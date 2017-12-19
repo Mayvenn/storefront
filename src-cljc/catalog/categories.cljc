@@ -601,10 +601,8 @@
     :category/new?        true
 
     :hair/family         #{"tape-ins"}
-    :hair/source         #{"human"}
-    :hair/texture        :query/missing
-    :selector/electives  [:hair/color :hair/length]
-    :selector/essentials [:catalog/department :hair/color.process :hair/source :hair/texture :hair/weight :hair/family]
+    :selector/electives  [:hair/color :hair/weight :hair/length]
+    :selector/essentials [:catalog/department :hair/family]
 
     :copy/title "Tape-Ins"
 
