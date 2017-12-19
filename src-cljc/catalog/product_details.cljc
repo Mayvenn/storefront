@@ -8,6 +8,8 @@
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.pixlee :as pixlee]
             [storefront.accessors.promos :as promos]
+            [storefront.accessors.skus :as skus]
+            [storefront.accessors.facets :as facets]
             [storefront.components.money-formatters :refer [as-money-without-cents as-money]]
             [storefront.components.ui :as ui]
             [spice.maps :as maps]
@@ -437,11 +439,14 @@
   ([app-state product new-sku-id]
    (let [prev-sku-id        (get-in app-state catalog.keypaths/detailed-product-selected-sku-id)
          valid-product-skus (get-valid-product-skus product (get-in app-state keypaths/v2-skus))
+         facets             (get-in app-state storefront.keypaths/v2-facets)
+         epitome            (skus/determine-epitome (facets/color-order-map facets)
+                                                    valid-product-skus)
          valid-sku-ids      (set (map :catalog/sku-id valid-product-skus))]
      (or (when (seq new-sku-id)
            (valid-sku-ids new-sku-id))
          (valid-sku-ids prev-sku-id)
-         (:catalog/sku-id (lowest :sku/price valid-product-skus))))))
+         (:catalog/sku-id epitome)))))
 
 (defn extract-product-skus [app-state product]
   (->> (select-keys (get-in app-state keypaths/v2-skus)
