@@ -564,6 +564,38 @@
                                "to fit your unique look. Free shipping. Free 30 day returns. Made with 100% human hair extensions.")
                          nil))])
 
+(def seamless-clip-ins-category
+  [(merge {:catalog/category-id "21"
+           :copy/title          "Clip Ins"
+           :page/slug           "seamless-clip-ins"
+           :catalog/new?        true
+           :catalog/department  #{"hair"}
+           :hair/family         #{"seamless-clip-ins"}
+           :hair/texture        :query/missing
+           :hair/source         #{"human"}
+           :hamburger/order     1
+           :header/order        5
+           :header/group        1
+           :footer/order        15
+           :selector/essentials [:catalog/department :hair/family]
+           :selector/electives  [:hair/origin :hair/texture :hair/color]})])
+
+(def tape-ins-category
+  [(merge {:catalog/category-id "22"
+           :copy/title          "Tape Ins"
+           :page/slug           "tape-ins"
+           :catalog/new?        true
+           :catalog/department  #{"hair"}
+           :hair/family         #{"tape-ins"}
+           :hair/texture        :query/missing
+           :hair/source         #{"human"}
+           :hamburger/order     1
+           :header/order        5
+           :header/group        1
+           :footer/order        15
+           :selector/essentials [:catalog/department :hair/family]
+           :selector/electives  [:hair/origin :hair/texture :hair/color]})])
+
 (def menu-categories
   (concat virgin-hair
           closures
@@ -574,7 +606,9 @@
           stylist-exclusives
           dyed-hair-nav-roots
           menu-categories
-          dyed-human-hair-category))
+          dyed-human-hair-category
+          seamless-clip-ins-category
+          tape-ins-category))
 
 (defn id->category [id categories]
   (->> categories

@@ -194,10 +194,22 @@
    [:li (menu-row (assoc (utils/route-to events/navigate-category
                                          {:page/slug           "wigs"
                                           :catalog/category-id "13"})
-                               :data-test "menu-shop-wigs")
-                        (when-not human-hair?
-                          [:span.teal.pr1 "NEW"])
-                        [:span.medium.flex-auto "Shop Wigs"])]
+                         :data-test "menu-shop-wigs")
+                  (when-not human-hair?
+                    [:span.teal.pr1 "NEW"])
+                  [:span.medium.flex-auto "Shop Wigs"])]
+   [:li (menu-row (assoc (utils/route-to events/navigate-category
+                                         {:page/slug           "seamless-clip-ins"
+                                          :catalog/category-id "21"})
+                         :data-test "menu-shop-seamless-clip-ins")
+                  [:span.teal.pr1 "NEW"]
+                  [:span.medium.flex-auto "Shop Clip-ins"])]
+   [:li (menu-row (assoc (utils/route-to events/navigate-category
+                                         {:page/slug           "tape-ins"
+                                          :catalog/category-id "22"})
+                         :data-test "menu-shop-tape-ins")
+                  [:span.teal.pr1 "NEW"]
+                  [:span.medium.flex-auto "Shop Tape-Ins"])]
    (when (-> signed-in ::auth/as (= :stylist))
      [:li (menu-row (assoc (utils/route-to events/navigate-product-details
                                            {:page/slug          "rings-kits"
