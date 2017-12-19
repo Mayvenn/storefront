@@ -127,7 +127,7 @@
 (def open-shopping (utils/expand-menu-callback keypaths/shop-menu-expanded))
 (def close-shopping (utils/collapse-menus-callback keypaths/header-menus))
 
-(defn menu-link [opts text]
+(defn header-menu-link [opts text]
   [:a.h5.medium.inherit-color.py2
    (merge opts {:style {:padding-left "24px" :padding-right "24px"}})
    text])
@@ -135,23 +135,23 @@
 (defn menu [human-hair?]
   (component/html
    [:div.center
-    (menu-link (assoc (utils/route-to events/navigate-shop-by-look)
-                      :on-mouse-enter close-shopping)
-     "Shop looks")
-    (menu-link (assoc (utils/route-to events/navigate-home)
-                      :on-mouse-enter open-shopping
-                      :on-click       open-shopping)
-     "Shop hair")
-    (menu-link (assoc (utils/route-to events/navigate-content-guarantee)
-                      :on-mouse-enter close-shopping)
-               "Our Guarantee")
+    (header-menu-link (assoc (utils/route-to events/navigate-shop-by-look)
+                             :on-mouse-enter close-shopping)
+                      "Shop looks")
+    (header-menu-link (assoc (utils/route-to events/navigate-home)
+                             :on-mouse-enter open-shopping
+                             :on-click       open-shopping)
+                      "Shop hair")
+    (header-menu-link (assoc (utils/route-to events/navigate-content-guarantee)
+                             :on-mouse-enter close-shopping)
+                      "Our Guarantee")
     (when human-hair?
-      (menu-link (assoc (utils/route-to events/navigate-content-our-hair)
-                        :on-mouse-enter close-shopping)
-                 "Our hair"))
-    (menu-link {:href           slideout-nav/blog-url
-                :on-mouse-enter close-shopping}
-     "Real Beautiful")]))
+      (header-menu-link (assoc (utils/route-to events/navigate-content-our-hair)
+                               :on-mouse-enter close-shopping)
+                        "Our hair"))
+    (header-menu-link {:href           slideout-nav/blog-url
+                       :on-mouse-enter close-shopping}
+                      "Real Beautiful")]))
 
 (defn shopping-column [items col-count human-hair?]
   {:pre [(zero? (mod 12 col-count))]}
