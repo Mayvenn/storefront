@@ -168,29 +168,29 @@
     [:li (menu-row (assoc (utils/fake-href events/menu-list
                                            {:page/slug           "virgin-hair"
                                             :catalog/category-id "15"})
-                                :data-test "menu-shop-virgin-hair")
-                         [:span.medium.flex-auto "Shop Virgin Hair"]
-                         ui/forward-caret)]
+                          :data-test "menu-shop-virgin-hair")
+                   [:span.medium.flex-auto "Shop Virgin Hair"]
+                   ui/forward-caret)]
     [:li (menu-row (assoc (utils/route-to events/navigate-category
                                           {:page/slug           "dyed-virgin-hair"
                                            :catalog/category-id "16"})
-                                :data-test "menu-shop-dyed-virgin-hair")
-                         (when-not human-hair?
-                           [:span.teal.pr1 "NEW"])
-                         [:span.medium.flex-auto "Shop Dyed Virgin Hair"])]
+                          :data-test "menu-shop-dyed-virgin-hair")
+                   (when-not human-hair?
+                     [:span.teal.pr1 "NEW"])
+                   [:span.medium.flex-auto "Shop Dyed Virgin Hair"])]
     (when human-hair?
       [:li (menu-row (assoc (utils/route-to events/navigate-category
                                             {:page/slug           "dyed-100-human-hair"
                                              :catalog/category-id "19"})
-                                  :data-test "menu-shop-dyed-virgin-hair")
-                           [:span.teal.pr1 "NEW"]
-                           [:span.medium.flex-auto "Shop Dyed 100% Human Hair"])])]
+                            :data-test "menu-shop-dyed-virgin-hair")
+                     [:span.teal.pr1 "NEW"]
+                     [:span.medium.flex-auto "Shop Dyed 100% Human Hair"])])]
    [:li (menu-row (assoc (utils/fake-href events/menu-list
                                           {:page/slug           "closures-and-frontals"
                                            :catalog/category-id "12"})
-                               :data-test "menu-shop-closures")
-                        [:span.medium.flex-auto "Shop Closures & Frontals"]
-                        ui/forward-caret)]
+                         :data-test "menu-shop-closures")
+                  [:span.medium.flex-auto "Shop Closures & Frontals"]
+                  ui/forward-caret)]
    [:li (menu-row (assoc (utils/route-to events/navigate-category
                                          {:page/slug           "wigs"
                                           :catalog/category-id "13"})
@@ -204,9 +204,9 @@
                          :data-test "menu-shop-seamless-clip-ins")
                   [:span.teal.pr1 "NEW"]
                   [:span.medium.flex-auto "Shop Clip-ins"])]
-   [:li (menu-row (assoc (utils/route-to events/navigate-category
+   [:li (menu-row (assoc (utils/route-to events/navigate-product-details
                                          {:page/slug           "tape-ins"
-                                          :catalog/category-id "22"})
+                                          :catalog/product-id "111"})
                          :data-test "menu-shop-tape-ins")
                   [:span.teal.pr1 "NEW"]
                   [:span.medium.flex-auto "Shop Tape-Ins"])]
@@ -214,29 +214,29 @@
      [:li (menu-row (assoc (utils/route-to events/navigate-product-details
                                            {:page/slug          "rings-kits"
                                             :catalog/product-id "49"})
-                                 :data-test "menu-stylist-products")
-                          [:span.medium.flex-auto "Shop Stylist Exclusives"])])])
+                           :data-test "menu-stylist-products")
+                    [:span.medium.flex-auto "Shop Stylist Exclusives"])])])
 
 (defn ^:private menu-area [signed-in human-hair?]
   [:ul.list-reset.mb3
    (shopping-area signed-in human-hair?)
    [:li (menu-row (assoc (utils/route-to events/navigate-content-guarantee)
-                               :data-test "content-guarantee")
-                        "Our Guarantee")]
+                         :data-test "content-guarantee")
+                  "Our Guarantee")]
    (when human-hair?
      [:li (menu-row (assoc (utils/route-to events/navigate-content-our-hair)
-                                 :data-test "content-our-hair")
-                          "Our Hair")])
+                           :data-test "content-our-hair")
+                    "Our Hair")])
    [:li (menu-row {:href blog-url}
-                        "Real Beautiful blog")]
+                  "Real Beautiful blog")]
    [:li (menu-row (assoc (utils/route-to events/navigate-content-about-us)
-                               :data-test "content-about-us")
-                        "About Us")]
+                         :data-test "content-about-us")
+                  "About Us")]
    [:li (menu-row {:href "https://jobs.mayvenn.com"}
-                        "Careers")]
+                  "Careers")]
    [:li (menu-row (assoc (utils/route-to events/navigate-content-help)
-                               :data-test "content-help")
-                        "Contact Us")]])
+                         :data-test "content-help")
+                  "Contact Us")]])
 
 (def ^:private sign-out-area
   (component/html

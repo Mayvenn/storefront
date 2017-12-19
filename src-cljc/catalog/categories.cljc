@@ -566,7 +566,7 @@
 
 (def seamless-clip-ins-category
   [(merge {:catalog/category-id "21"
-           :copy/title          "Clip Ins"
+           :copy/title          "Clip-Ins"
            :page/slug           "seamless-clip-ins"
            :catalog/new?        true
            :catalog/department  #{"hair"}
@@ -578,11 +578,22 @@
            :header/group        1
            :footer/order        15
            :selector/essentials [:catalog/department :hair/family]
-           :selector/electives  [:hair/origin :hair/texture :hair/color]})])
+           :selector/electives  [:hair/origin :hair/texture :hair/color]
+           :images                {:hero                           {:filename    "categories-header-clip.png"
+                                                                    :desktop-url "//ucarecdn.com/498c40b0-f957-4141-ac1f-99c144547a8f/"
+                                                                    :mobile-url  "//ucarecdn.com/34c3a8c3-a1fe-4475-ae80-c6713e56f6e8/"
+                                                                    :alt         "Clip-Ins"} ;; TODO
+                                   }
+           :copy/description (copy "Get the hair of your dreams in an instant with our seamless clip-in extensions."
+                                   "Featuring a thin, polyurethane (PU) weft that flawlessly blends with your own hair."
+                                   "Ditch the tracks for a clip-in experience that is truly seamless.")}
+          (category->seo "Clip-Ins"
+                         "TK"
+                         nil))])
 
 (def tape-ins-category
   [(merge {:catalog/category-id "22"
-           :copy/title          "Tape Ins"
+           :copy/title          "Tape-Ins"
            :page/slug           "tape-ins"
            :catalog/new?        true
            :catalog/department  #{"hair"}
@@ -593,8 +604,15 @@
            :header/order        5
            :header/group        1
            :footer/order        15
+           :direct-to-details/id "111"
+           :direct-to-details/slug "tape-ins"
            :selector/essentials [:catalog/department :hair/family]
-           :selector/electives  [:hair/origin :hair/texture :hair/color]})])
+           :selector/electives  [:hair/origin :hair/texture :hair/color]}
+          ;; :images                {:hero {:filename    ""
+                                         ;; :desktop-url "//ucarecdn.com/"
+                                         ;; :mobile-url  "//ucarecdn.com/"
+                                         ;; :alt         ""}}
+)])
 
 (def menu-categories
   (concat virgin-hair
