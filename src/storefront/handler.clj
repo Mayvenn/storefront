@@ -359,16 +359,22 @@
 
 (defn required-data
   [{:keys [environment leads-config storeback-config nav-event nav-message store order-number order-token]}]
-  (-> {}
-      (assoc-in keypaths/welcome-url
-                (str (:endpoint leads-config) "?utm_source=shop&utm_medium=referral&utm_campaign=ShoptoWelcome"))
-      (assoc-in keypaths/store store)
-      (assoc-in keypaths/environment environment)
-      experiments/determine-features
-      (assoc-in keypaths/order (api/get-order storeback-config order-number order-token))
-      (assoc-in keypaths/categories categories/initial-categories)
-      (assoc-in keypaths/static (static-page nav-event))
-      (assoc-in keypaths/navigation-message nav-message)))
+  (let [order (api/get-order storeback-config order-number order-token)
+        skus-on-order (mapv :sku (orders/product-items order))
+        {:keys [skus products]} (when (seq skus-on-order)
+                                  (api/fetch-v2-products storeback-config {:selector/sku-ids skus-on-order}))]
+    (-> {}
+        (assoc-in keypaths/welcome-url
+                  (str (:endpoint leads-config) "?utm_source=shop&utm_medium=referral&utm_campaign=ShoptoWelcome"))
+        (assoc-in keypaths/store store)
+        (assoc-in keypaths/environment environment)
+        experiments/determine-features
+        (assoc-in keypaths/order order)
+        (update-in keypaths/v2-products merge (products/index-products products)) 
+        (update-in keypaths/v2-skus merge (products/index-skus skus))
+        (assoc-in keypaths/categories categories/initial-categories)
+        (assoc-in keypaths/static (static-page nav-event))
+        (assoc-in keypaths/navigation-message nav-message))))
 
 (defn assoc-user-info [data req]
   (-> data
