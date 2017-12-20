@@ -116,7 +116,7 @@
      checkout-button]))
 
 (defn- hacky-fix-of-bad-slugs-on-facets [slug]
-  (string/replace slug #"#" ""))
+  (string/replace (str slug) #"#" ""))
 
 (defn option-html
   [selector {:keys [option/name option/slug image price-delta checked? stocked?] :as thing}]
