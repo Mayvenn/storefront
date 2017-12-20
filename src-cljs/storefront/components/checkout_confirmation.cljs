@@ -122,7 +122,7 @@
 (defn- absolute-url [& path]
   (apply str (.-protocol js/location) "//" (.-host js/location) path))
 
-(defn ->affirm-line-item [products skus {:keys [sku product-name sku unit-price quantity]}]
+(defn ->affirm-line-item [products skus {:keys [product-name sku unit-price quantity]}]
   (let [{:keys [page/slug catalog/product-id]}
         (accessors.products/find-product-by-sku-id products sku)]
     {:display_name   product-name
