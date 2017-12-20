@@ -370,7 +370,7 @@
         (assoc-in keypaths/environment environment)
         experiments/determine-features
         (assoc-in keypaths/order order)
-        (update-in keypaths/v2-products merge (products/index-products products)) 
+        (update-in keypaths/v2-products merge (products/index-products products))
         (update-in keypaths/v2-skus merge (products/index-skus skus))
         (assoc-in keypaths/categories categories/initial-categories)
         (assoc-in keypaths/static (static-page nav-event))
