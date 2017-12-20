@@ -574,7 +574,9 @@
     :selector/essentials [:catalog/department :hair/family]
 
     :copy/title       "Clip-Ins"
-    :copy/description "Get the hair of your dreams in an instant with our seamless clip-in extensions. Featuring a thin, polyurethane (PU) weft that flawlessly blends with your own hair. Free shipping. Free 30 day returns. Made with 100% human hair extensions."
+    :copy/description (copy "Get the hair of your dreams in an instant with our seamless clip-in extensions."
+                            "Featuring a thin, polyurethane (PU) weft that flawlessly blends with your own hair."
+                            "Ditch the tracks for a clip-in experience that is truly seamless.")
 
     :page/title "Clip-In Hair Extensions | Mayvenn"
     :page/slug  "seamless-clip-ins"
