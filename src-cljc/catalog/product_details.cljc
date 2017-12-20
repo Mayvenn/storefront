@@ -396,10 +396,16 @@
                             :image/of #{"model" "product"}})
        (sort-by :order)))
 
+(defn extract-product-skus [app-state product]
+  (->> (select-keys (get-in app-state keypaths/v2-skus)
+                    (:selector/skus product))
+       vals
+       (sort-by :sku/price)))
+
 (defn query [data]
   (let [selected-sku    (get-in data catalog.keypaths/detailed-product-selected-sku)
         product         (products/current-product data)
-        product-skus    (get-in data catalog.keypaths/detailed-product-product-skus)
+        product-skus    (extract-product-skus data product)
         facets          (->> (get-in data keypaths/v2-facets)
                              (map #(update % :facet/options (partial maps/index-by :option/slug)))
                              (maps/index-by :facet/slug))
@@ -450,12 +456,6 @@
            (valid-sku-ids new-sku-id))
          (valid-sku-ids prev-sku-id)
          (:catalog/sku-id epitome)))))
-
-(defn extract-product-skus [app-state product]
-  (->> (select-keys (get-in app-state keypaths/v2-skus)
-                    (:selector/skus product))
-       vals
-       (sort-by :sku/price)))
 
 (defmethod transitions/transition-state events/navigate-product-details
   [_ event {:keys [catalog/product-id query-params]} app-state]
