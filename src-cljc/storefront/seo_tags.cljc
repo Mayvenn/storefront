@@ -34,18 +34,20 @@
      [:meta {:name "description" :content (:page.meta/description category)}]
      [:meta {:property "og:title" :content (:opengraph/title category)}]
      [:meta {:property "og:type" :content "product"}]
-     [:meta {:property "og:image" :content (str "http:" (:category/image-url category))}]
+     (when (:category/image-url category)
+       [:meta {:property "og:image" :content (str "http:" (:category/image-url category))}])
      [:meta {:property "og:description" :content (:opengraph/description category)}]]))
 
 (defn product-details-tags [data]
   (let [product (products/current-product data)
         sku     (get-in data k/detailed-product-selected-sku)
-        image   (first (selector/seo-image sku))]
+        image   (when sku (first (selector/seo-image sku)))] ;; This when-clause is because of direct-to-detail products.
     [[:title {} (:page/title product)]
      [:meta {:name "description" :content (:page.meta/description product)}]
      [:meta {:property "og:title" :content (:opengraph/title product)}]
      [:meta {:property "og:type" :content "product"}]
-     [:meta {:property "og:image" :content (str "http:" (:url image))}]
+     (when image
+       [:meta {:property "og:image" :content (str "http:" (:url image))}])
      [:meta {:property "og:description" :content (:opengraph/description product)}]]))
 
 (defn tags-for-page [data]
