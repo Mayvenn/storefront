@@ -34,8 +34,7 @@
      [:meta {:name "description" :content (:page.meta/description category)}]
      [:meta {:property "og:title" :content (:opengraph/title category)}]
      [:meta {:property "og:type" :content "product"}]
-     (when (:category/image-url category)
-       [:meta {:property "og:image" :content (str "http:" (:category/image-url category))}])
+     [:meta {:property "og:image" :content (str "http:" (:category/image-url category))}]
      [:meta {:property "og:description" :content (:opengraph/description category)}]]))
 
 (defn product-details-tags [data]
@@ -46,8 +45,7 @@
      [:meta {:name "description" :content (:page.meta/description product)}]
      [:meta {:property "og:title" :content (:opengraph/title product)}]
      [:meta {:property "og:type" :content "product"}]
-     (when image
-       [:meta {:property "og:image" :content (str "http:" (:url image))}])
+     [:meta {:property "og:image" :content (str "http:" (:url image))}]
      [:meta {:property "og:description" :content (:opengraph/description product)}]]))
 
 (defn tags-for-page [data]
