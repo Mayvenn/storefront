@@ -802,11 +802,11 @@
    {:order        (-> app-state
                       (get-in keypaths/order)
                       (select-keys [:token :number])
-                      (assoc :cart-payments (get-in app-state keypaths/checkout-selected-payment-methods))
-                      (update :cart-payments select-keys [:stripe :store-credit])
-                      (assoc-in [:cart-payments :stripe :source] (:id token))
-                      (assoc-in [:cart-payments :stripe :save?] (boolean (and (get-in app-state keypaths/user-id)
-                                                                              (get-in app-state keypaths/checkout-credit-card-save)))))
+                      (assoc :cart-payments (merge {:stripe {:source (:id token)
+                                                             :save? (boolean (and (get-in app-state keypaths/user-id)
+                                                                                  (get-in app-state keypaths/checkout-credit-card-save)))}}
+                                                   (when (pos? (or (get-in app-state keypaths/user-total-available-store-credit) 0.0))
+                                                     {:store-credit {}}))))
     :navigate     events/navigate-checkout-confirmation
     :place-order? place-order?}))
 
