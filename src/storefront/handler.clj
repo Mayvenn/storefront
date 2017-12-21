@@ -345,7 +345,6 @@
         {:keys [facets]}        (api/fetch-v2-facets storeback-config)]
     (-> data
         (assoc-in catalog.keypaths/category-id (:catalog/category-id params))
-        (assoc-in keypaths/v2-facets (map #(update % :facet/slug keyword) facets))
         (update-in keypaths/v2-products merge (products/index-products products))
         (update-in keypaths/v2-skus merge (products/index-skus skus)))))
 
@@ -353,7 +352,6 @@
   (let [{:keys [skus products]} (api/fetch-v2-products storeback-config (:catalog/product-id params))
         {:keys [facets]}        (api/fetch-v2-facets storeback-config)]
     (-> data
-        (assoc-in keypaths/v2-facets (map #(update % :facet/slug keyword) facets))
         (update-in keypaths/v2-products merge (products/index-products products))
         (update-in keypaths/v2-skus merge (products/index-skus skus)))))
 
@@ -362,7 +360,8 @@
   (let [order (api/get-order storeback-config order-number order-token)
         skus-on-order (mapv :sku (orders/product-items order))
         {:keys [skus products]} (when (seq skus-on-order)
-                                  (api/fetch-v2-products storeback-config {:selector/sku-ids skus-on-order}))]
+                                  (api/fetch-v2-products storeback-config {:selector/sku-ids skus-on-order}))
+        {:keys [facets]} (api/fetch-v2-facets storeback-config)]
     (-> {}
         (assoc-in keypaths/welcome-url
                   (str (:endpoint leads-config) "?utm_source=shop&utm_medium=referral&utm_campaign=ShoptoWelcome"))
@@ -372,6 +371,7 @@
         (assoc-in keypaths/order order)
         (update-in keypaths/v2-products merge (products/index-products products))
         (update-in keypaths/v2-skus merge (products/index-skus skus))
+        (assoc-in keypaths/v2-facets (map #(update % :facet/slug keyword) facets))
         (assoc-in keypaths/categories categories/initial-categories)
         (assoc-in keypaths/static (static-page nav-event))
         (assoc-in keypaths/navigation-message nav-message))))
