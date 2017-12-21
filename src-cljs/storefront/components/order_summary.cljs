@@ -10,7 +10,8 @@
             [storefront.platform.component-utils :as utils]
             [storefront.utils.query :as query]
             [spice.core :as spice]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [storefront.accessors.images :as images]))
 
 (defn ^:private summary-row
   ([name amount] (summary-row {} name amount))
@@ -134,7 +135,7 @@
           quantity (or (:item/quantity line-item) (:quantity line-item))]
       (display-line-item line-item
                          sku
-                         (products/medium-img sku)
+                         (images/cart-image sku)
                          [:div.pyp2 "Quantity: " quantity]))))
 
 (defn display-adjustable-line-items
@@ -145,7 +146,7 @@
      line-item
      sku
      (merge
-      (products/medium-img sku)
+      (images/cart-image sku)
       {:data-test (str "line-item-img-" (:catalog/sku-id sku))})
      (adjustable-quantity-line line-item
                                sku

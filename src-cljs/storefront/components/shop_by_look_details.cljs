@@ -15,7 +15,8 @@
             [clojure.string :as str]
             [storefront.accessors.products :as products]
             [clojure.set :as set]
-            [spice.maps :as maps]))
+            [spice.maps :as maps]
+            [storefront.accessors.images :as images]))
 
 (defn add-to-cart-button [sold-out? creating-order? {:keys [number]}]
   (if sold-out?
@@ -34,7 +35,7 @@
             {:react-key "look-carousel"}))
 
 (defn distinct-product-imgs [{:keys [line-items]}]
-  (->> (map products/large-img line-items)
+  (->> (map (partial images/image-by-use-case "carousel") line-items)
        (remove nil?)
        distinct
        (map (fn [img] [:img.col-12 img]))))

@@ -5,6 +5,7 @@
             [storefront.accessors.products :as products]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.stylist-urls :as stylist-urls]
+            [storefront.accessors.images :as images]
             [storefront.components.stylist.pagination :as pagination]
             [storefront.components.money-formatters :as mf]
             [storefront.components.formatters :as f]
@@ -30,7 +31,7 @@
         full-sku (get skus sku)]
     [:div.py2.clearfix {:key id}
      [:img.left.border.border-light-gray.mr3
-      (assoc (products/medium-img full-sku)
+      (assoc (images/cart-image full-sku)
              :style {:width "5rem"})]
      [:div.overflow-hidden
       [:div.h4.medium.titleize (:sku/title full-sku)]

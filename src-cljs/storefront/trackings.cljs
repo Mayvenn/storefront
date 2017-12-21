@@ -15,7 +15,8 @@
             [storefront.hooks.stringer :as stringer]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
-            [storefront.utils.query :as query]))
+            [storefront.utils.query :as query]
+            [storefront.accessors.images :as images]))
 
 (defn ^:private convert-revenue [{:keys [number total] :as order}]
   {:order-number   number
@@ -125,7 +126,7 @@
 (defn line-item-skuer->stringer-cart-item
   "Converts line item skuers into the format that stringer expects"
   [line-item-skuer]
-  (let [image (products/medium-img line-item-skuer)]
+  (let [image (images/cart-image line-item-skuer)]
     {:variant_id       (:legacy/variant-id line-item-skuer)
      :variant_sku      (:catalog/sku-id line-item-skuer)
      :variant_price    (:sku/price line-item-skuer)

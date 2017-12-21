@@ -22,7 +22,8 @@
             [storefront.hooks.affirm :as affirm]
             [storefront.components.affirm :as affirm-components]
             [storefront.transitions :as transitions]
-            [storefront.api :as api]))
+            [storefront.api :as api]
+            [storefront.accessors.images :as images]))
 
 (defn requires-additional-payment? [data]
   (let [no-stripe-payment?  (nil? (get-in data keypaths/order-cart-payments-stripe))
@@ -129,7 +130,7 @@
      :sku            sku
      :unit_price     (* 100 unit-price)
      :qty            quantity
-     :item_image_url (str "https:" (:src (accessors.products/medium-img (get skus sku))))
+     :item_image_url (str "https:" (:src (images/cart-image (get skus sku))))
      :item_url       (absolute-url (products/path-for-sku product-id slug sku))}))
 
 (defn promotion->affirm-discount [{:keys [amount promotion] :as promo}]
