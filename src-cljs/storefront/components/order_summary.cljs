@@ -89,7 +89,7 @@
   coming off of a waiter order which is a 'variant' with a :quantity
   Until waiter is updated to return 'line-item-skuers', this function must handle
   the two different types of input"
-  [line-item sku thumbnail quantity-line]
+  [line-item {:keys [catalog/sku-id] :as sku} thumbnail quantity-line]
   (let [legacy-variant-id (or (:legacy/variant-id line-item) (:id line-item))
         price             (or (:sku/price line-item)         (:unit-price line-item))
         title             (or (:sku/title line-item)         (products/product-title line-item))]
@@ -100,22 +100,29 @@
                                 :height "7.33em"})]]
      [:div.overflow-hidden
       [:div.ml1
-       [:a.medium.titleize.h5 title]
+       [:a.medium.titleize.h5
+        {:data-test (str "line-item-title-" sku-id)}
+        title]
        [:div.h6.mt1.line-height-1
         (when-let [length (:hair/length sku)]
           ;; TODO use facets once it's not painful to do so
-          [:div.pyp2 "Length: " length "\""])
-        [:div.pyp2 "Price Each: " (as-money-without-cents price)]
+          [:div.pyp2
+           {:data-test (str "line-item-length-" sku-id)}
+           "Length: " length "\""])
+        [:div.pyp2
+         {:data-test (str "line-item-price-ea-" sku-id)}
+         "Price Each: " (as-money-without-cents price)]
         quantity-line]]]]))
 
-(defn adjustable-quantity-line [line-item sku removing? updating?]
+(defn adjustable-quantity-line
+  [line-item {:keys [catalog/sku-id]} removing? updating?]
   [:.mt1.flex.items-center.justify-between
    (if removing?
      [:.h3 {:style {:width "1.2em"}} ui/spinner]
      [:a.gray.medium (utils/fake-href events/control-cart-remove (:id line-item)) "Remove"])
    [:.h3
-    (ui/counter {:spinning? updating?
-                 :data-test (:catalog/sku-id sku)}
+    {:data-test (str "line-item-quantity-" sku-id)}
+    (ui/counter {:spinning? updating?}
                 (:quantity line-item)
                 (utils/send-event-callback events/control-cart-line-item-dec {:variant line-item})
                 (utils/send-event-callback events/control-cart-line-item-inc {:variant line-item}))]])
@@ -130,13 +137,16 @@
                          (products/medium-img sku)
                          [:div.pyp2 "Quantity: " quantity]))))
 
-(defn display-adjustable-line-items [line-items skus update-line-item-requests delete-line-item-requests]
+(defn display-adjustable-line-items
+  [line-items skus update-line-item-requests delete-line-item-requests]
   (for [{sku-id :sku variant-id :id :as line-item} line-items
         :let [sku (get skus sku-id)]]
     (display-line-item
      line-item
      sku
-     (products/medium-img sku)
+     (merge
+      (products/medium-img sku)
+      {:data-test (str "line-item-img-" (:catalog/sku-id sku))})
      (adjustable-quantity-line line-item
                                sku
                                (get delete-line-item-requests variant-id)
