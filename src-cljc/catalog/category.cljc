@@ -243,7 +243,6 @@
                                                 (assoc % :category-id category-id))]
        (if (auth/permitted-category? app-state category)
          (do
-           (storefront.api/fetch-v2-facets (get-in app-state keypaths/api-cache))
            (storefront.api/search-v2-products (get-in app-state keypaths/api-cache)
                                               (skuers/essentials category)
                                               success-fn))

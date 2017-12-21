@@ -7,7 +7,6 @@
 (def get-static-content [:get-static-content])
 (def search-v2-products [:search-v2-products])
 (def search-v2-skus [:search-v2-skus])
-(def fetch-v2-facets [:fetch-v2-facets])
 
 (def sign-out [:sign-out])
 (def sign-in [:sign-in])

@@ -479,7 +479,6 @@
                              {:catalog/product-id product-id}
                              (partial messages/handle-message
                                       events/api-success-v2-products-for-details))
-     (api/fetch-v2-facets (get-in app-state keypaths/api-cache))
 
      (if-let [current-product (products/current-product app-state)]
        (if (auth/permitted-product? app-state current-product)

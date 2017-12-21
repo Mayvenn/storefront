@@ -174,15 +174,6 @@
    {:params (criteria->query-params criteria-or-id)
     :handler handler}))
 
-(defn fetch-v2-facets [cache]
-  (cache-req
-   cache
-   GET
-   "/v2/facets"
-   request-keys/fetch-v2-facets
-   {:params {}
-    :handler #(messages/handle-message events/api-success-facets %)}))
-
 (defn get-saved-cards [user-id user-token]
   (api-req
    GET
