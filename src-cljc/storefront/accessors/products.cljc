@@ -34,23 +34,17 @@
                             line-item-sku)))
        first))
 
-(defn medium-img [skuer]
+(defn image-by-use-case [use-case skuer]
+  ;;TODO fix this!!! PLEASE!!! (should be using selector and doing something more clever than this.)
   (let [image (->> skuer
                    :selector/images
-                   (filter #(= (:use-case %) "cart"))
+                   (filter #(= (:use-case %) use-case))
                    first)]
     {:src (:url image)
      :alt (:copy/title skuer)}))
 
-(defn large-img [sku]
-  ;;TODO fix this!!! PLEASE!!! (should be using selector and doing something more clever than this.)
-  (let [image  (->> sku
-                    :selector/images
-                    #_(filter #(or
-                              (= (:image/of (:criteria/attributes %)) "product")
-                              ;; FIXME Please remove once we add cart use cases to all images
-                              (= (:use-case %) "cart")))
-                    (filter #(= (:use-case %) "carousel"))
-                    first)]
-    {:src (:url image)
-     :alt (:copy/title sku)}))
+(defn medium-img [skuer]
+  (image-by-use-case "cart" skuer))
+
+(defn large-img [skuer]
+  (image-by-use-case "carousel" skuer))
