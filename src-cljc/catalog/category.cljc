@@ -29,6 +29,7 @@
   {:grade         :hair/grade
    :family        :hair/family
    :origin        :hair/origin
+   :weight        :hair/weight
    :texture       :hair/texture
    :base-material :hair/base-material
    :color         :hair/color
