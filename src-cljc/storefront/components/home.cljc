@@ -10,6 +10,7 @@
             [storefront.assets :as assets]
             [storefront.config :as config]
             [storefront.accessors.flash-sale :as flash-sale]
+            [storefront.accessors.experiments :as experiments]
             [clojure.string :as string]
             [spice.date :as date]))
 
@@ -127,7 +128,7 @@
                        :src-set (str mobile-url "-/format/auto/-/resize/750x/-/quality/lightest/" file-name " 2x")
                        :alt     alt}]])
 
-(defn feature-blocks []
+(defn feature-blocks [human-hair?]
   [:div.container.border-top.border-white
    [:div.col.col-6.border.border-white
     [:a
@@ -138,12 +139,19 @@
                      :file-name   "Dyed-Virgin-Hair-Is-Here.png"
                      :alt         "Dyed Virgin Hair Is Here!"})]]
    [:div.col.col-6.border.border-white
-    [:a
-     (utils/route-to events/navigate-category {:page/slug "wigs" :catalog/category-id "13"})
-     (feature-image {:mobile-url  "//ucarecdn.com/87426013-0612-4c04-95e1-c2e4779a0856/"
-                     :desktop-url "//ucarecdn.com/18f073e7-2d40-4b78-8e39-bb5dc0ba4e51/"
-                     :file-name   "wigs-are-here.png"
-                     :alt         "Wigs are here!"})]]])
+    (if human-hair?
+      [:a
+       (utils/route-to events/navigate-category {:page/slug "dyed-100-human-hair" :catalog/category-id "19"})
+       (feature-image {:mobile-url  "//ucarecdn.com/ca5722d9-2589-4333-927d-c68432305d64/"
+                       :desktop-url "//ucarecdn.com/41367cc2-dd79-4e8b-b175-eb81b852030e/"
+                       :file-name   "dyed-100-human-hair.png"
+                       :alt         "Dyed 100% Human Hair - Starting at $30!"})]
+      [:a
+       (utils/route-to events/navigate-category {:page/slug "wigs" :catalog/category-id "13"})
+       (feature-image {:mobile-url  "//ucarecdn.com/87426013-0612-4c04-95e1-c2e4779a0856/"
+                       :desktop-url "//ucarecdn.com/18f073e7-2d40-4b78-8e39-bb5dc0ba4e51/"
+                       :file-name   "wigs-are-here.png"
+                       :alt         "Wigs are here!"})])]])
 
 (defn drop-down-row [opts & content]
   (into [:a.inherit-color.block.center.h5.flex.items-center.justify-center
@@ -284,11 +292,11 @@
                       :file-name   "talkable_banner.jpg"
                       :alt         "refer friends, earn rewards, get 20% off"})]]))
 
-(defn component [{:keys [signed-in store categories hero-fn]} owner opts]
+(defn component [{:keys [signed-in store categories hero-fn human-hair?]} owner opts]
   (component/create
    [:div.m-auto
     [:section (hero-fn (:store-slug store))]
-    [:section (feature-blocks)]
+    [:section (feature-blocks human-hair?)]
     [:section.hide-on-tb-dt (store-info signed-in store)]
     [:section (popular-grid categories)]
     [:section video-autoplay]
@@ -303,7 +311,8 @@
                     (sort-by :home/order))
    :hero-fn    (if (flash-sale/active?)
                  flash-sale-hero
-                 hero)})
+                 hero)
+   :human-hair? (experiments/human-hair? data)})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
