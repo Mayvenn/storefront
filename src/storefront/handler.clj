@@ -472,45 +472,46 @@
 (defn sitemap [{:keys [storeback-config]} {:keys [subdomains] :as req}]
   (if (and (seq subdomains)
            (not= "welcome" (first subdomains)))
-    (let [{:keys [products]} (api/fetch-v2-products storeback-config {})]
-      (if products
-        (letfn [(url [[location priority]]
-                  {:tag :url :content (cond-> [{:tag :loc :content [(str location)]}]
-                                        priority (conj {:tag :priority :content [(str priority)]}))})]
+    (if-let [launched-products (->> (api/fetch-v2-products storeback-config {})
+                                    :products
+                                    (filter :catalog/launched-at))]
+      (letfn [(url-xml-elem [[location priority]]
+                {:tag :url :content (cond-> [{:tag :loc :content [(str location)]}]
+                                      priority (conj {:tag :priority :content [(str priority)]}))})]
 
-          (-> (xml/emit {:tag     :urlset
-                         :attrs   {:xmlns "http://www.sitemaps.org/schemas/sitemap/0.9"}
-                         :content (->> (into [["https://mayvenn.com"]
-                                              ["https://welcome.mayvenn.com"                                  "0.60"]
-                                              ["https://shop.mayvenn.com"                                     "1.00"]
-                                              ["https://shop.mayvenn.com/guarantee"                           "0.60"]
-                                              ["https://shop.mayvenn.com/help"                                "0.60"]
-                                              ["https://shop.mayvenn.com/about-us"                            "0.60"]
-                                              ["https://shop.mayvenn.com/categories/0-closures"               "0.80"]
-                                              ["https://shop.mayvenn.com/categories/1-frontals"               "0.80"]
-                                              ["https://shop.mayvenn.com/categories/2-straight"               "0.80"]
-                                              ["https://shop.mayvenn.com/categories/3-yaki-straight"          "0.80"]
-                                              ["https://shop.mayvenn.com/categories/4-kinky-straight"         "0.80"]
-                                              ["https://shop.mayvenn.com/categories/5-body-wave"              "0.80"]
-                                              ["https://shop.mayvenn.com/categories/6-loose-wave"             "0.80"]
-                                              ["https://shop.mayvenn.com/categories/7-water-wave"             "0.80"]
-                                              ["https://shop.mayvenn.com/categories/8-deep-wave"              "0.80"]
-                                              ["https://shop.mayvenn.com/categories/9-curly"                  "0.80"]
-                                              ["https://shop.mayvenn.com/categories/10-360-frontals"          "0.80"]
-                                              ["https://shop.mayvenn.com/categories/12-closures-and-frontals" "0.80"]
-                                              ["https://shop.mayvenn.com/categories/13-wigs"                  "0.80"]
-                                              ["https://shop.mayvenn.com/categories/16-dyed-virgin-hair"      "0.80"]
-                                              ["https://shop.mayvenn.com/categories/21-seamless-clip-ins"     "0.80"]
-                                              ["https://shop.mayvenn.com/shop/look"                           "0.80"]]
-                                             (for [{:keys [catalog/product-id page/slug]} products]
-                                               [(str "https://shop.mayvenn.com/products/" product-id "-" slug) "0.80"]))
-                                       (mapv url))})
-              with-out-str
-              util.response/response
-              (util.response/content-type "text/xml")))
-        (-> (util.response/response "<error />")
-            (util.response/content-type "text/xml")
-            (util.response/status 502))))
+        (-> (xml/emit {:tag     :urlset
+                       :attrs   {:xmlns "http://www.sitemaps.org/schemas/sitemap/0.9"}
+                       :content (->> (into [["https://mayvenn.com"]
+                                            ["https://welcome.mayvenn.com"                                  "0.60"]
+                                            ["https://shop.mayvenn.com"                                     "1.00"]
+                                            ["https://shop.mayvenn.com/guarantee"                           "0.60"]
+                                            ["https://shop.mayvenn.com/help"                                "0.60"]
+                                            ["https://shop.mayvenn.com/about-us"                            "0.60"]
+                                            ["https://shop.mayvenn.com/categories/0-closures"               "0.80"]
+                                            ["https://shop.mayvenn.com/categories/1-frontals"               "0.80"]
+                                            ["https://shop.mayvenn.com/categories/2-straight"               "0.80"]
+                                            ["https://shop.mayvenn.com/categories/3-yaki-straight"          "0.80"]
+                                            ["https://shop.mayvenn.com/categories/4-kinky-straight"         "0.80"]
+                                            ["https://shop.mayvenn.com/categories/5-body-wave"              "0.80"]
+                                            ["https://shop.mayvenn.com/categories/6-loose-wave"             "0.80"]
+                                            ["https://shop.mayvenn.com/categories/7-water-wave"             "0.80"]
+                                            ["https://shop.mayvenn.com/categories/8-deep-wave"              "0.80"]
+                                            ["https://shop.mayvenn.com/categories/9-curly"                  "0.80"]
+                                            ["https://shop.mayvenn.com/categories/10-360-frontals"          "0.80"]
+                                            ["https://shop.mayvenn.com/categories/12-closures-and-frontals" "0.80"]
+                                            ["https://shop.mayvenn.com/categories/13-wigs"                  "0.80"]
+                                            ["https://shop.mayvenn.com/categories/16-dyed-virgin-hair"      "0.80"]
+                                            ["https://shop.mayvenn.com/categories/21-seamless-clip-ins"     "0.80"]
+                                            ["https://shop.mayvenn.com/shop/look"                           "0.80"]]
+                                           (for [{:keys [catalog/product-id page/slug]} launched-products]
+                                             [(str "https://shop.mayvenn.com/products/" product-id "-" slug) "0.80"]))
+                                     (mapv url-xml-elem))})
+            with-out-str
+            util.response/response
+            (util.response/content-type "text/xml")))
+      (-> (util.response/response "<error />")
+          (util.response/content-type "text/xml")
+          (util.response/status 502)))
     (-> (util.response/response "")
         (util.response/status 404))))
 
