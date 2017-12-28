@@ -85,24 +85,10 @@
    [:a
     (assoc (utils/route-to events/navigate-shop-by-look)
            :data-test "home-banner")
-    (let [file-name "Stealing-Hearts.jpg"
-          alt       "Gift yourself irresistible textures. Shop now!"
-          mob-uuid  "e0cfde2a-4fec-4d20-b534-658d2be2a771"
-          dsk-uuid  "614770c2-954c-48d5-9126-3845f3bbaad9"]
-      (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
-                   :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
-                   :file-name   file-name
-                   :alt         alt}))]])
-
-(defn flash-sale-hero [store-slug]
-  [:h1.h2
-   [:a
-    (assoc (utils/route-to events/navigate-shop-by-look)
-           :data-test "home-banner")
-    (let [file-name "Flash-Sale-48hrs.jpg"
-          alt       "48 Hour Flash Sale 25% Off The Entire Site. Ends 12/15 12AM EST"
-          mob-uuid  "2a9c871d-510f-4b81-bfc8-727205cab286"
-          dsk-uuid  "8a10c713-0f7f-46ab-b254-e6c1b818544a"]
+    (let [file-name "Hello2018.jpg"
+          alt       "Hello 2018! Strut into the new year with new hair. Shop now!"
+          mob-uuid  "d33664e7-82fe-44be-b273-8cd6bf379876"
+          dsk-uuid  "120be475-dd22-47ef-92dd-501827dd718d"]
       (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
                    :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
                    :file-name   file-name
