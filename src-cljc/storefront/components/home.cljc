@@ -9,7 +9,6 @@
             [storefront.components.marquee :as marquee]
             [storefront.assets :as assets]
             [storefront.config :as config]
-            [storefront.accessors.flash-sale :as flash-sale]
             [storefront.accessors.experiments :as experiments]
             [clojure.string :as string]
             [spice.date :as date]))
@@ -295,9 +294,7 @@
    :categories (->> (get-in data keypaths/categories)
                     (filter :home/order)
                     (sort-by :home/order))
-   :hero-fn    (if (flash-sale/active?)
-                 flash-sale-hero
-                 hero)
+   :hero-fn    hero
    :human-hair? (experiments/human-hair? data)})
 
 (defn built-component [data opts]
