@@ -428,7 +428,7 @@
                                  (= "movement" (get-in data keypaths/copy))
                                  "Be part of a movement of hair stylists making money on their own terms."
 
-                                 :else "Earn $2,000 a month selling hair with no out of pocket expenses")
+                                 :else "Earn up to $2,000 a month selling hair with no out of pocket expenses")
               :flow-id         flow-id
               :resume-self-reg {:remote-lead remote-lead}
               :sign-up         {:field-errors      (get-in data storefront.keypaths/field-errors)
