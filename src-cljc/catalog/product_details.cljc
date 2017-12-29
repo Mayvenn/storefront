@@ -327,7 +327,8 @@
                 (lowest-sku-price skus)})
              (group-by option-kw skus))))
 
-(defn ^:private construct-option [option-kw facets sku-skuer cheapest-for-option-kw cheapest-price options-for-option-kw sku]
+(defn ^:private construct-option
+  [option-kw facets sku-skuer cheapest-for-option-kw cheapest-price options-for-option-kw sku]
   (let [option-name  (first (option-kw sku))
         facet-option (get-in facets [option-kw :facet/options option-name])
         image        (:option/image facet-option)]
@@ -462,15 +463,12 @@
 
 (defmethod transitions/transition-state events/navigate-product-details
   [_ event {:keys [catalog/product-id query-params]} app-state]
-  (let [product      (products/product-by-id app-state product-id)
-        sku-id       (determine-sku-id app-state product (:SKU query-params))
-        sku          (get-in app-state (conj keypaths/v2-skus sku-id))
-
-        product-skus (extract-product-skus app-state product)]
+  (let [product (products/product-by-id app-state product-id)
+        sku-id  (determine-sku-id app-state product (:SKU query-params))
+        sku     (get-in app-state (conj keypaths/v2-skus sku-id))]
     (-> app-state
         (assoc-in keypaths/ui-ugc-category-popup-offset (:offset query-params))
         (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
-        (assoc-in catalog.keypaths/detailed-product-product-skus product-skus)
         (assoc-in catalog.keypaths/detailed-product-id product-id)
         (assoc-in keypaths/browse-recently-added-skus [])
         (assoc-in keypaths/browse-sku-quantity 1))))
@@ -500,8 +498,11 @@
   (let [product      (products/current-product app-state)
         skus         (products/index-skus skus)
         sku-id       (determine-sku-id app-state product)
-        sku          (get skus sku-id)]
-    (assoc-in app-state catalog.keypaths/detailed-product-selected-sku sku)))
+        sku          (get skus sku-id)
+        product-skus (extract-product-skus app-state product)]
+    (-> app-state
+        (assoc-in catalog.keypaths/detailed-product-product-skus product-skus)
+        (assoc-in catalog.keypaths/detailed-product-selected-sku sku))))
 
 (defn first-when-only [coll]
   (when (= 1 (count coll))
