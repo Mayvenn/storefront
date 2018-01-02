@@ -547,8 +547,8 @@
            :hair/texture          :query/missing
            :hair/color.process    #{"dyed"}
            :hair/source           #{"human"}
-           :header/order          7
-           :header/group          2
+           :header/order          5
+           :header/group          1
            :footer/order          15
            :selector/essentials   [:catalog/department :hair/family :hair/color.process :hair/source]
            :selector/electives    [:hair/origin :hair/texture :hair/color]
