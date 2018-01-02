@@ -52,8 +52,8 @@
                      (category-image (:home images))
                      [:h3.h2.white.absolute.col-12.titleize.mt1
                       {:style {:text-shadow "black 0px 0px 25px, black 0px 0px 25px"
-                               :transform "translateY(-50%)"
-                               :top "50%"}}
+                               :transform "translateY(-75%)"
+                               :top "75%"}}
                       (let [[first-word & last-words] (string/split title #" ")]
                         [:div
                          [:div first-word]
