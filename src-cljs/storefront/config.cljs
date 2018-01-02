@@ -104,11 +104,6 @@
     "production" "6a68fb24fd9c50c7ed8b"
     "a0c937dbb5a75e3c7937"))
 
-(def sift-api-key
-  (case js/environment
-    "production" "269464bc68"
-    "bbe6fafe11"))
-
 (def facebook-app-id (case js/environment
                        "production" 1536288310021691
                        "acceptance" 1537350883248767

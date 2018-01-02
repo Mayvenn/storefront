@@ -30,7 +30,6 @@
             [storefront.hooks.reviews :as reviews]
             [storefront.hooks.riskified :as riskified]
             [storefront.hooks.seo :as seo]
-            [storefront.hooks.sift :as sift]
             [storefront.hooks.stringer :as stringer]
             [storefront.hooks.stripe :as stripe]
             [storefront.hooks.svg :as svg]
@@ -101,7 +100,6 @@
   (affirm/insert)
   (convert/insert-tracking)
   (riskified/insert-tracking (get-in app-state keypaths/session-id))
-  (sift/insert-tracking)
   (facebook-analytics/insert-tracking)
   (pinterest/insert-tracking)
   (talkable/insert)
@@ -115,7 +113,6 @@
 (defmethod perform-effects events/app-stop [_ event args _ app-state]
   (convert/remove-tracking)
   (riskified/remove-tracking)
-  (sift/remove-tracking)
   (stringer/remove-tracking)
   (google-analytics/remove-tracking)
   (facebook-analytics/remove-tracking)

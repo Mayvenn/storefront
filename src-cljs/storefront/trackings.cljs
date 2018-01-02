@@ -11,7 +11,6 @@
             [storefront.hooks.google-analytics :as google-analytics]
             [storefront.hooks.pinterest :as pinterest]
             [storefront.hooks.riskified :as riskified]
-            [storefront.hooks.sift :as sift]
             [storefront.hooks.stringer :as stringer]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
@@ -44,8 +43,6 @@
       (google-analytics/track-page path)
       (when (not (nav-was-selecting-bundle-option? app-state))
         (pinterest/track-page)
-        (sift/track-page (get-in app-state keypaths/user-id)
-                         (get-in app-state keypaths/session-id))
         (riskified/track-page path)
         (stringer/track-page)
         (facebook-analytics/track-page path)))))
