@@ -419,9 +419,13 @@
   {"paypal-incomplete"      "We were unable to complete your order with PayPal. Please try again."
    "paypal-invalid-address" "Unfortunately, Mayvenn products cannot be delivered to this address at this time. Please choose a new shipping destination."})
 
+(def standard-affirm-error "There was an issue authorizing your Affirm loan. Please check out again or use a different payment method.")
 (def payment-error-codes
-  {"affirm-incomplete" "There was an issue authorizing your Affirm loan. Please check out again or use a different payment method."
-   "affirm-total-too-low" "Affirm financing is not available for orders less than $50. Please use a different payment method."})
+  {"affirm-total-too-low"       "Affirm financing is not available for orders less than $50. Please use a different payment method."
+   "affirm-incomplete"          standard-affirm-error
+   "affirm-invalid-state"       standard-affirm-error
+   "affirm-failed-to-authorize" standard-affirm-error
+   "affirm-failed-to-charge"    standard-affirm-error})
 
 (defmethod perform-effects events/navigate-cart [_ event args _ app-state]
   (api/get-shipping-methods)
@@ -471,7 +475,7 @@
     (redirect events/navigate-checkout-address))
   (fetch-saved-cards app-state)
   (stripe/insert)
-  (when-let [error-msg (-> args :query-params :error payment-error-codes)]
+  (when-let [error-msg (-> args :query-params :error payment-error-codes (or "Whoops! Something went wrong."))]
     (handle-message events/flash-show-failure {:message error-msg})))
 
 (defmethod perform-effects events/navigate-checkout-confirmation [_ event args _ app-state]
