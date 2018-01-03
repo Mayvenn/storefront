@@ -28,7 +28,6 @@
    :logger (logger (config :logging))
    :app-handler (map->AppHandler (select-keys config [:storeback-config
                                                       :leads-config
-                                                      :dc-logo-config
                                                       :environment
                                                       :client-version]))
    :embedded-server (jetty-server (merge (:server-opts config)

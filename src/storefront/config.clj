@@ -37,7 +37,6 @@
 (def env-config {:environment      (env :environment)
                  :bugsnag-token    (env :bugsnag-token)
                  :leads-config     {:endpoint (env :leads-endpoint)}
-                 :dc-logo-config   {:endpoint (env :dc-logo-endpoint)}
                  :storeback-config {:endpoint          (env :storeback-endpoint)
                                     :internal-endpoint (env :storeback-internal-endpoint)}})
 

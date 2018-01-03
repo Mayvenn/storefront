@@ -559,13 +559,6 @@
                                           (codec/form-encode {:affirm      true
                                                               :order-token order-token}))))))))
 
-(defn logo-routes [{:keys [dc-logo-config]}]
-  (wrap-cookies
-   (GET "/logo.:ext{htm|gif}" req
-     (let [s (or (cookies/get req "session-id")
-                 "missing-session-id")]
-       (util.response/redirect (str (:endpoint dc-logo-config) "&s=" s))))))
-
 (defn static-routes [_]
   (fn [{:keys [uri] :as req}]
     ;; can't use (:nav-message req) because routes/static-api-routes are not
@@ -724,7 +717,6 @@
                (GET "/products" req (redirect-to-home environment req))
                (GET "/products/" req (redirect-to-home environment req))
                (GET "/products/:id-and-slug/:sku" req (redirect-to-product-details environment req))
-               (logo-routes ctx)
                (static-routes ctx)
                (paypal-routes ctx)
                (affirm-routes ctx)

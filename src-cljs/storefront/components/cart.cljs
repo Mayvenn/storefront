@@ -312,8 +312,6 @@ Thanks,
     (if fetching-order?
       [:.py3.h2 ui/spinner]
       [:div
-       [:iframe.display-none {:width 1 :height 1 :src "/logo.htm"}
-        [:img {:width 1 :height 1 :src "/logo.gif"}]]
        (if (zero? item-count)
          (om/build empty-component empty-cart)
          (om/build full-component full-cart))]))))
