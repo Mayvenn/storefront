@@ -420,7 +420,8 @@
    "paypal-invalid-address" "Unfortunately, Mayvenn products cannot be delivered to this address at this time. Please choose a new shipping destination."})
 
 (def payment-error-codes
-  {"affirm-incomplete" "There was an issue authorizing your Affirm loan. Please check out again or use a different payment method."})
+  {"affirm-incomplete" "There was an issue authorizing your Affirm loan. Please check out again or use a different payment method."
+   "affirm-total-too-low" "Affirm financing is not available for orders less than $50. Please use a different payment method."})
 
 (defmethod perform-effects events/navigate-cart [_ event args _ app-state]
   (api/get-shipping-methods)
