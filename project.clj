@@ -40,7 +40,13 @@
              :css-dirs ["resources/public/css"]}
   :main storefront.core
   :repl-options {:init-ns user}
-  :jvm-opts ["-Xmx512m" "-XX:-OmitStackTraceInFastThrow"]
+  :jvm-opts ~(concat
+              ["-Xmx512m" "-XX:-OmitStackTraceInFastThrow"]
+              (let [version (System/getProperty "java.version")
+                    [major _ _] (clojure.string/split version #"\.")]
+                (if (>= (Integer. major) 9)
+                  ["--add-modules" "java.xml.bind"]
+                  [])))
   :clean-targets ^{:protect false} [:target-path
                                     "resources/public/js/out/"
                                     "resources/public/css/"
