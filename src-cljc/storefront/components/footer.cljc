@@ -91,41 +91,41 @@
       [:div {:style {:width "22px" :height "22px"}} svg/mayvenn-on-pinterest]]]]))
 
 (defn footer-links [minimal?]
-  [:div.center
-   (when-not minimal?
-     [:div
-      [:a.inherit-color
-       (utils/route-to events/navigate-content-about-us) "About"]
-      " - "
-      [:span
-       [:a.inherit-color {:href "https://jobs.mayvenn.com"}
-        "Careers"]
-       " - "]
-      [:a.inherit-color
-       (utils/route-to events/navigate-content-help) "Contact"]
-      " - "])
-   [:a.inherit-color
-    (assoc (utils/route-to events/navigate-content-privacy)
-           :data-test "content-privacy") "Privacy"]
-   " - "
-   [:a.inherit-color
-    ;; use traditional page load so anchors work
-    {:href (str (routes/path-for events/navigate-content-privacy) "#ca-privacy-rights")}
-    "CA Privacy Rights"]
-   " - "
-   [:a.inherit-color (assoc (utils/route-to events/navigate-content-tos)
-                    :data-test "content-tos") "Terms"]
-   " - "
-   [:a.inherit-color
-    ;; use traditional page load so anchors work
-    {:href (str (routes/path-for events/navigate-content-privacy) "#our-ads")}
-    "Our Ads"]
-   (when-not minimal?
-     " - "
-     [:span
-      {:item-prop "name"
-       :content "Mayvenn Hair"}
-      " ©" (date/full-year (date/current-date)) " " "Mayvenn"])] )
+  (into [:div.center]
+        (concat
+         (when-not minimal?
+           [[:a.inherit-color
+             (utils/route-to events/navigate-content-about-us) "About"]
+            " - "
+            [:span
+             [:a.inherit-color {:href "https://jobs.mayvenn.com"}
+              "Careers"]
+             " - "]
+            [:a.inherit-color
+             (utils/route-to events/navigate-content-help) "Contact"]
+            " - "])
+         [[:a.inherit-color
+           (assoc (utils/route-to events/navigate-content-privacy)
+                  :data-test "content-privacy") "Privacy"]
+          " - "
+          [:a.inherit-color
+           ;; use traditional page load so anchors work
+           {:href (str (routes/path-for events/navigate-content-privacy) "#ca-privacy-rights")}
+           "CA Privacy Rights"]
+          " - "
+          [:a.inherit-color (assoc (utils/route-to events/navigate-content-tos)
+                                   :data-test "content-tos") "Terms"]
+          " - "
+          [:a.inherit-color
+           ;; use traditional page load so anchors work
+           {:href (str (routes/path-for events/navigate-content-privacy) "#our-ads")}
+           "Our Ads"]
+          (when-not minimal?
+            " - "
+            [:span
+             {:item-prop "name"
+              :content "Mayvenn Hair"}
+             " ©" (date/full-year (date/current-date)) " " "Mayvenn"])])) )
 
 (defn full-component [{:keys [contacts
                               own-store?
