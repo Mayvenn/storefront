@@ -475,7 +475,7 @@
     (redirect events/navigate-checkout-address))
   (fetch-saved-cards app-state)
   (stripe/insert)
-  (when-let [error-msg (-> args :query-params :error payment-error-codes (or "Whoops! Something went wrong."))]
+  (when-let [error-msg (-> args :query-params :error payment-error-codes)]
     (handle-message events/flash-show-failure {:message error-msg})))
 
 (defmethod perform-effects events/navigate-checkout-confirmation [_ event args _ app-state]
