@@ -383,11 +383,11 @@
    [:a.h3.right (merge {:data-test data-test :title "Close"} close-attrs)
     (svg/close-x {:class (or class "stroke-white fill-gray")})]])
 
-(defn modal-close-big [{:keys [class data-test close-attrs]}]
+(defn big-x [{:keys [class data-test attrs]}]
   [:div {:style {:width "70px"}}
    [:div.relative.rotate-45.p2 (merge  {:style     {:height "70px"}
                                         :data-test data-test}
-                                       close-attrs)
+                                       attrs)
     [:div.absolute.border-right.border-dark-gray {:style {:width "25px" :height "50px"}}]
     [:div.absolute.border-bottom.border-dark-gray {:style {:width "50px" :height "25px"}}]]])
 

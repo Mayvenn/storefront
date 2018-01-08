@@ -32,19 +32,11 @@
 (defn ^:private promo-bar [promo-data]
   (component/build promotion-banner/component promo-data nil))
 
-(def ^:private menu-x
-  (component/html
-   [:div {:style {:width "70px"}}
-    [:div.relative.rotate-45.p2 {:style     {:height "70px"}
-                                 :data-test "close-slideout"
-                                 :on-click  #(messages/handle-message events/control-menu-collapse-all)}
-     [:div.absolute.border-right.border-dark-gray {:style {:width "25px" :height "50px"}}]
-     [:div.absolute.border-bottom.border-dark-gray {:style {:width "50px" :height "25px"}}]]]))
-
 (defn burger-header [cart]
   (component/html
    [:div.bg-white.flex.items-center.border-bottom.border-gray
-    menu-x
+    (ui/big-x {:data-test "close-slideout"
+               :attrs {:on-click #(messages/handle-message events/control-menu-collapse-all)}})
     [:div.flex-auto.py3 (logo "header-logo" "40px")]
     (ui/shopping-bag {:style     {:height "70px" :width "70px"}
                       :data-test "mobile-cart"}

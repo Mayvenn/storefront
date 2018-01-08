@@ -17,7 +17,7 @@
                           :background-position "top"
                           :background-image    "url('//ucarecdn.com/173e14ac-e55b-49f2-89e6-793051979629/emailmodalheroIMG.png')"}}
                  [:div.flex.justify-end
-                  (ui/modal-close-big {:data-test "dismiss-email-capture" :close-attrs close-attrs})]
+                  (ui/big-x {:data-test "dismiss-email-capture" :attrs close-attrs})]
                  [:div {:style {:height "230"}}]
                  [:div.p4.m3 {:style {:background "white" :opacity 0.8}}
                   [:form.col-12.flex.flex-column.items-center
