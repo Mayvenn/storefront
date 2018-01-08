@@ -2,11 +2,9 @@
   :description "The front of the store"
   :url "https://github.com/Mayvenn/storefront"
   :license {:name "All rights reserved"}
-  :dependencies [[org.clojure/clojure "1.9.0"]
+  :dependencies [[org.clojure/clojure "1.8.0"]
                  [com.taoensso/timbre "3.4.0" :exclusions [org.clojure/tools.reader]]
                  [com.stuartsierra/component "0.3.2"]
-                 [com.cognitect/transit-cljs "0.8.243"]
-
                  [environ "1.1.0"]
                  [tocsin "0.1.2"]
                  [tugboat "0.1.6"]
@@ -20,7 +18,7 @@
                  [hiccup "1.0.5"]
                  [cheshire "5.5.0"]
                  [cljsjs/google-maps "3.18-1"]
-                 [org.clojure/clojurescript "1.9.946"]
+                 [org.clojure/clojurescript "1.9.671"]
                  [org.clojure/core.cache "0.6.3"]
                  [org.clojure/core.memoize "0.5.6" :exclusions [org.clojure/core.cache]]
                  [cljsjs/react "15.6.1-2"]
@@ -30,13 +28,12 @@
                  [org.omcljs/om "1.0.0-beta1" :exclusions [cljsjs/react]]
                  [comb "0.1.0"]
                  [sablono "0.8.0"]
-
-                 [cljs-ajax "0.7.3"]
+                 [cljs-ajax "0.3.11"]
                  [bidi "2.0.16"]
                  [com.cemerick/url "0.1.1"]]
   :repositories [["private" {:url "s3p://mayvenn-dependencies/releases/" :no-auth true}]]
   :plugins [[s3-wagon-private "1.3.0"]
-            [lein-cljsbuild "1.1.7"]
+            [lein-cljsbuild "1.1.2"]
             [lein-cljfmt "0.1.10"]
             [lein-figwheel "0.5.11"]]
   :figwheel {:nrepl-port 4000
@@ -108,7 +105,7 @@
                           "externs/stripe.js"
                           "externs/talkable.js"
                           "externs/uploadcare.js"
-                          "externs/wistia.-js"
+                          "externs/wistia.js"
                           "externs/yotpo.js"]
                 :optimizations :advanced}}}}
   :auto-clean false
