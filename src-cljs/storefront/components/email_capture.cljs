@@ -11,27 +11,30 @@
     (component/create
      (html
       (ui/modal {:close-attrs close-attrs
-                 :bg-class "bg-darken-4"}
-                [:div.bg-white.rounded.p4
-                 (ui/modal-close {:close-attrs close-attrs :data-test "dismiss-email-capture"})
-                 [:form.col-12.flex.flex-column.items-center
-                  {:on-submit (utils/send-event-callback events/control-email-captured-submit)}
-                  [:div.h3.navy.bold.mb2 "Become an Insider"]
-                  [:p.h5.dark-gray.mb2
-                   "Want exclusive offers and first access to products? Sign up for our email alerts below!"]
-                  [:div.col-12.border-top.border-light-gray ui/nbsp]
-                  (ui/text-field {:errors   (get field-errors ["email"])
-                                  :keypath  keypaths/captured-email
-                                  :focused  focused
-                                  :label    "Your Email Address"
-                                  :name     "email"
-                                  :required true
-                                  :type     "email"
-                                  :value    email})
-                  [:div.col-12.col-6-on-tb-dt.mx-auto.my2 (ui/submit-button "Submit")]
-                  [:p.h6.dark-gray.mb2
-                   "By signing up, you agree to receive Mayvenn emails and promotions. "
-                   "You can unsubscribe at any time. See our Privacy Policy for details."]]])))))
+                 :bg-class    "bg-darken-4"}
+                [:div.flex.flex-column
+                 {:style {:background-size     "cover"
+                          :background-position "top"
+                          :background-image    "url('//ucarecdn.com/173e14ac-e55b-49f2-89e6-793051979629/emailmodalheroIMG.png')"}}
+                 [:div.flex.justify-end
+                  (ui/modal-close-big {:data-test "dismiss-email-capture" :close-attrs close-attrs})]
+                 [:div {:style {:height "230"}}]
+                 [:div.p4.m3 {:style {:background "white" :opacity 0.8}}
+                  [:form.col-12.flex.flex-column.items-center
+                   {:on-submit (utils/send-event-callback events/control-email-captured-submit)}
+                   [:div.h0.bold.teal.mb0.nowrap "You're Flawless"]
+                   [:p.mb2 "Make sure your hair is too"]
+                   [:p.mb2.center "Sign up now for exclusive discounts, stylist-approved hair tips, and first access to new products."]
+                   (ui/text-field {:errors   (get field-errors ["email"])
+                                   :keypath  keypaths/captured-email
+                                   :focused  focused
+                                   :label    "Your E-Mail Address"
+                                   :name     "email"
+                                   :required true
+                                   :type     "email"
+                                   :value    email
+                                   :class    "center"})
+                   [:div.col-12.col-6-on-tb-dt.mx-auto.my2 (ui/submit-button "Sign Up Now")]]]])))))
 
 (defn query [data]
   {:email        (get-in data keypaths/captured-email)
@@ -40,4 +43,3 @@
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
-
