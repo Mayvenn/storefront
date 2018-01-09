@@ -428,6 +428,7 @@
            :page/slug                 "stylist-exclusives"
            :direct-to-details/id      "49"
            :direct-to-details/slug    "rings-kits"
+           :direct-to-details/sku-id  "SK2"
            :catalog/department        #{"stylist-exclusives"},
            :kits/contents             #{"rings"},
            :stylist-exclusives/family #{"kits"}
@@ -611,7 +612,8 @@
     :page/slug "tape-ins"
 
     :direct-to-details/id   "111"
-    :direct-to-details/slug "50g-straight-tape-ins?SKU=TAPE-S-1-20"
+    :direct-to-details/slug "50g-straight-tape-ins"
+    :direct-to-details/sku-id "TAPE-S-1-20"
 
     :footer/order 50
     :header/group 2

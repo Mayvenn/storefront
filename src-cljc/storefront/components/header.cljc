@@ -163,7 +163,8 @@
        (if (:direct-to-details/id category)
          (utils/route-to events/navigate-product-details
                          {:catalog/product-id (:direct-to-details/id category)
-                          :page/slug          (:direct-to-details/slug category)})
+                          :page/slug          (:direct-to-details/slug category)
+                          :query-params       {:catalog/sku-id (:direct-to-details/sku-id category)}})
          (utils/route-to events/navigate-category category))
        (when (menu/new? human-hair? category)
          [:span.teal "NEW "])

@@ -21,10 +21,12 @@
 
 (defn ^:private category->link [{:keys        [copy/title page/slug] :as category
                                  product-id   :direct-to-details/id
-                                 product-slug :direct-to-details/slug}]
+                                 product-slug :direct-to-details/slug
+                                 sku-id       :direct-to-details/sku-id}]
   (let [nav-message (if product-id
                       [events/navigate-product-details {:catalog/product-id product-id
-                                                        :page/slug          product-slug}]
+                                                        :page/slug          product-slug
+                                                        :query-params       {:catalog/sku-id sku-id}}]
                       [events/navigate-category category])
         slug        (or product-slug slug)]
     {:title       title
