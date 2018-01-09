@@ -209,7 +209,7 @@
       (if (and (empty? (seq history)) fetching?)
         [:div.my2.h2 ui/spinner]
         [:div.clearfix
-         {:data-test "commissions-panel"}
+         {:data-test "earnings-panel"}
          [:div.col-on-tb-dt.col-9-on-tb-dt
           (when-let [history (seq history)]
             [:div.mb3
