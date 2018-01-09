@@ -39,6 +39,10 @@ Move to uploadcare???
     height: 240px;
 }
 
+.bg-email-capture {
+    background-image: url('//ucarecdn.com/173e14ac-e55b-49f2-89e6-793051979629/emailmodalheroIMG.png');
+}
+
 @media (min-width: 750px) {
     .leads-bg-hero-hair {
         background-image: url("/images/leads/hero-hair-texture-bg-dsk.jpg");

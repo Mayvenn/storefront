@@ -12,14 +12,11 @@
      (html
       (ui/modal {:close-attrs close-attrs
                  :bg-class    "bg-darken-4"}
-                [:div.flex.flex-column
-                 {:style {:background-size     "cover"
-                          :background-position "top"
-                          :background-image    "url('//ucarecdn.com/173e14ac-e55b-49f2-89e6-793051979629/emailmodalheroIMG.png')"}}
+                [:div.flex.flex-column.bg-cover.bg-top.bg-email-capture
                  [:div.flex.justify-end
                   (ui/big-x {:data-test "dismiss-email-capture" :attrs close-attrs})]
                  [:div {:style {:height "230"}}]
-                 [:div.p4.m3 {:style {:background "white" :opacity 0.8}}
+                 [:div.p4.m3.bg-white {:style {:opacity 0.8}}
                   [:form.col-12.flex.flex-column.items-center
                    {:on-submit (utils/send-event-callback events/control-email-captured-submit)}
                    [:div.h0.bold.teal.mb0.center "You're Flawless"]
