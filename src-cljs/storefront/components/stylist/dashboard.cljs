@@ -18,8 +18,8 @@
      [:div.bg-light-gray
       [:div.col-6-on-tb-dt.mx-auto
        (om/build tabs/component {:selected-tab nav-event}
-                 {:opts {:tab-refs ["bonuses" "commissions" "referrals"]
-                         :labels   ["Bonuses" "Commissions" "Referrals"]
+                 {:opts {:tab-refs ["bonuses" "earnings" "referrals"]
+                         :labels   ["Bonuses" "Earnings" "Referrals"]
                          :tabs     [events/navigate-stylist-dashboard-bonus-credit
                                     events/navigate-stylist-dashboard-commissions
                                     events/navigate-stylist-dashboard-referrals]}})]]
