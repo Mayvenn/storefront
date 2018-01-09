@@ -22,7 +22,7 @@
                  [:div.p4.m3 {:style {:background "white" :opacity 0.8}}
                   [:form.col-12.flex.flex-column.items-center
                    {:on-submit (utils/send-event-callback events/control-email-captured-submit)}
-                   [:div.h0.bold.teal.mb0.nowrap "You're Flawless"]
+                   [:div.h0.bold.teal.mb0.center "You're Flawless"]
                    [:p.mb2 "Make sure your hair is too"]
                    [:p.mb2.center "Sign up now for exclusive discounts, stylist-approved hair tips, and first access to new products."]
                    (ui/text-field {:errors   (get field-errors ["email"])
