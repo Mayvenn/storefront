@@ -21,10 +21,10 @@
                  {:opts {:tab-refs ["bonuses" "earnings" "referrals"]
                          :labels   ["Bonuses" "Earnings" "Referrals"]
                          :tabs     [events/navigate-stylist-dashboard-bonus-credit
-                                    events/navigate-stylist-dashboard-commissions
+                                    events/navigate-stylist-dashboard-earnings
                                     events/navigate-stylist-dashboard-referrals]}})]]
      (condp = nav-event
-       events/navigate-stylist-dashboard-commissions
+       events/navigate-stylist-dashboard-earnings
        (om/build commissions/component commissions)
 
        events/navigate-stylist-dashboard-bonus-credit

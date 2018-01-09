@@ -73,7 +73,7 @@
               "/shop/bundle-deals"             (edn->bidi events/navigate-shop-bundle-deals)
               "/shop/look"                     (edn->bidi events/navigate-shop-by-look)
               ["/shop/look/" :look-id]         (edn->bidi events/navigate-shop-by-look-details)
-              "/stylist/commissions"           (edn->bidi events/navigate-stylist-dashboard-commissions)
+              "/stylist/earnings"              (edn->bidi events/navigate-stylist-dashboard-earnings)
               "/stylist/store_credits"         (edn->bidi events/navigate-stylist-dashboard-bonus-credit)
               "/stylist/referrals"             (edn->bidi events/navigate-stylist-dashboard-referrals)
               "/stylist/share-your-store"      (edn->bidi events/navigate-stylist-share-your-store)

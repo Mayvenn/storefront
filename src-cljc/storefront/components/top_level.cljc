@@ -55,7 +55,7 @@
          events/navigate-shop-bundle-deals              shop-bundle-deals/built-component
          events/navigate-shop-by-look                   shop-by-look/built-component
          events/navigate-shop-by-look-details           shop-by-look-details/built-component
-         events/navigate-stylist-dashboard-commissions  stylist.dashboard/built-component
+         events/navigate-stylist-dashboard-earnings     stylist.dashboard/built-component
          events/navigate-stylist-dashboard-bonus-credit stylist.dashboard/built-component
          events/navigate-stylist-dashboard-referrals    stylist.dashboard/built-component
          events/navigate-stylist-share-your-store       stylist.share-your-store/built-component

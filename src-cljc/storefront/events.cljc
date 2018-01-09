@@ -60,7 +60,7 @@
 
 (defpath navigate-stylist)
 (defpath navigate-stylist-dashboard)
-(defpath navigate-stylist-dashboard-commissions)
+(defpath navigate-stylist-dashboard-earnings)
 (defpath navigate-stylist-dashboard-referrals)
 (defpath navigate-stylist-dashboard-bonus-credit)
 

@@ -108,7 +108,7 @@
     " | My dashboard" [:span.ml1 (ui/expand-icon expanded?)]]
    [:div.bg-white.absolute.right-0
     [:div
-     (drop-down-row (utils/route-to events/navigate-stylist-dashboard-commissions) "My dashboard")]
+     (drop-down-row (utils/route-to events/navigate-stylist-dashboard-earnings) "My dashboard")]
     [:div.border-top.border-gray
      (drop-down-row (utils/route-to events/navigate-stylist-share-your-store) "Share your store")]
     [:div.border-top.border-gray

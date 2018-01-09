@@ -115,7 +115,7 @@
                              :data-test "share-your-store")
                       "Share your store"))
     (marquee-row
-     (ui/ghost-button (assoc (utils/route-to events/navigate-stylist-dashboard-commissions)
+     (ui/ghost-button (assoc (utils/route-to events/navigate-stylist-dashboard-earnings)
                              :data-test "dashboard")
                       "Dashboard")
      (ui/ghost-button stylists/community-url

@@ -370,7 +370,7 @@
   (when-let [user-token (get-in app-state keypaths/user-token)]
     (api/get-stylist-stats (get-in app-state keypaths/user-id) user-token)))
 
-(defmethod perform-effects events/navigate-stylist-dashboard-commissions [_ event args _ app-state]
+(defmethod perform-effects events/navigate-stylist-dashboard-earnings [_ event args _ app-state]
   (when (zero? (get-in app-state keypaths/stylist-commissions-page 0))
     (handle-message events/control-stylist-commissions-fetch)))
 
