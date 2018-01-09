@@ -129,53 +129,18 @@
       (payout-bar
        (mf/as-money amount) " has been added to your next payment.")])])
 
-(defn toggle-expanded-commission [expanded? number]
-  (utils/send-event-callback events/control-commission-order-expand
-                             {:number (when-not (expanded? number)
-                                        number)}))
 
-(defn show-collapsed-commission [expanded?
-                                 {:keys [number amount status commission-date order]}]
-  [:div.p2.border-bottom.border-right.border-left.border-light-gray
-   (when order
-     {:class "pointer"
-      :on-click (toggle-expanded-commission expanded? number)})
-   [:div.mb2
-    [:div.px1.h6.right.border.capped
-     {:style {:padding-top "3px" :padding-bottom "2px"}
-      :class (status-look status)}
-     (when (= status "paid") "+") (mf/as-money amount)]
-    [:div.h3.navy (:full-name order)]]
-
-   [:div.dark-gray.h6.flex.justify-between
-    [:div "Status" [:div.medium.titleize {:class (status-look status)} status]]
-    [:div "Ship Date" [:div.medium (f/short-date commission-date)]]
-    [:div "Order" [:div.medium number]]
-    [:div (when order
-            [:div.medium.h2
-             {:class (if (expanded? number) "gray" "dark-gray")}
-             "..."])]]])
-
-(defn transition-group [options & children]
-  (apply js/React.createElement js/ReactTransitionGroup.CSSTransitionGroup (clj->js options) (html children)))
-
-(defn show-commission [{:keys [id number order commissionable-amount] :as commission}
-                       expanded?
-                       products
-                       skus]
-  [:div {:key id}
-   (show-collapsed-commission expanded? commission)
-   (when order
-     (transition-group {:transitionName "commission-order"
-                        :transitionEnterTimeout 1000
-                        :transitionLeaveTimeout 1000
-                        :component "div"}
-                       (when (expanded? number)
-                         [:div.transition-3.transition-ease.overflow-auto.commission-order
-                          [:.dark-gray.bg-light-gray
-                           (show-order products skus order)
-                           (show-grand-total commissionable-amount)]
-                          (show-payout commission)])))])
+(defn earnings-table [history]
+  [:table.col-12.mb3 {:style {:border-spacing 0}}
+   (map-indexed
+    (fn [i {:keys [id number order amount commission-date commissionable-amount] :as commission}]
+      [:tr (merge {:key id}
+                  (when (odd? i)
+                    {:class "bg-too-light-teal"}))
+       [:td.px3.py2 (f/less-year-more-day-date commission-date)]
+       [:td.py2 (:full-name order) [:div.h7 "Commission Earned"]]
+       [:td.pr3.py2.green.right-align "+" (mf/as-money amount)]])
+    history)])
 
 (def empty-commissions
   (html
@@ -211,12 +176,12 @@
         [:div.clearfix
          {:data-test "earnings-panel"}
          [:div.col-on-tb-dt.col-9-on-tb-dt
-          (when-let [history (seq history)]
-            [:div.mb3
-             (for [commission history]
-               (show-commission commission expanded? products skus))
-             (pagination/fetch-more events/control-stylist-commissions-fetch fetching? page pages)])
-          (when (zero? pages) empty-commissions)]
+          (when (seq history)
+            (earnings-table history))
+          (pagination/fetch-more events/control-stylist-commissions-fetch fetching? page pages)
+          (when (zero? pages)
+            empty-commissions)]
+
          [:div.col-on-tb-dt.col-3-on-tb-dt
           (when rate (show-commission-rate rate))]
          show-program-terms])))))
@@ -229,15 +194,7 @@
 
 (defn query [data]
   (let [commissions     (get-in data keypaths/stylist-commissions)
-        commission-skus (all-skus-in-commissions commissions)
-        products        (get-in data keypaths/v2-products)
-        skus            (select-keys (get-in data keypaths/v2-skus) commission-skus)
-        products        (into {}
-                              (map (fn [sku-id]
-                                     [sku-id (products/find-product-by-sku-id products sku-id)]))
-                              (all-skus-in-commissions commissions))]
+        commission-skus (all-skus-in-commissions commissions)]
     {:commissions commissions
      :expanded?   (get-in data keypaths/expanded-commission-order-id)
-     :products    products
-     :skus        skus
      :fetching?   (utils/requesting? data request-keys/get-stylist-commissions)}))

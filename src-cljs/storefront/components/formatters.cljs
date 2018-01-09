@@ -11,6 +11,10 @@
   (let [date (parse-iso8601 iso8601-formatted-string)]
     (goog.string/format "%d/%d/%d" (inc (.getMonth date)) (.getDate date) (.getFullYear date))))
 
+(defn less-year-more-day-date [iso8601-formatted-string]
+  (let [date (parse-iso8601 iso8601-formatted-string)]
+    (goog.string/format "%02d/%02d/%d" (inc (.getMonth date)) (.getDate date) (mod (.getFullYear date) 100))))
+
 (def month-names ["January"
                   "February"
                   "March"

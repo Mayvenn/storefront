@@ -2,34 +2,34 @@
 .bg-twitter-blue { background-color: var(--twitter-blue); }
 .bg-sms-green    { background-color: var(--sms-green); }
 
-.bg-white         { background-color: var(--white); }
-.bg-light-silver  { background-color: var(--light-silver); }
-.bg-silver        { background-color: var(--silver); }
-.bg-dark-silver   { background-color: var(--dark-silver); }
-.bg-light-gray    { background-color: var(--light-gray); }
-.bg-gray          { background-color: var(--gray); }
-.bg-dark-gray     { background-color: var(--dark-gray); }
-.bg-black         { background-color: var(--black); }
-.bg-clear         { background-color: var(--clear); }
-.bg-light-teal    { background-color: var(--light-teal); }
-
-.bg-lighten-5    { background-color: var(--lighten-5); }
+.bg-white          { background-color: var(--white); }
+.bg-light-silver   { background-color: var(--light-silver); }
+.bg-silver         { background-color: var(--silver); }
+.bg-dark-silver    { background-color: var(--dark-silver); }
+.bg-light-gray     { background-color: var(--light-gray); }
+.bg-gray           { background-color: var(--gray); }
+.bg-dark-gray      { background-color: var(--dark-gray); }
+.bg-black          { background-color: var(--black); }
+.bg-clear          { background-color: var(--clear); }
+.bg-light-teal     { background-color: var(--light-teal); }
+.bg-too-light-teal { background-color: var(--too-light-teal); }
+.bg-lighten-5      { background-color: var(--lighten-5); }
 
 :root {
-    --white:         #ffffff;
-    --light-silver:  #f2f2f2;
-    --silver:        #ebebeb;
-    --dark-silver:   #dadada;
-    --light-gray:    #b4b4b4;
-    --gray:          #666666;
-    --dark-gray:     #333333;
-    --black:         #000000;
+    --white:          #ffffff;
+    --light-silver:   #f2f2f2;
+    --silver:         #ebebeb;
+    --dark-silver:    #dadada;
+    --light-gray:     #b4b4b4;
+    --gray:           #666666;
+    --dark-gray:      #333333;
+    --black:          #000000;
 
-    --light-teal:  #9fe5d5;
-
-    --facebook-blue: #3b5998;
-    --twitter-blue:  #00aced;
-    --sms-green:     #1fcc23;
+    --light-teal:     #9fe5d5;
+    --too-light-teal: #f5fcfb;
+    --facebook-blue:  #3b5998;
+    --twitter-blue:   #00aced;
+    --sms-green:      #1fcc23;
 
     --lighten-5: rgba(255, 255, 255, .925);
     --clear: rgba(0, 0, 0, 0);
