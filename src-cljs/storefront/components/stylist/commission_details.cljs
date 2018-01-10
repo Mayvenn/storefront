@@ -34,8 +34,12 @@
         skus-for-commission (all-skus-in-commission (get-in data keypaths/v2-skus)
                                                     commission)]
     {:commission commission
-     :fetching? (utils/requesting? data request-keys/get-stylist-commission)
-     :skus       skus-for-commission}))
+     :fetching?  (utils/requesting? data request-keys/get-stylist-commission)
+     :skus       skus-for-commission
+     :ship-date  (f/less-year-more-day-date (date/to-iso (->> (:order commission)
+                                                              :shipments
+                                                              first
+                                                              :shipped-at)))}))
 
 (def back-caret
   (component/html
@@ -44,12 +48,8 @@
                      :width  "15px"
                      :height "1.5rem"})]))
 
-(defn component [{:keys [commission fetching? skus]} owner opts]
-  (let [{:keys [id number order amount commission-date commissionable-amount]} commission
-        ship-date (f/less-year-more-day-date (date/to-iso (->> order
-                                                               :shipments
-                                                               first
-                                                               :shipped-at)))]
+(defn component [{:keys [commission fetching? ship-date skus]} owner opts]
+  (let [{:keys [id number order amount commission-date commissionable-amount]} commission]
     (component/create
      (if fetching?
        [:div.my2.h2 ui/spinner]
@@ -57,8 +57,7 @@
        [:div.container.mb4.px3
         [:a.left.col-12.dark-gray.flex.items-center.py3
          (utils/route-to events/navigate-stylist-dashboard-earnings)
-         back-caret
-         "back to earnings"]
+         (ui/back-caret "back to earnings")]
         [:h3.my4 "Details - Commission Earned"]
         [:div.flex.justify-between.col-12
          [:div (f/less-year-more-day-date commission-date)]
