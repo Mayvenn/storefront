@@ -1,29 +1,26 @@
-(ns storefront.components.stylist.commissions
+(ns storefront.components.stylist.earnings
   (:require [clojure.string :as str]
+            goog.string
             [om.core :as om]
             [sablono.core :refer [html]]
-            [storefront.accessors.products :as products]
+            [storefront.accessors.images :as images]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.stylist-urls :as stylist-urls]
-            [storefront.accessors.images :as images]
-            [storefront.components.stylist.pagination :as pagination]
-            [storefront.components.money-formatters :as mf]
             [storefront.components.formatters :as f]
+            [storefront.components.money-formatters :as mf]
+            [storefront.components.stylist.pagination :as pagination]
             [storefront.components.svg :as svg]
-            [storefront.platform.component-utils :as utils]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
-            [storefront.request-keys :as request-keys]
             [storefront.keypaths :as keypaths]
-            [storefront.utils.query :as query]
-            [goog.string]
-            [goog.userAgent.product :as product]
-            [spice.core :as spice]))
+            [storefront.platform.component-utils :as utils]
+            [storefront.request-keys :as request-keys]
+            [storefront.platform.messages :as messages]))
 
 (defn status-look [status]
   (case status
-    "pending"   "teal"
-    "paid"      "navy"
+    "pending"    "teal"
+    "paid"       "navy"
     "processing" "teal"))
 
 (defn show-item [products skus {:keys [id sku product-id unit-price quantity] :as line-item}]
@@ -129,12 +126,12 @@
       (payout-bar
        (mf/as-money amount) " has been added to your next payment.")])])
 
-
 (defn earnings-table [history]
   [:table.col-12.mb3 {:style {:border-spacing 0}}
    (map-indexed
     (fn [i {:keys [id number order amount commission-date commissionable-amount] :as commission}]
       [:tr (merge {:key id}
+                  (utils/route-to events/navigate-stylist-dashboard-commission-details {:commission-id id})
                   (when (odd? i)
                     {:class "bg-too-light-teal"}))
        [:td.px3.py2 (f/less-year-more-day-date commission-date)]
@@ -167,7 +164,7 @@
    [:div.center.my2.h6
     [:a.dark-gray (utils/route-to events/navigate-content-program-terms) "Mayvenn Program Terms"]]])
 
-(defn component [{:keys [commissions expanded? products skus fetching?]}]
+(defn component [{:keys [commissions products skus fetching?]}]
   (om/component
    (let [{:keys [history page pages rate]} commissions]
      (html
@@ -196,5 +193,4 @@
   (let [commissions     (get-in data keypaths/stylist-commissions)
         commission-skus (all-skus-in-commissions commissions)]
     {:commissions commissions
-     :expanded?   (get-in data keypaths/expanded-commission-order-id)
      :fetching?   (utils/requesting? data request-keys/get-stylist-commissions)}))

@@ -30,6 +30,10 @@
 (defn dropdown-arrow [opts]
   [:svg opts (svg-xlink "dropdown-arrow")])
 
+(defn left-caret [opts]
+  [:svg opts
+   (svg-xlink "left-caret")])
+
 ;; Stylist Dashboard
 
 (def micro-dollar-sign

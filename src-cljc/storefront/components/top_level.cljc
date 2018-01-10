@@ -11,6 +11,7 @@
                        [storefront.components.shop-bundle-deals :as shop-bundle-deals]
                        [storefront.components.shop-by-look :as shop-by-look]
                        [storefront.components.shop-by-look-details :as shop-by-look-details]
+                       [storefront.components.stylist.commission-details :as commission-details]
                        [storefront.components.account :as account]
                        [storefront.components.reset-password :as reset-password]
                        [storefront.components.stylist.dashboard :as stylist.dashboard]
@@ -51,30 +52,31 @@
 (defn main-component [nav-event]
   (condp = nav-event
     #?@(:cljs
-        [events/navigate-reset-password                 reset-password/built-component
-         events/navigate-shop-bundle-deals              shop-bundle-deals/built-component
-         events/navigate-shop-by-look                   shop-by-look/built-component
-         events/navigate-shop-by-look-details           shop-by-look-details/built-component
-         events/navigate-stylist-dashboard-earnings     stylist.dashboard/built-component
-         events/navigate-stylist-dashboard-bonus-credit stylist.dashboard/built-component
-         events/navigate-stylist-dashboard-referrals    stylist.dashboard/built-component
-         events/navigate-stylist-share-your-store       stylist.share-your-store/built-component
-         events/navigate-stylist-account-profile        stylist.account/built-component
-         events/navigate-stylist-account-portrait       stylist.portrait/built-component
-         events/navigate-stylist-account-password       stylist.account/built-component
-         events/navigate-stylist-account-commission     stylist.account/built-component
-         events/navigate-stylist-account-social         stylist.account/built-component
-         events/navigate-gallery-image-picker           gallery-image-picker/built-component
-         events/navigate-account-manage                 (partial sign-in/requires-sign-in account/built-component)
-         events/navigate-account-referrals              (partial sign-in/requires-sign-in friend-referrals/built-component)
-         events/navigate-friend-referrals               friend-referrals/built-component
-         events/navigate-cart                           cart/built-component
-         events/navigate-checkout-returning-or-guest    checkout-returning-or-guest/built-component
-         events/navigate-checkout-sign-in               checkout-sign-in/built-component
-         events/navigate-checkout-address               (partial checkout-returning-or-guest/requires-sign-in-or-initiated-guest-checkout checkout-address/built-component)
-         events/navigate-checkout-payment               (partial checkout-returning-or-guest/requires-sign-in-or-initiated-guest-checkout checkout-payment/built-component)
-         events/navigate-checkout-confirmation          (partial checkout-returning-or-guest/requires-sign-in-or-initiated-guest-checkout checkout-confirmation/built-component)
-         events/navigate-order-complete                 checkout-complete/built-component])
+        [events/navigate-reset-password                       reset-password/built-component
+         events/navigate-shop-bundle-deals                    shop-bundle-deals/built-component
+         events/navigate-shop-by-look                         shop-by-look/built-component
+         events/navigate-shop-by-look-details                 shop-by-look-details/built-component
+         events/navigate-stylist-dashboard-earnings           stylist.dashboard/built-component
+         events/navigate-stylist-dashboard-bonus-credit       stylist.dashboard/built-component
+         events/navigate-stylist-dashboard-referrals          stylist.dashboard/built-component
+         events/navigate-stylist-share-your-store             stylist.share-your-store/built-component
+         events/navigate-stylist-account-profile              stylist.account/built-component
+         events/navigate-stylist-account-portrait             stylist.portrait/built-component
+         events/navigate-stylist-account-password             stylist.account/built-component
+         events/navigate-stylist-account-commission           stylist.account/built-component
+         events/navigate-stylist-dashboard-commission-details commission-details/built-component
+         events/navigate-stylist-account-social               stylist.account/built-component
+         events/navigate-gallery-image-picker                 gallery-image-picker/built-component
+         events/navigate-account-manage                       (partial sign-in/requires-sign-in account/built-component)
+         events/navigate-account-referrals                    (partial sign-in/requires-sign-in friend-referrals/built-component)
+         events/navigate-friend-referrals                     friend-referrals/built-component
+         events/navigate-cart                                 cart/built-component
+         events/navigate-checkout-returning-or-guest          checkout-returning-or-guest/built-component
+         events/navigate-checkout-sign-in                     checkout-sign-in/built-component
+         events/navigate-checkout-address                     (partial checkout-returning-or-guest/requires-sign-in-or-initiated-guest-checkout checkout-address/built-component)
+         events/navigate-checkout-payment                     (partial checkout-returning-or-guest/requires-sign-in-or-initiated-guest-checkout checkout-payment/built-component)
+         events/navigate-checkout-confirmation                (partial checkout-returning-or-guest/requires-sign-in-or-initiated-guest-checkout checkout-confirmation/built-component)
+         events/navigate-order-complete                       checkout-complete/built-component])
 
     events/navigate-home                    home/built-component
     events/navigate-category                category/built-component
