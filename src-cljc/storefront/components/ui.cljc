@@ -25,6 +25,13 @@
                         :height "20px"
                         :style  {:transform "rotate(-90deg)"}})))
 
+(defn back-caret [back-copy]
+  (component/html
+   [:span
+    [:img.px1.mbnp4 {:style {:height "1.25rem"}
+                     :src   (assets/path "/images/icons/caret-left.png")}]
+    back-copy]))
+
 (def spinner
   "Spinner that fills line, assuming line-height is 1.5em"
   (component/html

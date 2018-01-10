@@ -62,10 +62,7 @@
         (if bundle-deal-look?
           (utils/route-to events/navigate-shop-bundle-deals)
           (utils/route-back-or-to back events/navigate-shop-by-look))
-        [:span
-         [:img.px1.mbnp4 {:style {:height "1.25rem"}
-                          :src   (assets/path "/images/icons/caret-left.png")}]
-         back-copy]]
+        (ui/back-caret back-copy)]
 
        [:h1.h3.medium.center.dark-gray.mb2 (str "Get this " shared-cart-type-copy)]]]
      [:div.clearfix
