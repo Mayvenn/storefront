@@ -262,7 +262,7 @@
            ugc]}
    owner
    opts]
-  (let [review?        (:review? reviews)]
+  (let [review? (:review? reviews)]
     (component/create
      (if-not product
        [:div.flex.h2.p1.m1.items-center.justify-center
@@ -281,7 +281,8 @@
            [:div.center
             (title (:copy/title product))
             (when review? (reviews-summary reviews opts))
-            [:meta {:item-prop "image" :content (first carousel-images)}]
+            [:meta {:item-prop "image"
+                    :content   (:url (first carousel-images))}]
             (full-bleed-narrow (carousel carousel-images product))
             (starting-at cheapest-price)]
            [:div
@@ -296,7 +297,7 @@
                             :sku-quantity sku-quantity})]
              (when (products/eligible-for-triple-bundle-discount? product)
                triple-bundle-upsell)
-             (affirm/as-low-as-box {:amount (:sku/price selected-sku)
+             (affirm/as-low-as-box {:amount      (:sku/price selected-sku)
                                     :middle-copy "Just select Affirm at check out."})
              (add-to-bag-button adding-to-bag?
                                 selected-sku
