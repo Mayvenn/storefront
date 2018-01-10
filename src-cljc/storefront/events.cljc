@@ -249,6 +249,7 @@
 (defpath api-success-stylist-account-commission)
 (defpath api-success-stylist-account-social)
 (defpath api-success-stylist-stats)
+(defpath api-success-stylist-commission)
 (defpath api-success-stylist-commissions)
 (defpath api-success-stylist-bonus-credits)
 (defpath api-success-stylist-referral-program)
@@ -286,6 +287,8 @@
 
 (defpath api-success-lead-created)
 (defpath api-success-lead-registered)
+
+(defpath get-stylist-commission-api-failure)
 
 (defpath api-failure)
 (defpath api-failure-no-network-connectivity)

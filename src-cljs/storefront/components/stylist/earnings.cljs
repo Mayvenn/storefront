@@ -128,16 +128,17 @@
 
 (defn earnings-table [history]
   [:table.col-12.mb3 {:style {:border-spacing 0}}
-   (map-indexed
-    (fn [i {:keys [id number order amount commission-date commissionable-amount] :as commission}]
-      [:tr (merge {:key id}
-                  (utils/route-to events/navigate-stylist-dashboard-commission-details {:commission-id id})
-                  (when (odd? i)
-                    {:class "bg-too-light-teal"}))
-       [:td.px3.py2 (f/less-year-more-day-date commission-date)]
-       [:td.py2 (:full-name order) [:div.h7 "Commission Earned"]]
-       [:td.pr3.py2.green.right-align "+" (mf/as-money amount)]])
-    history)])
+   [:tbody
+    (map-indexed
+     (fn [i {:keys [id number order amount commission-date commissionable-amount] :as commission}]
+       [:tr (merge {:key id}
+                   (utils/route-to events/navigate-stylist-dashboard-commission-details {:commission-id id})
+                   (when (odd? i)
+                     {:class "bg-too-light-teal"}))
+        [:td.px3.py2 (f/less-year-more-day-date commission-date)]
+        [:td.py2 (:full-name order) [:div.h7 "Commission Earned"]]
+        [:td.pr3.py2.green.right-align "+" (mf/as-money amount)]])
+     history)]])
 
 (def empty-commissions
   (html

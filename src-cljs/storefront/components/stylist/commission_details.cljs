@@ -140,10 +140,11 @@
        (select-keys skus)))
 
 (defn query [data]
-  (let [commission          {}
+  (let [commission          (get-in data keypaths/stylist-commissions-detailed-commission)
         skus-for-commission (all-skus-in-commission (get-in data keypaths/v2-skus)
                                                     commission)]
     {:commission commission
+     :fetching? (utils/requesting? data request-keys/get-stylist-commission)
      :skus       skus-for-commission}))
 
 (def back-caret
@@ -153,39 +154,42 @@
                      :width  "15px"
                      :height "1.5rem"})]))
 
-(defn component [{:keys [commission skus]} owner opts]
+(defn component [{:keys [commission fetching? skus]} owner opts]
   (let [{:keys [id number order amount commission-date commissionable-amount]} commission
         ship-date (f/less-year-more-day-date (date/to-iso (->> order
                                                                :shipments
                                                                first
                                                                :shipped-at)))]
     (component/create
-     [:div.container.mb4.px3
-      [:a.left.col-12.dark-gray.flex.items-center.py3
-       (utils/route-to events/navigate-stylist-dashboard-earnings)
-       back-caret
-       "back to earnings"]
-      [:h3.my4 "Details - Commission Earned"]
-      [:div.flex.justify-between.col-12
-        [:div (f/less-year-more-day-date commission-date)]
-        [:div (:full-name order)]
-        [:div.green "+" (mf/as-money amount)]]
+     (if fetching?
+       [:div.my2.h2 ui/spinner]
 
-      [:div.col-12
-       [:div.col-4.inline-block
-        [:span.h6.dark-gray "Order Number"]
-        [:div.h6 (:number order)]]
-       [:div.col-8.inline-block
-        [:span.h6.dark-gray "Ship Date"]
-        [:div.h6 ship-date]]]
+       [:div.container.mb4.px3
+        [:a.left.col-12.dark-gray.flex.items-center.py3
+         (utils/route-to events/navigate-stylist-dashboard-earnings)
+         back-caret
+         "back to earnings"]
+        [:h3.my4 "Details - Commission Earned"]
+        [:div.flex.justify-between.col-12
+         [:div (f/less-year-more-day-date commission-date)]
+         [:div (:full-name order)]
+         [:div.green "+" (mf/as-money amount)]]
 
-      [:div.mt2.mbnp2.mtnp2.border-top.border-gray
-       (summary/display-line-items (orders/product-items order) skus)]
+        [:div.col-12
+         [:div.col-4.inline-block
+          [:span.h6.dark-gray "Order Number"]
+          [:div.h6 (:number order)]]
+         [:div.col-8.inline-block
+          [:span.h6.dark-gray "Ship Date"]
+          [:div.h6 ship-date]]]
 
-      (summary/display-order-summary order {:read-only? true})
+        [:div.mt2.mbnp2.mtnp2.border-top.border-gray
+         (summary/display-line-items (orders/product-items order) skus)]
 
-      [:div.h5.center
-       (str (mf/as-money amount) " has been added to your next payment.")]])))
+        (summary/display-order-summary order {:read-only? true})
+
+        [:div.h5.center
+         (str (mf/as-money amount) " has been added to your next payment.")]]))))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

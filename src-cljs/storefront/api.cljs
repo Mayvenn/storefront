@@ -537,6 +537,17 @@
     #(messages/handle-message events/api-success-stylist-commissions
                               (select-keys % [:rate :commissions :current-page :pages]))}))
 
+(defn get-stylist-commission [user-id user-token {:keys [commission-id]}]
+  (api-req
+   GET
+   (str "/v3/stylist/commission/" commission-id)
+   request-keys/get-stylist-commission
+   {:params
+    {:user-id user-id :user-token user-token}
+    :error-handler #(messages/handle-message events/get-stylist-commission-api-failure)
+    :handler #(messages/handle-message events/api-success-stylist-commission
+                              (select-keys % [:commission]))}))
+
 (defn get-stylist-bonus-credits [user-id user-token {:keys [page]}]
   (api-req
    GET

@@ -366,6 +366,15 @@
                     (map :sku)
                     set)))
 
+(defmethod perform-effects events/get-stylist-commission-api-failure [_ _ _ _ _]
+  (page-not-found))
+
+(defmethod perform-effects events/api-success-stylist-commission [_ event args _ app-state]
+  (ensure-skus app-state (->> (get-in app-state keypaths/stylist-commissions-detailed-commission)
+                              orders/product-items
+                              (map :sku)
+                              set)))
+
 (defmethod perform-effects events/navigate-stylist-dashboard [_ event args _ app-state]
   (when-let [user-token (get-in app-state keypaths/user-token)]
     (api/get-stylist-stats (get-in app-state keypaths/user-id) user-token)))
@@ -399,6 +408,12 @@
 (defmethod perform-effects events/navigate-stylist-dashboard-referrals [_ event args _ app-state]
   (when (zero? (get-in app-state keypaths/stylist-referral-program-page 0))
     (handle-message events/control-stylist-referrals-fetch)))
+
+(defmethod perform-effects events/navigate-stylist-dashboard-commission-details [_ event {:keys [commission-id]} _ app-state]
+  (let [user-id    (get-in app-state keypaths/user-id)
+        user-token (get-in app-state keypaths/user-token)]
+    (when user-token
+      (api/get-stylist-commission user-id user-token {:commission-id commission-id}))))
 
 (defmethod perform-effects events/control-stylist-referrals-fetch [_ event args _ app-state]
   (let [user-id    (get-in app-state keypaths/user-id)
