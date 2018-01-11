@@ -1,27 +1,16 @@
 (ns storefront.components.stylist.commission-details
-  (:require [clojure.string :as str]
-            [om.core :as om]
-            [sablono.core :refer [html]]
-            [storefront.assets :as assets]
-            [storefront.accessors.products :as products]
+  (:require [spice.date :as date]
             [storefront.accessors.orders :as orders]
-            [storefront.accessors.stylist-urls :as stylist-urls]
-            [storefront.accessors.images :as images] [storefront.components.stylist.pagination :as pagination]
-            [storefront.components.money-formatters :as mf]
+            [storefront.component :as component]
             [storefront.components.formatters :as f]
-            [storefront.components.svg :as svg]
+            [storefront.components.money-formatters :as mf]
             [storefront.components.order-summary :as summary]
-            [storefront.platform.component-utils :as utils]
+            [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
-            [storefront.request-keys :as request-keys]
             [storefront.keypaths :as keypaths]
-            [storefront.utils.query :as query]
-            [goog.string]
-            [goog.userAgent.product :as product]
-            [spice.core :as spice]
-            [spice.date :as date]
-            [storefront.component :as component]))
+            [storefront.platform.component-utils :as utils]
+            [storefront.request-keys :as request-keys]))
 
 (defn all-skus-in-commission [skus commission]
   (->> (:order commission)
