@@ -27,7 +27,7 @@
                            (when (odd? i)
                              {:class "bg-too-light-teal"}))
         [:td.px3.py2 (f/less-year-more-day-date commission-date)]
-        [:td.py2 (:full-name order) [:div.h7 "Commission Earned"]]
+        [:td.py2 (:full-name order) [:div.h6 "Commission Earned"]]
         [:td.pr3.py2.green.right-align "+" (mf/as-money amount)]])
      history)]])
 

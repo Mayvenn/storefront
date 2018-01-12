@@ -53,13 +53,13 @@
          [:div (:full-name order)]
          [:div.green "+" (mf/as-money amount)]]
 
-        [:div.col-12
+        [:div.col-12.pt2
          [:div.col-4.inline-block
-          [:span.h6.dark-gray "Order Number"]
-          [:div.h6 (:number order)]]
+          [:span.h5.dark-gray "Order Number"]
+          [:div.h5 (:number order)]]
          [:div.col-8.inline-block
-          [:span.h6.dark-gray "Ship Date"]
-          [:div.h6 ship-date]]]
+          [:span.h5.dark-gray "Ship Date"]
+          [:div.h5 ship-date]]]
 
         [:div.mt2.mbnp2.mtnp2.border-top.border-gray
          (summary/display-line-items (orders/product-items order) skus)]
