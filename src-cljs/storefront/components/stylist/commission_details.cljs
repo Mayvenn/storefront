@@ -66,7 +66,7 @@
 
         (summary/display-order-summary order {:read-only? true})
 
-        [:div.h5.center
+        [:div.h5.center.navy
          (str (mf/as-money amount) " has been added to your next payment.")]]))))
 
 (defn built-component [data opts]
