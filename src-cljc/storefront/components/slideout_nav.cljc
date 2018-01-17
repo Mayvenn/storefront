@@ -197,7 +197,7 @@
                   [:span.teal.pr1 "NEW"]
                   [:span.medium.flex-auto "Shop Clip-ins"])]
    [:li (menu-row (assoc (utils/route-to events/navigate-product-details
-                                         {:page/slug           "tape-ins"
+                                         {:page/slug          "50g-straight-tape-ins"
                                           :catalog/product-id "111"})
                          :data-test "menu-shop-tape-ins")
                   [:span.teal.pr1 "NEW"]

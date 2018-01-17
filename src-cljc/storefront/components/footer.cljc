@@ -26,7 +26,7 @@
   (let [nav-message (if product-id
                       [events/navigate-product-details {:catalog/product-id product-id
                                                         :page/slug          product-slug
-                                                        :query-params       {:catalog/sku-id sku-id}}]
+                                                        :query-params       {:SKU sku-id}}]
                       [events/navigate-category category])
         slug        (or product-slug slug)]
     {:title       title
