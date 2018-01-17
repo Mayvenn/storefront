@@ -24,9 +24,11 @@
                                  product-slug :direct-to-details/slug
                                  sku-id       :direct-to-details/sku-id}]
   (let [nav-message (if product-id
-                      [events/navigate-product-details {:catalog/product-id product-id
-                                                        :page/slug          product-slug
-                                                        :query-params       {:SKU sku-id}}]
+                      [events/navigate-product-details (merge
+                                                        {:catalog/product-id product-id
+                                                         :page/slug          product-slug}
+                                                        (when sku-id
+                                                          {:query-params {:SKU sku-id}}))]
                       [events/navigate-category category])
         slug        (or product-slug slug)]
     {:title       title

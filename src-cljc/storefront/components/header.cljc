@@ -162,9 +162,11 @@
       [:a.inherit-color.block.pyp2.titleize
        (if (:direct-to-details/id category)
          (utils/route-to events/navigate-product-details
-                         {:catalog/product-id (:direct-to-details/id category)
-                          :page/slug          (:direct-to-details/slug category)
-                          :query-params       {:SKU (:direct-to-details/sku-id category)}})
+                         (merge
+                          {:catalog/product-id (:direct-to-details/id category)
+                           :page/slug          (:direct-to-details/slug category)}
+                          (when-let [sku-id (:direct-to-details/sku-id category)]
+                            {:query-params {:SKU sku-id}})))
          (utils/route-to events/navigate-category category))
        (when (menu/new? human-hair? category)
          [:span.teal "NEW "])

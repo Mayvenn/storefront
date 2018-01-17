@@ -613,7 +613,6 @@
 
     :direct-to-details/id   "111"
     :direct-to-details/slug "50g-straight-tape-ins"
-    :direct-to-details/sku-id "TAPE-S-1-20"
 
     :footer/order 50
     :header/group 2
