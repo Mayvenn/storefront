@@ -42,23 +42,24 @@
        (utils/fake-href events/control-essence-offer-details)
        "Offer and Rebate Details ➤"]]]]])
 
+(defn ^:private text->data-test-name [name]
+  (-> name
+      (string/replace #"[0-9]" (comp spice/number->word int))
+      string/lower-case
+      (string/replace #"[^a-z]+" "-")))
+
 (defn display-order-summary [order {:keys [read-only? available-store-credit use-store-credit?]}]
-  (let [adjustments              (orders/all-order-adjustments order)
-        shipping-item            (orders/shipping-item order)
-        store-credit             (min (:total order) (or available-store-credit
-                                                         (-> order :cart-payments :store-credit :amount)
-                                                         0.0))
-        text->data-test-name (fn [name]
-                               (-> name
-                                   (string/replace #"[0-9]" (comp spice/number->word int))
-                                   string/lower-case
-                                   (string/replace #"[^a-z]+" "-")))]
+  (let [adjustments-including-tax (orders/all-order-adjustments order)
+        shipping-item             (orders/shipping-item order)
+        store-credit              (min (:total order) (or available-store-credit
+                                                          (-> order :cart-payments :store-credit :amount)
+                                                          0.0))]
     [:div
      [:.py2.border-top.border-bottom.border-gray
       [:table.col-12
        [:tbody
         (summary-row "Subtotal" (orders/products-subtotal order))
-        (for [{:keys [name price coupon-code]} adjustments]
+        (for [{:keys [name price coupon-code]} adjustments-including-tax]
           (when (or (not (= price 0))
                     (= coupon-code "amazon"))
             (summary-row
@@ -83,6 +84,32 @@
         (cond-> (:total order)
           use-store-credit? (- store-credit)
           true              as-money)]]] ]))
+
+(defn display-order-summary-for-commissions [order]
+  (let [adjustments              (:adjustments order)
+        shipping-item            (orders/shipping-item order)
+        subtotal                 (orders/products-subtotal order)
+        shipping-total           (* (:quantity shipping-item) (:unit-price shipping-item))
+        calculated-total         (+ subtotal shipping-total (reduce (fn [acc x] (+ acc (:price x) )) 0 adjustments))]
+
+    [:div
+     [:.py2.border-top.border-gray
+      [:table.col-12
+       [:tbody
+        (summary-row "Subtotal" subtotal)
+        (for [{:keys [name price coupon-code]} adjustments]
+          (when (or (not (= price 0))
+                    (= coupon-code "amazon"))
+            (summary-row
+             {:key name}
+             [:div {:data-test (text->data-test-name name)}
+              (orders/display-adjustment-name name)]
+             price)))
+
+        (when shipping-item
+          (summary-row "Shipping" shipping-total))]]]
+     [:.py2.h2.right-align
+      (as-money calculated-total) ]]))
 
 (defn ^:private display-line-item
   "Storeback now returns shared-cart line-items as a v2 Sku + item/quantity, aka
