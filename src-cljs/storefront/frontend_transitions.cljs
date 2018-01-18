@@ -289,9 +289,6 @@
 (defmethod transition-state events/control-create-order-from-shared-cart [_ event {:keys [selected-look-id]} app-state]
   (assoc-in app-state keypaths/selected-look-id selected-look-id))
 
-(defmethod transition-state events/control-essence-offer-details [_ event args app-state]
-  (assoc-in app-state keypaths/popup :essence))
-
 (defmethod transition-state events/api-start
   [_ event request app-state]
   (update-in app-state keypaths/api-requests conj request))

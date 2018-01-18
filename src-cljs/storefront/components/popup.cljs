@@ -1,7 +1,6 @@
 (ns storefront.components.popup
   (:require [storefront.platform.component-utils :as utils]
             [storefront.components.cart :as cart]
-            [storefront.components.essence :as essence]
             [storefront.components.email-capture :as email-capture]
             [storefront.components.stylist.referrals :as stylist.referrals]
             [storefront.events :as events]
@@ -14,5 +13,4 @@
       :share-cart           (cart/built-share-link-component data opts)
       :refer-stylist        (stylist.referrals/built-refer-component data opts)
       :refer-stylist-thanks (stylist.referrals/built-thanks-component data opts)
-      :essence              (essence/built-component data opts)
       nil)))

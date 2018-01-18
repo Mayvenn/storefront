@@ -26,22 +26,6 @@
                "navy")}
      (as-money-or-free amount)]]))
 
-(def essence-faux-line-item
-  [:div.pb3.border-bottom.border-gray
-   [:div.clearfix.border.border-orange.py3
-    [:div.left.mr1
-     [:img.ml1.block {:src (assets/path "/images/essence/essence@2x.png") :style {:width "7em"}}]]
-    [:div.overflow-hidden
-     [:div.mx1
-      [:div.mb1
-       [:div.bold.shout.h5 "bonus gift!"]
-       [:div.h6.mt1
-        "A one-year subscription to " [:span.bold "ESSENCE "]
-        "magazine is " [:span.underline "included"] " with your order."]]
-      [:a.h6.navy
-       (utils/fake-href events/control-essence-offer-details)
-       "Offer and Rebate Details ➤"]]]]])
-
 (defn ^:private text->data-test-name [name]
   (-> name
       (string/replace #"[0-9]" (comp spice/number->word int))

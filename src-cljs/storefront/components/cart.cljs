@@ -172,7 +172,6 @@ Thanks,
      [:div.mt2.clearfix.mxn3
       [:div.col-on-tb-dt.col-6-on-tb-dt.px3.mb3
        {:data-test "cart-line-items"}
-       summary/essence-faux-line-item
        (summary/display-adjustable-line-items (orders/product-items order)
                                               skus
                                               update-line-item-requests

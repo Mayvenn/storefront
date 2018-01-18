@@ -166,7 +166,6 @@
 (defpath control-cart-line-item-dec)
 (defpath control-cart-remove)
 (defpath control-cart-share-show)
-(defpath control-essence-offer-details)
 
 (defpath control-popup-hide)
 (defpath control-popup-show-refer-stylists)
