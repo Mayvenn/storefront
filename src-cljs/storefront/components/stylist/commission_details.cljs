@@ -38,7 +38,7 @@
                      :height "1.5rem"})]))
 
 (defn component [{:keys [commission fetching? ship-date skus]} owner opts]
-  (let [{:keys [id number order amount commission-date commissionable-amount]} commission]
+  (let [{:keys [id number order amount earned-date commissionable-amount]} commission]
     (component/create
      (if fetching?
        [:div.my2.h2 ui/spinner]
@@ -49,7 +49,7 @@
          (ui/back-caret "back to earnings")]
         [:h3.my4 "Details - Commission Earned"]
         [:div.flex.justify-between.col-12
-         [:div (f/less-year-more-day-date commission-date)]
+         [:div (f/less-year-more-day-date earned-date)]
          [:div (:full-name order)]
          [:div.green "+" (mf/as-money amount)]]
 

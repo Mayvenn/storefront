@@ -540,7 +540,7 @@
 (defn get-stylist-commission [user-id user-token {:keys [commission-id]}]
   (api-req
    GET
-   (str "/v3/stylist/commission/" commission-id)
+   (str "/v4/stylist/commission/" commission-id)
    request-keys/get-stylist-commission
    {:params
     {:user-id user-id :user-token user-token}

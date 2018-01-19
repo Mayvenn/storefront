@@ -371,6 +371,7 @@
 
 (defmethod perform-effects events/api-success-stylist-commission [_ event args _ app-state]
   (ensure-skus app-state (->> (get-in app-state keypaths/stylist-commissions-detailed-commission)
+                              :order
                               orders/product-items
                               (map :sku)
                               set)))
