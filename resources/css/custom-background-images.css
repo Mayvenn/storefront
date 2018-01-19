@@ -35,12 +35,12 @@ Move to uploadcare???
 }
 
 .bg-storefront-our-hair {
-    background-image: url("//ucarecdn.com/a38deee0-add3-4588-90fb-923158c90dbe/ourhairvirginhair.png");
+    background-image: url("//ucarecdn.com/a38deee0-add3-4588-90fb-923158c90dbe/-/format/auto/ourhairvirginhair.png");
     height: 240px;
 }
 
 .bg-email-capture {
-    background-image: url('//ucarecdn.com/173e14ac-e55b-49f2-89e6-793051979629/emailmodalheroIMG.png');
+    background-image: url('//ucarecdn.com/173e14ac-e55b-49f2-89e6-793051979629/-/format/auto/emailmodalheroIMG.png');
 }
 
 @media (min-width: 750px) {
@@ -61,7 +61,7 @@ Move to uploadcare???
         background-image: url("/images/leads/first-sale-bg-dsk.jpg");
     }
     .bg-storefront-our-hair {
-        background-image: url("//ucarecdn.com/70c53806-7dae-4537-a6b3-ef35dc7ea4f7/ourhairvirginhair.png");
+        background-image: url("//ucarecdn.com/70c53806-7dae-4537-a6b3-ef35dc7ea4f7/-/format/auto/ourhairvirginhair.png");
         height: 300px;
     }
 }
