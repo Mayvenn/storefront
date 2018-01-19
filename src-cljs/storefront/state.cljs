@@ -45,13 +45,10 @@
    :stats {:previous-payout {:amount 0 :date nil}
            :next-payout {:amount 0}
            :lifetime-payouts {:amount 0}}
-   :commissions {:rate nil
-                 :page 0
-                 :pages nil
-                 :history (sorted-set-by
-                           (fn [a b]
-                             (let [date-and-id (juxt :commission_date :id)]
-                               (compare (date-and-id b) (date-and-id a)))))}
+   :earnings {:rate nil
+              :page 0
+              :pages nil
+              :history []}
    :bonus-credits {:bonus-amount nil
                    :earning-amount nil
                    :commissioned-revenue nil
