@@ -34,7 +34,7 @@
    [:td.pr3.py2.green.right-align "+" (mf/as-money amount)]])
 
 (defn payout-row [{:keys [id amount earned-date payout-method] :as earning}]
-  [:tr.bg-warmer-silver
+  [:tr.bg-light-gray
    [:td.px3.py2 (f/less-year-more-day-date earned-date)]
    [:td.py2 {:col-span 2} "You transferred " [:span.medium amount]
     [:div.h6 (str "Earnings Transfer - " payout-method)]]])
