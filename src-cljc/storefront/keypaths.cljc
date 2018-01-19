@@ -203,11 +203,13 @@
 (def stylist-stats (conj stylist :stats))
 
 (def stylist-commissions (conj stylist :commissions))
-(def stylist-commissions-rate (conj stylist-commissions :rate))
-(def stylist-commissions-history (conj stylist-commissions :history))
-(def stylist-commissions-page (conj stylist-commissions :page))
-(def stylist-commissions-pages (conj stylist-commissions :pages))
 (def stylist-commissions-detailed-commission (conj stylist-commissions :detailed-commission))
+
+(def stylist-earnings (conj stylist :earnings))
+(def stylist-earnings-rate (conj stylist-earnings :rate))
+(def stylist-earnings-history (conj stylist-earnings :history))
+(def stylist-earnings-page (conj stylist-earnings :page))
+(def stylist-earnings-pages (conj stylist-earnings :pages))
 
 (def stylist-bonuses (conj stylist :bonus-credits))
 (def stylist-bonuses-award-amount (conj stylist-bonuses :bonus-amount))

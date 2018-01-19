@@ -349,13 +349,13 @@
   (-> app-state
       (assoc-in keypaths/stylist-stats (select-keys stats [:previous-payout :next-payout :lifetime-payouts]))))
 
-(defmethod transition-state events/api-success-stylist-commissions
-  [_ event {:keys [rate commissions pages current-page]} app-state]
+(defmethod transition-state events/api-success-stylist-earnings
+  [_ event {:keys [rate transactions pages current-page]} app-state]
   (-> app-state
-      (assoc-in keypaths/stylist-commissions-rate rate)
-      (assoc-in keypaths/stylist-commissions-pages (or pages 0))
-      (assoc-in keypaths/stylist-commissions-page (or current-page 1))
-      (update-in keypaths/stylist-commissions-history into commissions)))
+      (assoc-in keypaths/stylist-earnings-rate rate)
+      (assoc-in keypaths/stylist-earnings-pages (or pages 0))
+      (assoc-in keypaths/stylist-earnings-page (or current-page 1))
+      (assoc-in keypaths/stylist-earnings-history transactions)))
 
 (defmethod transition-state events/api-success-stylist-commission [_ event {:keys [commission]} app-state]
   (assoc-in app-state keypaths/stylist-commissions-detailed-commission commission))

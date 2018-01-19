@@ -127,7 +127,7 @@
 (defpath control-email-captured-dismiss)
 (defpath control-email-captured-submit)
 
-(defpath control-stylist-commissions-fetch)
+(defpath control-stylist-earnings-fetch)
 (defpath control-stylist-referrals-fetch)
 (defpath control-stylist-bonuses-fetch)
 (defpath control-stylist-community)
@@ -249,7 +249,7 @@
 (defpath api-success-stylist-account-social)
 (defpath api-success-stylist-stats)
 (defpath api-success-stylist-commission)
-(defpath api-success-stylist-commissions)
+(defpath api-success-stylist-earnings)
 (defpath api-success-stylist-bonus-credits)
 (defpath api-success-stylist-referral-program)
 (defpath api-success-send-stylist-referrals)

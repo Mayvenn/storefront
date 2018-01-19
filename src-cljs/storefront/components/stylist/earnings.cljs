@@ -17,18 +17,37 @@
             [storefront.request-keys :as request-keys]
             [storefront.platform.messages :as messages]))
 
+(defn commission-row [row-number {:keys [id number order amount earned-date commissionable-amount] :as commission}]
+  [:tr.pointer (merge {:key id}
+                      (utils/route-to events/navigate-stylist-dashboard-commission-details {:commission-id id})
+                      (when (odd? row-number)
+                        {:class "bg-too-light-teal"}))
+   [:td.px3.py2 (f/less-year-more-day-date earned-date)]
+   [:td.py2 (:full-name order) [:div.h6 "Commission Earned"]]
+   [:td.pr3.py2.green.right-align "+" (mf/as-money amount)]])
+
+(defn earning-row [row-number {:keys [id amount earned-date reason] :as earning}]
+  [:tr.pointer (when (odd? row-number)
+                 {:class "bg-too-light-teal"})
+   [:td.px3.py2 (f/less-year-more-day-date earned-date)]
+   [:td.py2 "Account Correction" [:div.h6 "Admin Payout"]]
+   [:td.pr3.py2.green.right-align "+" (mf/as-money amount)]])
+
+(defn payout-row [{:keys [id amount earned-date payout-method] :as earning}]
+  [:tr.bg-warmer-silver
+   [:td.px3.py2 (f/less-year-more-day-date earned-date)]
+   [:td.py2 {:col-span 2} "You transferred " [:span.medium amount]
+    [:div.h6 (str "Earnings Transfer - " payout-method)]]])
+
 (defn earnings-table [history]
   [:table.col-12.mb3 {:style {:border-spacing 0}}
    [:tbody
     (map-indexed
-     (fn [i {:keys [id number order amount commission-date commissionable-amount] :as commission}]
-       [:tr.pointer (merge {:key id}
-                           (utils/route-to events/navigate-stylist-dashboard-commission-details {:commission-id id})
-                           (when (odd? i)
-                             {:class "bg-too-light-teal"}))
-        [:td.px3.py2 (f/less-year-more-day-date commission-date)]
-        [:td.py2 (:full-name order) [:div.h6 "Commission Earned"]]
-        [:td.pr3.py2.green.right-align "+" (mf/as-money amount)]])
+     (fn [i {:keys [type] :as earning}]
+       (condp = type
+         "commission" (commission-row i earning)
+         "earning"    (earning-row i earning)
+         "payout"     (payout-row earning)))
      history)]])
 
 (def empty-commissions
@@ -56,9 +75,9 @@
    [:div.center.my2.h6
     [:a.dark-gray (utils/route-to events/navigate-content-program-terms) "Mayvenn Program Terms"]]])
 
-(defn component [{:keys [commissions products skus fetching?]}]
+(defn component [{:keys [earnings products fetching?]}]
   (om/component
-   (let [{:keys [history page pages rate]} commissions]
+   (let [{:keys [history page pages rate]} earnings]
      (html
       (if (and (empty? (seq history)) fetching?)
         [:div.my2.h2 ui/spinner]
@@ -67,7 +86,7 @@
          [:div.col-on-tb-dt.col-9-on-tb-dt
           (when (seq history)
             (earnings-table history))
-          (pagination/fetch-more events/control-stylist-commissions-fetch fetching? page pages)
+          (pagination/fetch-more events/control-stylist-earnings-fetch fetching? page pages)
           (when (zero? pages)
             empty-commissions)]
 
@@ -75,14 +94,7 @@
           (when rate (show-commission-rate rate))
           show-program-terms]])))))
 
-(defn all-skus-in-commissions [commissions]
-  (->> (:history commissions)
-       (map :order)
-       (mapcat orders/product-items)
-       (map :sku)))
-
 (defn query [data]
-  (let [commissions     (get-in data keypaths/stylist-commissions)
-        commission-skus (all-skus-in-commissions commissions)]
-    {:commissions commissions
-     :fetching?   (utils/requesting? data request-keys/get-stylist-commissions)}))
+  (let [earnings (get-in data keypaths/stylist-earnings)]
+    {:earnings  earnings
+     :fetching? (utils/requesting? data request-keys/get-stylist-commissions)}))
