@@ -138,6 +138,40 @@
                        :file-name   "wigs-are-here.png"
                        :alt         "Wigs are here!"})])]])
 
+(defn stacked-feature-blocks [human-hair?]
+  [:div.container.border-top.border-white
+   [:div.col.col-12.py6 [:h1.center "Shop What's New"]]
+   [:div.col.col-12-on-mb.col-4-on-tb-dt.border.border-white
+    [:a
+     (utils/route-to events/navigate-category {:catalog/category-id "16"
+                                               :page/slug           "dyed-virgin-hair"})
+     (feature-image {:mobile-url  "//ucarecdn.com/163230da-c4a8-4352-96de-d025df1eff5d/"
+                     :desktop-url "//ucarecdn.com/d7cf940b-1f49-4452-813e-fc1ff474b07e/"
+                     :file-name   "Dyed-Virgin-Hair-Is-Here.png"
+                     :alt         "Dyed Virgin Hair Is Here!"})]]
+   [:div.col.col-12-on-mb.col-4-on-tb-dt.border.border-white
+    (if human-hair?
+      [:a
+       (utils/route-to events/navigate-category {:page/slug "dyed-100-human-hair" :catalog/category-id "19"})
+       (feature-image {:mobile-url  "//ucarecdn.com/ca5722d9-2589-4333-927d-c68432305d64/"
+                       :desktop-url "//ucarecdn.com/41367cc2-dd79-4e8b-b175-eb81b852030e/"
+                       :file-name   "dyed-100-human-hair.png"
+                       :alt         "Dyed 100% Human Hair - Starting at $30!"})]
+      [:a
+       (utils/route-to events/navigate-category {:page/slug "wigs" :catalog/category-id "13"})
+       (feature-image {:mobile-url  "//ucarecdn.com/87426013-0612-4c04-95e1-c2e4779a0856/"
+                       :desktop-url "//ucarecdn.com/18f073e7-2d40-4b78-8e39-bb5dc0ba4e51/"
+                       :file-name   "wigs-are-here.png"
+                       :alt         "Wigs are here!"})])]
+   [:div.col.col-12-on-mb.col-4-on-tb-dt.border.border-white
+    [:a
+     (utils/route-to events/navigate-category {:catalog/category-id "16"
+                                               :page/slug           "dyed-virgin-hair"})
+     (feature-image {:mobile-url  "//ucarecdn.com/163230da-c4a8-4352-96de-d025df1eff5d/"
+                     :desktop-url "//ucarecdn.com/d7cf940b-1f49-4452-813e-fc1ff474b07e/"
+                     :file-name   "Dyed-Virgin-Hair-Is-Here.png"
+                     :alt         "Dyed Virgin Hair Is Here!"})]]])
+
 (defn drop-down-row [opts & content]
   (into [:a.inherit-color.block.center.h5.flex.items-center.justify-center
          (-> opts
@@ -277,11 +311,14 @@
                       :file-name   "talkable_banner.jpg"
                       :alt         "refer friends, earn rewards, get 20% off"})]]))
 
-(defn component [{:keys [signed-in store categories hero-fn human-hair?]} owner opts]
+(defn component [{:keys [signed-in store categories hero-fn human-hair? stacked-feature-blocks?]} owner opts]
   (component/create
    [:div.m-auto
     [:section (hero-fn (:store-slug store))]
-    [:section (feature-blocks human-hair?)]
+    [:section
+     (if stacked-feature-blocks?
+       (stacked-feature-blocks human-hair?)
+       (feature-blocks human-hair?))]
     [:section.hide-on-tb-dt (store-info signed-in store)]
     [:section (popular-grid categories)]
     [:section video-autoplay]
@@ -289,13 +326,14 @@
     [:section talkable-banner]]))
 
 (defn query [data]
-  {:store      (marquee/query data)
-   :signed-in  (auth/signed-in data)
-   :categories (->> (get-in data keypaths/categories)
-                    (filter :home/order)
-                    (sort-by :home/order))
-   :hero-fn    hero
-   :human-hair? (experiments/human-hair? data)})
+  {:store                   (marquee/query data)
+   :signed-in               (auth/signed-in data)
+   :categories              (->> (get-in data keypaths/categories)
+                                 (filter :home/order)
+                                 (sort-by :home/order))
+   :hero-fn                 hero
+   :human-hair?             (experiments/human-hair? data)
+   :stacked-feature-blocks? (experiments/stacked-feature-blocks? data)})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

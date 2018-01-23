@@ -66,3 +66,6 @@
 
 (defn bestseller? [data]
   (display-feature? data "bestseller"))
+
+(defn stacked-feature-blocks? [data]
+  (display-feature? data "stacked-feature-blocks"))
