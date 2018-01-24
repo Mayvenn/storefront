@@ -264,9 +264,8 @@
 
 (def stacked-feature-blocks-about-mayvenn
   (component/html
-   [:div.container.py1.my1.py4-on-tb-dt.my4-on-tb-dt.center
-    [:h1.line-length.mx-auto.pt4 "Why people love Mayvenn"]
-
+   [:div.container.py1.my1.pt2-on-tb-dt.mt4-on-tb-dt.center.mb1-on-tb-dt.center
+    [:h1.line-length.mx-auto.pb4 "Why people love Mayvenn"]
     [:div.clearfix.h5.center
      [:div.col-on-tb-dt.col-4-on-tb-dt.p3
       [:img.mb1 {:src    "//ucarecdn.com/83a8e87b-a16f-4d22-b294-e11616088ced/iconstylistreco.png"
