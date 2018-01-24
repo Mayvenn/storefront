@@ -340,7 +340,7 @@
       [:div.center.bg-teal.py4.white.hide-on-mb
        [:h1.mt1 "We love our customers"]
        [:p.h4 "And they love Mayvenn! Watch and see why they absolutely love wearing our hair."]
-       [:div.container.col-12.mx-auto.mb3 {:dangerouslySetInnerHTML {:__html video-html}}]]])))
+       [:div.container.col-12.mx-auto.mt6.mb4 {:dangerouslySetInnerHTML {:__html video-html}}]]])))
 
 (def video-autoplay
   (component/html
