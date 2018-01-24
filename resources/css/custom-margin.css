@@ -6,6 +6,14 @@
 .mx6 { margin-left:   var(--space-6); margin-right:  var(--space-6) }
 .my6 { margin-top:    var(--space-6); margin-bottom: var(--space-6) }
 
+.m7  { margin:        var(--space-7) }
+.mt7 { margin-top:    var(--space-7) }
+.mr7 { margin-right:  var(--space-7) }
+.mb7 { margin-bottom: var(--space-7) }
+.ml7 { margin-left:   var(--space-7) }
+.mx7 { margin-left:   var(--space-7); margin-right:  var(--space-7) }
+.my7 { margin-top:    var(--space-7); margin-bottom: var(--space-7) }
+
 .m8  { margin:        var(--space-8) }
 .mt8 { margin-top:    var(--space-8) }
 .mr8 { margin-right:  var(--space-8) }
@@ -81,6 +89,7 @@
   --space-3: 2rem;
   --space-4: 4rem;
   --space-6: 16rem;
+  --space-7: 32rem;
   --space-8: 64rem;
   --space-10: 256rem;
 }
