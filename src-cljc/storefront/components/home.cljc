@@ -34,6 +34,41 @@
                                     "(min-width: 750px) 240px, "
                                     "50vw")
                       :alt     alt}])
+(defn stacked-feature-blocks-popular-grid [categories]
+  (let [grid-block (fn [key content]
+                     [:div.col.col-6.col-4-on-tb-dt.border.border-white {:key key}
+                      (ui/aspect-ratio 4 3 content)])]
+    [:div.container.center.pb4
+     [:div.flex.flex-column.my7
+      [:h1.h4.order-2.px2
+       "Human hair extensions, free shipping, free returns, and a 30 day guarantee"]
+      [:h2.h1.order-1 "Shop Popular Styles"]]
+     [:div
+      (for [{:keys [page/slug images copy/title] :as category} categories]
+        (grid-block slug
+                    [:a.absolute.overlay.overflow-hidden
+                     (merge {:data-test (str "category-" slug)}
+                            (utils/route-to events/navigate-category category))
+                     (category-image (:home images))
+                     [:h3.h2.white.absolute.col-12.titleize.mt1
+                      {:style {:text-shadow "black 0px 0px 25px, black 0px 0px 25px"
+                               :transform "translateY(-75%)"
+                               :top "75%"}}
+                      (let [[first-word & last-words] (string/split title #" ")]
+                        [:div
+                         [:div first-word]
+                         [:div (string/join " " last-words)]])]]))
+      (grid-block "spare-block"
+                  [:a.bg-light-teal.white.absolute.overlay
+                   (assoc (utils/route-to events/navigate-shop-by-look)
+                          :data-test "nav-shop-look")
+                   [:div.flex.container-size.justify-center.items-center
+                    [:h3.hide-on-tb-dt
+                     [:div "Need inspiration?"]
+                     [:div "Try shop by look."]]
+                    [:h3.h2.hide-on-mb
+                     [:div "Need inspiration?"]
+                     [:div "Try shop by look."]]]])]]))
 
 (defn popular-grid [categories]
   (let [grid-block (fn [key content]
@@ -140,7 +175,7 @@
 
 (defn stacked-feature-blocks [human-hair?]
   [:div.container.border-top.border-white
-   [:div.col.col-12.py6 [:h1.center "Shop What's New"]]
+   [:div.col.col-12.my6 [:h1.center "Shop What's New"]]
    [:div.col.col-12-on-mb.col-4-on-tb-dt.border.border-white
     [:a
      (utils/route-to events/navigate-category {:catalog/category-id "16"
@@ -227,6 +262,42 @@
           (for [row rows]
             [:div.border-gray.border-bottom row])])))))
 
+(def stacked-feature-blocks-about-mayvenn
+  (component/html
+   [:div.container.py1.my1.py4-on-tb-dt.my4-on-tb-dt.center
+    [:h1.line-length.mx-auto.pt4 "Why people love Mayvenn"]
+
+    [:div.clearfix.h5.center
+     [:div.col-on-tb-dt.col-4-on-tb-dt.p3
+      [:img.mb1 {:src    "//ucarecdn.com/83a8e87b-a16f-4d22-b294-e11616088ced/iconstylistreco.png"
+                 :width  "48px"
+                 :height "70px"}]
+      [:h3.h2 "Stylist Recommended"]
+      [:p.h5 "Mayvenn hair is the #1 recommended hair company by over 100,000 hair stylists across the country, making it the most trusted hair brand on the market."]
+      [:a.h5.teal (assoc (utils/route-to events/navigate-shop-by-look)
+                         :data-test "nav-shop-look")
+       "Shop our looks"]]
+
+     [:div.col-on-tb-dt.col-4-on-tb-dt.p3
+      [:img.mb1 {:src    "//ucarecdn.com/a16d80a5-7bcf-4ec9-a5fc-5f8642d1542d/icon30dayguarantee.png"
+                 :width  "48px"
+                 :height "70px"}]
+      [:h3.h2 "30 Day Guarantee"]
+      [:p.h5 "Try the best quality hair on the market risk free! Wear it, dye it, even cut it. If you’re not happy with your bundles, we will exchange them within 30 days for FREE!"]
+      [:a.h5.teal (assoc (utils/route-to events/navigate-content-guarantee)
+                         :data-test "nav-our-guarantee")
+       "Learn more about Our Guarantee"]]
+
+     [:div.col-on-tb-dt.col-4-on-tb-dt.p3
+      [:div.flex.justify-center {:style {:height "80px"}}
+       [:img.self-center {:src    "//ucarecdn.com/647b33d9-a175-406c-82e0-3723c6767757/iconfastfreeshipping.png"
+                          :height "44px"}]]
+      [:h3.h2 "Fast Free Shipping"]
+      [:p.h5 "Mayvenn offers free standard shipping on all orders, no minimum necessary. In a hurry? Expedited shipping options are available for those who just can’t wait."]
+      [:a.h5.teal (assoc (utils/route-to events/navigate-shop-by-look)
+                         :data-test "nav-shop-look")
+       "Shop our looks"]]]]))
+
 (def about-mayvenn
   (component/html
    [:div.container.py1.my1.py4-on-tb-dt.my4-on-tb-dt
@@ -250,6 +321,26 @@
       (assoc (utils/route-to events/navigate-shop-by-look)
              :data-test "nav-shop-look")
       "shop our looks")]]))
+
+(def stacked-feature-blocks-video-autoplay
+  (component/html
+   (let [video-src  "https://embedwistia-a.akamaihd.net/deliveries/e88ed4645e104735c3bdcd095c370e5ccb1e1ef4/file.mp4"
+         image-src  "https://ucarecdn.com/17256a9e-78ef-4762-a5bd-7096bb9181c9/-/format/auto/testimonialpostervideoplay.jpg"
+         video-html (str "<video onClick=\"this.play();\" loop muted poster=\""
+                         image-src
+                         "\" preload=\"none\" playsinline controls class=\"col-12\"><source src=\""
+                         video-src
+                         "\"></source></video>")]
+     [:div
+      [:div.center.hide-on-tb-dt.mbn2
+       [:div.px3
+        [:h1 "We Love Our Customers"]
+        [:p.h4 "And they love Mayvenn! Watch and see why they absolutely love wearing our hair."]]
+       [:div.container.col-12.mx-auto.mt6 {:dangerouslySetInnerHTML {:__html video-html}}]]
+      [:div.center.bg-teal.py4.white.hide-on-mb
+       [:h1.mt1 "We love our customers"]
+       [:p.h4 "And they love Mayvenn! Watch and see why they absolutely love wearing our hair."]
+       [:div.container.col-12.mx-auto.mb3 {:dangerouslySetInnerHTML {:__html video-html}}]]])))
 
 (def video-autoplay
   (component/html
@@ -313,17 +404,24 @@
 
 (defn component [{:keys [signed-in store categories hero-fn human-hair? stacked-feature-blocks?]} owner opts]
   (component/create
-   [:div.m-auto
-    [:section (hero-fn (:store-slug store))]
-    [:section
-     (if stacked-feature-blocks?
-       (stacked-feature-blocks human-hair?)
-       (feature-blocks human-hair?))]
-    [:section.hide-on-tb-dt (store-info signed-in store)]
-    [:section (popular-grid categories)]
-    [:section video-autoplay]
-    [:section about-mayvenn]
-    [:section talkable-banner]]))
+   (if stacked-feature-blocks?
+     [:div.m-auto
+      [:section (hero-fn (:store-slug store))]
+      [:section.hide-on-tb-dt (store-info signed-in store)] ;; Preserve store-info location when promoting stacked-feature-blocks
+      [:section (stacked-feature-blocks human-hair?)]
+      [:section (stacked-feature-blocks-popular-grid categories)]
+      [:section stacked-feature-blocks-video-autoplay]
+      [:section stacked-feature-blocks-about-mayvenn]
+      [:section talkable-banner]]
+
+     [:div.m-auto
+      [:section (hero-fn (:store-slug store))]
+      [:section (feature-blocks human-hair?)]
+      [:section.hide-on-tb-dt (store-info signed-in store)]
+      [:section (popular-grid categories)]
+      [:section video-autoplay]
+      [:section about-mayvenn]
+      [:section talkable-banner]])))
 
 (defn query [data]
   {:store                   (marquee/query data)
