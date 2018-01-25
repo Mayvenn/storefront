@@ -389,6 +389,16 @@
                       :file-name   "talkable_banner.jpg"
                       :alt         "refer friends, earn rewards, get 20% off"})]]))
 
+(def talkable-banner-stacked-feature-blocks
+  (component/html
+   [:h1.h2.container.py4
+    [:a
+     (utils/route-to events/navigate-friend-referrals {:query-params {:traffic_source "homepageBanner"}})
+     (talkable-image {:mobile-url  "//ucarecdn.com/677f872a-d0eb-4c39-bffa-ffa02823143f/"
+                      :desktop-url "//ucarecdn.com/a3c29b65-feed-450f-bfa2-8a88a3b96cc8/"
+                      :file-name   "talkable_banner.jpg"
+                      :alt         "refer friends, earn rewards, get 20% off"})]]))
+
 (defn component [{:keys [signed-in store categories hero-fn human-hair? stacked-feature-blocks?]} owner opts]
   (component/create
    (if stacked-feature-blocks?
@@ -399,7 +409,7 @@
       [:section (stacked-feature-blocks-popular-grid categories)]
       [:section stacked-feature-blocks-video-autoplay]
       [:section stacked-feature-blocks-about-mayvenn]
-      [:section talkable-banner]]
+      [:section talkable-banner-stacked-feature-blocks]]
 
      [:div.m-auto
       [:section (hero-fn (:store-slug store))]
