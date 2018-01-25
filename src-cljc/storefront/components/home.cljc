@@ -39,7 +39,7 @@
                      [:div.col.col-6.col-4-on-tb-dt.border.border-white {:key key}
                       (ui/aspect-ratio 4 3 content)])]
     [:div.container.center.pb4
-     [:div.flex.flex-column.my7
+     [:div.flex.flex-column.my7.py4
       [:h1.h4.order-2.px2
        "Human hair extensions, free shipping, free returns, and a 30 day guarantee"]
       [:h2.h1.order-1 "Shop Popular Styles"]]
@@ -173,39 +173,27 @@
                        :file-name   "wigs-are-here.png"
                        :alt         "Wigs are here!"})])]])
 
-(defn stacked-feature-blocks [human-hair?]
-  [:div.container.border-top.border-white
-   [:div.col.col-12.my6 [:h1.center "Shop What's New"]]
-   [:div.col.col-12-on-mb.col-4-on-tb-dt.border.border-white
-    [:a
-     (utils/route-to events/navigate-category {:catalog/category-id "16"
-                                               :page/slug           "dyed-virgin-hair"})
-     (feature-image {:mobile-url  "//ucarecdn.com/163230da-c4a8-4352-96de-d025df1eff5d/"
-                     :desktop-url "//ucarecdn.com/d7cf940b-1f49-4452-813e-fc1ff474b07e/"
-                     :file-name   "Dyed-Virgin-Hair-Is-Here.png"
-                     :alt         "Dyed Virgin Hair Is Here!"})]]
-   [:div.col.col-12-on-mb.col-4-on-tb-dt.border.border-white
-    (if human-hair?
-      [:a
-       (utils/route-to events/navigate-category {:page/slug "dyed-100-human-hair" :catalog/category-id "19"})
-       (feature-image {:mobile-url  "//ucarecdn.com/ca5722d9-2589-4333-927d-c68432305d64/"
-                       :desktop-url "//ucarecdn.com/41367cc2-dd79-4e8b-b175-eb81b852030e/"
-                       :file-name   "dyed-100-human-hair.png"
-                       :alt         "Dyed 100% Human Hair - Starting at $30!"})]
-      [:a
-       (utils/route-to events/navigate-category {:page/slug "wigs" :catalog/category-id "13"})
-       (feature-image {:mobile-url  "//ucarecdn.com/87426013-0612-4c04-95e1-c2e4779a0856/"
-                       :desktop-url "//ucarecdn.com/18f073e7-2d40-4b78-8e39-bb5dc0ba4e51/"
-                       :file-name   "wigs-are-here.png"
-                       :alt         "Wigs are here!"})])]
-   [:div.col.col-12-on-mb.col-4-on-tb-dt.border.border-white
-    [:a
-     (utils/route-to events/navigate-category {:catalog/category-id "16"
-                                               :page/slug           "dyed-virgin-hair"})
-     (feature-image {:mobile-url  "//ucarecdn.com/163230da-c4a8-4352-96de-d025df1eff5d/"
-                     :desktop-url "//ucarecdn.com/d7cf940b-1f49-4452-813e-fc1ff474b07e/"
-                     :file-name   "Dyed-Virgin-Hair-Is-Here.png"
-                     :alt         "Dyed Virgin Hair Is Here!"})]]])
+(defn stacked-feature-blocks []
+  (let [block :div.col.col-12.col-4-on-tb-dt.border.border-white]
+    [:div.container.border-top.border-white
+     [:div.col.col-12.my6 [:h1.center "Shop What's New"]]
+     [block [:a (utils/route-to events/navigate-category {:catalog/category-id "16"
+                                                          :page/slug           "dyed-virgin-hair"})
+             (feature-image {:mobile-url  "//ucarecdn.com/2d75c17a-2d73-442d-aaee-f35657373eaa/"
+                             :desktop-url "//ucarecdn.com/9c58f3fd-9f56-4f32-938b-4072aa60e030/"
+                             :file-name   "Dyed-Virgin-Hair-Is-Here.png"
+                             :alt         "Dyed Virgin Hair Is Here!"})]]
+     [block [:a (utils/route-to events/navigate-category {:page/slug "wigs" :catalog/category-id "13"})
+             (feature-image {:mobile-url  "//ucarecdn.com/67653f8a-3530-42d1-a9d7-4bdf99b599c7/"
+                             :desktop-url "//ucarecdn.com/34aafae1-124b-4375-a75c-e8dcb2f6e7bc/"
+                             :file-name   "wigs-are-here.png"
+                             :alt         "Wigs are here!"})]]
+     [block [:a (utils/route-to events/navigate-category {:catalog/category-id "16"
+                                                          :page/slug           "dyed-virgin-hair"})
+             (feature-image {:mobile-url  "//ucarecdn.com/3fdbe21b-6826-4fb1-a8a3-eb73a37113c3/"
+                             :desktop-url "//ucarecdn.com/766bf2c0-63d1-4aec-840f-f993928ae20e/"
+                             :file-name   "clip-ins-9-colors-2-textures.png"
+                             :alt         "Clip-ins available in 9 colors, 2 textures!"})]]]))
 
 (defn drop-down-row [opts & content]
   (into [:a.inherit-color.block.center.h5.flex.items-center.justify-center
@@ -407,7 +395,7 @@
      [:div.m-auto
       [:section (hero-fn (:store-slug store))]
       [:section.hide-on-tb-dt (store-info signed-in store)] ;; Preserve store-info location when promoting stacked-feature-blocks
-      [:section (stacked-feature-blocks human-hair?)]
+      [:section (stacked-feature-blocks)]
       [:section (stacked-feature-blocks-popular-grid categories)]
       [:section stacked-feature-blocks-video-autoplay]
       [:section stacked-feature-blocks-about-mayvenn]
