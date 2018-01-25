@@ -188,8 +188,8 @@
                              :desktop-url "//ucarecdn.com/34aafae1-124b-4375-a75c-e8dcb2f6e7bc/"
                              :file-name   "wigs-are-here.png"
                              :alt         "Wigs are here!"})]]
-     [block [:a (utils/route-to events/navigate-category {:catalog/category-id "16"
-                                                          :page/slug           "dyed-virgin-hair"})
+     [block [:a (utils/route-to events/navigate-category {:catalog/category-id "21"
+                                                          :page/slug           "seamless-clip-ins"})
              (feature-image {:mobile-url  "//ucarecdn.com/3fdbe21b-6826-4fb1-a8a3-eb73a37113c3/"
                              :desktop-url "//ucarecdn.com/766bf2c0-63d1-4aec-840f-f993928ae20e/"
                              :file-name   "clip-ins-9-colors-2-textures.png"
