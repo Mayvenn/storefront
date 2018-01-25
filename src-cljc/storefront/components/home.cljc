@@ -39,7 +39,7 @@
                      [:div.col.col-6.col-4-on-tb-dt.border.border-white {:key key}
                       (ui/aspect-ratio 4 3 content)])]
     [:div.container.center.pb4
-     [:div.flex.flex-column.my7.py4
+     [:div.flex.flex-column.py4
       [:h1.h4.order-2.px2
        "Human hair extensions, free shipping, free returns, and a 30 day guarantee"]
       [:h2.h1.order-1 "Shop Popular Styles"]]
@@ -176,7 +176,7 @@
 (defn stacked-feature-blocks []
   (let [block :div.col.col-12.col-4-on-tb-dt.border.border-white]
     [:div.container.border-top.border-white
-     [:div.col.col-12.my6 [:h1.center "Shop What's New"]]
+     [:div.col.col-12.my4 [:h1.center "Shop What's New"]]
      [block [:a (utils/route-to events/navigate-category {:catalog/category-id "16"
                                                           :page/slug           "dyed-virgin-hair"})
              (feature-image {:mobile-url  "//ucarecdn.com/2d75c17a-2d73-442d-aaee-f35657373eaa/"
@@ -391,13 +391,12 @@
 
 (def talkable-banner-stacked-feature-blocks
   (component/html
-   [:h1.h2.container.py4
-    [:a
-     (utils/route-to events/navigate-friend-referrals {:query-params {:traffic_source "homepageBanner"}})
-     (talkable-image {:mobile-url  "//ucarecdn.com/677f872a-d0eb-4c39-bffa-ffa02823143f/"
-                      :desktop-url "//ucarecdn.com/a3c29b65-feed-450f-bfa2-8a88a3b96cc8/"
-                      :file-name   "talkable_banner.jpg"
-                      :alt         "refer friends, earn rewards, get 20% off"})]]))
+   [:a
+    (utils/route-to events/navigate-friend-referrals {:query-params {:traffic_source "homepageBanner"}})
+    (hero-image {:mobile-url  "//ucarecdn.com/677f872a-d0eb-4c39-bffa-ffa02823143f/"
+                 :desktop-url "//ucarecdn.com/a3c29b65-feed-450f-bfa2-8a88a3b96cc8/"
+                 :file-name   "talkable_banner.jpg"
+                 :alt         "refer friends, earn rewards, get 20% off"})]))
 
 (defn component [{:keys [signed-in store categories hero-fn human-hair? stacked-feature-blocks?]} owner opts]
   (component/create
