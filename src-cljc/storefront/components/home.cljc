@@ -119,10 +119,10 @@
    [:a
     (assoc (utils/route-to events/navigate-shop-by-look)
            :data-test "home-banner")
-    (let [file-name "Hello2018.jpg"
-          alt       "Hello 2018! Strut into the new year with new hair. Shop now!"
-          mob-uuid  "d33664e7-82fe-44be-b273-8cd6bf379876"
-          dsk-uuid  "120be475-dd22-47ef-92dd-501827dd718d"]
+    (let [file-name "TreatYourself.jpg"
+          alt       "Treat yourself to something sweet! Shop now!"
+          mob-uuid  "fe965ff2-46fa-40e5-8a21-e45909ab8ef3"
+          dsk-uuid  "47f44cce-73d9-4678-a05d-ab3e6044257f"]
       (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
                    :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
                    :file-name   file-name
