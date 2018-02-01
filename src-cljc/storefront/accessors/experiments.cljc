@@ -55,9 +55,3 @@
 (defn display-feature? [data feature]
   (contains? (set (get-in data keypaths/features)) feature))
 
-(defn human-hair? [data]
-  (display-feature? data "human-hair"))
-
-(defn human-hair-control? [data]  ; GROT: when human-hair? experiment succeeds
-  (display-feature? data "human-hair-control"))
-

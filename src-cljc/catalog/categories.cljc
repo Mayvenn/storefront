@@ -109,7 +109,7 @@
            :copy/title               "Dyed Virgin Closures"
            :page/slug                "dyed-virgin-closures"
            :legacy/named-search-slug "closures"
-           :category/new?            true  ; when experiments/human-hair? succeeds, set this to false
+           :category/new?            false
            :catalog/department       #{"hair"}
            :hair/family              #{"closures"}
            :hair/color.process       #{"dyed"}
@@ -136,7 +136,7 @@
            :copy/title               "Dyed Virgin Frontals"
            :page/slug                "dyed-virgin-frontals"
            :legacy/named-search-slug "frontals"
-           :category/new?            true  ; when experiments/human-hair? succeeds, set this to false
+           :category/new?            false
            :catalog/department       #{"hair"}
            :hair/family              #{"frontals"}
            :hair/color.process       #{"dyed"}
@@ -391,7 +391,7 @@
            :header/order        0
            :header/group        2
 
-           :category/new?            true  ; when experiments/human-hair? succeeds, set this to false
+           :category/new?            false
 
            :copy/title            "Wigs"
            :page/slug             "wigs"
@@ -465,7 +465,7 @@
    (merge {:catalog/category-id   "16"
            :copy/title            "Dyed Virgin Hair"
            :page/slug             "dyed-virgin-hair"
-           :category/new?         true
+           :category/new?         false
            :catalog/department    #{"hair"}
            :hair/family           #{"bundles" "closures" "frontals"}
            :hair/color.process    #{"dyed"}
@@ -541,7 +541,6 @@
   [(merge {:catalog/category-id   "20"
            :copy/title            "Dyed 100% Human Hair Closures"
            :page/slug             "dyed-100-human-hair-closures"
-           :experiment/enabled-on #{"human-hair"}
            :category/new?         true
            :catalog/department    #{"hair"}
            :hair/family           #{"closures"}
@@ -651,11 +650,3 @@
   (id->category (get-in data catalog.keypaths/category-id)
                 (get-in data keypaths/categories)))
 
-;; experiments/human-hair? - GROT when test succeeds
-(defn is-human-hair-product-ids? [product-id]
-  (<= 102 (spice/parse-int product-id) 109))
-
-;; experiments/human-hair? - GROT when test succeeds
-(def human-hair-category-ids-whitelist
-  #{(:catalog/category-id (first dyed-human-hair-closures-category))
-    (:catalog/category-id (first dyed-human-hair-category))})

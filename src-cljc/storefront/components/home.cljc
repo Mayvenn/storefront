@@ -281,7 +281,7 @@
                  :file-name   "talkable_banner.jpg"
                  :alt         "refer friends, earn rewards, get 20% off"})]))
 
-(defn component [{:keys [signed-in store categories hero-fn human-hair?]} owner opts]
+(defn component [{:keys [signed-in store categories hero-fn]} owner opts]
   (component/create
    [:div.m-auto
     [:section (hero-fn (:store-slug store))]
@@ -298,8 +298,7 @@
    :categories              (->> (get-in data keypaths/categories)
                                  (filter :home/order)
                                  (sort-by :home/order))
-   :hero-fn                 hero
-   :human-hair?             (experiments/human-hair? data)})
+   :hero-fn                 hero})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

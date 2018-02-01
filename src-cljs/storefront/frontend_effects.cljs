@@ -119,13 +119,7 @@
   (pinterest/remove-tracking))
 
 (defmethod perform-effects events/enable-feature [_ event {:keys [feature]} _ app-state]
-  (let [[nav-event {:keys [catalog/category-id catalog/product-id]}] (get-in app-state keypaths/navigation-message)]
-    (when (and (experiments/human-hair-control? app-state)
-               (or (and (= events/navigate-category nav-event)
-                        (contains? categories/human-hair-category-ids-whitelist category-id))
-                   (and (= events/navigate-product-details nav-event)
-                        (categories/is-human-hair-product-ids? product-id))))
-      (redirect events/navigate-home))))
+  )
 
 (defmethod perform-effects events/external-redirect-welcome [_ event args _ app-state]
   (set! (.-location js/window) (get-in app-state keypaths/welcome-url)))
@@ -517,10 +511,6 @@
 
 (defmethod perform-effects events/api-success-get-completed-order [_ event order _ app-state]
   (handle-message events/order-completed order))
-
-(defmethod perform-effects events/navigate-content-our-hair [_ event args _ app-state]
-  (when (experiments/human-hair-control? app-state)
-    (redirect events/navigate-home)))
 
 (defn redirect-to-return-navigation [app-state]
   (apply redirect

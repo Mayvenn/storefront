@@ -132,7 +132,7 @@
    (merge opts {:style {:padding-left "24px" :padding-right "24px"}})
    text])
 
-(defn menu [human-hair?]
+(def menu
   (component/html
    [:div.center
     (header-menu-link (assoc (utils/route-to events/navigate-shop-by-look)
@@ -145,15 +145,14 @@
     (header-menu-link (assoc (utils/route-to events/navigate-content-guarantee)
                              :on-mouse-enter close-shopping)
                       "Our Guarantee")
-    (when human-hair?
-      (header-menu-link (assoc (utils/route-to events/navigate-content-our-hair)
-                               :on-mouse-enter close-shopping)
-                        "Our hair"))
+    (header-menu-link (assoc (utils/route-to events/navigate-content-our-hair)
+                             :on-mouse-enter close-shopping)
+                      "Our hair")
     (header-menu-link {:href           slideout-nav/blog-url
                        :on-mouse-enter close-shopping}
                       "Real Beautiful")]))
 
-(defn shopping-column [items col-count human-hair?]
+(defn shopping-column [items col-count]
   {:pre [(zero? (mod 12 col-count))]}
   [:ul.list-reset.col.px2
    {:class (str "col-" (/ 12 col-count))}
@@ -168,17 +167,16 @@
                           (when-let [sku-id (:direct-to-details/sku-id category)]
                             {:query-params {:SKU sku-id}})))
          (utils/route-to events/navigate-category category))
-       (when (menu/new? human-hair? category)
+       (when new?
          [:span.teal "NEW "])
        (string/capitalize title)]])])
 
-(defn shopping-flyout [signed-in {:keys [expanded? categories]} human-hair?]
+(defn shopping-flyout [signed-in {:keys [expanded? categories]}]
   (when expanded?
     (let [show?   (fn [category]
                     (or (auth/stylist? signed-in)
                         (not (-> category :catalog/department (contains? "stylist-exclusives")))))
           columns (->> (filter :header/order categories)
-                       (menu/maybe-hide-experimental-categories human-hair?)
                        (filter show?)
                        (sort-by :header/group)
                        (group-by :header/group)
@@ -188,9 +186,9 @@
       [:div.absolute.bg-white.col-12.z3.border-bottom.border-gray
        [:div.mx-auto.clearfix.my6.col-10
         (for [items columns]
-          (shopping-column items (count columns) human-hair?))]])))
+          (shopping-column items (count columns)))]])))
 
-(defn component [{:keys [store user cart shopping signed-in human-hair?]} _ _]
+(defn component [{:keys [store user cart shopping signed-in]} _ _]
   (component/create
    [:div
     [:div.hide-on-mb.relative
@@ -206,8 +204,8 @@
                                  cart)]]]
        [:div.absolute.bottom-0.left-0.right-0
         [:div.mb4 (slideout-nav/logo "desktop-header-logo" "60px")]
-        [:div.mb1 (menu human-hair?)]]]]
-     (shopping-flyout signed-in shopping human-hair?)]
+        [:div.mb1 menu]]]]
+     (shopping-flyout signed-in shopping)]
     [:div.hide-on-tb-dt.border-bottom.border-gray.flex.items-center
      hamburger
      [:div.flex-auto.py3 (slideout-nav/logo "header-logo" "40px")]
@@ -222,7 +220,6 @@
 
 (defn query [data]
   (-> (slideout-nav/basic-query data)
-      (assoc :human-hair? (experiments/human-hair? data))
       (assoc-in [:user :expanded?]     (get-in data keypaths/account-menu-expanded))
       (assoc-in [:shopping :expanded?] (get-in data keypaths/shop-menu-expanded))
       (assoc-in [:cart :quantity]      (orders/product-quantity (get-in data keypaths/order)))))

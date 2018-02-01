@@ -165,14 +165,12 @@
    :contact-email "help@mayvenn.com"})
 
 (defn query [data]
-  (let [human-hair? (experiments/human-hair? data)]
-    {:contacts   (contacts-query data)
-     :own-store? (own-store? data)
-     :categories (->> (get-in data keypaths/categories)
-                      (filter :footer/order)
-                      (filter (partial auth/permitted-category? data))
-                      (menu/maybe-hide-experimental-categories human-hair?)
-                      (sort-by :footer/order))}))
+  {:contacts   (contacts-query data)
+   :own-store? (own-store? data)
+   :categories (->> (get-in data keypaths/categories)
+                    (filter :footer/order)
+                    (filter (partial auth/permitted-category? data))
+                    (sort-by :footer/order))})
 
 (defn built-component [data opts]
   (if (nav/minimal-events (get-in data keypaths/navigation-event))
