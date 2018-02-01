@@ -61,11 +61,3 @@
 (defn human-hair-control? [data]  ; GROT: when human-hair? experiment succeeds
   (display-feature? data "human-hair-control"))
 
-(defn affirm? [data]
-  (display-feature? data "affirm"))
-
-(defn bestseller? [data]
-  (display-feature? data "bestseller"))
-
-(defn stacked-feature-blocks? [data]
-  (display-feature? data "stacked-feature-blocks"))
