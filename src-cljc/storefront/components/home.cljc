@@ -113,13 +113,6 @@
                        :src-set (str mobile-url "-/format/auto/-/resize/750x/-/quality/lightest/" file-name " 2x")
                        :alt     alt}]])
 
-#_[:a
-   (utils/route-to events/navigate-category {:page/slug "dyed-100-human-hair" :catalog/category-id "19"})
-   (feature-image {:mobile-url  "//ucarecdn.com/ca5722d9-2589-4333-927d-c68432305d64/"
-                   :desktop-url "//ucarecdn.com/41367cc2-dd79-4e8b-b175-eb81b852030e/"
-                   :file-name   "dyed-100-human-hair.png"
-                   :alt         "Dyed 100% Human Hair - Starting at $30!"})]
-
 (defn feature-blocks []
   (let [block :div.col.col-12.col-4-on-tb-dt.border.border-white]
     [:div.container.border-top.border-white
@@ -130,11 +123,11 @@
                              :desktop-url "//ucarecdn.com/9c58f3fd-9f56-4f32-938b-4072aa60e030/"
                              :file-name   "Dyed-Virgin-Hair-Is-Here.png"
                              :alt         "Dyed Virgin Hair Is Here!"})]]
-     [block [:a (utils/route-to events/navigate-category {:page/slug "wigs" :catalog/category-id "13"})
-             (feature-image {:mobile-url  "//ucarecdn.com/67653f8a-3530-42d1-a9d7-4bdf99b599c7/"
-                             :desktop-url "//ucarecdn.com/34aafae1-124b-4375-a75c-e8dcb2f6e7bc/"
-                             :file-name   "wigs-are-here.png"
-                             :alt         "Wigs are here!"})]]
+     [block [:a (utils/route-to events/navigate-category {:page/slug "dyed-100-human-hair" :catalog/category-id "19"})
+             (feature-image {:mobile-url  "//ucarecdn.com/a1857e33-7536-48f7-8edc-fccb08b718b7/"
+                             :desktop-url "//ucarecdn.com/f4a97396-b98b-4f62-b918-75c5d60d3315/"
+                             :file-name   "dyed-100-human-hair.png"
+                             :alt         "Dyed 100% Human Hair - Starting at $30!"})]]
      [block [:a (utils/route-to events/navigate-category {:catalog/category-id "21"
                                                           :page/slug           "seamless-clip-ins"})
              (feature-image {:mobile-url  "//ucarecdn.com/3fdbe21b-6826-4fb1-a8a3-eb73a37113c3/"
