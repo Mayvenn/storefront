@@ -69,13 +69,11 @@
           use-store-credit? (- store-credit)
           true              as-money)]]] ]))
 
-(defn display-order-summary-for-commissions [order]
+(defn display-order-summary-for-commissions [order commissionable-amount]
   (let [adjustments              (:adjustments order)
         shipping-item            (orders/shipping-item order)
         subtotal                 (orders/products-subtotal order)
-        shipping-total           (* (:quantity shipping-item) (:unit-price shipping-item))
-        calculated-total         (+ subtotal shipping-total (reduce (fn [acc x] (+ acc (:price x) )) 0 adjustments))]
-
+        shipping-total           (* (:quantity shipping-item) (:unit-price shipping-item))]
     [:div
      [:.py2.border-top.border-gray
       [:table.col-12
@@ -93,7 +91,7 @@
         (when shipping-item
           (summary-row "Shipping" shipping-total))]]]
      [:.py2.h2.right-align
-      (as-money calculated-total) ]]))
+      (as-money commissionable-amount)]]))
 
 (defn ^:private display-line-item
   "Storeback now returns shared-cart line-items as a v2 Sku + item/quantity, aka

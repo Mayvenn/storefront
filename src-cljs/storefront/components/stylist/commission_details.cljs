@@ -64,7 +64,7 @@
         [:div.mt2.mbnp2.mtnp2.border-top.border-gray
          (summary/display-line-items (orders/product-items order) skus)]
 
-        (summary/display-order-summary-for-commissions order)
+        (summary/display-order-summary-for-commissions order commissionable-amount)
 
         [:div.h5.center.navy
          (str (mf/as-money amount) " has been added to your next payment.")]]))))
