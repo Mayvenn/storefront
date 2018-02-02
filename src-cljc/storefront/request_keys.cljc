@@ -31,7 +31,7 @@
 (def append-gallery [:append-gallery])
 (def get-stylist-stats [:get-stylist-stats])
 (def get-stylist-earnings [:get-stylist-earnings])
-(def get-stylist-commissions [:get-stylist-commissions])
+(def get-stylist-balance-transfers [:get-stylist-balance-tranfers])
 (def get-stylist-commission [:get-stylist-commission])
 (def get-stylist-bonus-credits [:get-stylist-bonus-credits])
 (def get-stylist-referral-program [:get-stylist-referral-program])

@@ -15,7 +15,8 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]
-            [storefront.platform.messages :as messages]))
+            [storefront.platform.messages :as messages]
+            [storefront.accessors.experiments :as experiments]))
 
 (defn commission-row [row-number {:keys [id number order amount earned-date commissionable-amount] :as commission}]
   [:tr.pointer (merge {:key id}
@@ -96,5 +97,5 @@
 
 (defn query [data]
   (let [earnings (get-in data keypaths/stylist-earnings)]
-    {:earnings  earnings
-     :fetching? (utils/requesting? data request-keys/get-stylist-commissions)}))
+    {:earnings           earnings
+     :fetching?          (utils/requesting? data request-keys/get-stylist-earnings)}))

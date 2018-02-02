@@ -118,8 +118,10 @@
   (facebook-analytics/remove-tracking)
   (pinterest/remove-tracking))
 
-(defmethod perform-effects events/enable-feature [_ event {:keys [feature]} _ app-state]
-  )
+(defmethod perform-effects events/enable-feature [_ event {:keys [feature]} _ app-state])
+
+(defmethod perform-effects events/ensure-skus [_ event {:keys [skus]} _ app-state]
+  (ensure-skus app-state skus))
 
 (defmethod perform-effects events/external-redirect-welcome [_ event args _ app-state]
   (set! (.-location js/window) (get-in app-state keypaths/welcome-url)))
@@ -375,8 +377,12 @@
     (api/get-stylist-stats (get-in app-state keypaths/user-id) user-token)))
 
 (defmethod perform-effects events/navigate-stylist-dashboard-earnings [_ event args _ app-state]
-  (when (zero? (get-in app-state keypaths/stylist-earnings-page 0))
-    (handle-message events/control-stylist-earnings-fetch)))
+  ;; TODO: Once balance-transfers are fully deployed,
+  ;;       get rid of the false case and move this to earnings namespace
+  (if (experiments/stylist-transfers? app-state)
+    (handle-message events/stylist-balance-transfers-fetch)
+    (when (zero? (get-in app-state keypaths/stylist-earnings-page 0))
+      (handle-message events/control-stylist-earnings-fetch))))
 
 (defmethod perform-effects events/control-stylist-earnings-fetch [_ _ args _ app-state]
   (let [user-id    (get-in app-state keypaths/user-id)

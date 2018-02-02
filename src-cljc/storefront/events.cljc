@@ -119,6 +119,10 @@
 (defpath stripe-component-mounted)
 (defpath stripe-component-will-unmount)
 
+(defpath stylist-balance-transfers-fetch)
+
+(defpath ensure-skus)
+
 (defpath control)
 (defpath control-change-state)
 (defpath control-focus)
@@ -128,6 +132,7 @@
 (defpath control-email-captured-submit)
 
 (defpath control-stylist-earnings-fetch)
+(defpath control-stylist-balance-transfers-load-more)
 (defpath control-stylist-referrals-fetch)
 (defpath control-stylist-bonuses-fetch)
 (defpath control-stylist-community)
@@ -250,6 +255,7 @@
 (defpath api-success-stylist-stats)
 (defpath api-success-stylist-commission)
 (defpath api-success-stylist-earnings)
+(defpath api-success-stylist-balance-transfers)
 (defpath api-success-stylist-bonus-credits)
 (defpath api-success-stylist-referral-program)
 (defpath api-success-send-stylist-referrals)

@@ -211,6 +211,12 @@
 (def stylist-earnings-page (conj stylist-earnings :page))
 (def stylist-earnings-pages (conj stylist-earnings :pages))
 
+(def stylist-earnings-pagination (conj stylist-earnings :pagination))
+(def stylist-earnings-pagination-page (conj stylist-earnings-pagination :page))
+(def stylist-earnings-balance-transfers (conj stylist-earnings :balance-transfers))
+(def stylist-earnings-balance-transfers-index (conj stylist-earnings :balance-transfers-index))
+(def stylist-earnings-orders (conj stylist-earnings :orders))
+
 (def stylist-bonuses (conj stylist :bonus-credits))
 (def stylist-bonuses-award-amount (conj stylist-bonuses :bonus-amount))
 (def stylist-bonuses-milestone-amount (conj stylist-bonuses :earning-amount))
