@@ -131,20 +131,14 @@
   [:div.mt6.mb2 [:p.py6.max-580.mx-auto.center (:copy/description category)]])
 
 
-(defn human-hair-video []
-  #?(:cljs
-     (let [iframe [:iframe.col-12
-                   {:src             (str "https://www.youtube.com/embed/tOUPp6s034U?"
-                                          "rel=0&"
-                                          "modestbranding=1&"
-                                          "widget_referrer=" js/window.location.href)
-                    :frameBorder     0
-                    :allowFullScreen true}]]
-       [:div
-        [:div.center.hide-on-tb-dt.mbn2
-         [:div.container.col-12.mx-auto.mt6 iframe]]
-        [:div.center.py4.hide-on-mb
-         [:div.container.col-12.mx-auto.mt6.mb4 iframe]]])))
+(defn human-hair-video [video]
+  (when video
+    #?(:cljs
+       [:div.container
+        (ui/youtube-responsive (str (:url video)
+                                    "?rel=0&"
+                                    "modestbranding=1&"
+                                    "widget_referrer=" js/window.location.href))])))
 
 (defn product-cards-empty-state [loading?]
   [:div.col-12.my8.py4.center
@@ -176,6 +170,7 @@
     (hero-section category)
     [:div.max-960.col-12.mx-auto.px2-on-mb
      (copy-section category)
+     (human-hair-video (-> category :videos :learn-more))
      [:div.bg-white.sticky.z1
       ;; The -5px prevents a sliver of the background from being visible above the filters
       ;; (when sticky) on android (and sometimes desktop chrome when using the inspector)

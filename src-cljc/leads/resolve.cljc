@@ -8,7 +8,8 @@
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.keypaths]
-            [leads.keypaths :as keypaths]))
+            [leads.keypaths :as keypaths]
+            [storefront.components.ui :as ui]))
 
 (defn social-link [url image-path]
   [:a {:item-prop "sameAs"
@@ -34,14 +35,7 @@
         (social-link "http://www.pinterest.com/mayvennhair/" "//ucarecdn.com/dc77e98c-1fda-4267-aba2-dce4b1dd0ecc/-/format/auto/pinteresticon.png")
         (social-link "https://twitter.com/mayvennhair" "//ucarecdn.com/41683ed1-1494-4c44-a3b0-41a25eab744e/-/format/auto/twittericon.png")]]
       [:div.col-10.mx-auto.py8
-       [:div.col-12.relative
-        {:style {:height "0"
-                 :padding-bottom "51%"}}
-        [:iframe.col-12.absolute.left-0.top-0
-         {:style {:height   "100%"}
-          :src   "https://www.youtube.com/embed/MjhjIB2s1Uk"
-          :frameBorder 0
-          :allowFullScreen true}]]]]]
+       (ui/youtube-responsive "https://www.youtube.com/embed/MjhjIB2s1Uk")]]]
     (component/build footer/minimal-component (:footer data) nil)]))
 
 (defn ^:private query [data]

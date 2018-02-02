@@ -9,7 +9,8 @@
             [storefront.platform.numbers :as numbers]
             [storefront.components.money-formatters :as mf]
             [clojure.string :as str]
-            [storefront.platform.images :as images]))
+            [storefront.platform.images :as images]
+            [spice.maps :as maps]))
 
 (defn narrow-container
   "A container that is 480px wide on desktop and tablet, but squishes on mobile"
@@ -547,6 +548,18 @@
 
 (defn sms-link [tag attrs & body]
   [tag (assoc attrs :href (sms-url (last body))) (apply str body)])
+
+(defn youtube-responsive
+  "Explanation: https://www.ostraining.com/blog/coding/responsive-videos/"
+  [url]
+  [:div.col-12.relative
+   {:style {:height         "0"
+            :padding-bottom "56.25%"}}
+   [:iframe.col-12.absolute.left-0.top-0
+    {:style           {:height "100%"}
+     :src             url
+     :frameBorder     0
+     :allowFullScreen true}]])
 
 (defmulti link (fn [link-type & _] link-type))
 (defmethod link :link/email [link-type tag attrs & body]
