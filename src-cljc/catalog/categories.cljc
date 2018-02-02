@@ -45,7 +45,7 @@
            :copy/description         (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
                                            "Our collection of closures and frontals blend seamlessly with our bundles"
                                            "and can be customized to fit your unique look.")
-           :videos                   {:learn-more {:url "https://www.youtube.com/embed/tOUPp6s034U"}}
+           :copy/videos              {:learn-more {:url "https://www.youtube.com/embed/tOUPp6s034U"}}
            :images                   {:hero {:filename    "VirginClosures.jpg",
                                              :desktop-url "//ucarecdn.com/b1443b91-6dd3-44e7-b7c3-06876def1bd5/",
                                              :mobile-url  "//ucarecdn.com/e3d3c5c7-e4dc-4f37-96c0-19bb14785dfb/",
@@ -70,7 +70,7 @@
            :copy/description (copy "From your hairline to nape, we’ve got you covered with our revolutionary 360 Lace Frontal."
                                    "This one-of-a-kind frontal piece features freestyle parting, baby hairs,"
                                    "and low-density edges for a naturally flawless look.")
-           :videos           {:learn-more {:url "https://www.youtube.com/embed/tOUPp6s034U"}}
+           :copy/videos      {:learn-more {:url "https://www.youtube.com/embed/tOUPp6s034U"}}
            :images           {:hero {:filename    "360Frontals.jpg"
                                      :desktop-url "//ucarecdn.com/4f2075cf-ea01-4c85-a96a-928fc6a03cf8/"
                                      :mobile-url  "//ucarecdn.com/3fccae53-99a7-4e3a-b52a-54086b6eef22/"
@@ -99,7 +99,7 @@
            :selector/electives  [:hair/origin :hair/texture :hair/base-material]
            :copy/description    (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
                                       "Our collection of frontals blend seamlessly with our bundles and can be customized to fit your unique look.")
-           :videos              {:learn-more {:url "https://www.youtube.com/embed/tOUPp6s034U"}}
+           :copy/videos         {:learn-more {:url "https://www.youtube.com/embed/tOUPp6s034U"}}
            :images              {:hero {:filename    "VirginFrontals.jpg",
                                         :desktop-url "//ucarecdn.com/2c6c4831-7002-43b9-8bb4-afda60dd213b/",
                                         :mobile-url  "//ucarecdn.com/d353eb7b-2b70-4b03-ab9e-9144dc81954e/",
@@ -125,7 +125,7 @@
            :copy/description         (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
                                            "Our collection of closures and frontals blend seamlessly with our bundles"
                                            "and can be customized to fit your unique look.")
-           :videos                   {:learn-more {:url "https://www.youtube.com/embed/tOUPp6s034U"}}
+           :copy/videos              {:learn-more {:url "https://www.youtube.com/embed/tOUPp6s034U"}}
            :images                   {:hero {:filename    "DyedVirginClosures.jpg",
                                              :desktop-url "//ucarecdn.com/8bb50b5c-dfc5-4565-8461-7e2a68a7733e/",
                                              :mobile-url  "//ucarecdn.com/8ae295fc-0252-499f-910a-73b29348414e/",
@@ -152,7 +152,7 @@
            :selector/electives       [:hair/origin :hair/texture :hair/base-material :hair/color]
            :copy/description         (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
                                            "Our collection of frontals blend seamlessly with our bundles and can be customized to fit your unique look.")
-           :videos                   {:learn-more {:url "https://www.youtube.com/embed/tOUPp6s034U"}}
+           :copy/videos              {:learn-more {:url "https://www.youtube.com/embed/tOUPp6s034U"}}
            :images                   {:hero {:filename    "DyedVirginFrontals.jpg",
                                              :desktop-url "//ucarecdn.com/d861f26b-6a2f-4bd9-a6e4-d0b0b141527e/",
                                              :mobile-url  "//ucarecdn.com/e686f6fe-31a4-408c-84ee-0337f6f0902b/",
@@ -180,7 +180,7 @@
                                       "straight, our collection of 100% virgin straight hair"
                                       "is your go-to for a sleek look with"
                                       "minimal effort.")
-           :videos              {:learn-more {:url "https://www.youtube.com/embed/tOUPp6s034U"}}
+           :copy/videos         {:learn-more {:url "https://www.youtube.com/embed/tOUPp6s034U"}}
            :images              {:hero {:filename    "VirginStraight.jpg",
                                         :desktop-url "//ucarecdn.com/5be83577-fc62-42fd-b7aa-cd35c09fa32a/",
                                         :mobile-url  "//ucarecdn.com/9ca3c6e7-1414-4702-be7b-6ea3428320de/",
@@ -214,7 +214,7 @@
                                       "your natural hair that's been pressed straight or"
                                       "freshly relaxed. Your flat iron has been officially"
                                       "cancelled.")
-           :videos              {:learn-more {:url "https://www.youtube.com/embed/tOUPp6s034U"}}
+           :copy/videos         {:learn-more {:url "https://www.youtube.com/embed/tOUPp6s034U"}}
            :images              {:hero {:filename    "VirginYakiStraight.jpg",
                                         :desktop-url "//ucarecdn.com/a49ac151-ff04-4bf5-895a-0636dc2dacd8/",
                                         :mobile-url  "//ucarecdn.com/249749df-11d7-4e1b-8ca7-f877af3b9c11/",
@@ -241,7 +241,7 @@
                                            "Kinky Straight hair texture moves freely and gives"
                                            "a naturally flawless look that mimics your own"
                                            "locks.")
-           :videos                   {:learn-more {:url "https://www.youtube.com/embed/tOUPp6s034U"}}
+           :copy/videos              {:learn-more {:url "https://www.youtube.com/embed/tOUPp6s034U"}}
            :images                   {:hero {:filename    "VirginKinkyStraight.jpg",
                                              :desktop-url "//ucarecdn.com/09d70755-37d5-401c-b483-c7a3dd1ef588/",
                                              :mobile-url  "//ucarecdn.com/297659dd-3b82-4f47-89ea-cdaf6045d923/",
@@ -265,7 +265,7 @@
            :selector/electives       [:hair/family :hair/origin :hair/base-material]
            :copy/description         (copy "Step into the spotlight with our collection of luscious Body Wave hair."
                                            "Body Wave is unbelievably soft and goes from straight to wavy and back again with ease.")
-           :videos                   {:learn-more {:url "https://www.youtube.com/embed/tOUPp6s034U"}}
+           :copy/videos              {:learn-more {:url "https://www.youtube.com/embed/tOUPp6s034U"}}
            :images                   {:hero {:filename    "VirginBodyWave.jpg",
                                              :desktop-url "//ucarecdn.com/5e0d4953-67af-4f53-a705-f3af1ed8704c/",
                                              :mobile-url  "//ucarecdn.com/e96d0e62-02ab-4834-a032-4a7cdb3a77b2/",
@@ -295,7 +295,7 @@
                                            "our collection of 100% virgin Loose Wave hair"
                                            "is the perfect foundation for all your carefree,"
                                            "flirty, wavy looks.")
-           :videos                   {:learn-more {:url "https://www.youtube.com/embed/tOUPp6s034U"}}
+           :copy/videos              {:learn-more {:url "https://www.youtube.com/embed/tOUPp6s034U"}}
            :images                   {:hero {:filename    "VirginLooseWave.jpg",
                                              :desktop-url "//ucarecdn.com/5cb19377-2ad1-4015-90fd-0152ce8b9f16/",
                                              :mobile-url  "//ucarecdn.com/70979840-a033-48c4-881b-7505c2bf5109/",
@@ -326,7 +326,7 @@
                                            "collection. For curls you can rock everywhere from"
                                            "the office to your tropical vacation, make a"
                                            "statement with Water Wave hair.")
-           :videos                   {:learn-more {:url "https://www.youtube.com/embed/tOUPp6s034U"}}
+           :copy/videos              {:learn-more {:url "https://www.youtube.com/embed/tOUPp6s034U"}}
            :images                   {:hero {:filename    "VirginWaterWave.jpg",
                                              :desktop-url "//ucarecdn.com/004230c4-f532-499c-a643-06481f2b5997/",
                                              :mobile-url  "//ucarecdn.com/d46cc08c-e17f-4529-b0c6-aeed97bf31ed/",
@@ -352,7 +352,7 @@
            :copy/description         (copy "Reigning supreme in versatility, the Deep Wave hair collection features"
                                            "a soft, spiral wave full of body and bounce. Our deep wave hair is perfect"
                                            "for those who want big waves that make an even bigger splash.")
-           :videos                   {:learn-more {:url "https://www.youtube.com/embed/tOUPp6s034U"}}
+           :copy/videos              {:learn-more {:url "https://www.youtube.com/embed/tOUPp6s034U"}}
            :images                   {:hero {:filename    "DeepWave.jpg",
                                              :desktop-url "//ucarecdn.com/c7dd690e-f3ae-4b6b-9411-d9e7027b15c5/",
                                              :mobile-url  "//ucarecdn.com/b07b0298-902e-4dc2-bdf4-f8e179f06020/",
@@ -380,7 +380,7 @@
            :selector/electives       [:hair/family :hair/origin :hair/base-material]
            :copy/description         (copy "Let your bold, beautiful curls take center stage! Our curly hair collection is a tight,"
                                            "kinky curl perfect for creating voluminous coily styles that mimic natural 3C hair textures.")
-           :videos                   {:learn-more {:url "https://www.youtube.com/embed/tOUPp6s034U"}}
+           :copy/videos              {:learn-more {:url "https://www.youtube.com/embed/tOUPp6s034U"}}
            :images                   {:hero {:filename    "VirginCurly.jpg",
                                              :desktop-url "//ucarecdn.com/29534c6f-54d0-4969-a1b1-b92b1dcde326/",
                                              :mobile-url  "//ucarecdn.com/7c77bfb9-53c3-4eb3-a4f9-6c9a456d93b4/",
@@ -489,7 +489,7 @@
            :hair/source         #{"virgin"}
            :selector/essentials [:catalog/department :hair/family :hair/color.process :hair/source]
            :selector/electives  [:hair/origin :hair/texture :hair/color]
-           :videos              {:learn-more {:url "https://www.youtube.com/embed/tOUPp6s034U"}}
+           :copy/videos         {:learn-more {:url "https://www.youtube.com/embed/tOUPp6s034U"}}
            :images              {:hero {:filename    "DyedVirginHair.jpg"
                                         :desktop-url "//ucarecdn.com/ffec1ede-b869-44f4-86e8-3615a78cf046/"
                                         :mobile-url  "//ucarecdn.com/0bec1329-ba01-4ece-a66f-4ad303311bf3/"
@@ -538,7 +538,7 @@
            :footer/order        9
            :selector/essentials [:catalog/department :hair/family :hair/color.process :hair/source]
            :selector/electives  [:hair/origin :hair/texture :hair/base-material :hair/color]
-           :videos              {:learn-more {:url "https://www.youtube.com/embed/tOUPp6s034U"}}
+           :copy/videos         {:learn-more {:url "https://www.youtube.com/embed/tOUPp6s034U"}}
            :images              {:hero {:filename    "Dyed100PercentHumanHair.jpg"
                                         :desktop-url "//ucarecdn.com/5d04e5b5-f441-448c-9244-9839f081e543/"
                                         :mobile-url  "//ucarecdn.com/33202e80-fab7-4209-859e-e7809b3bef30/"
@@ -567,7 +567,7 @@
            :footer/order        15
            :selector/essentials [:catalog/department :hair/family :hair/color.process :hair/source]
            :selector/electives  [:hair/origin :hair/texture :hair/color]
-           :videos              {:learn-more {:url "https://www.youtube.com/embed/tOUPp6s034U"}}
+           :copy/videos         {:learn-more {:url "https://www.youtube.com/embed/tOUPp6s034U"}}
            :images              {:hero {:filename    "Dyed100PercentHumanClosures.jpg"
                                         :desktop-url "//ucarecdn.com/a0913745-d344-4c8b-af48-dd79ac421202/"
                                         :mobile-url  "//ucarecdn.com/5ee6ff8f-9a4c-4474-950b-f7943b57da46/"
@@ -616,7 +616,7 @@
 (def tape-ins-category
   [{:catalog/category-id "22"
     :catalog/department  #{"hair"}
-    :category/new?        true
+    :category/new?       true
 
     :hair/family         #{"tape-ins"}
     :selector/electives  [:hair/color :hair/weight :hair/length]

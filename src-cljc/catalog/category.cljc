@@ -170,7 +170,7 @@
     (hero-section category)
     [:div.max-960.col-12.mx-auto.px2-on-mb
      (copy-section category)
-     (human-hair-video (-> category :videos :learn-more))
+     (human-hair-video (-> category :copy/videos :learn-more))
      [:div.bg-white.sticky.z1
       ;; The -5px prevents a sliver of the background from being visible above the filters
       ;; (when sticky) on android (and sometimes desktop chrome when using the inspector)
