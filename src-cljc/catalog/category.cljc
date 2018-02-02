@@ -130,6 +130,22 @@
 (defn copy-section [category]
   [:div.mt6.mb2 [:p.py6.max-580.mx-auto.center (:copy/description category)]])
 
+
+(defn human-hair-video []
+  #?(:cljs
+     (let [iframe [:iframe.col-12
+                   {:src             (str "https://www.youtube.com/embed/tOUPp6s034U?"
+                                          "rel=0&"
+                                          "modestbranding=1&"
+                                          "widget_referrer=" js/window.location.href)
+                    :frameBorder     0
+                    :allowFullScreen true}]]
+       [:div
+        [:div.center.hide-on-tb-dt.mbn2
+         [:div.container.col-12.mx-auto.mt6 iframe]]
+        [:div.center.py4.hide-on-mb
+         [:div.container.col-12.mx-auto.mt6.mb4 iframe]]])))
+
 (defn product-cards-empty-state [loading?]
   [:div.col-12.my8.py4.center
    (if loading?
