@@ -132,13 +132,12 @@
 
 
 (defn human-hair-video [video]
-  (when video
+  (when-let [url (:url video)]
     #?(:cljs
        [:div.container
-        (ui/youtube-responsive (str (:url video)
+        (ui/youtube-responsive (str url
                                     "?rel=0&"
-                                    "modestbranding=1&"
-                                    "widget_referrer=" js/window.location.href))])))
+                                    "modestbranding=1"))])))
 
 (defn product-cards-empty-state [loading?]
   [:div.col-12.my8.py4.center

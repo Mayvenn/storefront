@@ -552,14 +552,15 @@
 (defn youtube-responsive
   "Explanation: https://www.ostraining.com/blog/coding/responsive-videos/"
   [url]
-  [:div.col-12.relative
-   {:style {:height         "0"
-            :padding-bottom "56.25%"}}
-   [:iframe.col-12.absolute.left-0.top-0
-    {:style           {:height "100%"}
-     :src             url
-     :frameBorder     0
-     :allowFullScreen true}]])
+  (component/html
+   [:div.col-12.relative
+    {:style {:height         "0"
+             :padding-bottom "56.25%"}}
+    [:iframe.col-12.absolute.left-0.top-0
+     {:style           {:height "100%"}
+      :src             url
+      :frameBorder     0
+      :allowFullScreen true}]]))
 
 (defmulti link (fn [link-type & _] link-type))
 (defmethod link :link/email [link-type tag attrs & body]
