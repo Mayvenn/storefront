@@ -302,10 +302,11 @@
              (bagged-skus-and-checkout bagged-skus)
              (when (products/stylist-only? product) shipping-and-guarantee)]]
            (product-description product)
-           [:div.mt2
-            (ui/youtube-responsive (str (-> product :copy/videos :learn-more :url)
-                                        "?rel=0&"
-                                        "modestbranding=1&"))]
+           (when-let [video-url (-> product :copy/videos :learn-more :url)]
+             [:div.mt2
+              (ui/youtube-responsive (str video-url
+                                          "?rel=0&"
+                                          "modestbranding=1&"))])
            [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])
          (when review?
            (component/build review-component/reviews-component reviews opts))]]))))
