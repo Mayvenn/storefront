@@ -119,8 +119,8 @@
      [:div.col.col-12.my4 [:h1.center "Shop What's New"]]
      [block [:a (utils/route-to events/navigate-category {:catalog/category-id "16"
                                                           :page/slug           "dyed-virgin-hair"})
-             (feature-image {:mobile-url  "//ucarecdn.com/2d75c17a-2d73-442d-aaee-f35657373eaa/"
-                             :desktop-url "//ucarecdn.com/9c58f3fd-9f56-4f32-938b-4072aa60e030/"
+             (feature-image {:mobile-url  "//ucarecdn.com/3fa4212f-31a2-4525-a53f-f7aa988be858/"
+                             :desktop-url "//ucarecdn.com/a7f2d90b-3c51-4b53-935f-92600392d345/"
                              :file-name   "Dyed-Virgin-Hair-Is-Here.png"
                              :alt         "Dyed Virgin Hair Is Here!"})]]
      [block [:a (utils/route-to events/navigate-category {:page/slug "dyed-100-human-hair" :catalog/category-id "19"})
