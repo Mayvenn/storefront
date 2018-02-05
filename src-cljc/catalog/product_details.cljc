@@ -306,7 +306,8 @@
              [:div.mt2
               (ui/youtube-responsive (str video-url
                                           "?rel=0&"
-                                          "modestbranding=1&"))])
+                                          "color=white&"
+                                          "showinfo=0"))])
            [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])
          (when review?
            (component/build review-component/reviews-component reviews opts))]]))))

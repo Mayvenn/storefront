@@ -137,7 +137,8 @@
        [:div.container
         (ui/youtube-responsive (str url
                                     "?rel=0&"
-                                    "modestbranding=1"))])))
+                                    "color=white&"
+                                    "showinfo=0"))])))
 
 (defn product-cards-empty-state [loading?]
   [:div.col-12.my8.py4.center
