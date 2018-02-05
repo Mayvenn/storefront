@@ -537,13 +537,16 @@
     #(messages/handle-message events/api-success-stylist-earnings
                               (select-keys % [:rate :transactions :current-page :pages]))}))
 
-(defn get-stylist-balance-transfers [user-id user-token {:keys [page]} handler]
+(defn get-stylist-balance-transfers
+  [user-id user-token {:keys [page per]} handler]
   (api-req
    GET
    "/v1/stylist/balance-transfers"
    request-keys/get-stylist-balance-transfers
-   {:params
-    {:user-id user-id :user-token user-token :page page}
+   {:params  {:user-id    user-id
+              :user-token user-token
+              :page       page
+              :per        per}
     :handler handler}))
 
 (defn get-stylist-commission [user-id user-token {:keys [commission-id]}]

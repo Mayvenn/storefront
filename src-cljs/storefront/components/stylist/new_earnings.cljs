@@ -21,13 +21,14 @@
             [spice.maps :as maps]
             [storefront.api :as api]))
 
-(defn commission-row [row-number orders {:keys [id amount earned-date commissionable-amount order-number] :as commission}]
-  (let [order (get orders order-number)]
+(defn commission-row
+  [row-number orders {:keys [id amount commission-date commissionable-amount order-number] :as commission}]
+  (let [order (get orders (keyword order-number))]
     [:tr.pointer (merge {:key id}
                         (utils/route-to events/navigate-stylist-dashboard-commission-details {:commission-id id})
                         (when (odd? row-number)
                           {:class "bg-too-light-teal"}))
-     [:td.px3.py2 (f/less-year-more-day-date earned-date)]
+     [:td.px3.py2 (f/less-year-more-day-date commission-date)]
      [:td.py2 (:full-name order) [:div.h6 "Commission Earned"]]
      [:td.pr3.py2.green.right-align "+" (mf/as-money amount)]]))
 
@@ -48,11 +49,11 @@
   [:table.col-12.mb3 {:style {:border-spacing 0}}
    [:tbody
     (map-indexed
-     (fn [i {:keys [type] :as balance-transfer}]
+     (fn [i {:keys [type data]}]
        (case type
-         "commission" (commission-row orders i (:data balance-transfer))
-         "award"      (award-row i (:data balance-transfer))
-         "payout"     (payout-row (:data balance-transfer))))
+         "commission" (commission-row i orders data)
+         "award"      (award-row i data)
+         "payout"     (payout-row data)))
      balance-transfers)]])
 
 (def empty-commissions
@@ -82,7 +83,7 @@
 
 (defn component [{:keys [balance-transfers orders pagination stylist fetching?]}]
   (om/component
-   (let [{:keys [page pages]} pagination]
+   (let [{current-page :page total-pages :total} pagination]
      (html
       (if (and (empty? balance-transfers)
                fetching?)
@@ -92,8 +93,11 @@
          [:div.col-on-tb-dt.col-9-on-tb-dt
           (when (seq balance-transfers)
             (earnings-table orders balance-transfers))
-          (pagination/fetch-more events/control-stylist-balance-transfers-load-more fetching? page pages)
-          (when (zero? pages)
+          (pagination/fetch-more events/control-stylist-balance-transfers-load-more
+                                 fetching?
+                                 current-page
+                                 total-pages)
+          (when (zero? total-pages)
             empty-commissions)]
 
          [:div.col-on-tb-dt.col-3-on-tb-dt
@@ -124,13 +128,12 @@
   (update-in app-state keypaths/stylist-earnings-pagination-page inc))
 
 (defmethod effects/perform-effects events/stylist-balance-transfers-fetch [_ _ args _ app-state]
-  (let [user-id        (get-in app-state keypaths/user-id)
-        user-token     (get-in app-state keypaths/user-token)
-        {:keys [page]} (get-in app-state keypaths/stylist-earnings-pagination)]
+  (let [user-id    (get-in app-state keypaths/user-id)
+        user-token (get-in app-state keypaths/user-token)]
     (when (and user-id user-token)
       (api/get-stylist-balance-transfers user-id
                                          user-token
-                                         {:page page}
+                                         (get-in app-state keypaths/stylist-earnings-pagination)
                                          #(messages/handle-message events/api-success-stylist-balance-transfers
                                                                    (select-keys % [:stylist
                                                                                    :balance-transfers
@@ -139,8 +142,7 @@
 (defmethod transitions/transition-state events/navigate-stylist-dashboard-earnings
   [_ event {:keys [stylist balance-transfers orders pagination]} app-state]
   (-> app-state
-      (assoc-in keypaths/stylist-earnings-pagination {:page 0
-                                                      :per 15})))
+      (assoc-in keypaths/stylist-earnings-pagination {:page 0 :per 3})))
 
 (defmethod transitions/transition-state events/api-success-stylist-balance-transfers
   [_ event {:keys [stylist balance-transfers orders pagination]} app-state]
