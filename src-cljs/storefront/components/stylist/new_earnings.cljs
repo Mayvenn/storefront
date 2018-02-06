@@ -110,7 +110,13 @@
   (let [transfer-index    (mapcat val (get-in data keypaths/stylist-earnings-balance-transfers-index))
         balance-transfers (get-in data keypaths/stylist-earnings-balance-transfers)
         orders            (get-in data keypaths/stylist-earnings-orders)]
-    {:balance-transfers (map (partial get balance-transfers) transfer-index)
+    {:balance-transfers (into []
+                              (comp
+                               (map (partial get balance-transfers))
+                               (remove (fn [transfer]
+                                         (when-let [status (-> transfer :data :status)]
+                                           (not= "paid" status)))))
+                              transfer-index)
      :orders            orders
      :pagination        (get-in data keypaths/stylist-earnings-pagination)
      :stylist           (get-in data keypaths/stylist)
