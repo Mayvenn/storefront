@@ -39,11 +39,21 @@
    [:td.py2 "Account Correction" [:div.h6 "Admin Payout"]]
    [:td.pr3.py2.green.right-align "+" (mf/as-money amount)]])
 
-(defn payout-row [{:keys [id amount earned-date payout-method] :as earning}]
+(defn ^:private payout-method-type->title [payout-method-type]
+  (get {"Mayvenn::VenmoPayoutMethod"       "Venmo"
+        "Mayvenn::PaypalPayoutMethod"      "PayPal"
+        "Mayvenn::CheckPayoutMethod"       "Check"
+        "Mayvenn::GreenDotPayoutMethod"    "Mayvenn InstaPay"
+        "Mayvenn::HyperwalletPayoutMethod" "Mayvenn Debit"
+        "Mayvenn::InactivePayoutMethod"    "Inactive"
+        "Mayvenn::ManualPayoutMethod"      "Manual"
+        "Mayvenn::MissingPayoutMethod"     "Missing"} payout-method-type payout-method-type))
+
+(defn payout-row [{:keys [id amount created-at payout-method-type]}]
   [:tr.bg-light-gray
-   [:td.px3.py2 (f/less-year-more-day-date earned-date)]
-   [:td.py2 {:col-span 2} "You transferred " [:span.medium amount]
-    [:div.h6 (str "Earnings Transfer - " payout-method)]]])
+   [:td.px3.py2 (f/less-year-more-day-date created-at)]
+   [:td.py2 {:col-span 2} "You transferred " [:span.medium (mf/as-money amount)]
+    [:div.h6 (str "Earnings Transfer - " (payout-method-type->title payout-method-type))]]])
 
 (defn earnings-table [orders balance-transfers]
   [:table.col-12.mb3 {:style {:border-spacing 0}}
@@ -142,7 +152,7 @@
 (defmethod transitions/transition-state events/navigate-stylist-dashboard-earnings
   [_ event {:keys [stylist balance-transfers orders pagination]} app-state]
   (-> app-state
-      (assoc-in keypaths/stylist-earnings-pagination {:page 0 :per 3})))
+      (assoc-in keypaths/stylist-earnings-pagination {:page 1 :per 15})))
 
 (defmethod transitions/transition-state events/api-success-stylist-balance-transfers
   [_ event {:keys [stylist balance-transfers orders pagination]} app-state]
