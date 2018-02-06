@@ -39,11 +39,11 @@
    [:td.py2 "Account Correction" [:div.h6 "Admin Payout"]]
    [:td.pr3.py2.green.right-align "+" (mf/as-money amount)]])
 
-(defn payout-row [{:keys [id amount created-at payout-method-type]}]
+(defn payout-row [{:keys [id amount created-at payout-method-name]}]
   [:tr.bg-light-gray
    [:td.px3.py2 (f/less-year-more-day-date created-at)]
    [:td.py2 {:col-span 2} "You transferred " [:span.medium (mf/as-money amount)]
-    [:div.h6 (str "Earnings Transfer - " payout-method-type)]]])
+    [:div.h6 (str "Earnings Transfer - " payout-method-name)]]])
 
 (defn earnings-table [orders balance-transfers]
   [:table.col-12.mb3 {:style {:border-spacing 0}}
