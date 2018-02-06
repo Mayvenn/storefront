@@ -24,7 +24,7 @@
 (defn commission-row
   [row-number orders {:keys [id amount commission-date commissionable-amount order-number] :as commission}]
   (let [order (get orders (keyword order-number))]
-    [:tr.pointer (merge {:key id}
+    [:tr.pointer (merge {:key (str "commission-" id)}
                         (utils/route-to events/navigate-stylist-dashboard-commission-details {:commission-id id})
                         (when (odd? row-number)
                           {:class "bg-too-light-teal"}))
@@ -33,14 +33,15 @@
      [:td.pr3.py2.green.right-align "+" (mf/as-money amount)]]))
 
 (defn award-row [row-number {:keys [id amount created-at reason] :as award}]
-  [:tr.pointer (when (odd? row-number)
-                 {:class "bg-too-light-teal"})
+  [:tr (merge {:key (str "award-" id)}
+              (when (odd? row-number)
+                {:class "bg-too-light-teal"}))
    [:td.px3.py2 (f/less-year-more-day-date created-at)]
    [:td.py2 "Account Correction" [:div.h6 "Admin Payout"]]
    [:td.pr3.py2.green.right-align "+" (mf/as-money amount)]])
 
 (defn payout-row [{:keys [id amount created-at payout-method-name]}]
-  [:tr.bg-light-gray
+  [:tr.bg-light-gray {:key (str "payout-" id)}
    [:td.px3.py2 (f/less-year-more-day-date created-at)]
    [:td.py2 {:col-span 2} "You transferred " [:span.medium (mf/as-money amount)]
     [:div.h6 (str "Earnings Transfer - " payout-method-name)]]])
@@ -106,7 +107,7 @@
           show-program-terms]])))))
 
 (defn query [data]
-  (let [transfer-index    (mapcat second (get-in data keypaths/stylist-earnings-balance-transfers-index))
+  (let [transfer-index    (get-in data keypaths/stylist-earnings-balance-transfers-index)
         balance-transfers (get-in data keypaths/stylist-earnings-balance-transfers)
         orders            (get-in data keypaths/stylist-earnings-orders)]
     {:balance-transfers (map (partial get balance-transfers) transfer-index)
@@ -151,5 +152,5 @@
         (update-in keypaths/stylist merge stylist)
         (update-in keypaths/stylist-earnings-orders merge orders)
         (update-in keypaths/stylist-earnings-balance-transfers merge (maps/index-by :id balance-transfers))
-        (assoc-in (conj keypaths/stylist-earnings-balance-transfers-index page) (map :id balance-transfers))
+        (update-in keypaths/stylist-earnings-balance-transfers-index concat (map :id balance-transfers))
         (assoc-in keypaths/stylist-earnings-pagination pagination))))
