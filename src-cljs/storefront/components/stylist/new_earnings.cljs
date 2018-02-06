@@ -107,7 +107,7 @@
           show-program-terms]])))))
 
 (defn query [data]
-  (let [transfer-index    (get-in data keypaths/stylist-earnings-balance-transfers-index)
+  (let [transfer-index    (mapcat val (get-in data keypaths/stylist-earnings-balance-transfers-index))
         balance-transfers (get-in data keypaths/stylist-earnings-balance-transfers)
         orders            (get-in data keypaths/stylist-earnings-orders)]
     {:balance-transfers (map (partial get balance-transfers) transfer-index)
@@ -152,5 +152,5 @@
         (update-in keypaths/stylist merge stylist)
         (update-in keypaths/stylist-earnings-orders merge orders)
         (update-in keypaths/stylist-earnings-balance-transfers merge (maps/index-by :id balance-transfers))
-        (update-in keypaths/stylist-earnings-balance-transfers-index concat (map :id balance-transfers))
+        (assoc-in (conj keypaths/stylist-earnings-balance-transfers-index page) (map :id balance-transfers))
         (assoc-in keypaths/stylist-earnings-pagination pagination))))
