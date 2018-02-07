@@ -64,6 +64,7 @@
 (defpath navigate-stylist-dashboard-referrals)
 (defpath navigate-stylist-dashboard-bonus-credit)
 (defpath navigate-stylist-dashboard-commission-details)
+(defpath navigate-stylist-dashboard-cash-out-now)
 
 (defpath navigate-stylist-share-your-store)
 
@@ -256,6 +257,7 @@
 (defpath api-success-stylist-commission)
 (defpath api-success-stylist-earnings)
 (defpath api-success-stylist-balance-transfers)
+(defpath api-success-stylist-next-payout)
 (defpath api-success-stylist-bonus-credits)
 (defpath api-success-stylist-referral-program)
 (defpath api-success-send-stylist-referrals)

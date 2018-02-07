@@ -104,7 +104,10 @@
          [:div.col-on-tb-dt.col-3-on-tb-dt
           (when (:commission-rate stylist)
             (show-commission-rate (:commission-rate stylist)))
-          show-program-terms]])))))
+          show-program-terms]
+         [:a
+          (utils/route-to events/navigate-stylist-dashboard-cash-out-now)
+          "CLICK ME TO SEQUENCE BREAK!"]])))))
 
 (defn query [data]
   (let [transfer-index    (mapcat val (get-in data keypaths/stylist-earnings-balance-transfers-index))

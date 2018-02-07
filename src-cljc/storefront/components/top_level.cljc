@@ -15,6 +15,7 @@
                        [storefront.components.account :as account]
                        [storefront.components.reset-password :as reset-password]
                        [storefront.components.stylist.dashboard :as stylist.dashboard]
+                       [storefront.components.stylist.cash-out-now :as stylist.cash-out-now]
                        [storefront.components.stylist.share-your-store :as stylist.share-your-store]
                        [storefront.components.stylist.account :as stylist.account]
                        [storefront.components.stylist.portrait :as stylist.portrait]
@@ -59,6 +60,7 @@
          events/navigate-stylist-dashboard-earnings           stylist.dashboard/built-component
          events/navigate-stylist-dashboard-bonus-credit       stylist.dashboard/built-component
          events/navigate-stylist-dashboard-referrals          stylist.dashboard/built-component
+         events/navigate-stylist-dashboard-cash-out-now       stylist.cash-out-now/built-component
          events/navigate-stylist-share-your-store             stylist.share-your-store/built-component
          events/navigate-stylist-account-profile              stylist.account/built-component
          events/navigate-stylist-account-portrait             stylist.portrait/built-component
