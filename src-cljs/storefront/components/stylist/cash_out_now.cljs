@@ -11,7 +11,7 @@
             [storefront.effects :as effects]))
 
 (defn component [{:keys [amount payout-method]} owner opts]
-  (let [{:keys [name last4 email]} payout-method]
+  (let [{:keys [name last4 email payout-timeframe]} payout-method]
     (om/component
      (html
       [:.container.p4
@@ -23,7 +23,12 @@
            [:div.h7 "Linked Card XXXX-XXXX-XXXX-" last4]
            [:div.h7 "PayPal Email: " email])]
         [:h2.teal (mf/as-money amount)]]
-       (when last4 [:div.navy.center.h7 "Instant: Funds typically arrive in minutes"])
+       [:div.navy.center.h7
+        (case payout-timeframe
+          "immediate"                 "Instant: Funds typically arrive in minutes"
+          "next_business_day"         "Funds paid out to this card will become available the next business day."
+          "two_to_five_business_days" "Funds paid out to this card will become available two to five business days later."
+          "") ]
        [:div.my3
         {:data-test "cash-out-button"
          :data-ref "cash-out-button"}
@@ -43,8 +48,9 @@
 
 (defmethod transitions/transition-state events/api-success-stylist-next-payout
   [_ _ {:keys [amount payout-method]} app-state]
-  (let [{:keys [name email last4]} payout-method]
+  (let [{:keys [name email last4 payout-timeframe]} payout-method]
     (assoc-in app-state keypaths/stylist-next-payout {:amount amount
-                                                      :payout-method {:name  name
-                                                                      :email email
-                                                                      :last4 last4}})))
+                                                      :payout-method {:name             name
+                                                                      :email            email
+                                                                      :last4            last4
+                                                                      :payout-timeframe payout-timeframe}})))
