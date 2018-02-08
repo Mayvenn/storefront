@@ -76,6 +76,7 @@
               "/stylist/earnings"                     (edn->bidi events/navigate-stylist-dashboard-earnings)
               "/stylist/cash-out-now"                 (edn->bidi events/navigate-stylist-dashboard-cash-out-now)
               "/stylist/cash-out-pending"             (edn->bidi events/navigate-stylist-dashboard-cash-out-pending)
+              "/stylist/cash-out-success"             (edn->bidi events/navigate-stylist-dashboard-cash-out-success)
               "/stylist/store_credits"                (edn->bidi events/navigate-stylist-dashboard-bonus-credit)
               "/stylist/referrals"                    (edn->bidi events/navigate-stylist-dashboard-referrals)
               ["/stylist/commission/" :commission-id] (edn->bidi events/navigate-stylist-dashboard-commission-details)

@@ -23,8 +23,7 @@
     events/navigate-checkout-confirmation})
 
 (def payout-events
-  #{events/navigate-stylist-dashboard-cash-out-pending
-    events/navigate-stylist-dashboard-cash-out-now})
+  #{events/navigate-stylist-dashboard-cash-out-pending})
 
 (def auth-events
   (set/union plain-auth-events checkout-auth-events))
