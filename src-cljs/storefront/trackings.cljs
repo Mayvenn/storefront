@@ -5,6 +5,7 @@
             [storefront.accessors.orders :as orders]
             [storefront.accessors.products :as products]
             [storefront.accessors.videos :as videos]
+            [storefront.accessors.stylist-urls :as stylist-urls]
             [storefront.events :as events]
             [storefront.hooks.convert :as convert]
             [storefront.hooks.facebook-analytics :as facebook-analytics]
@@ -288,8 +289,10 @@
 (defmethod perform-track events/api-success-auth [_ event args app-state]
   (stringer/identify (get-in app-state keypaths/user)))
 
-(defmethod perform-track events/api-success-auth-sign-in [_ event {:keys [flow] :as args} app-state]
-  (stringer/track-event "sign_in" {:type flow}))
+(defmethod perform-track events/api-success-auth-sign-in [_ event {:keys [flow user] :as args} app-state]
+  (stringer/track-event "sign_in" {:type flow})
+  (facebook-analytics/track-custom-event "user_logged_in" {:email     (:email user)
+                                                           :store_url stylist-urls/store-url}))
 
 (defmethod perform-track events/api-success-auth-sign-up [_ event {:keys [flow] :as args} app-state]
   (stringer/track-event "sign_up" {:type flow}))
