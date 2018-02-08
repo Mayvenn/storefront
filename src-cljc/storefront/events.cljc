@@ -65,6 +65,7 @@
 (defpath navigate-stylist-dashboard-bonus-credit)
 (defpath navigate-stylist-dashboard-commission-details)
 (defpath navigate-stylist-dashboard-cash-out-now)
+(defpath navigate-stylist-dashboard-cash-out-pending)
 
 (defpath navigate-stylist-share-your-store)
 

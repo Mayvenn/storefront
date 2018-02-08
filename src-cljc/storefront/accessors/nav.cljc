@@ -22,6 +22,10 @@
     events/navigate-checkout-payment
     events/navigate-checkout-confirmation})
 
+(def payout-events
+  #{events/navigate-stylist-dashboard-cash-out-pending
+    events/navigate-stylist-dashboard-cash-out-now})
+
 (def auth-events
   (set/union plain-auth-events checkout-auth-events))
 
@@ -32,7 +36,8 @@
   (conj auth-events events/navigate-not-found))
 
 (def minimal-events
-  checkout-events)
+  (set/union checkout-events
+             payout-events))
 
 (defn lead-page? [event]
   (= events/navigate-leads (take 2 event)))

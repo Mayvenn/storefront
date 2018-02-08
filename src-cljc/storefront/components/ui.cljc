@@ -55,14 +55,12 @@
   [{:keys [disabled? spinning?]
     :as opts}
    & content]
-  (let [opts    (cond-> opts
-                  :always (update :on-click #(if (or disabled? spinning?)
-                                               utils/noop-callback
-                                               %))
-                  :always (dissoc :spinning? :disabled?)
-                  disabled? (update :class str " is-disabled "))
+  (let [attrs    (cond-> opts
+                  :always                  (dissoc :spinning? :disabled?)
+                  (or disabled? spinning?) (assoc :on-click utils/noop-callback)
+                  disabled?                (update :class str " is-disabled "))
         content (if spinning? spinner content)]
-    [:a (merge {:href "#"} opts)
+    [:a (merge {:href "#"} attrs)
      content]))
 
 (defn ^:private button-colors [color-kw]
