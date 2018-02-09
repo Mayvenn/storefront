@@ -4,17 +4,6 @@
             [ring.middleware.cookies :as cookies]
             [ring.util.codec :as codec]))
 
-(defn dumb-encoder
-  "Our cookies have colons at the beginning of their names (e.g. ':token'). But
-  the default cookie encoder is codec/form-encode, which escapes colons. It is
-  only safe to use this encoder if you know the cookie names are URL safe"
-  [map-entry]
-  (let [[k v] (first map-entry)]
-    (str k "=" v)))
-
-(defn encode [resp]
-  (cookies/cookies-response resp {:encoder dumb-encoder}))
-
 (defn days [n]
   (* 60 60 24 n))
 
