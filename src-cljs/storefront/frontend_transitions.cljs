@@ -355,7 +355,7 @@
       (assoc-in keypaths/stylist-earnings-rate rate)
       (assoc-in keypaths/stylist-earnings-pages (or pages 0))
       (assoc-in keypaths/stylist-earnings-page (or current-page 1))
-      (assoc-in keypaths/stylist-earnings-history transactions)))
+      (update-in keypaths/stylist-earnings-history into transactions)))
 
 (defmethod transition-state events/api-success-stylist-commission [_ event {:keys [commission]} app-state]
   (assoc-in app-state keypaths/stylist-commissions-detailed-commission commission))
