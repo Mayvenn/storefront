@@ -36,6 +36,7 @@
 (def get-stylist-commission [:get-stylist-commission])
 (def get-stylist-bonus-credits [:get-stylist-bonus-credits])
 (def get-stylist-referral-program [:get-stylist-referral-program])
+(def cash-out-now [:cash-out-now])
 (def get-gallery [:get-gallery])
 (def delete-gallery-image [:delete-gallery-image])
 

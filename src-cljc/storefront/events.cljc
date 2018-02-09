@@ -260,6 +260,7 @@
 (defpath api-success-stylist-earnings)
 (defpath api-success-stylist-balance-transfers)
 (defpath api-success-stylist-next-payout)
+(defpath api-success-cash-out-now)
 (defpath api-success-stylist-bonus-credits)
 (defpath api-success-stylist-referral-program)
 (defpath api-success-send-stylist-referrals)
