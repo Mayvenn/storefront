@@ -9,6 +9,7 @@
             [storefront.transitions :as transitions]
             [storefront.api :as api]
             [storefront.effects :as effects]
+            [storefront.platform.messages :as messages]
             [storefront.platform.component-utils :as utils]))
 
 (defn component [_ owner opts]
@@ -33,5 +34,35 @@
     (api/cash-out-now user-id user-token stylist-id)))
 
 (defmethod transitions/transition-state events/api-success-cash-out-now
-  [_ _ response app-state] ;;TODO specify keys in response
-  (utils/route-to events/navigate-stylist-dashboard-cash-out-success))
+  [_ _ {:keys [status-id]} app-state]
+  (assoc-in app-state keypaths/stylist-cash-out-status-id status-id))
+
+(defn- poll-status [user-id user-token status-id]
+  (js/setTimeout (fn [] (api/cash-out-status user-id user-token status-id))
+                 3000))
+
+(defmethod effects/perform-effects events/api-success-cash-out-now
+  [_ _ _ _ app-state]
+  (let [status-id  (get-in app-state keypaths/stylist-cash-out-status-id)
+        user-id    (get-in app-state keypaths/user-id)
+        user-token (get-in app-state keypaths/user-token)]
+    (poll-status user-id user-token status-id)))
+
+
+(defmethod effects/perform-effects events/api-success-cash-out-status
+  [_ _ {:keys [status]} _ app-state]
+  (let [status-id  (get-in app-state keypaths/stylist-cash-out-status-id)
+        user-id    (get-in app-state keypaths/user-id)
+        user-token (get-in app-state keypaths/user-token)]
+    (case status
+      "failed" (messages/handle-message events/api-success-cash-out-failed)
+      "success" (messages/handle-message events/api-success-cash-out-complete)
+      :else (poll-status user-id user-token status-id))))
+
+(defmethod effects/perform-effects events/api-success-cash-out-complete
+  [_ _ _ _ app-state]
+  (effects/redirect events/navigate-stylist-dashboard-cash-out-success))
+
+(defmethod effects/perform-effects events/api-success-cash-out-failed
+  [_ _ _ _ app-state]
+  (effects/redirect events/navigate-stylist-account-commission))

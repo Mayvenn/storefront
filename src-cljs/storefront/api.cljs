@@ -572,6 +572,18 @@
     :handler #(messages/handle-message events/api-success-cash-out-now
                                        (select-keys % [:status-id]))}))
 
+(defn cash-out-status
+  [user-id user-token status-id]
+  (api-req
+   GET
+   "/v1/stylist/cash-out"
+   request-keys/cash-out-status
+   {:params  {:user-id    user-id
+              :user-token user-token
+              :status-id  status-id}
+    :handler #(messages/handle-message events/api-success-cash-out-status
+                                       (select-keys % [:status]))}))
+
 (defn get-stylist-commission [user-id user-token {:keys [commission-id]}]
   (api-req
    GET
