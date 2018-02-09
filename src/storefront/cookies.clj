@@ -1,7 +1,8 @@
 (ns storefront.cookies
   (:refer-clojure :exclude [get set])
   (:require [storefront.config :as config]
-            [ring.middleware.cookies :as cookies]))
+            [ring.middleware.cookies :as cookies]
+            [ring.util.codec :as codec]))
 
 (defn dumb-encoder
   "Our cookies have colons at the beginning of their names (e.g. ':token'). But
@@ -30,7 +31,7 @@
 (defn set
   ([req-or-resp environment name value] (set req-or-resp environment name value {}))
   ([req-or-resp environment name value overrides]
-   (assoc-in req-or-resp [:cookies name] (merge {:value   (str value)
+   (assoc-in req-or-resp [:cookies name] (merge {:value   (codec/form-encode (str value))
                                                  :max-age (days 28)
                                                  :secure  (not (config/development? environment))
                                                  :path    "/"}
