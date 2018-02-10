@@ -153,6 +153,23 @@
       (is (= "https://shop.mayvenn.com/?world=true"
              (get-in resp [:headers "Location"]))))))
 
+(deftest redirects-legacy-products-to-new-products
+  (let [[storeback-requests storeback-handler]
+        (with-requests-chan (routes
+                             (GET "/v2/orders/:number" req {:status 404
+                                                            :body   "{}"})
+                             (GET "/v2/products" req
+                                  {:status 200
+                                   :body   (generate-string {:products [{:catalog/product-id "33"
+                                                                         :page/slug          "brazilian-loose-wave-lace-closures"}]})})
+                             (GET "/store" req storeback-stylist-response)))]
+    (with-standalone-server [storeback (standalone-server storeback-handler)]
+      (with-handler handler
+        (let [resp (handler (mock/request :get "https://shop.mayvenn.com/products/brazilian-loose-wave-lace-closure"))]
+          (is (= 301 (:status resp)) (pr-str resp))
+          (is (= "https://shop.mayvenn.com/products/33-brazilian-loose-wave-lace-closures"
+                 (get-in resp [:headers "Location"]))))))))
+
 (deftest redirects-old-categories-to-new-categories
   (assert-request (mock/request :get "https://shop.mayvenn.com/categories/hair/straight")
                   storeback-shop-response

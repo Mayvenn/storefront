@@ -53,7 +53,10 @@
    (edn->bidi events/navigate-legacy-ugc-named-search)
 
    ["/products/" [#"\d+" :catalog/product-id] "-" :page/slug]
-   (edn->bidi events/navigate-product-details)})
+   (edn->bidi events/navigate-product-details)
+
+   ["/products/" [#"[^\d].*" :legacy/product-slug]]
+   (edn->bidi events/navigate-legacy-product-page)})
 
 (def app-routes
   ["" (merge static-page-routes

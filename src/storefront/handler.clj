@@ -237,6 +237,37 @@
       (-> (routes/path-for events/navigate-category category)
           (util.response/redirect :moved-permanently)))))
 
+(def legacy-product-slug->new-location
+  {"deluxe-body-wave-hair"             [:category "5"]
+   "deluxe-curly-hair"                 [:category "9"]
+   "deluxe-deep-wave-hair"             [:category "8"]
+   "deluxe-straight-hair"              [:category "2"]
+   "ultra-body-wave-hair"              [:category "5"]
+   "ultra-deep-wave-hair"              [:category "8"]
+   "ultra-straight-hair"               [:category "2"]
+
+   "brazilian-curly-lace-closure"      [:product "35"]
+   "brazilian-deep-wave"               [:product "11"]
+   "brazilian-deep-wave-silk-closure"  [:product "19"]
+   "brazilian-loose-wave"              [:product "22"]
+   "brazilian-loose-wave-lace-closure" [:product "33"]
+   "brazilian-natural-straight"        [:product "9"]
+   "brazilian-straight-lace-closure"   [:product "16"]
+   "malaysian-body-wave-lace-closure"  [:product "3"]
+   "peruvian-loose-wave"               [:product "26"]
+   "peruvian-loose-wave-silk-closure"  [:product "36"]
+   "peruvian-straight"                 [:product "37"]})
+
+(defn redirect-legacy-product-page
+  [render-ctx data req {:keys [legacy/product-slug]}]
+  (when-let [[type id] (legacy-product-slug->new-location product-slug)]
+    (let [product    (first (:products (api/fetch-v2-products (:storeback-config render-ctx) {:catalog/product-id id})))
+          categories (index-by :catalog/category-id (get-in data keypaths/categories))
+          path       (if (= :product type)
+                       (routes/path-for events/navigate-product-details (spice/spy product))
+                       (routes/path-for events/navigate-category (spice/spy (categories id))))]
+      (util.response/redirect path :moved-permanently))))
+
 (defn render-category
   [render-ctx data req {:keys [catalog/category-id page/slug]}]
   (let [categories (get-in data keypaths/categories)]
@@ -446,6 +477,7 @@
    events/navigate-category                   render-category
    events/navigate-legacy-named-search        redirect-named-search
    events/navigate-legacy-ugc-named-search    redirect-named-search
+   events/navigate-legacy-product-page        redirect-legacy-product-page
    events/navigate-product-details            render-product-details
    events/navigate-content-help               generic-server-render
    events/navigate-content-about-us           generic-server-render
