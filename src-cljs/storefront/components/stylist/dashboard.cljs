@@ -11,12 +11,14 @@
             [storefront.keypaths :as keypaths]
             [storefront.accessors.experiments :as experiments]))
 
-(defn component [{:keys [nav-event stats earnings new-earnings bonuses referrals stylist-transfers? cash-out-now?]} owner opts]
+(defn component [{:keys [nav-event stats earnings new-earnings bonuses referrals payout-method stylist-transfers? cash-out-now?]} owner opts]
   (om/component
    (html
     [:.container
      (om/build stylist-dashboard-stats-component {:stats         stats
-                                                  :cash-out-now? cash-out-now?})
+                                                  :payout-method payout-method
+                                                  :show-cash-out-now-ui?  (and cash-out-now?
+                                                                               (#{"paypal" "green_dot"} payout-method))})
 
      [:div.bg-light-gray
       [:div.col-6-on-tb-dt.mx-auto
@@ -44,6 +46,7 @@
    :earnings           (earnings/query data)
    :new-earnings       (new-earnings/query data)
    :bonuses            (bonuses/query data)
+   :payout-method      (get-in data (conj keypaths/stylist-manage-account :original_payout_method))
    :cash-out-now?      (experiments/cash-out-now? data)
    :referrals          (referrals/query data)
    :stylist-transfers? (experiments/stylist-transfers? data)})

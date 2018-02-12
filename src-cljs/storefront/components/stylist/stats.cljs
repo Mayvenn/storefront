@@ -86,12 +86,12 @@
       [:.py2.h0 svg/large-percent]
       [:div "All sales since you joined Mayvenn."]])])
 
-(defn stylist-dashboard-stats-component [{:keys [stats cash-out-now?]} owner]
+(defn stylist-dashboard-stats-component [{:keys [stats show-cash-out-now-ui?]} owner]
   (om/component
    (html
     (let [items [[:div.my4.clearfix
                   (previous-payout-slide (:previous-payouts stats))]
-                 (if cash-out-now?
+                 (if show-cash-out-now-ui?
                    [:div.my4.clearfix
                     (cash-out-now-slide (:next-payout stats))]
                    [:div.my4.clearfix
@@ -105,5 +105,5 @@
                    :settings {:arrows true
                               :dots   true
                               :swipe  true
-                              :initialSlide (if cash-out-now? 1 0)}}
+                              :initialSlide (if show-cash-out-now-ui? 1 0)}}
                   {:react-key "stat-swiper"})]]))))
