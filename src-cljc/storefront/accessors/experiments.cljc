@@ -57,3 +57,6 @@
 
 (defn stylist-transfers? [data]
   (display-feature? data "stylist-transfers"))
+
+(defn cash-out-now? [data]
+  (display-feature? data "cash-out-now"))
