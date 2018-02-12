@@ -264,8 +264,8 @@
     (let [product    (first (:products (api/fetch-v2-products (:storeback-config render-ctx) {:catalog/product-id id})))
           categories (index-by :catalog/category-id (get-in data keypaths/categories))
           path       (if (= :product type)
-                       (routes/path-for events/navigate-product-details (spice/spy product))
-                       (routes/path-for events/navigate-category (spice/spy (categories id))))]
+                       (routes/path-for events/navigate-product-details product)
+                       (routes/path-for events/navigate-category (categories id)))]
       (util.response/redirect path :moved-permanently))))
 
 (defn render-category
