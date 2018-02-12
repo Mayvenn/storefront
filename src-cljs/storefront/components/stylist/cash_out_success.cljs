@@ -14,7 +14,7 @@
                          :style {:width "100px" :height "100px"}})
      [:h2.my3 "Cha-Ching!"]
      [:p.my4 "You have successfully cashed out your earnings. View your transfer by clicking the button below."]
-     (ui/teal-button (utils/route-to events/navigate-cart) "See Transfer")])))
+     (ui/teal-button (utils/route-to events/navigate-stylist-dashboard-earnings) "See Transfer")])))
 
 (defn built-component [data opts]
   (om/build component {} opts))
