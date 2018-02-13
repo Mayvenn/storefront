@@ -6,7 +6,7 @@
                    :selector/images
                    (filter #(= (:use-case %) use-case))
                    first)]
-    {:src (:url image)
+    {:src (str (:url image) "-/format/auto/")
      :alt (:copy/title skuer)}))
 
 (defn cart-image [skuer]
