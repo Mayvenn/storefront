@@ -192,7 +192,7 @@
     "Free shipping & 30 day guarantee"]))
 
 (defn product-description
-  [{:keys [copy/description copy/colors copy/weights copy/materials copy/summary hair/family]}]
+  [{:keys [copy/description copy/colors copy/weights copy/materials copy/summary hair/family] :as product}]
   (when (seq description)
     [:div.border.border-dark-gray.mt2.p2.rounded
      [:h2.h3.medium.navy.shout "Description"]
@@ -219,7 +219,8 @@
        (for [[idx item] (map-indexed vector description)]
          [:p.mt2 {:key (str "product-description-" idx)} item])
        (when (not (or (contains? family "seamless-clip-ins")
-                      (contains? family "tape-ins")))
+                      (contains? family "tape-ins")
+                      (contains? (:stylist-exclusives/family product) "kits")))
          [:p [:a.teal.underline (utils/route-to events/navigate-content-our-hair)
               "Learn more about our hair."]])]]]))
 
