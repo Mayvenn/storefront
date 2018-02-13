@@ -441,7 +441,7 @@
            :page/slug                 "stylist-exclusives"
            :direct-to-details/id      "49"
            :direct-to-details/slug    "rings-kits"
-           :direct-to-details/sku-id  "SK2"
+           :direct-to-details/sku-id  "SK3"
            :catalog/department        #{"stylist-exclusives"},
            :kits/contents             #{"rings"},
            :stylist-exclusives/family #{"kits"}
