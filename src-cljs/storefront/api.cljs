@@ -538,12 +538,13 @@
                               (select-keys % [:rate :transactions :current-page :pages]))}))
 
 (defn get-stylist-balance-transfers
-  [user-id user-token {:keys [page per]} handler]
+  [stylist-id user-id user-token {:keys [page per]} handler]
   (api-req
    GET
    "/v1/stylist/balance-transfers"
    request-keys/get-stylist-balance-transfers
-   {:params  {:user-id    user-id
+   {:params  {:stylist-id stylist-id
+              :user-id    user-id
               :user-token user-token
               :page       page
               :per        per}

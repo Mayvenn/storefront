@@ -135,10 +135,12 @@
   (update-in app-state keypaths/stylist-earnings-pagination-page inc))
 
 (defmethod effects/perform-effects events/stylist-balance-transfers-fetch [_ _ args _ app-state]
-  (let [user-id    (get-in app-state keypaths/user-id)
+  (let [stylist-id (get-in app-state keypaths/store-stylist-id)
+        user-id    (get-in app-state keypaths/user-id)
         user-token (get-in app-state keypaths/user-token)]
     (when (and user-id user-token)
-      (api/get-stylist-balance-transfers user-id
+      (api/get-stylist-balance-transfers stylist-id
+                                         user-id
                                          user-token
                                          (get-in app-state keypaths/stylist-earnings-pagination)
                                          #(messages/handle-message events/api-success-stylist-balance-transfers
