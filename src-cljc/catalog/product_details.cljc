@@ -477,9 +477,13 @@
         (assoc-in keypaths/browse-recently-added-skus [])
         (assoc-in keypaths/browse-sku-quantity 1))))
 
+(defn url-points-to-invalid-sku? [selected-sku query-params]
+  (and (:catalog/sku-id selected-sku)
+       (not= (:catalog/sku-id selected-sku)
+             (:SKU query-params))))
+
 #?(:cljs
-   (defmethod effects/perform-effects events/navigate-product-details
-     [_ _ {:keys [catalog/product-id]} _ app-state]
+   (defn fetch-product-details [app-state product-id]
      (api/search-v2-products (get-in app-state keypaths/api-cache)
                              {:catalog/product-id product-id}
                              (partial messages/handle-message
@@ -491,6 +495,16 @@
            (fetch-product-album current-product)
            (review-hooks/insert-reviews))
          (effects/redirect events/navigate-home)))))
+
+#?(:cljs
+   (defmethod effects/perform-effects events/navigate-product-details
+     [_ _ {:keys [catalog/product-id page/slug query-params]} _ app-state]
+     (let [selected-sku (get-in app-state catalog.keypaths/detailed-product-selected-sku)]
+       (if (url-points-to-invalid-sku? selected-sku query-params)
+         (effects/redirect events/navigate-product-details {:catalog/product-id product-id
+                                                            :page/slug          slug
+                                                            :query-params       {:SKU (:catalog/sku-id selected-sku)}})
+         (fetch-product-details app-state product-id)))))
 
 (defmethod effects/perform-effects events/api-success-v2-products-for-details
   [_ _ _ _ app-state]
