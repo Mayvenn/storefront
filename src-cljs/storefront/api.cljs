@@ -551,12 +551,13 @@
     :handler handler}))
 
 (defn get-stylist-next-payout
-  [user-id user-token]
+  [stylist-id user-id user-token]
   (api-req
    GET
    "/v1/stylist/next-payout"
    request-keys/get-stylist-next-payout
-   {:params  {:user-id    user-id
+   {:params  {:stylist-id stylist-id
+              :user-id    user-id
               :user-token user-token}
     :handler #(messages/handle-message events/api-success-stylist-next-payout
                                        (select-keys % [:amount :payout-method]))}))
