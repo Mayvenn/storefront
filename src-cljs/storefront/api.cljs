@@ -558,8 +558,7 @@
    {:params
     {:user-id user-id :user-token user-token}
     :handler
-    #(messages/handle-message events/api-success-stylist-balance-transfer-details
-                              identity)}))
+    (partial messages/handle-message events/api-success-stylist-balance-transfer-details)}))
 
 (defn get-stylist-next-payout
   [stylist-id user-id user-token]
