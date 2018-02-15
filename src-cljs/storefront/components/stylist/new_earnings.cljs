@@ -22,10 +22,12 @@
             [storefront.api :as api]))
 
 (defn commission-row
-  [row-number orders {:keys [id amount commission-date commissionable-amount order-number] :as commission}]
-  (let [order (get orders (keyword order-number))]
-    [:tr.pointer (merge {:key (str "commission-" id)}
-                        (utils/route-to events/navigate-stylist-dashboard-commission-details {:commission-id id})
+  [row-number orders balance-transfer]
+  (let [{:keys [id]} balance-transfer
+        {:keys [amount commission-date commissionable-amount order-number]} (:data balance-transfer)
+        order (get orders (keyword order-number))]
+    [:tr.pointer (merge {:key (str "balance-transfer-" id)}
+                        (utils/route-to events/navigate-stylist-dashboard-balance-transfer-details {:balance-transfer-id id})
                         (when (odd? row-number)
                           {:class "bg-too-light-teal"}))
      [:td.px3.py2 (f/less-year-more-day-date commission-date)]
@@ -50,9 +52,9 @@
   [:table.col-12.mb3 {:style {:border-spacing 0}}
    [:tbody
     (map-indexed
-     (fn [i {:keys [type data]}]
+     (fn [i {:keys [type data] :as balance-transfer}]
        (case type
-         "commission" (commission-row i orders data)
+         "commission" (commission-row i orders balance-transfer)
          "award"      (award-row i data)
          "payout"     (payout-row data)))
      balance-transfers)]])

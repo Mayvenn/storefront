@@ -16,7 +16,7 @@
             [storefront.request-keys :as request-keys]
             [storefront.api :as api]))
 
-(defmethod effects/perform-effects events/navigate-stylist-dashboard-balance-transfer-details [_ event {:keys [balance-transfer-id]} _ app-state]
+(defmethod effects/perform-effects events/navigate-stylist-dashboard-balance-transfer-details [_ event {:keys [balance-transfer-id] :as args} _ app-state]
   (let [user-id             (get-in app-state keypaths/user-id)
         user-token          (get-in app-state keypaths/user-token)]
     (when user-token
