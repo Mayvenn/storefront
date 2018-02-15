@@ -68,6 +68,7 @@
 (defpath navigate-stylist-dashboard-cash-out-now)
 (defpath navigate-stylist-dashboard-cash-out-pending)
 (defpath navigate-stylist-dashboard-cash-out-success)
+(defpath navigate-stylist-dashboard-balance-transfer-details)
 
 (defpath navigate-stylist-share-your-store)
 
@@ -260,6 +261,7 @@
 (defpath api-success-stylist-commission)
 (defpath api-success-stylist-earnings)
 (defpath api-success-stylist-balance-transfers)
+(defpath api-success-stylist-balance-transfer-details)
 (defpath api-success-stylist-next-payout)
 (defpath api-success-cash-out-now)
 (defpath api-success-cash-out-status)

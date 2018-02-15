@@ -218,6 +218,7 @@
 (def stylist-earnings-balance-transfers (conj stylist-earnings :balance-transfers))
 (def stylist-earnings-balance-transfers-index (conj stylist-earnings :balance-transfers-index))
 (def stylist-earnings-orders (conj stylist-earnings :orders))
+(def stylist-earnings-balance-transfer-details (conj stylist-earnings :balance-transfer-details))
 
 (def stylist-cash-out-status-id (conj stylist :cash-out-stylist-id))
 

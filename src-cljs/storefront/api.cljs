@@ -550,6 +550,17 @@
               :per        per}
     :handler handler}))
 
+(defn get-stylist-balance-transfer [user-id user-token balance-transfer-id]
+  (api-req
+   GET
+   (str "/v1/stylist/balance-transfers/" balance-transfer-id)
+   request-keys/get-stylist-balance-transfer
+   {:params
+    {:user-id user-id :user-token user-token}
+    :handler
+    #(messages/handle-message events/api-success-stylist-balance-transfer-details
+                              identity)}))
+
 (defn get-stylist-next-payout
   [stylist-id user-id user-token]
   (api-req
