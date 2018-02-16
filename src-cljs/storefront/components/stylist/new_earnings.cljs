@@ -34,19 +34,22 @@
      [:td.py2 (:full-name order) [:div.h6 "Commission Earned"]]
      [:td.pr3.py2.green.right-align "+" (mf/as-money amount)]]))
 
-(defn award-row [row-number {:keys [id amount created-at reason] :as award}]
-  [:tr (merge {:key (str "award-" id)}
-              (when (odd? row-number)
-                {:class "bg-too-light-teal"}))
-   [:td.px3.py2 (f/less-year-more-day-date created-at)]
-   [:td.py2 "Account Correction" [:div.h6 "Admin Payout"]]
-   [:td.pr3.py2.green.right-align "+" (mf/as-money amount)]])
+(defn award-row [row-number balance-transfer]
+  (let [{:keys [id amount created-at reason] :as award} (:data balance-transfer)]
+    (prn award)
+    [:tr (merge {:key (str "award-" id)}
+                (when (odd? row-number)
+                  {:class "bg-too-light-teal"}))
+     [:td.px3.py2 (f/less-year-more-day-date created-at)]
+     [:td.py2 "Account Correction" [:div.h6 reason]]
+     [:td.pr3.py2.green.right-align "+" (mf/as-money amount)]]))
 
-(defn payout-row [{:keys [id amount created-at payout-method-name]}]
-  [:tr.bg-light-gray {:key (str "payout-" id)}
-   [:td.px3.py2 (f/less-year-more-day-date created-at)]
-   [:td.py2 {:col-span 2} "You transferred " [:span.medium (mf/as-money amount)]
-    [:div.h6 (str "Earnings Transfer - " payout-method-name)]]])
+(defn payout-row [balance-transfer]
+  (let [{:keys [id amount created-at payout-method-name]} (:data balance-transfer)]
+    [:tr.bg-light-gray {:key (str "payout-" id)}
+     [:td.px3.py2 (f/less-year-more-day-date created-at)]
+     [:td.py2 {:col-span 2} "You transferred " [:span.medium (mf/as-money amount)]
+      [:div.h6 (str "Earnings Transfer - " payout-method-name)]]]))
 
 (defn earnings-table [orders balance-transfers]
   [:table.col-12.mb3 {:style {:border-spacing 0}}
@@ -55,8 +58,8 @@
      (fn [i {:keys [type data] :as balance-transfer}]
        (case type
          "commission" (commission-row i orders balance-transfer)
-         "award"      (award-row i data)
-         "payout"     (payout-row data)))
+         "award"      (award-row i balance-transfer)
+         "payout"     (payout-row balance-transfer)))
      balance-transfers)]])
 
 (def empty-commissions
