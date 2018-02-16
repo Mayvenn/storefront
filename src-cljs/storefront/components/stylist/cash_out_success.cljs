@@ -4,9 +4,13 @@
             [storefront.events :as events]
             [storefront.platform.component-utils :as utils]
             [storefront.components.ui :as ui]
+            [storefront.keypaths :as keypaths]
             [storefront.components.svg :as svg]))
 
-(defn component [_ owner opts]
+(defn query [data]
+  {:balance-transfer-id (get-in data keypaths/stylist-cash-out-balance-transfer-id)})
+
+(defn component [data owner opts]
   (om/component
    (html
     [:div.container.p4.center
@@ -14,9 +18,10 @@
                          :style {:width "100px" :height "100px"}})
      [:h2.my3 "Cha-Ching!"]
      [:p.my4 "You have successfully cashed out your earnings. View your transfer by clicking the button below."]
-     ;; TODO(jeff): add balance-transfer-id
-     (ui/teal-button (utils/route-to events/navigate-stylist-dashboard-balance-transfer-details) "See Transfer")])))
+     (ui/teal-button (utils/route-to events/navigate-stylist-dashboard-balance-transfer-details
+                                     {:balance-transfer-id (:balance-transfer-id data)})
+                     "See Transfer")])))
 
 (defn built-component [data opts]
-  (om/build component {} opts))
+  (om/build component (query data) opts))
 
