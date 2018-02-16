@@ -221,6 +221,7 @@
 (def stylist-earnings-balance-transfer-details (conj stylist-earnings :balance-transfer-details))
 
 (def stylist-cash-out-status-id (conj stylist :cash-out-stylist-id))
+(def stylist-cash-out-balance-transfer-id (conj stylist :cash-out-balance-transfer-id))
 
 (def stylist-bonuses (conj stylist :bonus-credits))
 (def stylist-bonuses-award-amount (conj stylist-bonuses :bonus-amount))

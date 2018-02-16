@@ -582,7 +582,7 @@
               :user-token user-token
               :stylist-id stylist-id}
     :handler #(messages/handle-message events/api-success-cash-out-now
-                                       (select-keys % [:status-id]))}))
+                                       (select-keys % [:status-id :balance-transfer-id]))}))
 
 (defn cash-out-status
   [user-id user-token status-id stylist-id]

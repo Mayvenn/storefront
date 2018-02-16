@@ -34,8 +34,10 @@
     (api/cash-out-now user-id user-token stylist-id)))
 
 (defmethod transitions/transition-state events/api-success-cash-out-now
-  [_ _ {:keys [status-id]} app-state]
-  (assoc-in app-state keypaths/stylist-cash-out-status-id status-id))
+  [_ _ {:keys [status-id balance-transfer-id]} app-state]
+  (-> app-state
+      (assoc-in keypaths/stylist-cash-out-status-id status-id)
+      (assoc-in keypaths/stylist-cash-out-balance-transfer-id balance-transfer-id)))
 
 (defn- poll-status [user-id user-token status-id stylist-id]
   (js/setTimeout (fn [] (api/cash-out-status user-id user-token status-id stylist-id))
