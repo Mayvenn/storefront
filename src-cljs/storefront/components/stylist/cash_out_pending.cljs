@@ -60,7 +60,7 @@
         stylist-id (get-in app-state keypaths/store-stylist-id)]
     (case status
       "failed" (messages/handle-message events/api-success-cash-out-failed)
-      "paid" (messages/handle-message events/api-success-cash-out-complete)
+      "paid"   (messages/handle-message events/api-success-cash-out-complete)
       (poll-status user-id user-token status-id stylist-id))))
 
 (defmethod effects/perform-effects events/api-success-cash-out-complete
