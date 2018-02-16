@@ -36,7 +36,6 @@
 
 (defn award-row [row-number balance-transfer]
   (let [{:keys [id amount created-at reason] :as award} (:data balance-transfer)]
-    (prn award)
     [:tr (merge {:key (str "award-" id)}
                 (when (odd? row-number)
                   {:class "bg-too-light-teal"}))
