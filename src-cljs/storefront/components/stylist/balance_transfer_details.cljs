@@ -16,17 +16,22 @@
             [storefront.request-keys :as request-keys]
             [storefront.api :as api]))
 
-(defmethod effects/perform-effects events/navigate-stylist-dashboard-balance-transfer-details [_ event {:keys [balance-transfer-id] :as args} _ app-state]
+(defmethod effects/perform-effects events/navigate-stylist-dashboard-balance-transfer-details
+  [_ event {:keys [balance-transfer-id] :as args} _ app-state]
   (let [user-id             (get-in app-state keypaths/user-id)
         user-token          (get-in app-state keypaths/user-token)]
     (when user-token
       (api/get-stylist-balance-transfer user-id user-token balance-transfer-id))))
 
+(defmethod effects/perform-effects events/api-success-stylist-balance-transfer-details
+  [_ event {:keys [data] :as args} _ app-state]
+  (messages/handle-message events/ensure-skus {:skus (map :sku (orders/product-items (:order data)))}))
+
 (defmethod transitions/transition-state events/api-success-stylist-balance-transfer-details [_ _ balance-transfer app-state]
   (assoc-in app-state keypaths/stylist-earnings-balance-transfer-details balance-transfer))
 
 (defn all-skus-in-balance-transfer [skus balance-transfer]
-  (->> (:order balance-transfer)
+  (->> (:order (:data balance-transfer))
        orders/product-items
        (mapv :sku)
        (select-keys skus)))
