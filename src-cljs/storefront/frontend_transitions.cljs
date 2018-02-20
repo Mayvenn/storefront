@@ -349,6 +349,10 @@
   (-> app-state
       (assoc-in keypaths/stylist-stats (select-keys stats [:previous-payout :next-payout :lifetime-payouts]))))
 
+(defmethod transition-state events/api-success-stylist-payout-stats
+  [_ _ stats app-state]
+  (assoc-in app-state keypaths/stylist-payout-stats stats))
+
 (defmethod transition-state events/api-success-stylist-earnings
   [_ event {:keys [rate transactions pages current-page]} app-state]
   (-> app-state

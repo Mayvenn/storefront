@@ -36,7 +36,7 @@
          (ui/teal-button (utils/route-to events/navigate-stylist-dashboard-cash-out-pending) "Cash out")]]]))))
 
 (defn query [data]
-  (let [{:keys [amount payout-method]} (get-in data keypaths/stylist-next-payout)]
+  (let [{:keys [amount payout-method]} (get-in data keypaths/stylist-payout-stats-next-payout)]
     {:amount            amount
      :payout-method     payout-method}))
 
@@ -44,15 +44,6 @@
   (om/build component (query data) opts))
 
 (defmethod effects/perform-effects events/navigate-stylist-dashboard-cash-out-now [_ _ _ _ app-state]
-  (api/get-stylist-next-payout (get-in app-state keypaths/store-stylist-id)
-                               (get-in app-state keypaths/user-id)
-                               (get-in app-state keypaths/user-token)))
-
-(defmethod transitions/transition-state events/api-success-stylist-next-payout
-  [_ _ {:keys [amount payout-method]} app-state]
-  (let [{:keys [name email last4 payout-timeframe]} payout-method]
-    (assoc-in app-state keypaths/stylist-next-payout {:amount amount
-                                                      :payout-method {:name             name
-                                                                      :email            email
-                                                                      :last4            last4
-                                                                      :payout-timeframe payout-timeframe}})))
+  (api/get-stylist-payout-stats (get-in app-state keypaths/store-stylist-id)
+                                (get-in app-state keypaths/user-id)
+                                (get-in app-state keypaths/user-token)))

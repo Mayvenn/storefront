@@ -202,7 +202,10 @@
 
 (def stylist-stats (conj stylist :stats))
 
-(def stylist-next-payout (conj stylist :next-payout))
+(def stylist-payout-stats (conj stylist :payout-stats))
+(def stylist-payout-stats-previous-payout (conj stylist-payout-stats :previous-payout))
+(def stylist-payout-stats-next-payout (conj stylist-payout-stats :next-payout))
+(def stylist-payout-stats-lifetime-stats (conj stylist-payout-stats :lifetime-stats))
 
 (def stylist-commissions (conj stylist :commissions))
 (def stylist-commissions-detailed-commission (conj stylist-commissions :detailed-commission))

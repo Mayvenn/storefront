@@ -74,7 +74,7 @@
        [:.py2.h0 svg/large-dollar]
        [:div "See your next payment amount here."]])]])
 
-(defn lifetime-payouts-slide [{:keys [amount]}]
+(defn old-lifetime-payouts-slide [{:keys [amount]}]
   [:div.my4.clearfix
    [:.my4
     {:class stat-card :key "render-stat"}
@@ -87,6 +87,19 @@
        [:.py2.h0 svg/large-percent]
        [:div "All sales since you joined Mayvenn."]])]])
 
+(defn lifetime-stats-slide [{:keys [total-paid-out]}]
+  [:div.my4.clearfix
+   [:.my4
+    {:class stat-card :key "render-stat"}
+    [:.p1 "LIFETIME COMMISSIONS"]
+    (if (> total-paid-out 0)
+      [:div
+       [:.py2.h0 re-center-money [:div.line-height-1 (mf/as-money-without-cents total-paid-out)]]
+       [:div "Sales since you joined Mayvenn"]]
+      [:div
+       [:.py2.h0 svg/large-percent]
+       [:div "All sales since you joined Mayvenn."]])]])
+
 (defn stylist-dashboard-stats-component [{:keys [stats show-cash-out-now-ui?]} owner]
   (om/component
    (html
@@ -94,7 +107,26 @@
                  (if show-cash-out-now-ui?
                    (cash-out-now-slide (:next-payout stats))
                    (next-payout-slide (:next-payout stats)))
-                 (lifetime-payouts-slide (:lifetime-payouts stats))]
+                 (old-lifetime-payouts-slide (:lifetime-payouts stats))]
+          initial-slide-index (if show-cash-out-now-ui? 1 0)]
+      [:div.bg-teal.white.center
+       [:div.bg-darken-bottom-1
+        (om/build carousel/component
+                  {:slides   items
+                   :settings {:arrows true
+                              :dots   true
+                              :swipe  true
+                              :initialSlide initial-slide-index}}
+                  {:react-key "stat-swiper"})]]))))
+
+(defn new-stylist-dashboard-stats-component [{:keys [payout-stats show-cash-out-now-ui?]} owner]
+  (om/component
+   (html
+    (let [items [(previous-payout-slide (:previous-payout payout-stats))
+                 (if show-cash-out-now-ui?
+                   (cash-out-now-slide (:next-payout payout-stats))
+                   (next-payout-slide (:next-payout payout-stats)))
+                 (lifetime-stats-slide (:lifetime-stats payout-stats))]
           initial-slide-index (if show-cash-out-now-ui? 1 0)]
       [:div.bg-teal.white.center
        [:div.bg-darken-bottom-1

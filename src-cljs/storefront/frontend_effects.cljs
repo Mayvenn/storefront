@@ -375,7 +375,11 @@
 (defmethod perform-effects events/navigate-stylist-dashboard [_ event args _ app-state]
   (when-let [user-token (get-in app-state keypaths/user-token)]
     (api/get-stylist-account (get-in app-state keypaths/user-id) user-token)
-    (api/get-stylist-stats (get-in app-state keypaths/user-id) user-token)))
+    (if (experiments/stylist-transfers? app-state)
+      (api/get-stylist-payout-stats (get-in app-state keypaths/store-stylist-id)
+                                    (get-in app-state keypaths/user-id)
+                                    (get-in app-state keypaths/user-token))
+      (api/get-stylist-stats (get-in app-state keypaths/user-id) user-token))))
 
 (defmethod perform-effects events/navigate-stylist-dashboard-earnings [_ event args _ app-state]
   ;; TODO: Once balance-transfers are fully deployed,

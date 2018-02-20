@@ -263,6 +263,7 @@
 (defpath api-success-stylist-balance-transfers)
 (defpath api-success-stylist-balance-transfer-details)
 (defpath api-success-stylist-next-payout)
+(defpath api-success-stylist-payout-stats)
 (defpath api-success-cash-out-now)
 (defpath api-success-cash-out-status)
 (defpath api-success-cash-out-failed)
