@@ -58,6 +58,11 @@
    [:svg {:class "stroke-white" :style {:width "1em" :height "1em"}}
     (svg-xlink "large-payout")]))
 
+(def no-expenses
+  (component/html
+   [:svg {:class "stroke-teal" :style {:width "70px" :height "70px" :stroke-width "2"}}
+    (svg-xlink "large-payout")]))
+
 (def large-mail
   (component/html
    [:svg {:style {:width "44px" :height "44px"}}

@@ -23,7 +23,8 @@
             [clojure.string :as string]
             [storefront.transitions :as transitions]
             [storefront.effects :as effects]
-            [storefront.request-keys :as request-keys]))
+            [storefront.request-keys :as request-keys]
+            [storefront.components.svg :as svg]))
 
 (defn sign-up-panel [{:keys [focused field-errors first-name last-name phone email website-url facebook-url instagram-handle number-of-clients number-of-clients-options spinning?]}]
   [:div.rounded.bg-lighten-4.p3
@@ -155,29 +156,30 @@
      "instead of sending clients to the beauty supply store."]]])
 
 (def our-stylists-thrive-section
-  (let [icon (fn [url] [:img.mb1 {:src url
-                                  :height "70px"
-                                  :width "70px"}])]
+  (let [section (fn [icon copy]
+                  [:div.col-on-tb-dt.col-4-on-tb-dt.px3-on-tb-dt.mb8
+                   icon
+                   [:p.h6.mb4 copy]])]
     [:section.px3.py6.center
 
      [:div.container
-      [:h2.mb4 "How can Mayvenn benefit you?"]
-      [:div.clearfix.mxn3-on-tb-dt
-       [:div.col-on-tb-dt.col-4-on-tb-dt.px3-on-tb-dt
-        (icon "//ucarecdn.com/ab25b35e-0fac-4539-bc2e-23490631dc35/-/format/auto/iconmakemore.png")
-        [:h3 "Earn more money"]
-        [:p.h5.mb4 "Once your clients make a purchase from your Mayvenn store, you’ll make a 15% commission and be paid out every week. It’s that simple. "]]
-       [:div.col-on-tb-dt.col-4-on-tb-dt.px3-on-tb-dt
-        (icon "//ucarecdn.com/7d1797f4-9677-4a4c-861d-fdc21b47d81b/-/format/auto/iconmovement.png")
-        [:h3 "Be a part of a movement"]
-        [:p.h5.mb4 "Mayvenn’s community is working together to change the hair industry to benefit stylists and clients. "
-         "Once you sign up, we’ll provide you with marketing materials, education, and customer support – completely free of charge. "]]
-       [:div.col-on-tb-dt.col-4-on-tb-dt.px3-on-tb-dt
-        (icon "//ucarecdn.com/2068e6cf-32f6-4c70-baaa-b7b9f17c586c/-/format/auto/icon30day.png")
-        [:h3 "Backed by our 30-day guarantee"]
-        [:p.h5 "All of our products are quality assured thanks to our 30-day guarantee. "
-         "If your clients don’t like the hair for any reason, they can exchange it. "
-         "If the hair is unopened, they can return it for a full refund within 30 days."]]]]]))
+      [:h2.mb4 "Our Stylists Thrive"]
+      [:p "Our ambitious community of stylists share a common goal of pursuing their passions and unlocking their business' full potential."]
+      [:div.clearfix.mxn3-on-tb-dt.mt4.pt4
+       (section [:img.mb1 {:src "//ucarecdn.com/ab25b35e-0fac-4539-bc2e-23490631dc35/-/format/auto/iconmakemore.png"
+                           :height "75px"
+                           :width "75px"}]
+                "Mayvenn stylists earn more money")
+       (section svg/no-expenses
+                "They have no out of pocket expenses")
+       (section [:img.mb1 {:src "//ucarecdn.com/2068e6cf-32f6-4c70-baaa-b7b9f17c586c/-/format/auto/icon30day.png"
+                           :height "75px"
+                           :width "75px"}]
+                "Hair quality is guaranteed for 30 days risk-free")
+       (section [:img.mt3.mb3.align-bottom {:src "//ucarecdn.com/647b33d9-a175-406c-82e0-3723c6767757/iconfastfreeshipping.png"
+                                        :height "44px"
+                                        :width "70px"}]
+                "Fast and free shipping to clients or to stylists")]]]))
 
 (defn slide [img copy]
   [:div.mb4
