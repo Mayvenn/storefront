@@ -12,6 +12,9 @@
             [storefront.keypaths :as keypaths]
             [storefront.accessors.experiments :as experiments]))
 
+(def cash-out-eligible-payout-methods
+  #{"green_dot"})
+
 (defn component [{:keys [nav-event
                          stats
                          payout-stats
@@ -28,11 +31,13 @@
      (if stylist-transfers?
        (om/build new-stylist-dashboard-stats-component {:payout-stats          payout-stats
                                                         :show-cash-out-now-ui? (and cash-out-now?
-                                                                                    (#{"paypal" "green_dot"} payout-method))})
+                                                                                    (cash-out-eligible-payout-methods
+                                                                                     payout-method))})
        (om/build stylist-dashboard-stats-component {:stats                 stats
                                                     :payout-method         payout-method
                                                     :show-cash-out-now-ui? (and cash-out-now?
-                                                                                (#{"paypal" "green_dot"} payout-method))}))
+                                                                                (cash-out-eligible-payout-methods
+                                                                                 payout-method))}))
 
      [:div.bg-light-gray
       [:div.col-6-on-tb-dt.mx-auto
@@ -68,7 +73,7 @@
        :referrals             (referrals/query data)
        :stylist-transfers?    (experiments/stylist-transfers? data)
        :show-cash-out-now-ui? (and cash-out-now?
-                                   (#{"paypal" "green_dot"} payout-method))}))
+                                   (cash-out-eligible-payout-methods payout-method))}))
 
 (defn built-component [data opts]
   (om/build component (query data) opts))
