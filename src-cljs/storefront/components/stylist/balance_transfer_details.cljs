@@ -18,8 +18,8 @@
 
 (defmethod effects/perform-effects events/navigate-stylist-dashboard-balance-transfer-details
   [_ event {:keys [balance-transfer-id] :as args} _ app-state]
-  (let [user-id             (get-in app-state keypaths/user-id)
-        user-token          (get-in app-state keypaths/user-token)]
+  (let [user-id    (get-in app-state keypaths/user-id)
+        user-token (get-in app-state keypaths/user-token)]
     (when user-token
       (api/get-stylist-balance-transfer user-id user-token balance-transfer-id))))
 
