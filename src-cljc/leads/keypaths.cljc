@@ -23,10 +23,10 @@
 (def lead-utm-medium   (conj lead :utm-medium))
 (def lead-utm-source   (conj lead :utm-source))
 (def lead-utm-term     (conj lead :utm-term))
-(def lead-group        (conj lead :group))
 (def lead-id           (conj lead :id))
 (def lead-tracking-id  (conj lead :tracking-id))
 (def lead-flow-id      (conj lead :flow-id))
+(def lead-flow-name    (conj lead :flow-name))
 (def lead-step-id      (conj lead :step-id))
 
 (def stylist                 (conj root :stylist))

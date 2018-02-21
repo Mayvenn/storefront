@@ -246,7 +246,7 @@
       [:form {:action    ""
               :method    "POST"
               :role      "form"
-              :on-submit (utils/send-event-callback events/leads-control-self-registration-submit {})}
+              #_:on-submit #_(utils/send-event-callback events/leads-control-self-registration-submit {})}
        (sign-up-section sign-up focused)
        (referral-section referral focused)
        (contact-section contact states focused)
@@ -329,7 +329,7 @@
      [_ _ _ _ app-state]
      (api/get-states (get-in app-state storefront.keypaths/api-cache))))
 
-(defmethod effects/perform-effects events/leads-control-self-registration-submit
+#_(defmethod effects/perform-effects events/leads-control-self-registration-submit
   [dispatch event args _ app-state]
   #?(:cljs
      (let [{:keys [id step-id] :as lead} (get-in app-state keypaths/remote-lead)

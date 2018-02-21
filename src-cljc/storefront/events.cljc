@@ -381,7 +381,6 @@
 (defpath sign-out)
 
 (defpath leads-control-sign-up-submit)
-(defpath leads-control-self-registration-submit)
 
 (defpath stringer-tracked-sent-to-affirm)
 

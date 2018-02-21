@@ -1,6 +1,5 @@
 (ns storefront.trackings
   (:require [clojure.string :as string]
-            [leads.accessors :as leads.accessors]
             [spice.maps :as maps]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.products :as products]
@@ -66,13 +65,12 @@
                                            :phone      phone
                                            :first_name first-name
                                            :last_name  last-name})
-  (if (leads.accessors/self-reg? flow-id)
-    (do
-      (pinterest/track-event "lead" {:lead_type "self_reg"})
-      (facebook-analytics/track-custom-event "Lead_Self_Reg"))
-    (do
-      (pinterest/track-event "lead" {:lead_type "sales_rep"})
-      (facebook-analytics/track-event "Lead"))))
+  #_ ;; We may want to differentiate between various reg flows.
+  (do
+    (pinterest/track-event "lead" {:lead_type "self_reg"})
+    (facebook-analytics/track-custom-event "Lead_Self_Reg"))
+  (pinterest/track-event "lead" {:lead_type "sales_rep"})
+  (facebook-analytics/track-event "Lead"))
 
 (defmethod perform-track events/api-success-lead-registered
   [_ _ _ _]

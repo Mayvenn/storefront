@@ -12,7 +12,6 @@
                        [storefront.history :as history]])
             [leads.header :as header]
             [leads.call-slot :as call-slot]
-            [leads.accessors :as accessors]
             [storefront.assets :as assets]
             [storefront.components.ui :as ui]
             [storefront.config :as config]
@@ -26,7 +25,7 @@
             [storefront.effects :as effects]
             [storefront.request-keys :as request-keys]))
 
-(defn sign-up-panel [{:keys [focused field-errors first-name last-name phone email call-slot self-reg? call-slot-options spinning?]}]
+(defn sign-up-panel [{:keys [focused field-errors first-name last-name phone email call-slot call-slot-options spinning?]}]
   [:div.rounded.bg-lighten-4.p3
    [:div.center
     [:h2 "Join over 100,000 stylists"]
@@ -74,32 +73,21 @@
                     :required  true
                     :type      "email"
                     :value     email})
-    (when-not self-reg?
-      (ui/select-field {:data-test   "sign-up-call-slot"
-                        :errors      (get field-errors ["call-slot"])
-                        :id          "sign-up-call-slot"
-                        :label       "Best time to call*"
-                        :keypath     keypaths/lead-call-slot
-                        :placeholder "Best time to call*"
-                        :value       call-slot
-                        :required    true
-                        :options     call-slot-options
-                        :div-attrs   {:class "bg-white border border-gray rounded"}}))
+    (ui/select-field {:data-test   "sign-up-call-slot"
+                      :errors      (get field-errors ["call-slot"])
+                      :id          "sign-up-call-slot"
+                      :label       "Best time to call*"
+                      :keypath     keypaths/lead-call-slot
+                      :placeholder "Best time to call*"
+                      :value       call-slot
+                      :required    true
+                      :options     call-slot-options
+                      :div-attrs   {:class "bg-white border border-gray rounded"}})
     (ui/submit-button "Become a Mayvenn Stylist"
                       {:data-test "sign-up-submit"
                        :spinning? spinning?})]])
 
-(defn resume-self-reg-panel [{:keys [remote-lead]}]
-  [:div.rounded.bg-lighten-4.p3
-   [:div.center
-    [:h2 "Become a Mayvenn"]
-    [:p.m2 "You are on your way to joining the Mayvenn Movement! Finish your registration today!"]]
-   (ui/teal-button
-    (merge {:data-test "resume-registration"}
-           (utils/route-to events/navigate-leads-registration-details {:submitted-lead remote-lead}))
-    "Finish registration")])
-
-(defn hero-section [{:keys [flow-id sign-up resume-self-reg title]}]
+(defn hero-section [{:keys [flow-id sign-up title]}]
   [:section.px3.py4.bg-cover.leads-bg-hero-hair
    [:div.container
     [:div.flex-on-tb-dt.items-center
@@ -110,9 +98,7 @@
         [:span.h0.hide-on-mb title]
         [:span.hide-on-tb-dt title]]]]
      [:div.col-5-on-tb-dt.py4
-      (if flow-id
-        (resume-self-reg-panel resume-self-reg)
-        (sign-up-panel sign-up))]]]])
+      (sign-up-panel sign-up)]]]])
 
 (def success-stories-section
   (let [video-src  "https://embedwistia-a.akamaihd.net/deliveries/2029303b76647441fe1cd35778556282f8c40e68/file.mp4"
@@ -423,22 +409,20 @@
                     "acceptance" "diva-acceptance.com"
                     "storefront.localhost")
 
-        {:keys [flow-id] :as remote-lead} (get-in data keypaths/remote-lead)
-        self-reg?                         (= "stylistsfb" (get-in data keypaths/lead-group))]
+        {:keys [flow-id] :as remote-lead} (get-in data keypaths/remote-lead)]
     {:hero   {:title           (cond
                                  (= "movement" (get-in data keypaths/copy))
                                  "Be part of a movement of hair stylists making money on their own terms."
 
                                  :else "Earn up to $2,000 a month selling hair with no out of pocket expenses")
               :flow-id         flow-id
-              :resume-self-reg {:remote-lead remote-lead}
               :sign-up         {:field-errors      (get-in data storefront.keypaths/field-errors)
                                 :first-name        (get-in data keypaths/lead-first-name)
                                 :last-name         (get-in data keypaths/lead-last-name)
                                 :phone             (get-in data keypaths/lead-phone)
                                 :email             (get-in data keypaths/lead-email)
                                 :call-slot         (get-in data keypaths/lead-call-slot)
-                                :self-reg?         self-reg?
+                                :flow-name         (get-in data keypaths/lead-flow-name)
                                 :call-slot-options (get-in data keypaths/call-slot-options)
                                 :spinning?         (utils/requesting? data request-keys/create-lead)}}
      :header {:call-number config/mayvenn-leads-call-number}
@@ -480,10 +464,7 @@
        (cookie-jar/save-lead (get-in app-state storefront.keypaths/cookie)
                              {"lead-id"             lead-id
                               "onboarding-status" "lead-created"})
-       (if (and (accessors/self-reg? flow-id)
-                (not (= state "duplicate")))
-         (history/enqueue-navigate events/navigate-leads-registration-details {:submitted-lead lead})
-         (history/enqueue-navigate events/navigate-leads-resolve)))))
+       (history/enqueue-navigate events/navigate-leads-resolve))))
 
 (defmethod effects/perform-effects events/navigate-leads
   [_ _ _ _ app-state]
@@ -502,7 +483,7 @@
                                     "stylist-created"})
 
 (defmethod transitions/transition-state events/navigate-leads-home
-  [_ _ {{:keys [copy group]} :query-params} app-state]
+  [_ _ {{:keys [copy group flow]} :query-params} app-state]
   #?(:cljs
      (let [call-slots        (call-slot/options (get-in app-state keypaths/eastern-offset))
            lead-cookie       (cookie-jar/retrieve-lead (get-in app-state storefront.keypaths/cookie))
@@ -510,8 +491,7 @@
            onboarding-status (get lead-cookie "onboarding-status")
            app-state         (-> app-state
                                  (assoc-in keypaths/copy (string/lower-case (str copy)))
-                                 (assoc-in keypaths/lead-group (or (string/lower-case (str group))
-                                                                   (get utm-cookies "leads.group")))
+                                 (assoc-in keypaths/lead-flow-name (string/lower-case (str flow)))
                                  (assoc-in keypaths/call-slot-options call-slots)
                                  (update-in keypaths/lead-utm-content
                                             (fn [existing-param]
