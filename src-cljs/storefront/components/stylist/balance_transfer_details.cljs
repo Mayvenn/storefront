@@ -51,7 +51,21 @@
        {:skus      (all-skus-in-balance-transfer (get-in data keypaths/v2-skus)
                                                  balance-transfer)}))))
 
-(defn commission-component [{:keys [balance-transfer fetching? skus]}]
+(def ^:private back-to-earnings
+  [:a.left.col-12.dark-gray.flex.items-center.py3
+   (utils/route-to events/navigate-stylist-dashboard-earnings)
+   (ui/back-caret "back to earnings")])
+
+(defn ^:private info-columns [[left-header left-content] [right-header right-content]]
+  [:div.col-12.pt2
+   [:div.col-6.inline-block.align-top
+    [:span.h5.dark-gray left-header]
+    [:div.h5 left-content]]
+   [:div.col-6.inline-block.align-top
+    [:span.h5.dark-gray right-header]
+    [:div.h5 right-content]]])
+
+(defn ^:private commission-component [{:keys [balance-transfer fetching? skus]}]
   (let [{:keys [id number amount]} balance-transfer
         {:keys [order
                 commission_date
@@ -61,25 +75,18 @@
       [:div.my2.h2 ui/spinner]
 
       [:div.container.mb4.px3
-       [:a.left.col-12.dark-gray.flex.items-center.py3
-        (utils/route-to events/navigate-stylist-dashboard-earnings)
-        (ui/back-caret "back to earnings")]
+       back-to-earnings
        [:h3.my4 "Details - Commission Earned"]
        [:div.flex.justify-between.col-12
         [:div (f/less-year-more-day-date commission_date)]
         [:div (:full-name order)]
         [:div.green "+" (mf/as-money amount)]]
 
-       [:div.col-12.pt2
-        [:div.col-4.inline-block
-         [:span.h5.dark-gray "Order Number"]
-         [:div.h5 (:number order)]]
-        [:div.col-8.inline-block
-         [:span.h5.dark-gray "Ship Date"]
-         [:div.h5 (f/less-year-more-day-date (->> (:order balance-transfer)
-                                                  :shipments
-                                                  first
-                                                  :shipped-at))]]]
+       (info-columns ["Order Number" (:number order)]
+                     ["Ship Date" (f/less-year-more-day-date (->> (:order balance-transfer)
+                                                                  :shipments
+                                                                  first
+                                                                  :shipped-at))])
 
        [:div.mt2.mbnp2.mtnp2.border-top.border-gray
         (summary/display-line-items (orders/product-items order) skus)]
@@ -89,51 +96,32 @@
        [:div.h5.center.navy
         (str (mf/as-money amount) " has been added to your next payment.")]])))
 
-(defn instapay-payout-details [payout_method]
-  [:div.col-12.pt2
-   [:div.col-4.inline-block.align-top
-    [:span.h5.dark-gray "Card Last 4"]
-    [:div.h5 (:last4 payout_method)]]
-   [:div.col-8.inline-block.align-top
-    [:span.h5.dark-gray "Estimated Arrival"]
-    [:div.h5 (:payout-timeframe payout_method)]]])
 
-(defn paypal-payout-details [payout_method]
-  [:div.col-12.pt2
-   [:div.col-6.inline-block.align-top
-    [:span.h5.dark-gray "Paypal Email Address"]
-    [:div.h5 (:email payout_method)]]
-   [:div.col-6.inline-block.align-top
-    [:span.h5.dark-gray "Estimated Arrival"]
-    [:div.h5 "Instant"]]])
 
-(defn check-payout-details [payout_method]
-  [:div.col-12.pt2
-   [:div.col-6.inline-block.align-top
-    [:span.h5.dark-gray "Mailing Address"]
-    [:div.h5
-     [:div (-> payout_method :address :address1)]
-     [:div (-> payout_method :address :address2)]
-     [:div (str (-> payout_method :address :city)
-                ", "
-                (-> payout_method :address :state_name)
-                " "
-                (-> payout_method :address :zipcode))]]]
+(defn ^:private instapay-payout-details [payout_method]
+  (info-columns ["Card Last 4" (:last4 payout_method)]
+                ["Estimated Arrival" (:payout-timeframe payout_method)]))
 
-   [:div.col-6.inline-block.align-top
-    [:span.h5.dark-gray "Estimated Arrival"]
-    [:div.h5 "7-10 Business Days"]]])
+(defn ^:private paypal-payout-details [payout_method]
+  (info-columns ["Paypal Email Address" (:email payout_method)]
+                ["Estimated Arrival" "Instant"]))
 
-(defn venmo-payout-details [payout_method]
-  [:div.col-12.pt2
-   [:div.col-6.inline-block
-    [:span.h5.dark-gray "Venmo Phone"]
-    [:div.h5 (:phone payout_method)]]
-   [:div.col-6.inline-block
-    [:span.h5.dark-gray "Estimated Arrival"]
-    [:div.h5 "Instant"]]])
+(defn ^:private check-payout-details [payout_method]
+  (info-columns ["Mailing Address " [:div
+                                     [:div (-> payout_method :address :address1)]
+                                     [:div (-> payout_method :address :address2)]
+                                     [:div (str (-> payout_method :address :city)
+                                                ", "
+                                                (-> payout_method :address :state_name)
+                                                " "
+                                                (-> payout_method :address :zipcode))]]]
+                ["Estimated Arrival" "7-10 Business Days"]))
 
-(defn payout-method-details [payout_method]
+(defn ^:private venmo-payout-details [payout_method]
+  (info-columns ["Venmo Phone" (:phone payout_method)]
+                ["Estimated Arrival" "Instant"]))
+
+(defn ^:private payout-method-details [payout_method]
   (when (:name payout_method)
     (case (:name payout_method)
       "Mayvenn InstaPay" (instapay-payout-details payout_method)
@@ -141,7 +129,7 @@
       "Check"            (check-payout-details payout_method)
       "Venmo"            (venmo-payout-details payout_method))))
 
-(defn payout-component [{:keys [balance-transfer]}]
+(defn ^:private payout-component [{:keys [balance-transfer]}]
   (let [{:keys [id
                 number
                 amount]}             balance-transfer
