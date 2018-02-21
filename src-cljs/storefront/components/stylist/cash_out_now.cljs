@@ -43,13 +43,21 @@
 (defn built-component [data opts]
   (om/build component (query data) opts))
 
+(defn ^:private should-redirect? [next-payout]
+  (cond
+    (some-> next-payout :payout-method :name (not= "Mayvenn InstaPay")) true
+    (some-> next-payout :amount pos? not)                               true
+    :else                                                               false))
+
 (defmethod effects/perform-effects events/navigate-stylist-dashboard-cash-out-now [_ _ _ _ app-state]
-  (api/get-stylist-payout-stats events/api-success-stylist-payout-stats-cash-out-now
-                                (get-in app-state keypaths/store-stylist-id)
-                                (get-in app-state keypaths/user-id)
-                                (get-in app-state keypaths/user-token)))
+  (if (should-redirect? (get-in app-state keypaths/stylist-payout-stats-next-payout))
+    (effects/redirect events/navigate-stylist-dashboard-earnings)
+    (api/get-stylist-payout-stats events/api-success-stylist-payout-stats-cash-out-now
+                                  (get-in app-state keypaths/store-stylist-id)
+                                  (get-in app-state keypaths/user-id)
+                                  (get-in app-state keypaths/user-token))))
 
 (defmethod effects/perform-effects events/api-success-stylist-payout-stats-cash-out-now
   [_ _ {next-payout :next-payout} _ app-state]
-  (when-not (-> next-payout :amount pos?)
+  (when (should-redirect? next-payout)
     (effects/redirect events/navigate-stylist-dashboard-earnings)))
