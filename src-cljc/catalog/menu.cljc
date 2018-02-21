@@ -16,13 +16,6 @@
    [storefront.transitions :as transitions]
    [storefront.accessors.experiments :as experiments]))
 
-(def back-caret
-  (component/html
-   (svg/dropdown-arrow {:class  "stroke-gray"
-                        :width  "12px"
-                        :height "10px"
-                        :style  {:transform "rotate(90deg)"}})))
-
 ;;NOTE Used by slideout-nav
 (defn major-menu-row [& content]
   [:div.h4.border-bottom.border-gray.py3
@@ -35,9 +28,9 @@
   (component/create
    (let [{:keys [selector/electives]} nav-root]
      [:div
-      [:a.gray.block.py1.px3.h6
+      [:a.dark-gray.block.py1.px3.h6
        (utils/fake-href events/menu-home)
-       [:span.mr1 back-caret] "Back"]
+       [:span.mr1 (ui/back-caret "Back")]]
       [:div.px6
        (major-menu-row
         [:div.h2.flex-auto.center "Shop " (:copy/title nav-root)])

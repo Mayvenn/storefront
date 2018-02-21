@@ -30,13 +30,6 @@
                                                               first
                                                               :shipped-at)))}))
 
-(def back-caret
-  (component/html
-   [:div.inline-block.pr1
-    (svg/left-caret {:class  "stroke-gray align-middle"
-                     :width  "15px"
-                     :height "1.5rem"})]))
-
 (defn component [{:keys [commission fetching? ship-date skus]} owner opts]
   (let [{:keys [id number order amount earned-date commissionable-amount]} commission]
     (component/create

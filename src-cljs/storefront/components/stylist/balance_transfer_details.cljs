@@ -51,13 +51,6 @@
        {:skus      (all-skus-in-balance-transfer (get-in data keypaths/v2-skus)
                                                  balance-transfer)}))))
 
-(def back-caret
-  (component/html
-   [:div.inline-block.pr1
-    (svg/left-caret {:class  "stroke-gray align-middle"
-                     :width  "15px"
-                     :height "1.5rem"})]))
-
 (defn commission-component [{:keys [balance-transfer fetching? skus]}]
   (let [{:keys [id number amount]} balance-transfer
         {:keys [order
