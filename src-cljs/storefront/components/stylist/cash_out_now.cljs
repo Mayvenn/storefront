@@ -44,6 +44,12 @@
   (om/build component (query data) opts))
 
 (defmethod effects/perform-effects events/navigate-stylist-dashboard-cash-out-now [_ _ _ _ app-state]
-  (api/get-stylist-payout-stats (get-in app-state keypaths/store-stylist-id)
+  (api/get-stylist-payout-stats events/api-success-stylist-payout-stats-cash-out-now
+                                (get-in app-state keypaths/store-stylist-id)
                                 (get-in app-state keypaths/user-id)
                                 (get-in app-state keypaths/user-token)))
+
+(defmethod effects/perform-effects events/api-success-stylist-payout-stats-cash-out-now
+  [_ _ {next-payout :next-payout} _ app-state]
+  (when-not (-> next-payout :amount pos?)
+    (effects/redirect events/navigate-stylist-dashboard-earnings)))

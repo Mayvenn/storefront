@@ -561,7 +561,7 @@
     (partial messages/handle-message events/api-success-stylist-balance-transfer-details)}))
 
 (defn get-stylist-payout-stats
-  [stylist-id user-id user-token]
+  [event stylist-id user-id user-token]
   (api-req
    GET
    "/v1/stylist/payout-stats"
@@ -569,7 +569,7 @@
    {:params  {:stylist-id stylist-id
               :user-id    user-id
               :user-token user-token}
-    :handler #(messages/handle-message events/api-success-stylist-payout-stats
+    :handler #(messages/handle-message event
                                        (select-keys % [:lifetime-stats :next-payout :previous-payout]))}))
 
 (defn cash-out-now

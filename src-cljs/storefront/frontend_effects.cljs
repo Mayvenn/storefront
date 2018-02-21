@@ -376,7 +376,8 @@
   (when-let [user-token (get-in app-state keypaths/user-token)]
     (api/get-stylist-account (get-in app-state keypaths/user-id) user-token)
     (if (experiments/stylist-transfers? app-state)
-      (api/get-stylist-payout-stats (get-in app-state keypaths/store-stylist-id)
+      (api/get-stylist-payout-stats events/api-success-stylist-payout-stats
+                                    (get-in app-state keypaths/store-stylist-id)
                                     (get-in app-state keypaths/user-id)
                                     (get-in app-state keypaths/user-token))
       (api/get-stylist-stats (get-in app-state keypaths/user-id) user-token))))
