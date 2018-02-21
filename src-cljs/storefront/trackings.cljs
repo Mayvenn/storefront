@@ -79,8 +79,10 @@
   (pinterest/track-event "signup")
   (facebook-analytics/track-custom-event "Lead_Self_Reg_Complete"))
 
-(defmethod perform-track events/navigate-product-details [_ event args app-state]
-  (facebook-analytics/track-event "ViewContent"))
+(defmethod perform-track events/viewed-sku [_ event {:keys [sku]} app-state]
+  (when sku
+    (facebook-analytics/track-event "ViewContent" {:content_type "product"
+                                                   :content_ids [(:catalog/sku-id sku)]})))
 
 (defmethod perform-track events/control-bundle-option-select [_ event {:keys [selection value]} app-state]
   (stringer/track-event "select_bundle_option" {:option_name  (name selection)

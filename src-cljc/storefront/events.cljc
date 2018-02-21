@@ -386,3 +386,5 @@
 
 (defpath affirm-checkout-error)
 (defpath affirm-ui-error-closed)
+
+(defpath viewed-sku)
