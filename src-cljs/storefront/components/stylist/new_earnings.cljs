@@ -46,7 +46,7 @@
 (defn payout-row [balance-transfer]
   (let [{:keys [id]} balance-transfer
         {:keys [amount created-at payout-method-name]} (:data balance-transfer)]
-    [:tr.bg-light-gray
+    [:tr.pointer.bg-light-gray
      (merge {:key (str "payout-" id)}
             (utils/route-to events/navigate-stylist-dashboard-balance-transfer-details {:balance-transfer-id id}))
      [:td.px3.py2 (f/less-year-more-day-date created-at)]
