@@ -10,12 +10,16 @@
 (def copy (conj root :copy))
 
 ;; Working lead
-(def lead              (conj root :lead))
-(def lead-first-name   (conj lead :first-name))
-(def lead-last-name    (conj lead :last-name))
-(def lead-phone        (conj lead :phone))
-(def lead-email        (conj lead :email))
-(def lead-call-slot    (conj lead :call-slot))
+(def lead                   (conj root :lead))
+(def lead-first-name        (conj lead :first-name))
+(def lead-last-name         (conj lead :last-name))
+(def lead-phone             (conj lead :phone))
+(def lead-email             (conj lead :email))
+(def lead-call-slot         (conj lead :call-slot))
+(def lead-website-url       (conj lead :website-url))
+(def lead-facebook-url      (conj lead :facebook-url))
+(def lead-instagram-handle  (conj lead :instagram-handle))
+(def lead-number-of-clients (conj lead :number-of-clients))
 
 ;; Lead specific data
 (def lead-utm-campaign (conj lead :utm-campaign))

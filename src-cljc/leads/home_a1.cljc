@@ -1,4 +1,4 @@
-(ns leads.home
+(ns leads.home-a1
   (:require #?@(:clj [[storefront.component-shim :as component]]
                 :cljs [[om.core :as om]
                        [goog.events]
@@ -12,7 +12,6 @@
                        [storefront.history :as history]])
             [leads.header :as header]
             [leads.call-slot :as call-slot]
-            [leads.home-a1 :as home-a1]
             [storefront.assets :as assets]
             [storefront.components.ui :as ui]
             [storefront.config :as config]
@@ -26,15 +25,13 @@
             [storefront.effects :as effects]
             [storefront.request-keys :as request-keys]))
 
-(defn sign-up-panel [{:keys [focused field-errors first-name last-name phone email call-slot call-slot-options spinning?]}]
+(defn sign-up-panel [{:keys [focused field-errors first-name last-name phone email website-url facebook-url instagram-handle number-of-clients number-of-clients-options spinning?]}]
   [:div.rounded.bg-lighten-4.p3
-   [:div.center
-    [:h2 "Join over 100,000 stylists"]
-    [:p.mb2 "Enter your info below to get started."]]
    [:form.col-12.flex.flex-column.items-center
     {:on-submit (utils/send-event-callback events/leads-control-sign-up-submit {})
      :data-test "leads-sign-up-form"
-     :method "POST"}
+     :method    "POST"}
+    [:p "About You"]
     (ui/text-field {:data-test "sign-up-first-name"
                     :errors    (get field-errors ["first-name"])
                     :id        "sign-up-first-name"
@@ -59,7 +56,7 @@
                     :id        "sign-up-phone"
                     :keypath   keypaths/lead-phone
                     :focused   focused
-                    :label     "Mobile phone*"
+                    :label     "Phone*"
                     :name      "phone"
                     :required  true
                     :type      "tel"
@@ -74,21 +71,49 @@
                     :required  true
                     :type      "email"
                     :value     email})
-    (ui/select-field {:data-test   "sign-up-call-slot"
-                      :errors      (get field-errors ["call-slot"])
-                      :id          "sign-up-call-slot"
-                      :label       "Best time to call*"
-                      :keypath     keypaths/lead-call-slot
-                      :placeholder "Best time to call*"
-                      :value       call-slot
-                      :required    true
-                      :options     call-slot-options
+
+    [:p "About Your Business"]
+    (ui/text-field {:data-test "sign-up-website-url"
+                    :errors    (get field-errors ["website-url"])
+                    :id        "sign-up-website-url"
+                    :keypath   keypaths/lead-website-url
+                    :focused   focused
+                    :label     "Website URL"
+                    :name      "website-url"
+                    :type      "url"
+                    :value     website-url})
+    (ui/text-field {:data-test "sign-up-facebook-url"
+                    :errors    (get field-errors ["facebook-url"])
+                    :id        "sign-up-facebook-url"
+                    :keypath   keypaths/lead-facebook-url
+                    :focused   focused
+                    :label     "Facebook URL"
+                    :name      "facebook-url"
+                    :type      "url"
+                    :value     facebook-url})
+    (ui/text-field {:data-test "sign-up-instagram-handle"
+                    :errors    (get field-errors ["instagram-handle"])
+                    :id        "sign-up-instagram-handle"
+                    :keypath   keypaths/lead-instagram-handle
+                    :focused   focused
+                    :label     "Instagram Handle"
+                    :name      "instagram-handle"
+                    :value     instagram-handle})
+    (ui/select-field {:data-test   "sign-up-number-of-clients"
+                      :errors      (get field-errors ["number-of-clients"])
+                      :id          "sign-up-number-of-clients"
+                      :label       "Number of Clients"
+                      :keypath     keypaths/lead-number-of-clients
+                      :placeholder "Number of Clients"
+                      :value       number-of-clients
+                      :options     number-of-clients-options
                       :div-attrs   {:class "bg-white border border-gray rounded"}})
-    (ui/submit-button "Become a Mayvenn Stylist"
+
+    (ui/submit-button "Begin Application"
                       {:data-test "sign-up-submit"
                        :spinning? spinning?})]])
 
-(defn hero-section [{:keys [flow-id sign-up title]}]
+(defn hero-section [{:keys [flow-id sign-up]}]
   [:section.px3.py4.bg-cover.leads-bg-hero-hair
    [:div.container
     [:div.flex-on-tb-dt.items-center
@@ -96,8 +121,8 @@
      [:div.col-7-on-tb-dt.py4
       [:div.col-9-on-tb-dt.mx-auto.white.center
        [:h1
-        [:span.h0.hide-on-mb title]
-        [:span.hide-on-tb-dt title]]]]
+        [:span.h0.hide-on-mb "Apply to become a Mayvenn Stylist"]
+        [:span.hide-on-tb-dt "Apply to become a Mayvenn Stylist"]]]]
      [:div.col-5-on-tb-dt.py4
       (sign-up-panel sign-up)]]]])
 
@@ -120,17 +145,20 @@
      [:div.container
       [:div.container.col-12.mx-auto {:dangerouslySetInnerHTML {:__html video-html}}]]]))
 
-(def about-section
+(def what-is-mayvenn-section
+  [:section.px3.py6.center
+   [:div.max-580.mx-auto.center
+    [:h2 "What is Mayvenn?"]
+    [:p.mb4 "Mayvenn is a black-owned hair company whose mission is to empower hair stylists to sell directly to their clients."]
+    [:p.mb4 "You already suggest hair products to your clients. "
+     "Become a Mayvenn stylist and start earning cash for yourself, "
+     "instead of sending clients to the beauty supply store."]]])
+
+(def our-stylists-thrive-section
   (let [icon (fn [url] [:img.mb1 {:src url
                                   :height "70px"
                                   :width "70px"}])]
     [:section.px3.py6.center
-     [:div.max-580.mx-auto.center
-      [:h2 "What is Mayvenn?"]
-      [:p.mb4 "Mayvenn is a black-owned hair company whose mission is to empower hair stylists to sell directly to their clients."]
-      [:p.mb4 "You already suggest hair products to your clients. "
-       "Become a Mayvenn stylist and start earning cash for yourself, "
-       "instead of sending clients to the beauty supply store."]]
 
      [:div.container
       [:h2.mb4 "How can Mayvenn benefit you?"]
@@ -163,19 +191,22 @@
    (slide "//ucarecdn.com/464c7eb4-4c0d-4365-9f1a-e775863d5cf7/-/format/auto/howitworks03.jpg" "Cha-ching! Once they complete their purchase on your site, we’ll deposit your commission via your chosen payment method.")])
 
 
-(def how-it-works-section
-  [:section.center.px3.pt6.pb3.bg-light-teal
-   [:div.max-580.mx-auto.center
-    [:h2 "How it works"]
-    [:p.mb4 "Selling with Mayvenn is as easy as sharing your store link, spreading the word, and watching your income grow."]]
-   [:div.container {:style {:max-width "375px"}}
-    (component/build carousel/component
-                     {:slides slides
-                      :settings {:swipe true
-                                 :arrows true
-                                 :dots true
-                                 :infinite false}}
-                     {})]])
+(def how-mayvenn-works-section
+  (let [segment (fn [num copy]
+                  [:div.pb4
+                   [:div.h1.bold.bg-white.light-teal.mx-auto.capped.pt4.my2
+                    {:style {:width "75px" :height "75px"}}
+                    num]
+                   [:p.h6 copy]])]
+    [:section.center.px3.pt6.pb3.bg-light-teal
+     [:div.max-580.mx-auto.center
+      [:h2 "How Mayvenn Works"]
+      [:p.mb4 "We build your beauty supply store for you. From tracking inventory, to customer service, and website maintenance, we support you."]]
+     [:div.mx-auto.center
+      (segment "1" "Apply to become part of our expert stylist community.")
+      (segment "2" "Work with our team to get onboarded, and activate your custom website.")
+      (segment "3" "Start sharing your website provided by Mayvenn with clients.")
+      (segment "4" "Grow your business, earn more money, and delight clients.")]]))
 
 (def guarantee-section
   [:section.center
@@ -193,48 +224,6 @@
     (into [:p {:lang "en" :dir "ltr"}] content)
     (str "— " byline " ")
     [:a {:href link} date]]])
-
-(def twitter-section
-  [:section.center.mx4.mb4
-   [:div.max-580.mx-auto.center
-    [:h2.mb2.h3 "With over 200,000 happy customers, your clients are going to love wearing Mayvenn hair."]]
-
-   (tweet "https://twitter.com/jusz_ashlee/status/838820759699075073"
-          "March 6, 2017"
-          "ashlee💙 (@jusz_ashlee)"
-          "Order it Friday &' it arrived today💁🏽 "
-          [:a {:href "https://twitter.com/MayvennHair"} "@MayvennHair"]
-          [:a {:href "https://t.co/WVr1HftUqb"} "pic.twitter.com/WVr1HftUqb"])
-
-   (tweet "https://twitter.com/ADITLWTOMEI/status/829373844980903938"
-          "February 8, 2017"
-          "Adayinthelifew/Tomei (@ADITLWTOMEI)"
-          "Oh my goodness ! I'm so ready to book my hair apt.my "
-          [:a {:href "https://twitter.com/MayvennHair"} "@MayvennHair"]
-          " has been delivered! I just ordered and it came in less than a week 🤗")
-
-   (tweet "https://twitter.com/ABenton/status/605158564479569920"
-          "May 31, 2015"
-          "Angela Benton (@ABenton)"
-          [:a {:href "https://twitter.com/MayvennHair"} "@mayvennhair"]
-          " for the save. My other hair and Hawaii didn't mix lol! You the real MVP 😂😂😂!… "
-          [:a {:href "https://t.co/LZlwmPJ1kJ"} "https://t.co/LZlwmPJ1kJ"])])
-
-(def your-store-section
-  [:section.px3.pt6.bg-light-teal
-   [:div.container
-    [:div.flex-on-dt.items-center
-     [:div.col-8-on-dt
-      [:div.col-9-on-dt.mx-auto.center
-       [:h2 "Your own beauty supply store"]
-       [:p.mb4
-        "Launching a website on your own is no easy feat - so we handle it all for you. "
-        "As a Mayvenn stylist, you can forget worrying about tracking inventory, customer service, or website maintenance."]]]
-     [:div.col-4-on-dt
-      [:picture
-       [:source {:media "(max-width: 999px)" :src-set "//ucarecdn.com/5ff05d23-6ef0-445d-9e76-f7e5ff5e3cf6/-/format/auto/yourbeautystore.jpg 2x"}]
-       [:source {:src-set "//ucarecdn.com/fd060b43-50c8-4e34-8c3e-7ba0605c8def/-/format/auto/yourbeautystoredsk.jpg"}]
-       [:img.block.mx-auto {:src "//ucarecdn.com/5ff05d23-6ef0-445d-9e76-f7e5ff5e3cf6/-/format/auto/yourbeautystore.jpg"}]]]]]])
 
 (def numbers-section
   (let [rule [:div.hide-on-tb-dt.border-white.border-bottom]]
@@ -345,52 +334,17 @@
          [:a.inherit-color
           {:href (str privacy-url "#our-ads")} "Our Ads"]]]]]]))
 
-(defn follow-header [{:keys [call-number]} owner opts]
-  #?(:cljs
-     (letfn [(handle-scroll [e] (om/set-state! owner :show? (< 750 (.-y (goog.dom/getDocumentScroll)))))]
-       (reify
-         om/IInitState
-         (init-state [this]
-           {:show? false})
-         om/IDidMount
-         (did-mount [this]
-           (goog.events/listen js/window EventType/SCROLL handle-scroll))
-         om/IWillUnmount
-         (will-unmount [this]
-           (goog.events/unlisten js/window EventType/SCROLL handle-scroll))
-         om/IWillReceiveProps
-         (will-receive-props [this next-props])
-         om/IRenderState
-         (render-state [this {:keys [show?]}]
-           (component/html
-            [:div.fixed.top-0.left-0.right-0.z4.bg-white
-             (if show?
-               {:style {:margin-top "0"}
-                :class "transition-2"}
-               {:style {:margin-top "-100px"}})
-             [:div.border-bottom.border-gray.mx-auto
-              {:style {:max-width "1440px"}}
-              [:div.container.flex.items-center.justify-between.px3.py2
-               [:div
-                [:img {:src (assets/path "/images/header_logo.svg")
-                       :style {:width "88px"}}]
-                [:div.h6 "Questions? Call us: " call-number]]
-               [:a.btn.btn-outline.teal {:href "#signup-form"} "Sign up"]]]]))))
-     :clj [:span]))
 
 (defn ^:private component [data owner opts]
   (component/create
    [:div
     (header/built-component data nil)
-    (component/build follow-header (:header data) nil)
+    how-mayvenn-works-section
+    our-stylists-thrive-section
     (hero-section (:hero data))
     success-stories-section
-    about-section
-    how-it-works-section
-    guarantee-section
-    twitter-section
-    your-store-section
     numbers-section
+    what-is-mayvenn-section
     press-section
     [:section.center.px3.py6
      (faq-section q-and-as (:faq data))]
@@ -411,21 +365,25 @@
                     "storefront.localhost")
 
         {:keys [flow-id] :as remote-lead} (get-in data keypaths/remote-lead)]
-    {:hero   {:title           (cond
-                                 (= "movement" (get-in data keypaths/copy))
-                                 "Be part of a movement of hair stylists making money on their own terms."
-
-                                 :else "Earn up to $2,000 a month selling hair with no out of pocket expenses")
-              :flow-id         flow-id
-              :sign-up         {:field-errors      (get-in data storefront.keypaths/field-errors)
-                                :first-name        (get-in data keypaths/lead-first-name)
-                                :last-name         (get-in data keypaths/lead-last-name)
-                                :phone             (get-in data keypaths/lead-phone)
-                                :email             (get-in data keypaths/lead-email)
-                                :call-slot         (get-in data keypaths/lead-call-slot)
-                                :flow-name         (get-in data keypaths/lead-flow-name)
-                                :call-slot-options (get-in data keypaths/call-slot-options)
-                                :spinning?         (utils/requesting? data request-keys/create-lead)}}
+    {:hero   {:flow-id flow-id
+              :sign-up {:field-errors              (get-in data storefront.keypaths/field-errors)
+                        :first-name                (get-in data keypaths/lead-first-name)
+                        :last-name                 (get-in data keypaths/lead-last-name)
+                        :phone                     (get-in data keypaths/lead-phone)
+                        :email                     (get-in data keypaths/lead-email)
+                        :flow-name                 (get-in data keypaths/lead-flow-name)
+                        :focused                   (get-in data storefront.keypaths/ui-focus)
+                        :website-url               nil
+                        :facebook-url              nil
+                        :instagram-handle          nil
+                        :number-of-clients         nil
+                        :number-of-clients-options [["None" "0"]
+                                                    ["1 to 5" "1-5"]
+                                                    ["6 to 10" "6-10"]
+                                                    ["11 to 15" "11-15"]
+                                                    ["16 to 19" "16-19"]
+                                                    ["20+" "20+"]]
+                        :spinning?                 (utils/requesting? data request-keys/create-lead)}}
      :header {:call-number config/mayvenn-leads-call-number}
      :footer {:call-number config/mayvenn-leads-call-number
               :host-name   host-name}
@@ -433,9 +391,7 @@
               :call-number config/mayvenn-leads-call-number}}))
 
 (defn built-component [data opts]
-  (case (get-in data keypaths/lead-flow-name)
-    "a1" (home-a1/built-component data opts)
-    (component/build component (query data) opts)))
+  (component/build component (query data) opts))
 
 (def ^:private required-keys
   #{:tracking-id
