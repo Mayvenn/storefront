@@ -114,7 +114,7 @@
                       {:data-test "sign-up-submit"
                        :spinning? spinning?})]])
 
-(defn hero-section [{:keys [flow-id sign-up]}]
+(defn signup-section [{:keys [flow-id sign-up]}]
   [:section.px3.py4.bg-cover.leads-bg-hero-hair
    [:div.container
     [:div.flex-on-tb-dt.items-center
@@ -309,7 +309,7 @@
     (header/built-component data nil)
     how-mayvenn-works-section
     our-stylists-thrive-section
-    (hero-section (:hero data))
+    (signup-section (:hero data))
     success-stories-section
     clients-love-section
     [:section.center.px3.py6
