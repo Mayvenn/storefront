@@ -485,7 +485,7 @@
                                     "stylist-created"})
 
 (defmethod transitions/transition-state events/navigate-leads-home
-  [_ _ {{:keys [copy group flow]} :query-params} app-state]
+  [_ _ {{:keys [copy flow]} :query-params} app-state]
   #?(:cljs
      (let [call-slots        (call-slot/options (get-in app-state keypaths/eastern-offset))
            lead-cookie       (cookie-jar/retrieve-lead (get-in app-state storefront.keypaths/cookie))
