@@ -37,8 +37,8 @@
       "their dreams. Instead of sending clients to beauty supply shops, we "
       "provide a custom platform for stylists to sell the high-quality hair "
       "directly, earn commissions from these sales, and be part of a movement."]]]
-   [:img.block.col-12 {:src     "//ucarecdn.com/cf60bdc3-09df-4ee3-87a8-d3cbdcefdd87/-/format/auto/-/resize/375x/StraightExtensionsMayvenn.jpg"
-                       :src-set "//ucarecdn.com/cf60bdc3-09df-4ee3-87a8-d3cbdcefdd87/-/format/auto/-/resize/750x/-/quality/lightest/StraightExtensionsMayvenn.jpg 2x"}]])
+   [:img.block.col-12 {:src     "//ucarecdn.com/7df3b65c-5da0-41e8-ad48-f7479f9907a2/-/format/auto/-/resize/375x/BecomeAMayvennStylist.jpg"
+                       :src-set "//ucarecdn.com/7df3b65c-5da0-41e8-ad48-f7479f9907a2/-/format/auto/-/resize/750x/-/quality/lightest/BecomeAMayvennStylist.jpg 2x"}]])
 
 (defn sign-up-panel [{:keys [focused field-errors first-name last-name phone email website-url facebook-url instagram-handle number-of-clients number-of-clients-options spinning?]}]
   [:div.rounded.bg-lighten-4.p3
@@ -236,6 +236,12 @@
     [:div.container
      [:div.container.col-12.mx-auto {:dangerouslySetInnerHTML {:__html video-html}}]]))
 
+(defn ^:private press-quote [copy img-src]
+  [:div.col-on-tb-dt.col-4-on-tb-dt.px3-on-tb-dt
+   [:div.py3
+    [:blockquote.m0.mb2.h4 copy]
+    [:img.mt1 {:src img-src :style {:width "201px"}}]]])
+
 (def clients-love-section
   [:section.pt6.center
    [:div.px3.max-580.mx-auto.center.mb6
@@ -243,19 +249,16 @@
    stylist-success-story-video
    [:div.px3.mt3
     [:div.clearfix.px2.mxn3-on-tb-dt
-     [:div.col-on-tb-dt.col-4-on-tb-dt.px3-on-tb-dt
-      [:div.py3
-       [:blockquote.m0.mb2.h4 "\"Mayvenn, the genius site that allows stylists to sell product directly to clients without having to worry about hidden costs and inventory.\""]
-       [:img {:src "//ucarecdn.com/e99ef6bb-c91f-44de-b4ff-ad69b843adb2/-/format/auto/presslogoessence.png" :style {:width "201px"}}]]]
-     [:div.col-on-tb-dt.col-4-on-tb-dt.px3-on-tb-dt
-      [:div.py3
-       [:blockquote.m0.mb2.h4 "\"They offer 100% quality virgin hair in various lengths and textures to over 50,000 women. "
-        "They empower hairstylists to be their own retailers and provide an additional revenue stream.\""]
-       [:img {:src "//ucarecdn.com/1089bc49-af30-4182-9059-a4e710b95ddb/-/format/auto/presslogohellobeautiful.png" :style {:width "201px"}}]]]
-     [:div.col-on-tb-dt.col-4-on-tb-dt.px3-on-tb-dt
-      [:div.py3
-       [:blockquote.m0.mb2.h4 "\"Mayvenn sources, purchases, warehouses, and distributes inventory on behalf of its users. It also handles customer service issues for them.\""]
-       [:img {:src "//ucarecdn.com/65e43a97-c265-46f8-a023-2476f8a60ea0/-/format/auto/presslogowsj.png" :style {:width "201px"}}]]]]]])
+      (press-quote
+       "\"Mayvenn, the genius site that allows stylists to sell product directly to clients without having to worry about hidden costs and inventory.\""
+       "//ucarecdn.com/e99ef6bb-c91f-44de-b4ff-ad69b843adb2/-/format/auto/presslogoessence.png")
+      (press-quote
+       (str "\"They offer 100% quality virgin hair in various lengths and textures to over 50,000 women. "
+            "They empower hairstylists to be their own retailers and provide an additional revenue stream.\"")
+       "//ucarecdn.com/1089bc49-af30-4182-9059-a4e710b95ddb/-/format/auto/presslogohellobeautiful.png")
+      (press-quote
+       "\"Mayvenn sources, purchases, warehouses, and distributes inventory on behalf of its users. It also handles customer service issues for them.\""
+       "//ucarecdn.com/65e43a97-c265-46f8-a023-2476f8a60ea0/-/format/auto/presslogowsj.png")]]])
 
 (def q-and-as
   [{:q "Is there a cost to be a Mayvenn Stylist and to sell Mayvenn products?"
