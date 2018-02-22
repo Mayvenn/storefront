@@ -28,11 +28,11 @@
 
 (defn sign-up-panel [{:keys [focused field-errors first-name last-name phone email website-url facebook-url instagram-handle number-of-clients number-of-clients-options spinning?]}]
   [:div.rounded.bg-lighten-4.p3
-   [:form.col-12.flex.flex-column.items-center
+   [:form.col-12.flex.flex-column
     {:on-submit (utils/send-event-callback events/leads-control-sign-up-submit {})
      :data-test "leads-sign-up-form"
      :method    "POST"}
-    [:p "About You"]
+    [:p.mb2 "About You"]
     (ui/text-field {:data-test "sign-up-first-name"
                     :errors    (get field-errors ["first-name"])
                     :id        "sign-up-first-name"
@@ -73,7 +73,7 @@
                     :type      "email"
                     :value     email})
 
-    [:p "About Your Business"]
+    [:p.mb2 "About Your Business"]
     (ui/text-field {:data-test "sign-up-website-url"
                     :errors    (get field-errors ["website-url"])
                     :id        "sign-up-website-url"
@@ -128,36 +128,35 @@
       (sign-up-panel sign-up)]]]])
 
 (def success-stories-section
-  (let [video-src  "https://embedwistia-a.akamaihd.net/deliveries/2029303b76647441fe1cd35778556282f8c40e68/file.mp4"
-        image-src  "https://ucarecdn.com/b2083468-3738-410f-944b-ad9ffdad0997/-/format/auto/stylistsuccessposterplaybutton.jpg"
-        ;; TODO Figure out why playing after figwheel reloads breaks chrome (aw, snap!)
-        video-html (str "<video onClick=\"this.play();\" loop muted poster=\""
-                        image-src
-                        "\" preload=\"none\" playsinline controls preload=\"none\" class=\"col-12\"><source src=\""
-                        video-src
-                        "\"></source></video>")]
-    [:section.center.pt6
+  (let [mobile-url "//ucarecdn.com/b9297a82-e947-486a-8f95-73ba18250269/"
+        desktop-url "//ucarecdn.com/878349cd-9510-4493-b990-c83aec10e41b/"
+        file-name "hairbundles.png"
+        alt "Hair Bundles"]
+    [:section.center.pt6.bg-light-teal
      [:div.max-580.mx-auto.center
-      [:div.px3.pb4
-       [:h2 "Mayvenn success stories"]
-       [:p
-        "Our ambitious group of stylists share a common goal of pursuing their passions and unlocking their full potential. "
-        "Watch how Mayvenn is helping them achieve some of their biggest dreams."]]]
-     [:div.container
-      [:div.container.col-12.mx-auto {:dangerouslySetInnerHTML {:__html video-html}}]]]))
-
-(def what-is-mayvenn-section
-  [:section.px3.py6.center
-   [:div.max-580.mx-auto.center
-    [:h2 "What is Mayvenn?"]
-    [:p.mb4 "Mayvenn is a black-owned hair company whose mission is to empower hair stylists to sell directly to their clients."]
-    [:p.mb4 "You already suggest hair products to your clients. "
-     "Become a Mayvenn stylist and start earning cash for yourself, "
-     "instead of sending clients to the beauty supply store."]]])
+      [:div.px3.pb2
+       [:h2 "Success Stories"]
+       [:p "Don't take our word for it. Our community speaks for itself."]]]
+     [:div.py2
+      [:p.h1.bold.white "200,000+"]
+      [:p.h5 "happy customers"]]
+     [:picture.mbnp6
+      ;; Desktop
+      [:source {:media   "(min-width: 1000px)"
+                :src-set (str desktop-url "-/format/auto/" file-name " 1x, "
+                              desktop-url "-/format/auto/-/quality/lightest/" file-name " 2x")}]
+      ;; Tablet
+      [:source {:media   "(min-width: 750px)"
+                :src-set (str desktop-url "-/format/auto/-/resize/768x/" file-name " 1x, "
+                              desktop-url "-/format/auto/-/resize/720x/-/quality/lightest/" file-name " 2x")}]
+      ;; Mobile
+      [:img.block.col-12 {:src     (str mobile-url "-/format/auto/-/resize/375x/" file-name)
+                          :src-set (str mobile-url "-/format/auto/-/resize/750x/-/quality/lightest/" file-name " 2x")
+                          :alt     alt}]]]))
 
 (def our-stylists-thrive-section
   (let [section (fn [icon copy]
-                  [:div.col-on-tb-dt.col-4-on-tb-dt.px3-on-tb-dt.mb8
+                  [:div.col-on-tb-dt.col-3-on-tb-dt.px3-on-tb-dt.mb8
                    icon
                    [:p.h6.mb4 copy]])]
     [:section.px3.py6.center
@@ -195,87 +194,54 @@
 
 (def how-mayvenn-works-section
   (let [segment (fn [num copy]
-                  [:div.pb4
-                   [:div.h1.bold.bg-white.light-teal.mx-auto.capped.pt4.my2
+                  [:div.pb4.col-on-tb-dt.col-3-on-tb-dt
+                   [:div.h1.bold.bg-white.light-teal.mx-auto.capped.my2
                     {:style {:width "75px" :height "75px"}}
-                    num]
+                    [:div.table-cell.align-middle
+                     {:style {:width "75px" :height "75px"}}
+                     num]]
                    [:p.h6 copy]])]
     [:section.center.px3.pt6.pb3.bg-light-teal
      [:div.max-580.mx-auto.center
       [:h2 "How Mayvenn Works"]
       [:p.mb4 "We build your beauty supply store for you. From tracking inventory, to customer service, and website maintenance, we support you."]]
-     [:div.mx-auto.center
+     [:div.mx-auto.center.clearfix
       (segment "1" "Apply to become part of our expert stylist community.")
       (segment "2" "Work with our team to get onboarded, and activate your custom website.")
       (segment "3" "Start sharing your website provided by Mayvenn with clients.")
       (segment "4" "Grow your business, earn more money, and delight clients.")]]))
 
-(def guarantee-section
-  [:section.center
-   [:div.bg-center.bg-top.bg-cover.bg-our-hair]
-   [:div.px3.pt6.pb4
-    [:div.max-580.mx-auto.center
-     [:h2 "Quality Guaranteed"]
-     [:p.mb1 "We sell 100% virgin human hair in a wide variety of textures and colors. "
-      "We offer Peruvian, Malaysian, Indian, and Brazilian virgin hair that is machine-wefted, tangle-free and handpicked for quality."]]]])
+(def stylist-success-story-video
+  (let [video-src  "https://embedwistia-a.akamaihd.net/deliveries/2029303b76647441fe1cd35778556282f8c40e68/file.mp4"
+        image-src  "https://ucarecdn.com/b2083468-3738-410f-944b-ad9ffdad0997/-/format/auto/stylistsuccessposterplaybutton.jpg"
+        video-html (str "<video onClick=\"this.play();\" loop muted poster=\""
+                        image-src
+                        "\" preload=\"none\" playsinline controls preload=\"none\" class=\"col-12\"><source src=\""
+                        video-src
+                        "\"></source></video>")]
+    [:div.container
+     [:div.container.col-12.mx-auto {:dangerouslySetInnerHTML {:__html video-html}}]]))
 
-(defn tweet [link date byline & content]
-  [:div.mb1.flex.justify-center
-   [:blockquote.mx-auto.twitter-tweet {:data-cards "hidden"
-                                       :data-lang  "en"}
-    (into [:p {:lang "en" :dir "ltr"}] content)
-    (str "— " byline " ")
-    [:a {:href link} date]]])
-
-(def numbers-section
-  (let [rule [:div.hide-on-tb-dt.border-white.border-bottom]]
-    [:section.px3.pt6.center
-     [:div.max-580.mx-auto.center
-      [:h2 "The best in the business"]
-      [:p "Our stylists have sold over $35 million in hair products which has helped grow their incomes and support their communities."]]
-     [:div.container
-      [:div.clearfix.px2
-       [:div.col-on-tb-dt.col-4-on-tb-dt
-        [:div.py6
-         [:h3.h2 "Member stylists"]
-         [:p.h0 "100,000+"]]
-        rule]
-       [:div.col-on-tb-dt.col-4-on-tb-dt
-        [:div.py6
-         [:h3.h2 "Stylist payouts"]
-         [:p.h0 "$5,000,000+"]]
-        rule]
-       [:div.col-on-tb-dt.col-4-on-tb-dt
-        [:div.py6
-         [:h3.h2 "Happy customers"]
-         [:p.h0 "200,000+"]]]]]]))
-
-(def press-section
-  (let [rule [:div.hide-on-tb-dt.border-teal.border-bottom]]
-    [:section.px3.pt6.center.bg-teal.white
-     [:div.max-580.mx-auto.center
-      [:h2 "In the press"]
-      [:p "Don’t just take our word for it. As the Mayvenn movement continues to grow so do our stylists’ earnings."]]
-     [:div.container
-      [:div.clearfix.px2.mxn3-on-tb-dt
-       [:div.col-on-tb-dt.col-4-on-tb-dt.px3-on-tb-dt
-        [:div.py6
-         [:blockquote.m0.mb2.h6 "\"Mayvenn, the genius site that allows stylists to sell product directly to clients without having to worry about hidden costs and inventory.\""]
-         [:img {:src "//ucarecdn.com/22ee98ef-927b-47be-a197-6adc0930f389/-/format/auto/presslogoessence.png" :style {:width "201px"}}]
-         [:p.h6 "November 24, 2016"]]
-        rule]
-       [:div.col-on-tb-dt.col-4-on-tb-dt.px3-on-tb-dt
-        [:div.py6
-         [:blockquote.m0.mb2.h6 "\"They offer 100% quality virgin hair in various lengths and textures to over 50,000 women. "
-          "They empower hairstylists to be their own retailers and provide an additional revenue stream.\""]
-         [:img {:src "//ucarecdn.com/eaa78d5e-f5fd-4fa7-8896-658a80787cc5/-/format/auto/presslogohellobeautiful.png" :style {:width "201px"}}]
-         [:p.h6 "September 8, 2016"]]
-        rule]
-       [:div.col-on-tb-dt.col-4-on-tb-dt.px3-on-tb-dt
-        [:div.py6
-         [:blockquote.m0.mb2.h6 "\"Mayvenn sources, purchases, warehouses, and distributes inventory on behalf of its users. It also handles customer service issues for them.\""]
-         [:img {:src "//ucarecdn.com/09a568b1-6365-4620-8699-230b2eef8be0/-/format/auto/presslogowsj.png" :style {:width "201px"}}]
-         [:p.h6 "June 19, 2015"]]]]]]))
+(def clients-love-section
+  [:section.pt6.center
+   [:div.px3.max-580.mx-auto.center.mb6
+    [:h2 "Your clients will love wearing Mayvenn Hair"]]
+   stylist-success-story-video
+   [:div.px3.mt3
+    [:div.clearfix.px2.mxn3-on-tb-dt
+     [:div.col-on-tb-dt.col-4-on-tb-dt.px3-on-tb-dt
+      [:div.py3
+       [:blockquote.m0.mb2.h4 "\"Mayvenn, the genius site that allows stylists to sell product directly to clients without having to worry about hidden costs and inventory.\""]
+       [:img {:src "//ucarecdn.com/e99ef6bb-c91f-44de-b4ff-ad69b843adb2/-/format/auto/presslogoessence.png" :style {:width "201px"}}]]]
+     [:div.col-on-tb-dt.col-4-on-tb-dt.px3-on-tb-dt
+      [:div.py3
+       [:blockquote.m0.mb2.h4 "\"They offer 100% quality virgin hair in various lengths and textures to over 50,000 women. "
+        "They empower hairstylists to be their own retailers and provide an additional revenue stream.\""]
+       [:img {:src "//ucarecdn.com/1089bc49-af30-4182-9059-a4e710b95ddb/-/format/auto/presslogohellobeautiful.png" :style {:width "201px"}}]]]
+     [:div.col-on-tb-dt.col-4-on-tb-dt.px3-on-tb-dt
+      [:div.py3
+       [:blockquote.m0.mb2.h4 "\"Mayvenn sources, purchases, warehouses, and distributes inventory on behalf of its users. It also handles customer service issues for them.\""]
+       [:img {:src "//ucarecdn.com/65e43a97-c265-46f8-a023-2476f8a60ea0/-/format/auto/presslogowsj.png" :style {:width "201px"}}]]]]]])
 
 (def q-and-as
   [{:q "Is there a cost to be a Mayvenn Stylist and to sell Mayvenn products?"
@@ -345,9 +311,7 @@
     our-stylists-thrive-section
     (hero-section (:hero data))
     success-stories-section
-    numbers-section
-    what-is-mayvenn-section
-    press-section
+    clients-love-section
     [:section.center.px3.py6
      (faq-section q-and-as (:faq data))]
     (footer (:footer data))]))
