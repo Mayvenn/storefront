@@ -26,6 +26,20 @@
             [storefront.request-keys :as request-keys]
             [storefront.components.svg :as svg]))
 
+(def become-a-mayvenn-stylist-section
+  [:div
+   [:section.px3.py6.center {:style {:background "#E5E5E5"}}
+
+    [:div.container
+     [:h2.mb4 "Become a Mayvenn stylist and join the movement"]
+     [:p.h6 "We're a black-owned hair company with hustle, that empowers "
+      "hair stylists to think bigger, build their businesses, and achieve "
+      "their dreams. Instead of sending clients to beauty supply shops, we "
+      "provide a custom platform for stylists to sell the high-quality hair "
+      "directly, earn commissions from these sales, and be part of a movement."]]]
+   [:img.block.col-12 {:src     "//ucarecdn.com/cf60bdc3-09df-4ee3-87a8-d3cbdcefdd87/-/format/auto/-/resize/375x/StraightExtensionsMayvenn.jpg"
+                       :src-set "//ucarecdn.com/cf60bdc3-09df-4ee3-87a8-d3cbdcefdd87/-/format/auto/-/resize/750x/-/quality/lightest/StraightExtensionsMayvenn.jpg 2x"}]])
+
 (defn sign-up-panel [{:keys [focused field-errors first-name last-name phone email website-url facebook-url instagram-handle number-of-clients number-of-clients-options spinning?]}]
   [:div.rounded.bg-lighten-4.p3
    [:form.col-12.flex.flex-column
@@ -307,6 +321,7 @@
   (component/create
    [:div
     (header/built-component data nil)
+    become-a-mayvenn-stylist-section
     how-mayvenn-works-section
     our-stylists-thrive-section
     (signup-section (:hero data))
