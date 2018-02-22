@@ -24,20 +24,17 @@
                          referrals
                          payout-method
                          stylist-transfers?
-                         cash-out-now?]} owner opts]
+                         cash-out-now?
+                         next-payout-slide]} owner opts]
   (om/component
    (html
     [:.container
      (if stylist-transfers?
        (om/build new-stylist-dashboard-stats-component {:payout-stats          payout-stats
-                                                        :show-cash-out-now-ui? (and cash-out-now?
-                                                                                    (cash-out-eligible-payout-methods
-                                                                                     payout-method))})
+                                                        :next-payout-slide     next-payout-slide})
        (om/build stylist-dashboard-stats-component {:stats                 stats
                                                     :payout-method         payout-method
-                                                    :show-cash-out-now-ui? (and cash-out-now?
-                                                                                (cash-out-eligible-payout-methods
-                                                                                 payout-method))}))
+                                                    :next-payout-slide     next-payout-slide}))
 
      [:div.bg-light-gray
       [:div.col-6-on-tb-dt.mx-auto
@@ -60,20 +57,27 @@
        (om/build referrals/component referrals))])))
 
 (defn query [data]
-  (let [payout-method         (get-in data (conj keypaths/stylist-manage-account :original_payout_method))
-        cash-out-now?         (experiments/cash-out-now? data)]
-      {:nav-event             (get-in data keypaths/navigation-event)
-       :stats                 (get-in data keypaths/stylist-stats)
-       :payout-stats          (get-in data keypaths/stylist-payout-stats)
-       :earnings              (earnings/query data)
-       :new-earnings          (new-earnings/query data)
-       :payout-method         payout-method
-       :bonuses               (bonuses/query data)
-       :cash-out-now?         cash-out-now?
-       :referrals             (referrals/query data)
-       :stylist-transfers?    (experiments/stylist-transfers? data)
-       :show-cash-out-now-ui? (and cash-out-now?
-                                   (cash-out-eligible-payout-methods payout-method))}))
+  (let [payout-method      (get-in data (conj keypaths/stylist-manage-account :original_payout_method))
+        cash-out-now?      (experiments/cash-out-now? data)
+        cash-out-eligible? (and cash-out-now?
+                                (cash-out-eligible-payout-methods payout-method))
+        payout-stats       (get-in data keypaths/stylist-payout-stats)]
+    {:nav-event          (get-in data keypaths/navigation-event)
+     :stats              (get-in data keypaths/stylist-stats)
+     :payout-stats       payout-stats
+     :earnings           (earnings/query data)
+     :new-earnings       (new-earnings/query data)
+     :payout-method      payout-method
+     :bonuses            (bonuses/query data)
+     :cash-out-now?      cash-out-now?
+     :referrals          (referrals/query data)
+     :stylist-transfers? (experiments/stylist-transfers? data)
+     :next-payout-slide  (cond
+                           (-> payout-stats
+                               :initiated-payout
+                               :status-id)    :stats/transfer-in-progress
+                           cash-out-eligible? :stats/cash-out-now
+                           :else              :stats/next-payout)}))
 
 (defn built-component [data opts]
   (om/build component (query data) opts))

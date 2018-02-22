@@ -570,7 +570,7 @@
               :user-id    user-id
               :user-token user-token}
     :handler #(messages/handle-message event
-                                       (select-keys % [:lifetime-stats :next-payout :previous-payout]))}))
+                                       (select-keys % [:lifetime-stats :next-payout :previous-payout :initiated-payout]))}))
 
 (defn cash-out-now
   [user-id user-token stylist-id]
