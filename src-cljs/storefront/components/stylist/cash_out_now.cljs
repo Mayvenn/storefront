@@ -32,8 +32,9 @@
            "") ]
         [:div.my3
          {:data-test "cash-out-button"
-          :data-ref "cash-out-button"}
-         (ui/teal-button (utils/route-to events/navigate-stylist-dashboard-cash-out-pending) "Cash out")]]]))))
+          :data-ref  "cash-out-button"}
+         (ui/teal-button {:on-click (utils/send-event-callback events/control-stylist-dashboard-cash-out-submit)}
+          "Cash out")]]]))))
 
 (defn query [data]
   (let [{:keys [amount payout-method]} (get-in data keypaths/stylist-payout-stats-next-payout)]
@@ -56,6 +57,22 @@
                                   (get-in app-state keypaths/store-stylist-id)
                                   (get-in app-state keypaths/user-id)
                                   (get-in app-state keypaths/user-token))))
+
+(defmethod effects/perform-effects events/control-stylist-dashboard-cash-out-submit [_ _ _ _ app-state]
+  (let [stylist-id (get-in app-state keypaths/store-stylist-id)
+        user-id    (get-in app-state keypaths/user-id)
+        user-token (get-in app-state keypaths/user-token)]
+    (api/cash-out-now user-id user-token stylist-id)))
+
+(defmethod effects/perform-effects events/api-success-cash-out-now
+  [_ _ {:keys [status-id balance-transfer-id]} _ app-state]
+  (effects/redirect events/navigate-stylist-dashboard-cash-out-pending))
+
+(defmethod transitions/transition-state events/api-success-cash-out-now
+  [_ _ {:keys [status-id balance-transfer-id]} app-state]
+  (-> app-state
+      (assoc-in keypaths/stylist-cash-out-status-id status-id)
+      (assoc-in keypaths/stylist-cash-out-balance-transfer-id balance-transfer-id)))
 
 (defmethod effects/perform-effects events/api-success-stylist-payout-stats-cash-out-now
   [_ _ {next-payout :next-payout} _ app-state]

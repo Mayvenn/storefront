@@ -210,6 +210,9 @@
 (defpath control-stylist-account-commission-submit)
 (defpath control-stylist-account-social-submit)
 
+(defpath control-stylist-dashboard-cash-out-now-submit)
+(defpath control-stylist-dashboard-cash-out-submit)
+
 (defpath control-commission-order-expand)
 
 (defpath control-category-panel-open)

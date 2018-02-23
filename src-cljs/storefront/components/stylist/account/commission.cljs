@@ -154,6 +154,8 @@
          "check"         [:p.ml1.mb3.h6 "Checks will mail to the address entered here"]
          [:p.ml1.mb3.h6 "Checks will mail to the address entered here"])]]
 
+     [:div.col.col-12.col-6-on-tb-dt.pt3.pb4.underline
+      [:a.teal (utils/route-to events/navigate-stylist-dashboard-earnings) "View your earnings"]]
 
      [:div.col.col-12.col-6-on-tb-dt
       [:div.mx-auto.col-12.col-10-on-tb-dt

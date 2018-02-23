@@ -6,8 +6,10 @@
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
-            [storefront.platform.component-utils :as util]
-            [storefront.platform.carousel :as carousel]))
+            [storefront.platform.component-utils :as utils]
+            [storefront.platform.carousel :as carousel]
+            [storefront.effects :as effects]
+            [storefront.history :as history]))
 
 (def payday 3) ;; 3 -> Wednesday in JS
 
@@ -52,9 +54,8 @@
         [:div
          [:.py2.h0 re-center-money (ui/big-money amount)]
          [:div.col-5.mt1.mb2.mx-auto
-          (ui/light-ghost-button (merge
-                                  {:class "rounded-1 p1 light"}
-                                  (util/route-to events/navigate-stylist-dashboard-cash-out-now))
+          (ui/light-ghost-button {:on-click (utils/send-event-callback events/control-stylist-dashboard-cash-out-now-submit)
+                                  :class    "rounded-1 p1 light"}
                                  [:span.ml1 "Cash Out Now"]
                                  [:span.ml2
                                   (svg/dropdown-arrow {:class  "stroke-white"
@@ -148,3 +149,7 @@
                               :swipe  true
                               :initialSlide initial-slide-index}}
                   {:react-key "stat-swiper"})]]))))
+
+(defmethod effects/perform-effects events/control-stylist-dashboard-cash-out-now-submit
+  [_ _ _ _ app-state]
+  (history/enqueue-navigate events/navigate-stylist-dashboard-cash-out-now))

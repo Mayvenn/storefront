@@ -26,13 +26,6 @@
 (defn built-component [data opts]
   (om/build component {} opts))
 
-(defmethod effects/perform-effects events/navigate-stylist-dashboard-cash-out-pending
-  [_ _ _ _ app-state]
-  (let [stylist-id (get-in app-state keypaths/store-stylist-id)
-        user-id (get-in app-state keypaths/user-id)
-        user-token (get-in app-state keypaths/user-token)]
-    (api/cash-out-now user-id user-token stylist-id)))
-
 (defmethod transitions/transition-state events/api-success-cash-out-now
   [_ _ {:keys [status-id balance-transfer-id]} app-state]
   (-> app-state
@@ -43,14 +36,13 @@
   (js/setTimeout (fn [] (api/cash-out-status user-id user-token status-id stylist-id))
                  3000))
 
-(defmethod effects/perform-effects events/api-success-cash-out-now
+(defmethod effects/perform-effects events/navigate-stylist-dashboard-cash-out-pending
   [_ _ _ _ app-state]
   (let [status-id  (get-in app-state keypaths/stylist-cash-out-status-id)
         user-id    (get-in app-state keypaths/user-id)
         user-token (get-in app-state keypaths/user-token)
         stylist-id (get-in app-state keypaths/store-stylist-id)]
     (poll-status user-id user-token status-id stylist-id)))
-
 
 (defmethod effects/perform-effects events/api-success-cash-out-status
   [_ _ {:keys [status]} _ app-state]
