@@ -38,10 +38,11 @@
    "/_style/carousel"        (edn->bidi events/navigate-style-guide-carousel)})
 
 (def leads-routes
-  {"/stylists/welcome"           (edn->bidi events/navigate-leads-home)
-   "/stylists/thank-you"         (edn->bidi events/navigate-leads-resolve)
-   "/stylists/flows/2/details"   (edn->bidi events/navigate-leads-registration-details)
-   "/stylists/flows/2/thank-you" (edn->bidi events/navigate-leads-registration-resolve)})
+  {"/stylists/welcome"              (edn->bidi events/navigate-leads-home)
+   "/stylists/thank-you"            (edn->bidi events/navigate-leads-resolve)
+   "/stylists/flows/a1/thank-you-1" (edn->bidi events/navigate-leads-receive-a1)
+   "/stylists/flows/2/details"      (edn->bidi events/navigate-leads-registration-details)
+   "/stylists/flows/2/thank-you"    (edn->bidi events/navigate-leads-registration-resolve)})
 
 (def catalog-routes
   {["/categories/" [#"\d+" :catalog/category-id] "-" :page/slug]

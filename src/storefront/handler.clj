@@ -332,13 +332,14 @@
 
 (defn render-leads-page
   [render-ctx data req params]
-  (let [onboarding-status     (get-in data leads.keypaths/onboarding-status)
-        lead-id       (get-in data leads.keypaths/lead-id)
-        nav-event     (get-in data keypaths/navigation-event)
-        home          events/navigate-leads-home
-        details       events/navigate-leads-registration-details
-        thank-you     events/navigate-leads-resolve
-        reg-thank-you events/navigate-leads-registration-resolve]
+  (let [onboarding-status (get-in data leads.keypaths/onboarding-status)
+        lead-id           (get-in data leads.keypaths/lead-id)
+        nav-event         (get-in data keypaths/navigation-event)
+        home              events/navigate-leads-home
+        details           events/navigate-leads-registration-details
+        thank-you         events/navigate-leads-resolve
+        receive-a1        events/navigate-leads-receive-a1
+        reg-thank-you     events/navigate-leads-registration-resolve]
     (redirect-if-necessary render-ctx data
                            (redir-table nav-event
                                         ;; nav-event        ;; redir to     ;; condition
@@ -348,6 +349,9 @@
                                         thank-you           home            (or (empty? lead-id)
                                                                                 (not=   onboarding-status
                                                                                         "awaiting-call"))
+                                        receive-a1          home            (or (empty? lead-id)
+                                                                                (not=   onboarding-status
+                                                                                        "stylist-created"))
                                         reg-thank-you       home            (or (empty? lead-id)
                                                                                 (not=   onboarding-status
                                                                                         "stylist-created"))))))

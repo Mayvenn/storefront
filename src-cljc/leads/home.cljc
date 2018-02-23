@@ -462,11 +462,13 @@
   [_ _ _ previous-app-state app-state]
   #?(:cljs
      (let [{:keys [flow-id state] lead-id :id} (get-in app-state keypaths/remote-lead)
-           lead                          (get-in previous-app-state keypaths/lead)]
+           lead                                (get-in previous-app-state keypaths/lead)]
        (cookie-jar/save-lead (get-in app-state storefront.keypaths/cookie)
-                             {"lead-id"             lead-id
+                             {"lead-id"           lead-id
                               "onboarding-status" "lead-created"})
-       (history/enqueue-navigate events/navigate-leads-resolve))))
+       (history/enqueue-navigate (if (= (:flow-name lead) "a1")
+                                   events/navigate-leads-receive-a1
+                                   events/navigate-leads-resolve)))))
 
 (defmethod effects/perform-effects events/navigate-leads
   [_ _ _ _ app-state]

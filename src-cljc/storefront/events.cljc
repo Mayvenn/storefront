@@ -98,6 +98,7 @@
 (defpath navigate-leads-registration-details)
 (defpath navigate-leads-registration-resolve)
 (defpath navigate-leads-resolve)
+(defpath navigate-leads-receive-a1)
 
 (defpath menu-traverse-root)
 (defpath menu-traverse-ascend)
