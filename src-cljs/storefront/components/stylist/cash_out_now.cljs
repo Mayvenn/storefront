@@ -47,8 +47,8 @@
 (defn ^:private should-redirect? [next-payout]
   (cond
     (some-> next-payout :payout-method payouts/cash-out-eligible? not) true
-    (some-> next-payout :amount pos? not)                      true
-    :else                                                      false))
+    (some-> next-payout :amount pos? not)                              true
+    :else                                                              false))
 
 (defmethod effects/perform-effects events/navigate-stylist-dashboard-cash-out-now [_ _ _ _ app-state]
   (if (should-redirect? (get-in app-state keypaths/stylist-payout-stats-next-payout))
