@@ -10,8 +10,11 @@
             [storefront.api :as api]
             [storefront.effects :as effects]))
 
+(defn cash-out-eligible? [payout-method]
+  (boolean (= "Mayvenn InstaPay" (:name payout-method))))
+
 (defn component [{:keys [amount payout-method cash-out-pending?]} owner opts]
-  (let [{:keys [name last4 email payout-timeframe]} payout-method]
+  (let [{:keys [name last-4 email payout-timeframe]} payout-method]
     (om/component
      (html
       [:div.container.p4
@@ -19,9 +22,7 @@
        [:div.col-12.flex.items-center.justify-between.my3
         [:div
          [:div.h6 name]
-         (if last4
-           [:div.h7 "Linked Card XXXX-XXXX-XXXX-" last4]
-           [:div.h7 "PayPal Email: " email])]
+         [:div.h7 "Linked Card XXXX-XXXX-XXXX-" (or last-4 "????")]]
         [:h2.teal (mf/as-money amount)]]
        [:div
         [:div.navy.center.h7
@@ -33,7 +34,8 @@
         [:div.my3
          {:data-test "cash-out-button"
           :data-ref  "cash-out-button"}
-         (ui/teal-button {:on-click (utils/send-event-callback events/control-stylist-dashboard-cash-out-submit)}
+         (ui/teal-button {:on-click (utils/send-event-callback events/control-stylist-dashboard-cash-out-submit)
+                          :disabled? (not (cash-out-eligible? payout-method))}
           "Cash out")]]]))))
 
 (defn query [data]
@@ -46,9 +48,9 @@
 
 (defn ^:private should-redirect? [next-payout]
   (cond
-    (some-> next-payout :payout-method :name (not= "Mayvenn InstaPay")) true
-    (some-> next-payout :amount pos? not)                               true
-    :else                                                               false))
+    (some-> next-payout :payout-method cash-out-eligible? not) true
+    (some-> next-payout :amount pos? not)                      true
+    :else                                                      false))
 
 (defmethod effects/perform-effects events/navigate-stylist-dashboard-cash-out-now [_ _ _ _ app-state]
   (if (should-redirect? (get-in app-state keypaths/stylist-payout-stats-next-payout))
