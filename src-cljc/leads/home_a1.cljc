@@ -38,7 +38,7 @@
       "provide a custom platform for stylists to sell the high-quality hair "
       "directly, earn commissions from these sales, and be part of a movement."]]]
    [:img.block.col-12 {:src     "//ucarecdn.com/7df3b65c-5da0-41e8-ad48-f7479f9907a2/-/format/auto/-/resize/375x/BecomeAMayvennStylist.jpg"
-                       :src-set "//ucarecdn.com/7df3b65c-5da0-41e8-ad48-f7479f9907a2/-/format/auto/-/resize/750x/-/quality/lightest/BecomeAMayvennStylist.jpg 2x"}]])
+                       :src-set "//ucarecdn.com/7df3b65c-5da0-41e8-ad48-f7479f9907a2/-/format/auto/-/quality/lightest/BecomeAMayvennStylist.jpg 2x"}]])
 
 (defn sign-up-panel [{:keys [focused field-errors first-name last-name phone email website-url facebook-url instagram-handle number-of-clients number-of-clients-options spinning?]}]
   [:div.rounded.bg-lighten-4.p3
