@@ -99,8 +99,8 @@
 
 
 (defn ^:private instapay-payout-details [payout_method]
-  (info-columns ["Card Last 4" (:last4 payout_method)]
-                ["Estimated Arrival" (:payout_timeframe payout_method)]))
+  (info-columns ["Card" (str "xxxx-xxxx-xxxx-" (or (:last4 payout_method) "????"))]
+                ["Estimated Arrival" (or (:payout_timeframe payout_method) "Unknown")]))
 
 (defn ^:private paypal-payout-details [payout_method]
   (info-columns ["Paypal Email Address" (:email payout_method)]

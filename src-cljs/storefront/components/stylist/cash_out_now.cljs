@@ -22,7 +22,7 @@
        [:div.col-12.flex.items-center.justify-between.my3
         [:div
          [:div.h6 name]
-         [:div.h7 "Linked Card XXXX-XXXX-XXXX-" (or last-4 "????")]]
+         [:div.h7 "Linked Card xxxx-xxxx-xxxx-" (or last-4 "????")]]
         [:h2.teal (mf/as-money amount)]]
        [:div
         [:div.navy.center.h7
