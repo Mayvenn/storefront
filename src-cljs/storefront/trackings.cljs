@@ -399,3 +399,12 @@
                           {:stylist_id         stylist-id
                            :amount             (js/parseFloat amount)
                            :payout_method_name (:name payout-method)})))
+
+(defmethod perform-track events/control-stylist-dashboard-cash-out-submit
+  [_ _ _ app-state]
+  (let [stylist-id                     (get-in app-state keypaths/store-stylist-id)
+        {:keys [amount payout-method]} (get-in app-state keypaths/stylist-payout-stats-next-payout)]
+    (stringer/track-event "dashboard_cash_out_button_pressed"
+                          {:stylist_id         stylist-id
+                           :amount             (js/parseFloat amount)
+                           :payout_method_name (:name payout-method)})))
