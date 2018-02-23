@@ -9,7 +9,8 @@
             [storefront.platform.component-utils :as utils]
             [storefront.platform.carousel :as carousel]
             [storefront.effects :as effects]
-            [storefront.history :as history]))
+            [storefront.history :as history]
+            [storefront.accessors.payouts :as payouts]))
 
 (def payday 3) ;; 3 -> Wednesday in JS
 
@@ -53,15 +54,16 @@
       (if (> amount 0)
         [:div
          [:.py2.h0 re-center-money (ui/big-money amount)]
-         [:div.col-5.mt1.mb2.mx-auto
-          (ui/light-ghost-button {:on-click (utils/send-event-callback events/control-stylist-dashboard-cash-out-now-submit)
-                                  :class    "rounded-1 p1 light"}
-                                 [:span.ml1 "Cash Out Now"]
-                                 [:span.ml2
-                                  (svg/dropdown-arrow {:class  "stroke-white"
-                                                       :width  "12px"
-                                                       :height "10px"
-                                                       :style  {:transform "rotate(-90deg)"}})])]]
+         (when (payouts/cash-out-eligible? next-payout)
+           [:div.col-5.mt1.mb2.mx-auto
+            (ui/light-ghost-button {:on-click (utils/send-event-callback events/control-stylist-dashboard-cash-out-now-submit)
+                                    :class    "rounded-1 p1 light"}
+                                   [:span.ml1 "Cash Out Now"]
+                                   [:span.ml2
+                                    (svg/dropdown-arrow {:class  "stroke-white"
+                                                         :width  "12px"
+                                                         :height "10px"
+                                                         :style  {:transform "rotate(-90deg)"}})])])]
         [:div
          [:.py2.h0 svg/large-dollar]
          [:div "See your available earnings here."]])]]))

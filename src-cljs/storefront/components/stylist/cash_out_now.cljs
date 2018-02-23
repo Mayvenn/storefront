@@ -5,13 +5,11 @@
             [storefront.components.money-formatters :as mf]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
+            [storefront.accessors.payouts :as payouts]
             [storefront.components.ui :as ui]
             [storefront.transitions :as transitions]
             [storefront.api :as api]
             [storefront.effects :as effects]))
-
-(defn cash-out-eligible? [payout-method]
-  (boolean (= "Mayvenn InstaPay" (:name payout-method))))
 
 (defn component [{:keys [amount payout-method cash-out-pending?]} owner opts]
   (let [{:keys [name last-4 email payout-timeframe]} payout-method]
@@ -35,7 +33,7 @@
          {:data-test "cash-out-button"
           :data-ref  "cash-out-button"}
          (ui/teal-button {:on-click (utils/send-event-callback events/control-stylist-dashboard-cash-out-submit)
-                          :disabled? (not (cash-out-eligible? payout-method))}
+                          :disabled? (not (payouts/cash-out-eligible? payout-method))}
           "Cash out")]]]))))
 
 (defn query [data]
@@ -48,7 +46,7 @@
 
 (defn ^:private should-redirect? [next-payout]
   (cond
-    (some-> next-payout :payout-method cash-out-eligible? not) true
+    (some-> next-payout :payout-method payouts/cash-out-eligible? not) true
     (some-> next-payout :amount pos? not)                      true
     :else                                                      false))
 
