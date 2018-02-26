@@ -28,7 +28,7 @@
            "immediate"                 "Instant: Funds typically arrive in minutes"
            "next_business_day"         "Funds paid out to this card will become available the next business day."
            "two_to_five_business_days" "Funds paid out to this card will become available two to five business days later."
-           "") ]
+           "")]
         [:div.my3
          {:data-test "cash-out-button"
           :data-ref  "cash-out-button"}
