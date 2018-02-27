@@ -121,8 +121,8 @@
 (defn stylist-dashboard-stats-component [{:keys [stats next-payout-slide]} owner]
   (om/component
    (html
-    (let [items [(previous-payout-slide (:previous-payouts stats))
-                 (payout-slide next-payout-slide (:next-payout stats))
+    (let [items [(previous-payout-slide (:previous-payout stats))
+                 (payout-slide next-payout-slide stats)
                  (old-lifetime-payouts-slide (:lifetime-payouts stats))]
           initial-slide-index (if (= :stats/cash-out-now next-payout-slide) 1 0)]
       [:div.bg-teal.white.center
