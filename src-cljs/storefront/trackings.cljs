@@ -417,3 +417,14 @@
                           {:stylist_id         stylist-id
                            :amount             (js/parseFloat amount)
                            :payout_method_name (:name payout-method)})))
+
+(defmethod perform-track events/api-success-cash-out-failed
+  [_ _ _ app-state]
+  (let [stylist-id                     (get-in app-state keypaths/store-stylist-id)
+        store-slug                     (get-in app-state keypaths/store-slug)
+        {:keys [amount payout-method]} (get-in app-state keypaths/stylist-payout-stats-initiated-payout)]
+    (stringer/track-event "cash_out_failed"
+                          {:stylist_id stylist-id
+                           :store_slug store-slug
+                           :amount     (js/parseFloat amount)
+                           :method     (:slug payout-method)})))
