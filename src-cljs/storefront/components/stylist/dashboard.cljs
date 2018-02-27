@@ -10,10 +10,8 @@
             [storefront.components.tabs :as tabs]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
+            [storefront.accessors.payouts :as payouts]
             [storefront.accessors.experiments :as experiments]))
-
-(def cash-out-eligible-payout-methods
-  #{"green_dot"})
 
 (defn component [{:keys [nav-event
                          stats
@@ -57,11 +55,12 @@
        (om/build referrals/component referrals))])))
 
 (defn query [data]
-  (let [payout-method      (get-in data (conj keypaths/stylist-manage-account :original_payout_method))
+  (let [payout-stats       (get-in data keypaths/stylist-payout-stats)
+        payout-method      (-> payout-stats :next-payout :payout-method)
+
         cash-out-now?      (experiments/cash-out-now? data)
         cash-out-eligible? (and cash-out-now?
-                                (cash-out-eligible-payout-methods payout-method))
-        payout-stats       (get-in data keypaths/stylist-payout-stats)]
+                                (payouts/cash-out-eligible? payout-method))]
     {:nav-event          (get-in data keypaths/navigation-event)
      :stats              (get-in data keypaths/stylist-stats)
      :payout-stats       payout-stats
