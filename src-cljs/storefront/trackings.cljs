@@ -411,7 +411,7 @@
                            :amount     (js/parseFloat amount)
                            :method     (:type payout-method)})))
 
-(defmethod perform-track events/navigate-stylist-dashboard-cash-out-success
+(defmethod perform-track events/api-success-cash-out-complete
   [_ _ _ app-state]
   (let [stylist-id                     (get-in app-state keypaths/store-stylist-id)
         store-slug                     (get-in app-state keypaths/store-slug)
