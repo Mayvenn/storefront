@@ -409,7 +409,7 @@
                           {:stylist_id stylist-id
                            :store_slug store-slug
                            :amount     (js/parseFloat amount)
-                           :method     (:slug payout-method)})))
+                           :method     (:type payout-method)})))
 
 (defmethod perform-track events/navigate-stylist-dashboard-cash-out-success
   [_ _ _ app-state]
@@ -422,7 +422,7 @@
                           {:stylist_id stylist-id
                            :store_slug store-slug
                            :amount     (js/parseFloat amount)
-                           :method     (:slug payout-method)})))
+                           :method     (:type payout-method)})))
 
 (defmethod perform-track events/api-success-cash-out-failed
   [_ _ _ app-state]
@@ -433,4 +433,4 @@
                           {:stylist_id stylist-id
                            :store_slug store-slug
                            :amount     (js/parseFloat amount)
-                           :method     (:slug payout-method)})))
+                           :method     (:type payout-method)})))
