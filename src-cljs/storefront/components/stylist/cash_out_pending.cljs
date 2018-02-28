@@ -63,6 +63,11 @@
 (defmethod effects/perform-effects events/api-success-cash-out-failed
   [_ _ args _ app-state]
   (let [payout-method (get-in app-state (conj keypaths/stylist-payout-stats-next-payout :payout-method))
-        message       "Your cash out failed. Please try another card with Mayvenn InstaPay and try again."]
+        message       (case (:slug payout-method)
+                        "paypal"    (str "Your cash out failed. "
+                                         "Please confirm your PayPal account or switch to Mayvenn Debit.")
+                        "green_dot" (str "Your cash out failed. "
+                                         "Please try another card with Mayvenn InstaPay "
+                                         "or switch to PayPal and try again."))]
     (effects/redirect events/navigate-stylist-account-commission)
     (messages/handle-later events/flash-show-failure {:message message})))

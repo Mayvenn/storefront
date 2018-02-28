@@ -22,7 +22,6 @@
                          referrals
                          payout-method
                          stylist-transfers?
-                         cash-out-now?
                          next-payout-slide]} owner opts]
   (om/component
    (html
@@ -55,11 +54,10 @@
        (om/build referrals/component referrals))])))
 
 (defn query [data]
-  (let [payout-stats       (get-in data keypaths/stylist-payout-stats)
-        payout-method      (-> payout-stats :next-payout :payout-method)
+  (let [payout-stats  (get-in data keypaths/stylist-payout-stats)
+        payout-method (-> payout-stats :next-payout :payout-method)
 
-        cash-out-now?      (experiments/cash-out-now? data)
-        cash-out-eligible? (and cash-out-now?
+        cash-out-eligible? (and (experiments/cash-out-now? data)
                                 (payouts/cash-out-eligible? payout-method))]
     {:nav-event          (get-in data keypaths/navigation-event)
      :stats              (get-in data keypaths/stylist-stats)
@@ -68,7 +66,6 @@
      :new-earnings       (new-earnings/query data)
      :payout-method      payout-method
      :bonuses            (bonuses/query data)
-     :cash-out-now?      cash-out-now?
      :referrals          (referrals/query data)
      :stylist-transfers? (experiments/stylist-transfers? data)
      :next-payout-slide  (cond

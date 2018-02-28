@@ -20,7 +20,9 @@
        [:div.col-12.flex.items-center.justify-between.my3
         [:div
          [:div.h6 name]
-         [:div.h7 "Linked Card xxxx-xxxx-xxxx-" (or last-4 "????")]]
+         (if last-4
+           [:div.h6 "Linked Card xxxx-xxxx-xxxx-" (or last-4 "????")]
+           [:div.h6 email])]
         [:h2.teal (mf/as-money amount)]]
        [:div
         [:div.navy.center.h7
@@ -32,7 +34,7 @@
         [:div.my3
          {:data-test "cash-out-button"
           :data-ref  "cash-out-button"}
-         (ui/teal-button {:on-click (utils/send-event-callback events/control-stylist-dashboard-cash-out-submit)
+         (ui/teal-button {:on-click  (utils/send-event-callback events/control-stylist-dashboard-cash-out-submit)
                           :disabled? (not (payouts/cash-out-eligible? payout-method))}
           "Cash out")]]]))))
 
