@@ -414,11 +414,15 @@
 (defmethod perform-track events/navigate-stylist-dashboard-cash-out-success
   [_ _ _ app-state]
   (let [stylist-id                     (get-in app-state keypaths/store-stylist-id)
-        {:keys [amount payout-method]} (get-in app-state keypaths/stylist-payout-stats-next-payout)]
-    (stringer/track-event "dashboard_cash_out_button_pressed"
-                          {:stylist_id         stylist-id
-                           :amount             (js/parseFloat amount)
-                           :payout_method_name (:name payout-method)})))
+        store-slug                     (get-in app-state keypaths/store-slug)
+        ;; We use initiated-payout because stats are not refetched until after
+        ;; this tracking method fires.
+        {:keys [amount payout-method]} (get-in app-state keypaths/stylist-payout-stats-initiated-payout)]
+    (stringer/track-event "cash_out_succeeded"
+                          {:stylist_id stylist-id
+                           :store_slug store-slug
+                           :amount     (js/parseFloat amount)
+                           :method     (:slug payout-method)})))
 
 (defmethod perform-track events/api-success-cash-out-failed
   [_ _ _ app-state]
