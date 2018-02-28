@@ -750,6 +750,7 @@
                (GET "/stylist/edit" [] (util.response/redirect "/stylist/account/profile" :moved-permanently))
                (GET "/stylist/account" [] (util.response/redirect "/stylist/account/profile" :moved-permanently))
                (GET "/stylist/commissions" [] (util.response/redirect "/stylist/earnings" :moved-permanently))
+               (GET "/stylist/cash-out-success" [] (util.response/redirect "/stylist/earnings" :temporary-redirect)) ;; Users should not be able to direct load this page
                (GET "/categories" req (redirect-to-home environment req))
                (GET "/categories/" req (redirect-to-home environment req))
                (GET "/products" req (redirect-to-home environment req))
