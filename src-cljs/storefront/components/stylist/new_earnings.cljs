@@ -26,7 +26,8 @@
   (let [{:keys [id]} balance-transfer
         {:keys [amount commission-date commissionable-amount order-number]} (:data balance-transfer)
         order (get orders (keyword order-number))]
-    [:tr.pointer (merge {:key (str "balance-transfer-" id)}
+    [:tr.pointer (merge {:key (str "balance-transfer-" id)
+                         :data-test (str "commission-" order-number)}
                         (utils/route-to events/navigate-stylist-dashboard-balance-transfer-details {:balance-transfer-id id})
                         (when (odd? row-number)
                           {:class "bg-too-light-teal"}))
