@@ -56,9 +56,15 @@
       "paid"      (messages/handle-message events/api-success-cash-out-complete)
       (poll-status user-id user-token status-id stylist-id))))
 
+(defmethod transitions/transition-state events/navigate-stylist-dashboard-cash-out-success
+  [_ _ {:keys [balance-transfer-id]} app-state]
+  (-> app-state
+      (assoc-in keypaths/stylist-cash-out-balance-transfer-id balance-transfer-id)))
+
 (defmethod effects/perform-effects events/api-success-cash-out-complete
   [_ _ _ _ app-state]
-  (effects/redirect events/navigate-stylist-dashboard-cash-out-success))
+  (let [balance-transfer-id (get-in app-state keypaths/stylist-cash-out-balance-transfer-id)]
+    (effects/redirect events/navigate-stylist-dashboard-cash-out-success {:balance-transfer-id balance-transfer-id})))
 
 (defmethod effects/perform-effects events/api-success-cash-out-failed
   [_ _ args _ app-state]

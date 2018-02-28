@@ -455,7 +455,10 @@
                                       (assoc-category-route-data storeback-config params)
 
                                       (= events/navigate-product-details nav-event)
-                                      (assoc-product-details-route-data storeback-config params))
+                                      (assoc-product-details-route-data storeback-config params)
+
+                                      (= events/navigate-stylist-dashboard-cash-out-success nav-event)
+                                      (assoc-in keypaths/stylist-cash-out-balance-transfer-id (:balance-transfer-id params)))
               render (server-render-pages nav-event generic-server-render)]
           (render render-ctx data req params))))))
 
@@ -750,7 +753,6 @@
                (GET "/stylist/edit" [] (util.response/redirect "/stylist/account/profile" :moved-permanently))
                (GET "/stylist/account" [] (util.response/redirect "/stylist/account/profile" :moved-permanently))
                (GET "/stylist/commissions" [] (util.response/redirect "/stylist/earnings" :moved-permanently))
-               (GET "/stylist/cash-out-success" [] (util.response/redirect "/stylist/earnings" :temporary-redirect)) ;; Users should not be able to direct load this page
                (GET "/categories" req (redirect-to-home environment req))
                (GET "/categories/" req (redirect-to-home environment req))
                (GET "/products" req (redirect-to-home environment req))
