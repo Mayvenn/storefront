@@ -458,7 +458,10 @@
                                       (assoc-product-details-route-data storeback-config params)
 
                                       (= events/navigate-stylist-dashboard-cash-out-success nav-event)
-                                      (assoc-in keypaths/stylist-cash-out-balance-transfer-id (:balance-transfer-id params)))
+                                      (assoc-in keypaths/stylist-cash-out-balance-transfer-id (:balance-transfer-id params))
+
+                                      (= events/navigate-stylist-dashboard-cash-out-pending nav-event)
+                                      (assoc-in keypaths/stylist-cash-out-status-id (:status-id params)))
               render (server-render-pages nav-event generic-server-render)]
           (render render-ctx data req params))))))
 

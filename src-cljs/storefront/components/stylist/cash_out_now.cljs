@@ -68,7 +68,7 @@
 
 (defmethod effects/perform-effects events/api-success-cash-out-now
   [_ _ {:keys [status-id balance-transfer-id]} _ app-state]
-  (effects/redirect events/navigate-stylist-dashboard-cash-out-pending))
+  (effects/redirect events/navigate-stylist-dashboard-cash-out-pending {:status-id status-id}))
 
 (defmethod transitions/transition-state events/api-success-cash-out-now
   [_ _ {:keys [status-id balance-transfer-id]} app-state]

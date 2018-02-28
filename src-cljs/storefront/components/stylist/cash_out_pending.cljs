@@ -26,12 +26,6 @@
 (defn built-component [data opts]
   (om/build component {} opts))
 
-(defmethod transitions/transition-state events/api-success-cash-out-now
-  [_ _ {:keys [status-id balance-transfer-id]} app-state]
-  (-> app-state
-      (assoc-in keypaths/stylist-cash-out-status-id status-id)
-      (assoc-in keypaths/stylist-cash-out-balance-transfer-id balance-transfer-id)))
-
 (defn- poll-status [user-id user-token status-id stylist-id]
   (js/setTimeout (fn [] (api/cash-out-status user-id user-token status-id stylist-id))
                  3000))
@@ -45,18 +39,18 @@
     (poll-status user-id user-token status-id stylist-id)))
 
 (defmethod effects/perform-effects events/api-success-cash-out-status
-  [_ _ {:keys [status]} _ app-state]
+  [_ _ {:keys [status balance-transfer-id]} _ app-state]
   (let [status-id  (get-in app-state keypaths/stylist-cash-out-status-id)
         user-id    (get-in app-state keypaths/user-id)
         user-token (get-in app-state keypaths/user-token)
         stylist-id (get-in app-state keypaths/store-stylist-id)]
     (case status
       "failed"    (messages/handle-message events/api-success-cash-out-failed)
-      "submitted" (messages/handle-message events/api-success-cash-out-complete)
-      "paid"      (messages/handle-message events/api-success-cash-out-complete)
+      "submitted" (messages/handle-message events/api-success-cash-out-complete {:balance-transfer-id balance-transfer-id})
+      "paid"      (messages/handle-message events/api-success-cash-out-complete {:balance-transfer-id balance-transfer-id})
       (poll-status user-id user-token status-id stylist-id))))
 
-(defmethod transitions/transition-state events/navigate-stylist-dashboard-cash-out-success
+(defmethod transitions/transition-state events/api-success-cash-out-complete
   [_ _ {:keys [balance-transfer-id]} app-state]
   (-> app-state
       (assoc-in keypaths/stylist-cash-out-balance-transfer-id balance-transfer-id)))

@@ -595,7 +595,7 @@
               :status-id  status-id
               :stylist-id stylist-id}
     :handler #(messages/handle-message events/api-success-cash-out-status
-                                       (select-keys % [:status]))}))
+                                       (select-keys % [:status :balance-transfer-id]))}))
 
 (defn get-stylist-commission [user-id user-token {:keys [commission-id]}]
   (api-req
