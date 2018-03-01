@@ -355,7 +355,7 @@
                         :last-name                 (get-in data keypaths/lead-last-name)
                         :phone                     (get-in data keypaths/lead-phone)
                         :email                     (get-in data keypaths/lead-email)
-                        :flow-name                 (get-in data keypaths/lead-flow-name)
+                        :flow-id                   (get-in data keypaths/lead-flow-id)
                         :focused                   (get-in data storefront.keypaths/ui-focus)
                         :website-url               (get-in data keypaths/lead-website-url)
                         :facebook-url              (get-in data keypaths/lead-facebook-url)

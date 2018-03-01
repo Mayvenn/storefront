@@ -422,7 +422,7 @@
                                 :phone             (get-in data keypaths/lead-phone)
                                 :email             (get-in data keypaths/lead-email)
                                 :call-slot         (get-in data keypaths/lead-call-slot)
-                                :flow-name         (get-in data keypaths/lead-flow-name)
+                                :flow-id           (get-in data keypaths/lead-flow-id)
                                 :call-slot-options (get-in data keypaths/call-slot-options)
                                 :spinning?         (utils/requesting? data request-keys/create-lead)}}
      :header {:call-number config/mayvenn-leads-call-number}
@@ -432,7 +432,7 @@
               :call-number config/mayvenn-leads-call-number}}))
 
 (defn built-component [data opts]
-  (case (get-in data keypaths/lead-flow-name)
+  (case (get-in data keypaths/lead-flow-id)
     "a1" (home-a1/built-component data opts)
     (component/build component (query data) opts)))
 
@@ -495,7 +495,7 @@
            onboarding-status (get lead-cookie "onboarding-status")
            app-state         (-> app-state
                                  (assoc-in keypaths/copy (string/lower-case (str copy)))
-                                 (assoc-in keypaths/lead-flow-name (string/lower-case (str flow)))
+                                 (assoc-in keypaths/lead-flow-id (string/lower-case (str flow)))
                                  (assoc-in keypaths/call-slot-options call-slots)
                                  (update-in keypaths/lead-utm-content
                                             (fn [existing-param]
