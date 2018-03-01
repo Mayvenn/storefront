@@ -10,6 +10,10 @@
     :email
     :call-slot
     :flow-id
+    :website-url
+    :facebook-url
+    :instagram-handle
+    :number-of-clients
     :utm-source
     :utm-medium
     :utm-campaign
