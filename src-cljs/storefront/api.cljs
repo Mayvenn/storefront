@@ -917,13 +917,13 @@
              :user-id user-id}
     :handler #(messages/handle-message events/api-success-telligent-login (set/rename-keys % {:max_age :max-age}))}))
 
-(defn create-lead [params]
+(defn create-lead [params callback]
   (api-req
    POST
    "/leads"
    request-keys/create-lead
    {:params params
-    :handler #(messages/handle-message events/api-success-lead-created %)}))
+    :handler callback}))
 
 (defn advance-lead-registration [params handler]
   (api-req POST

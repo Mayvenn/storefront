@@ -13,6 +13,7 @@
             [leads.header :as header]
             [leads.call-slot :as call-slot]
             [leads.home-a1 :as home-a1]
+            [leads.flows :as flows]
             [storefront.assets :as assets]
             [storefront.components.ui :as ui]
             [storefront.config :as config]
@@ -21,6 +22,7 @@
             [storefront.keypaths]
             [leads.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
+            [storefront.platform.messages :as messages]
             [clojure.string :as string]
             [storefront.transitions :as transitions]
             [storefront.effects :as effects]
@@ -436,20 +438,10 @@
     "a1" (home-a1/built-component data opts)
     (component/build component (query data) opts)))
 
-(def ^:private required-keys
-  #{:tracking-id
-    :first-name :last-name
-    :phone :email
-    :call-slot
-    :group
-    :utm-source :utm-medium :utm-campaign :utm-content :utm-term})
-
 (defmethod effects/perform-effects events/leads-control-sign-up-submit
   [_ _ _ _ app-state]
-  #?(:cljs
-     (-> (get-in app-state keypaths/lead)
-         (select-keys required-keys)
-         api/create-lead)))
+  (flows/create-lead app-state
+                     #(messages/handle-message events/api-success-leads-lead-created %)))
 
 (defmethod transitions/transition-state events/api-success-leads-lead-created
   [_ _ {remote-lead :lead} app-state]
@@ -461,14 +453,11 @@
 (defmethod effects/perform-effects events/api-success-leads-lead-created
   [_ _ _ previous-app-state app-state]
   #?(:cljs
-     (let [{:keys [flow-id state] lead-id :id} (get-in app-state keypaths/remote-lead)
-           lead                                (get-in previous-app-state keypaths/lead)]
+     (let [remote-lead (get-in app-state keypaths/remote-lead)]
        (cookie-jar/save-lead (get-in app-state storefront.keypaths/cookie)
-                             {"lead-id"           lead-id
+                             {"lead-id"           (:id remote-lead)
                               "onboarding-status" "lead-created"})
-       (history/enqueue-navigate (if (= (:flow-name lead) "a1")
-                                   events/navigate-leads-receive-a1
-                                   events/navigate-leads-resolve)))))
+       (history/enqueue-navigate events/navigate-leads-resolve))))
 
 (defmethod effects/perform-effects events/navigate-leads
   [_ _ _ _ app-state]

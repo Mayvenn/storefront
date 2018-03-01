@@ -10,21 +10,23 @@
                        [storefront.browser.cookie-jar :as cookie-jar]
                        [storefront.browser.tags :as tags]
                        [storefront.history :as history]])
-            [leads.header :as header]
+            [clojure.string :as string]
             [leads.call-slot :as call-slot]
+            [leads.flows :as flows]
+            [leads.header :as header]
+            [leads.keypaths :as keypaths]
             [storefront.assets :as assets]
+            [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.config :as config]
-            [storefront.platform.carousel :as carousel]
+            [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.keypaths]
-            [leads.keypaths :as keypaths]
+            [storefront.platform.carousel :as carousel]
             [storefront.platform.component-utils :as utils]
-            [clojure.string :as string]
-            [storefront.transitions :as transitions]
-            [storefront.effects :as effects]
+            [storefront.platform.messages :as messages]
             [storefront.request-keys :as request-keys]
-            [storefront.components.svg :as svg]))
+            [storefront.transitions :as transitions]))
 
 (def become-a-mayvenn-stylist-section
   [:div
@@ -376,3 +378,24 @@
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
+
+(defmethod effects/perform-effects events/leads-a1-control-sign-up-submit
+  [_ _ _ _ app-state]
+  (flows/create-lead app-state
+                     #(messages/handle-message events/api-success-leads-a1-lead-created %)))
+
+(defmethod transitions/transition-state events/api-success-leads-a1-lead-created
+  [_ _ {remote-lead :lead} app-state]
+  #?(:cljs (-> app-state
+               (update-in keypaths/lead select-keys [:utm-term :utm-content :utm-campaign :utm-source :utm-medium])
+               (update-in keypaths/remote-lead merge remote-lead))
+     :clj  app-state))
+
+(defmethod effects/perform-effects events/api-success-leads-a1-lead-created
+  [_ _ _ previous-app-state app-state]
+  #?(:cljs
+     (let [remote-lead (get-in app-state keypaths/remote-lead)]
+       (cookie-jar/save-lead (get-in app-state storefront.keypaths/cookie)
+                             {"lead-id"           (:id remote-lead)
+                              "onboarding-status" "lead-created"})
+       (history/enqueue-navigate events/navigate-leads-receive-a1))))

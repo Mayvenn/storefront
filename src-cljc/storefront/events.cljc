@@ -310,6 +310,8 @@
 (defpath api-success-leads-lead-created)
 (defpath api-success-leads-lead-registered)
 
+(defpath api-success-leads-a1-lead-created)
+(defpath api-success-leads-a1-lead-registered)
 
 (defpath get-stylist-commission-api-failure)
 
@@ -386,6 +388,7 @@
 (defpath sign-out)
 
 (defpath leads-control-sign-up-submit)
+(defpath leads-a1-control-sign-up-submit)
 
 (defpath stringer-tracked-sent-to-affirm)
 

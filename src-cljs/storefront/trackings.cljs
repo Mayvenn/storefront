@@ -65,14 +65,20 @@
                                            :phone      phone
                                            :first_name first-name
                                            :last_name  last-name})
-  #_ ;; We may want to differentiate between various reg flows.
-  (do
-    (pinterest/track-event "lead" {:lead_type "self_reg"})
-    (facebook-analytics/track-custom-event "Lead_Self_Reg"))
   (pinterest/track-event "lead" {:lead_type "sales_rep"})
   (facebook-analytics/track-event "Lead"))
 
-(defmethod perform-track events/api-success-lead-registered
+(defmethod perform-track events/api-success-leads-a1-lead-created
+  [_ _ {{:keys [first-name last-name email phone id flow-id]} :lead} _]
+  (stringer/track-event "lead_identified" {:lead_id    id
+                                           :email      email
+                                           :phone      phone
+                                           :first_name first-name
+                                           :last_name  last-name})
+  (pinterest/track-event "lead" {:lead_type "sales_rep"})
+  (facebook-analytics/track-event "Lead"))
+
+(defmethod perform-track events/api-success-leads-lead-registered
   [_ _ _ _]
   (pinterest/track-event "signup")
   (facebook-analytics/track-custom-event "Lead_Self_Reg_Complete"))
