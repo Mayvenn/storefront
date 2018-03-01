@@ -923,8 +923,14 @@
    POST
    "/leads"
    request-keys/create-lead
-   {:params params
-    :handler callback}))
+   {:params        params
+    :handler       callback
+    :error-handler (fn [resp]
+                     (messages/handle-message events/api-failure-errors (-> resp
+                                                                            :response
+                                                                            :body
+                                                                            schema-3-style->std-error
+                                                                            (assoc :scroll-selector "[data-ref=leads-sign-up-form]") )))}))
 
 (defn advance-lead-registration [params handler]
   (api-req POST

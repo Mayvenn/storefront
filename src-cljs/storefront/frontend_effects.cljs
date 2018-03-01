@@ -955,8 +955,8 @@
 (defmethod perform-effects events/api-failure-order-not-created-from-shared-cart [_ event args _ app-state]
   (history/enqueue-navigate events/navigate-home))
 
-(defmethod perform-effects events/api-failure-errors [_ event errors _ app-state]
-  (condp = (:error-code errors)
+(defmethod perform-effects events/api-failure-errors [_ event {:keys [error-code scroll-selector] :as errors} _ app-state]
+  (condp = error-code
     "stripe-card-failure"      (when (= (get-in app-state keypaths/navigation-event)
                                         events/navigate-checkout-confirmation)
                                  (redirect events/navigate-checkout-payment)
@@ -964,6 +964,9 @@
                                  (scroll/snap-to-top))
     "promotion-not-found"      (scroll-promo-field-to-top)
     "ineligible-for-promotion" (scroll-promo-field-to-top)
+    "invalid-input"            (if scroll-selector
+                                 (scroll/scroll-selector-to-top scroll-selector)
+                                 (scroll/snap-to-top))
     (scroll/snap-to-top)))
 
 (defmethod perform-effects events/api-success-add-to-bag [dispatch event args _ app-state]

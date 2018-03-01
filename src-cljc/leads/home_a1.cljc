@@ -47,6 +47,7 @@
    [:form.col-12.flex.flex-column
     {:on-submit (utils/send-event-callback events/leads-a1-control-sign-up-submit {})
      :data-test "leads-sign-up-form"
+     :data-ref  "leads-sign-up-form"
      :method    "POST"}
     [:p.mb2 "About You"]
     (ui/text-field {:data-test "sign-up-first-name"
@@ -124,6 +125,7 @@
                       :placeholder "Number of Clients"
                       :value       number-of-clients
                       :options     number-of-clients-options
+                      :required    true
                       :div-attrs   {:class "bg-white border border-gray rounded"}})
 
     (ui/submit-button "Begin Application"
