@@ -307,8 +307,9 @@
 
 (defpath api-success-telligent-login)
 
-(defpath api-success-lead-created)
-(defpath api-success-lead-registered)
+(defpath api-success-leads-lead-created)
+(defpath api-success-leads-lead-registered)
+
 
 (defpath get-stylist-commission-api-failure)
 

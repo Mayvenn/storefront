@@ -58,7 +58,7 @@
                         {:filter_name     (pr-str facet)
                          :selected_option option}))
 
-(defmethod perform-track events/api-success-lead-created
+(defmethod perform-track events/api-success-leads-lead-created
   [_ _ {{:keys [first-name last-name email phone id flow-id]} :lead} _]
   (stringer/track-event "lead_identified" {:lead_id    id
                                            :email      email

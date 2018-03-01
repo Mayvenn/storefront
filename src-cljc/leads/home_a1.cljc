@@ -43,7 +43,7 @@
 (defn sign-up-panel [{:keys [focused field-errors first-name last-name phone email website-url facebook-url instagram-handle number-of-clients number-of-clients-options spinning?]}]
   [:div.rounded.bg-lighten-4.p3
    [:form.col-12.flex.flex-column
-    {:on-submit (utils/send-event-callback events/leads-control-sign-up-submit {})
+    {:on-submit (utils/send-event-callback events/leads-a1-control-sign-up-submit {})
      :data-test "leads-sign-up-form"
      :method    "POST"}
     [:p.mb2 "About You"]

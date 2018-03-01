@@ -451,14 +451,14 @@
          (select-keys required-keys)
          api/create-lead)))
 
-(defmethod transitions/transition-state events/api-success-lead-created
+(defmethod transitions/transition-state events/api-success-leads-lead-created
   [_ _ {remote-lead :lead} app-state]
   #?(:cljs (-> app-state
                (update-in keypaths/lead select-keys [:utm-term :utm-content :utm-campaign :utm-source :utm-medium])
                (update-in keypaths/remote-lead merge remote-lead))
      :clj  app-state))
 
-(defmethod effects/perform-effects events/api-success-lead-created
+(defmethod effects/perform-effects events/api-success-leads-lead-created
   [_ _ _ previous-app-state app-state]
   #?(:cljs
      (let [{:keys [flow-id state] lead-id :id} (get-in app-state keypaths/remote-lead)
