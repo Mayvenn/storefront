@@ -16,16 +16,19 @@
             [storefront.accessors.products :as products]
             [clojure.set :as set]
             [spice.maps :as maps]
-            [storefront.accessors.images :as images]))
+            [storefront.accessors.images :as images]
+            [spice.core :as spice]))
 
-(defn add-to-cart-button [sold-out? creating-order? {:keys [number]}]
+(defn add-to-cart-button [sold-out? creating-order? look {:keys [number]}]
   (if sold-out?
     [:div.btn.col-12.h5.btn-primary.bg-gray.white
      {:on-click nil}
      "Sold Out"]
     (ui/teal-button
-     (assoc (utils/fake-href events/control-create-order-from-shared-cart {:shared-cart-id number})
-            :spinning? creating-order?)
+     (merge (utils/fake-href events/control-create-order-from-shared-cart {:shared-cart-id number
+                                                                           :look-id        (:id look)})
+            {:data-test "add-to-cart-submit"
+             :spinning? creating-order?})
      "Add items to bag")))
 
 (defn carousel [imgs]
@@ -83,7 +86,7 @@
              (when bundle-deal-look?
                [:div.center.teal.medium.mt2 "*Discounts applied at check out"])
              [:div.mt2
-              (add-to-cart-button sold-out? creating-order? shared-cart)]])))]])))
+              (add-to-cart-button sold-out? creating-order? look shared-cart)]])))]])))
 
 (defn put-skus-on-shared-cart [shared-cart skus]
   (let [shared-cart-variant-ids (into #{}

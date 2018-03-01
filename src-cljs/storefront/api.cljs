@@ -860,20 +860,21 @@
                                        {:shared-cart (:shared-cart %)
                                         :skus        (:skus %)})}))
 
-(defn create-order-from-cart [session-id shared-cart-id user-id user-token stylist-id]
+(defn create-order-from-cart [session-id shared-cart-id look-id user-id user-token stylist-id]
   (api-req
    POST
    "/create-order-from-shared-cart"
    request-keys/create-order-from-shared-cart
-   {:params {:session-id session-id
-             :shared-cart-id shared-cart-id
-             :user-id        user-id
-             :user-token     user-token
-             :stylist-id     stylist-id}
-    :handler #(messages/handle-message events/api-success-update-order-from-shared-cart
-                                       {:order %
-                                        :shared-cart-id shared-cart-id
-                                        :navigate events/navigate-cart})
+   {:params        {:session-id     session-id
+                    :shared-cart-id shared-cart-id
+                    :user-id        user-id
+                    :user-token     user-token
+                    :stylist-id     stylist-id}
+    :handler       #(messages/handle-message events/api-success-update-order-from-shared-cart
+                                             {:order          %
+                                              :look-id        look-id
+                                              :shared-cart-id shared-cart-id
+                                              :navigate       events/navigate-cart})
     :error-handler #(do
                       ;; Order is important here, for correct display of errors
                       (default-error-handler %)

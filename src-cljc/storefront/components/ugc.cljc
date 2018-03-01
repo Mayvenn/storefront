@@ -15,7 +15,10 @@
 (defn view-look-button [{{:keys [view-look view-other]} :links} button-copy nav-stack-item]
   (let [[nav-event nav-args] (or view-look view-other)]
     (ui/teal-button
-     (util/route-to nav-event nav-args nav-stack-item)
+     (merge
+      (util/route-to nav-event nav-args nav-stack-item)
+      (when view-look
+        {:data-test (str "look-" (:look-id nav-args))}))
      button-copy)))
 
 (defn image-thumbnail [img]

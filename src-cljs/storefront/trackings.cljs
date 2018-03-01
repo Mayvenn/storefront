@@ -182,7 +182,7 @@
                            :total_quantity (->> line-item-skuers (map :item/quantity) (reduce + 0))})))
 
 (defmethod perform-track events/api-success-update-order-from-shared-cart
-  [_ _ {:keys [order shared-cart-id]} app-state]
+  [_ _ {:keys [look-id order shared-cart-id]} app-state]
   (let [line-item-skuers (waiter-line-items->line-item-skuer
                           (get-in app-state keypaths/v2-skus)
                           (orders/product-items order))
@@ -191,13 +191,15 @@
     (facebook-analytics/track-event "AddToCart" {:content_type "product"
                                                  :content_ids  (map :catalog/sku-id line-item-skuers)
                                                  :num_items    (->> line-item-skuers (map :item/quantity) (reduce + 0))})
-    (stringer/track-event "bulk_add_to_cart" {:shared_cart_id shared-cart-id
-                                              :order_number   (:number order)
-                                              :order_total    (get-in app-state keypaths/order-total)
-                                              :order_quantity (orders/product-quantity order)
-                                              :skus           (->> line-item-skuers (map :catalog/sku-id) (string/join ","))
-                                              :variant_ids    (->> line-item-skuers (map :legacy/variant-id) (string/join ","))
-                                              :context        {:cart-items cart-items}})))
+    (stringer/track-event "bulk_add_to_cart" (merge {:shared_cart_id shared-cart-id
+                                                     :order_number   (:number order)
+                                                     :order_total    (get-in app-state keypaths/order-total)
+                                                     :order_quantity (orders/product-quantity order)
+                                                     :skus           (->> line-item-skuers (map :catalog/sku-id) (string/join ","))
+                                                     :variant_ids    (->> line-item-skuers (map :legacy/variant-id) (string/join ","))
+                                                     :context        {:cart-items cart-items}}
+                                                    (when look-id
+                                                        {:look_id look-id})))))
 
 (defmethod perform-track events/control-cart-share-show [_ event args app-state]
   (google-analytics/track-page (str (routes/current-path app-state) "/Share_cart")))

@@ -663,9 +663,10 @@
                           (get-in app-state keypaths/order-number)
                           (get-in app-state keypaths/order-token)))
 
-(defmethod perform-effects events/control-create-order-from-shared-cart [_ event {:keys [shared-cart-id]} _ app-state]
+(defmethod perform-effects events/control-create-order-from-shared-cart [_ event {:keys [look-id shared-cart-id] :as args} _ app-state]
   (api/create-order-from-cart (get-in app-state keypaths/session-id)
                               shared-cart-id
+                              look-id
                               (get-in app-state keypaths/user-id)
                               (get-in app-state keypaths/user-token)
                               (get-in app-state keypaths/store-stylist-id)))

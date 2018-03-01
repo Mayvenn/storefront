@@ -155,7 +155,9 @@
 
 (defn ^:private shopping-area [signed-in]
   [:div
-   [:li (menu-row (utils/route-to events/navigate-shop-by-look) [:span.medium "Shop Looks"])]
+   [:li (menu-row (assoc (utils/route-to events/navigate-shop-by-look)
+                         :data-test "menu-shop-by-look")
+                  [:span.medium "Shop Looks"])]
    [:div
     [:li (menu-row (assoc (utils/fake-href events/menu-list
                                            {:page/slug           "virgin-hair"
