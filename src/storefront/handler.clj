@@ -352,6 +352,8 @@
                                         receive-a1          home            (or (empty? lead-id)
                                                                                 (not=   onboarding-status
                                                                                         "stylist-created"))
+                                        home                receive-a1      (=  onboarding-status
+                                                                                "a1-lead-created")
                                         reg-thank-you       home            (or (empty? lead-id)
                                                                                 (not=   onboarding-status
                                                                                         "stylist-created"))))))

@@ -319,17 +319,17 @@
         (is (some #{"utm_content=;Max-Age=0;Secure;Path=/"} cookies))
         (is (some #{"utm_term=;Max-Age=0;Secure;Path=/"} cookies))))))
 
-(defmacro is-redirected-to-home [resp]
-  `(do
-     (is (= 302 (:status ~resp)))
-     (is (= "https://welcome.mayvenn.com/stylists/welcome" (-> ~resp :headers (get "Location"))))))
-
-(defmacro is-successful [resp]
-  `(do
-     (is (= 200 (:status ~resp)))))
+(defmacro is-redirected-to [domain path resp]
+  `(let [resp# ~resp
+         domain# ~domain
+         path# ~path]
+     (is (= 302 (:status resp#)))
+     (is (= (format "https://%s.mayvenn.com%s" domain# path#)
+            (-> resp# :headers (get "Location"))))))
 
 (def lead-awaiting-call-cookie "lead-id=MOCK-LEAD-ID;onboarding-status=awaiting-call")
 (def stylist-created-cookie "lead-id=MOCK-LEAD-ID;onboarding-status=stylist-created")
+(def lead-created-a1-cookie "lead-id=MOCK-LEAD-ID;onboarding-status=a1-lead-created")
 
 (deftest one-time-login-sets-cookies
   (with-standalone-server [storeback (standalone-server (routes
@@ -339,9 +339,8 @@
       (let [resp (handler (mock/request :get "https://bob.mayvenn.com/one-time-login?token=USERTOKEN&user-id=1&sha=FIRST&target=%2F"))
             cookies (get-in resp [:headers "Set-Cookie"])
             location (get-in resp [:headers "Location"])]
-        (is (= 302 (:status resp)))
         (testing "It removes one-time-login params, but keeps other query params in the url it redirects to"
-          (is (= location "https://bob.mayvenn.com/?sha=FIRST")))
+          (is-redirected-to "bob" "/?sha=FIRST" resp))
         (testing "It assigns cookies to the client to automatically log them into storefront frontend"
           (is (some #{"user-token=USERTOKEN;Max-Age=2592000;Secure;Path=/;Domain=bob.mayvenn.com"} cookies)))))))
 
@@ -349,9 +348,9 @@
   (with-handler handler
     (testing "Navigating to thank-you redirects you home"
       (let [resp (handler (mock/request :get "https://welcome.mayvenn.com/stylists/welcome"))]
-        (is-successful resp))
+        (is (= 200 (:status resp))))
       (let [resp (handler (mock/request :get "https://welcome.mayvenn.com/stylists/thank-you"))]
-        (is-redirected-to-home resp)))
+        (is-redirected-to "welcome" "/stylists/welcome" resp)))
     (testing "Navigating to details without a lead-id redirects to empty welcome page"
       (let [resp (handler (mock/request :get "https://welcome.mayvenn.com/stylists/flows/2/details"))]
         (is (= 302 (:status resp)))
@@ -363,20 +362,20 @@
         (with-handler handler
           (let [resp (handler (-> (mock/request :get "https://welcome.mayvenn.com/stylists/thank-you")
                                   (mock/header "Cookie" lead-awaiting-call-cookie)))]
-            (is-successful resp))
+            (is (= 200 (:status resp))))
           (let [resp (handler (-> (mock/request :get "https://welcome.mayvenn.com/stylists/welcome")
                                   (mock/header "Cookie" lead-awaiting-call-cookie)))]
             (is (= 200 (:status resp))))))))
-  #_(testing "redirect to registration details if lead id is provided with a step-id of 'details'"
-    (let [fake-lead {:id "MOCK-LEAD-ID" :flow-id "2" :step-id "details"}]
+  (testing "redirect to receive a1 if onboarding status is 'a1-lead-created'"
+    (let [fake-lead {:onboarding-status "a1-lead-created"}]
       (with-standalone-server [storeback (standalone-server (constantly {:status 200
                                                                          :body   (generate-string {:lead fake-lead})}))]
         (with-handler handler
-          (let [resp (handler (-> (mock/request :get "https://welcome.mayvenn.com/stylists/flows/2/details")
-                                  (mock/header "Cookie" stylist-created-cookie)))]
-            (is-redirected-to-home resp))
           (let [resp (handler (-> (mock/request :get "https://welcome.mayvenn.com/stylists/welcome")
-                                  (mock/header "Cookie" stylist-created-cookie)))]
+                                  (mock/header "Cookie" lead-created-a1-cookie)))]
+            (is-redirected-to "welcome" "/stylists/flows/a1/thank-you-1" resp))
+          (let [resp (handler (-> (mock/request :get "https://welcome.mayvenn.com/stylists/flows/a1/thank-you-1")
+                                  (mock/header "Cookie" lead-created-a1-cookie)))]
             (is (= 200 (:status resp))))))))
   #_(testing "redirect to registration resolve if lead id is provided with a step-id of 'thank-you'"
     (let [fake-lead {:id "MOCK-LEAD-ID" :flow-id "2" :step-id "thank-you"}]
@@ -385,7 +384,7 @@
         (with-handler handler
           (let [resp (handler (-> (mock/request :get "https://welcome.mayvenn.com/stylists/flows/2/thank-you")
                                   (mock/header "Cookie" self-reg-in-progress-cookie)))]
-            (is-redirected-to-home resp))
+            (is-redirected-to "welcome" "/stylists/welcome" resp))
           (let [resp (handler (-> (mock/request :get "https://welcome.mayvenn.com/stylists/welcome")
                                   (mock/header "Cookie" self-reg-in-progress-cookie)))]
             (is (= 200 (:status resp)))))))))
