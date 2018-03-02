@@ -250,7 +250,7 @@
     (update-email-capture-session app-state)))
 
 (defmethod perform-effects events/navigate-home [_ _ {:keys [query-params]} _ app-state]
-  (when (= "welcome" (get-in app-state keypaths/store-slug))
+  (when (= config/welcome-subdomain (get-in app-state keypaths/store-slug))
     (redirect events/navigate-leads-home))
   (when-not (:show query-params)
     (potentially-show-email-popup app-state)))

@@ -7,6 +7,8 @@
 (def mayvenn-leads-call-number "1-866-424-7201")
 (def mayvenn-leads-sms-number  "34649")
 
+(def welcome-subdomain "welcome")
+
 (defn development? [environment]
   {:pre [(#{"development" "test" "acceptance" "production"} environment)]}
   (= environment "development"))

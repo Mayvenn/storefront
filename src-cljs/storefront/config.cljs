@@ -2,6 +2,8 @@
 
 (def environment js/environment)
 
+(def welcome-subdomain "welcome")
+
 (def feature-block-look-ids
   ;;NOTE edit the clj config too!
   ;;NOTE @Ryan, please only change the top map

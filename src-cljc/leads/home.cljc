@@ -462,7 +462,7 @@
 (defmethod effects/perform-effects events/navigate-leads
   [_ _ _ _ app-state]
   #?(:cljs
-     (when-not (= "welcome"
+     (when-not (= config/welcome-subdomain
                   (get-in app-state storefront.keypaths/store-slug))
        (effects/page-not-found))))
 

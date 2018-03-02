@@ -504,7 +504,7 @@
 
 (defn robots [{:keys [subdomains]}]
   (cond
-    (= ["welcome"] subdomains) (string/join "\n" leads-disalloweds)
+    (= [config/welcome-subdomain] subdomains) (string/join "\n" leads-disalloweds)
     (#{["shop"] ["www"] []} subdomains) (string/join "\n" private-disalloweds)
     :else (string/join "\n" (concat ["User-agent: googlebot"
                                      "Disallow: /"
@@ -513,7 +513,7 @@
 
 (defn sitemap [{:keys [storeback-config]} {:keys [subdomains] :as req}]
   (if (and (seq subdomains)
-           (not= "welcome" (first subdomains)))
+           (not= config/welcome-subdomain (first subdomains)))
     (if-let [launched-products (->> (api/fetch-v2-products storeback-config {})
                                     :products
                                     (filter :catalog/launched-at))]
@@ -524,7 +524,7 @@
         (-> (xml/emit {:tag     :urlset
                        :attrs   {:xmlns "http://www.sitemaps.org/schemas/sitemap/0.9"}
                        :content (->> (into [["https://mayvenn.com"]
-                                            ["https://welcome.mayvenn.com"                                  "0.60"]
+                                            [(str "https://" config/welcome-subdomain ".mayvenn.com")       "0.60"]
                                             ["https://shop.mayvenn.com"                                     "1.00"]
                                             ["https://shop.mayvenn.com/guarantee"                           "0.60"]
                                             ["https://shop.mayvenn.com/help"                                "0.60"]
@@ -627,7 +627,7 @@
                                      (assoc-in leads.keypaths/lead-utm-medium (cookies/get request "leads.utm-medium"))
                                      (assoc-in leads.keypaths/lead-utm-term (cookies/get request "leads.utm-term"))
                                      (assoc-in leads.keypaths/onboarding-status (cookies/get request "onboarding-status"))
-                                     (assoc-in keypaths/store-slug "welcome")
+                                     (assoc-in keypaths/store-slug config/welcome-subdomain)
                                      (assoc-in keypaths/environment environment)
                                      (assoc-in keypaths/navigation-message nav-message)
                                      (assoc-in leads.keypaths/eastern-offset (eastern-offset))
@@ -647,7 +647,7 @@
   (fn [{:keys [subdomains nav-message query-params] :as req}]
     (let [on-leads-page?        (routes/sub-page? nav-message [events/navigate-leads])
           on-home-page?         (= events/navigate-home (get nav-message 0))
-          on-welcome-subdomain? (= "welcome" (first subdomains))
+          on-welcome-subdomain? (= config/welcome-subdomain (first subdomains))
           not-found             #(-> views/not-found
                                      ->html-resp
                                      (util.response/status 404))]
