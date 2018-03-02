@@ -466,33 +466,36 @@
                   (get-in app-state storefront.keypaths/store-slug))
        (effects/page-not-found))))
 
-(defn clear-lead [app-state]
-  (-> app-state
-      (update-in keypaths/lead select-keys [:utm-term :utm-content :utm-campaign :utm-source :utm-medium])
-      (assoc-in keypaths/stylist {})
-      (assoc-in keypaths/remote-lead {})))
-
 (def terminal-onboarding-statuses #{"awaiting-call"
                                     "stylist-created"})
+
+(defn ^:private clear-if-lead-finished [app-state]
+  #?(:cljs
+     (let [onboarding-status (-> (get-in app-state storefront.keypaths/cookie)
+                                 cookie-jar/retrieve-lead
+                                 (get "onboarding-status"))]
+       (if (contains? terminal-onboarding-statuses onboarding-status)
+         (-> app-state
+             ;;TODO Should we preserve flow-id here?
+             (update-in keypaths/lead select-keys [:utm-term :utm-content :utm-campaign :utm-source :utm-medium])
+             (assoc-in keypaths/stylist {})
+             (assoc-in keypaths/remote-lead {}))
+         app-state))))
 
 (defmethod transitions/transition-state events/navigate-leads-home
   [_ _ {{:keys [copy flow]} :query-params} app-state]
   #?(:cljs
      (let [call-slots        (call-slot/options (get-in app-state keypaths/eastern-offset))
-           lead-cookie       (cookie-jar/retrieve-lead (get-in app-state storefront.keypaths/cookie))
-           utm-cookies       (cookie-jar/retrieve-leads-utm-params (get-in app-state storefront.keypaths/cookie))
-           onboarding-status (get lead-cookie "onboarding-status")
-           app-state         (-> app-state
-                                 (assoc-in keypaths/copy (string/lower-case (str copy)))
-                                 (assoc-in keypaths/lead-flow-id (string/lower-case (str flow)))
-                                 (assoc-in keypaths/call-slot-options call-slots)
-                                 (update-in keypaths/lead-utm-content
-                                            (fn [existing-param]
-                                              (or existing-param
-                                                  (get utm-cookies "leads.utm-content")))))]
-       (cond-> app-state
-         (contains? terminal-onboarding-statuses onboarding-status)
-         clear-lead))))
+           utm-cookies       (cookie-jar/retrieve-leads-utm-params (get-in app-state storefront.keypaths/cookie))]
+       (-> app-state
+           (assoc-in keypaths/copy (string/lower-case (str copy)))
+           (update-in keypaths/lead-flow-id #(or % (string/lower-case (str flow))))
+           (assoc-in keypaths/call-slot-options call-slots)
+           (update-in keypaths/lead-utm-content
+                      (fn [existing-param]
+                        (or existing-param
+                            (get utm-cookies "leads.utm-content"))))
+           clear-if-lead-finished))))
 
 (defmethod effects/perform-effects events/navigate-leads-home
   [_ _ _ _ app-state]
