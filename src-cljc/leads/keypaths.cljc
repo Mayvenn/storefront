@@ -31,7 +31,6 @@
 (def lead-tracking-id  (conj lead :tracking-id))
 (def lead-flow-id      (conj lead :flow-id))
 (def lead-flow-name    (conj lead :flow-name))
-(def lead-step-id      (conj lead :step-id))
 
 (def stylist                 (conj root :stylist))
 (def stylist-first-name      (conj stylist :first-name))

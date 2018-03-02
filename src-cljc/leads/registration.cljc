@@ -332,13 +332,12 @@
 #_(defmethod effects/perform-effects events/leads-control-self-registration-submit
   [dispatch event args _ app-state]
   #?(:cljs
-     (let [{:keys [id step-id] :as lead} (get-in app-state keypaths/remote-lead)
+     (let [{:keys [id] :as lead} (get-in app-state keypaths/remote-lead)
            registration                  (-> (get-in app-state keypaths/stylist)
                                              handle-referral
                                              handle-address-2
                                              handle-payout-method)]
        (api/advance-lead-registration {:lead-id    id
-                                       :step-id    step-id
                                        :session-id (get-in app-state storefront.keypaths/session-id)
                                        :step-data  {:registration registration}}
                                       (fn [response-body]
