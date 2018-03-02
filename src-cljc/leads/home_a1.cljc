@@ -29,18 +29,34 @@
             [storefront.transitions :as transitions]))
 
 (def become-a-mayvenn-stylist-section
-  [:div
-   [:section.px3.py6.center {:style {:background "#E5E5E5"}}
+  [:div.bg-light-gray
+   [:section.center.hide-on-mb
+    [:div.relative
+     [:div.absolute.right-0.top-0.bottom-0.col-6
+      (ui/aspect-ratio 720 600
+                       {:class "flex flex-center"}
+                       [:div.flex-auto.self-center.mr4
+                        [:h2.h1.mb4 "Become a Mayvenn stylist and join the movement"]
+                        [:p.h4 "We're a black-owned hair company with hustle, that empowers "
+                         "hair stylists to think bigger, build their businesses, and achieve "
+                         "their dreams. Instead of sending clients to beauty supply shops, we "
+                         "provide a custom platform for stylists to sell the high-quality hair "
+                         "directly, earn commissions from these sales, and be part of a movement."]])]]
+    [:img.col-12.mbnp6
+     {:src     "//ucarecdn.com/e58b55dc-4c02-4d40-8633-0012a5469a4f/-/format/auto/BecomeAMayvennStylist.jpg"
+      :src-set "//ucarecdn.com/e58b55dc-4c02-4d40-8633-0012a5469a4f/-/format/auto/-/quality/lightest/BecomeAMayvennStylist.jpg 2x"}]]
 
-    [:div.container
-     [:h2.mb4 "Become a Mayvenn stylist and join the movement"]
-     [:p.h6 "We're a black-owned hair company with hustle, that empowers "
-      "hair stylists to think bigger, build their businesses, and achieve "
-      "their dreams. Instead of sending clients to beauty supply shops, we "
-      "provide a custom platform for stylists to sell the high-quality hair "
-      "directly, earn commissions from these sales, and be part of a movement."]]]
-   [:img.block.col-12 {:src     "//ucarecdn.com/7df3b65c-5da0-41e8-ad48-f7479f9907a2/-/format/auto/-/resize/375x/BecomeAMayvennStylist.jpg"
-                       :src-set "//ucarecdn.com/7df3b65c-5da0-41e8-ad48-f7479f9907a2/-/format/auto/-/quality/lightest/BecomeAMayvennStylist.jpg 2x"}]])
+   [:section.center.hide-on-tb-dt
+    [:div.px3.pt6
+     [:div.container
+      [:h2.mb4 "Become a Mayvenn stylist and join the movement"]
+      [:p.h6 "We're a black-owned hair company with hustle, that empowers "
+       "hair stylists to think bigger, build their businesses, and achieve "
+       "their dreams. Instead of sending clients to beauty supply shops, we "
+       "provide a custom platform for stylists to sell the high-quality hair "
+       "directly, earn commissions from these sales, and be part of a movement."]]
+     [:img.block.col-12 {:src     "//ucarecdn.com/36c98d9b-f015-4c65-9513-4554edc0ee48/-/format/auto/BecomeAMayvennStylist.jpg"
+                         :src-set "//ucarecdn.com/36c98d9b-f015-4c65-9513-4554edc0ee48/-/format/auto/-/quality/lightest/BecomeAMayvennStylist.jpg 2x"}]]]])
 
 (defn sign-up-panel [{:keys [focused field-errors first-name last-name phone email website-url facebook-url instagram-handle number-of-clients number-of-clients-options spinning?]}]
   [:div.rounded.bg-lighten-4.p3
