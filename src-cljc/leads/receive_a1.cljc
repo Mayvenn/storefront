@@ -44,14 +44,3 @@
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
-
-;; Comment to ensure this appears in diff
-;; Is this necessary given that we save the cookie in the event that triggers the navigation here?
-;; Additionally, does this smash the cookie on direct load?
-(defmethod effects/perform-effects events/navigate-leads-receive-a1
-  [_ _ _ _ app-state]
-  #?(:cljs
-     (cookie-jar/save-lead (get-in app-state storefront.keypaths/cookie)
-                           {"lead-id" (get-in app-state keypaths/remote-lead-id)
-                            "onboarding-status" "awaiting-call"})))
-
