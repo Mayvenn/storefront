@@ -92,9 +92,9 @@
 
 (defn hero-section [{:keys [flow-id sign-up title]}]
   [:section.px3.py4.bg-cover.leads-bg-hero-hair
+   [:a {:name "signup-form"}]
    [:div.container
     [:div.flex-on-tb-dt.items-center
-     [:a {:name "signup-form"}]
      [:div.col-7-on-tb-dt.py4
       [:div.col-9-on-tb-dt.mx-auto.white.center
        [:h1
