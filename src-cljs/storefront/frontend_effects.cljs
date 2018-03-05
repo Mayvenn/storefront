@@ -375,20 +375,10 @@
 (defmethod perform-effects events/navigate-stylist-dashboard [_ event args _ app-state]
   (when-let [user-token (get-in app-state keypaths/user-token)]
     (api/get-stylist-account (get-in app-state keypaths/user-id) user-token)
-    (if (experiments/stylist-transfers? app-state)
-      (api/get-stylist-payout-stats events/api-success-stylist-payout-stats
-                                    (get-in app-state keypaths/store-stylist-id)
-                                    (get-in app-state keypaths/user-id)
-                                    (get-in app-state keypaths/user-token))
-      (api/get-stylist-stats (get-in app-state keypaths/user-id) user-token))))
-
-(defmethod perform-effects events/navigate-stylist-dashboard-earnings [_ event args _ app-state]
-  ;; TODO: Once balance-transfers are fully deployed,
-  ;;       get rid of the false case and move this to earnings namespace
-  (if (experiments/stylist-transfers? app-state)
-    (handle-message events/stylist-balance-transfers-fetch)
-    (when (zero? (get-in app-state keypaths/stylist-earnings-page 0))
-      (handle-message events/control-stylist-earnings-fetch))))
+    (api/get-stylist-payout-stats events/api-success-stylist-payout-stats
+                                  (get-in app-state keypaths/store-stylist-id)
+                                  (get-in app-state keypaths/user-id)
+                                  (get-in app-state keypaths/user-token))))
 
 (defmethod perform-effects events/control-stylist-earnings-fetch [_ _ args _ app-state]
   (let [user-id    (get-in app-state keypaths/user-id)

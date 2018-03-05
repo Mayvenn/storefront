@@ -21,17 +21,12 @@
                          bonuses
                          referrals
                          payout-method
-                         stylist-transfers?
                          next-payout-slide]} owner opts]
   (om/component
    (html
     [:.container
-     (if stylist-transfers?
-       (om/build new-stylist-dashboard-stats-component {:payout-stats          payout-stats
-                                                        :next-payout-slide     next-payout-slide})
-       (om/build stylist-dashboard-stats-component {:stats                 stats
-                                                    :payout-method         payout-method
-                                                    :next-payout-slide     next-payout-slide}))
+     (om/build new-stylist-dashboard-stats-component {:payout-stats      payout-stats
+                                                      :next-payout-slide next-payout-slide})
 
      [:div.bg-light-gray
       [:div.col-6-on-tb-dt.mx-auto
@@ -43,9 +38,7 @@
                                     events/navigate-stylist-dashboard-referrals]}})]]
      (condp = nav-event
        events/navigate-stylist-dashboard-earnings
-       (if stylist-transfers?
-         (om/build new-earnings/component new-earnings)
-         (om/build earnings/component earnings))
+       (om/build new-earnings/component new-earnings)
 
        events/navigate-stylist-dashboard-bonus-credit
        (om/build bonuses/component bonuses)
@@ -56,9 +49,7 @@
 (defn query [data]
   (let [payout-stats  (get-in data keypaths/stylist-payout-stats)
         payout-method (-> payout-stats :next-payout :payout-method)
-
-        cash-out-eligible? (and (experiments/cash-out-now? data)
-                                (payouts/cash-out-eligible? payout-method))]
+        cash-out-eligible? (payouts/cash-out-eligible? payout-method)]
     {:nav-event          (get-in data keypaths/navigation-event)
      :stats              (get-in data keypaths/stylist-stats)
      :payout-stats       payout-stats
@@ -67,7 +58,6 @@
      :payout-method      payout-method
      :bonuses            (bonuses/query data)
      :referrals          (referrals/query data)
-     :stylist-transfers? (experiments/stylist-transfers? data)
      :next-payout-slide  (cond
                            (-> payout-stats
                                :initiated-payout
