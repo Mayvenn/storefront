@@ -159,7 +159,7 @@
                                                                                    :pagination]))))))
 
 (defmethod effects/perform-effects events/navigate-stylist-dashboard-earnings [_ event args _ app-state]
-  (handle-message events/stylist-balance-transfers-fetch))
+  (messages/handle-message events/stylist-balance-transfers-fetch))
 
 (defmethod transitions/transition-state events/navigate-stylist-dashboard-earnings
   [_ event {:keys [stylist balance-transfers orders pagination]} app-state]
