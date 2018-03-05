@@ -37,9 +37,10 @@
 
 (defn award-row [row-number balance-transfer]
   (let [{:keys [id amount created-at reason] :as award} (:data balance-transfer)]
-    [:tr (merge {:key (str "award-" id)}
-                (when (odd? row-number)
-                  {:class "bg-too-light-teal"}))
+    [:tr.pointer (merge {:key (str "award-" id)}
+                        (utils/route-to events/navigate-stylist-dashboard-balance-transfer-details {:balance-transfer-id id})
+                        (when (odd? row-number)
+                          {:class "bg-too-light-teal"}))
      [:td.px3.py2 (f/less-year-more-day-date created-at)]
      [:td.py2 "Account Correction" [:div.h6 reason]]
      [:td.pr3.py2.green.right-align "+" (mf/as-money amount)]]))

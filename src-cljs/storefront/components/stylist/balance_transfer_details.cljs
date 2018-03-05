@@ -146,6 +146,24 @@
       [:div.pr4 "You transferred " (mf/as-money amount)]]
      (payout-method-details payout_method)]))
 
+(defn ^:private award-component [{:keys [balance-transfer]}]
+  (let [{:keys [id transfered-at amount]} balance-transfer
+        {:keys [reason]}           (:data balance-transfer)]
+    (if false #_fetching?
+      [:div.my2.h2 ui/spinner]
+
+      [:div.container.mb4.px3
+       back-to-earnings
+       [:h3.my4 "Details - Award Received"]
+       [:div.flex.justify-between.col-12
+        [:div (f/less-year-more-day-date transfered-at)]
+        [:div.green "+" (mf/as-money amount)]]
+       [:div.col-12.inline-block.align-top.mb3
+        [:span.h5.dark-gray "Reason"]
+        [:div.h5 reason]]
+       [:div.h5.center.navy.py3.border-top.border-gray
+        (str (mf/as-money amount) " has been added to your next payment.")]])))
+
 (defn component [data owner opts]
   (component/create
    (if (and (:fetching? data)
@@ -154,7 +172,8 @@
      (when (:balance-transfer data)
        (case (:type (:balance-transfer data))
          "payout" (payout-component data)
-         "commission" (commission-component data))))))
+         "commission" (commission-component data)
+         "award" (award-component data))))))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
