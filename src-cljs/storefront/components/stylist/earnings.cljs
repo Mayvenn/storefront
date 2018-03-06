@@ -44,7 +44,7 @@
                         (when (odd? row-number)
                           {:class "bg-too-light-teal"}))
      [:td.px3.py2 (f/less-year-more-day-date created-at)]
-     [:td.py2 "Account Correction" [:div.h6 reason]]
+     [:td.py2 "Mayvenn Admin Payment" [:div.h6 reason]]
      [:td.pr3.py2.green.right-align "+" (mf/as-money amount)]]))
 
 (defn payout-row [balance-transfer]
