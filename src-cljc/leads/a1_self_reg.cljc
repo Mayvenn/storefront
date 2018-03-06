@@ -347,7 +347,7 @@
      (let [lead (or lead old-lead)]
        (cookie-jar/save-lead (get-in app-state storefront.keypaths/cookie)
                              {"lead-id" (:id lead)})
-       (history/enqueue-navigate events/navigate-leads-registration-resolve))))
+       (history/enqueue-navigate events/navigate-leads-a1-resolve))))
 
 (defmethod transitions/transition-state events/api-success-leads-a1-lead-registered
   [_ event {:keys [lead user-id token]} app-state]

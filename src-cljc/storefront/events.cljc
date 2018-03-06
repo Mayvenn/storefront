@@ -99,6 +99,7 @@
 (defpath navigate-leads-resolve)
 (defpath navigate-leads-a1-receive)
 (defpath navigate-leads-a1-self-reg)
+(defpath navigate-leads-a1-resolve)
 
 (defpath menu-traverse-root)
 (defpath menu-traverse-ascend)
