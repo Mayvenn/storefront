@@ -139,7 +139,6 @@
                       :id          "sign-up-number-of-clients"
                       :label       "Number of Clients*"
                       :keypath     keypaths/lead-number-of-clients
-                      :placeholder "Number of Clients*"
                       :value       number-of-clients
                       :options     number-of-clients-options
                       :required    true
