@@ -41,6 +41,7 @@
   {"/stylists/welcome"              (edn->bidi events/navigate-leads-home)
    "/stylists/thank-you"            (edn->bidi events/navigate-leads-resolve)
    "/stylists/flows/a1/thank-you-1" (edn->bidi events/navigate-leads-a1-receive)
+   "/stylists/flows/a1/self-reg"    (edn->bidi events/navigate-leads-a1-self-reg)
    "/stylists/flows/2/details"      (edn->bidi events/navigate-leads-registration-details)
    "/stylists/flows/2/thank-you"    (edn->bidi events/navigate-leads-registration-resolve)})
 

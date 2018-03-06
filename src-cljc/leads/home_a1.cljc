@@ -22,6 +22,7 @@
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.keypaths]
+            [leads.a1-self-reg]
             [storefront.platform.carousel :as carousel]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
@@ -414,6 +415,5 @@
   #?(:cljs
      (let [remote-lead (get-in app-state keypaths/remote-lead)]
        (cookie-jar/save-lead (get-in app-state storefront.keypaths/cookie)
-                             {"lead-id"           (:id remote-lead)
-                              "onboarding-status" "lead-created"})
-       (history/enqueue-navigate events/navigate-leads-receive-a1))))
+                             {"lead-id" (:id remote-lead)})
+       (history/enqueue-navigate events/navigate-leads-a1-receive))))

@@ -333,12 +333,16 @@
 (defn render-leads-page
   [render-ctx data req params]
   (let [onboarding-status (get-in data leads.keypaths/onboarding-status)
-        lead-id           (get-in data leads.keypaths/lead-id)
+        lead              (get-in data leads.keypaths/lead)
+        lead-id           (:id lead)
+        lead-step         (:step-id lead)
+        lead-flow         (:flow-id lead)
         nav-event         (get-in data keypaths/navigation-event)
         home              events/navigate-leads-home
         details           events/navigate-leads-registration-details
         thank-you         events/navigate-leads-resolve
         a1-receive        events/navigate-leads-a1-receive
+        a1-self-reg       events/navigate-leads-a1-self-reg
         reg-thank-you     events/navigate-leads-registration-resolve]
     (redirect-if-necessary render-ctx data
                            (redir-table nav-event
@@ -349,11 +353,16 @@
                                         thank-you           home            (or (empty? lead-id)
                                                                                 (not=   onboarding-status
                                                                                         "awaiting-call"))
-                                        receive-a1          home            (or (empty? lead-id)
-                                                                                (not=   onboarding-status
-                                                                                        "stylist-created"))
-                                        home                receive-a1      (=  onboarding-status
-                                                                                "a1-lead-created")
+                                        a1-receive          home            (or (empty? lead-id)
+                                                                                (not=   lead-step
+                                                                                        "applied"))
+                                        a1-self-reg         home            (empty? lead-id)
+
+                                        a1-self-reg         a1-receive      (or (empty? lead-id)
+                                                                                (not=   lead-step
+                                                                                        "applied"))
+                                        home                a1-receive      (and (= lead-step "applied")
+                                                                                 (= lead-flow "a1"))
                                         reg-thank-you       home            (or (empty? lead-id)
                                                                                 (not=   onboarding-status
                                                                                         "stylist-created"))))))
@@ -500,6 +509,7 @@
    events/navigate-content-program-terms      generic-server-render
    events/navigate-gallery                    generic-server-render
    events/navigate-leads-home                 render-leads-page
+   events/navigate-leads-a1-self-reg          render-leads-page
    events/navigate-leads-registration-details render-leads-page
    events/navigate-leads-registration-resolve render-leads-page
    events/navigate-leads-resolve              render-leads-page})
@@ -681,6 +691,23 @@
           set-tracking-id ; set it on the response, so it's saved in the client
           (cookies/expire environment "tracking_id")))))
 
+(defn wrap-lead-id-from-query-params [h {:keys [environment]}]
+  (fn [{:keys [server-name] :as req}]
+    (let [lead-id         (str (or (-> req :query-params (get "lead_id"))
+                                   (cookies/get req "lead-id")))
+          set-lead-id (fn [req-or-resp]
+                            (cookies/set req-or-resp
+                                         environment
+                                         "lead-id"
+                                         lead-id
+                                         {:http-only false
+                                          :max-age   (cookies/days 365)
+                                          :domain    (cookie-root-domain server-name)}))]
+      (-> req
+          set-lead-id ; set it on the request, so it's available to leads-routes as (cookies/get req "lead-id")
+          h
+          set-lead-id)))) ; set it on the response, so it's saved in the client
+
 (defn wrap-migrate-lead-utm-params-cookies [h {:keys [environment]}]
   (fn [{:keys [server-name] :as req}]
     (let [leads-utm-params        {"utm_source"   "leads.utm-source"
@@ -715,6 +742,7 @@
       ;; TODO: leads' version of utm param cookies stick around for 1 year, and are server-side only.
       ;; It would be nice to use storefront's server- and client-side copy of the UTM cookies, but they only stick for 1 month.
       ;; If we need to keep both, the leads' version must be converted to :http-only false
+      (wrap-lead-id-from-query-params ctx)
       (wrap-migrate-lead-utm-params-cookies ctx)
       (wrap-migrate-lead-tracking-id-cookie ctx)
       (wrap-defaults (storefront-site-defaults environment))

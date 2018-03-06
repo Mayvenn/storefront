@@ -98,6 +98,7 @@
 (defpath navigate-leads-registration-resolve)
 (defpath navigate-leads-resolve)
 (defpath navigate-leads-a1-receive)
+(defpath navigate-leads-a1-self-reg)
 
 (defpath menu-traverse-root)
 (defpath menu-traverse-ascend)
@@ -388,6 +389,7 @@
 
 (defpath leads-control-sign-up-submit)
 (defpath leads-a1-control-sign-up-submit)
+(defpath leads-a1-control-self-registration-submit)
 
 (defpath stringer-tracked-sent-to-affirm)
 

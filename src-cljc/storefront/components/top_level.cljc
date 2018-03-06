@@ -49,6 +49,7 @@
             [leads.registration] ;; GROT after a1 flow is done
             [leads.registration-resolve] ;; GROT after a1 flow is done
             [leads.a1-receive]
+            [leads.a1-self-reg]
             [leads.resolve :as leads.resolve]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -111,6 +112,7 @@
     events/navigate-leads-home                 leads.home/built-component
     events/navigate-leads-resolve              leads.resolve/built-component
     events/navigate-leads-a1-receive           leads.a1-receive/built-component
+    events/navigate-leads-a1-self-reg          leads.a1-self-reg/built-component
     events/navigate-leads-registration-details leads.registration/built-component         ;; GROT after a1 flow is done
     events/navigate-leads-registration-resolve leads.registration-resolve/built-component ;; GROT after a1 flow is done
     home/built-component))
