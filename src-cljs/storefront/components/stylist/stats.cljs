@@ -8,6 +8,7 @@
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.history :as history]
+            [storefront.keypaths :as keypaths]
             [storefront.platform.carousel :as carousel]
             [storefront.platform.component-utils :as utils]))
 
@@ -104,22 +105,36 @@
        [:.py2.h0 svg/large-percent]
        [:div "All sales since you joined Mayvenn."]])]])
 
+(defn query
+  [data]
+  (let [payout-stats       (get-in data keypaths/stylist-payout-stats)
+        payout-method      (-> payout-stats :next-payout :payout-method)
+        cash-out-eligible? (payouts/cash-out-eligible? payout-method)
+        next-payout-slide  (cond
+                             (-> payout-stats
+                                 :initiated-payout
+                                 :status-id)    :stats/transfer-in-progress
+                             cash-out-eligible? :stats/cash-out-now
+                             :else              :stats/next-payout)]
+    {:payout-stats        payout-stats
+     :next-payout-slide   next-payout-slide
+     :initial-slide-index (if (= :stats/cash-out-now next-payout-slide) 1 0) }))
+
 (defn component
-  [{:keys [payout-stats next-payout-slide]} owner]
+  [{:keys [payout-stats next-payout-slide initial-slide-index]} owner]
   (component/create
-   (let [items [(previous-payout-slide (:previous-payout payout-stats))
-                (payout-slide next-payout-slide payout-stats)
-                (lifetime-stats-slide (:lifetime-stats payout-stats))]
-         initial-slide-index (if (= :stats/cash-out-now next-payout-slide) 1 0)]
-     [:div.bg-teal.white.center
-      [:div.bg-darken-bottom-1
-       (om/build carousel/component
-                 {:slides   items
-                  :settings {:arrows true
-                             :dots   true
-                             :swipe  true
-                             :initialSlide initial-slide-index}}
-                 {:react-key "stat-swiper"})]])))
+   [:div.bg-teal.white.center
+    [:div.bg-darken-bottom-1
+     (component/build carousel/component
+                      {:slides   [(previous-payout-slide (:previous-payout payout-stats))
+                                  (payout-slide next-payout-slide payout-stats)
+                                  (lifetime-stats-slide (:lifetime-stats payout-stats))]
+                       :settings {:arrows       true
+                                  :dots         true
+                                  :swipe        true
+                                  :initialSlide initial-slide-index
+                                  :slickGoTo    initial-slide-index}}
+                      {:react-key "stat-swiper"})]]))
 
 (defmethod effects/perform-effects events/control-stylist-dashboard-cash-out-now-submit
   [_ _ _ _ app-state]
