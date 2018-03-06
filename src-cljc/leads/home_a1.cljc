@@ -138,6 +138,7 @@
                       :errors      (get field-errors ["number-of-clients"])
                       :id          "sign-up-number-of-clients"
                       :label       "Number of Clients *"
+                      :placeholder "Number of Clients *"
                       :keypath     keypaths/lead-number-of-clients
                       :value       number-of-clients
                       :options     number-of-clients-options
