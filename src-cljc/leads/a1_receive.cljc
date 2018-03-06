@@ -23,7 +23,8 @@
     [:div.bg-teal.white
      [:div.max-580.center.mx-auto
       [:div.h4.py3.px4
-       [:p.m2 "Thank you! We received your request to become a Mayvenn Stylist. " "Stay tuned – we're reviewing your info and will get back to you shortly with next steps."]]
+       [:p.m2 "Thank you! We received your request to become a Mayvenn Stylist. "
+        "Stay tuned – we're reviewing your info and will get back to you shortly with next steps."]]
       [:div.h4.py1
        [:p.my2 "We'd love to connect on social media:"]
        [:div
