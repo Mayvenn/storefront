@@ -52,7 +52,7 @@
                    :id        "email"
                    :keypath   keypaths/stylist-email
                    :focused   focused
-                   :label     "Email"
+                   :label     "Email *"
                    :name      "email"
                    :required  true
                    :type      "email"

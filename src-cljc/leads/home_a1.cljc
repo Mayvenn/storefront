@@ -72,7 +72,7 @@
                     :id        "sign-up-first-name"
                     :keypath   keypaths/lead-first-name
                     :focused   focused
-                    :label     "First name*"
+                    :label     "First name *"
                     :name      "first-name"
                     :required  true
                     :value     first-name})
@@ -82,7 +82,7 @@
                     :id        "sign-up-last-name"
                     :keypath   keypaths/lead-last-name
                     :focused   focused
-                    :label     "Last name*"
+                    :label     "Last name *"
                     :name      "last-name"
                     :required  true
                     :value     last-name})
@@ -91,7 +91,7 @@
                     :id        "sign-up-phone"
                     :keypath   keypaths/lead-phone
                     :focused   focused
-                    :label     "Phone*"
+                    :label     "Phone *"
                     :name      "phone"
                     :required  true
                     :type      "tel"
@@ -101,7 +101,7 @@
                     :id        "sign-up-email"
                     :keypath   keypaths/lead-email
                     :focused   focused
-                    :label     "Email*"
+                    :label     "Email *"
                     :name      "email"
                     :required  true
                     :type      "email"
@@ -137,7 +137,7 @@
     (ui/select-field {:data-test   "sign-up-number-of-clients"
                       :errors      (get field-errors ["number-of-clients"])
                       :id          "sign-up-number-of-clients"
-                      :label       "Number of Clients*"
+                      :label       "Number of Clients *"
                       :keypath     keypaths/lead-number-of-clients
                       :value       number-of-clients
                       :options     number-of-clients-options
