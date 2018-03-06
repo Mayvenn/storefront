@@ -1,4 +1,4 @@
-(ns leads.receive-a1
+(ns leads.a1-receive
   (:require #?@(:clj [[storefront.component-shim :as component]]
                 :cljs [[storefront.browser.cookie-jar :as cookie-jar]
                        [storefront.component :as component]])

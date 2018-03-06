@@ -48,7 +48,7 @@
             [leads.home :as leads.home]
             [leads.registration] ;; GROT after a1 flow is done
             [leads.registration-resolve] ;; GROT after a1 flow is done
-            [leads.receive-a1]
+            [leads.a1-receive]
             [leads.resolve :as leads.resolve]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -110,7 +110,7 @@
     #?@(:cljs [])
     events/navigate-leads-home                 leads.home/built-component
     events/navigate-leads-resolve              leads.resolve/built-component
-    events/navigate-leads-receive-a1           leads.receive-a1/built-component
+    events/navigate-leads-a1-receive           leads.a1-receive/built-component
     events/navigate-leads-registration-details leads.registration/built-component         ;; GROT after a1 flow is done
     events/navigate-leads-registration-resolve leads.registration-resolve/built-component ;; GROT after a1 flow is done
     home/built-component))

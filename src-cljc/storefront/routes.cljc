@@ -40,7 +40,7 @@
 (def leads-routes
   {"/stylists/welcome"              (edn->bidi events/navigate-leads-home)
    "/stylists/thank-you"            (edn->bidi events/navigate-leads-resolve)
-   "/stylists/flows/a1/thank-you-1" (edn->bidi events/navigate-leads-receive-a1)
+   "/stylists/flows/a1/thank-you-1" (edn->bidi events/navigate-leads-a1-receive)
    "/stylists/flows/2/details"      (edn->bidi events/navigate-leads-registration-details)
    "/stylists/flows/2/thank-you"    (edn->bidi events/navigate-leads-registration-resolve)})
 

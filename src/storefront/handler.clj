@@ -338,7 +338,7 @@
         home              events/navigate-leads-home
         details           events/navigate-leads-registration-details
         thank-you         events/navigate-leads-resolve
-        receive-a1        events/navigate-leads-receive-a1
+        a1-receive        events/navigate-leads-a1-receive
         reg-thank-you     events/navigate-leads-registration-resolve]
     (redirect-if-necessary render-ctx data
                            (redir-table nav-event
