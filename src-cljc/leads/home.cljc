@@ -455,8 +455,7 @@
   #?(:cljs
      (let [remote-lead (get-in app-state keypaths/remote-lead)]
        (cookie-jar/save-lead (get-in app-state storefront.keypaths/cookie)
-                             {"lead-id"           (:id remote-lead)
-                              "onboarding-status" "lead-created"})
+                             {"lead-id" (:id remote-lead)})
        (history/enqueue-navigate events/navigate-leads-resolve))))
 
 (defmethod effects/perform-effects events/navigate-leads

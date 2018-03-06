@@ -315,66 +315,34 @@
     (util.response/redirect (routes/path-for event))
     (html-response render-ctx data)))
 
-(defmacro redir-table
-  "`body` is rows of 3. (1) desired-dest (2) redirect-dest (3) truthy expression.
-   The final condition is :else `nav-event``"
-  [nav-event & body]
-  `(cond
-     ~@(mapcat
-        (fn [entry]
-          (let [page (first entry)
-                dest (second entry)
-                ok?  (nth entry 2)]
-            (list `(and (= ~nav-event ~page) ~ok?)
-                  dest)))
-        (partition 3 body))
-     :else ~nav-event))
-
 (defn render-leads-page
   [render-ctx data req params]
-  (let [onboarding-status (get-in data leads.keypaths/onboarding-status)
-        lead              (get-in data leads.keypaths/lead)
-        lead-id           (:id lead)
-        lead-step         (:step-id lead)
-        lead-flow         (:flow-id lead)
-        nav-event         (get-in data keypaths/navigation-event)
-        home              events/navigate-leads-home
-        details           events/navigate-leads-registration-details
-        thank-you         events/navigate-leads-resolve
-        reg-thank-you     events/navigate-leads-registration-resolve
-        a1-receive        events/navigate-leads-a1-receive
-        a1-self-reg       events/navigate-leads-a1-self-reg
-        a1-resolve        events/navigate-leads-a1-resolve]
+  (let [lead           (get-in data leads.keypaths/lead)
+        nav-event      (get-in data keypaths/navigation-event)
+        home           events/navigate-leads-home
+        thank-you      events/navigate-leads-resolve
+        a1-thank-you-1 events/navigate-leads-a1-receive
+        a1-self-reg    events/navigate-leads-a1-self-reg
+        a1-thank-you-2 events/navigate-leads-a1-resolve
+        in-flow?       (partial (fnil = "original")
+                                (:flow-id lead))
+        on-step?       (partial (fnil = "initial")
+                                (:step-id lead))
+        nav-event?     (partial = nav-event)
+        flow-step      (fn [flow step]
+                         (and (in-flow? flow)
+                              (on-step? step)))]
     (redirect-if-necessary render-ctx data
-                           (redir-table nav-event
-                                        ;; nav-event        ;; redir to     ;; condition
-                                        home                a1-resolve      (and (= lead-flow "a1")
-                                                                                 (= lead-step "registered"))
+                           (cond
+                             (nav-event? home)    home
+                             (-> lead :id empty?) home
 
-                                        home                a1-receive      (and (= lead-flow "a1")
-                                                                                 (= lead-step "applied"))
-
-                                        ;; original flow
-                                        details             home            (empty? lead-id)
-                                        details             home            (not= onboarding-status "lead-created")
-
-                                        thank-you           home            (empty? lead-id)
-                                        thank-you           home            (not= onboarding-status "awaiting-call")
-
-                                        reg-thank-you       home            (empty? lead-id)
-                                        reg-thank-you       home            (not= onboarding-status "stylist-created")
-
-                                        ;; a1 flow
-                                        a1-receive          home            (empty? lead-id)
-                                        a1-receive          home            (not= lead-step "applied")
-
-                                        a1-self-reg         home            (empty? lead-id)
-                                        a1-self-reg         a1-resolve      (= lead-step "registered")
-                                        a1-self-reg         home            (not= lead-step "applied")
-
-                                        a1-resolve          home            (empty? lead-id)
-                                        a1-resolve          a1-self-reg     (= lead-step "applied")
-                                        a1-resolve          home            (not= lead-step "registered")))))
+                             (flow-step "original" "initial") thank-you
+                             (flow-step "a1" "registered")    a1-thank-you-2
+                             (and (flow-step "a1" "applied")
+                                  (nav-event? a1-self-reg))   nav-event
+                             (flow-step "a1" "applied")       a1-thank-you-1
+                             :else                            nav-event))))
 
 (defn render-static-page [template]
   (template/eval template {:url assets/path}))
