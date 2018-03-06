@@ -1,16 +1,15 @@
 (ns storefront.components.stylist.stats
-  (:require [om.core :as om]
-            [sablono.core :refer [html]]
-            [storefront.components.money-formatters :as mf]
+  (:require [storefront.accessors.payouts :as payouts]
+            [storefront.component :as component]
             [storefront.components.formatters :as f]
+            [storefront.components.money-formatters :as mf]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
-            [storefront.events :as events]
-            [storefront.platform.component-utils :as utils]
-            [storefront.platform.carousel :as carousel]
             [storefront.effects :as effects]
+            [storefront.events :as events]
             [storefront.history :as history]
-            [storefront.accessors.payouts :as payouts]))
+            [storefront.platform.carousel :as carousel]
+            [storefront.platform.component-utils :as utils]))
 
 (def payday 3) ;; 3 -> Wednesday in JS
 
@@ -107,21 +106,20 @@
 
 (defn component
   [{:keys [payout-stats next-payout-slide]} owner]
-  (om/component
-   (html
-    (let [items [(previous-payout-slide (:previous-payout payout-stats))
-                 (payout-slide next-payout-slide payout-stats)
-                 (lifetime-stats-slide (:lifetime-stats payout-stats))]
-          initial-slide-index (if (= :stats/cash-out-now next-payout-slide) 1 0)]
-      [:div.bg-teal.white.center
-       [:div.bg-darken-bottom-1
-        (om/build carousel/component
-                  {:slides   items
-                   :settings {:arrows true
-                              :dots   true
-                              :swipe  true
-                              :initialSlide initial-slide-index}}
-                  {:react-key "stat-swiper"})]]))))
+  (component/create
+   (let [items [(previous-payout-slide (:previous-payout payout-stats))
+                (payout-slide next-payout-slide payout-stats)
+                (lifetime-stats-slide (:lifetime-stats payout-stats))]
+         initial-slide-index (if (= :stats/cash-out-now next-payout-slide) 1 0)]
+     [:div.bg-teal.white.center
+      [:div.bg-darken-bottom-1
+       (om/build carousel/component
+                 {:slides   items
+                  :settings {:arrows true
+                             :dots   true
+                             :swipe  true
+                             :initialSlide initial-slide-index}}
+                 {:react-key "stat-swiper"})]])))
 
 (defmethod effects/perform-effects events/control-stylist-dashboard-cash-out-now-submit
   [_ _ _ _ app-state]
