@@ -35,7 +35,7 @@
   :plugins [[s3-wagon-private "1.3.0"]
             [lein-cljsbuild "1.1.2"]
             [lein-cljfmt "0.1.10"]
-            [lein-figwheel "0.5.14"]]
+            [lein-figwheel "0.5.15"]]
   :figwheel {:nrepl-port 4000
              :css-dirs ["resources/public/css"]}
   :main storefront.core
@@ -122,7 +122,7 @@
                                   [standalone-test-server "0.7.2"]
                                   [ring/ring-mock "0.3.0"]
                                   [org.clojure/tools.namespace "0.2.11"]
-                                  [figwheel-sidecar "0.5.14"]]
+                                  [figwheel-sidecar "0.5.15"]]
                    :injections [(require 'pjstadig.humane-test-output)
                                 (pjstadig.humane-test-output/activate!)]
                    :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
