@@ -43,7 +43,7 @@
             [storefront.components.sign-up :as sign-up]
             [storefront.components.slideout-nav :as slideout-nav]
             [storefront.components.stylist-banner :as stylist-banner]
-            ;; TODO Maybe we should change leads namespaces to be somehting like
+            ;; TODO Maybe we should change leads namespaces to be something like
             ;; leads.components.home
             [leads.home :as leads.home]
             [leads.registration] ;; GROT after a1 flow is done
