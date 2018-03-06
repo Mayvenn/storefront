@@ -36,7 +36,8 @@
      [:td.pr3.py2.green.right-align "+" (mf/as-money amount)]]))
 
 (defn award-row [row-number balance-transfer]
-  (let [{:keys [id amount created-at reason] :as award} (:data balance-transfer)]
+  (let [{:keys [id]} balance-transfer
+        {:keys [amount created-at reason] :as award} (:data balance-transfer)]
     [:tr.pointer (merge {:key (str "award-" id)
                          :data-test (str "award-" id)}
                         (utils/route-to events/navigate-stylist-dashboard-balance-transfer-details {:balance-transfer-id id})
