@@ -1,10 +1,8 @@
 (ns storefront.components.stylist.dashboard
   (:require [om.core :as om]
             [sablono.core :refer [html]]
-            [storefront.components.stylist.stats :refer [stylist-dashboard-stats-component
-                                                         new-stylist-dashboard-stats-component]]
+            [storefront.components.stylist.stats :as stats]
             [storefront.components.stylist.earnings :as earnings]
-            [storefront.components.stylist.new-earnings :as new-earnings]
             [storefront.components.stylist.bonus-credit :as bonuses]
             [storefront.components.stylist.referrals :as referrals]
             [storefront.components.tabs :as tabs]
@@ -13,20 +11,20 @@
             [storefront.accessors.payouts :as payouts]
             [storefront.accessors.experiments :as experiments]))
 
-(defn component [{:keys [nav-event
-                         stats
-                         payout-stats
-                         earnings
-                         new-earnings
-                         bonuses
-                         referrals
-                         payout-method
-                         next-payout-slide]} owner opts]
+(defn component
+  [{:keys [nav-event
+           stats
+           payout-stats
+           earnings
+           bonuses
+           referrals
+           payout-method
+           next-payout-slide]} owner opts]
   (om/component
    (html
-    [:.container
-     (om/build new-stylist-dashboard-stats-component {:payout-stats      payout-stats
-                                                      :next-payout-slide next-payout-slide})
+    [:div.container
+     (om/build stats/component {:payout-stats      payout-stats
+                                :next-payout-slide next-payout-slide})
 
      [:div.bg-light-gray
       [:div.col-6-on-tb-dt.mx-auto
@@ -38,7 +36,7 @@
                                     events/navigate-stylist-dashboard-referrals]}})]]
      (condp = nav-event
        events/navigate-stylist-dashboard-earnings
-       (om/build new-earnings/component new-earnings)
+       (om/build earnings/component earnings)
 
        events/navigate-stylist-dashboard-bonus-credit
        (om/build bonuses/component bonuses)
@@ -46,24 +44,24 @@
        events/navigate-stylist-dashboard-referrals
        (om/build referrals/component referrals))])))
 
-(defn query [data]
-  (let [payout-stats  (get-in data keypaths/stylist-payout-stats)
-        payout-method (-> payout-stats :next-payout :payout-method)
+(defn query
+  [data]
+  (let [payout-stats       (get-in data keypaths/stylist-payout-stats)
+        payout-method      (-> payout-stats :next-payout :payout-method)
         cash-out-eligible? (payouts/cash-out-eligible? payout-method)]
-    {:nav-event          (get-in data keypaths/navigation-event)
-     :stats              (get-in data keypaths/stylist-stats)
-     :payout-stats       payout-stats
-     :earnings           (earnings/query data)
-     :new-earnings       (new-earnings/query data)
-     :payout-method      payout-method
-     :bonuses            (bonuses/query data)
-     :referrals          (referrals/query data)
-     :next-payout-slide  (cond
-                           (-> payout-stats
-                               :initiated-payout
-                               :status-id)    :stats/transfer-in-progress
-                           cash-out-eligible? :stats/cash-out-now
-                           :else              :stats/next-payout)}))
+    {:nav-event         (get-in data keypaths/navigation-event)
+     :stats             (get-in data keypaths/stylist-stats)
+     :payout-stats      payout-stats
+     :earnings          (earnings/query data)
+     :payout-method     payout-method
+     :bonuses           (bonuses/query data)
+     :referrals         (referrals/query data)
+     :next-payout-slide (cond
+                          (-> payout-stats
+                              :initiated-payout
+                              :status-id)    :stats/transfer-in-progress
+                          cash-out-eligible? :stats/cash-out-now
+                          :else              :stats/next-payout)}))
 
 (defn built-component [data opts]
   (om/build component (query data) opts))

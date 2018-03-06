@@ -92,19 +92,6 @@
        [:.py2.h0 re-center-money (ui/big-money amount)]
        [:div.col-5.mt1.mb2.mx-auto "Transfer in progress"]]]]))
 
-(defn old-lifetime-payouts-slide [{:keys [amount]}]
-  [:div.my4.clearfix
-   [:.my4
-    {:class stat-card :key "render-stat"}
-    [:.p1 "LIFETIME COMMISSIONS"]
-    (if (> amount 0)
-      [:div
-       [:.py2.h0 re-center-money [:div.line-height-1 (mf/as-money-without-cents amount)]]
-       [:div "Sales since you joined Mayvenn"]]
-      [:div
-       [:.py2.h0 svg/large-percent]
-       [:div "All sales since you joined Mayvenn."]])]])
-
 (defn lifetime-stats-slide [{:keys [total-paid-out]}]
   [:div.my4.clearfix
    [:.my4
@@ -118,24 +105,8 @@
        [:.py2.h0 svg/large-percent]
        [:div "All sales since you joined Mayvenn."]])]])
 
-(defn stylist-dashboard-stats-component [{:keys [stats next-payout-slide]} owner]
-  (om/component
-   (html
-    (let [items [(previous-payout-slide (:previous-payout stats))
-                 (payout-slide next-payout-slide stats)
-                 (old-lifetime-payouts-slide (:lifetime-payouts stats))]
-          initial-slide-index (if (= :stats/cash-out-now next-payout-slide) 1 0)]
-      [:div.bg-teal.white.center
-       [:div.bg-darken-bottom-1
-        (om/build carousel/component
-                  {:slides   items
-                   :settings {:arrows true
-                              :dots   true
-                              :swipe  true
-                              :initialSlide initial-slide-index}}
-                  {:react-key "stat-swiper"})]]))))
-
-(defn new-stylist-dashboard-stats-component [{:keys [payout-stats next-payout-slide]} owner]
+(defn component
+  [{:keys [payout-stats next-payout-slide]} owner]
   (om/component
    (html
     (let [items [(previous-payout-slide (:previous-payout payout-stats))
