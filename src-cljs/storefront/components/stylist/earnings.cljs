@@ -37,7 +37,8 @@
 
 (defn award-row [row-number balance-transfer]
   (let [{:keys [id amount created-at reason] :as award} (:data balance-transfer)]
-    [:tr.pointer (merge {:key (str "award-" id)}
+    [:tr.pointer (merge {:key (str "award-" id)
+                         :data-test (str "award-" id)}
                         (utils/route-to events/navigate-stylist-dashboard-balance-transfer-details {:balance-transfer-id id})
                         (when (odd? row-number)
                           {:class "bg-too-light-teal"}))
