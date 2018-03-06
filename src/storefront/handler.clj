@@ -341,32 +341,40 @@
         home              events/navigate-leads-home
         details           events/navigate-leads-registration-details
         thank-you         events/navigate-leads-resolve
+        reg-thank-you     events/navigate-leads-registration-resolve
         a1-receive        events/navigate-leads-a1-receive
         a1-self-reg       events/navigate-leads-a1-self-reg
-        reg-thank-you     events/navigate-leads-registration-resolve]
+        a1-resolve        events/navigate-leads-a1-resolve]
     (redirect-if-necessary render-ctx data
                            (redir-table nav-event
                                         ;; nav-event        ;; redir to     ;; condition
-                                        details             home            (or (empty? lead-id)
-                                                                                (not=   onboarding-status
-                                                                                        "lead-created"))
-                                        thank-you           home            (or (empty? lead-id)
-                                                                                (not=   onboarding-status
-                                                                                        "awaiting-call"))
-                                        a1-receive          home            (or (empty? lead-id)
-                                                                                (not=   lead-step
-                                                                                        "applied"))
+                                        home                a1-resolve      (and (= lead-flow "a1")
+                                                                                 (= lead-step "registered"))
+
+                                        home                a1-receive      (and (= lead-flow "a1")
+                                                                                 (= lead-step "applied"))
+
+                                        ;; original flow
+                                        details             home            (empty? lead-id)
+                                        details             home            (not= onboarding-status "lead-created")
+
+                                        thank-you           home            (empty? lead-id)
+                                        thank-you           home            (not= onboarding-status "awaiting-call")
+
+                                        reg-thank-you       home            (empty? lead-id)
+                                        reg-thank-you       home            (not= onboarding-status "stylist-created")
+
+                                        ;; a1 flow
+                                        a1-receive          home            (empty? lead-id)
+                                        a1-receive          home            (not= lead-step "applied")
+
                                         a1-self-reg         home            (empty? lead-id)
+                                        a1-self-reg         a1-resolve      (= lead-step "registered")
+                                        a1-self-reg         home            (not= lead-step "applied")
 
-                                        a1-self-reg         a1-receive      (or (empty? lead-id)
-                                                                                (not=   lead-step
-                                                                                        "applied"))
-                                        home                a1-receive      (and (= lead-step "applied")
-                                                                                 (= lead-flow "a1"))
-                                        reg-thank-you       home            (or (empty? lead-id)
-                                                                                (not=   onboarding-status
-                                                                                        "stylist-created"))))))
-
+                                        a1-resolve          home            (empty? lead-id)
+                                        a1-resolve          a1-self-reg     (= lead-step "applied")
+                                        a1-resolve          home            (not= lead-step "registered")))))
 
 (defn render-static-page [template]
   (template/eval template {:url assets/path}))
@@ -510,6 +518,8 @@
    events/navigate-gallery                    generic-server-render
    events/navigate-leads-home                 render-leads-page
    events/navigate-leads-a1-self-reg          render-leads-page
+   events/navigate-leads-a1-receive           render-leads-page
+   events/navigate-leads-a1-resolve           render-leads-page
    events/navigate-leads-registration-details render-leads-page
    events/navigate-leads-registration-resolve render-leads-page
    events/navigate-leads-resolve              render-leads-page})
