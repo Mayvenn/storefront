@@ -7,6 +7,7 @@
             [storefront.assets :as assets]
             [storefront.effects :as effects]
             [storefront.events :as events]
+            [storefront.config :as config]
             [storefront.keypaths]
             [leads.keypaths :as keypaths]
             [storefront.components.ui :as ui]))
@@ -39,11 +40,9 @@
     (component/build footer/minimal-component (:footer data) nil)]))
 
 (defn ^:private query [data]
-  (let [call-number "1-866-424-7201"
-        text-number "1-510-447-1504"]
-    {:footer {:call-number call-number}
-     :faq    {:text-number text-number
-              :call-number call-number}}))
+  {:footer {:call-number config/mayvenn-leads-call-number}
+   :faq    {:text-number config/mayvenn-leads-sms-number
+            :call-number config/mayvenn-leads-call-number}})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

@@ -3,18 +3,19 @@
                :cljs [storefront.component :as component])
             [storefront.events :as events]
             [storefront.components.ui :as ui]
+            [storefront.config :as config]
             [storefront.components.slideout-nav :as slideout-nav]))
 
-(defn ^:private component [data owner opts]
+(defn ^:private component [{:keys [call-number]} owner opts]
   (component/create
    [:div.border-bottom.border-gray.flex.items-center.justify-center.flex-column.py2
     [:div.col-12 (ui/clickable-logo {:data-test "leads-header-logo"
                                      :height "40px"})]
-    [:p.h6.dark-gray "Have questions? Call us:"
-     [:a {:href "tel://+18664247201"}] "1-866-424-7201"]]))
+    [:p.h6.dark-gray "Have questions? Call us: "
+     (ui/link :link/phone :a.inherit-color {} call-number)]]))
 
 (defn query [data]
-  {})
+  {:call-number config/mayvenn-leads-a1-call-number})
 
 (defn built-component [data opts]
   (component/build component (query data) nil))

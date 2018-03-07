@@ -342,7 +342,7 @@
 (defn ^:private component [data owner opts]
   (component/create
    [:div
-    (header/built-component data nil)
+    (header/built-component (:header data) nil)
     become-a-mayvenn-stylist-section
     how-mayvenn-works-section
     our-stylists-thrive-section
@@ -387,11 +387,11 @@
                                                     ["16 to 19" "16-19"]
                                                     ["20+" "20+"]]
                         :spinning?                 (utils/requesting? data request-keys/create-lead)}}
-     :header {:call-number config/mayvenn-leads-call-number}
-     :footer {:call-number config/mayvenn-leads-call-number
+     :header {:call-number config/mayvenn-leads-a1-call-number}
+     :footer {:call-number config/mayvenn-leads-a1-call-number
               :host-name   host-name}
      :faq    {:sms-number  config/mayvenn-leads-sms-number
-              :call-number config/mayvenn-leads-call-number}}))
+              :call-number config/mayvenn-leads-a1-call-number}}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

@@ -35,6 +35,7 @@
 (def api-base-url js/apiUrl)
 
 (def mayvenn-leads-call-number "1-866-424-7201")
+(def mayvenn-leads-a1-call-number "1-510-867-3439")
 (def mayvenn-leads-sms-number  "34649")
 
 (def send-sonar-base-url "https://www.sendsonar.com/api/v1")
