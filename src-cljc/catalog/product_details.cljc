@@ -444,11 +444,11 @@
          :clj nil))))
 
 (defn get-valid-product-skus [product all-skus]
-  (->> product
-       :selector/skus
-       (select-keys all-skus)
-       vals
-       (filter :inventory/in-stock?)))
+  (let [skus (->> product
+                  :selector/skus
+                  (select-keys all-skus)
+                  vals)]
+    (or (not-empty (filter :inventory/in-stock? skus)) skus)))
 
 (defn determine-sku-id
   ([app-state product]
