@@ -139,9 +139,7 @@
                 payout_method
                 payout_method_name]} (:data balance-transfer)]
     [:div.container.mb4.px3
-     [:a.left.col-12.dark-gray.flex.items-center.py3
-      (utils/route-to events/navigate-stylist-dashboard-earnings)
-      (ui/back-caret "back to earnings")]
+     back-to-earnings
      [:h3.my4 "Details - Earnings Transfer - " payout_method_name]
      [:div.flex.justify-between.col-12
       [:div (f/less-year-more-day-date created_at)]
