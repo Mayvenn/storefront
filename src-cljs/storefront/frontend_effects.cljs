@@ -354,14 +354,6 @@
   (cookie-jar/save-telligent-cookie (get-in app-state keypaths/cookie) cookie max-age)
   (handle-message events/external-redirect-telligent))
 
-(defmethod perform-effects events/api-success-stylist-earnings [_ event args _ app-state]
-  (ensure-skus app-state (->> (get-in app-state keypaths/stylist-earnings-history)
-                              (filter #(= "commission" (:type %)))
-                              (map :order)
-                              (mapcat orders/product-items)
-                              (map :sku)
-                              set)))
-
 (defmethod perform-effects events/navigate-stylist-dashboard [_ event args _ app-state]
   (when-let [user-token (get-in app-state keypaths/user-token)]
     (api/get-stylist-account (get-in app-state keypaths/user-id) user-token)
@@ -369,15 +361,6 @@
                                   (get-in app-state keypaths/store-stylist-id)
                                   (get-in app-state keypaths/user-id)
                                   (get-in app-state keypaths/user-token))))
-
-(defmethod perform-effects events/control-stylist-earnings-fetch [_ _ args _ app-state]
-  (let [user-id    (get-in app-state keypaths/user-id)
-        user-token (get-in app-state keypaths/user-token)
-        page       (inc (get-in app-state keypaths/stylist-earnings-page 0))]
-    (when (and user-id user-token)
-      (api/get-stylist-earnings user-id
-                                user-token
-                                {:page page}))))
 
 (defmethod perform-effects events/navigate-stylist-dashboard-bonus-credit [_ event args _ app-state]
   (when (zero? (get-in app-state keypaths/stylist-bonuses-page 0))

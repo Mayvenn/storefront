@@ -208,15 +208,7 @@
 (def stylist-payout-stats-lifetime-stats (conj stylist-payout-stats :lifetime-stats))
 (def stylist-payout-stats-initiated-payout (conj stylist-payout-stats :initiated-payout))
 
-(def stylist-commissions (conj stylist :commissions))
-(def stylist-commissions-detailed-commission (conj stylist-commissions :detailed-commission))
-
 (def stylist-earnings (conj stylist :earnings))
-(def stylist-earnings-rate (conj stylist-earnings :rate))
-(def stylist-earnings-history (conj stylist-earnings :history))
-(def stylist-earnings-page (conj stylist-earnings :page))
-(def stylist-earnings-pages (conj stylist-earnings :pages))
-
 (def stylist-earnings-pagination (conj stylist-earnings :pagination))
 (def stylist-earnings-pagination-page (conj stylist-earnings-pagination :page))
 (def stylist-earnings-balance-transfers (conj stylist-earnings :balance-transfers))

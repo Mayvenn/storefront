@@ -353,14 +353,6 @@
   [_ _ stats app-state]
   (assoc-in app-state keypaths/stylist-payout-stats stats))
 
-(defmethod transition-state events/api-success-stylist-earnings
-  [_ event {:keys [rate transactions pages current-page]} app-state]
-  (-> app-state
-      (assoc-in keypaths/stylist-earnings-rate rate)
-      (assoc-in keypaths/stylist-earnings-pages (or pages 0))
-      (assoc-in keypaths/stylist-earnings-page (or current-page 1))
-      (update-in keypaths/stylist-earnings-history into transactions)))
-
 (defmethod transition-state events/api-success-stylist-bonus-credits
   [_ event {:keys [bonuses bonus-amount earning-amount progress-to-next-bonus lifetime-total current-page pages]} app-state]
   (-> app-state

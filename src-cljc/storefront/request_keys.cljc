@@ -30,7 +30,6 @@
 (def update-stylist-account-portrait [:update-stylist-account-portrait])
 (def append-gallery [:append-gallery])
 (def get-stylist-stats [:get-stylist-stats])
-(def get-stylist-earnings [:get-stylist-earnings])
 (def get-stylist-balance-transfers [:get-stylist-balance-tranfers])
 (def get-stylist-balance-transfer [:get-stylist-balance-transfer])
 (def get-stylist-payout-stats [:get-stylist-payout-stats])

@@ -526,17 +526,6 @@
     #(messages/handle-message events/api-success-stylist-stats
                               (select-keys % [:previous-payout :next-payout :lifetime-payouts]))}))
 
-(defn get-stylist-earnings [user-id user-token {:keys [page]}]
-  (api-req
-   GET
-   "/v1/stylist/earnings"
-   request-keys/get-stylist-earnings
-   {:params
-    {:user-id user-id :user-token user-token :page page}
-    :handler
-    #(messages/handle-message events/api-success-stylist-earnings
-                              (select-keys % [:rate :transactions :current-page :pages]))}))
-
 (defn get-stylist-balance-transfers
   [stylist-id user-id user-token {:keys [page per]} handler]
   (api-req
