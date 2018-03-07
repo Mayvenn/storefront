@@ -334,14 +334,14 @@
                               (on-step? step)))]
     (redirect-if-necessary render-ctx data
                            (cond
-                             (-> lead :id empty?)             home
+                             (-> lead :id empty?)                home
                              (and (not (nav-event? home))
-                                  (flow-step "a1" "registered"))    a1-thank-you-2
-                             (and (flow-step "a1" "applied")
-                                  (nav-event? a1-self-reg))   nav-event
-                             (flow-step "a1" "applied")       a1-thank-you-1
-                             (flow-step "original" "initial") thank-you
-                             :else                            nav-event))))
+                                  (flow-step "a1" "registered")) a1-thank-you-2
+                             (and (nav-event? a1-self-reg)
+                                  (flow-step "a1" "applied"))    nav-event
+                             (flow-step "a1" "applied")          a1-thank-you-1
+                             (flow-step "original" "initial")    thank-you
+                             :else                               nav-event))))
 
 (defn render-static-page [template]
   (template/eval template {:url assets/path}))
