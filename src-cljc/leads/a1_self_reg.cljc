@@ -328,6 +328,21 @@
                              {"lead-id" (:id lead)})
        (history/enqueue-navigate events/navigate-leads-a1-resolve))))
 
+#?(:cljs
+   (defmethod effects/perform-effects events/leads-a1-control-self-registration-submit
+     [dispatch event args _ app-state]
+     (let [{:keys [id] :as lead} (get-in app-state keypaths/remote-lead)
+           registration                  (-> (get-in app-state keypaths/stylist)
+                                             handle-referral
+                                             handle-address-2
+                                             handle-payout-method)]
+       (api/advance-lead-registration {:lead-id    id
+                                       :session-id (get-in app-state storefront.keypaths/session-id)
+                                       :step-data  {:registration registration}}
+                                      (fn [response-body]
+                                        (messages/handle-message events/api-success-leads-a1-lead-registered
+                                                                 response-body))))))
+
 (defmethod transitions/transition-state events/api-success-leads-a1-lead-registered
   [_ event {:keys [lead user-id token]} app-state]
   (-> app-state
