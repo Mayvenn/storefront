@@ -60,4 +60,3 @@
 (def remote-user-token (conj remotes :user-token))
 
 (def remote-user-id    (conj remotes :user-id))
-(def onboarding-status (conj root :onboarding-status))

@@ -52,6 +52,5 @@
   [_ _ _ _ app-state]
   #?(:cljs
      (cookie-jar/save-lead (get-in app-state storefront.keypaths/cookie)
-                           {"lead-id" (get-in app-state keypaths/remote-lead-id)
-                            "onboarding-status" "awaiting-call"})))
+                           {"lead-id" (get-in app-state keypaths/remote-lead-id)})))
 

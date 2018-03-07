@@ -46,8 +46,6 @@
             ;; TODO Maybe we should change leads namespaces to be something like
             ;; leads.components.home
             [leads.home :as leads.home]
-            [leads.registration] ;; GROT after a1 flow is done
-            [leads.registration-resolve] ;; GROT after a1 flow is done
             [leads.a1-receive]
             [leads.a1-self-reg]
             [leads.a1-resolve]
@@ -115,8 +113,6 @@
     events/navigate-leads-a1-receive           leads.a1-receive/built-component
     events/navigate-leads-a1-self-reg          leads.a1-self-reg/built-component
     events/navigate-leads-a1-resolve           leads.a1-resolve/built-component
-    events/navigate-leads-registration-details leads.registration/built-component         ;; GROT after a1 flow is done
-    events/navigate-leads-registration-resolve leads.registration-resolve/built-component ;; GROT after a1 flow is done
     home/built-component))
 
 (defn top-level-component [data owner opts]

@@ -488,8 +488,6 @@
    events/navigate-leads-a1-self-reg          render-leads-page
    events/navigate-leads-a1-receive           render-leads-page
    events/navigate-leads-a1-resolve           render-leads-page
-   events/navigate-leads-registration-details render-leads-page
-   events/navigate-leads-registration-resolve render-leads-page
    events/navigate-leads-resolve              render-leads-page})
 
 (defn robots [{:keys [subdomains]}]
@@ -616,7 +614,6 @@
                                      (assoc-in leads.keypaths/lead-utm-campaign (cookies/get request "leads.utm-campaign"))
                                      (assoc-in leads.keypaths/lead-utm-medium (cookies/get request "leads.utm-medium"))
                                      (assoc-in leads.keypaths/lead-utm-term (cookies/get request "leads.utm-term"))
-                                     (assoc-in leads.keypaths/onboarding-status (cookies/get request "onboarding-status"))
                                      (assoc-in keypaths/store-slug config/welcome-subdomain)
                                      (assoc-in keypaths/environment environment)
                                      (assoc-in keypaths/navigation-message nav-message)

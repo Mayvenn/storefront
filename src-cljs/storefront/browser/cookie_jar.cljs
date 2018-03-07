@@ -53,7 +53,7 @@
 (def lead
   {:domain        (root-domain)
    :max-age       four-weeks
-   :optional-keys ["onboarding-status"]
+   :optional-keys []
    :required-keys ["lead-id"]})
 
 (def email-capture-session

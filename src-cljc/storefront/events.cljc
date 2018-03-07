@@ -93,9 +93,6 @@
 
 (defpath navigate-leads)
 (defpath navigate-leads-home)
-(defpath navigate-leads-registration)
-(defpath navigate-leads-registration-details)
-(defpath navigate-leads-registration-resolve)
 (defpath navigate-leads-resolve)
 (defpath navigate-leads-a1-receive)
 (defpath navigate-leads-a1-self-reg)
