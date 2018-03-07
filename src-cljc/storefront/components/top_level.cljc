@@ -11,7 +11,6 @@
                        [storefront.components.shop-bundle-deals :as shop-bundle-deals]
                        [storefront.components.shop-by-look :as shop-by-look]
                        [storefront.components.shop-by-look-details :as shop-by-look-details]
-                       [storefront.components.stylist.commission-details :as commission-details]
                        [storefront.components.account :as account]
                        [storefront.components.reset-password :as reset-password]
                        [storefront.components.stylist.dashboard :as stylist.dashboard]
@@ -73,7 +72,6 @@
          events/navigate-stylist-account-portrait                   stylist.portrait/built-component
          events/navigate-stylist-account-password                   stylist.account/built-component
          events/navigate-stylist-account-commission                 stylist.account/built-component
-         events/navigate-stylist-dashboard-commission-details       commission-details/built-component
          events/navigate-stylist-account-social                     stylist.account/built-component
          events/navigate-gallery-image-picker                       gallery-image-picker/built-component
          events/navigate-account-manage                             (partial sign-in/requires-sign-in account/built-component)

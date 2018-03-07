@@ -84,7 +84,6 @@
               ["/stylist/cash-out-success/" :balance-transfer-id] (edn->bidi events/navigate-stylist-dashboard-cash-out-success)
               "/stylist/store_credits"                            (edn->bidi events/navigate-stylist-dashboard-bonus-credit)
               "/stylist/referrals"                                (edn->bidi events/navigate-stylist-dashboard-referrals)
-              ["/stylist/commission/" :commission-id]             (edn->bidi events/navigate-stylist-dashboard-commission-details)
               "/stylist/share-your-store"                         (edn->bidi events/navigate-stylist-share-your-store)
               "/stylist/account/profile"                          (edn->bidi events/navigate-stylist-account-profile)
               "/stylist/account/portrait"                         (edn->bidi events/navigate-stylist-account-portrait)

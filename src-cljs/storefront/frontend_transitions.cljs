@@ -361,9 +361,6 @@
       (assoc-in keypaths/stylist-earnings-page (or current-page 1))
       (update-in keypaths/stylist-earnings-history into transactions)))
 
-(defmethod transition-state events/api-success-stylist-commission [_ event {:keys [commission]} app-state]
-  (assoc-in app-state keypaths/stylist-commissions-detailed-commission commission))
-
 (defmethod transition-state events/api-success-stylist-bonus-credits
   [_ event {:keys [bonuses bonus-amount earning-amount progress-to-next-bonus lifetime-total current-page pages]} app-state]
   (-> app-state

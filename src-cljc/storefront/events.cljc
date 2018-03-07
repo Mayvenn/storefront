@@ -63,7 +63,6 @@
 (defpath navigate-stylist-dashboard-earnings)
 (defpath navigate-stylist-dashboard-referrals)
 (defpath navigate-stylist-dashboard-bonus-credit)
-(defpath navigate-stylist-dashboard-commission-details)
 (defpath navigate-stylist-dashboard-cash-out-now)
 (defpath navigate-stylist-dashboard-cash-out-pending)
 (defpath navigate-stylist-dashboard-cash-out-success)
@@ -310,8 +309,6 @@
 
 (defpath api-success-leads-a1-lead-created)
 (defpath api-success-leads-a1-lead-registered)
-
-(defpath get-stylist-commission-api-failure)
 
 (defpath api-failure)
 (defpath api-failure-no-network-connectivity)
