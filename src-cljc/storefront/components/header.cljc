@@ -203,12 +203,16 @@
                                   :data-test "desktop-cart"}
                                  cart)]]]
        [:div.absolute.bottom-0.left-0.right-0
-        [:div.mb4 (ui/logo "desktop-header-logo" "60px")]
+        [:div.mb4 (ui/clickable-logo {:event events/navigate-home
+                                      :data-test "desktop-header-logo"
+                                      :height "60px"})]
         [:div.mb1 menu]]]]
      (shopping-flyout signed-in shopping)]
     [:div.hide-on-tb-dt.border-bottom.border-gray.flex.items-center
      hamburger
-     [:div.flex-auto.py3 (ui/logo "header-logo" "40px")]
+     [:div.flex-auto.py3 (ui/clickable-logo {:event events/navigate-home
+                                             :data-test "header-logo"
+                                             :height "40px"})]
      (ui/shopping-bag {:style     {:height "70px" :width "70px"}
                        :data-test "mobile-cart"}
                       cart)]]))
@@ -216,7 +220,9 @@
 (def minimal-component
   (component/html
    [:div.border-bottom.border-gray.flex.items-center
-    [:div.flex-auto.py3 (ui/logo "header-logo" "40px")]]))
+    [:div.flex-auto.py3 (ui/clickable-logo {:event events/navigate-home
+                                            :data-test "header-logo"
+                                            :height "40px"})]]))
 
 (defn query [data]
   (-> (slideout-nav/basic-query data)

@@ -524,14 +524,14 @@
                   (assets/path "/images/icons/collapse.png")
                   (assets/path "/images/icons/expand.png"))}])
 
-(defn logo [data-test-value height]
+(defn clickable-logo [{:as attrs :keys [height event]}]
   [:a.block.img-logo.bg-no-repeat.bg-center.bg-contain.teal
-   (assoc (utils/route-to events/navigate-home)
-          :style {:height height}
-          :title "Mayvenn"
-          :item-prop "logo"
-          :data-test data-test-value
-          :content (str "https:" (assets/path "/images/header_logo.svg")))])
+   (merge {:style {:height height}
+           :title "Mayvenn"
+           :item-prop "logo"
+           :content (str "https:" (assets/path "/images/header_logo.svg"))}
+          (when event (utils/route-to event))
+          (dissoc attrs [:height :event]))])
 
 (defn phone-href [tel-num]
   (str "tel://+" (numbers/digits-only tel-num)))
