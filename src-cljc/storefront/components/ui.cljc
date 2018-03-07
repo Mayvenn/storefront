@@ -524,6 +524,15 @@
                   (assets/path "/images/icons/collapse.png")
                   (assets/path "/images/icons/expand.png"))}])
 
+(defn logo [data-test-value height]
+  [:a.block.img-logo.bg-no-repeat.bg-center.bg-contain.teal
+   (assoc (utils/route-to events/navigate-home)
+          :style {:height height}
+          :title "Mayvenn"
+          :item-prop "logo"
+          :data-test data-test-value
+          :content (str "https:" (assets/path "/images/header_logo.svg")))])
+
 (defn phone-href [tel-num]
   (str "tel://+" (numbers/digits-only tel-num)))
 
