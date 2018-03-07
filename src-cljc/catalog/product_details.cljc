@@ -89,7 +89,7 @@
                                               {:sku sku
                                                :quantity quantity})
                    :data-test "add-to-bag"
-                   :disabled? (nil? sku)
+                   :disabled? (not (:inventory/in-stock? sku))
                    :spinning? adding-to-bag?}
                   "Add to bag"))
 
