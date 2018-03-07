@@ -458,8 +458,9 @@
                                           (constantly {:status 200
                                                        :body   (generate-string {:lead fake-lead})}))]
         (with-handler handler
-          (testing "you can go home"
-            (is (= 200 (:status (get-leads-req handler lead-cookie "/welcome")))))
+          (testing "going home redirects to thank you"
+            (is-redirected-to (get-leads-req handler lead-cookie "/welcome")
+                              "welcome" "/stylists/flows/a1/thank-you-2"))
           (testing "going to thank-you redirects to thank-you-2"
             (is-redirected-to (get-leads-req handler lead-cookie "/thank-you")
                               "welcome" "/stylists/flows/a1/thank-you-2"))
