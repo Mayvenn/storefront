@@ -115,7 +115,6 @@
                     :focused   focused
                     :label     "Website URL"
                     :name      "website-url"
-                    :type      "url"
                     :value     website-url})
     (ui/text-field {:data-test "sign-up-facebook-url"
                     :errors    (get field-errors ["facebook-url"])
@@ -124,7 +123,6 @@
                     :focused   focused
                     :label     "Facebook URL"
                     :name      "facebook-url"
-                    :type      "url"
                     :value     facebook-url})
     (ui/text-field {:data-test "sign-up-instagram-handle"
                     :errors    (get field-errors ["instagram-handle"])
