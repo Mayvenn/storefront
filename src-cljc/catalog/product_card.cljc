@@ -78,21 +78,24 @@
         facets          (get-in data keypaths/v2-facets)
         color-order-map (facets/color-order-map facets)
         in-stock-skus   (selector/query skus selections {:inventory/in-stock? #{true}})
+        ;; in order to fill the product card, we should always have a sku to use for
+        ;; the cheapest-sku and epitome
+        skus-to-search  (or (not-empty in-stock-skus) skus)
         ;; It is technically possible for the cheapest sku to not be the epitome
-        cheapest-sku    (->> in-stock-skus
+        cheapest-sku    (->> skus-to-search
                              (sort-by :sku/price)
                              first)
         ;; Product definition of epitome is the "first" SKU on the product details page where
         ;; first is when the first of every facet is selected.
         ;;
         ;; We're being lazy and sort by color facet + sku price (which implies sort by hair/length)
-        epitome         (skus/determine-epitome color-order-map in-stock-skus)]
+        epitome         (skus/determine-epitome color-order-map skus-to-search)]
     {:product         product
      :skus            skus
      :epitome         epitome
      :cheapest-sku    cheapest-sku
      :color-order-map color-order-map
-     :sold-out?       (nil? epitome)
+     :sold-out?       (empty? in-stock-skus)
      :title           (:copy/title product)
      :slug            (:page/slug product)
      :image           (->> epitome
