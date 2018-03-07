@@ -53,7 +53,9 @@
 
 (def ^:private back-to-earnings
   [:a.left.col-12.dark-gray.flex.items-center.py3
-   (utils/route-to events/navigate-stylist-dashboard-earnings)
+   (merge
+    {:data-test "back-link"}
+    (utils/route-to events/navigate-stylist-dashboard-earnings))
    (ui/back-caret "back to earnings")])
 
 (defn ^:private info-columns [[left-header left-content] [right-header right-content]]
