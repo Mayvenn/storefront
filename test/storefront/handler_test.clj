@@ -337,7 +337,6 @@
       (let [resp (handler (mock/request :get "https://bob.mayvenn.com/one-time-login?token=USERTOKEN&user-id=1&sha=FIRST&target=%2F"))
             cookies (get-in resp [:headers "Set-Cookie"])
             location (get-in resp [:headers "Location"])]
-        (println resp)
         (testing "It removes one-time-login params, but keeps other query params in the url it redirects to"
           (is-redirected-to resp "bob" "/?sha=FIRST"))
         (testing "It assigns cookies to the client to automatically log them into storefront frontend"
