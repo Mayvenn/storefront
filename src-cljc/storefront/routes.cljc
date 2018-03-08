@@ -38,11 +38,11 @@
    "/_style/carousel"        (edn->bidi events/navigate-style-guide-carousel)})
 
 (def leads-routes
-  {"/stylists/welcome"              (edn->bidi events/navigate-leads-home)
-   "/stylists/thank-you"            (edn->bidi events/navigate-leads-resolve)
-   "/stylists/flows/a1/thank-you-1" (edn->bidi events/navigate-leads-a1-applied-thank-you)
-   "/stylists/flows/a1/self-reg"    (edn->bidi events/navigate-leads-a1-applied-self-reg)
-   "/stylists/flows/a1/thank-you-2" (edn->bidi events/navigate-leads-a1-registered-thank-you)})
+  {"/stylists/welcome"                       (edn->bidi events/navigate-leads-home)
+   "/stylists/thank-you"                     (edn->bidi events/navigate-leads-resolve)
+   "/stylists/flows/a1/applied-thank-you"    (edn->bidi events/navigate-leads-a1-applied-thank-you)
+   "/stylists/flows/a1/applied-self-reg"     (edn->bidi events/navigate-leads-a1-applied-self-reg)
+   "/stylists/flows/a1/registered-thank-you" (edn->bidi events/navigate-leads-a1-registered-thank-you)})
 
 (def catalog-routes
   {["/categories/" [#"\d+" :catalog/category-id] "-" :page/slug]

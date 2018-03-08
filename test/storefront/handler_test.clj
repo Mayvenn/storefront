@@ -357,14 +357,14 @@
         (testing "going to thank-you takes you back to welcome"
           (is-redirected-to (get-leads-req handler "" "/thank-you")
                             "welcome" "/stylists/welcome"))
-        (testing "going to a1-thank-you-1 takes you back to welcome"
-          (is-redirected-to (get-leads-req handler "" "/flows/a1/thank-you-1")
+        (testing "going to a1-applied-thank-you takes you back to welcome"
+          (is-redirected-to (get-leads-req handler "" "/flows/a1/applied-thank-you")
                             "welcome" "/stylists/welcome"))
-        (testing "going to a1-self-reg takes you back to welcome"
-          (is-redirected-to (get-leads-req handler "" "/flows/a1/self-reg")
+        (testing "going to a1-applied-self-reg takes you back to welcome"
+          (is-redirected-to (get-leads-req handler "" "/flows/a1/applied-self-reg")
                             "welcome" "/stylists/welcome"))
-        (testing "going to a1-thank-you-2 takes you back to welcome"
-          (is-redirected-to (get-leads-req handler "" "/flows/a1/thank-you-2")
+        (testing "going to a1-registered-thank-you takes you back to welcome"
+          (is-redirected-to (get-leads-req handler "" "/flows/a1/registered-thank-you")
                             "welcome" "/stylists/welcome")))
       (testing "in the a1 flow"
         (testing "you can go home"
@@ -372,14 +372,14 @@
         (testing "going to thank-you takes you back to welcome"
           (is-redirected-to (get-leads-req handler "" "/thank-you?flow=a1")
                             "welcome" "/stylists/welcome"))
-        (testing "going to a1-thank-you-1 takes you back to welcome"
-          (is-redirected-to (get-leads-req handler "" "/flows/a1/thank-you-1?flow=a1")
+        (testing "going to a1-applied-thank-you takes you back to welcome"
+          (is-redirected-to (get-leads-req handler "" "/flows/a1/applied-thank-you?flow=a1")
                             "welcome" "/stylists/welcome"))
-        (testing "going to a1-self-reg takes you back to welcome"
-          (is-redirected-to (get-leads-req handler "" "/flows/a1/self-reg?flow=a1")
+        (testing "going to a1-applied-self-reg takes you back to welcome"
+          (is-redirected-to (get-leads-req handler "" "/flows/a1/applied-self-reg?flow=a1")
                             "welcome" "/stylists/welcome"))
-        (testing "going to a1-thank-you-2 takes you back to welcome"
-          (is-redirected-to (get-leads-req handler "" "/flows/a1/thank-you-2?flow=a1")
+        (testing "going to a1-registered-thank-you takes you back to welcome"
+          (is-redirected-to (get-leads-req handler "" "/flows/a1/registered-thank-you?flow=a1")
                             "welcome" "/stylists/welcome")))))
   (testing "When you are a known lead and don't have a flow"
     (let [fake-lead {:id "MOCK-LEAD-ID"}]
@@ -391,17 +391,17 @@
             (is (= 200 (:status (get-leads-req handler "" "/welcome")))))
           (testing "going to thank-you works"
             (is (= 200 (:status (get-leads-req handler lead-cookie "/thank-you")))))
-          (testing "going to a1 thank-you-1 redirects to thank-you"
-            (is-redirected-to (get-leads-req handler lead-cookie "/flows/a1/thank-you-1")
+          (testing "going to a1 applied-thank-you redirects to thank-you"
+            (is-redirected-to (get-leads-req handler lead-cookie "/flows/a1/applied-thank-you")
                               "welcome" "/stylists/thank-you"))
-          (testing "going to a1 self-reg redirects to thank-you"
-            (is-redirected-to (get-leads-req handler lead-cookie "/flows/a1/self-reg")
+          (testing "going to a1 applied-self-reg redirects to thank-you"
+            (is-redirected-to (get-leads-req handler lead-cookie "/flows/a1/applied-self-reg")
                               "welcome" "/stylists/thank-you"))
-          (testing "going to a1 self-reg redirects to thank-you (lead-id from query params)"
-            (is-redirected-to (get-leads-req handler "" "/flows/a1/self-reg?lead_id=MOCK-LEAD-ID")
+          (testing "going to a1 applied-self-reg redirects to thank-you (lead-id from query params)"
+            (is-redirected-to (get-leads-req handler "" "/flows/a1/applied-self-reg?lead_id=MOCK-LEAD-ID")
                               "welcome" "/stylists/thank-you"))
-          (testing "going to a1 thank-you-2 redirects to thank-you"
-            (is-redirected-to (get-leads-req handler lead-cookie "/flows/a1/thank-you-2")
+          (testing "going to a1 registered-thank-you redirects to thank-you"
+            (is-redirected-to (get-leads-req handler lead-cookie "/flows/a1/registered-thank-you")
                               "welcome" "/stylists/thank-you"))))))
   (testing "When you are a known lead and in [original initial]"
     (let [fake-lead {:id "MOCK-LEAD-ID"
@@ -415,17 +415,17 @@
             (is (= 200 (:status (get-leads-req handler "" "/welcome")))))
           (testing "going to thank-you works"
             (is (= 200 (:status (get-leads-req handler lead-cookie "/thank-you")))))
-          (testing "going to a1 thank-you-1 redirects to thank-you"
-            (is-redirected-to (get-leads-req handler lead-cookie "/flows/a1/thank-you-1")
+          (testing "going to a1 applied-thank-you redirects to thank-you"
+            (is-redirected-to (get-leads-req handler lead-cookie "/flows/a1/applied-thank-you")
                               "welcome" "/stylists/thank-you"))
-          (testing "going to a1 self-reg redirects to thank-you"
-            (is-redirected-to (get-leads-req handler lead-cookie "/flows/a1/self-reg")
+          (testing "going to a1 applied-self-reg redirects to thank-you"
+            (is-redirected-to (get-leads-req handler lead-cookie "/flows/a1/applied-self-reg")
                               "welcome" "/stylists/thank-you"))
-          (testing "going to a1 self-reg redirects to thank-you (lead-id from query params)"
-            (is-redirected-to (get-leads-req handler "" "/flows/a1/self-reg?lead_id=MOCK-LEAD-ID")
+          (testing "going to a1 applied-self-reg redirects to thank-you (lead-id from query params)"
+            (is-redirected-to (get-leads-req handler "" "/flows/a1/applied-self-reg?lead_id=MOCK-LEAD-ID")
                               "welcome" "/stylists/thank-you"))
-          (testing "going to a1 thank-you-2 redirects to thank-you"
-            (is-redirected-to (get-leads-req handler lead-cookie "/flows/a1/thank-you-2")
+          (testing "going to a1 registered-thank-you redirects to thank-you"
+            (is-redirected-to (get-leads-req handler lead-cookie "/flows/a1/registered-thank-you")
                               "welcome" "/stylists/thank-you"))))))
   (testing "When you are a known lead and in [a1 applied]"
     (let [fake-lead {:id "MOCK-LEAD-ID"
@@ -435,21 +435,21 @@
                                           (constantly {:status 200
                                                        :body   (generate-string {:lead fake-lead})}))]
         (with-handler handler
-          (testing "going home takes you to thank-you-1"
+          (testing "going home takes you to applied-thank-you"
             (is-redirected-to (get-leads-req handler lead-cookie "/welcome")
-                              "welcome" "/stylists/flows/a1/thank-you-1"))
-          (testing "going to thank-you redirects to thank-you-1"
+                              "welcome" "/stylists/flows/a1/applied-thank-you"))
+          (testing "going to thank-you redirects to applied-thank-you"
             (is-redirected-to (get-leads-req handler lead-cookie "/thank-you")
-                              "welcome" "/stylists/flows/a1/thank-you-1"))
-          (testing "going to a1 thank-you-1 works"
-            (is (= 200 (:status (get-leads-req handler lead-cookie "/flows/a1/thank-you-1")))))
-          (testing "going to a1 self-reg works (lead-id from cookie)"
-            (is (= 200 (:status (get-leads-req handler lead-cookie "/flows/a1/self-reg")))))
-          (testing "going to a1 self-reg works (lead-id from query params)"
-            (is (= 200 (:status (get-leads-req handler "" "/flows/a1/self-reg?lead_id=MOCK-LEAD-ID")))))
-          (testing "going to a1 thank-you-2 redirects to thank-you-1"
-            (is-redirected-to (get-leads-req handler lead-cookie "/flows/a1/thank-you-2")
-                              "welcome" "/stylists/flows/a1/thank-you-1"))))))
+                              "welcome" "/stylists/flows/a1/applied-thank-you"))
+          (testing "going to a1 applied-thank-you works"
+            (is (= 200 (:status (get-leads-req handler lead-cookie "/flows/a1/applied-thank-you")))))
+          (testing "going to a1 applied-self-reg works (lead-id from cookie)"
+            (is (= 200 (:status (get-leads-req handler lead-cookie "/flows/a1/applied-self-reg")))))
+          (testing "going to a1 applied-self-reg works (lead-id from query params)"
+            (is (= 200 (:status (get-leads-req handler "" "/flows/a1/applied-self-reg?lead_id=MOCK-LEAD-ID")))))
+          (testing "going to a1 registered-thank-you redirects to applied-thank-you"
+            (is-redirected-to (get-leads-req handler lead-cookie "/flows/a1/registered-thank-you")
+                              "welcome" "/stylists/flows/a1/applied-thank-you"))))))
   (testing "When you are a known lead and in [a1 registered]"
     (let [fake-lead {:id "MOCK-LEAD-ID"
                      :flow-id "a1"
@@ -460,21 +460,21 @@
         (with-handler handler
           (testing "going home redirects to thank you"
             (is-redirected-to (get-leads-req handler lead-cookie "/welcome")
-                              "welcome" "/stylists/flows/a1/thank-you-2"))
-          (testing "going to thank-you redirects to thank-you-2"
+                              "welcome" "/stylists/flows/a1/registered-thank-you"))
+          (testing "going to thank-you redirects to registered-thank-you"
             (is-redirected-to (get-leads-req handler lead-cookie "/thank-you")
-                              "welcome" "/stylists/flows/a1/thank-you-2"))
-          (testing "going to a1 thank-you-1 redirects to thank-you-2"
-            (is-redirected-to (get-leads-req handler lead-cookie "/flows/a1/thank-you-1")
-                              "welcome" "/stylists/flows/a1/thank-you-2"))
-          (testing "going to a1 self-reg redirects to thank-you-2"
-            (is-redirected-to (get-leads-req handler lead-cookie "/flows/a1/self-reg")
-                              "welcome" "/stylists/flows/a1/thank-you-2"))
-          (testing "going to a1 self-reg redirects to thank-you-2 (with query params)"
-            (is-redirected-to (get-leads-req handler "" "/flows/a1/self-reg?lead_id=MOCK-LEAD-ID")
-                              "welcome" "/stylists/flows/a1/thank-you-2"))
-          (testing "going to a1 thank-you-2 works"
-            (is (= 200 (:status (get-leads-req handler lead-cookie "/flows/a1/thank-you-2"))))))))))
+                              "welcome" "/stylists/flows/a1/registered-thank-you"))
+          (testing "going to a1 applied-thank-you redirects to registered-thank-you"
+            (is-redirected-to (get-leads-req handler lead-cookie "/flows/a1/applied-thank-you")
+                              "welcome" "/stylists/flows/a1/registered-thank-you"))
+          (testing "going to a1 applied-self-reg redirects to registered-thank-you"
+            (is-redirected-to (get-leads-req handler lead-cookie "/flows/a1/applied-self-reg")
+                              "welcome" "/stylists/flows/a1/registered-thank-you"))
+          (testing "going to a1 applied-self-reg redirects to registered-thank-you (with query params)"
+            (is-redirected-to (get-leads-req handler "" "/flows/a1/applied-self-reg?lead_id=MOCK-LEAD-ID")
+                              "welcome" "/stylists/flows/a1/registered-thank-you"))
+          (testing "going to a1 registered-thank-you works"
+            (is (= 200 (:status (get-leads-req handler lead-cookie "/flows/a1/registered-thank-you"))))))))))
 
 (deftest submits-paypal-redirect-to-waiter
   (testing "when waiter returns a 200 response"
