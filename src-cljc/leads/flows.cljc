@@ -2,7 +2,7 @@
   (:require #?@(:cljs [[storefront.api :as api]])
             [leads.keypaths :as keypaths]))
 
-(def ^:private required-keys
+(def ^:private allowed-keys
   #{:tracking-id
     :first-name
     :last-name
@@ -22,6 +22,10 @@
 
 (defn create-lead [app-state callback]
   #?(:cljs
-     (-> (get-in app-state keypaths/lead)
-         (select-keys required-keys)
-         (api/create-lead callback))))
+     (cond-> (get-in app-state keypaths/lead)
+       true (select-keys allowed-keys)
+
+       (= "a1" (get-in app-state keypaths/lead-flow-id))
+       (assoc :professional (get-in app-state keypaths/lead-professional false))
+
+       true (api/create-lead callback))))

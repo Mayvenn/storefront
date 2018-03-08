@@ -20,6 +20,7 @@
 (def lead-facebook-url      (conj lead :facebook-url))
 (def lead-instagram-handle  (conj lead :instagram-handle))
 (def lead-number-of-clients (conj lead :number-of-clients))
+(def lead-professional      (conj lead :professional))
 
 ;; Lead specific data
 (def lead-utm-campaign (conj lead :utm-campaign))

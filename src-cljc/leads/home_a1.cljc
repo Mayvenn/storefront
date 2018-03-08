@@ -59,7 +59,7 @@
      [:img.block.col-12 {:src     "//ucarecdn.com/36c98d9b-f015-4c65-9513-4554edc0ee48/-/format/auto/BecomeAMayvennStylist.jpg"
                          :src-set "//ucarecdn.com/36c98d9b-f015-4c65-9513-4554edc0ee48/-/format/auto/-/quality/lightest/BecomeAMayvennStylist.jpg 2x"}]]]])
 
-(defn sign-up-panel [{:keys [focused field-errors first-name last-name phone email website-url facebook-url instagram-handle number-of-clients number-of-clients-options spinning?]}]
+(defn sign-up-panel [{:keys [focused field-errors first-name last-name phone email website-url facebook-url instagram-handle number-of-clients number-of-clients-options pro? spinning?]}]
   [:div.rounded.bg-lighten-4.p3
    [:form.col-12.flex.flex-column
     {:on-submit (utils/send-event-callback events/leads-a1-control-sign-up-submit {})
@@ -142,6 +142,13 @@
                       :options     number-of-clients-options
                       :required    true
                       :div-attrs   {:class "bg-white border border-gray rounded"}})
+
+    (ui/check-box {:label     "I am a professional stylist *"
+                   :errors    (get field-errors ["professional"])
+                   :data-test "sign-up-professional"
+                   :id        "sign-up-professional"
+                   :keypath   keypaths/lead-professional
+                   :value     pro?})
 
     (ui/submit-button "Begin Application"
                       {:data-test "sign-up-submit"
@@ -386,6 +393,7 @@
                                                     ["11 to 15" "11-15"]
                                                     ["16 to 19" "16-19"]
                                                     ["20+" "20+"]]
+                        :pro?                      (get-in data keypaths/lead-professional)
                         :spinning?                 (utils/requesting? data request-keys/create-lead)}}
      :header {:call-number config/mayvenn-leads-a1-call-number}
      :footer {:call-number config/mayvenn-leads-a1-call-number

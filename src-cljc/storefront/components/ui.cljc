@@ -299,7 +299,7 @@
                            (dissoc select-attributes :label :keypath :value :options :errors :div-attrs))
        (field-error-message error data-test)])))
 
-(defn check-box [{:keys [label keypath value label-classes disabled] :as attributes}]
+(defn check-box [{:keys [label data-test errors keypath value label-classes disabled] :as attributes}]
   [:div.col-12.mb2
    [:label.flex.items-center {:class label-classes}
     ;; 15px svg + 2*2px padding + 2*1px border = 21px
@@ -315,7 +315,9 @@
             {:type "checkbox"})]
     [:span
      (when disabled {:class "gray"})
-     label]]])
+     label]]
+   (when-let [error (first errors)]
+     (field-error-message error data-test))])
 
 (defn radio-section [radio-attrs & content]
   (let [k (:key radio-attrs)
