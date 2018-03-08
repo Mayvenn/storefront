@@ -1,4 +1,4 @@
-(ns leads.a1-self-reg
+(ns leads.a1.applied-self-reg
   (:require #?@(:clj [[storefront.component-shim :as component]]
                 :cljs [[storefront.browser.cookie-jar :as cookie-jar]
                        [storefront.component :as component]
@@ -309,14 +309,14 @@
     registration))
 
 #?(:cljs
-   (defmethod transitions/transition-state events/navigate-leads-a1-self-reg
+   (defmethod transitions/transition-state events/navigate-leads-a1-applied-self-reg
      [_ _ {:keys [submitted-lead]} app-state]
      (-> app-state
          (update-in keypaths/stylist merge (get-in app-state keypaths/remote-lead))
          (update-in keypaths/stylist merge submitted-lead))))
 
 #?(:cljs
-   (defmethod effects/perform-effects events/navigate-leads-a1-self-reg
+   (defmethod effects/perform-effects events/navigate-leads-a1-applied-self-reg
      [dispatch event args _ app-state]
      (api/get-states (get-in app-state storefront.keypaths/api-cache))))
 
@@ -326,7 +326,7 @@
      (let [lead (or lead old-lead)]
        (cookie-jar/save-lead (get-in app-state storefront.keypaths/cookie)
                              {"lead-id" (:id lead)})
-       (history/enqueue-navigate events/navigate-leads-a1-resolve))))
+       (history/enqueue-navigate events/navigate-leads-a1-registered-thank-you))))
 
 #?(:cljs
    (defmethod effects/perform-effects events/leads-a1-control-self-registration-submit

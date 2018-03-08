@@ -93,9 +93,9 @@
 (defpath navigate-leads)
 (defpath navigate-leads-home)
 (defpath navigate-leads-resolve)
-(defpath navigate-leads-a1-receive)
-(defpath navigate-leads-a1-self-reg)
-(defpath navigate-leads-a1-resolve)
+(defpath navigate-leads-a1-applied-thank-you)
+(defpath navigate-leads-a1-applied-self-reg)
+(defpath navigate-leads-a1-registered-thank-you)
 
 (defpath menu-traverse-root)
 (defpath menu-traverse-ascend)

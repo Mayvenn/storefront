@@ -45,9 +45,9 @@
             ;; TODO Maybe we should change leads namespaces to be something like
             ;; leads.components.home
             [leads.home :as leads.home]
-            [leads.a1-receive]
-            [leads.a1-self-reg]
-            [leads.a1-resolve]
+            [leads.a1.applied-thank-you]
+            [leads.a1.applied-self-reg]
+            [leads.a1.registered-thank-you]
             [leads.resolve :as leads.resolve]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -65,7 +65,6 @@
          events/navigate-stylist-dashboard-bonus-credit             stylist.dashboard/built-component
          events/navigate-stylist-dashboard-referrals                stylist.dashboard/built-component
          events/navigate-stylist-dashboard-cash-out-now             stylist.cash-out-now/built-component
-         events/navigate-stylist-dashboard-cash-out-pending         stylist.cash-out-pending/built-component
          events/navigate-stylist-dashboard-cash-out-success         stylist.cash-out-success/built-component
          events/navigate-stylist-share-your-store                   stylist.share-your-store/built-component
          events/navigate-stylist-account-profile                    stylist.account/built-component
@@ -106,11 +105,11 @@
 (defn leads-component [nav-event]
   (condp = nav-event
     #?@(:cljs [])
-    events/navigate-leads-home                 leads.home/built-component
-    events/navigate-leads-resolve              leads.resolve/built-component
-    events/navigate-leads-a1-receive           leads.a1-receive/built-component
-    events/navigate-leads-a1-self-reg          leads.a1-self-reg/built-component
-    events/navigate-leads-a1-resolve           leads.a1-resolve/built-component
+    events/navigate-leads-home                    leads.home/built-component
+    events/navigate-leads-resolve                 leads.resolve/built-component
+    events/navigate-leads-a1-applied-thank-you    leads.a1.applied-thank-you/built-component
+    events/navigate-leads-a1-applied-self-reg     leads.a1.applied-self-reg/built-component
+    events/navigate-leads-a1-registered-thank-you leads.a1.registered-thank-you/built-component
     home/built-component))
 
 (defn top-level-component [data owner opts]

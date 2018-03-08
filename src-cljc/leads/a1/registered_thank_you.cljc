@@ -1,4 +1,4 @@
-(ns leads.a1-resolve
+(ns leads.a1.registered-thank-you
   (:require #?@(:clj [[storefront.component-shim :as component]]
                 :cljs [[storefront.browser.cookie-jar :as cookie-jar]
                        [storefront.component :as component]])

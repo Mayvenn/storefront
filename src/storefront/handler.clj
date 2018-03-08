@@ -317,30 +317,30 @@
 
 (defn render-leads-page
   [render-ctx data req params]
-  (let [lead           (get-in data leads.keypaths/lead)
-        nav-event      (get-in data keypaths/navigation-event)
-        home           events/navigate-leads-home
-        thank-you      events/navigate-leads-resolve
-        a1-thank-you-1 events/navigate-leads-a1-receive
-        a1-self-reg    events/navigate-leads-a1-self-reg
-        a1-thank-you-2 events/navigate-leads-a1-resolve
-        in-flow?       (partial (fnil = "original")
-                                (:flow-id lead))
-        on-step?       (partial (fnil = "initial")
-                                (:step-id lead))
-        nav-event?     (partial = nav-event)
-        flow-step?     (fn [flow step]
-                         (and (in-flow? flow)
-                              (on-step? step)))]
+  (let [lead                    (get-in data leads.keypaths/lead)
+        nav-event               (get-in data keypaths/navigation-event)
+        home                    events/navigate-leads-home
+        thank-you               events/navigate-leads-resolve
+        a1-applied-thank-you    events/navigate-leads-a1-applied-thank-you
+        a1-applied-self-reg     events/navigate-leads-a1-applied-self-reg
+        a1-registered-thank-you events/navigate-leads-a1-registered-thank-you
+        in-flow?                (partial (fnil = "original")
+                                         (:flow-id lead))
+        on-step?                (partial (fnil = "initial")
+                                         (:step-id lead))
+        nav-event?              (partial = nav-event)
+        flow-step?              (fn [flow step]
+                                  (and (in-flow? flow)
+                                       (on-step? step)))]
     (redirect-if-necessary render-ctx data
                            (cond
-                             (-> lead :id empty?)                 home
-                             (flow-step? "a1" "registered")       a1-thank-you-2
-                             (and (nav-event? a1-self-reg)
-                                  (flow-step? "a1" "applied"))    nav-event
-                             (flow-step? "a1" "applied")          a1-thank-you-1
-                             (flow-step? "original" "initial")    thank-you
-                             :else                                nav-event))))
+                             (-> lead :id empty?)              home
+                             (flow-step? "a1" "registered")    a1-registered-thank-you
+                             (and (nav-event? a1-applied-self-reg)
+                                  (flow-step? "a1" "applied")) nav-event
+                             (flow-step? "a1" "applied")       a1-applied-thank-you
+                             (flow-step? "original" "initial") thank-you
+                             :else                             nav-event))))
 
 (defn render-static-page [template]
   (template/eval template {:url assets/path}))
@@ -468,25 +468,25 @@
                           "Disallow: /policy/tos"])
 
 (def server-render-pages
-  {events/navigate-home                       generic-server-render
-   events/navigate-category                   render-category
-   events/navigate-legacy-named-search        redirect-named-search
-   events/navigate-legacy-ugc-named-search    redirect-named-search
-   events/navigate-legacy-product-page        redirect-legacy-product-page
-   events/navigate-product-details            render-product-details
-   events/navigate-content-help               generic-server-render
-   events/navigate-content-about-us           generic-server-render
-   events/navigate-content-privacy            generic-server-render
-   events/navigate-content-tos                generic-server-render
-   events/navigate-content-guarantee          generic-server-render
-   events/navigate-content-ugc-usage-terms    generic-server-render
-   events/navigate-content-program-terms      generic-server-render
-   events/navigate-gallery                    generic-server-render
-   events/navigate-leads-home                 render-leads-page
-   events/navigate-leads-a1-self-reg          render-leads-page
-   events/navigate-leads-a1-receive           render-leads-page
-   events/navigate-leads-a1-resolve           render-leads-page
-   events/navigate-leads-resolve              render-leads-page})
+  {events/navigate-home                          generic-server-render
+   events/navigate-category                      render-category
+   events/navigate-legacy-named-search           redirect-named-search
+   events/navigate-legacy-ugc-named-search       redirect-named-search
+   events/navigate-legacy-product-page           redirect-legacy-product-page
+   events/navigate-product-details               render-product-details
+   events/navigate-content-help                  generic-server-render
+   events/navigate-content-about-us              generic-server-render
+   events/navigate-content-privacy               generic-server-render
+   events/navigate-content-tos                   generic-server-render
+   events/navigate-content-guarantee             generic-server-render
+   events/navigate-content-ugc-usage-terms       generic-server-render
+   events/navigate-content-program-terms         generic-server-render
+   events/navigate-gallery                       generic-server-render
+   events/navigate-leads-home                    render-leads-page
+   events/navigate-leads-a1-applied-self-reg     render-leads-page
+   events/navigate-leads-a1-applied-thank-you    render-leads-page
+   events/navigate-leads-a1-registered-thank-you render-leads-page
+   events/navigate-leads-resolve                 render-leads-page})
 
 (defn robots [{:keys [subdomains]}]
   (cond
