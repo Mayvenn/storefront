@@ -11,7 +11,7 @@
             [storefront.api :as api]
             [storefront.effects :as effects]))
 
-(defn component [{:keys [amount payout-method cash-out-pending?]} owner opts]
+(defn component [{:keys [amount payout-method cash-out-pending? cashing-out?]} owner opts]
   (let [{:keys [name last-4 email payout-timeframe]} payout-method]
     (om/component
      (html
@@ -35,13 +35,15 @@
          {:data-test "cash-out-button"
           :data-ref  "cash-out-button"}
          (ui/teal-button {:on-click  (utils/send-event-callback events/control-stylist-dashboard-cash-out-submit)
-                          :disabled? (not (payouts/cash-out-eligible? payout-method))}
+                          :disabled? (not (payouts/cash-out-eligible? payout-method))
+                          :spinning? cashing-out?}
           "Cash out")]]]))))
 
 (defn query [data]
   (let [{:keys [amount payout-method]} (get-in data keypaths/stylist-payout-stats-next-payout)]
     {:amount            amount
-     :payout-method     payout-method}))
+     :payout-method     payout-method
+     :cashing-out?      (utils/requesting? data request-keys/cash-out-now)}))
 
 (defn built-component [data opts]
   (om/build component (query data) opts))
