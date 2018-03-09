@@ -12,27 +12,27 @@
    (html
     (ui/narrow-container
      [:div.p2
-      [:h2.center.my2.navy.mb3 "Update Your Password"]
+      [:h2.center.my2.navy.mb3 "Reset Your Password"]
       [:form.col-12
        {:on-submit (utils/send-event-callback events/control-reset-password-submit)}
        (ui/text-field {:errors     (get field-errors ["password"])
                        :data-test "reset-password-password"
                        :keypath    keypaths/reset-password-password
                        :focused    focused
-                       :label      "Password"
+                       :label      "New Password"
                        :min-length 6
                        :required   true
                        :type       "password"
                        :value      reset-password
                        :hint       (when show-password? reset-password)})
-       [:div.dark-gray.mtn2.mb2.col-12.left
+       [:div.dark-gray.col-12.left
         (ui/check-box {:label   "Show password"
                        :keypath keypaths/account-show-password?
                        :focused focused
                        :value   show-password?})]
 
        [:div.col-12.col-6-on-tb-dt.mx-auto
-        (ui/submit-button "Update" {:data-test "reset-password-submit"})]]
+        (ui/submit-button "Save & Continue" {:data-test "reset-password-submit"})]]
       [:.h5.center.dark-gray.light.my2 "OR"]
 
       [:div.col-12.col-6-on-tb-dt.mx-auto
