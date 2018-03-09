@@ -60,7 +60,7 @@
      ;; rename transition to transition-log to log messages
      (try
        (let [app-state-before @app-state]
-         (om/transact! (om/root-cursor app-state) #(transition-log % message))
+         (om/transact! (om/root-cursor app-state) #(transition % message))
          (effects app-state-before @app-state message))
        (track @app-state message)
        (catch :default e
