@@ -65,6 +65,7 @@
          events/navigate-stylist-dashboard-bonus-credit             stylist.dashboard/built-component
          events/navigate-stylist-dashboard-referrals                stylist.dashboard/built-component
          events/navigate-stylist-dashboard-cash-out-now             stylist.cash-out-now/built-component
+         events/navigate-stylist-dashboard-cash-out-pending         stylist.cash-out-pending/built-component
          events/navigate-stylist-dashboard-cash-out-success         stylist.cash-out-success/built-component
          events/navigate-stylist-share-your-store                   stylist.share-your-store/built-component
          events/navigate-stylist-account-profile                    stylist.account/built-component
