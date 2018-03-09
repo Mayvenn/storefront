@@ -21,7 +21,7 @@
        [:div.col-12.flex.items-center.justify-between.my3
         [:div
          [:div.h6 name]
-         (if last-4
+         (if (= name "Mayvenn InstaPay")
            [:div.h6 "Linked Card xxxx-xxxx-xxxx-" (or last-4 "????")]
            [:div.h6 email])]
         [:h2.teal (mf/as-money amount)]]
