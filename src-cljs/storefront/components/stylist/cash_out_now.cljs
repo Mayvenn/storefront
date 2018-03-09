@@ -9,7 +9,8 @@
             [storefront.components.ui :as ui]
             [storefront.transitions :as transitions]
             [storefront.api :as api]
-            [storefront.effects :as effects]))
+            [storefront.effects :as effects]
+            [storefront.request-keys :as request-keys]))
 
 (defn component [{:keys [amount payout-method cash-out-pending? cashing-out?]} owner opts]
   (let [{:keys [name last-4 email payout-timeframe]} payout-method]
