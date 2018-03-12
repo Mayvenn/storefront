@@ -52,8 +52,9 @@
 (defn potentially-show-email-popup [app-state]
   (let [is-on-homepage?     (= (get-in app-state keypaths/navigation-event) events/navigate-home)
         not-seen-popup-yet? (not (get-in app-state keypaths/email-capture-session))
-        signed-in?          (get-in app-state keypaths/user-id)]
-    (when (and is-on-homepage? not-seen-popup-yet?)
+        signed-in?          (get-in app-state keypaths/user-id)
+        not-ville?          (not (experiments/the-ville? app-state))]
+    (when (and is-on-homepage? not-seen-popup-yet? not-ville?)
       (if signed-in?
         (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) "signed-in")
         (handle-message events/show-email-popup)))))
