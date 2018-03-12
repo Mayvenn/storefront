@@ -57,7 +57,7 @@
     (when (and is-on-homepage? not-seen-popup-yet? not-ville?)
       (if signed-in?
         (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) "signed-in")
-        (handle-message events/show-email-popup)))))
+        (handle-message events/popup-show-email-capture)))))
 
 (defn refresh-account [app-state]
   (let [user-id (get-in app-state keypaths/user-id)

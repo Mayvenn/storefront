@@ -373,7 +373,8 @@
 
 (defpath video-component-mounted)
 (defpath video-component-unmounted)
-(defpath show-email-popup)
+
+(defpath popup-show-email-capture)
 
 (defpath image-picker-component-mounted)
 (defpath image-picker-component-will-unmount)

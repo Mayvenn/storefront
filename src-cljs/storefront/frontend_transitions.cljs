@@ -679,7 +679,7 @@
           (assoc-in keypaths/popup nil)
           (assoc-in keypaths/email-capture-session "opted-in")))))
 
-(defmethod transition-state events/show-email-popup [_ event args app-state]
+(defmethod transition-state events/popup-show-email-capture [_ event args app-state]
   (assoc-in app-state keypaths/popup :email-capture))
 
 (defmethod transition-state events/sign-out [_ event args app-state]

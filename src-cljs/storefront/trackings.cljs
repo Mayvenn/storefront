@@ -319,7 +319,7 @@
       (stringer/identify {:email captured-email})
       (stringer/track-event "email_capture-capture" {:email captured-email}))))
 
-(defmethod perform-track events/show-email-popup [_ events args app-state]
+(defmethod perform-track events/popup-show-email-capture [_ events args app-state]
   (stringer/track-event "email_capture-deploy" {}))
 
 (defmethod perform-track events/control-email-captured-dismiss [_ events args app-state]
