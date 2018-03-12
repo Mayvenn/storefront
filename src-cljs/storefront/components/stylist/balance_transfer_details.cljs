@@ -16,6 +16,8 @@
             [storefront.request-keys :as request-keys]
             [storefront.api :as api]))
 
+;; TODO Remove handling of underscored keys after storeback has been deployed.
+
 (defmethod effects/perform-effects events/navigate-stylist-dashboard-balance-transfer-details
   [_ event {:keys [balance-transfer-id] :as args} _ app-state]
   (let [user-id    (get-in app-state keypaths/user-id)
@@ -68,11 +70,10 @@
     [:div.h5 right-content]]])
 
 (defn ^:private commission-component [{:keys [balance-transfer fetching? skus]}]
-  (let [{:keys [id number amount]} balance-transfer
+  (let [{:keys [id number amount data]} balance-transfer
         {:keys [order
-                commission_date
-                commissionable_amount
-                number]}           (:data balance-transfer)]
+                commission-date
+                commissionable-amount]} data]
     (if fetching?
       [:div.my2.h2 ui/spinner]
 
@@ -80,7 +81,7 @@
        back-to-earnings
        [:h3.my4 "Details - Commission Earned"]
        [:div.flex.justify-between.col-12
-        [:div (f/less-year-more-day-date commission_date)]
+        [:div (f/less-year-more-day-date (or commission-date (:commission_date data)))]
         [:div (:full-name order)]
         [:div.green "+" (mf/as-money amount)]]
 
@@ -93,67 +94,73 @@
        [:div.mt2.mbnp2.mtnp2.border-top.border-gray
         (summary/display-line-items (orders/product-items order) skus)]
 
-       (summary/display-order-summary-for-commissions order commissionable_amount)
+       (summary/display-order-summary-for-commissions order (or commissionable-amount (:commissionable_amount data)))
 
        [:div.h5.center.navy
         (str (mf/as-money amount) " has been added to your next payment.")]])))
 
 
 
-(defn ^:private instapay-payout-details [payout_method]
-  (info-columns ["Card" (str "xxxx-xxxx-xxxx-" (or (:last4 payout_method) "????"))]
-                ["Estimated Arrival" (or (:payout_timeframe payout_method) "Unknown")]))
+(defn ^:private instapay-payout-details [payout-method]
+  (info-columns ["Card" (str "xxxx-xxxx-xxxx-" (or (:last-4 payout-method)
+                                                   (:last4 payout-method)
+                                                   "????"))]
+                ["Estimated Arrival" (or (:payout-timeframe payout-method)
+                                         (:payout_timeframe payout-method)
+                                         "Unknown")]))
 
-(defn ^:private paypal-payout-details [payout_method]
-  (info-columns ["Paypal Email Address" (:email payout_method)]
+(defn ^:private paypal-payout-details [payout-method]
+  (info-columns ["Paypal Email Address" (:email payout-method)]
                 ["Estimated Arrival" "Instant"]))
 
-(defn ^:private check-payout-details [payout_method]
+(defn ^:private check-payout-details [payout-method]
   (info-columns ["Mailing Address " [:div
-                                     [:div (-> payout_method :address :address1)]
-                                     [:div (-> payout_method :address :address2)]
-                                     [:div (str (-> payout_method :address :city)
+                                     [:div (-> payout-method :address :address1)]
+                                     [:div (-> payout-method :address :address2)]
+                                     [:div (str (-> payout-method :address :city)
                                                 ", "
-                                                (-> payout_method :address :state_name)
+                                                (or (-> payout-method :address :state-name)
+                                                    (-> payout-method :address :state_name))
                                                 " "
-                                                (-> payout_method :address :zipcode))]]]
+                                                (-> payout-method :address :zipcode))]]]
                 ["Estimated Arrival" "7-10 Business Days"]))
 
-(defn ^:private venmo-payout-details [payout_method]
-  (info-columns ["Venmo Phone" (:phone payout_method)]
+(defn ^:private venmo-payout-details [payout-method]
+  (info-columns ["Venmo Phone" (:phone payout-method)]
                 ["Estimated Arrival" "Instant"]))
 
-(defn ^:private payout-method-details [payout_method]
-  (when (:name payout_method)
-    (case (:name payout_method)
-      "Mayvenn InstaPay" (instapay-payout-details payout_method)
-      "Paypal"           (paypal-payout-details payout_method)
-      "Check"            (check-payout-details payout_method)
-      "Venmo"            (venmo-payout-details payout_method))))
+(defn ^:private payout-method-details [payout-method]
+  (when (:name payout-method)
+    (case (:name payout-method)
+      "Mayvenn InstaPay" (instapay-payout-details payout-method)
+      "Paypal"           (paypal-payout-details payout-method)
+      "Check"            (check-payout-details payout-method)
+      "Venmo"            (venmo-payout-details payout-method))))
 
 (defn ^:private payout-component [{:keys [balance-transfer]}]
   (let [{:keys [id
                 number
-                amount]}             balance-transfer
-        {:keys [created_at
-                payout_method
-                payout_method_name]} (:data balance-transfer)]
+                amount
+                data]}             balance-transfer
+        {:keys [created-at
+                payout-method
+                payout-method-name]} data]
     [:div.container.mb4.px3
      back-to-earnings
-     [:h3.my4 "Details - Earnings Transfer - " payout_method_name]
+     [:h3.my4 "Details - Earnings Transfer - " (or payout-method-name (:payout_method_name data))]
      [:div.flex.justify-between.col-12
-      [:div (f/less-year-more-day-date created_at)]
+      [:div (f/less-year-more-day-date (or created-at (:created_at data)))]
       [:div.pr4 "You transferred " (mf/as-money amount)]]
-     (payout-method-details payout_method)]))
+     (payout-method-details (or payout-method (:payout_method data)))]))
 
 (defn ^:private award-component [{:keys [balance-transfer]}]
-  (let [{:keys [id transfered-at amount]} balance-transfer
-        {:keys [reason]}           (:data balance-transfer)]
+  (let [{:keys [id transfered-at amount data]} balance-transfer
+        {:keys [reason]}                       data]
     [:div.container.mb4.px3
      back-to-earnings
      [:h3.my4 "Details - Award Received"]
      [:div.flex.justify-between.col-12
-      [:div (f/less-year-more-day-date transfered-at)]
+      [:div (f/less-year-more-day-date (or transfered-at (:transfered_at data)))]
       [:div.green "+" (mf/as-money amount)]]
      [:div.col-12.inline-block.align-top.mb3
       [:span.h5.dark-gray "Reason"]
