@@ -8,15 +8,16 @@
             [storefront.transitions :as transitions]
             [storefront.effects :as effects]
             [storefront.browser.cookie-jar :as cookie-jar]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            [storefront.platform.messages :as messages]))
 
 (defn component [data owner _]
   (component/create
    (html
-    (ui/modal {:col-class   "col-11 col-5-on-tb col-4-on-dt"
-               :bg-class    "bg-darken-4"}
+    (ui/modal {:col-class "col-11 col-5-on-tb col-4-on-dt"
+               :bg-class  "bg-darken-4"}
               [:div.flex.flex-column.bg-cover.bg-top.bg-free-install
-               [:div {:style {:height "220"}}]
+               [:div {:style {:height "220px"}}]
                [:div.p4.m3.center.bg-lighten-4
                 [:p.h3.medium.mb1.col-9.col-12-on-tb-dt.mx-auto "Buy 3 bundles or more and get a"]
                 [:div.h0.bold.teal.shout "Free Install"]
@@ -27,14 +28,15 @@
                  "Shop Looks Now")
                 [:p.h6.my2 "Free install details provided after check out"]
                 [:p.h5
-                 [:a.inherit-color (utils/fake-href events/control-free-install-dismiss)
+                 [:a.inherit-color (merge (utils/fake-href events/control-free-install-dismiss)
+                                          {:data-test "free-install-dismiss"}             )
                   "No thanks, I don't want a free install."]]]]))))
 
 (defn built-component [data opts]
   (component/build component {} opts))
 
 (defmethod effects/perform-effects events/control-free-install-shop-looks [_ event args _ app-state]
-  (history/enqueue-navigate events/navigate-shop-by-look))
+  (history/enqueue-navigate events/navigate-shop-by-look {:query-params {:sha "freeinstall"}}))
 
 (defmethod effects/perform-effects events/control-free-install [_ event args _ app-state]
   (when-let [value (get-in app-state keypaths/dismissed-free-install)]

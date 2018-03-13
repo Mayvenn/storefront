@@ -43,7 +43,8 @@
             [spice.maps :as maps]
             [storefront.hooks.pinterest :as pinterest]
             [clojure.string :as string]
-            [storefront.platform.messages :as messages]))
+            [storefront.platform.messages :as messages]
+            [storefront.components.free-install :as free-install]))
 
 (defn changed? [previous-app-state app-state keypath]
   (not= (get-in previous-app-state keypath)
@@ -53,8 +54,8 @@
   (let [is-on-homepage?     (= (get-in app-state keypaths/navigation-event) events/navigate-home)
         not-seen-popup-yet? (not (get-in app-state keypaths/email-capture-session))
         signed-in?          (get-in app-state keypaths/user-id)
-        not-ville?          (not (experiments/the-ville? app-state))]
-    (when (and is-on-homepage? not-seen-popup-yet? not-ville?)
+        the-ville-control?  (experiments/the-ville-control? app-state)]
+    (when (and is-on-homepage? not-seen-popup-yet? the-ville-control?)
       (if signed-in?
         (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) "signed-in")
         (handle-message events/popup-show-email-capture)))))
@@ -119,7 +120,14 @@
   (facebook-analytics/remove-tracking)
   (pinterest/remove-tracking))
 
-(defmethod perform-effects events/enable-feature [_ event {:keys [feature]} _ app-state])
+(defmethod perform-effects events/enable-feature [_ event {:keys [feature]} _ app-state]
+  (let [show-financing? (-> app-state (get-in keypaths/navigation-args) :query-params :show (= "financing"))]
+    (when-not show-financing?
+      (when (= "the-ville-control" feature)
+        (potentially-show-email-popup app-state))
+      (when (and (= "the-ville" feature)
+                 (not (cookie-jar/get-dismissed-free-install (get-in app-state keypaths/cookie))))
+        (handle-message events/popup-show-free-install)))))
 
 (defmethod perform-effects events/ensure-skus [_ event {:keys [skus]} _ app-state]
   (ensure-skus app-state skus))
@@ -178,7 +186,9 @@
 
 ;; FIXME:(jm) This is all triggered on pages we're redirecting through. :(
 (defmethod perform-effects events/navigate [_ event {:keys [query-params nav-stack-item] :as args} prev-app-state app-state]
-  (let [args (dissoc args :nav-stack-item)]
+  (let [args               (dissoc args :nav-stack-item)
+        show-free-install? (and (experiments/the-ville? app-state)
+                                (not (cookie-jar/get-dismissed-free-install (get-in app-state keypaths/cookie))))]
     (handle-message events/control-menu-collapse-all)
     (refresh-account app-state)
     (api/get-promotions (get-in app-state keypaths/api-cache)
@@ -204,12 +214,8 @@
        pending-promo-code)
       (redirect event (update-in args [:query-params] dissoc :sha)))
 
-    (cond
-      (= (:show query-params) "financing") (affirm/show-modal)
-
-      (and (experiments/the-ville? app-state)
-           (not (cookie-jar/get-dismissed-free-install (get-in app-state keypaths/cookie))))
-      (handle-message events/popup-show-free-install))
+    (cond (= (:show query-params) "financing") (affirm/show-modal)
+          show-free-install?                   (messages/handle-message events/popup-show-free-install))
 
     (when-let [order (get-in app-state keypaths/order)]
       (->> order orders/product-items (map :sku) (ensure-skus app-state))

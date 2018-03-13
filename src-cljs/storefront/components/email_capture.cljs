@@ -16,7 +16,7 @@
                 [:div.flex.flex-column.bg-cover.bg-top.bg-email-capture
                  [:div.flex.justify-end
                   (ui/big-x {:data-test "dismiss-email-capture" :attrs close-attrs})]
-                 [:div {:style {:height "110"}}]
+                 [:div {:style {:height "110px"}}]
                  [:div.p4.m3.bg-lighten-4
                   [:form.col-12.flex.flex-column.items-center
                    {:on-submit (utils/send-event-callback events/control-email-captured-submit)}
