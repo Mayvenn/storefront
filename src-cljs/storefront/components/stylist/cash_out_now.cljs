@@ -13,7 +13,7 @@
             [storefront.request-keys :as request-keys]))
 
 (defn component [{:keys [amount payout-method cash-out-pending? cashing-out?]} owner opts]
-  (let [{:keys [name last-4 email payout-timeframe]} payout-method]
+  (let [{:keys [name type last-4 email payout-timeframe]} payout-method]
     (om/component
      (html
       [:div.container.p4
@@ -21,7 +21,7 @@
        [:div.col-12.flex.items-center.justify-between.my3
         [:div
          [:div.h6 name]
-         (if (= name "Mayvenn InstaPay")
+         (if (= type "Mayvenn::GreenDotPayoutMethod")
            [:div.h6 "Linked Card xxxx-xxxx-xxxx-" (or last-4 "????")]
            [:div.h6 email])]
         [:h2.teal (mf/as-money amount)]]
