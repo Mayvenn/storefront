@@ -10,8 +10,6 @@
             [storefront.browser.cookie-jar :as cookie-jar]
             [storefront.platform.component-utils :as utils]))
 
-;; TODO cljc
-
 (defn component [data owner _]
   (component/create
    (html
