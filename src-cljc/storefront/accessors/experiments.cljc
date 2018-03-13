@@ -49,9 +49,6 @@
                                            (count variations)))]
         variation))))
 
-;; A bookmarklet for testing features in your browser:
-;; javascript:storefront.core.external_message(["enable","feature"], {feature: "FEATURE-NAME-GOES-HERE"});
-
 (defn feature-for [data experiment]
   (:feature (variation-for data experiment)))
 
