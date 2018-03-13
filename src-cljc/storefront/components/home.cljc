@@ -292,7 +292,7 @@
   (component/create
    [:div.m-auto
     [:section hero-element]
-    [:section.hide-on-tb-dt (store-info signed-in store)] ;; Preserve store-info location when promoting feature-blocks
+    [:section.hide-on-tb-dt (store-info signed-in store)]
     [:section (feature-blocks)]
     [:section (popular-grid categories)]
     [:section video-autoplay]
