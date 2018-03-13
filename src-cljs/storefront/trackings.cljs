@@ -319,6 +319,7 @@
       (stringer/identify {:email captured-email})
       (stringer/track-event "email_capture-capture" {:email captured-email}))))
 
+;; TODO(jjh): one of these for free install?
 (defmethod perform-track events/popup-show-email-capture [_ events args app-state]
   (stringer/track-event "email_capture-deploy" {}))
 

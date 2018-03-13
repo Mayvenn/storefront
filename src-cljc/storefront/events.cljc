@@ -134,6 +134,10 @@
 (defpath control-email-captured-dismiss)
 (defpath control-email-captured-submit)
 
+(defpath control-free-install)
+(defpath control-free-install-shop-looks)
+(defpath control-free-install-dismiss)
+
 (defpath control-stylist-earnings-fetch)
 (defpath control-stylist-balance-transfers-load-more)
 (defpath control-stylist-referrals-fetch)
@@ -375,6 +379,7 @@
 (defpath video-component-unmounted)
 
 (defpath popup-show-email-capture)
+(defpath popup-show-free-install)
 
 (defpath image-picker-component-mounted)
 (defpath image-picker-component-will-unmount)

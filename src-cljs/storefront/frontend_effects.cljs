@@ -204,9 +204,12 @@
        pending-promo-code)
       (redirect event (update-in args [:query-params] dissoc :sha)))
 
-    (when-let [show (:show query-params)]
-      (case show
-        "financing" (affirm/show-modal)))
+    (cond
+      (= (:show query-params) "financing") (affirm/show-modal)
+
+      (and (experiments/the-ville? app-state)
+           (not (cookie-jar/get-dismissed-free-install (get-in app-state keypaths/cookie))))
+      (handle-message events/popup-show-free-install))
 
     (when-let [order (get-in app-state keypaths/order)]
       (->> order orders/product-items (map :sku) (ensure-skus app-state))

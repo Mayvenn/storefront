@@ -146,6 +146,12 @@
                   "dismissed" 1800)]
     (.set cookie :popup-session value max-age "/" (:domain email-capture-session) config/secure?)))
 
+(defn save-dismissed-free-install [cookie value]
+  (.set cookie "dismissed-free-install" value four-weeks "/" nil config/secure?))
+
+(defn get-dismissed-free-install [cookie]
+  (.get cookie "dismissed-free-install"))
+
 (defn save-pending-promo-code [cookie promo-code]
   (save-cookie pending-promo cookie {:pending-promo-code promo-code}))
 
