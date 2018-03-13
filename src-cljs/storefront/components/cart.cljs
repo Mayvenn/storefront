@@ -142,6 +142,16 @@ Thanks,
           [:div {:ref "banner"}
            (om/build promotion-banner/component data opts)]])))))
 
+(def free-install-cart-promo
+  [:div.bg-teal.p2.white.center {:data-test "free-install-cart-promo"}
+   [:img {:src    "//ucarecdn.com/db055165-7085-4af5-b265-8aba681e6275/successwhite.png"
+          :height "63px"
+          :width  "68px"}]
+   [:h4 "Buy 3 bundles or more and get a"]
+   [:h1.shout.bold "Free Install"]
+   [:h6 "from a Mayvenn Certified Stylist in Fayetteville, NC. Details will be
+   provided with your order confirmation."]])
+
 (defn full-component [{:keys [focused
                               order
                               skus
@@ -156,7 +166,8 @@ Thanks,
                               disable-apple-pay-button?
                               update-line-item-requests
                               delete-line-item-requests
-                              field-errors]} owner]
+                              field-errors
+                              the-ville?]} owner]
   (om/component
    (html
     [:div.container.p2
@@ -168,6 +179,8 @@ Thanks,
      [:div.h3.py1
       {:data-test "order-summary"}
       "Review your order"]
+
+     (when the-ville? free-install-cart-promo)
 
      [:div.mt2.clearfix.mxn3
       [:div.col-on-tb-dt.col-6-on-tb-dt.px3.mb3
@@ -295,7 +308,8 @@ Thanks,
                                  (variants-requests data request-keys/update-line-item (map :sku line-items)))
      :delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)
      :field-errors              (get-in data keypaths/field-errors)
-     :focused                   (get-in data keypaths/ui-focus)}))
+     :focused                   (get-in data keypaths/ui-focus)
+     :the-ville?                (experiments/the-ville? data)}))
 
 (defn empty-cart-query [data]
   {:promotions (get-in data keypaths/promotions)})

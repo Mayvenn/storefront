@@ -29,7 +29,7 @@
                 [:p.h6.my2 "Free install details provided after check out"]
                 [:p.h5
                  [:a.inherit-color (merge (utils/fake-href events/control-free-install-dismiss)
-                                          {:data-test "free-install-dismiss"}             )
+                                          {:data-test "free-install-dismiss"})
                   "No thanks, I don't want a free install."]]]]))))
 
 (defn built-component [data opts]
