@@ -301,7 +301,10 @@
 
 (defn check-box [{:keys [label data-test errors keypath value label-classes disabled] :as attributes}]
   [:div.col-12.mb2
-   [:label.flex.items-center {:class label-classes}
+   [:label.flex.items-center
+    (merge {:class label-classes}
+           (when data-test
+             {:data-test (str "label-" data-test)}))
     ;; 15px svg + 2*2px padding + 2*1px border = 21px
     [:div.border.left.mr3.pp2
      (when disabled
