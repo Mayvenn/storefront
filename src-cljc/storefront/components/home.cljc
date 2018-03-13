@@ -79,7 +79,7 @@
    [:img.block.col-12 {:src (str mobile-url "-/format/auto/" file-name)
                        :alt alt}]])
 
-(defn hero [store-slug]
+(def hero
   [:h1.h2
    [:a
     (assoc (utils/route-to events/navigate-shop-by-look)
@@ -88,6 +88,20 @@
           alt       "The Spring Stock-Up! 25% off everything! Shop now!"
           mob-uuid  "c1db5830-0753-40dd-9bd1-1fdc6f6309be"
           dsk-uuid  "61b200be-1722-47ad-81c0-3b44435689a0"]
+      (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
+                   :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
+                   :file-name   file-name
+                   :alt         alt}))]])
+
+(def the-ville-hero
+  [:h1.h2
+   [:a
+    (assoc (utils/route-to events/navigate-shop-by-look)
+           :data-test "home-banner")
+    (let [file-name ""
+          alt       ""
+          mob-uuid  ""
+          dsk-uuid  ""]
       (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
                    :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
                    :file-name   file-name
@@ -274,10 +288,10 @@
                  :file-name   "talkable_banner.jpg"
                  :alt         "refer friends, earn rewards, get 20% off"})]))
 
-(defn component [{:keys [signed-in store categories hero-fn]} owner opts]
+(defn component [{:keys [signed-in store categories hero-element]} owner opts]
   (component/create
    [:div.m-auto
-    [:section (hero-fn (:store-slug store))]
+    [:section hero-element]
     [:section.hide-on-tb-dt (store-info signed-in store)] ;; Preserve store-info location when promoting feature-blocks
     [:section (feature-blocks)]
     [:section (popular-grid categories)]
@@ -286,12 +300,15 @@
     [:section talkable-banner]]))
 
 (defn query [data]
-  {:store                   (marquee/query data)
-   :signed-in               (auth/signed-in data)
-   :categories              (->> (get-in data keypaths/categories)
-                                 (filter :home/order)
-                                 (sort-by :home/order))
-   :hero-fn                 hero})
+  (let [the-ville? (experiments/the-ville? data)]
+    {:store        (marquee/query data)
+     :signed-in    (auth/signed-in data)
+     :categories   (->> (get-in data keypaths/categories)
+                        (filter :home/order)
+                        (sort-by :home/order))
+     :hero-element (if the-ville?
+                     the-ville-hero
+                     hero)}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
