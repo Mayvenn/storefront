@@ -70,10 +70,11 @@
           true              as-money)]]] ]))
 
 (defn display-order-summary-for-commissions [order commissionable-amount]
-  (let [adjustments              (:adjustments order)
-        shipping-item            (orders/shipping-item order)
-        subtotal                 (orders/products-subtotal order)
-        shipping-total           (* (:quantity shipping-item) (:unit-price shipping-item))]
+  (let [adjustments       (:adjustments order)
+        store-credit-used (:total-store-credit-used order)
+        shipping-item     (orders/shipping-item order)
+        subtotal          (orders/products-subtotal order)
+        shipping-total    (* (:quantity shipping-item) (:unit-price shipping-item))]
     [:div
      [:.py2.border-top.border-gray
       [:table.col-12
@@ -87,6 +88,10 @@
              [:div {:data-test (text->data-test-name name)}
               (orders/display-adjustment-name name)]
              price)))
+
+        ;; GROT store-credit-used guard after diva deploy
+        (when (and store-credit-used (pos? store-credit-used))
+          (summary-row "Store Credit" (- store-credit-used)))
 
         (when shipping-item
           (summary-row "Shipping" shipping-total))]]]
