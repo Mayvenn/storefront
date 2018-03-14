@@ -45,7 +45,7 @@
         (summary-row "Subtotal" (orders/products-subtotal order))
         (for [{:keys [name price coupon-code]} adjustments-including-tax]
           (when (or (not (= price 0))
-                    (= coupon-code "amazon"))
+                    (#{"amazon" "freeinstall"} coupon-code))
             (summary-row
              {:key name}
              [:div {:data-test (text->data-test-name name)}
@@ -82,7 +82,7 @@
         (summary-row "Subtotal" subtotal)
         (for [{:keys [name price coupon-code]} adjustments]
           (when (or (not (= price 0))
-                    (= coupon-code "amazon"))
+                    (#{"amazon" "freeinstall"} coupon-code))
             (summary-row
              {:key name}
              [:div {:data-test (text->data-test-name name)}
