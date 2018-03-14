@@ -8,6 +8,6 @@
       (str "//" asset-mappings/cdn-host "/cdn/" mapped-asset)
       resource-path)))
 
-(def canonical-image (path "/images/canonical_image.jpg"))
+(def canonical-image "//ucarecdn.com/64724eec-000d-4be9-a342-5d800999fe45/canonical_image.png")
 
 (defn css-url [url] (str "url(" url ")"))
