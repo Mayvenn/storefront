@@ -93,7 +93,7 @@
                    :file-name   file-name
                    :alt         alt}))]])
 
-(def the-ville-hero
+(def free-installation-hero
   [:h1.h2
    [:a
     (assoc (utils/route-to events/navigate-shop-by-look)
@@ -307,7 +307,7 @@
                         (filter :home/order)
                         (sort-by :home/order))
      :hero-element (if the-ville?
-                     the-ville-hero
+                     free-installation-hero
                      hero)}))
 
 (defn built-component [data opts]
