@@ -121,13 +121,14 @@
   (pinterest/remove-tracking))
 
 (defmethod perform-effects events/enable-feature [_ event {:keys [feature]} _ app-state]
-  (let [show-financing? (-> app-state (get-in keypaths/navigation-args) :query-params :show (= "financing"))]
-    (when-not show-financing?
-      (when (= "the-ville-control" feature)
-        (potentially-show-email-popup app-state))
-      (when (and (= "the-ville" feature)
-                 (not (cookie-jar/get-dismissed-free-install (get-in app-state keypaths/cookie))))
-        (handle-message events/popup-show-free-install)))))
+  (let [show-financing?           (-> app-state (get-in keypaths/navigation-args) :query-params :show (= "financing"))
+        joined-the-ville-control? (= "the-ville-control" feature)
+        show-free-install-modal?  (and (= "the-ville" feature)
+                                       (not (cookie-jar/get-dismissed-free-install (get-in app-state keypaths/cookie))))]
+    (cond
+      show-financing?           nil
+      joined-the-ville-control? (potentially-show-email-popup app-state)
+      show-free-install-modal?  (handle-message events/popup-show-free-install))))
 
 (defmethod perform-effects events/ensure-skus [_ event {:keys [skus]} _ app-state]
   (ensure-skus app-state skus))
