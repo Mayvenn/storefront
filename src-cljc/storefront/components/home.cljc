@@ -84,16 +84,16 @@
    [:a
     (assoc (utils/route-to events/navigate-shop-by-look)
            :data-test "home-banner")
-    (let [file-name "Spring-Stock-up.jpg"
-          alt       "The Spring Stock-Up! 25% off everything! Shop now!"
-          mob-uuid  "c1db5830-0753-40dd-9bd1-1fdc6f6309be"
-          dsk-uuid  "61b200be-1722-47ad-81c0-3b44435689a0"]
+    (let [file-name "Spring-Stock-up-extended.jpg"
+          alt       "The Spring Stock-Up EXTENDED! 25% off everything! Shop now!"
+          mob-uuid  "62a53d3b-3a88-4f46-83b2-1982c9814725"
+          dsk-uuid  "c62421c7-4eaf-4ef3-a84f-b6194fa8fe71"]
       (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
                    :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
                    :file-name   file-name
                    :alt         alt}))]])
 
-(def free-installation-hero
+ (def free-installation-hero
   [:h1.h2
    [:a
     (assoc (utils/route-to events/navigate-shop-by-look)
