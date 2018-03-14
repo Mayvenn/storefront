@@ -30,6 +30,7 @@
 (defpath navigate-shared-cart)
 (defpath navigate-gallery)
 (defpath navigate-gallery-image-picker)
+(defpath navigate-force-reset-password)
 
 (defpath navigate-content)
 (defpath navigate-content-help)

@@ -69,6 +69,7 @@
               "/logout"                                           (edn->bidi events/navigate-sign-out)
               "/signup"                                           (edn->bidi events/navigate-sign-up)
               "/password/recover"                                 (edn->bidi events/navigate-forgot-password)
+              "/password/reset"                                   (edn->bidi events/navigate-force-reset-password)
               ["/m/" :reset-token]                                (edn->bidi events/navigate-reset-password)
               ["/c/" :shared-cart-id]                             (edn->bidi events/navigate-shared-cart)
               "/account/edit"                                     (edn->bidi events/navigate-account-manage)

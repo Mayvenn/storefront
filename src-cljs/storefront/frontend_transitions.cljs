@@ -395,11 +395,12 @@
       (assoc-in keypaths/popup :refer-stylist-thanks)))
 
 (defn sign-in-user
-  [app-state {:keys [email token store_slug id total_available_store_credit]}]
+  [app-state {:keys [email token store_slug id total_available_store_credit must_reset_password]}]
   (-> app-state
       (assoc-in keypaths/user-id id)
       (assoc-in keypaths/user-email email)
       (assoc-in keypaths/user-token token)
+      (assoc-in keypaths/user-must-reset-password must_reset_password)
       (assoc-in keypaths/user-store-slug store_slug)
       (assoc-in keypaths/user-total-available-store-credit (js/parseFloat total_available_store_credit))
       (assoc-in keypaths/checkout-as-guest false)))

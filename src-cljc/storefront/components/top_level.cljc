@@ -13,6 +13,7 @@
                        [storefront.components.shop-by-look-details :as shop-by-look-details]
                        [storefront.components.account :as account]
                        [storefront.components.reset-password :as reset-password]
+                       [storefront.components.force-reset-password :as force-reset-password]
                        [storefront.components.stylist.dashboard :as stylist.dashboard]
                        [storefront.components.stylist.balance-transfer-details :as balance-transfer-details]
                        [storefront.components.stylist.cash-out-now :as stylist.cash-out-now]
@@ -57,6 +58,7 @@
   (condp = nav-event
     #?@(:cljs
         [events/navigate-reset-password                             reset-password/built-component
+         events/navigate-force-reset-password                       force-reset-password/built-component
          events/navigate-shop-bundle-deals                          shop-bundle-deals/built-component
          events/navigate-shop-by-look                               shop-by-look/built-component
          events/navigate-shop-by-look-details                       shop-by-look-details/built-component
