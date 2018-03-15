@@ -317,7 +317,14 @@
         (is (some #{"utm_medium=;Max-Age=0;Secure;Path=/"} cookies))
         (is (some #{"utm_campaign=;Max-Age=0;Secure;Path=/"} cookies))
         (is (some #{"utm_content=;Max-Age=0;Secure;Path=/"} cookies))
-        (is (some #{"utm_term=;Max-Age=0;Secure;Path=/"} cookies))))))
+        (is (some #{"utm_term=;Max-Age=0;Secure;Path=/"} cookies))))
+    (testing "has no canonical url"
+      (let [resp (handler (-> (mock/request :get "https://welcome.mayvenn.com/stylists/welcome")))]
+        (is (= 200 (:status resp)))
+        (is (-> resp
+                :body
+                (.contains "rel=\"canonical\"")
+                not))))))
 
 (defmacro is-redirected-to [resp domain path]
   `(let [resp# ~resp
