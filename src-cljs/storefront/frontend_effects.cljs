@@ -406,8 +406,9 @@
     :referrals (map #(select-keys % [:fullname :email :phone]) (get-in app-state keypaths/stylist-referrals))}))
 
 (def cart-error-codes
-  {"paypal-incomplete"      "We were unable to complete your order with PayPal. Please try again."
-   "paypal-invalid-address" "Unfortunately, Mayvenn products cannot be delivered to this address at this time. Please choose a new shipping destination."})
+  {"paypal-incomplete"           "We were unable to complete your order with PayPal. Please try again."
+   "paypal-invalid-address"      "Unfortunately, Mayvenn products cannot be delivered to this address at this time. Please choose a new shipping destination."
+   "ineligible-for-free-install" "The 'FreeInstall' promotion code has been removed from your order. This offer is only eligible for orders that ship to an address in Fayetteville, NC. To complete your purchase without the 'FreeInstall' promotion, please continue with your order below."})
 
 (def standard-affirm-error "There was an issue authorizing your Affirm loan. Please check out again or use a different payment method.")
 (def payment-error-codes
@@ -925,16 +926,21 @@
 
 (defmethod perform-effects events/api-failure-errors [_ event {:keys [error-code scroll-selector] :as errors} _ app-state]
   (condp = error-code
-    "stripe-card-failure"      (when (= (get-in app-state keypaths/navigation-event)
-                                        events/navigate-checkout-confirmation)
-                                 (redirect events/navigate-checkout-payment)
-                                 (handle-later events/api-failure-errors errors)
-                                 (scroll/snap-to-top))
-    "promotion-not-found"      (scroll-promo-field-to-top)
-    "ineligible-for-promotion" (scroll-promo-field-to-top)
-    "invalid-input"            (if scroll-selector
-                                 (scroll/scroll-selector-to-top scroll-selector)
-                                 (scroll/snap-to-top))
+    "stripe-card-failure"          (when (= (get-in app-state keypaths/navigation-event)
+                                            events/navigate-checkout-confirmation)
+                                     (redirect events/navigate-checkout-payment)
+                                     (handle-later events/api-failure-errors errors)
+                                     (scroll/snap-to-top))
+    "promotion-not-found"          (scroll-promo-field-to-top)
+    "ineligible-for-promotion"     (scroll-promo-field-to-top)
+    "invalid-input"                (if scroll-selector
+                                     (scroll/scroll-selector-to-top scroll-selector)
+                                     (scroll/snap-to-top))
+    "invalid-fayetteville-zipcode" (when (= (get-in app-state keypaths/navigation-event)
+                                            events/navigate-checkout-confirmation)
+                                       (redirect events/navigate-cart)
+                                       (handle-later events/api-failure-errors errors)
+                                       (scroll/snap-to-top))
     (scroll/snap-to-top)))
 
 (defmethod perform-effects events/api-success-add-to-bag [dispatch event args _ app-state]

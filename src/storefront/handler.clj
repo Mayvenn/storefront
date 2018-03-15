@@ -569,21 +569,25 @@
 (defn affirm-routes [{:keys [storeback-config]}]
   (wrap-cookies
    (POST "/orders/:number/affirm/:order-token" [number order-token :as request]
-         (let [checkout-token (-> request :params (get "checkout_token"))]
-           (if-let [error-code (api/verify-affirm-payment storeback-config number order-token checkout-token
-                                                          (let [headers (:headers request)]
-                                                            (or (headers "x-forwarded-for")
-                                                                (headers "remote-addr")
-                                                                "localhost"))
-                                                          (assoc (:query-params request)
-                                                                 "session-id"    (cookies/get request "session-id")
-                                                                 "utm-params"
-                                                                 {"utm-source"   (cookies/get request "utm-source")
-                                                                  "utm-campaign" (cookies/get request "utm-campaign")
-                                                                  "utm-term"     (cookies/get request "utm-term")
-                                                                  "utm-content"  (cookies/get request "utm-content")
-                                                                  "utm-medium"   (cookies/get request "utm-medium")}))]
-             (util.response/redirect (str "/checkout/payment?error=" error-code))
+         (let [checkout-token (-> request :params (get "checkout_token"))
+               error-code     (api/verify-affirm-payment storeback-config number order-token checkout-token
+                                                         (let [headers (:headers request)]
+                                                           (or (headers "x-forwarded-for")
+                                                               (headers "remote-addr")
+                                                               "localhost"))
+                                                         (assoc (:query-params request)
+                                                                "session-id"    (cookies/get request "session-id")
+                                                                "utm-params"
+                                                                {"utm-source"   (cookies/get request "utm-source")
+                                                                 "utm-campaign" (cookies/get request "utm-campaign")
+                                                                 "utm-term"     (cookies/get request "utm-term")
+                                                                 "utm-content"  (cookies/get request "utm-content")
+                                                                 "utm-medium"   (cookies/get request "utm-medium")}))
+               redirect-url  (if (= "ineligible-for-free-install" error-code)
+                               "/cart"
+                               "/checkout/payment")]
+           (if error-code
+             (util.response/redirect (str redirect-url "?error=" error-code))
              (util.response/redirect (str "/orders/" number "/complete?"
                                           (codec/form-encode {:affirm      true
                                                               :order-token order-token}))))))))

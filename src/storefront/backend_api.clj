@@ -58,7 +58,8 @@
                                                      :conn-timeout   place-order-timeout
                                                      :headers        {"X-Forwarded-For" ip-addr}})]
     (when-not (<= 200 status 299)
-      (-> body :errors first :error-code (or "affirm-incomplete")))))
+      (let [first-error-code (->> body :errors (some identity) :error-code)]
+        (or first-error-code "affirm-incomplete")))))
 
 (defn criteria->query-params [criteria]
   (->> criteria
