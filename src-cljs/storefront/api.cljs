@@ -806,16 +806,14 @@
                    (when (and token number) {:token token :number number}))
     :handler handler}))
 
-(defn remove-promotion-code [session-id {:keys [token number]} promo-code]
+(defn remove-promotion-code [session-id {:keys [token number]} promo-code handler]
   (api-req
    POST
    "/v2/remove-promotion-code"
    request-keys/remove-promotion-code
    {:params {:session-id session-id
              :number number :token token :code promo-code}
-    :handler #(messages/handle-message events/api-success-update-order-remove-promotion-code
-                                       {:order %
-                                        :promo-code promo-code})}))
+    :handler handler}))
 
 (defn create-shared-cart [session-id order-number order-token]
   (api-req
