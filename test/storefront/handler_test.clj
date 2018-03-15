@@ -661,7 +661,7 @@
         (let [resp (handler (mock/request :get "https://welcome.mayvenn.com/sitemap.xml"))]
           (is (= 404 (:status resp))))))))
 
-(deftest robots-disllows-content-storefront-pages-on-shop
+(deftest robots-disallows-content-storefront-pages-on-shop
   (with-handler handler
     (let [{:keys [status body]} (handler (mock/request :get "https://shop.mayvenn.com/robots.txt"))]
       (is (= 200 status))
