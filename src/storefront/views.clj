@@ -64,35 +64,49 @@
           (prefetch-image "spinner" "/images/spinner.svg")
           (prefetch-image "large_spinner" "/images/large-spinner.svg")))
 
-(defn layout [{:keys [storeback-config environment client-version]} data initial-content]
-  (html5 {:lang "en"}
-   [:head
-    [:meta {:name "fragment" :content "!"}]
-    [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"}]
-    [:meta {:http-equiv "Content-type" :content "text/html;charset=UTF-8"}]
-    [:meta {:name "theme-color" :content "#ffffff"}]
-    (into '() (seo/tags-for-page data))
+(defn canonical-uri
+  [{:as data :keys [store]}]
+  (when-not (#{"shop" "welcome"} (:store-slug store))
+    (let [{:keys [domain path query]} (get-in data keypaths/navigation-uri)]
+      (some-> domain
+              (string/replace #"^\w+\." "//shop.")
+              (str path "?" query)))))
 
-    [:link {:href (assets/path "/images/favicon.png") :rel "shortcut icon" :type "image/vnd.microsoft.icon"}]
-    (when asset-mappings/cdn-host
-      [:link {:rel "dns-prefetch" :href (str "//" asset-mappings/cdn-host)}])
-    [:link {:rel "dns-prefetch" :href (:endpoint storeback-config)}]
-    [:link {:rel "dns-prefetch" :href "//www.sendsonar.com"}]
-    [:link {:rel "dns-prefetch" :href "//ucarecdn.com"}]
-    [:script {:type "text/javascript"} (raw prefetch-script)]
-    [:script {:type "text/javascript"}
-     (raw (str "var assetManifest=" (generate-string asset-mappings/image-manifest) ";"
-               "var cdnHost=" (generate-string asset-mappings/cdn-host) ";"
-               ;; need to make sure the edn which has double quotes is validly escaped as
-               ;; json as it goes into the JS file
-               "var data = " (-> (sanitize data)
-                                 (assoc-in keypaths/static (get-in data keypaths/static))
-                                 pr-str
-                                 generate-string) ";"
-               "var environment=\"" environment "\";"
-               "var clientVersion=\"" client-version "\";"
-               "var apiUrl=\"" (:endpoint storeback-config) "\";"
-               "if (window.FontFace) {
+(defn layout
+  [{:keys [storeback-config environment client-version]} data initial-content]
+  (html5 {:lang "en"}
+         [:head
+          [:meta {:name "fragment" :content "!"}]
+          [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"}]
+          [:meta {:http-equiv "Content-type" :content "text/html;charset=UTF-8"}]
+          [:meta {:name "theme-color" :content "#ffffff"}]
+          (into '() (seo/tags-for-page data))
+
+          [:link {:href (assets/path "/images/favicon.png") :rel "shortcut icon" :type "image/vnd.microsoft.icon"}]
+          (when asset-mappings/cdn-host
+            [:link {:rel "dns-prefetch" :href (str "//" asset-mappings/cdn-host)}])
+          [:link {:rel "dns-prefetch" :href (:endpoint storeback-config)}]
+          [:link {:rel "dns-prefetch" :href "//www.sendsonar.com"}]
+          [:link {:rel "dns-prefetch" :href "//ucarecdn.com"}]
+          (when-let [canonical-href (canonical-uri data)]
+            [:link {:rel "canonical" :href canonical-href}])
+          [:script {:type "text/javascript"} (raw prefetch-script)]
+          [:script {:type "text/javascript"}
+           (raw (str "var assetManifest=" (generate-string asset-mappings/image-manifest) ";"
+                     "var cdnHost=" (generate-string asset-mappings/cdn-host) ";"
+                     ;; need to make sure the edn which has double quotes is validly escaped as
+                     ;; json as it goes into the JS file
+                     "var data = " (-> data
+                                       (update-in (butlast keypaths/navigation-uri)
+                                                  dissoc (last keypaths/navigation-uri))
+                                       sanitize
+                                       (assoc-in keypaths/static (get-in data keypaths/static))
+                                       pr-str
+                                       generate-string) ";"
+                     "var environment=\"" environment "\";"
+                     "var clientVersion=\"" client-version "\";"
+                     "var apiUrl=\"" (:endpoint storeback-config) "\";"
+                     "if (window.FontFace) {
                     robotoLight = new FontFace('Roboto',
                                                \"" (assets/css-url (assets/path "/fonts/Roboto-Light-webfont.woff")) " format('woff')\",
                                                {style: 'normal', weight: 300, stretch: 'normal'});
@@ -104,22 +118,22 @@
                         document.fonts.add(robotoRegular);
                     });
                 }"))]
-    ;; in production, we want to load the script tag asynchronously which has better
-    ;; support when that script tag is in the <head>
-    (when-not (config/development? environment)
-      [:script {:src (assets/path "/js/out/main.js") :async true}])
-    ;; inline styles in production because our css file is so small and it avoids another round
-    ;; trip request. At time of writing this greatly includes our pagespeed score
-    (if (#{"development" "test"} environment)
-      (page/include-css (assets/path "/css/app.css"))
-      [:style (raw (css-styles))])]
-   [:body {:itemscope "itemscope" :itemtype "http://schema.org/Corporation"}
-    [:div#content initial-content]
-    ;; in development, figwheel uses document.write which can't be done asynchronously
-    ;; additionally, we want developers to see the server side render, so we don't want
-    ;; to put this tag in <head> and be synchronous
-    (when (config/development? environment)
-      [:script {:src (assets/path "/js/out/main.js")}])]))
+          ;; in production, we want to load the script tag asynchronously which has better
+          ;; support when that script tag is in the <head>
+          (when-not (config/development? environment)
+            [:script {:src (assets/path "/js/out/main.js") :async true}])
+          ;; inline styles in production because our css file is so small and it avoids another round
+          ;; trip request. At time of writing this greatly includes our pagespeed score
+          (if (#{"development" "test"} environment)
+            (page/include-css (assets/path "/css/app.css"))
+            [:style (raw (css-styles))])]
+         [:body {:itemscope "itemscope" :itemtype "http://schema.org/Corporation"}
+          [:div#content initial-content]
+          ;; in development, figwheel uses document.write which can't be done asynchronously
+          ;; additionally, we want developers to see the server side render, so we don't want
+          ;; to put this tag in <head> and be synchronous
+          (when (config/development? environment)
+            [:script {:src (assets/path "/js/out/main.js")}])]))
 
 (defn index [render-ctx data]
   (layout render-ctx data spinner-content))
@@ -131,33 +145,33 @@
 
 (def not-found
   (html5 {:lang "en"}
-   [:head
-    [:title "Not Found | Mayvenn"]
-    [:meta {:name "fragment" :content "!"}]
-    [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"}]
-    [:meta {:http-equiv "Content-type" :content "text/html;charset=UTF-8"}]
-    [:link {:href (assets/path "/images/favicon.png") :rel "shortcut icon" :type "image/vnd.microsoft.icon"}]
-    (page/include-css (assets/path "/css/app.css"))]
-   [:body.bg-light-gray
-    [:div.container
-     [:div.col-9-on-tb-dt.mx-auto.px2.flex.flex-column.items-center
-      {:style "min-height: 100vh;"}
-      [:img.py2 {:src (assets/path "/images/header_logo.svg")}]
-      [:img.mx-auto.block {:src (assets/path "/images/not_found_head.png")
-                           :style "max-width: 80%"}]
-      [:div.h3.mt3.mb2.center "We can't seem to find the page you're looking for."]
-      [:a.mx-auto.btn.btn-primary.col-10
-       {:href "/"}
-       [:div.h4.p1.letter-spacing-1 "Return to Homepage"]]]]]))
+         [:head
+          [:title "Not Found | Mayvenn"]
+          [:meta {:name "fragment" :content "!"}]
+          [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"}]
+          [:meta {:http-equiv "Content-type" :content "text/html;charset=UTF-8"}]
+          [:link {:href (assets/path "/images/favicon.png") :rel "shortcut icon" :type "image/vnd.microsoft.icon"}]
+          (page/include-css (assets/path "/css/app.css"))]
+         [:body.bg-light-gray
+          [:div.container
+           [:div.col-9-on-tb-dt.mx-auto.px2.flex.flex-column.items-center
+            {:style "min-height: 100vh;"}
+            [:img.py2 {:src (assets/path "/images/header_logo.svg")}]
+            [:img.mx-auto.block {:src (assets/path "/images/not_found_head.png")
+                                 :style "max-width: 80%"}]
+            [:div.h3.mt3.mb2.center "We can't seem to find the page you're looking for."]
+            [:a.mx-auto.btn.btn-primary.col-10
+             {:href "/"}
+             [:div.h4.p1.letter-spacing-1 "Return to Homepage"]]]]]))
 
 (def error-page
   (html5 {:lang "en"}
-   [:head
-    [:meta {:name "fragment" :content "!"}]
-    [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"}]
-    [:meta {:http-equiv "Content-type" :content "text/html;charset=UTF-8"}]
-    [:title "Something went wrong | Mayvenn"]]
-   [:body
-    {:itemscope "itemscope" :itemtype "http://schema.org/Corporation"}
-    [:h3.h4 "Mayvenn Will Be Back Soon"]
-    [:h4.h5 "We apologize for the inconvenience and appreciate your patience. Please check back soon."]]))
+         [:head
+          [:meta {:name "fragment" :content "!"}]
+          [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"}]
+          [:meta {:http-equiv "Content-type" :content "text/html;charset=UTF-8"}]
+          [:title "Something went wrong | Mayvenn"]]
+         [:body
+          {:itemscope "itemscope" :itemtype "http://schema.org/Corporation"}
+          [:h3.h4 "Mayvenn Will Be Back Soon"]
+          [:h4.h5 "We apologize for the inconvenience and appreciate your patience. Please check back soon."]]))

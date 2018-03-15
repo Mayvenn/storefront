@@ -77,6 +77,7 @@
 (def api-requests (conj ui :api-requests))
 (def redirecting? (conj ui :redirecting?))
 (def return-navigation-message (conj ui :return-navigation-message))
+(def navigation-uri (conj ui :navigation-uri))
 (def navigation-message (conj ui :navigation-message))
 (def navigation-event (conj navigation-message 0))
 (def navigation-args (conj navigation-message 1))

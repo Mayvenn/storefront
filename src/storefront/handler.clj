@@ -376,7 +376,7 @@
         (update-in keypaths/v2-skus merge (products/index-skus skus)))))
 
 (defn required-data
-  [{:keys [environment leads-config storeback-config nav-event nav-message store order-number order-token]}]
+  [{:keys [environment leads-config storeback-config nav-event nav-message nav-uri store order-number order-token]}]
   (let [order (api/get-order storeback-config order-number order-token)
         skus-on-order (mapv :sku (orders/product-items order))
         {:keys [skus products]} (when (seq skus-on-order)
@@ -394,6 +394,7 @@
         (assoc-in keypaths/v2-facets (map #(update % :facet/slug keyword) facets))
         (assoc-in keypaths/categories categories/initial-categories)
         (assoc-in keypaths/static (static-page nav-event))
+        (assoc-in keypaths/navigation-uri nav-uri)
         (assoc-in keypaths/navigation-message nav-message))))
 
 (defn assoc-user-info [data req]
@@ -414,7 +415,7 @@
       (update-in keypaths/v2-skus merge (products/index-skus skus)))))
 
 (defn frontend-routes [{:keys [storeback-config leads-config environment client-version] :as ctx}]
-  (fn [{:keys [store nav-message] :as req}]
+  (fn [{:keys [store nav-message nav-uri] :as req}]
     (let [[nav-event params] nav-message
           order-number       (get-in req [:cookies "number" :value])
           order-token        (some-> (get-in req [:cookies "token" :value])
@@ -426,6 +427,7 @@
                                                              storeback-config
                                                              nav-event
                                                              nav-message
+                                                             nav-uri
                                                              store
                                                              order-number
                                                              order-token))
@@ -728,8 +730,10 @@
       (wrap-content-type)))
 
 (defn wrap-add-nav-message [h]
-  (fn [{:keys [uri query-params] :as req}]
-    (h (assoc req :nav-message (routes/navigation-message-for uri query-params)))))
+  (fn [{:keys [server-name uri query-params query-string] :as req}]
+    (h (assoc req
+              :nav-uri {:domain server-name :path uri :query query-string}
+              :nav-message (routes/navigation-message-for uri query-params)))))
 
 (defn login-and-redirect [{:keys [environment storeback-config] :as ctx}
                           {:keys [subdomains query-params server-name store] :as req}]
