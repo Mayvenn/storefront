@@ -73,7 +73,8 @@
   (let [{:keys [id number amount data]} balance-transfer
         {:keys [order
                 commission-date
-                commissionable-amount]} data]
+                commissionable-amount]} data
+        commission-date (or commission-date (:commission_date data))]
     (if fetching?
       [:div.my2.h2 ui/spinner]
 
@@ -81,15 +82,12 @@
        back-to-earnings
        [:h3.my4 "Details - Commission Earned"]
        [:div.flex.justify-between.col-12
-        [:div (f/less-year-more-day-date (or commission-date (:commission_date data)))]
+        [:div (f/less-year-more-day-date commission-date)]
         [:div (:full-name order)]
         [:div.green "+" (mf/as-money amount)]]
 
        (info-columns ["Order Number" (:number order)]
-                     ["Ship Date" (f/less-year-more-day-date (->> (:order balance-transfer)
-                                                                  :shipments
-                                                                  first
-                                                                  :shipped-at))])
+                     ["Ship Date" (f/less-year-more-day-date commission-date)])
 
        [:div.mt2.mbnp2.mtnp2.border-top.border-gray
         (summary/display-line-items (orders/product-items order) skus)]
