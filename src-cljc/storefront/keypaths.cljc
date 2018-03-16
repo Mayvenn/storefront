@@ -16,7 +16,7 @@
 (def user-token (conj user :user-token))
 (def user-store-slug (conj user :store-slug))
 (def user-id (conj user :id))
-(def user-must-reset-password (conj user :must-reset-password))
+(def user-must-set-password (conj user :must-set-password))
 (def user-total-available-store-credit (conj user :total-available-store-credit))
 
 (def order [:order])

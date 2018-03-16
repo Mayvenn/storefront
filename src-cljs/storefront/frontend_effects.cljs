@@ -259,7 +259,7 @@
     (when (get-in app-state keypaths/popup)
       (handle-message events/control-popup-hide))
 
-    (when (and (get-in app-state keypaths/user-must-reset-password)
+    (when (and (get-in app-state keypaths/user-must-set-password)
                (not= event events/navigate-force-reset-password))
       (redirect events/navigate-force-reset-password))
 
