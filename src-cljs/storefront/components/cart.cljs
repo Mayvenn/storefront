@@ -149,8 +149,9 @@ Thanks,
           :width  "68px"}]
    [:h4 "Buy 3 bundles or more and get a"]
    [:h1.shout.bold "Free Install"]
-   [:h6 "from a Mayvenn Certified Stylist in Fayetteville, NC. Details will be
-   provided with your order confirmation."]])
+   [:h6
+    [:div "from a Mayvenn Certified Stylist in Fayetteville, NC. "]
+    [:div "Use code " [:span.bold "FREEINSTALL"] " to get your free install."]]])
 
 (defn full-component [{:keys [focused
                               order
