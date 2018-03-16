@@ -26,7 +26,7 @@
                  (merge (utils/fake-href events/control-free-install-shop-looks)
                         {:data-test "free-install-shop-looks"})
                  "Shop Looks Now")
-                [:p.h6.my2 "Free install details provided after check out"]
+                [:p.h4.my2.bold "Use code FREEINSTALL at checkout"]
                 [:p.h5
                  [:a.inherit-color (merge (utils/fake-href events/control-free-install-dismiss)
                                           {:data-test "free-install-dismiss"})
