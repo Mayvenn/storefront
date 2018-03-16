@@ -74,7 +74,8 @@
         {:keys [order
                 commission-date
                 commissionable-amount]} data
-        commission-date (or commission-date (:commission_date data))]
+        commission-date (or commission-date (:commission_date data))
+        shipped-at      (->> order :shipments first :shipped-at)]
     (if fetching?
       [:div.my2.h2 ui/spinner]
 
@@ -87,7 +88,7 @@
         [:div.green "+" (mf/as-money amount)]]
 
        (info-columns ["Order Number" (:number order)]
-                     ["Ship Date" (f/less-year-more-day-date commission-date)])
+                     ["Ship Date" (f/less-year-more-day-date (or shipped-at commission-date))])
 
        [:div.mt2.mbnp2.mtnp2.border-top.border-gray
         (summary/display-line-items (orders/product-items order) skus)]
