@@ -262,9 +262,7 @@
 
 (defmethod perform-effects events/navigate-home [_ _ {:keys [query-params]} _ app-state]
   (when (= config/welcome-subdomain (get-in app-state keypaths/store-slug))
-    (redirect events/navigate-leads-home))
-  (when-not (:show query-params)
-    (potentially-show-email-popup app-state)))
+    (redirect events/navigate-leads-home)))
 
 (defmethod perform-effects events/navigate-content [_ [_ _ & static-content-id :as event] _ _ app-state]
   (when-not (= static-content-id
