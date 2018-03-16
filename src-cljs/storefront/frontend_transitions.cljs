@@ -122,8 +122,6 @@
           prefill-guest-email-address)
       (assoc-in app-state keypaths/order nil))))
 
-(cemerick.url/url "http://hello.com/are-you-out-there?mother=mother&drop=the-bomb")
-
 (defmethod transition-state events/navigate [_ event args app-state]
   (let [args (dissoc args :nav-stack-item)
         uri  (url/url js/window.location)]
