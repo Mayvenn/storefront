@@ -89,8 +89,7 @@
               (orders/display-adjustment-name name)]
              price)))
 
-        ;; GROT store-credit-used guard after diva deploy
-        (when (and store-credit-used (pos? store-credit-used))
+        (when (pos? store-credit-used)
           (summary-row "Store Credit" (- store-credit-used)))
 
         (when shipping-item
