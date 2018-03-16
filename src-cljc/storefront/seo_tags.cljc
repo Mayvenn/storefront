@@ -54,10 +54,9 @@
 (defn canonical-uri
   [{:as data :keys [store]}]
   (when-not (contains? #{"shop" "welcome"} (:store_slug store))
-    (prn "hi")
-    (spice/spy (some-> (get-in data keypaths/navigation-uri)
-                      (update :host string/replace #"^[^.]+" "shop")
-                      str))))
+    (some-> (get-in data keypaths/navigation-uri)
+            (update :host string/replace #"^[^.]+" "shop")
+            str)))
 
 (defn canonical-link-tag [data]
   (when-let [canonical-href (canonical-uri data)]
