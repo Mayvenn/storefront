@@ -122,8 +122,11 @@
           prefill-guest-email-address)
       (assoc-in app-state keypaths/order nil))))
 
+(cemerick.url/url "http://hello.com/are-you-out-there?mother=mother&drop=the-bomb")
+
 (defmethod transition-state events/navigate [_ event args app-state]
-  (let [args (dissoc args :nav-stack-item)]
+  (let [args (dissoc args :nav-stack-item)
+        uri  (url/url js/window.location)]
     (-> app-state
         collapse-menus
         add-return-event
@@ -135,6 +138,7 @@
         (assoc-in keypaths/flash-later-success nil)
         (assoc-in keypaths/flash-later-failure nil)
         (update-in keypaths/ui dissoc :navigation-stashed-stack-item)
+        (assoc-in keypaths/navigation-uri uri)
         ;; order is important from here on
         update-state-from-order
         (assoc-in keypaths/redirecting? false)

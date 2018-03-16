@@ -30,6 +30,7 @@
                  [sablono "0.8.0"]
                  [cljs-ajax "0.3.11"]
                  [bidi "2.0.16"]
+                 [lambdaisland/uri "1.1.0"]
                  [com.cemerick/url "0.1.1"]]
   :repositories [["private" {:url "s3p://mayvenn-dependencies/releases/" :no-auth true}]]
   :plugins [[s3-wagon-private "1.3.0"]

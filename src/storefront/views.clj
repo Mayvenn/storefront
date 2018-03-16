@@ -64,13 +64,7 @@
           (prefetch-image "spinner" "/images/spinner.svg")
           (prefetch-image "large_spinner" "/images/large-spinner.svg")))
 
-(defn canonical-uri
-  [{:as data :keys [store]}]
-  (when-not (#{"shop" "welcome"} (:store-slug store))
-    (let [{:keys [domain path query]} (get-in data keypaths/navigation-uri)]
-      (some-> domain
-              (string/replace #"^\w+\." "//shop.")
-              (str path "?" query)))))
+
 
 (defn layout
   [{:keys [storeback-config environment client-version]} data initial-content]
@@ -88,8 +82,6 @@
           [:link {:rel "dns-prefetch" :href (:endpoint storeback-config)}]
           [:link {:rel "dns-prefetch" :href "//www.sendsonar.com"}]
           [:link {:rel "dns-prefetch" :href "//ucarecdn.com"}]
-          (when-let [canonical-href (canonical-uri data)]
-            [:link {:rel "canonical" :href canonical-href}])
           [:script {:type "text/javascript"} (raw prefetch-script)]
           [:script {:type "text/javascript"}
            (raw (str "var assetManifest=" (generate-string asset-mappings/image-manifest) ";"
@@ -97,8 +89,6 @@
                      ;; need to make sure the edn which has double quotes is validly escaped as
                      ;; json as it goes into the JS file
                      "var data = " (-> data
-                                       (update-in (butlast keypaths/navigation-uri)
-                                                  dissoc (last keypaths/navigation-uri))
                                        sanitize
                                        (assoc-in keypaths/static (get-in data keypaths/static))
                                        pr-str

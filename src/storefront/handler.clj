@@ -40,6 +40,7 @@
             [spice.core :as spice]
             [catalog.skuers :as skuers]
             [storefront.accessors.orders :as orders]
+            [lambdaisland.uri :as uri]
             [spice.maps :as maps]))
 
 (defn ^:private str->int [s]
@@ -732,7 +733,7 @@
 (defn wrap-add-nav-message [h]
   (fn [{:keys [server-name uri query-params query-string] :as req}]
     (h (assoc req
-              :nav-uri {:domain server-name :path uri :query query-string}
+              :nav-uri (uri/uri {:host server-name :path uri :query query-params})
               :nav-message (routes/navigation-message-for uri query-params)))))
 
 (defn login-and-redirect [{:keys [environment storeback-config] :as ctx}

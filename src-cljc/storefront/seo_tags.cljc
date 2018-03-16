@@ -5,7 +5,10 @@
             [storefront.events :as events]
             [catalog.categories :as categories]
             [catalog.products :as products]
-            [catalog.selector :as selector]))
+            [catalog.selector :as selector]
+            [lambdaisland.uri :as uri]
+            [clojure.string :as string]
+            [spice.core :as spice]))
 
 (def tag-class "seo-tag")
 
@@ -47,6 +50,18 @@
      [:meta {:property "og:type" :content "product"}]
      [:meta {:property "og:image" :content (str "http:" (:url image))}]
      [:meta {:property "og:description" :content (:opengraph/description product)}]]))
+
+(defn canonical-uri
+  [{:as data :keys [store]}]
+  (when-not (contains? #{"shop" "welcome"} (:store_slug store))
+    (prn "hi")
+    (spice/spy (some-> (get-in data keypaths/navigation-uri)
+                      (update :host string/replace #"^[^.]+" "shop")
+                      str))))
+
+(defn canonical-link-tag [data]
+  (when-let [canonical-href (canonical-uri data)]
+    [[:link {:rel "canonical" :href canonical-href}]]))
 
 (defn tags-for-page [data]
   (let [og-image-url (str "http:" assets/canonical-image)]
@@ -125,5 +140,5 @@
        events/navigate-product-details     (product-details-tags data)
 
        default-tags)
-     (concat constant-tags)
+     (concat constant-tags (canonical-link-tag data))
      add-seo-tag-class)))
