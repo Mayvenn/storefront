@@ -64,8 +64,6 @@
           (prefetch-image "spinner" "/images/spinner.svg")
           (prefetch-image "large_spinner" "/images/large-spinner.svg")))
 
-
-
 (defn layout
   [{:keys [storeback-config environment client-version]} data initial-content]
   (html5 {:lang "en"}
