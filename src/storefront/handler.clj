@@ -494,10 +494,7 @@
 (defn robots [{:keys [subdomains]}]
   (cond
     (= [config/welcome-subdomain] subdomains) (string/join "\n" leads-disalloweds)
-    (#{["shop"] ["www"] []} subdomains) (string/join "\n" user-specific-disalloweds)
-    :else (string/join "\n" (concat ["User-agent: googlebot"
-                                     ""]
-                                    user-specific-disalloweds))))
+    :else (string/join "\n" user-specific-disalloweds)))
 
 (defn sitemap [{:keys [storeback-config]} {:keys [subdomains] :as req}]
   (if (and (seq subdomains)
