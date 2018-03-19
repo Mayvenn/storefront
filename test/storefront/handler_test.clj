@@ -687,11 +687,11 @@
         "Disallow: /admin"
         "Disallow: /content"))))
 
-(deftest robots-disallows-all-pages-on-stylist-stores
+(deftest robots-allows-all-pages-on-stylist-stores
   (with-handler handler
     (let [{:keys [status body]} (handler (mock/request :get "https://bob.mayvenn.com/robots.txt"))]
       (is (= 200 status))
-      (is (some #{"Disallow: /"} (seq (.split body "\n")))))))
+      (is (not-any? #{"Disallow: /"} (string/split-lines body)) body))))
 
 (deftest robots-disallows-leads-pages-on-welcome-subdomain
   (with-handler handler

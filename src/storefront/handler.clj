@@ -496,7 +496,6 @@
     (= [config/welcome-subdomain] subdomains) (string/join "\n" leads-disalloweds)
     (#{["shop"] ["www"] []} subdomains) (string/join "\n" private-disalloweds)
     :else (string/join "\n" (concat ["User-agent: googlebot"
-                                     "Disallow: /"
                                      ""]
                                     private-disalloweds))))
 
