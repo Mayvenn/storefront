@@ -123,12 +123,15 @@
 (defmethod perform-effects events/enable-feature [_ event {:keys [feature]} _ app-state]
   (let [show-financing?           (-> app-state (get-in keypaths/navigation-args) :query-params :show (= "financing"))
         joined-the-ville-control? (= "the-ville-control" feature)
-        show-free-install-modal?  (and (= "the-ville" feature)
+        the-ville-variation?      (= "the-ville" feature)
+        show-free-install-modal?  (and the-ville-variation?
                                        (not (cookie-jar/get-dismissed-free-install (get-in app-state keypaths/cookie))))]
     (cond
       show-financing?           nil
       joined-the-ville-control? (potentially-show-email-popup app-state)
-      show-free-install-modal?  (handle-message events/popup-show-free-install))))
+      show-free-install-modal?  (handle-message events/popup-show-free-install))
+    (when the-ville-variation?
+      (pixlee/fetch-free-install))))
 
 (defmethod perform-effects events/ensure-skus [_ event {:keys [skus]} _ app-state]
   (ensure-skus app-state skus))
@@ -280,7 +283,9 @@
 
 (defmethod perform-effects events/navigate-shop-by-look [_ event {:keys [look-id]} _ app-state]
   (when-not look-id ;; we are on navigate-shop-by-look, not navigate-shop-by-look-details
-    (pixlee/fetch-mosaic)))
+    (if (experiments/the-ville? app-state)
+      (pixlee/fetch-free-install)
+      (pixlee/fetch-mosaic))))
 
 (defmethod perform-effects events/navigate-shop-by-look-details [_ event {:keys [look-id]} _ app-state]
   (pixlee/fetch-bundle-deals)

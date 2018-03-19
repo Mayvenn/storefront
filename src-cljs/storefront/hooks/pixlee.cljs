@@ -28,6 +28,9 @@
 (defn fetch-mosaic []
   (fetch-album (-> config/pixlee :albums :mosaic) :mosaic))
 
+(defn fetch-free-install []
+  (fetch-album (-> config/pixlee :albums :free-install) :free-install))
+
 (defn fetch-image [image-id]
   (api-request (str "/media/" image-id)
                {:handler (fn [resp]

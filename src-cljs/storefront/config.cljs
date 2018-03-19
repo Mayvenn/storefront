@@ -122,6 +122,7 @@
   (case js/environment
     "production" {:api-key "PUTXr6XBGuAhWqoIP4ir"
                   :albums  {:mosaic          952508
+                            :free-install    3082797
                             "straight"       1104027
                             "loose-wave"     1104028
                             "body-wave"      1104029
@@ -137,6 +138,7 @@
                             :bundle-deals    2585224}}
     {:api-key "iiQ27jLOrmKgTfIcRIk"
      :albums  {:mosaic          965034
+               :free-install    3082796
                "straight"       1327330
                "loose-wave"     1327331
                "body-wave"      1327332
