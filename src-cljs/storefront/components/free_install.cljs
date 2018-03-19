@@ -36,13 +36,15 @@
   (component/build component {} opts))
 
 (defmethod effects/perform-effects events/control-free-install-shop-looks [_ event args _ app-state]
-  (history/enqueue-navigate events/navigate-shop-by-look {:query-params {:sha "freeinstall"}}))
+  (history/enqueue-navigate events/navigate-shop-by-look))
 
 (defmethod effects/perform-effects events/control-free-install [_ event args _ app-state]
+  (cookie-jar/save-pending-promo-code (get-in app-state keypaths/cookie) "freeinstall")
   (when-let [value (get-in app-state keypaths/dismissed-free-install)]
     (cookie-jar/save-dismissed-free-install (get-in app-state keypaths/cookie) value)))
 
 (defmethod transitions/transition-state events/control-free-install [_ event args app-state]
   (-> app-state
+      (assoc-in keypaths/pending-promo-code "freeinstall")
       (assoc-in keypaths/popup nil)
       (assoc-in keypaths/dismissed-free-install true)))
