@@ -457,18 +457,18 @@
                         "Disallow: /stylists/thank-you"
                         "Disallow: /stylists/flows/"])
 
-(def private-disalloweds ["User-agent: *"
-                          "Disallow: /account"
-                          "Disallow: /checkout"
-                          "Disallow: /orders"
-                          "Disallow: /stylist"
-                          "Disallow: /cart"
-                          "Disallow: /m/"
-                          "Disallow: /c/"
-                          "Disallow: /admin"
-                          "Disallow: /content"
-                          "Disallow: /policy/privacy"
-                          "Disallow: /policy/tos"])
+(def user-specific-disalloweds ["User-agent: *"
+                                "Disallow: /account"
+                                "Disallow: /checkout"
+                                "Disallow: /orders"
+                                "Disallow: /stylist"
+                                "Disallow: /cart"
+                                "Disallow: /m/"
+                                "Disallow: /c/"
+                                "Disallow: /admin"
+                                "Disallow: /content"
+                                "Disallow: /policy/privacy"
+                                "Disallow: /policy/tos"])
 
 (def server-render-pages
   {events/navigate-home                          generic-server-render
@@ -494,10 +494,10 @@
 (defn robots [{:keys [subdomains]}]
   (cond
     (= [config/welcome-subdomain] subdomains) (string/join "\n" leads-disalloweds)
-    (#{["shop"] ["www"] []} subdomains) (string/join "\n" private-disalloweds)
+    (#{["shop"] ["www"] []} subdomains) (string/join "\n" user-specific-disalloweds)
     :else (string/join "\n" (concat ["User-agent: googlebot"
                                      ""]
-                                    private-disalloweds))))
+                                    user-specific-disalloweds))))
 
 (defn sitemap [{:keys [storeback-config]} {:keys [subdomains] :as req}]
   (if (and (seq subdomains)
