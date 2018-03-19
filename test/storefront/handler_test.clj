@@ -615,12 +615,17 @@
                                     storeback-stylist-response)))]
       (with-standalone-server [storeback (standalone-server storeback-handler)]
         (with-handler handler
-          (let [resp (handler (mock/request :get "https://bob.mayvenn.com/products/67-peruvian-water-wave-lace-closures?SKU=PWWLC10"))]
-            (is (= 200 (:status resp)))
-            (testing "includes canonical links to corresponding shop.mayvenn page"
-              (let [canonical-tag (re-find #"<link[^>]+canonical[^>]+>" (:body resp))]
-                (is (string/includes? canonical-tag "rel=\"canonical\""))
-                (is (re-find #"href=\"\/\/shop\.[\w\.]+\/products\/67-peruvian-water-wave-lace-closures\?SKU=PWWLC10\"" canonical-tag))))))))))
+          (are [url] (string/includes?
+                      (->> (str "https:" url)
+                           (mock/request :get)
+                           handler
+                           :body
+                           (re-find #"<link[^>]+rel=\"canonical[^>]+>"))
+                      (string/replace url #"bob" "shop"))
+            "//bob.mayvenn.com/products/67-peruvian-water-wave-lace-closures?SKU=PWWLC10"
+            "//bob.mayvenn.com/categories/10-virgin-360-frontals"
+            "//bob.mayvenn.com/our-hair"
+            "//bob.mayvenn.com/"))))))
 
 (deftest server-side-fetching-of-orders
   (testing "storefront retrieves an order from storeback"
