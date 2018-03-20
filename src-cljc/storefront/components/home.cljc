@@ -98,10 +98,10 @@
    [:a
     (assoc (utils/route-to events/navigate-shop-by-look)
            :data-test "home-banner")
-    (let [file-name ""
-          alt       ""
-          mob-uuid  ""
-          dsk-uuid  ""]
+    (let [file-name "free-installation-hero"
+          alt       "Free install when you buy 3 bundles or more! Use code: FREEINSTALL"
+          mob-uuid  "c0d7f720-2a69-415b-beee-97e0decf8342"
+          dsk-uuid  "45876125-679f-401c-b77a-6e3eb428d44f"]
       (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
                    :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
                    :file-name   file-name
