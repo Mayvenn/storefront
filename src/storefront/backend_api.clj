@@ -36,7 +36,7 @@
 (def not-404 (comp (partial not= 404) :status))
 
 (defn verify-paypal-payment [storeback-config number order-token ip-addr {:strs [sid utm-params]}]
-  (let [{:keys [status body]} (storeback-post storeback-config "/v2/place-order"
+  (let [{:keys [status body]} (storeback-post storeback-config "/v2/paypal/place-order"
                                               {:form-params {:number number
                                                              :token order-token
                                                              :session-id sid
