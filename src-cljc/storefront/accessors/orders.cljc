@@ -88,6 +88,11 @@
   (conj (:adjustments order)
         (tax-adjustment order)))
 
+(defn bundle-discount? [order]
+  (->> (:adjustments order)
+       (map :name)
+       (some #{"Bundle Discount"})))
+
 (defn display-adjustment-name [name]
   (if (= name "Bundle Discount")
     "10% Bundle Discount"

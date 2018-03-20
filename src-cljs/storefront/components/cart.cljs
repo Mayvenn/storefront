@@ -142,15 +142,24 @@ Thanks,
           [:div {:ref "banner"}
            (om/build promotion-banner/component data opts)]])))))
 
+(def ineligible-free-install-cart-promo
+  [:div.p2.bg-orange.white.center {:data-test "ineligible-free-install-cart-promo"}
+   [:h4 "You're almost there..."]
+   [:h4 "Buy 3 bundles or more and get a"]
+   [:h1.shout.bold "Free Install"]
+   [:h6
+    [:div "from a Mayvenn Certified Stylist in Fayetteville, NC."]
+    [:div "Use code " [:span.bold "FREEINSTALL"] " to get your free install."]]])
+
 (def free-install-cart-promo
   [:div.bg-teal.p2.white.center {:data-test "free-install-cart-promo"}
    [:img {:src    "//ucarecdn.com/db055165-7085-4af5-b265-8aba681e6275/successwhite.png"
           :height "63px"
           :width  "68px"}]
-   [:h4 "Buy 3 bundles or more and get a"]
+   [:h4 "This order qualifies for a"]
    [:h1.shout.bold "Free Install"]
    [:h6
-    [:div "from a Mayvenn Certified Stylist in Fayetteville, NC. "]
+    [:div "from a Mayvenn Certified Stylist in Fayetteville, NC."]
     [:div "Use code " [:span.bold "FREEINSTALL"] " to get your free install."]]])
 
 (defn full-component [{:keys [focused
@@ -168,7 +177,8 @@ Thanks,
                               update-line-item-requests
                               delete-line-item-requests
                               field-errors
-                              the-ville?]} owner]
+                              the-ville?
+                              bundle-discount?]} owner]
   (om/component
    (html
     [:div.container.p2
@@ -181,7 +191,10 @@ Thanks,
       {:data-test "order-summary"}
       "Review your order"]
 
-     (when the-ville? free-install-cart-promo)
+     (when the-ville?
+       (if bundle-discount?
+         free-install-cart-promo
+         ineligible-free-install-cart-promo))
 
      [:div.mt2.clearfix.mxn3
       [:div.col-on-tb-dt.col-6-on-tb-dt.px3.mb3
@@ -292,6 +305,7 @@ Thanks,
         variant-ids (map :id line-items)]
     {:order                     order
      :skus                      (get-in data keypaths/v2-skus)
+     :bundle-discount?          (orders/bundle-discount? order)
      :coupon-code               (get-in data keypaths/cart-coupon-code)
      :promotion-banner          (promotion-banner/query data)
      :updating?                 (update-pending? data)
