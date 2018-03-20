@@ -256,6 +256,10 @@
    (color-swatch "green" "00cc00")
    (color-swatch "red" "ff0000")]
 
+  (subheader "Flourishes")
+  [:div.flex.flex-wrap.mxn1.mb4
+   (color-swatch "orange" "ffc520")]
+
   (subheader "Third party")
   [:div.flex.flex-wrap.mxn1.mb4
    (color-swatch "fb-blue" "3b5998")]])
