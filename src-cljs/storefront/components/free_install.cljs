@@ -1,5 +1,6 @@
 (ns storefront.components.free-install
   (:require [sablono.core :refer [html]]
+            [storefront.api :as api]
             [storefront.history :as history]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
@@ -39,6 +40,10 @@
   (history/enqueue-navigate events/navigate-shop-by-look))
 
 (defmethod effects/perform-effects events/control-free-install [_ event args _ app-state]
+  (api/get-promotions (get-in app-state keypaths/api-cache)
+                      (or
+                       (first (get-in app-state keypaths/order-promotion-codes))
+                       (get-in app-state keypaths/pending-promo-code)))
   (cookie-jar/save-pending-promo-code (get-in app-state keypaths/cookie) "freeinstall")
   (when-let [value (get-in app-state keypaths/dismissed-free-install)]
     (cookie-jar/save-dismissed-free-install (get-in app-state keypaths/cookie) value)))
