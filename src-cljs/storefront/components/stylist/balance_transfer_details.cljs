@@ -143,13 +143,14 @@
                 data]}             balance-transfer
         {:keys [created-at
                 payout-method
-                payout-method-name]} data]
+                payout-method-name
+                by-self]} data]
     [:div.container.mb4.px3
      back-to-earnings
      [:h3.my4 "Details - Earnings Transfer - " (or payout-method-name (:payout_method_name data))]
      [:div.flex.justify-between.col-12
       [:div (f/less-year-more-day-date (or created-at (:created_at data)))]
-      [:div.pr4 "You transferred " (mf/as-money amount)]]
+      [:div.pr4 (if by-self "You" "Mayvenn") " transferred " (mf/as-money amount)]]
      (payout-method-details (or payout-method (:payout_method data)))]))
 
 (defn ^:private award-component [{:keys [balance-transfer]}]

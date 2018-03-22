@@ -49,13 +49,14 @@
 
 (defn payout-row [balance-transfer]
   (let [{:keys [id]} balance-transfer
-        {:keys [amount created-at payout-method-name]} (:data balance-transfer)]
+        {:keys [amount created-at payout-method-name by-self]} (:data balance-transfer)]
     [:tr.pointer.bg-light-gray
      (merge {:key (str "payout-" id)
              :data-test (str "payout-" id)}
             (utils/route-to events/navigate-stylist-dashboard-balance-transfer-details {:balance-transfer-id id}))
      [:td.px3.py2 (f/less-year-more-day-date created-at)]
-     [:td.py2 {:col-span 2} "You transferred " [:span.medium (mf/as-money amount)]
+     [:td.py2 {:col-span 2}
+      (if by-self "You" "Mayvenn") " transferred " [:span.medium (mf/as-money amount)]
       [:div.h6 (str "Earnings Transfer - " payout-method-name)]]]))
 
 (defn earnings-table [orders balance-transfers]
