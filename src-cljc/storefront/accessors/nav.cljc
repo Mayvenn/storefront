@@ -7,7 +7,8 @@
     events/navigate-sign-up
     events/navigate-sign-out
     events/navigate-forgot-password
-    events/navigate-reset-password})
+    events/navigate-reset-password
+    events/navigate-force-set-password})
 
 (def cart-events
   #{events/navigate-cart})
