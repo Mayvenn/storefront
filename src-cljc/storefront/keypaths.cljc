@@ -125,6 +125,9 @@
 (def reset-password-password (conj reset-password :password))
 (def reset-password-token (conj reset-password :token))
 
+(def force-set-password (conj ui :force-set-password))
+(def force-set-password-password (conj force-set-password :password))
+
 (def manage-account (conj ui :manage-account))
 (def manage-account-email (conj manage-account :email))
 (def manage-account-password (conj manage-account :password))

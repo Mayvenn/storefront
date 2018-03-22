@@ -260,9 +260,9 @@
       (handle-message events/control-popup-hide))
 
     (when (and (get-in app-state keypaths/user-must-set-password)
-               (not= event events/navigate-force-reset-password)
+               (not= event events/navigate-force-set-password)
                (experiments/must-set-password? app-state))
-      (redirect events/navigate-force-reset-password))
+      (redirect events/navigate-force-set-password))
 
     (exception-handler/refresh)
 

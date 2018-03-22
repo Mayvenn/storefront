@@ -26,11 +26,11 @@
 (defpath navigate-sign-up)
 (defpath navigate-forgot-password)
 (defpath navigate-reset-password)
+(defpath navigate-force-set-password)
 (defpath navigate-cart)
 (defpath navigate-shared-cart)
 (defpath navigate-gallery)
 (defpath navigate-gallery-image-picker)
-(defpath navigate-force-reset-password)
 
 (defpath navigate-content)
 (defpath navigate-content-help)
@@ -160,6 +160,7 @@
 (defpath control-sign-up-submit)
 (defpath control-forgot-password-submit)
 (defpath control-reset-password-submit)
+(defpath control-force-set-password-submit)
 (defpath control-account-profile-submit)
 
 (defpath control-facebook-sign-in)
