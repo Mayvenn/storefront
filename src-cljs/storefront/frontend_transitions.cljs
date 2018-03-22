@@ -12,12 +12,12 @@
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
             [storefront.state :as state]
-            [storefront.transitions :refer [transition-state]]
+            [storefront.transitions :refer [transition-state
+                                            sign-in-user
+                                            clear-fields]]
             [spice.maps :as maps]
-            [storefront.accessors.experiments :as experiments]))
-
-(defn clear-fields [app-state & fields]
-  (reduce #(assoc-in %1 %2 "") app-state fields))
+            [storefront.accessors.experiments :as experiments]
+            [storefront.transitions :as transitions]))
 
 (defn clear-nav-traversal
   [app-state]
@@ -394,17 +394,6 @@
       (assoc-in keypaths/stylist-referrals [state/empty-referral])
       (assoc-in keypaths/popup :refer-stylist-thanks)))
 
-(defn sign-in-user
-  [app-state {:keys [email token store_slug id total_available_store_credit must_set_password]}]
-  (-> app-state
-      (assoc-in keypaths/user-id id)
-      (assoc-in keypaths/user-email email)
-      (assoc-in keypaths/user-token token)
-      (assoc-in keypaths/user-must-set-password must_set_password)
-      (assoc-in keypaths/user-store-slug store_slug)
-      (assoc-in keypaths/user-total-available-store-credit (js/parseFloat total_available_store_credit))
-      (assoc-in keypaths/checkout-as-guest false)))
-
 (defmethod transition-state events/api-success-auth [_ event {:keys [user order]} app-state]
   (let [signed-in-app-state (-> app-state
                                 (sign-in-user user)
@@ -499,8 +488,6 @@
   (-> app-state
       clear-flash
       (assoc-in keypaths/popup nil)))
-
-
 
 (defmethod transition-state events/api-success-manage-account [_ event args app-state]
   (-> app-state
