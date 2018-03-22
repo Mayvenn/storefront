@@ -1,6 +1,7 @@
 (ns storefront.components.force-set-password
   (:require [storefront.component :as component]
             [storefront.components.ui :as ui]
+            [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]))
@@ -44,3 +45,8 @@
 (defn built-component
   [data opts]
   (component/build component (query data) opts))
+
+(defmethod effects/perform-effects events/navigate-force-set-password
+  [_ _ _ _ app-state]
+  (when-not (get-in app-state keypaths/user-must-set-password)
+    (effects/redirect events/navigate-home)))
