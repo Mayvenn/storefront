@@ -206,8 +206,6 @@
 (def stylist-portrait-status (conj stylist-manage-account :portrait :status))
 (def stylist-portrait-url    (conj stylist-manage-account :portrait :resizable-url))
 
-(def stylist-stats (conj stylist :stats))
-
 (def stylist-payout-stats (conj stylist :payout-stats))
 (def stylist-payout-stats-previous-payout (conj stylist-payout-stats :previous-payout))
 (def stylist-payout-stats-next-payout (conj stylist-payout-stats :next-payout))

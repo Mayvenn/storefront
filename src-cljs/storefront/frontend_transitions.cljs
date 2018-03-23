@@ -347,10 +347,6 @@
   (-> app-state
       (assoc-in keypaths/store-gallery-images images)))
 
-(defmethod transition-state events/api-success-stylist-stats [_ events stats app-state]
-  (-> app-state
-      (assoc-in keypaths/stylist-stats (select-keys stats [:previous-payout :next-payout :lifetime-payouts]))))
-
 (defmethod transition-state events/api-success-stylist-payout-stats
   [_ _ stats app-state]
   (assoc-in app-state keypaths/stylist-payout-stats stats))

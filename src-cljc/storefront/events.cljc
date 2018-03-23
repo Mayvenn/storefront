@@ -265,7 +265,6 @@
 (defpath api-success-stylist-account-password)
 (defpath api-success-stylist-account-commission)
 (defpath api-success-stylist-account-social)
-(defpath api-success-stylist-stats)
 (defpath api-success-stylist-balance-transfers)
 (defpath api-success-stylist-balance-transfer-details)
 (defpath api-success-stylist-next-payout)

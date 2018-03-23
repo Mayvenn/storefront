@@ -524,19 +524,6 @@
     :handler
     #(messages/handle-message events/api-success-gallery (maps/kebabify %))}))
 
-;; GROT
-(defn get-stylist-stats [user-id user-token]
-  (api-req
-   GET
-   "/stylist/stats"
-   request-keys/get-stylist-stats
-   {:params
-    {:user-id    user-id
-     :user-token user-token}
-    :handler
-    #(messages/handle-message events/api-success-stylist-stats
-                              (select-keys % [:previous-payout :next-payout :lifetime-payouts]))}))
-
 (defn get-stylist-balance-transfers
   [stylist-id user-id user-token {:keys [page per]} handler]
   (api-req
