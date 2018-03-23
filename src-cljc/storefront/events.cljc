@@ -258,6 +258,7 @@
 
 (defpath api-success-account)
 (defpath api-success-manage-account)
+(defpath api-success-force-set-password)
 (defpath api-success-stylist-account)
 (defpath api-success-stylist-account-portrait)
 (defpath api-success-stylist-account-profile)

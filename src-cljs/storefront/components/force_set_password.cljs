@@ -1,10 +1,13 @@
 (ns storefront.components.force-set-password
-  (:require [storefront.component :as component]
+  (:require [storefront.api :as api]
+            [storefront.component :as component]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            [storefront.platform.messages :as messages]
+            [storefront.transitions :as transitions]))
 
 (defn component
   [{:keys [focused password show-password? loaded-facebook? field-errors]} owner]
@@ -50,3 +53,18 @@
   [_ _ _ _ app-state]
   (when-not (get-in app-state keypaths/user-must-set-password)
     (effects/redirect events/navigate-home)))
+
+(defmethod transitions/transition-state events/api-success-force-set-password
+  [_ _ updated-user app-state]
+  (-> app-state
+      (transitions/sign-in-user updated-user)
+      (transitions/clear-fields keypaths/force-set-password-password)))
+
+(defmethod effects/perform-effects events/control-force-set-password-submit
+  [_ _ _ _ app-state]
+  (api/force-set-password {:session-id (get-in app-state keypaths/session-id)
+                           :id         (get-in app-state keypaths/user-id)
+                           :password   (get-in app-state keypaths/force-set-password-password)
+                           :token      (get-in app-state keypaths/user-token)}
+                          #(messages/handle-message events/api-success-force-set-password
+                                                    (api/select-user-keys %))))

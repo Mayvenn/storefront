@@ -369,6 +369,13 @@
     #(messages/handle-message events/api-success-manage-account
                               (select-user-keys %))}))
 
+(defn force-set-password
+  [{:as params :keys [session-id id password token]} handler]
+  (api-req
+   PUT "/users"
+   request-keys/update-account
+   {:params params :handler handler}))
+
 (defn select-stylist-account-keys [args]
   (-> args
       (select-keys [:birth_date_1i :birth_date_2i :birth_date_3i
