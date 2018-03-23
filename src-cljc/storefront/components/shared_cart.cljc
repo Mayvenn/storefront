@@ -12,7 +12,6 @@
 (defn component [{:keys [shared-cart-id store fetching-products? creating-cart? advertised-promo]} owner opts]
   (component/create
    (let [{:keys [portrait store-nickname]} store]
-     (prn portrait)
      [:div.container.p4
       [:div.pb3
        (when (:resizable-url portrait)
