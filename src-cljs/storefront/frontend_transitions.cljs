@@ -390,17 +390,6 @@
       (assoc-in keypaths/stylist-referrals [state/empty-referral])
       (assoc-in keypaths/popup :refer-stylist-thanks)))
 
-(defn sign-in-user
-  [app-state {:keys [email token store-slug id total-available-store-credit must-set-password]}]
-  (-> app-state
-      (assoc-in keypaths/user-id id)
-      (assoc-in keypaths/user-email email)
-      (assoc-in keypaths/user-token token)
-      (assoc-in keypaths/user-must-set-password must-set-password)
-      (assoc-in keypaths/user-store-slug store-slug)
-      (assoc-in keypaths/user-total-available-store-credit (js/parseFloat total-available-store-credit))
-      (assoc-in keypaths/checkout-as-guest false)))
-
 (defmethod transition-state events/api-success-auth [_ event {:keys [user order]} app-state]
   (let [signed-in-app-state (-> app-state
                                 (sign-in-user user)
