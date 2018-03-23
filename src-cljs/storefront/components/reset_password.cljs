@@ -32,7 +32,8 @@
                        :value   show-password?})]
 
        [:div.col-12.col-6-on-tb-dt.mx-auto
-        (ui/submit-button "Save & Continue" {:data-test "reset-password-submit"})]]
+        (ui/submit-button "Save & Continue"
+                          {:data-test "reset-password-submit"})]]
       [:.h5.center.dark-gray.light.my2 "OR"]
 
       [:div.col-12.col-6-on-tb-dt.mx-auto

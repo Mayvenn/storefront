@@ -60,6 +60,11 @@
       (transitions/sign-in-user updated-user)
       (transitions/clear-fields keypaths/force-set-password-password)))
 
+(defmethod effects/perform-effects events/api-success-force-set-password
+  [_ _ _ _ app-state]
+  (when-not (get-in app-state keypaths/user-must-set-password)
+    (effects/redirect events/navigate-home)))
+
 (defmethod effects/perform-effects events/control-force-set-password-submit
   [_ _ _ _ app-state]
   (api/force-set-password {:session-id (get-in app-state keypaths/session-id)
