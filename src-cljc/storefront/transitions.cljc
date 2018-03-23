@@ -20,7 +20,7 @@
       (assoc-in keypaths/user-store-slug store-slug)
       (assoc-in keypaths/checkout-as-guest false)
       #?(:cljs
-         (assoc-in keypaths/user-total-available-store-credit (js/parseFloat total_available_store_credit)))))
+         (assoc-in keypaths/user-total-available-store-credit (js/parseFloat total-available-store-credit)))))
 
 (defn clear-fields [app-state & fields]
   (reduce #(assoc-in %1 %2 "") app-state fields))
