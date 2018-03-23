@@ -49,9 +49,5 @@
 
 (defn query [data]
   (-> (get-in data keypaths/store)
-      (set/rename-keys {:store_slug        :store-slug
-                        :store_nickname    :store-nickname
-                        :instagram_account :instagram-account
-                        :styleseat_account :styleseat-account})
       (assoc :gallery? (stylists/gallery? data))
       (assoc :expanded? (get-in data keypaths/store-info-expanded))))

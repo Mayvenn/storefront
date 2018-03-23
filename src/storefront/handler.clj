@@ -132,7 +132,7 @@
 
 (defn wrap-remove-superfluous-www-redirect [h environment]
   (fn [{subdomains :subdomains
-        {store-slug :store_slug} :store
+        {store-slug :store-slug} :store
         :as req}]
     (if (= "www" (first subdomains))
       (util.response/redirect (store-url store-slug environment req))
@@ -140,7 +140,7 @@
 
 (defn wrap-stylist-not-found-redirect [h environment]
   (fn [{server-name                        :server-name
-        {store-slug :store_slug :as store} :store
+        {store-slug :store-slug :as store} :store
         :as                                req}]
     (cond
       (= store :storefront.backend-api/storeback-unavailable)
@@ -180,7 +180,7 @@
     (when-let [resp (handler req)]
       (-> resp
           (cookies/set environment
-                       "preferred-store-slug" (:store_slug store)
+                       "preferred-store-slug" (:store-slug store)
                        {:http-only true
                         :max-age   (cookies/days 365)
                         :domain    (cookie-root-domain server-name)})))))
@@ -735,7 +735,7 @@
 (defn login-and-redirect [{:keys [environment storeback-config] :as ctx}
                           {:keys [subdomains query-params server-name store] :as req}]
   (let [{:strs [token user-id target]}     query-params
-        {:keys [user] :as response} (api/one-time-login-in storeback-config user-id token (:stylist_id store))
+        {:keys [user] :as response} (api/one-time-login-in storeback-config user-id token (:stylist-id store))
         cookie-options              {:max-age   (cookies/days 30)
                                      :domain    (str (first subdomains) (cookie-root-domain server-name))}
         whitelisted-redirect-paths #{"/" "/products/49-rings-kits"}
@@ -746,7 +746,7 @@
       (->  (util.response/redirect (store-url (first subdomains) environment dest-req))
            (cookies/set environment :email (:email user) cookie-options)
            (cookies/set environment :id (:id user) cookie-options)
-           (cookies/set environment :store-slug (:store_slug user) cookie-options)
+           (cookies/set environment :store-slug (:store-slug user) cookie-options)
            (cookies/set environment :user-token (:token user) cookie-options))
       (util.response/redirect (store-homepage (first subdomains) environment dest-req)))))
 

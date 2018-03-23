@@ -9,17 +9,17 @@
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]))
 
-(def green-dot-keypath (partial conj keypaths/stylist-manage-account :green_dot_payout_attributes))
+(def green-dot-keypath (partial conj keypaths/stylist-manage-account :green-dot-payout-attributes))
 
 (defn green-dot-query [data]
   (let [green-dot #(get-in data (green-dot-keypath %))]
-    {:first-name       (green-dot :card_first_name)
-     :last-name        (green-dot :card_last_name)
-     :card-number      (green-dot :card_number)
-     :expiration-date  (green-dot :expiration_date)
+    {:first-name       (green-dot :card-first-name)
+     :last-name        (green-dot :card-last-name)
+     :card-number      (green-dot :card-number)
+     :expiration-date  (green-dot :expiration-date)
      :card-selected-id (get-in data keypaths/stylist-manage-account-green-dot-card-selected-id)
      :card-last4       (green-dot :last4)
-     :payout-timeframe (green-dot :payout_timeframe)}))
+     :payout-timeframe (green-dot :payout-timeframe)}))
 
 (defn green-dot-component
   [{:keys [green-dot focused field-errors]} owner opts]
@@ -40,27 +40,27 @@
                 (= card-selected-id "replace-card"))
         [:div
          (ui/text-field-group {:data-test "green-dot-first-name"
-                               :errors    (get field-errors ["payout_method" "card_first_name"])
+                               :errors    (get field-errors ["payout-method" "card-first-name"])
                                :id        "green-dot-first-name"
-                               :keypath   (green-dot-keypath :card_first_name)
+                               :keypath   (green-dot-keypath :card-first-name)
                                :focused   focused
                                :label     "Card First Name"
                                :name      "green-dot-first-name"
                                :required  true
                                :value     first-name}
                               {:data-test "green-dot-last-name"
-                               :errors    (get field-errors ["payout_method" "card_last_name"])
+                               :errors    (get field-errors ["payout-method" "card-last-name"])
                                :id        "green-dot-last-name"
-                               :keypath   (green-dot-keypath :card_last_name)
+                               :keypath   (green-dot-keypath :card-last-name)
                                :focused   focused
                                :label     "Card Last Name"
                                :name      "green-dot-last-name"
                                :required  true
                                :value     last-name})
          (ui/text-field {:data-test     "green-dot-card-number"
-                         :errors        (get field-errors ["payout_method" "card_number"])
+                         :errors        (get field-errors ["payout-method" "card-number"])
                          :id            "green-dot-card-number"
-                         :keypath       (green-dot-keypath :card_number)
+                         :keypath       (green-dot-keypath :card-number)
                          :focused       focused
                          :label         "Card Number"
                          :name          "green-dot-card-number"
@@ -70,9 +70,9 @@
                          :type          "tel"
                          :value         (cc/format-cc-number card-number)})
          (ui/text-field {:data-test     "green-dot-expiration-date"
-                         :errors        (get field-errors ["payout_method" "expiration_date"])
+                         :errors        (get field-errors ["payout-method" "expiration-date"])
                          :id            "green-dot-expiration-date"
-                         :keypath       (green-dot-keypath :expiration_date)
+                         :keypath       (green-dot-keypath :expiration-date)
                          :focused       focused
                          :label         "Expiration Date (MM/YY)"
                          :name          "green-dot-expiration-date"
@@ -114,9 +114,10 @@
       [:h1.h3.light.my3.center.col-12 "Update Commission Info"]
       [:div.col-12.col-10-on-tb-dt.mx-auto
        (ui/select-field {:data-test "payout-method"
-                         :errors    (get field-errors ["chosen_payout_method"])
+                         ;;TODO We should update field-error construction to be kebabed how we like it.
+                         :errors    (get field-errors ["chosen-payout-method"])
                          :id        "payout-method"
-                         :keypath   (conj keypaths/stylist-manage-account :chosen_payout_method)
+                         :keypath   (conj keypaths/stylist-manage-account :chosen-payout-method)
                          :focused   focused
                          :label     "Payout Method"
                          :options   payout-methods
@@ -124,9 +125,9 @@
                          :value     payout-method})
        (condp = payout-method
          "venmo"     (ui/text-field {:data-test "venmo-phone"
-                                     :errors    (get field-errors ["payout_method" "phone"])
+                                     :errors    (get field-errors ["payout-method" "phone"])
                                      :id        "venmo-phone"
-                                     :keypath   (conj keypaths/stylist-manage-account :venmo_payout_attributes :phone)
+                                     :keypath   (conj keypaths/stylist-manage-account :venmo-payout-attributes :phone)
                                      :focused   focused
                                      :label     "Venmo Phone #"
                                      :name      "venmo-phone"
@@ -134,9 +135,9 @@
                                      :type      "tel"
                                      :value     venmo-phone})
          "paypal"    (ui/text-field {:data-test "paypal-email"
-                                     :errors    (get field-errors ["payout_method" "email"])
+                                     :errors    (get field-errors ["payout-method" "email"])
                                      :id        "paypal-email"
-                                     :keypath   (conj keypaths/stylist-manage-account :paypal_payout_attributes :email)
+                                     :keypath   (conj keypaths/stylist-manage-account :paypal-payout-attributes :email)
                                      :focused   focused
                                      :label     "PayPal Email"
                                      :name      "paypal-email"
@@ -212,7 +213,7 @@
        (ui/select-field {:data-test   "account-state"
                          :errors      (get field-errors ["address" "state"])
                          :id          :account-state
-                         :keypath     (conj keypaths/stylist-manage-account :address :state_id)
+                         :keypath     (conj keypaths/stylist-manage-account :address :state-id)
                          :focused     focused
                          :label       "State"
                          :options     states
@@ -252,16 +253,16 @@
 
 (defn query [data]
   {:saving?        (utils/requesting? data request-keys/update-stylist-account-commission)
-   :payout-method  (get-in data (conj keypaths/stylist-manage-account :chosen_payout_method))
-   :payout-methods (payout-methods (get-in data (conj keypaths/stylist-manage-account :original_payout_method)))
-   :paypal-email   (get-in data (conj keypaths/stylist-manage-account :paypal_payout_attributes :email))
-   :venmo-phone    (get-in data (conj keypaths/stylist-manage-account :venmo_payout_attributes :phone))
+   :payout-method  (get-in data (conj keypaths/stylist-manage-account :chosen-payout-method))
+   :payout-methods (payout-methods (get-in data (conj keypaths/stylist-manage-account :original-payout-method)))
+   :paypal-email   (get-in data (conj keypaths/stylist-manage-account :paypal-payout-attributes :email))
+   :venmo-phone    (get-in data (conj keypaths/stylist-manage-account :venmo-payout-attributes :phone))
    :green-dot      (green-dot-query data)
    :address1       (get-in data (conj keypaths/stylist-manage-account :address :address1))
    :address2       (get-in data (conj keypaths/stylist-manage-account :address :address2))
    :city           (get-in data (conj keypaths/stylist-manage-account :address :city))
    :zipcode        (get-in data (conj keypaths/stylist-manage-account :address :zipcode))
-   :state-id       (get-in data (conj keypaths/stylist-manage-account :address :state_id))
+   :state-id       (get-in data (conj keypaths/stylist-manage-account :address :state-id))
    :phone          (get-in data (conj keypaths/stylist-manage-account :address :phone))
    :states         (map (juxt :name :id) (get-in data keypaths/states))
    :field-errors   (get-in data keypaths/field-errors)

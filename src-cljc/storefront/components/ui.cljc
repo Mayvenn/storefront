@@ -402,8 +402,8 @@
     [:div.absolute.border-right.border-dark-gray {:style {:width "25px" :height "50px"}}]
     [:div.absolute.border-bottom.border-dark-gray {:style {:width "50px" :height "25px"}}]]])
 
-(defn square-image [{:keys [resizable_url]} size]
-  (some-> resizable_url (str "-/scale_crop/" size "x" size "/center/")))
+(defn square-image [{:keys [resizable-url]} size]
+  (some-> resizable-url (str "-/scale_crop/" size "x" size "/center/")))
 
 (defn circle-picture
   ([src] (circle-picture {} src))
@@ -504,14 +504,14 @@
   need to be 96 by 72. Experiment with different values, trying to keep the
   low-quality image less than 3kb.
 
-  Within the `image` hashmap, the `resizable_url` will be used with the CDN
-  image operations. The `resizable_filename` will be appended to all image URLs,
+  Within the `image` hashmap, the `resizable-url` will be used with the CDN
+  image operations. The `resizable-filename` will be appended to all image URLs,
   for SEO. And the `alt` will be put on all img tags."
   [lq-width lq-height image]
-  (let [{:keys [resizable_url resizable_filename alt]} image
+  (let [{:keys [resizable-url resizable-filename alt]} image
 
-        lq-url (str resizable_url "-/resize/" lq-width "x" lq-height "/-/quality/lighter/" resizable_filename)
-        hq-url (str resizable_url resizable_filename)]
+        lq-url (str resizable-url "-/resize/" lq-width "x" lq-height "/-/quality/lighter/" resizable-filename)
+        hq-url (str resizable-url resizable-filename)]
     [:picture.overflow-hidden.bg-cover.block.relative
      {:style {:background-image (assets/css-url lq-url)
               :padding-top      (-> lq-height (/ lq-width) (* 100) float (str "%"))}}

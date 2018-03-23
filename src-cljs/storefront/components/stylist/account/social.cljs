@@ -26,9 +26,9 @@
        svg/instagram]
       [:div.flex-auto
        (ui/text-field {:data-test "account-instagram"
-                       :errors    (get field-errors ["instagram_account"])
+                       :errors    (get field-errors ["instagram-account"])
                        :id        "account-instagram"
-                       :keypath   (conj keypaths/stylist-manage-account :instagram_account)
+                       :keypath   (conj keypaths/stylist-manage-account :instagram-account)
                        :focused   focused
                        :label     "Instagram"
                        :name      "account-instagram"
@@ -42,9 +42,9 @@
        svg/styleseat]
       [:div.flex-auto
        (ui/text-field {:data-test "account-styleseat"
-                       :errors    (get field-errors ["styleseat_account"])
+                       :errors    (get field-errors ["styleseat-account"])
                        :id        "account-styleseat"
-                       :keypath   (conj keypaths/stylist-manage-account :styleseat_account)
+                       :keypath   (conj keypaths/stylist-manage-account :styleseat-account)
                        :focused   focused
                        :label     "StyleSeat"
                        :name      "account-styleseat"
@@ -60,7 +60,7 @@
 
 (defn query [data]
   {:saving?           (utils/requesting? data request-keys/update-stylist-account-social)
-   :instagram-account (get-in data (conj keypaths/stylist-manage-account :instagram_account))
-   :styleseat-account (get-in data (conj keypaths/stylist-manage-account :styleseat_account))
+   :instagram-account (get-in data (conj keypaths/stylist-manage-account :instagram-account))
+   :styleseat-account (get-in data (conj keypaths/stylist-manage-account :styleseat-account))
    :field-errors      (get-in data keypaths/field-errors)
    :focused           (get-in data keypaths/ui-focus)})

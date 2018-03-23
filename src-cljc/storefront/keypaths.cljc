@@ -45,8 +45,9 @@
 (def promotions [:promotions])
 
 (def store [:store])
-(def store-slug (conj store :store_slug))
-(def store-stylist-id (conj store :stylist_id))
+(def store-slug (conj store :store-slug))
+(def store-nickname (conj store :store-nickname))
+(def store-stylist-id (conj store :stylist-id))
 (def store-gallery-images (conj store :gallery :images))
 
 (def v2-products [:v2 :products])
@@ -203,7 +204,7 @@
 (def stylist-manage-account (conj stylist :manage-account))
 (def stylist-manage-account-green-dot-card-selected-id (conj stylist-manage-account :green-dot :card-selected-id))
 (def stylist-portrait-status (conj stylist-manage-account :portrait :status))
-(def stylist-portrait-url    (conj stylist-manage-account :portrait :resizable_url))
+(def stylist-portrait-url    (conj stylist-manage-account :portrait :resizable-url))
 
 (def stylist-stats (conj stylist :stats))
 

@@ -15,7 +15,7 @@
 
 (defn query [data]
   {:loaded-uploadcare? (get-in data keypaths/loaded-uploadcare)
-   :resizable-url      (get-in data (conj keypaths/stylist-manage-account :portrait :resizable_url))
+   :resizable-url      (get-in data (conj keypaths/stylist-manage-account :portrait :resizable-url))
    :on-success         events/uploadcare-api-success-upload-portrait
    :selector           "stylist-portrait"
    :back-link          {:navigation-event events/navigate-stylist-account-profile

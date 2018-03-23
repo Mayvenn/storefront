@@ -53,7 +53,7 @@
 
 (defn canonical-uri
   [{:as data :keys [store]}]
-  (when-not (contains? #{"shop" "welcome"} (:store_slug store))
+  (when-not (contains? #{"shop" "welcome"} (:store-slug store))
     (some-> (get-in data keypaths/navigation-uri)
             (update :host string/replace #"^[^.]+" "shop")
             str)))

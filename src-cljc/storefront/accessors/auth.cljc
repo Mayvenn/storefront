@@ -5,7 +5,7 @@
 (defn signed-in [data]
   (let [as-stylist? (stylists/own-store? data)
         as-user?    (get-in data keypaths/user-email)
-        store-slug  (get-in data (conj keypaths/store :store_slug))]
+        store-slug  (get-in data keypaths/store-slug)]
     {::at-all (or as-stylist? as-user?)
      ::as     (cond
                 as-stylist? :stylist

@@ -9,15 +9,15 @@
             [storefront.assets :as assets]
             [storefront.keypaths :as keypaths]))
 
-(defn title [own-store? {:keys [store_nickname]}]
+(defn title [own-store? {:keys [store-nickname]}]
   [:div.p2.center
    [:h2 [:img {:style {:height "50px"}
                   :src (assets/path "/images/icons/gallery-profile.png")}]]
-   [:h1 (str store_nickname "'s Gallery")]
+   [:h1 (str store-nickname "'s Gallery")]
    [:p (if own-store?
          "Show off your best work to your clients by uploading images of your #MayvennMade hairstyles."
          (str "Scroll through "
-              store_nickname
+              store-nickname
               "'s best #MayvennMade looks and get inspiration for your next style!"))]])
 
 (defn manage-section [{:keys [gallery]} editing? adding-photo?]
@@ -42,19 +42,19 @@
 
 (defn images [editing? {:keys [gallery]}]
   (into [:div.clearfix.mxn1]
-        (for [{:keys [status resizable_url]} (:images gallery)]
+        (for [{:keys [status resizable-url]} (:images gallery)]
           [:div.col.col-12.col-4-on-tb-dt.px1.pb2
-           {:key resizable_url}
+           {:key resizable-url}
            [:div
             (when editing?
               [:div.bg-black.white.p2.flex.h6.medium
                [:span.flex-auto.right-align.mr2 "Delete this post"]
                (ui/modal-close {:close-attrs (merge
-                                              (utils/fake-href events/control-delete-gallery-image {:image-url resizable_url})
+                                              (utils/fake-href events/control-delete-gallery-image {:image-url resizable-url})
                                               {:class "line-height-1"})})])
             (ui/aspect-ratio 1 1
                              (if (= "approved" status)
-                               [:img.col-12 {:src resizable_url}]
+                               [:img.col-12 {:src resizable-url}]
                                pending-approval))]])))
 
 (defn component [{:keys [store editing? own-store? adding-photo?]} owner opts]

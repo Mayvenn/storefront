@@ -68,7 +68,7 @@
 
       [:div.flex.flex-column.items-center.col-12
        (ui/text-field {:data-test "account-birth-date"
-                       :errors    (get field-errors ["birth_date"])
+                       :errors    (get field-errors ["birth-date"])
                        :id        "account-birth-date"
                        :keypath   (conj keypaths/stylist-manage-account :birth-date)
                        :focused   focused

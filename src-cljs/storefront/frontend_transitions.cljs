@@ -334,14 +334,14 @@
   [_ event {:keys [stylist]} app-state]
   (-> app-state
       (update-in keypaths/stylist-manage-account merge stylist)
-      (update-in keypaths/store merge (select-keys stylist [:instagram_account :styleseat_account :portrait]))))
+      (update-in keypaths/store merge (select-keys stylist [:instagram-account :styleseat-account :portrait]))))
 
 (defmethod transition-state events/api-success-stylist-account-commission [_ event {:keys [stylist]} app-state]
-  (let [green-dot-payout-attributes (some-> stylist :green_dot_payout_attributes (select-keys [:last4 :payout_timeframe]))]
-    (cond-> (update-in app-state keypaths/stylist-manage-account dissoc :green_dot_payout_attributes)
-      (= "green_dot" (:chosen_payout_method stylist))
+  (let [green-dot-payout-attributes (some-> stylist :green-dot-payout-attributes (select-keys [:last4 :payout-timeframe]))]
+    (cond-> (update-in app-state keypaths/stylist-manage-account dissoc :green-dot-payout-attributes)
+      (= "green_dot" (:chosen-payout-method stylist))
       (-> (assoc-in keypaths/stylist-manage-account-green-dot-card-selected-id (:last4 green-dot-payout-attributes))
-          (assoc-in (conj keypaths/stylist-manage-account :green_dot_payout_attributes) green-dot-payout-attributes)))))
+          (assoc-in (conj keypaths/stylist-manage-account :green-dot-payout-attributes) green-dot-payout-attributes)))))
 
 (defmethod transition-state events/api-success-gallery [_ event {:keys [images]} app-state]
   (-> app-state
@@ -393,6 +393,17 @@
       clear-field-errors
       (assoc-in keypaths/stylist-referrals [state/empty-referral])
       (assoc-in keypaths/popup :refer-stylist-thanks)))
+
+(defn sign-in-user
+  [app-state {:keys [email token store-slug id total-available-store-credit must-set-password]}]
+  (-> app-state
+      (assoc-in keypaths/user-id id)
+      (assoc-in keypaths/user-email email)
+      (assoc-in keypaths/user-token token)
+      (assoc-in keypaths/user-must-set-password must-set-password)
+      (assoc-in keypaths/user-store-slug store-slug)
+      (assoc-in keypaths/user-total-available-store-credit (js/parseFloat total-available-store-credit))
+      (assoc-in keypaths/checkout-as-guest false)))
 
 (defmethod transition-state events/api-success-auth [_ event {:keys [user order]} app-state]
   (let [signed-in-app-state (-> app-state
@@ -462,10 +473,10 @@
 
 (defmethod transition-state events/control-stylist-account-commission-submit [_ event args app-state]
   (let [selected-id (get-in app-state keypaths/stylist-manage-account-green-dot-card-selected-id)
-        last4       (get-in app-state (conj keypaths/stylist-manage-account :green_dot_payout_attributes :last4))]
+        last4       (get-in app-state (conj keypaths/stylist-manage-account :green-dot-payout-attributes :last4))]
     (cond-> app-state
       (and (seq last4) (= selected-id last4))
-      (assoc-in (conj keypaths/stylist-manage-account :green_dot_payout_attributes) {:last4 last4}))))
+      (assoc-in (conj keypaths/stylist-manage-account :green-dot-payout-attributes) {:last4 last4}))))
 
 (defmethod transition-state events/control-stylist-account-password-submit [_ event args app-state]
   (let [stylist-account       (get-in app-state keypaths/stylist-manage-account)

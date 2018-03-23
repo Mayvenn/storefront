@@ -72,8 +72,8 @@
                               :address1 nil
                               :address2 nil
                               :city nil
-                              :state_id nil
-                              :country_id nil
+                              :state-id nil
+                              :country-id nil
                               :zipcode nil
                               :phone nil}}})
 
@@ -106,7 +106,7 @@
                        :address1 ""
                        :address2 ""
                        :city ""
-                       :state_id 0
+                       :state-id 0
                        :zipcode ""
                        :phone ""}
      :shipping-address {:firstname ""
@@ -114,7 +114,7 @@
                         :address1 ""
                         :address2 ""
                         :city ""
-                        :state_id 0
+                        :state-id 0
                         :zipcode ""
                         :phone ""}
 

@@ -9,6 +9,7 @@
             [storefront.platform.messages :as messages]
             [storefront.request-keys :as request-keys]
             [spice.maps :as maps]
+            [spice.core :as spice]
             [clojure.set :as set]))
 
 (defn is-rails-style? [resp]
@@ -27,7 +28,7 @@
 (defn rails-style->std-error [{:keys [error errors]}]
   {:error-message (or error "Something went wrong. Please refresh and try again or contact customer service.")
    :error-code (if errors "invalid-input" "generic-error")
-   :field-errors (when errors (convert-to-paths errors))})
+   :field-errors (when errors (convert-to-paths (maps/kebabify errors)))})
 
 (defn rails-exception->std-error [resp]
   {:error-message "Something went wrong. Please refresh and try again or contact customer service."
@@ -195,7 +196,8 @@
                               (select-keys % [:states]))}))
 
 (defn select-user-keys [user]
-  (select-keys user [:email :token :store_slug :id :is_new_user :must_set_password]))
+  (-> (maps/kebabify user)
+      (select-keys [:email :token :store-slug :id :is-new-user :must-set-password])))
 
 (defn select-auth-keys [args]
   (-> args
@@ -254,7 +256,7 @@
             ;; Since we use facebook sign-in for both sign-in and sign-up, we
             ;; need to trigger the appropriate event. Diva tells us when this
             ;; flow has created a new user.
-            new-user? (get-in auth-keys [:user :is_new_user])
+            new-user? (get-in auth-keys [:user :is-new-user])
             success-event (if new-user? events/api-success-auth-sign-up events/api-success-auth-sign-in)]
         (messages/handle-message success-event auth-keys)))}))
 
@@ -329,7 +331,7 @@
 
 (defn diva->mayvenn-address [address]
   (-> address
-      (dissoc :country_id)
+      (dissoc :country-id)
       (set/rename-keys {:firstname :first-name
                         :lastname :last-name})
       (update-in [:state] :abbr)
@@ -337,8 +339,8 @@
 
 (defn diva->mayvenn-addresses [contains-addresses]
   (-> contains-addresses
-      (set/rename-keys {:bill_address :billing-address
-                        :ship_address :shipping-address})
+      (set/rename-keys {:bill-address :billing-address
+                        :ship-address :shipping-address})
       (update-in [:billing-address] diva->mayvenn-address)
       (update-in [:shipping-address] diva->mayvenn-address)))
 
@@ -348,11 +350,11 @@
    "/users"
    request-keys/get-account
    {:params
-    {:id id
+    {:id    id
      :token token}
     :handler
     #(messages/handle-message events/api-success-account
-                              (diva->mayvenn-addresses %))}))
+                              (diva->mayvenn-addresses (maps/kebabify %)))}))
 
 (defn update-account [session-id id email password token]
   (api-req
@@ -377,19 +379,20 @@
    {:params params :handler handler}))
 
 (defn select-stylist-account-keys [args]
-  (-> args
-      (select-keys [:birth_date_1i :birth_date_2i :birth_date_3i
-                    :birth-date
-                    :portrait
-                    :chosen_payout_method
-                    :venmo_payout_attributes
-                    :paypal_payout_attributes
-                    :green_dot_payout_attributes
-                    :instagram_account
-                    :styleseat_account
-                    :user
-                    :address])
-      (assoc :original_payout_method (:chosen_payout_method args))))
+  (let [kebabed-args (maps/kebabify args)]
+    (-> kebabed-args
+        (select-keys [:birth-date-1i :birth-date-2i :birth-date-3i
+                      :birth-date
+                      :portrait
+                      :chosen-payout-method
+                      :venmo-payout-attributes
+                      :paypal-payout-attributes
+                      :green-dot-payout-attributes
+                      :instagram-account
+                      :styleseat-account
+                      :user
+                      :address])
+        (assoc :original-payout-method (:chosen-payout-method kebabed-args)))))
 
 (defn get-stylist-account [user-id user-token]
   (api-req
@@ -418,7 +421,7 @@
    {:params {:session-id session-id
              :user-id    user-id
              :user-token user-token
-             :stylist    stylist-account}
+             :stylist    (maps/snakify stylist-account)}
     :handler
     #(messages/handle-message events/api-success-stylist-account-profile
                               {:stylist (select-stylist-account-keys %)})}))
@@ -431,7 +434,7 @@
    {:params {:session-id session-id
              :user-id    user-id
              :user-token user-token
-             :stylist    stylist-account}
+             :stylist    (maps/snakify stylist-account)}
     :handler
     #(messages/handle-message events/api-success-stylist-account-password
                               {:stylist (select-stylist-account-keys %)})}))
@@ -444,7 +447,7 @@
    {:params {:session-id session-id
              :user-id    user-id
              :user-token user-token
-             :stylist    stylist-account}
+             :stylist    (maps/snakify stylist-account)}
     :handler
     #(messages/handle-message events/api-success-stylist-account-commission
                               {:stylist (select-stylist-account-keys %)})}))
@@ -457,7 +460,7 @@
    {:params {:session-id session-id
              :user-id    user-id
              :user-token user-token
-             :stylist    stylist-account}
+             :stylist    (maps/snakify stylist-account)}
     :handler
     #(messages/handle-message events/api-success-stylist-account-social
                               {:stylist (select-stylist-account-keys %)})}))
@@ -472,7 +475,7 @@
      :user-token user-token}
     :handler
     #(messages/handle-message events/api-success-stylist-account-portrait
-                              {:stylist (select-keys % [:portrait])})}))
+                              {:stylist (maps/kebabify (select-keys % [:portrait]))})}))
 
 (defn update-stylist-account-portrait [session-id user-id user-token stylist-account]
   (api-req
@@ -482,7 +485,7 @@
    {:params {:session-id session-id
              :user-id    user-id
              :user-token user-token
-             :stylist    stylist-account}
+             :stylist    (maps/snakify stylist-account)}
     :handler
     #(messages/handle-message events/api-success-stylist-account-portrait
                               {:stylist (select-keys % [:portrait])
@@ -497,7 +500,7 @@
              :user-token user-token
              :urls       gallery-urls}
     :handler
-    #(messages/handle-message events/api-success-gallery %)}))
+    #(messages/handle-message events/api-success-gallery (maps/kebabify %))}))
 
 (defn get-gallery [params]
   (api-req
@@ -507,7 +510,7 @@
    {:params
     (select-keys params [:user-id :user-token :stylist-id])
     :handler
-    #(messages/handle-message events/api-success-gallery %)}))
+    #(messages/handle-message events/api-success-gallery (maps/kebabify %))}))
 
 (defn delete-gallery-image [user-id user-token image-url]
   (api-req
@@ -519,8 +522,9 @@
      :user-token user-token
      :image-url  image-url}
     :handler
-    #(messages/handle-message events/api-success-gallery %)}))
+    #(messages/handle-message events/api-success-gallery (maps/kebabify %))}))
 
+;; GROT
 (defn get-stylist-stats [user-id user-token]
   (api-req
    GET
@@ -868,9 +872,9 @@
    POST
    "/leads/referrals"
    request-keys/send-referrals
-   {:params (assoc referral :session-id session-id)
+   {:params  (assoc referral :session-id session-id)
     :handler #(messages/handle-message events/api-success-send-stylist-referrals
-                                      {:referrals %})}))
+                                       {:referrals %})}))
 
 (defn- static-content-req [method path req-key {:keys [handler] :as request-opts}]
   (let [req-id       (str (random-uuid))

@@ -102,7 +102,7 @@
                    "production" "mayvenn.com"
                    "acceptance" "diva-acceptance.com"
                    "storefront.localhost")
-   :store-slug   (:store_slug (get-in data keypaths/store))
+   :store-slug   (get-in data keypaths/store-slug)
    :utm-campaign "stylist_dashboard"})
 
 (defn built-component [data opts]

@@ -104,7 +104,7 @@ Thanks,
 
 (defn query-share-link [data]
   {:share-url (get-in data keypaths/shared-cart-url)
-   :store-nickname (:store_nickname (get-in data keypaths/store))})
+   :store-nickname (get-in data keypaths/store-nickname)})
 
 (defn built-share-link-component [data opts]
   (om/build share-link-component (query-share-link data) opts))

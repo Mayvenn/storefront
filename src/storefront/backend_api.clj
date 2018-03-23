@@ -1,5 +1,6 @@
 (ns storefront.backend-api
-  (:require [tugboat.core :as tugboat]))
+  (:require [tugboat.core :as tugboat]
+            [spice.maps :as maps]))
 
 (defn storeback-fetch [storeback-config path params]
   (tugboat/request {:endpoint (:internal-endpoint storeback-config)}
@@ -29,7 +30,7 @@
                                   {:query-params {:store_slug store-slug}})]
         (if (#{500} (:status resp))
           ::storeback-unavailable
-          (:body resp)))
+          (maps/kebabify (:body resp))))
       (catch java.io.IOException e
         ::storeback-unavailable))))
 
@@ -105,7 +106,9 @@
 
 ;; todo clean up
 (defn select-user-keys [user]
-  (select-keys user [:email :token :store_slug :id :is_new_user]))
+  (-> user
+      maps/kebabify
+      (select-keys [:email :token :store-slug :id :is-new-user])))
 
 (defn select-auth-keys [args]
   (-> args

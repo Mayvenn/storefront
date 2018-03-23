@@ -728,14 +728,14 @@
     (when (empty? (get-in app-state keypaths/errors))
       (api/update-stylist-account-password session-id user-id user-token stylist-account))))
 
-(defn reformat-green-dot [{:keys [expiration_date] :as attributes}]
+(defn reformat-green-dot [{:keys [expiration-date] :as attributes}]
   (when (seq attributes)
-    (let [[month year] (parse-expiration (str expiration_date))]
+    (let [[month year] (parse-expiration (str expiration-date))]
       (-> attributes
-          (dissoc :expiration_date)
-          (assoc :expiration_month month)
-          (assoc :expiration_year year)
-          (update :card_number (comp string/join filter-cc-number-format str))))))
+          (dissoc :expiration-date)
+          (assoc :expiration-month month)
+          (assoc :expiration-year year)
+          (update :card-number (comp string/join filter-cc-number-format str))))))
 
 (defmethod perform-effects events/control-stylist-account-commission-submit [_ _ args _ app-state]
   (let [session-id      (get-in app-state keypaths/session-id)
@@ -743,7 +743,7 @@
         user-token      (get-in app-state keypaths/user-token)
         stylist-account (-> app-state
                             (get-in keypaths/stylist-manage-account)
-                            (update :green_dot_payout_attributes reformat-green-dot))]
+                            (update :green-dot-payout-attributes reformat-green-dot))]
     (api/update-stylist-account-commission session-id user-id user-token stylist-account)))
 
 (defmethod perform-effects events/control-stylist-account-social-submit [_ _ _ _ app-state]
