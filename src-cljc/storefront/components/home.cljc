@@ -96,7 +96,7 @@
  (def free-installation-hero
   [:h1.h2
    [:a
-    (assoc (utils/route-to events/navigate-shop-by-look)
+    (assoc (utils/route-to events/navigate-shop-by-look {:query-params {:sha "freeinstall"}})
            :data-test "home-banner")
     (let [file-name "free-installation-hero"
           alt       "Free install when you buy 3 bundles or more! Use code: FREEINSTALL"
