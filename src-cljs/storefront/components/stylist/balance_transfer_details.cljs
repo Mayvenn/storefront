@@ -87,7 +87,7 @@
         [:div (:full-name order)]
         [:div.green "+" (mf/as-money amount)]]
 
-       (info-columns ["Order Number" (:number order)]
+       (info-columns ["Order Number" number]
                      ["Ship Date" (f/less-year-more-day-date (or shipped-at commission-date))])
 
        [:div.mt2.mbnp2.mtnp2.border-top.border-gray
