@@ -190,3 +190,15 @@
   (component/html
    [:svg {:class "fill-teal" :height "5em"}
     (svg-xlink "guarantee")]))
+
+(defn number-circle [number-kw]
+  (component/html
+   [:svg {:class "fill-teal bold"
+          :style {:width     "74px"
+                  :height    "74px"
+                  :font-size "35px"}}
+    (svg-xlink
+     (case number-kw
+       :1 "number-circle-1"
+       :2 "number-circle-2"
+       :3 "number-circle-3"))]))

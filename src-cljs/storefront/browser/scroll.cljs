@@ -3,6 +3,12 @@
             [goog.dom.classlist :as classlist]
             [clojure.string :as string]))
 
+(defn disable-body-scrolling []
+  (-> (js/document.querySelector "body") .-classList (.add "overflow-hidden")))
+
+(defn enable-body-scrolling []
+  (-> (js/document.querySelector "body") .-classList (.remove "overflow-hidden")))
+
 (defn scroll-target []
   (or (.-scrollingElement js/document)
       (if (string/starts-with? (str (.-compatMode js/document)) "CSS1")

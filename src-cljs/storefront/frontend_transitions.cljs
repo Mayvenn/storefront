@@ -668,9 +668,6 @@
 (defmethod transition-state events/popup-show-email-capture [_ event args app-state]
   (assoc-in app-state keypaths/popup :email-capture))
 
-(defmethod transition-state events/popup-show-free-install [_ event args app-state]
-  (assoc-in app-state keypaths/popup :free-install))
-
 (defmethod transition-state events/sign-out [_ event args app-state]
   (let [signed-out-app-state (-> app-state
                                  (assoc-in keypaths/user {})
