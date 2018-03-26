@@ -178,7 +178,7 @@ Thanks,
                               delete-line-item-requests
                               field-errors
                               the-ville?
-                              bundle-discount?]} owner]
+                              show-green-banner?]} owner]
   (om/component
    (html
     [:div.container.p2
@@ -192,7 +192,7 @@ Thanks,
       "Review your order"]
 
      (when the-ville?
-       (if bundle-discount?
+       (if show-green-banner?
          free-install-cart-promo
          ineligible-free-install-cart-promo))
 
@@ -305,7 +305,8 @@ Thanks,
         variant-ids (map :id line-items)]
     {:order                     order
      :skus                      (get-in data keypaths/v2-skus)
-     :bundle-discount?          (orders/bundle-discount? order)
+     :show-green-banner?        (and (orders/bundle-discount? order)
+                                     (-> order :promotion-codes set (contains? "freeinstall")))
      :coupon-code               (get-in data keypaths/cart-coupon-code)
      :promotion-banner          (promotion-banner/query data)
      :updating?                 (update-pending? data)
