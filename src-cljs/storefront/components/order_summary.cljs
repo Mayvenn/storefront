@@ -52,7 +52,9 @@
               (orders/display-adjustment-name name)
               (when (and (not read-only?) coupon-code)
                 [:a.ml1.h6.gray
-                 (utils/fake-href events/control-checkout-remove-promotion {:code coupon-code})
+                 (merge {:data-test "cart-remove-promo"}
+                        (utils/fake-href events/control-checkout-remove-promotion
+                                         {:code coupon-code}))
                  "Remove"])]
              price)))
 
