@@ -22,10 +22,10 @@
 (defn component [{:keys [allowed? the-ville? promo]} owner opts]
   (component/create
    (cond
-     (and allowed? the-ville?) [:a.white.center.pp5.bg-teal.h5.bold
-                                {:on-click (utils/send-event-callback events/popup-show-free-install {})
+     (and allowed? the-ville?) [:a {:on-click (utils/send-event-callback events/popup-show-free-install {})
                                  :data-test "free-install-promo-banner"}
-                                "Mayvenn will pay for your install! Learn more"]
+                                [:div.white.center.pp5.bg-teal.h5.bold
+                                 "Mayvenn will pay for your install! Learn more"]]
      (and allowed? promo)      [:div.white.center.pp5.bg-teal.h5.bold
                                 {:data-test "promo-banner"}
                                 (:description promo)]
