@@ -12,6 +12,7 @@
             [storefront.transitions :refer [transition-state]]
             [storefront.frontend-transitions]
             [storefront.trackings :refer [perform-track]]
+            [leads.keypaths :as leads.keypath]
             [cljs.reader :refer [read-string]]
             [om.core :as om]
             [clojure.data :refer [diff]]))
@@ -64,7 +65,16 @@
          (effects app-state-before @app-state message))
        (track @app-state message)
        (catch :default e
-         (exception-handler/report e {:api-version (get-in @app-state keypaths/app-version "unknown")}))))))
+         (let [state @app-state]
+           (exception-handler/report e {:api-version                (get-in state keypaths/app-version "unknown")
+                                        :handling-message           message
+                                        :current-lead-id            (get-in state leads.keypaths/lead-id)
+                                        :current-flow-id            (get-in state leads.keypaths/lead-flow-id)
+                                        :current-features           (get-in state keypaths/features)
+                                        :current-navigation-message (get-in state keypaths/navigation-message)
+                                        :current-order-number       (get-in state keypaths/order-number)
+                                        :current-user-id            (get-in state keypaths/user-id)
+                                        :current-store-id           (get-in state keypaths/store-stylist-id)})))))))
 
 (defn reload-app [app-state]
   (set! messages/handle-message (partial handle-message app-state)) ;; in case it has changed
