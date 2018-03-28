@@ -30,7 +30,7 @@
                           :width        "1.5rem"
                           :class        "stroke-black"
                           :stroke-width "5"}))]]
-               [:div.flex.flex-column
+               [:div.mx-auto.col-8-on-tb-dt.flex.flex-column
                 [:div.center.p4
                  [:div.flex.justify-center  ;; Images
                   [:div.col-6
