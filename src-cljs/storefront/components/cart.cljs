@@ -283,7 +283,7 @@ Thanks,
           (:description promo)
           promos/bundle-discount-description)]]
 
-      (ui/teal-button (utils/route-to events/navigate-shop-by-look)
+      (ui/teal-button (utils/route-to events/navigate-shop-by-look {:album-slug "look"})
                       "Shop Our Looks")]))))
 
 (defn ^:private variants-requests [data request-key variant-ids]

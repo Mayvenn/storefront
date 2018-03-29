@@ -149,10 +149,10 @@
 (defn ^:private shopping-area [{:keys [signed-in deals?]}]
   [:div
    (if deals?
-     [:li (menu-row (assoc (utils/route-to events/navigate-shop-by-deals)
+     [:li (menu-row (assoc (utils/route-to events/navigate-shop-by-look {:album-slug "deals"})
                            :data-test "menu-shop-by-deals")
                     [:span.medium "Deals"])])
-   [:li (menu-row (assoc (utils/route-to events/navigate-shop-by-look)
+   [:li (menu-row (assoc (utils/route-to events/navigate-shop-by-look {:album-slug "look"})
                          :data-test "menu-shop-by-look")
                   [:span.medium "Shop Looks"])]
    [:div

@@ -56,16 +56,14 @@
       title)))
 
 (defn component [{:keys [creating-order? sold-out? look shared-cart skus back fetching-shared-cart? discount-warning?
-                         bundle-deal-look? shared-cart-type-copy back-copy]} owner opts]
+                         shared-cart-type-copy back-copy above-button-copy album-slug]} owner opts]
   (om/component
    (html
     [:div.container.mb4
      [:div.clearfix
       [:div.col-6-on-tb-dt
        [:a.p2.px3-on-tb-dt.left.col-12.dark-gray
-        (if bundle-deal-look?
-          (utils/route-to events/navigate-shop-by-deals)
-          (utils/route-back-or-to back events/navigate-shop-by-look))
+        (utils/route-back-or-to back events/navigate-shop-by-look {:album-slug album-slug})
         (ui/back-caret back-copy)]
 
        [:h1.h3.medium.center.dark-gray.mb2 (str "Get this " shared-cart-type-copy)]]]
@@ -84,8 +82,8 @@
             [:div.col-on-tb-dt.col-6-on-tb-dt.px2.px3-on-tb-dt
              [:div.p2.center.h3.medium.border-bottom.border-gray (str item-count " items in this " shared-cart-type-copy)]
              (order-summary/display-line-items line-items skus)
-             (when bundle-deal-look?
-               [:div.center.teal.medium.mt2 "*Discounts applied at check out"])
+             (when above-button-copy
+               [:div.center.teal.medium.mt2 above-button-copy])
              [:div.mt2
               (add-to-cart-button sold-out? creating-order? look shared-cart)]])))]])))
 
@@ -101,31 +99,27 @@
                        {:legacy/variant-id :legacy/variant-id}))))
 
 (defn query [data]
-  (let [skus        (get-in data keypaths/v2-skus)
+  (let [skus (get-in data keypaths/v2-skus)
 
         shared-cart-with-skus (put-skus-on-shared-cart
                                (get-in data keypaths/shared-cart-current)
                                skus)
 
-        look              (pixlee/selected-look data)
-        bundle-deal-ids   (->> (pixlee/images-in-album (get-in data keypaths/ugc) :deals)
-                               (mapv :id)
-                               set)
-        bundle-deal-look? (boolean (bundle-deal-ids (:id look)))]
+        look       (pixlee/selected-look data)
+        album-slug (get-in data keypaths/selected-album-slug)
+        album-copy (when album-slug ;; TODO(jeff): why do we need this guard?
+                     (-> config/pixlee :copy album-slug))]
     {:shared-cart           shared-cart-with-skus
+     :album-slug            album-slug
      :look                  look
-     :bundle-deal-look?     bundle-deal-look?
      :creating-order?       (utils/requesting? data request-keys/create-order-from-shared-cart)
      :skus                  skus
      :sold-out?             (not-every? :inventory/in-stock? (:line-items shared-cart-with-skus))
      :fetching-shared-cart? (utils/requesting? data request-keys/fetch-shared-cart)
      :back                  (first (get-in data keypaths/navigation-undo-stack))
-     :back-copy             (if bundle-deal-look?
-                              (-> config/pixlee :copy :deals :back-copy)
-                              (-> config/pixlee :copy :mosaic :back-copy))
-     :shared-cart-type-copy (if bundle-deal-look?
-                              (-> config/pixlee :copy :deals :short-name)
-                              (-> config/pixlee :copy :mosaic :short-name))}))
+     :back-copy             (:back-copy album-copy)
+     :above-button-copy     (:above-button-copy album-copy)
+     :shared-cart-type-copy (:short-name album-copy)}))
 
 (defn built-component [data opts]
   (om/build component (query data) opts))

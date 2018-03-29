@@ -103,7 +103,7 @@
 
               [:p.btn.mt1
                [:a.navy
-                (utils/route-to events/navigate-shop-by-look)
+                (utils/route-to events/navigate-shop-by-look {:album-slug "look"})
                 "Shop our looks" ui/rarr]]])])]
 
        [:.col-right-on-tb-dt.col-4-on-tb-dt

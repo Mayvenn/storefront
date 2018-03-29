@@ -37,7 +37,7 @@
       :path
       routes/navigation-message-for))
 
-(defn parse-ugc-image [{:keys [album_photo_id user_name content_type source products title source_url] :as item}]
+(defn parse-ugc-image [album-slug {:keys [album_id album_photo_id user_name content_type source products title source_url] :as item}]
   (let [[nav-event nav-args :as nav-message] (product-link (first products))]
     {:id             album_photo_id
      :content-type   content_type
@@ -48,11 +48,13 @@
      :shared-cart-id (:shared-cart-id nav-args)
      :links          (merge {:view-other nav-message}
                             (when (= nav-event events/navigate-shared-cart)
-                              {:view-look [events/navigate-shop-by-look-details {:look-id album_photo_id}]}))
+                              {:view-look [events/navigate-shop-by-look-details {:album-slug (or (#{:deals} album-slug)
+                                                                                                 :look)
+                                                                                 :look-id album_photo_id}]}))
      :title          title}))
 
-(defn parse-ugc-album [album]
-  (map parse-ugc-image album))
+(defn parse-ugc-album [album-slug album]
+  (map (partial parse-ugc-image album-slug) album))
 
 (defn images-by-id [images]
   (reduce (fn [result img]

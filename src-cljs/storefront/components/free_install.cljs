@@ -86,7 +86,7 @@
   (component/build component (query data) opts))
 
 (defmethod effects/perform-effects events/control-free-install-shop-looks [_ event args _ app-state]
-  (history/enqueue-navigate events/navigate-shop-by-look))
+  (history/enqueue-navigate events/navigate-shop-by-look {:album-slug "look"}))
 
 (defmethod effects/perform-effects events/control-free-install [_ event args _ app-state]
   (scroll/enable-body-scrolling)

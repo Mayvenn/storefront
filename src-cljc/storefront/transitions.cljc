@@ -1,12 +1,31 @@
 (ns storefront.transitions
-  (:require [storefront.keypaths :as keypaths]))
+  (:require [storefront.keypaths :as keypaths]
+            [storefront.events :as events]
+            [storefront.accessors.pixlee :as pixlee]
+            [spice.core :as spice]))
 
-(defmulti transition-state identity)
+(defmulti transition-state #?(:cljs identity
+                              :clj (comp first vector)))
 
 (defmethod transition-state :default
   [dispatch event args app-state]
   ;; (js/console.log "IGNORED transition" (clj->js event) (clj->js args)) ;; enable to see ignored transitions
   app-state)
+
+(defmethod transition-state events/navigate-shop-by-look [_ event {:keys [album-slug] :as args} app-state]
+  (-> app-state
+      (assoc-in keypaths/selected-album-slug (keyword album-slug))
+      (assoc-in keypaths/selected-look-id nil)))
+
+(defmethod transition-state events/navigate-shop-by-look-details [_ event {:keys [album-slug look-id]} app-state]
+  (let [shared-cart-id (:shared-cart-id (pixlee/selected-look app-state))
+        current-shared-cart (get-in app-state keypaths/shared-cart-current)]
+    (cond-> app-state
+      :always
+      (assoc-in keypaths/selected-look-id (spice/parse-int look-id))
+
+      (not= shared-cart-id (:number current-shared-cart))
+      (assoc-in keypaths/shared-cart-current nil))))
 
 ;; Utilities
 

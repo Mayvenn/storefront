@@ -131,7 +131,7 @@
       joined-the-ville-control? (potentially-show-email-popup app-state)
       show-free-install-modal?  (handle-message events/popup-show-free-install))
     (when the-ville-variation?
-      (pixlee/fetch-free-install))))
+      (pixlee/fetch-look "free-install"))))
 
 (defmethod perform-effects events/ensure-skus [_ event {:keys [skus]} _ app-state]
   (ensure-skus app-state skus))
@@ -283,20 +283,18 @@
 (defmethod perform-effects events/navigate-shared-cart [_ _ {:keys [shared-cart-id]} _ app-state]
   (api/fetch-shared-cart shared-cart-id))
 
-(defmethod perform-effects events/navigate-shop-by-deals [_ event _ _ app-state]
-  (pixlee/fetch-deals))
-
-(defmethod perform-effects events/navigate-shop-by-look [_ event {:keys [look-id]} _ app-state]
+(defmethod perform-effects events/navigate-shop-by-look [_ event {:keys [album-slug look-id]} _ app-state]
   (when-not look-id ;; we are on navigate-shop-by-look, not navigate-shop-by-look-details
-    (if (experiments/the-ville? app-state)
-      (pixlee/fetch-free-install)
-      (pixlee/fetch-mosaic))))
+    (pixlee/fetch-look
+     (if (and (experiments/the-ville? app-state)
+              (= (keyword album-slug) :look))
+       :free-install
+       (keyword album-slug)))))
 
-(defmethod perform-effects events/navigate-shop-by-look-details [_ event {:keys [look-id]} _ app-state]
-  (pixlee/fetch-deals)
+(defmethod perform-effects events/navigate-shop-by-look-details [_ event {:keys [album-slug look-id]} _ app-state]
   (if-let [shared-cart-id (:shared-cart-id (accessors.pixlee/selected-look app-state))]
     (api/fetch-shared-cart shared-cart-id)
-    (pixlee/fetch-image look-id)))
+    (pixlee/fetch-image (keyword album-slug) look-id)))
 
 (defmethod perform-effects events/pixlee-api-success-fetch-image [_ event _ _ app-state]
   (when-let [shared-cart-id (:shared-cart-id (accessors.pixlee/selected-look app-state))]

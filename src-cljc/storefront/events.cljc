@@ -55,7 +55,6 @@
 
 (defpath navigate-order-complete)
 (defpath navigate-not-found)
-(defpath navigate-shop-by-deals)
 (defpath navigate-shop-by-look)
 (defpath navigate-shop-by-look-details)
 

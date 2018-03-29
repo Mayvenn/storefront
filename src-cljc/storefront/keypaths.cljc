@@ -138,6 +138,7 @@
 (def shared-cart-url (conj shared-cart :url))
 (def shared-cart-id (conj shared-cart :id))
 
+(def selected-album-slug (conj ui :selected-album-slug))
 (def selected-look-id (conj ui :selected-look-id))
 
 (def show-apple-pay? (conj ui :show-apple-pay?))

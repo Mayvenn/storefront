@@ -6,6 +6,7 @@
             [catalog.categories :as categories]
             [catalog.products :as products]
             [catalog.selector :as selector]
+            [storefront.pixlee :refer [pixlee-config]]
             [lambdaisland.uri :as uri]
             [clojure.string :as string]
             [spice.core :as spice]))
@@ -69,7 +70,8 @@
            :og-title "Shop by Look - Find and Buy your favorite Mayvenn bundles!"}})
 
 (defn tags-for-page [data]
-  (let [og-image-url (str "http:" assets/canonical-image)]
+  (let [og-image-url (str "http:" assets/canonical-image)
+        pixlee (pixlee-config (get-in data keypaths/environment))]
     (->
      (condp = (get-in data keypaths/navigation-event)
        events/navigate-sign-in [[:title {} "Sign In | Mayvenn"]
@@ -126,28 +128,18 @@
                                          [:meta {:property "og:description"
                                                  :content  "Mayvenn's story starts with a Toyota Corolla filled with bundles of hair to now having over 50,000 stylists selling Mayvenn hair and increasing their incomes. Learn more about us!"}]]
 
-       events/navigate-shop-by-look [[:title {} (-> pixlee-copy :look :seo-title)]
-                                     [:meta {:property "og:title"
-                                             :content  (-> pixlee-copy :look :og-title)}]
-                                     [:meta {:name    "description"
-                                             :content "Find your favorite Mayvenn hairstyle on social media and shop the exact look directly from our website."}]
-                                     [:meta {:property "og:type"
-                                             :content  "website"}]
-                                     [:meta {:property "og:image"
-                                             :content og-image-url}]
-                                     [:meta {:property "og:description"
-                                             :content  "Find your favorite Mayvenn hairstyle on social media and shop the exact look directly from our website."}]]
-       events/navigate-shop-by-deals [[:title {} (-> pixlee-copy :deals :seo-title)]
-                                      [:meta {:property "og:title"
-                                              :content  (-> pixlee-copy :deals :og-title)}]
-                                      [:meta {:name    "description"
-                                              :content "Find your favorite Mayvenn hairstyle on social media and shop the exact look directly from our website."}]
-                                      [:meta {:property "og:type"
-                                              :content  "website"}]
-                                      [:meta {:property "og:image"
-                                              :content og-image-url}]
-                                      [:meta {:property "og:description"
-                                              :content  "Find your favorite Mayvenn hairstyle on social media and shop the exact look directly from our website."}]]
+       events/navigate-shop-by-look (let [album-slug (get-in data keypaths/selected-album-slug)]
+                                      [[:title {} (-> pixlee :copy album-slug :seo-title)]
+                                       [:meta {:property "og:title"
+                                               :content  (-> pixlee :copy album-slug :og-title)}]
+                                       [:meta {:name    "description"
+                                               :content "Find your favorite Mayvenn hairstyle on social media and shop the exact look directly from our website."}]
+                                       [:meta {:property "og:type"
+                                               :content  "website"}]
+                                       [:meta {:property "og:image"
+                                               :content og-image-url}]
+                                       [:meta {:property "og:description"
+                                               :content  "Find your favorite Mayvenn hairstyle on social media and shop the exact look directly from our website."}]])
 
        events/navigate-category            (category-tags data)
        events/navigate-product-details     (product-details-tags data)

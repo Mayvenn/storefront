@@ -203,28 +203,15 @@
      (get-in app-state keypaths/user))
     (assoc-in (conj keypaths/checkout-selected-payment-methods :store-credit) {})))
 
-(defmethod transition-state events/pixlee-api-success-fetch-album [_ event {:keys [album-data album-name]} app-state]
-  (let [images (pixlee/parse-ugc-album album-data)]
+(defmethod transition-state events/pixlee-api-success-fetch-album [_ event {:keys [album-data album-slug]} app-state]
+  (let [images (pixlee/parse-ugc-album album-slug album-data)]
     (-> app-state
-        (assoc-in (conj keypaths/ugc-albums album-name) (map :id images))
+        (assoc-in (conj keypaths/ugc-albums album-slug) (map :id images))
         (update-in keypaths/ugc-images merge (pixlee/images-by-id images)))))
 
-(defmethod transition-state events/pixlee-api-success-fetch-image [_ event {:keys [image-data]} app-state]
-  (let [image (pixlee/parse-ugc-image image-data)]
+(defmethod transition-state events/pixlee-api-success-fetch-image [_ event {:keys [image-data album-slug]} app-state]
+  (let [image (pixlee/parse-ugc-image album-slug image-data)]
     (assoc-in app-state (conj keypaths/ugc-images (:id image)) image)))
-
-(defmethod transition-state events/navigate-shop-by-look [_ event _ app-state]
-  (assoc-in app-state keypaths/selected-look-id nil))
-
-(defmethod transition-state events/navigate-shop-by-look-details [_ event {:keys [look-id]} app-state]
-  (let [shared-cart-id (:shared-cart-id (pixlee/selected-look app-state))
-        current-shared-cart (get-in app-state keypaths/shared-cart-current)]
-    (cond-> app-state
-      true
-      (assoc-in keypaths/selected-look-id (js/parseInt look-id))
-
-      (not= shared-cart-id (:number current-shared-cart))
-      (assoc-in keypaths/shared-cart-current nil))))
 
 (defn ensure-cart-has-shipping-method [app-state]
   (-> app-state

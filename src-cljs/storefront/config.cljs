@@ -1,4 +1,5 @@
-(ns storefront.config)
+(ns storefront.config
+  (:require [storefront.pixlee :refer [pixlee-config]]))
 
 (def environment js/environment)
 
@@ -118,58 +119,8 @@
     "acceptance" "AIzaSyA25Ehwf5yqYjAVfzYeAT5VEfqsKZjVbKY"
     "AIzaSyBF1WsIRs4wIRTEsnNi8Klynxtxqz5RoIA"))
 
-(def ^:private pixlee-copy
-  {:deals  {:back-copy       "back to deals"
-            :short-name      "deal"
-            :button-copy     "View this deal"
-            :seo-title       "Shop Deals | Mayvenn"
-            :seo-description "Find your favorite Mayvenn hairstyle on social media and shop the exact look directly from our website."
-            :og-title        "Shop Deals - Find and Buy your favorite Mayvenn bundles!"
-            :og-description  "Find your favorite Mayvenn hairstyle on social media and shop the exact look directly from our website."}
-   :mosaic {:short-name      "look"
-            :button-copy     "View this look"
-            :back-copy       "back to shop by look"
-            :seo-title       "Shop by Look | Mayvenn"
-            :seo-description "Find your favorite Mayvenn hairstyle on social media and shop the exact look directly from our website."
-            :og-title        "Shop By Look - Find and Buy your favorite Mayvenn hairstyle!"
-            :og-description  "Find your favorite Mayvenn hairstyle on social media and shop the exact look directly from our website."}})
-
 (def pixlee
-  (case js/environment
-    "production" {:api-key "PUTXr6XBGuAhWqoIP4ir"
-                  :copy    pixlee-copy
-                  :albums  {:mosaic          952508
-                            :free-install    3082797
-                            "straight"       1104027
-                            "loose-wave"     1104028
-                            "body-wave"      1104029
-                            "deep-wave"      1104030
-                            "curly"          1104031
-                            "closures"       1104032
-                            "frontals"       1104033
-                            "kinky-straight" 1700440
-                            "water-wave"     1814288
-                            "yaki-straight"  1814286
-                            "dyed"           2750237
-                            "wigs"           1880465
-                            :deals           3091418}}
-    {:api-key "iiQ27jLOrmKgTfIcRIk"
-     :copy    pixlee-copy
-     :albums  {:mosaic          965034
-               :free-install    3082796
-               "straight"       1327330
-               "loose-wave"     1327331
-               "body-wave"      1327332
-               "deep-wave"      1327333
-               "curly"          1331955
-               "closures"       1331956
-               "frontals"       1331957
-               "kinky-straight" 1801984
-               "water-wave"     1912641
-               "yaki-straight"  1912642
-               "dyed"           2918644
-               "wigs"           2918645
-               :deals           3091419}}))
+  (pixlee-config js/environment))
 
 (def manual-experiments
   (case js/environment

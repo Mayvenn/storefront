@@ -15,18 +15,22 @@
       (ui/large-spinner {:style {:height "4em"}})
       [:div
        [:div.center.bg-light-gray.py3
-        [:h1.h2.navy "shop by look"]
+        [:h1.h2.navy (:title copy)]
         [:div.img-shop-by-look-icon.bg-no-repeat.bg-contain.mx-auto.my2
          {:style {:width "101px" :height "85px"}} ]
         [:p.dark-gray.col-10.col-6-on-tb-dt.mx-auto "Get inspiration for your next hairstyle and shop your favorite looks from the #MayvennMade community."]]
        (om/build ugc/component {:looks looks} {:opts {:copy copy}})]))))
 
 (defn query [data]
-  (let [the-ville?         (experiments/the-ville? data)
-        the-ville-control? (experiments/the-ville-control? data)
-        album              (if the-ville? :free-install :mosaic)]
-    {:looks     (pixlee/images-in-album (get-in data keypaths/ugc) album)
-     :copy      (-> config/pixlee :copy :mosaic)
+  (let [the-ville?          (experiments/the-ville? data)
+        the-ville-control?  (experiments/the-ville-control? data)
+        linkable-album-slug (get-in data keypaths/selected-album-slug)
+        fetched-album-slug  (if (and the-ville? (= linkable-album-slug :look))
+                              :free-install
+                              (or linkable-album-slug
+                                  :look))]
+    {:looks     (pixlee/images-in-album (get-in data keypaths/ugc) fetched-album-slug)
+     :copy      (-> config/pixlee :copy fetched-album-slug)
      :spinning? (not (or the-ville? the-ville-control?))}))
 
 (defn built-component [data opts]

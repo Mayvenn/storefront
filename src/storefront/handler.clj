@@ -41,7 +41,8 @@
             [catalog.skuers :as skuers]
             [storefront.accessors.orders :as orders]
             [lambdaisland.uri :as uri]
-            [spice.maps :as maps]))
+            [spice.maps :as maps]
+            [storefront.transitions :as transitions]))
 
 (defn ^:private str->int [s]
   (try
@@ -415,6 +416,13 @@
       (seq skus)
       (update-in keypaths/v2-skus merge (products/index-skus skus)))))
 
+(defn- transition [app-state [event args]]
+  (reduce (fn [app-state dispatch]
+            (or (transitions/transition-state dispatch event args app-state)
+                app-state))
+          app-state
+          (reductions conj [] event)))
+
 (defn frontend-routes [{:keys [storeback-config leads-config environment client-version] :as ctx}]
   (fn [{:keys [store nav-message nav-uri] :as req}]
     (let [[nav-event params] nav-message
@@ -444,6 +452,9 @@
 
                                       (= events/navigate-product-details nav-event)
                                       (assoc-product-details-route-data storeback-config params)
+
+                                      (#{events/navigate-shop-by-look-details events/navigate-shop-by-look} nav-event)
+                                      (transition nav-message)
 
                                       (= events/navigate-stylist-dashboard-cash-out-success nav-event)
                                       (assoc-in keypaths/stylist-cash-out-balance-transfer-id (:balance-transfer-id params))

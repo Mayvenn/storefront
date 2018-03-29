@@ -14,27 +14,23 @@
        :handler         handler
        :error-handler   (or error-handler default-error-handler)}))
 
-(defn fetch-album [album-id album-name]
+(defn fetch-album [album-id album-slug]
   (api-request (str "/albums/" album-id "/photos")
                {:params  {:per_page 48}
                 :handler (fn [resp]
                            (m/handle-message events/pixlee-api-success-fetch-album
                                              {:album-data (:data resp)
-                                              :album-name album-name}))}))
+                                              :album-slug album-slug}))}))
 
-(defn fetch-deals []
-  (fetch-album (-> config/pixlee :albums :deals) :deals))
+(defn fetch-look [album-slug]
+  (let [album-kw (keyword album-slug)]
+    (fetch-album (-> config/pixlee :albums album-kw) album-kw)))
 
-(defn fetch-mosaic []
-  (fetch-album (-> config/pixlee :albums :mosaic) :mosaic))
-
-(defn fetch-free-install []
-  (fetch-album (-> config/pixlee :albums :free-install) :free-install))
-
-(defn fetch-image [image-id]
+(defn fetch-image [album-slug image-id]
   (api-request (str "/media/" image-id)
                {:handler (fn [resp]
                            (m/handle-message events/pixlee-api-success-fetch-image
-                                             {:image-data (:data resp)}))
+                                             {:image-data (:data resp)
+                                              :album-slug album-slug}))
                 :error-handler (fn [resp]
                                  (m/handle-message events/pixlee-api-failure-fetch-album resp))}))
