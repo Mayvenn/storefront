@@ -63,7 +63,7 @@
       [:div.col-6-on-tb-dt
        [:a.p2.px3-on-tb-dt.left.col-12.dark-gray
         (if bundle-deal-look?
-          (utils/route-to events/navigate-shop-bundle-deals)
+          (utils/route-to events/navigate-shop-by-deals)
           (utils/route-back-or-to back events/navigate-shop-by-look))
         (ui/back-caret back-copy)]
 

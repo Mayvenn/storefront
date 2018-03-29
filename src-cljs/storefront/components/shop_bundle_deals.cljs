@@ -1,4 +1,4 @@
-(ns storefront.components.shop-bundle-deals
+(ns storefront.components.shop-by-deals
   (:require [om.core :as om]
             [sablono.core :refer [html]]
             [storefront.accessors.pixlee :as pixlee]

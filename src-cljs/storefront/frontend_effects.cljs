@@ -283,7 +283,7 @@
 (defmethod perform-effects events/navigate-shared-cart [_ _ {:keys [shared-cart-id]} _ app-state]
   (api/fetch-shared-cart shared-cart-id))
 
-(defmethod perform-effects events/navigate-shop-bundle-deals [_ event _ _ app-state]
+(defmethod perform-effects events/navigate-shop-by-deals [_ event _ _ app-state]
   (redirect events/navigate-home))
 
 (defmethod perform-effects events/navigate-shop-by-look [_ event {:keys [look-id]} _ app-state]
