@@ -18,7 +18,7 @@
 (defn component [{:keys [footer-data]} owner _]
   (component/create
    (html
-    (ui/modal {:col-class "col-12 col-5-on-tb col-4-on-dt"
+    (ui/modal {:col-class "col-12 col-6-on-tb col-5-on-dt"
                :bg-class  "bg-darken-4"}
               [:div.bg-cover.bg-white
                [:div.col-12.clearfix
@@ -30,7 +30,7 @@
                           :width        "1.5rem"
                           :class        "stroke-black"
                           :stroke-width "5"}))]]
-               [:div.mx-auto.col-8-on-tb-dt.flex.flex-column
+               [:div.mx-auto.col-10-on-dt.col-11-on-tb.flex.flex-column
                 [:div.center.p4
                  [:div.flex.justify-center  ;; Images
                   [:div.col-6
