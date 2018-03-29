@@ -18,7 +18,7 @@
         [:h1.h2.navy (:title copy)]
         [:div.img-shop-by-look-icon.bg-no-repeat.bg-contain.mx-auto.my2
          {:style {:width "101px" :height "85px"}} ]
-        [:p.dark-gray.col-10.col-6-on-tb-dt.mx-auto "Get inspiration for your next hairstyle and shop your favorite looks from the #MayvennMade community."]]
+        [:p.dark-gray.col-10.col-6-on-tb-dt.mx-auto (:description copy)]]
        (om/build ugc/component {:looks looks} {:opts {:copy copy}})]))))
 
 (defn query [data]

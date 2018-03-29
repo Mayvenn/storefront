@@ -2,6 +2,7 @@
 
 (def ^:private pixlee-copy
   {:deals {:title             "shop deals"
+           :description       "Save more when you bundle up! We wrapped our most popular textures into packaged bundle deals so you can shop with ease."
            :button-copy       "View this deal"
            :back-copy         "back to deals"
            :above-button-copy "*Discounts applied at check out"
@@ -9,6 +10,7 @@
            :seo-title         "Shop Deals | Mayvenn"
            :og-title          "Shop Deals - Find and Buy your favorite Mayvenn bundles!"}
    :look  {:title             "shop by look"
+           :description       "Get inspiration for your next hairstyle and shop your favorite looks from the #MayvennMade community."
            :button-copy       "View this look"
            :back-copy         "back to shop by look"
            :above-button-copy nil
