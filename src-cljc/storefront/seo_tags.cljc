@@ -131,9 +131,9 @@
                                              :content og-image-url}]
                                      [:meta {:property "og:description"
                                              :content  "Find your favorite Mayvenn hairstyle on social media and shop the exact look directly from our website."}]]
-       events/navigate-shop-bundle-deals [[:title {} "Shop Bundle Deals | Mayvenn"]
-                                          [:meta {:property "og:title"
-                                                  :content  "Shop Bundle Deals - Find and Buy your favorite Mayvenn bundles!"}]]
+       events/navigate-shop-by-deals [[:title {} "Shop Bundle Deals | Mayvenn"] ;; TODO(heather): DO NOT FORGET
+                                      [:meta {:property "og:title"
+                                              :content  "Shop Bundle Deals - Find and Buy your favorite Mayvenn bundles!"}]]
 
        events/navigate-category            (category-tags data)
        events/navigate-product-details     (product-details-tags data)
