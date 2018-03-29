@@ -109,7 +109,6 @@
 
         look              (pixlee/selected-look data)
         bundle-deal-ids   (->> (pixlee/images-in-album (get-in data keypaths/ugc) :deals)
-                               (remove (comp #{"video"} :content-type))
                                (mapv :id)
                                set)
         bundle-deal-look? (boolean (bundle-deal-ids (:id look)))]

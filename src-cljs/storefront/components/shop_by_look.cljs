@@ -25,8 +25,7 @@
   (let [the-ville?         (experiments/the-ville? data)
         the-ville-control? (experiments/the-ville-control? data)
         album              (if the-ville? :free-install :mosaic)]
-    {:looks     (->> (pixlee/images-in-album (get-in data keypaths/ugc) album)
-                     (remove (comp #{"video"} :content-type)))
+    {:looks     (pixlee/images-in-album (get-in data keypaths/ugc) album)
      :copy      (-> config/pixlee :copy :mosaic)
      :spinning? (not (or the-ville? the-ville-control?))}))
 

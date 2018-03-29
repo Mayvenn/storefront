@@ -19,8 +19,7 @@
      (om/build ugc/component {:looks deals} {:opts {:copy copy}})])))
 
 (defn query [data]
-  {:deals (->> (pixlee/images-in-album (get-in data keypaths/ugc) :deals)
-               (remove (comp #{"video"} :content-type)))
+  {:deals (pixlee/images-in-album (get-in data keypaths/ugc) :deals)
    :copy (-> config/pixlee :copy :deals)})
 
 (defn built-component [data opts]

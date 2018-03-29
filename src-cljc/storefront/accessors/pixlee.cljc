@@ -62,7 +62,11 @@
 
 (defn images-in-album [ugc album]
   (let [image-ids (get-in ugc [:albums album])]
-    (map (get ugc :images) image-ids)))
+    (into []
+          (comp
+           (map (get ugc :images))
+           (remove (comp #{"video"} :content-type)))
+          image-ids)))
 
 (defn selected-look [data]
   (get-in data (conj keypaths/ugc-images (get-in data keypaths/selected-look-id))))
