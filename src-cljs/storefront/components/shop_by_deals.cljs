@@ -3,9 +3,10 @@
             [sablono.core :refer [html]]
             [storefront.accessors.pixlee :as pixlee]
             [storefront.components.ugc :as ugc]
-            [storefront.keypaths :as keypaths]))
+            [storefront.keypaths :as keypaths]
+            [storefront.config :as config]))
 
-(defn component [{:keys [deals]} owner opts]
+(defn component [{:keys [deals copy]} owner opts]
   (om/component
    (html
     [:div
@@ -15,14 +16,12 @@
        {:style {:width "101px" :height "85px"}} ]
       [:p.dark-gray.col-10.col-6-on-tb-dt.mx-auto
        "Save more when you bundle up! We wrapped our most popular textures into packaged bundle deals so you can shop with ease."]]
-     (om/build ugc/component {:looks deals} {:opts {:copy {:back-copy   "back to deals"
-                                                           :short-name  "deal"
-                                                           :button-copy "View this deal"}}})])))
+     (om/build ugc/component {:looks deals} {:opts {:copy copy}})])))
 
 (defn query [data]
-  (let [deals (->> (pixlee/images-in-album (get-in data keypaths/ugc) :deals)
-                   (remove (comp #{"video"} :content-type)))]
-    {:deals deals}))
+  {:deals (->> (pixlee/images-in-album (get-in data keypaths/ugc) :deals)
+               (remove (comp #{"video"} :content-type)))
+   :copy (-> config/pixlee :copy :deals)})
 
 (defn built-component [data opts]
   (om/build component (query data) opts))

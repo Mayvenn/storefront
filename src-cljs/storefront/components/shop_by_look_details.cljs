@@ -17,7 +17,8 @@
             [clojure.set :as set]
             [spice.maps :as maps]
             [storefront.accessors.images :as images]
-            [spice.core :as spice]))
+            [spice.core :as spice]
+            [storefront.config :as config]))
 
 (defn add-to-cart-button [sold-out? creating-order? look {:keys [number]}]
   (if sold-out?
@@ -107,12 +108,11 @@
                                skus)
 
         look              (pixlee/selected-look data)
-        bundle-deal-ids   (->> (pixlee/images-in-album (get-in data keypaths/ugc) :bundle-deals)
+        bundle-deal-ids   (->> (pixlee/images-in-album (get-in data keypaths/ugc) :deals)
                                (remove (comp #{"video"} :content-type))
                                (mapv :id)
                                set)
-        bundle-deal-look? (boolean (bundle-deal-ids (:id look)))
-        back              (first (get-in data keypaths/navigation-undo-stack))]
+        bundle-deal-look? (boolean (bundle-deal-ids (:id look)))]
     {:shared-cart           shared-cart-with-skus
      :look                  look
      :bundle-deal-look?     bundle-deal-look?
@@ -121,12 +121,12 @@
      :sold-out?             (not-every? :inventory/in-stock? (:line-items shared-cart-with-skus))
      :fetching-shared-cart? (utils/requesting? data request-keys/fetch-shared-cart)
      :back                  (first (get-in data keypaths/navigation-undo-stack))
-     :back-copy             (:back-copy back (if bundle-deal-look?
-                                               "back to bundle deals"
-                                               "back"))
-     :shared-cart-type-copy (:short-name back (if bundle-deal-look?
-                                                "deal"
-                                                "look"))}))
+     :back-copy             (if bundle-deal-look?
+                              (-> config/pixlee :copy :deals :back-copy)
+                              (-> config/pixlee :copy :mosaic :back-copy))
+     :shared-cart-type-copy (if bundle-deal-look?
+                              (-> config/pixlee :copy :deals :short-name)
+                              (-> config/pixlee :copy :mosaic :short-name))}))
 
 (defn built-component [data opts]
   (om/build component (query data) opts))

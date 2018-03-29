@@ -62,6 +62,12 @@
   (when-let [canonical-href (canonical-uri data)]
     [[:link {:rel "canonical" :href canonical-href}]]))
 
+(def ^:private pixlee-copy
+  {:deals {:seo-title "Shop Deals | Mayvenn"
+           :og-title "Shop Deals - Find and Buy your favorite Mayvenn bundles!"}
+   :look  {:seo-title "Shop by Look | Mayvenn"
+           :og-title "Shop by Look - Find and Buy your favorite Mayvenn bundles!"}})
+
 (defn tags-for-page [data]
   (let [og-image-url (str "http:" assets/canonical-image)]
     (->
@@ -120,9 +126,9 @@
                                          [:meta {:property "og:description"
                                                  :content  "Mayvenn's story starts with a Toyota Corolla filled with bundles of hair to now having over 50,000 stylists selling Mayvenn hair and increasing their incomes. Learn more about us!"}]]
 
-       events/navigate-shop-by-look [[:title {} "Shop By Look | Mayvenn"]
+       events/navigate-shop-by-look [[:title {} (-> pixlee-copy :look :seo-title)]
                                      [:meta {:property "og:title"
-                                             :content  "Shop By Look - Find and Buy your favorite Mayvenn hairstyle!"}]
+                                             :content  (-> pixlee-copy :look :og-title)}]
                                      [:meta {:name    "description"
                                              :content "Find your favorite Mayvenn hairstyle on social media and shop the exact look directly from our website."}]
                                      [:meta {:property "og:type"
@@ -131,9 +137,17 @@
                                              :content og-image-url}]
                                      [:meta {:property "og:description"
                                              :content  "Find your favorite Mayvenn hairstyle on social media and shop the exact look directly from our website."}]]
-       events/navigate-shop-by-deals [[:title {} "Shop Bundle Deals | Mayvenn"] ;; TODO(heather): DO NOT FORGET
+       events/navigate-shop-by-deals [[:title {} (-> pixlee-copy :deals :seo-title)]
                                       [:meta {:property "og:title"
-                                              :content  "Shop Bundle Deals - Find and Buy your favorite Mayvenn bundles!"}]]
+                                              :content  (-> pixlee-copy :deals :og-title)}]
+                                      [:meta {:name    "description"
+                                              :content "Find your favorite Mayvenn hairstyle on social media and shop the exact look directly from our website."}]
+                                      [:meta {:property "og:type"
+                                              :content  "website"}]
+                                      [:meta {:property "og:image"
+                                              :content og-image-url}]
+                                      [:meta {:property "og:description"
+                                              :content  "Find your favorite Mayvenn hairstyle on social media and shop the exact look directly from our website."}]]
 
        events/navigate-category            (category-tags data)
        events/navigate-product-details     (product-details-tags data)
