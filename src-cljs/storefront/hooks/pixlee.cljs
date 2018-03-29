@@ -22,8 +22,8 @@
                                              {:album-data (:data resp)
                                               :album-name album-name}))}))
 
-(defn fetch-bundle-deals []
-  (fetch-album (-> config/pixlee :albums :bundle-deals) :bundle-deals))
+(defn fetch-deals []
+  (fetch-album (-> config/pixlee :albums :deals) :deals))
 
 (defn fetch-mosaic []
   (fetch-album (-> config/pixlee :albums :mosaic) :mosaic))

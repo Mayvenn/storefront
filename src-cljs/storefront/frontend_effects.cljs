@@ -283,7 +283,8 @@
 (defmethod perform-effects events/navigate-shared-cart [_ _ {:keys [shared-cart-id]} _ app-state]
   (api/fetch-shared-cart shared-cart-id))
 
-(defmethod perform-effects events/navigate-shop-by-deals [_ event _ _ app-state])
+(defmethod perform-effects events/navigate-shop-by-deals [_ event _ _ app-state]
+  (pixlee/fetch-deals))
 
 (defmethod perform-effects events/navigate-shop-by-look [_ event {:keys [look-id]} _ app-state]
   (when-not look-id ;; we are on navigate-shop-by-look, not navigate-shop-by-look-details
@@ -292,7 +293,7 @@
       (pixlee/fetch-mosaic))))
 
 (defmethod perform-effects events/navigate-shop-by-look-details [_ event {:keys [look-id]} _ app-state]
-  (pixlee/fetch-bundle-deals)
+  (pixlee/fetch-deals)
   (if-let [shared-cart-id (:shared-cart-id (accessors.pixlee/selected-look app-state))]
     (api/fetch-shared-cart shared-cart-id)
     (pixlee/fetch-image look-id)))
