@@ -135,7 +135,7 @@
                             "yaki-straight"  1814286
                             "dyed"           2750237
                             "wigs"           1880465
-                            :bundle-deals    2585224}}
+                            :deals           3091418}}
     {:api-key "iiQ27jLOrmKgTfIcRIk"
      :albums  {:mosaic          965034
                :free-install    3082796
@@ -151,7 +151,7 @@
                "yaki-straight"  1912642
                "dyed"           2918644
                "wigs"           2918645
-               :bundle-deals    2584964}}))
+               :deals           3091419}}))
 
 (def manual-experiments
   (case js/environment

@@ -5,23 +5,24 @@
             [storefront.components.ugc :as ugc]
             [storefront.keypaths :as keypaths]))
 
-(defn component [{:keys [bundle-deals]} owner opts]
+(defn component [{:keys [deals]} owner opts]
   (om/component
    (html
     [:div
      [:div.center.bg-light-gray.py3
+      [:h1.h2.navy "shop deals"]
       [:div.img-shop-by-bundle-deal-icon.bg-no-repeat.bg-contain.mx-auto.my2
        {:style {:width "101px" :height "85px"}} ]
       [:p.dark-gray.col-10.col-6-on-tb-dt.mx-auto
-       "Get 25% off everything on our site, and an extra 10% off purchases of 3 bundles or more. Save some time and shop our 3-bundle deals below!"]]
-     (om/build ugc/component {:looks bundle-deals} {:opts {:copy {:back-copy   "back to bundle deals"
-                                                                  :short-name  "deal"
-                                                                  :button-copy "View this deal"}}})])))
+       "Save more when you bundle up! We wrapped our most popular textures into packaged bundle deals so you can shop with ease."]]
+     (om/build ugc/component {:looks deals} {:opts {:copy {:back-copy   "back to deals"
+                                                           :short-name  "deal"
+                                                           :button-copy "View this deal"}}})])))
 
 (defn query [data]
-  (let [bundle-deals (->> (pixlee/images-in-album (get-in data keypaths/ugc) :bundle-deals)
-                          (remove (comp #{"video"} :content-type)))]
-    {:bundle-deals       bundle-deals}))
+  (let [deals (->> (pixlee/images-in-album (get-in data keypaths/ugc) :deals)
+                   (remove (comp #{"video"} :content-type)))]
+    {:deals deals}))
 
 (defn built-component [data opts]
   (om/build component (query data) opts))
