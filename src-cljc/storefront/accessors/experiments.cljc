@@ -63,6 +63,3 @@
 
 (defn must-set-password? [data]
   (display-feature? data "must-set-password"))
-
-(defn deals? [data]
-  (display-feature? data "deals"))
