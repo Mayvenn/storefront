@@ -146,11 +146,12 @@
   [:div.h4.border-bottom.border-gray.py3
    (into [:a.block.inherit-color.flex.items-center] content)])
 
-(defn ^:private shopping-area [{:keys [signed-in]}]
+(defn ^:private shopping-area [{:keys [signed-in deals?]}]
   [:div
-   [:li (menu-row (assoc (utils/route-to events/navigate-shop-by-look {:album-slug "deals"})
-                         :data-test "menu-shop-by-deals")
-                  [:span.medium "Deals"])]
+   (if deals?
+     [:li (menu-row (assoc (utils/route-to events/navigate-shop-by-look {:album-slug "deals"})
+                           :data-test "menu-shop-by-deals")
+                    [:span.medium "Deals"])])
    [:li (menu-row (assoc (utils/route-to events/navigate-shop-by-look {:album-slug "look"})
                          :data-test "menu-shop-by-look")
                   [:span.medium "Shop Looks"])]
@@ -230,7 +231,7 @@
                      "Sign out")
     [:div])))
 
-(defn ^:private root-menu [{:keys [user signed-in store] :as data} owner opts]
+(defn ^:private root-menu [{:keys [user signed-in store deals?] :as data} owner opts]
   (component/create
    [:div
     [:div.px6.border-bottom.border-gray
@@ -262,6 +263,7 @@
    :on-taxon? (get-in data keypaths/current-traverse-nav-id)
    :user      {:email (get-in data keypaths/user-email)}
    :store     (marquee/query data)
+   :deals?    (experiments/deals? data)
    :shopping  {:categories (get-in data keypaths/categories)}})
 
 (defn query [data]
