@@ -283,12 +283,15 @@
   (api/fetch-shared-cart shared-cart-id))
 
 (defmethod perform-effects events/navigate-shop-by-look [_ event {:keys [album-slug look-id]} _ app-state]
-  (when-not look-id ;; we are on navigate-shop-by-look, not navigate-shop-by-look-details
-    (pixlee/fetch-look
-     (if (and (experiments/the-ville? app-state)
-              (= (keyword album-slug) :look))
-       :free-install
-       (keyword album-slug)))))
+  (let [album-slug-kw (keyword album-slug)]
+    (if (get (:albums config/pixlee) (album-slug-kw))
+      (when-not look-id ;; we are on navigate-shop-by-look, not navigate-shop-by-look-details
+        (pixlee/fetch-look
+         (if (and (experiments/the-ville? app-state)
+                  (= (album-slug-kw) :look))
+           :free-install
+           (album-slug-kw))))
+      (page-not-found))))
 
 (defmethod perform-effects events/navigate-shop-by-look-details [_ event {:keys [album-slug look-id]} _ app-state]
   (if-let [shared-cart-id (:shared-cart-id (accessors.pixlee/selected-look app-state))]
