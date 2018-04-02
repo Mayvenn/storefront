@@ -284,13 +284,13 @@
 
 (defmethod perform-effects events/navigate-shop-by-look [_ event {:keys [album-slug look-id]} _ app-state]
   (let [album-slug-kw (keyword album-slug)]
-    (if (get (:albums config/pixlee) (album-slug-kw))
+    (if (get (:albums config/pixlee) album-slug-kw)
       (when-not look-id ;; we are on navigate-shop-by-look, not navigate-shop-by-look-details
         (pixlee/fetch-look
          (if (and (experiments/the-ville? app-state)
-                  (= (album-slug-kw) :look))
+                  (= album-slug-kw :look))
            :free-install
-           (album-slug-kw))))
+           album-slug-kw)))
       (page-not-found))))
 
 (defmethod perform-effects events/navigate-shop-by-look-details [_ event {:keys [album-slug look-id]} _ app-state]
