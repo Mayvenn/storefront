@@ -24,8 +24,8 @@
    (cond
      (and allowed? the-ville?) [:a {:on-click (utils/send-event-callback events/popup-show-free-install {})
                                  :data-test "free-install-promo-banner"}
-                                [:div.white.center.pp5.bg-teal.h5.bold
-                                 "Mayvenn will pay for your install! Learn more"]]
+                                [:div.white.center.pp5.bg-teal.h5.bold.pointer
+                                 "Mayvenn will pay for your install! " [:span.underline "Learn more"]]]
      (and allowed? promo)      [:div.white.center.pp5.bg-teal.h5.bold
                                 {:data-test "promo-banner"}
                                 (:description promo)]
