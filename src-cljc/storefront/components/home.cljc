@@ -84,10 +84,10 @@
    [:a
     (assoc (utils/route-to events/navigate-shop-by-look {:album-slug "look"})
            :data-test "home-banner")
-    (let [file-name "Spring-Stock-up-extended.jpg"
-          alt       "The Spring Stock-Up EXTENDED! 25% off everything! Shop now!"
-          mob-uuid  "62a53d3b-3a88-4f46-83b2-1982c9814725"
-          dsk-uuid  "c62421c7-4eaf-4ef3-a84f-b6194fa8fe71"]
+    (let [file-name "Hair-Always-On-Beat.jpg"
+          alt       "Hair always on beat! 15% off everything! Shop looks!"
+          mob-uuid  "6b51554f-9062-4c13-b9ac-2b41a7cc7beb"
+          dsk-uuid  "5d5b9bae-7d8b-496e-ada1-4cc6dfd60f4a"]
       (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
                    :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
                    :file-name   file-name
