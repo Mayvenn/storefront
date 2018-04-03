@@ -18,8 +18,9 @@
                          :style {:width "100px" :height "100px"}})
      [:h2.my3 "Cha-Ching!"]
      [:p.my4 "You have successfully cashed out your earnings. View your transfer by clicking the button below."]
-     (ui/teal-button (utils/route-to events/navigate-stylist-dashboard-balance-transfer-details
-                                     {:balance-transfer-id (:balance-transfer-id data)})
+     (ui/teal-button (merge (utils/route-to events/navigate-stylist-dashboard-balance-transfer-details
+                                            {:balance-transfer-id (:balance-transfer-id data)})
+                            {:data-test "see-transfer-button"})
                      "See Transfer")])))
 
 (defn built-component [data opts]
