@@ -366,6 +366,8 @@
 (defpath checkout-address-place-changed)
 (defpath checkout-address-component-mounted)
 
+(defpath contentful-api-success-fetch-homepage)
+
 (defpath pixlee-api-success-fetch-album)
 (defpath pixlee-api-success-fetch-image)
 (defpath pixlee-api-success-fetch-named-search-album-ids)

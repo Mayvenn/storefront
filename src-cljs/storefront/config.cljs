@@ -131,3 +131,8 @@
     {"address-login" {:enabled?   false
                       :variations [{:feature "address-login-control"}
                                    {:feature "address-login"}]}}))
+
+(def contentful
+  {:api-key       "1fea07edad4b8f58403bacc931b9db4eb7dd8be23a89c5271e6f0e596c85fe7b"
+   :content-model "76m8os65degn"
+   :homepage-id   "6VN7YwJeAoQagIaEyOqk4S"})
