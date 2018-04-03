@@ -1,35 +1,44 @@
 (ns storefront.pixlee)
 
 (def ^:private pixlee-copy
-  {:deals       {:title             "shop deals"
-                 :description       (str "Save more when you bundle up! "
-                                         "We wrapped our most popular textures into "
-                                         "packaged bundle deals so you can shop with ease.")
-                 :button-copy       "View this deal"
-                 :back-copy         "back to deals"
-                 :above-button-copy "*Discounts applied at check out"
-                 :short-name        "deal"
-                 :seo-title         "Shop Deals | Mayvenn"
-                 :og-title          (str "Shop Deals - "
-                                         "Find and Buy your favorite Mayvenn bundles!")}
-   :look        {:title             "shop by look"
-                 :description       (str "Get inspiration for your next hairstyle and "
-                                         "shop your favorite looks from the #MayvennMade community.")
-                 :button-copy       "View this look"
-                 :back-copy         "back to shop by look"
-                 :above-button-copy nil
-                 :short-name        "look"
-                 :seo-title         "Shop by Look | Mayvenn"
-                 :og-title          "Shop by Look - Find and Buy your favorite Mayvenn bundles!"}
-   :email-deals {:title             "shop by look"
-                 :description       (str "Grab the latest bundle deal! "
-                                         "Below you can shop every bundle deal of the week.")
-                 :button-copy       "View this look"
-                 :back-copy         "back to shop by look"
-                 :above-button-copy nil
-                 :short-name        "look"
-                 :seo-title         "Shop by Look | Mayvenn"
-                 :og-title          "Shop by Look - Find and Buy your favorite Mayvenn bundles!"}})
+  {:deals        {:title             "shop deals"
+                  :description       (str "Save more when you bundle up! "
+                                          "We wrapped our most popular textures into "
+                                          "packaged bundle deals so you can shop with ease.")
+                  :button-copy       "View this deal"
+                  :back-copy         "back to deals"
+                  :above-button-copy "*Discounts applied at check out"
+                  :short-name        "deal"
+                  :seo-title         "Shop Deals | Mayvenn"
+                  :og-title          (str "Shop Deals - "
+                                          "Find and Buy your favorite Mayvenn bundles!")}
+   :look         {:title             "shop by look"
+                  :description       (str "Get inspiration for your next hairstyle and "
+                                          "shop your favorite looks from the #MayvennMade community.")
+                  :button-copy       "View this look"
+                  :back-copy         "back to shop by look"
+                  :above-button-copy nil
+                  :short-name        "look"
+                  :seo-title         "Shop by Look | Mayvenn"
+                  :og-title          "Shop by Look - Find and Buy your favorite Mayvenn bundles!"}
+   :free-install {:title             "shop by look"
+                  :description       (str "Get inspiration for your next hairstyle and "
+                                          "shop your favorite looks from the #MayvennMade community.")
+                  :button-copy       "View this look"
+                  :back-copy         "back to shop by look"
+                  :above-button-copy nil
+                  :short-name        "look"
+                  :seo-title         "Shop by Look | Mayvenn"
+                  :og-title          "Shop by Look - Find and Buy your favorite Mayvenn bundles!"}
+   :email-deals  {:title             "shop by look"
+                  :description       (str "Grab the latest bundle deal! "
+                                          "Below you can shop every bundle deal of the week.")
+                  :button-copy       "View this look"
+                  :back-copy         "back to shop by look"
+                  :above-button-copy nil
+                  :short-name        "look"
+                  :seo-title         "Shop by Look | Mayvenn"
+                  :og-title          "Shop by Look - Find and Buy your favorite Mayvenn bundles!"}})
 
 (defn pixlee-config [environment]
   (case environment
