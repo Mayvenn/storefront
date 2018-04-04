@@ -4,7 +4,8 @@
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
-            [storefront.keypaths :as keypaths]))
+            [storefront.keypaths :as keypaths]
+            [storefront.accessors.experiments :as experiments]))
 
 (def close-button
   (component/html
@@ -40,5 +41,6 @@
 (defn built-component [data opts]
   (when (and (= (get-in data keypaths/navigation-event) events/navigate-home)
              (= (get-in data keypaths/store-slug) "shop")
-             (not (get-in data keypaths/stylist-banner-hidden)))
+             (not (get-in data keypaths/stylist-banner-hidden))
+             (not (experiments/the-ville? data)))
     (component/build component (query data) opts)))
