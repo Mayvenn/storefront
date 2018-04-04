@@ -5,21 +5,11 @@
             [storefront.config :as config]
             [storefront.handler :refer [create-handler]]
             [storefront.jetty :as jetty]
+            [storefront.system.contentful :as contentful]
             [taoensso.timbre :as timbre]
             [tocsin.core :as tocsin]))
 
-(defrecord ContentfulContext
-    [logger exception-handler cache-timeout api-key space-id endpoint]
-  component/Lifecycle
-  (start [c]
-    (assoc c :cache (atom {:timestamp (date/add-delta
-                                       (date/now)
-                                       {:minutes -6})
-                           :transformed-response nil})))
-  (stop [c]
-    (dissoc c :cache)))
-
-(defrecord AppHandler [logger exception-handler contentful-config storeback-config leads-config environment client-version]
+(defrecord AppHandler [logger exception-handler storeback-config leads-config environment client-version]
   component/Lifecycle
   (start [c]
     (assoc c :handler (create-handler (dissoc c :handler))))
@@ -39,7 +29,7 @@
 (defn system-map [config]
   (component/system-map
    :logger (logger (config :logging))
-   :contentful  (map->ContentfulContext (:contentful-config config))
+   :contentful  (contentful/map->ContentfulContext (:contentful-config config))
    :app-handler (map->AppHandler (select-keys config [:storeback-config
                                                       :leads-config
                                                       :environment
@@ -49,8 +39,8 @@
    :exception-handler (exception-handler (config :bugsnag-token) (config :environment))))
 
 (def dependency-map
-  {:app-handler [:logger :exception-handler :contentful]
-   :contentful  [:logger :exception-handler]
+  {:app-handler     [:logger :exception-handler :contentful]
+   :contentful      [:logger :exception-handler]
    :embedded-server {:app :app-handler}})
 
 (defn create-system

@@ -384,7 +384,7 @@
         {:keys [skus products]} (when (seq skus-on-order)
                                   (api/fetch-v2-products storeback-config {:selector/sku-ids skus-on-order}))
         {:keys [facets]}        (api/fetch-v2-facets storeback-config)
-        {:keys [hero]}          (api/contentful-fetch contentful)]
+        {:keys [hero]}          (-> @(:cache contentful) :transformed-response)]
     (-> {}
         (assoc-in keypaths/welcome-url
                   (str (:endpoint leads-config) "?utm_source=shop&utm_medium=referral&utm_campaign=ShoptoWelcome"))
