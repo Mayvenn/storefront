@@ -63,3 +63,6 @@
 
 (defn deals? [data]
   (display-feature? data "deals"))
+
+(defn cms? [data]
+  (display-feature? data "cms"))

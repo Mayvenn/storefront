@@ -29,19 +29,22 @@
     (catch java.lang.IllegalArgumentException e
       "unknown")))
 
-(def default-config {:server-opts    {:port 3006}
-                     :client-version client-version
-                     :logging
-                     (merge (timbre/get-default-config)
-                            {:appenders
-                             {:standard-out
-                              (get-in timbre/example-config [:appenders :standard-out])}})})
+(def default-config {:server-opts       {:port 3006}
+                     :client-version    client-version
+                     :contentful-config {:endpoint "https://cdn.contentful.com"}
 
-(def env-config {:environment      (env :environment)
-                 :bugsnag-token    (env :bugsnag-token)
-                 :leads-config     {:endpoint (env :leads-endpoint)}
-                 :storeback-config {:endpoint          (env :storeback-endpoint)
-                                    :internal-endpoint (env :storeback-internal-endpoint)}})
+                     :logging (merge (timbre/get-default-config)
+                                     {:appenders
+                                      {:standard-out
+                                       (get-in timbre/example-config [:appenders :standard-out])}})})
+
+(def env-config {:environment       (env :environment)
+                 :bugsnag-token     (env :bugsnag-token)
+                 :leads-config      {:endpoint (env :leads-endpoint)}
+                 :contentful-config {:api-key  (env :contentful-content-delivery-api-key)
+                                     :space-id (env :contentful-space-id)}
+                 :storeback-config  {:endpoint          (env :storeback-endpoint)
+                                     :internal-endpoint (env :storeback-internal-endpoint)}})
 
 (defn deep-merge
   [& maps]
@@ -53,3 +56,5 @@
   (deep-merge default-config env-config overrides))
 
 (def pixlee {})
+
+

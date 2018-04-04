@@ -3,6 +3,10 @@
 
 (def cookie [:cookie])
 
+(def cms [:cms])
+(def cms-homepage (conj cms :homepage))
+(def cms-homepage-hero (conj cms-homepage :hero))
+
 (def features [:features])
 (def welcome-url [:welcome-url])
 (def telligent-community-url [:telligent-community-url])

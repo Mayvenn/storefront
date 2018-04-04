@@ -378,15 +378,17 @@
         (update-in keypaths/v2-skus merge (products/index-skus skus)))))
 
 (defn required-data
-  [{:keys [environment leads-config storeback-config nav-event nav-message nav-uri store order-number order-token]}]
-  (let [order (api/get-order storeback-config order-number order-token)
-        skus-on-order (mapv :sku (orders/product-items order))
+  [{:keys [contentful environment leads-config storeback-config contentful-config nav-event nav-message nav-uri store order-number order-token]}]
+  (let [order                   (api/get-order storeback-config order-number order-token)
+        skus-on-order           (mapv :sku (orders/product-items order))
         {:keys [skus products]} (when (seq skus-on-order)
                                   (api/fetch-v2-products storeback-config {:selector/sku-ids skus-on-order}))
-        {:keys [facets]} (api/fetch-v2-facets storeback-config)]
+        {:keys [facets]}        (api/fetch-v2-facets storeback-config)
+        {:keys [hero]}          (api/contentful-fetch contentful)]
     (-> {}
         (assoc-in keypaths/welcome-url
                   (str (:endpoint leads-config) "?utm_source=shop&utm_medium=referral&utm_campaign=ShoptoWelcome"))
+        (assoc-in keypaths/cms-homepage-hero hero)
         (assoc-in keypaths/store store)
         (assoc-in keypaths/environment environment)
         experiments/determine-features
@@ -423,7 +425,7 @@
           app-state
           (reductions conj [] event)))
 
-(defn frontend-routes [{:keys [storeback-config leads-config environment client-version] :as ctx}]
+(defn frontend-routes [{:keys [contentful storeback-config leads-config environment client-version] :as ctx}]
   (fn [{:keys [store nav-message nav-uri] :as req}]
     (let [[nav-event params] nav-message
           order-number       (get-in req [:cookies "number" :value])
@@ -434,6 +436,7 @@
               data                  (required-data (auto-map environment
                                                              leads-config
                                                              storeback-config
+                                                             contentful
                                                              nav-event
                                                              nav-message
                                                              nav-uri
