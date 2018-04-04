@@ -80,7 +80,10 @@
   (reduce + 0 (map line-item-subtotal (product-items order))))
 
 (defn commissioned-products-subtotal [order]
-  (reduce + 0 (map line-item-subtotal (product-items-for-shipment (first-commissioned-shipment order)))))
+  (reduce + 0 (->> order
+                   first-commissioned-shipment
+                   product-items-for-shipment
+                   (map line-item-subtotal))))
 
 (defn non-store-credit-payment-amount [order]
   (->> order
