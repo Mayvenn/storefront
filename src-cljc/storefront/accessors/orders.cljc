@@ -22,6 +22,17 @@
 
 (def ^:private shipping-item? (comp #{"waiter"} :source))
 
+(defn product-items-for-shipment [shipment]
+  (->> shipment
+       :line-items
+       (remove shipping-item?)))
+
+(defn first-commissioned-shipment [order]
+  (->> order
+       :shipments
+       (filter (comp #{"released" "shipped"} :state))
+       first))
+
 (defn product-items
   "Returns cart items from an order hashmap.
   Excludes shipping and items added by El Jefe.
@@ -67,6 +78,9 @@
 
 (defn products-subtotal [order]
   (reduce + 0 (map line-item-subtotal (product-items order))))
+
+(defn commissioned-products-subtotal [order]
+  (reduce + 0 (map line-item-subtotal (product-items-for-shipment (first-commissioned-shipment order)))))
 
 (defn non-store-credit-payment-amount [order]
   (->> order

@@ -75,7 +75,7 @@
   (let [adjustments       (:adjustments order)
         store-credit-used (:total-store-credit-used order)
         shipping-item     (orders/shipping-item order)
-        subtotal          (orders/products-subtotal order)
+        subtotal          (orders/commissioned-products-subtotal order)
         shipping-total    (* (:quantity shipping-item) (:unit-price shipping-item))]
     [:div
      [:.py2.border-top.border-gray

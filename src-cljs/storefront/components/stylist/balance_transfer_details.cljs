@@ -27,7 +27,11 @@
 
 (defmethod effects/perform-effects events/api-success-stylist-balance-transfer-details
   [_ event {:keys [data] :as args} _ app-state]
-  (messages/handle-message events/ensure-skus {:skus (map :sku (orders/product-items (:order data)))}))
+  (messages/handle-message events/ensure-skus {:skus (->> data
+                                                          :order
+                                                          orders/first-commissioned-shipment
+                                                          orders/product-items-for-shipment
+                                                          (map :sku))}))
 
 (defmethod transitions/transition-state events/api-success-stylist-balance-transfer-details [_ _ balance-transfer app-state]
   (-> app-state
@@ -37,7 +41,8 @@
 
 (defn ^:private all-skus-in-balance-transfer [skus balance-transfer]
   (->> (:order (:data balance-transfer))
-       orders/product-items
+       orders/first-commissioned-shipment
+       orders/product-items-for-shipment
        (mapv :sku)
        (select-keys skus)))
 
@@ -74,8 +79,9 @@
         {:keys [order
                 commission-date
                 commissionable-amount]} data
-        commission-date (or commission-date (:commission_date data))
-        shipped-at      (->> order :shipments first :shipped-at)]
+        shipment                        (orders/first-commissioned-shipment order)
+        commission-date                 (or commission-date (:commission_date data))
+        shipped-at                      (:shipped-at shipment)]
     (if fetching?
       [:div.my2.h2 ui/spinner]
 
@@ -91,7 +97,8 @@
                      ["Ship Date" (f/less-year-more-day-date (or shipped-at commission-date))])
 
        [:div.mt2.mbnp2.mtnp2.border-top.border-gray
-        (summary/display-line-items (orders/product-items order) skus)]
+
+        (summary/display-line-items (orders/product-items-for-shipment shipment) skus)]
 
        (summary/display-order-summary-for-commissions order (or commissionable-amount (:commissionable_amount data)))
 
