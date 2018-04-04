@@ -92,15 +92,16 @@
                    :file-name   file-name
                    :alt         alt}))]])
 
-(defn cms-hero [{:keys [desktop-uuid mobile-uuid file-name alt-text]}]
-  [:h1.h2
-   [:a
-    (assoc (utils/route-to events/navigate-shop-by-look {:album-slug "look"})
-           :data-test "home-banner")
-    (hero-image {:mobile-url  (str "//ucarecdn.com/" mobile-uuid "/")
-                 :desktop-url (str "//ucarecdn.com/" desktop-uuid "/")
-                 :file-name   file-name
-                 :alt         alt-text})]])
+(defn cms-hero [{:keys [desktop-uuid mobile-uuid file-name alt-text] :as hero-data}]
+  (when (seq hero-data)
+    [:h1.h2
+     [:a
+      (assoc (utils/route-to events/navigate-shop-by-look {:album-slug "look"})
+             :data-test "home-banner")
+      (hero-image {:mobile-url  (str "//ucarecdn.com/" mobile-uuid "/")
+                   :desktop-url (str "//ucarecdn.com/" desktop-uuid "/")
+                   :file-name   file-name
+                   :alt         alt-text})]]))
 
 (def free-installation-hero
   [:h1.h2

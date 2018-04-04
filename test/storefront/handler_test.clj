@@ -711,7 +711,6 @@
       (is (.contains body "Disallow: /stylists/thank-you") body)
       (is (.contains body "Disallow: /stylists/flows/") body))))
 
-
 (def contentful-response
   {:body
    {:sys   {:type "Array"}
