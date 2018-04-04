@@ -757,14 +757,37 @@
        :rightFeatureBlockFileName  "Right"}}]}
    :status 200})
 
-(deftest fetches-data-from-cms
-  (let [[storeback-requests storeback-handler]   (with-requests-chan (routes (GET "/store" req storeback-stylist-response)))
-        [contentful-requests contentful-handler] (with-requests-chan (routes (GET "/spaces/fake-space-id/entries" req
-                                                                                  {:status 200
-                                                                                   :body   (generate-string (:body contentful-response))})))]
-    (with-standalone-server [storeback (standalone-server storeback-handler)
-                             contentful (standalone-server contentful-handler {:port 4335})]
-      (with-handler handler
-        (let [responses (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))]
-          (is (every? #(= 200 (:status %)) responses))
-          (is (= 1 (count (txfm-requests contentful-requests identity)))))))))
+(deftest fetches-data-from-contentful
+  (testing "caching content"
+    (let [[storeback-requests storeback-handler]   (with-requests-chan (routes (GET "/store" req storeback-stylist-response)))
+          [contentful-requests contentful-handler] (with-requests-chan (routes (GET "/spaces/fake-space-id/entries" req
+                                                                                    {:status 200
+                                                                                     :body   (generate-string (:body contentful-response))})))]
+      (with-standalone-server [storeback (standalone-server storeback-handler)
+                               contentful (standalone-server contentful-handler {:port 4335})]
+        (with-handler handler
+          (let [responses (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
+                requests  (txfm-requests contentful-requests identity)]
+            (is (every? #(= 200 (:status %)) responses))
+            (is (= 1 (count requests))))))))
+
+  (testing "fetches data on system start"
+    (let [[contentful-requests contentful-handler] (with-requests-chan (routes (GET "/spaces/fake-space-id/entries" req
+                                                                                    {:status 200
+                                                                                     :body   (generate-string (:body contentful-response))})))]
+      (with-standalone-server [contentful (standalone-server contentful-handler {:port 4335})]
+        (with-handler handler
+          (is (= 1 (count (txfm-requests contentful-requests identity))))))))
+
+  (testing "attempts-to-retry-fetch-from-contentful"
+    (let [[storeback-requests storeback-handler]   (with-requests-chan (routes (GET "/store" req storeback-stylist-response)))
+          [contentful-requests contentful-handler] (with-requests-chan (routes (GET "/spaces/fake-space-id/entries" req
+                                                                                    {:status 500
+                                                                                     :body   "{}"})))]
+      (with-standalone-server [storeback (standalone-server storeback-handler)
+                               contentful (standalone-server contentful-handler {:port 4335})]
+        (with-handler handler
+          (let [responses (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
+                requests  (txfm-requests contentful-requests identity)]
+            (is (every? #(= 200 (:status %)) responses))
+            (is (= 2 (count requests)))))))))

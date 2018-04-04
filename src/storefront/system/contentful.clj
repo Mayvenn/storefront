@@ -3,14 +3,14 @@
             [tugboat.core :as tugboat]
             [com.stuartsierra.component :as component]))
 
-(defn contentful-request [{:keys [endpoint space-id api-key] :as contentful}]
-  (tugboat/request {:endpoint endpoint }
-                   :get (str "/spaces/" space-id "/entries")
-                   (merge
-                    {:socket-timeout 30000
-                     :conn-timeout   30000
-                     :as             :json
-                     :query-params   {:access_token api-key}})) )
+(defn contentful-request [{:keys [endpoint api-key] :as contentful} method path]
+  (tugboat/request {:endpoint endpoint}
+                   method path
+                   (assoc {:socket-timeout 30000
+                           :conn-timeout   30000
+                           :as             :json}
+                          :query-params
+                          {:access_token api-key})))
 
 (def entry->content-type-id (comp :id :sys :contentType :sys))
 
@@ -36,10 +36,16 @@
             :file-name    (:heroImageFileName homepage-hero-data)
             :alt-text     (:heroImageAltText homepage-hero-data)}}))
 
-(defn contentful-fetch [{:keys [cache] :as contentful}]
-  (let [{:keys [status body]} (contentful-request contentful)]
-    (when (<= 200 status 299) ;; What if this fails?
-      (reset! cache {:transformed-response (tx-contentful-body body)}))))
+(defn fetch-entries
+  ([contentful]
+   (fetch-entries contentful 1))
+  ([{:keys [cache space-id] :as contentful} attempt-number]
+   (when (<= attempt-number 2)
+     (let [{:keys [status body]}
+           (contentful-request contentful :get (str "/spaces/" space-id "/entries"))]
+       (if (<= 200 status 299)
+         (reset! cache {:transformed-response (tx-contentful-body body)})
+         (fetch-entries contentful (inc attempt-number)))))))
 
 (defrecord ContentfulContext
     [logger exception-handler cache-timeout api-key space-id endpoint]
@@ -48,10 +54,10 @@
     (let [pool  (at-at/mk-pool)
           cache (atom {:transformed-response nil})]
       (at-at/every cache-timeout
-                   (partial contentful-fetch {:space-id space-id
-                                              :endpoint endpoint
-                                              :cache    cache
-                                              :api-key  api-key})
+                   #(fetch-entries {:space-id space-id
+                                    :endpoint endpoint
+                                    :cache    cache
+                                    :api-key  api-key})
                    pool)
       (assoc c :pool  pool
                :cache cache)))
