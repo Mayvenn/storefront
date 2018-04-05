@@ -52,7 +52,7 @@
      (let [{:keys [status body]}
            (contentful-request contentful :get (str "/spaces/" space-id "/entries"))]
        (if (<= 200 status 299)
-         (reset! cache {:transformed-response (tx-contentful-body body)})
+         (reset! cache (tx-contentful-body body))
          (fetch-entries contentful (inc attempt-number)))))))
 
 (defrecord ContentfulContext
@@ -60,7 +60,7 @@
   component/Lifecycle
   (start [c]
     (let [pool  (at-at/mk-pool)
-          cache (atom {:transformed-response nil})]
+          cache (atom {})]
       (at-at/every cache-timeout
                    #(fetch-entries {:space-id space-id
                                     :endpoint endpoint
