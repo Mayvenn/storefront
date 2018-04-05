@@ -1,7 +1,9 @@
 (ns storefront.system.contentful
   (:require [overtone.at-at :as at-at]
             [tugboat.core :as tugboat]
-            [com.stuartsierra.component :as component]))
+            [com.stuartsierra.component :as component]
+            [spice.core :as spice]
+            [spice.maps :as maps]))
 
 (defn contentful-request [{:keys [endpoint api-key] :as contentful} method path]
   (tugboat/request {:endpoint endpoint}
@@ -12,24 +14,30 @@
                           :query-params
                           {:access_token api-key})))
 
-(def entry->content-type-id (comp :id :sys :contentType :sys))
+(defn include-assets [assets fields]
+  (maps/map-values
+   (fn [v]
+     (let [field-type (-> v :sys :linkType)
+           asset-id   (-> v :sys :id)]
+       (if (= field-type "Asset")
+         (:fields (get assets asset-id))
+         v))) fields))
 
-(defn entry->fields [entry]
-  (let [fields (:fields entry)]
-    [(entry->content-type-id entry)
-     (merge fields
-            {:updated-at (-> entry :sys :updatedAt)
-             :entry-id   (-> entry :sys :id)})]))
+(defn entry->fields [assets entry]
+  (merge (include-assets assets (:fields entry))
+         {:updated-at (-> entry :sys :updatedAt)
+          :entry-type (-> entry :sys :contentType :sys :id)
+          :entry-id   (-> entry :sys :id)}))
 
-;; Rule is to use the most recently updated 'published' entry of a specific type
 (defn tx-contentful-body [body]
-  (let [contentful-key->data (->> (:items body)
-                                  (sort-by (comp :updatedAt :sys))
+  (let [included-assets      (->> body :includes :Asset (maps/index-by (comp :id :sys)))
+        contentful-key->data (->> (:items body)
+                                  (map (partial entry->fields included-assets))
+                                  (sort-by :updated-at)
                                   reverse
-                                  (partition-by entry->content-type-id)
+                                  (partition-by :entry-type)
                                   (map first)
-                                  (map entry->fields)
-                                  (into {}))
+                                  (maps/index-by :entry-type))
         homepage-hero-data   (get contentful-key->data "homepage")]
     {:hero {:desktop-uuid (:heroImageDesktopUuid homepage-hero-data)
             :mobile-uuid  (:heroImageMobileUuid homepage-hero-data)
