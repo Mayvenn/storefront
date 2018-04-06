@@ -33,10 +33,6 @@
        (group-by index-key)
        (maps/map-values (partial apply max-key :content/updated-at))))
 
-(let [{:keys [cache space-id] :as contentful} (:contentful dev-system/the-system)]
-  (->content
-   (:body
-    (contentful-request contentful :get (str "/spaces/" space-id "/entries")))))
 
 (defn resolve-link [resources [key value]]
   [key (if (map? value)
@@ -64,6 +60,11 @@
        (if (<= 200 status 299)
          (reset! cache (->content body))
          (fetch-entries contentful (inc attempt-number)))))))
+
+#_(let [{:keys [cache space-id] :as contentful} (:contentful dev-system/the-system)]
+  (->content
+   (:body
+    (contentful-request contentful :get (str "/spaces/" space-id "/entries")))))
 
 #_ (fetch-entries (:contentful dev-system/the-system))
 
