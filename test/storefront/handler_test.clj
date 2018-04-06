@@ -756,6 +756,7 @@
        :rightFeatureBlockFileName  "Right"}}]}
    :status 200})
 
+#_
 (deftest fetches-data-from-contentful
   (testing "caching content"
     (let [[storeback-requests storeback-handler]   (with-requests-chan (routes (GET "/store" req storeback-stylist-response)))

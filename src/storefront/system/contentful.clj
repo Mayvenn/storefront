@@ -75,6 +75,7 @@
   (start [c]
     (let [pool  (at-at/mk-pool)
           cache (atom {})]
+      #_
       (at-at/every cache-timeout
                    #(fetch-entries {:space-id space-id
                                     :endpoint endpoint
