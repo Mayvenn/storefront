@@ -294,10 +294,10 @@
   (component/html
    [:a
     (utils/route-to events/navigate-friend-referrals {:query-params {:traffic_source "homepageBanner"}})
-    (hero-image {:mobile-url  "//ucarecdn.com/677f872a-d0eb-4c39-bffa-ffa02823143f/"
-                 :desktop-url "//ucarecdn.com/a3c29b65-feed-450f-bfa2-8a88a3b96cc8/"
-                 :file-name   "talkable_banner.jpg"
-                 :alt         "refer friends, earn rewards, get 20% off"})]))
+    (hero-image {:mobile-url  "//ucarecdn.com/762369fb-6680-4e0a-bf99-4e6317f03f1d/"
+                 :desktop-url "//ucarecdn.com/b11d90d3-ed57-4c18-a61b-d91b68e1cccb/"
+                 :file-name   "talkable_banner_25.jpg"
+                 :alt         "refer friends, earn rewards, get 25% off"})]))
 
 (defn component [{:keys [signed-in store categories hero-element]} owner opts]
   (component/create
