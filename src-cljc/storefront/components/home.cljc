@@ -92,16 +92,24 @@
                    :file-name   file-name
                    :alt         alt}))]])
 
-(defn cms-hero [{:keys [desktop-uuid mobile-uuid file-name alt-text] :as hero-data}]
-  (when (seq hero-data)
+(defn cms-hero-image [{:keys [desktop-url mobile-url alt]}]
+  [:picture
+   ;; Tablet/Desktop
+   [:source {:media   "(min-width: 750px)"
+             :src-set (str desktop-url " 1x")}]
+   ;; Mobile
+   [:img.block.col-12 {:src mobile-url
+                       :alt alt}]])
+
+(defn cms-hero [{:keys [heroImageDesktop heroImageMobile heroImageAltText] :as homepage-data}]
+  (when (seq homepage-data)
     [:h1.h2
      [:a
       (assoc (utils/route-to events/navigate-shop-by-look {:album-slug "look"})
              :data-test "home-banner")
-      (hero-image {:mobile-url  (str "//ucarecdn.com/" mobile-uuid "/")
-                   :desktop-url (str "//ucarecdn.com/" desktop-uuid "/")
-                   :file-name   file-name
-                   :alt         alt-text})]]))
+      (cms-hero-image {:mobile-url  (-> heroImageMobile :file :url)
+                       :desktop-url (-> heroImageDesktop :file :url)
+                       :alt         heroImageAltText})]]))
 
 (def free-installation-hero
   [:h1.h2
@@ -313,8 +321,7 @@
 (defn query [data]
   (let [the-ville? (experiments/the-ville? data)
         cms?       (experiments/cms? data)
-        hero-data  (get-in data keypaths/cms-homepage-hero)]
-
+        homepage-data  (get-in data keypaths/cms-homepage)]
     {:store        (marquee/query data)
      :signed-in    (auth/signed-in data)
      :categories   (->> (get-in data keypaths/categories)
@@ -322,7 +329,7 @@
                         (sort-by :home/order))
      :hero-element (cond
                      the-ville? free-installation-hero
-                     cms?       (cms-hero hero-data)
+                     cms?       (cms-hero homepage-data)
                      :else      hero)}))
 
 (defn built-component [data opts]

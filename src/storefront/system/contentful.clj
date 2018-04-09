@@ -68,7 +68,7 @@
      (let [{:keys [status body]}
            (contentful-request contentful :get (str "/spaces/" space-id "/entries"))]
        (if (<= 200 status 299)
-         (reset! cache (some-> body extract resolve-items))
+         (reset! cache (some-> body extract resolve-items clojure.walk/keywordize-keys))
          (fetch-entries contentful (inc attempt-number)))))))
 
 (defrecord ContentfulContext

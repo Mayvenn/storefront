@@ -378,17 +378,16 @@
         (update-in keypaths/v2-skus merge (products/index-skus skus)))))
 
 (defn required-data
-  [{:keys [contentful environment leads-config storeback-config contentful-config nav-event nav-message nav-uri store order-number order-token]}]
+  [{:keys [contentful environment leads-config storeback-config nav-event nav-message nav-uri store order-number order-token]}]
   (let [order                   (api/get-order storeback-config order-number order-token)
         skus-on-order           (mapv :sku (orders/product-items order))
         {:keys [skus products]} (when (seq skus-on-order)
                                   (api/fetch-v2-products storeback-config {:selector/sku-ids skus-on-order}))
-        {:keys [facets]}        (api/fetch-v2-facets storeback-config)
-        {:keys [hero]}          @(:cache contentful)]
+        {:keys [facets]}        (api/fetch-v2-facets storeback-config)]
     (-> {}
         (assoc-in keypaths/welcome-url
                   (str (:endpoint leads-config) "?utm_source=shop&utm_medium=referral&utm_campaign=ShoptoWelcome"))
-        (assoc-in keypaths/cms-homepage-hero hero)
+        (assoc-in keypaths/cms @(:cache contentful))
         (assoc-in keypaths/store store)
         (assoc-in keypaths/environment environment)
         experiments/determine-features
