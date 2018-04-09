@@ -6,7 +6,8 @@
             [spice.maps :as maps]
             [clojure.set :as set]))
 
-(defn contentful-request [{:keys [endpoint api-key] :as contentful} method path]
+(defn contentful-request
+  [{:keys [endpoint api-key] :as contentful} method path]
   (tugboat/request {:endpoint endpoint}
                    method path
                    (assoc {:socket-timeout 30000
@@ -15,12 +16,11 @@
                           :query-params
                           {:access_token api-key})))
 
-(defn find-referenced-asset [assets value]
-  (if (-> value :sys :linkType (= "Asset"))
-    (:fields (get assets (-> value :sys :id)))
-    value))
+(defn extract-fields
+  "Contentful resources are boxed.
 
-(defn unbox [{:keys [fields sys]}]
+  We extract the fields, merging useful meta-data."
+  [{:keys [fields sys]}]
   (merge (maps/kebabify fields)
          {:content/updated-at (spice.date/to-millis (:updatedAt sys 0))
           :content/type       (or
@@ -28,27 +28,37 @@
                                "Asset")
           :content/id         (-> sys :id)}))
 
-(defn unbox-all [index-key boxed-resources]
-  (->> (map unbox boxed-resources)
+(defn extract-latest-by
+  "Extract a resource (e.g. items), grouped by a key, and taking the latest"
+  [resource index-key]
+  (->> (map extract-fields resource)
        (group-by index-key)
        (maps/map-values (partial apply max-key :content/updated-at))))
 
+(defn extract
+  "Extract resources in a response body"
+  [body]
+  (-> body
+      (update-in [:items]
+                 extract-latest-by :content/type)
+      (update-in [:includes :Asset]
+                 extract-latest-by :content/id)))
 
-(defn resolve-link [resources [key value]]
+(defn resolve-link
+  "Resolves contentful links in field values by stitching included
+  resources in situ."
+  [includes [key value]]
   [key (if (map? value)
-         (let [{:as image :keys [link-type id]} (:sys value)]
-           (if-let [resolved-value (get (get resources "Asset") (:id image))]
-             resolved-value
-             value))
+         (get (:Asset includes) (some-> value :sys :id) value)
          value)])
 
-(defn ->content [body]
-  (let [resources {:items (unbox-all :content/type
-                                     (:items body))
-                   :Asset (unbox-all :content/id
-                                     (some-> body :includes :Asset))}]
-    (maps/map-values (fn [v] (into {} (map (partial resolve-link resources)) v))
-                     (:items resources))))
+(defn resolve-items
+  [{:keys [items includes]}]
+  (maps/map-values (fn [item]
+                     (into {}
+                           (map (partial resolve-link includes))
+                           item))
+                   items))
 
 (defn fetch-entries
   ([contentful]
@@ -58,16 +68,8 @@
      (let [{:keys [status body]}
            (contentful-request contentful :get (str "/spaces/" space-id "/entries"))]
        (if (<= 200 status 299)
-         (reset! cache (->content body))
+         (reset! cache (some-> body extract resolve-items))
          (fetch-entries contentful (inc attempt-number)))))))
-
-#_(let [{:keys [cache space-id] :as contentful} (:contentful dev-system/the-system)]
-  (->content
-   (:body
-    (contentful-request contentful :get (str "/spaces/" space-id "/entries")))))
-
-#_ (fetch-entries (:contentful dev-system/the-system))
-
 
 (defrecord ContentfulContext
     [logger exception-handler cache-timeout api-key space-id endpoint]
@@ -75,7 +77,6 @@
   (start [c]
     (let [pool  (at-at/mk-pool)
           cache (atom {})]
-      #_
       (at-at/every cache-timeout
                    #(fetch-entries {:space-id space-id
                                     :endpoint endpoint
