@@ -333,7 +333,9 @@
   (-> address
       (dissoc :country-id)
       (set/rename-keys {:firstname :first-name
-                        :lastname :last-name})
+                        :lastname  :last-name
+                        :address-1 :address1
+                        :address-2 :address2})
       (update-in [:state] :abbr)
       (select-keys [:address1 :address2 :city :first-name :last-name :phone :state :zipcode])))
 

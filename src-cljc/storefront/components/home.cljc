@@ -101,15 +101,15 @@
    [:img.block.col-12 {:src mobile-url
                        :alt alt}]])
 
-(defn cms-hero [{:keys [heroImageDesktop heroImageMobile heroImageAltText] :as homepage-data}]
+(defn cms-hero [{:keys [hero-image-desktop hero-image-mobile hero-image-alt-text] :as homepage-data}]
   (when (seq homepage-data)
     [:h1.h2
      [:a
       (assoc (utils/route-to events/navigate-shop-by-look {:album-slug "look"})
              :data-test "home-banner")
-      (cms-hero-image {:mobile-url  (-> heroImageMobile :file :url)
-                       :desktop-url (-> heroImageDesktop :file :url)
-                       :alt         heroImageAltText})]]))
+      (cms-hero-image {:mobile-url  (-> hero-image-mobile :file :url)
+                       :desktop-url (-> hero-image-desktop :file :url)
+                       :alt         hero-image-alt-text})]]))
 
 (def free-installation-hero
   [:h1.h2
