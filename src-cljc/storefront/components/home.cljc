@@ -190,7 +190,13 @@
                        :alt     alt}]])
 
 (defn cms-feature-blocks
-  [homepage-data]
+  [{:keys [desktop-feature-image-1
+           mobile-feature-image-1
+           desktop-feature-image-2
+           mobile-feature-image-2
+           desktop-feature-image-3
+           mobile-feature-image-3]
+    :as   homepage-data}]
   (let [block :div.col.col-12.col-4-on-tb-dt.border.border-white]
     [:div.container.border-top.border-white
      [:div.col.col-12.my4 [:h1.center "Shop What's New"]]
