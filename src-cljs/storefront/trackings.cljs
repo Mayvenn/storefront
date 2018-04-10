@@ -86,7 +86,7 @@
   (pinterest/track-event "lead" {:lead_type "sales_rep"})
   (facebook-analytics/track-event "Lead"))
 
-(defmethod perform-track events/api-success-leads-lead-registered
+(defmethod perform-track events/api-success-leads-a1-lead-registered
   [_ _ _ _]
   (pinterest/track-event "signup")
   (facebook-analytics/track-custom-event "Lead_Self_Reg_Complete"))

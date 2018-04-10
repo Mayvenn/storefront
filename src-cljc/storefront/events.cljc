@@ -308,7 +308,6 @@
 (defpath api-success-telligent-login)
 
 (defpath api-success-leads-lead-created)
-(defpath api-success-leads-lead-registered)
 
 (defpath api-success-leads-a1-lead-created)
 (defpath api-success-leads-a1-lead-registered)
