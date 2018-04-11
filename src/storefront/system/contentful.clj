@@ -1,11 +1,13 @@
 (ns storefront.system.contentful
-  (:require [overtone.at-at :as at-at]
-            [tugboat.core :as tugboat]
+  (:require [camel-snake-kebab.core :as csk]
+            [camel-snake-kebab.extras :as cske]
+            [clojure.set :as set]
             [com.stuartsierra.component :as component]
+            [overtone.at-at :as at-at]
             [spice.core :as spice]
-            [spice.maps :as maps]
             [spice.date :as date]
-            [clojure.set :as set]))
+            [spice.maps :as maps]
+            [tugboat.core :as tugboat]))
 
 (defn contentful-request
   "Wrapper for the Content Delivery endpoint"
@@ -25,7 +27,7 @@
 
   We extract the fields, merging useful meta-data."
   [{:keys [fields sys]}]
-  (merge (maps/kebabify fields)
+  (merge (cske/transform-keys csk/->kebab-case fields)
          {:content/updated-at (spice.date/to-millis (:updatedAt sys 0))
           :content/type       (or
                                (some-> sys :contentType :sys :id)
