@@ -94,7 +94,6 @@
                    :alt         alt}))]])
 
 (defn cms-hero [{:keys [hero] :as homepage-data}]
-  ;; TODO(justin): webP
   (when (seq homepage-data)
     (let [{:keys [mobile desktop alt path]} hero
           mobile-url  (-> mobile :file :url)
@@ -105,9 +104,9 @@
         [:picture
          ;; Tablet/Desktop
          [:source {:media   "(min-width: 750px)"
-                   :src-set (str desktop-url " 1x")}]
-         ;; Mobile
-         [:img.block.col-12 {:src mobile-url :alt alt}]]]])))
+                   :src-set (str desktop-url "?fm=webp 1x")}]
+
+         [:img.block.col-12 {:src (str mobile-url "?fm=webp") :alt alt}]]]])))
 
 (def free-installation-hero
   [:h1.h2
@@ -167,14 +166,12 @@
                              :alt         "Clip-ins available in 9 colors, 2 textures!"})]]]))
 
 (defn cms-feature-block [{:keys [desktop mobile alt path]}]
-  ;; TODO: Figure out the appropriate q= setting equiv to uploadcare lightest
   ;; Assumptions: 2 up, within a .container. Does not account for 1px border.
   ;;          Large End
   ;; Desktop  480px
   ;; Tablet   360px
   ;; Mobile   375px
   ;;
-  ;; TODO(jonathan): WebP
   (let [mobile-url  (-> mobile :file :url)
         desktop-url (-> desktop :file :url)]
     [:div.col.col-12.col-4-on-tb-dt.border.border-white
@@ -182,15 +179,15 @@
       [:picture
        ;; Desktop
        [:source {:media   "(min-width: 1000px)"
-                 :src-set (str desktop-url "?w=480 1x, "
-                               desktop-url "?w=960&q=70 2x")}]
+                 :src-set (str desktop-url "?w=480&fm=webp 1x, "
+                               desktop-url "?w=960&fm=webp&q=50 2x")}]
        ;; Tablet
        [:source {:media   "(min-width: 750px)"
-                 :src-set (str desktop-url "?w=360 1x, "
-                               desktop-url "?w=720&q=70 2x")}]
+                 :src-set (str desktop-url "?w=360&fm=webp 1x, "
+                               desktop-url "?w=720&fm=webp&q=50 2x")}]
        ;; Mobile
-       [:img.block.col-12 {:src     (str mobile-url "?w=375")
-                           :src-set (str mobile-url "?w=750&q=70 2x")
+       [:img.block.col-12 {:src     (str mobile-url "?w=375&fm=webp")
+                           :src-set (str mobile-url "?w=750&fm=webp&q=50 2x")
                            :alt     alt}]]]]))
 
 (defn cms-feature-blocks
