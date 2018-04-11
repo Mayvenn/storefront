@@ -4,17 +4,21 @@
             [com.stuartsierra.component :as component]
             [spice.core :as spice]
             [spice.maps :as maps]
+            [spice.date :as date]
             [clojure.set :as set]))
 
 (defn contentful-request
-  [{:keys [endpoint api-key] :as contentful} method path]
-  (tugboat/request {:endpoint endpoint}
-                   method path
-                   (assoc {:socket-timeout 30000
-                           :conn-timeout   30000
-                           :as             :json}
-                          :query-params
-                          {:access_token api-key})))
+  "Wrapper for the Content Delivery endpoint"
+  [{:keys [endpoint env-param api-key space-id]} params]
+  (let [base-params {:access_token                     api-key
+                     :order                            (str "-fields." env-param)
+                     (str "fields." env-param "[lte]") (date/to-iso (date/now)) }]
+    (tugboat/request {:endpoint endpoint}
+                     :get (str "/spaces/" space-id "/entries")
+                     {:socket-timeout 30000
+                      :conn-timeout   30000
+                      :as             :json
+                      :query-params   (merge base-params params)})))
 
 (defn extract-fields
   "Contentful resources are boxed.
@@ -24,7 +28,7 @@
   (merge (maps/kebabify fields)
          {:content/updated-at (spice.date/to-millis (:updatedAt sys 0))
           :content/type       (or
-                               (-> sys :contentType :sys :id)
+                               (some-> sys :contentType :sys :id)
                                "Asset")
           :content/id         (-> sys :id)}))
 
@@ -41,6 +45,8 @@
   (-> body
       (update-in [:items]
                  extract-latest-by :content/type)
+      (update-in [:includes :Entry]
+                 extract-latest-by :content/id)
       (update-in [:includes :Asset]
                  extract-latest-by :content/id)))
 
@@ -49,44 +55,57 @@
   resources in situ."
   [includes [key value]]
   [key (if (map? value)
-         (get (:Asset includes) (some-> value :sys :id) value)
+         (let [id        (some-> value :sys :id)
+               link-type (some-> value :sys :link-type keyword)]
+           (get-in includes [link-type id] value))
          value)])
 
-(defn resolve-items
-  [{:keys [items includes]}]
-  (maps/map-values (fn [item]
+(defn resolve-children
+  "Resolves child links in parent maps by lookup in includes."
+  [includes parent-map]
+  (maps/map-values (fn [child-map]
                      (into {}
                            (map (partial resolve-link includes))
-                           item))
-                   items))
+                           child-map))
+                   parent-map))
+
+(defn resolve-all
+  "Resolves Assets under Entries within items."
+  [{:keys [items includes]}]
+  (-> includes
+      (update :Entry (partial resolve-children includes))
+      (resolve-children items)))
 
 (defn fetch-entries
   ([contentful]
    (fetch-entries contentful 1))
   ([{:keys [cache space-id] :as contentful} attempt-number]
    (when (<= attempt-number 2)
-     (let [{:keys [status body]}
-           (contentful-request contentful :get (str "/spaces/" space-id "/entries"))]
+     (let [{:keys [status body]} (contentful-request contentful
+                                                     {"content_type" "homepage"
+                                                      "limit"        1})]
        (if (<= 200 status 299)
-         (reset! cache (some-> body extract resolve-items clojure.walk/keywordize-keys))
+         (reset! cache (some-> body extract resolve-all clojure.walk/keywordize-keys))
          (fetch-entries contentful (inc attempt-number)))))))
 
 (defrecord ContentfulContext
-    [logger exception-handler cache-timeout api-key space-id endpoint]
+    [logger exception-handler environment cache-timeout api-key space-id endpoint]
   component/Lifecycle
   (start [c]
-    (let [pool  (at-at/mk-pool)
-          cache (atom {})]
+    (let [pool   (at-at/mk-pool)
+          cache  (atom {})]
       (at-at/every cache-timeout
-                   #(fetch-entries {:space-id space-id
-                                    :endpoint endpoint
-                                    :cache    cache
-                                    :api-key  api-key})
-                  pool)
-      (assoc c :pool  pool
-               :cache cache)))
+                   #(fetch-entries {:space-id  space-id
+                                    :endpoint  endpoint
+                                    :env-param (if (= environment "production")
+                                                 "production"
+                                                 "acceptance")
+                                    :cache     cache
+                                    :api-key   api-key})
+                   pool)
+      (assoc c
+             :pool  pool
+             :cache cache)))
   (stop [c]
     (when (:pool c) (at-at/stop-and-reset-pool! (:pool c)))
     (dissoc c :cache :pool)))
-
-;; TODO filter by space

@@ -92,24 +92,23 @@
                    :file-name   file-name
                    :alt         alt}))]])
 
-(defn cms-hero-image [{:keys [desktop-url mobile-url alt]}]
-  [:picture
-   ;; Tablet/Desktop
-   [:source {:media   "(min-width: 750px)"
-             :src-set (str desktop-url " 1x")}]
-   ;; Mobile
-   [:img.block.col-12 {:src mobile-url
-                       :alt alt}]])
+(defn cms-hero-image [{:keys [desktop mobile alt]}]
+  (let [mobile-url  (-> mobile :file :url)
+        desktop-url (-> desktop :file :url)]
+    [:picture
+     ;; Tablet/Desktop
+     [:source {:media   "(min-width: 750px)"
+               :src-set (str desktop-url " 1x")}]
+     ;; Mobile
+     [:img.block.col-12 {:src mobile-url :alt alt}]]))
 
-(defn cms-hero [{:keys [hero-image-desktop hero-image-mobile hero-image-alt-text] :as homepage-data}]
+(defn cms-hero [{:keys [hero] :as homepage-data}]
   (when (seq homepage-data)
     [:h1.h2
      [:a
       (assoc (utils/route-to events/navigate-shop-by-look {:album-slug "look"})
              :data-test "home-banner")
-      (cms-hero-image {:mobile-url  (-> hero-image-mobile :file :url)
-                       :desktop-url (-> hero-image-desktop :file :url)
-                       :alt         hero-image-alt-text})]]))
+      (cms-hero-image hero)]]))
 
 (def free-installation-hero
   [:h1.h2
@@ -168,52 +167,48 @@
                              :file-name   "clip-ins-9-colors-2-textures.png"
                              :alt         "Clip-ins available in 9 colors, 2 textures!"})]]]))
 
-(defn cms-feature-image [{:keys [desktop-url mobile-url alt]}]
+(defn cms-feature-image
   ;; TODO: Figure out the appropriate q= setting equiv to uploadcare lightest
   ;; Assumptions: 2 up, within a .container. Does not account for 1px border.
   ;;          Large End
   ;; Desktop  480px
   ;; Tablet   360px
   ;; Mobile   375px
-  [:picture
-   ;; Desktop
-   [:source {:media   "(min-width: 1000px)"
-             :src-set (str desktop-url "?w=480 1x, "
-                           desktop-url "?w=960&q=70 2x")}]
-   ;; Tablet
-   [:source {:media   "(min-width: 750px)"
-             :src-set (str desktop-url "?w=360 1x, "
-                           desktop-url "?w=720&q=70 2x")}]
-   ;; Mobile
-   [:img.block.col-12 {:src     (str desktop-url "?w=375")
-                       :src-set (str desktop-url "?w=750&q=70 2x")
-                       :alt     alt}]])
+  [{:keys [desktop mobile alt]}]
+  (let [mobile-url (-> mobile :file :url)
+        desktop-url (-> desktop :file :url)]
+    [:picture
+     ;; Desktop
+     [:source {:media   "(min-width: 1000px)"
+               :src-set (str desktop-url "?w=480 1x, "
+                             desktop-url "?w=960&q=70 2x")}]
+     ;; Tablet
+     [:source {:media   "(min-width: 750px)"
+               :src-set (str desktop-url "?w=360 1x, "
+                             desktop-url "?w=720&q=70 2x")}]
+     ;; Mobile
+     [:img.block.col-12 {:src     (str mobile-url "?w=375")
+                         :src-set (str mobile-url "?w=750&q=70 2x")
+                         :alt     alt}]]))
 
 (defn cms-feature-blocks
-  [{:keys [desktop-feature-image-1
-           mobile-feature-image-1
-           desktop-feature-image-2
-           mobile-feature-image-2
-           desktop-feature-image-3
-           mobile-feature-image-3]
-    :as   homepage-data}]
-  (let [block :div.col.col-12.col-4-on-tb-dt.border.border-white]
-    [:div.container.border-top.border-white
-     [:div.col.col-12.my4 [:h1.center "Shop What's New"]]
-     [block [:a (utils/route-to events/navigate-category {:catalog/category-id "16"
-                                                          :page/slug           "dyed-virgin-hair"})
-             (cms-feature-image {:desktop-url (-> desktop-feature-image-1 :file :url)
-                                 :mobile-url  (-> mobile-feature-image-1 :file :url)
-                                 :alt         (-> desktop-feature-image-1 :file :title)})]]
-     [block [:a (utils/route-to events/navigate-category {:page/slug "dyed-100-human-hair" :catalog/category-id "19"})
-             (cms-feature-image {:desktop-url (-> desktop-feature-image-2 :file :url)
-                                 :mobile-url  (-> mobile-feature-image-2 :file :url)
-                                 :alt         (-> desktop-feature-image-2 :file :title)})]]
-     [block [:a (utils/route-to events/navigate-category {:catalog/category-id "21"
-                                                          :page/slug           "seamless-clip-ins"})
-             (cms-feature-image {:desktop-url (-> desktop-feature-image-3 :file :url)
-                                 :mobile-url  (-> mobile-feature-image-3 :file :url)
-                                 :alt         (-> desktop-feature-image-3 :file :title)})]]]))
+  [{:as homepage-data :keys [feature-1 feature-2 feature-3]}]
+  (when (seq homepage-data)
+    (let [block :div.col.col-12.col-4-on-tb-dt.border.border-white]
+      [:div.container.border-top.border-white
+       [:div.col.col-12.my4 [:h1.center "Shop What's New"]]
+       [block [:a (utils/route-to events/navigate-category
+                                  {:catalog/category-id "16"
+                                   :page/slug           "dyed-virgin-hair"})
+               (cms-feature-image feature-1)]]
+       [block [:a (utils/route-to events/navigate-category
+                                  {:page/slug           "dyed-100-human-hair"
+                                   :catalog/category-id "19"})
+               (cms-feature-image feature-2)]]
+       [block [:a (utils/route-to events/navigate-category
+                                  {:catalog/category-id "21"
+                                   :page/slug           "seamless-clip-ins"})
+               (cms-feature-image feature-3)]]])))
 
 (defn drop-down-row [opts & content]
   (into [:a.inherit-color.block.center.h5.flex.items-center.justify-center

@@ -29,7 +29,8 @@
 (defn system-map [config]
   (component/system-map
    :logger (logger (config :logging))
-   :contentful  (contentful/map->ContentfulContext (:contentful-config config))
+   :contentful  (contentful/map->ContentfulContext (merge (:contentful-config config)
+                                                          (select-keys config [:environment])))
    :app-handler (map->AppHandler (select-keys config [:storeback-config
                                                       :leads-config
                                                       :environment
