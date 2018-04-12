@@ -96,17 +96,22 @@
 (defn cms-hero [{:keys [hero] :as homepage-data}]
   (when (seq homepage-data)
     (let [{:keys [mobile desktop alt path]} hero
-          mobile-url  (-> mobile :file :url)
-          desktop-url (-> desktop :file :url)]
+          mobile-url                        (-> mobile :file :url)
+          desktop-url                       (-> desktop :file :url)]
       [:h1.h2
        [:a (assoc (apply utils/route-to (routes/navigation-message-for path))
                   :data-test "home-banner")
         [:picture
          ;; Tablet/Desktop
-         [:source {:media   "(min-width: 750px)"
-                   :src-set (str desktop-url "?fm=webp 1x")}]
-
-         [:img.block.col-12 {:src (str mobile-url "?fm=webp") :alt alt}]]]])))
+         (for [img-type ["webp" "jpg"]]
+           [(ui/source desktop-url
+                       {:media   "(min-width: 750px)"
+                        :src-set {"1x" {}}
+                        :type    img-type})
+            (ui/source mobile-url
+                       {:src-set {"1x" {}}
+                        :type    img-type})])
+         [:img.block.col-12 {:src mobile-url :alt alt}]]]])))
 
 (def free-installation-hero
   [:h1.h2
@@ -173,22 +178,32 @@
   ;; Mobile   375px
   ;;
   (let [mobile-url  (-> mobile :file :url)
-        desktop-url (-> desktop :file :url)]
+        desktop-url (-> desktop :file :url)
+        tablet-url  (-> desktop :file :url)]
     [:div.col.col-12.col-4-on-tb-dt.border.border-white
      [:a (apply utils/route-to (routes/navigation-message-for path))
       [:picture
-       ;; Desktop
-       [:source {:media   "(min-width: 1000px)"
-                 :src-set (str desktop-url "?w=480&fm=webp 1x, "
-                               desktop-url "?w=960&fm=webp&q=50 2x")}]
-       ;; Tablet
-       [:source {:media   "(min-width: 750px)"
-                 :src-set (str desktop-url "?w=360&fm=webp 1x, "
-                               desktop-url "?w=720&fm=webp&q=50 2x")}]
-       ;; Mobile
-       [:img.block.col-12 {:src     (str mobile-url "?w=375&fm=webp")
-                           :src-set (str mobile-url "?w=750&fm=webp&q=50 2x")
-                           :alt     alt}]]]]))
+       (for [img-type ["webp" "jpg"]]
+         [(ui/source desktop-url
+                  {:media   "(min-width: 1000px)"
+                   :type    img-type
+                   :src-set {"1x" {:w "480"}
+                             "2x" {:w "960"
+                                   :q "50"}}})
+          (ui/source tablet-url
+                  {:media   "(min-width: 750px)"
+                   :type    img-type
+                   :src-set {"1x" {:w "360"}
+                             "2x" {:w "720"
+                                   :q "50"}}})
+          (ui/source mobile-url
+                  {:type    img-type
+                   :src-set {"1x" {:w "375"}
+                             "2x" {:w "750"
+                                   :q "50"}}})])
+       ;; Fallback
+       [:img.block.col-12 {:src (str mobile-url "?w=375&fm=jpg")
+                           :alt alt}]]]]))
 
 (defn cms-feature-blocks
   [{:as homepage-data :keys [feature-1 feature-2 feature-3]}]

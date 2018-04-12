@@ -1,16 +1,17 @@
 (ns storefront.components.ui
-  (:require [storefront.platform.component-utils :as utils]
-            [storefront.components.svg :as svg]
-            [storefront.events :as events]
+  (:require [cemerick.url :as url]
+            [clojure.string :as string]
+            [spice.maps :as maps]
+            [storefront.assets :as assets]
             #?(:clj [storefront.component-shim :as component]
                :cljs [storefront.component :as component])
-            [storefront.platform.messages :refer [handle-message]]
-            [storefront.assets :as assets]
-            [storefront.platform.numbers :as numbers]
             [storefront.components.money-formatters :as mf]
-            [clojure.string :as str]
+            [storefront.components.svg :as svg]
+            [storefront.events :as events]
+            [storefront.platform.component-utils :as utils]
             [storefront.platform.images :as images]
-            [spice.maps :as maps]))
+            [storefront.platform.messages :refer [handle-message]]
+            [storefront.platform.numbers :as numbers]))
 
 (defn narrow-container
   "A container that is 480px wide on desktop and tablet, but squishes on mobile"
@@ -77,10 +78,10 @@
     color))
 
 (defn ^:private button-class [color-kw {:keys [class]}]
-  (str/join " "
-            ["btn col-12 h5"
-             (button-colors color-kw)
-             class]))
+  (string/join " "
+               ["btn col-12 h5"
+                (button-colors color-kw)
+                class]))
 
 (defn ^:private color-button [color-kw attrs & content]
   (button (assoc attrs :class (button-class color-kw attrs))
@@ -524,6 +525,28 @@
                                     :style {:filter "blur(10px)"}}]
      (images/platform-hq-image {:src hq-url :alt alt})
      [:noscript [:img.col-12.absolute.overlay {:src hq-url :alt alt}]]]))
+
+(def ^:private contentful-type->mime
+  {"jpg" "image/jpeg"
+   "webp" "image/webp"})
+
+(defn ^:private build-src-set-url [url format [rule query]]
+  (-> (url/url (str "https:" url))
+      (assoc :query query)
+      (assoc-in [:query :fm] format)
+      (str " " rule)))
+
+(defn ^:private build-src-set [url format src-set]
+  (->> (map (partial build-src-set-url url format) src-set)
+       (string/join ", ")))
+
+(defn source [url {:as attrs :keys [src-set type]}]
+  (assert (contains? contentful-type->mime type)
+          (str "[ui/source] Invalid contentful format:" type
+               "; must be one of:" (keys contentful-type->mime)))
+  [:source (merge attrs
+                  {:src-set (build-src-set url type src-set)
+                   :type    (contentful-type->mime type)})])
 
 (def header-image-size 36)
 
