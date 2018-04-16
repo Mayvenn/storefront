@@ -1,6 +1,6 @@
 (ns storefront.components.popup
   (:require [storefront.platform.component-utils :as utils]
-            [storefront.components.cart :as cart]
+            [storefront.components.share-your-cart :as share-your-cart]
             [storefront.components.email-capture :as email-capture]
             [storefront.components.free-install :as free-install]
             [storefront.components.stylist.referrals :as stylist.referrals]
@@ -12,7 +12,7 @@
     (case (get-in data keypaths/popup)
       :free-install         (free-install/built-component data opts)
       :email-capture        (email-capture/built-component data opts)
-      :share-cart           (cart/built-share-link-component data opts)
+      :share-cart           (share-your-cart/built-component data opts)
       :refer-stylist        (stylist.referrals/built-refer-component data opts)
       :refer-stylist-thanks (stylist.referrals/built-thanks-component data opts)
       nil)))
