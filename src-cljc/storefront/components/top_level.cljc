@@ -1,8 +1,7 @@
 (ns storefront.components.top-level
   (:require #?(:clj [storefront.component-shim :as component]
                :cljs [storefront.component :as component])
-            #?@(:cljs [[storefront.components.cart :as cart]
-                       [storefront.components.checkout-sign-in :as checkout-sign-in]
+            #?@(:cljs [[storefront.components.checkout-sign-in :as checkout-sign-in]
                        [storefront.components.checkout-returning-or-guest :as checkout-returning-or-guest]
                        [storefront.components.checkout-address :as checkout-address]
                        [storefront.components.checkout-complete :as checkout-complete]
@@ -26,7 +25,7 @@
                        [storefront.components.style-guide :as style-guide]
                        [storefront.components.popup :as popup]
                        [storefront.config :as config]])
-
+            [checkout.cart :as cart]
             [catalog.category :as category]
             [catalog.product-details :as product-details]
             [storefront.components.content :as content]
