@@ -66,3 +66,6 @@
 
 (defn cms? [data]
   (display-feature? data "cms"))
+
+(defn auto-complete? [data]
+  (display-feature? data "auto-complete"))
