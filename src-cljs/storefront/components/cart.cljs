@@ -22,11 +22,6 @@
             [storefront.request-keys :as request-keys]
             [storefront.components.affirm :as affirm]))
 
-(defn- pluralize
-  ([cnt singular] (pluralize cnt singular (str singular "s")))
-  ([cnt singular plural]
-   (str cnt " " (if (= 1 (max cnt (- cnt))) singular plural))))
-
 (defn facebook-link [share-url]
   (share-links/facebook-link (share-links/with-utm-medium share-url "facebook")))
 
@@ -185,7 +180,7 @@ Thanks,
      (om/build deploy-promotion-banner-component promotion-banner)
      [:div.py3.h3.center
       [:.dark-gray
-       "You have " (pluralize (orders/product-quantity order) "item") " in your shopping bag."]]
+       "You have " (ui/pluralize (orders/product-quantity order) "item") " in your shopping bag."]]
 
      [:div.h3.py1
       {:data-test "order-summary"}
