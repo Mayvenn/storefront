@@ -105,32 +105,30 @@
   coming off of a waiter order which is a 'variant' with a :quantity
   Until waiter is updated to return 'line-item-skuers', this function must handle
   the two different types of input"
-  ([line-item {:keys [catalog/sku-id] :as sku} thumbnail quantity-line]
-   (let [legacy-variant-id (or (:legacy/variant-id line-item) (:id line-item))
-         price             (or (:sku/price line-item)         (:unit-price line-item))
-         title             (or (:sku/title line-item)         (products/product-title line-item))]
-     [:div.clearfix.border-bottom.border-gray.py3 {:key legacy-variant-id}
-      [:a.left.mr1
-       [:img.block.border.border-gray.rounded
-        (assoc thumbnail :style {:width  "7.33em"
-                                 :height "7.33em"})]]
-      [:div.overflow-hidden
-       [:div.ml1
-        [:a.medium.titleize.h5
-         {:data-test (str "line-item-title-" sku-id)}
-         title]
-        [:div.h6.mt1.line-height-1
-         (when-let [length (:hair/length sku)]
-           ;; TODO use facets once it's not painful to do so
-           [:div.pyp2
-            {:data-test (str "line-item-length-" sku-id)}
-            "Length: " length "\""])
-         [:div.pyp2
-          {:data-test (str "line-item-price-ea-" sku-id)}
-          "Price Each: " (as-money-without-cents price)]
-         quantity-line]]]]))
-  ([line-item {:keys [catalog/sku-id] :as sku} _ thumbnail quantity-line]
-   (display-line-item line-item sku thumbnail quantity-line)))
+  [line-item {:keys [catalog/sku-id] :as sku} thumbnail quantity-line]
+  (let [legacy-variant-id (or (:legacy/variant-id line-item) (:id line-item))
+        price             (or (:sku/price line-item)         (:unit-price line-item))
+        title             (or (:sku/title line-item)         (products/product-title line-item))]
+    [:div.clearfix.border-bottom.border-gray.py3 {:key legacy-variant-id}
+     [:a.left.mr1
+      [:img.block.border.border-gray.rounded
+       (assoc thumbnail :style {:width  "7.33em"
+                                :height "7.33em"})]]
+     [:div.overflow-hidden
+      [:div.ml1
+       [:a.medium.titleize.h5
+        {:data-test (str "line-item-title-" sku-id)}
+        title]
+       [:div.h6.mt1.line-height-1
+        (when-let [length (:hair/length sku)]
+          ;; TODO use facets once it's not painful to do so
+          [:div.pyp2
+           {:data-test (str "line-item-length-" sku-id)}
+           "Length: " length "\""])
+        [:div.pyp2
+         {:data-test (str "line-item-price-ea-" sku-id)}
+         "Price Each: " (as-money-without-cents price)]
+        quantity-line]]]]))
 
 (defn adjustable-quantity-line
   [line-item {:keys [catalog/sku-id]} removing? updating?]
@@ -154,8 +152,9 @@
   coming off of a waiter order which is a 'variant' with a :quantity
   Until waiter is updated to return 'line-item-skuers', this function must handle
   the two different types of input"
-  [line-item {:keys [catalog/sku-id] :as sku} {:keys [copy/title]} thumbnail quantity-line]
+  [line-item {:keys [catalog/sku-id] :as sku} thumbnail quantity-line]
   (let [legacy-variant-id (or (:legacy/variant-id line-item) (:id line-item))
+        product-title     (:product-title line-item)
         price             (or (:sku/price line-item)         (:unit-price line-item))]
     [:div.clearfix.border-bottom.border-gray.py3 {:key legacy-variant-id}
      [:a.left.mr1
@@ -166,7 +165,7 @@
       [:div.ml1
        [:a.medium.titleize.h5
         {:data-test (str "line-item-title-" sku-id)}
-        title]
+        product-title]
        [:div.h6.mt1.line-height-1
         (when-let [length (:hair/length sku)]
           ;; TODO use facets once it's not painful to do so
@@ -195,10 +194,9 @@
                 (utils/send-event-callback events/control-cart-line-item-inc {:variant line-item}))]])
 
 (defn display-adjustable-line-items
-  [line-items skus products update-line-item-requests delete-line-item-requests auto-complete?]
+  [line-items skus update-line-item-requests delete-line-item-requests auto-complete?]
   (for [{sku-id :sku variant-id :id :as line-item} line-items
         :let [sku                      (get skus sku-id)
-              product                  (products/find-product-by-sku-id products sku-id)
               line-item-displayer      (if auto-complete?
                                          display-line-item-auto-complete-experiment
                                          display-line-item)
@@ -208,7 +206,6 @@
     (line-item-displayer
      line-item
      sku
-     product
      (merge
       (images/cart-image sku)
       {:data-test (str "line-item-img-" (:catalog/sku-id sku))})

@@ -11,6 +11,7 @@
    [storefront.accessors.experiments :as experiments]
    [storefront.accessors.orders :as orders]
    [storefront.accessors.promos :as promos]
+   [storefront.accessors.products :as products]
    [storefront.accessors.stylists :as stylists]
    [storefront.components.affirm :as affirm]
    [storefront.components.promotion-banner :as promotion-banner]
@@ -79,6 +80,7 @@
 
 (defn full-component [{:keys [focused
                               order
+                              line-items
                               skus
                               products
                               coupon-code
@@ -116,9 +118,8 @@
      [:div.col-on-tb-dt.col-6-on-tb-dt.px3.mb3
       {:data-test "cart-line-items"}
       #?(:cljs
-         (summary/display-adjustable-line-items (orders/product-items order)
+         (summary/display-adjustable-line-items line-items
                                                 skus
-                                                products
                                                 update-line-item-requests
                                                 delete-line-item-requests
                                                 auto-complete?))]
@@ -220,11 +221,19 @@
 
 (defn full-cart-query [data]
   (let [order       (get-in data keypaths/order)
-        line-items  (orders/product-items order)
+        products    (get-in data keypaths/v2-products)
+        line-items  (map (fn [line-item]
+                           (merge line-item
+                                  {:product-title (->> line-item
+                                                       :sku
+                                                       (products/find-product-by-sku-id products)
+                                                       :copy/title)}))
+                         (orders/product-items order))
         variant-ids (map :id line-items)]
     {:order                     order
+     :line-items                line-items
      :skus                      (get-in data keypaths/v2-skus)
-     :products                  (get-in data keypaths/v2-products)
+     :products                  products
      :show-green-banner?        (and (orders/bundle-discount? order)
                                      (-> order :promotion-codes set (contains? "freeinstall")))
      :coupon-code               (get-in data keypaths/cart-coupon-code)
