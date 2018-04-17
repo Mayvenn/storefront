@@ -7,11 +7,20 @@
             [storefront.accessors.experiments :as experiments]
             [storefront.platform.component-utils :as utils]))
 
-(def allowed-navigation-events
+(def allowed-navigation?
   #{events/navigate-home
     events/navigate-cart
     events/navigate-shop-by-look
     events/navigate-shop-by-look-details})
+
+(defn auto-complete-allowed?
+  [data]
+  (let [nav-event                      (get-in data keypaths/navigation-event)
+        experiment-allowed-navigation? (disj allowed-navigation? events/navigate-cart)
+        current-promotion-codes        (get-in data keypaths/order-promotion-codes)]
+    (or (experiment-allowed-navigation? nav-event)
+        (and (= events/navigate-cart nav-event)
+             (empty? current-promotion-codes)))))
 
 (defn promotion-to-advertise [data]
   (let [promotions (get-in data keypaths/promotions)]
@@ -19,7 +28,8 @@
         (promos/find-promotion-by-code promotions (get-in data keypaths/pending-promo-code))
         (promos/default-advertised-promotion promotions))))
 
-(defn component [{:keys [allowed? the-ville? promo]} owner opts]
+(defn component
+  [{:keys [allowed? the-ville? promo]} owner opts]
   (component/create
    (cond
      (and allowed? the-ville?) [:a {:on-click (utils/send-event-callback events/popup-show-free-install {})
@@ -31,10 +41,15 @@
                                 (:description promo)]
      :else                     nil)))
 
-(defn query [data]
-  {:allowed?   (allowed-navigation-events (get-in data keypaths/navigation-event))
-   :the-ville? (experiments/the-ville? data)
-   :promo      (promotion-to-advertise data)})
+(defn query
+  [data]
+  (let [auto-complete? (experiments/auto-complete? data)]
+    {:allowed?   (if auto-complete?
+                   (auto-complete-allowed? data)
+                   (allowed-navigation? (get-in data keypaths/navigation-event)))
+     :the-ville? (experiments/the-ville? data)
+     :promo      (promotion-to-advertise data)}))
 
-(defn built-component [data opts]
+(defn built-component
+  [data opts]
   (component/build component (query data) opts))
