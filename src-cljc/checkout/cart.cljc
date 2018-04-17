@@ -80,6 +80,7 @@
 (defn full-component [{:keys [focused
                               order
                               skus
+                              products
                               coupon-code
                               promotion-banner
                               applying-coupon?
@@ -93,7 +94,8 @@
                               delete-line-item-requests
                               field-errors
                               the-ville?
-                              show-green-banner?]} owner]
+                              show-green-banner?
+                              auto-complete?]} owner]
   (component/create
    [:div.container.p2
     (component/build deploy-promotion-banner-component promotion-banner nil)
@@ -116,8 +118,10 @@
       #?(:cljs
          (summary/display-adjustable-line-items (orders/product-items order)
                                                 skus
+                                                products
                                                 update-line-item-requests
-                                                delete-line-item-requests))]
+                                                delete-line-item-requests
+                                                auto-complete?))]
 
      [:div.col-on-tb-dt.col-6-on-tb-dt.px3
       [:form.clearfix.mxn1
@@ -220,6 +224,7 @@
         variant-ids (map :id line-items)]
     {:order                     order
      :skus                      (get-in data keypaths/v2-skus)
+     :products                  (get-in data keypaths/v2-products)
      :show-green-banner?        (and (orders/bundle-discount? order)
                                      (-> order :promotion-codes set (contains? "freeinstall")))
      :coupon-code               (get-in data keypaths/cart-coupon-code)
@@ -240,7 +245,8 @@
      :delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)
      :field-errors              (get-in data keypaths/field-errors)
      :focused                   (get-in data keypaths/ui-focus)
-     :the-ville?                (experiments/the-ville? data)}))
+     :the-ville?                (experiments/the-ville? data)
+     :auto-complete?            (experiments/auto-complete? data)}))
 
 (defn empty-cart-query [data]
   {:promotions (get-in data keypaths/promotions)})
