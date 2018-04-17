@@ -135,7 +135,9 @@
   [:.mt1.flex.items-center.justify-between
    (if removing?
      [:.h3 {:style {:width "1.2em"}} ui/spinner]
-     [:a.gray.medium (utils/fake-href events/control-cart-remove (:id line-item)) "Remove"])
+     [:a.gray.medium
+      (merge {:data-test (str "line-item-remove-" sku-id)}
+             (utils/fake-href events/control-cart-remove (:id line-item))) "Remove"])
    [:.h3
     {:data-test (str "line-item-quantity-" sku-id)}
     (ui/counter {:spinning? updating?
