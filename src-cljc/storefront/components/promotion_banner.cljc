@@ -5,7 +5,8 @@
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
             [storefront.accessors.experiments :as experiments]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            [storefront.accessors.orders :as orders]))
 
 (def allowed-navigation?
   #{events/navigate-home
@@ -15,12 +16,14 @@
 
 (defn auto-complete-allowed?
   [data]
-  (let [nav-event                      (get-in data keypaths/navigation-event)
+  (let [empty-cart?                    (= 0 (orders/product-quantity (get-in data keypaths/order)))
+        nav-event                      (get-in data keypaths/navigation-event)
         experiment-allowed-navigation? (disj allowed-navigation? events/navigate-cart)
         current-promotion-codes        (get-in data keypaths/order-promotion-codes)]
     (or (experiment-allowed-navigation? nav-event)
         (and (= events/navigate-cart nav-event)
-             (empty? current-promotion-codes)))))
+             (or (empty? current-promotion-codes)
+                 empty-cart?)))))
 
 (defn promotion-to-advertise [data]
   (let [promotions (get-in data keypaths/promotions)]
