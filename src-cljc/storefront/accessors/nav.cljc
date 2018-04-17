@@ -39,5 +39,10 @@
   (set/union checkout-events
              payout-events))
 
+(defn show-minimal-footer? [event experiment-auto-complete?]
+  (if experiment-auto-complete?
+    (= event events/navigate-cart)
+    (minimal-events event)))
+
 (defn lead-page? [event]
   (= events/navigate-leads (take 2 event)))

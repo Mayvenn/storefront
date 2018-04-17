@@ -173,6 +173,6 @@
                     (sort-by :footer/order))})
 
 (defn built-component [data opts]
-  (if (nav/minimal-events (get-in data keypaths/navigation-event))
+  (if (nav/show-minimal-footer? (get-in data keypaths/navigation-event) (experiments/auto-complete? data))
     (component/build minimal-component (contacts-query data) nil)
     (component/build full-component (query data) nil)))
