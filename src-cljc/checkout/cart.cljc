@@ -219,15 +219,16 @@
            [request-key-prefix request-keys/update-line-item]
            [request-key-prefix request-keys/delete-line-item]])))
 
+(defn ^:private add-product-title-and-color-to-line-item [products line-item]
+  (merge line-item {:product-title (->> line-item
+                                        :sku
+                                        (products/find-product-by-sku-id products)
+                                        :copy/title)}))
+
 (defn full-cart-query [data]
   (let [order       (get-in data keypaths/order)
         products    (get-in data keypaths/v2-products)
-        line-items  (map (fn [line-item]
-                           (merge line-item
-                                  {:product-title (->> line-item
-                                                       :sku
-                                                       (products/find-product-by-sku-id products)
-                                                       :copy/title)}))
+        line-items  (map (partial add-product-title-and-color-to-line-item products)
                          (orders/product-items order))
         variant-ids (map :id line-items)]
     {:order                     order
