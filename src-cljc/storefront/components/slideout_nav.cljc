@@ -114,13 +114,16 @@
      (ui/ghost-button stylists/community-url
                       "Community"))]))
 
-(def ^:private user-actions
+(defn ^:private user-actions [the-ville?]
   (component/html
    (marquee-row
     (ui/ghost-button (assoc (utils/route-to events/navigate-account-manage)
                             :data-test "account-settings")
                      "Account settings")
-    (ui/ghost-button (utils/route-to events/navigate-account-referrals)
+    (ui/ghost-button (if the-ville?
+                       (utils/route-to events/navigate-friend-referrals
+                                       {:query-params {:campaign_tags "fayetteville-offer"}})
+                       (utils/route-to events/navigate-account-referrals))
                      "Refer a friend"))))
 
 (def ^:private guest-actions
@@ -136,10 +139,10 @@
              :data-test "sign-up")
       "Sign up now, get offers!"]])))
 
-(defn ^:private actions-marquee [signed-in]
+(defn ^:private actions-marquee [signed-in the-ville?]
   (case (-> signed-in ::auth/as)
     :stylist stylist-actions
-    :user    user-actions
+    :user    (user-actions the-ville?)
     :guest   guest-actions))
 
 (defn ^:private menu-row [& content]
@@ -231,14 +234,14 @@
                      "Sign out")
     [:div])))
 
-(defn ^:private root-menu [{:keys [user signed-in store deals?] :as data} owner opts]
+(defn ^:private root-menu [{:keys [user signed-in store deals? the-ville?] :as data} owner opts]
   (component/create
    [:div
     [:div.px6.border-bottom.border-gray
      (store-info-marquee signed-in store)
      (account-info-marquee signed-in user)
      [:div.my3.dark-gray
-      (actions-marquee signed-in)]]
+      (actions-marquee signed-in the-ville?)]]
     [:div.px6
      (menu-area data)]
     (when (-> signed-in ::auth/at-all)
@@ -259,12 +262,13 @@
       (component/build root-menu data nil))]))
 
 (defn basic-query [data]
-  {:signed-in (auth/signed-in data)
-   :on-taxon? (get-in data keypaths/current-traverse-nav-id)
-   :user      {:email (get-in data keypaths/user-email)}
-   :store     (marquee/query data)
-   :deals?    (experiments/deals? data)
-   :shopping  {:categories (get-in data keypaths/categories)}})
+  {:signed-in  (auth/signed-in data)
+   :on-taxon?  (get-in data keypaths/current-traverse-nav-id)
+   :user       {:email (get-in data keypaths/user-email)}
+   :store      (marquee/query data)
+   :deals?     (experiments/deals? data)
+   :the-ville? (experiments/the-ville? data)
+   :shopping   {:categories (get-in data keypaths/categories)}})
 
 (defn query [data]
   (-> (basic-query data)
