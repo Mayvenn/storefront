@@ -200,8 +200,7 @@
                               (select-keys % [:states]))}))
 
 (defn select-user-keys [user]
-  (-> (maps/kebabify user)
-      (select-keys [:email :token :store-slug :id :is-new-user :must-set-password])))
+  (select-keys user [:email :token :store-slug :id :is-new-user :must-set-password]))
 
 (defn select-auth-keys [args]
   (-> args
@@ -360,7 +359,7 @@
      :token token}
     :handler
     #(messages/handle-message events/api-success-account
-                              (diva->mayvenn-addresses (maps/kebabify %)))}))
+                              (diva->mayvenn-addresses %))}))
 
 (defn update-account [session-id id email password token]
   (storeback-api-req
@@ -385,20 +384,19 @@
    {:params params :handler handler}))
 
 (defn select-stylist-account-keys [args]
-  (let [kebabed-args (maps/kebabify args)]
-    (-> kebabed-args
-        (select-keys [:birth-date-1i :birth-date-2i :birth-date-3i
-                      :birth-date
-                      :portrait
-                      :chosen-payout-method
-                      :venmo-payout-attributes
-                      :paypal-payout-attributes
-                      :green-dot-payout-attributes
-                      :instagram-account
-                      :styleseat-account
-                      :user
-                      :address])
-        (assoc :original-payout-method (:chosen-payout-method kebabed-args)))))
+  (-> args
+      (select-keys [:birth-date-1i :birth-date-2i :birth-date-3i
+                    :birth-date
+                    :portrait
+                    :chosen-payout-method
+                    :venmo-payout-attributes
+                    :paypal-payout-attributes
+                    :green-dot-payout-attributes
+                    :instagram-account
+                    :styleseat-account
+                    :user
+                    :address])
+      (assoc :original-payout-method (:chosen-payout-method args))))
 
 (defn get-stylist-account [user-id user-token]
   (storeback-api-req
@@ -427,7 +425,7 @@
    {:params {:session-id session-id
              :user-id    user-id
              :user-token user-token
-             :stylist    (maps/snakify stylist-account)}
+             :stylist    stylist-account}
     :handler
     #(messages/handle-message events/api-success-stylist-account-profile
                               {:stylist (select-stylist-account-keys %)})}))
@@ -440,7 +438,7 @@
    {:params {:session-id session-id
              :user-id    user-id
              :user-token user-token
-             :stylist    (maps/snakify stylist-account)}
+             :stylist    stylist-account}
     :handler
     #(messages/handle-message events/api-success-stylist-account-password
                               {:stylist (select-stylist-account-keys %)})}))
@@ -453,7 +451,7 @@
    {:params {:session-id session-id
              :user-id    user-id
              :user-token user-token
-             :stylist    (maps/snakify stylist-account)}
+             :stylist    stylist-account}
     :handler
     #(messages/handle-message events/api-success-stylist-account-commission
                               {:stylist (select-stylist-account-keys %)})}))
@@ -466,7 +464,7 @@
    {:params {:session-id session-id
              :user-id    user-id
              :user-token user-token
-             :stylist    (maps/snakify stylist-account)}
+             :stylist    stylist-account}
     :handler
     #(messages/handle-message events/api-success-stylist-account-social
                               {:stylist (select-stylist-account-keys %)})}))
@@ -481,7 +479,7 @@
      :user-token user-token}
     :handler
     #(messages/handle-message events/api-success-stylist-account-portrait
-                              {:stylist (maps/kebabify (select-keys % [:portrait]))})}))
+                              {:stylist (select-keys % [:portrait])})}))
 
 (defn update-stylist-account-portrait [session-id user-id user-token stylist-account]
   (storeback-api-req
@@ -491,10 +489,10 @@
    {:params {:session-id session-id
              :user-id    user-id
              :user-token user-token
-             :stylist    (maps/snakify stylist-account)}
+             :stylist    stylist-account}
     :handler
     #(messages/handle-message events/api-success-stylist-account-portrait
-                              {:stylist  (maps/kebabify (select-keys % [:portrait]))
+                              {:stylist  (select-keys % [:portrait])
                                :updated? true})}))
 
 (defn append-stylist-gallery [user-id user-token {:keys [gallery-urls]}]
@@ -506,7 +504,7 @@
              :user-token user-token
              :urls       gallery-urls}
     :handler
-    #(messages/handle-message events/api-success-gallery (maps/kebabify %))}))
+    #(messages/handle-message events/api-success-gallery %)}))
 
 (defn get-gallery [params]
   (storeback-api-req
@@ -516,7 +514,7 @@
    {:params
     (select-keys params [:user-id :user-token :stylist-id])
     :handler
-    #(messages/handle-message events/api-success-gallery (maps/kebabify %))}))
+    #(messages/handle-message events/api-success-gallery %)}))
 
 (defn delete-gallery-image [user-id user-token image-url]
   (storeback-api-req
@@ -528,7 +526,7 @@
      :user-token user-token
      :image-url  image-url}
     :handler
-    #(messages/handle-message events/api-success-gallery (maps/kebabify %))}))
+    #(messages/handle-message events/api-success-gallery %)}))
 
 (defn get-stylist-balance-transfers
   [stylist-id user-id user-token {:keys [page per]} handler]
