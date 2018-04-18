@@ -76,7 +76,6 @@
          events/navigate-account-manage                             (partial sign-in/requires-sign-in account/built-component)
          events/navigate-account-referrals                          (partial sign-in/requires-sign-in friend-referrals/built-component)
          events/navigate-friend-referrals                           friend-referrals/built-component
-         events/navigate-cart                                       cart/built-component
          events/navigate-checkout-returning-or-guest                checkout-returning-or-guest/built-component
          events/navigate-checkout-sign-in                           checkout-sign-in/built-component
          events/navigate-checkout-address                           (partial checkout-returning-or-guest/requires-sign-in-or-initiated-guest-checkout checkout-address/built-component)
@@ -112,6 +111,12 @@
     events/navigate-leads-a1-registered-thank-you leads.a1.registered-thank-you/built-component
     home/built-component))
 
+(defn checkout-component [nav-event]
+  (condp = nav-event
+    #?@(:cljs [])
+    events/navigate-cart checkout.cart/built-component
+    checkout.cart/built-component))
+
 (defn top-level-component [data owner opts]
   (let [nav-event (get-in data keypaths/navigation-event)]
     (component/create
@@ -130,6 +135,10 @@
        (routes/sub-page? [nav-event] [events/navigate-leads])
        [:div {:data-test (keypaths/->component-str nav-event)}
         ((leads-component nav-event) data nil)]
+
+       (routes/sub-page? [nav-event] [events/navigate-cart])
+       [:div {:data-test (keypaths/->component-str nav-event)}
+        ((checkout-component nav-event) data nil)]
 
        :else
        [:div.flex.flex-column {:style {:min-height "100vh"}}

@@ -2,6 +2,7 @@
   (:require
    [checkout.control-cart :as control]
    [checkout.auto-complete-cart :as auto-complete]
+   [checkout.header :as auto-complete.header]
    #?@(:cljs [[goog.dom]
               [goog.events]
               [goog.events.EventType :as EventType]
@@ -15,10 +16,13 @@
    [storefront.accessors.promos :as promos]
    [storefront.accessors.products :as products]
    [storefront.accessors.stylists :as stylists]
+   [storefront.components.header :as storefront.header]
+   [storefront.components.footer :as storefront.footer]
    [storefront.components.affirm :as affirm]
    [storefront.components.promotion-banner :as promotion-banner]
    [storefront.components.svg :as svg]
    [storefront.components.ui :as ui]
+   [storefront.components.flash :as flash]
    [storefront.events :as events]
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
@@ -272,25 +276,55 @@
 (defn empty-cart-query [data]
   {:promotions (get-in data keypaths/promotions)})
 
-(defn component [{:keys [fetching-order?
-                         item-count
-                         empty-cart
-                         full-cart]}
-                 owner
-                 opts]
-  (component/create
-   (if fetching-order?
-     [:.py3.h2 ui/spinner]
+(defn component
+  [{:keys [auto-complete? fetching-order? item-count empty-cart full-cart header footer promotion-banner flash nav-event]} owner opts]
+  (if auto-complete?
+    (component/create
      [:div
-      (if (zero? item-count)
-        (component/build empty-component empty-cart opts)
-        (component/build full-component full-cart opts))])))
+      [:header (component/build auto-complete.header/component header nil)]
+
+      [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
+       (if fetching-order?
+         [:.py3.h2 ui/spinner]
+         [:div
+          (if (zero? item-count)
+            (component/build empty-component empty-cart opts)
+            (component/build full-component full-cart opts))])]
+
+      [:footer footer]])
+    (component/create
+     [:div.flex.flex-column {:style {:min-height "100vh"}}
+
+      (component/build promotion-banner/component promotion-banner nil)
+
+      [:header (component/build storefront.header/component header nil)]
+
+      (component/build flash/component flash nil)
+
+      [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
+       (if fetching-order?
+         [:.py3.h2 ui/spinner]
+         [:div
+          (if (zero? item-count)
+            (component/build empty-component empty-cart opts)
+            (component/build full-component full-cart opts))])]
+
+      [:footer footer]])))
 
 (defn query [data]
-  {:fetching-order? (utils/requesting? data request-keys/get-order)
-   :item-count      (orders/product-quantity (get-in data keypaths/order))
-   :empty-cart      (empty-cart-query data)
-   :full-cart       (full-cart-query data)})
+  {:auto-complete?   (experiments/auto-complete? data)
+   :fetching-order?  (utils/requesting? data request-keys/get-order)
+   :item-count       (orders/product-quantity (get-in data keypaths/order))
+   :empty-cart       (empty-cart-query data)
+   :full-cart        (full-cart-query data)
+   :promotion-banner (promotion-banner/query data)
+   :flash            (flash/query data)
+   :header           (storefront.header/query data)
+   ;; TODO Fix footer so that it's more useful from the outside.
+   ;; In the interim, we could just have our own checkout.footer
+   ;; and we could use the regular "full" storefront.footer in the control
+   :footer           (storefront.footer/built-component data nil)
+   :nav-event        (get-in data keypaths/navigation-event)})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
