@@ -1,5 +1,7 @@
 (ns checkout.cart
   (:require
+   [checkout.control-cart :as control]
+   [checkout.auto-complete-cart :as auto-complete]
    #?@(:cljs [[goog.dom]
               [goog.events]
               [goog.events.EventType :as EventType]
@@ -118,12 +120,15 @@
     [:div.mt2.clearfix.mxn3
      [:div.col-on-tb-dt.col-6-on-tb-dt.px3.mb3
       {:data-test "cart-line-items"}
-      #?(:cljs
-         (summary/display-adjustable-line-items line-items
-                                                skus
-                                                update-line-item-requests
-                                                delete-line-item-requests
-                                                auto-complete?))]
+      (if auto-complete?
+        (auto-complete/display-adjustable-line-items line-items
+                                                     skus
+                                                     update-line-item-requests
+                                                     delete-line-item-requests)
+        (control/display-adjustable-line-items line-items
+                                               skus
+                                               update-line-item-requests
+                                               delete-line-item-requests))]
 
      [:div.col-on-tb-dt.col-6-on-tb-dt.px3
       [:form.clearfix.mxn1
