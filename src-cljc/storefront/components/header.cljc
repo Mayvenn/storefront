@@ -232,7 +232,6 @@
   (-> (slideout-nav/basic-query data)
       (assoc-in [:user :expanded?]     (get-in data keypaths/account-menu-expanded))
       (assoc-in [:shopping :expanded?] (get-in data keypaths/shop-menu-expanded))
-      (assoc-in [:deals?] (experiments/deals? data))
       (assoc-in [:cart :quantity]      (orders/product-quantity (get-in data keypaths/order)))))
 
 (defn built-component [data opts]
