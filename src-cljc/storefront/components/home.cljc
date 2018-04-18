@@ -353,7 +353,7 @@
                  :file-name   "talkable_banner_25.jpg"
                  :alt         "refer friends, earn rewards, get 25% off"})]))
 
-(defn component [{:keys [signed-in store categories hero-element feature-elements]} owner opts]
+(defn component [{:keys [signed-in store categories hero-element feature-elements the-ville?]} owner opts]
   (component/create
    [:div.m-auto
     [:section hero-element]
@@ -362,24 +362,25 @@
     [:section (popular-grid categories)]
     [:section video-autoplay]
     [:section about-mayvenn]
-    [:section talkable-banner]]))
+    (when-not the-ville? [:section talkable-banner])]))
 
 (defn query [data]
   (let [the-ville?    (experiments/the-ville? data)
         cms?          (experiments/cms? data)
         homepage-data (get-in data keypaths/cms-homepage)]
-    {:store           (marquee/query data)
-     :signed-in       (auth/signed-in data)
-     :categories      (->> (get-in data keypaths/categories)
-                           (filter :home/order)
-                           (sort-by :home/order))
-     :hero-element    (cond
-                        the-ville? free-installation-hero
-                        cms?       (cms-hero homepage-data)
-                        :else      hero)
+    {:store            (marquee/query data)
+     :signed-in        (auth/signed-in data)
+     :categories       (->> (get-in data keypaths/categories)
+                            (filter :home/order)
+                            (sort-by :home/order))
+     :hero-element     (cond
+                         the-ville? free-installation-hero
+                         cms?       (cms-hero homepage-data)
+                         :else      hero)
      :feature-elements (if cms?
-                        (cms-feature-blocks homepage-data)
-                        (feature-blocks))}))
+                         (cms-feature-blocks homepage-data)
+                         (feature-blocks))
+     :the-ville?       the-ville?}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
