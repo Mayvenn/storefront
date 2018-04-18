@@ -31,7 +31,7 @@
 
 (def default-config {:server-opts       {:port 3006}
                      :client-version    client-version
-                     :contentful-config {:cache-timeout 300000
+                     :contentful-config {:cache-timeout 120000
                                          :endpoint "https://cdn.contentful.com"}
 
                      :logging (merge (timbre/get-default-config)
