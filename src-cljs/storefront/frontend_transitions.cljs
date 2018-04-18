@@ -415,6 +415,9 @@
       (assoc-in keypaths/shared-cart-current shared-cart)
       (update-in keypaths/v2-skus merge (products/index-skus skus))))
 
+(defmethod transition-state events/api-success-fetch-cms-data [_ event cms-data app-state]
+  (assoc-in app-state keypaths/cms cms-data))
+
 (defmethod transition-state events/control-stylist-referral-add-another [_ event args app-state]
   (update-in app-state keypaths/stylist-referrals conj state/empty-referral))
 

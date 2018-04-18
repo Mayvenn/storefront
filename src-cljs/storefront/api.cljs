@@ -111,16 +111,20 @@
                                                                     :app-version (-> res :response :app-version)})
                            ((or error-handler default-error-handler) res))}))
 
-(defn api-req
-  [method path req-key request-opts]
+(defn api-request [method url req-key request-opts]
   (let [request-opts (update-in request-opts [:params] maps/remove-nils)
-        req-id (str (random-uuid))
-        request
-        (method (str api-base-url path)
-                (merge-req-opts req-key req-id request-opts))]
-    (messages/handle-message events/api-start {:xhr request
+        req-id       (str (random-uuid))
+        request      (method url (merge-req-opts req-key req-id request-opts))]
+    (messages/handle-message events/api-start {:xhr         request
                                                :request-key req-key
-                                               :request-id req-id})))
+                                               :request-id  req-id})))
+
+(defn storeback-api-req [method path req-key request-opts]
+  (api-request method (str api-base-url path) req-key request-opts))
+
+(defn fetch-cms-data []
+  (api-request GET "/api/cms" request-keys/fetch-cms-data
+                      {:handler #(messages/handle-message events/api-success-fetch-cms-data %)}))
 
 (defn cache-req
   [cache method path req-key {:keys [handler params] :as request-opts}]
@@ -128,7 +132,7 @@
         res (cache key)]
     (if res
       (handler res)
-      (api-req method
+      (storeback-api-req method
                path
                req-key
                (merge request-opts
@@ -176,7 +180,7 @@
     :handler handler}))
 
 (defn get-saved-cards [user-id user-token]
-  (api-req
+  (storeback-api-req
    GET
    "/saved-cards"
    request-keys/get-saved-cards
@@ -205,7 +209,7 @@
       (select-keys [:user :order])))
 
 (defn sign-out [session-id browser-id user-id user-token]
-  (api-req
+  (storeback-api-req
    POST
    "/v2/signout"
    request-keys/sign-out
@@ -218,7 +222,7 @@
     :error-handler identity}))
 
 (defn sign-in [session-id browser-id email password stylist-id order-number order-token]
-  (api-req
+  (storeback-api-req
    POST
    "/v2/login"
    request-keys/sign-in
@@ -237,7 +241,7 @@
                                   (assoc :flow "email-password")))}))
 
 (defn facebook-sign-in [session-id browser-id uid access-token stylist-id order-number order-token]
-  (api-req
+  (storeback-api-req
    POST
    "/v2/login/facebook"
    request-keys/facebook-sign-in
@@ -261,7 +265,7 @@
         (messages/handle-message success-event auth-keys)))}))
 
 (defn sign-up [session-id browser-id email password stylist-id order-number order-token]
-  (api-req
+  (storeback-api-req
    POST
    "/v2/signup"
    request-keys/sign-up
@@ -280,7 +284,7 @@
                                   (assoc :flow "email-password")))}))
 
 (defn reset-password [session-id browser-id password reset-token order-number order-token stylist-id]
-  (api-req
+  (storeback-api-req
    POST
    "/v2/reset_password"
    request-keys/reset-password
@@ -299,7 +303,7 @@
                                   (assoc :flow "email-password")))}))
 
 (defn facebook-reset-password [session-id browser-id uid access-token reset-token order-number order-token stylist-id]
-  (api-req
+  (storeback-api-req
    POST
    "/v2/reset_facebook"
    request-keys/reset-facebook
@@ -319,7 +323,7 @@
                                   (assoc :flow "facebook")))}))
 
 (defn forgot-password [session-id email]
-  (api-req
+  (storeback-api-req
    POST
    "/forgot_password"
    request-keys/forgot-password
@@ -347,7 +351,7 @@
       (update-in [:shipping-address] diva->mayvenn-address)))
 
 (defn get-account [id token]
-  (api-req
+  (storeback-api-req
    GET
    "/users"
    request-keys/get-account
@@ -359,7 +363,7 @@
                               (diva->mayvenn-addresses (maps/kebabify %)))}))
 
 (defn update-account [session-id id email password token]
-  (api-req
+  (storeback-api-req
    PUT
    "/users"
    request-keys/update-account
@@ -375,7 +379,7 @@
 
 (defn force-set-password
   [{:as params :keys [session-id id password token]} handler]
-  (api-req
+  (storeback-api-req
    PUT "/users"
    request-keys/update-account
    {:params params :handler handler}))
@@ -397,7 +401,7 @@
         (assoc :original-payout-method (:chosen-payout-method kebabed-args)))))
 
 (defn get-stylist-account [user-id user-token]
-  (api-req
+  (storeback-api-req
    GET
    "/stylist"
    request-keys/get-stylist-account
@@ -408,7 +412,7 @@
                               {:stylist (select-stylist-account-keys %)})}))
 
 (defn get-shipping-methods []
-  (api-req
+  (storeback-api-req
    GET
    "/v2/shipping-methods"
    request-keys/get-shipping-methods
@@ -416,7 +420,7 @@
                                        (update-in % [:shipping-methods] reverse))}))
 
 (defn update-stylist-account-profile [session-id user-id user-token stylist-account]
-  (api-req
+  (storeback-api-req
    PUT
    "/stylist"
    request-keys/update-stylist-account-profile
@@ -429,7 +433,7 @@
                               {:stylist (select-stylist-account-keys %)})}))
 
 (defn update-stylist-account-password [session-id user-id user-token stylist-account]
-  (api-req
+  (storeback-api-req
    PUT
    "/stylist"
    request-keys/update-stylist-account-password
@@ -442,7 +446,7 @@
                               {:stylist (select-stylist-account-keys %)})}))
 
 (defn update-stylist-account-commission [session-id user-id user-token stylist-account]
-  (api-req
+  (storeback-api-req
    PUT
    "/stylist"
    request-keys/update-stylist-account-commission
@@ -455,7 +459,7 @@
                               {:stylist (select-stylist-account-keys %)})}))
 
 (defn update-stylist-account-social [session-id user-id user-token stylist-account]
-  (api-req
+  (storeback-api-req
    PUT
    "/stylist"
    request-keys/update-stylist-account-social
@@ -468,7 +472,7 @@
                               {:stylist (select-stylist-account-keys %)})}))
 
 (defn refresh-stylist-portrait [user-id user-token]
-  (api-req
+  (storeback-api-req
    GET
    "/stylist"
    request-keys/refresh-stylist-portrait
@@ -480,7 +484,7 @@
                               {:stylist (maps/kebabify (select-keys % [:portrait]))})}))
 
 (defn update-stylist-account-portrait [session-id user-id user-token stylist-account]
-  (api-req
+  (storeback-api-req
    PUT
    "/stylist"
    request-keys/update-stylist-account-portrait
@@ -494,7 +498,7 @@
                                :updated? true})}))
 
 (defn append-stylist-gallery [user-id user-token {:keys [gallery-urls]}]
-  (api-req
+  (storeback-api-req
    POST
    "/gallery"
    request-keys/append-gallery
@@ -505,7 +509,7 @@
     #(messages/handle-message events/api-success-gallery (maps/kebabify %))}))
 
 (defn get-gallery [params]
-  (api-req
+  (storeback-api-req
    GET
    "/gallery"
    request-keys/get-gallery
@@ -515,7 +519,7 @@
     #(messages/handle-message events/api-success-gallery (maps/kebabify %))}))
 
 (defn delete-gallery-image [user-id user-token image-url]
-  (api-req
+  (storeback-api-req
    POST
    "/gallery/images/delete"
    request-keys/delete-gallery-image
@@ -528,7 +532,7 @@
 
 (defn get-stylist-balance-transfers
   [stylist-id user-id user-token {:keys [page per]} handler]
-  (api-req
+  (storeback-api-req
    GET
    "/v1/stylist/balance-transfers"
    request-keys/get-stylist-balance-transfers
@@ -540,7 +544,7 @@
     :handler handler}))
 
 (defn get-stylist-balance-transfer [user-id user-token balance-transfer-id]
-  (api-req
+  (storeback-api-req
    GET
    (str "/v1/stylist/balance-transfers/" balance-transfer-id)
    request-keys/get-stylist-balance-transfer
@@ -551,7 +555,7 @@
 
 (defn get-stylist-payout-stats
   [event stylist-id user-id user-token]
-  (api-req
+  (storeback-api-req
    GET
    "/v1/stylist/payout-stats"
    request-keys/get-stylist-payout-stats
@@ -563,7 +567,7 @@
 
 (defn cash-out-now
   [user-id user-token stylist-id]
-  (api-req
+  (storeback-api-req
    POST
    "/v1/stylist/cash-out"
    request-keys/cash-out-now
@@ -575,7 +579,7 @@
 
 (defn cash-out-status
   [user-id user-token status-id stylist-id]
-  (api-req
+  (storeback-api-req
    GET
    "/v1/stylist/cash-out"
    request-keys/cash-out-status
@@ -587,7 +591,7 @@
                                        (select-keys % [:status :balance-transfer-id]))}))
 
 (defn get-stylist-bonus-credits [user-id user-token {:keys [page]}]
-  (api-req
+  (storeback-api-req
    GET
    "/stylist/bonus-credits"
    request-keys/get-stylist-bonus-credits
@@ -606,7 +610,7 @@
                                               :pages]))}))
 
 (defn get-stylist-referral-program [user-id user-token {:keys [page]}]
-  (api-req
+  (storeback-api-req
    GET
    "/stylist/referrals"
    request-keys/get-stylist-referral-program
@@ -625,7 +629,7 @@
                                               :pages]))}))
 
 (defn place-order [session-id order utm-params]
-  (api-req
+  (storeback-api-req
    POST
    "/v2/place-order"
    request-keys/place-order
@@ -638,7 +642,7 @@
 
 
 (defn ^:private remove-from-bag [request-key session-id {:keys [variant-id number token quantity]} handler]
-  (api-req
+  (storeback-api-req
    POST
    "/v2/remove-from-bag"
    request-key
@@ -672,7 +676,7 @@
    #(messages/handle-message events/api-success-remove-from-bag {:order %})))
 
 (defn update-addresses [session-id order]
-  (api-req
+  (storeback-api-req
    POST
    "/v2/update-addresses"
    request-keys/update-addresses
@@ -684,7 +688,7 @@
                                         :navigate events/navigate-checkout-payment})}))
 
 (defn guest-update-addresses [session-id order]
-  (api-req
+  (storeback-api-req
    POST
    "/v2/guest-update-addresses"
    request-keys/update-addresses
@@ -704,7 +708,7 @@
            :error-handler failed-to-estimate})))
 
 (defn checkout [params successful-checkout failed-checkout]
-  (api-req
+  (storeback-api-req
    POST
    "/checkout"
    request-keys/checkout
@@ -715,7 +719,7 @@
     :error-handler (juxt failed-checkout default-error-handler)}))
 
 (defn update-shipping-method [session-id order]
-  (api-req
+  (storeback-api-req
    POST
    "/v2/update-shipping-method"
    request-keys/update-shipping-method
@@ -726,7 +730,7 @@
                                        {:order %})}))
 
 (defn update-cart-payments [session-id {:keys [order] :as args}]
-  (api-req
+  (storeback-api-req
    POST
    "/v2/update-cart-payments"
    request-keys/update-cart-payments
@@ -737,7 +741,7 @@
                                        (merge args {:order %}))}))
 
 (defn get-order [number token]
-  (api-req
+  (storeback-api-req
    GET
    (str "/v2/orders/" number)
    request-keys/get-order
@@ -747,7 +751,7 @@
     #(messages/handle-message events/api-success-get-order %)}))
 
 (defn get-completed-order [number token]
-  (api-req
+  (storeback-api-req
    GET
    (str "/v2/orders/" number)
    request-keys/get-order
@@ -757,7 +761,7 @@
     #(messages/handle-message events/api-success-get-completed-order %)}))
 
 (defn get-current-order [user-id user-token store-stylist-id]
-  (api-req
+  (storeback-api-req
    GET
    "/v2/current-order-for-user"
    request-keys/get-order
@@ -773,7 +777,7 @@
   (= events/api-failure (subvec event 0 2)))
 
 (defn add-promotion-code [session-id number token promo-code allow-dormant?]
-  (api-req
+  (storeback-api-req
    POST
    "/v2/add-promotion-code"
    request-keys/add-promotion-code
@@ -796,7 +800,7 @@
                           (default-error-handler %))))}))
 
 (defn add-sku-to-bag [session-id {:keys [token number sku] :as params} handler]
-  (api-req
+  (storeback-api-req
    POST
    "/v2/add-to-bag"
    (conj request-keys/add-to-bag (:catalog/sku-id sku))
@@ -807,7 +811,7 @@
     :handler handler}))
 
 (defn remove-promotion-code [session-id {:keys [token number]} promo-code handler]
-  (api-req
+  (storeback-api-req
    POST
    "/v2/remove-promotion-code"
    request-keys/remove-promotion-code
@@ -816,7 +820,7 @@
     :handler handler}))
 
 (defn create-shared-cart [session-id order-number order-token]
-  (api-req
+  (storeback-api-req
    POST
    "/create-shared-cart"
    request-keys/create-shared-cart
@@ -827,7 +831,7 @@
                                        {:cart %})}))
 
 (defn fetch-shared-cart [shared-cart-id]
-  (api-req
+  (storeback-api-req
    GET
    "/fetch-shared-cart"
    request-keys/fetch-shared-cart
@@ -837,7 +841,7 @@
                                         :skus        (:skus %)})}))
 
 (defn create-order-from-cart [session-id shared-cart-id look-id user-id user-token stylist-id]
-  (api-req
+  (storeback-api-req
    POST
    "/create-order-from-shared-cart"
    request-keys/create-order-from-shared-cart
@@ -857,7 +861,7 @@
                       (messages/handle-message events/api-failure-order-not-created-from-shared-cart))}))
 
 (defn send-referrals [session-id referral]
-  (api-req
+  (storeback-api-req
    POST
    "/leads/referrals"
    request-keys/send-referrals
@@ -885,7 +889,7 @@
                                         :content %})}))
 
 (defn telligent-sign-in [session-id user-id token]
-  (api-req
+  (storeback-api-req
    POST
    "/v2/login/telligent"
    request-keys/login-telligent
@@ -895,7 +899,7 @@
     :handler #(messages/handle-message events/api-success-telligent-login (set/rename-keys % {:max_age :max-age}))}))
 
 (defn create-lead [params callback]
-  (api-req
+  (storeback-api-req
    POST
    "/leads"
    request-keys/create-lead
@@ -909,7 +913,7 @@
                                                                             (assoc :scroll-selector "[data-ref=leads-sign-up-form]") )))}))
 
 (defn advance-lead-registration [params handler]
-  (api-req POST
+  (storeback-api-req POST
              "/leads/advance-in-flow"
              request-keys/advance-lead
              {:params  params

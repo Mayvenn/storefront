@@ -278,6 +278,8 @@
 (defpath api-success-send-stylist-referrals)
 (defpath api-partial-success-send-stylist-referrals)
 
+(defpath api-success-fetch-cms-data)
+
 (defpath api-success-add-to-bag)
 (defpath api-success-add-sku-to-bag)
 (defpath api-success-remove-from-bag)

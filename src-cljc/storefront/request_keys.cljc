@@ -67,3 +67,5 @@
 
 (def create-lead [:create-lead])
 (def advance-lead [:advance-lead])
+
+(def fetch-cms-data [:fetch-cms-data])
