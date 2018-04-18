@@ -20,7 +20,8 @@
    [storefront.events :as events]
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
-   [storefront.request-keys :as request-keys]))
+   [storefront.request-keys :as request-keys]
+   [storefront.accessors.facets :as facets]))
 
 (defn deploy-promotion-banner-component
   [data owner opts]
@@ -219,17 +220,22 @@
            [request-key-prefix request-keys/update-line-item]
            [request-key-prefix request-keys/delete-line-item]])))
 
-(defn ^:private add-product-title-and-color-to-line-item [products line-item]
+(defn ^:private add-product-title-and-color-to-line-item [products facets line-item]
   (merge line-item {:product-title (->> line-item
                                         :sku
                                         (products/find-product-by-sku-id products)
-                                        :copy/title)}))
+                                        :copy/title)
+                    :color-name    (-> line-item
+                                       :variant-attrs
+                                       :color
+                                       (facets/get-color facets)
+                                       :option/name)}))
 
 (defn full-cart-query [data]
   (let [order       (get-in data keypaths/order)
         products    (get-in data keypaths/v2-products)
-        line-items  (map (partial add-product-title-and-color-to-line-item products)
-                         (orders/product-items order))
+        facets      (get-in data keypaths/v2-facets)
+        line-items  (map (partial add-product-title-and-color-to-line-item products facets) (orders/product-items order))
         variant-ids (map :id line-items)]
     {:order                     order
      :line-items                line-items

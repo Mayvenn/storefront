@@ -154,7 +154,6 @@
   the two different types of input"
   [line-item {:keys [catalog/sku-id] :as sku} thumbnail quantity-line]
   (let [legacy-variant-id (or (:legacy/variant-id line-item) (:id line-item))
-        product-title     (:product-title line-item)
         price             (or (:sku/price line-item)         (:unit-price line-item))]
     [:div.clearfix.border-bottom.border-gray.py3 {:key legacy-variant-id}
      [:a.left.mr1
@@ -165,13 +164,11 @@
       [:div.ml1
        [:a.medium.titleize.h5
         {:data-test (str "line-item-title-" sku-id)}
-        product-title]
+        (:product-title line-item)]
        [:div.h6.mt1.line-height-1
-        (when-let [length (:hair/length sku)]
-          ;; TODO use facets once it's not painful to do so
-          [:div.pyp2
-           {:data-test (str "line-item-length-" sku-id)}
-           "Length: " length "\""])
+        [:div.pyp2
+         {:data-test (str "line-item-color-" sku-id)}
+         (:color-name line-item)]
         [:div.pyp2
          {:data-test (str "line-item-price-ea-" sku-id)}
          "Price Each: " (as-money-without-cents price)]
