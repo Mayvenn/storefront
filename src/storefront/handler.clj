@@ -782,7 +782,7 @@
                (GET "/products" req (redirect-to-home environment req))
                (GET "/products/" req (redirect-to-home environment req))
                (GET "/products/:id-and-slug/:sku" req (redirect-to-product-details environment req))
-               (GET "/api/cms" req (-> ctx :contentful :cache deref cheshire.core/generate-string util.response/response))
+               (GET "/cms" req (-> ctx :contentful :cache deref cheshire.core/generate-string util.response/response))
                (static-routes ctx)
                (paypal-routes ctx)
                (affirm-routes ctx)

@@ -123,8 +123,8 @@
   (api-request method (str api-base-url path) req-key request-opts))
 
 (defn fetch-cms-data []
-  (api-request GET "/api/cms" request-keys/fetch-cms-data
-                      {:handler #(messages/handle-message events/api-success-fetch-cms-data %)}))
+  (api-request GET "/cms" request-keys/fetch-cms-data
+               {:handler #(messages/handle-message events/api-success-fetch-cms-data %)}))
 
 (defn cache-req
   [cache method path req-key {:keys [handler params] :as request-opts}]
