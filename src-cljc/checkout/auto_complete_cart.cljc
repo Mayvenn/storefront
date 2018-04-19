@@ -15,8 +15,16 @@
   (let [legacy-variant-id (or (:legacy/variant-id line-item) (:id line-item))
         price             (or (:sku/price line-item)         (:unit-price line-item))]
     [:div.clearfix.border-bottom.border-gray.py3 {:key legacy-variant-id}
-     [:a.left.mr1
-      [:img.block.border.border-gray.rounded
+     [:a.left.mr1.z0
+      [:div.right.z1.bg-teal.border.border-white.circle.stacking-context
+       {:style {:margin-left "-14px"
+                :margin-top  "-14px"
+                :width      "40px"
+                :height     "40px"}}
+       [:div.bg-lighten-4.circle.align-middle.flex.items-center.justify-center.medium
+        {:style {:width  "44px"
+                 :height "44px"}} "12\""]]
+      [:img.block.border.border-light-gray
        (assoc thumbnail :style {:width  "7.33em"
                                 :height "7.33em"})]]
      [:div.overflow-hidden
