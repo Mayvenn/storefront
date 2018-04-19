@@ -8,6 +8,7 @@
               [goog.events.EventType :as EventType]
               [goog.style]
               [storefront.component :as component]
+              [storefront.components.popup :as popup]
               [storefront.components.order-summary :as summary]
               [om.core :as om]]
        :clj [[storefront.component-shim :as component]])
@@ -284,6 +285,7 @@
            full-cart
            control-header
            auto-complete-header
+           popup
            footer
            promotion-banner
            flash
@@ -307,6 +309,8 @@
 
       (component/build promotion-banner/component promotion-banner nil)
 
+      #?(:cljs popup)
+
       [:header (component/build storefront.header/component control-header nil)]
 
       (component/build flash/component flash nil)
@@ -322,20 +326,22 @@
       [:footer footer]])))
 
 (defn query [data]
-  {:auto-complete?    (experiments/auto-complete? data)
-   :fetching-order?   (utils/requesting? data request-keys/get-order)
-   :item-count        (orders/product-quantity (get-in data keypaths/order))
-   :empty-cart        (empty-cart-query data)
-   :full-cart         (full-cart-query data)
-   :promotion-banner  (promotion-banner/query data)
-   :flash             (flash/query data)
-   :control-header (storefront.header/query data)
-   :auto-complete-header   (auto-complete.header/query data)
+  {:auto-complete?       (experiments/auto-complete? data)
+   :fetching-order?      (utils/requesting? data request-keys/get-order)
+   :item-count           (orders/product-quantity (get-in data keypaths/order))
+   :empty-cart           (empty-cart-query data)
+   :full-cart            (full-cart-query data)
+   :promotion-banner     (promotion-banner/query data)
+   :flash                (flash/query data)
+   :control-header       (storefront.header/query data)
+   :auto-complete-header (auto-complete.header/query data)
    ;; TODO Fix footer so that it's more useful from the outside.
    ;; In the interim, we could just have our own checkout.footer
    ;; and we could use the regular "full" storefront.footer in the control
-   :footer            (storefront.footer/built-component data nil)
-   :nav-event         (get-in data keypaths/navigation-event)})
+   :footer               (storefront.footer/built-component data nil)
+   :popup                #?(:clj nil
+                            :cljs (popup/built-component data nil))
+   :nav-event            (get-in data keypaths/navigation-event)})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
