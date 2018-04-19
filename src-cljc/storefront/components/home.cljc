@@ -79,21 +79,8 @@
    ;; Mobile
    [:img.block.col-12 {:src (str mobile-url "-/format/auto/" file-name)
                        :alt alt}]])
-(def hero
-  [:h1.h2
-   [:a
-    (assoc (utils/route-to events/navigate-shop-by-look {:album-slug "look"})
-           :data-test "home-banner")
-    (let [file-name "Hair-Always-On-Beat-Fling.jpg"
-          alt       "Hair always on beat! 25% off everything! Shop looks!"
-          mob-uuid  "567ec976-be95-416f-a8ca-e49b3aefad8a"
-          dsk-uuid  "eb9fb12d-cd4b-4348-bd49-dc529a93e3ef"]
-      (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
-                   :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
-                   :file-name   file-name
-                   :alt         alt}))]])
 
-(defn cms-hero [{:keys [hero] :as homepage-data}]
+(defn hero [{:keys [hero] :as homepage-data}]
   (when (seq homepage-data)
     (let [{:keys [mobile desktop alt path]} hero
           mobile-url                        (-> mobile :file :url)
@@ -148,29 +135,7 @@
                        :src-set (str mobile-url "-/format/auto/-/resize/750x/-/quality/lightest/" file-name " 2x")
                        :alt     alt}]])
 
-(defn feature-blocks []
-  (let [block :div.col.col-12.col-4-on-tb-dt.border.border-white]
-    [:div.container.border-top.border-white
-     [:div.col.col-12.my4 [:h1.center "Shop What's New"]]
-     [block [:a (utils/route-to events/navigate-category {:catalog/category-id "16"
-                                                          :page/slug           "dyed-virgin-hair"})
-             (feature-image {:mobile-url  "//ucarecdn.com/3fa4212f-31a2-4525-a53f-f7aa988be858/"
-                             :desktop-url "//ucarecdn.com/a7f2d90b-3c51-4b53-935f-92600392d345/"
-                             :file-name   "Dyed-Virgin-Hair-Is-Here.png"
-                             :alt         "Dyed Virgin Hair Is Here!"})]]
-     [block [:a (utils/route-to events/navigate-category {:page/slug "dyed-100-human-hair" :catalog/category-id "19"})
-             (feature-image {:mobile-url  "//ucarecdn.com/a1857e33-7536-48f7-8edc-fccb08b718b7/"
-                             :desktop-url "//ucarecdn.com/f4a97396-b98b-4f62-b918-75c5d60d3315/"
-                             :file-name   "dyed-100-human-hair.png"
-                             :alt         "Dyed 100% Human Hair - Starting at $30!"})]]
-     [block [:a (utils/route-to events/navigate-category {:catalog/category-id "21"
-                                                          :page/slug           "seamless-clip-ins"})
-             (feature-image {:mobile-url  "//ucarecdn.com/3fdbe21b-6826-4fb1-a8a3-eb73a37113c3/"
-                             :desktop-url "//ucarecdn.com/766bf2c0-63d1-4aec-840f-f993928ae20e/"
-                             :file-name   "clip-ins-9-colors-2-textures.png"
-                             :alt         "Clip-ins available in 9 colors, 2 textures!"})]]]))
-
-(defn cms-feature-block [{:keys [desktop mobile alt path]}]
+(defn feature-block [{:keys [desktop mobile alt path]}]
   ;; Assumptions: 2 up, within a .container. Does not account for 1px border.
   ;;          Large End
   ;; Desktop  480px
@@ -205,14 +170,14 @@
        [:img.block.col-12 {:src (str mobile-url "?w=375&fm=jpg")
                            :alt alt}]]]]))
 
-(defn cms-feature-blocks
+(defn feature-blocks
   [{:as homepage-data :keys [feature-1 feature-2 feature-3]}]
   (when (seq homepage-data)
     [:div.container.border-top.border-white
      [:div.col.col-12.my4 [:h1.center "Shop What's New"]]
-     (cms-feature-block feature-1)
-     (cms-feature-block feature-2)
-     (cms-feature-block feature-3)]))
+     (feature-block feature-1)
+     (feature-block feature-2)
+     (feature-block feature-3)]))
 
 (defn drop-down-row [opts & content]
   (into [:a.inherit-color.block.center.h5.flex.items-center.justify-center
@@ -366,7 +331,6 @@
 
 (defn query [data]
   (let [the-ville?    (experiments/the-ville? data)
-        cms?          (experiments/cms? data)
         homepage-data (get-in data keypaths/cms-homepage)]
     {:store            (marquee/query data)
      :signed-in        (auth/signed-in data)
@@ -375,11 +339,8 @@
                             (sort-by :home/order))
      :hero-element     (cond
                          the-ville? free-installation-hero
-                         cms?       (cms-hero homepage-data)
-                         :else      hero)
-     :feature-elements (if cms?
-                         (cms-feature-blocks homepage-data)
-                         (feature-blocks))
+                         :else      (hero homepage-data))
+     :feature-elements (feature-blocks homepage-data)
      :the-ville?       the-ville?}))
 
 (defn built-component [data opts]
