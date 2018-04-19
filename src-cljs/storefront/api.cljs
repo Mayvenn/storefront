@@ -345,7 +345,9 @@
 (defn diva->mayvenn-addresses [contains-addresses]
   (-> contains-addresses
       (set/rename-keys {:bill-address :billing-address
-                        :ship-address :shipping-address})
+                        :ship-address :shipping-address
+                        ;;TODO GROT once storeback deployed
+                        :total_available_store_credit :total-available-store-credit})
       (update-in [:billing-address] diva->mayvenn-address)
       (update-in [:shipping-address] diva->mayvenn-address)))
 
