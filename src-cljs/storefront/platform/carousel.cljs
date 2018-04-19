@@ -5,20 +5,21 @@
 
 (def custom-dots (constantly (html [:a [:div.circle]])))
 
-(defn inner-component [{:keys [slides settings]} owner _]
+(defn inner-component [{:keys [now slides settings]} owner _]
   (om/component
    (if-not (seq slides)
      (html [:div])
      (js/React.createElement js/Slider
                              (clj->js (merge {:pauseOnHover true
                                               :customPaging custom-dots
-                                              :dotsClass "carousel-dots"
+                                              :dotsClass    "carousel-dots"
                                               ;; :waitForAnimate true
                                               ;; TODO: figure out why onMouseUp always
                                               ;; triggers navigation to link in slide,
                                               ;; while onTouchEnd doesn't. This prevents
                                               ;; us from allowing drag on desktop.
-                                              :draggable    false}
+                                              :draggable    false
+                                              :now          now}
                                              settings))
                              (html (for [[idx slide] (map-indexed vector slides)]
                                      ;; Wrapping div allows slider.js to attach

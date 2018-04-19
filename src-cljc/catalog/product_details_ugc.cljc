@@ -64,7 +64,7 @@
        "Want to show up on our homepage? "
        "Tag your best pictures wearing Mayvenn with " [:span.bold "#MayvennMade"]]])))
 
-(defn popup-component [{:keys [carousel-data offset]} owner opts]
+(defn popup-component [{:keys [now carousel-data offset]} owner opts]
   (component/create
    (let [close-attrs (util/route-to events/navigate-product-details
                                     {:catalog/product-id (:product-id carousel-data)
@@ -77,7 +77,8 @@
                         {:slides   (map (partial popup-slide (:product-name carousel-data))
                                         (:album carousel-data))
                          :settings {:slidesToShow 1
-                                    :initialSlide (parse-int offset)}}
+                                    :initialSlide (parse-int offset)}
+                         :now      now}
                         {})
        [:div.absolute
         {:style {:top "1.5rem" :right "1.5rem"}}

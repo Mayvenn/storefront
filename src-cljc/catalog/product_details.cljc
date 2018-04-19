@@ -32,7 +32,8 @@
                        [storefront.hooks.reviews :as review-hooks]
                        [storefront.api :as api]
                        [storefront.history :as history]])
-            [storefront.components.affirm :as affirm]))
+            [storefront.components.affirm :as affirm]
+            [spice.date :as date]))
 
 (defn item-price [price]
   (when price
@@ -385,8 +386,15 @@
                        :page-slug    (:page/slug product)
                        :sku-id       (:catalog/sku-id sku)
                        :album        images}
-       :offset (get-in data keypaths/ui-ugc-category-popup-offset)
-       :back   (first (get-in data keypaths/navigation-undo-stack))})))
+       :offset        (get-in data keypaths/ui-ugc-category-popup-offset)
+       :back          (first (get-in data keypaths/navigation-undo-stack))
+       ;;TODO GROT:
+       ;; This is to force UGC to re-render after Slick's initial render
+       ;; Slick has a bug when before 485px width where it shows a sliver
+       ;; of the next image on the right.
+       ;; This ugly terrible hack gets it to re-evaluate its width
+       ;; The correct solution is to get rid of/fix slick
+       :now           (date/now)})))
 
 (defn generate-options [facets product product-skus selected-sku]
   (reduce (partial skus->options product selected-sku facets product-skus)
