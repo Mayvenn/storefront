@@ -28,10 +28,11 @@
         fetched-album-slug  (if (and the-ville? (= linkable-album-slug :look))
                               :free-install
                               (or linkable-album-slug
-                                  :look))]
-    {:looks     (pixlee/images-in-album (get-in data keypaths/ugc) fetched-album-slug)
+                                  :look))
+        looks               (pixlee/images-in-album (get-in data keypaths/ugc) fetched-album-slug)]
+    {:looks     looks
      :copy      (-> config/pixlee :copy fetched-album-slug)
-     :spinning? (not (or the-ville? the-ville-control?))}))
+     :spinning? (empty? looks)}))
 
 (defn built-component [data opts]
   (om/build component (query data) opts))
