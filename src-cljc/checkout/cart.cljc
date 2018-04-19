@@ -277,15 +277,25 @@
   {:promotions (get-in data keypaths/promotions)})
 
 (defn component
-  [{:keys [auto-complete? fetching-order? item-count empty-cart full-cart header footer promotion-banner flash nav-event]} owner opts]
+  [{:keys [auto-complete?
+           fetching-order?
+           item-count
+           empty-cart
+           full-cart
+           control-header
+           auto-complete-header
+           footer
+           promotion-banner
+           flash
+           nav-event]} owner opts]
   (if auto-complete?
     (component/create
      [:div
-      [:header (component/build auto-complete.header/component header nil)]
+      [:header (component/build auto-complete.header/component auto-complete-header nil)]
 
       [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
        (if fetching-order?
-         [:.py3.h2 ui/spinner]
+         [:div.py3.h2 ui/spinner]
          [:div
           (if (zero? item-count)
             (component/build empty-component empty-cart opts)
@@ -297,13 +307,13 @@
 
       (component/build promotion-banner/component promotion-banner nil)
 
-      [:header (component/build storefront.header/component header nil)]
+      [:header (component/build storefront.header/component control-header nil)]
 
       (component/build flash/component flash nil)
 
       [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
        (if fetching-order?
-         [:.py3.h2 ui/spinner]
+         [:div.py3.h2 ui/spinner]
          [:div
           (if (zero? item-count)
             (component/build empty-component empty-cart opts)
@@ -312,19 +322,20 @@
       [:footer footer]])))
 
 (defn query [data]
-  {:auto-complete?   (experiments/auto-complete? data)
-   :fetching-order?  (utils/requesting? data request-keys/get-order)
-   :item-count       (orders/product-quantity (get-in data keypaths/order))
-   :empty-cart       (empty-cart-query data)
-   :full-cart        (full-cart-query data)
-   :promotion-banner (promotion-banner/query data)
-   :flash            (flash/query data)
-   :header           (storefront.header/query data)
+  {:auto-complete?    (experiments/auto-complete? data)
+   :fetching-order?   (utils/requesting? data request-keys/get-order)
+   :item-count        (orders/product-quantity (get-in data keypaths/order))
+   :empty-cart        (empty-cart-query data)
+   :full-cart         (full-cart-query data)
+   :promotion-banner  (promotion-banner/query data)
+   :flash             (flash/query data)
+   :control-header (storefront.header/query data)
+   :auto-complete-header   (auto-complete.header/query data)
    ;; TODO Fix footer so that it's more useful from the outside.
    ;; In the interim, we could just have our own checkout.footer
    ;; and we could use the regular "full" storefront.footer in the control
-   :footer           (storefront.footer/built-component data nil)
-   :nav-event        (get-in data keypaths/navigation-event)})
+   :footer            (storefront.footer/built-component data nil)
+   :nav-event         (get-in data keypaths/navigation-event)})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

@@ -24,10 +24,10 @@
 (defn component [{:keys [item-count]}]
   (component/create
    [:div.border-bottom.border-gray.flex.items-center
-    [:div.flex-auto.py3.center.dark-gray "Shopping Bag - " item-count " items X"]]))
+    [:div.flex-auto.py3.center.dark-gray "Shopping Bag - " (prn-str item-count) " items"]]))
 
 (defn query [data]
-  :item-count (orders/product-quantity (get-in data keypaths/order)))
+  {:item-count (orders/product-quantity (get-in data keypaths/order))})
 
 (defn built-component [data opts]
   (component/build component (query data) nil))
