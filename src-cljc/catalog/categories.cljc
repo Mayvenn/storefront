@@ -47,8 +47,8 @@
                                            "and can be customized to fit your unique look.")
            :copy/videos              {:learn-more {:url "https://www.youtube.com/embed/xSA_7hTH2Fg"}}
            :images                   {:hero {:filename    "VirginClosures.jpg",
-                                             :desktop-url "//ucarecdn.com/b1443b91-6dd3-44e7-b7c3-06876def1bd5/",
-                                             :mobile-url  "//ucarecdn.com/e3d3c5c7-e4dc-4f37-96c0-19bb14785dfb/",
+                                             :desktop-url "//ucarecdn.com/205aa178-866d-4cfd-a122-e16a28cd7314/",
+                                             :mobile-url  "//ucarecdn.com/dbae573e-9757-46cb-b42b-8a8159f9e12c/",
                                              :alt         "Virgin Closures"}}}
           (category->seo "Closures"
                          (copy "Lace Closures in Brazilian Straight, Malaysian Body Wave,"
@@ -72,8 +72,8 @@
                                    "and low-density edges for a naturally flawless look.")
            :copy/videos      {:learn-more {:url "https://www.youtube.com/embed/xSA_7hTH2Fg"}}
            :images           {:hero {:filename    "360Frontals.jpg"
-                                     :desktop-url "//ucarecdn.com/4f2075cf-ea01-4c85-a96a-928fc6a03cf8/"
-                                     :mobile-url  "//ucarecdn.com/3fccae53-99a7-4e3a-b52a-54086b6eef22/"
+                                     :desktop-url "//ucarecdn.com/70ea2632-2710-49a7-a53f-4f34213c2fb6/"
+                                     :mobile-url  "//ucarecdn.com/2a4e32c9-91fe-4a1e-8a84-d10c62f52819/"
                                      :alt         "360 Frontals"}}
            :footer/order     11
            :header/order     1
@@ -101,8 +101,8 @@
                                       "Our collection of frontals blend seamlessly with our bundles and can be customized to fit your unique look.")
            :copy/videos         {:learn-more {:url "https://www.youtube.com/embed/xSA_7hTH2Fg"}}
            :images              {:hero {:filename    "VirginFrontals.jpg",
-                                        :desktop-url "//ucarecdn.com/2c6c4831-7002-43b9-8bb4-afda60dd213b/",
-                                        :mobile-url  "//ucarecdn.com/d353eb7b-2b70-4b03-ab9e-9144dc81954e/",
+                                        :desktop-url "//ucarecdn.com/753b14a4-24ac-468c-b6f6-6aad72de443d/",
+                                        :mobile-url  "//ucarecdn.com/158461f7-e264-4d58-974a-59abf5b18c3a/",
                                         :alt         "Virgin Frontals"}}}
           (category->seo "Frontals"
                          (copy "Brazilian, Peruvian, Indian and Malaysian hair frontals."
@@ -127,8 +127,8 @@
                                            "and can be customized to fit your unique look.")
            :copy/videos              {:learn-more {:url "https://www.youtube.com/embed/xSA_7hTH2Fg"}}
            :images                   {:hero {:filename    "DyedVirginClosures.jpg",
-                                             :desktop-url "//ucarecdn.com/8bb50b5c-dfc5-4565-8461-7e2a68a7733e/",
-                                             :mobile-url  "//ucarecdn.com/8ae295fc-0252-499f-910a-73b29348414e/",
+                                             :desktop-url "//ucarecdn.com/28dbf16e-3df7-4160-b109-c183c7a93e93/",
+                                             :mobile-url  "//ucarecdn.com/b9b70ce1-57c3-4376-b341-aff6c165c706/",
                                              :alt         "Dyed Vigin Closures"}}}
           (category->seo "Dyed Virgin Closures"
                          (copy "Save time and skip the hassle of fussing with toner"
@@ -154,8 +154,8 @@
                                            "Our collection of frontals blend seamlessly with our bundles and can be customized to fit your unique look.")
            :copy/videos              {:learn-more {:url "https://www.youtube.com/embed/xSA_7hTH2Fg"}}
            :images                   {:hero {:filename    "DyedVirginFrontals.jpg",
-                                             :desktop-url "//ucarecdn.com/d861f26b-6a2f-4bd9-a6e4-d0b0b141527e/",
-                                             :mobile-url  "//ucarecdn.com/e686f6fe-31a4-408c-84ee-0337f6f0902b/",
+                                             :desktop-url "//ucarecdn.com/7a0dcb8e-5589-48d6-94d0-eeb972ce962f/",
+                                             :mobile-url  "//ucarecdn.com/ac0cda32-5258-43bf-82d5-1928537bec8c/",
                                              :alt         "Dyed Virgin Frontals"}}}
           (category->seo "Dyed Virgin Frontals"
                          (copy "Save time and skip the hassle of fussing with toner"
@@ -182,8 +182,8 @@
                                       "minimal effort.")
            :copy/videos         {:learn-more {:url "https://www.youtube.com/embed/xSA_7hTH2Fg"}}
            :images              {:hero {:filename    "VirginStraight.jpg",
-                                        :desktop-url "//ucarecdn.com/5be83577-fc62-42fd-b7aa-cd35c09fa32a/",
-                                        :mobile-url  "//ucarecdn.com/9ca3c6e7-1414-4702-be7b-6ea3428320de/",
+                                        :desktop-url "//ucarecdn.com/371af310-9100-433e-9e49-4abd8308d262/",
+                                        :mobile-url  "//ucarecdn.com/409a74b6-1f12-4a9d-b024-672a4d0e1694/",
                                         :alt         "Virgin Straight"}
                                  :home {:filename "StraightExtensionsMayvenn.jpg",
                                         :url      "//ucarecdn.com/cf60bdc3-09df-4ee3-87a8-d3cbdcefdd87/",
@@ -216,8 +216,8 @@
                                       "cancelled.")
            :copy/videos         {:learn-more {:url "https://www.youtube.com/embed/xSA_7hTH2Fg"}}
            :images              {:hero {:filename    "VirginYakiStraight.jpg",
-                                        :desktop-url "//ucarecdn.com/a49ac151-ff04-4bf5-895a-0636dc2dacd8/",
-                                        :mobile-url  "//ucarecdn.com/249749df-11d7-4e1b-8ca7-f877af3b9c11/",
+                                        :desktop-url "//ucarecdn.com/303850ef-a62a-49d9-bc38-e7e823133efa/",
+                                        :mobile-url  "//ucarecdn.com/2ed05d29-6f8f-4378-8d24-cab16f1e8a0e/",
                                         :alt         "Virgin Yaki Straight"}}
            :footer/order        1
            :header/order        1
@@ -243,8 +243,8 @@
                                            "locks.")
            :copy/videos              {:learn-more {:url "https://www.youtube.com/embed/xSA_7hTH2Fg"}}
            :images                   {:hero {:filename    "VirginKinkyStraight.jpg",
-                                             :desktop-url "//ucarecdn.com/09d70755-37d5-401c-b483-c7a3dd1ef588/",
-                                             :mobile-url  "//ucarecdn.com/297659dd-3b82-4f47-89ea-cdaf6045d923/",
+                                             :desktop-url "//ucarecdn.com/92530f8d-0ff0-4705-bfd9-94b75fbbacca/",
+                                             :mobile-url  "//ucarecdn.com/8c996c90-9db1-4a45-b6bf-1c242b708583/",
                                              :alt         "Virgin Kinky Straight"}}
            :footer/order             2
            :header/order             2
@@ -267,8 +267,8 @@
                                            "Body Wave is unbelievably soft and goes from straight to wavy and back again with ease.")
            :copy/videos              {:learn-more {:url "https://www.youtube.com/embed/xSA_7hTH2Fg"}}
            :images                   {:hero {:filename    "VirginBodyWave.jpg",
-                                             :desktop-url "//ucarecdn.com/5e0d4953-67af-4f53-a705-f3af1ed8704c/",
-                                             :mobile-url  "//ucarecdn.com/e96d0e62-02ab-4834-a032-4a7cdb3a77b2/",
+                                             :desktop-url "//ucarecdn.com/6ed67381-3dae-41bb-b684-efbcbc05b8bf/",
+                                             :mobile-url  "//ucarecdn.com/550b0231-1282-42a8-afcd-caed588e5a61/",
                                              :alt         "Virgin Body Wave"}
                                       :home {:filename "BodyWaveExtensionsMayvenn.jpg",
                                              :url      "//ucarecdn.com/1a3ce0a2-d8a4-4c72-b20b-62b5ff445096/",
@@ -297,8 +297,8 @@
                                            "flirty, wavy looks.")
            :copy/videos              {:learn-more {:url "https://www.youtube.com/embed/xSA_7hTH2Fg"}}
            :images                   {:hero {:filename    "VirginLooseWave.jpg",
-                                             :desktop-url "//ucarecdn.com/5cb19377-2ad1-4015-90fd-0152ce8b9f16/",
-                                             :mobile-url  "//ucarecdn.com/70979840-a033-48c4-881b-7505c2bf5109/",
+                                             :desktop-url "//ucarecdn.com/6c8a823d-c0bf-4768-bc69-cb7820d85e8c/",
+                                             :mobile-url  "//ucarecdn.com/56a81f02-ec0d-4b5d-8518-8cf6929fa502/",
                                              :alt         "Virgin Loose Wave"}
                                       :home {:filename "LooseWaveExtensionsMayvenn.jpg",
                                              :url      "//ucarecdn.com/1cfc4f20-1917-4c2b-87c2-68aa2dc7c77e/",
@@ -328,8 +328,8 @@
                                            "statement with Water Wave hair.")
            :copy/videos              {:learn-more {:url "https://www.youtube.com/embed/xSA_7hTH2Fg"}}
            :images                   {:hero {:filename    "VirginWaterWave.jpg",
-                                             :desktop-url "//ucarecdn.com/004230c4-f532-499c-a643-06481f2b5997/",
-                                             :mobile-url  "//ucarecdn.com/d46cc08c-e17f-4529-b0c6-aeed97bf31ed/",
+                                             :desktop-url "//ucarecdn.com/8600cff0-4402-43f7-9cff-8314ce0bb197/",
+                                             :mobile-url  "//ucarecdn.com/5a015964-8ca9-4d65-80ec-ab0703cc5d97/",
                                              :alt         "Virgin Water Wave"}}
            :footer/order             5
            :header/order             5
@@ -354,8 +354,8 @@
                                            "for those who want big waves that make an even bigger splash.")
            :copy/videos              {:learn-more {:url "https://www.youtube.com/embed/xSA_7hTH2Fg"}}
            :images                   {:hero {:filename    "DeepWave.jpg",
-                                             :desktop-url "//ucarecdn.com/c7dd690e-f3ae-4b6b-9411-d9e7027b15c5/",
-                                             :mobile-url  "//ucarecdn.com/b07b0298-902e-4dc2-bdf4-f8e179f06020/",
+                                             :desktop-url "//ucarecdn.com/af14c56c-a304-4a82-8491-1bdc777b9b03/",
+                                             :mobile-url  "//ucarecdn.com/69e2acad-0140-4b06-9e8f-ac48f6416076/",
                                              :alt         "Virgin Deep Wave"}
                                       :home {:filename "DeepWaveExtensionsMayvenn.jpg",
                                              :url      "//ucarecdn.com/0432b04b-92fe-4e30-b18f-3747e4efef8c/",
@@ -382,8 +382,8 @@
                                            "kinky curl perfect for creating voluminous coily styles that mimic natural 3C hair textures.")
            :copy/videos              {:learn-more {:url "https://www.youtube.com/embed/xSA_7hTH2Fg"}}
            :images                   {:hero {:filename    "VirginCurly.jpg",
-                                             :desktop-url "//ucarecdn.com/29534c6f-54d0-4969-a1b1-b92b1dcde326/",
-                                             :mobile-url  "//ucarecdn.com/7c77bfb9-53c3-4eb3-a4f9-6c9a456d93b4/",
+                                             :desktop-url "//ucarecdn.com/e6cdfaeb-b98b-4b98-878e-fc2b2936995d/",
+                                             :mobile-url  "//ucarecdn.com/17c827ca-e4df-4427-bdf8-c3426ff8d750/",
                                              :alt         "Virgin Curly"}
                                       :home {:filename "CurlyExtensionsMayvenn.jpg",
                                              :url      "//ucarecdn.com/9bcf9e1b-4a8a-4a40-a9f4-414c22c629b4/",
@@ -414,8 +414,8 @@
                                         "from 100% virgin human hair, and customizable"
                                         "to fit your unique look.")
            :images                {:hero {:filename    "Wigs.jpg"
-                                          :desktop-url "//ucarecdn.com/0ce6c31c-1e35-47c7-a6aa-039ba57e19be/"
-                                          :mobile-url  "//ucarecdn.com/9f7ce79a-867f-4455-adc5-5a784ba17e41/"
+                                          :desktop-url "//ucarecdn.com/c17d9942-4cec-4f32-814c-ed5141efef59/"
+                                          :mobile-url  "//ucarecdn.com/27fac423-2571-4dee-90fa-e98071051fea/"
                                           :alt         "Wigs"}}
            :catalog/department    #{"hair"}
            :hair/family           #{"360-wigs" "lace-front-wigs"}
@@ -491,8 +491,8 @@
            :selector/electives  [:hair/origin :hair/texture :hair/color]
            :copy/videos         {:learn-more {:url "https://www.youtube.com/embed/xSA_7hTH2Fg"}}
            :images              {:hero {:filename    "DyedVirginHair.jpg"
-                                        :desktop-url "//ucarecdn.com/ffec1ede-b869-44f4-86e8-3615a78cf046/"
-                                        :mobile-url  "//ucarecdn.com/0bec1329-ba01-4ece-a66f-4ad303311bf3/"
+                                        :desktop-url "//ucarecdn.com/e3f9b527-4f74-46e6-ba91-2802092c1abe/"
+                                        :mobile-url  "//ucarecdn.com/43f356cb-6489-40a9-aa44-f9d763a1753b/"
                                         :alt         "Dyed Virgin Hair"}}
            :copy/description    (copy "When natural brown isn’t cutting it,"
                                       "find your true color match with our Dyed Virgin Hair."
@@ -540,8 +540,8 @@
            :selector/electives  [:hair/origin :hair/texture :hair/base-material :hair/color]
            :copy/videos         {:learn-more {:url "https://www.youtube.com/embed/xSA_7hTH2Fg"}}
            :images              {:hero {:filename    "Dyed100PercentHumanHair.jpg"
-                                        :desktop-url "//ucarecdn.com/5d04e5b5-f441-448c-9244-9839f081e543/"
-                                        :mobile-url  "//ucarecdn.com/33202e80-fab7-4209-859e-e7809b3bef30/"
+                                        :desktop-url "//ucarecdn.com/93ed4255-acab-431b-9d05-f97d6826f9dd/"
+                                        :mobile-url  "//ucarecdn.com/373737cd-c441-45f9-8378-ba4f970205e3/"
                                         :alt         "Dyed 100% Human Hair"}}
            :copy/description    (copy "These extensions are perfect for when you need a quick style swap or when you’re ballin’ on a budget."
                                       "Our dyed 100% human hair comes in a range of stylish hues, can take heat up to 350 degrees, and"
@@ -569,8 +569,8 @@
            :selector/electives  [:hair/origin :hair/texture :hair/color]
            :copy/videos         {:learn-more {:url "https://www.youtube.com/embed/xSA_7hTH2Fg"}}
            :images              {:hero {:filename    "Dyed100PercentHumanClosures.jpg"
-                                        :desktop-url "//ucarecdn.com/a0913745-d344-4c8b-af48-dd79ac421202/"
-                                        :mobile-url  "//ucarecdn.com/5ee6ff8f-9a4c-4474-950b-f7943b57da46/"
+                                        :desktop-url "//ucarecdn.com/0e36e6b4-ff61-484c-bcf7-4c1434f3be96/"
+                                        :mobile-url  "//ucarecdn.com/dbd46863-1f64-4731-aa81-2d12d7ee9caa/"
                                         :alt         "Dyed 100% Human Hair Closures"}}
            :copy/description    (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
                                       "Our collection of closures and frontals blend seamlessly with our bundles and can be customized"
@@ -605,8 +605,8 @@
     :opengraph/description "Blending flawlessly with your own hair and backed by our 30 Day Quality Guarantee, our seamless clip-in extensions are the best quality products on the market and ships free!"
 
     :images {:hero {:filename    "categories-header-clip.png"
-                    :desktop-url "//ucarecdn.com/498c40b0-f957-4141-ac1f-99c144547a8f/"
-                    :mobile-url  "//ucarecdn.com/34c3a8c3-a1fe-4475-ae80-c6713e56f6e8/"
+                    :desktop-url "//ucarecdn.com/96b65a4b-34d5-4b45-b5a7-cf4156d355c0/"
+                    :mobile-url  "//ucarecdn.com/be8b83db-370f-45f9-bc37-4f674abbd718/"
                     :alt         "Clip-Ins"}}
 
     :footer/order 40
