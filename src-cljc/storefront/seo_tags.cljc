@@ -7,7 +7,6 @@
             [catalog.products :as products]
             [catalog.selector :as selector]
             [storefront.pixlee :refer [pixlee-config]]
-            [lambdaisland.uri :as uri]
             [clojure.string :as string]
             [spice.core :as spice]))
 
