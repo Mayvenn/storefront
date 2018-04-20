@@ -141,7 +141,8 @@
         ((checkout-component nav-event) data nil)]
 
        :else
-       [:div.flex.flex-column {:style {:min-height "100vh"}}
+       [:div.flex.flex-column {:style {:min-height    "100vh"
+                                       :margin-bottom "-1px"}}
         (stylist-banner/built-component data nil)
         (promotion-banner/built-component data nil)
         #?(:cljs (popup/built-component data nil))
