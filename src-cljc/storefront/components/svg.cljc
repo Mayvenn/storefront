@@ -202,3 +202,15 @@
        :1 "number-circle-1"
        :2 "number-circle-2"
        :3 "number-circle-3"))]))
+
+(defn minus-sign [opts]
+  (component/html
+   [:svg (merge {:height "1em" :width "1em"}
+                opts)
+    (svg-xlink "minus-sign")]))
+
+(defn plus-sign [opts]
+  (component/html
+   [:svg (merge {:height "1em" :width "1em"}
+                opts)
+    (svg-xlink "plus-sign")]))

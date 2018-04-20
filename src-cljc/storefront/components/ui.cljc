@@ -428,7 +428,7 @@
    :alt (:alt img)})
 
 (defn ^:private counter-button [spinning? data-test f content]
-  [:a.col
+  [:a.col.inherit-color
    {:href "#"
     :data-test data-test
     :disabled spinning?
@@ -445,6 +445,25 @@
    (counter-button spinning? (str "quantity-dec-" data-test) dec-fn svg/counter-dec)
    (counter-value spinning? value)
    (counter-button spinning? (str "quantity-inc-" data-test) inc-fn svg/counter-inc)])
+
+(defn auto-complete-quantity-button [content]
+  [:div.border.border-gray.rounded.h6.flex.justify-center.items-center
+   {:style {:height "28px"
+            :width  "30px"}}
+   content])
+
+(defn auto-complete-counter [{:keys [data-test spinning?]} value dec-fn inc-fn]
+   [:div.teal
+    (counter-button spinning? (str "quantity-dec-" data-test) dec-fn
+                    (auto-complete-quantity-button (svg/minus-sign
+                                                    {:class "stroke-gray"
+                                                     :width ".75em"})))
+    (counter-value spinning? value)
+    (counter-button spinning? (str "quantity-inc-" data-test) inc-fn
+                    (auto-complete-quantity-button (svg/plus-sign
+                                                    {:class  "fill-black stroke-black"
+                                                     :width  ".75em"
+                                                     :height ".75em"})))])
 
 (defn note-box [{:keys [color data-test]} contents]
   [:div.border.rounded
