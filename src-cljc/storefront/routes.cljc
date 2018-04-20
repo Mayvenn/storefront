@@ -91,6 +91,7 @@
               "/stylist/account/commission"                       (edn->bidi events/navigate-stylist-account-commission)
               "/stylist/account/social"                           (edn->bidi events/navigate-stylist-account-social)
               "/share"                                            (edn->bidi events/navigate-friend-referrals)
+              "/freeinstall-share"                                (edn->bidi events/navigate-friend-referrals-freeinstall)
               "/gallery"                                          (edn->bidi events/navigate-gallery)
               "/gallery/add"                                      (edn->bidi events/navigate-gallery-image-picker)
               "/checkout/returning_or_guest"                      (edn->bidi events/navigate-checkout-returning-or-guest)

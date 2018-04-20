@@ -121,8 +121,7 @@
                             :data-test "account-settings")
                      "Account settings")
     (ui/ghost-button (if the-ville?
-                       (utils/route-to events/navigate-friend-referrals
-                                       {:query-params {:campaign_tags "fayetteville-offer"}})
+                       (utils/route-to events/navigate-freeinstall-friend-referrals)
                        (utils/route-to events/navigate-account-referrals))
                      "Refer a friend"))))
 

@@ -75,6 +75,7 @@
          events/navigate-gallery-image-picker                       gallery-image-picker/built-component
          events/navigate-account-manage                             (partial sign-in/requires-sign-in account/built-component)
          events/navigate-account-referrals                          (partial sign-in/requires-sign-in friend-referrals/built-component)
+         events/navigate-friend-referrals-freeinstall               friend-referrals/built-component
          events/navigate-friend-referrals                           friend-referrals/built-component
          events/navigate-checkout-returning-or-guest                checkout-returning-or-guest/built-component
          events/navigate-checkout-sign-in                           checkout-sign-in/built-component

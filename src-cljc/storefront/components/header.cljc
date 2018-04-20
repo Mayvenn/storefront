@@ -96,8 +96,7 @@
      (drop-down-row (utils/route-to events/navigate-account-manage) "Account settings")]
     [:div.border-top.border-gray
      (drop-down-row (if the-ville?
-                      (utils/route-to events/navigate-friend-referrals
-                                      {:query-params {:campaign_tags "fayetteville-offer"}})
+                      (utils/route-to events/navigate-freeinstall-friend-referrals)
                       (utils/route-to events/navigate-account-referrals)) "Refer a friend")]
     [:div.border-top.border-gray
      (drop-down-row (utils/fake-href events/control-sign-out) "Sign out")]]))
