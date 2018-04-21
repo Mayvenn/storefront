@@ -15,7 +15,6 @@
                  [ring/ring-defaults "0.1.4"]
                  [ring-jetty-component "0.3.1"]
                  [org.eclipse.jetty/jetty-server "9.3.9.v20160517"]
-                 [binaryage/devtools "0.9.10"]
                  [hiccup "1.0.5"]
                  [cheshire "5.5.0"]
                  [cljsjs/google-maps "3.18-1"]
@@ -123,6 +122,7 @@
   :profiles {:uberjar {:aot :all}
              :dev {:source-paths ["dev/clj"]
                    :dependencies [[com.cemerick/piggieback "0.2.2"]
+                                  [binaryage/devtools "0.9.10"]
                                   [pjstadig/humane-test-output "0.8.1"]
                                   [standalone-test-server "0.7.2"]
                                   [ring/ring-mock "0.3.0"]
