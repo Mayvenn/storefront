@@ -205,12 +205,10 @@
 
 (defn minus-sign [opts]
   (component/html
-   [:svg (merge {:height "1em" :width "1em"}
-                opts)
+   [:svg opts
     (svg-xlink "minus-sign")]))
 
 (defn plus-sign [opts]
   (component/html
-   [:svg (merge {:height "1em" :width "1em"}
-                opts)
+   [:svg opts
     (svg-xlink "plus-sign")]))
