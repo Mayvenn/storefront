@@ -105,6 +105,12 @@
     events/navigate-gallery                 gallery/built-component
     home/built-component))
 
+;;TODO (Ellie) Refactor Storefront (main), Catalog, Leads and Checkout to have their own
+;; "top-level" components which handle routing and layout (things like header/footer and such)
+;; I also suggest splitting layout from routing
+;;
+;;             Change my mind
+
 (defn leads-component [nav-event]
   (condp = nav-event
     #?@(:cljs [])
