@@ -212,3 +212,8 @@
   (component/html
    [:svg opts
     (svg-xlink "plus-sign")]))
+
+(defn trash-can [opts]
+  (component/html
+   [:svg opts
+    (svg-xlink "trash-can")]))
