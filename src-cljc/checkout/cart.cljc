@@ -1,8 +1,5 @@
 (ns checkout.cart
   (:require
-   [checkout.control-cart :as control]
-   [checkout.auto-complete-cart :as auto-complete]
-   [checkout.header :as auto-complete.header]
    #?@(:cljs [[goog.dom]
               [goog.events]
               [goog.events.EventType :as EventType]
@@ -12,13 +9,12 @@
               [storefront.components.order-summary :as summary]
               [om.core :as om]]
        :clj [[storefront.component-shim :as component]])
+   [checkout.control-cart :as control]
    [storefront.accessors.experiments :as experiments]
    [storefront.accessors.orders :as orders]
    [storefront.accessors.promos :as promos]
    [storefront.accessors.products :as products]
    [storefront.accessors.stylists :as stylists]
-   [storefront.components.header :as storefront.header]
-   [storefront.components.footer :as storefront.footer]
    [storefront.components.affirm :as affirm]
    [storefront.components.promotion-banner :as promotion-banner]
    [storefront.components.svg :as svg]
@@ -104,8 +100,7 @@
                               delete-line-item-requests
                               field-errors
                               the-ville?
-                              show-green-banner?
-                              auto-complete?]} owner]
+                              show-green-banner?]} owner]
   (component/create
    [:div.container.p2
     (component/build deploy-promotion-banner-component promotion-banner nil)
@@ -125,15 +120,10 @@
     [:div.mt2.clearfix.mxn3
      [:div.col-on-tb-dt.col-6-on-tb-dt.px3.mb3
       {:data-test "cart-line-items"}
-      (if auto-complete?
-        (auto-complete/display-adjustable-line-items line-items
-                                                     skus
-                                                     update-line-item-requests
-                                                     delete-line-item-requests)
-        (control/display-adjustable-line-items line-items
-                                               skus
-                                               update-line-item-requests
-                                               delete-line-item-requests))]
+      (control/display-adjustable-line-items line-items
+                                             skus
+                                             update-line-item-requests
+                                             delete-line-item-requests)]
 
      [:div.col-on-tb-dt.col-6-on-tb-dt.px3
       [:form.clearfix.mxn1
@@ -271,77 +261,37 @@
      :delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)
      :field-errors              (get-in data keypaths/field-errors)
      :focused                   (get-in data keypaths/ui-focus)
-     :the-ville?                (experiments/the-ville? data)
-     :auto-complete?            (experiments/auto-complete? data)}))
+     :the-ville?                (experiments/the-ville? data)}))
 
 (defn empty-cart-query [data]
   {:promotions (get-in data keypaths/promotions)})
 
 (defn component
-  [{:keys [auto-complete?
-           fetching-order?
+  [{:keys [fetching-order?
            item-count
            empty-cart
            full-cart
            control-header
-           auto-complete-header
            popup
            footer
            promotion-banner
            flash
            nav-event]} owner opts]
-  (if auto-complete?
-    (component/create
+  (component/create
+   (if fetching-order?
+     [:div.py3.h2 ui/spinner]
      [:div
-      [:header (component/build auto-complete.header/component auto-complete-header nil)]
-
-      [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
-       (if fetching-order?
-         [:div.py3.h2 ui/spinner]
-         [:div
-          (if (zero? item-count)
-            (component/build empty-component empty-cart opts)
-            (component/build full-component full-cart opts))])]
-
-      [:footer footer]])
-    (component/create
-     [:div.flex.flex-column {:style {:min-height "100vh"}}
-
-      (component/build promotion-banner/component promotion-banner nil)
-
-      #?(:cljs popup)
-
-      [:header (component/build storefront.header/component control-header nil)]
-
-      (component/build flash/component flash nil)
-
-      [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
-       (if fetching-order?
-         [:div.py3.h2 ui/spinner]
-         [:div
-          (if (zero? item-count)
-            (component/build empty-component empty-cart opts)
-            (component/build full-component full-cart opts))])]
-
-      [:footer footer]])))
+      (if (zero? item-count)
+        (component/build empty-component empty-cart opts)
+        (component/build full-component full-cart opts))])))
 
 (defn query [data]
-  {:auto-complete?       (experiments/auto-complete? data)
-   :fetching-order?      (utils/requesting? data request-keys/get-order)
-   :item-count           (orders/product-quantity (get-in data keypaths/order))
-   :empty-cart           (empty-cart-query data)
-   :full-cart            (full-cart-query data)
-   :promotion-banner     (promotion-banner/query data)
-   :flash                (flash/query data)
-   :control-header       (storefront.header/query data)
-   :auto-complete-header (auto-complete.header/query data)
-   ;; TODO Fix footer so that it's more useful from the outside.
-   ;; In the interim, we could just have our own checkout.footer
-   ;; and we could use the regular "full" storefront.footer in the control
-   :footer               (storefront.footer/built-component data nil)
-   :popup                #?(:clj nil
-                            :cljs (popup/built-component data nil))
-   :nav-event            (get-in data keypaths/navigation-event)})
+  {:fetching-order?  (utils/requesting? data request-keys/get-order)
+   :item-count       (orders/product-quantity (get-in data keypaths/order))
+   :empty-cart       (empty-cart-query data)
+   :full-cart        (full-cart-query data)
+   :promotion-banner (promotion-banner/query data)
+   :flash            (flash/query data)})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

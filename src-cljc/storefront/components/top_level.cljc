@@ -26,6 +26,7 @@
                        [storefront.components.popup :as popup]
                        [storefront.config :as config]])
             [checkout.cart :as cart]
+            [checkout.auto-complete-cart :as checkout.auto-complete-cart]
             [catalog.category :as category]
             [catalog.product-details :as product-details]
             [storefront.components.content :as content]
@@ -50,7 +51,8 @@
             [leads.resolve :as leads.resolve]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.routes :as routes]))
+            [storefront.routes :as routes]
+            [storefront.accessors.experiments :as experiments]))
 
 (defn main-component [nav-event]
   (condp = nav-event
@@ -88,6 +90,7 @@
     events/navigate-category                category/built-component
     events/navigate-product-details         product-details/built-component
     events/navigate-shared-cart             shared-cart/built-component
+    events/navigate-cart                    cart/built-component
     events/navigate-content-guarantee       content/built-component
     events/navigate-content-help            content/built-component
     events/navigate-content-privacy         content/built-component
@@ -112,14 +115,22 @@
     events/navigate-leads-a1-registered-thank-you leads.a1.registered-thank-you/built-component
     home/built-component))
 
-(defn checkout-component [nav-event]
-  (condp = nav-event
-    #?@(:cljs [])
-    events/navigate-cart checkout.cart/built-component
-    checkout.cart/built-component))
+(defn main-layout [data nav-event]
+  [:div.flex.flex-column {:style {:min-height    "100vh"
+                                  :margin-bottom "-1px"}}
+   (stylist-banner/built-component data nil)
+   (promotion-banner/built-component data nil)
+   #?(:cljs (popup/built-component data nil))
+   [:header (header/built-component data nil)]
+   (flash/built-component data nil)
+   [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
+    ((main-component nav-event) data nil)]
+   [:footer
+    (footer/built-component data nil)]])
 
 (defn top-level-component [data owner opts]
-  (let [nav-event (get-in data keypaths/navigation-event)]
+  (let [nav-event      (get-in data keypaths/navigation-event)
+        auto-complete? (experiments/auto-complete? data)]
     (component/create
      (cond
        #?@(:cljs
@@ -137,19 +148,9 @@
        [:div {:data-test (keypaths/->component-str nav-event)}
         ((leads-component nav-event) data nil)]
 
-       (routes/sub-page? [nav-event] [events/navigate-cart])
-       [:div {:data-test (keypaths/->component-str nav-event)}
-        ((checkout-component nav-event) data nil)]
+       (and (routes/sub-page? [nav-event] [events/navigate-cart])
+            auto-complete?)
+       (checkout.auto-complete-cart/layout data nav-event)
 
        :else
-       [:div.flex.flex-column {:style {:min-height    "100vh"
-                                       :margin-bottom "-1px"}}
-        (stylist-banner/built-component data nil)
-        (promotion-banner/built-component data nil)
-        #?(:cljs (popup/built-component data nil))
-        [:header (header/built-component data nil)]
-        (flash/built-component data nil)
-        [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
-         ((main-component nav-event) data nil)]
-        [:footer
-         (footer/built-component data nil)]]))))
+       (main-layout data nav-event)))))
