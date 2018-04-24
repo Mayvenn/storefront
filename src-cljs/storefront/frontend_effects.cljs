@@ -1006,11 +1006,16 @@
   (api/get-promotions (get-in app-state keypaths/api-cache)
                       (first (get-in app-state keypaths/order-promotion-codes))))
 
+
 (defmethod perform-effects events/inserted-talkable [_ event args _ app-state]
   (talkable/show-pending-offer app-state)
-  (when (#{events/navigate-friend-referrals events/navigate-account-referrals}
-         (get-in app-state keypaths/navigation-event))
-    (talkable/show-referrals app-state)))
+  (let [nav-event (get-in app-state keypaths/navigation-event)]
+    (cond
+      (= events/navigate-friend-referrals-freeinstall nav-event)
+      (talkable/show-referrals app-state "fayetteville-offer")
+
+      (#{events/navigate-friend-referrals events/navigate-account-referrals} nav-event)
+      (talkable/show-referrals app-state))))
 
 (defmethod perform-effects events/inserted-stripe [_ event args _ app-state]
   (apple-pay/verify-eligible app-state))
