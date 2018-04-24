@@ -222,3 +222,8 @@
   (component/html
    [:svg opts
     (svg-xlink "question-circle")]))
+
+(defn discount-tag [opts]
+  (component/html
+   [:svg opts
+    (svg-xlink "discount-tag")]))
