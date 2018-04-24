@@ -71,6 +71,7 @@
                          :color/ghost       "btn-outline border-dark-gray dark-gray"
                          :color/light-ghost "btn-outline border-white white"
                          :color/teal-ghost  "btn-outline border-teal teal"
+                         :color/navy-ghost  "btn-outline border-navy navy"
                          :color/facebook    "btn-primary bg-fb-blue white"
                          :color/apple-pay   "btn-primary bg-black white"
                          :color/dark-gray   "btn-primary bg-dark-gray white"})]
@@ -114,6 +115,9 @@
 
 (defn teal-ghost-button [attrs & content]
   (color-button :color/teal-ghost attrs content))
+
+(defn navy-ghost-button [attrs & content]
+  (color-button :color/navy-ghost attrs content))
 
 (defn submit-button
   ([title] (submit-button title {}))
