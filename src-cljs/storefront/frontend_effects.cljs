@@ -494,7 +494,9 @@
     (redirect events/navigate-order-complete {:number number})))
 
 (defmethod perform-effects events/navigate-friend-referrals [_ event args _ app-state]
-  (talkable/show-referrals app-state))
+  (if (= event events/navigate-friend-referrals-freeinstall)
+    (talkable/show-referrals app-state ["fayetteville-offer"])
+    (talkable/show-referrals app-state)))
 
 (defmethod perform-effects events/navigate-account-referrals [_ event args _ app-state]
   (talkable/show-referrals app-state))

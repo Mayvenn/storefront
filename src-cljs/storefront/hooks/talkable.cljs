@@ -27,7 +27,10 @@
       (js/showPP (clj->js order))
       (m/handle-message events/talkable-offer-shown))))
 
-(defn show-referrals [data]
+(defn show-referrals [data & campaign-tags]
   (when (get-in data keypaths/loaded-talkable)
-    (js/showSA (clj->js {:affiliate_member
-                         {:email (get-in data keypaths/user-email)}}))))
+    (js/showSA (clj->js (merge
+                         {:affiliate_member
+                          {:email (get-in data keypaths/user-email)}}
+                         (when (seq campaign-tags)
+                           {:campaign_tags compaign-tags}))))))
