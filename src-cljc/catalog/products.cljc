@@ -55,10 +55,6 @@
          (maps/map-values set)
          (merge value))))
 
-(def normalize-selector-images-xf
-  (comp (mapcat :selector/images)
-        (map normalize-image)))
-
 (defn index-skus [skus]
   (->> skus
        (map ->skuer)
@@ -72,8 +68,6 @@
 (defmethod transition-state events/api-success-v2-products
   [_ event {:keys [products skus] :as response} app-state]
   (-> app-state
-      (update-in keypaths/db-images set/union
-                 (set (sequence normalize-selector-images-xf products)))
       (update-in keypaths/v2-products merge (index-products products))
       (update-in keypaths/v2-skus merge (index-skus skus))))
 

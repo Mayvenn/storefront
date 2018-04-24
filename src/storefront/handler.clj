@@ -307,7 +307,6 @@
         :else
         (html-response render-ctx
                        (-> data
-                           (assoc-in keypaths/db-images images)
                            (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
                            (assoc-in catalog.keypaths/detailed-product-selected-sku-id sku-id)
                            (assoc-in catalog.keypaths/detailed-product-id product-id)))))))

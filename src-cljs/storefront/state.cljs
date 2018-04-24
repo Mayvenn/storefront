@@ -86,9 +86,6 @@
      :completed-order nil
      :pending-promo-code (cookie-jar/retrieve-pending-promo-code cookie)
      :promotions []
-     :db {:skus #{}
-          :images #{}}
-
      :store {}
      :products {}
      :states []
