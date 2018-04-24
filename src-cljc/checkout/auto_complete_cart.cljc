@@ -85,13 +85,13 @@
         [:div.h4 {:data-test (str "line-item-price-ea-" sku-id)} (mf/as-money-without-cents price) " ea"]]]]]))
 
 (defn ^:private summary-row
-  ([name amount] (summary-row {} name amount))
-  ([row-attrs name amount]
+  ([content amount] (summary-row {} content amount))
+  ([row-attrs content amount]
    [:tr.h5
     (merge (when (neg? amount)
              {:class "teal"})
            row-attrs)
-    [:td.pyp3 name]
+    [:td.pyp3 content]
     [:td.pyp3.right-align.medium
      (mf/as-money-or-free amount)]]))
 
@@ -143,7 +143,10 @@
                     (#{"amazon" "freeinstall"} coupon-code))
             (summary-row
              {:key name}
-             [:div {:data-test (text->data-test-name name)}
+             [:div.flex.items-center.align-middle {:data-test (text->data-test-name name)}
+              (when (= "Bundle Discount" name)
+                (svg/discount-tag {:class "mxnp6"
+                                   :height "2em" :width "2em"}))
               (orders/display-adjustment-name name)
               (when (and (not read-only?) coupon-code)
                 [:a.ml1.h6.gray
