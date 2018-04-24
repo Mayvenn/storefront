@@ -290,7 +290,6 @@
   (when-let [product (get-in data (conj keypaths/v2-products product-id))]
     (let [sku-id         (product-details/determine-sku-id data product (:SKU params))
           sku            (get-in data (conj keypaths/v2-skus sku-id))
-          images         (into #{} products/normalize-selector-images-xf (vals (get-in data keypaths/v2-products)))
           canonical-slug (:page/slug product)
           redirect?      (and canonical-slug
                               (or (not= slug canonical-slug)
