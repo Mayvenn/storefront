@@ -123,15 +123,21 @@
 (defn- absolute-url [& path]
   (apply str (.-protocol js/location) "//" (.-host js/location) path))
 
-(defn ->affirm-line-item [products skus {:keys [product-name sku unit-price quantity]}]
-  (let [{:keys [page/slug catalog/product-id]}
-        (accessors.products/find-product-by-sku-id products sku)]
+(defn ->affirm-line-item
+  "Convert order line items to affirm schema with help of in-mem product/sku dbs
+
+  Currently experiencing hard to track down bug around product-db lookup, throwing
+  to get more information."
+  [products skus {:as item :keys [product-name sku unit-price quantity]}]
+  (if-let [{:as product :keys [page/slug catalog/product-id]}
+           (accessors.products/find-product-by-sku-id products sku)]
     {:display_name   product-name
      :sku            sku
      :unit_price     (* 100 unit-price)
      :qty            quantity
      :item_image_url (str "https:" (:src (images/cart-image (get skus sku))))
-     :item_url       (absolute-url (products/path-for-sku product-id slug sku))}))
+     :item_url       (absolute-url (products/path-for-sku product-id slug sku))}
+    (throw (ex-info "Affirm line item building missing product" item))))
 
 (defn promotion->affirm-discount [{:keys [amount promotion] :as promo}]
   (when (seq promo)
