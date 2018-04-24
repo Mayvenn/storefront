@@ -119,24 +119,26 @@
           [:tr.h5
            [:td
             {:col-span "2"}
-            [:form.flex.justify-around.mxnp1.mt2
+            [:form.mt2
              {:on-submit (utils/send-event-callback events/control-cart-update-coupon)}
-             (ui/text-field {:keypath       keypaths/cart-coupon-code
-                             :wrapper-class "rounded-left"
-                             :class         "flex-grow-5 h6 black"
-                             :data-test     "promo-code"
-                             :focused       focused
-                             :label         "Promo code"
-                             :value         coupon-code
-                             :errors        (get field-errors ["promo-code"])
-                             :data-ref      "promo-code"})
-             (ui/teal-button {:on-click   (utils/send-event-callback events/control-cart-update-coupon)
-                              :class      "rounded-right mb2 flex-grow-1 flex justify-center items-center"
-                              :size-class "flex-grow-4"
-                              :data-test  "cart-apply-promo"
-                              :disabled?  updating?
-                              :spinning?  applying?}
-                             "Apply")]]])
+             (ui/input-group
+              {:keypath       keypaths/cart-coupon-code
+               :wrapper-class "flex-grow-5"
+               :class         "h6"
+               :data-test     "promo-code"
+               :focused       focused
+               :label         "Promo code"
+               :value         coupon-code
+               :errors        (get field-errors ["promo-code"])
+               :data-ref      "promo-code"}
+              {:ui-element ui/teal-button
+               :content    "Apply"
+               :args       {:on-click   (utils/send-event-callback events/control-cart-update-coupon)
+                            :class      "flex justify-center items-center"
+                            :size-class "flex-grow-3"
+                            :data-test  "cart-apply-promo"
+                            :disabled?  updating?
+                            :spinning?  applying?}})]]])
 
         (for [{:keys [name price coupon-code]} adjustments-including-tax]
           (when (or (not (= price 0))

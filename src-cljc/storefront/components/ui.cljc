@@ -228,6 +228,18 @@
                        (dissoc input-attributes :label :keypath :value :errors))
      (field-error-message error data-test)]))
 
+(defn input-group [{:keys [label keypath value errors data-test class] :as input-attributes :or {class "col-12"}}
+                   {:keys [ui-element args content]}]
+  (let [error (first errors)]
+    [:div.mb2.stacking-context
+     [:div.flex.justify-around
+      (plain-text-field label keypath value (not (nil? error))
+                        (-> input-attributes
+                            (dissoc :label :keypath :value :errors)
+                            (update :wrapper-class str " rounded-left x-group-item")))
+      (ui-element (update args :class str " rounded-right x-group-item") content)]
+     (field-error-message error data-test)]))
+
 (defn text-field-group
   "For grouping many fields on one line. Sets up columns, rounding of
   first and last fields, and avoids doubling of borders between fields."
