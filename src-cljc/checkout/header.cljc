@@ -23,7 +23,7 @@
 
 (defn component [{:keys [item-count]}]
   (component/create
-   [:div.border-bottom.border-gray.flex.items-center
+   [:div.border-bottom.border-light-gray.flex.items-center
     [:div.flex-auto.py3.center.dark-gray "Shopping Bag - " (prn-str item-count) " items"]]))
 
 (defn query [data]

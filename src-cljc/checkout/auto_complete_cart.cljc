@@ -47,12 +47,12 @@
                                  {:data-test (str "line-item-img-" (:catalog/sku-id sku))})
               removing?         (get delete-line-item-requests variant-id)
               updating?         (get update-line-item-requests sku-id)]]
-    [:div.py4 {:key legacy-variant-id}
+    [:div.pt1.pb2 {:key legacy-variant-id}
      [:a.left.pr1
       (when-let [length (-> sku :hair/length first)]
         [:div.right.z1.circle.stacking-context.border.border-light-gray.flex.items-center.justify-center.medium.h5.bg-too-light-teal
-         {:style {:margin-left "-19px"
-                  :margin-top  "-14px"
+         {:style {:margin-left "-21px"
+                  :margin-top  "-12px"
                   :width       "32px"
                   :height      "32px"}} (str length "\"")])
       [:img.block.border.border-light-gray
@@ -62,7 +62,7 @@
        {:data-test (str "line-item-title-" sku-id)}
        (:product-title line-item)]
       [:div.h6
-       [:div.flex.justify-between.mt1 ;; Color & Remove
+       [:div.flex.justify-between.mt1
         [:div
          {:data-test (str "line-item-color-" sku-id)}
          (:color-name line-item)]
@@ -72,9 +72,10 @@
            [:a.gray.medium
             (merge {:data-test (str "line-item-remove-" sku-id)}
                    (utils/fake-href events/control-cart-remove (:id line-item)))
-            (svg/trash-can {:height "1.3em"
-                            :width  "1.3em"})])]]
-       [:div.flex.justify-between.mt1 ;; Quantity & Price
+            (svg/trash-can {:height "1.1em"
+                            :width  "1.1em"
+                            :class "stroke-dark-gray"})])]]
+       [:div.flex.justify-between.mt1
         [:div.h3
          {:data-test (str "line-item-quantity-" sku-id)}
          (ui/auto-complete-counter {:spinning? updating?
@@ -82,7 +83,7 @@
                                    (:quantity line-item)
                                    (utils/send-event-callback events/control-cart-line-item-dec {:variant line-item})
                                    (utils/send-event-callback events/control-cart-line-item-inc {:variant line-item}))]
-        [:div.h4 {:data-test (str "line-item-price-ea-" sku-id)} (mf/as-money-without-cents price) " ea"]]]]]))
+        [:div.h5 {:data-test (str "line-item-price-ea-" sku-id)} (mf/as-money-without-cents price) " ea"]]]]]))
 
 (defn ^:private summary-row
   ([content amount] (summary-row {} content amount))
@@ -91,8 +92,8 @@
     (merge (when (neg? amount)
              {:class "teal"})
            row-attrs)
-    [:td.pyp3 content]
-    [:td.pyp3.right-align.medium
+    [:td.pyp1 content]
+    [:td.pyp1.right-align.medium
      (mf/as-money-or-free amount)]]))
 
 (defn ^:private text->data-test-name [name]
@@ -108,7 +109,7 @@
                                                           (-> order :cart-payments :store-credit :amount)
                                                           0.0))]
     [:div
-     [:div.py2.border-top.border-bottom.border-gray
+     [:div.py1.border-top.border-bottom.border-light-gray
       [:table.col-12
        [:tbody
         (summary-row "Subtotal" (orders/products-subtotal order))
@@ -147,15 +148,15 @@
              {:key name}
              [:div.flex.items-center.align-middle {:data-test (text->data-test-name name)}
               (when (= "Bundle Discount" name)
-                (svg/discount-tag {:class "mxnp6"
+                (svg/discount-tag {:class  "mxnp6"
                                    :height "2em" :width "2em"}))
               (orders/display-adjustment-name name)
               (when (and (not read-only?) coupon-code)
-                [:a.ml1.h6.gray
+                [:a.ml1.h6.gray.flex.items-center
                  (merge {:data-test "cart-remove-promo"}
                         (utils/fake-href events/control-checkout-remove-promotion
                                          {:code coupon-code}))
-                 "Remove"])]
+                 (svg/close-x {:class "stroke-white fill-gray"})])]
              price)))
 
         (when (pos? store-credit)
@@ -253,8 +254,8 @@
         free-install-cart-promo
         ineligible-free-install-cart-promo))
 
-    [:div.mt2.clearfix.mxn3
-     [:div.col-on-tb-dt.col-6-on-tb-dt.px3.mb3
+    [:div.clearfix.mxn3
+     [:div.col-on-tb-dt.col-6-on-tb-dt.px3
       {:data-test "cart-line-items"}
       (display-adjustable-line-items line-items
                                      skus
@@ -262,7 +263,6 @@
                                      delete-line-item-requests)]
 
      [:div.col-on-tb-dt.col-6-on-tb-dt.px3
-
       (display-order-summary order
                              {:read-only?        false
                               :use-store-credit? false
@@ -271,12 +271,15 @@
                                                   :focused      focused
                                                   :field-errors field-errors}})
 
-      [:form
-       {:on-submit (utils/send-event-callback events/control-checkout-cart-submit)}
-       (affirm/auto-complete-as-low-as-box {:amount (:total order)})
-       (ui/submit-button "Check out" {:spinning? false
-                                      :disabled? updating?
-                                      :data-test "start-checkout-button"})]
+      (affirm/auto-complete-as-low-as-box {:amount (:total order)})
+
+      (ui/teal-button {:spinning? false
+                       :disabled? updating?
+                       :on-click  (utils/send-event-callback events/control-checkout-cart-submit)
+                       :class     "py2"
+                       :data-test "start-checkout-button"}
+                      [:div.p1 "Check out"])
+
       [:div.h5.black.center.py1.flex.justify-around.items-center
        [:div.flex-grow-1.border-bottom.border-light-gray]
        [:div.mx2 "or"]
@@ -287,7 +290,7 @@
                         :spinning? redirecting-to-paypal?
                         :disabled? updating?
                         :data-test "paypal-checkout"}
-                       [:div
+                       [:div.p1
                         "Check out with "
                         [:span.medium.italic "PayPal™"]])]
 
@@ -305,13 +308,13 @@
       (when share-carts?
         [:div.py2
          [:div.h6.center.pt2.black.bold "Is this bag for a customer?"]
-         (ui/navy-ghost-button {:on-click (utils/send-event-callback events/control-cart-share-show)
-                                :class         "border-width-2 border-navy"
-                                :spinning?     requesting-shared-cart?
-                                :data-test     "share-cart"}
-                          [:div.flex.items-center.justify-center.bold
-                           (svg/share-arrow {:class "stroke-navy mr1 fill-navy"
-                                             :width "24px"
+         (ui/navy-ghost-button {:on-click  (utils/send-event-callback events/control-cart-share-show)
+                                :class     "border-width-2 border-navy"
+                                :spinning? requesting-shared-cart?
+                                :data-test "share-cart"}
+                          [:div.flex.items-center.justify-center.bold.p1
+                           (svg/share-arrow {:class  "stroke-navy mr1 fill-navy"
+                                             :width  "24px"
                                              :height "24px"})
                            "Share your bag"])])]]]))
 

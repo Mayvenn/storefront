@@ -69,17 +69,15 @@
        [:p.h6 (component/build as-low-as-component data {})]
        [:p.h6 (:middle-copy data) " " (component/build modal-component data {:opts {:content "Learn more."
                                                                                     :link-classes "navy underline"}})]]]]))
-
 (defn auto-complete-as-low-as-box [data]
   (when (valid-order-total? (:amount data))
-    [:div.pt3
-     [:div.center.col-12.py1.mx-auto
-      [:div.mx1.dark-gray.h6.py1
-       [:p.h5.flex.justify-center.black
-        (component/build as-low-as-component data {})
-        (component/build modal-component data {:opts {:link-classes "flex self-center mxn1"
-                                                      :content      (svg/question-circle {:width "1em"
-                                                                                          :height "1em"})}})]]]]))
+    [:div.center.col-12.py1.mx-auto
+     [:div.mx1.dark-gray.h6.py1
+      [:p.h5.flex.justify-center.black
+       (component/build as-low-as-component data {})
+       (component/build modal-component data {:opts {:link-classes "flex self-center mxn1"
+                                                     :content      (svg/question-circle {:width "1em"
+                                                                                         :height "1em"})}})]]]))
 
 (defn ^:private reset-refresh-timeout [timeout f]
   #?(:cljs

@@ -27,6 +27,11 @@
 (defn error [opts]
   [:svg opts (svg-xlink "circled-exclamation")])
 
+(defn question-circle [opts]
+  (component/html
+   [:svg opts
+    (svg-xlink "question-circle")]))
+
 (defn dropdown-arrow [opts]
   [:svg opts (svg-xlink "dropdown-arrow")])
 
@@ -217,11 +222,6 @@
   (component/html
    [:svg opts
     (svg-xlink "trash-can")]))
-
-(defn question-circle [opts]
-  (component/html
-   [:svg opts
-    (svg-xlink "question-circle")]))
 
 (defn discount-tag [opts]
   (component/html
