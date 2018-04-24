@@ -275,7 +275,10 @@
        (ui/submit-button "Check out" {:spinning? false
                                       :disabled? updating?
                                       :data-test "start-checkout-button"})]
-      [:div.h5.dark-gray.center.py2 "OR"]
+      [:div.h5.black.center.py1.flex.justify-around.items-center
+       [:div.flex-grow-1.border-bottom.border-light-gray]
+       [:div.mx2 "or"]
+       [:div.flex-grow-1.border-bottom.border-light-gray]]
 
       [:div.pb2
        (ui/aqua-button {:on-click  (utils/send-event-callback events/control-checkout-cart-paypal-setup)
@@ -298,16 +301,17 @@
                                                                                     :height "2rem"}}]])])
 
       (when share-carts?
-        [:div.border-top.border-gray.py2
-         (ui/ghost-button {:on-click  (utils/send-event-callback events/control-cart-share-show)
-                           :spinning? requesting-shared-cart?
-                           :data-test "share-cart"}
-                          [:div.flex.items-center.justify-center
-                           [:div.flex-none.img-share-icon.bg-center.bg-no-repeat.bg-contain.mr2
-                            {:style {:width  "24px"
-                                     :height "18px"}}]
-                           [:div.flex-grow "Share your bag"]])
-         [:div.h5.pt2.dark-gray.light "Click the button above to share this bag with customers."]])]]]))
+        [:div.py2
+         [:div.h6.center.pt2.black.bold "Is this bag for a customer?"]
+         (ui/navy-ghost-button {:on-click (utils/send-event-callback events/control-cart-share-show)
+                                :class         "border-width-2 border-navy"
+                                :spinning?     requesting-shared-cart?
+                                :data-test     "share-cart"}
+                          [:div.flex.items-center.justify-center.bold
+                           (svg/share-arrow {:class "stroke-navy mr1 fill-navy"
+                                             :width "24px"
+                                             :height "24px"})
+                           "Share your bag"])])]]]))
 
 (defn empty-component [{:keys [promotions]} owner]
   (component/create

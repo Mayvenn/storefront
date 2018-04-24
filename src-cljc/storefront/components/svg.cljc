@@ -227,3 +227,8 @@
   (component/html
    [:svg opts
     (svg-xlink "discount-tag")]))
+
+(defn share-arrow [opts]
+  (component/html
+   [:svg opts
+    (svg-xlink "share-arrow")]))
