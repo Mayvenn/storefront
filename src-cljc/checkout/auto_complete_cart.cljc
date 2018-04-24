@@ -51,7 +51,7 @@
     [:div.py4 {:key legacy-variant-id}
      [:a.left.pr1
       (when-let [length (-> sku :hair/length first)]
-        [:div.right.z1.circle.stacking-context.border.border-white.flex.items-center.justify-center.medium.h5.bg-too-light-teal
+        [:div.right.z1.circle.stacking-context.border.border-light-gray.flex.items-center.justify-center.medium.h5.bg-too-light-teal
          {:style {:margin-left "-19px"
                   :margin-top  "-14px"
                   :width       "32px"
