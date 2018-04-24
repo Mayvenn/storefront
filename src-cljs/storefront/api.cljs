@@ -575,7 +575,7 @@
               :user-token user-token
               :stylist-id stylist-id}
     :handler #(messages/handle-message events/api-success-cash-out-now
-                                       (select-keys % [:status-id :balance-transfer-id]))}))
+                                       (select-keys % [:status-id :balance-transfer-id :amount :payout-method]))}))
 
 (defn cash-out-status
   [user-id user-token status-id stylist-id]
@@ -588,7 +588,7 @@
               :status-id  status-id
               :stylist-id stylist-id}
     :handler #(messages/handle-message events/api-success-cash-out-status
-                                       (select-keys % [:status :balance-transfer-id]))}))
+                                       (select-keys % [:status :balance-transfer-id :amount :payout-method]))}))
 
 (defn get-stylist-bonus-credits [user-id user-token {:keys [page]}]
   (storeback-api-req

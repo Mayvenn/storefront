@@ -74,8 +74,10 @@
   (effects/redirect events/navigate-stylist-dashboard-cash-out-pending {:status-id status-id}))
 
 (defmethod transitions/transition-state events/api-success-cash-out-now
-  [_ _ {:keys [status-id balance-transfer-id]} app-state]
+  [_ _ {:keys [status-id balance-transfer-id amount payout-method]} app-state]
   (-> app-state
+      (assoc-in keypaths/stylist-payout-stats-initiated-payout {:amount amount
+                                                                :payout-method payout-method})
       (assoc-in keypaths/stylist-cash-out-status-id status-id)
       (assoc-in keypaths/stylist-cash-out-balance-transfer-id balance-transfer-id)))
 
