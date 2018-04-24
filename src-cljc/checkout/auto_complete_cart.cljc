@@ -10,7 +10,10 @@
               [storefront.components.order-summary :as summary]
               [om.core :as om]]
        :clj [[storefront.component-shim :as component]])
+   [clojure.string :as string]
+   [spice.core :as spice]
    [storefront.accessors.experiments :as experiments]
+   [storefront.components.money-formatters :as mf]
    [storefront.accessors.orders :as orders]
    [storefront.accessors.promos :as promos]
    [storefront.accessors.products :as products]
@@ -28,7 +31,6 @@
    [storefront.request-keys :as request-keys]
    [storefront.accessors.facets :as facets]
    [storefront.accessors.images :as images]
-   [storefront.components.money-formatters :refer [as-money-without-cents]]
    [storefront.components.ui :as ui]
    [storefront.components.stylist-banner :as stylist-banner]
    [storefront.events :as events]
@@ -81,7 +83,86 @@
                                    (:quantity line-item)
                                    (utils/send-event-callback events/control-cart-line-item-dec {:variant line-item})
                                    (utils/send-event-callback events/control-cart-line-item-inc {:variant line-item}))]
-        [:div.h4 {:data-test (str "line-item-price-ea-" sku-id)} (as-money-without-cents price) " ea"]]]]]))
+        [:div.h4 {:data-test (str "line-item-price-ea-" sku-id)} (mf/as-money-without-cents price) " ea"]]]]]))
+
+(defn ^:private summary-row
+  ([name amount] (summary-row {} name amount))
+  ([row-attrs name amount]
+   [:tr.h5
+    (merge (when (neg? amount)
+             {:class "teal"})
+           row-attrs)
+    [:td.pyp3 name]
+    [:td.pyp3.right-align.medium
+     (mf/as-money-or-free amount)]]))
+
+(defn ^:private text->data-test-name [name]
+  (-> name
+      (string/replace #"[0-9]" (comp spice/number->word int))
+      string/lower-case
+      (string/replace #"[^a-z]+" "-")))
+
+(defn display-order-summary [order {:keys [read-only? available-store-credit use-store-credit? promo-data]}]
+  (let [adjustments-including-tax (orders/all-order-adjustments order)
+        shipping-item             (orders/shipping-item order)
+        store-credit              (min (:total order) (or available-store-credit
+                                                          (-> order :cart-payments :store-credit :amount)
+                                                          0.0))]
+    [:div
+     [:div.py2.border-top.border-bottom.border-gray
+      [:table.col-12
+       [:tbody
+        (summary-row "Subtotal" (orders/products-subtotal order))
+        (when shipping-item
+          (summary-row "Shipping" (* (:quantity shipping-item) (:unit-price shipping-item))))
+
+        (let [{:keys [focused coupon-code field-errors updating? applying?]} promo-data]
+          [:tr.h5
+           [:td
+            {:col-span "2"}
+            [:form.flex.justify-around.mxnp1.mt2
+             {:on-submit (utils/send-event-callback events/control-cart-update-coupon)}
+             (ui/text-field {:keypath       keypaths/cart-coupon-code
+                             :wrapper-class "rounded-left"
+                             :class         "flex-grow-5 h6 black"
+                             :data-test     "promo-code"
+                             :focused       focused
+                             :label         "Promo code"
+                             :value         coupon-code
+                             :errors        (get field-errors ["promo-code"])
+                             :data-ref      "promo-code"})
+             (ui/teal-button {:on-click   (utils/send-event-callback events/control-cart-update-coupon)
+                              :class      "rounded-right mb2 flex-grow-1 flex justify-center items-center"
+                              :size-class "flex-grow-4"
+                              :data-test  "cart-apply-promo"
+                              :disabled?  updating?
+                              :spinning?  applying?}
+                             "Apply")]]])
+
+        (for [{:keys [name price coupon-code]} adjustments-including-tax]
+          (when (or (not (= price 0))
+                    (#{"amazon" "freeinstall"} coupon-code))
+            (summary-row
+             {:key name}
+             [:div {:data-test (text->data-test-name name)}
+              (orders/display-adjustment-name name)
+              (when (and (not read-only?) coupon-code)
+                [:a.ml1.h6.gray
+                 (merge {:data-test "cart-remove-promo"}
+                        (utils/fake-href events/control-checkout-remove-promotion
+                                         {:code coupon-code}))
+                 "Remove"])]
+             price)))
+
+        (when (pos? store-credit)
+          (summary-row "Store Credit" (- store-credit)))]]]
+     [:div.py2.h2
+      [:div.flex
+       [:div.flex-auto.light "Total"]
+       [:div.right-align.medium
+        (cond-> (:total order)
+          use-store-credit? (- store-credit)
+          true              mf/as-money)]]]]))
 
 
 (defn deploy-promotion-banner-component
@@ -177,27 +258,14 @@
                                      delete-line-item-requests)]
 
      [:div.col-on-tb-dt.col-6-on-tb-dt.px3
-      [:form.clearfix.mxn1
-       {:on-submit (utils/send-event-callback events/control-cart-update-coupon)}
-       [:div.col.col-8.px1
-        (ui/text-field {:keypath   keypaths/cart-coupon-code
-                        :data-test "promo-code"
-                        :focused   focused
-                        :label     "Promo code"
-                        :value     coupon-code
-                        :errors    (get field-errors ["promo-code"])
-                        :data-ref  "promo-code"})]
-       [:div.col.col-4.px1.mb3.inline-block
-        (ui/teal-button {:on-click  (utils/send-event-callback events/control-cart-update-coupon)
-                         :data-test "cart-apply-promo"
-                         :disabled? updating?
-                         :spinning? applying-coupon?}
-                        "Apply")]]
 
-      #?(:cljs
-         (summary/display-order-summary order
-                                        {:read-only?        false
-                                         :use-store-credit? false}))
+      (display-order-summary order
+                             {:read-only?        false
+                              :use-store-credit? false
+                              :promo-data        {:coupon-code coupon-code
+                                                  :applying?   applying-coupon?
+                                                  :focused     focused
+                                                  :field-errors field-errors}})
 
       [:form
        {:on-submit (utils/send-event-callback events/control-checkout-cart-submit)}
@@ -334,8 +402,7 @@
   {:fetching-order?  (utils/requesting? data request-keys/get-order)
    :item-count       (orders/product-quantity (get-in data keypaths/order))
    :empty-cart       (empty-cart-query data)
-   :full-cart        (full-cart-query data)
-   :promotion-banner (promotion-banner/query data)})
+   :full-cart        (full-cart-query data)})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

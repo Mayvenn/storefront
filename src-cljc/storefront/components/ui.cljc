@@ -77,9 +77,10 @@
     (assert color (str "Button color " color-kw " has not been defined."))
     color))
 
-(defn ^:private button-class [color-kw {:keys [class]}]
+(defn ^:private button-class [color-kw {:keys [size-class class] :or {size-class "col-12"}}]
   (string/join " "
-               ["btn col-12 h5"
+               ["btn h5"
+                size-class
                 (button-colors color-kw)
                 class]))
 
@@ -216,9 +217,9 @@
        checked?
        (assoc :checked true))]))
 
-(defn text-field [{:keys [label keypath value errors data-test] :as input-attributes}]
+(defn text-field [{:keys [label keypath value errors data-test class] :as input-attributes :or {class "col-12"}}]
   (let [error (first errors)]
-    [:div.col-12.mb2.stacking-context
+    [:div.mb2.stacking-context {:class class}
      (plain-text-field label keypath value (not (nil? error))
                        (dissoc input-attributes :label :keypath :value :errors))
      (field-error-message error data-test)]))

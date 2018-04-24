@@ -12,3 +12,9 @@
 @custom-media --on-tablet             (min-width: 750px) and (max-width: 999px);
 @custom-media --on-tablet-and-desktop (min-width: 750px);
 @custom-media --on-desktop            (min-width: 1000px);
+
+.flex-grow-1 { flex-grow: 1; }
+.flex-grow-2 { flex-grow: 2; }
+.flex-grow-3 { flex-grow: 3; }
+.flex-grow-4 { flex-grow: 4; }
+.flex-grow-5 { flex-grow: 5; }

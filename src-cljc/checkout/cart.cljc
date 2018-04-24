@@ -272,11 +272,7 @@
            empty-cart
            full-cart
            control-header
-           popup
-           footer
-           promotion-banner
-           flash
-           nav-event]} owner opts]
+           footer]} owner opts]
   (component/create
    (if fetching-order?
      [:div.py3.h2 ui/spinner]
@@ -289,9 +285,7 @@
   {:fetching-order?  (utils/requesting? data request-keys/get-order)
    :item-count       (orders/product-quantity (get-in data keypaths/order))
    :empty-cart       (empty-cart-query data)
-   :full-cart        (full-cart-query data)
-   :promotion-banner (promotion-banner/query data)
-   :flash            (flash/query data)})
+   :full-cart        (full-cart-query data)})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
