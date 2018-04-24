@@ -1,6 +1,5 @@
 (ns checkout.auto-complete-cart
   (:require
-   [checkout.control-cart :as control]
    #?@(:cljs [[goog.dom]
               [goog.events]
               [goog.events.EventType :as EventType]
@@ -262,15 +261,14 @@
       (display-order-summary order
                              {:read-only?        false
                               :use-store-credit? false
-                              :promo-data        {:coupon-code coupon-code
-                                                  :applying?   applying-coupon?
-                                                  :focused     focused
+                              :promo-data        {:coupon-code  coupon-code
+                                                  :applying?    applying-coupon?
+                                                  :focused      focused
                                                   :field-errors field-errors}})
 
       [:form
        {:on-submit (utils/send-event-callback events/control-checkout-cart-submit)}
-       (affirm/as-low-as-box {:amount      (:total order)
-                              :middle-copy "Just 'Check Out' below."})
+       (affirm/auto-complete-as-low-as-box {:amount (:total order)})
        (ui/submit-button "Check out" {:spinning? false
                                       :disabled? updating?
                                       :data-test "start-checkout-button"})]

@@ -8,6 +8,7 @@
    [storefront.platform.messages :as m]
    [storefront.transitions :as transitions]
    [storefront.components.money-formatters :as mf]
+   [storefront.components.svg :as svg]
    [storefront.keypaths :as keypaths]
    [storefront.effects :as effects]))
 
@@ -26,13 +27,14 @@
      :on-click            (fn [event]
                             (.preventDefault event))}]))
 
-(defn ^:private modal-html [data]
+(defn ^:private modal-html [data content link-classes]
   (component/html
-   [:a.inline-block.affirm-product-modal.navy.underline
-    {:data-promo-id "promo_set_pdp"
+   [:a.inline-block.affirm-product-modal
+    {:class link-classes
+     :data-promo-id "promo_set_pdp"
      :data-amount (mf/as-cents (:amount data))
      :data-learnmore-show (or (:show-learnmore data) false)}
-    "Learn more."]))
+    content]))
 
 (defn as-low-as-component [data owner _]
   #?(:cljs (reify
@@ -47,7 +49,7 @@
                (as-low-as-html data)))
      :clj (as-low-as-html data)))
 
-(defn modal-component [data owner _]
+(defn modal-component [data owner {:keys [link-classes content]}]
   #?(:cljs (reify
              om/IDidUpdate
              (did-update [this _ _]
@@ -56,8 +58,8 @@
              (did-mount [this]
                (m/handle-message events/affirm-request-refresh {}))
              om/IRender
-             (render [_] (modal-html data)))
-     :clj (modal-html data)))
+             (render [_] (modal-html data content link-classes)))
+     :clj (modal-html data content link-classes)))
 
 (defn as-low-as-box [data]
   (when (valid-order-total? (:amount data))
@@ -65,7 +67,19 @@
      [:div.center.border.rounded.border-aqua.col-12.py1.mx-auto
       [:div.mx1.dark-gray.h6.py1
        [:p.h6 (component/build as-low-as-component data {})]
-       [:p.h6 (:middle-copy data) " " (component/build modal-component data {})]]]]))
+       [:p.h6 (:middle-copy data) " " (component/build modal-component data {:opts {:content "Learn more."
+                                                                                    :link-classes "navy underline"}})]]]]))
+
+(defn auto-complete-as-low-as-box [data]
+  (when (valid-order-total? (:amount data))
+    [:div.pt3
+     [:div.center.col-12.py1.mx-auto
+      [:div.mx1.dark-gray.h6.py1
+       [:p.h5.flex.justify-center.black
+        (component/build as-low-as-component data {})
+        (component/build modal-component data {:opts {:link-classes "flex self-center mxn1"
+                                                      :content      (svg/question-circle {:width "1em"
+                                                                                          :height "1em"})}})]]]]))
 
 (defn ^:private reset-refresh-timeout [timeout f]
   #?(:cljs

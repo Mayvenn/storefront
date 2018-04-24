@@ -217,3 +217,8 @@
   (component/html
    [:svg opts
     (svg-xlink "trash-can")]))
+
+(defn question-circle [opts]
+  (component/html
+   [:svg opts
+    (svg-xlink "question-circle")]))
