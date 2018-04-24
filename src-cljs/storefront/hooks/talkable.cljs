@@ -33,4 +33,4 @@
                          {:affiliate_member
                           {:email (get-in data keypaths/user-email)}}
                          (when (seq campaign-tags)
-                           {:campaign_tags compaign-tags}))))))
+                           {:campaign_tags campaign-tags}))))))
