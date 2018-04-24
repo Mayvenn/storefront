@@ -42,9 +42,6 @@
 
 (def initial-stylist-state
   {:sales-rep-email nil
-   :stats {:previous-payout {:amount 0 :date nil}
-           :next-payout {:amount 0}
-           :lifetime-payouts {:amount 0}}
    :earnings {:rate nil
               :page 0
               :pages nil
