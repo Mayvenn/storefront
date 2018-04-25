@@ -1,0 +1,14 @@
+{
+  "short_name": "Mayvenn",
+  "name": "Mayvenn Virgin Human Hair",
+  "icons": [
+    {
+      "src": "/images/favicon.png",
+      "sizes": "64x64",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait"
+}

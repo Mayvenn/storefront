@@ -72,8 +72,12 @@
           [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"}]
           [:meta {:http-equiv "Content-type" :content "text/html;charset=UTF-8"}]
           [:meta {:name "theme-color" :content "#ffffff"}]
+          [:meta {:name "apple-mobile-web-app-capable" :content "yes"}]
+          [:meta {:name "mobile-web-app-capable" :content "yes"}]
+
           (into '() (seo/tags-for-page data))
 
+          [:link {:rel "manifest" :href "/web_app_manifest.json"}]
           [:link {:href (assets/path "/images/favicon.png") :rel "shortcut icon" :type "image/vnd.microsoft.icon"}]
           (when asset-mappings/cdn-host
             [:link {:rel "dns-prefetch" :href (str "//" asset-mappings/cdn-host)}])
