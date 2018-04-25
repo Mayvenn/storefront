@@ -191,7 +191,7 @@
                                           :catalog/category-id "21"})
                          :data-test "menu-shop-seamless-clip-ins")
                   [:span.teal.pr1 "NEW"]
-                  [:span.medium.flex-auto "Shop Clip-ins"])]
+                  [:span.medium.flex-auto "Shop Clip-Ins"])]
    [:li (menu-row (assoc (utils/route-to events/navigate-product-details
                                          {:page/slug          "50g-straight-tape-ins"
                                           :catalog/product-id "111"})
