@@ -13,12 +13,14 @@
   (component/create
    [:div.border-bottom.border-light-gray.flex.items-center
     [:div.col-1]
-    [:div.flex-auto.py3.center.dark-gray "Shopping Bag - " (prn-str item-count) " items"]
+    [:div.flex-auto.py3.center.dark-gray
+     {:data-test "mobile-cart"}
+     "Shopping Bag - " (prn-str item-count) " items"]
     [:div.col-1
      [:a.h3.pointer.flex.items-center
       (merge
        (utils/route-back-or-to back events/navigate-home)
-       {:data-test "auto-complete-close" :title "Close"})
+       {:data-test "cart-close" :title "Close"})
       (svg/close-x {:class "stroke-dark-gray fill-white"})]]]))
 
 (defn query [data]
