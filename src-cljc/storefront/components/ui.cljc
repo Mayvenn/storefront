@@ -86,7 +86,9 @@
                 class]))
 
 (defn ^:private color-button [color-kw attrs & content]
-  (button (assoc attrs :class (button-class color-kw attrs))
+  (button (-> attrs
+              (dissoc :size-class)
+              (assoc :class (button-class color-kw attrs)))
           (into [:div] content)))
 
 (defn teal-button [attrs & content]
