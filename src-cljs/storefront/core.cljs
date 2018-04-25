@@ -66,7 +66,8 @@
        (track @app-state message)
        (catch :default e
          (let [state @app-state]
-           (exception-handler/report e {:api-version                (get-in state keypaths/app-version "unknown")
+           (exception-handler/report e {:ex-data                    (ex-data e)
+                                        :api-version                (get-in state keypaths/app-version "unknown")
                                         :handling-message           message
                                         :current-lead-id            (get-in state leads.keypaths/lead-id)
                                         :current-flow-id            (get-in state leads.keypaths/lead-flow-id)

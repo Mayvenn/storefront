@@ -128,16 +128,18 @@
 
   Currently experiencing hard to track down bug around product-db lookup, throwing
   to get more information."
-  [products skus {:as item :keys [product-name sku unit-price quantity]}]
+  [products skus {:as item :keys [product-name unit-price quantity] sku-id :sku}]
   (if-let [{:as product :keys [page/slug catalog/product-id]}
-           (accessors.products/find-product-by-sku-id products sku)]
+           (accessors.products/find-product-by-sku-id products sku-id)]
     {:display_name   product-name
-     :sku            sku
+     :sku            sku-id
      :unit_price     (* 100 unit-price)
      :qty            quantity
-     :item_image_url (str "https:" (:src (images/cart-image (get skus sku))))
-     :item_url       (absolute-url (products/path-for-sku product-id slug sku))}
-    (throw (ex-info "Affirm line item building missing product" item))))
+     :item_image_url (str "https:" (:src (images/cart-image (get skus sku-id))))
+     :item_url       (absolute-url (products/path-for-sku product-id slug sku-id))}
+    (throw (ex-info "Affirm line item building missing product" {:item item
+                                                                 :product-keys (keys products)
+                                                                 :sku-keys (keys skus)}))))
 
 (defn promotion->affirm-discount [{:keys [amount promotion] :as promo}]
   (when (seq promo)
