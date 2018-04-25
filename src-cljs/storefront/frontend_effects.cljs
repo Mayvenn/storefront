@@ -50,16 +50,6 @@
   (not= (get-in previous-app-state keypath)
         (get-in app-state keypath)))
 
-(defn potentially-show-email-popup [app-state]
-  (let [is-on-homepage?     (= (get-in app-state keypaths/navigation-event) events/navigate-home)
-        not-seen-popup-yet? (not (get-in app-state keypaths/email-capture-session))
-        signed-in?          (get-in app-state keypaths/user-id)
-        the-ville-control?  (experiments/the-ville-control? app-state)]
-    (when (and is-on-homepage? not-seen-popup-yet? the-ville-control?)
-      (if signed-in?
-        (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) "signed-in")
-        (handle-message events/popup-show-email-capture)))))
-
 (defn refresh-account [app-state]
   (let [user-id (get-in app-state keypaths/user-id)
         user-token (get-in app-state keypaths/user-token)]
@@ -120,18 +110,40 @@
   (facebook-analytics/remove-tracking)
   (pinterest/remove-tracking))
 
-(defmethod perform-effects events/enable-feature [_ event {:keys [feature]} _ app-state]
-  (let [show-financing?           (-> app-state (get-in keypaths/navigation-args) :query-params :show (= "financing"))
-        joined-the-ville-control? (= "the-ville-control" feature)
-        the-ville-variation?      (= "the-ville" feature)
-        show-free-install-modal?  (and the-ville-variation?
-                                       (not (cookie-jar/get-dismissed-free-install (get-in app-state keypaths/cookie))))]
+(defmethod perform-effects events/determine-and-show-popup [_ event args previous-app-state app-state]
+  (let [the-ville-control?       (experiments/the-ville-control? app-state)
+        the-ville-variation?     (experiments/the-ville? app-state)
+        is-on-homepage?          (= (get-in app-state keypaths/navigation-event)
+                                    events/navigate-home)
+        seen-email-capture?      (get-in app-state keypaths/email-capture-session)
+        seen-fayetteville-offer? (get-in app-state keypaths/dismissed-free-install)
+        signed-in?               (get-in app-state keypaths/user-id)
+
+        show-financing?          (and (-> app-state (get-in keypaths/navigation-args) :query-params :show (= "financing"))
+                                      (not the-ville-variation?))
+        show-free-install-modal? (and the-ville-variation?
+                                      (not seen-fayetteville-offer?))
+        show-email-capture?      (and (not signed-in?)
+                                      (not seen-email-capture?)
+                                      (or (and the-ville-control?
+                                               is-on-homepage?)
+                                          (and the-ville-variation?
+                                               seen-fayetteville-offer?)
+                                          ;; This is the original logic
+                                          ;; Uncomment this when removing the fayetteville experiment
+                                          #_(and is-on-homepage?
+                                               (not (or the-ville-control?
+                                                        the-ville-variation?)))))]
     (cond
-      show-financing?           nil
-      joined-the-ville-control? (potentially-show-email-popup app-state)
-      show-free-install-modal?  (handle-message events/popup-show-free-install))
-    (when the-ville-variation?
-      (pixlee/fetch-look "free-install"))))
+      show-free-install-modal? (handle-message events/popup-show-free-install)
+      show-financing?          (affirm/show-modal)
+      signed-in?               (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) "signed-in")
+      show-email-capture?      (handle-message events/popup-show-email-capture))))
+
+(defmethod perform-effects events/enable-feature [_ event {:keys [feature]} _ app-state]
+  (handle-message events/determine-and-show-popup)
+  (when (= "the-ville" feature)
+    (pixlee/fetch-look "free-install")))
 
 (defmethod perform-effects events/ensure-skus [_ event {:keys [skus]} _ app-state]
   (ensure-skus app-state skus))
@@ -190,9 +202,7 @@
 
 ;; FIXME:(jm) This is all triggered on pages we're redirecting through. :(
 (defmethod perform-effects events/navigate [_ event {:keys [query-params nav-stack-item] :as args} prev-app-state app-state]
-  (let [args               (dissoc args :nav-stack-item)
-        show-free-install? (and (experiments/the-ville? app-state)
-                                (not (cookie-jar/get-dismissed-free-install (get-in app-state keypaths/cookie))))]
+  (let [args               (dissoc args :nav-stack-item)]
     (handle-message events/control-menu-collapse-all)
     (refresh-account app-state)
     (api/get-promotions (get-in app-state keypaths/api-cache)
@@ -218,8 +228,7 @@
        pending-promo-code)
       (redirect event (update-in args [:query-params] dissoc :sha)))
 
-    (cond (= (:show query-params) "financing") (affirm/show-modal)
-          show-free-install?                   (messages/handle-message events/popup-show-free-install))
+    (handle-message events/determine-and-show-popup)
 
     (when-let [order (get-in app-state keypaths/order)]
       (->> order orders/product-items (map :sku) (ensure-skus app-state))
