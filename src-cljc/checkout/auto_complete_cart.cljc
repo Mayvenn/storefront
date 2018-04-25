@@ -421,11 +421,9 @@
   [:div {:data-test (keypaths/->component-str nav-event)}
 
    (stylist-banner/built-component data nil)
-   (promotion-banner/built-component (promotion-banner/query data) nil)
+   (promotion-banner/built-component data nil)
    #?(:cljs (popup/built-component data nil))
-   [:header (component/build header/component
-                             (header/query data)
-                             nil)]
+   [:header (component/build header/component (header/query data) nil)]
 
    (flash/built-component (flash/query data) nil)
 
