@@ -116,30 +116,31 @@
         (when shipping-item
           (summary-row "Shipping" (* (:quantity shipping-item) (:unit-price shipping-item))))
 
-        (let [{:keys [focused coupon-code field-errors updating? applying?]} promo-data]
-          [:tr.h5
-           [:td
-            {:col-span "2"}
-            [:form.mt2
-             {:on-submit (utils/send-event-callback events/control-cart-update-coupon)}
-             (ui/input-group
-              {:keypath       keypaths/cart-coupon-code
-               :wrapper-class "flex-grow-5"
-               :class         "h6"
-               :data-test     "promo-code"
-               :focused       focused
-               :label         "Promo code"
-               :value         coupon-code
-               :errors        (get field-errors ["promo-code"])
-               :data-ref      "promo-code"}
-              {:ui-element ui/teal-button
-               :content    "Apply"
-               :args       {:on-click   (utils/send-event-callback events/control-cart-update-coupon)
-                            :class      "flex justify-center items-center"
-                            :size-class "flex-grow-3"
-                            :data-test  "cart-apply-promo"
-                            :disabled?  updating?
-                            :spinning?  applying?}})]]])
+        (when-not (some :coupon-code adjustments-including-tax)
+          (let [{:keys [focused coupon-code field-errors updating? applying?]} promo-data]
+            [:tr.h5
+             [:td
+              {:col-span "2"}
+              [:form.mt2
+               {:on-submit (utils/send-event-callback events/control-cart-update-coupon)}
+               (ui/input-group
+                {:keypath       keypaths/cart-coupon-code
+                 :wrapper-class "flex-grow-5"
+                 :class         "h6"
+                 :data-test     "promo-code"
+                 :focused       focused
+                 :label         "Promo code"
+                 :value         coupon-code
+                 :errors        (get field-errors ["promo-code"])
+                 :data-ref      "promo-code"}
+                {:ui-element ui/teal-button
+                 :content    "Apply"
+                 :args       {:on-click   (utils/send-event-callback events/control-cart-update-coupon)
+                              :class      "flex justify-center items-center"
+                              :size-class "flex-grow-3"
+                              :data-test  "cart-apply-promo"
+                              :disabled?  updating?
+                              :spinning?  applying?}})]]]))
 
         (for [{:keys [name price coupon-code]} adjustments-including-tax]
           (when (or (not (= price 0))
@@ -168,7 +169,6 @@
         (cond-> (:total order)
           use-store-credit? (- store-credit)
           true              mf/as-money)]]]]))
-
 
 (defn deploy-promotion-banner-component
   [data owner opts]
