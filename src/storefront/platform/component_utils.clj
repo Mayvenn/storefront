@@ -33,5 +33,8 @@
 (defn select-all-text [e]
   nil)
 
+(defn route-back-or-to [_ navigation-event & [navigation-args]]
+  (route-to navigation-event navigation-args))
+
 (defn scroll-href [anchor-id]
   {:href (str "#" anchor-id)})
