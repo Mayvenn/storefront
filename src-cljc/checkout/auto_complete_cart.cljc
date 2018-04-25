@@ -423,9 +423,9 @@
    (stylist-banner/built-component data nil)
    (promotion-banner/built-component data nil)
    #?(:cljs (popup/built-component data nil))
-   [:header (component/build header/component (header/query data) nil)]
+   [:header (header/built-component data nil)]
 
-   (flash/built-component (flash/query data) nil)
+   (flash/built-component data nil)
 
    [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
     (built-component data nil)]
