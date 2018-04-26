@@ -109,18 +109,17 @@
              (get-in app-state keypaths/order-user-email)
              (get-in app-state keypaths/captured-email)))
 
-(defn update-state-from-order [app-state]
-  (let [order (get-in app-state keypaths/order)]
-    (if (orders/incomplete? order)
-      (-> app-state
-          (update-in keypaths/checkout-billing-address merge (:billing-address order))
-          (update-in keypaths/checkout-shipping-address merge (:shipping-address order))
-          (assoc-in keypaths/order order)
-          (assoc-in keypaths/checkout-selected-shipping-method
-                    (merge (first (get-in app-state keypaths/shipping-methods))
-                           (orders/shipping-item order)))
-          prefill-guest-email-address)
-      (assoc-in app-state keypaths/order nil))))
+(defn update-state-from-order [app-state order]
+  (if (orders/incomplete? order)
+    (-> app-state
+        (update-in keypaths/checkout-billing-address merge (:billing-address order))
+        (update-in keypaths/checkout-shipping-address merge (:shipping-address order))
+        (assoc-in keypaths/order order)
+        (assoc-in keypaths/checkout-selected-shipping-method
+                  (merge (first (get-in app-state keypaths/shipping-methods))
+                         (orders/shipping-item order)))
+        prefill-guest-email-address)
+    (assoc-in app-state keypaths/order nil)))
 
 (defmethod transition-state events/navigate [_ event args app-state]
   (let [args (dissoc args :nav-stack-item)
@@ -138,7 +137,7 @@
         (update-in keypaths/ui dissoc :navigation-stashed-stack-item)
         (assoc-in keypaths/navigation-uri uri)
         ;; order is important from here on
-        update-state-from-order
+        (update-state-from-order (get-in app-state keypaths/order))
         (assoc-in keypaths/redirecting? false)
         (assoc-in keypaths/navigation-message [event args]))))
 
@@ -376,6 +375,9 @@
       clear-field-errors
       (assoc-in keypaths/stylist-referrals [state/empty-referral])
       (assoc-in keypaths/popup :refer-stylist-thanks)))
+
+(defmethod transition-state events/api-success-get-order [_ event order app-state]
+  (update-state-from-order app-state order))
 
 (defmethod transition-state events/api-success-auth [_ event {:keys [user order]} app-state]
   (let [signed-in-app-state (-> app-state

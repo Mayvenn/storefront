@@ -769,8 +769,7 @@
     {:user-id user-id
      :user-token user-token
      :store-stylist-id store-stylist-id}
-    :handler
-    #(messages/handle-message events/api-success-get-order %)
+    :handler #(messages/handle-message events/api-success-get-order %)
     :error-handler (constantly nil)}))
 
 (defn api-failure? [event]
