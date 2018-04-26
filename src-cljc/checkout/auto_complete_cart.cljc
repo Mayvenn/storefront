@@ -27,6 +27,7 @@
    [storefront.events :as events]
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
+   [storefront.css-transitions :as css-transitions]
    [storefront.request-keys :as request-keys]
    [storefront.accessors.facets :as facets]
    [storefront.accessors.images :as images]
@@ -35,6 +36,15 @@
    [storefront.events :as events]
    [storefront.platform.component-utils :as utils]
    [storefront.components.svg :as svg]))
+
+(defn transition-background-color [& content]
+  (css-transitions/transition-element
+   {:transitionName          "line-item-fade"
+    :transitionAppearTimeout 1100
+    :transitionAppear        true
+    :transitionEnter         true
+    :transitionEnterTimeout  1100}
+   content))
 
 (defn display-adjustable-line-items
   [line-items skus update-line-item-requests delete-line-item-requests]
@@ -48,15 +58,18 @@
               removing?         (get delete-line-item-requests variant-id)
               updating?         (get update-line-item-requests sku-id)]]
     [:div.pt1.pb2 {:key legacy-variant-id}
-     [:a.left.pr1
-      (when-let [length (-> sku :hair/length first)]
-        [:div.right.z1.circle.stacking-context.border.border-light-gray.flex.items-center.justify-center.medium.h5.bg-too-light-teal
-         {:style {:margin-left "-21px"
-                  :margin-top  "-12px"
-                  :width       "32px"
-                  :height      "32px"}} (str length "\"")])
-      [:img.block.border.border-light-gray
-       (assoc thumbnail :style {:width "75px" :height "75px"})]]
+     [:div.left.pr1
+      (transition-background-color
+       (when-let [length (-> sku :hair/length first)]
+         [:div.right.z1.circle.stacking-context.border.border-light-gray.flex.items-center.justify-center.medium.h5.bg-too-light-teal
+          {:style {:margin-left "-21px"
+                   :margin-top  "-10px"
+                   :width       "32px"
+                   :height      "32px"}} (str length "\"")]))
+      (transition-background-color
+       [:div.flex.items-center.justify-center.ml1 {:style {:width "79px" :height "79px"}}
+        [:img.block.border.border-light-gray
+         (assoc thumbnail :style {:width "75px" :height "75px"})]])]
      [:div {:style {:margin-top "-14px"}}
       [:a.medium.titleize.h5
        {:data-test (str "line-item-title-" sku-id)}
@@ -74,7 +87,7 @@
                    (utils/fake-href events/control-cart-remove (:id line-item)))
             (svg/trash-can {:height "1.1em"
                             :width  "1.1em"
-                            :class "stroke-dark-gray"})])]]
+                            :class  "stroke-dark-gray"})])]]
        [:div.flex.justify-between.mt1
         [:div.h3
          {:data-test (str "line-item-quantity-" sku-id)}

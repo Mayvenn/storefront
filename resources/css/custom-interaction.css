@@ -19,3 +19,29 @@
 
 .hoverable:hover .show-on-hover { display: block; }
 .hoverable .show-on-hover { display: none; }
+
+.line-item-fade-enter {
+    background-color: var(--teal);
+}
+
+.line-item-fade-enter.line-item-fade-enter-active {
+    background-color: var(--too-light-teal);
+    transition: var(--color-transition);
+}
+
+.line-item-fade-appear {
+    background-color: var(--teal);
+    color: white;
+}
+
+.line-item-fade-appear.line-item-fade-appear-active {
+    background-color: var(--too-light-teal);
+    color: initial;
+    transition: var(--color-transition);
+}
+
+:root {
+    --teal: #40cbac;
+    --too-light-teal: #f5fcfb;
+    --color-transition: all 800ms 300ms linear;
+}
