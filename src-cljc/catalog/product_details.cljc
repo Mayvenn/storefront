@@ -585,19 +585,25 @@
 
 (defmethod effects/perform-effects events/control-add-sku-to-bag
   [dispatch event {:keys [sku quantity] :as args} _ app-state]
-  #?(:cljs (api/add-sku-to-bag
-            (get-in app-state keypaths/session-id)
-            {:sku        sku
-             :quantity   quantity
-             :stylist-id (get-in app-state keypaths/store-stylist-id)
-             :token      (get-in app-state keypaths/order-token)
-             :number     (get-in app-state keypaths/order-number)
-             :user-id    (get-in app-state keypaths/user-id)
-             :user-token (get-in app-state keypaths/user-token)}
-            #(messages/handle-message events/api-success-add-sku-to-bag
-                                      {:order    %
-                                       :quantity quantity
-                                       :sku      sku}))))
+  #?(:cljs
+     (let [auto-complete? (experiments/auto-complete? app-state)
+           nav-event      (get-in app-state keypaths/navigation-event)]
+       (api/add-sku-to-bag
+        (get-in app-state keypaths/session-id)
+        {:sku        sku
+         :quantity   quantity
+         :stylist-id (get-in app-state keypaths/store-stylist-id)
+         :token      (get-in app-state keypaths/order-token)
+         :number     (get-in app-state keypaths/order-number)
+         :user-id    (get-in app-state keypaths/user-id)
+         :user-token (get-in app-state keypaths/user-token)}
+        #(do
+            (when (and auto-complete? (not= events/navigate-cart nav-event))
+              (history/enqueue-navigate events/navigate-cart))
+            (messages/handle-later events/api-success-add-sku-to-bag
+                                     {:order    %
+                                      :quantity quantity
+                                      :sku      sku}))))))
 
 (defmethod transitions/transition-state events/api-success-add-sku-to-bag
   [_ event {:keys [order quantity sku]} app-state]

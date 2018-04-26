@@ -981,13 +981,9 @@
   (handle-later events/added-to-bag))
 
 (defmethod perform-effects events/api-success-add-sku-to-bag [dispatch event args _ app-state]
-  (let [auto-complete? (experiments/auto-complete? app-state)
-        nav-event      (get-in app-state keypaths/navigation-event)]
-    (save-cookie app-state)
-    (add-pending-promo-code app-state (get-in app-state keypaths/order))
-    (handle-later events/added-to-bag)
-    (when (and auto-complete? (not= events/navigate-cart nav-event))
-      (history/enqueue-navigate events/navigate-cart))))
+  (save-cookie app-state)
+  (add-pending-promo-code app-state (get-in app-state keypaths/order))
+  (handle-later events/added-to-bag))
 
 (defmethod perform-effects events/added-to-bag [_ _ _ _ app-state]
   (when-let [el (.querySelector js/document "[data-ref=cart-button]")]
