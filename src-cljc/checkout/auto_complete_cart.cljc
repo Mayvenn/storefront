@@ -109,7 +109,8 @@
                                                           (-> order :cart-payments :store-credit :amount)
                                                           0.0))]
     [:div
-     [:div.py1.border-top.border-bottom.border-light-gray
+     [:div.hide-on-dt.border-top.border-light-gray]
+     [:div.py1.border-bottom.border-light-gray
       [:table.col-12
        [:tbody
         (summary-row "Subtotal" (orders/products-subtotal order))
@@ -143,8 +144,7 @@
                               :spinning?  applying?}})]]]))
 
         (for [{:keys [name price coupon-code]} adjustments-including-tax]
-          (when (or (not (= price 0))
-                    (#{"amazon" "freeinstall"} coupon-code))
+          (when (or (not (= price 0)) (#{"amazon" "freeinstall"} coupon-code))
             (summary-row
              {:key name}
              [:div.flex.items-center.align-middle {:data-test (text->data-test-name name)}
@@ -403,7 +403,7 @@
   (component/create
    (if fetching-order?
      [:div.py3.h2 ui/spinner]
-     [:div
+     [:div.col-7-on-dt.mx-auto
       (if (zero? item-count)
         (component/build empty-component empty-cart opts)
         (component/build full-component full-cart opts))])))
