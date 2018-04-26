@@ -31,15 +31,14 @@
 
 (defn component [{:keys [desktop-header-data item-count back]}]
   (component/create
-   (let [back-to-shopping-attrs (merge (utils/route-back-or-to back events/navigate-home)
-                                       {:data-test "cart-close" :title "Close"})]
+   (let [close-cart-route (utils/route-back-or-to back events/navigate-home)]
      [:div
       (desktop-header desktop-header-data)
 
       [:div.max-960.mx-auto.border-bottom.border-light-gray.flex.items-center
 
        [:div.col-2.hide-on-mb-tb
-        [:a.h5.black.pointer.flex.justify-start.items-center back-to-shopping-attrs
+        [:a.h5.black.pointer.flex.justify-start.items-center close-cart-route
          (svg/left-caret {:class "stroke-dark-gray"
                           :height "1em" :width "1em"}) "Back to Shopping"]]
 
@@ -52,7 +51,8 @@
        [:div.col-2.hide-on-mb-tb]
 
        [:div.col-1.hide-on-dt
-        [:a.h3.pointer.flex.items-center back-to-shopping-attrs
+        [:a.h3.pointer.flex.items-center (merge close-cart-route
+                                                {:data-test "cart-close" :title "Close"})
          (svg/close-x {:class "stroke-dark-gray fill-white"})]]]])))
 
 (defn query [data]
