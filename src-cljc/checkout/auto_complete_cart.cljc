@@ -418,7 +418,8 @@
   (component/build component (query data) opts))
 
 (defn layout [data nav-event]
-  [:div {:data-test (keypaths/->component-str nav-event)}
+  [:div.flex.flex-column {:style {:min-height    "100vh"
+                                  :margin-bottom "-1px"}}
 
    (stylist-banner/built-component data nil)
    (promotion-banner/built-component data nil)
