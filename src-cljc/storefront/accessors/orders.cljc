@@ -114,3 +114,6 @@
   (if (= name "Bundle Discount")
     "10% Bundle Discount"
     name))
+
+(defn applied-promo-code [order]
+  (some :coupon-code (all-order-adjustments order)))

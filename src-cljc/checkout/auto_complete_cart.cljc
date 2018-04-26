@@ -117,7 +117,7 @@
         (when shipping-item
           (summary-row "Shipping" (* (:quantity shipping-item) (:unit-price shipping-item))))
 
-        (when-not (some :coupon-code adjustments-including-tax)
+        (when-not (orders/applied-promo-code order)
           (let [{:keys [focused coupon-code field-errors updating? applying?]} promo-data]
             [:tr.h5
              [:td

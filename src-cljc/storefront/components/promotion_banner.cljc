@@ -16,13 +16,14 @@
 
 (defn auto-complete-allowed?
   [data]
-  (let [empty-cart?                    (= 0 (orders/product-quantity (get-in data keypaths/order)))
+  (let [order                          (get-in data keypaths/order)
+        empty-cart?                    (= 0 (orders/product-quantity order))
         nav-event                      (get-in data keypaths/navigation-event)
         experiment-allowed-navigation? (disj allowed-navigation? events/navigate-cart)
-        current-promotion-codes        (get-in data keypaths/order-promotion-codes)]
+        applied-promo-code             (orders/applied-promo-code order)]
     (or (experiment-allowed-navigation? nav-event)
         (and (= events/navigate-cart nav-event)
-             (or (empty? current-promotion-codes)
+             (or (nil? applied-promo-code)
                  empty-cart?)))))
 
 (defn promotion-to-advertise [data]
