@@ -42,10 +42,10 @@
   (if run-transition?
     (css-transitions/transition-element
      {:transitionName          "line-item-fade"
-      :transitionAppearTimeout 1100
+      :transitionAppearTimeout 1300
       :transitionAppear        true
       :transitionEnter         true
-      :transitionEnterTimeout  1100}
+      :transitionEnterTimeout  1300}
      content)
     content))
 

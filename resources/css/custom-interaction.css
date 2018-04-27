@@ -43,5 +43,5 @@
 :root {
     --teal: #40cbac;
     --too-light-teal: #f5fcfb;
-    --color-transition: all 800ms 300ms linear;
+    --color-transition: all 1000ms 300ms ease-in-out;
 }
