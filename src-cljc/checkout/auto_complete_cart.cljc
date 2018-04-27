@@ -67,13 +67,15 @@
       (when-let [length (-> sku :hair/length first)]
         (transition-background-color just-added-to-order?
          [:div.right.z1.circle.stacking-context.border.border-light-gray.flex.items-center.justify-center.medium.h5.bg-too-light-teal
-          {:style {:margin-left "-21px"
+          {:key   (str "length-circle-" sku-id)
+           :style {:margin-left "-21px"
                    :margin-top  "-10px"
                    :width       "32px"
                    :height      "32px"}} (str length "\"")]))
 
       (transition-background-color just-added-to-order?
-       [:div.flex.items-center.justify-center.ml1 {:style {:width "79px" :height "79px"}}
+       [:div.flex.items-center.justify-center.ml1 {:key   (str "thumbnail-" sku-id)
+                                                   :style {:width "79px" :height "79px"}}
         [:img.block.border.border-light-gray
          (assoc thumbnail :style {:width "75px" :height "75px"})]])]
 
