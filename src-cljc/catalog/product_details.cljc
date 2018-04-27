@@ -33,7 +33,8 @@
                        [storefront.api :as api]
                        [storefront.history :as history]])
             [storefront.components.affirm :as affirm]
-            [spice.date :as date]))
+            [spice.date :as date]
+            [storefront.components.svg :as svg]))
 
 (defn item-price [price]
   (when price
@@ -184,8 +185,14 @@
       (counter-or-out-of-stock in-stock? sku-quantity)
       (item-price price)))))
 
-(def triple-bundle-upsell
-  (component/html [:p.center.h5.p2.navy promos/bundle-discount-description]))
+(defn triple-bundle-upsell [auto-complete?]
+  [:p.center.h5.navy.flex.items-center.justify-center
+   (when-not auto-complete? {:class "p2"})
+   (when auto-complete?
+     (svg/discount-tag {:class  "mxnp6"
+                        :height "3em"
+                        :width  "3em"}))
+   promos/bundle-discount-description])
 
 (def shipping-and-guarantee
   (component/html
@@ -258,6 +265,7 @@
            reviews
            selected-sku
            sku-quantity
+           auto-complete?
            ugc]}
    owner
    opts]
@@ -295,7 +303,7 @@
               (sku-summary {:sku          selected-sku
                             :sku-quantity sku-quantity})]
              (when (products/eligible-for-triple-bundle-discount? product)
-               triple-bundle-upsell)
+               (triple-bundle-upsell auto-complete?))
              (affirm/as-low-as-box {:amount      (:sku/price selected-sku)
                                     :middle-copy "Just select Affirm at check out."})
              (add-to-bag-button adding-to-bag?
@@ -438,6 +446,7 @@
      :options           (generate-options facets product product-skus selected-sku)
      :product           product
      :selected-sku      selected-sku
+     :auto-complete?    (experiments/auto-complete? data)
      :cheapest-price    (lowest-sku-price product-skus)
      :carousel-images   carousel-images}))
 
