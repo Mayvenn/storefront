@@ -140,7 +140,7 @@
           (summary-row "Shipping" (* (:quantity shipping-item) (:unit-price shipping-item))))
 
         (when-not (orders/applied-promo-code order)
-          (let [{:keys [focused coupon-code field-errors updating? applying?]} promo-data]
+          (let [{:keys [focused coupon-code field-errors updating? applying? error-message]} promo-data]
             [:tr.h5
              [:td
               {:col-span "2"}
@@ -154,7 +154,9 @@
                  :focused       focused
                  :label         "Promo code"
                  :value         coupon-code
-                 :errors        (get field-errors ["promo-code"])
+                 :errors        (when (get field-errors ["promo-code"])
+                                  [{:long-message error-message
+                                    :path         ["promo-code"]}])
                  :data-ref      "promo-code"}
                 {:ui-element ui/teal-button
                  :content    "Apply"
@@ -211,6 +213,7 @@
                               field-errors
                               the-ville?
                               recently-added-skus
+                              error-message
                               show-green-banner?]} owner]
   (component/create
    [:div.container.p2
@@ -235,10 +238,11 @@
       (display-order-summary order
                              {:read-only?        false
                               :use-store-credit? false
-                              :promo-data        {:coupon-code  coupon-code
-                                                  :applying?    applying-coupon?
-                                                  :focused      focused
-                                                  :field-errors field-errors}})
+                              :promo-data        {:coupon-code   coupon-code
+                                                  :applying?     applying-coupon?
+                                                  :focused       focused
+                                                  :error-message error-message
+                                                  :field-errors  field-errors}})
 
       (affirm/auto-complete-as-low-as-box {:amount (:total order)})
 
@@ -358,6 +362,7 @@
                                  (variants-requests data request-keys/update-line-item (map :sku line-items)))
      :delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)
      :field-errors              (get-in data keypaths/field-errors)
+     :error-message             (get-in data keypaths/error-message)
      :focused                   (get-in data keypaths/ui-focus)
      :the-ville?                (experiments/the-ville? data)
      :recently-added-skus       (get-in data keypaths/cart-recently-added-skus)}))
