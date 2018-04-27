@@ -10,6 +10,7 @@
             [storefront.accessors.promos :as promos]
             [storefront.accessors.skus :as skus]
             [storefront.accessors.facets :as facets]
+            [storefront.accessors.orders :as orders]
             [storefront.components.money-formatters :refer [as-money-without-cents as-money]]
             [storefront.components.ui :as ui]
             [spice.maps :as maps]
@@ -616,10 +617,16 @@
 
 (defmethod transitions/transition-state events/api-success-add-sku-to-bag
   [_ event {:keys [order quantity sku]} app-state]
-  (-> app-state
-      (update-in keypaths/browse-recently-added-skus
-                 conj
-                 {:quantity quantity :sku sku})
-      (assoc-in keypaths/browse-sku-quantity 1)
-      (update-in keypaths/order merge order)))
+  (let [previous-skus  (->> (get-in app-state keypaths/order)
+                            orders/product-items
+                            (map :sku)
+                            set)
+        new-skus       (set/difference (hash-set (:catalog/sku-id sku)) previous-skus)]
+    (-> app-state
+        (assoc-in keypaths/cart-recently-added-skus new-skus)
+        (update-in keypaths/browse-recently-added-skus
+                   conj
+                   {:quantity quantity :sku sku})
+        (assoc-in keypaths/browse-sku-quantity 1)
+        (update-in keypaths/order merge order))))
 

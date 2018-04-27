@@ -153,6 +153,8 @@
 
 (def cart-paypal-redirect (conj cart :paypal-redirect))
 
+(def cart-recently-added-skus (conj cart :recently-added-skus))
+
 (def checkout (conj ui :checkout))
 (def checkout-as-guest (conj checkout :as-guest))
 (def checkout-guest-email (conj checkout :guest-email))

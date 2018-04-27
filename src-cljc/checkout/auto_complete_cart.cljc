@@ -38,39 +38,45 @@
    [storefront.components.svg :as svg]
    [checkout.cart :as cart]))
 
-(defn transition-background-color [& content]
-  (css-transitions/transition-element
-   {:transitionName          "line-item-fade"
-    :transitionAppearTimeout 1100
-    :transitionAppear        true
-    :transitionEnter         true
-    :transitionEnterTimeout  1100}
-   content))
+(defn transition-background-color [run-transition? & content]
+  (if run-transition?
+    (css-transitions/transition-element
+     {:transitionName          "line-item-fade"
+      :transitionAppearTimeout 1100
+      :transitionAppear        true
+      :transitionEnter         true
+      :transitionEnterTimeout  1100}
+     content)
+    content))
 
 (defn display-adjustable-line-items
-  [line-items skus update-line-item-requests delete-line-item-requests]
+  [recently-added-skus line-items skus update-line-item-requests delete-line-item-requests]
   (for [{sku-id :sku variant-id :id :as line-item} line-items
-        :let [sku               (get skus sku-id)
-              legacy-variant-id (or (:legacy/variant-id line-item) (:id line-item))
-              price             (or (:sku/price line-item)         (:unit-price line-item))
-              thumbnail         (merge
-                                 (images/cart-image sku)
-                                 {:data-test (str "line-item-img-" (:catalog/sku-id sku))})
-              removing?         (get delete-line-item-requests variant-id)
-              updating?         (get update-line-item-requests sku-id)]]
+        :let [sku                  (get skus sku-id)
+              legacy-variant-id    (or (:legacy/variant-id line-item) (:id line-item))
+              price                (or (:sku/price line-item)         (:unit-price line-item))
+              thumbnail            (merge
+                                    (images/cart-image sku)
+                                    {:data-test (str "line-item-img-" (:catalog/sku-id sku))})
+              removing?            (get delete-line-item-requests variant-id)
+              updating?            (get update-line-item-requests sku-id)
+              just-added-to-order? (contains? recently-added-skus sku-id)]]
     [:div.pt1.pb2 {:key legacy-variant-id}
+
      [:div.left.pr1
-      (transition-background-color
-       (when-let [length (-> sku :hair/length first)]
+      (when-let [length (-> sku :hair/length first)]
+        (transition-background-color just-added-to-order?
          [:div.right.z1.circle.stacking-context.border.border-light-gray.flex.items-center.justify-center.medium.h5.bg-too-light-teal
           {:style {:margin-left "-21px"
                    :margin-top  "-10px"
                    :width       "32px"
                    :height      "32px"}} (str length "\"")]))
-      (transition-background-color
+
+      (transition-background-color just-added-to-order?
        [:div.flex.items-center.justify-center.ml1 {:style {:width "79px" :height "79px"}}
         [:img.block.border.border-light-gray
          (assoc thumbnail :style {:width "75px" :height "75px"})]])]
+
      [:div {:style {:margin-top "-14px"}}
       [:a.medium.titleize.h5
        {:data-test (str "line-item-title-" sku-id)}
@@ -202,6 +208,7 @@
                               delete-line-item-requests
                               field-errors
                               the-ville?
+                              recently-added-skus
                               show-green-banner?]} owner]
   (component/create
    [:div.container.p2
@@ -216,7 +223,8 @@
     [:div.clearfix.mxn3
      [:div.col-on-tb-dt.col-6-on-tb-dt.px3
       {:data-test "cart-line-items"}
-      (display-adjustable-line-items line-items
+      (display-adjustable-line-items recently-added-skus
+                                     line-items
                                      skus
                                      update-line-item-requests
                                      delete-line-item-requests)]
@@ -349,7 +357,8 @@
      :delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)
      :field-errors              (get-in data keypaths/field-errors)
      :focused                   (get-in data keypaths/ui-focus)
-     :the-ville?                (experiments/the-ville? data)}))
+     :the-ville?                (experiments/the-ville? data)
+     :recently-added-skus       (get-in data keypaths/cart-recently-added-skus)}))
 
 (defn empty-cart-query [data]
   {:promotions (get-in data keypaths/promotions)})

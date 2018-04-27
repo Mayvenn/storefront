@@ -121,6 +121,11 @@
         prefill-guest-email-address)
     (assoc-in app-state keypaths/order nil)))
 
+(defn clear-recently-added-skus [app-state nav-event]
+  (if (not= nav-event events/navigate-cart)
+    (assoc-in app-state keypaths/cart-recently-added-skus #{})
+    app-state))
+
 (defmethod transition-state events/navigate [_ event args app-state]
   (let [args (dissoc args :nav-stack-item)
         uri  (url/url js/window.location)]
@@ -130,6 +135,7 @@
         (add-pending-promo-code args)
         clear-flash
         clear-completed-order
+        (clear-recently-added-skus (get-in app-state keypaths/navigation-event))
         (assoc-in keypaths/flash-now-success (get-in app-state keypaths/flash-later-success))
         (assoc-in keypaths/flash-now-failure (get-in app-state keypaths/flash-later-failure))
         (assoc-in keypaths/flash-later-success nil)
