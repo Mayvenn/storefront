@@ -35,7 +35,8 @@
    [storefront.components.stylist-banner :as stylist-banner]
    [storefront.events :as events]
    [storefront.platform.component-utils :as utils]
-   [storefront.components.svg :as svg]))
+   [storefront.components.svg :as svg]
+   [checkout.cart :as cart]))
 
 (defn transition-background-color [& content]
   (css-transitions/transition-element
@@ -183,62 +184,6 @@
           use-store-credit? (- store-credit)
           true              mf/as-money)]]]]))
 
-(defn deploy-promotion-banner-component
-  [data owner opts]
-  #?(:clj [:div]
-     :cljs
-     (letfn [(handle-scroll [e] (om/set-state! owner :show? (< 75 (.-y (goog.dom/getDocumentScroll)))))
-             (set-height [] (om/set-state! owner :banner-height (some-> owner
-                                                                        (om/get-node "banner")
-                                                                        goog.style/getSize
-                                                                        .-height)))]
-       (reify
-         om/IInitState
-         (init-state [this]
-           {:show? false})
-         om/IDidMount
-         (did-mount [this]
-           (om/set-state! owner :description-length (count (:description (:promo data))))
-           (set-height)
-           (goog.events/listen js/window EventType/SCROLL handle-scroll))
-         om/IWillUnmount
-         (will-unmount [this]
-           (goog.events/unlisten js/window EventType/SCROLL handle-scroll))
-         om/IWillReceiveProps
-         (will-receive-props [this next-props]
-           (set-height))
-         om/IRenderState
-         (render-state [this {:keys [show? banner-height]}]
-           (component/html
-            [:div.fixed.z1.top-0.left-0.right-0
-             (if show?
-               {:style {:margin-top "0"}
-                :class "transition-2"}
-               {:class "hide"
-                :style {:margin-top (str "-" banner-height "px")}})
-             [:div {:ref "banner"}
-              (om/build promotion-banner/component data opts)]]))))))
-
-(def ineligible-free-install-cart-promo
-  [:div.p2.bg-orange.white.center {:data-test "ineligible-free-install-cart-promo"}
-   [:h4 "You're almost there..."]
-   [:h4 "Buy 3 bundles or more and get a"]
-   [:h1.shout.bold "Free Install"]
-   [:h6
-    [:div "from a Mayvenn Certified Stylist in Fayetteville, NC."]
-    [:div "Use code " [:span.bold "FREEINSTALL"] " to get your free install."]]])
-
-(def free-install-cart-promo
-  [:div.bg-teal.p2.white.center {:data-test "free-install-cart-promo"}
-   [:img {:src    "//ucarecdn.com/db055165-7085-4af5-b265-8aba681e6275/successwhite.png"
-          :height "63px"
-          :width  "68px"}]
-   [:h4 "This order qualifies for a"]
-   [:h1.shout.bold "Free Install"]
-   [:h6
-    [:div "from a Mayvenn Certified Stylist in Fayetteville, NC."]
-    [:div "Use code " [:span.bold "FREEINSTALL"] " to get your free install."]]])
-
 (defn full-component [{:keys [focused
                               order
                               line-items
@@ -260,12 +205,12 @@
                               show-green-banner?]} owner]
   (component/create
    [:div.container.p2
-    (component/build deploy-promotion-banner-component promotion-banner nil)
+    (component/build cart/deploy-promotion-banner-component promotion-banner nil)
 
     (when the-ville?
       (if show-green-banner?
-        free-install-cart-promo
-        ineligible-free-install-cart-promo))
+        cart/free-install-cart-promo
+        cart/ineligible-free-install-cart-promo))
 
     [:div.clearfix.mxn3
      [:div.col-on-tb-dt.col-6-on-tb-dt.px3
