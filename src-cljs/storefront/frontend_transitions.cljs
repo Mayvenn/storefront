@@ -135,7 +135,7 @@
         (add-pending-promo-code args)
         clear-flash
         clear-completed-order
-        (clear-recently-added-skus (get-in app-state keypaths/navigation-event))
+        (clear-recently-added-skus event)
         (assoc-in keypaths/flash-now-success (get-in app-state keypaths/flash-later-success))
         (assoc-in keypaths/flash-now-failure (get-in app-state keypaths/flash-later-failure))
         (assoc-in keypaths/flash-later-success nil)
@@ -536,7 +536,10 @@
   (assoc-in app-state keypaths/sms-number (:number args)))
 
 (defmethod transition-state events/api-success-update-order [_ event {:keys [order]} app-state]
-  (assoc-in app-state keypaths/order order))
+  (let [previous-order (get-in app-state keypaths/order)]
+    (-> app-state
+        (assoc-in keypaths/cart-recently-added-skus (orders/newly-added-sku-ids previous-order order))
+        (assoc-in keypaths/order order))))
 
 (defmethod transition-state events/order-completed [_ event order app-state]
   (-> app-state

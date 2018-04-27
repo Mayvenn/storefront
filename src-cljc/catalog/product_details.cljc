@@ -617,13 +617,9 @@
 
 (defmethod transitions/transition-state events/api-success-add-sku-to-bag
   [_ event {:keys [order quantity sku]} app-state]
-  (let [previous-skus  (->> (get-in app-state keypaths/order)
-                            orders/product-items
-                            (map :sku)
-                            set)
-        new-skus       (set/difference (hash-set (:catalog/sku-id sku)) previous-skus)]
+  (let [previous-order (get-in app-state keypaths/order)]
     (-> app-state
-        (assoc-in keypaths/cart-recently-added-skus new-skus)
+        (assoc-in keypaths/cart-recently-added-skus (orders/newly-added-sku-ids previous-order order))
         (update-in keypaths/browse-recently-added-skus
                    conj
                    {:quantity quantity :sku sku})

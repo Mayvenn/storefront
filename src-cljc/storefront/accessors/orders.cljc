@@ -1,4 +1,5 @@
-(ns storefront.accessors.orders)
+(ns storefront.accessors.orders
+  (:require [clojure.set :as set]))
 
 (defn incomplete? [order]
   (and (-> order :state #{"cart"} boolean)
@@ -117,3 +118,11 @@
 
 (defn applied-promo-code [order]
   (some :coupon-code (all-order-adjustments order)))
+
+(defn sku-ids [order]
+  (->> (product-items order)
+       (map :sku)
+       set))
+
+(defn newly-added-sku-ids [previous-order new-order]
+  (set/difference (sku-ids new-order) (sku-ids previous-order)))
