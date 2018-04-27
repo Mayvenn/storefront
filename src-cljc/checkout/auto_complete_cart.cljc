@@ -208,9 +208,10 @@
     (component/build cart/deploy-promotion-banner-component promotion-banner nil)
 
     (when the-ville?
-      (if show-green-banner?
-        cart/free-install-cart-promo
-        cart/ineligible-free-install-cart-promo))
+      [:div.mb3
+       (if show-green-banner?
+         cart/free-install-cart-promo
+         cart/ineligible-free-install-cart-promo)])
 
     [:div.clearfix.mxn3
      [:div.col-on-tb-dt.col-6-on-tb-dt.px3
