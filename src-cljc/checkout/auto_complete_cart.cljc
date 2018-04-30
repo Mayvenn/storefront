@@ -223,7 +223,31 @@
                                      line-items
                                      skus
                                      update-line-item-requests
-                                     delete-line-item-requests)]
+                                     delete-line-item-requests)
+
+      (let [items (orders/product-items order)
+            item  (first items)]
+        (when (and (= 1 (orders/line-item-quantity line-items))
+                   (= "bundles" (-> item :variant-attrs :hair/family)))
+          [:div.mb4.col-11.mx-auto {:style {:background-color "rgba(255, 197, 32, 0.1)"}}
+           [:div.flex.justify-center
+            [:div.col.col-4.m1 {:style {:height "90px"}}
+             [:div.border.border-light-gray
+              [:div.center.h5.medium.bg-white "string of lengths"] ;; length string
+              [:div.flex.justify-center.bg-light-gray ;; Images
+               [:img.bg-light-gray.m1 (update (images/cart-image (get skus (:sku item))) :style merge {:height "36px" :width "40px"})]
+               [:img.bg-light-gray.m1 (update (images/cart-image (get skus (:sku item))) :style merge {:height "36px" :width "40px"})]]]
+             [:div.col-10.mx-auto
+              (ui/navy-button {:style {:margin-top "-10px"}} "Add")]] ;; button
+
+            [:div.col.col-4.m1 {:style {:height "90px"}}
+             [:div.border.border-light-gray
+              [:div.center.h5.medium.bg-white "string of lengths"] ;; length string
+              [:div.flex.justify-center.bg-light-gray ;; Images
+               [:img.bg-light-gray.m1 (update (images/cart-image (get skus (:sku item))) :style merge {:height "36px" :width "40px"})]
+               [:img.bg-light-gray.m1 (update (images/cart-image (get skus (:sku item))) :style merge {:height "36px" :width "40px"})]]]
+             [:div.col-10.mx-auto
+              (ui/navy-button {:style {:margin-top "-10px"}} "Add")]]]]))]
 
      [:div.col-on-tb-dt.col-6-on-tb-dt.px3
       (display-order-summary order
