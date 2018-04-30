@@ -185,10 +185,23 @@
           use-store-credit? (- store-credit)
           true              mf/as-money)]]]]))
 
+(defn suggested-bundles
+  [{:keys [lengths-str image]}]
+  (let [sized-image (update image :style merge {:height "36px" :width "40px"})]
+    [:div.col.col-4.m1 {:style {:height "90px"}}
+     [:div.border.border-light-gray
+      [:div.center.h5.medium.bg-white lengths-str]
+      [:div.flex.justify-center.bg-light-gray
+       [:img.bg-light-gray.m1 sized-image]
+       [:img.bg-light-gray.m1 sized-image]]]
+     [:div.col-10.mx-auto
+      (ui/navy-button {:style {:margin-top "-10px"}} "Add")]]))
+
 (defn full-component [{:keys [focused
                               order
                               line-items
                               skus
+                              suggestions
                               products
                               coupon-code
                               promotion-banner
@@ -225,29 +238,9 @@
                                      update-line-item-requests
                                      delete-line-item-requests)
 
-      (let [items (orders/product-items order)
-            item  (first items)]
-        (when (and (= 1 (orders/line-item-quantity line-items))
-                   (= "bundles" (-> item :variant-attrs :hair/family)))
-          [:div.mb4.col-11.mx-auto {:style {:background-color "rgba(255, 197, 32, 0.1)"}}
-           [:div.flex.justify-center
-            [:div.col.col-4.m1 {:style {:height "90px"}}
-             [:div.border.border-light-gray
-              [:div.center.h5.medium.bg-white "string of lengths"] ;; length string
-              [:div.flex.justify-center.bg-light-gray ;; Images
-               [:img.bg-light-gray.m1 (update (images/cart-image (get skus (:sku item))) :style merge {:height "36px" :width "40px"})]
-               [:img.bg-light-gray.m1 (update (images/cart-image (get skus (:sku item))) :style merge {:height "36px" :width "40px"})]]]
-             [:div.col-10.mx-auto
-              (ui/navy-button {:style {:margin-top "-10px"}} "Add")]] ;; button
-
-            [:div.col.col-4.m1 {:style {:height "90px"}}
-             [:div.border.border-light-gray
-              [:div.center.h5.medium.bg-white "string of lengths"] ;; length string
-              [:div.flex.justify-center.bg-light-gray ;; Images
-               [:img.bg-light-gray.m1 (update (images/cart-image (get skus (:sku item))) :style merge {:height "36px" :width "40px"})]
-               [:img.bg-light-gray.m1 (update (images/cart-image (get skus (:sku item))) :style merge {:height "36px" :width "40px"})]]]
-             [:div.col-10.mx-auto
-              (ui/navy-button {:style {:margin-top "-10px"}} "Add")]]]]))]
+      (when (seq suggestions)
+        [:div.mb4.col-11.mx-auto {:style {:background-color "rgba(255, 197, 32, 0.1)"}}
+         [:div.flex.justify-center (map suggested-bundles suggestions)]])]
 
      [:div.col-on-tb-dt.col-6-on-tb-dt.px3
       (display-order-summary order
@@ -348,15 +341,27 @@
                                        (facets/get-color facets)
                                        :option/name)}))
 
+(defn suggest-bundles
+  [skus items]
+  (when (= 1 (orders/line-item-quantity items))
+    (let [{:keys [sku variant-attrs]} (first items)]
+      (when (= "bundles" (variant-attrs :hair/family))
+        [{:lengths-str "Imma String!"
+          :image       (images/cart-image (get skus sku))}
+         {:lengths-str "Yarn"
+          :image       (images/cart-image (get skus sku))}]))))
+
 (defn full-cart-query [data]
   (let [order       (get-in data keypaths/order)
         products    (get-in data keypaths/v2-products)
         facets      (get-in data keypaths/v2-facets)
         line-items  (map (partial add-product-title-and-color-to-line-item products facets) (orders/product-items order))
-        variant-ids (map :id line-items)]
+        variant-ids (map :id line-items)
+        skus        (get-in data keypaths/v2-skus)]
     {:order                     order
      :line-items                line-items
-     :skus                      (get-in data keypaths/v2-skus)
+     :skus                      skus
+     :suggestions               (suggest-bundles skus line-items)
      :products                  products
      :show-green-banner?        (and (orders/bundle-discount? order)
                                      (-> order :promotion-codes set (contains? "freeinstall")))
