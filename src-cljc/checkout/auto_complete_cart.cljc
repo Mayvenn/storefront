@@ -197,11 +197,17 @@
      [:div.col-10.mx-auto
       (ui/navy-button {:style {:margin-top "-10px"}} "Add")]]))
 
+(defn auto-complete-component [{:keys [suggestions]}]
+  (component/create
+   (when (seq suggestions)
+     [:div.mb4.col-11.mx-auto {:style {:background-color "rgba(255, 197, 32, 0.1)"}}
+      [:div.flex.justify-center (map suggested-bundles suggestions)]])))
+
 (defn full-component [{:keys [focused
                               order
                               line-items
                               skus
-                              suggestions
+                              auto-complete
                               products
                               coupon-code
                               promotion-banner
@@ -238,9 +244,7 @@
                                      update-line-item-requests
                                      delete-line-item-requests)
 
-      (when (seq suggestions)
-        [:div.mb4.col-11.mx-auto {:style {:background-color "rgba(255, 197, 32, 0.1)"}}
-         [:div.flex.justify-center (map suggested-bundles suggestions)]])]
+      (component/build auto-complete-component auto-complete nil)]
 
      [:div.col-on-tb-dt.col-6-on-tb-dt.px3
       (display-order-summary order
@@ -342,7 +346,7 @@
                                        :option/name)}))
 
 (defn suggest-bundles
-  [skus items]
+  [products skus items]
   (when (= 1 (orders/line-item-quantity items))
     (let [{:keys [sku variant-attrs]} (first items)]
       (when (= "bundles" (variant-attrs :hair/family))
@@ -351,17 +355,23 @@
          {:lengths-str "Yarn"
           :image       (images/cart-image (get skus sku))}]))))
 
+(defn auto-complete-query
+  [data]
+  (let [skus       (get-in data keypaths/v2-skus)
+        products   (get-in data keypaths/v2-products)
+        line-items (orders/product-items (get-in data keypaths/order))]
+    {:suggestions (suggest-bundles products skus line-items)}))
+
 (defn full-cart-query [data]
   (let [order       (get-in data keypaths/order)
         products    (get-in data keypaths/v2-products)
         facets      (get-in data keypaths/v2-facets)
         line-items  (map (partial add-product-title-and-color-to-line-item products facets) (orders/product-items order))
-        variant-ids (map :id line-items)
-        skus        (get-in data keypaths/v2-skus)]
-    {:order                     order
+        variant-ids (map :id line-items)]
+    {:auto-complete             (auto-complete-query data)
+     :order                     order
      :line-items                line-items
-     :skus                      skus
-     :suggestions               (suggest-bundles skus line-items)
+     :skus                      (get-in data keypaths/v2-skus)
      :products                  products
      :show-green-banner?        (and (orders/bundle-discount? order)
                                      (-> order :promotion-codes set (contains? "freeinstall")))
