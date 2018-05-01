@@ -63,7 +63,7 @@
            :style {:margin-left "-21px"
                    :margin-top  "-10px"
                    :width       "32px"
-                   :height      "32px"}} (str length "\"")]))
+                   :height      "32px"}} (str length "”")]))
 
       (transition-background-color just-added-to-order?
        [:div.flex.items-center.justify-center.ml1 {:key   (str "thumbnail-" sku-id)
@@ -369,9 +369,9 @@
               long-suggestions  (if (< (count longer-skus) 2)
                                   [(-> adjacent-skus butlast last last) (last longer-skus)]
                                   (take 2 longer-skus))]
-          [{:lengths-str (string/join " & " (map (comp first :hair/length) short-suggestions))
+          [{:lengths-str (str (-> short-suggestions first :hair/length first) "” & " (-> short-suggestions last :hair/length first) "”")
             :image       (images/cart-image (get skus sku-id))}
-           {:lengths-str (string/join " & " (map (comp first :hair/length) long-suggestions))
+           {:lengths-str (str (-> long-suggestions first :hair/length first) "” & " (-> long-suggestions last :hair/length first) "”")
             :image       (images/cart-image (get skus sku-id))}])))))
 
 (defn auto-complete-query
