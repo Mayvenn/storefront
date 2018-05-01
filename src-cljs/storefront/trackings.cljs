@@ -428,12 +428,9 @@
                            :method     (:type payout-method)})))
 
 (defmethod perform-track events/api-success-cash-out-complete
-  [_ _ _ app-state]
+  [_ _ {:keys [amount payout-method] :as cash-out-status} app-state]
   (let [stylist-id                     (get-in app-state keypaths/store-stylist-id)
-        store-slug                     (get-in app-state keypaths/store-slug)
-        ;; We use initiated-payout because stats are not refetched until after
-        ;; this tracking method fires.
-        {:keys [amount payout-method]} (get-in app-state keypaths/stylist-payout-stats-initiated-payout)]
+        store-slug                     (get-in app-state keypaths/store-slug)]
     (stringer/track-event "cash_out_succeeded"
                           {:stylist_id stylist-id
                            :store_slug store-slug
