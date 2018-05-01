@@ -240,6 +240,7 @@
 
   (subheader "Primary")
   [:div.flex.flex-wrap.mxn1.mb4
+   (color-swatch "too-light-teal" "f5fcfb")
    (color-swatch "light-teal" "9fe5d5")
    (color-swatch "teal" "40cbac")]
 
