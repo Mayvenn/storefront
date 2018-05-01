@@ -189,19 +189,26 @@
 (defn suggested-bundles
   [{:keys [lengths-str image]}]
   (let [sized-image (update image :style merge {:height "36px" :width "40px"})]
-    [:div.col.col-4.m1 {:style {:height "90px"}}
-     [:div.border.border-light-gray
-      [:div.center.h5.medium.bg-white lengths-str]
-      [:div.flex.justify-center.bg-light-gray
-       [:img.bg-light-gray.m1 sized-image]
-       [:img.bg-light-gray.m1 sized-image]]]
-     [:div.col-10.mx-auto
-      (ui/navy-button {:style {:margin-top "-10px"}} "Add")]]))
+    [:div.mx2.my4.col-11
+     [:div.fixed (svg/discount-tag {:style {:height      "3em" :width "3em"
+                                            :margin-left "-23px"
+                                            :margin-top  "-20px"}})]
+     [:div.border.border-light-gray.bg-light-gray
+      {:style {:height "68px"}}
+      [:div.bg-white.h5.medium.center lengths-str]
+      [:div.flex.justify-center
+       [:img.m1 sized-image]
+       [:img.m1 sized-image]]
+      [:div.col-10.mx-auto
+       (ui/navy-button {:class "p1"
+                        :style {:margin-top "-10px"
+                                :height     "40px"}} "Add")]]]))
 
 (defn auto-complete-component [{:keys [suggestions]}]
   (component/create
    (when (seq suggestions)
-     [:div.mb4.col-11.mx-auto {:style {:background-color "rgba(255, 197, 32, 0.1)"}}
+     [:div.mb4.px1.col-12.mx-auto.bg-light-orange
+      {:style {:height "135px"}}
       [:div.flex.justify-center (map suggested-bundles suggestions)]])))
 
 (defn full-component [{:keys [products
