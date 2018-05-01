@@ -204,27 +204,27 @@
      [:div.mb4.col-11.mx-auto {:style {:background-color "rgba(255, 197, 32, 0.1)"}}
       [:div.flex.justify-center (map suggested-bundles suggestions)]])))
 
-(defn full-component [{:keys [focused
+(defn full-component [{:keys [products
                               order
-                              line-items
+                              disable-apple-pay-button?
                               skus
-                              auto-complete
-                              products
-                              coupon-code
                               promotion-banner
-                              applying-coupon?
                               updating?
                               redirecting-to-paypal?
                               share-carts?
                               requesting-shared-cart?
-                              show-apple-pay?
-                              disable-apple-pay-button?
-                              update-line-item-requests
-                              delete-line-item-requests
+                              auto-complete
+                              focused
                               field-errors
-                              the-ville?
-                              recently-added-skus
+                              line-items
                               error-message
+                              coupon-code
+                              update-line-item-requests
+                              show-apple-pay?
+                              the-ville?
+                              applying-coupon?
+                              recently-added-skus
+                              delete-line-item-requests
                               show-green-banner?]} owner]
   (component/create
    [:div.container.p2
