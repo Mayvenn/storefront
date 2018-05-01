@@ -1,6 +1,7 @@
 .bg-fb-blue      { background-color: var(--facebook-blue); }
 .bg-twitter-blue { background-color: var(--twitter-blue); }
 .bg-sms-green    { background-color: var(--sms-green); }
+.bg-light-orange { background-color: var(--light-orange); }
 
 .bg-white          { background-color: var(--white); }
 .bg-light-silver   { background-color: var(--light-silver); }
@@ -30,6 +31,7 @@
     --facebook-blue:  #3b5998;
     --twitter-blue:   #00aced;
     --sms-green:      #1fcc23;
+    --light-orange:   rgb(255, 248, 229);
 
     --lighten-5: rgba(255, 255, 255, .925);
     --clear: rgba(0, 0, 0, 0);
