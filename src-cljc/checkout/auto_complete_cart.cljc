@@ -6,6 +6,7 @@
        :clj [[storefront.component-shim :as component]])
    [checkout.cart :as cart]
    [checkout.header :as header]
+   [spice.selector :as selector]
    [clojure.string :as string]
    [spice.core :as spice]
    [storefront.accessors.experiments :as experiments]
@@ -348,12 +349,30 @@
 (defn suggest-bundles
   [products skus items]
   (when (= 1 (orders/line-item-quantity items))
-    (let [{:keys [sku variant-attrs]} (first items)]
+    (let [{:keys [variant-attrs] sku-id :sku} (first items)]
       (when (= "bundles" (variant-attrs :hair/family))
-        [{:lengths-str "Imma String!"
-          :image       (images/cart-image (get skus sku))}
-         {:lengths-str "Yarn"
-          :image       (images/cart-image (get skus sku))}]))))
+        (let [sku               (get skus sku-id)
+              adjacent-skus     (->> sku
+                                     :selector/from-products
+                                     first
+                                     (get products)
+                                     :selector/sku-ids
+                                     (map (partial get skus))
+                                     (selector/match-all {} {:hair/color (:hair/color sku)})
+                                     (sort-by (comp first :hair/length))
+                                     (partition-by #(= (:hair/length sku) (:hair/length %))))
+              shorter-skus      (first adjacent-skus)
+              longer-skus       (last adjacent-skus)
+              short-suggestions (if (< (count shorter-skus) 2)
+                                  [(first shorter-skus) (-> adjacent-skus second first)]
+                                  (take-last 2 shorter-skus))
+              long-suggestions  (if (< (count longer-skus) 2)
+                                  [(-> adjacent-skus butlast last last) (last longer-skus)]
+                                  (take 2 longer-skus))]
+          [{:lengths-str (string/join " & " (map (comp first :hair/length) short-suggestions))
+            :image       (images/cart-image (get skus sku-id))}
+           {:lengths-str (string/join " & " (map (comp first :hair/length) long-suggestions))
+            :image       (images/cart-image (get skus sku-id))}])))))
 
 (defn auto-complete-query
   [data]
