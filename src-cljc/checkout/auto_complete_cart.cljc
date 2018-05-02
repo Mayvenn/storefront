@@ -359,6 +359,7 @@
     (let [{:keys [variant-attrs] sku-id :sku} (first items)]
       (when (= "bundles" (variant-attrs :hair/family))
         (let [sku               (get skus sku-id)
+              image             (images/cart-image sku)
               adjacent-skus     (->> sku
                                      :selector/from-products
                                      first
@@ -372,14 +373,17 @@
               longer-skus       (last adjacent-skus)
               short-suggestions (if (< (count shorter-skus) 2)
                                   [(first shorter-skus) (-> adjacent-skus second first)]
-                                  (take-last 2 shorter-skus))
+                                  (into [] (take-last 2 shorter-skus)))
               long-suggestions  (if (< (count longer-skus) 2)
                                   [(-> adjacent-skus butlast last last) (last longer-skus)]
-                                  (take 2 longer-skus))]
-          [{:lengths-str (str (-> short-suggestions first :hair/length first) "” & " (-> short-suggestions last :hair/length first) "”")
-            :image       (images/cart-image (get skus sku-id))}
-           {:lengths-str (str (-> long-suggestions first :hair/length first) "” & " (-> long-suggestions last :hair/length first) "”")
-            :image       (images/cart-image (get skus sku-id))}])))))
+                                  (into [] (take 2 longer-skus)))]
+          (->> [short-suggestions long-suggestions]
+               (filterv (fn [skus] (every? :inventory/in-stock? skus)))
+               (mapv (fn [skus] {:lengths-str (str (-> skus first :hair/length first)
+                                                   "” & "
+                                                   (-> skus last :hair/length first)
+                                                   "”")
+                                 :image       image}))))))))
 
 (defn auto-complete-query
   [data]
