@@ -332,16 +332,16 @@
 (defn query [data]
   (let [the-ville?    (experiments/the-ville? data)
         homepage-data (get-in data keypaths/cms-homepage)]
-    {:store            (marquee/query data)
-     :signed-in        (auth/signed-in data)
-     :categories       (->> (get-in data keypaths/categories)
-                            (filter :home/order)
-                            (sort-by :home/order))
-     :hero-element     (cond
-                         the-ville? free-installation-hero
-                         :else      (hero homepage-data))
-     :feature-elements (feature-blocks homepage-data)
-     :the-ville?       the-ville?}))
+    {:store              (marquee/query data)
+     :signed-in          (auth/signed-in data)
+     :categories         (->> (get-in data keypaths/categories)
+                              (filter :home/order)
+                              (sort-by :home/order))
+     :hero-element       (cond
+                           the-ville? free-installation-hero
+                           :else      (hero homepage-data))
+     :feature-elements   (feature-blocks homepage-data)
+     :the-ville?         the-ville?}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

@@ -42,6 +42,7 @@
             [storefront.components.sign-up :as sign-up]
             [storefront.components.slideout-nav :as slideout-nav]
             [storefront.components.stylist-banner :as stylist-banner]
+            [storefront.components.header-new-flyout :as header-new-flyout]
             ;; TODO Maybe we should change leads namespaces to be something like
             ;; leads.components.home
             [leads.home :as leads.home]
@@ -127,7 +128,10 @@
    (stylist-banner/built-component data nil)
    (promotion-banner/built-component data nil)
    #?(:cljs (popup/built-component data nil))
-   [:header (header/built-component data nil)]
+   [:header
+    (if (experiments/new-flyout? data)
+      (header-new-flyout/built-component data nil)
+      (header/built-component data nil))]
    (flash/built-component data nil)
    [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
     ((main-component nav-event) data nil)]

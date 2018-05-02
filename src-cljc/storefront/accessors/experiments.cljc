@@ -66,3 +66,6 @@
 
 (defn auto-complete? [data]
   (display-feature? data "auto-complete"))
+
+(defn new-flyout? [data]
+  (display-feature? data "new-flyout"))
