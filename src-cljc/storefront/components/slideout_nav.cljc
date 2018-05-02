@@ -162,48 +162,48 @@
                                            {:page/slug           "virgin-hair"
                                             :catalog/category-id "15"})
                           :data-test "menu-shop-virgin-hair")
-                   [:span.medium.flex-auto "Shop Virgin Hair"]
+                   [:span.medium.flex-auto "Virgin Hair"]
                    ui/forward-caret)]
     [:li (menu-row (assoc (utils/route-to events/navigate-category
                                           {:page/slug           "dyed-virgin-hair"
                                            :catalog/category-id "16"})
                           :data-test "menu-shop-dyed-virgin-hair")
-                   [:span.medium.flex-auto "Shop Dyed Virgin Hair"])]
+                   [:span.medium.flex-auto "Dyed Virgin Hair"])]
     [:li (menu-row (assoc (utils/route-to events/navigate-category
                                           {:page/slug           "dyed-100-human-hair"
                                            :catalog/category-id "19"})
                           :data-test "menu-shop-dyed-100-human-hair")
                    [:span.teal.pr1 "NEW"]
-                   [:span.medium.flex-auto "Shop Dyed 100% Human Hair"])]]
+                   [:span.medium.flex-auto "Dyed 100% Human Hair"])]]
    [:li (menu-row (assoc (utils/fake-href events/menu-list
                                           {:page/slug           "closures-and-frontals"
                                            :catalog/category-id "12"})
                          :data-test "menu-shop-closures")
-                  [:span.medium.flex-auto "Shop Closures & Frontals"]
+                  [:span.medium.flex-auto "Closures & Frontals"]
                   ui/forward-caret)]
    [:li (menu-row (assoc (utils/route-to events/navigate-category
                                          {:page/slug           "wigs"
                                           :catalog/category-id "13"})
                          :data-test "menu-shop-wigs")
-                  [:span.medium.flex-auto "Shop Wigs"])]
+                  [:span.medium.flex-auto "Wigs"])]
    [:li (menu-row (assoc (utils/route-to events/navigate-category
                                          {:page/slug           "seamless-clip-ins"
                                           :catalog/category-id "21"})
                          :data-test "menu-shop-seamless-clip-ins")
                   [:span.teal.pr1 "NEW"]
-                  [:span.medium.flex-auto "Shop Clip-Ins"])]
+                  [:span.medium.flex-auto "Clip-Ins"])]
    [:li (menu-row (assoc (utils/route-to events/navigate-product-details
                                          {:page/slug          "50g-straight-tape-ins"
                                           :catalog/product-id "111"})
                          :data-test "menu-shop-tape-ins")
                   [:span.teal.pr1 "NEW"]
-                  [:span.medium.flex-auto "Shop Tape-Ins"])]
+                  [:span.medium.flex-auto "Tape-Ins"])]
    (when (-> signed-in ::auth/as (= :stylist))
      [:li (menu-row (assoc (utils/route-to events/navigate-product-details
                                            {:page/slug          "rings-kits"
                                             :catalog/product-id "49"})
                            :data-test "menu-stylist-products")
-                    [:span.medium.flex-auto "Shop Stylist Exclusives"])])])
+                    [:span.medium.flex-auto "Stylist Exclusives"])])])
 
 (defn ^:private menu-area [data]
   [:ul.list-reset.mb3
