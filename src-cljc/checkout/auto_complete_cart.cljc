@@ -190,9 +190,10 @@
   [{:keys [lengths-str image]}]
   (let [sized-image (update image :style merge {:height "36px" :width "40px"})]
     [:div.mx2.my4.col-11
-     [:div.fixed (svg/discount-tag {:style {:height      "3em" :width "3em"
-                                            :margin-left "-23px"
-                                            :margin-top  "-20px"}})]
+     [:div.absolute (svg/discount-tag {:style {:height      "3em"
+                                               :width       "3em"
+                                               :margin-left "-23px"
+                                               :margin-top  "-20px"}})]
      [:div.border.border-light-gray.bg-light-gray
       {:style {:height "68px"}}
       [:div.bg-white.h5.medium.center lengths-str]
