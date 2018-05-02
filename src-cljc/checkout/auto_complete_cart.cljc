@@ -208,7 +208,8 @@
   (component/create
    (when (seq suggestions)
      [:div.mb4.px1.col-12.mx-auto.bg-light-orange
-      {:style {:height "135px"}}
+      {:style     {:height "135px"}
+       :data-test "auto-complete"}
       [:div.flex.justify-center (map suggested-bundles suggestions)]])))
 
 (defn full-component [{:keys [products
