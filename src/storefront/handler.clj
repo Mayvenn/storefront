@@ -405,16 +405,6 @@
       (assoc-in keypaths/user-store-slug (cookies/get req "store-slug"))
       (assoc-in keypaths/user-email (cookies/get req "email"))))
 
-(defn assoc-cart-route-data [data storeback-config]
-  (let [order          (get-in data keypaths/order)
-        sku-ids        (map :sku (orders/product-items order))
-        {:keys [skus]} (when (seq sku-ids)
-                         (api/fetch-v2-skus storeback-config
-                                            {:catalog/sku-id sku-ids}))]
-    (cond-> data
-      (seq skus)
-      (update-in keypaths/v2-skus merge (products/index-skus skus)))))
-
 (defn- transition [app-state [event args]]
   (reduce (fn [app-state dispatch]
             (or (transitions/transition-state dispatch event args app-state)
@@ -443,9 +433,6 @@
               data                  (cond-> data
                                       true
                                       (assoc-user-info req)
-
-                                      (= events/navigate-cart nav-event)
-                                      (assoc-cart-route-data storeback-config)
 
                                       (= events/navigate-category nav-event)
                                       (assoc-category-route-data storeback-config params)
