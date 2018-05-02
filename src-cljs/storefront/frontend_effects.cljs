@@ -60,18 +60,23 @@
   (let [user-id (get-in app-state keypaths/user-id)
         user-token (get-in app-state keypaths/user-token)
         stylist-id (get-in app-state keypaths/store-stylist-id)
-        order-number (get-in app-state keypaths/order-number)]
-    (when (and user-id user-token stylist-id (not order-number))
+        order-number (get-in app-state keypaths/order-number)
+        order-token (get-in app-state keypaths/order-token)]
+    (cond
+      (and user-id user-token stylist-id (not order-number))
       (api/get-current-order user-id
                              user-token
-                             stylist-id))))
+                             stylist-id)
+
+      (and order-number order-token)
+      (api/get-order order-number order-token))))
 
 (defn- refresh-skus
   [app-state sku-ids]
   (when (seq sku-ids)
-    (api/search-v2-skus (get-in app-state keypaths/api-cache)
-                        {:catalog/sku-id sku-ids}
-                        (partial messages/handle-message events/api-success-v2-products))))
+    (api/search-v2-products (get-in app-state keypaths/api-cache)
+                            {:selector/sku-ids sku-ids}
+                            (partial messages/handle-message events/api-success-v2-products))))
 
 (defn- ensure-skus [app-state needed-sku-ids]
   (let [cached-sku-ids (set (keys (get-in app-state keypaths/v2-skus)))]
@@ -97,7 +102,6 @@
   (talkable/insert)
   (places-autocomplete/insert)
   (refresh-account app-state)
-  (refresh-current-order app-state)
   (doseq [feature (get-in app-state keypaths/features)]
     ;; trigger GA analytics, even though feature is already enabled
     (handle-message events/enable-feature {:feature feature})))
@@ -204,6 +208,7 @@
 (defmethod perform-effects events/navigate [_ event {:keys [query-params nav-stack-item] :as args} prev-app-state app-state]
   (let [args               (dissoc args :nav-stack-item)]
     (handle-message events/control-menu-collapse-all)
+    (handle-message events/save-order {:order (get-in app-state keypaths/order)})
     (refresh-account app-state)
     (api/get-promotions (get-in app-state keypaths/api-cache)
                         (or
@@ -229,14 +234,6 @@
       (redirect event (update-in args [:query-params] dissoc :sha)))
 
     (handle-message events/determine-and-show-popup)
-
-    (when-let [order (get-in app-state keypaths/order)]
-      (->> order orders/product-items (map :sku) (ensure-skus app-state))
-      (if (orders/incomplete? order)
-        (do
-          (save-cookie app-state)
-          (add-pending-promo-code app-state order))
-        (cookie-jar/clear-order (get-in app-state keypaths/cookie))))
 
     (if (routes/sub-page? [event args] [events/navigate-leads])
       (let [utm-params (some-> query-params
@@ -843,7 +840,19 @@
                      (get-in app-state keypaths/order)
                      (cookie-jar/retrieve-utm-params (get-in app-state keypaths/cookie)))))
 
-(defmethod perform-effects events/api-success-auth [_ _ _ _ app-state]
+(defmethod perform-effects events/save-order [_ _ {:keys [order]} _ app-state]
+  (if (and order (orders/incomplete? order))
+    (do
+      (->> order orders/product-items (map :sku) (ensure-skus app-state))
+      (save-cookie app-state)
+      (add-pending-promo-code app-state order))
+    (handle-message events/clear-order)))
+
+(defmethod perform-effects events/clear-order [_ _ _ _ app-state]
+  (cookie-jar/clear-order (get-in app-state keypaths/cookie)))
+
+(defmethod perform-effects events/api-success-auth [_ _ {:keys [order]} _ app-state]
+  (handle-message events/save-order {:order order})
   (doto app-state
     save-cookie
     redirect-to-return-navigation))
@@ -912,6 +921,7 @@
   (handle-later events/control-popup-hide {} 2000))
 
 (defmethod perform-effects events/api-success-update-order-place-order [_ event {:keys [order]} _ app-state]
+  (handle-message events/clear-order)
   (handle-message events/order-completed order))
 
 (defmethod perform-effects events/order-completed [dispatch event order _ app-state]
@@ -925,11 +935,15 @@
                      (cookie-jar/retrieve-utm-params (get-in app-state keypaths/cookie)))))
 
 (defmethod perform-effects events/api-success-update-order [_ event {:keys [order navigate event]} _ app-state]
+  (handle-message events/save-order {:order order})
   (save-cookie app-state)
   (when event
     (handle-message event {:order order}))
   (when navigate
     (history/enqueue-navigate navigate {:number (:number order)})))
+
+(defmethod perform-effects events/api-success-get-order [_ event order _ app-state]
+  (handle-message events/save-order {:order order}))
 
 (defmethod perform-effects events/api-failure-no-network-connectivity [_ event response _ app-state]
   (handle-message events/flash-show-failure {:message "Something went wrong. Please refresh and try again or contact customer service."}))
@@ -975,14 +989,19 @@
                                     (scroll/snap-to-top))
     (scroll/snap-to-top)))
 
-(defmethod perform-effects events/api-success-add-to-bag [dispatch event args _ app-state]
+(defmethod perform-effects events/api-success-add-to-bag [dispatch event {:keys [order]} _ app-state]
+  (handle-message events/save-order {:order order})
   (save-cookie app-state)
-  (add-pending-promo-code app-state (get-in app-state keypaths/order))
+  (add-pending-promo-code app-state order)
   (handle-later events/added-to-bag))
 
-(defmethod perform-effects events/api-success-add-sku-to-bag [dispatch event args _ app-state]
+(defmethod perform-effects events/api-success-remove-from-bag [dispatch event {:keys [order]} _ app-state]
+  (handle-message events/save-order {:order order}))
+
+(defmethod perform-effects events/api-success-add-sku-to-bag [dispatch event {:keys [order]} _ app-state]
+  (handle-message events/save-order {:order order})
   (save-cookie app-state)
-  (add-pending-promo-code app-state (get-in app-state keypaths/order))
+  (add-pending-promo-code app-state order)
   (handle-later events/added-to-bag))
 
 (defmethod perform-effects events/added-to-bag [_ _ _ _ app-state]
@@ -1038,6 +1057,7 @@
                          (get-in app-state keypaths/user-token)))
 
 (defmethod perform-effects events/sign-out [_ event args app-state-before app-state]
+  (handle-message events/clear-order)
   (cookie-jar/clear-account (get-in app-state keypaths/cookie))
   (handle-message events/control-menu-collapse-all)
   (abort-pending-requests (get-in app-state keypaths/api-requests))

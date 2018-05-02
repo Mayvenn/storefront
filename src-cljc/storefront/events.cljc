@@ -336,6 +336,9 @@
 
 (defpath added-to-bag)
 
+(defpath save-order)
+(defpath clear-order)
+
 (defpath facebook)
 (defpath facebook-success-sign-in)
 (defpath facebook-success-reset)

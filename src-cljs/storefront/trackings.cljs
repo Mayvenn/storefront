@@ -152,18 +152,16 @@
      :variant_image    (update image :src (partial str "https:"))}))
 
 (defmethod perform-track events/api-success-add-sku-to-bag
-  [_ _ {:keys [quantity sku] :as args} app-state]
+  [_ _ {:keys [quantity sku order] :as args} app-state]
   (when sku
-    (let [order (get-in app-state keypaths/order)
-
-          line-item-skuers (waiter-line-items->line-item-skuer
+    (let [line-item-skuers (waiter-line-items->line-item-skuer
                             (get-in app-state keypaths/v2-skus)
                             (orders/product-items order))
 
           cart-items (mapv line-item-skuer->stringer-cart-item line-item-skuers)]
       (stringer/track-event "add_to_cart" (merge (line-item-skuer->stringer-cart-item sku)
-                                                 {:order_number     (get-in app-state keypaths/order-number)
-                                                  :order_total      (get-in app-state keypaths/order-total)
+                                                 {:order_number     (:number order)
+                                                  :order_total      (:total order)
                                                   :order_quantity   (orders/product-quantity order)
                                                   :variant_quantity quantity
                                                   :quantity         quantity
@@ -201,7 +199,7 @@
                                                  :num_items    (->> line-item-skuers (map :item/quantity) (reduce + 0))})
     (stringer/track-event "bulk_add_to_cart" (merge {:shared_cart_id shared-cart-id
                                                      :order_number   (:number order)
-                                                     :order_total    (get-in app-state keypaths/order-total)
+                                                     :order_total    (:total order)
                                                      :order_quantity (orders/product-quantity order)
                                                      :skus           (->> line-item-skuers (map :catalog/sku-id) (string/join ","))
                                                      :variant_ids    (->> line-item-skuers (map :legacy/variant-id) (string/join ","))
@@ -355,38 +353,38 @@
   (checkout-initiate app-state "paypal")
   (convert/track-conversion "paypal-checkout"))
 
-(defmethod perform-track events/api-success-update-order-update-guest-address [_ event args app-state]
-  (stringer/identify (:user (get-in app-state keypaths/order)))
+(defmethod perform-track events/api-success-update-order-update-guest-address [_ event {:keys [order]} app-state]
+  (stringer/identify (:user order))
   (stringer/track-event "checkout-identify_guest")
-  (stringer/track-event "checkout-address_enter" {:order_number (get-in app-state keypaths/order-number)}))
+  (stringer/track-event "checkout-address_enter" {:order_number (:number order)}))
 
-(defmethod perform-track events/api-success-update-order-update-address [_ events args app-state]
-  (stringer/track-event "checkout-address_enter" {:order_number (get-in app-state keypaths/order-number)}))
+(defmethod perform-track events/api-success-update-order-update-address [_ events {:keys [order]} app-state]
+  (stringer/track-event "checkout-address_enter" {:order_number (:number order)}))
 
-(defmethod perform-track events/api-success-update-order-update-cart-payments [_ events args app-state]
-  (stringer/track-event "checkout-payment_enter" {:order_number (get-in app-state keypaths/order-number)
-                                                  :method (cond (maps/contains-in? app-state keypaths/order-cart-payments-affirm) "affirm"
-                                                                (maps/contains-in? app-state keypaths/order-cart-payments-paypal) "paypal"
+(defmethod perform-track events/api-success-update-order-update-cart-payments [_ events {:keys [order]} app-state]
+  (stringer/track-event "checkout-payment_enter" {:order_number (:number order)
+                                                  :method (cond (contains? (:cart-payments order) :affirm) "affirm"
+                                                                (contains? (:cart-payments order) :paypal) "paypal"
                                                                 :else "other")}))
 
-(defmethod perform-track events/api-success-update-order-update-shipping-method [_ events args app-state]
+(defmethod perform-track events/api-success-update-order-update-shipping-method [_ events {:keys [order]} app-state]
   (stringer/track-event "checkout-shipping_method_change"
-                        {:order_number (get-in app-state keypaths/order-number)
+                        {:order_number (:number order)
                          :shipping_method (get-in app-state keypaths/checkout-selected-shipping-method-name)}))
 
 (defmethod perform-track events/api-success-forgot-password [_ events {email :email} app-state]
   (stringer/track-event "request_reset_password" {:email email}))
 
-(defmethod perform-track events/api-success-update-order-add-promotion-code [_ events {promo-code :promo-code} app-state]
-  (stringer/track-event "promo_add" {:order_number (get-in app-state keypaths/order-number)
+(defmethod perform-track events/api-success-update-order-add-promotion-code [_ events {order :order promo-code :promo-code} app-state]
+  (stringer/track-event "promo_add" {:order_number (:number order)
                                      :promotion_code promo-code}))
 
-(defmethod perform-track events/api-success-update-order-remove-promotion-code [_ events {promo-code :promo-code} app-state]
-  (stringer/track-event "promo_remove" {:order_number (get-in app-state keypaths/order-number)
+(defmethod perform-track events/api-success-update-order-remove-promotion-code [_ events {order :order promo-code :promo-code} app-state]
+  (stringer/track-event "promo_remove" {:order_number (:number order)
                                         :promotion_code promo-code}))
 
-(defmethod perform-track events/api-failure-errors-invalid-promo-code [_ events {promo-code :promo-code :as args} app-state]
-  (stringer/track-event "promo_invalid" {:order_number (get-in app-state keypaths/order-number)
+(defmethod perform-track events/api-failure-errors-invalid-promo-code [_ events {order :order promo-code :promo-code} app-state]
+  (stringer/track-event "promo_invalid" {:order_number (:number order)
                                          :promotion_code promo-code}))
 
 (defn track-photo [image]

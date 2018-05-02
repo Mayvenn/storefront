@@ -112,9 +112,9 @@
 (defn update-state-from-order [app-state order]
   (if (orders/incomplete? order)
     (-> app-state
+        (assoc-in keypaths/order order)
         (update-in keypaths/checkout-billing-address merge (:billing-address order))
         (update-in keypaths/checkout-shipping-address merge (:shipping-address order))
-        (assoc-in keypaths/order order)
         (assoc-in keypaths/checkout-selected-shipping-method
                   (merge (first (get-in app-state keypaths/shipping-methods))
                          (orders/shipping-item order)))
@@ -143,7 +143,6 @@
         (update-in keypaths/ui dissoc :navigation-stashed-stack-item)
         (assoc-in keypaths/navigation-uri uri)
         ;; order is important from here on
-        (update-state-from-order (get-in app-state keypaths/order))
         (assoc-in keypaths/redirecting? false)
         (assoc-in keypaths/navigation-message [event args]))))
 
@@ -382,8 +381,11 @@
       (assoc-in keypaths/stylist-referrals [state/empty-referral])
       (assoc-in keypaths/popup :refer-stylist-thanks)))
 
-(defmethod transition-state events/api-success-get-order [_ event order app-state]
+(defmethod transition-state events/save-order [_ event {:keys [order]} app-state]
   (update-state-from-order app-state order))
+
+(defmethod transition-state events/clear-order [_ event _ app-state]
+  (assoc-in app-state keypaths/order nil))
 
 (defmethod transition-state events/api-success-auth [_ event {:keys [user order]} app-state]
   (let [signed-in-app-state (-> app-state
@@ -393,8 +395,7 @@
                                               keypaths/sign-in-email
                                               keypaths/sign-in-password
                                               keypaths/reset-password-password
-                                              keypaths/reset-password-token)
-                                (assoc-in keypaths/order order))
+                                              keypaths/reset-password-token))
         opted-in?           (= "opted-in" (get-in signed-in-app-state keypaths/email-capture-session))]
     (cond-> signed-in-app-state
       (not opted-in?)
@@ -406,12 +407,7 @@
 (defmethod transition-state events/api-success-add-to-bag [_ event {:keys [order quantity variant]} app-state]
   (-> app-state
       (update-in keypaths/browse-recently-added-variants conj {:quantity quantity :variant variant})
-      (assoc-in keypaths/browse-variant-quantity 1)
-      (update-in keypaths/order merge order)))
-
-(defmethod transition-state events/api-success-remove-from-bag [_ event {:keys [order]} app-state]
-  (-> app-state
-      (update-in keypaths/order merge order)))
+      (assoc-in keypaths/browse-variant-quantity 1)))
 
 (defmethod transition-state events/api-success-shared-cart-create [_ event {:keys [cart]} app-state]
   (-> app-state
@@ -538,15 +534,13 @@
 (defmethod transition-state events/api-success-update-order [_ event {:keys [order]} app-state]
   (let [previous-order (get-in app-state keypaths/order)]
     (-> app-state
-        (assoc-in keypaths/cart-recently-added-skus (orders/newly-added-sku-ids previous-order order))
-        (assoc-in keypaths/order order))))
+        (assoc-in keypaths/cart-recently-added-skus (orders/newly-added-sku-ids previous-order order)))))
 
 (defmethod transition-state events/order-completed [_ event order app-state]
   (-> app-state
       (assoc-in keypaths/sign-up-email (get-in app-state keypaths/checkout-guest-email))
       (assoc-in keypaths/checkout state/initial-checkout-state)
       (assoc-in keypaths/cart state/initial-cart-state)
-      (assoc-in keypaths/order nil)
       (assoc-in keypaths/completed-order order)
       (assoc-in keypaths/pending-talkable-order (talkable/completed-order order))))
 
@@ -672,7 +666,6 @@
 (defmethod transition-state events/sign-out [_ event args app-state]
   (let [signed-out-app-state (-> app-state
                                  (assoc-in keypaths/user {})
-                                 (assoc-in keypaths/order nil)
                                  (assoc-in keypaths/completed-order nil)
                                  (assoc-in keypaths/stylist state/initial-stylist-state)
                                  (assoc-in keypaths/checkout state/initial-checkout-state)
