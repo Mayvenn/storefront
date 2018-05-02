@@ -64,6 +64,25 @@
           (prefetch-image "spinner" "/images/spinner.svg")
           (prefetch-image "large_spinner" "/images/large-spinner.svg")))
 
+(def favicon-links
+  '([:link {:href  "/images/apple-touch-icon.png",
+            :sizes "180x180",
+            :rel   "apple-touch-icon"}]
+    [:link {:href  "/images/favicon-32x32.png",
+            :sizes "32x32",
+            :type  "image/png",
+            :rel   "icon"}]
+    [:link {:href  "/images/favicon-16x16.png",
+            :sizes "16x16",
+            :type  "image/png",
+            :rel   "icon"}]
+    [:link {:rel "manifest" :href "/web_app_manifest.json"}]
+    [:link {:color "#40cbac",
+            :href  "/images/safari-pinned-tab.svg",
+            :rel   "mask-icon"}]
+    [:link {:href "/images/favicon.ico", :rel "shortcut icon"}]
+    [:meta {:content "#000000", :name "msapplication-TileColor"}]))
+
 (defn layout
   [{:keys [storeback-config environment client-version]} data initial-content]
   (html5 {:lang "en"}
@@ -78,8 +97,7 @@
 
           (into '() (seo/tags-for-page data))
 
-          [:link {:rel "manifest" :href "/web_app_manifest.json"}]
-          [:link {:href (assets/path "/images/favicon.png") :rel "shortcut icon" :type "image/vnd.microsoft.icon"}]
+          favicon-links
           (when asset-mappings/cdn-host
             [:link {:rel "dns-prefetch" :href (str "//" asset-mappings/cdn-host)}])
           [:link {:rel "dns-prefetch" :href (:endpoint storeback-config)}]
@@ -143,7 +161,7 @@
           [:meta {:name "fragment" :content "!"}]
           [:meta {:name "viewport" :content "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"}]
           [:meta {:http-equiv "Content-type" :content "text/html;charset=UTF-8"}]
-          [:link {:href (assets/path "/images/favicon.png") :rel "shortcut icon" :type "image/vnd.microsoft.icon"}]
+          favicon-links
           (page/include-css (assets/path "/css/app.css"))]
          [:body.bg-light-gray
           [:div.container
