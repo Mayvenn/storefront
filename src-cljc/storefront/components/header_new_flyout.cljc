@@ -64,7 +64,7 @@
      ::marquee/ask-for-portrait  [:div.left.pr2 marquee/add-portrait-cta]
      ::marquee/show-nothing      [:div.left {:style {:height (str ui/header-image-size "px")}}])
    [:div.dark-gray
-    "Welcome to " [:span.black.medium {:data-test "nickname"} "MeakPillPartDeux" #_store-nickname "'s"] " shop"
+    "Welcome to " [:span.black.medium {:data-test "nickname"} store-nickname "'s"] " shop"
     (when expandable?
       [:span.ml1 (ui/expand-icon expanded?)])]])
 
