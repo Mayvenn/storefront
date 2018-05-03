@@ -134,6 +134,27 @@
    " | "
    [:a.inherit-color (utils/route-to events/navigate-sign-up) "No account? Sign up"]])
 
+(defn flyout-menu [expanded? deals?]
+  (ui/drop-down
+   expanded?
+   keypaths/shop-menu-expanded
+   [:div
+    [:div.left.block.mr6.py4 {:style {:width "25px"}
+                              :data-test "hamburger"}
+     [:div.border-top.border-bottom.border-dark-gray.border-width-2 {:style {:height "9px"}} [:span.hide "MENU"]]
+     [:div.border-bottom.border-dark-gray.border-width-2 {:style {:height "7px"}}]]]
+   [:div.bg-white.absolute.left-0.top-lit
+    {:style {:top "50px"}}
+    (for [[text & msg] [["Deals" events/navigate-shop-by-look {:album-slug "deals"}]
+                        ["Shop Looks" events/navigate-shop-by-look {:album-slug "look"}]
+                        ["Shop hair" events/navigate-home]
+                        ["Shop Guarantee" events/navigate-content-guarantee]
+                        ["Our hair" events/navigate-content-our-hair]
+                        ["Our Real Beautiful" slideout-nav/blog-url]
+                        ]]
+      [:div
+       (drop-down-row (apply utils/route-to msg) text)])]))
+
 (def open-shopping (utils/expand-menu-callback keypaths/shop-menu-expanded))
 (def close-shopping (utils/collapse-menus-callback keypaths/header-menus))
 
@@ -202,7 +223,7 @@
         (for [items columns]
           (shopping-column items (count columns)))]])))
 
-(defn component [{:keys [store user cart shopping signed-in deals? the-ville?]} _ _]
+(defn component [{:keys [store user cart shopping signed-in deals? the-ville? expanded-flyout-menu?]} _ _]
   (component/create
    [:div
     [:div.hide-on-mb
@@ -214,7 +235,7 @@
                             :height "60px"})]]
       [:div.max-960.mx-auto.pt2.relative
        [:div.left.col-5
-        non-mobile-hamburger
+        (flyout-menu expanded-flyout-menu? deals?)
         [:div.mr4.pr2 (store-info signed-in store)]]
        [:div.right.col-4
         [:div.h6.my2.flex.items-center.right
@@ -240,9 +261,10 @@
 
 (defn query [data]
   (-> (slideout-nav/basic-query data)
-      (assoc-in [:user :expanded?]     (get-in data keypaths/account-menu-expanded))
-      (assoc-in [:shopping :expanded?] (get-in data keypaths/shop-menu-expanded))
-      (assoc-in [:cart :quantity]      (orders/product-quantity (get-in data keypaths/order)))))
+      (assoc-in [:expanded-flyout-menu?] (get-in data keypaths/shop-menu-expanded))
+      (assoc-in [:user :expanded?]       (get-in data keypaths/account-menu-expanded))
+      (assoc-in [:shopping :expanded?]   (get-in data keypaths/shop-menu-expanded))
+      (assoc-in [:cart :quantity]        (orders/product-quantity (get-in data keypaths/order)))))
 
 (defn built-component [data opts]
   (if (nav/minimal-events (get-in data keypaths/navigation-event))
