@@ -20,10 +20,8 @@
 
 (def non-mobile-hamburger
   (component/html
-   [:a.left.block.mr6.py4 (assoc (utils/fake-href events/control-menu-expand-hamburger
-                                                  {:keypath keypaths/shop-menu-expanded})
-                                 :style {:width "25px"}
-                                 :data-test "hamburger")
+   [:div.left.block.mr6.py4 {:style {:width "25px"}
+                             :data-test "hamburger"}
     [:div.border-top.border-bottom.border-dark-gray.border-width-2 {:style {:height "9px"}} [:span.hide "MENU"]]
     [:div.border-bottom.border-dark-gray.border-width-2 {:style {:height "7px"}}]]))
 
@@ -134,15 +132,11 @@
    " | "
    [:a.inherit-color (utils/route-to events/navigate-sign-up) "No account? Sign up"]])
 
-(defn flyout-menu [expanded? deals?]
+(defn flyout-menu [expanded?]
   (ui/drop-down
    expanded?
    keypaths/shop-menu-expanded
-   [:div
-    [:div.left.block.mr6.py4 {:style {:width "25px"}
-                              :data-test "hamburger"}
-     [:div.border-top.border-bottom.border-dark-gray.border-width-2 {:style {:height "9px"}} [:span.hide "MENU"]]
-     [:div.border-bottom.border-dark-gray.border-width-2 {:style {:height "7px"}}]]]
+   [:div non-mobile-hamburger]
    [:div.bg-white.absolute.left-0.top-lit
     {:style {:top "50px"}}
     (for [[text & msg] [["Deals" events/navigate-shop-by-look {:album-slug "deals"}]
@@ -150,8 +144,7 @@
                         ["Shop hair" events/navigate-home]
                         ["Shop Guarantee" events/navigate-content-guarantee]
                         ["Our hair" events/navigate-content-our-hair]
-                        ["Our Real Beautiful" slideout-nav/blog-url]
-                        ]]
+                        ["Our Real Beautiful" slideout-nav/blog-url]]]
       [:div
        (drop-down-row (apply utils/route-to msg) text)])]))
 
@@ -162,66 +155,6 @@
   [:a.h5.medium.inherit-color.py2
    (merge opts {:style {:padding-left "24px" :padding-right "24px"}})
    text])
-
-(defn menu [deals?]
-  (component/html
-   [:div.center
-    (if deals?
-      (header-menu-link (assoc (utils/route-to events/navigate-shop-by-look {:album-slug "deals"})
-                               :on-mouse-enter close-shopping)
-                        "Deals"))
-    (header-menu-link (assoc (utils/route-to events/navigate-shop-by-look {:album-slug "look"})
-                             :on-mouse-enter close-shopping)
-                      "Shop looks")
-    (header-menu-link (assoc (utils/route-to events/navigate-home)
-                             :on-mouse-enter open-shopping
-                             :on-click       open-shopping)
-                      "Shop hair")
-    (header-menu-link (assoc (utils/route-to events/navigate-content-guarantee)
-                             :on-mouse-enter close-shopping)
-                      "Our Guarantee")
-    (header-menu-link (assoc (utils/route-to events/navigate-content-our-hair)
-                             :on-mouse-enter close-shopping)
-                      "Our hair")
-    (header-menu-link {:href           slideout-nav/blog-url
-                       :on-mouse-enter close-shopping}
-                      "Real Beautiful")]))
-
-(defn shopping-column [items col-count]
-  {:pre [(zero? (mod 12 col-count))]}
-  [:ul.list-reset.col.px2
-   {:class (str "col-" (/ 12 col-count))}
-   (for [{:keys [page/slug copy/title category/new?] :as category} items]
-     [:li {:key slug}
-      [:a.inherit-color.block.pyp2.titleize
-       (if (:direct-to-details/id category)
-         (utils/route-to events/navigate-product-details
-                         (merge
-                          {:catalog/product-id (:direct-to-details/id category)
-                           :page/slug          (:direct-to-details/slug category)}
-                          (when-let [sku-id (:direct-to-details/sku-id category)]
-                            {:query-params {:SKU sku-id}})))
-         (utils/route-to events/navigate-category category))
-       (when new?
-         [:span.teal "NEW "])
-       (string/capitalize title)]])])
-
-(defn shopping-flyout [signed-in {:keys [expanded? categories]}]
-  (when expanded?
-    (let [show?   (fn [category]
-                    (or (auth/stylist? signed-in)
-                        (not (-> category :catalog/department (contains? "stylist-exclusives")))))
-          columns (->> (filter :header/order categories)
-                       (filter show?)
-                       (sort-by :header/group)
-                       (group-by :header/group)
-                       vals
-                       (map (partial sort-by :header/order))
-                       (mapcat (partial partition-all 11)))]
-      [:div.absolute.bg-white.col-12.z3.border-bottom.border-gray
-       [:div.mx-auto.clearfix.my6.col-10
-        (for [items columns]
-          (shopping-column items (count columns)))]])))
 
 (defn component [{:keys [store user cart shopping signed-in deals? the-ville? expanded-flyout-menu?]} _ _]
   (component/create
@@ -235,7 +168,7 @@
                             :height "60px"})]]
       [:div.max-960.mx-auto.pt2.relative
        [:div.left.col-5
-        (flyout-menu expanded-flyout-menu? deals?)
+        (flyout-menu expanded-flyout-menu?)
         [:div.mr4.pr2 (store-info signed-in store)]]
        [:div.right.col-4
         [:div.h6.my2.flex.items-center.right
