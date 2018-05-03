@@ -418,7 +418,7 @@
     (svg/close-x {:class (or class "stroke-white fill-gray")})]])
 
 ;; TODO(ellie) Replace with svg version
-(defn big-x [{:keys [class data-test attrs]}]
+(defn big-x [{:keys [data-test attrs]}]
   [:div {:style {:width "70px"}}
    [:div.relative.rotate-45.p2 (merge  {:style     {:height "70px"}
                                         :data-test data-test}
