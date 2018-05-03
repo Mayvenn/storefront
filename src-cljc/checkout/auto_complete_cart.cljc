@@ -2,7 +2,8 @@
   (:require
    #?@(:cljs [[storefront.component :as component]
               [storefront.components.popup :as popup]
-              [storefront.components.order-summary :as summary]]
+              [storefront.components.order-summary :as summary]
+              [storefront.api :as api]]
        :clj [[storefront.component-shim :as component]])
    [checkout.cart :as cart]
    [checkout.header :as header]
@@ -26,6 +27,7 @@
    [storefront.components.ui :as ui]
    [storefront.css-transitions :as css-transitions]
    [storefront.events :as events]
+   [storefront.effects :as effects]
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
    [storefront.request-keys :as request-keys]))
@@ -187,7 +189,7 @@
           true              mf/as-money)]]]]))
 
 (defn suggested-bundles
-  [{:keys [lengths-str image position]}]
+  [{:keys [lengths-str image position skus adding-to-bag?]}]
   (let [sized-image (update image :style merge {:height "36px" :width "40px"})]
     [:div.mx2.my4.col-11
      {:data-test (str "suggestion-" (name position))}
@@ -203,6 +205,8 @@
        [:img.m1 sized-image]]
       [:div.col-10.mx-auto
        (ui/navy-button {:class "p1"
+                        :on-click (utils/send-event-callback events/control-suggested-add-to-bag {:skus skus})
+                        :spinning? adding-to-bag?
                         :style {:margin-top "-10px"
                                 :height     "40px"}} "Add")]]]))
 
@@ -357,7 +361,7 @@
                                        :option/name)}))
 
 (defn suggest-bundles
-  [products skus items]
+  [data products skus items]
   (when (= 1 (orders/line-item-quantity items))
     (let [{:keys [variant-attrs] sku-id :sku} (first items)]
       (when (= "bundles" (variant-attrs :hair/family))
@@ -380,32 +384,46 @@
               long-suggestions  (if (< (count longer-skus) 2)
                                   [(-> adjacent-skus butlast last last) (last longer-skus)]
                                   (into [] (take 2 longer-skus)))]
-          (->> {:shorter-lengths  short-suggestions
-                :longer-lengths long-suggestions}
+          (->> {:shorter-lengths short-suggestions
+                :longer-lengths  long-suggestions}
                (filterv (fn in-stock? [[_ skus]]
                           (every? :inventory/in-stock? skus)))
                (mapv (fn transform [[position skus]]
-                       {:position    position
-                        :lengths-str (str (-> skus first :hair/length first)
-                                          "” & "
-                                          (-> skus last :hair/length first)
-                                          "”")
-                        :image       image}))))))))
+                       {:position       position
+                        :lengths-str    (str (-> skus first :hair/length first)
+                                             "” & "
+                                             (-> skus last :hair/length first)
+                                             "”")
+                        :image          image
+                        :skus           skus
+                        :adding-to-bag? (utils/requesting? data (conj request-keys/add-to-bag skus))}))))))))
+
+(defmethod effects/perform-effects events/control-suggested-add-to-bag [_ _ {:keys [skus] } _ app-state]
+  (api/add-skus-to-bag (get-in app-state keypaths/session-id) {:number (get-in app-state keypaths/order-number)
+                                                               :token  (get-in app-state keypaths/order-token)
+                                                               :skus   (into {} (map (fn [[sku-id skus]] [sku-id (count skus)])
+                                                                                     (group-by :catalog/sku-id skus)))}
+                       #(messages/handle-message events/api-success-suggested-add-to-bag %)))
+
+(defmethod transitions/transition-state events/api-success-suggested-add-to-bag [_ _ order app-state]
+  (app-state))
 
 (defn auto-complete-query
   [data]
+  ;; TODO(jeff): refactor this as we are passing data in, as well as things that come off of data
   (let [skus       (get-in data keypaths/v2-skus)
         products   (get-in data keypaths/v2-products)
         line-items (orders/product-items (get-in data keypaths/order))]
-    {:suggestions (suggest-bundles products skus line-items)}))
+    {:suggestions (suggest-bundles data products skus line-items)}))
 
 (defn full-cart-query [data]
-  (let [order       (get-in data keypaths/order)
-        products    (get-in data keypaths/v2-products)
-        facets      (get-in data keypaths/v2-facets)
-        line-items  (map (partial add-product-title-and-color-to-line-item products facets) (orders/product-items order))
-        variant-ids (map :id line-items)]
-    {:auto-complete             (auto-complete-query data)
+  (let [order         (get-in data keypaths/order)
+        products      (get-in data keypaths/v2-products)
+        facets        (get-in data keypaths/v2-facets)
+        line-items    (map (partial add-product-title-and-color-to-line-item products facets) (orders/product-items order))
+        variant-ids   (map :id line-items)
+        auto-complete (auto-complete-query data)]
+    {:auto-complete             auto-complete
      :order                     order
      :line-items                line-items
      :skus                      (get-in data keypaths/v2-skus)
@@ -432,7 +450,8 @@
      :error-message             (get-in data keypaths/error-message)
      :focused                   (get-in data keypaths/ui-focus)
      :the-ville?                (experiments/the-ville? data)
-     :recently-added-skus       (get-in data keypaths/cart-recently-added-skus)}))
+     :recently-added-skus       (get-in data keypaths/cart-recently-added-skus)
+     :adding-to-bag?            true #_(utils/requesting? data (conj request-keys/add-to-bag (:skus (:suggestions auto-complete))))}))
 
 (defn empty-cart-query [data]
   {:promotions (get-in data keypaths/promotions)})
@@ -451,10 +470,10 @@
         (component/build full-component full-cart opts))])))
 
 (defn query [data]
-  {:fetching-order?  (utils/requesting? data request-keys/get-order)
-   :item-count       (orders/product-quantity (get-in data keypaths/order))
-   :empty-cart       (empty-cart-query data)
-   :full-cart        (full-cart-query data)})
+  {:fetching-order? (utils/requesting? data request-keys/get-order)
+   :item-count      (orders/product-quantity (get-in data keypaths/order))
+   :empty-cart      (empty-cart-query data)
+   :full-cart       (full-cart-query data)})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

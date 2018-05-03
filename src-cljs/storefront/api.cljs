@@ -809,6 +809,17 @@
                    (when (and token number) {:token token :number number}))
     :handler handler}))
 
+(defn add-skus-to-bag [session-id {:keys [token number sku->quantity] :as params} handler]
+  (storeback-api-req
+   POST
+   "/v2/bulk-add-to-bag"
+   (conj request-keys/add-to-bag (keys sku->quantity))
+   {:params  (merge {:session-id    session-id
+                     :sku->quantity sku->quantity}
+                    (when (and token number) {:token token :number number}))
+    :handler handler}))
+
+
 (defn remove-promotion-code [session-id {:keys [token number]} promo-code handler]
   (storeback-api-req
    POST

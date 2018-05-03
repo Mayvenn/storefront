@@ -172,6 +172,7 @@
 (defpath control-add-to-bag)
 
 (defpath control-add-sku-to-bag)
+(defpath control-suggested-add-to-bag)
 
 (defpath control-create-order-from-shared-cart)
 
@@ -283,6 +284,7 @@
 
 (defpath api-success-add-to-bag)
 (defpath api-success-add-sku-to-bag)
+(defpath api-success-suggested-add-to-bag)
 (defpath api-success-remove-from-bag)
 (defpath api-success-get-order)
 (defpath api-success-get-completed-order)
