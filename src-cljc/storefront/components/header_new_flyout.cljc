@@ -86,7 +86,8 @@
          expanded?
          keypaths/store-info-expanded
          [:div (store-welcome signed-in store true)]
-         [:div.bg-white.absolute.left-0
+         [:div.bg-white.absolute.mt1.top-lit
+          {:style {:left "50px"}}
           (for [[idx row] (map-indexed vector rows)]
             [:div.border-gray {:key   idx
                                :class (when-not (zero? idx) "border-top")} row])])))))
@@ -99,7 +100,7 @@
    keypaths/account-menu-expanded
    [:a.inherit-color.h6
     "Account settings" [:span.ml1 (ui/expand-icon expanded?)]]
-   [:div.bg-white.absolute.left-0
+   [:div.bg-white.absolute.left-0.top-lit
     [:div
      (drop-down-row (utils/route-to events/navigate-account-manage) "Account settings")]
     [:div.border-top.border-gray
@@ -115,7 +116,7 @@
    keypaths/account-menu-expanded
    [:a.inherit-color.h6
     "My dashboard" [:span.ml1 (ui/expand-icon expanded?)]]
-   [:div.bg-white.absolute.left-0
+   [:div.bg-white.absolute.right-0.mt3.top-lit
     [:div
      (drop-down-row (utils/route-to events/navigate-stylist-dashboard-earnings) "My dashboard")]
     [:div.border-top.border-gray
