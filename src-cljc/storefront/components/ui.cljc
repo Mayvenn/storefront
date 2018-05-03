@@ -378,7 +378,7 @@
       [:span label]])])
 
 (defn drop-down [expanded? menu-keypath [link-tag & link-contents] menu]
-  [:div
+  [:div.pointer
    (into [link-tag
           (utils/fake-href events/control-menu-expand {:keypath menu-keypath})]
          link-contents)
