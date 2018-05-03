@@ -18,7 +18,16 @@
             [storefront.accessors.experiments :as experiments]
             [catalog.menu :as menu]))
 
-(def hamburger
+(def non-mobile-hamburger
+  (component/html
+   [:a.left.block.mr6.py4 (assoc (utils/fake-href events/control-menu-expand-hamburger
+                                                  {:keypath keypaths/shop-menu-expanded})
+                                 :style {:width "25px"}
+                                 :data-test "hamburger")
+    [:div.border-top.border-bottom.border-dark-gray.border-width-2 {:style {:height "9px"}} [:span.hide "MENU"]]
+    [:div.border-bottom.border-dark-gray.border-width-2 {:style {:height "7px"}}]]))
+
+(def mobile-hamburger
   (component/html
    [:a.block.px3.py4 (assoc (utils/fake-href events/control-menu-expand-hamburger
                                              {:keypath keypaths/menu-expanded})
@@ -204,22 +213,16 @@
                             :height "60px"})]]
       [:div.max-960.mx-auto.pt2.relative
        [:div.left.col-5
-        [:a.left.block.mr6.py4 (assoc (utils/fake-href events/control-menu-expand-hamburger
-                                                       {:keypath keypaths/menu-expanded})
-                                      :style {:width "25px"}
-                                      :data-test "hamburger")
-         [:div.border-top.border-bottom.border-dark-gray.border-width-2 {:style {:height "9px"}} [:span.hide "MENU"]]
-         [:div.border-bottom.border-dark-gray.border-width-2 {:style {:height "7px"}}]]
+        non-mobile-hamburger
         [:div.mr4.pr2 (store-info signed-in store)]]
        [:div.right.col-4
         [:div.h6.my2.flex.items-center.right
          [:div.mt1 (account-info signed-in user the-ville?)]
          [:div.pl6 (ui/shopping-bag {:style {:height (str ui/header-image-size "px") :width "28px"}
                                      :data-test "desktop-cart"}
-                                    cart)]]]]]
-     (shopping-flyout signed-in shopping)]
+                                    cart)]]]]]]
     [:div.hide-on-tb-dt.border-bottom.border-gray.flex.items-center
-     hamburger
+     mobile-hamburger
      [:div.flex-auto.py3 (ui/clickable-logo {:event events/navigate-home
                                              :data-test "header-logo"
                                              :height "40px"})]
