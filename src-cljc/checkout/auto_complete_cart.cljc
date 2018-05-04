@@ -28,6 +28,7 @@
    [storefront.platform.messages :as messages]
    [storefront.css-transitions :as css-transitions]
    [storefront.events :as events]
+   [storefront.transitions :as transitions]
    [storefront.effects :as effects]
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
@@ -56,23 +57,23 @@
               removing?            (get delete-line-item-requests variant-id)
               updating?            (get update-line-item-requests sku-id)
               just-added-to-order? (contains? recently-added-skus sku-id)]]
-    [:div.pt1.pb2 {:key legacy-variant-id}
+    [:div.pt1.pb2 {:key (str (:catalog/sku-id sku) (:quantity line-item))}
 
      [:div.left.pr1
       (when-let [length (-> sku :hair/length first)]
         (transition-background-color just-added-to-order?
-         [:div.right.z1.circle.stacking-context.border.border-light-gray.flex.items-center.justify-center.medium.h5.bg-too-light-teal
-          {:key   (str "length-circle-" sku-id)
-           :style {:margin-left "-21px"
-                   :margin-top  "-10px"
-                   :width       "32px"
-                   :height      "32px"}} (str length "”")]))
+                                     [:div.right.z1.circle.stacking-context.border.border-light-gray.flex.items-center.justify-center.medium.h5.bg-too-light-teal
+                                      {:key   (str "length-circle-" sku-id)
+                                       :style {:margin-left "-21px"
+                                               :margin-top  "-10px"
+                                               :width       "32px"
+                                               :height      "32px"}} (str length "”")]))
 
       (transition-background-color just-added-to-order?
-       [:div.flex.items-center.justify-center.ml1 {:key   (str "thumbnail-" sku-id)
-                                                   :style {:width "79px" :height "79px"}}
-        [:img.block.border.border-light-gray
-         (assoc thumbnail :style {:width "75px" :height "75px"})]])]
+                                   [:div.flex.items-center.justify-center.ml1 {:key   (str "thumbnail-" sku-id)
+                                                                               :style {:width "79px" :height "79px"}}
+                                    [:img.block.border.border-light-gray
+                                     (assoc thumbnail :style {:width "75px" :height "75px"})]])]
 
      [:div {:style {:margin-top "-14px"}}
       [:a.medium.titleize.h5
@@ -190,10 +191,11 @@
           true              mf/as-money)]]]]))
 
 (defn suggested-bundles
-  [{:keys [lengths-str image position skus adding-to-bag?]}]
+  [{:keys [lengths-str image position skus this-is-adding-to-bag? any-adding-to-bag?]}]
   (let [sized-image (update image :style merge {:height "36px" :width "40px"})]
     [:div.mx2.my4.col-11
-     {:data-test (str "suggestion-" (name position))}
+     {:data-test (str "suggestion-" (name position))
+      :key (str "suggestion-" (map :catalog/sku-id skus) "-" (name position))}
      [:div.absolute (svg/discount-tag {:style {:height      "3em"
                                                :width       "3em"
                                                :margin-left "-23px"
@@ -206,8 +208,13 @@
        [:img.m1 sized-image]]
       [:div.col-10.mx-auto
        (ui/navy-button {:class "p1"
-                        :on-click (utils/send-event-callback events/control-suggested-add-to-bag {:skus skus})
-                        :spinning? adding-to-bag?
+                        ;; we don't want to draw attention to the disabling of the other 'Add' button,
+                        ;; but we do want to prevent people from clicking both.
+                        ;; :disabled? (and (not this-is-adding-to-bag?) any-adding-to-bag?)
+                        :on-click (if (and (not this-is-adding-to-bag?) any-adding-to-bag?)
+                                    utils/noop-callback
+                                    (utils/send-event-callback events/control-suggested-add-to-bag {:skus skus}))
+                        :spinning? this-is-adding-to-bag?
                         :style {:margin-top "-10px"
                                 :height     "40px"}} "Add")]]]))
 
@@ -390,14 +397,17 @@
                (filterv (fn in-stock? [[_ skus]]
                           (every? :inventory/in-stock? skus)))
                (mapv (fn transform [[position skus]]
-                       {:position       position
-                        :lengths-str    (str (-> skus first :hair/length first)
-                                             "” & "
-                                             (-> skus last :hair/length first)
-                                             "”")
-                        :image          image
-                        :skus           skus
-                        :adding-to-bag? (utils/requesting? data (conj request-keys/add-to-bag skus))}))))))))
+                       {:position               position
+                        :lengths-str            (str (-> skus first :hair/length first)
+                                                     "” & "
+                                                     (-> skus last :hair/length first)
+                                                     "”")
+                        :image                  image
+                        :skus                   skus
+                        :any-adding-to-bag?     (utils/requesting? data (fn [req]
+                                                                          (subvec (:request-key req []) 0 1))
+                                                                   request-keys/add-to-bag)
+                        :this-is-adding-to-bag? (utils/requesting? data (conj request-keys/add-to-bag (map :catalog/sku-id skus)))}))))))))
 
 #?(:cljs
    (defmethod effects/perform-effects events/control-suggested-add-to-bag [_ _ {:keys [skus] } _ app-state]
@@ -408,7 +418,7 @@
                           #(messages/handle-message events/api-success-suggested-add-to-bag {:order %}))))
 
 #?(:cljs
-   (defmethod effects/perform-effects events/api-success-suggested-add-to-bag [_ _ {:keys [order]} _ _]
+   (defmethod effects/perform-effects events/api-success-suggested-add-to-bag [_ _ {:keys [order]} previous-app-state app-state]
      (messages/handle-message events/save-order {:order order})))
 
 (defn auto-complete-query
@@ -453,8 +463,7 @@
      :error-message             (get-in data keypaths/error-message)
      :focused                   (get-in data keypaths/ui-focus)
      :the-ville?                (experiments/the-ville? data)
-     :recently-added-skus       (get-in data keypaths/cart-recently-added-skus)
-     :adding-to-bag?            true #_(utils/requesting? data (conj request-keys/add-to-bag (:skus (:suggestions auto-complete))))}))
+     :recently-added-skus       (get-in data keypaths/cart-recently-added-skus)}))
 
 (defn empty-cart-query [data]
   {:promotions (get-in data keypaths/promotions)})

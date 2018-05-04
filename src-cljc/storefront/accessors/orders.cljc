@@ -119,10 +119,19 @@
 (defn applied-promo-code [order]
   (some :coupon-code (all-order-adjustments order)))
 
-(defn sku-ids [order]
+(defn- line-item-tuples [order]
   (->> (product-items order)
-       (map :sku)
-       set))
+       (map (juxt :sku :quantity))))
 
 (defn newly-added-sku-ids [previous-order new-order]
-  (set/difference (sku-ids new-order) (sku-ids previous-order)))
+  (let [new-line-item-tuples (set (line-item-tuples new-order))
+        prev-line-item-tuples (set (line-item-tuples previous-order))
+        changed-line-item-tuples (set/difference new-line-item-tuples
+                                                 prev-line-item-tuples)
+        prev-sku->quantity (into {} prev-line-item-tuples)
+        get-sku first]
+    (->> changed-line-item-tuples
+         (remove (fn [[sku quantity]]
+                   (< quantity (prev-sku->quantity sku 0))))
+         (map get-sku)
+         set)))

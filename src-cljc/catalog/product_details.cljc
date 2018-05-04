@@ -619,10 +619,8 @@
   [_ event {:keys [order quantity sku]} app-state]
   (let [previous-order (get-in app-state keypaths/order)]
     (-> app-state
-        (assoc-in keypaths/cart-recently-added-skus (orders/newly-added-sku-ids previous-order order))
         (update-in keypaths/browse-recently-added-skus
                    conj
                    {:quantity quantity :sku sku})
-        (assoc-in keypaths/browse-sku-quantity 1)
-        (update-in keypaths/order merge order))))
+        (assoc-in keypaths/browse-sku-quantity 1))))
 

@@ -109,18 +109,6 @@
              (get-in app-state keypaths/order-user-email)
              (get-in app-state keypaths/captured-email)))
 
-(defn update-state-from-order [app-state order]
-  (if (orders/incomplete? order)
-    (-> app-state
-        (assoc-in keypaths/order order)
-        (update-in keypaths/checkout-billing-address merge (:billing-address order))
-        (update-in keypaths/checkout-shipping-address merge (:shipping-address order))
-        (assoc-in keypaths/checkout-selected-shipping-method
-                  (merge (first (get-in app-state keypaths/shipping-methods))
-                         (orders/shipping-item order)))
-        prefill-guest-email-address)
-    (assoc-in app-state keypaths/order nil)))
-
 (defn clear-recently-added-skus [app-state nav-event]
   (if (not= nav-event events/navigate-cart)
     (assoc-in app-state keypaths/cart-recently-added-skus #{})
@@ -382,7 +370,21 @@
       (assoc-in keypaths/popup :refer-stylist-thanks)))
 
 (defmethod transition-state events/save-order [_ event {:keys [order]} app-state]
-  (update-state-from-order app-state order))
+  (if (orders/incomplete? order)
+    (let [previous-order (get-in app-state keypaths/order)
+          newly-added-sku-ids (if (= order previous-order)
+                                (get-in app-state keypaths/cart-recently-added-skus)
+                                (orders/newly-added-sku-ids previous-order order))]
+      (-> app-state
+          (assoc-in keypaths/order order)
+          (assoc-in keypaths/cart-recently-added-skus newly-added-sku-ids)
+          (update-in keypaths/checkout-billing-address merge (:billing-address order))
+          (update-in keypaths/checkout-shipping-address merge (:shipping-address order))
+          (assoc-in keypaths/checkout-selected-shipping-method
+                    (merge (first (get-in app-state keypaths/shipping-methods))
+                           (orders/shipping-item order)))
+          prefill-guest-email-address))
+    (assoc-in app-state keypaths/order nil)))
 
 (defmethod transition-state events/clear-order [_ event _ app-state]
   (assoc-in app-state keypaths/order nil))

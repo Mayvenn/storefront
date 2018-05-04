@@ -819,7 +819,6 @@
                     (when (and token number) {:token token :number number}))
     :handler handler}))
 
-
 (defn remove-promotion-code [session-id {:keys [token number]} promo-code handler]
   (storeback-api-req
    POST
