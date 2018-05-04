@@ -125,7 +125,7 @@
 
 (defn overlay-scrim [show-scrim? content]
   (if show-scrim?
-    [:div.stacking-context.relative
+    [:div.stacking-context.relative.hide-on-mb
      {:on-click #(messages/handle-message events/control-menu-collapse-all)}
      [:div.fixed.overlay.bg-darken-3.z4]
      content]
