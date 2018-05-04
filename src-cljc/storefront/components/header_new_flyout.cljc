@@ -141,7 +141,7 @@
 
 (defn ^:private menu-row
   [{:keys [link-attrs data-test content]}]
-  [:li
+  [:li {:key data-test}
    [:div.h5.p2.dark-gray.medium
     (into [:a.block.inherit-color.flex.items-center (assoc link-attrs :data-test data-test)] content)]])
 
