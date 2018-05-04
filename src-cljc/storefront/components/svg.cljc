@@ -121,6 +121,16 @@
    [:svg {:class "stroke-white fill-gray" :style {:width "1.2em" :height "1.2em"}}
     (svg-xlink "counter-dec")]))
 
+(def open-hamburger-menu
+  (component/html
+   [:svg {:class "stroke-dark-gray" :style {:width "25px" :height "25px"}}
+    (svg-xlink "open-hamburger-menu")]))
+
+(def close-hamburger-menu
+  (component/html
+   [:svg {:class "stroke-dark-gray" :style {:width "25px" :height "25px"}}
+    (svg-xlink "close-hamburger-menu")]))
+
 ;; Social
 (def instagram
   (component/html

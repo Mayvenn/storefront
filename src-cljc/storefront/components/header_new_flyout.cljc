@@ -20,13 +20,6 @@
 
 (def blog-url "https://blog.mayvenn.com")
 
-(def non-mobile-hamburger
-  (component/html
-   [:div.left.block.mr6.py4 {:style {:width "25px"}
-                             :data-test "hamburger"}
-    [:div.border-top.border-bottom.border-dark-gray.border-width-2 {:style {:height "9px"}} [:span.hide "MENU"]]
-    [:div.border-bottom.border-dark-gray.border-width-2 {:style {:height "7px"}}]]))
-
 (def mobile-hamburger
   (component/html
    [:a.block.px3.py4 (assoc (utils/fake-href events/control-menu-expand-hamburger
@@ -134,11 +127,6 @@
    " | "
    [:a.inherit-color (utils/route-to events/navigate-sign-up) "No account? Sign up"]])
 
-(def close-flyout
-  (component/html
-   [:div.left.block.mr6.py4
-    (svg/close-x {:class "stroke-dark-gray fill-white"})]))
-
 (defn ^:private menu-row
   [{:keys [link-attrs data-test content]}]
   [:li {:key data-test}
@@ -148,7 +136,9 @@
 (defn drop-down [expanded? menu-keypath [link-tag & link-contents] menu]
   [:div
    (into [link-tag
-          (utils/fake-href events/control-menu-expand {:keypath menu-keypath})]
+          (if expanded?
+            (utils/fake-href events/control-menu-collapse-all {})
+            (utils/fake-href events/control-menu-expand {:keypath menu-keypath}))]
          link-contents)
    (when expanded?
      [:div.relative.z4
@@ -165,16 +155,21 @@
    (for [row slideout-nav/content-rows]
      (menu-row row))])
 
+(defn non-mobile-hamburger [open?]
+  [:div.left.block.mr6.py2.flex.justify-center.items-center
+   (merge {:style {:width "25px"}
+           :data-test "hamburger"})
+   (if open?
+     svg/close-hamburger-menu
+     svg/open-hamburger-menu)])
+
 (defn flyout-menu [{:keys [expanded-flyout-menu? deals? on-taxon? signed-in menu-data]}]
   (drop-down
    expanded-flyout-menu?
    keypaths/shop-menu-expanded
-   (if expanded-flyout-menu?
-     [:div.left.block.mr6
-      (ui/big-x {:attrs {:style {:height "50px"}}})]
-     [:div non-mobile-hamburger])
+   [:div (non-mobile-hamburger expanded-flyout-menu?)]
    [:div.bg-white.absolute.left-0
-    {:style {:top "58px" :width "245px"}}
+    {:style {:top "56px" :width "245px"}}
     (if on-taxon?
       (component/build menu/new-flyout-submenu-component menu-data nil)
       (root-menu deals? signed-in))]))
