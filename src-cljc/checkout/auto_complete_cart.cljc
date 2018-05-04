@@ -25,6 +25,7 @@
    [storefront.components.stylist-banner :as stylist-banner]
    [storefront.components.svg :as svg]
    [storefront.components.ui :as ui]
+   [storefront.platform.messages :as messages]
    [storefront.css-transitions :as css-transitions]
    [storefront.events :as events]
    [storefront.effects :as effects]
@@ -398,15 +399,17 @@
                         :skus           skus
                         :adding-to-bag? (utils/requesting? data (conj request-keys/add-to-bag skus))}))))))))
 
-(defmethod effects/perform-effects events/control-suggested-add-to-bag [_ _ {:keys [skus] } _ app-state]
-  (api/add-skus-to-bag (get-in app-state keypaths/session-id) {:number (get-in app-state keypaths/order-number)
-                                                               :token  (get-in app-state keypaths/order-token)
-                                                               :skus   (into {} (map (fn [[sku-id skus]] [sku-id (count skus)])
-                                                                                     (group-by :catalog/sku-id skus)))}
-                       #(messages/handle-message events/api-success-suggested-add-to-bag {:order %})))
+#?(:cljs
+   (defmethod effects/perform-effects events/control-suggested-add-to-bag [_ _ {:keys [skus] } _ app-state]
+     (api/add-skus-to-bag (get-in app-state keypaths/session-id) {:number        (get-in app-state keypaths/order-number)
+                                                                  :token         (get-in app-state keypaths/order-token)
+                                                                  :sku->quantity (into {} (map (fn [[sku-id skus]] [sku-id (count skus)])
+                                                                                               (group-by :catalog/sku-id skus)))}
+                          #(messages/handle-message events/api-success-suggested-add-to-bag {:order %}))))
 
-(defmethod effects/perform-effects events/api-success-suggested-add-to-bag [_ _ {:keys [order]} _ _]
-  (messages/handle-message events/save-order {:order order}))
+#?(:cljs
+   (defmethod effects/perform-effects events/api-success-suggested-add-to-bag [_ _ {:keys [order]} _ _]
+     (messages/handle-message events/save-order {:order order})))
 
 (defn auto-complete-query
   [data]
