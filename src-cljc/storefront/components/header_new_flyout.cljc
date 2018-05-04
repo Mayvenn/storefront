@@ -148,7 +148,9 @@
   [:ul.list-reset.mx2
    (when deals?
      (menu-row slideout-nav/deal-row))
-   (for [row slideout-nav/shopping-rows]
+   (for [row (slideout-nav/shopping-rows (ui/forward-caret {:width  "16px"
+                                                            :height "13px"
+                                                            :class  "stroke-dark-gray"}))]
      (menu-row row))
    (when (-> signed-in ::auth/as (= :stylist))
      (menu-row slideout-nav/stylist-exclusive-row))
@@ -184,7 +186,7 @@
 
 (defn component [{:keys [store user cart signed-in the-ville?] :as data} _ _]
   (component/create
-   [:div
+   [:div.border-bottom.border-gray
     [:div.mx-auto.col-11.hide-on-mb.flex.items-center.justify-between {:style {:height "85px"}}
 
      [:div.flex.items-center.mt4.col-4
@@ -201,9 +203,9 @@
       [:div.mt4.pl6 (ui/shopping-bag {:style     {:height (str ui/header-image-size "px")
                                                   :width  "28px"}
                                       :data-test "desktop-cart"}
-                                 cart)]]]
+                                     cart)]]]
 
-    [:div.hide-on-tb-dt.border-bottom.border-gray.flex.items-center
+    [:div.hide-on-tb-dt.flex.items-center
      mobile-hamburger
      [:div.flex-auto.py3 (ui/clickable-logo {:event     events/navigate-home
                                              :data-test "header-logo"

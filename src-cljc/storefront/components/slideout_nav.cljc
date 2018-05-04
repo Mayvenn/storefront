@@ -154,7 +154,7 @@
    :data-test  "menu-shop-by-look"
    :content    [[:span.medium "Deals"]]})
 
-(def shopping-rows
+(defn shopping-rows [caret]
   [{:link-attrs (utils/route-to events/navigate-shop-by-look {:album-slug "look"})
     :data-test "menu-shop-by-look"
     :content [[:span.medium "Shop Looks"]]}
@@ -164,7 +164,7 @@
                                   :catalog/category-id "15"})
     :data-test  "menu-shop-virgin-hair"
     :content    [[:span.medium.flex-auto "Virgin Hair"]
-                 ui/forward-caret]}
+                 caret]}
 
    {:link-attrs (utils/route-to events/navigate-category
                                 {:page/slug           "dyed-virgin-hair"
@@ -182,7 +182,7 @@
                                   :catalog/category-id "12"})
     :data-test "menu-shop-closures"
     :content [[:span.medium.flex-auto "Closures & Frontals"]
-              ui/forward-caret]}
+              caret]}
    {:link-attrs (utils/route-to events/navigate-category
                                 {:page/slug           "wigs"
                                  :catalog/category-id "13"})
@@ -232,7 +232,9 @@
   [:ul.list-reset.mb3
    (when deals?
      (menu-row deal-row))
-   (for [row shopping-rows]
+   (for [row (shopping-rows (ui/forward-caret {:class  "stroke-black"
+                                               :width  "23px"
+                                               :height "20px"}))]
      (menu-row row))
    (when (-> signed-in ::auth/as (= :stylist))
      (menu-row stylist-exclusive-row))
