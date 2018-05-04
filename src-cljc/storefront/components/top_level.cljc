@@ -163,7 +163,7 @@
                     (->> nav-event
                          (take (count events/navigate-style-guide))
                          vec)))
-            [:div (style-guide/built-component data nil)]])
+            [:div #_(style-guide/built-component data nil)]])
 
        (get-in data keypaths/menu-expanded)
        (slideout-nav/built-component data nil)

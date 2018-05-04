@@ -60,10 +60,10 @@
    (social-icon (assets/path "/images/share/styleseat-logotype.png"))))
 
 (defn store-welcome [signed-in {:keys [store-nickname portrait expanded?]} expandable?]
-  [:div.h6.flex.items-center.mt2
+  [:div.h6.flex.items-center
    (case (marquee/portrait-status (-> signed-in ::auth/as (= :stylist)) portrait)
-     ::marquee/show-what-we-have [:div.left.pr2 (marquee/stylist-portrait portrait)]
-     ::marquee/ask-for-portrait  [:div.left.pr2 marquee/add-portrait-cta]
+     ::marquee/show-what-we-have [:div.pr2 (marquee/stylist-portrait portrait)]
+     ::marquee/ask-for-portrait  [:div.mt1.pr2 marquee/add-portrait-cta]
      ::marquee/show-nothing      [:div.left {:style {:height (str ui/header-image-size "px")}}])
    [:div.dark-gray
     "Welcome to " [:span.black.medium {:data-test "nickname"} store-nickname "'s"] " shop"
@@ -145,7 +145,7 @@
       menu])])
 
 (defn root-menu [deals? signed-in]
-  [:ul.list-reset.mb3
+  [:ul.list-reset.mx2
    (when deals?
      (menu-row slideout-nav/deal-row))
    (for [row slideout-nav/shopping-rows]
@@ -156,7 +156,7 @@
      (menu-row row))])
 
 (defn non-mobile-hamburger [open?]
-  [:div.left.block.mr6.py2.flex.justify-center.items-center
+  [:div.flex.items-center
    (merge {:style {:width "25px"}
            :data-test "hamburger"})
    (if open?
@@ -168,8 +168,8 @@
    expanded-flyout-menu?
    keypaths/shop-menu-expanded
    [:div (non-mobile-hamburger expanded-flyout-menu?)]
-   [:div.bg-white.absolute.left-0
-    {:style {:top "56px" :width "245px"}}
+   [:div.bg-white.absolute.left-0.pb2
+    {:style {:top "20px" :width "245px"}}
     (if on-taxon?
       (component/build menu/new-flyout-submenu-component menu-data nil)
       (root-menu deals? signed-in))]))
@@ -185,28 +185,29 @@
 (defn component [{:keys [store user cart signed-in the-ville?] :as data} _ _]
   (component/create
    [:div
-    [:div.hide-on-mb
-     [:div.relative.border-bottom.border-gray.pt3 {:style {:height "85px"}}
-      [:div.absolute.bottom-0.left-0.right-0
-       [:div.mb2
-        (ui/clickable-logo {:event events/navigate-home
-                            :data-test "desktop-header-logo"
-                            :height "60px"})]]
-      [:div.max-960.mx-auto.pt2.relative
-       [:div.left.col-5.flex.items-center
-        (flyout-menu data)
-        [:div.mr4.pr2 (store-info signed-in store)]]
-       [:div.right.col-4
-        [:div.h6.my2.flex.items-center.right
-         [:div.mt1 (account-info signed-in user the-ville?)]
-         [:div.pl6 (ui/shopping-bag {:style {:height (str ui/header-image-size "px") :width "28px"}
-                                     :data-test "desktop-cart"}
-                                    cart)]]]]]]
+    [:div.mx-auto.col-11.hide-on-mb.flex.items-center.justify-between {:style {:height "85px"}}
+
+     [:div.flex.items-center.mt4.col-4
+      [:div.mr8 (flyout-menu data)]
+      (store-info signed-in store)]
+
+     [:div.col-4
+      [:a (utils/route-to events/navigate-home)
+       [:div.bg-no-repeat.bg-center.img-logo.mb1
+        {:style {:height "60px"}}]]]
+
+     [:div.h6.flex.justify-end.items-center.col-4
+      [:div.mt4 (account-info signed-in user the-ville?)]
+      [:div.mt4.pl6 (ui/shopping-bag {:style     {:height (str ui/header-image-size "px")
+                                                  :width  "28px"}
+                                      :data-test "desktop-cart"}
+                                 cart)]]]
+
     [:div.hide-on-tb-dt.border-bottom.border-gray.flex.items-center
      mobile-hamburger
-     [:div.flex-auto.py3 (ui/clickable-logo {:event events/navigate-home
+     [:div.flex-auto.py3 (ui/clickable-logo {:event     events/navigate-home
                                              :data-test "header-logo"
-                                             :height "40px"})]
+                                             :height    "40px"})]
      (ui/shopping-bag {:style     {:height "70px" :width "70px"}
                        :data-test "mobile-cart"}
                       cart)]]))
