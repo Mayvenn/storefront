@@ -916,11 +916,14 @@
    {:params        params
     :handler       callback
     :error-handler (fn [resp]
-                     (messages/handle-message events/api-failure-errors (-> resp
-                                                                            :response
-                                                                            :body
-                                                                            schema-3-style->std-error
-                                                                            (assoc :scroll-selector "[data-ref=leads-sign-up-form]") )))}))
+                     (if (<= 400 (:status resp) 499)
+                       (messages/handle-message events/api-failure-errors
+                                                (-> resp
+                                                    :response
+                                                    :body
+                                                    schema-3-style->std-error
+                                                    (assoc :scroll-selector "[data-ref=leads-sign-up-form]") ))
+                       (messages/handle-message events/api-failure-bad-server-response resp)))}))
 
 (defn advance-lead-registration [params handler]
   (storeback-api-req POST

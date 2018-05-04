@@ -23,15 +23,25 @@
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
             [clojure.string :as string]
+            [storefront.components.svg :as svg]
             [storefront.transitions :as transitions]
             [storefront.effects :as effects]
-            [storefront.request-keys :as request-keys]))
+            [storefront.request-keys :as request-keys]
+            [storefront.components.flash :as flash]))
 
-(defn sign-up-panel [{:keys [focused field-errors first-name last-name phone email spinning?]}]
+(defn sign-up-panel [{:keys [focused field-errors first-name last-name phone email spinning? flash-data]}]
   [:div.rounded.bg-lighten-4.p3
    [:div.center
     [:h2 "Join over 100,000 stylists"]
     [:p.mb2 "Enter your info below to get started."]]
+   (when-let [failure  (:failure flash-data)]
+     [:div.p2
+      [:div.red.bg-red.border.border-red.rounded.light.letter-spacing-1
+       [:div.clearfix.px2.py1.bg-lighten-5.rounded
+        {:data-test "flash-error"}
+        [:div.right.ml1 (svg/error {:class "red"
+                                    :style {:width "1em" :height "1em"}})]
+        [:div.overflow-hidden failure]]]])
    [:form.col-12.flex.flex-column.items-center
     {:on-submit (utils/send-event-callback events/leads-control-sign-up-submit {})
      :data-test "leads-sign-up-form"
@@ -401,19 +411,23 @@
                     "storefront.localhost")
 
         {:keys [flow-id] :as remote-lead} (get-in data keypaths/remote-lead)]
-    {:hero   {:title           (cond
-                                 (= "movement" (get-in data keypaths/copy))
-                                 "Be part of a movement of hair stylists making money on their own terms."
+    {
 
-                                 :else "Earn up to $2,000 a month selling hair with no out of pocket expenses")
-              :flow-id         flow-id
-              :sign-up         {:field-errors      (get-in data storefront.keypaths/field-errors)
-                                :first-name        (get-in data keypaths/lead-first-name)
-                                :last-name         (get-in data keypaths/lead-last-name)
-                                :phone             (get-in data keypaths/lead-phone)
-                                :email             (get-in data keypaths/lead-email)
-                                :flow-id           (get-in data keypaths/lead-flow-id)
-                                :spinning?         (utils/requesting? data request-keys/create-lead)}}
+     :hero {:title (cond
+                     (= "movement" (get-in data keypaths/copy))
+                     "Be part of a movement of hair stylists making money on their own terms."
+
+                     :else "Earn up to $2,000 a month selling hair with no out of pocket expenses")
+
+            :flow-id flow-id
+            :sign-up {:field-errors (get-in data storefront.keypaths/field-errors)
+                      :flash-data   (flash/query data)
+                      :first-name   (get-in data keypaths/lead-first-name)
+                      :last-name    (get-in data keypaths/lead-last-name)
+                      :phone        (get-in data keypaths/lead-phone)
+                      :email        (get-in data keypaths/lead-email)
+                      :flow-id      (get-in data keypaths/lead-flow-id)
+                      :spinning?    (utils/requesting? data request-keys/create-lead)}}
      :header {:call-number config/mayvenn-leads-call-number}
      :footer {:call-number config/mayvenn-leads-call-number
               :host-name   host-name}
