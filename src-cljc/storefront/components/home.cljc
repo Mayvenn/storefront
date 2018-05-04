@@ -231,8 +231,8 @@
          keypaths/store-info-expanded
          [:div (store-welcome signed-in store true)]
          [:div.bg-white.absolute.left-0.right-0
-          (for [row rows]
-            [:div.border-gray.border-bottom row])])))))
+          (for [[index row] (map-indexed vector rows)]
+            [:div.border-gray.border-bottom {:key (str "action-row-" index)} row])])))))
 
 (def about-mayvenn
   (component/html

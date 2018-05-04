@@ -44,7 +44,7 @@
         [:div.col.col-6 {:key (str "footer-column-" (-> link-column first :slug))}
          (for [{:keys [title nav-message slug]} link-column]
            [:a.block.py1.dark-gray.light.titleize
-            (merge {:key slug}
+            (merge {:key (str "footer-link-" slug)}
                    (apply utils/route-to nav-message))
             title])])]]))
 
