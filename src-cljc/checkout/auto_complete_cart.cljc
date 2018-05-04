@@ -403,10 +403,10 @@
                                                                :token  (get-in app-state keypaths/order-token)
                                                                :skus   (into {} (map (fn [[sku-id skus]] [sku-id (count skus)])
                                                                                      (group-by :catalog/sku-id skus)))}
-                       #(messages/handle-message events/api-success-suggested-add-to-bag %)))
+                       #(messages/handle-message events/api-success-suggested-add-to-bag {:order %})))
 
-(defmethod transitions/transition-state events/api-success-suggested-add-to-bag [_ _ order app-state]
-  (app-state))
+(defmethod effects/perform-effects events/api-success-suggested-add-to-bag [_ _ {:keys [order]} _ _]
+  (messages/handle-message events/save-order {:order order}))
 
 (defn auto-complete-query
   [data]
