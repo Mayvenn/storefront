@@ -64,6 +64,7 @@
         (transition-background-color just-added-to-order?
                                      [:div.right.z1.circle.stacking-context.border.border-light-gray.flex.items-center.justify-center.medium.h5.bg-too-light-teal
                                       {:key   (str "length-circle-" sku-id)
+                                       :data-test (str "line-item-length-" sku-id)
                                        :style {:margin-left "-21px"
                                                :margin-top  "-10px"
                                                :width       "32px"
