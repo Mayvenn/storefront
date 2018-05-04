@@ -53,6 +53,7 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
+            [storefront.platform.messages :as messages]
             [storefront.accessors.experiments :as experiments]))
 
 (defn main-component [nav-event]
@@ -122,21 +123,34 @@
     events/navigate-leads-a1-registered-thank-you leads.a1.registered-thank-you/built-component
     home/built-component))
 
+(defn overlay-scrim [show-scrim? content]
+  (if show-scrim?
+    [:div.stacking-context.relative
+     {:on-click #(messages/handle-message events/control-menu-collapse-all)}
+     [:div.fixed.overlay.bg-darken-3.z4]
+     content]
+    content))
+
 (defn main-layout [data nav-event]
-  [:div.flex.flex-column {:style {:min-height    "100vh"
-                                  :margin-bottom "-1px"}}
-   (stylist-banner/built-component data nil)
-   (promotion-banner/built-component data nil)
-   #?(:cljs (popup/built-component data nil))
-   [:header
-    (if (experiments/new-flyout? data)
-      (header-new-flyout/built-component data nil)
-      (header/built-component data nil))]
-   (flash/built-component data nil)
-   [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
-    ((main-component nav-event) data nil)]
-   [:footer
-    (footer/built-component data nil)]])
+  (let [show-scrim? (and (experiments/new-flyout? data)
+                         (get-in data keypaths/shop-menu-expanded))]
+    [:div.flex.flex-column {:style {:min-height    "100vh"
+                                    :margin-bottom "-1px"}}
+     (stylist-banner/built-component data nil)
+     (promotion-banner/built-component data nil)
+     #?(:cljs (popup/built-component data nil))
+     [:header
+      (if (experiments/new-flyout? data)
+        (header-new-flyout/built-component data nil)
+        (header/built-component data nil))]
+     (overlay-scrim show-scrim?
+      (list
+       (flash/built-component data nil)
+
+       [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
+        ((main-component nav-event) data nil)]
+
+       [:footer (footer/built-component data nil)]))]))
 
 (defn top-level-component [data owner opts]
   (let [nav-event      (get-in data keypaths/navigation-event)

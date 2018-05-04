@@ -18,6 +18,8 @@
             [storefront.accessors.experiments :as experiments]
             [catalog.menu :as menu]))
 
+(def blog-url "https://blog.mayvenn.com")
+
 (def non-mobile-hamburger
   (component/html
    [:div.left.block.mr6.py4 {:style {:width "25px"}
@@ -132,21 +134,50 @@
    " | "
    [:a.inherit-color (utils/route-to events/navigate-sign-up) "No account? Sign up"]])
 
-(defn flyout-menu [expanded?]
-  (ui/drop-down
-   expanded?
+(def close-flyout
+  (component/html
+   [:div.left.block.mr6.py4
+    (svg/close-x {:class "stroke-dark-gray fill-white"})]))
+
+(defn ^:private menu-row
+  [{:keys [link-attrs data-test content]}]
+  [:li
+   [:div.h5.p2.dark-gray.medium
+    (into [:a.block.inherit-color.flex.items-center (assoc link-attrs :data-test data-test)] content)]])
+
+(defn drop-down [expanded? menu-keypath [link-tag & link-contents] menu]
+  [:div
+   (into [link-tag
+          (utils/fake-href events/control-menu-expand {:keypath menu-keypath})]
+         link-contents)
+   (when expanded?
+     [:div.relative.z4
+      menu])])
+
+(defn root-menu [deals? signed-in]
+  [:ul.list-reset.mb3
+   (when deals?
+     (menu-row slideout-nav/deal-row))
+   (for [row slideout-nav/shopping-rows]
+     (menu-row row))
+   (when (-> signed-in ::auth/as (= :stylist))
+     (menu-row slideout-nav/stylist-exclusive-row))
+   (for [row slideout-nav/content-rows]
+     (menu-row row))])
+
+(defn flyout-menu [{:keys [expanded-flyout-menu? deals? on-taxon? signed-in menu-data]}]
+  (drop-down
+   expanded-flyout-menu?
    keypaths/shop-menu-expanded
-   [:div non-mobile-hamburger]
-   [:div.bg-white.absolute.left-0.top-lit
-    {:style {:top "50px"}}
-    (for [[text & msg] [["Deals" events/navigate-shop-by-look {:album-slug "deals"}]
-                        ["Shop Looks" events/navigate-shop-by-look {:album-slug "look"}]
-                        ["Shop hair" events/navigate-home]
-                        ["Shop Guarantee" events/navigate-content-guarantee]
-                        ["Our hair" events/navigate-content-our-hair]
-                        ["Our Real Beautiful" slideout-nav/blog-url]]]
-      [:div
-       (drop-down-row (apply utils/route-to msg) text)])]))
+   (if expanded-flyout-menu?
+     [:div.left.block.mr6
+      (ui/big-x {:attrs {:style {:height "50px"}}})]
+     [:div non-mobile-hamburger])
+   [:div.bg-white.absolute.left-0
+    {:style {:top "58px" :width "245px"}}
+    (if on-taxon?
+      (component/build menu/new-flyout-submenu-component menu-data nil)
+      (root-menu deals? signed-in))]))
 
 (def open-shopping (utils/expand-menu-callback keypaths/shop-menu-expanded))
 (def close-shopping (utils/collapse-menus-callback keypaths/header-menus))
@@ -156,7 +187,7 @@
    (merge opts {:style {:padding-left "24px" :padding-right "24px"}})
    text])
 
-(defn component [{:keys [store user cart shopping signed-in deals? the-ville? expanded-flyout-menu?]} _ _]
+(defn component [{:keys [store user cart signed-in the-ville?] :as data} _ _]
   (component/create
    [:div
     [:div.hide-on-mb
@@ -167,8 +198,8 @@
                             :data-test "desktop-header-logo"
                             :height "60px"})]]
       [:div.max-960.mx-auto.pt2.relative
-       [:div.left.col-5
-        (flyout-menu expanded-flyout-menu?)
+       [:div.left.col-5.flex.items-center
+        (flyout-menu data)
         [:div.mr4.pr2 (store-info signed-in store)]]
        [:div.right.col-4
         [:div.h6.my2.flex.items-center.right
@@ -193,7 +224,7 @@
                                             :height "40px"})]]))
 
 (defn query [data]
-  (-> (slideout-nav/basic-query data)
+  (-> (slideout-nav/query data)
       (assoc-in [:expanded-flyout-menu?] (get-in data keypaths/shop-menu-expanded))
       (assoc-in [:user :expanded?]       (get-in data keypaths/account-menu-expanded))
       (assoc-in [:shopping :expanded?]   (get-in data keypaths/shop-menu-expanded))
