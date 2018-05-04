@@ -144,86 +144,100 @@
     :user    (user-actions the-ville?)
     :guest   guest-actions))
 
-(defn ^:private menu-row [& content]
-  [:div.h4.border-bottom.border-gray.py3
-   (into [:a.block.inherit-color.flex.items-center] content)])
+(defn ^:private menu-row [{:keys [link-attrs data-test content]}]
+  [:li {:key data-test}
+   [:div.h4.border-bottom.border-gray.py3
+    (into [:a.block.inherit-color.flex.items-center (assoc link-attrs :data-test data-test)] content)]])
 
-(defn ^:private shopping-area [{:keys [signed-in deals?]}]
-  [:div
-   (if deals?
-     [:li (menu-row (assoc (utils/route-to events/navigate-shop-by-look {:album-slug "deals"})
-                           :data-test "menu-shop-by-deals")
-                    [:span.medium "Deals"])])
-   [:li (menu-row (assoc (utils/route-to events/navigate-shop-by-look {:album-slug "look"})
-                         :data-test "menu-shop-by-look")
-                  [:span.medium "Shop Looks"])]
-   [:div
-    [:li (menu-row (assoc (utils/fake-href events/menu-list
-                                           {:page/slug           "virgin-hair"
-                                            :catalog/category-id "15"})
-                          :data-test "menu-shop-virgin-hair")
-                   [:span.medium.flex-auto "Virgin Hair"]
-                   ui/forward-caret)]
-    [:li (menu-row (assoc (utils/route-to events/navigate-category
-                                          {:page/slug           "dyed-virgin-hair"
-                                           :catalog/category-id "16"})
-                          :data-test "menu-shop-dyed-virgin-hair")
-                   [:span.medium.flex-auto "Dyed Virgin Hair"])]
-    [:li (menu-row (assoc (utils/route-to events/navigate-category
-                                          {:page/slug           "dyed-100-human-hair"
-                                           :catalog/category-id "19"})
-                          :data-test "menu-shop-dyed-100-human-hair")
-                   [:span.teal.pr1 "NEW"]
-                   [:span.medium.flex-auto "Dyed 100% Human Hair"])]]
-   [:li (menu-row (assoc (utils/fake-href events/menu-list
-                                          {:page/slug           "closures-and-frontals"
-                                           :catalog/category-id "12"})
-                         :data-test "menu-shop-closures")
-                  [:span.medium.flex-auto "Closures & Frontals"]
-                  ui/forward-caret)]
-   [:li (menu-row (assoc (utils/route-to events/navigate-category
-                                         {:page/slug           "wigs"
-                                          :catalog/category-id "13"})
-                         :data-test "menu-shop-wigs")
-                  [:span.medium.flex-auto "Wigs"])]
-   [:li (menu-row (assoc (utils/route-to events/navigate-category
-                                         {:page/slug           "seamless-clip-ins"
-                                          :catalog/category-id "21"})
-                         :data-test "menu-shop-seamless-clip-ins")
-                  [:span.teal.pr1 "NEW"]
-                  [:span.medium.flex-auto "Clip-Ins"])]
-   [:li (menu-row (assoc (utils/route-to events/navigate-product-details
-                                         {:page/slug          "50g-straight-tape-ins"
-                                          :catalog/product-id "111"})
-                         :data-test "menu-shop-tape-ins")
-                  [:span.teal.pr1 "NEW"]
-                  [:span.medium.flex-auto "Tape-Ins"])]
-   (when (-> signed-in ::auth/as (= :stylist))
-     [:li (menu-row (assoc (utils/route-to events/navigate-product-details
-                                           {:page/slug          "rings-kits"
-                                            :catalog/product-id "49"})
-                           :data-test "menu-stylist-products")
-                    [:span.medium.flex-auto "Stylist Exclusives"])])])
+(def deal-row
+  {:link-attrs (utils/route-to events/navigate-shop-by-look {:album-slug "deals"})
+   :data-test  "menu-shop-by-look"
+   :content    [[:span.medium "Deals"]]})
 
-(defn ^:private menu-area [data]
+(def shopping-rows
+  [{:link-attrs (utils/route-to events/navigate-shop-by-look {:album-slug "look"})
+    :data-test "menu-shop-by-look"
+    :content [[:span.medium "Shop Looks"]]}
+
+   {:link-attrs (utils/fake-href events/menu-list
+                                 {:page/slug           "virgin-hair"
+                                  :catalog/category-id "15"})
+    :data-test  "menu-shop-virgin-hair"
+    :content    [[:span.medium.flex-auto "Virgin Hair"]
+                 ui/forward-caret]}
+
+   {:link-attrs (utils/route-to events/navigate-category
+                                {:page/slug           "dyed-virgin-hair"
+                                 :catalog/category-id "16"})
+    :data-test  "menu-shop-dyed-virgin-hair"
+    :content    [[:span.medium.flex-auto "Dyed Virgin Hair"]]}
+   {:link-attrs (utils/route-to events/navigate-category
+                                {:page/slug           "dyed-100-human-hair"
+                                 :catalog/category-id "19"})
+    :data-test "menu-shop-dyed-100-human-hair"
+    :content [[:span.teal.pr1 "NEW"]
+              [:span.medium.flex-auto "Dyed 100% Human Hair"]]}
+   {:link-attrs (utils/fake-href events/menu-list
+                                 {:page/slug           "closures-and-frontals"
+                                  :catalog/category-id "12"})
+    :data-test "menu-shop-closures"
+    :content [[:span.medium.flex-auto "Closures & Frontals"]
+              ui/forward-caret]}
+   {:link-attrs (utils/route-to events/navigate-category
+                                {:page/slug           "wigs"
+                                 :catalog/category-id "13"})
+    :data-test "menu-shop-wigs"
+    :content [[:span.medium.flex-auto "Wigs"]]}
+   {:link-attrs (utils/route-to events/navigate-category
+                                {:page/slug           "seamless-clip-ins"
+                                 :catalog/category-id "21"})
+    :data-test "menu-shop-seamless-clip-ins"
+    :content [[:span.teal.pr1 "NEW"]
+              [:span.medium.flex-auto "Clip-Ins"]]}
+   {:link-attrs (utils/route-to events/navigate-product-details
+                                {:page/slug          "50g-straight-tape-ins"
+                                 :catalog/product-id "111"})
+    :data-test "menu-shop-tape-ins"
+    :content [[:span.teal.pr1 "NEW"]
+              [:span.medium.flex-auto "Tape-Ins"]]}])
+
+(def stylist-exclusive-row
+  {:link-attrs (utils/route-to events/navigate-product-details
+                               {:page/slug          "rings-kits"
+                                :catalog/product-id "49"})
+   :data-test "menu-stylist-products"
+   :content [[:span.medium.flex-auto "Stylist Exclusives"]]})
+
+(def content-rows
+  [{:link-attrs (utils/route-to events/navigate-content-guarantee)
+    :data-test  "content-guarantee"
+    :content    ["Our Guarantee"]}
+   {:link-attrs (utils/route-to events/navigate-content-our-hair)
+    :data-test  "content-our-hair"
+    :content    ["Our Hair"]}
+   {:link-attrs {:href blog-url}
+    :data-test  "content-blog"
+    :content    ["Real Beautiful blog"]}
+   {:link-attrs (utils/route-to events/navigate-content-about-us)
+    :data-test  "content-about-us"
+    :content    ["About Us"]}
+   {:link-attrs {:href "https://jobs.mayvenn.com"}
+    :data-test  "content-jobs"
+    :content    ["Careers"]}
+   {:link-attrs (utils/route-to events/navigate-content-help)
+    :data-test  "content-help"
+    :content    ["Contact Us"]}])
+
+(defn ^:private menu-area [{:keys [deals? signed-in]}]
   [:ul.list-reset.mb3
-   (shopping-area data)
-   [:li (menu-row (assoc (utils/route-to events/navigate-content-guarantee)
-                         :data-test "content-guarantee")
-                  "Our Guarantee")]
-   [:li (menu-row (assoc (utils/route-to events/navigate-content-our-hair)
-                         :data-test "content-our-hair")
-                  "Our Hair")]
-   [:li (menu-row {:href blog-url}
-                  "Real Beautiful blog")]
-   [:li (menu-row (assoc (utils/route-to events/navigate-content-about-us)
-                         :data-test "content-about-us")
-                  "About Us")]
-   [:li (menu-row {:href "https://jobs.mayvenn.com"}
-                  "Careers")]
-   [:li (menu-row (assoc (utils/route-to events/navigate-content-help)
-                         :data-test "content-help")
-                  "Contact Us")]])
+   (when deals?
+     (menu-row deal-row))
+   (for [row shopping-rows]
+     (menu-row row))
+   (when (-> signed-in ::auth/as (= :stylist))
+     (menu-row stylist-exclusive-row))
+   (for [row content-rows]
+     (menu-row row))])
 
 (def ^:private sign-out-area
   (component/html
