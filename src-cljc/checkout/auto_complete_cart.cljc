@@ -215,6 +215,7 @@
                                     utils/noop-callback
                                     (utils/send-event-callback events/control-suggested-add-to-bag {:skus skus}))
                         :spinning? this-is-adding-to-bag?
+                        :data-test (str "add-" (name position))
                         :style {:margin-top "-10px"
                                 :height     "40px"}} "Add")]]]))
 
