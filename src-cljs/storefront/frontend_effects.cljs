@@ -840,6 +840,7 @@
                      (get-in app-state keypaths/order)
                      (cookie-jar/retrieve-utm-params (get-in app-state keypaths/cookie)))))
 
+;; TODO(jeff): audit callsites of this message to remove their save-cookie calls
 (defmethod perform-effects events/save-order [_ _ {:keys [order]} _ app-state]
   (if (and order (orders/incomplete? order))
     (do
