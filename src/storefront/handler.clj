@@ -618,7 +618,6 @@
                                      (assoc-in keypaths/navigation-message nav-message)
                                      (assoc-in leads.keypaths/eastern-offset (eastern-offset))
                                      (assoc-in leads.keypaths/tz-abbreviation "EST")
-                                     (assoc-in leads.keypaths/call-slot-options [["Best time to call*" ""]])
                                      (assoc-in leads.keypaths/lead-flow-id (-> nav-args :query-params :flow))
                                      ((fn [data]
                                         (let [lead-id     (cookies/get request "lead-id")

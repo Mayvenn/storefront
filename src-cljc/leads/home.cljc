@@ -11,7 +11,6 @@
                        [storefront.browser.tags :as tags]
                        [storefront.history :as history]])
             [leads.header :as header]
-            [leads.call-slot :as call-slot]
             [leads.home-a1 :as home-a1]
             [leads.flows :as flows]
             [storefront.assets :as assets]
@@ -28,7 +27,7 @@
             [storefront.effects :as effects]
             [storefront.request-keys :as request-keys]))
 
-(defn sign-up-panel [{:keys [focused field-errors first-name last-name phone email call-slot call-slot-options spinning?]}]
+(defn sign-up-panel [{:keys [focused field-errors first-name last-name phone email spinning?]}]
   [:div.rounded.bg-lighten-4.p3
    [:div.center
     [:h2 "Join over 100,000 stylists"]
@@ -76,16 +75,6 @@
                     :required  true
                     :type      "email"
                     :value     email})
-    (ui/select-field {:data-test   "sign-up-call-slot"
-                      :errors      (get field-errors ["call-slot"])
-                      :id          "sign-up-call-slot"
-                      :label       "Best time to call*"
-                      :keypath     keypaths/lead-call-slot
-                      :placeholder "Best time to call*"
-                      :value       call-slot
-                      :required    true
-                      :options     call-slot-options
-                      :div-attrs   {:class "bg-white border border-gray rounded"}})
     (ui/submit-button "Become a Mayvenn Stylist"
                       {:data-test "sign-up-submit"
                        :spinning? spinning?})]])
@@ -423,9 +412,7 @@
                                 :last-name         (get-in data keypaths/lead-last-name)
                                 :phone             (get-in data keypaths/lead-phone)
                                 :email             (get-in data keypaths/lead-email)
-                                :call-slot         (get-in data keypaths/lead-call-slot)
                                 :flow-id           (get-in data keypaths/lead-flow-id)
-                                :call-slot-options (get-in data keypaths/call-slot-options)
                                 :spinning?         (utils/requesting? data request-keys/create-lead)}}
      :header {:call-number config/mayvenn-leads-call-number}
      :footer {:call-number config/mayvenn-leads-call-number
@@ -480,12 +467,10 @@
 (defmethod transitions/transition-state events/navigate-leads-home
   [_ _ {{:keys [copy flow]} :query-params} app-state]
   #?(:cljs
-     (let [call-slots        (call-slot/options (get-in app-state keypaths/eastern-offset))
-           utm-cookies       (cookie-jar/retrieve-leads-utm-params (get-in app-state storefront.keypaths/cookie))]
+     (let [utm-cookies       (cookie-jar/retrieve-leads-utm-params (get-in app-state storefront.keypaths/cookie))]
        (-> app-state
            (assoc-in keypaths/copy (string/lower-case (str copy)))
            (update-in keypaths/lead-flow-id #(or % (string/lower-case (str flow))))
-           (assoc-in keypaths/call-slot-options call-slots)
            (update-in keypaths/lead-utm-content
                       (fn [existing-param]
                         (or existing-param

@@ -11,7 +11,6 @@
                        [storefront.browser.tags :as tags]
                        [storefront.history :as history]])
             [clojure.string :as string]
-            [leads.call-slot :as call-slot]
             [leads.flows :as flows]
             [leads.header :as header]
             [leads.keypaths :as keypaths]

@@ -8,7 +8,6 @@
     :last-name
     :phone
     :email
-    :call-slot
     :flow-id
     :website-url
     :facebook-url

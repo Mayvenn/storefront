@@ -2,7 +2,6 @@
 
 (def root [:leads])
 
-(def call-slot-options (conj root :call-slot-options))
 (def eastern-offset    (conj root :eastern-offset))
 (def offset            (conj root :offset))
 (def tz-abbreviation   (conj root :timezone-abbreviation))
@@ -15,7 +14,6 @@
 (def lead-last-name         (conj lead :last-name))
 (def lead-phone             (conj lead :phone))
 (def lead-email             (conj lead :email))
-(def lead-call-slot         (conj lead :call-slot))
 (def lead-website-url       (conj lead :website-url))
 (def lead-facebook-url      (conj lead :facebook-url))
 (def lead-instagram-handle  (conj lead :instagram-handle))
