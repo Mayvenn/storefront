@@ -108,9 +108,9 @@
    [:svg {:class "stroke-white fill-gray" :style {:width "1.2em" :height "1.2em"}}
     (svg-xlink "counter-inc")]))
 
-(defn close-x [opts]
+(defn close-x [{:keys [class]}]
   (component/html
-   [:svg.rotate-45 (maps/deep-merge {:style {:width "1.2em" :height "1.2em"}} opts)
+   [:svg.rotate-45 {:class class :style {:width "1.2em" :height "1.2em"}}
     (svg-xlink "counter-inc")]))
 
 (defn simple-x [opts]
