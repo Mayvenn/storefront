@@ -4,7 +4,8 @@
             [storefront.events :as events]
             [storefront.components.ui :as ui]
             [storefront.config :as config]
-            [storefront.components.slideout-nav :as slideout-nav]))
+            [storefront.components.slideout-nav :as slideout-nav]
+            [leads.keypaths :as keypaths]))
 
 (defn ^:private component [{:keys [call-number]} owner opts]
   (component/create
@@ -15,7 +16,9 @@
      (ui/link :link/phone :a.inherit-color {} call-number)]]))
 
 (defn query [data]
-  {:call-number config/mayvenn-leads-a1-call-number})
+  {:call-number (if (= "a1" (get-in data keypaths/lead-flow-id))
+                  config/mayvenn-leads-a1-call-number
+                  config/mayvenn-leads-call-number)})
 
 (defn built-component [data opts]
   (component/build component (query data) nil))
