@@ -45,14 +45,19 @@
                                 (:description promo)]
      :else                     nil)))
 
+(defn should-display?
+  "Used here to decide whether to display, and also by the flyout menu scrim to
+  calculate top margin."
+  [data]
+  (if (experiments/auto-complete? data)
+    (auto-complete-allowed? data)
+    (allowed-navigation? (get-in data keypaths/navigation-event))))
+
 (defn query
   [data]
-  (let [auto-complete? (experiments/auto-complete? data)]
-    {:allowed?   (if auto-complete?
-                   (auto-complete-allowed? data)
-                   (allowed-navigation? (get-in data keypaths/navigation-event)))
-     :the-ville? (experiments/the-ville? data)
-     :promo      (promotion-to-advertise data)}))
+  {:allowed?   (should-display? data)
+   :the-ville? (experiments/the-ville? data)
+   :promo      (promotion-to-advertise data)})
 
 (defn built-component
   [data opts]

@@ -123,34 +123,34 @@
     events/navigate-leads-a1-registered-thank-you leads.a1.registered-thank-you/built-component
     home/built-component))
 
-(defn overlay-scrim [show-scrim? content]
-  (if show-scrim?
-    [:div.stacking-context.relative.hide-on-mb
-     {:on-click #(messages/handle-message events/control-menu-collapse-all)}
-     [:div.fixed.overlay.bg-darken-3.z4]
-     content]
-    content))
+(defn overlay-scrim [data]
+  (let [show-scrim?     (and (experiments/new-flyout? data)
+                             (get-in data keypaths/shop-menu-expanded))
+        display-banner? (promotion-banner/should-display? data)]
+    (when show-scrim?
+      [:div.overlay.absolute.top-0.hide-on-mb.bg-darken-3.z4
+       {:style    {;:min-height    "100vh"
+                   ;:margin-bottom "-1px"
+                   :margin-top (if display-banner? "117px" "85px")}
+        :on-click #(messages/handle-message events/control-menu-collapse-all)}])))
 
 (defn main-layout [data nav-event]
-  (let [show-scrim? (and (experiments/new-flyout? data)
-                         (get-in data keypaths/shop-menu-expanded))]
-    [:div.flex.flex-column {:style {:min-height    "100vh"
-                                    :margin-bottom "-1px"}}
-     (stylist-banner/built-component data nil)
-     (promotion-banner/built-component data nil)
-     #?(:cljs (popup/built-component data nil))
-     [:header
-      (if (experiments/new-flyout? data)
-        (header-new-flyout/built-component data nil)
-        (header/built-component data nil))]
-     (overlay-scrim show-scrim?
-      (list
-       (flash/built-component data nil)
+  [:div.flex.flex-column {:style {:min-height    "100vh"
+                                  :margin-bottom "-1px"}}
+   (overlay-scrim data)
+   (stylist-banner/built-component data nil)
+   (promotion-banner/built-component data nil)
+   #?(:cljs (popup/built-component data nil))
+   [:header
+    (if (experiments/new-flyout? data)
+      (header-new-flyout/built-component data nil)
+      (header/built-component data nil))]
+   (flash/built-component data nil)
 
-       [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
-        ((main-component nav-event) data nil)]
+   [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
+    ((main-component nav-event) data nil)]
 
-       [:footer (footer/built-component data nil)]))]))
+   [:footer (footer/built-component data nil)]])
 
 (defn top-level-component [data owner opts]
   (let [nav-event      (get-in data keypaths/navigation-event)
@@ -163,7 +163,7 @@
                     (->> nav-event
                          (take (count events/navigate-style-guide))
                          vec)))
-            [:div #_(style-guide/built-component data nil)]])
+            [:div (style-guide/built-component data nil)]])
 
        (get-in data keypaths/menu-expanded)
        (slideout-nav/built-component data nil)
