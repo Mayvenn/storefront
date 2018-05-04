@@ -20,10 +20,12 @@
    [:div.m-auto.col-8-on-tb.col-6-on-dt
     content]])
 
-(defn forward-caret [opts]
+(defn forward-caret [{:keys [height width]}]
   (component/html
-   (svg/dropdown-arrow (merge {:style  {:transform "rotate(-90deg)"}}
-                              opts))))
+   (svg/dropdown-arrow {:class  "stroke-black"
+                        :height height
+                        :width  width
+                        :style  {:transform "rotate(-90deg)"}})))
 
 (defn back-caret [back-copy]
   (component/html

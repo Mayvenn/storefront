@@ -232,8 +232,7 @@
   [:ul.list-reset.mb3
    (when deals?
      (menu-row deal-row))
-   (for [row (shopping-rows (ui/forward-caret {:class  "stroke-black"
-                                               :width  "23px"
+   (for [row (shopping-rows (ui/forward-caret {:width  "23px"
                                                :height "20px"}))]
      (menu-row row))
    (when (-> signed-in ::auth/as (= :stylist))

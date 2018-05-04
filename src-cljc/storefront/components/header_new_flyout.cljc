@@ -130,7 +130,7 @@
 (defn ^:private menu-row
   [{:keys [link-attrs data-test content]}]
   [:li {:key data-test}
-   [:div.h5.p2.dark-gray.medium
+   [:div.h5.p2.medium
     (into [:a.block.inherit-color.flex.items-center (assoc link-attrs :data-test data-test)] content)]])
 
 (defn drop-down [expanded? menu-keypath [link-tag & link-contents] menu]
@@ -149,8 +149,7 @@
    (when deals?
      (menu-row slideout-nav/deal-row))
    (for [row (slideout-nav/shopping-rows (ui/forward-caret {:width  "16px"
-                                                            :height "13px"
-                                                            :class  "stroke-dark-gray"}))]
+                                                            :height "13px"}))]
      (menu-row row))
    (when (-> signed-in ::auth/as (= :stylist))
      (menu-row slideout-nav/stylist-exclusive-row))
