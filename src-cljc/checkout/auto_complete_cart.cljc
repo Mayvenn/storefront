@@ -194,33 +194,38 @@
           true              mf/as-money)]]]]))
 
 (defn suggested-bundles
-  [{:keys [lengths-str image position skus this-is-adding-to-bag? any-adding-to-bag?]}]
-  (let [sized-image (update image :style merge {:height "36px" :width "40px"})]
+  [{:keys [image position skus this-is-adding-to-bag? any-adding-to-bag?]}]
+  (let [[short-sku long-sku] skus
+        sized-image          (update image :style merge {:height "36px" :width "40px"})]
     [:div.mx2.my4.col-11
      {:data-test (str "suggestion-" (name position))
-      :key (str "suggestion-" (map :catalog/sku-id skus) "-" (name position))}
+      :key       (str "suggestion-" (map :catalog/sku-id skus) "-" (name position))}
      [:div.absolute (svg/discount-tag {:style {:height      "3em"
                                                :width       "3em"
                                                :margin-left "-23px"
                                                :margin-top  "-20px"}})]
      [:div.border.border-light-gray.bg-light-gray
       {:style {:height "68px"}}
-      [:div.bg-white.h5.medium.center lengths-str]
+      [:div.bg-white.h5.medium.center
+       (first (:hair/length short-sku))
+       "” & "
+       (first (:hair/length long-sku))
+       "”"]
       [:div.flex.justify-center
        [:img.m1 sized-image]
        [:img.m1 sized-image]]
       [:div.col-10.mx-auto
-       (ui/navy-button {:class "p1"
+       (ui/navy-button {:class     "p1"
                         ;; we don't want to draw attention to the disabling of the other 'Add' button,
                         ;; but we do want to prevent people from clicking both.
                         ;; :disabled? (and (not this-is-adding-to-bag?) any-adding-to-bag?)
-                        :on-click (if (and (not this-is-adding-to-bag?) any-adding-to-bag?)
-                                    utils/noop-callback
-                                    (utils/send-event-callback events/control-suggested-add-to-bag {:skus skus}))
+                        :on-click  (if (and (not this-is-adding-to-bag?) any-adding-to-bag?)
+                                     utils/noop-callback
+                                     (utils/send-event-callback events/control-suggested-add-to-bag {:skus skus}))
                         :spinning? this-is-adding-to-bag?
                         :data-test (str "add-" (name position))
-                        :style {:margin-top "-10px"
-                                :height     "40px"}} "Add")]]]))
+                        :style     {:margin-top "-10px"
+                                    :height     "40px"}} "Add")]]]))
 
 (defn auto-complete-component [{:keys [suggestions]}]
   (component/create
@@ -387,25 +392,21 @@
                                      (map (partial get skus))
                                      (selector/match-all {} {:hair/color (:hair/color sku)})
                                      (sort-by (comp first :hair/length))
-                                     (partition-by #(= (:hair/length sku) (:hair/length %))))
+                                     (partition-by #(= (:catalog/sku-id sku) (:catalog/sku-id %))))
               shorter-skus      (first adjacent-skus)
               longer-skus       (last adjacent-skus)
               short-suggestions (if (< (count shorter-skus) 2)
-                                  [(first shorter-skus) (-> adjacent-skus second first)]
-                                  (into [] (take-last 2 shorter-skus)))
+                                  (repeat 2 sku)
+                                  (take-last 2 shorter-skus))
               long-suggestions  (if (< (count longer-skus) 2)
-                                  [(-> adjacent-skus butlast last last) (last longer-skus)]
-                                  (into [] (take 2 longer-skus)))]
+                                  (repeat 2 sku)
+                                  (take 2 longer-skus))]
           (->> {:shorter-lengths short-suggestions
                 :longer-lengths  long-suggestions}
                (filterv (fn in-stock? [[_ skus]]
                           (every? :inventory/in-stock? skus)))
                (mapv (fn transform [[position skus]]
                        {:position               position
-                        :lengths-str            (str (-> skus first :hair/length first)
-                                                     "” & "
-                                                     (-> skus last :hair/length first)
-                                                     "”")
                         :image                  image
                         :skus                   skus
                         :any-adding-to-bag?     (utils/requesting? data (fn [req]
