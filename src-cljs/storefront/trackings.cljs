@@ -32,11 +32,11 @@
                 (maps/select-rename-keys % {:quantity :item/quantity}))
         line-items))
 
-(defn sku->quantity-to-line-item-skuer
-  [skus-db sku->quantity]
+(defn sku-id->quantity-to-line-item-skuer
+  [skus-db sku-id->quantity]
   (mapv (fn [[sku-id quantity]]
           (assoc (get skus-db sku-id) :item/quantity quantity))
-        sku->quantity))
+        sku-id->quantity))
 
 (defn line-item-skuer->stringer-cart-item
   "Converts line item skuers into the format that stringer expects"
@@ -132,8 +132,8 @@
   (stringer/track-event "select_bundle_option" {:option_name  (name selection)
                                                 :option_value value}))
 
-(defmethod perform-track events/api-success-suggested-add-to-bag [_ event {:keys [order sku->quantity initial-sku]} app-state]
-  (let [line-item-skuers (sku->quantity-to-line-item-skuer (get-in app-state keypaths/v2-skus) sku->quantity)
+(defmethod perform-track events/api-success-suggested-add-to-bag [_ event {:keys [order sku-id->quantity initial-sku]} app-state]
+  (let [line-item-skuers (sku-id->quantity-to-line-item-skuer (get-in app-state keypaths/v2-skus) sku-id->quantity)
         added-skus       (mapv line-item-skuer->stringer-cart-item line-item-skuers)]
     (stringer/track-event "suggested_line_item_added" {:added_skus   added-skus
                                                        :initial_sku  (dissoc (line-item-skuer->stringer-cart-item initial-sku)

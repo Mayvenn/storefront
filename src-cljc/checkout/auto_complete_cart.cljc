@@ -418,10 +418,10 @@
 
 #?(:cljs
    (defmethod effects/perform-effects events/control-suggested-add-to-bag [_ _ {:keys [skus initial-sku]} _ app-state]
-     (api/add-skus-to-bag (get-in app-state keypaths/session-id) {:number        (get-in app-state keypaths/order-number)
-                                                                  :token         (get-in app-state keypaths/order-token)
-                                                                  :sku->quantity (into {} (map (fn [[sku-id skus]] [sku-id (count skus)])
-                                                                                               (group-by :catalog/sku-id skus)))}
+     (api/add-skus-to-bag (get-in app-state keypaths/session-id) {:number           (get-in app-state keypaths/order-number)
+                                                                  :token            (get-in app-state keypaths/order-token)
+                                                                  :sku-id->quantity (into {} (map (fn [[sku-id skus]] [sku-id (count skus)])
+                                                                                                  (group-by :catalog/sku-id skus)))}
                           #(messages/handle-message events/api-success-suggested-add-to-bag (assoc % :initial-sku initial-sku)))))
 
 #?(:cljs

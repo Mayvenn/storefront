@@ -128,10 +128,10 @@
         prev-line-item-tuples (set (line-item-tuples previous-order))
         changed-line-item-tuples (set/difference new-line-item-tuples
                                                  prev-line-item-tuples)
-        prev-sku->quantity (into {} prev-line-item-tuples)
+        prev-sku-id->quantity (into {} prev-line-item-tuples)
         get-sku first]
     (->> changed-line-item-tuples
          (remove (fn [[sku quantity]]
-                   (< quantity (prev-sku->quantity sku 0))))
+                   (< quantity (prev-sku-id->quantity sku 0))))
          (map get-sku)
          set)))
