@@ -22,12 +22,11 @@
 
 (def mobile-hamburger
   (component/html
-   [:a.block.px3.py4 (assoc (utils/fake-href events/control-menu-expand-hamburger
-                                             {:keypath keypaths/menu-expanded})
-                            :style {:width "70px"}
-                            :data-test "hamburger")
-    [:div.border-top.border-bottom.border-dark-gray {:style {:height "15px"}} [:span.hide "MENU"]]
-    [:div.border-bottom.border-dark-gray {:style {:height "15px"}}]]))
+   [:a.block.px3.py4.flex.items-center
+    (assoc (utils/fake-href events/control-menu-expand-hamburger
+                            {:keypath keypaths/menu-expanded})
+           :data-test "hamburger")
+    svg/open-hamburger-menu]))
 
 (defn drop-down-row [opts & content]
   (into [:a.inherit-color.block.center.h5.flex.items-center.justify-center
@@ -199,9 +198,9 @@
 
      [:div.h6.flex.justify-end.items-center.col-4
       [:div.mt4 (account-info signed-in user the-ville?)]
-      [:div.mt4.pl6 (ui/shopping-bag {:style     {:height (str ui/header-image-size "px")
-                                                  :width  "28px"}
-                                      :data-test "desktop-cart"}
+      [:div.mt3.pl6 (ui/shopping-bag-flyout {:style     {:height (str ui/header-image-size "px")
+                                                         :width  "28px"}
+                                             :data-test "desktop-cart"}
                                      cart)]]]
 
     [:div.hide-on-tb-dt.flex.items-center
@@ -209,9 +208,9 @@
      [:div.flex-auto.py3 (ui/clickable-logo {:event     events/navigate-home
                                              :data-test "header-logo"
                                              :height    "40px"})]
-     (ui/shopping-bag {:style     {:height "70px" :width "70px"}
-                       :data-test "mobile-cart"}
-                      cart)]]))
+     (ui/shopping-bag-flyout {:style     {:height "70px" :width "70px"}
+                              :data-test "mobile-cart"}
+                             cart)]]))
 
 (def minimal-component
   (component/html

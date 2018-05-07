@@ -103,6 +103,11 @@
   [:svg (merge {:style {:width "25px" :height "28px"}} opts)
    (svg-xlink "bag")])
 
+(defn bag-flyout [opts]
+  (component/html
+   [:svg (merge {:style {:width "25px" :height "28px"}} opts)
+    (svg-xlink "bag-flyout")]))
+
 (def counter-inc
   (component/html
    [:svg {:class "stroke-white fill-gray" :style {:width "1.2em" :height "1.2em"}}
@@ -123,12 +128,12 @@
 
 (def open-hamburger-menu
   (component/html
-   [:svg {:class "stroke-dark-gray" :style {:width "25px" :height "25px"}}
+   [:svg {:class "fill-dark-gray" :style {:width "25px" :height "25px"}}
     (svg-xlink "open-hamburger-menu")]))
 
 (def close-hamburger-menu
   (component/html
-   [:svg {:class "stroke-dark-gray" :style {:width "25px" :height "25px"}}
+   [:svg {:class "fill-dark-gray" :style {:width "25px" :height "25px"}}
     (svg-xlink "close-hamburger-menu")]))
 
 ;; Social
