@@ -4,10 +4,11 @@
             [storefront.events :as events]
             [storefront.components.ui :as ui]
             [storefront.config :as config]
+            [leads.flows :as flows]
             [storefront.components.slideout-nav :as slideout-nav]
             [leads.keypaths :as keypaths]))
 
-(defn ^:private component [{:keys [call-number]} owner opts]
+(defn component [{:keys [call-number]} owner opts]
   (component/create
    [:div.border-bottom.border-gray.flex.items-center.justify-center.flex-column.py2
     [:div.col-12 (ui/clickable-logo {:data-test "leads-header-logo"
@@ -16,9 +17,7 @@
      (ui/link :link/phone :a.inherit-color {} call-number)]]))
 
 (defn query [data]
-  {:call-number (if (= "a1" (get-in data keypaths/lead-flow-id))
-                  config/mayvenn-leads-a1-call-number
-                  config/mayvenn-leads-call-number)})
+  {:call-number (flows/call-number data)})
 
 (defn built-component [data opts]
   (component/build component (query data) nil))

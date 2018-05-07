@@ -1,6 +1,13 @@
 (ns leads.flows
   (:require #?@(:cljs [[storefront.api :as api]])
+            [storefront.config :as config]
             [leads.keypaths :as keypaths]))
+
+(defn call-number
+  [data]
+  (case (get-in data keypaths/lead-flow-id)
+    "a1" config/mayvenn-leads-a1-call-number
+    config/mayvenn-leads-call-number))
 
 (def ^:private allowed-keys
   #{:tracking-id

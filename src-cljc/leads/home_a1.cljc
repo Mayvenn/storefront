@@ -345,19 +345,19 @@
           {:href (str privacy-url "#our-ads")} "Our Ads"]]]]]]))
 
 
-(defn ^:private component [data owner opts]
+(defn ^:private component [queried-data owner opts]
   (component/create
    [:div
-    (header/built-component (:header data) nil)
+    (component/build header/component (:header queried-data) nil)
     become-a-mayvenn-stylist-section
     how-mayvenn-works-section
     our-stylists-thrive-section
-    (signup-section (:hero data))
+    (signup-section (:hero queried-data))
     success-stories-section
     clients-love-section
     [:section.center.px3.py6
-     (faq-section q-and-as (:faq data))]
-    (footer (:footer data))]))
+     (faq-section q-and-as (:faq queried-data))]
+    (footer (:footer queried-data))]))
 
 (defn ->hr [hour]
   (let [tod    (if (< hour 12) "AM" "PM")
@@ -373,7 +373,8 @@
                     "acceptance" "diva-acceptance.com"
                     "storefront.localhost")
 
-        {:keys [flow-id] :as remote-lead} (get-in data keypaths/remote-lead)]
+        {:keys [flow-id] :as remote-lead} (get-in data keypaths/remote-lead)
+        call-number                       (flows/call-number data)]
     {:hero   {:flow-id flow-id
               :sign-up {:field-errors              (get-in data storefront.keypaths/field-errors)
                         :first-name                (get-in data keypaths/lead-first-name)
@@ -394,11 +395,11 @@
                                                     ["20+" "20+"]]
                         :pro?                      (get-in data keypaths/lead-professional)
                         :spinning?                 (utils/requesting? data request-keys/create-lead)}}
-     :header {:call-number config/mayvenn-leads-a1-call-number}
-     :footer {:call-number config/mayvenn-leads-a1-call-number
+     :header (header/query data)
+     :footer {:call-number call-number
               :host-name   host-name}
      :faq    {:sms-number  config/mayvenn-leads-sms-number
-              :call-number config/mayvenn-leads-a1-call-number}}))
+              :call-number call-number}}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

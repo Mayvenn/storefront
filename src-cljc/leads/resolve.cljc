@@ -3,13 +3,14 @@
                 :cljs [[storefront.browser.cookie-jar :as cookie-jar]
                        [storefront.component :as component]])
             [leads.header :as header]
+            [leads.keypaths :as keypaths]
+            [leads.flows :as flows]
             [storefront.components.footer :as footer]
             [storefront.assets :as assets]
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.config :as config]
             [storefront.keypaths]
-            [leads.keypaths :as keypaths]
             [storefront.components.ui :as ui]))
 
 (defn social-link [url image-path]
@@ -17,10 +18,10 @@
        :href url}
    [:img {:src (assets/path image-path)}]])
 
-(defn ^:private component [data owner opts]
+(defn ^:private component [queried-data owner opts]
   (component/create
    [:div
-    (header/built-component data nil)
+    (component/build header/component (:header queried-data) nil)
     [:div.bg-teal.white
      [:div.max-580.center.mx-auto
       [:div.h4.py3.px4
@@ -37,12 +38,14 @@
         (social-link "https://twitter.com/mayvennhair" "//ucarecdn.com/41683ed1-1494-4c44-a3b0-41a25eab744e/-/format/auto/twittericon.png")]]
       [:div.col-10.mx-auto.py8
        (ui/youtube-responsive "https://www.youtube.com/embed/MjhjIB2s1Uk")]]]
-    (component/build footer/minimal-component (:footer data) nil)]))
+    (component/build footer/minimal-component (:footer queried-data) nil)]))
 
 (defn ^:private query [data]
-  {:footer {:call-number config/mayvenn-leads-call-number}
-   :faq    {:text-number config/mayvenn-leads-sms-number
-            :call-number config/mayvenn-leads-call-number}})
+  (let [call-number (flows/call-number data)]
+    {:header (header/query data)
+     :footer {:call-number call-number}
+     :faq    {:text-number config/mayvenn-leads-sms-number
+              :call-number call-number}}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

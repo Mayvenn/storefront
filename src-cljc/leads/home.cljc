@@ -378,12 +378,12 @@
                [:a.btn.btn-outline.teal {:href "#signup-form"} "Sign up"]]]]))))
      :clj [:span]))
 
-(defn ^:private component [data owner opts]
+(defn ^:private component [queried-data owner opts]
   (component/create
    [:div
-    (header/built-component data nil)
-    (component/build follow-header (:header data) nil)
-    (hero-section (:hero data))
+    (component/build header/component (:header queried-data) nil)
+    (component/build follow-header (:header queried-data) nil)
+    (hero-section (:hero queried-data))
     success-stories-section
     about-section
     how-it-works-section
@@ -393,8 +393,8 @@
     numbers-section
     press-section
     [:section.center.px3.py6
-     (faq-section q-and-as (:faq data))]
-    (footer (:footer data))]))
+     (faq-section q-and-as (:faq queried-data))]
+    (footer (:footer queried-data))]))
 
 (defn ->hr [hour]
   (let [tod    (if (< hour 12) "AM" "PM")
@@ -410,7 +410,8 @@
                     "acceptance" "diva-acceptance.com"
                     "storefront.localhost")
 
-        {:keys [flow-id] :as remote-lead} (get-in data keypaths/remote-lead)]
+        {:keys [flow-id] :as remote-lead} (get-in data keypaths/remote-lead)
+        call-number (flows/call-number data)]
     {
 
      :hero {:title (cond
@@ -428,11 +429,11 @@
                       :email        (get-in data keypaths/lead-email)
                       :flow-id      (get-in data keypaths/lead-flow-id)
                       :spinning?    (utils/requesting? data request-keys/create-lead)}}
-     :header {:call-number config/mayvenn-leads-call-number}
-     :footer {:call-number config/mayvenn-leads-call-number
+     :header (header/query data)
+     :footer {:call-number call-number
               :host-name   host-name}
      :faq    {:sms-number  config/mayvenn-leads-sms-number
-              :call-number config/mayvenn-leads-call-number}}))
+              :call-number call-number}}))
 
 (defn built-component [data opts]
   (case (get-in data keypaths/lead-flow-id)
