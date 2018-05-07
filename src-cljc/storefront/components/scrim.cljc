@@ -7,7 +7,7 @@
             [storefront.platform.messages :as messages]
             [storefront.events :as events]))
 
-(defn component [{:keys [show? banner-showing?]}]
+(defn component [{:keys [show? banner-showing?]} owner opts]
   (component/create
    (when show?
      [:div.overlay.absolute.hide-on-mb.bg-darken-3.z4
