@@ -35,14 +35,15 @@
             [storefront.components.forgot-password :as forgot-password]
             [storefront.components.gallery :as gallery]
             [storefront.components.header :as header]
+            [storefront.components.header-new-flyout :as header-new-flyout]
             [storefront.components.home :as home]
             [storefront.components.promotion-banner :as promotion-banner]
+            [storefront.components.scrim :as scrim]
             [storefront.components.shared-cart :as shared-cart]
             [storefront.components.sign-in :as sign-in]
             [storefront.components.sign-up :as sign-up]
             [storefront.components.slideout-nav :as slideout-nav]
             [storefront.components.stylist-banner :as stylist-banner]
-            [storefront.components.header-new-flyout :as header-new-flyout]
             ;; TODO Maybe we should change leads namespaces to be something like
             ;; leads.components.home
             [leads.home :as leads.home]
@@ -53,7 +54,6 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
-            [storefront.platform.messages :as messages]
             [storefront.accessors.experiments :as experiments]))
 
 (defn main-component [nav-event]
@@ -123,22 +123,10 @@
     events/navigate-leads-a1-registered-thank-you leads.a1.registered-thank-you/built-component
     home/built-component))
 
-(defn overlay-scrim [data]
-  (let [show-scrim?     (and (experiments/new-flyout? data)
-                             (or (get-in data keypaths/shop-menu-expanded)
-                                 (get-in data keypaths/store-info-expanded)
-                                 (get-in data keypaths/account-menu-expanded)))
-        display-banner? (promotion-banner/should-display? data)]
-    (when show-scrim?
-      [:div.overlay.absolute.hide-on-mb.bg-darken-3.z4
-       {:style    {:margin-top (if display-banner?
-                                 "117px" "85px")}
-        :on-click #(messages/handle-message events/control-menu-collapse-all)}])))
-
 (defn main-layout [data nav-event]
   [:div.relative.flex.flex-column {:style {:min-height    "100vh"
                                            :margin-bottom "-1px"}}
-   (overlay-scrim data)
+   (scrim/built-component data nil)
    (stylist-banner/built-component data nil)
    (promotion-banner/built-component data nil)
    #?(:cljs (popup/built-component data nil))

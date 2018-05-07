@@ -20,7 +20,9 @@
    [storefront.components.affirm :as affirm]
    [storefront.components.flash :as flash]
    [storefront.components.footer :as storefront.footer]
+   [storefront.components.scrim :as scrim]
    [storefront.components.money-formatters :as mf]
+   [storefront.components.header-new-flyout :as header-new-flyout]
    [storefront.components.promotion-banner :as promotion-banner]
    [storefront.components.stylist-banner :as stylist-banner]
    [storefront.components.svg :as svg]
@@ -496,10 +498,13 @@
   [:div.flex.flex-column {:style {:min-height    "100vh"
                                   :margin-bottom "-1px"}}
 
+   (scrim/built-component data nil)
    (stylist-banner/built-component data nil)
    (promotion-banner/built-component data nil)
    #?(:cljs (popup/built-component data nil))
-   [:header (header/built-component data nil)]
+   [:header  (if (experiments/new-flyout? data)
+               (header-new-flyout/built-component data nil)
+               (header/built-component data nil))]
 
    (flash/built-component data nil)
 
