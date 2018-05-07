@@ -69,6 +69,7 @@
        [:p.h6 (component/build as-low-as-component data {})]
        [:p.h6 (:middle-copy data) " " (component/build modal-component data {:opts {:content "Learn more."
                                                                                     :link-classes "navy underline"}})]]]]))
+
 (defn auto-complete-as-low-as-box [data]
   (when (valid-order-total? (:amount data))
     [:div.center.col-12.py1.mx-auto
