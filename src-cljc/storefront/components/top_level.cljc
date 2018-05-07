@@ -128,15 +128,14 @@
                              (get-in data keypaths/shop-menu-expanded))
         display-banner? (promotion-banner/should-display? data)]
     (when show-scrim?
-      [:div.overlay.absolute.top-0.hide-on-mb.bg-darken-3.z4
-       {:style    {;:min-height    "100vh"
-                   ;:margin-bottom "-1px"
-                   :margin-top (if display-banner? "117px" "85px")}
+      [:div.overlay.absolute.hide-on-mb.bg-darken-3.z4
+       {:style    {:margin-top (if display-banner?
+                                 "117px" "85px")}
         :on-click #(messages/handle-message events/control-menu-collapse-all)}])))
 
 (defn main-layout [data nav-event]
-  [:div.flex.flex-column {:style {:min-height    "100vh"
-                                  :margin-bottom "-1px"}}
+  [:div.relative.flex.flex-column {:style {:min-height    "100vh"
+                                           :margin-bottom "-1px"}}
    (overlay-scrim data)
    (stylist-banner/built-component data nil)
    (promotion-banner/built-component data nil)
