@@ -51,8 +51,8 @@
    opts]
   (component/create
    (let [{:keys [selector/electives]} nav-root]
-     [:div.dark-gray.medium
-      [:a.inherit-color.block.px3.h6.mt2.mb1
+     [:div.medium
+      [:a.dark-gray.block.px3.h6.mt2.mb1
        (utils/fake-href events/menu-home)
        (ui/back-caret "Back")]
       [:div.mx4.pb1.h5.flex-auto.center.border-bottom "Shop " (:copy/title nav-root)]
