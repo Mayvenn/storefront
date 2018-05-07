@@ -414,7 +414,7 @@
                         :any-adding-to-bag?     (utils/requesting? data (fn [req]
                                                                           (subvec (:request-key req []) 0 1))
                                                                    request-keys/add-to-bag)
-                        :this-is-adding-to-bag? (utils/requesting? data (conj request-keys/add-to-bag (map :catalog/sku-id skus)))}))))))))
+                        :this-is-adding-to-bag? (utils/requesting? data (conj request-keys/add-to-bag (set (map :catalog/sku-id skus))))}))))))))
 
 #?(:cljs
    (defmethod effects/perform-effects events/control-suggested-add-to-bag [_ _ {:keys [skus initial-sku]} _ app-state]

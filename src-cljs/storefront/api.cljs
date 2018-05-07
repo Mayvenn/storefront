@@ -813,7 +813,7 @@
   (storeback-api-req
    POST
    "/v2/bulk-add-to-bag"
-   (conj request-keys/add-to-bag (keys sku-id->quantity))
+   (conj request-keys/add-to-bag (set (keys sku-id->quantity)))
    {:params  (merge {:session-id    session-id
                      :sku->quantity sku-id->quantity}
                     (when (and token number) {:token token :number number}))
