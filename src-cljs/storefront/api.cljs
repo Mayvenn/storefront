@@ -817,7 +817,9 @@
    {:params  (merge {:session-id    session-id
                      :sku->quantity sku->quantity}
                     (when (and token number) {:token token :number number}))
-    :handler handler}))
+    :handler (fn [order]
+               (handler {:order         order
+                         :sku->quantity sku->quantity}))}))
 
 (defn remove-promotion-code [session-id {:keys [token number]} promo-code handler]
   (storeback-api-req

@@ -22,6 +22,38 @@
    :revenue        total
    :products-count (orders/product-quantity order)})
 
+(defn waiter-line-items->line-item-skuer
+  "This is a stopgap measure to stand in for when waiter will one day return
+  line items in skuer format. The domain around selling needs to be defined.
+
+  Does not handle shipping line-items."
+  [skus-db line-items]
+  (mapv #(merge (get skus-db (:sku %))
+                (maps/select-rename-keys % {:quantity :item/quantity}))
+        line-items))
+
+(defn sku->quantity-to-line-item-skuer
+  [skus-db sku->quantity]
+  (mapv (fn [[sku-id quantity]]
+          (assoc (get skus-db sku-id) :item/quantity quantity))
+        sku->quantity))
+
+(defn line-item-skuer->stringer-cart-item
+  "Converts line item skuers into the format that stringer expects"
+  [line-item-skuer]
+  (let [image (images/cart-image line-item-skuer)]
+    {:variant_id       (:legacy/variant-id line-item-skuer)
+     :variant_sku      (:catalog/sku-id line-item-skuer)
+     :variant_price    (:sku/price line-item-skuer)
+     :variant_quantity (:item/quantity line-item-skuer)
+     :variant_name     (:legacy/product-name line-item-skuer)
+     :variant_origin   (-> line-item-skuer :hair/origin first)
+     :variant_style    (-> line-item-skuer :hair/texture first)
+     :variant_color    (-> line-item-skuer :hair/color first)
+     :variant_length   (-> line-item-skuer :hair/length first)
+     :variant_material (-> line-item-skuer :hair/base-material first)
+     :variant_image    (update image :src (partial str "https:"))}))
+
 (defmulti perform-track identity)
 
 (defmethod perform-track :default [dispatch event args app-state])
@@ -100,6 +132,15 @@
   (stringer/track-event "select_bundle_option" {:option_name  (name selection)
                                                 :option_value value}))
 
+(defmethod perform-track events/api-success-suggested-add-to-bag [_ event {:keys [order sku->quantity initial-sku]} app-state]
+  (let [line-item-skuers (sku->quantity-to-line-item-skuer (get-in app-state keypaths/v2-skus) sku->quantity)
+        added-skus       (mapv line-item-skuer->stringer-cart-item line-item-skuers)]
+    (stringer/track-event "suggested_line_item_added" {:added_skus   added-skus
+                                                       :initial_sku  (dissoc (line-item-skuer->stringer-cart-item initial-sku)
+                                                                             :variant_quantity)
+                                                       :order_number (:number order)
+                                                       :order_total  (:total order)})))
+
 (defmethod perform-track events/control-add-sku-to-bag [_ event {:keys [sku quantity]} app-state]
   (facebook-analytics/track-event "AddToCart" {:content_type "product"
                                                :content_ids  [(:catalog/sku-id sku)]
@@ -124,32 +165,6 @@
                                         :length           (-> sku :hair/length first)
                                         :store_slug       store-slug
                                         :is_stylist_store (not (#{"store" "shop" "internal"} store-slug))})))
-
-(defn waiter-line-items->line-item-skuer
-  "This is a stopgap measure to stand in for when waiter will one day return
-  line items in skuer format. The domain around selling needs to be defined.
-
-  Does not handle shipping line-items."
-  [skus-db line-items]
-  (mapv #(merge (get skus-db (:sku %))
-                (maps/select-rename-keys % {:quantity :item/quantity}))
-        line-items))
-
-(defn line-item-skuer->stringer-cart-item
-  "Converts line item skuers into the format that stringer expects"
-  [line-item-skuer]
-  (let [image (images/cart-image line-item-skuer)]
-    {:variant_id       (:legacy/variant-id line-item-skuer)
-     :variant_sku      (:catalog/sku-id line-item-skuer)
-     :variant_price    (:sku/price line-item-skuer)
-     :variant_quantity (:item/quantity line-item-skuer)
-     :variant_name     (:legacy/product-name line-item-skuer)
-     :variant_origin   (-> line-item-skuer :hair/origin first)
-     :variant_style    (-> line-item-skuer :hair/texture first)
-     :variant_color    (-> line-item-skuer :hair/color first)
-     :variant_length   (-> line-item-skuer :hair/length first)
-     :variant_material (-> line-item-skuer :hair/base-material first)
-     :variant_image    (update image :src (partial str "https:"))}))
 
 (defmethod perform-track events/api-success-add-sku-to-bag
   [_ _ {:keys [quantity sku order] :as args} app-state]

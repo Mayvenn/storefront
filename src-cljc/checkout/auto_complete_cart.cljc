@@ -194,7 +194,7 @@
           true              mf/as-money)]]]]))
 
 (defn suggested-bundles
-  [{:keys [image position skus this-is-adding-to-bag? any-adding-to-bag?]}]
+  [{:keys [image position skus initial-sku this-is-adding-to-bag? any-adding-to-bag?]}]
   (let [[short-sku long-sku] skus
         sized-image          (update image :style merge {:height "36px" :width "40px"})]
     [:div.mx2.my4.col-11
@@ -221,7 +221,8 @@
                         ;; :disabled? (and (not this-is-adding-to-bag?) any-adding-to-bag?)
                         :on-click  (if (and (not this-is-adding-to-bag?) any-adding-to-bag?)
                                      utils/noop-callback
-                                     (utils/send-event-callback events/control-suggested-add-to-bag {:skus skus}))
+                                     (utils/send-event-callback events/control-suggested-add-to-bag {:skus        skus
+                                                                                                     :initial-sku initial-sku}))
                         :spinning? this-is-adding-to-bag?
                         :data-test (str "add-" (name position))
                         :style     {:margin-top "-10px"
@@ -409,18 +410,19 @@
                        {:position               position
                         :image                  image
                         :skus                   skus
+                        :initial-sku             sku
                         :any-adding-to-bag?     (utils/requesting? data (fn [req]
                                                                           (subvec (:request-key req []) 0 1))
                                                                    request-keys/add-to-bag)
                         :this-is-adding-to-bag? (utils/requesting? data (conj request-keys/add-to-bag (map :catalog/sku-id skus)))}))))))))
 
 #?(:cljs
-   (defmethod effects/perform-effects events/control-suggested-add-to-bag [_ _ {:keys [skus] } _ app-state]
+   (defmethod effects/perform-effects events/control-suggested-add-to-bag [_ _ {:keys [skus initial-sku]} _ app-state]
      (api/add-skus-to-bag (get-in app-state keypaths/session-id) {:number        (get-in app-state keypaths/order-number)
                                                                   :token         (get-in app-state keypaths/order-token)
                                                                   :sku->quantity (into {} (map (fn [[sku-id skus]] [sku-id (count skus)])
                                                                                                (group-by :catalog/sku-id skus)))}
-                          #(messages/handle-message events/api-success-suggested-add-to-bag {:order %}))))
+                          #(messages/handle-message events/api-success-suggested-add-to-bag (assoc % :initial-sku initial-sku)))))
 
 #?(:cljs
    (defmethod effects/perform-effects events/api-success-suggested-add-to-bag [_ _ {:keys [order]} previous-app-state app-state]
