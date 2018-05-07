@@ -125,7 +125,9 @@
 
 (defn overlay-scrim [data]
   (let [show-scrim?     (and (experiments/new-flyout? data)
-                             (get-in data keypaths/shop-menu-expanded))
+                             (or (get-in data keypaths/shop-menu-expanded)
+                                 (get-in data keypaths/store-info-expanded)
+                                 (get-in data keypaths/account-menu-expanded)))
         display-banner? (promotion-banner/should-display? data)]
     (when show-scrim?
       [:div.overlay.absolute.hide-on-mb.bg-darken-3.z4
