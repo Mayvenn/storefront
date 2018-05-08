@@ -264,9 +264,7 @@
 
     (when the-ville?
       [:div.mb3
-       (if show-green-banner?
-         cart/free-install-cart-promo
-         cart/ineligible-free-install-cart-promo)])
+       (cart/free-install-cart-promo show-green-banner?)])
 
     [:div.clearfix.mxn3
      [:div.col-on-tb-dt.col-6-on-tb-dt.px3
