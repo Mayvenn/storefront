@@ -33,17 +33,27 @@
         (promos/default-advertised-promotion promotions))))
 
 (defn component
-  [{:keys [allowed? the-ville? promo]} owner opts]
+  [{:keys [allowed? the-ville? seventy-five-off-install? promo]} owner opts]
   (component/create
    (cond
-     (and allowed? the-ville?) [:a {:on-click (utils/send-event-callback events/popup-show-free-install {})
-                                 :data-test "free-install-promo-banner"}
-                                [:div.white.center.pp5.bg-teal.h5.bold.pointer
-                                 "Mayvenn will pay for your install! " [:span.underline "Learn more"]]]
-     (and allowed? promo)      [:div.white.center.pp5.bg-teal.h5.bold
-                                {:data-test "promo-banner"}
-                                (:description promo)]
-     :else                     nil)))
+     (and allowed? seventy-five-off-install?)
+     [:a {:on-click  (utils/send-event-callback events/popup-show-seventy-five-off-install {})
+          :data-test "seventy-five-off-install-promo-banner"}
+      [:div.white.center.pp5.bg-teal.h5.bold.pointer
+       "Get $75 off your install! " [:span.underline "Learn more"]]]
+
+     (and allowed? the-ville?)
+     [:a {:on-click  (utils/send-event-callback events/popup-show-free-install {})
+          :data-test "free-install-promo-banner"}
+      [:div.white.center.pp5.bg-teal.h5.bold.pointer
+       "Mayvenn will pay for your install! " [:span.underline "Learn more"]]]
+
+     (and allowed? promo)
+     [:div.white.center.pp5.bg-teal.h5.bold
+      {:data-test "promo-banner"}
+      (:description promo)]
+
+     :else nil)))
 
 (defn should-display?
   "Used here to decide whether to display, and also by the flyout menu scrim to
@@ -55,9 +65,11 @@
 
 (defn query
   [data]
-  {:allowed?   (should-display? data)
-   :the-ville? (experiments/the-ville? data)
-   :promo      (promotion-to-advertise data)})
+  {:promo    (promotion-to-advertise data)
+   :allowed? (should-display? data)
+
+   :the-ville?                (experiments/the-ville? data)
+   :seventy-five-off-install? (experiments/seventy-five-off? data)})
 
 (defn built-component
   [data opts]

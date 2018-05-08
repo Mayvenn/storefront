@@ -35,8 +35,6 @@
                   [:div.col-6
                    (ui/clickable-logo {:class "col-12 mx1"
                                        :style {:height "40px"}})]]
-
-
                  [:div  ;; Body
                   [:h1.h3.bold.teal.mb4 "Get $75 Off Your Install with promo code: INSTALL"]
                   [:p.h6.mb1
