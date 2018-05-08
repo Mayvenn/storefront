@@ -1,19 +1,18 @@
 (ns storefront.components.free-install
   (:require [sablono.core :refer [html]]
             [storefront.api :as api]
-            [storefront.history :as history]
-            [storefront.components.ui :as ui]
-            [storefront.events :as events]
-            [storefront.keypaths :as keypaths]
-            [storefront.component :as component]
-            [storefront.transitions :as transitions]
-            [storefront.effects :as effects]
             [storefront.browser.cookie-jar :as cookie-jar]
-            [storefront.platform.component-utils :as utils]
-            [storefront.platform.messages :as messages]
-            [storefront.components.svg :as svg]
+            [storefront.browser.scroll :as scroll]
+            [storefront.component :as component]
             [storefront.components.footer-minimal :as footer-minimal]
-            [storefront.browser.scroll :as scroll]))
+            [storefront.components.svg :as svg]
+            [storefront.components.ui :as ui]
+            [storefront.effects :as effects]
+            [storefront.events :as events]
+            [storefront.history :as history]
+            [storefront.keypaths :as keypaths]
+            [storefront.platform.component-utils :as utils]
+            [storefront.transitions :as transitions]))
 
 (defn component [{:keys [footer-data]} owner _]
   (component/create
