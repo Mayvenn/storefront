@@ -65,22 +65,22 @@
           (prefetch-image "large_spinner" "/images/large-spinner.svg")))
 
 (def favicon-links
-  '([:link {:href  "/images/apple-touch-icon.png",
+  '([:link {:href  "/apple-touch-icon-precomposed.png",
             :sizes "180x180",
             :rel   "apple-touch-icon"}]
-    [:link {:href  "/images/favicon-32x32.png",
+    [:link {:href  "/favicon-32x32.png",
             :sizes "32x32",
             :type  "image/png",
             :rel   "icon"}]
-    [:link {:href  "/images/favicon-16x16.png",
+    [:link {:href  "/favicon-16x16.png",
             :sizes "16x16",
             :type  "image/png",
             :rel   "icon"}]
     [:link {:rel "manifest" :href "/web_app_manifest.json"}]
     [:link {:color "#40cbac",
-            :href  "/images/safari-pinned-tab.svg",
+            :href  "/safari-pinned-tab.svg",
             :rel   "mask-icon"}]
-    [:link {:href "/images/favicon.ico", :rel "shortcut icon"}]
+    [:link {:href "/favicon.ico", :rel "shortcut icon"}]
     [:meta {:content "#000000", :name "msapplication-TileColor"}]))
 
 (defn layout
