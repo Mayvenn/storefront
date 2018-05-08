@@ -105,7 +105,7 @@
 
 (defn bag-flyout [opts]
   (component/html
-   [:svg (merge {:style {:width "25px" :height "28px"}} opts)
+   [:svg (merge {:style {:width "35px" :height "33px"}} opts)
     (svg-xlink "bag-flyout")]))
 
 (def counter-inc
@@ -128,12 +128,12 @@
 
 (def open-hamburger-menu
   (component/html
-   [:svg {:class "fill-dark-gray" :style {:width "25px" :height "25px"}}
+   [:svg {:class "fill-dark-gray" :style {:width "30px" :height "30px"}}
     (svg-xlink "open-hamburger-menu")]))
 
 (def close-hamburger-menu
   (component/html
-   [:svg {:class "fill-dark-gray" :style {:width "25px" :height "25px"}}
+   [:svg {:class "fill-dark-gray" :style {:width "30px" :height "30px"}}
     (svg-xlink "close-hamburger-menu")]))
 
 ;; Social

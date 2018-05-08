@@ -121,10 +121,10 @@
      (drop-down-row (utils/fake-href events/control-sign-out) "Sign out")]]))
 
 (defmethod account-info :guest [_ _ _]
-  [:div.h6
+  [:div.dark-gray.h6
    [:a.inherit-color (utils/route-to events/navigate-sign-in) "Sign in"]
    " | "
-   [:a.inherit-color (utils/route-to events/navigate-sign-up) "No account? Sign up"]])
+   [:a.inherit-color (utils/route-to events/navigate-sign-up) "Sign up"]])
 
 (defn ^:private menu-row
   [{:keys [link-attrs data-test content]}]
@@ -157,7 +157,7 @@
 
 (defn non-mobile-hamburger [open?]
   [:div.flex.items-center
-   (merge {:style {:width "25px"}
+   (merge {:style {:width "30px"}
            :data-test "hamburger"})
    (if open?
      svg/close-hamburger-menu
@@ -169,7 +169,7 @@
    keypaths/shop-menu-expanded
    [:div (non-mobile-hamburger expanded-flyout-menu?)]
    [:div.bg-white.absolute.left-0.pb2
-    {:style {:top "20px" :width "245px"}}
+    {:style {:top "17px" :width "245px"}}
     (if on-taxon?
       (component/build menu/new-flyout-submenu-component menu-data nil)
       (root-menu deals? signed-in))]))
@@ -199,18 +199,13 @@
      [:div.h6.flex.justify-end.items-center.col-4
       [:div.mt4 (account-info signed-in user the-ville?)]
       [:div.mt3.pl6 (ui/shopping-bag-flyout {:style     {:height (str ui/header-image-size "px")
-                                                         :width  "28px"}
+                                                         :width  "35px"}
                                              :data-test "desktop-cart"}
                                      cart)]]]
 
     [:div.hide-on-tb-dt.flex.items-center
      mobile-hamburger
-     [:div.flex-auto.py3 (ui/clickable-logo {:event     events/navigate-home
-                                             :data-test "header-logo"
-                                             :height    "40px"})]
-     (ui/shopping-bag-flyout {:style     {:height "70px" :width "70px"}
-                              :data-test "mobile-cart"}
-                             cart)]]))
+     (slideout-nav/logo-and-bag cart)]]))
 
 (def minimal-component
   (component/html

@@ -35,18 +35,23 @@
                       :data-test "mobile-cart"}
                      cart)]))
 
+(defn logo-and-bag [cart]
+  (list
+   [:div.flex-auto.m3 (ui/clickable-logo {:event      events/navigate-home
+                                          :data-test "header-logo"
+                                          :height    "40px"})]
+   (ui/shopping-bag-flyout {:style     {:height "70px" :width "35px"}
+                            :class     "mr2"
+                            :data-test "mobile-cart"}
+                           cart)))
+
 (defn burger-header-new-flyout [cart]
   [:div.bg-white.flex.items-center.border-bottom.border-gray
    [:a.px3.flex.items-center
     {:data-test "close-slideout"
      :on-click  #(messages/handle-message events/control-menu-collapse-all)}
     svg/close-hamburger-menu]
-   [:div.flex-auto.py3 (ui/clickable-logo {:event     events/navigate-home
-                                           :data-test "header-logo"
-                                           :height    "40px"})]
-   (ui/shopping-bag-flyout {:style     {:height "70px" :width "70px"}
-                            :data-test "mobile-cart"}
-                           cart)])
+   (logo-and-bag cart)])
 
 (defn ^:private marquee-col [content]
   [:div.flex-auto

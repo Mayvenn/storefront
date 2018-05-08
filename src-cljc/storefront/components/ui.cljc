@@ -518,11 +518,13 @@
 (defn shopping-bag-flyout [opts {:keys [quantity]}]
   [:a.relative.pointer.block (merge (utils/route-to events/navigate-cart)
                                     opts)
-   (svg/bag-flyout {:class (str "absolute overlay m-auto "
-                                (if (pos? quantity) "stroke-navy fill-navy" "stroke-dark-gray fill-dark-gray"))})
+   (svg/bag-flyout {:class "absolute overlay m-auto stroke-dark-gray fill-dark-gray"})
    (when (pos? quantity)
      [:div.absolute.overlay.m-auto {:style {:height "12px"}}
-      [:div.center.navy.h6.line-height-1.mtp3 {:data-test (-> opts :data-test (str  "-populated"))} quantity]])])
+      [:div.center.bold.teal.h6.line-height-1.mt1 (merge {:data-test (-> opts :data-test (str  "-populated"))}
+                                                         (when (> 9 quantity)
+                                                           {:class "mlp2"}))
+       quantity]])])
 
 (defn lqip
   "Generates a Low Quality Image Placeholder.
