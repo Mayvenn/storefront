@@ -152,6 +152,12 @@
 (defn get-dismissed-free-install [cookie]
   (.get cookie "dismissed-free-install"))
 
+(defn save-dismissed-seventy-five-off-install [cookie value]
+  (.set cookie "dismissed-seventy-five-off-install" value four-weeks "/" nil config/secure?))
+
+(defn get-dismissed-seventy-five-off-install [cookie]
+  (.get cookie "dismissed-seventy-five-off-install"))
+
 (defn save-pending-promo-code [cookie promo-code]
   (save-cookie pending-promo cookie {:pending-promo-code promo-code}))
 

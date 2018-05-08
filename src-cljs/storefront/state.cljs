@@ -146,8 +146,12 @@
           :show-apple-pay? false
 
           :expanded-commission-order-id #{nil}
-          :email-capture-session (cookie-jar/retrieve-email-capture-session cookie)
-          :dismissed-free-install (cookie-jar/get-dismissed-free-install cookie)
+          :email-capture-session
+          (cookie-jar/retrieve-email-capture-session cookie)
+          :dismissed-free-install
+          (cookie-jar/get-dismissed-free-install cookie)
+          :dismissed-seventy-five-off-install
+          (cookie-jar/get-dismissed-seventy-five-off-install cookie)
 
           :sign-in {:email ""
                     :password ""}

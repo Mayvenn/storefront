@@ -1,5 +1,6 @@
 (ns storefront.accessors.experiments
   (:require [storefront.keypaths :as keypaths]
+            [storefront.config :as config]
             [spice.date :as date]))
 
 #_ (defn bucketing-example
@@ -69,3 +70,17 @@
 
 (defn new-flyout? [data]
   (display-feature? data "new-flyout"))
+
+(defn seventy-five-off?
+  [data]
+  (and (the-ville-control? data)
+       (config/seventy-five-off-stores
+        (get-in data keypaths/store-slug))))
+
+(defn install-control?
+  "Neither $75 off or in Fayetteville"
+  [data]
+  (and (the-ville-control? data)
+       (not (contains?
+             config/seventy-five-off-stores
+             (get-in data keypaths/store-slug)))))

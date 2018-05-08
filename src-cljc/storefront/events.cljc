@@ -138,6 +138,9 @@
 (defpath control-free-install)
 (defpath control-free-install-shop-looks)
 (defpath control-free-install-dismiss)
+(defpath control-seventy-five-off-install)
+(defpath control-seventy-five-off-install-shop-looks)
+(defpath control-seventy-five-off-install-dismiss)
 
 (defpath control-stylist-earnings-fetch)
 (defpath control-stylist-balance-transfers-load-more)
@@ -390,6 +393,7 @@
 
 (defpath popup-show-email-capture)
 (defpath popup-show-free-install)
+(defpath popup-show-seventy-five-off-install)
 
 (defpath image-picker-component-mounted)
 (defpath image-picker-component-will-unmount)
