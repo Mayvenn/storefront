@@ -12,7 +12,7 @@
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
             [storefront.components.svg :as svg]
-            [storefront.components.footer :as footer]
+            [storefront.components.footer-minimal :as footer-minimal]
             [storefront.browser.scroll :as scroll]))
 
 (defn component [{:keys [footer-data]} owner _]
@@ -77,12 +77,14 @@
                    "Shop looks")]]
 
                 [:div.hide-on-tb-dt.pt3 ;; Footer
-                 (component/build footer/minimal-component footer-data nil)]]]))))
+                 (component/build footer-minimal/component footer-data nil)]]]))))
 
-(defn query [data]
-  {:footer-data (footer/contacts-query data)})
+(defn query
+  [data]
+  {:footer-data (footer-minimal/query data)})
 
-(defn built-component [data opts]
+(defn built-component
+  [data opts]
   (component/build component (query data) opts))
 
 (defmethod effects/perform-effects events/control-free-install-shop-looks [_ event args _ app-state]
@@ -103,7 +105,6 @@
       (assoc-in keypaths/pending-promo-code "freeinstall")
       (assoc-in keypaths/popup nil)
       (assoc-in keypaths/dismissed-free-install true)))
-
 
 (defmethod transitions/transition-state events/popup-show-free-install [_ event args app-state]
   (assoc-in app-state keypaths/popup :free-install))

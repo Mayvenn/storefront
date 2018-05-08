@@ -4,7 +4,6 @@
                        [storefront.component :as component]
                        [storefront.api :as api]
                        [storefront.history :as history]])
-            [storefront.components.footer :as footer]
             [storefront.assets :as assets]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]

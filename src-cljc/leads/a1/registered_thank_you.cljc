@@ -5,7 +5,7 @@
             [leads.header :as header]
             [leads.keypaths :as keypaths]
             [leads.flows :as flows]
-            [storefront.components.footer :as footer]
+            [storefront.components.footer-minimal :as footer-minimal]
             [storefront.assets :as assets]
             [storefront.effects :as effects]
             [storefront.events :as events]
@@ -48,17 +48,17 @@
            (social-link "https://twitter.com/mayvennhair" "//ucarecdn.com/41683ed1-1494-4c44-a3b0-41a25eab744e/-/format/auto/twittericon.png")]]]
         [:div.col-10.mx-auto.py6
          (ui/youtube-responsive "https://www.youtube.com/embed/MjhjIB2s1Uk")]]])
-    (component/build footer/minimal-component (:footer queried-data) nil)]))
+    (component/build footer-minimal/component (:footer queried-data) nil)]))
 
 (defn ^:private query [data]
   (let [call-number (flows/call-number data)]
     {:header (header/query data)
-     :footer {:call-number call-number}
+     :footer (footer-minimal/query data)
      :faq    {:text-number config/mayvenn-leads-sms-number
               :call-number call-number}
-     :body {:copy-phone call-number
-            :tel-phone  call-number
-            :email      "help@mayvenn.com"}}))
+     :body   {:copy-phone call-number
+              :tel-phone  call-number
+              :email      "help@mayvenn.com"}}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
