@@ -257,14 +257,22 @@
                               applying-coupon?
                               recently-added-skus
                               delete-line-item-requests
+                              seventy-five-off-install?
                               show-green-banner?]} owner]
   (component/create
    [:div.container.p2
     (component/build cart/deploy-promotion-banner-component promotion-banner nil)
 
-    (when the-ville?
+    (cond
+      seventy-five-off-install?
       [:div.mb3
-       (cart/free-install-cart-promo show-green-banner?)])
+       (cart/seventy-five-off-install-cart-promo show-green-banner?)]
+
+      the-ville?
+      [:div.mb3
+       (cart/free-install-cart-promo show-green-banner?)]
+
+      :else nil)
 
     [:div.clearfix.mxn3
      [:div.col-on-tb-dt.col-6-on-tb-dt.px3
@@ -446,8 +454,7 @@
      :line-items                line-items
      :skus                      (get-in data keypaths/v2-skus)
      :products                  products
-     :show-green-banner?        (and (orders/bundle-discount? order)
-                                     (-> order :promotion-codes set (contains? "freeinstall")))
+     :show-green-banner?        (cart/install-qualified? order)
      :coupon-code               (get-in data keypaths/cart-coupon-code)
      :promotion-banner          (promotion-banner/query data)
      :updating?                 (update-pending? data)
@@ -468,6 +475,7 @@
      :error-message             (get-in data keypaths/error-message)
      :focused                   (get-in data keypaths/ui-focus)
      :the-ville?                (experiments/the-ville? data)
+     :seventy-five-off-install? (experiments/seventy-five-off-install? data)
      :recently-added-skus       (get-in data keypaths/cart-recently-added-skus)}))
 
 (defn empty-cart-query [data]

@@ -10,6 +10,7 @@
               [om.core :as om]]
        :clj [[storefront.component-shim :as component]])
    [checkout.control-cart :as control]
+   [clojure.set :as set]
    [storefront.accessors.experiments :as experiments]
    [storefront.accessors.orders :as orders]
    [storefront.accessors.promos :as promos]
@@ -62,14 +63,25 @@
              [:div {:ref "banner"}
               (om/build promotion-banner/component data opts)]]))))))
 
-(def ineligible-free-install-cart-promo
-  [:div.p2.bg-orange.white.center {:data-test "ineligible-free-install-cart-promo"}
-   [:h4 "You're almost there..."]
-   [:h4 "Buy 3 bundles or more and get a"]
-   [:h1.shout.bold "Free Install"]
-   [:h6
-    [:div "from a Mayvenn Certified Stylist in Fayetteville, NC."]
-    [:div "Use code " [:span.bold "FREEINSTALL"] " to get your free install."]]])
+(defn seventy-five-off-install-cart-promo [qualified?]
+  (if qualified?
+    [:div.bg-teal.p2.white.center {:data-test "seventy-five-off-install-cart-promo"}
+     [:img {:src    "//ucarecdn.com/db055165-7085-4af5-b265-8aba681e6275/successwhite.png"
+            :height "63px"
+            :width  "68px"}]
+     [:h4 "This order qualifies for"]
+     [:h1.shout.bold "$75 off"]
+     [:h6
+      [:div "your install from your Mayvenn stylist."]
+      [:div "Use code " [:span.bold "INSTALL"] " to get your discounted install."]]]
+
+    [:div.p2.bg-orange.white.center {:data-test "ineligible-seventy-five-off-install-cart-promo"}
+     [:h4 "You're almost there..."]
+     [:h4 "Buy 3 bundles or more and get"]
+     [:h1.shout.bold "$75 off"]
+     [:h6
+      [:div "your install from your Mayvenn stylist."]
+      [:div "Use code " [:span.bold "INSTALL"] " to get your discounted install."]]]))
 
 (defn free-install-cart-promo [qualified?]
   (if qualified?
@@ -109,6 +121,7 @@
                               delete-line-item-requests
                               field-errors
                               the-ville?
+                              seventy-five-off-install?
                               show-green-banner?]} owner]
   (component/create
    [:div.container.p2
@@ -121,8 +134,10 @@
      {:data-test "order-summary"}
      "Review your order"]
 
-    (when the-ville?
-      (free-install-cart-promo show-green-banner?))
+    (cond
+      seventy-five-off-install? (seventy-five-off-install-cart-promo show-green-banner?)
+      the-ville?                (free-install-cart-promo show-green-banner?)
+      :else                     nil)
 
     [:div.mt2.clearfix.mxn3
      [:div.col-on-tb-dt.col-6-on-tb-dt.px3.mb3
@@ -238,18 +253,23 @@
                                        (facets/get-color facets)
                                        :option/name)}))
 
+(defn install-qualified?
+  [{:as order :keys [promotion-codes]}]
+  (and (orders/bundle-discount? order)
+       (seq (set/intersection (set promotion-codes) #{"install" "freeinstall"}))))
+
 (defn full-cart-query [data]
   (let [order       (get-in data keypaths/order)
         products    (get-in data keypaths/v2-products)
         facets      (get-in data keypaths/v2-facets)
         line-items  (map (partial add-product-title-and-color-to-line-item products facets) (orders/product-items order))
         variant-ids (map :id line-items)]
-    {:order                     order
-     :line-items                line-items
-     :skus                      (get-in data keypaths/v2-skus)
-     :products                  products
-     :show-green-banner?        (and (orders/bundle-discount? order)
-                                     (-> order :promotion-codes set (contains? "freeinstall")))
+    {:order              order
+     :line-items         line-items
+     :skus               (get-in data keypaths/v2-skus)
+     :products           products
+     :show-green-banner? (install-qualified? order)
+
      :coupon-code               (get-in data keypaths/cart-coupon-code)
      :promotion-banner          (promotion-banner/query data)
      :updating?                 (update-pending? data)
@@ -268,7 +288,8 @@
      :delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)
      :field-errors              (get-in data keypaths/field-errors)
      :focused                   (get-in data keypaths/ui-focus)
-     :the-ville?                (experiments/the-ville? data)}))
+     :the-ville?                (experiments/the-ville? data)
+     :seventy-five-off-install? (experiments/seventy-five-off-install? data)}))
 
 (defn empty-cart-query [data]
   {:promotions (get-in data keypaths/promotions)})

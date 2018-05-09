@@ -157,6 +157,7 @@
 
       show-financing?
       (affirm/show-modal)
+
       signed-in?
       (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) "signed-in")
 
