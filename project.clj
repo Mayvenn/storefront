@@ -6,7 +6,7 @@
                  [com.taoensso/timbre "3.4.0" :exclusions [org.clojure/tools.reader]]
                  [com.stuartsierra/component "0.3.2"]
                  [environ "1.1.0"]
-                 [tocsin "0.1.2"]
+                 [tocsin "0.1.4"]
                  [tugboat "0.1.6"]
                  [mayvenn/spice "0.1.48"]
                  [compojure "1.4.0"]
