@@ -116,16 +116,16 @@
 
 (defmethod perform-effects events/determine-and-show-popup
   [_ event args previous-app-state app-state]
-  (let [install-control?            (experiments/install-control? app-state)
-        the-ville-variation?        (experiments/the-ville? app-state)
-        seventy-five-off-variation? (experiments/seventy-five-off? app-state)
+  (let [install-control?                    (experiments/install-control? app-state)
+        the-ville-variation?                (experiments/the-ville? app-state)
+        seventy-five-off-install-variation? (experiments/seventy-five-off-install? app-state)
 
         is-on-homepage? (= (get-in app-state keypaths/navigation-event)
                            events/navigate-home)
 
-        seen-email-capture?          (get-in app-state keypaths/email-capture-session)
-        seen-fayetteville-offer?     (get-in app-state keypaths/dismissed-free-install)
-        seen-seventy-five-off-offer? (get-in app-state keypaths/dismissed-seventy-five-off-install)
+        seen-email-capture?                  (get-in app-state keypaths/email-capture-session)
+        seen-fayetteville-offer?             (get-in app-state keypaths/dismissed-free-install)
+        seen-seventy-five-off-install-offer? (get-in app-state keypaths/dismissed-seventy-five-off-install)
 
         signed-in? (get-in app-state keypaths/user-id)
 
@@ -135,24 +135,33 @@
         show-free-install-modal? (and the-ville-variation?
                                       (not seen-fayetteville-offer?))
 
-        show-seventy-five-off-modal? (and (experiments/seventy-five-off? app-state)
-                                          (not seen-seventy-five-off-offer?))
+        show-seventy-five-off-install-modal? (and (experiments/seventy-five-off-install? app-state)
+                                                  (not seen-seventy-five-off-install-offer?))
 
         show-email-capture? (and (not signed-in?)
                                  (not seen-email-capture?)
                                  (or (and install-control? is-on-homepage?)
                                      (and the-ville-variation? seen-fayetteville-offer?)
-                                     (and seventy-five-off-variation? seen-seventy-five-off-offer?)
+                                     (and seventy-five-off-install-variation?
+                                          seen-seventy-five-off-install-offer?)
                                      ;; This is the original logic
                                      ;; Uncomment this when removing the fayetteville experiment
                                      ;;is-on-homepage?
                                      ))]
     (cond
-      show-free-install-modal?     (handle-message events/popup-show-free-install)
-      show-seventy-five-off-modal? (handle-message events/popup-show-seventy-five-off-install)
-      show-financing?              (affirm/show-modal)
-      signed-in?                   (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) "signed-in")
-      show-email-capture?          (handle-message events/popup-show-email-capture))))
+      show-free-install-modal?
+      (handle-message events/popup-show-free-install)
+
+      show-seventy-five-off-install-modal?
+      (handle-message events/popup-show-seventy-five-off-install)
+
+      show-financing?
+      (affirm/show-modal)
+      signed-in?
+      (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) "signed-in")
+
+      show-email-capture?
+      (handle-message events/popup-show-email-capture))))
 
 (defmethod perform-effects events/enable-feature [_ event {:keys [feature]} _ app-state]
   (handle-message events/determine-and-show-popup)

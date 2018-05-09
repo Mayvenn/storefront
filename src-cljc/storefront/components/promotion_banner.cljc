@@ -69,7 +69,7 @@
    :allowed? (should-display? data)
 
    :the-ville?                (experiments/the-ville? data)
-   :seventy-five-off-install? (experiments/seventy-five-off? data)})
+   :seventy-five-off-install? (experiments/seventy-five-off-install? data)})
 
 (defn built-component
   [data opts]

@@ -71,7 +71,7 @@
 (defn new-flyout? [data]
   (display-feature? data "new-flyout"))
 
-(defn seventy-five-off?
+(defn seventy-five-off-install?
   [data]
   (and (the-ville-control? data)
        (config/seventy-five-off-stores
