@@ -56,12 +56,22 @@
     (when (and user-id user-token)
       (api/get-account user-id user-token))))
 
+(defn- refresh-skus
+  [app-state sku-ids]
+  (when (seq sku-ids)
+    (api/search-v2-products (get-in app-state keypaths/api-cache)
+                            {:selector/sku-ids sku-ids}
+                            (partial messages/handle-message events/api-success-v2-products))))
+
 (defn refresh-current-order [app-state]
-  (let [user-id (get-in app-state keypaths/user-id)
-        user-token (get-in app-state keypaths/user-token)
-        stylist-id (get-in app-state keypaths/store-stylist-id)
+  (let [user-id      (get-in app-state keypaths/user-id)
+        user-token   (get-in app-state keypaths/user-token)
+        stylist-id   (get-in app-state keypaths/store-stylist-id)
+        order        (get-in app-state keypaths/order)
+        sku-ids      (map :sku (product-items order))
         order-number (get-in app-state keypaths/order-number)
-        order-token (get-in app-state keypaths/order-token)]
+        order-token  (get-in app-state keypaths/order-token)]
+    (refresh-skus app-state sku-ids)
     (cond
       (and user-id user-token stylist-id (not order-number))
       (api/get-current-order user-id
@@ -70,13 +80,6 @@
 
       (and order-number order-token)
       (api/get-order order-number order-token))))
-
-(defn- refresh-skus
-  [app-state sku-ids]
-  (when (seq sku-ids)
-    (api/search-v2-products (get-in app-state keypaths/api-cache)
-                            {:selector/sku-ids sku-ids}
-                            (partial messages/handle-message events/api-success-v2-products))))
 
 (defn- ensure-skus [app-state needed-sku-ids]
   (let [cached-sku-ids (set (keys (get-in app-state keypaths/v2-skus)))]
