@@ -56,12 +56,6 @@
 (defn display-feature? [data feature]
   (contains? (set (get-in data keypaths/features)) feature))
 
-(defn the-ville? [data]
-  (display-feature? data "the-ville"))
-
-(defn the-ville-control? [data]
-  (display-feature? data "the-ville-control"))
-
 (defn deals? [data]
   (display-feature? data "deals"))
 
@@ -73,14 +67,22 @@
 
 (defn seventy-five-off-install?
   [data]
-  (and (the-ville-control? data)
-       (config/seventy-five-off-stores
-        (get-in data keypaths/store-slug))))
+  (contains? config/seventy-five-off-stores
+             (get-in data keypaths/store-slug)))
+
+(defn the-ville?
+  "Fayetteville experiment, can't be used with $75 install experiment"
+  [data]
+  (and (not (seventy-five-off-install? data))
+       (display-feature? data "the-ville")))
+
+(defn the-ville-control?
+  "GROT Remove after refs are gone"
+  [data]
+  (display-feature? data "the-ville-control"))
 
 (defn install-control?
   "Neither $75 off or in Fayetteville"
   [data]
-  (and (the-ville-control? data)
-       (not (contains?
-             config/seventy-five-off-stores
-             (get-in data keypaths/store-slug)))))
+  (and (not (seventy-five-off-install? data))
+       (display-feature? data "the-ville-control")))
