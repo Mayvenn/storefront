@@ -85,19 +85,19 @@
 
 (defn free-install-cart-promo [qualified?]
   (if qualified?
-    [:div.p2.bg-orange.white.center {:data-test "ineligible-free-install-cart-promo"}
-     [:h4 "You're almost there..."]
-     [:h4 "Buy 3 bundles or more and get a"]
-     [:h1.shout.bold "Free Install"]
-     [:h6
-      [:div "from a Mayvenn Certified Stylist in Fayetteville, NC."]
-      [:div "Use code " [:span.bold "FREEINSTALL"] " to get your free install."]]]
-
     [:div.bg-teal.p2.white.center {:data-test "free-install-cart-promo"}
      [:img {:src    "//ucarecdn.com/db055165-7085-4af5-b265-8aba681e6275/successwhite.png"
             :height "63px"
             :width  "68px"}]
      [:h4 "This order qualifies for a"]
+     [:h1.shout.bold "Free Install"]
+     [:h6
+      [:div "from a Mayvenn Certified Stylist in Fayetteville, NC."]
+      [:div "Use code " [:span.bold "FREEINSTALL"] " to get your free install."]]]
+
+    [:div.p2.bg-orange.white.center {:data-test "ineligible-free-install-cart-promo"}
+     [:h4 "You're almost there..."]
+     [:h4 "Buy 3 bundles or more and get a"]
      [:h1.shout.bold "Free Install"]
      [:h6
       [:div "from a Mayvenn Certified Stylist in Fayetteville, NC."]
