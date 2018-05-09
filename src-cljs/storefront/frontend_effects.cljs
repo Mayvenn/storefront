@@ -169,6 +169,8 @@
 
 (defmethod perform-effects events/enable-feature [_ event {:keys [feature]} _ app-state]
   (handle-message events/determine-and-show-popup)
+  (when (experiments/seventy-five-off-install? app-state)
+    (pixlee/fetch-look "install"))
   (when (= "the-ville" feature)
     (pixlee/fetch-look "free-install")))
 
@@ -312,15 +314,16 @@
 (defmethod perform-effects events/navigate-shared-cart [_ _ {:keys [shared-cart-id]} _ app-state]
   (api/fetch-shared-cart shared-cart-id))
 
-(defmethod perform-effects events/navigate-shop-by-look [_ event {:keys [album-slug look-id]} _ app-state]
+(defmethod perform-effects events/navigate-shop-by-look
+  [_ event {:keys [album-slug look-id]} _ app-state]
   (let [album-slug-kw (keyword album-slug)]
-    (if (get (:albums config/pixlee) album-slug-kw)
-      (when-not look-id ;; we are on navigate-shop-by-look, not navigate-shop-by-look-details
-        (pixlee/fetch-look
-         (if (and (experiments/the-ville? app-state)
-                  (= album-slug-kw :look))
-           :free-install
-           album-slug-kw)))
+    (if (or (-> config/pixlee :albums (contains? album-slug-kw))
+            (-> config/pixlee :albums (contains? album-slug)))
+      ;; when we are on navigate-shop-by-look, not navigate-shop-by-look-details
+      (when-not look-id
+        (-> app-state
+            (accessors.pixlee/determine-look-album album-slug-kw)
+            pixlee/fetch-look))
       (page-not-found))))
 
 (defmethod perform-effects events/navigate-shop-by-look-details [_ event {:keys [album-slug look-id]} _ app-state]

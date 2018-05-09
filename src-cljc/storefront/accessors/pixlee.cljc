@@ -1,6 +1,7 @@
 (ns storefront.accessors.pixlee
   (:require [cemerick.url :as url]
             [clojure.set :as set]
+            [storefront.accessors.experiments :as experiments]
             [clojure.string :as string]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -71,4 +72,23 @@
           image-ids)))
 
 (defn selected-look [data]
-  (get-in data (conj keypaths/ugc-images (get-in data keypaths/selected-look-id))))
+  (get-in data
+          (conj keypaths/ugc-images
+                (get-in data keypaths/selected-look-id))))
+
+(defn determine-look-album
+  [data target-album]
+  (let [the-ville?                (experiments/the-ville? data)
+        install-control?          (experiments/install-control? data)
+        seventy-five-off-install? (experiments/seventy-five-off-install? data)]
+    (cond (and seventy-five-off-install? (= target-album :look))
+          :install
+
+          (and the-ville? (= target-album :look))
+          :free-install
+
+          (some? target-album)
+          target-album
+
+          :elsewise
+          :look)))

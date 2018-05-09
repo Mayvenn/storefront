@@ -22,16 +22,12 @@
        (om/build ugc/component {:looks looks} {:opts {:copy copy}})]))))
 
 (defn query [data]
-  (let [the-ville?          (experiments/the-ville? data)
-        the-ville-control?  (experiments/the-ville-control? data)
-        linkable-album-slug (get-in data keypaths/selected-album-slug)
-        fetched-album-slug  (if (and the-ville? (= linkable-album-slug :look))
-                              :free-install
-                              (or linkable-album-slug
-                                  :look))
-        looks               (pixlee/images-in-album (get-in data keypaths/ugc) fetched-album-slug)]
+  (let [ugc-content         (get-in data keypaths/ugc)
+        selected-album-slug (get-in data keypaths/selected-album-slug)
+        actual-album-slug   (pixlee/determine-look-album data selected-album-slug)
+        looks               (pixlee/images-in-album ugc-content actual-album-slug)]
     {:looks     looks
-     :copy      (-> config/pixlee :copy fetched-album-slug)
+     :copy      (-> config/pixlee :copy actual-album-slug)
      :spinning? (empty? looks)}))
 
 (defn built-component [data opts]

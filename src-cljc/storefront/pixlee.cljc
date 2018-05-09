@@ -30,15 +30,25 @@
                   :short-name        "look"
                   :seo-title         "Shop by Look | Mayvenn"
                   :og-title          "Shop by Look - Find and Buy your favorite Mayvenn bundles!"}
-   :email-deals  {:title             "shop by look"
-                  :description       (str "Grab the latest bundle deal! "
-                                          "Below you can shop every bundle deal of the week.")
+   :install      {:title             "shop by look"
+                  :description       (str "Get inspiration for your next hairstyle and "
+                                          "shop your favorite looks from the #MayvennMade community.")
                   :button-copy       "View this look"
                   :back-copy         "back to shop by look"
                   :above-button-copy nil
                   :short-name        "look"
                   :seo-title         "Shop by Look | Mayvenn"
-                  :og-title          "Shop by Look - Find and Buy your favorite Mayvenn bundles!"}})
+                  :og-title          "Shop by Look - Find and Buy your favorite Mayvenn bundles!"}
+
+   :email-deals {:title             "shop by look"
+                 :description       (str "Grab the latest bundle deal! "
+                                         "Below you can shop every bundle deal of the week.")
+                 :button-copy       "View this look"
+                 :back-copy         "back to shop by look"
+                 :above-button-copy nil
+                 :short-name        "look"
+                 :seo-title         "Shop by Look | Mayvenn"
+                 :og-title          "Shop by Look - Find and Buy your favorite Mayvenn bundles!"}})
 
 (defn pixlee-config [environment]
   (case environment
@@ -46,6 +56,7 @@
                   :copy    pixlee-copy
                   :albums  {:look            952508
                             :free-install    3082797
+                            :install         3681927
                             :deals           3091418
                             :email-deals     3130480
                             "straight"       1104027
@@ -64,6 +75,7 @@
      :copy    pixlee-copy
      :albums  {:look            965034
                :free-install    3082796
+               :install         3681928
                :deals           3091419
                :email-deals     3130242
                "straight"       1327330
