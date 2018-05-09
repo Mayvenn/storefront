@@ -68,7 +68,7 @@
         user-token   (get-in app-state keypaths/user-token)
         stylist-id   (get-in app-state keypaths/store-stylist-id)
         order        (get-in app-state keypaths/order)
-        sku-ids      (map :sku (product-items order))
+        sku-ids      (map :sku (orders/product-items order))
         order-number (get-in app-state keypaths/order-number)
         order-token  (get-in app-state keypaths/order-token)]
     (refresh-skus app-state sku-ids)
