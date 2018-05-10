@@ -137,9 +137,12 @@
      :qty            quantity
      :item_image_url (str "https:" (:src (images/cart-image (get skus sku-id))))
      :item_url       (absolute-url (products/path-for-sku product-id slug sku-id))}
-    (throw (ex-info "Affirm line item building missing product" {:item item
-                                                                 :product-keys (keys products)
-                                                                 :sku-keys (keys skus)}))))
+    (throw (ex-info "Affirm line item building missing product"
+                    {:item item
+                     :product-keys (if-let [product-keys (keys products)]
+                                     product-keys
+                                     :no-products-in-app-state)
+                     :sku-keys (keys skus)}))))
 
 (defn promotion->affirm-discount [{:keys [amount promotion] :as promo}]
   (when (seq promo)
