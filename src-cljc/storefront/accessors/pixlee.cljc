@@ -50,9 +50,7 @@
      :shared-cart-id (:shared-cart-id nav-args)
      :links          (merge {:view-other nav-message}
                             (when (= nav-event events/navigate-shared-cart)
-                              ;; TODO(ellie) Investigate this...
-                              {:view-look [events/navigate-shop-by-look-details {:album-keyword (or (#{:deals} album-keyword)
-                                                                                                 :look)
+                              {:view-look [events/navigate-shop-by-look-details {:album-keyword (or (#{:deals} album-keyword) :look)
                                                                                  :look-id album_photo_id}]}))
      :title          title}))
 
