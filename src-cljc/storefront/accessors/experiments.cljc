@@ -76,13 +76,7 @@
   (and (not (seventy-five-off-install? data))
        (display-feature? data "the-ville")))
 
-(defn the-ville-control?
-  "GROT Remove after refs are gone"
-  [data]
-  (display-feature? data "the-ville-control"))
-
 (defn install-control?
   "Neither $75 off or in Fayetteville"
   [data]
-  (and (not (seventy-five-off-install? data))
-       (display-feature? data "the-ville-control")))
+  (not (seventy-five-off-install? data)))
