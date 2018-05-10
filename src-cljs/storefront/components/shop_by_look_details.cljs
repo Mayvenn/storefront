@@ -106,11 +106,10 @@
                                skus)
 
         look       (pixlee/selected-look data)
-        album-slug (get-in data keypaths/selected-album-slug)
-        album-copy (when album-slug ;; TODO(jeff): why do we need this guard?
-                     (-> config/pixlee :copy album-slug))]
+        album-kw   (get-in data keypaths/selected-album-slug)
+        album-copy (-> config/pixlee :copy album-kw)]
     {:shared-cart           shared-cart-with-skus
-     :album-slug            album-slug
+     :album-slug            album-kw
      :look                  look
      :creating-order?       (utils/requesting? data request-keys/create-order-from-shared-cart)
      :skus                  skus

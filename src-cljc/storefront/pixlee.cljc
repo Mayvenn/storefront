@@ -54,39 +54,39 @@
   (case environment
     "production" {:api-key "PUTXr6XBGuAhWqoIP4ir"
                   :copy    pixlee-copy
-                  :albums  {:look            952508
-                            :free-install    3082797
-                            :install         3681927
-                            :deals           3091418
-                            :email-deals     3130480
-                            "straight"       1104027
-                            "loose-wave"     1104028
-                            "body-wave"      1104029
-                            "deep-wave"      1104030
-                            "curly"          1104031
-                            "closures"       1104032
-                            "frontals"       1104033
-                            "kinky-straight" 1700440
-                            "water-wave"     1814288
-                            "yaki-straight"  1814286
-                            "dyed"           2750237
-                            "wigs"           1880465}}
+                  :albums  {:look           952508
+                            :free-install   3082797
+                            :install        3681927
+                            :deals          3091418
+                            :email-deals    3130480
+                            :straight       1104027
+                            :loose-wave     1104028
+                            :body-wave      1104029
+                            :deep-wave      1104030
+                            :curly          1104031
+                            :closures       1104032
+                            :frontals       1104033
+                            :kinky-straight 1700440
+                            :water-wave     1814288
+                            :yaki-straight  1814286
+                            :dyed           2750237
+                            :wigs           1880465}}
     {:api-key "iiQ27jLOrmKgTfIcRIk"
      :copy    pixlee-copy
-     :albums  {:look            965034
-               :free-install    3082796
-               :install         3681928
-               :deals           3091419
-               :email-deals     3130242
-               "straight"       1327330
-               "loose-wave"     1327331
-               "body-wave"      1327332
-               "deep-wave"      1327333
-               "curly"          1331955
-               "closures"       1331956
-               "frontals"       1331957
-               "kinky-straight" 1801984
-               "water-wave"     1912641
-               "yaki-straight"  1912642
-               "dyed"           2918644
-               "wigs"           2918645}}))
+     :albums  {:look           965034
+               :free-install   3082796
+               :install        3681928
+               :deals          3091419
+               :email-deals    3130242
+               :straight       1327330
+               :loose-wave     1327331
+               :body-wave      1327332
+               :deep-wave      1327333
+               :curly          1331955
+               :closures       1331956
+               :frontals       1331957
+               :kinky-straight 1801984
+               :water-wave     1912641
+               :yaki-straight  1912642
+               :dyed           2918644
+               :wigs           2918645}}))

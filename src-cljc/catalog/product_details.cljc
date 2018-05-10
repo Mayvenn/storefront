@@ -456,9 +456,10 @@
 
 (defn fetch-product-album
   [{:keys [legacy/named-search-slug]}]
-  (when named-search-slug
-    (when-let [album-id (get-in config/pixlee [:albums named-search-slug])]
-      #?(:cljs (pixlee-hooks/fetch-album album-id named-search-slug)
+  (let [named-search-kw (keyword named-search-slug)
+        album-id        (get-in config/pixlee [:albums named-search-kw])]
+    (when album-id
+      #?(:cljs (pixlee-hooks/fetch-album album-id named-search-kw)
          :clj nil))))
 
 (defn get-valid-product-skus [product all-skus]

@@ -64,7 +64,7 @@
           images))
 
 (defn images-in-album [ugc album]
-  (let [image-ids (get-in ugc [:albums album])]
+  (let [image-ids (get-in ugc [:albums (keyword album)])]
     (into []
           (comp
            (map (get ugc :images))

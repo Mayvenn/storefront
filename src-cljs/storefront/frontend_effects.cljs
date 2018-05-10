@@ -317,8 +317,7 @@
 (defmethod perform-effects events/navigate-shop-by-look
   [_ event {:keys [album-slug look-id]} _ app-state]
   (let [album-slug-kw (keyword album-slug)]
-    (if (or (-> config/pixlee :albums (contains? album-slug-kw))
-            (-> config/pixlee :albums (contains? album-slug)))
+    (if (-> config/pixlee :albums (contains? album-slug-kw))
       ;; when we are on navigate-shop-by-look, not navigate-shop-by-look-details
       (when-not look-id
         (-> app-state
