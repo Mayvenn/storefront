@@ -266,11 +266,15 @@
 
 (defmethod transitions/transition-state events/control-category-panel-open
   [_ _ {:keys [selected]} app-state]
-  (assoc-in app-state catalog.keypaths/category-panel selected))
+  (-> app-state
+      (assoc-in keypaths/hide-header? selected)
+      (assoc-in catalog.keypaths/category-panel selected)))
 
 (defmethod transitions/transition-state events/control-category-panel-close
   [_ _ _ app-state]
-  (assoc-in app-state catalog.keypaths/category-panel nil))
+  (-> app-state
+      (assoc-in keypaths/hide-header? nil)
+      (assoc-in catalog.keypaths/category-panel nil)))
 
 #?(:cljs
    (defmethod effects/perform-effects events/control-category-option

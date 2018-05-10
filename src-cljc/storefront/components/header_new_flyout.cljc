@@ -221,6 +221,9 @@
       (assoc-in [:cart :quantity]        (orders/product-quantity (get-in data keypaths/order)))))
 
 (defn built-component [data opts]
-  (if (nav/minimal-events (get-in data keypaths/navigation-event))
-    minimal-component
-    (component/build component (query data) nil)))
+  [:header.stacking-context.z4
+   (when (get-in data keypaths/hide-header?)
+     {:class "hide-on-mb-tb"})
+   (if (nav/minimal-events (get-in data keypaths/navigation-event))
+     minimal-component
+     (component/build component (query data) nil))])

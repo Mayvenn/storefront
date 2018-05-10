@@ -506,19 +506,19 @@
 (defn layout [data nav-event]
   [:div.flex.flex-column {:style {:min-height    "100vh"
                                   :margin-bottom "-1px"}}
-
-   (scrim/built-component data nil)
    (stylist-banner/built-component data nil)
    (promotion-banner/built-component data nil)
    #?(:cljs (popup/built-component data nil))
-   [:header  (if (experiments/new-flyout? data)
-               (header-new-flyout/built-component data nil)
-               (header/built-component data nil))]
 
-   (flash/built-component data nil)
+   (if (experiments/new-flyout? data)
+     (header-new-flyout/built-component data nil)
+     (header/built-component data nil))
+   [:div.relative.flex.flex-column.flex-auto
+    (scrim/built-component data nil)
+    (flash/built-component data nil)
 
-   [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
-    (built-component data nil)]
+    [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
+     (built-component data nil)]
 
-   [:footer
-    (storefront.footer/built-component data nil)]])
+    [:footer
+     (storefront.footer/built-component data nil)]]])

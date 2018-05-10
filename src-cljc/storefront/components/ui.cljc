@@ -390,7 +390,7 @@
 
 (defn modal [{:keys [close-attrs bg-class col-class] :or {col-class "col-11 col-7-on-tb col-5-on-dt"}} & body]
   ;; The scrim
-  [:div.z4.fixed.overlay.bg-darken-4
+  [:div.z5.fixed.overlay.bg-darken-4
    ;; Set bg-class to override or darken the scrim
    [:div.absolute.overlay {:class bg-class}]
    ;; The modal itself, centered with https://www.smashingmagazine.com/2013/08/absolute-horizontal-vertical-centering-css/2/#table-cell
