@@ -168,12 +168,12 @@
     (into [:a.block.inherit-color.flex.items-center (assoc link-attrs :data-test data-test)] content)]])
 
 (def deal-row
-  {:link-attrs (utils/route-to events/navigate-shop-by-look {:album-slug "deals"})
+  {:link-attrs (utils/route-to events/navigate-shop-by-look {:album-keyword :deals})
    :data-test  "menu-shop-by-look"
    :content    [[:span.medium "Deals"]]})
 
 (defn shopping-rows [caret]
-  [{:link-attrs (utils/route-to events/navigate-shop-by-look {:album-slug "look"})
+  [{:link-attrs (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
     :data-test "menu-shop-by-look"
     :content [[:span.medium "Shop Looks"]]}
 

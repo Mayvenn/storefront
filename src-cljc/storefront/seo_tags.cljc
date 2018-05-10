@@ -127,10 +127,10 @@
                                          [:meta {:property "og:description"
                                                  :content  "Mayvenn's story starts with a Toyota Corolla filled with bundles of hair to now having over 50,000 stylists selling Mayvenn hair and increasing their incomes. Learn more about us!"}]]
 
-       events/navigate-shop-by-look (let [album-slug (get-in data keypaths/selected-album-slug)]
-                                      [[:title {} (-> pixlee :copy album-slug :seo-title)]
+       events/navigate-shop-by-look (let [album-keyword (get-in data keypaths/selected-album-keyword)]
+                                      [[:title {} (-> pixlee :copy album-keyword :seo-title)]
                                        [:meta {:property "og:title"
-                                               :content  (-> pixlee :copy album-slug :og-title)}]
+                                               :content  (-> pixlee :copy album-keyword :og-title)}]
                                        [:meta {:name    "description"
                                                :content "Find your favorite Mayvenn hairstyle on social media and shop the exact look directly from our website."}]
                                        [:meta {:property "og:type"

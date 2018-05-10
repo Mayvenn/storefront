@@ -170,9 +170,9 @@
 (defmethod perform-effects events/enable-feature [_ event {:keys [feature]} _ app-state]
   (handle-message events/determine-and-show-popup)
   (when (experiments/seventy-five-off-install? app-state)
-    (pixlee/fetch-look "install"))
+    (pixlee/fetch-album-by-keyword :install))
   (when (= "the-ville" feature)
-    (pixlee/fetch-look "free-install")))
+    (pixlee/fetch-album-by-keyword :free-install)))
 
 (defmethod perform-effects events/ensure-skus [_ event {:keys [skus]} _ app-state]
   (ensure-skus app-state skus))
@@ -315,20 +315,19 @@
   (api/fetch-shared-cart shared-cart-id))
 
 (defmethod perform-effects events/navigate-shop-by-look
-  [_ event {:keys [album-slug look-id]} _ app-state]
-  (let [album-slug-kw (keyword album-slug)]
-    (if (-> config/pixlee :albums (contains? album-slug-kw))
-      ;; when we are on navigate-shop-by-look, not navigate-shop-by-look-details
-      (when-not look-id
-        (-> app-state
-            (accessors.pixlee/determine-look-album album-slug-kw)
-            pixlee/fetch-look))
-      (page-not-found))))
+  [dispatch event {:keys [album-keyword look-id]} _ app-state]
+  (let [actual-album-keyword (accessors.pixlee/determine-look-album app-state album-keyword)]
+    (cond (= :pixlee/unknown-album actual-album-keyword)
+          (page-not-found)
 
-(defmethod perform-effects events/navigate-shop-by-look-details [_ event {:keys [album-slug look-id]} _ app-state]
+          ;; Only fetch this album if you are viewing it (not it's look-details/specific photo)
+          (= dispatch event)
+          (pixlee/fetch-album-by-keyword actual-album-keyword))))
+
+(defmethod perform-effects events/navigate-shop-by-look-details [_ event {:keys [album-keyword look-id]} _ app-state]
   (if-let [shared-cart-id (:shared-cart-id (accessors.pixlee/selected-look app-state))]
     (api/fetch-shared-cart shared-cart-id)
-    (pixlee/fetch-image (keyword album-slug) look-id)))
+    (pixlee/fetch-image album-keyword look-id)))
 
 (defmethod perform-effects events/pixlee-api-success-fetch-image [_ event _ _ app-state]
   (when-let [shared-cart-id (:shared-cart-id (accessors.pixlee/selected-look app-state))]

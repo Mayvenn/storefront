@@ -195,14 +195,14 @@
      (get-in app-state keypaths/user))
     (assoc-in (conj keypaths/checkout-selected-payment-methods :store-credit) {})))
 
-(defmethod transition-state events/pixlee-api-success-fetch-album [_ event {:keys [album-data album-slug]} app-state]
-  (let [images (pixlee/parse-ugc-album album-slug album-data)]
+(defmethod transition-state events/pixlee-api-success-fetch-album [_ event {:keys [album-data album-keyword]} app-state]
+  (let [images (pixlee/parse-ugc-album album-keyword album-data)]
     (-> app-state
-        (assoc-in (conj keypaths/ugc-albums album-slug) (map :id images))
+        (assoc-in (conj keypaths/ugc-albums album-keyword) (map :id images))
         (update-in keypaths/ugc-images merge (pixlee/images-by-id images)))))
 
-(defmethod transition-state events/pixlee-api-success-fetch-image [_ event {:keys [image-data album-slug]} app-state]
-  (let [image (pixlee/parse-ugc-image album-slug image-data)]
+(defmethod transition-state events/pixlee-api-success-fetch-image [_ event {:keys [image-data album-keyword]} app-state]
+  (let [image (pixlee/parse-ugc-image album-keyword image-data)]
     (assoc-in app-state (conj keypaths/ugc-images (:id image)) image)))
 
 (defn ensure-cart-has-shipping-method [app-state]

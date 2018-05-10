@@ -61,7 +61,7 @@
                          [:div (string/join " " last-words)]])]]))
       (grid-block "spare-block"
                   [:a.bg-light-teal.white.absolute.overlay
-                   (assoc (utils/route-to events/navigate-shop-by-look {:album-slug "look"})
+                   (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
                           :data-test "nav-shop-look")
                    [:div.flex.container-size.justify-center.items-center
                     [:h3.hide-on-tb-dt
@@ -103,8 +103,8 @@
 (def free-installation-hero
   [:h1.h2
    [:a
-    (assoc (utils/route-to events/navigate-shop-by-look {:album-slug "look"
-                                                         :query-params {:sha "freeinstall"}})
+    (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :look
+                                                         :query-params  {:sha "freeinstall"}})
            :data-test "home-banner")
     (let [file-name "free-installation-hero"
           alt       "Free install when you buy 3 bundles or more! Use code: FREEINSTALL"
@@ -245,7 +245,7 @@
                  :height "70px"}]
       [:h3.h2 "Stylist Recommended"]
       [:p.h5 "Mayvenn hair is the #1 recommended hair company by over 100,000 hair stylists across the country, making it the most trusted hair brand on the market."]
-      [:a.h5.teal (assoc (utils/route-to events/navigate-shop-by-look {:album-slug "look"})
+      [:a.h5.teal (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
                          :data-test "nav-shop-look")
        "Shop our looks"]]
 
@@ -265,7 +265,7 @@
                           :height "44px"}]]
       [:h3.h2 "Fast Free Shipping"]
       [:p.h5 "Mayvenn offers free standard shipping on all orders, no minimum necessary. In a hurry? Expedited shipping options are available for those who just can’t wait."]
-      [:a.h5.teal (assoc (utils/route-to events/navigate-shop-by-look {:album-slug "look"})
+      [:a.h5.teal (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
                          :data-test "nav-shop-look")
        "Shop our looks"]]]]))
 

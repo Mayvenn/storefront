@@ -12,12 +12,12 @@
   ;; (js/console.log "IGNORED transition" (clj->js event) (clj->js args)) ;; enable to see ignored transitions
   app-state)
 
-(defmethod transition-state events/navigate-shop-by-look [_ event {:keys [album-slug] :as args} app-state]
+(defmethod transition-state events/navigate-shop-by-look [_ event {:keys [album-keyword] :as args} app-state]
   (-> app-state
-      (assoc-in keypaths/selected-album-slug (keyword album-slug))
+      (assoc-in keypaths/selected-album-keyword album-keyword)
       (assoc-in keypaths/selected-look-id nil)))
 
-(defmethod transition-state events/navigate-shop-by-look-details [_ event {:keys [album-slug look-id]} app-state]
+(defmethod transition-state events/navigate-shop-by-look-details [_ event {:keys [album-keyword look-id]} app-state]
   (let [shared-cart-id (:shared-cart-id (pixlee/selected-look app-state))
         current-shared-cart (get-in app-state keypaths/shared-cart-current)]
     (cond-> app-state

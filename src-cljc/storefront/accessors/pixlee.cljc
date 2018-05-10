@@ -5,7 +5,8 @@
             [clojure.string :as string]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.routes :as routes]))
+            [storefront.routes :as routes]
+            [storefront.config :as config]))
 
 (defn normalize-user-name [user-name]
   (if (= (first user-name) \@)
@@ -38,7 +39,7 @@
       :path
       routes/navigation-message-for))
 
-(defn parse-ugc-image [album-slug {:keys [album_id album_photo_id user_name content_type source products title source_url] :as item}]
+(defn parse-ugc-image [album-keyword {:keys [album_id album_photo_id user_name content_type source products title source_url] :as item}]
   (let [[nav-event nav-args :as nav-message] (product-link (first products))]
     {:id             album_photo_id
      :content-type   content_type
@@ -49,13 +50,14 @@
      :shared-cart-id (:shared-cart-id nav-args)
      :links          (merge {:view-other nav-message}
                             (when (= nav-event events/navigate-shared-cart)
-                              {:view-look [events/navigate-shop-by-look-details {:album-slug (or (#{:deals} album-slug)
+                              ;; TODO(ellie) Investigate this...
+                              {:view-look [events/navigate-shop-by-look-details {:album-keyword (or (#{:deals} album-keyword)
                                                                                                  :look)
                                                                                  :look-id album_photo_id}]}))
      :title          title}))
 
-(defn parse-ugc-album [album-slug album]
-  (map (partial parse-ugc-image album-slug) album))
+(defn parse-ugc-album [album-keyword album]
+  (map (partial parse-ugc-image album-keyword) album))
 
 (defn images-by-id [images]
   (reduce (fn [result img]
@@ -63,8 +65,8 @@
           {}
           images))
 
-(defn images-in-album [ugc album]
-  (let [image-ids (get-in ugc [:albums (keyword album)])]
+(defn images-in-album [ugc album-keyword]
+  (let [image-ids (get-in ugc [:albums album-keyword])]
     (into []
           (comp
            (map (get ugc :images))
@@ -77,18 +79,20 @@
                 (get-in data keypaths/selected-look-id))))
 
 (defn determine-look-album
-  [data target-album]
+  [data target-album-keyword]
   (let [the-ville?                (experiments/the-ville? data)
         install-control?          (experiments/install-control? data)
-        seventy-five-off-install? (experiments/seventy-five-off-install? data)]
-    (cond (and seventy-five-off-install? (= target-album :look))
-          :install
+        seventy-five-off-install? (experiments/seventy-five-off-install? data)
+        actual-album              (cond (and seventy-five-off-install? (= target-album-keyword :look))
+                                        :install
 
-          (and the-ville? (= target-album :look))
-          :free-install
+                                        (and the-ville? (= target-album-keyword :look))
+                                        :free-install
 
-          (some? target-album)
-          target-album
+                                        (some? target-album-keyword)
+                                        target-album-keyword
 
-          :elsewise
-          :look)))
+                                        :elsewise target-album-keyword)]
+    (if (-> config/pixlee :albums (contains? actual-album))
+      actual-album
+      :pixlee/unknown-album)))

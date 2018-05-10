@@ -22,12 +22,12 @@
        (om/build ugc/component {:looks looks} {:opts {:copy copy}})]))))
 
 (defn query [data]
-  (let [ugc-content         (get-in data keypaths/ugc)
-        selected-album-slug (get-in data keypaths/selected-album-slug)
-        actual-album-slug   (pixlee/determine-look-album data selected-album-slug)
-        looks               (pixlee/images-in-album ugc-content actual-album-slug)]
+  (let [ugc-content       (get-in data keypaths/ugc)
+        selected-album-kw (get-in data keypaths/selected-album-keyword)
+        actual-album-kw   (pixlee/determine-look-album data selected-album-kw)
+        looks             (pixlee/images-in-album ugc-content actual-album-kw)]
     {:looks     looks
-     :copy      (-> config/pixlee :copy actual-album-slug)
+     :copy      (-> config/pixlee :copy actual-album-kw)
      :spinning? (empty? looks)}))
 
 (defn built-component [data opts]

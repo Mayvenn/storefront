@@ -138,10 +138,10 @@
   (component/html
    [:div.center
     (if deals?
-      (header-menu-link (assoc (utils/route-to events/navigate-shop-by-look {:album-slug "deals"})
+      (header-menu-link (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :deals})
                                :on-mouse-enter close-shopping)
                         "Deals"))
-    (header-menu-link (assoc (utils/route-to events/navigate-shop-by-look {:album-slug "look"})
+    (header-menu-link (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
                              :on-mouse-enter close-shopping)
                       "Shop looks")
     (header-menu-link (assoc (utils/route-to events/navigate-home)

@@ -83,7 +83,7 @@
   (component/build component (query data) opts))
 
 (defmethod effects/perform-effects events/control-seventy-five-off-install-shop-looks [_ event args _ app-state]
-  (history/enqueue-navigate events/navigate-shop-by-look {:album-slug "look"}))
+  (history/enqueue-navigate events/navigate-shop-by-look {:album-keyword :look}))
 
 (defmethod effects/perform-effects events/control-seventy-five-off-install [_ event args _ app-state]
   (scroll/enable-body-scrolling)
