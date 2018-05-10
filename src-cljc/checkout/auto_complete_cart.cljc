@@ -167,7 +167,7 @@
                               :spinning?  applying?}})]]]))
 
         (for [{:keys [name price coupon-code]} adjustments-including-tax]
-          (when (or (not (= price 0)) (#{"amazon" "freeinstall"} coupon-code))
+          (when (or (not (= price 0)) (#{"amazon" "freeinstall" "install"} coupon-code))
             (summary-row
              {:key name}
              [:div.flex.items-center.align-middle {:data-test (text->data-test-name name)}
