@@ -849,7 +849,8 @@
    {:params  {:shared-cart-id shared-cart-id}
     :handler #(messages/handle-message events/api-success-shared-cart-fetch
                                        {:shared-cart (:shared-cart %)
-                                        :skus        (:skus %)})}))
+                                        :skus        (:skus %)
+                                        :products    (:products %)})}))
 
 (defn create-order-from-cart [session-id shared-cart-id look-id user-id user-token stylist-id]
   (storeback-api-req

@@ -68,10 +68,8 @@
         user-token   (get-in app-state keypaths/user-token)
         stylist-id   (get-in app-state keypaths/store-stylist-id)
         order        (get-in app-state keypaths/order)
-        sku-ids      (map :sku (orders/product-items order))
         order-number (get-in app-state keypaths/order-number)
         order-token  (get-in app-state keypaths/order-token)]
-    (refresh-skus app-state sku-ids)
     (cond
       (and user-id user-token stylist-id (not order-number))
       (api/get-current-order user-id
@@ -1099,6 +1097,3 @@
                 (stringer/browser-id)
                 (get-in app-state-before keypaths/user-id)
                 (get-in app-state-before keypaths/user-token)))
-
-(defmethod perform-effects events/api-success-shared-cart-fetch [_ event {:keys [cart]} _ app-state]
-  (->> cart :line-items (map :sku) (ensure-skus app-state)))

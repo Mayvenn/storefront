@@ -416,10 +416,12 @@
       (assoc-in keypaths/shared-cart-url (str (.-protocol js/location) "//" (.-host js/location) "/c/" (:number cart)))
       (assoc-in keypaths/popup :share-cart)))
 
-(defmethod transition-state events/api-success-shared-cart-fetch [_ event {:keys [shared-cart skus]} app-state]
+(defmethod transition-state events/api-success-shared-cart-fetch
+  [_ event {:keys [shared-cart skus products]} app-state]
   (-> app-state
       (assoc-in keypaths/shared-cart-current shared-cart)
-      (update-in keypaths/v2-skus merge (products/index-skus skus))))
+      (update-in keypaths/v2-skus merge (products/index-skus skus))
+      (update-in keypaths/v2-products merge (products/index-products products))))
 
 (defmethod transition-state events/api-success-fetch-cms-data [_ event cms-data app-state]
   (assoc-in app-state keypaths/cms cms-data))
