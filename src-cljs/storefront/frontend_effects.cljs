@@ -448,10 +448,12 @@
 
 (def cart-error-codes
   {"paypal-incomplete"           "We were unable to complete your order with PayPal. Please try again."
-   "paypal-invalid-address"      "Unfortunately, Mayvenn products cannot be delivered to this address at this time. Please choose a new shipping destination. "
+   "paypal-invalid-address"      (str "Unfortunately, Mayvenn products cannot be delivered to this address at this time. "
+                                      "Please choose a new shipping destination. ")
    "ineligible-for-free-install" (str "The 'FreeInstall' promotion code has been removed from your order. "
                                       "This offer is only eligible for orders that ship to an address in Fayetteville, NC. "
-                                      "To complete your purchase without the 'FreeInstall' promotion, please continue with your order below.")})
+                                      "To complete your purchase without the 'FreeInstall' promotion, "
+                                      "please continue with your order below.")})
 
 (def standard-affirm-error "There was an issue authorizing your Affirm loan. Please check out again or use a different payment method.")
 (def payment-error-codes
