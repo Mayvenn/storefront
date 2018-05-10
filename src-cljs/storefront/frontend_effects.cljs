@@ -56,13 +56,6 @@
     (when (and user-id user-token)
       (api/get-account user-id user-token))))
 
-(defn- refresh-skus
-  [app-state sku-ids]
-  (when (seq sku-ids)
-    (api/search-v2-products (get-in app-state keypaths/api-cache)
-                            {:selector/sku-ids sku-ids}
-                            (partial messages/handle-message events/api-success-v2-products))))
-
 (defn refresh-current-order [app-state]
   (let [user-id      (get-in app-state keypaths/user-id)
         user-token   (get-in app-state keypaths/user-token)
@@ -78,10 +71,6 @@
 
       (and order-number order-token)
       (api/get-order order-number order-token))))
-
-(defn- ensure-skus [app-state needed-sku-ids]
-  (let [cached-sku-ids (set (keys (get-in app-state keypaths/v2-skus)))]
-    (refresh-skus app-state (set/difference (set needed-sku-ids) cached-sku-ids))))
 
 (defn update-email-capture-session [app-state]
   (when-let [value (get-in app-state keypaths/email-capture-session)]
@@ -172,8 +161,19 @@
   (when (= "the-ville" feature)
     (pixlee/fetch-album-by-keyword :free-install)))
 
-(defmethod perform-effects events/ensure-skus [_ event {:keys [skus]} _ app-state]
-  (ensure-skus app-state skus))
+(defmethod perform-effects events/ensure-sku-ids
+  [_ _ {:keys [sku-ids]} _ app-state]
+  (let [ids-in-db   (keys (get-in app-state keypaths/v2-skus))
+        missing-ids (seq (set/difference (set sku-ids)
+                                         (set ids-in-db)))
+
+        api-cache (get-in app-state keypaths/api-cache)
+        handler   (partial messages/handle-message
+                           events/api-success-v2-products)]
+    (when missing-ids
+      (api/search-v2-products api-cache
+                              {:selector/sku-ids missing-ids}
+                              handler))))
 
 (defmethod perform-effects events/external-redirect-welcome [_ event args _ app-state]
   (set! (.-location js/window) (get-in app-state keypaths/welcome-url)))
@@ -867,10 +867,12 @@
                      (cookie-jar/retrieve-utm-params (get-in app-state keypaths/cookie)))))
 
 ;; TODO(jeff): audit callsites of this message to remove their save-cookie calls
-(defmethod perform-effects events/save-order [_ _ {:keys [order]} _ app-state]
+(defmethod perform-effects events/save-order
+  [_ _ {:keys [order]} _ app-state]
   (if (and order (orders/incomplete? order))
     (do
-      (->> order orders/product-items (map :sku) (ensure-skus app-state))
+      (when-let [sku-ids (->> order orders/product-items (map :sku) seq)]
+        (handle-message events/ensure-sku-ids {:sku-ids sku-ids}))
       (save-cookie app-state)
       (add-pending-promo-code app-state order))
     (handle-message events/clear-order)))

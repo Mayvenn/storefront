@@ -26,12 +26,12 @@
       (api/get-stylist-balance-transfer user-id user-token balance-transfer-id))))
 
 (defmethod effects/perform-effects events/api-success-stylist-balance-transfer-details
-  [_ event {:keys [data] :as args} _ app-state]
-  (messages/handle-message events/ensure-skus {:skus (->> data
-                                                          :order
-                                                          orders/first-commissioned-shipment
-                                                          orders/product-items-for-shipment
-                                                          (map :sku))}))
+  [_ _ {:keys [data]} _ _]
+  (messages/handle-message events/ensure-sku-ids
+                           {:sku-ids (->> (:order data)
+                                          orders/first-commissioned-shipment
+                                          orders/product-items-for-shipment
+                                          (map :sku))}))
 
 (defmethod transitions/transition-state events/api-success-stylist-balance-transfer-details [_ _ balance-transfer app-state]
   (-> app-state

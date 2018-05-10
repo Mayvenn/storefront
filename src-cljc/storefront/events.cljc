@@ -125,7 +125,7 @@
 
 (defpath stylist-balance-transfers-fetch)
 
-(defpath ensure-skus)
+(defpath ensure-sku-ids)
 
 (defpath control)
 (defpath control-change-state)

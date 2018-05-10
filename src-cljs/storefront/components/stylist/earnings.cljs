@@ -135,11 +135,12 @@
      :stylist           (get-in data keypaths/stylist)
      :fetching?         (utils/requesting? data request-keys/get-stylist-balance-transfers)}))
 
-(defmethod effects/perform-effects events/api-success-stylist-balance-transfers [_ event {:keys [orders]} _ app-state]
-  (messages/handle-message events/ensure-skus {:skus (->> orders
-                                                          (mapcat orders/product-items)
-                                                          (map :sku)
-                                                          set)}))
+(defmethod effects/perform-effects events/api-success-stylist-balance-transfers
+  [_ _ {:keys [orders]} _ _]
+  (messages/handle-message events/ensure-sku-ids
+                           {:sku-ids (->> orders
+                                          (mapcat orders/product-items)
+                                          (map :sku))}))
 
 (defmethod effects/perform-effects events/control-stylist-balance-transfers-load-more [_ _ args _ app-state]
   (messages/handle-message events/stylist-balance-transfers-fetch args))
