@@ -168,7 +168,7 @@
    expanded-flyout-menu?
    keypaths/shop-menu-expanded
    [:div (non-mobile-hamburger expanded-flyout-menu?)]
-   [:div.bg-white.absolute.left-0.pb2
+   [:div.bg-white.absolute.left-0.pb2.z4
     {:style {:top "17px" :width "245px"}}
     (if on-taxon?
       (component/build menu/new-flyout-submenu-component menu-data nil)

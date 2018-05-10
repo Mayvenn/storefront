@@ -10,10 +10,8 @@
 (defn component [{:keys [show? banner-showing?]} owner opts]
   (component/create
    (when show?
-     [:div.overlay.absolute.hide-on-mb.bg-darken-3.z4
-      {:style    {:margin-top (if banner-showing?
-                                "117px" "85px")}
-       :on-click #(messages/handle-message events/control-menu-collapse-all)}])))
+     [:div.overlay.absolute.hide-on-mb.bg-darken-3.z3
+      {:on-click #(messages/handle-message events/control-menu-collapse-all)}])))
 
 (defn query [data]
   {:show? (and (experiments/new-flyout? data)
