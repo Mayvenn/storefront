@@ -186,36 +186,45 @@
      [:p.mb1 "We sell 100% virgin human hair in a wide variety of textures and colors. "
       "We offer Peruvian, Malaysian, Indian, and Brazilian virgin hair that is machine-wefted, tangle-free and handpicked for quality."]]]])
 
-(defn tweet [link date byline & content]
-  [:div.mb1.flex.justify-center
-   [:blockquote.mx-auto.twitter-tweet {:data-cards "hidden"
-                                       :data-lang  "en"}
-    (into [:p {:lang "en" :dir "ltr"}] content)
-    (str "— " byline " ")
-    [:a {:href link} date]]])
+(defn tweet [link date byline handle & content]
+  [:div.mb1.col-on-tb-dt.col-4-on-tb-dt.px3-on-tb-dt
+   [:blockquote.twitter-tweet.border.border-light-gray.rounded.p4.mx-auto
+    {:data-cards "hidden"
+     :data-lang  "en"
+     :style {:text-align "left"
+             :max-width "520px"}}
+    [:div.flex
+     [:div.bold.flex-auto byline]
+     [:div.right {:style {:width "20px" :height "20px"} :class "fill-twitter-blue"} svg/twitter]]
+    [:div.dark-gray.h5.medium.mb2 handle]
+    (into [:p.medium.mb1 {:lang "en" :dir "ltr"}] (interpose " " content))
+    [:a.medium.h5.dark-gray {:href link} date]]])
 
 (def twitter-section
-  [:section.center.mx4.mb4
+  [:section.center.mx4.mb4.clearfix
    [:div.max-580.mx-auto.center
     [:h2.mb2.h3 "With over 200,000 happy customers, your clients are going to love wearing Mayvenn hair."]]
 
    (tweet "https://twitter.com/jusz_ashlee/status/838820759699075073"
           "March 6, 2017"
-          "ashlee💙 (@jusz_ashlee)"
+          "ashlee💙"
+          "@jusz_ashlee"
           "Order it Friday &' it arrived today💁🏽 "
           [:a {:href "https://twitter.com/MayvennHair"} "@MayvennHair"]
           [:a {:href "https://t.co/WVr1HftUqb"} "pic.twitter.com/WVr1HftUqb"])
 
    (tweet "https://twitter.com/ADITLWTOMEI/status/829373844980903938"
           "February 8, 2017"
-          "Adayinthelifew/Tomei (@ADITLWTOMEI)"
+          "Adayinthelifew/Tomei"
+          "@ADITLWTOMEI"
           "Oh my goodness ! I'm so ready to book my hair apt.my "
           [:a {:href "https://twitter.com/MayvennHair"} "@MayvennHair"]
           " has been delivered! I just ordered and it came in less than a week 🤗")
 
    (tweet "https://twitter.com/ABenton/status/605158564479569920"
           "May 31, 2015"
-          "Angela Benton (@ABenton)"
+          "Angela Benton"
+          "@ABenton"
           [:a {:href "https://twitter.com/MayvennHair"} "@mayvennhair"]
           " for the save. My other hair and Hawaii didn't mix lol! You the real MVP 😂😂😂!… "
           [:a {:href "https://t.co/LZlwmPJ1kJ"} "https://t.co/LZlwmPJ1kJ"])])

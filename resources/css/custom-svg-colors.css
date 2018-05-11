@@ -3,10 +3,11 @@
 .stroke-orange { stroke: var(--orange); }
 .stroke-aqua   { stroke: var(--aqua); }
 
-.fill-teal   { fill: var(--teal); }
-.fill-navy   { fill: var(--navy); }
-.fill-orange { fill: var(--orange); }
-.fill-aqua   { fill: var(--aqua); }
+.fill-twitter-blue { fill: var(--twitter-blue); }
+.fill-teal         { fill: var(--teal); }
+.fill-navy         { fill: var(--navy); }
+.fill-orange       { fill: var(--orange); }
+.fill-aqua         { fill: var(--aqua); }
 
 .stroke-white          { stroke: var(--white); }
 .stroke-light-silver   { stroke: var(--light-silver); }
@@ -27,6 +28,7 @@
 .fill-black            { fill: var(--black); }
 
 :root {
+  --twitter-blue:   #00aced;
   --teal:         #40CBAC;
   --navy:         #175674;
   --orange:       #FFC520;
