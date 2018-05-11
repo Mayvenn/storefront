@@ -160,8 +160,7 @@
                                          (empty? (get-in data keypaths/checkout-credit-card-existing-cards))
                                          (not fully-covered?))
                                     (empty? selected-payment-methods))
-      :loaded-stripe?           (and (get-in data keypaths/loaded-stripe-v2)
-                                     (get-in data keypaths/loaded-stripe-v3))
+      :loaded-stripe?           (get-in data keypaths/loaded-stripe-v3)
       :step-bar                 (checkout-steps/query data)
       :field-errors             (:field-errors (get-in data keypaths/errors))
       :selected-payment-methods selected-payment-methods}

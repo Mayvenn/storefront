@@ -271,7 +271,6 @@
 (def loaded-places (conj loaded :places))
 (def loaded-reviews (conj loaded :reviews))
 (def loaded-stripe (conj loaded :stripe))
-(def loaded-stripe-v2 (conj loaded-stripe :v2))
 (def loaded-stripe-v3 (conj loaded-stripe :v3))
 (def loaded-talkable (conj loaded :talkable))
 (def loaded-uploadcare (conj loaded :uploadcare))
