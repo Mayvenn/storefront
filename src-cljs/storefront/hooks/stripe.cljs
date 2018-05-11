@@ -9,6 +9,11 @@
 (defn insert []
   (when-not (.hasOwnProperty js/window "Stripe")
     (insert-tag-with-callback
+     (src-tag "https://js.stripe.com/v2/stripe.js" "stripe-v2")
+     (fn []
+       (handle-message events/inserted-stripe {:version :v2})
+       (js/Stripe.setPublishableKey config/stripe-publishable-key)))
+    (insert-tag-with-callback
      (src-tag "https://js.stripe.com/v3/" "stripe-v3")
      (fn []
        (handle-message events/inserted-stripe {:version :v3})
