@@ -44,9 +44,9 @@
 
 (defn- log-deltas [old-app-state new-app-state [event args]]
   (let [[deleted added unchanged] (diff old-app-state new-app-state)]
-    (js/console.groupCollapsed (clj->js event) (clj->js args))
-    (js/console.log "Delta" (clj->js {:deleted deleted
-                                      :added added}))
+    (js/console.groupCollapsed event args)
+    (js/console.log "Delta" {:deleted deleted
+                             :added added})
     (js/console.trace "Stacktrace")
     (js/console.groupEnd))
   new-app-state)
