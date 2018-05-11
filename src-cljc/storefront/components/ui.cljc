@@ -68,7 +68,7 @@
   (let [color (color-kw {:color/teal        "btn-primary bg-teal white"
                          :color/navy        "btn-primary bg-navy white"
                          :color/aqua        "btn-primary bg-aqua white"
-                         :color/ghost       "btn-outline border-dark-gray dark-gray"
+                         :color/ghost       "btn-outline border-light-gray black"
                          :color/light-ghost "btn-outline border-white white"
                          :color/teal-ghost  "btn-outline border-teal teal"
                          :color/navy-ghost  "btn-outline border-navy navy"

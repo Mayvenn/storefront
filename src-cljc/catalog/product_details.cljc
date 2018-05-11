@@ -129,7 +129,7 @@
                  checked? "border-gray bg-teal  white     medium"
                  stocked? "border-gray bg-white dark-gray light"
                  :else    "border-gray bg-gray  dark-gray light")
-    :style     {:font-size "14px" :line-height "18px"}}
+    :style     {:font-size "14px" :line-height "18px" :border-radius "5px"}}
    (ui/hidden-field {:type      "radio"
                      :keypath   events/control-bundle-option-select
                      :disabled? (not stocked?)
