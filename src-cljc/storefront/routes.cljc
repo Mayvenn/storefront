@@ -99,6 +99,7 @@
               "/checkout/address"                                 (edn->bidi events/navigate-checkout-address)
               "/checkout/payment"                                 (edn->bidi events/navigate-checkout-payment)
               "/checkout/confirm"                                 (edn->bidi events/navigate-checkout-confirmation)
+              "/checkout/processing"                              (edn->bidi events/navigate-checkout-processing)
               ["/orders/" :number "/complete"]                    (edn->bidi events/navigate-order-complete)})])
 
 (defn path-for [navigation-event & [args]]

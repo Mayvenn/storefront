@@ -6,6 +6,7 @@
                        [storefront.components.checkout-address :as checkout-address]
                        [storefront.components.checkout-complete :as checkout-complete]
                        [storefront.components.checkout-confirmation :as checkout-confirmation]
+                       [storefront.components.checkout-processing :as checkout-processing]
                        [storefront.components.checkout-payment :as checkout-payment]
                        [storefront.components.shop-by-look :as shop-by-look]
                        [storefront.components.shop-by-look-details :as shop-by-look-details]
@@ -86,6 +87,7 @@
          events/navigate-checkout-address                           (partial checkout-returning-or-guest/requires-sign-in-or-initiated-guest-checkout checkout-address/built-component)
          events/navigate-checkout-payment                           (partial checkout-returning-or-guest/requires-sign-in-or-initiated-guest-checkout checkout-payment/built-component)
          events/navigate-checkout-confirmation                      (partial checkout-returning-or-guest/requires-sign-in-or-initiated-guest-checkout checkout-confirmation/built-component)
+         events/navigate-checkout-processing                        checkout-processing/built-component
          events/navigate-order-complete                             checkout-complete/built-component])
 
     events/navigate-home                    home/built-component

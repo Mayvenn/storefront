@@ -90,6 +90,7 @@
 (defpath navigate-checkout-address)
 (defpath navigate-checkout-payment)
 (defpath navigate-checkout-confirmation)
+(defpath navigate-checkout-processing)
 
 (defpath navigate-leads)
 (defpath navigate-leads-home)
