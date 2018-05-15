@@ -50,6 +50,21 @@
     (catch NumberFormatException _
       nil)))
 
+(defn render-static-page [template]
+  (template/eval template {:url assets/path}))
+
+(defn static-page [[navigate-kw content-kw & static-content-id]]
+  (when (= [navigate-kw content-kw] events/navigate-content)
+    {:id      static-content-id
+     :content (->> static-content-id
+                   (map name)
+                   (string/join "-")
+                   (format "public/content/%s.html")
+                   io/resource
+                   slurp
+                   render-static-page)}))
+
+
 (defn storefront-site-defaults
   [environment]
   (if (config/development? environment)
@@ -196,19 +211,87 @@
           (handler req)))
       (handler req))))
 
+(defn ^:private assoc-in-req-state [req keypath value]
+  (update req :state assoc-in keypath value))
+
+(defn ^:private update-in-req-state [req keypath fn & args]
+  (apply update-in req (concat [:state] keypath) fn args))
+
+(defn ^:private get-in-req-state
+  ([req keypath]
+   (get-in-req-state req keypath nil))
+  ([req keypath default-value]
+   (get-in req (concat [:state] keypath) default-value)))
+
+(defn wrap-set-initial-state [h environment leads-config]
+  (fn [req]
+    (let [nav-message        (:nav-message req)
+          [nav-event params] nav-message]
+      (h (-> req
+             (assoc-in-req-state keypaths/navigation-message nav-message)
+             (assoc-in-req-state keypaths/navigation-uri (:nav-uri req))
+             (assoc-in-req-state keypaths/static (static-page nav-event))
+             (assoc-in-req-state keypaths/environment environment)
+             (update-in-req-state [] experiments/determine-features))))))
+
+(defn wrap-set-cms-cache [h contentful]
+  (fn [req]
+    (h (assoc-in-req-state req keypaths/cms @(:cache contentful)))))
+
+(defn wrap-set-welcome-url [h leads-config]
+  (fn [req]
+    (h (assoc-in-req-state req keypaths/welcome-url
+                           (str (:endpoint leads-config) "?utm_source=shop&utm_medium=referral&utm_campaign=ShoptoWelcome")))))
+
+
 (defn wrap-fetch-store [h storeback-config]
   (fn [{:keys [subdomains] :as req}]
-    (h (merge req
-              {:store (api/store storeback-config (last subdomains))}))))
+    (let [store (api/store storeback-config (last subdomains))]
+      (h (-> req
+             (merge {:store store})
+             (assoc-in-req-state keypaths/store store))))))
 
-(defn wrap-logging [handler logger]
-  (-> handler
-      ring-logging/wrap-request-timing
-      (ring-logging/wrap-logging logger ring-logging/simple-inbound-config)
-      ring-logging/wrap-trace-request))
+(defn wrap-fetch-order [h storeback-config]
+  (fn [req]
+    (let [order-number (get-in req [:cookies "number" :value])
+          order-token  (some-> (get-in req [:cookies "token" :value])
+                               (string/replace #" " "+"))]
+      (h (cond-> req
+           (and order-number order-token)
+           (assoc-in-req-state keypaths/order (api/get-order storeback-config order-number order-token)))))))
+
+(defn wrap-fetch-catalog [h storeback-config]
+  (fn [req]
+    (let [order                   (get-in-req-state req keypaths/order)
+          skus-on-order           (mapv :sku (orders/product-items order))
+          {:keys [skus products]} (when (seq skus-on-order)
+                                    (api/fetch-v2-products storeback-config {:selector/sku-ids skus-on-order}))
+          {:keys [facets]}        (api/fetch-v2-facets storeback-config)]
+      (h (-> req
+             (update-in-req-state keypaths/v2-products merge (products/index-products products))
+             (update-in-req-state keypaths/v2-skus merge (products/index-skus skus))
+             (assoc-in-req-state keypaths/v2-facets (map #(update % :facet/slug keyword) facets))
+             (assoc-in-req-state keypaths/categories categories/initial-categories))))))
+
+(defn wrap-set-user [h]
+  (fn [req]
+    (h (-> req
+           (assoc-in-req-state keypaths/user-id (str->int (cookies/get req "id")))
+           (assoc-in-req-state keypaths/user-token (cookies/get req "user-token"))
+           (assoc-in-req-state keypaths/user-store-slug (cookies/get req "store-slug"))
+           (assoc-in-req-state keypaths/user-email (cookies/get req "email"))))))
+
+(defn wrap-state [routes {:keys [storeback-config leads-config contentful environment]}]
+  (-> routes
+      (wrap-fetch-catalog storeback-config)
+      (wrap-fetch-order storeback-config)
+      (wrap-set-user)
+      (wrap-set-welcome-url leads-config)
+      (wrap-set-cms-cache contentful)
+      (wrap-set-initial-state environment leads-config)))
 
 (defn wrap-site-routes
-  [routes {:keys [storeback-config environment]}]
+  [routes {:keys [storeback-config leads-config contentful environment]}]
   (-> routes
       (wrap-set-preferred-store environment)
       (wrap-preferred-store-redirect environment)
@@ -219,6 +302,12 @@
       (wrap-known-subdomains-redirect environment)
       (wrap-resource "public")
       (wrap-content-type)))
+
+(defn wrap-logging [handler logger]
+  (-> handler
+      ring-logging/wrap-request-timing
+      (ring-logging/wrap-logging logger ring-logging/simple-inbound-config)
+      ring-logging/wrap-trace-request))
 
 (declare server-render-pages)
 (defn html-response [render-ctx data]
@@ -342,20 +431,6 @@
                              (flow-step? "original" "initial") thank-you
                              :else                             nav-event))))
 
-(defn render-static-page [template]
-  (template/eval template {:url assets/path}))
-
-(defn static-page [[navigate-kw content-kw & static-content-id]]
-  (when (= [navigate-kw content-kw] events/navigate-content)
-    {:id      static-content-id
-     :content (->> static-content-id
-                   (map name)
-                   (string/join "-")
-                   (format "public/content/%s.html")
-                   io/resource
-                   slurp
-                   render-static-page)}))
-
 (defn- assoc-category-route-data [data storeback-config params]
   (let [category                (categories/id->category (:catalog/category-id params)
                                                          (get-in data keypaths/categories))
@@ -375,36 +450,6 @@
         (update-in keypaths/v2-products merge (products/index-products products))
         (update-in keypaths/v2-skus merge (products/index-skus skus)))))
 
-(defn required-data
-  [{:keys [contentful environment leads-config storeback-config nav-event nav-message nav-uri store order-number order-token]}]
-  (let [order                   (api/get-order storeback-config order-number order-token)
-        skus-on-order           (mapv :sku (orders/product-items order))
-        {:keys [skus products]} (when (seq skus-on-order)
-                                  (api/fetch-v2-products storeback-config {:selector/sku-ids skus-on-order}))
-        {:keys [facets]}        (api/fetch-v2-facets storeback-config)]
-    (-> {}
-        (assoc-in keypaths/welcome-url
-                  (str (:endpoint leads-config) "?utm_source=shop&utm_medium=referral&utm_campaign=ShoptoWelcome"))
-        (assoc-in keypaths/cms @(:cache contentful))
-        (assoc-in keypaths/store store)
-        (assoc-in keypaths/environment environment)
-        experiments/determine-features
-        (assoc-in keypaths/order order)
-        (update-in keypaths/v2-products merge (products/index-products products))
-        (update-in keypaths/v2-skus merge (products/index-skus skus))
-        (assoc-in keypaths/v2-facets (map #(update % :facet/slug keyword) facets))
-        (assoc-in keypaths/categories categories/initial-categories)
-        (assoc-in keypaths/static (static-page nav-event))
-        (assoc-in keypaths/navigation-uri nav-uri)
-        (assoc-in keypaths/navigation-message nav-message))))
-
-(defn assoc-user-info [data req]
-  (-> data
-      (assoc-in keypaths/user-id (str->int (cookies/get req "id")))
-      (assoc-in keypaths/user-token (cookies/get req "user-token"))
-      (assoc-in keypaths/user-store-slug (cookies/get req "store-slug"))
-      (assoc-in keypaths/user-email (cookies/get req "email"))))
-
 (defn- transition [app-state [event args]]
   (reduce (fn [app-state dispatch]
             (or (transitions/transition-state dispatch event args app-state)
@@ -413,27 +458,12 @@
           (reductions conj [] event)))
 
 (defn frontend-routes [{:keys [contentful storeback-config leads-config environment client-version] :as ctx}]
-  (fn [{:keys [store nav-message nav-uri] :as req}]
+  (fn [{:keys [state nav-message ] :as req}]
     (let [[nav-event params] nav-message
-          order-number       (get-in req [:cookies "number" :value])
-          order-token        (some-> (get-in req [:cookies "token" :value])
-                                     (string/replace #" " "+"))]
+          order-number       (get-in-req-state req keypaths/order-number)]
       (when (not= nav-event events/navigate-not-found)
         (let [render-ctx (auto-map storeback-config environment client-version)
-              data       (required-data (auto-map environment
-                                                  leads-config
-                                                  storeback-config
-                                                  contentful
-                                                  nav-event
-                                                  nav-message
-                                                  nav-uri
-                                                  store
-                                                  order-number
-                                                  order-token))
-              data       (cond-> data
-                           true
-                           (assoc-user-info req)
-
+              data       (cond-> state
                            (= events/navigate-category nav-event)
                            (assoc-category-route-data storeback-config params)
 
@@ -450,7 +480,7 @@
                            (assoc-in keypaths/stylist-cash-out-status-id (:status-id params)))
               render (server-render-pages nav-event generic-server-render)]
           (if (and (= events/navigate-checkout-processing nav-event)
-                   (not= "cart" (get-in data (conj keypaths/order :state))))
+                   (= "cart" (get-in data (conj keypaths/order :state))))
             (util.response/redirect (str "/orders/" order-number "/complete"))
             (render render-ctx data req params)))))))
 
@@ -778,7 +808,9 @@
                (paypal-routes ctx)
                (affirm-routes ctx)
                (wrap-leads-routes (leads-routes ctx) ctx)
-               (wrap-site-routes (site-routes ctx) ctx)
+               (-> (site-routes ctx)
+                   (wrap-state ctx)
+                   (wrap-site-routes ctx))
                (route/not-found views/not-found))
        (wrap-add-nav-message)
        (wrap-add-domains)
