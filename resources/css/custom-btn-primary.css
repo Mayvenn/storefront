@@ -3,7 +3,7 @@
 .btn-primary {
   color: var(--button-color);
   background-color: var(--button-background-color);
-  border-radius: var(--border-radius);
+  border-radius: var(--button-border-radius);
 }
 
 .btn-primary.is-hover,
@@ -26,9 +26,11 @@
   --blue: #0074d9;
   --silver: #EBEBEB;
   --light-gray: #B4B4B4;
-  --button-color: #fff;
-  --button-background-color: var(--blue);
-  --border-radius: 3px;
+
   --darken-1: rgba(0, 0, 0, .075);
   --darken-3: rgba(0, 0, 0, .375);
+
+  --button-color: #fff;
+  --button-background-color: var(--blue);
+  --button-border-radius: 27px;
 }

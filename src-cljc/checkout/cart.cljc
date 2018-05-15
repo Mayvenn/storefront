@@ -159,10 +159,11 @@
                         :errors    (get field-errors ["promo-code"])
                         :data-ref  "promo-code"})]
        [:div.col.col-4.px1.mb3.inline-block
-        (ui/teal-button {:on-click  (utils/send-event-callback events/control-cart-update-coupon)
-                         :data-test "cart-apply-promo"
-                         :disabled? updating?
-                         :spinning? applying-coupon?}
+        (ui/teal-button {:on-click     (utils/send-event-callback events/control-cart-update-coupon)
+                         :data-test    "cart-apply-promo"
+                         :disabled?    updating?
+                         :spinning?    applying-coupon?
+                         :height-class "py2"}
                         "Apply")]]
 
       #?(:cljs
@@ -196,19 +197,19 @@
            :disabled? disable-apple-pay-button?}
           [:div.flex.items-center.justify-center
            "Check out with "
-           [:span.img-apple-pay.bg-fill.bg-no-repeat.inline-block.mtp4.ml1 {:style {:width  "4rem"
-                                                                                    :height "2rem"}}]])])
+           [:span.img-apple-pay.bg-fill.bg-no-repeat.inline-block.ml1.mynp6 {:style {:width  "4rem"
+                                                                                     :height "2rem"}}]])])
 
       (when share-carts?
         [:div.border-top.border-gray.py2
          (ui/ghost-button {:on-click  (utils/send-event-callback events/control-cart-share-show)
                            :spinning? requesting-shared-cart?
                            :data-test "share-cart"}
-                          [:div.flex.items-center.justify-center
-                           [:div.flex-none.img-share-icon.bg-center.bg-no-repeat.bg-contain.mr2
-                            {:style {:width  "24px"
-                                     :height "18px"}}]
-                           [:div.flex-grow "Share your bag"]])
+                          [:div.flex.items-center.justify-center.medium
+                           (svg/share-arrow {:class  "stroke-teal mr2 fill-teal"
+                                             :width  "24px"
+                                             :height "24px"})
+                           "Share your bag"])
          [:div.h5.pt2.dark-gray.light "Click the button above to share this bag with customers."]])]]]))
 
 (defn empty-component [{:keys [promotions]} owner]

@@ -230,7 +230,7 @@
                      (merge (utils/fake-href events/control-stylist-referral-add-another)
                             {:data-test "another-referral-button"})
                      [:div.flex.items-center.justify-center.h5
-                      [:div.mr1.flex.items-center svg/counter-inc]
+                      [:div.mr1.flex.items-center (svg/counter-inc {:class "stroke-white fill-teal"})]
                       [:div "Add Another Referral"]])]])
                 [:div.col-12.col-6-on-tb-dt.mx-auto
                  (ui/submit-button "Send" {:data-test "submit-referral"

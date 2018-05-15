@@ -6,7 +6,8 @@
             [storefront.platform.component-utils :as utils]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [storefront.components.svg :as svg]))
 
 (defn- header [name]
   [:h2.h3.py1.my3.shout.medium.border-bottom [:a {:name (string/lower-case name)} name]])
@@ -133,14 +134,32 @@
   [:section
    (header "Buttons")
    [:div.clearfix.mxn1
-    [:div.col.col-4.p1 (ui/teal-button {} "ui/teal-button")]
-    [:div.col.col-4.p1 (ui/navy-button {} "ui/navy-button")]
-    [:div.col.col-4.p1 (ui/ghost-button {} "ui/ghost-button")]
-    [:div.col.col-4.p1 (ui/teal-button {:disabled? true} "(ui/teal-button {:disabled? true})")]
-    [:div.col.col-4.p1 (ui/aqua-button {} "ui/aqua-button")]
-    [:div.col.col-4.p1 (ui/teal-ghost-button {} "ui/teal-ghost-button")]]
+    [:div.col.col-6.p1 (ui/teal-button {} "ui/teal-button")]
+    [:div.col.col-6.p1 (ui/navy-button {} "ui/navy-button")]
+    [:div.col.col-6.p1 (ui/aqua-button {} "ui/aqua-button")]
+    [:div.col.col-6.p1 (ui/dark-gray-button {} "ui/dark-gray-button")]
+    [:div.col.col-6.p1 (ui/facebook-button {} "ui/facebook-button")]
+    [:div.col.col-6.p1 (ui/apple-pay-button {} "ui/apple-pay-button")]
+
+    [:div.col.col-6.p1 (ui/ghost-button {} "ui/ghost-button")]
+    [:div.col.col-6.p1 (ui/navy-ghost-button {} "ui/navy-ghost-button")]
+    [:div.col.col-6.p1 (ui/light-ghost-button {} "ui/light-ghost-button")]
+    [:div.col.col-6.p1 (ui/teal-ghost-button {} "ui/teal-ghost-button")]
+
+    [:div.col.col-6.p1 (ui/teal-button {:disabled? true} "(ui/teal-button {:disabled? true})")]
+    [:div.col.col-6.p1 (ui/teal-button {:height-class "py2" :title "Used for adding promo codes to cart"} "height-class py2")]
+    [:div.col.col-12.p1 (ui/teal-button {:spinning? false
+                                         :disabled? false}
+                                        [:div "col-12 with styled "
+                                         [:span.medium.italic.underline "SPAN™"]
+                                         " and svg "
+                                         (svg/dropdown-arrow {:class  "stroke-white"
+                                                              :width  "12px"
+                                                              :height "10px"
+                                                              :style  {:transform "rotate(-90deg)"}})])]
+    [:div.col.col-12.p1 (ui/teal-button {:spinning? true :title ":spinning? true"})]]
    [:div.clearfix.bg-teal
-    [:div.col.col-4.p1.bg-teal (ui/light-ghost-button {} "ui/light-ghost-button")]]])
+    [:div.col.col-4.p1.mx-auto (ui/light-ghost-button {} "ui/light-ghost-button")]]])
 
 (def ^:private increment->size
   {1 "5px"

@@ -68,7 +68,7 @@
   (let [color (color-kw {:color/teal        "btn-primary bg-teal white"
                          :color/navy        "btn-primary bg-navy white"
                          :color/aqua        "btn-primary bg-aqua white"
-                         :color/ghost       "btn-outline border-dark-gray dark-gray"
+                         :color/ghost       "btn-outline border-light-gray black"
                          :color/light-ghost "btn-outline border-white white"
                          :color/teal-ghost  "btn-outline border-teal teal"
                          :color/navy-ghost  "btn-outline border-navy navy"
@@ -78,16 +78,19 @@
     (assert color (str "Button color " color-kw " has not been defined."))
     color))
 
-(defn ^:private button-class [color-kw {:keys [size-class class] :or {size-class "col-12"}}]
+(defn ^:private button-class [color-kw {:keys [height-class size-class class]
+                                        :or   {size-class "col-12" height-class "py3"}}]
   (string/join " "
                ["btn h5"
                 size-class
+                height-class
                 (button-colors color-kw)
                 class]))
 
 (defn ^:private color-button [color-kw attrs & content]
   (button (-> attrs
               (dissoc :size-class)
+              (dissoc :height-class)
               (assoc :class (button-class color-kw attrs)))
           (into [:div] content)))
 
@@ -463,7 +466,7 @@
   [:div
    (counter-button spinning? (str "quantity-dec-" data-test) dec-fn svg/counter-dec)
    (counter-value spinning? value)
-   (counter-button spinning? (str "quantity-inc-" data-test) inc-fn svg/counter-inc)])
+   (counter-button spinning? (str "quantity-inc-" data-test) inc-fn (svg/counter-inc))])
 
 (defn auto-complete-counter [{:keys [data-test spinning?]} value dec-fn inc-fn]
    [:div.medium
