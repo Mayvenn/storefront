@@ -6,7 +6,6 @@
                        [storefront.components.checkout-address :as checkout-address]
                        [storefront.components.checkout-complete :as checkout-complete]
                        [storefront.components.checkout-confirmation :as checkout-confirmation]
-                       [storefront.components.checkout-processing :as checkout-processing]
                        [storefront.components.checkout-payment :as checkout-payment]
                        [storefront.components.shop-by-look :as shop-by-look]
                        [storefront.components.shop-by-look-details :as shop-by-look-details]
@@ -26,10 +25,17 @@
                        [storefront.components.style-guide :as style-guide]
                        [storefront.components.popup :as popup]
                        [storefront.config :as config]])
-            [checkout.cart :as cart]
-            [checkout.auto-complete-cart :as checkout.auto-complete-cart]
             [catalog.category :as category]
             [catalog.product-details :as product-details]
+            [checkout.auto-complete-cart :as checkout.auto-complete-cart]
+            [checkout.cart :as cart]
+            [checkout.processing :as checkout-processing]
+            [leads.a1.applied-self-reg]
+            [leads.a1.applied-thank-you]
+            [leads.a1.registered-thank-you]
+            [leads.home :as leads.home]
+            [leads.resolve :as leads.resolve]
+            [storefront.accessors.experiments :as experiments]
             [storefront.components.content :as content]
             [storefront.components.flash :as flash]
             [storefront.components.footer :as footer]
@@ -47,15 +53,9 @@
             [storefront.components.stylist-banner :as stylist-banner]
             ;; TODO Maybe we should change leads namespaces to be something like
             ;; leads.components.home
-            [leads.home :as leads.home]
-            [leads.a1.applied-thank-you]
-            [leads.a1.applied-self-reg]
-            [leads.a1.registered-thank-you]
-            [leads.resolve :as leads.resolve]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.routes :as routes]
-            [storefront.accessors.experiments :as experiments]))
+            [storefront.routes :as routes]))
 
 (defn main-component [nav-event]
   (condp = nav-event
@@ -87,13 +87,13 @@
          events/navigate-checkout-address                           (partial checkout-returning-or-guest/requires-sign-in-or-initiated-guest-checkout checkout-address/built-component)
          events/navigate-checkout-payment                           (partial checkout-returning-or-guest/requires-sign-in-or-initiated-guest-checkout checkout-payment/built-component)
          events/navigate-checkout-confirmation                      (partial checkout-returning-or-guest/requires-sign-in-or-initiated-guest-checkout checkout-confirmation/built-component)
-         events/navigate-checkout-processing                        checkout-processing/built-component
          events/navigate-order-complete                             checkout-complete/built-component])
 
     events/navigate-home                    home/built-component
     events/navigate-category                category/built-component
     events/navigate-product-details         product-details/built-component
     events/navigate-shared-cart             shared-cart/built-component
+    events/navigate-checkout-processing     checkout-processing/built-component
     events/navigate-cart                    cart/built-component
     events/navigate-content-guarantee       content/built-component
     events/navigate-content-help            content/built-component

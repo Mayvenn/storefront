@@ -487,7 +487,8 @@
    events/navigate-leads-a1-applied-self-reg     render-leads-page
    events/navigate-leads-a1-applied-thank-you    render-leads-page
    events/navigate-leads-a1-registered-thank-you render-leads-page
-   events/navigate-leads-resolve                 render-leads-page})
+   events/navigate-leads-resolve                 render-leads-page
+   events/navigate-checkout-processing           generic-server-render})
 
 (defn robots [{:keys [subdomains]}]
   (cond
@@ -566,7 +567,8 @@
 (defn affirm-routes [{:keys [storeback-config]}]
   (wrap-cookies
    (POST "/orders/:number/affirm/:order-token" [number order-token :as request]
-         (let [checkout-token (-> request :params (get "checkout_token"))
+         (util.response/redirect "/checkout/processing")
+        #_ (let [checkout-token (-> request :params (get "checkout_token"))
                error-code     (api/verify-affirm-payment storeback-config number order-token checkout-token
                                                          (let [headers (:headers request)]
                                                            (or (headers "x-forwarded-for")
