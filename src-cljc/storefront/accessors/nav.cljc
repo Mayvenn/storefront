@@ -21,6 +21,7 @@
   #{events/navigate-checkout-returning-or-guest
     events/navigate-checkout-address
     events/navigate-checkout-payment
+    events/navigate-checkout-processing
     events/navigate-checkout-confirmation})
 
 (def payout-events
