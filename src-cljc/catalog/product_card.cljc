@@ -128,7 +128,7 @@
           [:div {:key selector}
            (unconstrained-facet color-order-map product skus facets selector)])
         [:p.h6 "Starting at " (mf/as-money-without-cents (:sku/price cheapest-sku 0))]])]]
-   [:p.mb10.center
+   [:div.mb10.center
     [:div.h6.dark-gray
      (component/build affirm/as-low-as-component {:amount (:sku/price epitome)
                                                   :type   :text-only} {})]]])
