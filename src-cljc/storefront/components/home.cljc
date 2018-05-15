@@ -100,6 +100,21 @@
                         :type    img-type})])
          [:img.block.col-12 {:src mobile-url :alt alt}]]]])))
 
+(def seventy-five-off-installation-hero
+  [:h1.h2
+   [:a
+    (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :look
+                                                         :query-params  {:sha "install"}})
+           :data-test "home-banner")
+    (let [file-name "75-off-installation-hero"
+          alt       "$75 off your install when you buy 3 bundles or more! Use code: INSTALL"
+          mob-uuid  "78619333-fc96-4ba6-b79e-fc8c9fa70142"
+          dsk-uuid  "b0ab06bf-8525-47d1-8964-2f072ecfa329"]
+      (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
+                   :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
+                   :file-name   file-name
+                   :alt         alt}))]])
+
 (def free-installation-hero
   [:h1.h2
    [:a
@@ -318,7 +333,7 @@
                  :file-name   "talkable_banner_25.jpg"
                  :alt         "refer friends, earn rewards, get 25% off"})]))
 
-(defn component [{:keys [signed-in store categories hero-element feature-elements the-ville?]} owner opts]
+(defn component [{:keys [signed-in store categories hero-element feature-elements show-talkable-banner?]} owner opts]
   (component/create
    [:div.m-auto
     [:section hero-element]
@@ -327,21 +342,23 @@
     [:section (popular-grid categories)]
     [:section video-autoplay]
     [:section about-mayvenn]
-    (when-not the-ville? [:section talkable-banner])]))
+    (when show-talkable-banner? [:section talkable-banner])]))
 
 (defn query [data]
-  (let [the-ville?    (experiments/the-ville? data)
-        homepage-data (get-in data keypaths/cms-homepage)]
-    {:store              (marquee/query data)
-     :signed-in          (auth/signed-in data)
-     :categories         (->> (get-in data keypaths/categories)
-                              (filter :home/order)
-                              (sort-by :home/order))
-     :hero-element       (cond
-                           the-ville? free-installation-hero
-                           :else      (hero homepage-data))
-     :feature-elements   (feature-blocks homepage-data)
-     :the-ville?         the-ville?}))
+  (let [seventy-five-off-install? (experiments/seventy-five-off-install? data)
+        the-ville?                (experiments/the-ville? data)
+        homepage-data             (get-in data keypaths/cms-homepage)]
+    {:store                 (marquee/query data)
+     :signed-in             (auth/signed-in data)
+     :categories            (->> (get-in data keypaths/categories)
+                                 (filter :home/order)
+                                 (sort-by :home/order))
+     :hero-element          (cond
+                              seventy-five-off-install? seventy-five-off-installation-hero
+                              the-ville?                free-installation-hero
+                              :else                     (hero homepage-data))
+     :feature-elements      (feature-blocks homepage-data)
+     :show-talkable-banner? (not (and seventy-five-off-install? the-ville?))}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
