@@ -252,8 +252,9 @@
              (assoc-in-req-state keypaths/store store))))))
 
 (defn wrap-fetch-order [h storeback-config]
-  (fn [req]
-    (let [order-number (get-in req [:cookies "number" :value])
+  (fn [{:as req :keys [nav-message]}]
+    (let [params       (second nav-message)
+          order-number (get-in req [:cookies "number" :value])
           order-token  (some-> (get-in req [:cookies "token" :value])
                                (string/replace #" " "+"))]
       (h (cond-> req
@@ -281,6 +282,7 @@
            (assoc-in-req-state keypaths/user-store-slug (cookies/get req "store-slug"))
            (assoc-in-req-state keypaths/user-email (cookies/get req "email"))))))
 
+;;TODO Have all of these middleswarez perform event transitions, just like the frontend
 (defn wrap-state [routes {:keys [storeback-config leads-config contentful environment]}]
   (-> routes
       (wrap-fetch-catalog storeback-config)
@@ -431,6 +433,8 @@
                              (flow-step? "original" "initial") thank-you
                              :else                             nav-event))))
 
+;;TODO Move to wrap set catalog
+;;TODO join queries!!!
 (defn- assoc-category-route-data [data storeback-config params]
   (let [category                (categories/id->category (:catalog/category-id params)
                                                          (get-in data keypaths/categories))
@@ -443,6 +447,8 @@
         (update-in keypaths/v2-products merge (products/index-products products))
         (update-in keypaths/v2-skus merge (products/index-skus skus)))))
 
+;;TODO Move to wrap set catalog
+;;TODO join queries!!!
 (defn- assoc-product-details-route-data [data storeback-config params]
   (let [{:keys [skus products]} (api/fetch-v2-products storeback-config (:catalog/product-id params))
         {:keys [facets]}        (api/fetch-v2-facets storeback-config)]
@@ -458,9 +464,9 @@
           (reductions conj [] event)))
 
 (defn frontend-routes [{:keys [contentful storeback-config leads-config environment client-version] :as ctx}]
-  (fn [{:keys [state nav-message ] :as req}]
-    (let [[nav-event params] nav-message
-          order-number       (get-in-req-state req keypaths/order-number)]
+  (fn [{:keys [state] :as req}]
+    (let [nav-message        (get-in-req-state req keypaths/navigation-message)
+          [nav-event params] nav-message]
       (when (not= nav-event events/navigate-not-found)
         (let [render-ctx (auto-map storeback-config environment client-version)
               data       (cond-> state
@@ -479,10 +485,7 @@
                            (= events/navigate-stylist-dashboard-cash-out-pending nav-event)
                            (assoc-in keypaths/stylist-cash-out-status-id (:status-id params)))
               render (server-render-pages nav-event generic-server-render)]
-          (if (and (= events/navigate-checkout-processing nav-event)
-                   (= "cart" (get-in data (conj keypaths/order :state))))
-            (util.response/redirect (str "/orders/" order-number "/complete"))
-            (render render-ctx data req params)))))))
+          (render render-ctx data req params))))))
 
 (def leads-disalloweds ["User-agent: *"
                         "Disallow: /stylists/thank-you"
@@ -577,8 +580,8 @@
 
 (defn paypal-routes [{:keys [storeback-config]}]
   (wrap-cookies
-   (GET "/orders/:number/paypal/:order-token" [number order-token :as request]
-     (if-let [error-code (api/verify-paypal-payment storeback-config number order-token
+   (GET "/orders/:order-number/paypal/:order-token" [order-number order-token :as request]
+     (if-let [error-code (api/verify-paypal-payment storeback-config order-number order-token
                                                     (let [headers (:headers request)]
                                                       (or (headers "x-forwarded-for")
                                                           (headers "remote-addr")
@@ -592,39 +595,51 @@
                                                             "utm-medium"   (cookies/get request "utm-medium")}))]
        (util.response/redirect (str "/cart?error=" error-code))
        (util.response/redirect (str "/orders/"
-                                    number
+                                    order-number
                                     "/complete?"
                                     (codec/form-encode {:paypal      true
                                                         :order-token order-token})))))))
 
 (defn affirm-routes [{:keys [storeback-config environment]}]
-  (wrap-cookies
-   (POST "/orders/:number/affirm/:order-token" [number order-token :as request]
-         #_(-> (util.response/redirect "/checkout/processing")
-             (cookies/set environment "number" number {})
-             (cookies/set environment "token" order-token {}))
+  (routes
+   (POST "/orders/:order-number/affirm/:order-token" [order-number order-token :as request]
          (let [checkout-token (-> request :params (get "checkout_token"))
-               error-code     (api/finalize-affirm-payment storeback-config number order-token checkout-token
-                                                           (let [headers (:headers request)]
-                                                             (or (headers "x-forwarded-for")
-                                                                 (headers "remote-addr")
-                                                                 "localhost"))
-                                                           (assoc (:query-params request)
-                                                                  "session-id"    (cookies/get request "session-id")
-                                                                  "utm-params"
-                                                                  {"utm-source"   (cookies/get request "utm-source")
-                                                                   "utm-campaign" (cookies/get request "utm-campaign")
-                                                                   "utm-term"     (cookies/get request "utm-term")
-                                                                   "utm-content"  (cookies/get request "utm-content")
-                                                                   "utm-medium"   (cookies/get request "utm-medium")}))
-               redirect-url   (if (= "ineligible-for-free-install" error-code)
-                                "/cart"
-                                "/checkout/payment")]
+               error-code   (api/finalize-affirm-payment storeback-config order-number order-token checkout-token
+                                                         (let [headers (:headers request)]
+                                                           (or (headers "x-forwarded-for")
+                                                               (headers "remote-addr")
+                                                               "localhost"))
+                                                         (assoc (:query-params request)
+                                                                "session-id"    (cookies/get request "session-id")
+                                                                "utm-params"
+                                                                {"utm-source"   (cookies/get request "utm-source")
+                                                                 "utm-campaign" (cookies/get request "utm-campaign")
+                                                                 "utm-term"     (cookies/get request "utm-term")
+                                                                 "utm-content"  (cookies/get request "utm-content")
+                                                                 "utm-medium"   (cookies/get request "utm-medium")}))
+               redirect-url (if (= "ineligible-for-free-install" error-code)
+                              "/cart"
+                              "/checkout/payment")]
            (if error-code
              (util.response/redirect (str redirect-url "?error=" error-code))
-             (util.response/redirect (str "/orders/" number "/complete?"
+             (util.response/redirect (str "/orders/" order-number "/complete?"
                                           (codec/form-encode {:affirm      true
-                                                              :order-token order-token}))))))))
+                                                              :order-token order-token}))))))
+   (POST "/orders/:order-number/affirm-v2/:order-token" [order-number order-token :as request]
+         ;;TODO Don't forget the checkout token!!!
+         (let [order (get-in-req-state request keypaths/order)]
+           (cond
+             (or (nil? order)
+                 (not= (:number order) order-number)
+                 (not (#{"cart" "submitted"} (:state order)))
+                 (not= (:token order) order-token))
+             (util.response/redirect (str redirect-url "?error=affirm-invalid-state"))
+
+             (= "cart" (:state order))
+             (util.response/redirect "/checkout/processing")
+
+             (= "submitted" (:state order))
+             (util.response/redirect (str "/orders/" (:number order) "/complete")))))))
 
 (defn static-routes [_]
   (fn [{:keys [uri] :as req}]
@@ -791,7 +806,7 @@
 
 (defn create-handler
   ([] (create-handler {}))
-  ([{:keys [logger exception-handler environment] :as ctx}]
+  ([{:keys [logger exception-handler environment storeback-config] :as ctx}]
    (-> (routes (GET "/healthcheck" [] "cool beans")
                (GET "/robots.txt" req (-> (robots req) util.response/response (util.response/content-type "text/plain")))
                (GET "/sitemap.xml" req (sitemap ctx req))
@@ -806,7 +821,10 @@
                (GET "/cms" req (-> ctx :contentful :cache deref cheshire.core/generate-string util.response/response))
                (static-routes ctx)
                (paypal-routes ctx)
-               (affirm-routes ctx)
+               (-> (affirm-routes ctx)
+                   (wrap-fetch-order storeback-config)
+                   (wrap-params)
+                   (wrap-cookies))
                (wrap-leads-routes (leads-routes ctx) ctx)
                (-> (site-routes ctx)
                    (wrap-state ctx)

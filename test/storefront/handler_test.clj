@@ -635,12 +635,12 @@
 
 (deftest server-side-fetching-of-orders
   (testing "storefront retrieves an order from storeback"
-    (let [number "W123456"
-          token "iA1bjIUAqCfyS3cuvdNYindmlRZ3ICr3g+vSfzvUM1c="
+    (let [number                                 "W123456"
+          token                                  "iA1bjIUAqCfyS3cuvdNYindmlRZ3ICr3g+vSfzvUM1c="
           [storeback-requests storeback-handler] (with-requests-chan (routes
                                                                       (GET "/v2/orders/:number" req {:status 200
                                                                                                      ;; TODO: fixme
-                                                                                                     :body "{\"number\": \"W123456\"}"})
+                                                                                                     :body   "{\"number\": \"W123456\"}"})
                                                                       (GET "/store" req storeback-stylist-response)))]
       (with-standalone-server [storeback (standalone-server storeback-handler)]
         (with-handler handler
@@ -651,9 +651,8 @@
             (is (.contains (:body resp) "W123456") (pr-str resp))
 
             (testing "storefront properly reads order tokens with pluses in them"
-              (let [requests (txfm-requests storeback-requests identity)
-                    waiter-request (nth requests 1)]
-                (is (= "/v2/orders/W123456" (:uri waiter-request)))
+              (let [requests       (txfm-requests storeback-requests (filter (fn [req] (= "/v2/orders/W123456" (:uri req)))))
+                    waiter-request (first requests)]
                 (is (= {"token" token} (:query-params waiter-request)))))))))))
 
 (deftest sitemap-on-a-valid-store-domain
