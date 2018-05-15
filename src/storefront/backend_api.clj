@@ -50,7 +50,7 @@
     (when-not (<= 200 status 299)
       (-> body :error-code (or "paypal-incomplete")))))
 
-(defn verify-affirm-payment [storeback-config number order-token checkout-token ip-addr {:strs [session-id utm-params]}]
+(defn finalize-affirm-payment [storeback-config number order-token checkout-token ip-addr {:strs [session-id utm-params]}]
   (let [{:keys [status body] :as r} (storeback-post storeback-config "/v2/affirm/place-order"
                                                     {:form-params    {:number         number
                                                                       :token          order-token
