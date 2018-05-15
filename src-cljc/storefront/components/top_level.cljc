@@ -51,8 +51,6 @@
             [storefront.components.sign-up :as sign-up]
             [storefront.components.slideout-nav :as slideout-nav]
             [storefront.components.stylist-banner :as stylist-banner]
-            ;; TODO Maybe we should change leads namespaces to be something like
-            ;; leads.components.home
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]))
@@ -108,12 +106,6 @@
     events/navigate-forgot-password         forgot-password/built-component
     events/navigate-gallery                 gallery/built-component
     home/built-component))
-
-;;TODO (Ellie) Refactor Storefront (main), Catalog, Leads and Checkout to have their own
-;; "top-level" components which handle routing and layout (things like header/footer and such)
-;; I also suggest splitting layout from routing
-;;
-;;             Change my mind
 
 (defn leads-component [nav-event]
   (condp = nav-event
