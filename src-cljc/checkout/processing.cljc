@@ -7,9 +7,9 @@
   [{:keys [guest? sign-up-data]} _ _]
   (component/create
    (ui/narrow-container
-    [:div.py3.h2
-     [:div.py3 (ui/large-spinner {:style {:height "6em"}})]
-     [:h1.center.navy "Processing your order..."]])))
+    [:div.py6.h2
+     [:div.py4 (ui/large-spinner {:style {:height "6em"}})]
+     [:h2.center.navy "Processing your order..."]])))
 
 (defn query [data]
   {})
