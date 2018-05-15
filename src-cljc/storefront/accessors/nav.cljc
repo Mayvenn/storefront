@@ -2,7 +2,7 @@
   (:require [storefront.events :as events]
             [clojure.set :as set]))
 
-(def plain-auth-events
+(def ^:private plain-auth-events
   #{events/navigate-sign-in
     events/navigate-sign-up
     events/navigate-sign-out
@@ -10,28 +10,28 @@
     events/navigate-reset-password
     events/navigate-force-set-password})
 
-(def cart-events
+(def ^:private cart-events
   #{events/navigate-cart})
 
-(def checkout-auth-events
+(def ^:private checkout-auth-events
   #{events/navigate-checkout-returning-or-guest
     events/navigate-checkout-sign-in})
 
-(def checkout-flow-events
+(def ^:private checkout-flow-events
   #{events/navigate-checkout-returning-or-guest
     events/navigate-checkout-address
     events/navigate-checkout-payment
-    events/navigate-checkout-processing
-    events/navigate-checkout-confirmation})
+    events/navigate-checkout-confirmation
+    events/navigate-checkout-processing})
 
-(def payout-events
+(def ^:private payout-events
   #{events/navigate-stylist-dashboard-cash-out-pending})
+
+(def ^:private checkout-events
+  (set/union checkout-auth-events checkout-flow-events))
 
 (def auth-events
   (set/union plain-auth-events checkout-auth-events))
-
-(def checkout-events
-  (set/union checkout-auth-events checkout-flow-events))
 
 (def return-blacklisted?
   (conj auth-events events/navigate-not-found))
@@ -43,7 +43,7 @@
 (defn show-minimal-footer? [event experiment-auto-complete?]
   (let [minimal-events' (cond-> minimal-events
                           experiment-auto-complete?
-                          (conj events/navigate-cart))]
+                          (concat cart-events))]
     (contains? minimal-events' event)))
 
 (defn lead-page? [event]
