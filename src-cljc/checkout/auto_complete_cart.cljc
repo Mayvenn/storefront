@@ -325,8 +325,8 @@
            :disabled? disable-apple-pay-button?}
           [:div.flex.items-center.justify-center
            "Check out with "
-           [:span.img-apple-pay.bg-fill.bg-no-repeat.inline-block.mtp4.ml1 {:style {:width  "4rem"
-                                                                                    :height "2rem"}}]])])
+           [:span.img-apple-pay.bg-fill.bg-no-repeat.inline-block.ml1.mynp6 {:style {:width  "4rem"
+                                                                                     :height "2rem"}}]])])
 
       (when share-carts?
         [:div.py2
