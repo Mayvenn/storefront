@@ -45,7 +45,7 @@
         user-token (get-in app-state keypaths/user-token)
         stylist-id (get-in app-state keypaths/store-stylist-id)]
     (case status
-      "failed"    (messages/handle-message events/api-success-cash-out-failed)
+      "failed"    (messages/handle-message events/api-success-cash-out-failed cash-out-status)
       "submitted" (messages/handle-message events/api-success-cash-out-complete cash-out-status)
       "paid"      (messages/handle-message events/api-success-cash-out-complete cash-out-status)
       (poll-status user-id user-token status-id stylist-id))))
