@@ -1,6 +1,7 @@
 (ns storefront.components.svg
   (:require #?(:clj [storefront.component-shim :as component]
-               :cljs [storefront.component :as component])))
+               :cljs [storefront.component :as component])
+            [spice.maps :as maps]))
 
 ;; OPTIMIZATION TOOLS:
 ;; hiccup -> xml:           Let the browser do it... then delete the data-reactid's
@@ -108,9 +109,10 @@
    [:svg (merge {:style {:width "35px" :height "33px"}} opts)
     (svg-xlink "bag-flyout")]))
 
-(def counter-inc
-  (component/html
-   [:svg {:class "stroke-white fill-gray" :style {:width "1.2em" :height "1.2em"}}
+(defn counter-inc
+  ([] (counter-inc {}))
+  ([opts]
+   [:svg (maps/deep-merge {:class "stroke-white fill-gray" :style {:width "1.2em" :height "1.2em"}} opts)
     (svg-xlink "counter-inc")]))
 
 (defn close-x [{:keys [class]}]

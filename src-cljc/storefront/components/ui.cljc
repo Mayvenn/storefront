@@ -463,7 +463,7 @@
   [:div
    (counter-button spinning? (str "quantity-dec-" data-test) dec-fn svg/counter-dec)
    (counter-value spinning? value)
-   (counter-button spinning? (str "quantity-inc-" data-test) inc-fn svg/counter-inc)])
+   (counter-button spinning? (str "quantity-inc-" data-test) inc-fn (svg/counter-inc))])
 
 (defn auto-complete-counter [{:keys [data-test spinning?]} value dec-fn inc-fn]
    [:div.medium
