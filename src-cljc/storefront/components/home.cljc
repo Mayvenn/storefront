@@ -108,8 +108,8 @@
            :data-test "home-banner")
     (let [file-name "100-off-installation-hero"
           alt       "$100 off your install when you buy 3 bundles or more! Use code: INSTALL"
-          mob-uuid  "78619333-fc96-4ba6-b79e-fc8c9fa70142"
-          dsk-uuid  "b0ab06bf-8525-47d1-8964-2f072ecfa329"]
+          mob-uuid  "699e088d-aaf1-4b7a-b807-a5893573757f"
+          dsk-uuid  "6b872af5-b447-440d-b872-6c8a1b669969"]
       (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
                    :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
                    :file-name   file-name
