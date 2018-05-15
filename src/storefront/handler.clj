@@ -419,37 +419,40 @@
           order-token        (some-> (get-in req [:cookies "token" :value])
                                      (string/replace #" " "+"))]
       (when (not= nav-event events/navigate-not-found)
-        (let [render-ctx            (auto-map storeback-config environment client-version)
-              data                  (required-data (auto-map environment
-                                                             leads-config
-                                                             storeback-config
-                                                             contentful
-                                                             nav-event
-                                                             nav-message
-                                                             nav-uri
-                                                             store
-                                                             order-number
-                                                             order-token))
-              data                  (cond-> data
-                                      true
-                                      (assoc-user-info req)
+        (let [render-ctx (auto-map storeback-config environment client-version)
+              data       (required-data (auto-map environment
+                                                  leads-config
+                                                  storeback-config
+                                                  contentful
+                                                  nav-event
+                                                  nav-message
+                                                  nav-uri
+                                                  store
+                                                  order-number
+                                                  order-token))
+              data       (cond-> data
+                           true
+                           (assoc-user-info req)
 
-                                      (= events/navigate-category nav-event)
-                                      (assoc-category-route-data storeback-config params)
+                           (= events/navigate-category nav-event)
+                           (assoc-category-route-data storeback-config params)
 
-                                      (= events/navigate-product-details nav-event)
-                                      (assoc-product-details-route-data storeback-config params)
+                           (= events/navigate-product-details nav-event)
+                           (assoc-product-details-route-data storeback-config params)
 
-                                      (#{events/navigate-shop-by-look-details events/navigate-shop-by-look} nav-event)
-                                      (transition nav-message)
+                           (#{events/navigate-shop-by-look-details events/navigate-shop-by-look} nav-event)
+                           (transition nav-message)
 
-                                      (= events/navigate-stylist-dashboard-cash-out-success nav-event)
-                                      (assoc-in keypaths/stylist-cash-out-balance-transfer-id (:balance-transfer-id params))
+                           (= events/navigate-stylist-dashboard-cash-out-success nav-event)
+                           (assoc-in keypaths/stylist-cash-out-balance-transfer-id (:balance-transfer-id params))
 
-                                      (= events/navigate-stylist-dashboard-cash-out-pending nav-event)
-                                      (assoc-in keypaths/stylist-cash-out-status-id (:status-id params)))
+                           (= events/navigate-stylist-dashboard-cash-out-pending nav-event)
+                           (assoc-in keypaths/stylist-cash-out-status-id (:status-id params)))
               render (server-render-pages nav-event generic-server-render)]
-          (render render-ctx data req params))))))
+          (if (and (= events/navigate-checkout-processing nav-event)
+                   (not= "cart" (get-in data (conj keypaths/order :state))))
+            (util.response/redirect (str "/orders/" order-number "/complete"))
+            (render render-ctx data req params)))))))
 
 (def leads-disalloweds ["User-agent: *"
                         "Disallow: /stylists/thank-you"
@@ -564,10 +567,12 @@
                                     (codec/form-encode {:paypal      true
                                                         :order-token order-token})))))))
 
-(defn affirm-routes [{:keys [storeback-config]}]
+(defn affirm-routes [{:keys [storeback-config environment]}]
   (wrap-cookies
    (POST "/orders/:number/affirm/:order-token" [number order-token :as request]
-      #_   (util.response/redirect "/checkout/processing")
+         #_(-> (util.response/redirect "/checkout/processing")
+             (cookies/set environment "number" number {})
+             (cookies/set environment "token" order-token {}))
          (let [checkout-token (-> request :params (get "checkout_token"))
                error-code     (api/finalize-affirm-payment storeback-config number order-token checkout-token
                                                            (let [headers (:headers request)]
