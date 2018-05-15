@@ -159,10 +159,11 @@
                         :errors    (get field-errors ["promo-code"])
                         :data-ref  "promo-code"})]
        [:div.col.col-4.px1.mb3.inline-block
-        (ui/teal-button {:on-click  (utils/send-event-callback events/control-cart-update-coupon)
-                         :data-test "cart-apply-promo"
-                         :disabled? updating?
-                         :spinning? applying-coupon?}
+        (ui/teal-button {:on-click     (utils/send-event-callback events/control-cart-update-coupon)
+                         :data-test    "cart-apply-promo"
+                         :disabled?    updating?
+                         :spinning?    applying-coupon?
+                         :height-class "py2"}
                         "Apply")]]
 
       #?(:cljs

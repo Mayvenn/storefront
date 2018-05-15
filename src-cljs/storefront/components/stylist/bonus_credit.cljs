@@ -101,7 +101,7 @@
                [:br]
                "Why not treat yourself?"]
 
-              [:p.btn.mt1
+              [:p.my2.medium
                [:a.navy
                 (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
                 "Shop our looks" ui/rarr]]])])]

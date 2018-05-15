@@ -147,6 +147,7 @@
     [:div.col.col-6.p1 (ui/teal-ghost-button {} "ui/teal-ghost-button")]
 
     [:div.col.col-6.p1 (ui/teal-button {:disabled? true} "(ui/teal-button {:disabled? true})")]
+    [:div.col.col-6.p1 (ui/teal-button {:height-class "py2" :title "Used for adding promo codes to cart"} "height-class py2")]
     [:div.col.col-12.p1 (ui/teal-button {:spinning? false
                                          :disabled? false}
                                         [:div "col-12 with styled "
@@ -156,7 +157,7 @@
                                                               :width  "12px"
                                                               :height "10px"
                                                               :style  {:transform "rotate(-90deg)"}})])]
-    [:div.col.col-12.p1 (ui/teal-button {:spinning? true})]]
+    [:div.col.col-12.p1 (ui/teal-button {:spinning? true :title ":spinning? true"})]]
    [:div.clearfix.bg-teal
     [:div.col.col-4.p1.mx-auto (ui/light-ghost-button {} "ui/light-ghost-button")]]])
 

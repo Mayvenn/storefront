@@ -56,10 +56,10 @@
          [:.py2.h0 re-center-money (ui/big-money amount)]
          (when (payouts/cash-out-eligible? (:payout-method next-payout))
            [:div.col-5.mt1.mb2.mx-auto
-            (ui/light-ghost-button {:on-click (utils/send-event-callback events/control-stylist-dashboard-cash-out-now-submit)
-                                    :class    "rounded-1 p1 light"
-                                    :data-test "cash-out-now-button"}
-
+            (ui/light-ghost-button {:on-click     (utils/send-event-callback events/control-stylist-dashboard-cash-out-now-submit)
+                                    :class        "light"
+                                    :height-class "py2"
+                                    :data-test    "cash-out-now-button"}
                                    [:span.ml1 "Cash Out Now"]
                                    [:span.ml2
                                     (svg/dropdown-arrow {:class  "stroke-white"

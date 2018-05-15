@@ -300,9 +300,8 @@
       (ui/teal-button {:spinning? false
                        :disabled? updating?
                        :on-click  (utils/send-event-callback events/control-checkout-cart-submit)
-                       :class     "py2"
                        :data-test "start-checkout-button"}
-                      [:div.p1 "Check out"])
+                      [:div "Check out"])
 
       [:div.h5.black.center.py1.flex.justify-around.items-center
        [:div.flex-grow-1.border-bottom.border-light-gray]
@@ -314,7 +313,7 @@
                         :spinning? redirecting-to-paypal?
                         :disabled? updating?
                         :data-test "paypal-checkout"}
-                       [:div.p1
+                       [:div
                         "Check out with "
                         [:span.medium.italic "PayPal™"]])]
 
@@ -336,7 +335,7 @@
                                 :class     "border-width-2 border-navy"
                                 :spinning? requesting-shared-cart?
                                 :data-test "share-cart"}
-                          [:div.flex.items-center.justify-center.bold.p1
+                          [:div.flex.items-center.justify-center.bold
                            (svg/share-arrow {:class  "stroke-navy mr1 fill-navy"
                                              :width  "24px"
                                              :height "24px"})
