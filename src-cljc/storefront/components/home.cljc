@@ -106,8 +106,8 @@
     (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :look
                                                          :query-params  {:sha "install"}})
            :data-test "home-banner")
-    (let [file-name "75-off-installation-hero"
-          alt       "$75 off your install when you buy 3 bundles or more! Use code: INSTALL"
+    (let [file-name "100-off-installation-hero"
+          alt       "$100 off your install when you buy 3 bundles or more! Use code: INSTALL"
           mob-uuid  "78619333-fc96-4ba6-b79e-fc8c9fa70142"
           dsk-uuid  "b0ab06bf-8525-47d1-8964-2f072ecfa329"]
       (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")

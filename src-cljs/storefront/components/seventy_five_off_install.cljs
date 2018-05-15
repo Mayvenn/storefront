@@ -36,17 +36,17 @@
                    (ui/clickable-logo {:class "col-12 mx1"
                                        :style {:height "40px"}})]]
                  [:div  ;; Body
-                  [:h1.h3.bold.teal.mb4 "Get $75 Off Your Install with promo code: INSTALL"]
+                  [:h1.h3.bold.teal.mb4 "Get $100 Off Your Install with promo code: INSTALL"]
                   [:p.h6.mb1
                    "Purchase any 3 bundles or more from Mayvenn and Mayvenn will
-                   give you $75 to use for your install at your Mayvenn Stylist.
+                   give you $100 to use for your install at your Mayvenn Stylist.
                    Just follow 3 easy steps:"]
                   [:div
                    [:div.py4
                     (svg/number-circle :1)
                     [:h3.pt1 "Buy 3 bundles or more"]
                     [:p.h6.dark-gray.mt1
-                     "To receive $75 off your install, purchase 3 bundles or
+                     "To receive $100 off your install, purchase 3 bundles or
                      more (this can also include closures and frontals) from
                      Mayvenn." ]]
                    [:div.py4
@@ -54,10 +54,10 @@
                     [:h3.pt1 "An exclusive offer"]
                     [:p.h6.dark-gray.mt1
                      "Your Mayvenn order must be with your Mayvenn stylist to be
-                     eligible for the $75 off promotion."]]
+                     eligible for the $100 off promotion."]]
                    [:div.py4
                     (svg/number-circle :3)
-                    [:h3.pt1 "Book your $75 off install"]
+                    [:h3.pt1 "Book your $100 off install"]
                     [:p.h6.dark-gray.mt1
                      "After you complete your purchase, Mayvenn will contact you
                      to arrange your discounted install appointment with your

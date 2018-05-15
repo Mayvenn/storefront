@@ -70,7 +70,7 @@
             :height "63px"
             :width  "68px"}]
      [:h4 "This order qualifies for"]
-     [:h1.shout.bold "$75 off"]
+     [:h1.shout.bold "$100 off"]
      [:h6
       [:div "your install from your Mayvenn stylist."]
       [:div "Use code " [:span.bold "INSTALL"] " to get your discounted install."]]]
@@ -78,7 +78,7 @@
     [:div.p2.bg-orange.white.center {:data-test "ineligible-seventy-five-off-install-cart-promo"}
      [:h4 "You're almost there..."]
      [:h4 "Buy 3 bundles or more and get"]
-     [:h1.shout.bold "$75 off"]
+     [:h1.shout.bold "$100 off"]
      [:h6
       [:div "your install from your Mayvenn stylist."]
       [:div "Use code " [:span.bold "INSTALL"] " to get your discounted install."]]]))

@@ -71,12 +71,12 @@
              (get-in data keypaths/store-slug)))
 
 (defn the-ville?
-  "Fayetteville experiment, can't be used with $75 install experiment"
+  "Fayetteville experiment, can't be used with $100 install experiment"
   [data]
   (and (not (seventy-five-off-install? data))
        (display-feature? data "the-ville")))
 
 (defn install-control?
-  "Neither $75 off or in Fayetteville"
+  "Neither $100 off or in Fayetteville"
   [data]
   (not (seventy-five-off-install? data)))

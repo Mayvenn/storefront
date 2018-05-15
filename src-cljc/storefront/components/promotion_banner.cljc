@@ -40,7 +40,7 @@
      [:a {:on-click  (utils/send-event-callback events/popup-show-seventy-five-off-install {})
           :data-test "seventy-five-off-install-promo-banner"}
       [:div.white.center.pp5.bg-teal.h5.bold.pointer
-       "Get $75 off your install! " [:span.underline "Learn more"]]]
+       "Get $100 off your install! " [:span.underline "Learn more"]]]
 
      (and allowed? the-ville?)
      [:a {:on-click  (utils/send-event-callback events/popup-show-free-install {})
