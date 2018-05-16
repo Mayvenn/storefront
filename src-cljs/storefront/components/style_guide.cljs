@@ -280,7 +280,8 @@
   (subheader "Flourishes")
   [:div.flex.flex-wrap.mxn1.mb4
    (color-swatch "light-orange" "fff8e5")
-   (color-swatch "orange" "ffc520")]
+   (color-swatch "orange" "ffc520")
+   (color-swatch "transparent-light-teal" "9fe5d5CC")]
 
   (subheader "Third party")
   [:div.flex.flex-wrap.mxn1.mb4
