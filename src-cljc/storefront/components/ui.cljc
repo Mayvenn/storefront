@@ -464,9 +464,9 @@
 
 (defn counter [{:keys [data-test spinning?]} value dec-fn inc-fn]
   [:div
-   (counter-button spinning? (str "quantity-dec-" data-test) dec-fn svg/counter-dec)
+   (counter-button spinning? (str "quantity-dec-" data-test) dec-fn (svg/counter-dec {:title "Decrement cart item count"}))
    (counter-value spinning? value)
-   (counter-button spinning? (str "quantity-inc-" data-test) inc-fn (svg/counter-inc))])
+   (counter-button spinning? (str "quantity-inc-" data-test) inc-fn (svg/counter-inc {:title "Increment cart item count"}))])
 
 (defn auto-complete-counter [{:keys [data-test spinning?]} value dec-fn inc-fn]
    [:div.medium

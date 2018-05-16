@@ -73,13 +73,11 @@
     <path stroke-linecap="square" d="M10 10 l80 80 M90 10 l-80 80"/>
   </symbol>
   <symbol id="counter-inc" viewBox="0 0 49 49">
-    <title>Increment cart item count</title>
     <circle stroke="none" r="24" cy="24" cx="24"></circle>
     <path stroke-width="4" d="M24 8v32M8 24h32"></path>
   </symbol>
   <symbol id="counter-dec" viewBox="0 0 49 49">
     <g>
-      <title>Decrement cart item count</title>
       <circle r="24" cy="24" cx="24"></circle>
       <path stroke-width="4" d="M9 24h30"></path>
     </g>

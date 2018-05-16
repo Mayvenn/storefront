@@ -115,6 +115,12 @@
    [:svg (maps/deep-merge {:class "stroke-white fill-gray" :style {:width "1.2em" :height "1.2em"}} opts)
     (svg-xlink "counter-inc")]))
 
+(defn counter-dec
+  ([] (counter-dec {}))
+  ([opts]
+   [:svg (maps/deep-merge {:class "stroke-white fill-gray" :style {:width "1.2em" :height "1.2em"}} opts)
+    (svg-xlink "counter-dec")]))
+
 (defn close-x [{:keys [class]}]
   (component/html
    [:svg.rotate-45 {:class class :style {:width "1.2em" :height "1.2em"}}
@@ -122,11 +128,6 @@
 
 (defn simple-x [opts]
   [:svg opts (svg-xlink "simple-x")])
-
-(def counter-dec
-  (component/html
-   [:svg {:class "stroke-white fill-gray" :style {:width "1.2em" :height "1.2em"}}
-    (svg-xlink "counter-dec")]))
 
 (def open-hamburger-menu
   (component/html
