@@ -87,6 +87,7 @@
 (def navigation-message (conj ui :navigation-message))
 (def navigation-event (conj navigation-message 0))
 (def navigation-args (conj navigation-message 1))
+(def navigation-query-params (conj navigation-args :query-params))
 (def navigation-stashed-stack-item (conj ui :navigation-stashed-stack-item))
 (def navigation-undo-stack (conj ui :navigation-undo-stack))
 (def navigation-redo-stack (conj ui :navigation-redo-stack))

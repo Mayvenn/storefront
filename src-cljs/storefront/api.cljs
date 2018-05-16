@@ -628,17 +628,22 @@
                                               :current-page
                                               :pages]))}))
 
-(defn place-order [session-id order utm-params]
-  (storeback-api-req
-   POST
-   "/v2/place-order"
-   request-keys/place-order
-   {:params (merge (select-keys order [:number :token])
-                   {:session-id session-id
-                    :utm-params utm-params})
-    :handler #(messages/handle-message events/api-success-update-order-place-order
-                                       {:order %
-                                        :navigate events/navigate-order-complete})}))
+(defn place-order
+  ([session-id order utm-params]
+   (place-order session-id order utm-params nil))
+  ([session-id order utm-params {:as handlers :keys [error-handler success-handler]}]
+   (let [default-success-handler #(messages/handle-message events/api-success-update-order-place-order
+                                                           {:order    %
+                                                            :navigate events/navigate-order-complete})]
+     (storeback-api-req
+      POST
+      "/v2/place-order"
+      request-keys/place-order
+      {:params        (merge (select-keys order [:number :token])
+                             {:session-id session-id
+                              :utm-params utm-params})
+       :handler       (or success-handler default-success-handler)
+       :error-handler (or error-handler default-error-handler)}))))
 
 
 (defn ^:private remove-from-bag [request-key session-id {:keys [variant-id number token quantity]} handler]

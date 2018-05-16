@@ -8,6 +8,8 @@
 (defpath domain)
 (defpath order-completed)
 
+(defpath order-remove-promotion)
+
 (defpath external-redirect-welcome)
 (defpath external-redirect-paypal-setup)
 (defpath external-redirect-telligent)
