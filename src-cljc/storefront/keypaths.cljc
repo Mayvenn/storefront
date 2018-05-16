@@ -264,6 +264,7 @@
 (def review-components-count (conj ui :review-components-count))
 
 (def affirm-refresh-timeout (concat ui [:affirm :refresh :timeout] ))
+(def affirm-checkout-token (concat ui [:affirm :checkout :token] ))
 
 (def loaded (conj ui :loaded))
 (def loaded-convert (conj loaded :convert))
