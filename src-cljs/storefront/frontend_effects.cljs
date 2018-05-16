@@ -217,21 +217,16 @@
 (defmethod perform-effects events/redirect [_ event {:keys [nav-message]} _ app-state]
   (apply history/enqueue-redirect nav-message))
 
-(defn save-cookie [app-state]
-  (cookie-jar/save-order (get-in app-state keypaths/cookie)
-                         (get-in app-state keypaths/order))
-  (cookie-jar/save-user (get-in app-state keypaths/cookie)
-                        (get-in app-state keypaths/user)))
-
 (defn add-pending-promo-code [app-state {:keys [number token] :as order}]
   (when-let [pending-promo-code (get-in app-state keypaths/pending-promo-code)]
     (api/add-promotion-code (get-in app-state keypaths/session-id) number token pending-promo-code true)))
 
-;; FIXME:(jm) This is all triggered on pages we're redirecting through. :(
 (defmethod perform-effects events/navigate [_ event {:keys [query-params nav-stack-item] :as args} prev-app-state app-state]
   (let [args               (dissoc args :nav-stack-item)]
     (handle-message events/control-menu-collapse-all)
     (handle-message events/save-order {:order (get-in app-state keypaths/order)})
+    (cookie-jar/save-user (get-in app-state keypaths/cookie)
+                          (get-in app-state keypaths/user))
     (refresh-account app-state)
     (api/get-promotions (get-in app-state keypaths/api-cache)
                         (or
@@ -873,14 +868,13 @@
                      (get-in app-state keypaths/order)
                      (cookie-jar/retrieve-utm-params (get-in app-state keypaths/cookie)))))
 
-;; TODO(jeff): audit callsites of this message to remove their save-cookie calls
 (defmethod perform-effects events/save-order
   [_ _ {:keys [order]} _ app-state]
   (if (and order (orders/incomplete? order))
     (do
       (when-let [sku-ids (->> order orders/product-items (map :sku) seq)]
         (handle-message events/ensure-sku-ids {:sku-ids sku-ids}))
-      (save-cookie app-state)
+      (cookie-jar/save-order (get-in app-state keypaths/cookie) order)
       (add-pending-promo-code app-state order))
     (handle-message events/clear-order)))
 
@@ -889,9 +883,9 @@
 
 (defmethod perform-effects events/api-success-auth [_ _ {:keys [order]} _ app-state]
   (handle-message events/save-order {:order order})
-  (doto app-state
-    save-cookie
-    redirect-to-return-navigation))
+  (cookie-jar/save-user (get-in app-state keypaths/cookie)
+                        (get-in app-state keypaths/user))
+  (redirect-to-return-navigation app-state))
 
 (defmethod perform-effects events/api-success-auth-sign-in [_ _ _ _ app-state]
   (if (get-in app-state keypaths/telligent-community-url)
@@ -909,7 +903,8 @@
   (handle-message events/flash-later-show-success {:message "You will receive an email with instructions on how to reset your password in a few minutes."}))
 
 (defmethod perform-effects events/api-success-manage-account [_ event args _ app-state]
-  (save-cookie app-state)
+  (cookie-jar/save-user (get-in app-state keypaths/cookie)
+                        (get-in app-state keypaths/user))
   (history/enqueue-navigate events/navigate-home)
   (handle-message events/flash-later-show-success {:message "Account updated"}))
 
@@ -931,7 +926,8 @@
                               (changed? previous-app-state app-state keypaths/stylist-portrait-status)
                               (= "pending" (get-in app-state keypaths/stylist-portrait-status)))]
     (handle-later events/poll-stylist-portrait {} 5000))
-  (save-cookie app-state))
+  (cookie-jar/save-user (get-in app-state keypaths/cookie)
+                        (get-in app-state keypaths/user)))
 
 (defmethod perform-effects events/api-success-stylist-account-profile [_ event args _ app-state]
   (handle-message events/flash-show-success {:message "Profile updated"}))
@@ -972,7 +968,6 @@
 
 (defmethod perform-effects events/api-success-update-order [_ event {:keys [order navigate event]} _ app-state]
   (handle-message events/save-order {:order order})
-  (save-cookie app-state)
   (when event
     (handle-message event {:order order}))
   (when navigate
@@ -1027,7 +1022,6 @@
 
 (defmethod perform-effects events/api-success-add-to-bag [dispatch event {:keys [order]} _ app-state]
   (handle-message events/save-order {:order order})
-  (save-cookie app-state)
   (add-pending-promo-code app-state order)
   (handle-later events/added-to-bag))
 
@@ -1036,7 +1030,6 @@
 
 (defmethod perform-effects events/api-success-add-sku-to-bag [dispatch event {:keys [order]} _ app-state]
   (handle-message events/save-order {:order order})
-  (save-cookie app-state)
   (add-pending-promo-code app-state order)
   (handle-later events/added-to-bag))
 
