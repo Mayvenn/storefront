@@ -96,7 +96,7 @@
 (defn save-cookie [{:keys [max-age domain] :as spec} cookie attrs]
   (doseq [attr (all-keys spec)]
     (if-let [val (get attrs attr)]
-      (.set        cookie (spice/kw-name attr) (js/encodeURIComponent val) max-age "/" domain (get spec :secure config/secure?))
+      (.set cookie (spice/kw-name attr) (js/encodeURIComponent val) max-age "/" domain (get spec :secure config/secure?))
       (do (.remove cookie attr                 "/" domain)
           (.remove cookie (spice/kw-name attr) "/" domain)))))
 
