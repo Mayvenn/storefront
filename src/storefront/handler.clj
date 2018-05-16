@@ -607,7 +607,7 @@
 (defn affirm-routes [{:keys [logger storeback-config environment]}]
   (routes
    (POST "/orders/:order-number/affirm/:order-token" [order-number order-token :as request]
-         ;;TODO Remove this when ready to test this on acceptance
+         ;;TODO Remove this and change route to affirm-v2 when ready to test this on acceptance
          (when (= "development" environment)
            (let [order          (get-in-req-state request keypaths/order)
                  checkout-token (get-in-req-state request keypaths/affirm-checkout-token)]
