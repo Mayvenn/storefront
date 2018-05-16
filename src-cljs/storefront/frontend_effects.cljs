@@ -480,7 +480,10 @@
       (redirect events/navigate-cart))
     (when (and have-cart?
                (not (auth/signed-in-or-initiated-guest-checkout? app-state))
-               (not (#{events/navigate-checkout-address events/navigate-checkout-returning-or-guest events/navigate-checkout-sign-in} event)))
+               (not (#{events/navigate-checkout-address
+                       events/navigate-checkout-returning-or-guest
+                       events/navigate-checkout-sign-in
+                       events/navigate-checkout-processing} event)))
       (redirect events/navigate-checkout-address))))
 
 (defmethod perform-effects events/navigate-checkout-sign-in [_ event args _ app-state]

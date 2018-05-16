@@ -579,41 +579,20 @@
         (util.response/status 404))))
 
 (defn paypal-routes [{:keys [storeback-config]}]
-  (routes
-   (GET "/orders/:order-number/paypal-v2/:order-token" [order-number order-token :as request]
-        (let [order          (get-in-req-state request keypaths/order)]
-          (cond
-            (or (nil? order)
-                (not= (:number order) order-number)
-                (not= (:token order) order-token)
-                (not (#{"cart" "submitted"} (:state order))))
-            (util.response/redirect "/checkout/payment?error=paypal-invalid-state")
+  (GET "/orders/:order-number/paypal/:order-token" [order-number order-token :as request]
+       (let [order          (get-in-req-state request keypaths/order)]
+         (cond
+           (or (nil? order)
+               (not= (:number order) order-number)
+               (not= (:token order) order-token)
+               (not (#{"cart" "submitted"} (:state order))))
+           (util.response/redirect "/checkout/payment?error=paypal-invalid-state")
 
-            (= "cart" (:state order))
-            (util.response/redirect "/checkout/processing")
+           (= "cart" (:state order))
+           (util.response/redirect "/checkout/processing")
 
-            (= "submitted" (:state order))
-            (util.response/redirect (str "/orders/" (:number order) "/complete")))))
-
-   (GET "/orders/:order-number/paypal/:order-token" [order-number order-token :as request]
-        (if-let [error-code (api/verify-paypal-payment storeback-config order-number order-token
-                                                       (let [headers (:headers request)]
-                                                         (or (headers "x-forwarded-for")
-                                                             (headers "remote-addr")
-                                                             "localhost"))
-                                                       (assoc (:query-params request)
-                                                              "utm-params"
-                                                              {"utm-source"   (cookies/get request "utm-source")
-                                                               "utm-campaign" (cookies/get request "utm-campaign")
-                                                               "utm-term"     (cookies/get request "utm-term")
-                                                               "utm-content"  (cookies/get request "utm-content")
-                                                               "utm-medium"   (cookies/get request "utm-medium")}))]
-          (util.response/redirect (str "/cart?error=" error-code))
-          (util.response/redirect (str "/orders/"
-                                       order-number
-                                       "/complete?"
-                                       (codec/form-encode {:paypal      true
-                                                           :order-token order-token})))))))
+           (= "submitted" (:state order))
+           (util.response/redirect (str "/orders/" (:number order) "/complete"))))))
 
 (defn wrap-set-affirm-checkout-token [h]
   (fn [{:as req :keys [params]}]
@@ -621,51 +600,27 @@
            (assoc-in-req-state keypaths/affirm-checkout-token (get params "checkout_token"))))))
 
 (defn affirm-routes [{:keys [logger storeback-config environment]}]
-  (routes
-   (POST "/orders/:order-number/affirm-v2/:order-token" [order-number order-token :as request]
-         (let [order          (get-in-req-state request keypaths/order)
-               checkout-token (get-in-req-state request keypaths/affirm-checkout-token)]
-           (cond
-             (or (nil? order)
-                 (nil? checkout-token)
-                 (not= (:number order) order-number)
-                 (not= (:token order) order-token)
-                 (not (#{"cart" "submitted"} (:state order))))
-             (util.response/redirect "/checkout/payment?error=affirm-invalid-state")
+  (POST "/orders/:order-number/affirm/:order-token" [order-number order-token :as request]
+        (let [order          (get-in-req-state request keypaths/order)
+              checkout-token (get-in-req-state request keypaths/affirm-checkout-token)]
+          (cond
+            (or (nil? order)
+                (nil? checkout-token)
+                (not= (:number order) order-number)
+                (not= (:token order) order-token)
+                (not (#{"cart" "submitted"} (:state order))))
+            (util.response/redirect "/checkout/payment?error=affirm-invalid-state")
 
-             (= "cart" (:state order))
-             (do
-               (api/save-affirm-checkout-token storeback-config
-                                               (:number order)
-                                               (:token order)
-                                               checkout-token)
-               (util.response/redirect "/checkout/processing"))
+            (= "cart" (:state order))
+            (do
+              (api/save-affirm-checkout-token storeback-config
+                                              (:number order)
+                                              (:token order)
+                                              checkout-token)
+              (util.response/redirect "/checkout/processing"))
 
-             (= "submitted" (:state order))
-             (util.response/redirect (str "/orders/" (:number order) "/complete")))))
-   (POST "/orders/:order-number/affirm/:order-token" [order-number order-token :as request]
-         (let [checkout-token (-> request :params (get "checkout_token"))
-               error-code     (api/finalize-affirm-payment storeback-config order-number order-token checkout-token
-                                                           (let [headers (:headers request)]
-                                                             (or (headers "x-forwarded-for")
-                                                                 (headers "remote-addr")
-                                                                 "localhost"))
-                                                           (assoc (:query-params request)
-                                                                  "session-id"    (cookies/get request "session-id")
-                                                                  "utm-params"
-                                                                  {"utm-source"   (cookies/get request "utm-source")
-                                                                   "utm-campaign" (cookies/get request "utm-campaign")
-                                                                   "utm-term"     (cookies/get request "utm-term")
-                                                                   "utm-content"  (cookies/get request "utm-content")
-                                                                   "utm-medium"   (cookies/get request "utm-medium")}))
-               redirect-url   (if (= "ineligible-for-free-install" error-code)
-                                "/cart"
-                                "/checkout/payment")]
-           (if error-code
-             (util.response/redirect (str redirect-url "?error=" error-code))
-             (util.response/redirect (str "/orders/" order-number "/complete?"
-                                          (codec/form-encode {:affirm      true
-                                                              :order-token order-token}))))))))
+            (= "submitted" (:state order))
+            (util.response/redirect (str "/orders/" (:number order) "/complete"))))))
 
 (defn static-routes [_]
   (fn [{:keys [uri] :as req}]
