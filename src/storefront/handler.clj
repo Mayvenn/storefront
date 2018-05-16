@@ -599,9 +599,10 @@
                                     "/complete?"
                                     (codec/form-encode {:paypal      true
                                                         :order-token order-token})))))))
-(defn wrap-set-affirm-checkout-token [h]
+(defn wrap-set-affirm-checkout-token [h environment]
   (fn [{:as req :keys [params]}]
-    (h (assoc-in-req-state req keypaths/affirm-checkout-token (get params "checkout_token")))))
+    (h (-> req
+           (assoc-in-req-state keypaths/affirm-checkout-token (get params "checkout_token"))))))
 
 (defn affirm-routes [{:keys [logger storeback-config environment]}]
   (routes
@@ -629,7 +630,6 @@
                                           (codec/form-encode {:affirm      true
                                                               :order-token order-token}))))))
    (POST "/orders/:order-number/affirm-v2/:order-token" [order-number order-token :as request]
-         ;;TODO Don't forget the checkout token!!!
          (let [order          (get-in-req-state request keypaths/order)
                checkout-token (get-in-req-state request keypaths/affirm-checkout-token)]
            (logger :debug
@@ -648,7 +648,12 @@
              (util.response/redirect "/checkout/payment?error=affirm-invalid-state")
 
              (= "cart" (:state order))
-             (util.response/redirect "/checkout/processing")
+             (do
+               (api/save-affirm-checkout-token storeback-config
+                                               (:number order)
+                                               (:token order)
+                                               checkout-token)
+               (util.response/redirect "/checkout/processing"))
 
              (= "submitted" (:state order))
              (util.response/redirect (str "/orders/" (:number order) "/complete")))))))
