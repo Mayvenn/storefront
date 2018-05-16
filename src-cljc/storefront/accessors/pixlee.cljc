@@ -39,20 +39,30 @@
       :path
       routes/navigation-message-for))
 
-(defn parse-ugc-image [album-keyword {:keys [album_id album_photo_id user_name content_type source products title source_url] :as item}]
+(defn ^:private notes->look-attributes
+  "Expects a url encoded string that is delimited by asterisks with texture,
+  color, and length"
+  [notes]
+  (let [[texture color lengths] (some-> notes url/url-decode (string/split #"\*"))]
+    {:texture texture
+     :color   color
+     :lengths lengths}))
+
+(defn parse-ugc-image [album-keyword {:keys [notes album_id album_photo_id user_name content_type source products title source_url] :as item}]
   (let [[nav-event nav-args :as nav-message] (product-link (first products))]
-    {:id             album_photo_id
-     :content-type   content_type
-     :source-url     source_url
-     :user-handle    (normalize-user-name user_name)
-     :imgs           (extract-images item)
-     :social-service source
-     :shared-cart-id (:shared-cart-id nav-args)
-     :links          (merge {:view-other nav-message}
-                            (when (= nav-event events/navigate-shared-cart)
-                              {:view-look [events/navigate-shop-by-look-details {:album-keyword (or (#{:deals} album-keyword) :look)
-                                                                                 :look-id album_photo_id}]}))
-     :title          title}))
+    {:id              album_photo_id
+     :content-type    content_type
+     :source-url      source_url
+     :user-handle     (normalize-user-name user_name)
+     :imgs            (extract-images item)
+     :social-service  source
+     :shared-cart-id  (:shared-cart-id nav-args)
+     :look-attributes (notes->look-attributes notes)
+     :links           (merge {:view-other nav-message}
+                             (when (= nav-event events/navigate-shared-cart)
+                               {:view-look [events/navigate-shop-by-look-details {:album-keyword (or (#{:deals} album-keyword) :look)
+                                                                                  :look-id       album_photo_id}]}))
+     :title           title}))
 
 (defn parse-ugc-album [album-keyword album]
   (map (partial parse-ugc-image album-keyword) album))
