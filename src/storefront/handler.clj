@@ -586,7 +586,7 @@
                (not= (:number order) order-number)
                (not= (:token order) order-token)
                (not (#{"cart" "submitted"} (:state order))))
-           (util.response/redirect "/checkout/payment?error=paypal-invalid-state")
+           (util.response/redirect "/cart?error=bad-request")
 
            (= "cart" (:state order))
            (util.response/redirect "/checkout/processing")

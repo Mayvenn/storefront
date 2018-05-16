@@ -490,50 +490,63 @@
             (is (= 200 (:status (get-leads-req handler lead-cookie "/flows/a1/registered-thank-you"))))))))))
 
 (deftest submits-paypal-redirect-to-waiter
-  (testing "when waiter returns a 200 response"
-    (let [[waiter-requests waiter-handler] (with-requests-chan
-                                             (constantly {:status  200
-                                                          :headers {"Content-Type" "application/json"}
-                                                          :body    "{}"}))]
-      (with-standalone-server [waiter (standalone-server waiter-handler)]
-        (with-handler handler
-          (let [resp        (-> (mock/request :get "https://shop.mayvenn.com/orders/W123456/paypal/order-token")
-                                (set-cookies {":storefront/utm-source"   "source"
-                                              ":storefront/utm-campaign" "campaign"
-                                              ":storefront/utm-term"     "term"
-                                              ":storefront/utm-content"  "content"
-                                              ":storefront/utm-medium"   "medium"
-                                              "expires"                  "Sat, 03 May 2025 17:44:22 GMT"})
-                                handler)]
-            (is (= 302 (:status resp)))
-            (testing "it redirects to order complete page"
-              (is (= "/orders/W123456/complete?paypal=true&order-token=order-token"
-                     (get-in resp [:headers "Location"]))))
-
-            (testing "it records the utm params associated with the request"
-              (is (= {:utm-source   "source"
-                      :utm-campaign "campaign"
-                      :utm-term     "term"
-                      :utm-content  "content"
-                      :utm-medium   "medium"}
-                     (-> waiter-requests first-json-request :body :utm-params)))))))))
-
-  (testing "when waiter returns a non-200 response without an error-code"
-    (with-standalone-server [waiter (standalone-server (constantly {:status  500
-                                                                    :headers {"Content-Type" "application/json"}
-                                                                    :body    "{}"}))]
+  (testing "when waiter knows the order"
+    (with-standalone-server [storeback (standalone-server (constantly {:status  200
+                                                                       :headers {"Content-Type" "application/json"}
+                                                                       :body    (generate-string {:number "W123456"
+                                                                                                  :token  "order-token"
+                                                                                                  :state  "cart"})}))]
       (with-handler handler
-        (let [resp (handler (mock/request :get "https://shop.mayvenn.com/orders/W123456/paypal/order-token"))]
+        (let [resp (-> (mock/request :get "https://shop.mayvenn.com/orders/W123456/paypal/order-token")
+                       (set-cookies {"number"  "W123456"
+                                     "token"   "order-token"
+                                     "expires" "Sat, 03 May 2025 17:44:22 GMT"})
+                       handler)]
           (is (= 302 (:status resp)))
-          (is (= "/cart?error=paypal-incomplete"
-                 (get-in resp [:headers "Location"])))))))
+          (testing "it redirects to order processing page"
+            (is (= "/checkout/processing"
+                   (get-in resp [:headers "Location"]))))))))
 
-  (testing "when waiter returns a non-200 response with an error-code"
-    (with-standalone-server [waiter (standalone-server (constantly {:status  400
-                                                                    :headers {"Content-Type" "application/json"}
-                                                                    :body    "{\"error-code\": \"bad-request\"}"}))]
+  (testing "when waiter does not recognize the order"
+    (with-standalone-server [storeback (standalone-server (constantly {:status  404
+                                                                       :headers {"Content-Type" "application/json"}
+                                                                       :body    (generate-string {})}))]
       (with-handler handler
-        (let [resp (handler (mock/request :get "https://shop.mayvenn.com/orders/W123456/paypal/order-token"))]
+        (let [resp (-> (mock/request :get "https://shop.mayvenn.com/orders/W123456/paypal/order-token")
+                       (set-cookies {"number"  "W123456"
+                                     "token"   "order-token"
+                                     "expires" "Sat, 03 May 2025 17:44:22 GMT"})
+                       handler)]
+          (is (= 302 (:status resp)))
+          (is (= "/cart?error=bad-request"
+                 (get-in resp [:headers "Location"])))))))
+  (testing "when cookies and order token from paypal do not match"
+    (with-standalone-server [storeback (standalone-server (constantly {:status 200
+                                                                       :headers   {"Content-Type" "application/json"}
+                                                                       :body      (generate-string {:number "W123456"
+                                                                                                    :token  "order-token"
+                                                                                                    :state  "cart"})}))]
+      (with-handler handler
+        (let [resp (-> (mock/request :get "https://shop.mayvenn.com/orders/W123456/paypal/order-token-v2")
+                       (set-cookies {"number"  "W123456"
+                                     "token"   "order-token"
+                                     "expires" "Sat, 03 May 2025 17:44:22 GMT"})
+                       handler)]
+          (is (= 302 (:status resp)) (pr-str resp))
+          (is (= "/cart?error=bad-request"
+                 (get-in resp [:headers "Location"])))))))
+  (testing "when cookies and order number from paypal do not match"
+    (with-standalone-server [storeback (standalone-server (constantly {:status 200
+                                                                       :headers   {"Content-Type" "application/json"}
+                                                                       :body      (generate-string {:number "W123456"
+                                                                                                    :token  "order-token"
+                                                                                                    :state  "cart"})}))]
+      (with-handler handler
+        (let [resp (-> (mock/request :get "https://shop.mayvenn.com/orders/W234567/paypal/order-token")
+                       (set-cookies {"number"  "W123456"
+                                     "token"   "order-token"
+                                     "expires" "Sat, 03 May 2025 17:44:22 GMT"})
+                       handler)]
           (is (= 302 (:status resp)) (pr-str resp))
           (is (= "/cart?error=bad-request"
                  (get-in resp [:headers "Location"]))))))))
