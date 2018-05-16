@@ -68,10 +68,7 @@
   (let [{:keys [status body] :as r} (storeback-post storeback-config "/v2/update-cart-payments"
                                                     {:form-params {:number        number
                                                                    :token         order-token
-                                                                   :cart-payments {:affirm {:checkout-token checkout-token}}
-                                                                   :session-id    session-id
-                                                                   :utm-params    utm-params}
-                                                     :headers     {"X-Forwarded-For" ip-addr}})]
+                                                                   :cart-payments {:affirm {:checkout-token checkout-token}}}})]
     (when-not (<= 200 status 299)
       (let [first-error-code (->> body :errors (some identity) :error-code)]
         (or first-error-code "affirm-incomplete")))))

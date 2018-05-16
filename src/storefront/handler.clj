@@ -599,13 +599,43 @@
                                     "/complete?"
                                     (codec/form-encode {:paypal      true
                                                         :order-token order-token})))))))
-(defn wrap-set-affirm-checkout-token [h environment]
+(defn wrap-set-affirm-checkout-token [h]
   (fn [{:as req :keys [params]}]
     (h (-> req
            (assoc-in-req-state keypaths/affirm-checkout-token (get params "checkout_token"))))))
 
 (defn affirm-routes [{:keys [logger storeback-config environment]}]
   (routes
+   (POST "/orders/:order-number/affirm/:order-token" [order-number order-token :as request]
+         ;;TODO Remove this when ready to test this on acceptance
+         (when (= "development" environment)
+           (let [order          (get-in-req-state request keypaths/order)
+                 checkout-token (get-in-req-state request keypaths/affirm-checkout-token)]
+             (logger :debug
+                     (format "order:%s, checkout-token:%s, numbers-match:%s, tokens-match:%s, order-state:%s"
+                             (nil? order)
+                             (nil? checkout-token)
+                             (not= (:number order) order-number)
+                             (not= (:token order) order-token)
+                             (:state order)))
+             (cond
+               (or (nil? order)
+                   (nil? checkout-token)
+                   (not= (:number order) order-number)
+                   (not= (:token order) order-token)
+                   (not (#{"cart" "submitted"} (:state order))))
+               (util.response/redirect "/checkout/payment?error=affirm-invalid-state")
+
+               (= "cart" (:state order))
+               (do
+                 (api/save-affirm-checkout-token storeback-config
+                                                 (:number order)
+                                                 (:token order)
+                                                 checkout-token)
+                 (util.response/redirect "/checkout/processing"))
+
+               (= "submitted" (:state order))
+               (util.response/redirect (str "/orders/" (:number order) "/complete"))))))
    (POST "/orders/:order-number/affirm/:order-token" [order-number order-token :as request]
          (let [checkout-token (-> request :params (get "checkout_token"))
                error-code     (api/finalize-affirm-payment storeback-config order-number order-token checkout-token
@@ -628,35 +658,7 @@
              (util.response/redirect (str redirect-url "?error=" error-code))
              (util.response/redirect (str "/orders/" order-number "/complete?"
                                           (codec/form-encode {:affirm      true
-                                                              :order-token order-token}))))))
-   (POST "/orders/:order-number/affirm-v2/:order-token" [order-number order-token :as request]
-         (let [order          (get-in-req-state request keypaths/order)
-               checkout-token (get-in-req-state request keypaths/affirm-checkout-token)]
-           (logger :debug
-                   (format "order:%s, checkout-token:%s, numbers-match:%s, tokens-match:%s, order-state:%s"
-                           (nil? order)
-                           (nil? checkout-token)
-                           (not= (:number order) order-number)
-                           (not= (:token order) order-token)
-                           (:state order)))
-           (cond
-             (or (nil? order)
-                 (nil? checkout-token)
-                 (not= (:number order) order-number)
-                 (not= (:token order) order-token)
-                 (not (#{"cart" "submitted"} (:state order))))
-             (util.response/redirect "/checkout/payment?error=affirm-invalid-state")
-
-             (= "cart" (:state order))
-             (do
-               (api/save-affirm-checkout-token storeback-config
-                                               (:number order)
-                                               (:token order)
-                                               checkout-token)
-               (util.response/redirect "/checkout/processing"))
-
-             (= "submitted" (:state order))
-             (util.response/redirect (str "/orders/" (:number order) "/complete")))))))
+                                                              :order-token order-token}))))))))
 
 (defn static-routes [_]
   (fn [{:keys [uri] :as req}]
