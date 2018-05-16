@@ -850,14 +850,15 @@
                        (get-in app-state (conj keypaths/order :billing-address))
                        args))
 
-(defmethod perform-effects events/order-remove-promotion [_ _ {:keys [code]} _ app-state]
+(defmethod perform-effects events/order-remove-promotion [_ _ {:keys [code hide-success]} _ app-state]
   (api/remove-promotion-code
    (get-in app-state keypaths/session-id)
    (get-in app-state keypaths/order)
    code
    #(handle-message events/api-success-update-order-remove-promotion-code
-                    {:order      %
-                     :promo-code code})))
+                    {:order        %
+                     :hide-success hide-success
+                     :promo-code   code})))
 
 (defmethod perform-effects events/control-checkout-remove-promotion [_ _ args _ app-state]
   (handle-message events/order-remove-promotion args))
@@ -1054,9 +1055,9 @@
   [_ event {:keys [address-elem address-keypath]} _ app-state]
   (places-autocomplete/attach address-elem address-keypath))
 
-(defmethod perform-effects events/api-success-update-order-remove-promotion-code [_ _ _ _ app-state]
-  (when (not= (get-in app-state keypaths/navigation-query-params)
-              {:error "ineligible-for-free-install"})
+(defmethod perform-effects events/api-success-update-order-remove-promotion-code
+  [_ _ {:keys [hide-success]} _ app-state]
+  (when-not hide-success
     (handle-message events/flash-show-success {:message "The coupon code was successfully removed from your order."
                                                :scroll? false})))
 

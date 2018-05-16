@@ -11,24 +11,22 @@
             [storefront.platform.messages :as messages]))
 
 (defn component
-  [{:keys [guest? sign-up-data]} _ _]
+  [{:keys []} _ _]
   (component/create
    (ui/narrow-container
     [:div.py6.h2
      [:div.py4 (ui/large-spinner {:style {:height "6em"}})]
      [:h2.center.navy "Processing your order..."]])))
 
-(defn query [data]
-  {})
+(defn query [data] {})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
 
 (defmethod effects/perform-effects events/navigate-checkout-processing [dispatch event args _ app-state]
   #?(:cljs
-     (let [order                  (get-in app-state keypaths/order)
-           {:keys [number state]} order]
-       (case state
+     (let [order (get-in app-state keypaths/order)]
+       (case (:state order)
          "cart"      (api/place-order
                       (get-in app-state keypaths/session-id)
                       order
@@ -36,7 +34,8 @@
                       {:error-handler #(let [error-code (-> % :response :body :error-code)]
                                          (when (= error-code "ineligible-for-free-install")
                                            (messages/handle-message events/order-remove-promotion
-                                                                    {:code "freeinstall"}))
+                                                                    {:code "freeinstall"
+                                                                     :hide-success true}))
                                          (history/enqueue-navigate events/navigate-cart
                                                                    {:query-params {:error error-code}}))})
          "submitted" (history/enqueue-navigate events/navigate-order-complete

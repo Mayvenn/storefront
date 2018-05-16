@@ -579,26 +579,42 @@
         (util.response/status 404))))
 
 (defn paypal-routes [{:keys [storeback-config]}]
-  (wrap-cookies
+  (routes
+   (GET "/orders/:order-number/paypal-v2/:order-token" [order-number order-token :as request]
+        (let [order          (get-in-req-state request keypaths/order)]
+          (cond
+            (or (nil? order)
+                (not= (:number order) order-number)
+                (not= (:token order) order-token)
+                (not (#{"cart" "submitted"} (:state order))))
+            (util.response/redirect "/checkout/payment?error=paypal-invalid-state")
+
+            (= "cart" (:state order))
+            (util.response/redirect "/checkout/processing")
+
+            (= "submitted" (:state order))
+            (util.response/redirect (str "/orders/" (:number order) "/complete")))))
+
    (GET "/orders/:order-number/paypal/:order-token" [order-number order-token :as request]
-     (if-let [error-code (api/verify-paypal-payment storeback-config order-number order-token
-                                                    (let [headers (:headers request)]
-                                                      (or (headers "x-forwarded-for")
-                                                          (headers "remote-addr")
-                                                          "localhost"))
-                                                    (assoc (:query-params request)
-                                                           "utm-params"
-                                                           {"utm-source"   (cookies/get request "utm-source")
-                                                            "utm-campaign" (cookies/get request "utm-campaign")
-                                                            "utm-term"     (cookies/get request "utm-term")
-                                                            "utm-content"  (cookies/get request "utm-content")
-                                                            "utm-medium"   (cookies/get request "utm-medium")}))]
-       (util.response/redirect (str "/cart?error=" error-code))
-       (util.response/redirect (str "/orders/"
-                                    order-number
-                                    "/complete?"
-                                    (codec/form-encode {:paypal      true
-                                                        :order-token order-token})))))))
+        (if-let [error-code (api/verify-paypal-payment storeback-config order-number order-token
+                                                       (let [headers (:headers request)]
+                                                         (or (headers "x-forwarded-for")
+                                                             (headers "remote-addr")
+                                                             "localhost"))
+                                                       (assoc (:query-params request)
+                                                              "utm-params"
+                                                              {"utm-source"   (cookies/get request "utm-source")
+                                                               "utm-campaign" (cookies/get request "utm-campaign")
+                                                               "utm-term"     (cookies/get request "utm-term")
+                                                               "utm-content"  (cookies/get request "utm-content")
+                                                               "utm-medium"   (cookies/get request "utm-medium")}))]
+          (util.response/redirect (str "/cart?error=" error-code))
+          (util.response/redirect (str "/orders/"
+                                       order-number
+                                       "/complete?"
+                                       (codec/form-encode {:paypal      true
+                                                           :order-token order-token})))))))
+
 (defn wrap-set-affirm-checkout-token [h]
   (fn [{:as req :keys [params]}]
     (h (-> req
@@ -606,36 +622,27 @@
 
 (defn affirm-routes [{:keys [logger storeback-config environment]}]
   (routes
-   (POST "/orders/:order-number/affirm/:order-token" [order-number order-token :as request]
-         ;;TODO Remove this and change route to affirm-v2 when ready to test this on acceptance
-         (when (= "development" environment)
-           (let [order          (get-in-req-state request keypaths/order)
-                 checkout-token (get-in-req-state request keypaths/affirm-checkout-token)]
-             (logger :debug
-                     (format "order:%s, checkout-token:%s, numbers-match:%s, tokens-match:%s, order-state:%s"
-                             (nil? order)
-                             (nil? checkout-token)
-                             (not= (:number order) order-number)
-                             (not= (:token order) order-token)
-                             (:state order)))
-             (cond
-               (or (nil? order)
-                   (nil? checkout-token)
-                   (not= (:number order) order-number)
-                   (not= (:token order) order-token)
-                   (not (#{"cart" "submitted"} (:state order))))
-               (util.response/redirect "/checkout/payment?error=affirm-invalid-state")
+   (POST "/orders/:order-number/affirm-v2/:order-token" [order-number order-token :as request]
+         (let [order          (get-in-req-state request keypaths/order)
+               checkout-token (get-in-req-state request keypaths/affirm-checkout-token)]
+           (cond
+             (or (nil? order)
+                 (nil? checkout-token)
+                 (not= (:number order) order-number)
+                 (not= (:token order) order-token)
+                 (not (#{"cart" "submitted"} (:state order))))
+             (util.response/redirect "/checkout/payment?error=affirm-invalid-state")
 
-               (= "cart" (:state order))
-               (do
-                 (api/save-affirm-checkout-token storeback-config
-                                                 (:number order)
-                                                 (:token order)
-                                                 checkout-token)
-                 (util.response/redirect "/checkout/processing"))
+             (= "cart" (:state order))
+             (do
+               (api/save-affirm-checkout-token storeback-config
+                                               (:number order)
+                                               (:token order)
+                                               checkout-token)
+               (util.response/redirect "/checkout/processing"))
 
-               (= "submitted" (:state order))
-               (util.response/redirect (str "/orders/" (:number order) "/complete"))))))
+             (= "submitted" (:state order))
+             (util.response/redirect (str "/orders/" (:number order) "/complete")))))
    (POST "/orders/:order-number/affirm/:order-token" [order-number order-token :as request]
          (let [checkout-token (-> request :params (get "checkout_token"))
                error-code     (api/finalize-affirm-payment storeback-config order-number order-token checkout-token
@@ -839,7 +846,10 @@
                (GET "/products/:id-and-slug/:sku" req (redirect-to-product-details environment req))
                (GET "/cms" req (-> ctx :contentful :cache deref cheshire.core/generate-string util.response/response))
                (static-routes ctx)
-               (paypal-routes ctx)
+               (-> (paypal-routes ctx)
+                   (wrap-fetch-order storeback-config)
+                   (wrap-params)
+                   (wrap-cookies))
                (-> (affirm-routes ctx)
                    (wrap-set-affirm-checkout-token)
                    (wrap-fetch-order storeback-config)
