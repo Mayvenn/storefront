@@ -146,6 +146,7 @@
     [:div.col.col-6.p1 (ui/light-ghost-button {} "ui/light-ghost-button")]
     [:div.col.col-6.p1 (ui/teal-ghost-button {} "ui/teal-ghost-button")]
 
+    [:div.col.col-6.p1 (ui/underline-button {} "ui/underline-button")]
     [:div.col.col-6.p1 (ui/teal-button {:disabled? true} "(ui/teal-button {:disabled? true})")]
     [:div.col.col-6.p1 (ui/teal-button {:height-class "py2" :title "Used for adding promo codes to cart"} "height-class py2")]
     [:div.col.col-12.p1 (ui/teal-button {:spinning? false

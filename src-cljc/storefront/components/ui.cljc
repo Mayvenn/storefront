@@ -68,6 +68,7 @@
   (let [color (color-kw {:color/teal        "btn-primary bg-teal white"
                          :color/navy        "btn-primary bg-navy white"
                          :color/aqua        "btn-primary bg-aqua white"
+                         :color/white       "btn-primary bg-white border-light-gray black"
                          :color/ghost       "btn-outline border-gray black"
                          :color/light-ghost "btn-outline border-white white"
                          :color/teal-ghost  "btn-outline border-teal teal"
@@ -96,6 +97,10 @@
 
 (defn teal-button [attrs & content]
   (color-button :color/teal attrs content))
+
+(defn underline-button [attrs & content]
+  (color-button :color/white attrs
+                [:span.pxp3.border-bottom.border-teal.border-width-2 content]))
 
 (defn dark-gray-button [attrs & content]
   (color-button :color/dark-gray attrs content))
