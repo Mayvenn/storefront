@@ -57,8 +57,3 @@
   (deep-merge default-config env-config overrides))
 
 (def pixlee {})
-
-(def seventy-five-off-stores
-  (case (env :environment)
-    "production" #{"justin"}
-    #{"suzy"}))

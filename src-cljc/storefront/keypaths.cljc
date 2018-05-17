@@ -53,6 +53,7 @@
 (def store-nickname (conj store :store-nickname))
 (def store-stylist-id (conj store :stylist-id))
 (def store-gallery-images (conj store :gallery :images))
+(def store-features (conj store :features))
 
 (def v2-products [:v2 :products])
 (def v2-skus [:v2 :skus])

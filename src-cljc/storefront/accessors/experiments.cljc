@@ -67,8 +67,9 @@
 
 (defn seventy-five-off-install?
   [data]
-  (contains? config/seventy-five-off-stores
-             (get-in data keypaths/store-slug)))
+  (->> (get-in data keypaths/store-features)
+       (some #{"install"})
+       boolean))
 
 (defn the-ville?
   "Fayetteville experiment, can't be used with $100 install experiment"

@@ -131,8 +131,3 @@
     {"address-login" {:enabled?   false
                       :variations [{:feature "address-login-control"}
                                    {:feature "address-login"}]}}))
-
-(def seventy-five-off-stores
-  (case js/environment
-    "production" #{"justin"}
-    #{"suzy"}))
