@@ -59,23 +59,24 @@
 
 (defn shop-by-look-experiment-component [{:keys [looks color-details]} owner {:keys [copy]}]
   (component/create
-   [:div.container.clearfix.mtn2.p4
+   [:div.flex.flex-wrap.mtn2.py4.px2.justify-center.justify-start-on-tb-dt
     (for [{:keys [id imgs] :as look} looks
-          :let [{:keys [look-attributes social-service links]} look]]
-      [:div.p2.col-12-on-mb.col-6-on-tb.col-4-on-dt.col
-       {:key (str "small-" id)}
+          :let [{:keys [look-attributes social-service links]} look
+                {:keys [view-look view-other]} links
+                [nav-event nav-args]           (or view-look view-other)]]
+      [:div.p2.col-12.col-6-on-tb.col-4-on-dt {:key (str "small-" id)}
        [:div.relative
         [:img.col-12.block (:medium imgs)]
         (when-let [texture (:texture look-attributes)]
-          [:div.absolute.flex.justify-end.items-stretch.bottom-0.right-0.mb8
+          [:div.absolute.flex.justify-end.bottom-0.right-0.mb8
            [:div {:style {:width       "0"
                           :height      "0"
                           :border-top  "28px solid rgba(159, 229, 213, 0.8)"
                           :border-left "21px solid transparent"}}]
            [:div.flex.items-center.px3.medium.h6.bg-transparent-light-teal
             texture]])]
-       [:div.bg-light-gray.p1
-        [:div.h5.medium.mt1.mb2.mx1
+       [:div.bg-light-gray.p1.px2.pb2
+        [:div.h5.medium.mt1.mb2
          [:div.flex.items-center
           [:div.flex-auto
            (when-let [color-detail (get color-details (:color look-attributes))]
