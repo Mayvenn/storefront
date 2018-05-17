@@ -4,11 +4,13 @@
 
 @media (--on-tablet-and-desktop) {
     .flex-on-tb-dt { display: flex }
+    .justify-start-on-tb-dt { justify-content: flex-start; }
 }
 
 @media (--on-desktop) {
     .flex-on-dt { display: flex }
 }
+
 @custom-media --on-tablet             (min-width: 750px) and (max-width: 999px);
 @custom-media --on-tablet-and-desktop (min-width: 750px);
 @custom-media --on-desktop            (min-width: 1000px);
