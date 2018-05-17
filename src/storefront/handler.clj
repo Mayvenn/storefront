@@ -258,21 +258,25 @@
           order-token  (some-> (get-in req [:cookies "token" :value])
                                (string/replace #" " "+"))]
       (h (cond-> req
-           (and order-number order-token)
+           (and order-number order-token
+                (not (get-in-req-state req keypaths/order)))
            (assoc-in-req-state keypaths/order (api/get-order storeback-config order-number order-token)))))))
 
 (defn wrap-fetch-catalog [h storeback-config]
   (fn [req]
     (let [order                   (get-in-req-state req keypaths/order)
           skus-on-order           (mapv :sku (orders/product-items order))
-          {:keys [skus products]} (when (seq skus-on-order)
-                                    (api/fetch-v2-products storeback-config {:selector/sku-ids skus-on-order}))
-          {:keys [facets]}        (api/fetch-v2-facets storeback-config)]
+          skus-we-have            (keys (get-in-req-state req keypaths/v2-skus))
+          needed-skus             (set/difference (set skus-on-order) (set skus-we-have))
+          {:keys [skus products]} (when (seq needed-skus)
+                                    (api/fetch-v2-products storeback-config {:selector/sku-ids needed-skus}))
+          {:keys [facets]}        (when-not (get-in-req-state req keypaths/v2-facets)
+                                    (api/fetch-v2-facets storeback-config))]
       (h (-> req
-             (update-in-req-state keypaths/v2-products merge (products/index-products products))
-             (update-in-req-state keypaths/v2-skus merge (products/index-skus skus))
-             (assoc-in-req-state keypaths/v2-facets (map #(update % :facet/slug keyword) facets))
-             (assoc-in-req-state keypaths/categories categories/initial-categories))))))
+           (update-in-req-state keypaths/v2-products merge (products/index-products products))
+           (update-in-req-state keypaths/v2-skus merge (products/index-skus skus))
+           (assoc-in-req-state keypaths/v2-facets (map #(update % :facet/slug keyword) facets))
+           (assoc-in-req-state keypaths/categories categories/initial-categories))))))
 
 (defn wrap-set-user [h]
   (fn [req]
@@ -286,7 +290,6 @@
 (defn wrap-state [routes {:keys [storeback-config leads-config contentful environment]}]
   (-> routes
       (wrap-fetch-catalog storeback-config)
-      (wrap-fetch-order storeback-config)
       (wrap-set-user)
       (wrap-set-welcome-url leads-config)
       (wrap-set-cms-cache contentful)
@@ -301,9 +304,7 @@
       (wrap-defaults (storefront-site-defaults environment))
       (wrap-remove-superfluous-www-redirect environment)
       (wrap-fetch-store storeback-config)
-      (wrap-known-subdomains-redirect environment)
-      (wrap-resource "public")
-      (wrap-content-type)))
+      (wrap-known-subdomains-redirect environment)))
 
 (defn wrap-logging [handler logger]
   (-> handler
@@ -745,9 +746,7 @@
       (wrap-migrate-lead-utm-params-cookies ctx)
       (wrap-migrate-lead-tracking-id-cookie ctx)
       (wrap-defaults (storefront-site-defaults environment))
-      (wrap-welcome-is-for-leads)
-      (wrap-resource "public")
-      (wrap-content-type)))
+      (wrap-welcome-is-for-leads)))
 
 (defn wrap-add-nav-message [h]
   (fn [{:keys [server-name uri query-params query-string] :as req}]
@@ -778,6 +777,17 @@
    (GET "/one-time-login" req (login-and-redirect ctx req))
    (frontend-routes ctx)))
 
+(defn routes-with-orders [ctx]
+  (-> (routes (-> (affirm-routes ctx)
+                  wrap-set-affirm-checkout-token)
+              (paypal-routes ctx)
+              (-> (site-routes ctx)
+                  (wrap-state ctx)
+                  (wrap-site-routes ctx)))
+      (wrap-fetch-order (:storeback-config ctx))
+      (wrap-params)
+      (wrap-cookies)))
+
 (defn create-handler
   ([] (create-handler {}))
   ([{:keys [logger exception-handler environment storeback-config] :as ctx}]
@@ -793,21 +803,12 @@
                (GET "/products/" req (redirect-to-home environment req))
                (GET "/products/:id-and-slug/:sku" req (redirect-to-product-details environment req))
                (GET "/cms" req (-> ctx :contentful :cache deref cheshire.core/generate-string util.response/response))
-               (static-routes ctx)
-               (-> (paypal-routes ctx)
-                   (wrap-fetch-order storeback-config)
-                   (wrap-params)
-                   (wrap-cookies))
-               (-> (affirm-routes ctx)
-                   (wrap-set-affirm-checkout-token)
-                   (wrap-fetch-order storeback-config)
-                   (wrap-params)
-                   (wrap-cookies))
-               (wrap-leads-routes (leads-routes ctx) ctx)
-               (-> (site-routes ctx)
-                   (wrap-state ctx)
-                   (wrap-site-routes ctx))
-               (route/not-found views/not-found))
+               (-> (routes (static-routes ctx)
+                           (wrap-leads-routes (leads-routes ctx) ctx)
+                           (routes-with-orders ctx)
+                           (route/not-found views/not-found))
+                   (wrap-resource "public")
+                   (wrap-content-type)))
        (wrap-add-nav-message)
        (wrap-add-domains)
        (wrap-logging logger)

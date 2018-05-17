@@ -802,3 +802,26 @@
                 requests  (txfm-requests contentful-requests identity)]
             (is (every? #(= 200 (:status %)) responses))
             (is (= 2 (count requests)))))))))
+
+(deftest we-do-not-ask-waiter-more-than-once-for-the-order
+  (testing "Fetching normal pages fetches order once"
+    (let [[storeback-requests storeback-handler]
+          (with-requests-chan (constantly {:status  200
+                                           :headers {"Content-Type" "application/json"}
+                                           :body    (generate-string {:number "W123456"
+                                                                      :token  "order-token"
+                                                                      :state  "cart"})}))]
+      (with-standalone-server [storeback (standalone-server
+                                          (routes (GET "/store" req storeback-stylist-response)
+                                                  (GET "/v2/facets" req {:status 200
+                                                                         :body {}})
+                                                  storeback-handler))]
+        (with-handler handler
+          (let [resp (-> (mock/request :get "https://bob.mayvenn.com/")
+                         (set-cookies {"number"  "W123456"
+                                       "token"   "order-token"
+                                       "expires" "Sat, 03 May 2025 17:44:22 GMT"})
+                         handler)]
+            (is (= 200 (:status resp))
+                (get-in resp [:headers "Location"]))
+            (is (= 1 (count (txfm-requests storeback-requests identity))))))))))
