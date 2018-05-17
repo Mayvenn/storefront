@@ -2,10 +2,6 @@
 
 (def root [:leads])
 
-(def eastern-offset    (conj root :eastern-offset))
-(def offset            (conj root :offset))
-(def tz-abbreviation   (conj root :timezone-abbreviation))
-
 (def copy (conj root :copy))
 
 ;; Working lead

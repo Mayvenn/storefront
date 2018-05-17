@@ -629,11 +629,6 @@
     (let [{nav-event :handler} (bidi/match-route routes/static-api-routes uri)]
       (some-> nav-event routes/bidi->edn static-page :content ->html-resp))))
 
-(defn eastern-offset []
-  (- (-> (clj-time.core/time-zone-for-id "America/New_York")
-         (.getOffset (clj-time.core/now))
-         (/ 3600000))))
-
 (defn leads-routes [{:keys [storeback-config environment client-version] :as ctx}]
   (fn [{:keys [nav-message] :as request}]
     (when (not= (get nav-message 0) events/navigate-not-found)
@@ -649,8 +644,6 @@
                                      (assoc-in keypaths/store-slug config/welcome-subdomain)
                                      (assoc-in keypaths/environment environment)
                                      (assoc-in keypaths/navigation-message nav-message)
-                                     (assoc-in leads.keypaths/eastern-offset (eastern-offset))
-                                     (assoc-in leads.keypaths/tz-abbreviation "EST")
                                      (assoc-in leads.keypaths/lead-flow-id (-> nav-args :query-params :flow))
                                      ((fn [data]
                                         (let [lead-id     (cookies/get request "lead-id")
