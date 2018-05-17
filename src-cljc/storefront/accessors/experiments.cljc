@@ -80,3 +80,6 @@
   "Neither $100 off or in Fayetteville"
   [data]
   (not (seventy-five-off-install? data)))
+
+(defn shop-by-look? [data]
+  (display-feature? data "shop-by-look"))

@@ -56,3 +56,38 @@
          {:class "hoverable"}
          (image-thumbnail (:medium imgs))
          [:div.absolute.bottom-0.col-12.show-on-hover (image-attribution look copy)])]])]))
+
+(defn shop-by-look-experiment-component [{:keys [looks]} owner {:keys [copy]}]
+  (component/create
+   [:div.container.clearfix.mtn2.p4
+    (for [{:keys [id imgs] :as look} looks
+          :let [{:keys [look-attributes social-service links]} look]]
+      [:div
+       {:key id}
+       [:div.p2.col-12-on-mb.col-6-on-tb.col-4-on-dt.col {:key (str "small-" id)}
+        [:div.relative
+         [:img.col-12.block (:medium imgs)]
+         (when-let [texture (:texture look-attributes)]
+           [:div.absolute.flex.justify-end.items-stretch.bottom-0.right-0.mb8
+            [:div {:style {:width       "0"
+                           :height      "0"
+                           :border-top  "28px solid rgba(159, 229, 213, 0.8)"
+                           :border-left "21px solid transparent"}}]
+            [:div.flex.items-center.px3.medium.h6.bg-transparent-light-teal
+             texture]])]
+        [:div.bg-light-gray.p1
+         [:div.h5.mt1.mb2.mx1
+          [:div.flex.items-center
+           [:div.flex-auto.medium.h6 (:color look-attributes)]
+           [:div.line-height-1 {:style {:width "1em" :height "1em"}}
+            (svg/social-icon social-service)]]
+          [:div.flex-auto.medium (:lengths look-attributes)]]
+         (let [{:keys [view-look view-other]} links
+               [nav-event nav-args]           (or view-look view-other)]
+           (ui/underline-button
+            (merge
+             (util/route-to nav-event nav-args {:back-copy  (:back-copy copy)
+                                                :short-name (:short-name copy)})
+             (when view-look
+               {:data-test (str "look-" (:look-id nav-args))}))
+            [:span.bold (:button-copy copy)]))]]])]))
