@@ -7,8 +7,13 @@
 }
 
 .btn-primary.is-hover,
-.btn-primary:hover {
-  box-shadow: inset 0 0 0 20rem var(--darken-1);
+.btn-primary:hover
+{
+    box-shadow: inset 0 0 0 20rem var(--darken-1);
+}
+
+.btn-primary-teal-hover.btn-primary.is-hover, .btn-primary-teal-hover.btn-primary:hover {
+    background-color: var(--hover-only-teal-gray);
 }
 
 .btn-primary.is-active,
@@ -23,9 +28,10 @@
 }
 
 :root {
-  --blue: #0074d9;
-  --silver: #EBEBEB;
-  --light-gray: #B4B4B4;
+  --blue:                 #0074d9;
+  --silver:               #ebebeb;
+  --light-gray:           #b4b4b4;
+  --hover-only-teal-gray: #e5eeec;
 
   --darken-1: rgba(0, 0, 0, .075);
   --darken-3: rgba(0, 0, 0, .375);

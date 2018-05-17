@@ -248,10 +248,11 @@
    [:div.p1
     [:div.p4
      {:class (str "bg-" color-class
-                  (when (#{"black" "fb-blue"} color-class) " white")
-                  (when (#{"white"} color-class) " border border-gray"))}
+                  (when (#{"black" "fb-blue" "dark-gray"} color-class) " white")
+                  (when (#{"white"} color-class) " border border-gray"))
+      :style {:height "8em"}}
      [:div.mt4
-      [:div.titleize color-class]
+      [:div color-class]
       [:div "#" hex]]]]])
 
 (def ^:private colors
@@ -281,7 +282,8 @@
   [:div.flex.flex-wrap.mxn1.mb4
    (color-swatch "light-orange" "fff8e5")
    (color-swatch "orange" "ffc520")
-   (color-swatch "transparent-light-teal" "9fe5d5CC")]
+   (color-swatch "transparent-light-teal" "9fe5d5cc")
+   (color-swatch "hover-only-teal-gray" "e5eeec")]
 
   (subheader "Third party")
   [:div.flex.flex-wrap.mxn1.mb4
