@@ -305,6 +305,7 @@
 (defpath api-success-update-order-update-address)
 (defpath api-success-update-order-update-guest-address)
 (defpath api-success-update-order-update-cart-payments)
+(defpath api-success-update-order-update-cart-payments-affirm)
 (defpath api-success-update-order-update-shipping-method)
 (defpath api-success-update-order-add-promotion-code)
 (defpath api-success-update-order-remove-promotion-code)

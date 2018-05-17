@@ -4,6 +4,9 @@
             [ring.middleware.cookies :as cookies]
             [ring.util.codec :as codec]))
 
+(defn minutes [n]
+  (* 60 n))
+
 (defn days [n]
   (* 60 60 24 n))
 

@@ -446,14 +446,6 @@
                                       "To complete your purchase without the 'FreeInstall' promotion, "
                                       "please continue with your order below.")})
 
-(def standard-affirm-error "There was an issue authorizing your Affirm loan. Please check out again or use a different payment method.")
-(def payment-error-codes
-  {"affirm-total-too-low"       "Affirm financing is not available for orders less than $50. Please use a different payment method."
-   "affirm-incomplete"          standard-affirm-error
-   "affirm-invalid-state"       standard-affirm-error
-   "affirm-failed-to-authorize" standard-affirm-error
-   "affirm-failed-to-charge"    standard-affirm-error})
-
 (defmethod perform-effects events/navigate-cart [_ event args _ app-state]
   (api/get-shipping-methods)
   (api/get-states (get-in app-state keypaths/api-cache))
@@ -499,6 +491,14 @@
   (places-autocomplete/remove-containers)
   (api/get-states (get-in app-state keypaths/api-cache))
   (fetch-saved-cards app-state))
+
+(def ^:private payment-error-codes
+  (let [standard-affirm-error "There was an issue authorizing your Affirm loan. Please check out again or use a different payment method."]
+    {"affirm-total-too-low"       "Affirm financing is not available for orders less than $50. Please use a different payment method."
+     "affirm-incomplete"          standard-affirm-error
+     "affirm-invalid-state"       standard-affirm-error
+     "affirm-failed-to-authorize" standard-affirm-error
+     "affirm-failed-to-charge"    standard-affirm-error}))
 
 (defmethod perform-effects events/navigate-checkout-payment [dispatch event args _ app-state]
   (when (empty? (get-in app-state keypaths/order-shipping-address))

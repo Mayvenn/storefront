@@ -612,12 +612,12 @@
             (util.response/redirect "/checkout/payment?error=affirm-invalid-state")
 
             (= "cart" (:state order))
-            (do
-              (api/save-affirm-checkout-token storeback-config
-                                              (:number order)
-                                              (:token order)
-                                              checkout-token)
-              (util.response/redirect "/checkout/processing"))
+            (-> (util.response/redirect "/checkout/processing")
+                (cookies/set environment
+                             "affirm-token"
+                             checkout-token
+                             {:http-only false
+                              :max-age   (cookies/minutes 5)}))
 
             (= "submitted" (:state order))
             (util.response/redirect (str "/orders/" (:number order) "/complete"))))))

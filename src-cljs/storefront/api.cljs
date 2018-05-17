@@ -734,16 +734,22 @@
     :handler #(messages/handle-message events/api-success-update-order-update-shipping-method
                                        {:order %})}))
 
-(defn update-cart-payments [session-id {:keys [order] :as args}]
-  (storeback-api-req
-   POST
-   "/v2/update-cart-payments"
-   request-keys/update-cart-payments
-   {:params (-> order
-                (select-keys [:number :token :cart-payments])
-                (assoc :session-id session-id))
-    :handler #(messages/handle-message events/api-success-update-order-update-cart-payments
-                                       (merge args {:order %}))}))
+;;TODO This needs some reworking, it has an awkward api
+(defn update-cart-payments
+  ([session-id {:keys [order] :as args}]
+   (update-cart-payments session-id
+                         args
+                         #(messages/handle-message events/api-success-update-order-update-cart-payments
+                                                   (merge args {:order %}))))
+  ([session-id {:keys [order] :as args} success-handler]
+   (storeback-api-req
+    POST
+    "/v2/update-cart-payments"
+    request-keys/update-cart-payments
+    {:params (-> order
+                 (select-keys [:number :token :cart-payments])
+                 (assoc :session-id session-id))
+     :handler success-handler})))
 
 (defn get-order [number token]
   (storeback-api-req

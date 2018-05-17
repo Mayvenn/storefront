@@ -235,13 +235,16 @@
                               :long-message message}])
      :error-message "Affirm reported an error with your address, please correct them below"}))
 
+(def ^:private std-affirm-error-message
+  "There was an issue authorizing your Affirm loan. Please check out again or use a different payment method.")
+
 (def non-input-affirm-std-error
   {:error-code "affirm-open-failure"
-   :error-message "There was an issue authorizing your Affirm loan. Please check out again or use a different payment method."})
+   :error-message std-affirm-error-message})
 
 (def affirm-ui-std-error
   {:error-code "affirm-ui-error"
-   :error-message "There was an issue authorizing your Affirm loan. Please check out again or use a different payment method."})
+   :error-message std-affirm-error-message})
 
 (defmethod effects/perform-effects events/affirm-checkout-error
   [_ _ {:keys [code] :as affirm-error} _ app-state]
