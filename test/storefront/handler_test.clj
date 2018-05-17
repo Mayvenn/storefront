@@ -54,8 +54,8 @@
 
 
 (def storeback-one-time-login-response
-  (-> (generate-string {:user  {:email      "acceptance+bob@mayvenn.com"
-                                :id         3
+  (-> (generate-string {:user  {:email "acceptance+bob@mayvenn.com"
+                                :id    3
                                 :token "USERTOKEN"}
                         :order {:number "W123456"
                                 :token  "ORDERTOKEN"}})
@@ -770,10 +770,10 @@
 
 (deftest fetches-data-from-contentful
   (testing "caching content"
-    (let [[storeback-requests storeback-handler]   (with-requests-chan (routes (GET "/store" req storeback-stylist-response)))
-          [contentful-requests contentful-handler] (with-requests-chan (routes (GET "/spaces/fake-space-id/entries" req
-                                                                                    {:status 200
-                                                                                     :body   (generate-string (:body contentful-response))})))]
+    (let [[storeback-requests storeback-handler]   (with-requests-chan (GET "/store" req storeback-stylist-response))
+          [contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
+                                                                            {:status 200
+                                                                             :body   (generate-string (:body contentful-response))}))]
       (with-standalone-server [storeback (standalone-server storeback-handler)
                                contentful (standalone-server contentful-handler {:port 4335})]
         (with-handler handler
@@ -783,18 +783,18 @@
             (is (= 1 (count requests))))))))
 
   (testing "fetches data on system start"
-    (let [[contentful-requests contentful-handler] (with-requests-chan (routes (GET "/spaces/fake-space-id/entries" req
-                                                                                    {:status 200
-                                                                                     :body   (generate-string (:body contentful-response))})))]
+    (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
+                                                                            {:status 200
+                                                                             :body   (generate-string (:body contentful-response))}))]
       (with-standalone-server [contentful (standalone-server contentful-handler {:port 4335})]
         (with-handler handler
           (is (= 1 (count (txfm-requests contentful-requests identity))))))))
 
   (testing "attempts-to-retry-fetch-from-contentful"
-    (let [[storeback-requests storeback-handler]   (with-requests-chan (routes (GET "/store" req storeback-stylist-response)))
-          [contentful-requests contentful-handler] (with-requests-chan (routes (GET "/spaces/fake-space-id/entries" req
-                                                                                    {:status 500
-                                                                                     :body   "{}"})))]
+    (let [[storeback-requests storeback-handler]   (with-requests-chan (GET "/store" req storeback-stylist-response))
+          [contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
+                                                                            {:status 500
+                                                                             :body   "{}"}))]
       (with-standalone-server [storeback (standalone-server storeback-handler)
                                contentful (standalone-server contentful-handler {:port 4335})]
         (with-handler handler
