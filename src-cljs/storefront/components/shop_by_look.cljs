@@ -7,9 +7,10 @@
             [storefront.accessors.experiments :as experiments]
             [storefront.components.ui :as ui]
             [storefront.config :as config]
-            [storefront.accessors.experiments :as experiments]))
+            [storefront.accessors.experiments :as experiments]
+            [spice.maps :as maps]))
 
-(defn component [{:keys [looks copy spinning? shop-by-look?]} owner opts]
+(defn component [{:keys [looks color-details copy spinning? shop-by-look?]} owner opts]
   (om/component
    (html
     (if spinning?
@@ -21,7 +22,9 @@
          {:style {:width "101px" :height "85px"}} ]
         [:p.dark-gray.col-10.col-6-on-tb-dt.mx-auto (:description copy)]]
        (if shop-by-look?
-         (om/build ugc/shop-by-look-experiment-component {:looks looks} {:opts {:copy copy}})
+         (om/build ugc/shop-by-look-experiment-component
+                   {:color-details color-details :looks looks}
+                   {:opts {:copy copy}})
          (om/build ugc/component {:looks looks} {:opts {:copy copy}}))]))))
 
 (defn query [data]
@@ -32,6 +35,11 @@
     {:looks         looks
      :copy          (-> config/pixlee :copy actual-album-kw)
      :spinning?     (empty? looks)
+     :color-details (->> (get-in data keypaths/v2-facets)
+                         (filter #(= :hair/color (:facet/slug %)))
+                         first
+                         :facet/options
+                         (maps/index-by :option/slug))
      :shop-by-look? (experiments/shop-by-look? data)}))
 
 (defn built-component [data opts]
