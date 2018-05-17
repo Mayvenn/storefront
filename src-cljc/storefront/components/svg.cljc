@@ -226,6 +226,26 @@
        :2 "number-circle-2"
        :3 "number-circle-3"))]))
 
+(defn number-circle-with-white-border [number-kw]
+  (component/html
+   [:div.relative {:style {:left "-37px"}}
+    [:svg.absolute {:class "fill-white bold"
+                    :style {:width     "80px"
+                            :height    "80px"
+                            :font-size "35px"}}
+     (svg-xlink "number-circle-1")]
+    [:svg.absolute {:class "fill-teal bold"
+                    :style {:width       "74px"
+                            :height      "74px"
+                            :font-size   "35px"
+                            :margin-left "3px"
+                            :margin-top  "3px"}}
+     (svg-xlink
+      (case number-kw
+        :1 "number-circle-1"
+        :2 "number-circle-2"
+        :3 "number-circle-3"))]]))
+
 (defn minus-sign [opts]
   (component/html
    [:svg opts

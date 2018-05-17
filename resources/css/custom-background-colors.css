@@ -16,6 +16,7 @@
 .bg-transparent-light-teal { background-color: var(--transparent-light-teal); }
 .bg-hover-only-teal-gray   { background-color: var(--hover-only-teal-gray); }
 .bg-too-light-teal         { background-color: var(--too-light-teal); }
+.bg-transparent-teal       { background-color: var(--transparent-teal); }
 .bg-lighten-5              { background-color: var(--lighten-5); }
 
 :root {
@@ -28,6 +29,7 @@
     --dark-gray:      #333333;
     --black:          #000000;
 
+    --transparent-teal:       #40cbac19;
     --light-teal:             #9fe5d5;
     --transparent-light-teal: #9fe5d5cc;
     --hover-only-teal-gray:   #e5eeec;
