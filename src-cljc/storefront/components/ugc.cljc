@@ -86,13 +86,11 @@
               (:option/name color-detail)])]
           [:div.self-end.line-height-1 {:style {:width "1em" :height "1em"}}
            (svg/social-icon social-service)]]
-         [:div.flex-auto (:lengths look-attributes)]]
-        (let [{:keys [view-look view-other]} links
-              [nav-event nav-args]           (or view-look view-other)]
-          (ui/underline-button
-           (merge
-            (util/route-to nav-event nav-args {:back-copy  (:back-copy copy)
-                                               :short-name (:short-name copy)})
-            (when view-look
-              {:data-test (str "look-" (:look-id nav-args))}))
-           [:span.bold (:button-copy copy)]))]])]))
+         (:lengths look-attributes)]
+        (ui/underline-button
+         (merge
+          (util/route-to nav-event nav-args {:back-copy  (:back-copy copy)
+                                             :short-name (:short-name copy)})
+          (when view-look
+            {:data-test (str "look-" (:look-id nav-args))}))
+         [:span.bold (:new-look/button-copy copy)])]])]))
