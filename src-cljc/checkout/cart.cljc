@@ -54,7 +54,7 @@
          om/IRenderState
          (render-state [this {:keys [show? banner-height]}]
            (component/html
-            [:div.fixed.z1.top-0.left-0.right-0
+            [:div.fixed.z4.top-0.left-0.right-0
              (if show?
                {:style {:margin-top "0"}
                 :class "transition-2"}
