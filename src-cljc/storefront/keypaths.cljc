@@ -291,6 +291,9 @@
 
 (def environment [:environment])
 
+(def faq (conj ui :faq))
+(def faq-expanded-section (conj faq :expanded-section))
+
 (defn ->str [keypath]
   (string/join "-" (map name keypath)))
 

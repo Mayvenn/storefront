@@ -416,3 +416,5 @@
 (defpath viewed-sku)
 
 (defpath determine-and-show-popup)
+
+(defpath faq-section-selected)
