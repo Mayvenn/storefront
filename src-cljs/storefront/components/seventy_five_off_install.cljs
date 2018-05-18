@@ -121,13 +121,6 @@
                                                " INSTALL at checkout. Then, schedule an appointment with your"
                                                " Mayvenn stylist and just show up. The $100 off will be waiting"
                                                " for you. It’s that easy!"])
-                           (accordion/section "How does this all work? How do I get $100 off my install?"
-                                              ["It’s easy! Mayvenn will pay the first $100 of your"
-                                               " install directly to your Mayvenn stylist. Just purchase 3"
-                                               " bundles or more (including frontals and closures) and use code"
-                                               " INSTALL at checkout. Then, schedule an appointment with your"
-                                               " Mayvenn stylist and just show up. The $100 off will be waiting"
-                                               " for you. It’s that easy!"])
                            (accordion/section "Who is going to do my hair?"
                                               ["The $100 off offer is only valid at your Mayvenn stylist."
                                                " If you are unsure if your stylist is participating in the $100"
