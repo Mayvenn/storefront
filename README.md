@@ -60,6 +60,23 @@ This module contains the code involved in logging in.
 Storefront's is built around a single application state and 5 event systems.
 An event is a vector of keywords.
 
+### State
+Storefront's application state (let's call it app-state) is a single om atom containing nested maps.
+It is dereferenced before it is in a usuable context, ie event handling code described below.
+We set and access values through `keypaths` which are vectors of keywords.
+For example, say you want to get the ID number of an order.
+That information is stored in the order, naturally.
+You can use the keypaths/order-number along with get-in to fetch that value.
+
+#### Example
+```
+(def app-state
+ {:order {:number "W123456"}
+  :ui    {:other :stuff}})
+
+(get-in app-state keypaths/order-number)
+```
+
 ### Events
 Events are evaluated in a cascading manner, for example, examine the event `navigate-checkout-returning-or-guest`.
 It evaluates to `[:navigate :checkout :returning :or :guest]`.
@@ -132,16 +149,35 @@ Some examples would be `[:navigate :checkout :returning]` and `[:navigate :check
 
 #### Examples:
 ##### Getting data asynchronously over an API
+
+
 ##### Configuring a component to update app state when interacted with.
+```
+(defn text-field [app-state keypath]
+  [:input
+   {:type      "text"
+    :value     (get-in app-state keypath)
+    :on-change (fn [^js/Event e]
+                 (handle-message events/control-change-state
+                                 {:keypath keypath
+                                  :value   (.. e -target -value)}))}])
+                                  
+(defmethod transition-state events/control-change-state
+  [dispatch event {:keys [keypath value] :as arguments} app-state]
+  (assoc-in app-state keypath (if (fn? value) (value) value)))
 
+```
+In the above example, we can see a simple function which takes the state of the
+application and a keypath that points to a value in app state and returns a html data structure.
+Before it can be used, it must used in an om component.
 
+The value of the text field is not directly manipulated by the text field.
+Instead, the on-change fn dispatches a `control-change-state` event.
+
+The transition multimethod for the `control-change-state` event places the value
+into app-state causing the text-field to re-render with the newly inserted value in app-state.
 
 ## Server Side Rendering
-
-[Here is some more information about effects and transitions][8]
-
-
-
 
 ## Questions
 * Where are the tests?
