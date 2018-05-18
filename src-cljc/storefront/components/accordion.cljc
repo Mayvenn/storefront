@@ -23,6 +23,8 @@
            {:data-test (str "accordion-" index)})
     [:div.flex-auto title]
     [:div.px2
+     (when expanded?
+       {:class "rotate-180"})
      (svg/dropdown-arrow {:class  "stroke-dark-gray"
                           :style  {:stroke-width "3px"}
                           :height "12px"
