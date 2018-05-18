@@ -613,7 +613,7 @@
            :item-prop "logo"
            :content (str "https:" (assets/path "/images/header_logo.svg"))}
           (when event (utils/route-to event))
-          (dissoc attrs [:height :event]))])
+          (dissoc attrs :height :event))])
 
 (defn pluralize
   ([cnt singular] (pluralize cnt singular (str singular "s")))
