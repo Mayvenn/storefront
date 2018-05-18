@@ -60,6 +60,7 @@
 }
 
 .capped { border-radius: 1000px; }
+.rounded-0            { border-radius: var(--border-radius-0); }
 .rounded-top-left     { border-top-left-radius:     var(--border-radius); }
 .rounded-top-right    { border-top-right-radius:    var(--border-radius); }
 .rounded-bottom-left  { border-bottom-left-radius:  var(--border-radius); }
@@ -73,5 +74,6 @@
 :root {
   --border-width: 1px;
   --border-radius: 3px;
+  --border-radius-0: 3px;
   --border-radius-1: 6px;
 }
