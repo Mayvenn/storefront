@@ -40,6 +40,14 @@
     transition: var(--color-transition);
 }
 
+.slide-down-enter {
+    opacity: 0;
+}
+.slide-down-enter.slide-down-enter-active {
+    opacity: 1;
+    transition: all 300ms 0ms ease-in-out;
+}
+
 :root {
     --teal: #40cbac;
     --too-light-teal: #f5fcfb;

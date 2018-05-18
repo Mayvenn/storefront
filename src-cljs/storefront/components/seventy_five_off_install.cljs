@@ -116,7 +116,8 @@
                                                " before it is installed, we will refund your purchase if the"
                                                " bundle is unopened and the hair is in its original condition."
                                                " Just call us:"
-                                               [:br]])
+                                               [:br]
+                                               (ui/link :link/phone :a.dark-gray {} "1-888-562-7952")])
                            (accordion/section "How does this all work? How do I get $100 off my install?"
                                               ["It’s easy! Mayvenn will pay the first $100 of your"
                                                " install directly to your Mayvenn stylist. Just purchase 3"

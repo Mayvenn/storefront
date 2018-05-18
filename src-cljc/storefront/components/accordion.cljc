@@ -5,6 +5,15 @@
             [storefront.components.svg :as svg]
             [storefront.css-transitions :as css-transitions]))
 
+(defn- slide-down [& content]
+  (css-transitions/transition-group
+   {:transitionName          "slide-down"
+    :transitionEnter         true
+    :transitionEnterTimeout  300
+    :transitionLeave         false
+    :transitionLeaveTimeout  300}
+   content))
+
 (defn section
   "A data constructor for convenience"
   [title & paragraphs]
@@ -29,13 +38,12 @@
                           :style  {:stroke-width "3px"}
                           :height "12px"
                           :width  "12px"})]]
-   (into [:div.mr8
-          #?(:cljs ;; for SEO
-             (when-not expanded?
-               {:class "hide"}))]
-         (map (fn [paragraph]
-                [:p.py2.h6 paragraph])
-              paragraphs))])
+   (slide-down
+    (when (or expanded? #?(:clj true)) ;; always show for server-side rendered html
+      (into [:div.mr8]
+            (map (fn [paragraph]
+                   [:p.py2.h6 paragraph])
+                 paragraphs))))])
 
 (defn component [{:keys [expanded-indicies sections]} owner {:keys [section-click-event]}]
   (component/create
