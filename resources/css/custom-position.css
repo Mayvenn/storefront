@@ -1,5 +1,6 @@
 .overlay { top: 0; right: 0; bottom: 0; left: 0; }
 .sticky { position: sticky; } /* only works in FF, Safari, mobile Safari and chrome >= 58 */
+.overflow-auto { -webkit-overflow-scrolling: touch; }
 
 .rotate-45 { transform: rotate(45deg); }
 .rotate-180 { transform: rotate(180deg); }
