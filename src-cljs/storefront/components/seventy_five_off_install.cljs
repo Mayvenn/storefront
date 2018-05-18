@@ -50,7 +50,7 @@
       " and backed by a 30 day guarantee."]]
     [:div.py4
      (img-with-number-circle {:alt      "Phone showing appointments"}
-                             "1bfbdd7b-4854-43de-99d3-8d51576bbd17"
+                             "68b7a726-effe-49cf-a78b-d89263c3393f"
                              :2)
      [:h2.h2.pt1 "Book your appointment"]
      [:p.h5.dark-gray.mt1
@@ -80,16 +80,18 @@
 
    [:div.my4
     (ucare-img {:alt ""}
-               "98a2fb6d-3149-4213-8198-b67a87d8042b"
+               "3bbc41a4-31c2-4817-ad9b-f32936d7a95f"
                72)
     [:h6.teal.bold "Risk Free"]
     [:p.h6 "Wear it, dye it, style it. If your don't love it your"
      " hair we'll exchange it within 30 days of purchase."]]
 
    [:div.my4
-    (ucare-img {:alt ""}
-               "4e19de20-0af3-4330-9598-eb9a70e1f9d8"
-               72)
+    [:div.relative
+     {:style {:left "-11px"}}
+     (ucare-img {:alt ""}
+                "4f5d609c-a4f1-4d1b-9ea0-787a1e0a6a07"
+                72)]
     [:h6.teal.bold "Free 3-5 Day Shipping"]
     [:p.h6 "Need it sooner? Overnight shipping is available."]]])
 
@@ -101,15 +103,16 @@
     {:expanded-indicies   #{expanded-index}
      :sections            [(accordion/section "How does the 30 day guarantee work?"
                                               ["Buy Mayvenn hair RISK FREE with easy returns and exchanges."]
-                                              ["EXCHANGES"]
-                                              ["Wear it, dye it, even flat iron it. If you do not love your"
+                                              ["EXCHANGES"
+                                               [:br]
+                                               "Wear it, dye it, even flat iron it. If you do not love your"
                                                " Mayvenn hair we will exchange it within 30 days of purchase."
                                                " Just call us:"
                                                [:br]
                                                (ui/link :link/phone :a.dark-gray {} "1-888-562-7952")]
-
-                                              ["RETURNS"]
-                                              ["If you are not completely happy with your Mayvenn hair"
+                                              ["RETURNS"
+                                               [:br]
+                                               "If you are not completely happy with your Mayvenn hair"
                                                " before it is installed, we will refund your purchase if the"
                                                " bundle is unopened and the hair is in its original condition."
                                                " Just call us:"

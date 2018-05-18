@@ -29,12 +29,12 @@
                           :style  {:stroke-width "3px"}
                           :height "12px"
                           :width  "12px"})]]
-   (into [:div
+   (into [:div.mr8
           #?(:cljs ;; for SEO
              (when-not expanded?
                {:class "hide"}))]
          (map (fn [paragraph]
-                [:p.py1.h6 paragraph])
+                [:p.py2.h6 paragraph])
               paragraphs))])
 
 (defn component [{:keys [expanded-indicies sections]} owner {:keys [section-click-event]}]
