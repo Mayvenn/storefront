@@ -59,6 +59,23 @@
 (defn deals? [data]
   (display-feature? data "deals"))
 
+(defn email-capture-test-variation [data]
+  (cond
+    (display-feature? data "email-capture-40-dollars")
+    "email-capture-40-dollars"
+
+    (display-feature? data "email-capture-25-percent")
+    "email-capture-25-percent"
+
+    (display-feature? data "email-capture-35-percent")
+    "email-capture-35-percent"
+
+    (display-feature? data "email-capture-bundle-deal")
+    "email-capture-bundle-deal"
+
+    :else
+    "control"))
+
 (defn auto-complete? [data]
   (display-feature? data "auto-complete"))
 
