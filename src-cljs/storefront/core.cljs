@@ -43,10 +43,12 @@
     (perform-track event-fragment event args app-state)))
 
 (defn- log-deltas [old-app-state new-app-state [event args]]
-  (let [[deleted added unchanged] (diff old-app-state new-app-state)]
-    (js/console.groupCollapsed event args)
-    (js/console.log "Delta" {:deleted deleted
-                             :added added})
+  (let [[deleted added _unchanged] (diff old-app-state new-app-state)]
+    (js/console.groupCollapsed (clojure.string/join "-" (map name event)) args)
+    (apply js/console.log (remove nil? [(when (seq deleted) "Δ-")
+                                        deleted
+                                        (when (seq added) "Δ+")
+                                        added]))
     (js/console.trace "Stacktrace")
     (js/console.groupEnd))
   new-app-state)
