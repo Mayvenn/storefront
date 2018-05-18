@@ -1,15 +1,12 @@
 (ns checkout.header
-  (:require
-   [storefront.accessors.orders :as orders]
-   [storefront.components.slideout-nav :as slideout-nav]
-   [storefront.platform.component-utils :as utils]
-   [storefront.components.svg :as svg]
-   [storefront.events :as events]
-   [storefront.components.ui :as ui]
-   [storefront.keypaths :as keypaths]
-   [storefront.components.header :as storefront-header]
-   #?(:clj [storefront.component-shim :as component]
-      :cljs [storefront.component :as component])))
+  (:require [storefront.accessors.orders :as orders]
+            [storefront.component :as component]
+            [storefront.components.header :as storefront-header]
+            [storefront.components.svg :as svg]
+            [storefront.components.ui :as ui]
+            [storefront.events :as events]
+            [storefront.keypaths :as keypaths]
+            [storefront.platform.component-utils :as utils]))
 
 (defn desktop-header [{:keys [store user cart shopping signed-in the-ville?]}]
   [:div.hide-on-mb.relative
@@ -29,7 +26,7 @@
                                     :data-test "desktop-header-logo"
                                     :height "60px"})]]]]])
 
-(defn component [{:keys [desktop-header-data item-count back]}]
+(defn component [{:keys [desktop-header-data item-count back]} _ _]
   (component/create
    (let [close-cart-route (utils/route-back-or-to back events/navigate-home)]
      [:div

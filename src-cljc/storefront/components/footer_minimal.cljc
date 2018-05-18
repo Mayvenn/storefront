@@ -1,9 +1,7 @@
 (ns storefront.components.footer-minimal
-  (:require #?(:clj [storefront.component-shim :as component]
-               :cljs [storefront.component :as component])
-            [storefront.components.ui :as ui]
-            [storefront.keypaths :as keypaths]
-            [storefront.components.footer-links :as footer-links]))
+  (:require [storefront.component :as component]
+            [storefront.components.footer-links :as footer-links]
+            [storefront.components.ui :as ui]))
 
 (defn component
   [{:keys [call-number]} owner opts]

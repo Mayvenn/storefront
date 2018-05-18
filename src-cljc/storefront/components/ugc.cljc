@@ -2,9 +2,8 @@
   (:require  [storefront.platform.component-utils :as util]
              [storefront.components.ui :as ui]
              [storefront.components.svg :as svg]
-             #?@(:clj [[storefront.component-shim :as component]]
-                 :cljs [[storefront.component :as component]
-                        [goog.string]])))
+             [storefront.component :as component]
+             #?@(:cljs [[goog.string]])))
 
 (defn user-attribution [{:keys [user-handle social-service]}]
   [:div.flex.items-center

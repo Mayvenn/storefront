@@ -27,9 +27,8 @@
             [storefront.request-keys :as request-keys]
             [storefront.transitions :as transitions]
             [storefront.platform.component-utils :as utils]
-            #?@(:clj [[storefront.component-shim :as component]]
-                :cljs [[storefront.hooks.pixlee :as pixlee-hooks]
-                       [storefront.component :as component]
+            [storefront.component :as component]
+            #?@(:cljs [[storefront.hooks.pixlee :as pixlee-hooks]
                        [storefront.hooks.reviews :as review-hooks]
                        [storefront.api :as api]
                        [storefront.history :as history]])

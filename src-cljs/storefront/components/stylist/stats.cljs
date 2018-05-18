@@ -123,7 +123,7 @@
      :initial-slide-index (if (= :stats/cash-out-now next-payout-slide) 1 0) }))
 
 (defn component
-  [{:keys [payout-stats next-payout-slide initial-slide-index]} owner]
+  [{:keys [payout-stats next-payout-slide initial-slide-index]} owner _]
   (component/create
    [:div.bg-teal.white.center
     [:div.bg-darken-bottom-1

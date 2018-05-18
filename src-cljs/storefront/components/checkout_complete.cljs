@@ -1,18 +1,17 @@
 (ns storefront.components.checkout-complete
-  (:require [storefront.assets :as assets]
-            [storefront.components.facebook :as facebook]
+  (:require [clojure.string :as string]
+            [storefront.assets :as assets]
             [storefront.component :as component]
-            [storefront.components.ui :as ui]
+            [storefront.components.facebook :as facebook]
             [storefront.components.sign-up :as sign-up]
-            [storefront.keypaths :as keypaths]
-            [clojure.string :as string]
-            [spice.date :as date]))
+            [storefront.components.ui :as ui]
+            [storefront.keypaths :as keypaths]))
 
 (defn copy [& sentences]
   (string/join " " sentences))
 
 (defn component
-  [{:keys [guest? sign-up-data]} _]
+  [{:keys [guest? sign-up-data]} _ _]
   (component/create
    (ui/narrow-container
     [:div.p3

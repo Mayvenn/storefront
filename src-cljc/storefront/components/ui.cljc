@@ -1,10 +1,8 @@
 (ns storefront.components.ui
   (:require [cemerick.url :as url]
             [clojure.string :as string]
-            [spice.maps :as maps]
             [storefront.assets :as assets]
-            #?(:clj [storefront.component-shim :as component]
-               :cljs [storefront.component :as component])
+            [storefront.component :as component]
             [storefront.components.money-formatters :as mf]
             [storefront.components.svg :as svg]
             [storefront.events :as events]

@@ -1,11 +1,10 @@
 (ns storefront.components.stylist-banner
-  (:require #?(:clj [storefront.component-shim :as component]
-               :cljs [storefront.component :as component])
+  (:require [storefront.accessors.experiments :as experiments]
+            [storefront.component :as component]
             [storefront.components.ui :as ui]
-            [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.accessors.experiments :as experiments]))
+            [storefront.platform.component-utils :as utils]))
 
 (def close-button
   (component/html

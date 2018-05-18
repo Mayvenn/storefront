@@ -1,9 +1,8 @@
 (ns leads.a1.applied-self-reg
-  (:require #?@(:clj [[storefront.component-shim :as component]]
-                :cljs [[storefront.browser.cookie-jar :as cookie-jar]
-                       [storefront.component :as component]
+  (:require #?@(:cljs [[storefront.browser.cookie-jar :as cookie-jar]
                        [storefront.api :as api]
                        [storefront.history :as history]])
+            [storefront.component :as component]
             [storefront.assets :as assets]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]

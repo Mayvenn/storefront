@@ -1,15 +1,14 @@
 (ns leads.home-a1
-  (:require #?@(:clj [[storefront.component-shim :as component]]
-                :cljs [[om.core :as om]
+  (:require #?@(:cljs [[om.core :as om]
                        [goog.events]
                        [goog.dom]
                        [goog.style]
                        [goog.events.EventType :as EventType]
-                       [storefront.component :as component]
                        [storefront.api :as api]
                        [storefront.browser.cookie-jar :as cookie-jar]
                        [storefront.browser.tags :as tags]
                        [storefront.history :as history]])
+            [storefront.component :as component]
             [clojure.string :as string]
             [leads.flows :as flows]
             [leads.header :as header]

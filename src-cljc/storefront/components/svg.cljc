@@ -1,7 +1,6 @@
 (ns storefront.components.svg
-  (:require #?(:clj [storefront.component-shim :as component]
-               :cljs [storefront.component :as component])
-            [spice.maps :as maps]))
+  (:require [spice.maps :as maps]
+            [storefront.component :as component]))
 
 ;; OPTIMIZATION TOOLS:
 ;; hiccup -> xml:           Let the browser do it... then delete the data-reactid's

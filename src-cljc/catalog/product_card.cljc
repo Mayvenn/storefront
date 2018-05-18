@@ -1,18 +1,14 @@
 (ns catalog.product-card
-  (:require
-   #?(:cljs [storefront.component :as component]
-      :clj  [storefront.component-shim :as component])
-   [storefront.components.affirm :as affirm]
-   [storefront.accessors.experiments :as experiments]
-   [storefront.platform.component-utils :as utils]
-   [storefront.components.money-formatters :as mf]
-   [storefront.accessors.skus :as skus]
-   [storefront.accessors.facets :as facets]
-   [storefront.events :as events]
-   [storefront.keypaths :as keypaths]
-   [catalog.keypaths]
-   [catalog.selector :as selector]
-   [spice.core :as spice]))
+  (:require catalog.keypaths
+            [catalog.selector :as selector]
+            [storefront.accessors.facets :as facets]
+            [storefront.accessors.skus :as skus]
+            [storefront.component :as component]
+            [storefront.components.affirm :as affirm]
+            [storefront.components.money-formatters :as mf]
+            [storefront.events :as events]
+            [storefront.keypaths :as keypaths]
+            [storefront.platform.component-utils :as utils]))
 
 (defn slug->facet [facet facets]
   (->> facets

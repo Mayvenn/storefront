@@ -4,11 +4,10 @@
               [goog.events]
               [goog.events.EventType :as EventType]
               [goog.style]
-              [storefront.component :as component]
               [storefront.components.popup :as popup]
               [storefront.components.order-summary :as summary]
-              [om.core :as om]]
-       :clj [[storefront.component-shim :as component]])
+              [om.core :as om]])
+   [storefront.component :as component]
    [checkout.control-cart :as control]
    [clojure.set :as set]
    [storefront.accessors.experiments :as experiments]
@@ -122,7 +121,7 @@
                               field-errors
                               the-ville?
                               seventy-five-off-install?
-                              show-green-banner?]} owner]
+                              show-green-banner?]} owner _]
   (component/create
    [:div.container.p2
     (component/build deploy-promotion-banner-component promotion-banner nil)
@@ -212,7 +211,7 @@
                            "Share your bag"])
          [:div.h5.pt2.dark-gray.light "Click the button above to share this bag with customers."]])]]]))
 
-(defn empty-component [{:keys [promotions]} owner]
+(defn empty-component [{:keys [promotions]} owner _]
   (component/create
    (ui/narrow-container
     [:div.p2

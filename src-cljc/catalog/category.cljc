@@ -1,8 +1,7 @@
 (ns catalog.category
   (:require
-   #?@(:cljs [[storefront.component :as component]
-              [storefront.history :as history]]
-       :clj  [[storefront.component-shim :as component]])
+   #?@(:cljs [[storefront.history :as history]])
+   [storefront.component :as component]
    [catalog.categories :as categories]
    [catalog.product-card :as product-card]
    [storefront.components.ui :as ui]

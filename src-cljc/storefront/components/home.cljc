@@ -1,18 +1,15 @@
 (ns storefront.components.home
-  (:require [storefront.platform.component-utils :as utils]
-            #?(:clj [storefront.component-shim :as component]
-               :cljs [storefront.component :as component])
+  (:require [clojure.string :as string]
             [storefront.accessors.auth :as auth]
-            [storefront.keypaths :as keypaths]
-            [storefront.events :as events]
-            [storefront.components.ui :as ui]
-            [storefront.components.marquee :as marquee]
-            [storefront.assets :as assets]
-            [storefront.config :as config]
             [storefront.accessors.experiments :as experiments]
-            [storefront.routes :as routes]
-            [clojure.string :as string]
-            [spice.date :as date]))
+            [storefront.assets :as assets]
+            [storefront.component :as component]
+            [storefront.components.marquee :as marquee]
+            [storefront.components.ui :as ui]
+            [storefront.events :as events]
+            [storefront.keypaths :as keypaths]
+            [storefront.platform.component-utils :as utils]
+            [storefront.routes :as routes]))
 
 (defn product-image
   [{:keys [resizable_url resizable_filename alt]}]

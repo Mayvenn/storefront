@@ -1,20 +1,14 @@
 (ns catalog.menu
-  (:require
-   #?@(:clj [[storefront.component-shim :as component]]
-       :cljs [[storefront.api :as api]
-              [storefront.component :as component]])
-   [catalog.categories :as categories]
-   [catalog.selector :as selector]
-   [clojure.set :as set]
-   [storefront.components.ui :as ui]
-   [storefront.components.svg :as svg]
-   [storefront.effects :as effects]
-   [storefront.events :as events]
-   [storefront.keypaths :as keypaths]
-   [storefront.platform.component-utils :as utils]
-   [storefront.platform.messages :as messages]
-   [storefront.transitions :as transitions]
-   [storefront.accessors.experiments :as experiments]))
+  (:require [catalog.categories :as categories]
+            [catalog.selector :as selector]
+            [storefront.component :as component]
+            [storefront.components.ui :as ui]
+            [storefront.effects :as effects]
+            [storefront.events :as events]
+            [storefront.keypaths :as keypaths]
+            [storefront.platform.component-utils :as utils]
+            [storefront.platform.messages :as messages]
+            [storefront.transitions :as transitions]))
 
 ;;NOTE Used by slideout-nav
 (defn major-menu-row [& content]

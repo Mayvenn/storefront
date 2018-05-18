@@ -1,16 +1,14 @@
 (ns storefront.components.affirm
-  (:require
-   #?@(:cljs [[storefront.component :as component]
-              [om.core :as om]
-              [storefront.hooks.affirm :as affirm]]
-       :clj  [[storefront.component-shim :as component]])
-   [storefront.events :as events]
-   [storefront.platform.messages :as m]
-   [storefront.transitions :as transitions]
-   [storefront.components.money-formatters :as mf]
-   [storefront.components.svg :as svg]
-   [storefront.keypaths :as keypaths]
-   [storefront.effects :as effects]))
+  (:require [storefront.component :as component]
+            #?@(:cljs [[om.core :as om]
+                       [storefront.hooks.affirm :as affirm]])
+            [storefront.events :as events]
+            [storefront.platform.messages :as m]
+            [storefront.transitions :as transitions]
+            [storefront.components.money-formatters :as mf]
+            [storefront.components.svg :as svg]
+            [storefront.keypaths :as keypaths]
+            [storefront.effects :as effects]))
 
 (defn valid-order-total? [amount-in-usd]  ; Affirm doesn't support items less than $50
   (>= amount-in-usd 50))

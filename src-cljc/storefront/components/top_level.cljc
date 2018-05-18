@@ -1,6 +1,5 @@
 (ns storefront.components.top-level
-  (:require #?(:clj [storefront.component-shim :as component]
-               :cljs [storefront.component :as component])
+  (:require [storefront.component :as component]
             #?@(:cljs [[storefront.components.checkout-sign-in :as checkout-sign-in]
                        [storefront.components.checkout-returning-or-guest :as checkout-returning-or-guest]
                        [storefront.components.checkout-address :as checkout-address]

@@ -1,9 +1,7 @@
 (ns storefront.components.flash
-  (:require [clojure.string :as string]
-            #?(:clj [storefront.component-shim :as component]
-               :cljs [storefront.component :as component])
-            [storefront.components.ui :as ui]
+  (:require [storefront.component :as component]
             [storefront.components.svg :as svg]
+            [storefront.components.ui :as ui]
             [storefront.keypaths :as keypaths]))
 
 (def success-img

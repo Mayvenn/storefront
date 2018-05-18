@@ -1,8 +1,7 @@
 (ns storefront.components.footer-links
-  (:require #?(:clj [storefront.component-shim :as component]
-               :cljs [storefront.component :as component])
-            [storefront.accessors.experiments :as experiments]
+  (:require [storefront.accessors.experiments :as experiments]
             [storefront.accessors.nav :as nav]
+            [storefront.component :as component]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]

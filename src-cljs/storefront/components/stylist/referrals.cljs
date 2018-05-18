@@ -1,17 +1,17 @@
 (ns storefront.components.stylist.referrals
-  (:require [om.core :as om]
+  (:require goog.string
+            [om.core :as om]
             [sablono.core :refer [html]]
-            [storefront.components.money-formatters :as mf]
-            [storefront.components.formatters :as f]
             [storefront.components.flash :as flash]
-            [storefront.components.svg :as svg]
-            [storefront.platform.component-utils :as utils]
-            [storefront.components.ui :as ui]
+            [storefront.components.formatters :as f]
+            [storefront.components.money-formatters :as mf]
             [storefront.components.stylist.pagination :as pagination]
-            [storefront.request-keys :as request-keys]
+            [storefront.components.svg :as svg]
+            [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [goog.string]))
+            [storefront.platform.component-utils :as utils]
+            [storefront.request-keys :as request-keys]))
 
 (defn circular-progress [{:keys [radius stroke-width fraction-filled]}]
   (let [inner-radius    (- radius stroke-width)
@@ -121,7 +121,7 @@
                          referrals
                          page
                          pages
-                         fetching?]} _]
+                         fetching?]} _ _]
   (om/component
    (html
     (if (and (empty? (seq referrals)) fetching?)

@@ -1,12 +1,11 @@
 (ns storefront.components.promotion-banner
-  (:require [storefront.accessors.promos :as promos]
-            #?(:clj [storefront.component-shim :as component]
-               :cljs [storefront.component :as component])
-            [storefront.keypaths :as keypaths]
+  (:require [storefront.accessors.experiments :as experiments]
+            [storefront.accessors.orders :as orders]
+            [storefront.accessors.promos :as promos]
+            [storefront.component :as component]
             [storefront.events :as events]
-            [storefront.accessors.experiments :as experiments]
-            [storefront.platform.component-utils :as utils]
-            [storefront.accessors.orders :as orders]))
+            [storefront.keypaths :as keypaths]
+            [storefront.platform.component-utils :as utils]))
 
 (def allowed-navigation?
   #{events/navigate-home

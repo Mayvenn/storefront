@@ -1,10 +1,10 @@
 (ns storefront.components.slideout-nav
   (:require [catalog.menu :as menu]
             [storefront.accessors.auth :as auth]
+            [storefront.accessors.experiments :as experiments]
+            [storefront.accessors.orders :as orders]
             [storefront.accessors.stylists :as stylists]
-            [storefront.assets :as assets]
-            #?(:clj  [storefront.component-shim :as component]
-               :cljs [storefront.component :as component])
+            [storefront.component :as component]
             [storefront.components.marquee :as marquee]
             [storefront.components.money-formatters :refer [as-money]]
             [storefront.components.promotion-banner :as promotion-banner]
@@ -13,10 +13,7 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.platform.messages :as messages]
-            [storefront.accessors.orders :as orders]
-            [storefront.accessors.experiments :as experiments]
-            [spice.date :as date]))
+            [storefront.platform.messages :as messages]))
 
 (def blog-url "https://blog.mayvenn.com")
 

@@ -1,7 +1,6 @@
 (ns catalog.product-details-ugc
-  (:require #?@(:clj [[storefront.component-shim :as component]]
-                :cljs [[storefront.component :as component]
-                       [goog.string]])
+  (:require #?@(:cljs [[goog.string]])
+            [storefront.component :as component]
             [storefront.components.ugc :as ugc]
             [storefront.components.ui :as ui]
             [storefront.components.svg :as svg]

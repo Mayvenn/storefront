@@ -1,11 +1,10 @@
 (ns storefront.components.scrim
-  (:require #?(:clj [storefront.component-shim :as component]
-               :cljs [storefront.component :as component])
-            [storefront.keypaths :as keypaths]
+  (:require [storefront.accessors.experiments :as experiments]
+            [storefront.component :as component]
             [storefront.components.promotion-banner :as promotion-banner]
-            [storefront.accessors.experiments :as experiments]
-            [storefront.platform.messages :as messages]
-            [storefront.events :as events]))
+            [storefront.events :as events]
+            [storefront.keypaths :as keypaths]
+            [storefront.platform.messages :as messages]))
 
 (defn component [{:keys [show? banner-showing?]} owner opts]
   (component/create

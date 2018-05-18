@@ -1,10 +1,9 @@
 (ns checkout.auto-complete-cart
   (:require
-   #?@(:cljs [[storefront.component :as component]
-              [storefront.components.popup :as popup]
+   #?@(:cljs [[storefront.components.popup :as popup]
               [storefront.components.order-summary :as summary]
-              [storefront.api :as api]]
-       :clj [[storefront.component-shim :as component]])
+              [storefront.api :as api]])
+   [storefront.component :as component]
    [checkout.cart :as cart]
    [checkout.header :as header]
    [spice.selector :as selector]
@@ -228,7 +227,7 @@
                         :style     {:margin-top "-10px"
                                     :height     "40px"}} "Add")]]]))
 
-(defn auto-complete-component [{:keys [suggestions]}]
+(defn auto-complete-component [{:keys [suggestions]} _ _]
   (component/create
    (when (seq suggestions)
      [:div.mb4.px1.col-12.mx-auto.bg-light-orange
@@ -258,7 +257,7 @@
                               recently-added-skus
                               delete-line-item-requests
                               seventy-five-off-install?
-                              show-green-banner?]} owner]
+                              show-green-banner?]} owner _]
   (component/create
    [:div.container.p2
     (component/build cart/deploy-promotion-banner-component promotion-banner nil)
@@ -341,7 +340,7 @@
                                              :height "24px"})
                            "Share your bag"])])]]]))
 
-(defn empty-component [{:keys [promotions]} owner]
+(defn empty-component [{:keys [promotions]} owner _]
   (component/create
    (ui/narrow-container
     [:div.p2

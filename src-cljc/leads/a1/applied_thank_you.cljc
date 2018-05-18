@@ -1,7 +1,6 @@
 (ns leads.a1.applied-thank-you
-  (:require #?@(:clj [[storefront.component-shim :as component]]
-                :cljs [[storefront.browser.cookie-jar :as cookie-jar]
-                       [storefront.component :as component]])
+  (:require #?@(:cljs [[storefront.browser.cookie-jar :as cookie-jar]])
+            [storefront.component :as component]
             [leads.flows :as flows]
             [leads.header :as header]
             [storefront.assets :as assets]

@@ -1,22 +1,18 @@
 (ns storefront.components.header-new-flyout
-  (:require [catalog.categories :as categories]
+  (:require [catalog.menu :as menu]
+            [storefront.accessors.auth :as auth]
+            [storefront.accessors.nav :as nav]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.stylists :as stylists]
-            [storefront.accessors.nav :as nav]
-            [storefront.accessors.auth :as auth]
             [storefront.assets :as assets]
-            #?(:clj [storefront.component-shim :as component]
-               :cljs [storefront.component :as component])
+            [storefront.component :as component]
+            [storefront.components.marquee :as marquee]
+            [storefront.components.slideout-nav :as slideout-nav]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
-            [storefront.components.slideout-nav :as slideout-nav]
-            [storefront.components.marquee :as marquee]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.platform.component-utils :as utils]
-            [clojure.string :as string]
-            [storefront.accessors.experiments :as experiments]
-            [catalog.menu :as menu]))
+            [storefront.platform.component-utils :as utils]))
 
 (def blog-url "https://blog.mayvenn.com")
 

@@ -1,13 +1,11 @@
 (ns storefront.components.marquee
-  (:require #?(:clj [storefront.component-shim :as component]
-               :cljs [storefront.component :as component])
-            [storefront.components.ui :as ui]
-            [storefront.platform.component-utils :as utils]
+  (:require [storefront.accessors.stylists :as stylists]
             [storefront.assets :as assets]
-            [storefront.keypaths :as keypaths]
+            [storefront.component :as component]
+            [storefront.components.ui :as ui]
             [storefront.events :as events]
-            [storefront.accessors.stylists :as stylists]
-            [clojure.set :as set]))
+            [storefront.keypaths :as keypaths]
+            [storefront.platform.component-utils :as utils]))
 
 (defn instagram-url [instagram-account]
   (str "http://instagram.com/" instagram-account))

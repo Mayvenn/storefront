@@ -1,22 +1,17 @@
 (ns storefront.components.header
-  (:require [catalog.categories :as categories]
+  (:require [clojure.string :as string]
+            [storefront.accessors.auth :as auth]
+            [storefront.accessors.nav :as nav]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.stylists :as stylists]
-            [storefront.accessors.nav :as nav]
-            [storefront.accessors.auth :as auth]
             [storefront.assets :as assets]
-            #?(:clj [storefront.component-shim :as component]
-               :cljs [storefront.component :as component])
-            [storefront.components.svg :as svg]
-            [storefront.components.ui :as ui]
-            [storefront.components.slideout-nav :as slideout-nav]
+            [storefront.component :as component]
             [storefront.components.marquee :as marquee]
+            [storefront.components.slideout-nav :as slideout-nav]
+            [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.platform.component-utils :as utils]
-            [clojure.string :as string]
-            [storefront.accessors.experiments :as experiments]
-            [catalog.menu :as menu]))
+            [storefront.platform.component-utils :as utils]))
 
 (def hamburger
   (component/html

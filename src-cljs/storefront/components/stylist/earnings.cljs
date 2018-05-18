@@ -1,25 +1,22 @@
 (ns storefront.components.stylist.earnings
-  (:require [clojure.string :as str]
-            goog.string
-            [om.core :as om]
+  (:require [om.core :as om]
             [sablono.core :refer [html]]
-            [storefront.accessors.images :as images]
+            [spice.maps :as maps]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.stylist-urls :as stylist-urls]
+            [storefront.api :as api]
             [storefront.components.formatters :as f]
             [storefront.components.money-formatters :as mf]
             [storefront.components.stylist.pagination :as pagination]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
+            [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.request-keys :as request-keys]
             [storefront.platform.messages :as messages]
-            [storefront.transitions :as transitions]
-            [storefront.effects :as effects]
-            [spice.maps :as maps]
-            [storefront.api :as api]))
+            [storefront.request-keys :as request-keys]
+            [storefront.transitions :as transitions]))
 
 (defn commission-row
   [row-number orders balance-transfer]
@@ -95,7 +92,7 @@
    [:div.center.my2.h6
     [:a.dark-gray (utils/route-to events/navigate-content-program-terms) "Mayvenn Program Terms"]]])
 
-(defn component [{:keys [balance-transfers orders pagination stylist fetching?]}]
+(defn component [{:keys [balance-transfers orders pagination stylist fetching?]} _ _]
   (om/component
    (let [{current-page :page total-pages :total} pagination]
      (html

@@ -1,10 +1,9 @@
 (ns checkout.processing
   (:require [storefront.components.ui :as ui]
-            #?@(:cljs [[storefront.component :as component]
-                       [storefront.browser.cookie-jar :as cookie-jar]
+            #?@(:cljs [[storefront.browser.cookie-jar :as cookie-jar]
                        [storefront.api :as api]
-                       [storefront.history :as history]]
-                :clj [[storefront.component-shim :as component]])
+                       [storefront.history :as history]])
+            [storefront.component :as component]
             [storefront.keypaths :as keypaths]
             [storefront.effects :as effects]
             [storefront.events :as events]

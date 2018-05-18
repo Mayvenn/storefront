@@ -1,13 +1,12 @@
 (ns storefront.components.gallery
-  (:require #?(:clj [storefront.component-shim :as component]
-               :cljs [storefront.component :as component])
-            [storefront.components.ui :as ui]
-            [storefront.platform.component-utils :as utils]
-            [storefront.accessors.stylists :as stylists]
-            [storefront.events :as events]
-            [storefront.request-keys :as request-keys]
+  (:require [storefront.accessors.stylists :as stylists]
             [storefront.assets :as assets]
-            [storefront.keypaths :as keypaths]))
+            [storefront.component :as component]
+            [storefront.components.ui :as ui]
+            [storefront.events :as events]
+            [storefront.keypaths :as keypaths]
+            [storefront.platform.component-utils :as utils]
+            [storefront.request-keys :as request-keys]))
 
 (defn title [own-store? {:keys [store-nickname]}]
   [:div.p2.center

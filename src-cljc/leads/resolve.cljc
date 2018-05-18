@@ -1,8 +1,6 @@
 (ns leads.resolve
-  (:require
-   #?@(:clj [[storefront.component-shim :as component]]
-                :cljs [[storefront.browser.cookie-jar :as cookie-jar]
-                       [storefront.component :as component]])
+  (:require [storefront.component :as component]
+            #?@(:cljs [[storefront.browser.cookie-jar :as cookie-jar]])
             [leads.header :as header]
             [leads.keypaths :as keypaths]
             [leads.flows :as flows]

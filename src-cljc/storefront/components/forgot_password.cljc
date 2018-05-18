@@ -1,11 +1,10 @@
 (ns storefront.components.forgot-password
-  (:require #?(:clj [storefront.component-shim :as component]
-               :cljs [storefront.component :as component])
+  (:require [storefront.component :as component]
             [storefront.components.facebook :as facebook]
             [storefront.components.ui :as ui]
-            [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
-            [storefront.keypaths :as keypaths]))
+            [storefront.keypaths :as keypaths]
+            [storefront.platform.component-utils :as utils]))
 
 (defn component [{:keys [email facebook-loaded? field-errors focused]} owner opts]
   (component/create

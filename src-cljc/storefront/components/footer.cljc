@@ -1,22 +1,17 @@
 (ns storefront.components.footer
-  (:require [storefront.platform.component-utils :as utils]
-            #?(:clj [storefront.component-shim :as component]
-               :cljs [storefront.component :as component])
-            [storefront.config :as config]
-            [storefront.events :as events]
-            [storefront.accessors.nav :as nav]
-            [storefront.components.ui :as ui]
-            [storefront.components.svg :as svg]
-            [storefront.routes :as routes]
-            [storefront.accessors.stylists :refer [own-store?]]
-            [storefront.platform.date :as date]
-            [storefront.platform.numbers :as numbers]
-            [storefront.keypaths :as keypaths]
-            [storefront.accessors.auth :as auth]
-            [storefront.components.footer-minimal :as footer-minimal]
-            [catalog.menu :as menu]
+  (:require [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
-            [storefront.components.footer-links :as footer-links]))
+            [storefront.accessors.nav :as nav]
+            [storefront.accessors.stylists :refer [own-store?]]
+            [storefront.component :as component]
+            [storefront.components.footer-links :as footer-links]
+            [storefront.components.footer-minimal :as footer-minimal]
+            [storefront.components.svg :as svg]
+            [storefront.components.ui :as ui]
+            [storefront.events :as events]
+            [storefront.keypaths :as keypaths]
+            [storefront.platform.component-utils :as utils]
+            [storefront.platform.numbers :as numbers]))
 
 (defn phone-uri [tel-num]
   (apply str "tel://+" (numbers/digits-only tel-num)))

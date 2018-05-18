@@ -1,13 +1,12 @@
 (ns storefront.components.shared-cart
-  (:require [storefront.platform.component-utils :as utils]
-            #?(:clj [storefront.component-shim :as component]
-               :cljs [storefront.component :as component])
-            [storefront.accessors.promos :as promos]
-            [storefront.components.ui :as ui]
+  (:require [storefront.accessors.promos :as promos]
+            [storefront.component :as component]
             [storefront.components.svg :as svg]
+            [storefront.components.ui :as ui]
             [storefront.events :as events]
-            [storefront.request-keys :as request-keys]
-            [storefront.keypaths :as keypaths]))
+            [storefront.keypaths :as keypaths]
+            [storefront.platform.component-utils :as utils]
+            [storefront.request-keys :as request-keys]))
 
 (defn component [{:keys [shared-cart-id store fetching-products? creating-cart? advertised-promo]} owner opts]
   (component/create

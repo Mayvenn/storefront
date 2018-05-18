@@ -1,6 +1,5 @@
 (ns leads.header
-  (:require #?(:clj [storefront.component-shim :as component]
-               :cljs [storefront.component :as component])
+  (:require [storefront.component :as component]
             [storefront.events :as events]
             [storefront.components.ui :as ui]
             [storefront.config :as config]

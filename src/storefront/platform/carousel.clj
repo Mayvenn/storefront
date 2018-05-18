@@ -1,5 +1,5 @@
 (ns storefront.platform.carousel
-  (:require [storefront.component-shim :as component]))
+  (:require [storefront.component :as component]))
 
 (defn component [{:keys [slides]} _ _]
   (component/create

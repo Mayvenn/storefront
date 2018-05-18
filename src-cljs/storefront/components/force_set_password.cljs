@@ -10,7 +10,7 @@
             [storefront.transitions :as transitions]))
 
 (defn component
-  [{:keys [focused password show-password? loaded-facebook? field-errors]} owner]
+  [{:keys [focused password show-password? loaded-facebook? field-errors]} owner _]
   (component/create
    (ui/narrow-container
     [:div.p2
