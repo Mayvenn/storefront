@@ -1,6 +1,5 @@
 (ns storefront.components.footer-modal
-  (:require #?(:clj [storefront.component-shim :as component]
-               :cljs [storefront.component :as component])
+  (:require [storefront.component :as component]
             [storefront.components.ui :as ui]
             [storefront.keypaths :as keypaths]
             [storefront.components.footer-links :as footer-links]))

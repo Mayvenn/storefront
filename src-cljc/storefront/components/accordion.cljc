@@ -1,6 +1,5 @@
 (ns storefront.components.accordion
-  (:require #?@(:clj [[storefront.component-shim :as component]]
-                :cljs [[storefront.component :as component]])
+  (:require [storefront.component :as component]
             [storefront.platform.component-utils :as utils]
             [storefront.components.svg :as svg]
             [storefront.css-transitions :as css-transitions]))
