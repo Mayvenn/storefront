@@ -588,7 +588,9 @@
   (->> (map (partial build-src-set-url url format) src-set)
        (string/join ", ")))
 
-(defn source [url {:as attrs :keys [src-set type]}]
+(defn source
+  "For contentful only."
+  [url {:as attrs :keys [src-set type]}]
   (assert (contains? contentful-type->mime type)
           (str "[ui/source] Invalid contentful format:" type
                "; must be one of:" (keys contentful-type->mime)))
