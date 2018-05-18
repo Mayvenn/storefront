@@ -53,28 +53,22 @@
 (defn feature-for [data experiment]
   (:feature (variation-for data experiment)))
 
-(defn display-feature? [data feature]
+(defn ^:private display-feature? [data feature]
   (contains? (set (get-in data keypaths/features)) feature))
 
 (defn deals? [data]
   (display-feature? data "deals"))
 
-(defn email-capture-test-variation [data]
-  (cond
-    (display-feature? data "email-capture-40-dollars")
-    "email-capture-40-dollars"
-
-    (display-feature? data "email-capture-25-percent")
-    "email-capture-25-percent"
-
-    (display-feature? data "email-capture-35-percent")
-    "email-capture-35-percent"
-
-    (display-feature? data "email-capture-bundle-deal")
-    "email-capture-bundle-deal"
-
-    :else
-    "control"))
+(defn email-capture-test-variation
+  ([data] (email-capture-test-variation data ["email-capture-40-dollars"
+                                              "email-capture-25-percent"
+                                              "email-capture-35-percent"
+                                              "email-capture-bundle-deal"
+                                              "email-capture-control"]))
+  ([data [v & variations]]
+   (if (or (nil? v) (display-feature? data v))
+     v
+     (recur data variations))))
 
 (defn auto-complete? [data]
   (display-feature? data "auto-complete"))
