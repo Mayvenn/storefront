@@ -4,8 +4,9 @@
             [storefront.accessors.pixlee :as pixlee]
             [spice.core :as spice]))
 
-(defmulti transition-state #?(:cljs identity
-                              :clj (comp first vector)))
+(defmulti transition-state
+  (fn [dispatch event arguments app-state]
+    dispatch))
 
 (defmethod transition-state :default
   [dispatch event args app-state]
