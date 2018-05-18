@@ -1,64 +1,155 @@
 # Mayvenn Storefront
 [The front of shop.mayvenn.com][9].
 
+# NOTE: This document represents our goals, not necessarily our current state.
+
 ## Overview
 Storefront is built primarily using ClojureScript and Om, with a smidgen of Clojure.
 
-## Server Side
-On the server side, there is a simple static file server with some redirects and a very tiny bit of dynamic code (for robots and stuff).
+## Directory Structure
+Storefront's source is first split into three src directories: `src-clj`, `src-cljs`, `src-cljc`.
+Naturally, these dirs correspond to the language files contained within them.
+The differences between the three files will be talked about more in a later section,
+for now let's refer to the top level as `src*`.
 
-## Client Architecture
-Storefront's Om code is built around a single application state and two disparate [events][2] systems, [transitions][0] and [effects][1].
-Events processed in transitions mutate state, e.g. adding product information after it has been retrieved.
-On the other hand, those processed in effects cause side-effects, such as making api calls and causing animations.
-Despite being separate, the two event systems operate on the same events.
-This allows a clean separation of concerns.
-Events are collections of keywords that transitions and effects operate on [reductions][10] of these collections.
-This allows for some common tasks to be abstracted cleanly.
+The next layer of directories corelates to modules.
+A module generally corresponds to a single feature or logical area of storefront.
+More on those in a bit.
 
-For example, lets say the [navigate-named-search][3] event, equivalent to ```[:navigate :category]``` is triggered:
- 1. The event will propagate to [transitions][11] and the ```:navigate``` transition will run.
- 2. Still in [transitions][5], the transition for ```[:navigate :category]``` will run, and some page nav information will be moved into the app state.
- 3. The event will propagate to [effects][12] and the ```:navigate``` effect will run.  It will start API calls for various information that needs to be loaded on every page change.
- 4. Still in [effects][6], the ```[:navigate :category]``` effect will execute and an API call to fetch the category is started.
- 5. (**ASYNC**) Upon success, a callback that triggers the [api-success-category][4] is called.  The other API calls from step 3 have similar functionality, so lets skip them for now.
- 6. The api success event is then processed by [transitions][7] and the category is moved into the application state.
- 7. Via the magic of Om (and therefore react) bindings, the category information is bound from the application state.
+Inside each module, there are
+components (representing a single react component of the site, both appearance and behavior),
+hooks (direct integration with javascript),
+accessors (transformation functions for commonly used datastructure),
+a single routes file (which defines that module's routes)
+and a core file (which simply imports all of the components for that module to make importing all cljs components easier).
 
+
+## Modules
+There are 9 modules: core, account, catalog, checkout, dashboard, gallery, home, leads, login.
+
+### Core
+This is the frame of storefront.
+It is the 'glue' which ties all of the modules together and it contains some utilities which are necessary across all modules.
+If code needs to be in more than one module, it probably goes into this module
+
+### Account
+This module contains the code involved in editing a user or stylist's information
+
+### Catalog
+This module contains the code involved in shopping.
+
+### Checkout
+This module contains the code involved in checking out.
+
+### Dashboard
+This module contains the code involved in the stylist dashboard and the cash out now code.
+
+### Gallery
+This module contains the code involved in stylist gallery
+
+### Home
+This module contains the code involved in home page and static content
+
+### Leads
+This module contains the code involved in the welcome page and leads page
+
+### Login
+This module contains the code involved in logging in.
+
+## Architecture
+Storefront's is built around a single application state and 5 event systems.
+An event is a vector of keywords.
+
+### Events
+Events are evaluated in a cascading manner, for example, examine the event `navigate-checkout-returning-or-guest`.
+It evaluates to `[:navigate :checkout :returning :or :guest]`.
+
+#### Multimethods
+There are many multimethods for which events can have implementations.
+They are listed here in order of execution.
+
+##### Transitions
+```clojure
+
+(defmulti transition-state
+  (fn [dispatch event arguments app-state]
+    dispatch))
+
+```
+
+If a given event has a transition defmethod registered, then that code will execute and update application state.
+It should not be side-effectful and it must always return the application's state
+
+##### Effects
+If a given event has a effect defmethod registered, then that code will execute perform side-effectful operations
+such as API calls, external library operations or interactions with cookies.
+It should not have any side effects and it must always return the application's state.
+Effects can also dispatch further events.
+
+##### Query
+All components should implement a query defmethod.
+Query is responsible for transforming data in app-state into the shape that the component needs.
+
+##### Display
+All components should implement a display defmethod.
+Display is responsible for building the component.
+
+##### Trackings
+
+#### Executing Events
+As the function handle-message processes the event for most event multimethods,
+it executes left to right, building as it goes.
+The exceptions are the Query and Display steps (we can only render one component for a given place at a time!).
+`handle-message` finishes all event steps for a given defmethod before continuing.
+
+So, it would execute the following events:
+1. Transition
+  1. `[:navigate]`
+  2. `[:navigate :checkout]`
+  3. `[:navigate :checkout :returning]`
+  4. `[:navigate :checkout :returning :or]`
+  5. `[:navigate :checkout :returning :or :guest]`
+2. Effect
+  1. `[:navigate]`
+  2. `[:navigate :checkout]`
+  3. `[:navigate :checkout :returning]`
+  4. `[:navigate :checkout :returning :or]`
+  5. `[:navigate :checkout :returning :or :guest]`
+3. Query
+  1. `[:navigate :checkout :returning :or :guest]`
+4. Display
+  1. `[:navigate :checkout :returning :or :guest]`
+5. Trackings
+  1. `[:navigate]`
+  2. `[:navigate :checkout]`
+  3. `[:navigate :checkout :returning]`
+  4. `[:navigate :checkout :returning :or]`
+  5. `[:navigate :checkout :returning :or :guest]`
+
+
+Note that not all intermediate events need to have defmultis implemented.
+Some examples would be `[:navigate :checkout :returning]` and `[:navigate :checkout :returning :or]`.
+
+#### Examples:
+##### Getting data asynchronously over an API
+##### Configuring a component to update app state when interacted with.
+
+
+
+## Server Side Rendering
 
 [Here is some more information about effects and transitions][8]
 
-## ClojureScript Directory Structure
-Starting at [/src-cljs/storefront/][13], there are some directories.
 
-* Accessors - Utility modules for working with our domain models
-* Browser - Modules which work with browser APIs directly, e.g. scrolling and cookies
-* Components - React UI components
-* Hooks - Things like middleware or 3rd party code which is non-essential to the operation of storefront e.g. yotpo, bugsnag
-* Utils - Small helper libraries that are generic in nature, e.g. a Uuid generator
 
 
 ## Questions
 * Where are the tests?
   * The vast majority of Storefront's tests are in a different project.
   This was done because they are integration tests and test more than just storefront.
+  There are some tests for the server side handler.
 * Can I run this?
   * Sure, but you will need to setup up some external dependencies, such as an API server. We hope this project serves as a reference project moreso than generic ecommerce solution.
 
 ## License
 Copyright (C) Mayvenn, Inc. - All Rights Reserved
-
-[0]: https://github.com/Mayvenn/storefront/blob/master/src-cljs/storefront/transitions.cljs
-[1]: https://github.com/Mayvenn/storefront/blob/master/src-cljs/storefront/effects.cljs
-[2]: https://github.com/Mayvenn/storefront/blob/master/src-cljs/storefront/events.cljs
-[3]: https://github.com/Mayvenn/storefront/blob/master/src-cljs/storefront/events.cljs#L10
-[4]: https://github.com/Mayvenn/storefront/blob/master/src-cljs/storefront/events.cljs#L107
-[5]: https://github.com/Mayvenn/storefront/blob/master/src-cljs/storefront/transitions.cljs#L26
-[6]: https://github.com/Mayvenn/storefront/blob/master/src-cljs/storefront/effects.cljs#L79
-[7]: https://github.com/Mayvenn/storefront/blob/master/src-cljs/storefront/transitions.cljs#L107
-[8]: http://engineering.mayvenn.com/2015/05/28/Transitions-and-Effects/
-[9]: https://shop.mayvenn.com
-[10]: https://clojuredocs.org/clojure.core/reductions
-[11]: https://github.com/Mayvenn/storefront/blob/master/src-cljs/storefront/transitions.cljs#L18
-[12]: https://github.com/Mayvenn/storefront/blob/master/src-cljs/storefront/effects.cljs#L33
-[13]: https://github.com/Mayvenn/storefront/tree/master/src-cljs/storefront
