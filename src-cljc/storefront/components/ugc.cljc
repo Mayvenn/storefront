@@ -76,8 +76,8 @@
            [:div.flex.items-center.px3.medium.h6.bg-transparent-light-teal
             texture]])]
        [:div.bg-light-gray.p1.px2.pb2
-        [:div.h5.medium.mt1.mb2
-         [:div.flex.items-center
+        [:div.h6.medium.mt1.mb2
+         [:div.flex.items-center.mb2
           [:div.flex-auto
            (if-let [color-detail (get color-details (:color look-attributes))]
              [:div.flex.items-center
