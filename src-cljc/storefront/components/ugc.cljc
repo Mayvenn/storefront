@@ -81,9 +81,10 @@
           [:div.flex-auto
            (if-let [color-detail (get color-details (:color look-attributes))]
              [:div.flex.items-center
-              [:img.mr2 {:height "25px"
-                         :width  "25px"
-                         :src    (:option/image color-detail)}]
+              [:img.mr2.lit.rounded-0
+               {:height "25px"
+                :width  "37.5px"
+                :src    (:option/rectangle-swatch color-detail)}]
               (:option/name color-detail)]
              [:div.light-gray.pyp1 "Check this out!"])]
           [:div.self-end.line-height-1 {:style {:width "1em" :height "1em"}}
