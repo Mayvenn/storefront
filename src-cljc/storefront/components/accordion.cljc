@@ -30,7 +30,7 @@
                           :height "12px"
                           :width  "12px"})]]
    (into [:div
-          #?(:cljs
+          #?(:cljs ;; for SEO
              (when-not expanded?
                {:class "hide"}))]
          (map (fn [paragraph]
