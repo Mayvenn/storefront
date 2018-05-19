@@ -8,7 +8,6 @@
 
 (def close-button
   (component/html
-   ;; TODO: this was fill-dark-gray, but got lost
    (ui/modal-close {:close-attrs (utils/fake-href events/control-stylist-banner-close)})))
 
 (def banner-copy
