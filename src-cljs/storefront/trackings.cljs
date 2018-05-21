@@ -334,11 +334,11 @@
   (stringer/track-event "experiment-joined" {:name experiment
                                              :variation feature}))
 
-(defmethod perform-track events/control-email-captured-submit [_ event {:keys [test-variation]} app-state]
+(defmethod perform-track events/control-email-captured-submit [_ event _ app-state]
   (when (empty? (get-in app-state keypaths/errors))
     (let [captured-email (get-in app-state keypaths/captured-email)]
       (stringer/identify {:email captured-email})
-      (stringer/track-event "email_capture-capture" {:email captured-email :test-variation test-variation}))))
+      (stringer/track-event "email_capture-capture" {:email captured-email :test-variations (get-in app-state keypaths/features)}))))
 
 (defmethod perform-track events/popup-show-email-capture [_ events args app-state]
   (stringer/track-event "email_capture-deploy" {}))
