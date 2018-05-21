@@ -814,7 +814,7 @@
       (with-standalone-server [storeback (standalone-server
                                           (routes (GET "/store" req storeback-stylist-response)
                                                   (GET "/v2/facets" req {:status 200
-                                                                         :body {}})
+                                                                         :body   ""})
                                                   storeback-handler))]
         (with-handler handler
           (let [resp (-> (mock/request :get "https://bob.mayvenn.com/")
