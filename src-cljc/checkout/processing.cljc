@@ -41,7 +41,8 @@
                                {:order (assoc-in (get-in app-state keypaths/order)
                                                  [:cart-payments :affirm]
                                                  {:checkout-token affirm-token})}
-                               #(messages/handle-message events/api-success-update-order-update-cart-payments-affirm))))
+                               #(messages/handle-message events/api-success-update-order-update-cart-payments-affirm
+                                                         {:order %}))))
 
 (defmethod effects/perform-effects events/api-success-update-order-update-cart-payments-affirm [_ event {:keys [order]} _ app-state]
   #?(:cljs (cookie-jar/clear-affirm (get-in app-state keypaths/cookie)))
