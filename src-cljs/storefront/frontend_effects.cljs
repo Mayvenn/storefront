@@ -953,11 +953,10 @@
   (handle-later events/control-popup-hide {} 2000))
 
 (defmethod perform-effects events/api-success-update-order-place-order [_ event {:keys [order]} _ app-state]
-  (handle-message events/clear-order)
   (handle-message events/order-completed order))
 
 (defmethod perform-effects events/order-completed [dispatch event order _ app-state]
-  (cookie-jar/clear-order (get-in app-state keypaths/cookie))
+  (handle-message events/clear-order)
   (talkable/show-pending-offer app-state))
 
 (defmethod perform-effects events/api-success-update-order-update-cart-payments [_ event {:keys [order place-order?]} _ app-state]
