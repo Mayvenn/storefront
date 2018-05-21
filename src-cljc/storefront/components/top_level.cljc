@@ -34,6 +34,7 @@
             [leads.a1.registered-thank-you]
             [leads.home :as leads.home]
             [leads.resolve :as leads.resolve]
+            [install.home :as install.home]
             [storefront.accessors.experiments :as experiments]
             [storefront.components.content :as content]
             [storefront.components.flash :as flash]
@@ -154,6 +155,10 @@
        (routes/sub-page? [nav-event] [events/navigate-leads])
        [:div {:data-test (keypaths/->component-str nav-event)}
         ((leads-component nav-event) data nil)]
+
+       (routes/sub-page? [nav-event] [events/navigate-install-home])
+       [:div {:data-test (keypaths/->component-str nav-event)}
+        (install.home/built-component data nil)]
 
        (and (routes/sub-page? [nav-event] [events/navigate-cart])
             auto-complete?)

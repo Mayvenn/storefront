@@ -43,8 +43,7 @@
             [spice.maps :as maps]
             [storefront.hooks.pinterest :as pinterest]
             [clojure.string :as string]
-            [storefront.platform.messages :as messages]
-            [storefront.components.free-install :as free-install]))
+            [storefront.platform.messages :as messages]))
 
 (defn changed? [previous-app-state app-state keypath]
   (not= (get-in previous-app-state keypath)
@@ -294,7 +293,9 @@
 (defmethod perform-effects events/navigate-home [_ _ {:keys [query-params]} _ app-state]
   (api/fetch-cms-data)
   (when (= config/welcome-subdomain (get-in app-state keypaths/store-slug))
-    (redirect events/navigate-leads-home)))
+    (redirect events/navigate-leads-home))
+  (when (= config/install-subdomain (get-in app-state keypaths/store-slug))
+    (redirect events/navigate-install-home)))
 
 (defmethod perform-effects events/navigate-content [_ [_ _ & static-content-id :as event] _ _ app-state]
   (when-not (= static-content-id

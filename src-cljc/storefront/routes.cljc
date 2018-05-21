@@ -44,6 +44,9 @@
    "/stylists/flows/a1/applied-self-reg"     (edn->bidi events/navigate-leads-a1-applied-self-reg)
    "/stylists/flows/a1/registered-thank-you" (edn->bidi events/navigate-leads-a1-registered-thank-you)})
 
+(def install-routes
+  {"/install" (edn->bidi events/navigate-install-home)})
+
 (def catalog-routes
   {["/categories/" [#"\d+" :catalog/category-id] "-" :page/slug]
    (edn->bidi events/navigate-category)
@@ -63,6 +66,7 @@
   ["" (merge static-page-routes
              style-guide-routes
              leads-routes
+             install-routes
              catalog-routes
              {"/"                                                 (edn->bidi events/navigate-home)
               "/login"                                            (edn->bidi events/navigate-sign-in)

@@ -525,6 +525,7 @@
    events/navigate-leads-a1-applied-thank-you    render-leads-page
    events/navigate-leads-a1-registered-thank-you render-leads-page
    events/navigate-leads-resolve                 render-leads-page
+   events/navigate-install-home                  generic-server-render
    events/navigate-checkout-processing           generic-server-render})
 
 (defn robots [{:keys [subdomains]}]
@@ -630,6 +631,38 @@
     (let [{nav-event :handler} (bidi/match-route routes/static-api-routes uri)]
       (some-> nav-event routes/bidi->edn static-page :content ->html-resp))))
 
+(defn install-routes [{:keys [storeback-config environment client-version] :as ctx}]
+  (fn [{:keys [nav-message] :as request}]
+    (when (not= (get nav-message 0) events/navigate-not-found)
+      (let [render-ctx           (auto-map storeback-config environment client-version)
+            [nav-event nav-args] nav-message
+            data                 (-> {}
+                                     (assoc-in keypaths/store-slug config/install-subdomain)
+                                     (assoc-in keypaths/environment environment)
+                                     (assoc-in keypaths/navigation-message nav-message))]
+        ((server-render-pages nav-event generic-server-render) render-ctx data request nav-args)))))
+
+(defn wrap-freeinstall-is-for-install
+  "Handle only requests for freeinstall
+
+   Verify that the routed pages exist, and redirect root to a subpage."
+  [h]
+  (fn [{:keys [subdomains nav-message query-params] :as req}]
+    (let [on-install-page?          (routes/sub-page? nav-message [events/navigate-install])
+          on-root-path?             (= events/navigate-home (get nav-message 0))
+          on-freeinstall-subdomain? (= config/install-subdomain (first subdomains))
+          not-found                 #(-> views/not-found
+                                         ->html-resp
+                                         (util.response/status 404))]
+      (if on-freeinstall-subdomain?
+        (cond
+          on-install-page? (h req)
+          on-root-path?    (util.response/redirect (routes/path-for events/navigate-install-home
+                                                                    {:query-params query-params})
+                                                   :moved-permanently)
+          :else          (not-found))
+        (when on-install-page? (not-found))))))
+
 (defn leads-routes [{:keys [storeback-config environment client-version] :as ctx}]
   (fn [{:keys [nav-message] :as request}]
     (when (not= (get nav-message 0) events/navigate-not-found)
@@ -655,7 +688,8 @@
                                               (update-in leads.keypaths/lead merge remote-lead))))))]
         ((server-render-pages nav-event generic-server-render) render-ctx data request nav-args)))))
 
-(defn wrap-welcome-is-for-leads [h]
+(defn wrap-welcome-is-for-leads
+  [h]
   (fn [{:keys [subdomains nav-message query-params] :as req}]
     (let [on-leads-page?        (routes/sub-page? nav-message [events/navigate-leads])
           on-home-page?         (= events/navigate-home (get nav-message 0))
@@ -805,6 +839,7 @@
                (GET "/cms" req (-> ctx :contentful :cache deref cheshire.core/generate-string util.response/response))
                (-> (routes (static-routes ctx)
                            (wrap-leads-routes (leads-routes ctx) ctx)
+                           (wrap-freeinstall-is-for-install (install-routes ctx))
                            (routes-with-orders ctx)
                            (route/not-found views/not-found))
                    (wrap-resource "public")

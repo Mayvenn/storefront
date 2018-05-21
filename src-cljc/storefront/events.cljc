@@ -101,6 +101,9 @@
 (defpath navigate-leads-a1-applied-self-reg)
 (defpath navigate-leads-a1-registered-thank-you)
 
+(defpath navigate-install)
+(defpath navigate-install-home)
+
 (defpath menu-traverse-root)
 (defpath menu-traverse-ascend)
 (defpath menu-traverse-descend)
