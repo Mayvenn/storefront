@@ -59,16 +59,16 @@
 (defn deals? [data]
   (display-feature? data "deals"))
 
-(defn email-capture-test-variation
-  ([data] (email-capture-test-variation data ["email-capture-40-dollars"
-                                              "email-capture-25-percent"
-                                              "email-capture-35-percent"
-                                              "email-capture-bundle-deal"
-                                              "email-capture-control"]))
-  ([data [v & variations]]
-   (if (or (nil? v) (display-feature? data v))
-     v
-     (recur data variations))))
+(defn email-capture-test-variation [data]
+  (let [email-capture-variations ["email-capture-40-dollars"
+                                  "email-capture-25-percent"
+                                  "email-capture-35-percent"
+                                  "email-capture-bundle-deal"
+                                  "email-capture-control"]]
+    (some (fn [variation]
+            (when (display-feature? data variation)
+              variation))
+          email-capture-variations)))
 
 (defn auto-complete? [data]
   (display-feature? data "auto-complete"))
