@@ -9,7 +9,9 @@
 
 (def email-capture-copy
   {"email-capture-bundle-deal" {:header "Exclusive Bundle Deal"
-                                :body "Sign up now and we'll email you an exclusive bundle deal plus free shipping."}})
+                                :body "Sign up now and we'll email you an exclusive bundle deal plus free shipping."}
+   "email-capture-40-dollars" {:header "Get $40 Off!"
+                               :body "Sign up now and we'll email you a promotion code for $40 off your first order plus free shipping."}})
 
 (defn ^:private email-capture-modal [{:keys [email field-errors focused variation-contents test-variation]} owner]
   (let [close-attrs (utils/fake-href events/control-email-captured-dismiss)]
@@ -37,7 +39,7 @@
                     [:p.h5.my2.line-height-2.center
                      "Sign up now for exclusive discounts, stylist-approved hair
                      tips, and first access to new products."]])
-                 [:div.col-12.col-6-on-dt.mx-auto
+                 [:div.col-12.mx-auto
                   (ui/text-field {:errors   (get field-errors ["email"])
                                   :keypath  keypaths/captured-email
                                   :focused  focused
