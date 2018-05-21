@@ -383,7 +383,7 @@
                 [:img {:src (assets/path "/images/header_logo.svg")
                        :style {:width "88px"}}]
                 [:div.h6 "Questions? Call us: " call-number]]
-               [:a.btn.btn-outline.teal {:href "#signup-form"} "Sign up"]]]]))))
+               [:a.btn.btn-primary {:href "#signup-form"} "Sign up"]]]]))))
      :clj [:span]))
 
 (defn ^:private component [queried-data owner opts]
