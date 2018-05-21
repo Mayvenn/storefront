@@ -18,6 +18,11 @@
     :body "Sign up now and we'll email you a promotion code for $40 off your
     first order plus free shipping."}
 
+   "email-capture-35-percent"
+   {:header "Get 35% Off!"
+    :body "Sign up now and we'll email you a promotion code for 35% off your
+    first order of 3 bundles or more."}
+
    "email-capture-25-percent"
    {:header "Get 25% Off!"
     :body "Sign up now and we'll email you a promotion code for 25% off your
