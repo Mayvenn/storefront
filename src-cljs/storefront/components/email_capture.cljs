@@ -8,10 +8,20 @@
             [storefront.accessors.experiments :as experiments]))
 
 (def email-capture-copy
-  {"email-capture-bundle-deal" {:header "Exclusive Bundle Deal"
-                                :body "Sign up now and we'll email you an exclusive bundle deal plus free shipping."}
-   "email-capture-40-dollars" {:header "Get $40 Off!"
-                               :body "Sign up now and we'll email you a promotion code for $40 off your first order plus free shipping."}})
+  {"email-capture-bundle-deal"
+   {:header "Exclusive Bundle Deal"
+    :body "Sign up now and we'll email you an exclusive bundle deal plus free
+    shipping."}
+
+   "email-capture-40-dollars"
+   {:header "Get $40 Off!"
+    :body "Sign up now and we'll email you a promotion code for $40 off your
+    first order plus free shipping."}
+
+   "email-capture-25-percent"
+   {:header "Get 25% Off!"
+    :body "Sign up now and we'll email you a promotion code for 25% off your
+    first order plus free shipping."}})
 
 (defn ^:private email-capture-modal [{:keys [email field-errors focused variation-contents test-variation]} owner]
   (let [close-attrs (utils/fake-href events/control-email-captured-dismiss)]
