@@ -46,17 +46,16 @@
                              :1)
      [:h2.h2.my1 "Buy 3 bundles or more"]
      [:p.h5.dark-gray.mt1
-      "Closures and frontals count, too! Our hair is 100% human"
+      "Our hair is 100% human"
       " and backed by a 30 day guarantee."]]
     [:div.py4
      (img-with-number-circle {:alt      "Phone showing appointments"}
                              "68b7a726-effe-49cf-a78b-d89263c3393f"
                              :2)
-     [:h2.h2.pt1 "Book your appointment"]
+     [:h2.h2.pt1 "Visit your Mayvenn Stylist"]
      [:p.h5.dark-gray.mt1
-      "After completing your purchase, Mayvenn will contact you"
-      " to arrange your discounted install appointment with a"
-      " Mayvenn stylist."]]
+      "Your install must be with a Mayvenn stylist"
+      " to be eligible for the $100 off promotion."]]
     [:div.py4
      (img-with-number-circle {:alt ""}
                              "14ad5231-c062-4eec-b516-23fd6b8e0735"
@@ -121,7 +120,7 @@
                            (accordion/section "How does this all work? How do I get $100 off my install?"
                                               ["It’s easy! Mayvenn will pay the first $100 of your"
                                                " install directly to your Mayvenn stylist. Just purchase 3"
-                                               " bundles or more (including frontals and closures) and use code"
+                                               " bundles or more (frontals and closures count as bundles) and use code"
                                                " INSTALL at checkout. Then, schedule an appointment with your"
                                                " Mayvenn stylist and just show up. The $100 off will be waiting"
                                                " for you. It’s that easy!"])
@@ -146,9 +145,10 @@
 (defn component [{:keys [footer-data faq-data]} owner _]
   (component/create
    (html
-    (ui/modal {:col-class "col-12 col-6-on-tb col-5-on-dt"
+    (ui/modal {:col-class "col-12 col-6-on-tb col-6-on-dt my8-on-tb-dt flex justify-center"
                :bg-class  "bg-darken-4"}
               [:div.bg-white
+               {:style {:max-width "400px"}}
                [:div.col-12.clearfix.pt1.pb2
                 [:div.right.pt2.pr2.pointer
                  (svg/simple-x
@@ -160,7 +160,7 @@
                           :stroke-width "5"}))]
                 [:div.flex.justify-center.pb2
                  [:div.col-6
-                  (ui/clickable-logo {:class "col-12 mx1"
+                  (ui/clickable-logo {:class "col-12 mx4"
                                       :style {:height "40px"}})]]]
                [:div.flex.flex-column
                 [:div.center
