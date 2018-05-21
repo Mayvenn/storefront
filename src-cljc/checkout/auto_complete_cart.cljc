@@ -215,6 +215,7 @@
        [:img.m1 sized-image]]
       [:div.col-10.mx-auto
        (ui/navy-button {:class     "p1"
+                        :height-class "py1"
                         ;; we don't want to draw attention to the disabling of the other 'Add' button,
                         ;; but we do want to prevent people from clicking both.
                         ;; :disabled? (and (not this-is-adding-to-bag?) any-adding-to-bag?)
@@ -224,8 +225,8 @@
                                                                                                      :initial-sku initial-sku}))
                         :spinning? this-is-adding-to-bag?
                         :data-test (str "add-" (name position))
-                        :style     {:margin-top "-10px"
-                                    :height     "40px"}} "Add")]]]))
+                        :style     {:margin-top "-10px"}}
+                       "Add")]]]))
 
 (defn auto-complete-component [{:keys [suggestions]} _ _]
   (component/create
