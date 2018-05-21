@@ -65,7 +65,10 @@
                 [nav-event nav-args]           (or view-look view-other)]]
       [:div.p2.col-12.col-6-on-tb.col-4-on-dt {:key (str "small-" id)}
        [:div.relative
-        [:img.col-12.block (:medium imgs)]
+        (ui/aspect-ratio
+         1 1
+         {}
+         (image-thumbnail (:medium imgs)))
         (when-let [texture (:texture look-attributes)]
           [:div.absolute.flex.justify-end.bottom-0.right-0.mb8
            [:div {:style {:width       "0"
