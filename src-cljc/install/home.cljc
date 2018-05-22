@@ -10,19 +10,17 @@
             [storefront.component :as component]))
 
 (defn header [text-or-call-number]
-  [:div.border-bottom.border-gray.mx-auto
-   {:style {:max-width "1440px"}}
-   [:div.container.flex.items-center.justify-between.px3.py2
-    [:div
-     [:img {:src (assets/path "/images/header_logo.svg")
-            :style {:height "40px"}}]
-     [:div.h6 "Questions? Text or call: "
-      (ui/link :link/phone :a.inherit-color {} text-or-call-number)]]
-    [:div.col.col-4.h5
-     (ui/teal-button (assoc (utils/route-to events/navigate-home)
-                            :data-test "shop"
-                            :height-class "py2")
-                     "Shop")]]])
+  [:div.container.flex.items-center.justify-between.px3.py2
+   [:div
+    [:img {:src (assets/path "/images/header_logo.svg")
+           :style {:height "40px"}}]
+    [:div.h7 "Questions? Text or call: "
+     (ui/link :link/phone :a.inherit-color {} text-or-call-number)]]
+   [:div.col.col-4.h5
+    (ui/teal-button (assoc (utils/route-to events/navigate-home)
+                           :data-test "shop"
+                           :height-class "py2")
+                    "Shop")]])
 
 (defn relative-header [{:keys [text-or-call-number]} owner opts]
    (component/create (header text-or-call-number)))
