@@ -49,7 +49,11 @@
 }
 
 .border-width-2 {
-  border-width: 2px;
+  border-width: var(--border-width-2);
+}
+
+.border-width-3 {
+    border-width: var(--border-width-3);
 }
 
 .rounded-item:first-child {
@@ -73,6 +77,9 @@
 
 :root {
   --border-width: 1px;
+  --border-width-1: 1px;
+  --border-width-2: 2px;
+  --border-width-3: 3px;
   --border-radius: 3px;
   --border-radius-0: 3px;
   --border-radius-1: 6px;

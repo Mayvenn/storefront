@@ -7,6 +7,7 @@
             [storefront.assets :as assets]
             [storefront.platform.component-utils :as utils]
             [storefront.components.ui :as ui]
+            [storefront.components.svg :as svg]
             [storefront.component :as component]))
 
 (defn header [text-or-call-number]
@@ -52,12 +53,43 @@
      :clj [:span]))
 
 (defn ^:private stat-block [header content]
-  [:div.center.p2 [:div.bold.teal header]
+  [:div.center.p2 [:div.bold.teal.letter-spacing-1 header]
    [:div.h6.line-height-1 content]])
 
 (defn ^:private as-seen-in-logos [& logo-urls]
   (for [url logo-urls]
     [:img.mx2.my2 {:src url}]))
+
+(defn ucare-img [{:as img-attrs :keys [width class]} image-id]
+  (let [retina-url  (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/lightest/")
+                      width (str "-/resize/" width "x"))
+        default-url (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/")
+                      width (str "-/resize/" width "x"))]
+    [:picture {:class class}
+     [:source {:src-set (str retina-url " 2x,"
+                             default-url " 1x")}]
+     [:img (assoc img-attrs :src default-url)]]))
+
+
+(defn img-with-circle [diameter img-id content]
+  (let [radius (quot diameter 2)]
+    [:div
+     {:style {:padding-bottom (str radius "px")}}
+     [:div.relative
+      [:div
+       (ucare-img {:class "col-12 col-4-on-tb-dt"} img-id)]
+      [:div.bg-teal.border.border-white.border-width-3.circle.absolute.right-0.left-0.mx-auto.flex.items-center.justify-center
+       {:style {:height (str diameter "px")
+                :width (str diameter "px")
+                :bottom (str "-" (- radius 4) "px")}}
+       content]]]))
+
+(defn ^:private easy-step [number title copy img-id]
+  [:div.py4
+   [:div.px6 (img-with-circle 60 img-id [:div.h1.bold.white number])]
+   [:div.h3 title]
+   [:div.dark-gray.h6 copy]])
+
 
 (defn ^:private component
   [queried-data owner opts]
@@ -86,7 +118,24 @@
             "//ucarecdn.com/4f8c1a9d-ab71-4881-97df-b4a724354faa/-/format/auto/-/resize/45x/pressvoiceofhairlogo3x.png"
             "//ucarecdn.com/3428dfc2-bc0a-40f2-9bdd-c79df6abd63f/-/format/auto/-/resize/150x/presshellobeautiful3x.png"))]
 
-    [:div "3 EASY STEPS"]
+    [:div.border.border-teal.border-width-2.m3.center.p3
+     [:div
+      [:div.py2
+       [:div.teal.letter-spacing-6.medium.h6 "3 EASY STEPS"]
+       [:div.h2 "Get a FREE install"]]
+      [:div.h6 "Purchase 3 bundles of Mayvenn hair and your install by a Mayvenn Certified Stylist is FREE!"]]
+     (easy-step 1
+                "Buy 3 bundles or more"
+                "Closures and fronts count, too! Our hair is 100% human, backed by a 30 day guarantee and starts at $30 per bundle."
+                "fdcc8acc-443c-4b2f-b510-0d940297f997")
+     (easy-step 2
+                "A Fayetteville, NC exclusive offer"
+                "Your Mayvenn order must be shipped to a qualified address in Fayetteville, NC."
+                "6263c536-f548-45dc-ba89-ca68ad7c44c8")
+     (easy-step 3
+                "Book your FREE install"
+                "After completing your purchase, Mayvell will contact you to arrange your FREE install appointment with a Mayvenn Certified Stylists."
+                "52dcdffb-cc44-4f80-88c8-325de7c3fa62")]
 
     [:div "HAPPY CUSTOMERS"]]))
 
