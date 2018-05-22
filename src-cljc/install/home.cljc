@@ -9,7 +9,25 @@
             [storefront.components.ui :as ui]
             [storefront.component :as component]))
 
-(defn follow-header [{:keys [text-or-call-number]} owner opts]
+(defn header [text-or-call-number]
+  [:div.border-bottom.border-gray.mx-auto
+   {:style {:max-width "1440px"}}
+   [:div.container.flex.items-center.justify-between.px3.py2
+    [:div
+     [:img {:src (assets/path "/images/header_logo.svg")
+            :style {:height "40px"}}]
+     [:div.h6 "Questions? Text or call: "
+      (ui/link :link/phone :a.inherit-color {} text-or-call-number)]]
+    [:div.col.col-4.h5
+     (ui/teal-button (assoc (utils/route-to events/navigate-home)
+                            :data-test "shop"
+                            :height-class "py2")
+                     "Shop")]]])
+
+(defn relative-header [{:keys [text-or-call-number]} owner opts]
+   (component/create (header text-or-call-number)))
+
+(defn fixed-header [{:keys [text-or-call-number]} owner opts]
   #?(:cljs
      (letfn [(handle-scroll [e] (om/set-state! owner :show? (< 750 (.-y (goog.dom/getDocumentScroll)))))]
        (reify
@@ -32,28 +50,15 @@
                {:style {:margin-top "0"}
                 :class "transition-2"}
                {:style {:margin-top "-100px"}})
-             [:div.border-bottom.border-gray.mx-auto
-              {:style {:max-width "1440px"}}
-              [:div.container.flex.items-center.justify-between.px3.py2
-               [:div
-                [:img {:src (assets/path "/images/header_logo.svg")
-                       :style {:height "40px"}}]
-                [:div.h6 "Questions? Text or call: "
-                 (ui/link :link/phone :a.inherit-color {} text-or-call-number)]]
-               [:div.col.col-4.h5
-                (ui/teal-button (assoc (utils/route-to events/navigate-home)
-                                       :data-test "shop"
-                                       :height-class "py2")
-                                "Shop")]]]]))))
+             (header text-or-call-number)]))))
      :clj [:span]))
 
 (defn ^:private component
   [queried-data owner opts]
   (component/create
    [:div
-    #_(component/build header/component (:header queried-data) nil)
-    (component/build follow-header (:header queried-data) nil)
-]))
+    (component/build relative-header (:header queried-data) nil)
+    (component/build fixed-header (:header queried-data) nil)]))
 
 (defn ^:private query
   [data]
