@@ -56,7 +56,16 @@
   (component/create
    [:div
     (component/build relative-header (:header queried-data) nil)
-    (component/build fixed-header (:header queried-data) nil)]))
+    (component/build fixed-header (:header queried-data) nil)
+
+    [:div.bg-cover.bg-top.bg-free-install-landing.col-12.p4
+     [:div.teal.h1.shadow.bold.pt2 "FREE INSTALL"]
+     [:div.medium.letter-spacing-1.col-7.h3.white.shadow "Get your Mayvenn hair installed for FREE by some of the best stylists in Fayetteville, NC"]]
+
+
+    [:div "3 EASY STEPS"]
+
+    [:div "HAPPY CUSTOMERS"]]))
 
 (defn ^:private query
   [data]

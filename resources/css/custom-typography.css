@@ -12,7 +12,7 @@ h1, h2, h3, h4, h5, h6 { font-weight: var(--heading-font-weight); }
 .shout { text-transform: uppercase; }
 .strike { text-decoration: line-through; }
 
-.shadow { text-shadow: 1px 1px #000; }
+.shadow { text-shadow: 0 2px 2px var(--darken-3); }
 .engrave-2 { text-shadow: 0 -1px 0 var(--darken-2); }
 
 .crush { letter-spacing: -0.05em; }
