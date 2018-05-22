@@ -55,6 +55,10 @@
   [:div.center.p2 [:div.bold.teal header]
    [:div.h6.line-height-1 content]])
 
+(defn ^:private as-seen-in-logos [& logo-urls]
+  (for [url logo-urls]
+    [:img.mx2.my2 {:src url}]))
+
 (defn ^:private component
   [queried-data owner opts]
   (component/create
@@ -71,6 +75,16 @@
      (stat-block "200,000+" "Happy Mayvenn Customers")
      (stat-block "100%" "Guaranteed Human Hair")]
 
+
+    [:div.col-12.bg-gray.py2
+     [:div.dark-gray.col-12.center.h7.medium.letter-spacing-4.p1 "AS SEEN IN"]
+     (into [:div.flex.flex-wrap.justify-around.items-center]
+           (as-seen-in-logos
+            "//ucarecdn.com/a2e763ea-1837-43fd-8531-440d18360e1e/-/format/auto/-/resize/160x/pressmadamenoirelogo3x.png"
+            "//ucarecdn.com/74f56834-b879-415a-9e55-87a059767297/-/format/auto/-/resize/75x/pressessence3x.png"
+            "//ucarecdn.com/b1a3d9c1-80a0-4549-9603-36fb65b5bebb/-/format/auto/-/resize/56x/pressebonylogo3x.png"
+            "//ucarecdn.com/4f8c1a9d-ab71-4881-97df-b4a724354faa/-/format/auto/-/resize/45x/pressvoiceofhairlogo3x.png"
+            "//ucarecdn.com/3428dfc2-bc0a-40f2-9bdd-c79df6abd63f/-/format/auto/-/resize/150x/presshellobeautiful3x.png"))]
 
     [:div "3 EASY STEPS"]
 
