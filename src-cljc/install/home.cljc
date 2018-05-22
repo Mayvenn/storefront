@@ -51,6 +51,10 @@
              (header text-or-call-number)]))))
      :clj [:span]))
 
+(defn ^:private stat-block [header content]
+  [:div.center.p2 [:div.bold.teal header]
+   [:div.h6.line-height-1 content]])
+
 (defn ^:private component
   [queried-data owner opts]
   (component/create
@@ -61,6 +65,11 @@
     [:div.bg-cover.bg-top.bg-free-install-landing.col-12.p4
      [:div.teal.h1.shadow.bold.pt2 "FREE INSTALL"]
      [:div.medium.letter-spacing-1.col-7.h3.white.shadow "Get your Mayvenn hair installed for FREE by some of the best stylists in Fayetteville, NC"]]
+
+    [:div.flex.items-center.justify-center.p1.pt2.pb3
+     (stat-block "100,000+" "Mayvenn Stylists Nationwide")
+     (stat-block "200,000+" "Happy Mayvenn Customers")
+     (stat-block "100%" "Guaranteed Human Hair")]
 
 
     [:div "3 EASY STEPS"]
