@@ -148,11 +148,33 @@ Note that not all intermediate events need to have defmultis implemented.
 Some examples would be `[:navigate :checkout :returning]` and `[:navigate :checkout :returning :or]`.
 
 #### Examples:
-##### Getting data asynchronously over an API
+##### Fetching data asynchronously over an API
+``` clojure
+(defn get-promotions
+  [cache]
+  (cache-req
+   cache
+   GET
+   "/promotions"
+   request-keys/get-promotions
+   {:handler #(messages/handle-message events/api-success-promotions %)}))
 
-
-##### Configuring a component to update app state when interacted with.
+(defmethod transition-state events/api-success-promotion
+  [dispatch event {:keys [promotions]} app-state]
+  (assoc-in app-state keypaths/promotions promotions))
 ```
+
+Above we have defined the function `get-promotions` to fetch the current
+promotions from a backend service.
+
+Attached is a handler that will run once a response is received. The handler places
+`api-success-promotions` into the event queue along with the response from the
+api request.
+
+The transition-state defmethod registered for the `api-success-promotion` event
+receives the response and places the returned promotions into the appropriate place in app-state.
+
+
 ##### Configuring a component to update application state when interacted with
 ```clojure
 (defn text-field [app-state keypath]
