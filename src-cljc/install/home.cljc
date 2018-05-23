@@ -118,6 +118,7 @@
     [:div.col-12.bg-gray.py2
      [:div.dark-gray.col-12.center.h7.medium.letter-spacing-4.p1 "AS SEEN IN"]
      (into [:div.flex.flex-wrap.justify-around.items-center]
+           ;; TODO(ellie) These images should use the ucare-img helper
            (as-seen-in-logos
             "//ucarecdn.com/a2e763ea-1837-43fd-8531-440d18360e1e/-/format/auto/-/resize/160x/pressmadamenoirelogo3x.png"
             "//ucarecdn.com/74f56834-b879-415a-9e55-87a059767297/-/format/auto/-/resize/75x/pressessence3x.png"
