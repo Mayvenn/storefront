@@ -1,5 +1,5 @@
 # Mayvenn Storefront
-[The front of shop.mayvenn.com][9].
+[The front of shop.mayvenn.com](http://shop.mayvenn.com).
 
 # NOTE: This document represents our goals, not necessarily our current state.
 
@@ -121,27 +121,27 @@ The exceptions are the Query and Display steps (we can only render one component
 
 So, it would execute the following events:
 1. Transition
-  1. `[:navigate]`
-  2. `[:navigate :checkout]`
-  3. `[:navigate :checkout :returning]`
-  4. `[:navigate :checkout :returning :or]`
-  5. `[:navigate :checkout :returning :or :guest]`
-2. Effect
-  1. `[:navigate]`
-  2. `[:navigate :checkout]`
-  3. `[:navigate :checkout :returning]`
-  4. `[:navigate :checkout :returning :or]`
-  5. `[:navigate :checkout :returning :or :guest]`
-3. Query
-  1. `[:navigate :checkout :returning :or :guest]`
-4. Display
-  1. `[:navigate :checkout :returning :or :guest]`
-5. Trackings
-  1. `[:navigate]`
-  2. `[:navigate :checkout]`
-  3. `[:navigate :checkout :returning]`
-  4. `[:navigate :checkout :returning :or]`
-  5. `[:navigate :checkout :returning :or :guest]`
+   1. `[:navigate]`
+   1. `[:navigate :checkout]`
+   1. `[:navigate :checkout :returning]`
+   1. `[:navigate :checkout :returning :or]`
+   1. `[:navigate :checkout :returning :or :guest]`
+1. Effect
+   1. `[:navigate]`
+   1. `[:navigate :checkout]`
+   1. `[:navigate :checkout :returning]`
+   1. `[:navigate :checkout :returning :or]`
+   1. `[:navigate :checkout :returning :or :guest]`
+1. Query
+   1. `[:navigate :checkout :returning :or :guest]`
+1. Display
+   1. `[:navigate :checkout :returning :or :guest]`
+1. Trackings
+   1. `[:navigate]`
+   1. `[:navigate :checkout]`
+   1. `[:navigate :checkout :returning]`
+   1. `[:navigate :checkout :returning :or]`
+   1. `[:navigate :checkout :returning :or :guest]`
 
 
 Note that not all intermediate events need to have defmultis implemented.
@@ -153,6 +153,8 @@ Some examples would be `[:navigate :checkout :returning]` and `[:navigate :check
 
 ##### Configuring a component to update app state when interacted with.
 ```
+##### Configuring a component to update application state when interacted with
+```clojure
 (defn text-field [app-state keypath]
   [:input
    {:type      "text"
@@ -161,11 +163,10 @@ Some examples would be `[:navigate :checkout :returning]` and `[:navigate :check
                  (handle-message events/control-change-state
                                  {:keypath keypath
                                   :value   (.. e -target -value)}))}])
-                                  
+
 (defmethod transition-state events/control-change-state
   [dispatch event {:keys [keypath value] :as arguments} app-state]
   (assoc-in app-state keypath (if (fn? value) (value) value)))
-
 ```
 In the above example, we can see a simple function which takes the state of the
 application and a keypath that points to a value in app state and returns a html data structure.
