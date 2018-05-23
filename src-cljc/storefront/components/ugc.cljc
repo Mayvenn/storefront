@@ -78,18 +78,18 @@
            [:div.flex.items-center.px3.medium.h6.bg-transparent-light-teal
             texture]])]
        [:div.bg-light-gray.p1.px2.pb2
-        [:div.h6.medium.mt1.mb2
+        [:div.h5.medium.mt1.mb2
          [:div.flex.items-center.mb2
           [:div.flex-auto
            (if-let [color-detail (get color-details (:color look-attributes))]
              [:div.flex.items-center
               [:img.mr2.lit.rounded-0
-               {:height "25px"
-                :width  "37.5px"
+               {:height "30px"
+                :width  "50px"
                 :src    (:option/rectangle-swatch color-detail)}]
               (:option/name color-detail)]
              [:div.light-gray.pyp1 "Check this out!"])]
-          [:div.self-end.line-height-1 {:style {:width "1em" :height "1em"}}
+          [:div.m1.self-end {:style {:width "20px" :height "20px"}}
            (svg/social-icon social-service)]]
          (or (:lengths look-attributes) [:span.light-gray "Get this look!"])]
         (ui/underline-button
