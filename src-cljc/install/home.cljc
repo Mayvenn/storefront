@@ -65,7 +65,7 @@
                       width (str "-/resize/" width "x"))
         default-url (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/")
                       width (str "-/resize/" width "x"))]
-    [:picture {:class class}
+    [:picture
      [:source {:src-set (str retina-url " 2x,"
                              default-url " 1x")}]
      [:img (assoc img-attrs :src default-url)]]))
@@ -90,6 +90,13 @@
    [:div.h3 title]
    [:div.dark-gray.h6 copy]])
 
+(defn ^:private happy-customer [img-id testimony customer-name]
+  [:div.p4.flex.items-start.justify-center
+   [:div.col-5
+    (ucare-img {:class "col-12"} img-id)]
+   [:div.px2.flex.flex-column
+    [:div.line-height-3.h6 \“ testimony \”]
+    [:div.h6.bold "- "  customer-name]]])
 
 (defn ^:private component
   [queried-data owner opts]
@@ -137,7 +144,18 @@
                 "After completing your purchase, Mayvell will contact you to arrange your FREE install appointment with a Mayvenn Certified Stylists."
                 "52dcdffb-cc44-4f80-88c8-325de7c3fa62")]
 
-    [:div "HAPPY CUSTOMERS"]]))
+    [:div.bg-transparent-teal.py6
+     [:div.pt4.teal.letter-spacing-6.bold.center.h6 "HAPPY CUSTOMERS"]
+     [:div.px3
+      (happy-customer "dd6b26ed-1f15-437c-ac2c-e289d3a854fe"
+                      "I freaking love Mayvenn hair, like they are BOMB.COM GIRL! Yass!"
+                      "J Luxe")
+      (happy-customer "014856c8-7fa5-40b7-a707-48361c37f04f"
+                      "I'm 100% satisfied, that's all I can say, I'm 100% satisfied"
+                      "Cara Scott")
+      (happy-customer "b7258cae-1aac-4755-9f61-90e9908ff7a7"
+                      "Ugh God you guys, like you don't understand, I love this hair."
+                      "Tiona Chantel")]]]))
 
 (defn ^:private query
   [data]
