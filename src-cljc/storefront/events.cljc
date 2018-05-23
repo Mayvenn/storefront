@@ -133,6 +133,8 @@
 
 (defpath ensure-sku-ids)
 
+(defpath carousel-change-index)
+
 (defpath control)
 (defpath control-change-state)
 (defpath control-focus)

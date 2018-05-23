@@ -10,7 +10,9 @@
             [storefront.components.svg :as svg]
             [storefront.component :as component]
             [storefront.platform.carousel :as carousel]
-            [spice.core :as spice]))
+            [storefront.platform.messages :as messages]
+            [spice.core :as spice]
+            [storefront.effects :as effects]))
 
 (defn header [text-or-call-number]
   [:div.container.flex.items-center.justify-between.px3.py2
@@ -132,6 +134,18 @@
 (defn ^:private stylist-slides []
   (map stylist-slide stylists))
 
+(defn ^:private stylist-info []
+  (prn (first stylists))
+  (let [{:keys [stylist-name salon-name salon-address stylist-bio]} (first stylists)]
+    [:div.py2
+     [:div.h3 stylist-name]
+     [:div.teal.h6
+      "MAYVENN CERTIFIED STYLIST"]
+     [:div.h6.bold.dark-gray salon-name]
+     [:div.h6.bold.dark-gray salon-address]
+
+     [:div.h6.dark-gray stylist-bio]]))
+
 (defn ^:private component
   [queried-data owner opts]
   (component/create
@@ -140,7 +154,7 @@
     (component/build fixed-header (:header queried-data) nil)
 
     [:div.bg-cover.bg-top.bg-free-install-landing.col-12.p4
-     [:div.teal.h1.shadow.bold.pt2 "FREE INSTALL"]
+     [:div.teal.h1.shadow.bold.pt2.shout "free install"]
      [:div.medium.letter-spacing-1.col-7.h3.white.shadow "Get your Mayvenn hair installed for FREE by some of the best stylists in Fayetteville, NC"]]
 
     [:div.flex.items-center.justify-center.p1.pt2.pb3
@@ -196,17 +210,23 @@
       [:div.pt4.teal.letter-spacing-6.bold.h6 "LICENSED STYLISTS"]
       [:div.h2 "Mayvenn Certified Stylists"]
       [:div.h6 "We have partnered with a select group of experienced and licensed stylists in Fayetteville, NC to give you a FREE high quality standard install."]]
-     [:div.container #_{:style {:max-width "350px"}}
-      (component/build carousel/component
-                       {:slides   (stylist-slides)
-                        :settings {:swipe        true
-                                   :arrows       true
-                                   :dots         false
-                                   :slidesToShow 1
-                                   :centerMode   true
-                                   :infinite     true}}
-                       {})]
-     [:div "Changing text"]]]))
+
+     [:div
+      [:div.container
+       (component/build carousel/component
+                        {:slides   (stylist-slides)
+                         :settings {:swipe        true
+                                    :arrows       true
+                                    :dots         false
+                                    :slidesToShow 1
+                                    :centerMode   true
+                                    :infinite     true
+                                    :afterChange  #(messages/handle-message events/carousel-change-index %)}}
+                        {})]
+      [:div (stylist-info)]]]]))
+
+#?(:cljs
+     (defmethod effects/perform-effects events/carousel-change-index []))
 
 (defn ^:private query
   [data]
