@@ -8,7 +8,9 @@
             [storefront.platform.component-utils :as utils]
             [storefront.components.ui :as ui]
             [storefront.components.svg :as svg]
-            [storefront.component :as component]))
+            [storefront.component :as component]
+            [storefront.platform.carousel :as carousel]
+            [spice.core :as spice]))
 
 (defn header [text-or-call-number]
   [:div.container.flex.items-center.justify-between.px3.py2
@@ -62,13 +64,15 @@
 
 (defn ucare-img [{:as img-attrs :keys [width class]} image-id]
   (let [retina-url  (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/lightest/")
-                      width (str "-/resize/" width "x"))
+                      width (str "-/resize/" (* 2 (spice/parse-int width)) "x/"))
         default-url (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/")
-                      width (str "-/resize/" width "x"))]
+                      width (str "-/resize/" width "x/"))]
     [:picture
      [:source {:src-set (str retina-url " 2x,"
                              default-url " 1x")}]
-     [:img (assoc img-attrs :src default-url)]]))
+     [:img (-> img-attrs
+               (dissoc :width)
+               (assoc :src default-url))]]))
 
 
 (defn img-with-circle [diameter img-id content]
@@ -98,6 +102,36 @@
     [:div.line-height-3.h6 \“ testimony \”]
     [:div.h6.bold "- "  customer-name]]])
 
+(defn ^:private stylist-slide [{:keys [stylist-headshot]}]
+  [:div.flex.relative.justify-center.mxn2
+   [:div.z5.stacking-context.absolute
+    {:style {:margin-top  "14px"
+             :margin-left "92px"}}
+    (ucare-img {:width "40"} "3cd2b6e9-8470-44c2-ad1f-b1e182d38cb0")]
+   (ucare-img {:width "210"} stylist-headshot)])
+
+(def stylists
+  [{:stylist-name     "Aundria Carter"
+    :stylist-headshot "63acc2ac-43cc-48cb-9db7-0361f01aaa25"
+    :salon-name       "Giovani Hair Salon"
+    :salon-address    "520 S Reilly Rd. Fayetteville, NC"
+    :stylist-bio
+    "Aundria Carter better known as Keshstyles, has logged over 10 years of experience as a stylist. She ensures a memorable and enjoyable experience while getting the style of your dreams. A sew-in specialist she focuses on accentuating the beauty of all of her clients."}
+
+   {:stylist-name     "Angela White"
+    :stylist-headshot "a7903783-7c7a-4459-85a7-fc9db361696e"}
+   {:stylist-name     "Tamara Johnson"
+    :stylist-headshot "be913d9e-e69d-45e9-8a92-23b7dfca01fe"}
+   {:stylist-name     "Valerie Selby"
+    :stylist-headshot "f1ba9936-d310-42fb-a0fa-fa54b49e7055"}
+   {:stylist-name     "Demetria Murphy"
+    :stylist-headshot "2f98fa6e-321b-4d5c-993b-2f424cb221c0"}
+   {:stylist-name     "Tiara Cohen"
+    :stylist-headshot "28ea9a60-1254-4325-8593-b6bac09e19e9"}])
+
+(defn ^:private stylist-slides []
+  (map stylist-slide stylists))
+
 (defn ^:private component
   [queried-data owner opts]
   (component/create
@@ -113,7 +147,6 @@
      (stat-block "100,000+" "Mayvenn Stylists Nationwide")
      (stat-block "200,000+" "Happy Mayvenn Customers")
      (stat-block "100%" "Guaranteed Human Hair")]
-
 
     [:div.col-12.bg-gray.py2
      [:div.dark-gray.col-12.center.h7.medium.letter-spacing-4.p1 "AS SEEN IN"]
@@ -156,7 +189,24 @@
                       "Cara Scott")
       (happy-customer "b7258cae-1aac-4755-9f61-90e9908ff7a7"
                       "Ugh God you guys, like you don't understand, I love this hair."
-                      "Tiona Chantel")]]]))
+                      "Tiona Chantel")]]
+
+    [:div.center.p3
+     [:div
+      [:div.pt4.teal.letter-spacing-6.bold.h6 "LICENSED STYLISTS"]
+      [:div.h2 "Mayvenn Certified Stylists"]
+      [:div.h6 "We have partnered with a select group of experienced and licensed stylists in Fayetteville, NC to give you a FREE high quality standard install."]]
+     [:div.container #_{:style {:max-width "350px"}}
+      (component/build carousel/component
+                       {:slides   (stylist-slides)
+                        :settings {:swipe        true
+                                   :arrows       true
+                                   :dots         false
+                                   :slidesToShow 1
+                                   :centerMode   true
+                                   :infinite     true}}
+                       {})]
+     [:div "Changing text"]]]))
 
 (defn ^:private query
   [data]
