@@ -5,7 +5,8 @@
             [storefront.component :as component]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            [storefront.components.svg :as svg]))
 
 (def allowed-navigation?
   #{events/navigate-home
@@ -31,8 +32,15 @@
         (promos/find-promotion-by-code promotions (get-in data keypaths/pending-promo-code))
         (promos/default-advertised-promotion promotions))))
 
+(defn install-applied-banner-allowed? [nav-event]
+  (#{events/navigate-checkout-returning-or-guest
+     events/navigate-checkout-address
+     events/navigate-checkout-payment
+     events/navigate-checkout-confirmation}
+   nav-event))
+
 (defn component
-  [{:keys [allowed? the-ville? seventy-five-off-install? promo]} owner opts]
+  [{:keys [allowed? install-qualified? the-ville? seventy-five-off-install? promo nav-event]} owner opts]
   (component/create
    (cond
      (and allowed? seventy-five-off-install?)
@@ -40,6 +48,14 @@
           :data-test "seventy-five-off-install-promo-banner"}
       [:div.white.center.pp5.bg-teal.h5.bold.pointer
        "Get $100 off your install! " [:span.underline "Learn more"]]]
+
+     (and (install-applied-banner-allowed? nav-event) install-qualified?
+          seventy-five-off-install?)
+     [:div.white.center.p2.bg-teal.mbnp5.h6.bold.flex.items-center.justify-center
+      (svg/celebration-horn {:height "1.6em"
+                             :width  "1.6em"
+                             :class  "mr1 fill-white stroke-white"})
+      "CONGRATS — Enjoy $100 off your next install"]
 
      (and allowed? the-ville?)
      [:a {:on-click  (utils/send-event-callback events/popup-show-free-install {})
@@ -61,6 +77,8 @@
                (auto-complete-allowed? data)
                (allowed-navigation? (get-in data keypaths/navigation-event)))
 
+   :nav-event                 (get-in data keypaths/navigation-event)
+   :install-qualified?        (orders/install-qualified? (get-in data keypaths/order))
    :the-ville?                (experiments/the-ville? data)
    :seventy-five-off-install? (experiments/seventy-five-off-install? data)})
 
