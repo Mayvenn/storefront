@@ -156,12 +156,12 @@
   (let [{:keys [stylist-name salon-name salon-address stylist-bio]} (get stylists index)]
     [:div.py2
      [:div.h3 stylist-name]
-     [:div.teal.h6
+     [:div.teal.h6.pt2.bold
       "MAYVENN CERTIFIED STYLIST"]
      [:div.h6.bold.dark-gray salon-name]
      [:div.h6.bold.dark-gray salon-address]
 
-     [:div.h6.dark-gray stylist-bio]]))
+     [:div.h6.dark-gray.pt3 stylist-bio]]))
 
 (defn stylist-details-before-change [prev next]
   (messages/handle-message events/carousel-certified-stylist-slide))
@@ -230,25 +230,26 @@
                       "Ugh God you guys, like you don't understand, I love this hair."
                       "Tiona Chantel")]]
 
-    [:div.center.p3
-     [:div
-      [:div.pt4.teal.letter-spacing-6.bold.h6 "LICENSED STYLISTS"]
-      [:div.h2 "Mayvenn Certified Stylists"]
-      [:div.h6 "We have partnered with a select group of experienced and licensed stylists in Fayetteville, NC to give you a FREE high quality standard install."]]
+    [:div.center.pt6.px6
+     [:div.pt4.teal.letter-spacing-6.bold.h6 "LICENSED STYLISTS"]
+     [:div.h2 "Mayvenn Certified Stylists"]
+     [:div.h6.pt2 "We have partnered with a select group of experienced and licensed stylists in Fayetteville, NC to give you a FREE high quality standard install."]]
 
-     [:div
-      [:div.container
-       (component/build carousel/component
-                        {:slides   stylist-slides
-                         :settings {:swipe        true
-                                    :arrows       true
-                                    :dots         false
-                                    :slidesToShow 1
-                                    :centerMode   true
-                                    :infinite     true
-                                    :beforeChange stylist-details-before-change
-                                    :afterChange  stylist-details-after-change}}
-                        {})]
+    [:div.pt6
+     [:div.container
+      (component/build carousel/component
+                       {:slides   stylist-slides
+                        :settings {:swipe        true
+                                   :arrows       true
+                                   :dots         false
+                                   :slidesToShow 1
+                                   :centerMode   true
+                                   :infinite     true
+                                   :className    "our-class"
+                                   :beforeChange stylist-details-before-change
+                                   :afterChange  stylist-details-after-change}}
+                       {})]
+     [:div.center.px6
       (if carousel-certified-stylist-sliding?
         [:div.transition-2.transparent (stylist-info carousel-certified-stylist-index)]
         [:div.transition-1.opaque (stylist-info carousel-certified-stylist-index)])]]]))
