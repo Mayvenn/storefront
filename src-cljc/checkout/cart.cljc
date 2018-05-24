@@ -253,11 +253,6 @@
                                        (facets/get-color facets)
                                        :option/name)}))
 
-(defn install-qualified?
-  [{:as order :keys [promotion-codes]}]
-  (and (orders/bundle-discount? order)
-       (seq (set/intersection (set promotion-codes) #{"install" "freeinstall"}))))
-
 (defn full-cart-query [data]
   (let [order       (get-in data keypaths/order)
         products    (get-in data keypaths/v2-products)
@@ -268,7 +263,7 @@
      :line-items         line-items
      :skus               (get-in data keypaths/v2-skus)
      :products           products
-     :show-green-banner? (install-qualified? order)
+     :show-green-banner? (orders/install-qualified? order)
 
      :coupon-code               (get-in data keypaths/cart-coupon-code)
      :promotion-banner          (promotion-banner/query data)

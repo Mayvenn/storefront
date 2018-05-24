@@ -135,3 +135,8 @@
                    (< quantity (prev-sku-id->quantity sku 0))))
          (map get-sku)
          set)))
+
+(defn install-qualified?
+  [{:as order :keys [promotion-codes]}]
+  (and (bundle-discount? order)
+       (seq (set/intersection (set promotion-codes) #{"install" "freeinstall"}))))

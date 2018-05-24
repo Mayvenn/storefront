@@ -453,7 +453,7 @@
      :line-items                line-items
      :skus                      (get-in data keypaths/v2-skus)
      :products                  products
-     :show-green-banner?        (cart/install-qualified? order)
+     :show-green-banner?        (orders/install-qualified? order)
      :coupon-code               (get-in data keypaths/cart-coupon-code)
      :promotion-banner          (promotion-banner/query data)
      :updating?                 (update-pending? data)
