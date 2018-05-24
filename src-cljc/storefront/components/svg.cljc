@@ -269,3 +269,8 @@
   (component/html
    [:svg opts
     (svg-xlink "share-arrow")]))
+
+(defn celebration-horn [opts]
+  (component/html
+   [:svg opts
+    (svg-xlink "celebration-horn")]))
