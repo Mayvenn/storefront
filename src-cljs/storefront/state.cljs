@@ -133,6 +133,7 @@
                        :slug ""}}
 
      :ui {:api-requests []
+          :carousel {:certified-stylist-index 0}
           :navigation-message [events/navigate-home {}]
           :return-navigation-message [events/navigate-home {}]
           :errors {}

@@ -133,7 +133,8 @@
 
 (defpath ensure-sku-ids)
 
-(defpath carousel-change-index)
+(defpath carousel-certified-stylist-index)
+(defpath carousel-certified-stylist-slide)
 
 (defpath control)
 (defpath control-change-state)
