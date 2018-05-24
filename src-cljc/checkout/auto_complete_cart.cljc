@@ -29,7 +29,6 @@
    [storefront.platform.messages :as messages]
    [storefront.css-transitions :as css-transitions]
    [storefront.events :as events]
-   [storefront.transitions :as transitions]
    [storefront.effects :as effects]
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
