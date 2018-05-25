@@ -23,7 +23,7 @@
 (defn ^:private stylist-slides [stylists]
   (map stylist-slide stylists))
 
-(defn ^:private stylist-info [{:keys [stylist-name salon-name salon-address stylist-bio]}]
+(defn ^:private stylist-info [{:keys [stylist-name salon-name salon-address stylist-bio gallery]}]
   [:div.py2
    [:div.h3 stylist-name]
    [:div.teal.h6.pt2.bold
@@ -33,7 +33,8 @@
 
    [:div.h6.dark-gray.pt3 stylist-bio]
    [:div
-    [:a.teal.medium.h6.border-teal.border-bottom.border-width-2 "View Hair Gallery"]]])
+    [:a.teal.medium.h6.border-teal.border-bottom.border-width-2 "View Hair Gallery"]
+    #_[:div (-> gallery :images first :ucare-id str)]]])
 
 (defn stylist-details-before-change [prev next]
   (messages/handle-message events/carousel-certified-stylist-slide))
