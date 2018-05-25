@@ -305,10 +305,10 @@
         (component/build full-component full-cart opts))])))
 
 (defn query [data]
-  {:fetching-order?  (utils/requesting? data request-keys/get-order)
-   :item-count       (orders/product-quantity (get-in data keypaths/order))
-   :empty-cart       (empty-cart-query data)
-   :full-cart        (full-cart-query data)})
+  {:fetching-order? (utils/requesting? data request-keys/get-order)
+   :item-count      (orders/product-quantity (get-in data keypaths/order))
+   :empty-cart      (empty-cart-query data)
+   :full-cart       (full-cart-query data)})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
