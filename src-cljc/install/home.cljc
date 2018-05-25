@@ -61,9 +61,9 @@
   [:div.center.p2 [:div.bold.teal.letter-spacing-1 header]
    [:div.h6.line-height-1 content]])
 
-(defn ^:private as-seen-in-logos [& logo-urls]
-  (for [url logo-urls]
-    [:img.mx2.my2 {:src url}]))
+(defn ^:private as-seen-in-logos [& logo-img-ids]
+  (for [{:keys [id width]} logo-img-ids]
+    (ui/ucare-img {:class "mx2 my2" :width width} id)))
 
 (defn img-with-circle [diameter img-id content]
   (let [radius (quot diameter 2)]
@@ -111,13 +111,12 @@
     [:div.col-12.bg-gray.py2
      [:div.dark-gray.col-12.center.h7.medium.letter-spacing-4.p1 "AS SEEN IN"]
      (into [:div.flex.flex-wrap.justify-around.items-center]
-           ;; TODO(ellie) These images should use the ui/ucare-img helper
            (as-seen-in-logos
-            "//ucarecdn.com/a2e763ea-1837-43fd-8531-440d18360e1e/-/format/auto/-/resize/160x/pressmadamenoirelogo3x.png"
-            "//ucarecdn.com/74f56834-b879-415a-9e55-87a059767297/-/format/auto/-/resize/75x/pressessence3x.png"
-            "//ucarecdn.com/b1a3d9c1-80a0-4549-9603-36fb65b5bebb/-/format/auto/-/resize/56x/pressebonylogo3x.png"
-            "//ucarecdn.com/4f8c1a9d-ab71-4881-97df-b4a724354faa/-/format/auto/-/resize/45x/pressvoiceofhairlogo3x.png"
-            "//ucarecdn.com/3428dfc2-bc0a-40f2-9bdd-c79df6abd63f/-/format/auto/-/resize/150x/presshellobeautiful3x.png"))]
+            {:id "a2e763ea-1837-43fd-8531-440d18360e1e" :width "160"}
+            {:id "74f56834-b879-415a-9e55-87a059767297" :width "75"}
+            {:id "b1a3d9c1-80a0-4549-9603-36fb65b5bebb" :width "56"}
+            {:id "4f8c1a9d-ab71-4881-97df-b4a724354faa" :width "45"}
+            {:id "3428dfc2-bc0a-40f2-9bdd-c79df6abd63f" :width "150"}))]
 
     [:div.border.border-teal.border-width-2.m3.center.p3
      [:div
