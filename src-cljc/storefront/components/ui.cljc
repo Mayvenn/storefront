@@ -8,6 +8,7 @@
             [storefront.events :as events]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.images :as images]
+            [spice.core :as spice]
             [storefront.platform.messages :refer [handle-message]]
             [storefront.platform.numbers :as numbers]))
 
@@ -434,6 +435,18 @@
 
 (defn square-image [{:keys [resizable-url]} size]
   (some-> resizable-url (str "-/scale_crop/" size "x" size "/center/")))
+
+(defn ucare-img [{:as img-attrs :keys [width class]} image-id]
+  (let [retina-url  (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/lightest/")
+                      width (str "-/resize/" (* 2 (spice/parse-int width)) "x/"))
+        default-url (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/")
+                      width (str "-/resize/" width "x/"))]
+    [:picture
+     [:source {:src-set (str retina-url " 2x,"
+                             default-url " 1x")}]
+     [:img (-> img-attrs
+               (dissoc :width)
+               (assoc :src default-url))]]))
 
 (defn circle-picture
   ([src] (circle-picture {} src))

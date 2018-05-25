@@ -65,25 +65,13 @@
   (for [url logo-urls]
     [:img.mx2.my2 {:src url}]))
 
-(defn ucare-img [{:as img-attrs :keys [width class]} image-id]
-  (let [retina-url  (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/lightest/")
-                      width (str "-/resize/" (* 2 (spice/parse-int width)) "x/"))
-        default-url (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/")
-                      width (str "-/resize/" width "x/"))]
-    [:picture
-     [:source {:src-set (str retina-url " 2x,"
-                             default-url " 1x")}]
-     [:img (-> img-attrs
-               (dissoc :width)
-               (assoc :src default-url))]]))
-
 (defn img-with-circle [diameter img-id content]
   (let [radius (quot diameter 2)]
     [:div
      {:style {:padding-bottom (str radius "px")}}
      [:div.relative
       [:div
-       (ucare-img {:class "col-12 col-4-on-tb-dt"} img-id)]
+       (ui/ucare-img {:class "col-12 col-4-on-tb-dt"} img-id)]
       [:div.bg-teal.border.border-white.border-width-3.circle.absolute.right-0.left-0.mx-auto.flex.items-center.justify-center
        {:style {:height (str diameter "px")
                 :width (str diameter "px")
@@ -99,7 +87,7 @@
 (defn ^:private happy-customer [img-id testimony customer-name]
   [:div.p4.flex.items-start.justify-center
    [:div.col-5
-    (ucare-img {:class "col-12"} img-id)]
+    (ui/ucare-img {:class "col-12"} img-id)]
    [:div.px2.flex.flex-column
     [:div.line-height-3.h6 \“ testimony \”]
     [:div.h6.bold "- "  customer-name]]])
@@ -123,7 +111,7 @@
     [:div.col-12.bg-gray.py2
      [:div.dark-gray.col-12.center.h7.medium.letter-spacing-4.p1 "AS SEEN IN"]
      (into [:div.flex.flex-wrap.justify-around.items-center]
-           ;; TODO(ellie) These images should use the ucare-img helper
+           ;; TODO(ellie) These images should use the ui/ucare-img helper
            (as-seen-in-logos
             "//ucarecdn.com/a2e763ea-1837-43fd-8531-440d18360e1e/-/format/auto/-/resize/160x/pressmadamenoirelogo3x.png"
             "//ucarecdn.com/74f56834-b879-415a-9e55-87a059767297/-/format/auto/-/resize/75x/pressessence3x.png"

@@ -15,17 +15,9 @@
             [storefront.platform.component-utils :as utils]
             [storefront.transitions :as transitions]))
 
-(defn ucare-img [img-attrs image-id width]
-  (let [retina-url (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/lightest/-/resize/" (* 2 width) "x/")
-        default-url (str "//ucarecdn.com/" image-id "/-/format/auto/-/resize/" width "x/")]
-    [:picture
-     [:source {:src-set (str retina-url " 2x,"
-                             default-url " 1x")}]
-     [:img (assoc img-attrs :src default-url)]]))
-
 (defn img-with-number-circle [img-attrs image-id number-kw]
   [:div
-   (ucare-img img-attrs image-id 280)
+   (ui/ucare-img (assoc img-attrs :width "280") image-id)
    [:div.relative.mb4.pb3
     [:div.absolute.left-0.right-0
      {:style {:top "-50px"}}
@@ -71,16 +63,14 @@
    [:div.my2.mx-auto.bg-teal {:style {:width "30px" :height "2px"}}]
 
    [:div.my4
-    (ucare-img {:alt ""}
-               "c81da7fe-f3fb-4728-8428-e1b93bdf34cc"
-               72)
+    (ui/ucare-img {:alt "" :width "72"}
+               "c81da7fe-f3fb-4728-8428-e1b93bdf34cc")
     [:h6.teal.bold "$100 Off"]
     [:p.h6 "Get your hair installed for $100 less!"]]
 
    [:div.my4
-    (ucare-img {:alt ""}
-               "3bbc41a4-31c2-4817-ad9b-f32936d7a95f"
-               72)
+    (ui/ucare-img {:alt "" :width "72"}
+               "3bbc41a4-31c2-4817-ad9b-f32936d7a95f")
     [:h6.teal.bold "Risk Free"]
     [:p.h6 "Wear it, dye it, style it. If your don't love it your"
      " hair we'll exchange it within 30 days of purchase."]]
@@ -88,9 +78,8 @@
    [:div.my4
     [:div.relative
      {:style {:left "-11px"}}
-     (ucare-img {:alt ""}
-                "4f5d609c-a4f1-4d1b-9ea0-787a1e0a6a07"
-                72)]
+     (ui/ucare-img {:alt "" :width "72"}
+                "4f5d609c-a4f1-4d1b-9ea0-787a1e0a6a07")]
     [:h6.teal.bold "Free 3-5 Day Shipping"]
     [:p.h6 "Need it sooner? Overnight shipping is available."]]])
 

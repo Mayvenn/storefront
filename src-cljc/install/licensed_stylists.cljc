@@ -9,27 +9,16 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.carousel :as carousel]
             [storefront.platform.messages :as messages]
+            [storefront.components.ui :as ui]
             [storefront.transitions :as transitions]))
-
-(defn ucare-img [{:as img-attrs :keys [width class]} image-id]
-  (let [retina-url  (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/lightest/")
-                      width (str "-/resize/" (* 2 (spice/parse-int width)) "x/"))
-        default-url (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/")
-                      width (str "-/resize/" width "x/"))]
-    [:picture
-     [:source {:src-set (str retina-url " 2x,"
-                             default-url " 1x")}]
-     [:img (-> img-attrs
-               (dissoc :width)
-               (assoc :src default-url))]]))
 
 (defn ^:private stylist-slide [{:keys [stylist-headshot]}]
   [:div.flex.relative.justify-center.mxn2
    [:div.z5.stacking-context.absolute
     {:style {:margin-top  "14px"
              :margin-left "92px"}}
-    (ucare-img {:width "40"} "3cd2b6e9-8470-44c2-ad1f-b1e182d38cb0")]
-   (ucare-img {:width "210"} stylist-headshot)])
+    (ui/ucare-img {:width "40"} "3cd2b6e9-8470-44c2-ad1f-b1e182d38cb0")]
+   (ui/ucare-img {:width "210"} stylist-headshot)])
 
 (defn ^:private stylist-slides [stylists]
   (map stylist-slide stylists))
