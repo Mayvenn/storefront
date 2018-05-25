@@ -50,41 +50,38 @@
     {:data-test "promo-banner"}
     (:description promo)]))
 
-(defn ^:private to-show?*
-  "Determine whether to show for a nav-event"
-  [auto-complete? no-promotions? nav-event promo-type]
-  (get (cond-> #{events/navigate-home
-                 events/navigate-cart
-                 events/navigate-shop-by-look
-                 events/navigate-shop-by-look-details}
-
-         ;; Incentivize checkout by reminding them they are saving
-         (= :install-discount/applied promo-type)
-         (conj events/navigate-checkout-returning-or-guest
-               events/navigate-checkout-address
-               events/navigate-checkout-payment
-               events/navigate-checkout-confirmation)
-
-         ;; Do promotion banner on the cart page w/ auto-complete experiment
-         (and auto-complete?
-              (not no-promotions?))
-         (disj events/navigate-cart))
-       nav-event))
-
-(defn ^:private no-promotion?
-  "TODO move to order accessors"
-  [order]
-  (or (nil? (orders/applied-promo-code order))
-      (= 0 (orders/product-quantity order))))
-
 (defn ^:private promotion-to-advertise
   [data]
-  (let [promotions (get-in data keypaths/promotions)]
-    (or (promos/find-promotion-by-code promotions (first (get-in data keypaths/order-promotion-codes)))
-        (promos/find-promotion-by-code promotions (get-in data keypaths/pending-promo-code))
-        (promos/default-advertised-promotion promotions))))
+  (let [promotion-db (get-in data keypaths/promotions)
+        applied      (get-in data keypaths/order-promotion-codes)
+        pending      (get-in data keypaths/pending-promo-code)]
+    (or (promos/find-promotion-by-code promotion-db (first applied))
+        (promos/find-promotion-by-code promotion-db pending)
+        (promos/default-advertised-promotion promotion-db))))
 
-(defn promo-type*
+(defn ^:private nav-whitelist-for*
+  "Promo code banner should only show on these nav-events
+
+   Depending on experiments, this whitelist may be modified"
+  [auto-complete? no-promotions? promo-type]
+  (cond-> #{events/navigate-home
+            events/navigate-cart
+            events/navigate-shop-by-look
+            events/navigate-shop-by-look-details}
+
+    ;; Incentivize checkout by reminding them they are saving
+    (= :install-discount/applied promo-type)
+    (conj events/navigate-checkout-returning-or-guest
+          events/navigate-checkout-address
+          events/navigate-checkout-payment
+          events/navigate-checkout-confirmation)
+
+    ;; Do promotion banner on the cart page w/ auto-complete experiment
+    (and auto-complete?
+         (not no-promotions?))
+    (disj events/navigate-cart)))
+
+(defn ^:private promo-type*
   "Determine what type of promotion behavior we are under
    experiment for"
   [data]
@@ -104,13 +101,16 @@
 
 (defn query
   [data]
-  (let [to-show?   (partial to-show?*
-                            (experiments/auto-complete? data)
-                            (no-promotion? (get-in data keypaths/order))
-                            (get-in data keypaths/navigation-event))
+  (let [nav-whitelist-for
+        (partial nav-whitelist-for*
+                 (experiments/auto-complete? data)
+                 (orders/no-applied-promo? (get-in data
+                                                   keypaths/order)))
+
+        nav-event  (get-in data keypaths/navigation-event)
         promo-type (promo-type* data)]
     (cond-> {:promo (promotion-to-advertise data)}
-      (to-show? promo-type)
+      (contains? (nav-whitelist-for promo-type) nav-event)
       (assoc :promo/type promo-type))))
 
 (defn built-component

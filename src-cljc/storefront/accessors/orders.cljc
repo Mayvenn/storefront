@@ -119,6 +119,11 @@
 (defn applied-promo-code [order]
   (some :coupon-code (all-order-adjustments order)))
 
+(defn no-applied-promo?
+  [order]
+  (or (nil? (applied-promo-code order))
+      (= 0 (product-quantity order))))
+
 (defn- line-item-tuples [order]
   (->> (product-items order)
        (map (juxt :sku :quantity))))
