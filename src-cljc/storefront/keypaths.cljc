@@ -294,6 +294,8 @@
 (def carousel (conj ui :carousel))
 (def carousel-certified-stylist-index (conj carousel :certified-stylist-index))
 (def carousel-certified-stylist-sliding? (conj carousel :certified-stylist-sliding?))
+(def carousel-stylist-gallery (conj carousel :stylist-gallery))
+(def carousel-stylist-gallery-open? (conj carousel-stylist-gallery :open?))
 
 (def faq (conj ui :faq))
 (def faq-expanded-section (conj faq :expanded-section))

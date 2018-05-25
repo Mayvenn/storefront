@@ -154,50 +154,51 @@
 
 (defn ^:private query [data]
   (let [images (repeat 10 {:ucare-id "40920021-daa7-4067-9b6a-6d9bb027b529"})]
-    {:header                              {:text-or-call-number "1-310-733-0284"}
+    {:header                     {:text-or-call-number "1-310-733-0284"}
      :carousel-certified-stylist {:carousel-certified-stylist-index    (get-in data keypaths/carousel-certified-stylist-index)
                                   :carousel-certified-stylist-sliding? (get-in data keypaths/carousel-certified-stylist-sliding?)
+                                  :stylist-gallery-open?               (get-in data keypaths/carousel-stylist-gallery-open?)
                                   :stylists                            [{:stylist-name     "Aundria Carter"
                                                                          :stylist-headshot "63acc2ac-43cc-48cb-9db7-0361f01aaa25"
                                                                          :salon-name       "Giovani Hair Salon"
                                                                          :salon-address    "520 S Reilly Rd. Fayetteville, NC"
                                                                          :stylist-bio      "Aundria Carter better known as Keshstyles, has logged over 10 years of experience as a stylist. She ensures a memorable and enjoyable experience while getting the style of your dreams. A sew-in specialist she focuses on accentuating the beauty of all of her clients."
-                                                                         :gallery {:images images}
+                                                                         :gallery          {:images images}
                                                                          }
 
                                                                         {:stylist-name     "Angela White"
                                                                          :stylist-headshot "a7903783-7c7a-4459-85a7-fc9db361696e"
                                                                          :salon-name       "Michae's Hair Salon"
                                                                          :salon-address    "5338 Yadkin Rd. Fayetteville, NC"
-                                                                         :gallery {:images images}
+                                                                         :gallery          {:images images}
                                                                          :stylist-bio      "Angela White a.k.a Hairdiva Daplug, is a licensed and versatile stylist with more than 10 years of experience. Discovering her love for all things hair at an early age Angela works with you to achieve your unique look. Specializing in sew-ins, braiding, blow outs, cuts, and coloring."}
 
                                                                         {:stylist-name     "Tamara Johnson"
                                                                          :stylist-headshot "be913d9e-e69d-45e9-8a92-23b7dfca01fe"
                                                                          :salon-name       "Sara's Hair & Nail Salon"
                                                                          :salon-address    "5845C Yadkin Rd. Fayetteville, NC"
-                                                                         :gallery {:images images}
+                                                                         :gallery          {:images images}
                                                                          :stylist-bio      "Tamara Johnson, a.k.a. Tamara Nicole brings over 9 years of experience to her chair. A graduate of the Paul Mitchell School she places an emphasis on healthy and strong, shiny hair. Specializing in sew-ins, blowouts, and locs she will make your hair grow!"}
 
                                                                         {:stylist-name     "Valerie Selby"
                                                                          :stylist-headshot "f1ba9936-d310-42fb-a0fa-fa54b49e7055"
                                                                          :salon-name       "ILLstylz Salon"
                                                                          :salon-address    "1016 71st School Rd. Fayetteville, NC"
-                                                                         :gallery {:images images}
+                                                                         :gallery          {:images images}
                                                                          :stylist-bio      "As the owner and operator of ILLstylz Salon Valerie backs her love of hair with over 15 years of experience. With a focus on healthy hair a specialty in sew-ins Valerie strives to give your hair what it needs to be healthy regardless of the style or service you choose."}
 
                                                                         {:stylist-name     "Demetria Murphy"
                                                                          :stylist-headshot "2f98fa6e-321b-4d5c-993b-2f424cb221c0"
                                                                          :salon-name       "Exclusive Hair Design"
                                                                          :salon-address    "224 McPherson Church Rd. Fayetteville, NC"
-                                                                         :gallery {:images images}
+                                                                         :gallery          {:images images}
                                                                          :stylist-bio      "Demetria, AKA MizDee, has been doing what she loves as a licensed stylist for over 15 years taking pride in transforming her clients into their greater self. Specializing in sew-ins, cuts, and styling she strives to ensure each one of her clients have a memorable experience."}
 
                                                                         {:stylist-name     "Tiara Cohen"
                                                                          :stylist-headshot "28ea9a60-1254-4325-8593-b6bac09e19e9"
                                                                          :salon-name       "Hair Miracles"
                                                                          :salon-address    "508 Owen Dr. Suite B Fayetteville, NC"
-                                                                         :gallery {:images images}
+                                                                         :gallery          {:images images}
                                                                          :stylist-bio      "With over 22 years of experience Tiara knows that weaves and wigs are a choice that each one of her clients makes, not a must. Starting with a specialty in sew-ins, Tiara has the experience to meet all the needs of her clients dreams."}]}}))
 
 (defn built-component
