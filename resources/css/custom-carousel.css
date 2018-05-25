@@ -1,5 +1,17 @@
 /* Taken from slick.css */
 
+.faded-inactive-slides-carousel
+  .slick-slide {
+    opacity: 0.40;
+    transition-duration: 0.5s;
+}
+
+.faded-inactive-slides-carousel
+  .slick-slide.slick-active {
+    opacity: 1;
+    transition-duration: 0.5s;
+}
+
 .slick-slider {
    margin-bottom: 0;
 }

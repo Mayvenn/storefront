@@ -245,7 +245,7 @@
                                    :slidesToShow 1
                                    :centerMode   true
                                    :infinite     true
-                                   :className    "our-class"
+                                   :className    "faded-inactive-slides-carousel"
                                    :beforeChange stylist-details-before-change
                                    :afterChange  stylist-details-after-change}}
                        {})]
