@@ -3,10 +3,10 @@
             [storefront.accessors.orders :as orders]
             [storefront.accessors.promos :as promos]
             [storefront.component :as component]
+            [storefront.components.svg :as svg]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.platform.component-utils :as utils]
-            [storefront.components.svg :as svg]))
+            [storefront.platform.component-utils :as utils]))
 
 (defmulti component
   "Display a different component based on type of promotion"
