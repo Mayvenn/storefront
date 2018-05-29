@@ -139,6 +139,9 @@
 (defpath control-stylist-gallery-open)
 (defpath control-stylist-gallery-close)
 
+(defpath control-freeinstall-ugc-modal-open)
+(defpath control-freeinstall-ugc-modal-close)
+
 (defpath control)
 (defpath control-change-state)
 (defpath control-focus)

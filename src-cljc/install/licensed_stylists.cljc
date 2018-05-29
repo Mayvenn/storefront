@@ -67,7 +67,7 @@
   (messages/handle-message events/carousel-certified-stylist-index {:index index}))
 
 (defn component
-  [{:keys [stylists carousel-certified-stylist-index carousel-certified-stylist-sliding? stylist-gallery-open?]} owner opts]
+  [{:keys [stylists index sliding? gallery-open?]} owner opts]
   (component/create
    [:div
     [:div.center.pt6.px6
@@ -90,9 +90,9 @@
                                    :afterChange  stylist-details-after-change}}
                        {})]
      [:div.center.px6
-      [:div {:class (if carousel-certified-stylist-sliding? "transition-2 transparent" "transition-1 opaque")}
-       (stylist-info (get stylists carousel-certified-stylist-index)
-                     stylist-gallery-open?)]]]]))
+      [:div {:class (if sliding? "transition-2 transparent" "transition-1 opaque")}
+       (stylist-info (get stylists index)
+                     gallery-open?)]]]]))
 
 (defmethod transitions/transition-state events/carousel-certified-stylist-slide [_ _event _args app-state]
   (assoc-in app-state keypaths/carousel-certified-stylist-sliding? true))

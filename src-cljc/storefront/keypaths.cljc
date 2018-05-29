@@ -297,6 +297,11 @@
 (def carousel-stylist-gallery (conj carousel :stylist-gallery))
 (def carousel-stylist-gallery-open? (conj carousel-stylist-gallery :open?))
 
+(def carousel-freeinstall (conj carousel :freeinstall))
+(def carousel-freeinstall-ugc (conj carousel-freeinstall :ugc))
+(def carousel-freeinstall-ugc-open? (conj carousel-freeinstall-ugc :open?))
+(def carousel-freeinstall-ugc-index (conj carousel-freeinstall-ugc :index))
+
 (def faq (conj ui :faq))
 (def faq-expanded-section (conj faq :expanded-section))
 

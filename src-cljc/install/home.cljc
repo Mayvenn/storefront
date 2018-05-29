@@ -2,10 +2,12 @@
   (:require #?@(:cljs [[om.core :as om]
                        [goog.events]
                        [goog.dom]
+                       [storefront.hooks.pixlee :as pixlee-hook]
                        [goog.events.EventType :as EventType]])
             [spice.core :as spice]
             [install.licensed-stylists :as licensed-stylists]
             [storefront.assets :as assets]
+            [storefront.accessors.pixlee :as pixlee]
             [storefront.component :as component]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
@@ -13,7 +15,10 @@
             [storefront.platform.carousel :as carousel]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
-            [storefront.transitions :as transitions]))
+            [storefront.platform.carousel :as carousel]
+            [storefront.transitions :as transitions]
+            [storefront.components.svg :as svg]
+            [storefront.effects :as effects]))
 
 (defn header [text-or-call-number]
   [:div.container.flex.items-center.justify-between.px3.py2
@@ -92,8 +97,19 @@
     [:div.line-height-3.h6 \“ testimony \”]
     [:div.h6.bold "- "  customer-name]]])
 
+(defn ^:private carousel-slide [idx image]
+  [:div.p1
+   [:a (utils/fake-href events/control-freeinstall-ugc-modal-open {:index idx})
+    (ui/aspect-ratio
+     1 1
+     {:class "flex items-center"}
+     [:img.col-12 (:large (:imgs image))]
+     #_(when (= content-type "video")
+       [:div.absolute.overlay.flex.items-center.justify-center
+        svg/play-video-muted]))]])
+
 (defn ^:private component
-  [{:keys [header carousel-certified-stylist]} owner opts]
+  [{:keys [header carousel-certified-stylist ugc-carousel]} owner opts]
   (component/create
    [:div
     (component/build relative-header header nil)
@@ -150,7 +166,24 @@
                       "Ugh God you guys, like you don't understand, I love this hair."
                       "Tiona Chantel")]]
 
-    (component/build licensed-stylists/component carousel-certified-stylist {})]))
+    (component/build licensed-stylists/component carousel-certified-stylist {})
+    [:div.bg-transparent-teal.center
+     [:h2.pt6.pb4 "#MayvennFreeInstall"]
+     (component/build carousel/component
+                      {:slides   (map-indexed carousel-slide (:album (:carousel-data ugc-carousel)))
+                       :settings {:centerMode    true
+                                  ;; must be in px, because it gets parseInt'd for
+                                  ;; the slide width calculation
+                                  :centerPadding "36px"
+                                  ;; The breakpoints are mobile-last. That is, the
+                                  ;; default values apply to the largest screens, and
+                                  ;; 1000 means 1000 and below.
+                                  :slidesToShow  3
+                                  :responsive    [{:breakpoint 1000
+                                                   :settings   {:slidesToShow 2}}]}}
+                        opts)
+     [:p.center.p2.h6 "Want a chance to be featured? Share your free install style by tagging us with #MayvennFreeInstall"]]
+    [:div.bg-black.white.p2.flex.h6.medium "Buy 3 bundles or more and get a FREE install!"]]))
 
 (def ^:private certified-stylists
   [{:stylist-name     "Aundria Carter"
@@ -238,11 +271,19 @@
 
 (defn ^:private query [data]
   {:header                     {:text-or-call-number "1-310-733-0284"}
-   :carousel-certified-stylist {:carousel-certified-stylist-index    (get-in data keypaths/carousel-certified-stylist-index)
-                                :carousel-certified-stylist-sliding? (get-in data keypaths/carousel-certified-stylist-sliding?)
-                                :stylist-gallery-open?               (get-in data keypaths/carousel-stylist-gallery-open?)
-                                :stylists                            certified-stylists}})
+   :carousel-certified-stylist {:index         (get-in data keypaths/carousel-certified-stylist-index)
+                                :sliding?      (get-in data keypaths/carousel-certified-stylist-sliding?)
+                                :gallery-open? (get-in data keypaths/carousel-stylist-gallery-open?)
+                                :stylists      certified-stylists}
+
+   :ugc-carousel (when-let [ugc (get-in data keypaths/ugc)]
+                   (when-let [images (pixlee/images-in-album ugc :free-install-home)]
+                     {:carousel-data {:album images}
+                      :index         (get-in data keypaths/carousel-freeinstall-ugc-index)}))})
 
 (defn built-component
   [data opts]
   (component/build component (query data) opts))
+
+(defmethod effects/perform-effects events/navigate-install-home [_ _ _ _ app-state]
+  #?(:cljs (pixlee-hook/fetch-album-by-keyword :free-install-home)))
