@@ -10,6 +10,7 @@
             [storefront.platform.carousel :as carousel]
             [storefront.platform.messages :as messages]
             [storefront.components.ui :as ui]
+            [storefront.platform.component-utils :as utils]
             [storefront.transitions :as transitions]))
 
 (defn ^:private stylist-slide [{:keys [stylist-headshot]}]
@@ -29,7 +30,7 @@
 (defn ^:private gallery-slides [gallery]
   (map gallery-slide gallery))
 
-(defn ^:private stylist-info [{:keys [stylist-name salon-name salon-address stylist-bio gallery]}]
+(defn ^:private stylist-info [{:keys [stylist-name salon-name salon-address stylist-bio gallery]} stylist-gallery-open?]
   [:div.py2
    [:div.h3 stylist-name]
    [:div.teal.h6.pt2.bold
@@ -40,10 +41,12 @@
    [:div.h6.dark-gray.pt3 stylist-bio]
 
    [:div
-    [:a.teal.medium.h6.border-teal.border-bottom.border-width-2 "View Hair Gallery"]
+    [:a.teal.medium.h6.border-teal.border-bottom.border-width-2
+     (utils/fake-href events/control-stylist-gallery-open)
+     "View Hair Gallery"]
 
-    (if false ;; this is where we decide to show the model or not
-      (let [close-attrs (messages/handle-message events/stylist-gallery-close)]
+    (when stylist-gallery-open?
+      (let [close-attrs (utils/fake-href events/control-stylist-gallery-close)]
         (ui/modal
          {:close-attrs close-attrs}
          [:div.relative
@@ -87,7 +90,8 @@
                        {})]
      [:div.center.px6
       [:div {:class (if carousel-certified-stylist-sliding? "transition-2 transparent" "transition-1 opaque")}
-       (stylist-info (get stylists carousel-certified-stylist-index))]]]]))
+       (stylist-info (get stylists carousel-certified-stylist-index)
+                     stylist-gallery-open?)]]]]))
 
 (defmethod transitions/transition-state events/carousel-certified-stylist-slide [_ _event _args app-state]
   (assoc-in app-state keypaths/carousel-certified-stylist-sliding? true))
@@ -97,8 +101,8 @@
       (assoc-in keypaths/carousel-certified-stylist-index index)
       (update-in keypaths/carousel dissoc :certified-stylist-sliding?)))
 
-(defmethod transitions/transition-state events/stylist-gallery-open [_ _event _args app-state]
+(defmethod transitions/transition-state events/control-stylist-gallery-open [_ _event _args app-state]
   (assoc-in app-state keypaths/carousel-stylist-gallery-open? true))
 
-(defmethod transitions/transition-state events/stylist-gallery-close [_ _event _args app-state]
-  (update-in keypaths/carousel-stylist-gallery dissoc :stylist-gallery-open?))
+(defmethod transitions/transition-state events/control-stylist-gallery-close [_ _event _args app-state]
+  (update-in app-state keypaths/carousel-stylist-gallery dissoc :open?))

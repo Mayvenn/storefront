@@ -136,8 +136,8 @@
 (defpath carousel-certified-stylist-index)
 (defpath carousel-certified-stylist-slide)
 
-(defpath stylist-gallery-open)
-(defpath stylist-gallery-close)
+(defpath control-stylist-gallery-open)
+(defpath control-stylist-gallery-close)
 
 (defpath control)
 (defpath control-change-state)
