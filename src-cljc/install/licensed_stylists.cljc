@@ -24,8 +24,9 @@
 (defn ^:private stylist-slides [stylists]
   (map stylist-slide stylists))
 
-(defn ^:private gallery-slide [{:keys [ucare-id]}]
-  [:div (ui/ucare-img {} ucare-id)])
+(defn ^:private gallery-slide [ucare-id]
+  [:div (ui/aspect-ratio 1 1
+                         (ui/ucare-img {:class "col-12"} ucare-id))])
 
 (defn ^:private gallery-slides [gallery]
   (map gallery-slide gallery))
@@ -37,9 +38,7 @@
     "MAYVENN CERTIFIED STYLIST"]
    [:div.h6.bold.dark-gray salon-name]
    [:div.h6.bold.dark-gray salon-address]
-
    [:div.h6.dark-gray.pt3 stylist-bio]
-
    [:div
     [:a.teal.medium.h6.border-teal.border-bottom.border-width-2
      (utils/fake-href events/control-stylist-gallery-open)
@@ -48,8 +47,10 @@
     (when stylist-gallery-open?
       (let [close-attrs (utils/fake-href events/control-stylist-gallery-close)]
         (ui/modal
-         {:close-attrs close-attrs}
-         [:div.relative
+         {:close-attrs close-attrs
+          :col-class "col-12"}
+         [:div.relative.mx-auto
+          {:style {:max-width "750px"}}
           (component/build carousel/component
                            {:slides   (gallery-slides (:images gallery))
                             :settings {:slidesToShow 1}}
