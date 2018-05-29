@@ -5,7 +5,7 @@
                        [storefront.hooks.pixlee :as pixlee-hook]
                        [goog.events.EventType :as EventType]])
             [spice.core :as spice]
-            [install.licensed-stylists :as licensed-stylists]
+            [install.certified-stylists :as certified-stylists]
             [storefront.assets :as assets]
             [storefront.accessors.pixlee :as pixlee]
             [storefront.component :as component]
@@ -97,16 +97,35 @@
     [:div.line-height-3.h6 \“ testimony \”]
     [:div.h6.bold "- "  customer-name]]])
 
-(defn ^:private carousel-slide [idx image]
-  [:div.p1
-   [:a (utils/fake-href events/control-freeinstall-ugc-modal-open {:index idx})
-    (ui/aspect-ratio
-     1 1
-     {:class "flex items-center"}
-     [:img.col-12 (:large (:imgs image))]
-     #_(when (= content-type "video")
-       [:div.absolute.overlay.flex.items-center.justify-center
-        svg/play-video-muted]))]])
+(defn ^:private embedded-carousel-slides [album]
+  (map-indexed
+   (fn [idx image]
+     [:div.p1
+      [:a (utils/fake-href events/control-free-install-ugc-modal-open {:index idx})
+       (ui/aspect-ratio
+        1 1
+        {:class "flex items-center"}
+        [:img.col-12 (:large (:imgs image))])]])
+   album))
+
+(defn ^:private modal-carousel-slides [album]
+  (map-indexed
+   (fn [idx {:keys [imgs id user-handle social-service] :as image}]
+     [:div
+      (ui/aspect-ratio
+       1 1
+       {:class "flex items-center"}
+       [:img.col-12 (:large imgs)])
+      [:div.flex.items-center.justify-between.p2.h5
+       [:div.dark-gray.medium.pl4 {:style {:word-break "break-all"}} "@" user-handle]
+       [:div.mr4.mx1.line-height-1 {:style {:width "1em" :height "1em"}}
+        (svg/social-icon social-service)]]
+      [:a.col-11.btn.btn-primary.mx-auto.mb2
+       (utils/route-to events/navigate-shop-by-look-details
+                       {:look-id       id
+                        :album-keyword :free-install-home})
+       "Shop This Look"]])
+   album))
 
 (defn ^:private component
   [{:keys [header carousel-certified-stylist ugc-carousel]} owner opts]
@@ -166,22 +185,40 @@
                       "Ugh God you guys, like you don't understand, I love this hair."
                       "Tiona Chantel")]]
 
-    (component/build licensed-stylists/component carousel-certified-stylist {})
+    (component/build certified-stylists/component carousel-certified-stylist {})
     [:div.bg-transparent-teal.center
      [:h2.pt6.pb4 "#MayvennFreeInstall"]
-     (component/build carousel/component
-                      {:slides   (map-indexed carousel-slide (:album (:carousel-data ugc-carousel)))
-                       :settings {:centerMode    true
-                                  ;; must be in px, because it gets parseInt'd for
-                                  ;; the slide width calculation
-                                  :centerPadding "36px"
-                                  ;; The breakpoints are mobile-last. That is, the
-                                  ;; default values apply to the largest screens, and
-                                  ;; 1000 means 1000 and below.
-                                  :slidesToShow  3
-                                  :responsive    [{:breakpoint 1000
-                                                   :settings   {:slidesToShow 2}}]}}
-                        opts)
+     (let [index (:index ugc-carousel)]
+       [:div
+        (component/build carousel/component
+                         {:slides   (embedded-carousel-slides (:album (:carousel-data ugc-carousel)))
+                          :settings {:centerMode    true
+                                     ;; must be in px, because it gets parseInt'd for
+                                     ;; the slide width calculation
+                                     :centerPadding "36px"
+                                     ;; The breakpoints are mobile-last. That is, the
+                                     ;; default values apply to the largest screens, and
+                                     ;; 1000 means 1000 and below.
+                                     :slidesToShow  3
+                                     :responsive    [{:breakpoint 1000
+                                                      :settings   {:slidesToShow 2}}]}}
+                         opts)
+        (when (:open? ugc-carousel)
+          (let [close-attrs (utils/fake-href events/control-free-install-ugc-modal-dismiss)]
+            (ui/modal
+             {:close-attrs close-attrs
+              :col-class "col-12"}
+             [:div.bg-white.relative.col-11.mx-auto
+              {:style {:max-width "750px"}}
+              (component/build carousel/component
+                               {:slides   (modal-carousel-slides (:album (:carousel-data ugc-carousel)))
+                                :settings {:slidesToShow 1
+                                           :initialSlide index}}
+                               {})
+              [:div.absolute
+               {:style {:top "1.5rem" :right "1.5rem"}}
+               (ui/modal-close {:class       "stroke-dark-gray fill-gray"
+                                :close-attrs close-attrs})]])))])
      [:p.center.p2.h6 "Want a chance to be featured? Share your free install style by tagging us with #MayvennFreeInstall"]]
     [:div.bg-black.white.p2.flex.h6.medium "Buy 3 bundles or more and get a FREE install!"]]))
 
@@ -279,7 +316,8 @@
    :ugc-carousel (when-let [ugc (get-in data keypaths/ugc)]
                    (when-let [images (pixlee/images-in-album ugc :free-install-home)]
                      {:carousel-data {:album images}
-                      :index         (get-in data keypaths/carousel-freeinstall-ugc-index)}))})
+                      :index         (get-in data keypaths/carousel-freeinstall-ugc-index)
+                      :open?         (get-in data keypaths/carousel-freeinstall-ugc-open?)}))})
 
 (defn built-component
   [data opts]
@@ -287,3 +325,12 @@
 
 (defmethod effects/perform-effects events/navigate-install-home [_ _ _ _ app-state]
   #?(:cljs (pixlee-hook/fetch-album-by-keyword :free-install-home)))
+
+(defmethod transitions/transition-state events/control-free-install-ugc-modal-open
+  [_ _ {:keys [index]} app-state]
+  (-> app-state
+      (assoc-in keypaths/carousel-freeinstall-ugc-open? true)
+      (assoc-in keypaths/carousel-freeinstall-ugc-index index)))
+
+(defmethod transitions/transition-state events/control-free-install-ugc-modal-dismiss [_ _ _ app-state]
+  (assoc-in app-state keypaths/carousel-freeinstall-ugc-open? false))

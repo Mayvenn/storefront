@@ -1,4 +1,4 @@
-(ns install.licensed-stylists
+(ns install.certified-stylists
   (:require #?@(:cljs [[om.core :as om]
                        [goog.events]
                        [goog.dom]
