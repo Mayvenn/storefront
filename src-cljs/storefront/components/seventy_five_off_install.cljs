@@ -88,47 +88,47 @@
    [:h2.center.my5 "Frequently Asked Questions"]
    (component/build
     accordion/component
-    {:expanded-indicies   #{expanded-index}
-     :sections            [(accordion/section "How does the 30 day guarantee work?"
-                                              ["Buy Mayvenn hair RISK FREE with easy returns and exchanges."]
-                                              ["EXCHANGES"
-                                               [:br]
-                                               "Wear it, dye it, even flat iron it. If you do not love your"
-                                               " Mayvenn hair we will exchange it within 30 days of purchase."
-                                               " Just call us:"
-                                               [:br]
-                                               (ui/link :link/phone :a.dark-gray {} "1-888-562-7952")]
-                                              ["RETURNS"
-                                               [:br]
-                                               "If you are not completely happy with your Mayvenn hair"
-                                               " before it is installed, we will refund your purchase if the"
-                                               " bundle is unopened and the hair is in its original condition."
-                                               " Just call us:"
-                                               [:br]
-                                               (ui/link :link/phone :a.dark-gray {} "1-888-562-7952")])
-                           (accordion/section "How does this all work? How do I get $100 off my install?"
-                                              ["It’s easy! Mayvenn will pay the first $100 of your"
-                                               " install directly to your Mayvenn stylist. Just purchase 3"
-                                               " bundles or more (frontals and closures count as bundles) and use code"
-                                               " INSTALL at checkout. Then, schedule an appointment with your"
-                                               " Mayvenn stylist and just show up. The $100 off will be waiting"
-                                               " for you. It’s that easy!"])
-                           (accordion/section "Who is going to do my hair?"
-                                              ["The $100 off offer is only valid at your Mayvenn stylist."
-                                               " If you are unsure if your stylist is participating in the $100"
-                                               " off offer, you can simply ask them or contact Mayvenn customer"
-                                               " service:"
-                                               (ui/link :link/phone :a.dark-gray {} "1-888-562-7952")])
-                           (accordion/section "What if I want to get my hair done by a non-Mayvenn?"
-                                              ["No, you must get your hair done from your Mayvenn"
-                                               " stylist in order to get $100 off your install."])
-                           (accordion/section "Why should I order hair from Mayvenn?"
-                                              ["Mayvenn hair is 100% human. Our Virgin, Dyed Virgin, and"
-                                               " 100% Human hair can be found in a variety of textures from"
-                                               " straight to curly. Virgin hair starts at $54 per bundle and"
-                                               " 100% Human hair starts at just $30 per bundle. All orders are"
-                                               " eligible for free shipping and backed by our 30 Day"
-                                               " Guarantee."])]}
+    {:expanded-indices #{expanded-index}
+     :sections         [(accordion/section "How does the 30 day guarantee work?"
+                                           ["Buy Mayvenn hair RISK FREE with easy returns and exchanges."]
+                                           ["EXCHANGES"
+                                            [:br]
+                                            "Wear it, dye it, even flat iron it. If you do not love your"
+                                            " Mayvenn hair we will exchange it within 30 days of purchase."
+                                            " Just call us:"
+                                            [:br]
+                                            (ui/link :link/phone :a.dark-gray {} "1-888-562-7952")]
+                                           ["RETURNS"
+                                            [:br]
+                                            "If you are not completely happy with your Mayvenn hair"
+                                            " before it is installed, we will refund your purchase if the"
+                                            " bundle is unopened and the hair is in its original condition."
+                                            " Just call us:"
+                                            [:br]
+                                            (ui/link :link/phone :a.dark-gray {} "1-888-562-7952")])
+                        (accordion/section "How does this all work? How do I get $100 off my install?"
+                                           ["It’s easy! Mayvenn will pay the first $100 of your"
+                                            " install directly to your Mayvenn stylist. Just purchase 3"
+                                            " bundles or more (frontals and closures count as bundles) and use code"
+                                            " INSTALL at checkout. Then, schedule an appointment with your"
+                                            " Mayvenn stylist and just show up. The $100 off will be waiting"
+                                            " for you. It’s that easy!"])
+                        (accordion/section "Who is going to do my hair?"
+                                           ["The $100 off offer is only valid at your Mayvenn stylist."
+                                            " If you are unsure if your stylist is participating in the $100"
+                                            " off offer, you can simply ask them or contact Mayvenn customer"
+                                            " service:"
+                                            (ui/link :link/phone :a.dark-gray {} "1-888-562-7952")])
+                        (accordion/section "What if I want to get my hair done by a non-Mayvenn?"
+                                           ["No, you must get your hair done from your Mayvenn"
+                                            " stylist in order to get $100 off your install."])
+                        (accordion/section "Why should I order hair from Mayvenn?"
+                                           ["Mayvenn hair is 100% human. Our Virgin, Dyed Virgin, and"
+                                            " 100% Human hair can be found in a variety of textures from"
+                                            " straight to curly. Virgin hair starts at $54 per bundle and"
+                                            " 100% Human hair starts at just $30 per bundle. All orders are"
+                                            " eligible for free shipping and backed by our 30 Day"
+                                            " Guarantee."])]}
     {:opts {:section-click-event events/faq-section-selected}})])
 
 (defn component [{:keys [footer-data faq-data]} owner _]

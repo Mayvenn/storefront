@@ -44,8 +44,8 @@
                    [:p.py2.h6 paragraph])
                  paragraphs))))])
 
-(defn component [{:keys [expanded-indicies sections]} owner {:keys [section-click-event]}]
+(defn component [{:keys [expanded-indices sections]} owner {:keys [section-click-event]}]
   (component/create
    [:div
     (for [[idx {:keys [title paragraphs]}] (map-indexed vector sections)]
-      (section-element (contains? expanded-indicies idx) idx title paragraphs section-click-event))]))
+      (section-element (contains? expanded-indices idx) idx title paragraphs section-click-event))]))
