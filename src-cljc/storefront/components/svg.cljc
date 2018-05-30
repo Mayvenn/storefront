@@ -284,3 +284,18 @@
   (component/html
    [:svg opts
     (svg-xlink "certified-ribbon")]))
+
+(defn icon-sms [opts]
+  (component/html
+   [:svg opts
+    (svg-xlink "icon-sms")]))
+
+(defn icon-call [opts]
+  (component/html
+   [:svg opts
+    (svg-xlink "icon-call")]))
+
+(defn icon-email [opts]
+  (component/html
+   [:svg opts
+    (svg-xlink "icon-email")]))

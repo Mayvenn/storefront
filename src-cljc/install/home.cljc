@@ -126,7 +126,7 @@
        "Shop This Look"]])
    album))
 
-(defn treat-yourself-block [svg title copy]
+(defn icon-block [svg title copy]
   [:div.py3
    svg
    [:div.h6.teal.bold.titlize title]
@@ -235,25 +235,44 @@
      [:h5.teal.letter-spacing-3.shout.bold "The Hookup"]
      [:h1.black "Treat Yourself"]
      [:div.py2.mx-auto.col-1.teal.border-bottom.border-width-2]
-     (treat-yourself-block (svg/coin-stack {:height 71
-                                            :width  82})
-                           "Free Install"
-                           "Get your hair installed absolutely FREE!")
-     (treat-yourself-block (svg/guarantee {:class  "bg-white fill-black stroke-black circle"
-                                           :height 72
-                                           :width  72})
-                           "Risk Free"
-                           "Wear it, dye it, style it. If you don’t love it your hair we’ll exchange it within 30 days of purchase.")
-     (treat-yourself-block (svg/certified-ribbon {:height 71
-                                                  :width  51})
-                           "Mayvenn Certified Stylists"
-                           "All Mayvenn Certified Stylists are licenced and work in salons.")]
+     (icon-block (svg/coin-stack {:height 71
+                                  :width  82})
+                 "Free Install"
+                 "Get your hair installed absolutely FREE!")
+     (icon-block (svg/guarantee {:class  "bg-white fill-black stroke-black circle"
+                                 :height 72
+                                 :width  72})
+                 "Risk Free"
+                 "Wear it, dye it, style it. If you don’t love it your hair we’ll exchange it within 30 days of purchase.")
+     (icon-block (svg/certified-ribbon {:height 71
+                                        :width  51})
+                 "Mayvenn Certified Stylists"
+                 "All Mayvenn Certified Stylists are licenced and work in salons.")]
     [:div.mt10.px4
      [:div.pb2.h6.teal.bold.center.letter-spacing-3 "Q + A"]
      [:h2.center.my5 "Frequently Asked Questions"]
      (component/build accordion/component
                       (assoc faq-accordion :sections faq-accordion/free-install-sections)
-                      {:opts {:section-click-event events/control-free-install-home-toggle-accordion}})]]))
+                      {:opts {:section-click-event events/control-free-install-home-toggle-accordion}})]
+
+    [:div.bg-transparent-teal.center.py4
+     [:h5.teal.letter-spacing-3.shout.bold "Contact Us"]
+     [:h1.black.titleize "Have Questions?"]
+     [:h5 "We are here to help you"]
+     [:div.py2.mx-auto.col-1.teal.border-bottom.border-width-2.mb3]
+     (icon-block (svg/icon-sms {:height 51
+                                :width  56})
+                 "Live Chat"
+                 (ui/link :link/sms :a.black {} "1-310-0284"))
+     (icon-block (svg/icon-call {:class  "bg-white fill-black stroke-black circle"
+                                 :height 57
+                                 :width  57})
+                 "Speak With Us"
+                 (ui/link :link/phone :a.black {} "1-310-0284"))
+     (icon-block (svg/icon-email {:height 39
+                                  :width  56})
+                 "Write To Us"
+                 (ui/link :link/email :a.black {} "help@mayvenn.com"))]]))
 
 (defn ^:private query [data]
   {:header                     {:text-or-call-number "1-310-733-0284"}
