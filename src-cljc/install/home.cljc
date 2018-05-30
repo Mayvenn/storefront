@@ -121,9 +121,9 @@
        [:div.mr4.mx1.line-height-1 {:style {:width "1em" :height "1em"}}
         (svg/social-icon social-service)]]
       [:a.col-11.btn.btn-primary.mx-auto.mb2
-       (utils/route-to events/navigate-shop-by-look-details
-                       {:look-id       id
-                        :album-keyword :free-install-home})
+       (utils/route-to-shop events/navigate-shop-by-look-details
+                            {:look-id       id
+                             :album-keyword :free-install-home})
        "Shop This Look"]])
    album))
 
