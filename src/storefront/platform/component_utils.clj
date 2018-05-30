@@ -4,6 +4,9 @@
 (defn route-to [navigation-event & [args]]
   {:href (routes/path-for navigation-event args)})
 
+(defn route-to-shop [navigation-event & [args]]
+  {:href (routes/path-for navigation-event args)})
+
 (defn noop-callback [e])
 
 (defn fake-href [event & [args]]

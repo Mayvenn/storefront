@@ -220,7 +220,11 @@
                (ui/modal-close {:class       "stroke-dark-gray fill-gray"
                                 :close-attrs close-attrs})]])))])
      [:p.center.p2.h6 "Want a chance to be featured? Share your free install style by tagging us with #MayvennFreeInstall"]]
-    [:div.bg-black.white.p2.flex.h6.medium "Buy 3 bundles or more and get a FREE install!"]]))
+    [:div.bg-black.white.p4.flex.h5.medium.flex.items-center.justify-around
+     [:div.px2 "Buy 3 bundles or more and get a FREE install!"]
+     [:a.btn.btn-primary.px6
+      (utils/route-to-shop events/navigate-home)
+      "Shop"]]]))
 
 (def ^:private certified-stylists
   [{:stylist-name     "Aundria Carter"

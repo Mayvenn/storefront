@@ -1,11 +1,13 @@
 (ns storefront.platform.component-utils
-  (:require [storefront.events :as events]
+  (:require [lambdaisland.uri :as uri]
+            [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.messages :refer [handle-message]]
             [storefront.history :as history]
             [storefront.routes :as routes]
             [storefront.utils.query :as query]
-            [storefront.browser.scroll :as scroll]))
+            [storefront.browser.scroll :as scroll]
+            [clojure.string :as str]))
 
 (defn position [pred coll]
   (first (keep-indexed #(when (pred %2) %1)
@@ -34,6 +36,10 @@
      ;; back, we'll need some info about where we've come from
      (handle-message events/stash-nav-stack-item nav-stack-item)
      (history/enqueue-navigate navigation-event navigation-args))})
+
+(defn route-to-shop [navigation-event & [args]]
+  {:href (str (uri/map->URI {:host (str/replace-first js/location.host #"^[^\.]*\." "shop.")
+                             :path (routes/path-for navigation-event args)}))})
 
 (defn route-back [{:keys [navigation-message]}]
   {:href (apply routes/path-for navigation-message)
