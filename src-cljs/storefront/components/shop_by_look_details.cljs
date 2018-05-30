@@ -56,14 +56,16 @@
       title)))
 
 (defn component [{:keys [creating-order? sold-out? look shared-cart skus back fetching-shared-cart? discount-warning?
-                         shared-cart-type-copy back-copy above-button-copy album-keyword]} owner opts]
+                         shared-cart-type-copy back-copy back-event above-button-copy album-keyword]} owner opts]
   (om/component
    (html
     [:div.container.mb4
      [:div.clearfix
       [:div.col-6-on-tb-dt
        [:a.p2.px3-on-tb-dt.left.col-12.dark-gray
-        (utils/route-back-or-to back events/navigate-shop-by-look {:album-keyword album-keyword})
+        (if (and (not back) back-event)
+          (utils/fake-href back-event)
+          (utils/route-back-or-to back events/navigate-shop-by-look {:album-keyword album-keyword}))
         (ui/back-caret back-copy)]
 
        [:h1.h3.medium.center.dark-gray.mb2 (str "Get this " shared-cart-type-copy)]]]
@@ -116,6 +118,7 @@
      :sold-out?             (not-every? :inventory/in-stock? (:line-items shared-cart-with-skus))
      :fetching-shared-cart? (utils/requesting? data request-keys/fetch-shared-cart)
      :back                  (first (get-in data keypaths/navigation-undo-stack))
+     :back-event            (:default-back-event album-copy)
      :back-copy             (:back-copy album-copy)
      :above-button-copy     (:above-button-copy album-copy)
      :shared-cart-type-copy (:short-name album-copy)}))

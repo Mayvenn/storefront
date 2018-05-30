@@ -432,6 +432,9 @@
                                         user-token
                                         {:page page}))))
 
+(defmethod perform-effects events/control-free-install-look-back [_ event args _ app-state]
+  (js/history.back))
+
 (defmethod perform-effects events/control-stylist-referral-submit [_ event args _ app-state]
   (api/send-referrals
    (get-in app-state keypaths/session-id)

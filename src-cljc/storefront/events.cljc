@@ -156,6 +156,8 @@
 (defpath control-free-install-ugc-modal-open)
 (defpath control-free-install-ugc-modal-dismiss)
 
+(defpath control-free-install-look-back)
+
 (defpath control-seventy-five-off-install)
 (defpath control-seventy-five-off-install-shop-looks)
 (defpath control-seventy-five-off-install-dismiss)

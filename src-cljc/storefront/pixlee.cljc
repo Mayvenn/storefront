@@ -1,4 +1,5 @@
-(ns storefront.pixlee)
+(ns storefront.pixlee
+  (:require [storefront.events :as events]))
 
 (def ^:private pixlee-copy
   {:deals        {:title             "shop deals"
@@ -39,7 +40,8 @@
                                                   "shop your favorite looks from the #MayvennMade community.")
                        :button-copy          "View this look"
                        :new-look/button-copy "Shop Look"
-                       :back-copy            "back to welcome page"
+                       :back-copy            "back"
+                       :default-back-event   events/control-free-install-look-back
                        :above-button-copy    nil
                        :short-name           "look"
                        :seo-title            "Shop by Look | Mayvenn"
