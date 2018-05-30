@@ -5,4 +5,4 @@ COPY storefront.jar storefront.jar
 COPY container_files /
 
 USER nobody
-CMD exec java -javaagent:/jmxtrans-agent-1.2.4.jar=/jmxtrans-agent.xml -server -Xmx768m -XX:MaxMetaspaceSize=64m -Xss1m -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -jar storefront.jar
+CMD exec java -javaagent:/jmxtrans-agent-1.2.4.jar=/jmxtrans-agent.xml -server -Xmx1408m -XX:MaxMetaspaceSize=64m -Xss1m -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -jar storefront.jar
