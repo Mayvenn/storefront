@@ -208,9 +208,9 @@
    [:svg {:class "fill-dark-gray" :style {:width "64px" :height "64px" :fill-opacity "0.6"}}
     (svg-xlink "play-video")]))
 
-(def guarantee
+(defn guarantee [opts]
   (component/html
-   [:svg {:class "fill-teal" :height "5em"}
+   [:svg opts
     (svg-xlink "guarantee")]))
 
 (defn number-circle [number-kw]
@@ -274,3 +274,13 @@
   (component/html
    [:svg opts
     (svg-xlink "celebration-horn")]))
+
+(defn coin-stack [opts]
+  (component/html
+   [:svg opts
+    (svg-xlink "coin-stack")]))
+
+(defn certified-ribbon [opts]
+  (component/html
+   [:svg opts
+    (svg-xlink "certified-ribbon")]))

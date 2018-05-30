@@ -127,6 +127,12 @@
        "Shop This Look"]])
    album))
 
+(defn treat-yourself-block [svg title copy]
+  [:div.py3
+   svg
+   [:div.h6.teal.bold.titlize title]
+   [:div.col-8.mx-auto.h6.black copy]])
+
 (defn ^:private component
   [{:keys [header carousel-certified-stylist ugc-carousel]} owner opts]
   (component/create
@@ -207,7 +213,7 @@
           (let [close-attrs (utils/fake-href events/control-free-install-ugc-modal-dismiss)]
             (ui/modal
              {:close-attrs close-attrs
-              :col-class "col-12"}
+              :col-class   "col-12"}
              [:div.bg-white.relative.col-11.mx-auto
               {:style {:max-width "750px"}}
               (component/build carousel/component
@@ -224,7 +230,28 @@
      [:div.px2 "Buy 3 bundles or more and get a FREE install!"]
      [:a.btn.btn-primary.px6
       (utils/route-to-shop events/navigate-home)
-      "Shop"]]]))
+      "Shop"]]
+
+    [:div.bg-transparent-teal.center.py4
+     [:h5.teal.letter-spacing-3.shout.bold "The Hookup"]
+     [:h1.black "Treat Yourself"]
+     [:div.py2.mx-auto.col-1.teal.border-bottom.border-width-2]
+     (treat-yourself-block (svg/coin-stack {:height 71
+                                            :width  82})
+                           "Free Install"
+                           "Get your hair installed absolutely FREE!")
+     (treat-yourself-block (svg/guarantee {:class  "bg-white fill-black stroke-black circle"
+                                           :height 72
+                                           :width  72})
+                           "Risk Free"
+                           "Wear it, dye it, style it. If you don’t love it your hair we’ll exchange it within 30 days of purchase.")
+     (treat-yourself-block (svg/certified-ribbon {:height 71
+                                                  :width  51})
+                           "Mayvenn Certified Stylists"
+                           "All Mayvenn Certified Stylists are licenced and work in salons.")]
+
+    [:div {:style {:height "100vh"}}]
+    ]))
 
 (def ^:private certified-stylists
   [{:stylist-name     "Aundria Carter"
