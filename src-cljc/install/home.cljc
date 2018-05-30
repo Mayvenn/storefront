@@ -4,21 +4,20 @@
                        [goog.dom]
                        [storefront.hooks.pixlee :as pixlee-hook]
                        [goog.events.EventType :as EventType]])
-            [spice.core :as spice]
             [install.certified-stylists :as certified-stylists]
-            [storefront.assets :as assets]
+            [install.faq-accordion :as faq-accordion]
             [storefront.accessors.pixlee :as pixlee]
+            [storefront.assets :as assets]
             [storefront.component :as component]
+            [storefront.components.accordion :as accordion]
+            [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
+            [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.carousel :as carousel]
             [storefront.platform.component-utils :as utils]
-            [storefront.platform.messages :as messages]
-            [storefront.platform.carousel :as carousel]
-            [storefront.transitions :as transitions]
-            [storefront.components.svg :as svg]
-            [storefront.effects :as effects]))
+            [storefront.transitions :as transitions]))
 
 (defn header [text-or-call-number]
   [:div.container.flex.items-center.justify-between.px3.py2
@@ -134,7 +133,7 @@
    [:div.col-8.mx-auto.h6.black copy]])
 
 (defn ^:private component
-  [{:keys [header carousel-certified-stylist ugc-carousel]} owner opts]
+  [{:keys [header carousel-certified-stylist ugc-carousel faq-accordion]} owner opts]
   (component/create
    [:div
     (component/build relative-header header nil)
@@ -249,28 +248,31 @@
                                                   :width  51})
                            "Mayvenn Certified Stylists"
                            "All Mayvenn Certified Stylists are licenced and work in salons.")]
-
-    [:div {:style {:height "100vh"}}]
-    ]))
-
+    [:div.mt10.px4
+     [:div.pb2.h6.teal.bold.center.letter-spacing-3 "Q + A"]
+     [:h2.center.my5 "Frequently Asked Questions"]
+     (component/build accordion/component
+                      (assoc faq-accordion :sections faq-accordion/free-install-sections)
+                      {:opts {:section-click-event events/control-free-install-home-toggle-accordion}})]]))
 
 (defn ^:private query [data]
   {:header                     {:text-or-call-number "1-310-733-0284"}
    :carousel-certified-stylist {:index         (get-in data keypaths/carousel-certified-stylist-index)
                                 :sliding?      (get-in data keypaths/carousel-certified-stylist-sliding?)
-                                :gallery-open? (get-in data keypaths/carousel-stylist-gallery-open?)
-                                :stylists      certified-stylists}
+                                :gallery-open? (get-in data keypaths/carousel-stylist-gallery-open?)}
 
    :ugc-carousel (when-let [ugc (get-in data keypaths/ugc)]
                    (when-let [images (pixlee/images-in-album ugc :free-install-home)]
                      {:carousel-data {:album images}
                       :index         (get-in data keypaths/carousel-freeinstall-ugc-index)
-                      :open?         (get-in data keypaths/carousel-freeinstall-ugc-open?)}))})
+                      :open?         (get-in data keypaths/carousel-freeinstall-ugc-open?)}))
+   :faq-accordion {:expanded-indices (get-in data keypaths/accordion-freeinstall-home-expanded-indices)}})
 
 (defn built-component
   [data opts]
   (component/build component (query data) opts))
 
+;; TODO Consider renaming file and event to something free install specific
 (defmethod effects/perform-effects events/navigate-install-home [_ _ _ _ app-state]
   #?(:cljs (pixlee-hook/fetch-album-by-keyword :free-install-home)))
 
@@ -280,5 +282,16 @@
       (assoc-in keypaths/carousel-freeinstall-ugc-open? true)
       (assoc-in keypaths/carousel-freeinstall-ugc-index index)))
 
-(defmethod transitions/transition-state events/control-free-install-ugc-modal-dismiss [_ _ _ app-state]
+(defmethod transitions/transition-state events/control-free-install-ugc-modal-dismiss
+  [_ _ _ app-state]
   (assoc-in app-state keypaths/carousel-freeinstall-ugc-open? false))
+
+(defmethod transitions/transition-state events/control-free-install-home-toggle-accordion
+  [_ _ {index :index} app-state]
+  (update-in app-state
+             keypaths/accordion-freeinstall-home-expanded-indices
+             (fn [indices i]
+               (set (if (contains? indices i)
+                      (disj indices i)
+                      (conj indices i))))
+             index))

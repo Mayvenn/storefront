@@ -160,6 +160,8 @@
 (defpath control-seventy-five-off-install-shop-looks)
 (defpath control-seventy-five-off-install-dismiss)
 
+(defpath control-free-install-home-toggle-accordion)
+
 (defpath control-stylist-earnings-fetch)
 (defpath control-stylist-balance-transfers-load-more)
 (defpath control-stylist-referrals-fetch)

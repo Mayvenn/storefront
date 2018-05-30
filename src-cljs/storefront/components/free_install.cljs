@@ -1,5 +1,6 @@
 (ns storefront.components.free-install
-  (:require [sablono.core :refer [html]]
+  (:require [install.faq-accordion :as faq-accordion]
+            [sablono.core :refer [html]]
             [storefront.api :as api]
             [storefront.browser.cookie-jar :as cookie-jar]
             [storefront.browser.scroll :as scroll]
@@ -90,7 +91,7 @@
    (component/build
     accordion/component
     {:expanded-indices #{expanded-index}
-     :sections         (faq-accordion/sections)}
+     :sections         faq-accordion/free-install-sections}
     {:opts {:section-click-event events/faq-section-selected}})])
 
 (defn component [{:keys [footer-data faq-data]} owner _]

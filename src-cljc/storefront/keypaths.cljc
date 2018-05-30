@@ -302,6 +302,11 @@
 (def carousel-freeinstall-ugc-open? (conj carousel-freeinstall-ugc :open?))
 (def carousel-freeinstall-ugc-index (conj carousel-freeinstall-ugc :index))
 
+(def accordion (conj ui :accordion))
+(def accordion-freeinstall-home (conj accordion :freeinstall))
+(def accordion-freeinstall-home-expanded-indices
+  (conj accordion-freeinstall-home :expanded-indices))
+
 (def faq (conj ui :faq))
 (def faq-expanded-section (conj faq :expanded-section))
 

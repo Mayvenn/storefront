@@ -48,4 +48,4 @@
   (component/create
    [:div
     (for [[idx {:keys [title paragraphs]}] (map-indexed vector sections)]
-      (section-element (contains? expanded-indices idx) idx title paragraphs section-click-event))]))
+      (section-element (contains? (set expanded-indices) idx) idx title paragraphs section-click-event))]))
