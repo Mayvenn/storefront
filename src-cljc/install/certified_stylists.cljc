@@ -103,7 +103,9 @@
     {:style {:margin-top  "14px"
              :margin-left "92px"}}
     (ui/ucare-img {:width "40"} "3cd2b6e9-8470-44c2-ad1f-b1e182d38cb0")]
-   (ui/ucare-img {:width "210"} stylist-headshot)])
+   (ui/ucare-img {:width "210"
+                  :on-click (utils/send-event-callback events/control-stylist-gallery-open)}
+                 stylist-headshot)])
 
 (defn ^:private gallery-slide [ucare-id]
   [:div (ui/aspect-ratio 1 1
