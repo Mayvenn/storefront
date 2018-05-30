@@ -28,7 +28,7 @@
    [:div.h6.letter-spacing-7.bold.caps.teal.mb1.mt2 "3 Easy Steps"]
    [:h1 "Get a FREE install"]
    [:p.h5.my2
-    "Purchase 3 bundles of Mayvenn hair and your install by a"
+    "Purchase 3 bundles and your install by a"
     " Mayvenn Certified Stylist is FREE!"]
 
    [:div
@@ -43,7 +43,7 @@
       " and backed by a 30 day guarantee"
       " and starts at $30 per bundle."]]
     [:div.py4
-     (img-with-number-circle {:alt      "Phone showing appointments"}
+     (img-with-number-circle {:alt      ""}
                              "6263c536-f548-45dc-ba89-ca68ad7c44c8"
                              :2)
      [:h2.h2.pt1 "A Fayetteville, NC exclusive offer"]
