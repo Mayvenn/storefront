@@ -158,7 +158,7 @@
             {:id "4f8c1a9d-ab71-4881-97df-b4a724354faa" :width "45"}
             {:id "3428dfc2-bc0a-40f2-9bdd-c79df6abd63f" :width "150"}))]
 
-    [:div.border.border-teal.border-width-2.m3.center.p3
+    [:div.border.border-teal.border-width-2.mx3.center.p3.my6
      [:div
       [:div.py2
        [:div.teal.letter-spacing-6.medium.h6 "3 EASY STEPS"]
@@ -231,8 +231,8 @@
       (utils/route-to-shop events/navigate-home)
       "Shop"]]
 
-    [:div.bg-transparent-teal.center.py4
-     [:h5.teal.letter-spacing-3.shout.bold "The Hookup"]
+    [:div.bg-transparent-teal.center.py8
+     [:h5.mt6.teal.letter-spacing-3.shout.bold "The Hookup"]
      [:h1.black "Treat Yourself"]
      [:div.py2.mx-auto.col-1.teal.border-bottom.border-width-2]
      (icon-block (svg/coin-stack {:height 71
