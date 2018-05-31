@@ -248,7 +248,7 @@
                                         :width  51})
                  "Mayvenn Certified Stylists"
                  "All Mayvenn Certified Stylists are licenced and work in salons.")]
-    [:div.mt10.px4
+    [:div.my10.px4
      [:div.pb2.h6.teal.bold.center.letter-spacing-3 "Q + A"]
      [:h2.center.my5 "Frequently Asked Questions"]
      (component/build accordion/component
