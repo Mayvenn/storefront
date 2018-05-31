@@ -133,17 +133,34 @@
    [:div.col-8.mx-auto.h6.black copy]])
 
 (defn ^:private component
-  [{:keys [header carousel-certified-stylist ugc-carousel faq-accordion]} owner opts]
+  [{:keys [header carousel-certified-stylist ugc-carousel faq-accordion
+           show-video]} owner opts]
   (component/create
    [:div
     (component/build relative-header header nil)
     (component/build fixed-header header nil)
+    (if show-video
+      [:div.flex.items-center.bg-black
+       {:style {:min-height "450px"}}
+       (ui/youtube-responsive
+        (str
+         "//www.youtube.com/embed/cWkSO_2nnD4"
+         "?rel=0"
+         "&color=white"
+         "&showinfo=0"))]
+      [:div.bg-cover.bg-free-install-landing.col-12.p4
+       [:div.teal.h1.shadow.bold.pt2.shout "free install"]
+       [:div.medium.letter-spacing-1.col-7.h3.white.shadow "Get your Mayvenn hair installed for FREE by some of the best stylists in Fayetteville, NC"]
+       [:a.shout.white.flex.items-center.pt4.h5
+        (utils/fake-href events/control-free-install-play-hero)
+        (svg/clear-play-video {:class        "mr2"
+                               :fill         "white"
+                               :fill-opacity "0.9"
+                               :height       "50px"
+                               :width        "50px"})
+        "Watch Now"]])
 
-    [:div.bg-cover.bg-top.bg-free-install-landing.col-12.p4
-     [:div.teal.h1.shadow.bold.pt2.shout "free install"]
-     [:div.medium.letter-spacing-1.col-7.h3.white.shadow "Get your Mayvenn hair installed for FREE by some of the best stylists in Fayetteville, NC"]]
-
-    [:div.flex.items-center.justify-center.p1.pt2.pb3
+    [:div.flex.items-top.justify-center.p1.pt2.pb3
      (stat-block "100,000+" "Mayvenn Stylists Nationwide")
      (stat-block "200,000+" "Happy Mayvenn Customers")
      (stat-block "100%" "Guaranteed Human Hair")]
@@ -276,6 +293,7 @@
 
 (defn ^:private query [data]
   {:header                     {:text-or-call-number "1-310-733-0284"}
+   :show-video                 (get-in data keypaths/freeinstall-show-video)
    :carousel-certified-stylist {:index         (get-in data keypaths/carousel-certified-stylist-index)
                                 :sliding?      (get-in data keypaths/carousel-certified-stylist-sliding?)
                                 :gallery-open? (get-in data keypaths/carousel-stylist-gallery-open?)}
@@ -300,6 +318,10 @@
   (-> app-state
       (assoc-in keypaths/carousel-freeinstall-ugc-open? true)
       (assoc-in keypaths/carousel-freeinstall-ugc-index index)))
+
+(defmethod transitions/transition-state events/control-free-install-play-hero
+  [_ _ {:keys [index]} app-state]
+  (assoc-in app-state keypaths/freeinstall-show-video true))
 
 (defmethod transitions/transition-state events/control-free-install-ugc-modal-dismiss
   [_ _ _ app-state]

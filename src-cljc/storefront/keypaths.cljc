@@ -297,6 +297,7 @@
 (def carousel-stylist-gallery (conj carousel :stylist-gallery))
 (def carousel-stylist-gallery-open? (conj carousel-stylist-gallery :open?))
 
+(def freeinstall-show-video (into ui [:freeinstall :show-video]))
 (def carousel-freeinstall (conj carousel :freeinstall))
 (def carousel-freeinstall-ugc (conj carousel-freeinstall :ugc))
 (def carousel-freeinstall-ugc-open? (conj carousel-freeinstall-ugc :open?))

@@ -208,6 +208,10 @@
    [:svg {:class "fill-dark-gray" :style {:width "64px" :height "64px" :fill-opacity "0.6"}}
     (svg-xlink "play-video")]))
 
+(defn clear-play-video [opts]
+  (component/html
+   [:svg opts (svg-xlink "clear-play-video")]))
+
 (defn guarantee [opts]
   (component/html
    [:svg opts
