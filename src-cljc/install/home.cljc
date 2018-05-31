@@ -255,8 +255,8 @@
                       (assoc faq-accordion :sections faq-accordion/free-install-sections)
                       {:opts {:section-click-event events/control-free-install-home-toggle-accordion}})]
 
-    [:div.bg-transparent-teal.center.py4
-     [:h5.teal.letter-spacing-3.shout.bold "Contact Us"]
+    [:div.bg-transparent-teal.center.py8
+     [:h5.mt6.teal.letter-spacing-3.shout.bold "Contact Us"]
      [:h1.black.titleize "Have Questions?"]
      [:h5 "We are here to help you"]
      [:div.py2.mx-auto.col-1.teal.border-bottom.border-width-2.mb3]
