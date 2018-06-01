@@ -41,7 +41,7 @@
                        :button-copy          "View this look"
                        :new-look/button-copy "Shop Look"
                        :back-copy            "back"
-                       :default-back-event   events/control-free-install-look-back
+                       :default-back-event   events/control-install-landing-page-look-back
                        :above-button-copy    nil
                        :short-name           "look"
                        :seo-title            "Shop by Look | Mayvenn"

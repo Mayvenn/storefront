@@ -110,7 +110,7 @@
   (map-indexed
    (fn [idx image]
      [:div.p1
-      [:a (utils/fake-href events/control-free-install-ugc-modal-open {:index idx})
+      [:a (utils/fake-href events/control-install-landing-page-ugc-modal-open {:index idx})
        (ui/aspect-ratio
         1 1
         {:class "flex items-center"}
@@ -249,7 +249,7 @@
                                                      :settings   {:slidesToShow 3}}]}}
                          opts)
         (when (:open? ugc-carousel)
-          (let [close-attrs (utils/fake-href events/control-free-install-ugc-modal-dismiss)]
+          (let [close-attrs (utils/fake-href events/control-install-landing-page-ugc-modal-dismiss)]
             (ui/modal
              {:close-attrs close-attrs
               :col-class   "col-12"}
@@ -301,7 +301,7 @@
      [:h2.center.my5 "Frequently Asked Questions"]
      (component/build accordion/component
                       (assoc faq-accordion :sections faq-accordion/free-install-sections)
-                      {:opts {:section-click-event events/control-free-install-home-toggle-accordion}})]
+                      {:opts {:section-click-event events/control-install-landing-page-toggle-accordion}})]
 
     [:div.bg-transparent-teal.center.py8
      [:h5.mt6.teal.letter-spacing-3.shout.bold "Contact Us"]
@@ -347,7 +347,7 @@
 (defmethod effects/perform-effects events/navigate-install-home [_ _ _ _ app-state]
   #?(:cljs (pixlee-hook/fetch-album-by-keyword :free-install-home)))
 
-(defmethod transitions/transition-state events/control-free-install-ugc-modal-open
+(defmethod transitions/transition-state events/control-install-landing-page-ugc-modal-open
   [_ _ {:keys [index]} app-state]
   (-> app-state
       (assoc-in keypaths/carousel-freeinstall-ugc-open? true)
@@ -357,11 +357,11 @@
   [_ _ _ app-state]
   (assoc-in app-state keypaths/popup :free-install-video))
 
-(defmethod transitions/transition-state events/control-free-install-ugc-modal-dismiss
+(defmethod transitions/transition-state events/control-install-landing-page-ugc-modal-dismiss
   [_ _ _ app-state]
   (assoc-in app-state keypaths/carousel-freeinstall-ugc-open? false))
 
-(defmethod transitions/transition-state events/control-free-install-home-toggle-accordion
+(defmethod transitions/transition-state events/control-install-landing-page-toggle-accordion
   [_ _ {index :index} app-state]
   (assoc-in app-state
              keypaths/accordion-freeinstall-home-expanded-indices

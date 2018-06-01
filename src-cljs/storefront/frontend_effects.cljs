@@ -432,7 +432,7 @@
                                         user-token
                                         {:page page}))))
 
-(defmethod perform-effects events/control-free-install-look-back [_ event args _ app-state]
+(defmethod perform-effects events/control-install-landing-page-look-back [_ event args _ app-state]
   (js/history.back))
 
 (defmethod perform-effects events/control-stylist-referral-submit [_ event args _ app-state]

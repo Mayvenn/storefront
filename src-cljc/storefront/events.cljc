@@ -153,18 +153,16 @@
 (defpath control-free-install)
 (defpath control-free-install-shop-looks)
 (defpath control-free-install-dismiss)
-(defpath control-free-install-ugc-modal-open)
-(defpath control-free-install-ugc-modal-dismiss)
 
 (defpath control-install-landing-page-video-modal-open)
-
-(defpath control-free-install-look-back)
+(defpath control-install-landing-page-look-back)
+(defpath control-install-landing-page-toggle-accordion)
+(defpath control-install-landing-page-ugc-modal-open)
+(defpath control-install-landing-page-ugc-modal-dismiss)
 
 (defpath control-seventy-five-off-install)
 (defpath control-seventy-five-off-install-shop-looks)
 (defpath control-seventy-five-off-install-dismiss)
-
-(defpath control-free-install-home-toggle-accordion)
 
 (defpath control-stylist-earnings-fetch)
 (defpath control-stylist-balance-transfers-load-more)
