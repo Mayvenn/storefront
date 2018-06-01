@@ -99,6 +99,8 @@
                 :source-map-path "/js/out"
                 :pretty-print false
                 :infer-externs true
+                :static-fns true
+                :fn-invoke-direct true
                 :foreign-libs [{:file "storefront/react-slick.js"
                                 :file-min "target/min-js/react-slick.js" ;; created by gulp
                                 :provides ["react-slick"]}
