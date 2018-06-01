@@ -1,13 +1,11 @@
 /* Taken from slick.css */
 
-.faded-inactive-slides-carousel
-  .slick-slide {
+.faded-inactive-slides-carousel .slick-slide {
     opacity: 0.40;
     transition-duration: 0.5s;
 }
 
-.faded-inactive-slides-carousel
-  .slick-slide.slick-active {
+.faded-inactive-slides-carousel .slick-center {
     opacity: 1;
     transition-duration: 0.5s;
 }

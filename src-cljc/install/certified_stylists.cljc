@@ -97,14 +97,16 @@
                                 "9427d213-db31-4f29-a769-f43e3246db96"]}
     :stylist-bio      "With over 22 years of experience Tiara knows that weaves and wigs are a choice that each one of her clients makes, not a must. Starting with a specialty in sew-ins, Tiara has the experience to meet all the needs of her clients dreams."}])
 
-(defn ^:private stylist-slide [{:keys [stylist-headshot]}]
+(defn ^:private stylist-slide [selected-index index {:keys [stylist-headshot]}]
   [:div.flex.relative.justify-center.mxn2
    [:div.z5.stacking-context.absolute
     {:style {:margin-top  "14px"
-             :margin-left "92px"}}
+             :margin-left "95px"}}
     (ui/ucare-img {:width "40"} "3cd2b6e9-8470-44c2-ad1f-b1e182d38cb0")]
    (ui/ucare-img {:width "210"
-                  :on-click (utils/send-event-callback events/control-stylist-gallery-open)}
+                  :on-click (if (= selected-index index)
+                              (utils/send-event-callback events/control-stylist-gallery-open)
+                              utils/noop-callback)}
                  stylist-headshot)])
 
 (defn ^:private gallery-slide [ucare-id]
@@ -118,7 +120,7 @@
     "MAYVENN CERTIFIED STYLIST"]
    [:div.h6.bold.dark-gray salon-name]
    [:div.h6.bold.dark-gray salon-address]
-   [:div.h6.dark-gray.pt3 stylist-bio]
+   [:div.h6.dark-gray.pt3.mx-auto.col-12.col-5-on-tb.col-3-on-dt stylist-bio]
    [:div
     [:a.teal.medium.h6.border-teal.border-bottom.border-width-2
      (utils/fake-href events/control-stylist-gallery-open)
@@ -149,30 +151,32 @@
 (defn component
   [{:keys [index sliding? gallery-open?]} owner opts]
   (component/create
-   [:div
-    [:div.center.pt6.px6
-     [:div.pt4.teal.letter-spacing-6.bold.h6 "LICENSED STYLISTS"]
-     [:div.h2 "Mayvenn Certified Stylists"]
-     [:div.h6.pt2 "We have partnered with a select group of experienced and licensed stylists in Fayetteville, NC to give you a FREE high quality standard install."]]
-
-    [:div.pt6
-     [:div.container
-      (component/build carousel/component
-                       {:slides   (map stylist-slide stylist-information)
-                        :settings {:swipe        true
-                                   :arrows       true
-                                   :dots         false
-                                   :slidesToShow 1
-                                   :centerMode   true
-                                   :infinite     true
-                                   :className    "faded-inactive-slides-carousel"
-                                   :beforeChange stylist-details-before-change
-                                   :afterChange  stylist-details-after-change}}
-                       {})]
-     [:div.center.px6
-      [:div {:class (if sliding? "transition-2 transparent" "transition-1 opaque")}
-       (stylist-info (get stylist-information index)
-                     gallery-open?)]]]]))
+   [:div.pt6
+    [:div
+     (component/build carousel/component
+                      {:slides   (map-indexed (partial stylist-slide index) stylist-information)
+                       :settings {:swipe         true
+                                  :arrows        true
+                                  :dots          false
+                                  :slidesToShow  5
+                                  :centerMode    true
+                                  :infinite      true
+                                  :focusOnSelect true
+                                  :className     "faded-inactive-slides-carousel"
+                                  :beforeChange  stylist-details-before-change
+                                  :afterChange   stylist-details-after-change
+                                  ;; The breakpoints are mobile-last. That is, the
+                                  ;; default values apply to the largest screens, and
+                                  ;; 1000 means 1000 and below.
+                                  :responsive    [{:breakpoint 999
+                                                   :settings   {:slidesToShow 3}}
+                                                  {:breakpoint 749
+                                                   :settings   {:slidesToShow 1}}]}}
+                      {})]
+    [:div.center.px6
+     [:div {:class (if sliding? "transition-2 transparent" "transition-1 opaque")}
+      (stylist-info (get stylist-information index)
+                    gallery-open?)]]]))
 
 (defmethod transitions/transition-state events/carousel-certified-stylist-slide [_ _event _args app-state]
   (assoc-in app-state keypaths/carousel-certified-stylist-sliding? true))

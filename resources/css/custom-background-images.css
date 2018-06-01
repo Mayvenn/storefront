@@ -48,9 +48,10 @@ Move to uploadcare???
 }
 
 .bg-free-install-landing {
-    background-image: url('//ucarecdn.com/01ed08c3-5c18-4b1c-8722-0a5c64630c17/-/format/auto/imagehero3x.png');
-    height: 450px;
+    background-image: url('//ucarecdn.com/b1e09caf-6783-4593-95b6-f1502a628b63/-/format/auto/freeinstallheromobile2x.png');
+    height: 455px;
 }
+
 
 .bg-100-off-install {
     background-image:  url('//ucarecdn.com/7cc2e3fc-f06a-4673-bc3a-ad3ea2cc4219/-/format/auto/-/resize/120x/patterncelebrate.png');
@@ -77,5 +78,9 @@ Move to uploadcare???
     .bg-storefront-our-hair {
         background-image: url("//ucarecdn.com/70c53806-7dae-4537-a6b3-ef35dc7ea4f7/-/format/auto/ourhairvirginhair.png");
         height: 300px;
+    }
+    .bg-free-install-landing {
+        background-image: url('//ucarecdn.com/b016b985-affb-4c97-af0a-a1f1334c0c51/-/format/auto/freeinstallherodesktop2x.png');
+        height: 560px;
     }
 }

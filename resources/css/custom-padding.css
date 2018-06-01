@@ -1,3 +1,11 @@
+.p5  { padding:        var(--space-5) }
+.pt5 { padding-top:    var(--space-5) }
+.pr5 { padding-right:  var(--space-5) }
+.pb5 { padding-bottom: var(--space-5) }
+.pl5 { padding-left:   var(--space-5) }
+.px5 { padding-left:   var(--space-5); padding-right:  var(--space-5) }
+.py5 { padding-top:    var(--space-5); padding-bottom: var(--space-5) }
+
 .p6  { padding:        var(--space-6) }
 .pt6 { padding-top:    var(--space-6) }
 .pr6 { padding-right:  var(--space-6) }
@@ -42,6 +50,7 @@
     --space-2: 1rem;
     --space-3: 2rem;
     --space-4: 4rem;
+    --space-5: 8rem;
     --space-6: 16rem;
     --space-8: 64rem;
     --space-10: 256rem;

@@ -19,17 +19,22 @@
             [storefront.platform.component-utils :as utils]
             [storefront.transitions :as transitions]))
 
+(def visual-divider
+  [:div.py2.mx-auto.teal.border-bottom.border-width-2.mb2-on-tb-dt
+   {:style {:width "30px"}}])
+
 (defn header [text-or-call-number]
-  [:div.container.flex.items-center.justify-between.px3.py2
-   [:div
+  [:div.flex.items-center.justify-between.px6.px3-on-mb.py4.py2-on-mb
+   [:div.px5.px0-on-mb
     [:img {:src (assets/path "/images/header_logo.svg")
            :style {:height "40px"}}]
     [:div.h7 "Questions? Text or call: "
      (ui/link :link/phone :a.inherit-color {} text-or-call-number)]]
-   [:div.col.col-4.h5
-    (ui/teal-button (assoc (utils/route-to events/navigate-home)
+   [:div.col.h5
+    {:style {:width "100px"}}
+    (ui/teal-button (assoc (utils/route-to-shop events/navigate-home)
                            :data-test "shop"
-                           :height-class "py2")
+                           :height-class "py1")
                     "Shop")]])
 
 (defn relative-header [{:keys [text-or-call-number]} owner opts]
@@ -53,7 +58,7 @@
          om/IRenderState
          (render-state [this {:keys [show?]}]
            (component/html
-            [:div.fixed.top-0.left-0.right-0.z4.bg-white
+            [:div.fixed.top-0.left-0.right-0.z4.bg-white.lit
              (if show?
                {:style {:margin-top "0"}
                 :class "transition-2"}
@@ -62,7 +67,8 @@
      :clj [:span]))
 
 (defn ^:private stat-block [header content]
-  [:div.center.p2 [:div.bold.teal.letter-spacing-1 header]
+  [:div.center.p2
+   [:div.bold.teal.letter-spacing-1 header]
    [:div.h6.line-height-1 content]])
 
 (defn ^:private as-seen-in-logos [& logo-img-ids]
@@ -75,7 +81,7 @@
      {:style {:padding-bottom (str radius "px")}}
      [:div.relative
       [:div
-       (ui/ucare-img {:class "col-12 col-4-on-tb-dt"} img-id)]
+       (ui/ucare-img {:class "col-12"} img-id)]
       [:div.bg-teal.border.border-white.border-width-3.circle.absolute.right-0.left-0.mx-auto.flex.items-center.justify-center
        {:style {:height (str diameter "px")
                 :width (str diameter "px")
@@ -85,16 +91,19 @@
 (defn ^:private easy-step [number title copy img-id]
   [:div.py4
    [:div.px6 (img-with-circle 60 img-id [:div.h1.bold.white number])]
-   [:div.h3 title]
-   [:div.dark-gray.h6 copy]])
+   [:div.h3.px6-on-dt title]
+   [:div.dark-gray.h6.px6-on-dt copy]])
 
 (defn ^:private happy-customer [img-id testimony customer-name]
-  [:div.p4.flex.items-start.justify-center
-   [:div.col-5
+  [:div.p4.flex.items-start.justify-center.col.col-12.col-4-on-tb-dt
+   [:div.col-5.col-6-on-tb.col-3-on-dt
     (ui/ucare-img {:class "col-12"} img-id)]
-   [:div.px2.flex.flex-column
-    [:div.line-height-3.h6 \“ testimony \”]
-    [:div.h6.bold "- "  customer-name]]])
+   [:div.px2.flex.flex-column.h5.hide-on-mb
+    [:div.line-height-3 \“ testimony \”]
+    [:div.bold "- "  customer-name]]
+   [:div.px2.flex.flex-column.h6.hide-on-tb-dt
+    [:div.line-height-3 \“ testimony \”]
+    [:div.bold "- "  customer-name]]])
 
 (defn ^:private embedded-carousel-slides [album]
   (map-indexed
@@ -127,7 +136,7 @@
    album))
 
 (defn icon-block [svg title copy]
-  [:div.py3
+  [:div.py3.col-12.col-4-on-tb-dt
    svg
    [:div.h6.teal.bold.titlize title]
    [:div.col-8.mx-auto.h6.black copy]])
@@ -148,19 +157,35 @@
          "?rel=0"
          "&color=white"
          "&showinfo=0"))]
-      [:div.bg-cover.bg-free-install-landing.col-12.p4
-       [:div.teal.h1.shadow.bold.pt2.shout "free install"]
-       [:div.medium.letter-spacing-1.col-7.h3.white.shadow "Get your Mayvenn hair installed for FREE by some of the best stylists in Fayetteville, NC"]
-       [:a.shout.white.flex.items-center.pt4.h5
-        (utils/fake-href events/control-free-install-play-hero)
-        (svg/clear-play-video {:class        "mr2"
-                               :fill         "white"
-                               :fill-opacity "0.9"
-                               :height       "50px"
-                               :width        "50px"})
-        "Watch Now"]])
+      [:div.shadow.bg-cover.bg-center.bg-top.bg-free-install-landing.col-12.p4
+       [:div.hide-on-mb.px6.py3
+        [:div.teal.line-height-2.bold.pt2.shout {:style {:font-size "57px"}} "free install"]
+        [:div.medium.line-height-2.col-6.white.mt2
+         {:style {:font-size "36px"}}
+         "Get your Mayvenn hair installed for FREE by some of the best stylists in Fayetteville, NC"]
+        [:a.shout.white.flex.items-center.pt8.h4.medium
+         (utils/fake-href events/control-free-install-play-hero)
+         (svg/clear-play-video {:class        "mr2"
+                                :fill         "white"
+                                :fill-opacity "0.9"
+                                :height       "50px"
+                                :width        "50px"})
+         "Watch Now"]]
 
-    [:div.flex.items-top.justify-center.p1.pt2.pb3
+       [:div.hide-on-tb-dt
+        [:div.teal.h1.bold.pt2.shout "free install"]
+        [:div.medium.letter-spacing-1.col-7.h3.white
+         "Get your Mayvenn hair installed for FREE by some of the best stylists in Fayetteville, NC"]
+        [:a.shout.white.flex.items-center.pt4.h6.medium
+         (utils/fake-href events/control-free-install-play-hero)
+         (svg/clear-play-video {:class        "mr2"
+                                :fill         "white"
+                                :fill-opacity "0.9"
+                                :height       "50px"
+                                :width        "50px"})
+         "Watch Now"]]])
+
+    [:div.flex.items-start.justify-center.p1.pt2.pb3.py5-on-tb-dt
      (stat-block "100,000+" "Mayvenn Stylists Nationwide")
      (stat-block "200,000+" "Happy Mayvenn Customers")
      (stat-block "100%" "Guaranteed Human Hair")]
@@ -181,22 +206,23 @@
        [:div.teal.letter-spacing-6.medium.h6 "3 EASY STEPS"]
        [:div.h2 "Get a FREE install"]]
       [:div.h6 "Purchase 3 bundles of Mayvenn hair and your install by a Mayvenn Certified Stylist is FREE!"]]
-     (easy-step 1
-                "Buy 3 bundles or more"
-                "Closures and fronts count, too! Our hair is 100% human, backed by a 30 day guarantee and starts at $30 per bundle."
-                "fdcc8acc-443c-4b2f-b510-0d940297f997")
-     (easy-step 2
-                "A Fayetteville, NC exclusive offer"
-                "Your Mayvenn order must be shipped to a qualified address in Fayetteville, NC."
-                "6263c536-f548-45dc-ba89-ca68ad7c44c8")
-     (easy-step 3
-                "Book your FREE install"
-                "After completing your purchase, Mayvell will contact you to arrange your FREE install appointment with a Mayvenn Certified Stylists."
-                "52dcdffb-cc44-4f80-88c8-325de7c3fa62")]
+     [:div.flex-on-tb-dt.items-start.justify-center
+      (easy-step 1
+                 "Buy 3 bundles or more"
+                 "Closures and fronts count, too! Our hair is 100% human, backed by a 30 day guarantee and starts at $30 per bundle."
+                 "fdcc8acc-443c-4b2f-b510-0d940297f997")
+      (easy-step 2
+                 "A Fayetteville, NC exclusive offer"
+                 "Your Mayvenn order must be shipped to a qualified address in Fayetteville, NC."
+                 "6263c536-f548-45dc-ba89-ca68ad7c44c8")
+      (easy-step 3
+                 "Book your FREE install"
+                 "After completing your purchase, Mayvell will contact you to arrange your FREE install appointment with a Mayvenn Certified Stylists."
+                 "52dcdffb-cc44-4f80-88c8-325de7c3fa62")]]
 
     [:div.bg-transparent-teal.py6
      [:div.pt4.teal.letter-spacing-6.bold.center.h6 "HAPPY CUSTOMERS"]
-     [:div.px3
+     [:div.px3.clearfix
       (happy-customer "dd6b26ed-1f15-437c-ac2c-e289d3a854fe"
                       "I freaking love Mayvenn hair, like they are BOMB.COM GIRL! Yass!"
                       "J Luxe")
@@ -207,6 +233,11 @@
                       "Ugh God you guys, like you don't understand, I love this hair."
                       "Tiona Chantel")]]
 
+    [:div.center.pt6.px6
+     [:div.pt4.teal.letter-spacing-6.bold.h6 "LICENSED STYLISTS"]
+     [:div.h2 "Mayvenn Certified Stylists"]
+     [:div.h6.pt2 "We have partnered with a select group of experienced and licensed stylists in Fayetteville, NC to give you a FREE high quality standard install."]]
+
     (component/build certified-stylists/component carousel-certified-stylist {})
     [:div.bg-transparent-teal.center
      [:h2.pt6.pb4 "#MayvennFreeInstall"]
@@ -214,16 +245,16 @@
        [:div
         (component/build carousel/component
                          {:slides   (embedded-carousel-slides (:album (:carousel-data ugc-carousel)))
-                          :settings {:centerMode    true
-                                     ;; must be in px, because it gets parseInt'd for
-                                     ;; the slide width calculation
-                                     :centerPadding "36px"
+                          :settings {:infinite     true
+                                     :swipe        true
                                      ;; The breakpoints are mobile-last. That is, the
                                      ;; default values apply to the largest screens, and
                                      ;; 1000 means 1000 and below.
-                                     :slidesToShow  3
-                                     :responsive    [{:breakpoint 1000
-                                                      :settings   {:slidesToShow 2}}]}}
+                                     :slidesToShow 10
+                                     :responsive   [{:breakpoint 999
+                                                     :settings   {:slidesToShow 7}}
+                                                    {:breakpoint 749
+                                                     :settings   {:slidesToShow 3}}]}}
                          opts)
         (when (:open? ugc-carousel)
           (let [close-attrs (utils/fake-href events/control-free-install-ugc-modal-dismiss)]
@@ -241,31 +272,39 @@
                {:style {:top "1.5rem" :right "1.5rem"}}
                (ui/modal-close {:class       "stroke-dark-gray fill-gray"
                                 :close-attrs close-attrs})]])))])
-     [:p.center.p2.h6 "Want a chance to be featured? Share your free install style by tagging us with #MayvennFreeInstall"]]
-    [:div.bg-black.white.p4.flex.h5.medium.flex.items-center.justify-around
-     [:div.px2 "Buy 3 bundles or more and get a FREE install!"]
-     [:a.btn.btn-primary.px6
-      (utils/route-to-shop events/navigate-home)
-      "Shop"]]
+     [:div.col-5-on-tb-dt.mx-auto.pb2-on-dt.center.dark-gray.p2
+      [:p.h6.hide-on-tb-dt
+       "Want a chance to be featured? Share your free install style by tagging us with #MayvennFreeInstall"]
+      [:p.h5.hide-on-mb
+       "Want a chance to be featured? Share your free install style by tagging us with #MayvennFreeInstall"]]]
+    [:div.bg-black.white.p4.h5.medium
+     [:div.max-580.mx-auto.flex.items-center.justify-around
+      [:div.px2 "Buy 3 bundles or more and get a FREE install!"]
+      [:div.col-6.col-2-on-tb-dt.ml3
+       (ui/teal-button (assoc (utils/route-to-shop events/navigate-home)
+                              :data-test "shop"
+                              :height-class "py1")
+                       "Shop")]]]
 
     [:div.bg-transparent-teal.center.py8
      [:h5.mt6.teal.letter-spacing-3.shout.bold "The Hookup"]
      [:h1.black "Treat Yourself"]
-     [:div.py2.mx-auto.col-1.teal.border-bottom.border-width-2]
-     (icon-block (svg/coin-stack {:height 71
-                                  :width  82})
-                 "Free Install"
-                 "Get your hair installed absolutely FREE!")
-     (icon-block (svg/guarantee {:class  "bg-white fill-black stroke-black circle"
-                                 :height 72
-                                 :width  72})
-                 "Risk Free"
-                 "Wear it, dye it, style it. If you don’t love it your hair we’ll exchange it within 30 days of purchase.")
-     (icon-block (svg/certified-ribbon {:height 71
-                                        :width  51})
-                 "Mayvenn Certified Stylists"
-                 "All Mayvenn Certified Stylists are licenced and work in salons.")]
-    [:div.my10.px4
+     visual-divider
+     [:div.flex.flex-wrap.items-start.justify-center
+      (icon-block (svg/coin-stack {:height 71
+                                   :width  82})
+                  "Free Install"
+                  "Get your hair installed absolutely FREE!")
+      (icon-block (svg/guarantee {:class  "bg-white fill-black stroke-black circle"
+                                  :height 72
+                                  :width  72})
+                  "Risk Free"
+                  "Wear it, dye it, style it. If you don’t love it your hair we’ll exchange it within 30 days of purchase.")
+      (icon-block (svg/certified-ribbon {:height 71
+                                         :width  51})
+                  "Mayvenn Certified Stylists"
+                  "All Mayvenn Certified Stylists are licenced and work in salons.")]]
+    [:div.my10.px4.col-12.col-6-on-tb.col-4-on-dt.mx-auto
      [:div.pb2.h6.teal.bold.center.letter-spacing-3 "Q + A"]
      [:h2.center.my5 "Frequently Asked Questions"]
      (component/build accordion/component
@@ -276,20 +315,21 @@
      [:h5.mt6.teal.letter-spacing-3.shout.bold "Contact Us"]
      [:h1.black.titleize "Have Questions?"]
      [:h5 "We are here to help you"]
-     [:div.py2.mx-auto.col-1.teal.border-bottom.border-width-2.mb3]
-     (icon-block (svg/icon-sms {:height 51
-                                :width  56})
-                 "Live Chat"
-                 (ui/link :link/sms :a.black {} "1-310-0284"))
-     (icon-block (svg/icon-call {:class  "bg-white fill-black stroke-black circle"
-                                 :height 57
-                                 :width  57})
-                 "Speak With Us"
-                 (ui/link :link/phone :a.black {} "1-310-0284"))
-     (icon-block (svg/icon-email {:height 39
-                                  :width  56})
-                 "Write To Us"
-                 (ui/link :link/email :a.black {} "help@mayvenn.com"))]]))
+     visual-divider
+     [:div.flex.flex-wrap.items-baseline.justify-center.col-12.col-8-on-tb-dt.mx-auto
+      (icon-block (svg/icon-sms {:height 51
+                                 :width  56})
+                  "Live Chat"
+                  (ui/link :link/sms :a.black {} "1-310-0284"))
+      (icon-block (svg/icon-call {:class  "bg-white fill-black stroke-black circle"
+                                  :height 57
+                                  :width  57})
+                  "Speak With Us"
+                  (ui/link :link/phone :a.black {} "1-310-0284"))
+      (icon-block (svg/icon-email {:height 39
+                                   :width  56})
+                  "Write To Us"
+                  (ui/link :link/email :a.black {} "help@mayvenn.com"))]]]))
 
 (defn ^:private query [data]
   {:header                     {:text-or-call-number "1-310-733-0284"}
@@ -329,10 +369,6 @@
 
 (defmethod transitions/transition-state events/control-free-install-home-toggle-accordion
   [_ _ {index :index} app-state]
-  (update-in app-state
+  (assoc-in app-state
              keypaths/accordion-freeinstall-home-expanded-indices
-             (fn [indices i]
-               (set (if (contains? indices i)
-                      (disj indices i)
-                      (conj indices i))))
-             index))
+             #{index}))

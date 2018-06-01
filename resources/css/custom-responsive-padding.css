@@ -19,6 +19,10 @@
   .px4-on-mb { padding-left:   var(--space-4); padding-right:  var(--space-4) }
   .py4-on-mb { padding-top:    var(--space-4); padding-bottom: var(--space-4) }
 
+  .p5-on-mb  { padding:        var(--space-5) }
+  .px5-on-mb { padding-left:   var(--space-5); padding-right:  var(--space-5) }
+  .py5-on-mb { padding-top:    var(--space-5); padding-bottom: var(--space-5) }
+
   .p6-on-mb  { padding:        var(--space-6) }
   .px6-on-mb { padding-left:   var(--space-6); padding-right:  var(--space-6) }
   .py6-on-mb { padding-top:    var(--space-6); padding-bottom: var(--space-6) }
@@ -48,6 +52,10 @@
   .p4-on-tb-dt  { padding:        var(--space-4) }
   .px4-on-tb-dt { padding-left:   var(--space-4); padding-right:  var(--space-4) }
   .py4-on-tb-dt { padding-top:    var(--space-4); padding-bottom: var(--space-4) }
+
+  .p5-on-tb-dt  { padding:        var(--space-5) }
+  .px5-on-tb-dt { padding-left:   var(--space-5); padding-right:  var(--space-5) }
+  .py5-on-tb-dt { padding-top:    var(--space-5); padding-bottom: var(--space-5) }
 
   .p6-on-tb-dt  { padding:        var(--space-6) }
   .px6-on-tb-dt { padding-left:   var(--space-6); padding-right:  var(--space-6) }
@@ -79,6 +87,10 @@
   .px4-on-dt { padding-left:   var(--space-4); padding-right:  var(--space-4) }
   .py4-on-dt { padding-top:    var(--space-4); padding-bottom: var(--space-4) }
 
+  .p5-on-dt  { padding:        var(--space-5) }
+  .px5-on-dt { padding-left:   var(--space-5); padding-right:  var(--space-5) }
+  .py5-on-dt { padding-top:    var(--space-5); padding-bottom: var(--space-5) }
+
   .p6-on-dt  { padding:        var(--space-6) }
   .px6-on-dt { padding-left:   var(--space-6); padding-right:  var(--space-6) }
   .py6-on-dt { padding-top:    var(--space-6); padding-bottom: var(--space-6) }
@@ -97,6 +109,7 @@
     --space-2: 1rem;
     --space-3: 2rem;
     --space-4: 4rem;
+    --space-5: 8rem;
     --space-6: 16rem;
     --space-8: 64rem;
 }
