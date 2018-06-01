@@ -112,6 +112,9 @@
         is-on-homepage? (= (get-in app-state keypaths/navigation-event)
                            events/navigate-home)
 
+        is-on-free-install-landing-page? (= (get-in app-state keypaths/navigation-event)
+                                            events/navigate-install-home)
+
         seen-email-capture?                  (get-in app-state keypaths/email-capture-session)
         seen-fayetteville-offer?             (get-in app-state keypaths/dismissed-free-install)
         seen-seventy-five-off-install-offer? (get-in app-state keypaths/dismissed-seventy-five-off-install)
@@ -138,6 +141,8 @@
                                      ;;is-on-homepage?
                                      ))]
     (cond
+      is-on-free-install-landing-page? nil
+
       show-free-install-modal?
       (handle-message events/popup-show-free-install)
 
