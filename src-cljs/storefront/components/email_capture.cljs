@@ -77,4 +77,4 @@
      :variation-contents (email-capture-copy test-variation)}))
 
 (defn built-component [data opts]
-  (component/build component (query data) opts))
+  (component/build component data opts))

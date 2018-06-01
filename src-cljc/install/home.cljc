@@ -3,6 +3,7 @@
                        [goog.events]
                        [goog.dom]
                        [storefront.hooks.pixlee :as pixlee-hook]
+                       [storefront.components.popup :as popup]
                        [goog.events.EventType :as EventType]])
             [install.certified-stylists :as certified-stylists]
             [install.faq-accordion :as faq-accordion]
@@ -142,48 +143,39 @@
    [:div.col-8.mx-auto.h6.black copy]])
 
 (defn ^:private component
-  [{:keys [header carousel-certified-stylist ugc-carousel faq-accordion
-           show-video]} owner opts]
+  [{:keys [header carousel-certified-stylist ugc-carousel faq-accordion popup-data]} owner opts]
   (component/create
    [:div
+    #?(:cljs (popup/built-component popup-data nil))
     (component/build relative-header header nil)
     (component/build fixed-header header nil)
-    (if show-video
-      [:div.flex.items-center.bg-black
-       {:style {:min-height "450px"}}
-       (ui/youtube-responsive
-        (str
-         "//www.youtube.com/embed/cWkSO_2nnD4"
-         "?rel=0"
-         "&color=white"
-         "&showinfo=0"))]
-      [:div.shadow.bg-cover.bg-center.bg-top.bg-free-install-landing.col-12.p4
-       [:div.hide-on-mb.px6.py3
-        [:div.teal.line-height-2.bold.pt2.shout {:style {:font-size "57px"}} "free install"]
-        [:div.medium.line-height-2.col-6.white.mt2
-         {:style {:font-size "36px"}}
-         "Get your Mayvenn hair installed for FREE by some of the best stylists in Fayetteville, NC"]
-        [:a.shout.white.flex.items-center.pt8.h4.medium
-         (utils/fake-href events/control-free-install-play-hero)
-         (svg/clear-play-video {:class        "mr2"
-                                :fill         "white"
-                                :fill-opacity "0.9"
-                                :height       "50px"
-                                :width        "50px"})
-         "Watch Now"]]
+    [:div.shadow.bg-cover.bg-center.bg-top.bg-free-install-landing.col-12.p4
+     [:div.hide-on-mb.px6.py3
+      [:div.teal.line-height-2.bold.pt2.shout {:style {:font-size "57px"}} "free install"]
+      [:div.medium.line-height-2.col-6.white.mt2
+       {:style {:font-size "36px"}}
+       "Get your Mayvenn hair installed for FREE by some of the best stylists in Fayetteville, NC"]
+      [:a.shout.white.flex.items-center.pt8.h4.medium
+       (utils/fake-href events/control-install-landing-page-video-modal-open)
+       (svg/clear-play-video {:class        "mr2"
+                              :fill         "white"
+                              :fill-opacity "0.9"
+                              :height       "50px"
+                              :width        "50px"})
+       "Watch Now"]]
 
-       [:div.hide-on-tb-dt
-        [:div.teal.h1.bold.pt2.shout "free install"]
-        [:div.medium.letter-spacing-1.col-7.h3.white
-         "Get your Mayvenn hair installed for FREE by some of the best stylists in Fayetteville, NC"]
-        [:a.shout.white.flex.items-center.pt4.h6.medium
-         (utils/fake-href events/control-free-install-play-hero)
-         (svg/clear-play-video {:class        "mr2"
-                                :fill         "white"
-                                :fill-opacity "0.9"
-                                :height       "50px"
-                                :width        "50px"})
-         "Watch Now"]]])
+     [:div.hide-on-tb-dt
+      [:div.teal.h1.bold.pt2.shout "free install"]
+      [:div.medium.letter-spacing-1.col-7.h3.white
+       "Get your Mayvenn hair installed for FREE by some of the best stylists in Fayetteville, NC"]
+      [:a.shout.white.flex.items-center.pt4.h6.medium
+       (utils/fake-href events/control-install-landing-page-video-modal-open)
+       (svg/clear-play-video {:class        "mr2"
+                              :fill         "white"
+                              :fill-opacity "0.9"
+                              :height       "50px"
+                              :width        "50px"})
+       "Watch Now"]]]
 
     [:div.flex.items-start.justify-center.p1.pt2.pb3.py5-on-tb-dt
      (stat-block "100,000+" "Mayvenn Stylists Nationwide")
@@ -338,11 +330,13 @@
                                 :sliding?      (get-in data keypaths/carousel-certified-stylist-sliding?)
                                 :gallery-open? (get-in data keypaths/carousel-stylist-gallery-open?)}
 
-   :ugc-carousel (when-let [ugc (get-in data keypaths/ugc)]
-                   (when-let [images (pixlee/images-in-album ugc :free-install-home)]
-                     {:carousel-data {:album images}
-                      :index         (get-in data keypaths/carousel-freeinstall-ugc-index)
-                      :open?         (get-in data keypaths/carousel-freeinstall-ugc-open?)}))
+   :popup-data    #?(:cljs (popup/query data)
+                     :clj {})
+   :ugc-carousel  (when-let [ugc (get-in data keypaths/ugc)]
+                    (when-let [images (pixlee/images-in-album ugc :free-install-home)]
+                      {:carousel-data {:album images}
+                       :index         (get-in data keypaths/carousel-freeinstall-ugc-index)
+                       :open?         (get-in data keypaths/carousel-freeinstall-ugc-open?)}))
    :faq-accordion {:expanded-indices (get-in data keypaths/accordion-freeinstall-home-expanded-indices)}})
 
 (defn built-component
@@ -359,9 +353,9 @@
       (assoc-in keypaths/carousel-freeinstall-ugc-open? true)
       (assoc-in keypaths/carousel-freeinstall-ugc-index index)))
 
-(defmethod transitions/transition-state events/control-free-install-play-hero
-  [_ _ {:keys [index]} app-state]
-  (assoc-in app-state keypaths/freeinstall-show-video true))
+(defmethod transitions/transition-state events/control-install-landing-page-video-modal-open
+  [_ _ _ app-state]
+  (assoc-in app-state keypaths/popup :free-install-video))
 
 (defmethod transitions/transition-state events/control-free-install-ugc-modal-dismiss
   [_ _ _ app-state]

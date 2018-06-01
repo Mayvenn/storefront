@@ -96,5 +96,5 @@ Thanks,
 
 (defn built-component
   [data opts]
-  (component/build component (query data) opts))
+  (component/build component data opts))
 

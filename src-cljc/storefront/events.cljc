@@ -151,11 +151,12 @@
 (defpath control-email-captured-submit)
 
 (defpath control-free-install)
-(defpath control-free-install-play-hero)
 (defpath control-free-install-shop-looks)
 (defpath control-free-install-dismiss)
 (defpath control-free-install-ugc-modal-open)
 (defpath control-free-install-ugc-modal-dismiss)
+
+(defpath control-install-landing-page-video-modal-open)
 
 (defpath control-free-install-look-back)
 

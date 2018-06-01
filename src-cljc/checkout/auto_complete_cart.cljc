@@ -506,7 +506,7 @@
                                   :margin-bottom "-1px"}}
    (stylist-banner/built-component data nil)
    (promotion-banner/built-component data nil)
-   #?(:cljs (popup/built-component data nil))
+   #?(:cljs (popup/built-component (popup/query data) nil))
 
    (if (experiments/new-flyout? data)
      (header-new-flyout/built-component data nil)

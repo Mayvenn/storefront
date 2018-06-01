@@ -1,20 +1,38 @@
 (ns storefront.components.popup
   (:require [storefront.platform.component-utils :as utils]
+            [storefront.component :as component]
             [storefront.components.share-your-cart :as share-your-cart]
             [storefront.components.email-capture :as email-capture]
             [storefront.components.free-install :as free-install]
+            [storefront.components.free-install-video :as free-install-video]
             [storefront.components.seventy-five-off-install :as seventy-five-off-install]
             [storefront.components.stylist.referrals :as stylist.referrals]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
 
-(defn built-component [data _]
+(def popup-type->popups
+  {:free-install-video       {:query     free-install-video/query
+                              :component free-install-video/component}
+   :free-install             {:query     free-install/query
+                              :component free-install/component}
+   :seventy-five-off-install {:query     seventy-five-off-install/query
+                              :component seventy-five-off-install/component}
+   :email-capture            {:query     email-capture/query
+                              :component email-capture/component}
+   :share-cart               {:query     share-your-cart/query
+                              :component share-your-cart/component}
+   :refer-stylist            {:query     stylist.referrals/query-refer
+                              :component stylist.referrals/refer-component}
+   :refer-stylist-thanks     {:query     stylist.referrals/query-thanks
+                              :component stylist.referrals/thanks-component}})
+
+(defn query [data]
+  (let [popup-type (get-in data keypaths/popup)
+        query (or (some-> popup-type popup-type->popups :query)
+                  (constantly nil))]
+    {:popup-type popup-type
+     :popup-data (query data)}))
+
+(defn built-component [{:keys [popup-type popup-data]} _]
   (let [opts {:opts {:close-attrs (utils/fake-href events/control-popup-hide)}}]
-    (case (get-in data keypaths/popup)
-      :free-install             (free-install/built-component data opts)
-      :seventy-five-off-install (seventy-five-off-install/built-component data opts)
-      :email-capture            (email-capture/built-component data opts)
-      :share-cart               (share-your-cart/built-component data opts)
-      :refer-stylist            (stylist.referrals/built-refer-component data opts)
-      :refer-stylist-thanks     (stylist.referrals/built-thanks-component data opts)
-      nil)))
+    (some-> popup-type popup-type->popups :component (component/build popup-data opts))))

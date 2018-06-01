@@ -248,6 +248,9 @@
 (defn built-refer-component [data opts]
   (om/build refer-component (query-refer data) opts))
 
+(defn query-thanks [data]
+  nil)
+
 (defn thanks-component [_ owner {:keys [close-attrs]}]
   (om/component
    (html
