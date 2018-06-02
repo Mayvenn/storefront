@@ -102,6 +102,7 @@
           [:link {:rel "dns-prefetch" :href (:endpoint storeback-config)}]
           [:link {:rel "dns-prefetch" :href "//www.sendsonar.com"}]
           [:link {:rel "dns-prefetch" :href "//ucarecdn.com"}]
+          [:link {:rel "preload" :href (assets/path "/images/sprites.svg") :as "image" :type "image/svg+xml"}]
           [:script {:type "text/javascript"} (raw prefetch-script)]
           [:script {:type "text/javascript"}
            (raw (str "var assetManifest=" (generate-string asset-mappings/image-manifest) ";"
