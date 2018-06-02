@@ -101,6 +101,10 @@
                 :infer-externs true
                 :static-fns true
                 :fn-invoke-direct true
+                ;; --- test
+                :anon-fn-naming-policy :mapped
+                :pseudo-names true
+                ;; ---
                 :foreign-libs [{:file "storefront/react-slick.js"
                                 :file-min "target/min-js/react-slick.js" ;; created by gulp
                                 :provides ["react-slick"]}
