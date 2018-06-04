@@ -646,22 +646,25 @@
   "Handle only requests for freeinstall
 
    Verify that the routed pages exist, and redirect root to a subpage."
-  [h]
+  [environment h]
   (fn [{:keys [subdomains nav-message query-params] :as req}]
     (let [on-install-page?          (routes/sub-page? nav-message [events/navigate-install])
           on-root-path?             (= events/navigate-home (get nav-message 0))
           on-freeinstall-subdomain? (= config/install-subdomain (last subdomains))
+          is-www-prefixed?          (= ["www" config/install-subdomain]
+                                       (map (comp string/lower-case str) subdomains))
           not-found                 #(-> views/not-found
                                          ->html-resp
                                          (util.response/status 404))]
-      (if on-freeinstall-subdomain?
-        (cond
-          on-install-page? (h req)
-          on-root-path?    (util.response/redirect (routes/path-for events/navigate-install-home
-                                                                    {:query-params query-params})
-                                                   :moved-permanently)
-          :else          (not-found))
-        (when on-install-page? (not-found))))))
+      (cond
+        (and (not on-freeinstall-subdomain?) on-install-page?) (not-found)
+        (not on-freeinstall-subdomain?)                        nil ;; defer handling elsewhere for non-freeinstall domains
+        is-www-prefixed?                                       (util.response/redirect (store-url "freeinstall" environment req))
+        on-install-page?                                       (h req)
+        on-root-path?                                          (util.response/redirect (routes/path-for events/navigate-install-home
+                                                                                                        {:query-params query-params})
+                                                                                       :moved-permanently)
+        :else                                                  (not-found)))))
 
 (defn leads-routes [{:keys [storeback-config environment client-version] :as ctx}]
   (fn [{:keys [nav-message] :as request}]
@@ -839,7 +842,7 @@
                (GET "/cms" req (-> ctx :contentful :cache deref cheshire.core/generate-string util.response/response))
                (-> (routes (static-routes ctx)
                            (wrap-leads-routes (leads-routes ctx) ctx)
-                           (wrap-freeinstall-is-for-install (install-routes ctx))
+                           (wrap-freeinstall-is-for-install environment (install-routes ctx))
                            (routes-with-orders ctx)
                            (route/not-found views/not-found))
                    (wrap-resource "public")
