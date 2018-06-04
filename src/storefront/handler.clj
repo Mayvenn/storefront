@@ -650,7 +650,7 @@
   (fn [{:keys [subdomains nav-message query-params] :as req}]
     (let [on-install-page?          (routes/sub-page? nav-message [events/navigate-install])
           on-root-path?             (= events/navigate-home (get nav-message 0))
-          on-freeinstall-subdomain? (= config/install-subdomain (first subdomains))
+          on-freeinstall-subdomain? (= config/install-subdomain (last subdomains))
           not-found                 #(-> views/not-found
                                          ->html-resp
                                          (util.response/status 404))]
