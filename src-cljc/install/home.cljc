@@ -195,7 +195,7 @@
     [:div.border.border-teal.border-width-2.mx3.center.p3.my6
      [:div
       [:div.py2
-       [:div.teal.letter-spacing-6.medium.h6 "3 EASY STEPS"]
+       [:div.teal.letter-spacing-6.bold.h6 "3 EASY STEPS"]
        [:div.h2 "Get a FREE install"]]
       [:div.h6 "Purchase 3 bundles of Mayvenn hair and your install by a Mayvenn Certified Stylist is FREE!"]]
      [:div.flex-on-tb-dt.items-start.justify-center
