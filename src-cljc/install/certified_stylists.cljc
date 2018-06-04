@@ -168,7 +168,7 @@
                                   ;; The breakpoints are mobile-last. That is, the
                                   ;; default values apply to the largest screens, and
                                   ;; 1000 means 1000 and below.
-                                  :responsive    [{:breakpoint 999
+                                  :responsive    [{:breakpoint 1200
                                                    :settings   {:slidesToShow 3}}
                                                   {:breakpoint 749
                                                    :settings   {:slidesToShow 1}}]}}
