@@ -297,11 +297,11 @@
 (def carousel-stylist-gallery (conj carousel :stylist-gallery))
 (def carousel-stylist-gallery-open? (conj carousel-stylist-gallery :open?))
 
-(def freeinstall-show-video (into ui [:freeinstall :show-video]))
-(def carousel-freeinstall (conj carousel :freeinstall))
-(def carousel-freeinstall-ugc (conj carousel-freeinstall :ugc))
-(def carousel-freeinstall-ugc-open? (conj carousel-freeinstall-ugc :open?))
-(def carousel-freeinstall-ugc-index (conj carousel-freeinstall-ugc :index))
+(def fvlanding (conj ui :fvlanding))
+(def fvlanding-show-video? (conj fvlanding :show-video))
+(def fvlanding-carousel-ugc (conj fvlanding :carousel-ugc))
+(def fvlanding-carousel-ugc-open? (conj fvlanding-carousel-ugc :open?))
+(def fvlanding-carousel-ugc-index (conj fvlanding-carousel-ugc :index))
 
 (def accordion (conj ui :accordion))
 (def accordion-freeinstall-home (conj accordion :freeinstall))

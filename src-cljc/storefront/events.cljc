@@ -103,6 +103,7 @@
 
 (defpath navigate-install)
 (defpath navigate-install-home)
+(defpath navigate-install-home-video-modal-open)
 
 (defpath menu-traverse-root)
 (defpath menu-traverse-ascend)
@@ -154,7 +155,6 @@
 (defpath control-free-install-shop-looks)
 (defpath control-free-install-dismiss)
 
-(defpath control-install-landing-page-video-modal-open)
 (defpath control-install-landing-page-look-back)
 (defpath control-install-landing-page-toggle-accordion)
 (defpath control-install-landing-page-ugc-modal-open)

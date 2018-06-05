@@ -18,7 +18,8 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.carousel :as carousel]
             [storefront.platform.component-utils :as utils]
-            [storefront.transitions :as transitions]))
+            [storefront.transitions :as transitions]
+            [storefront.components.free-install-video :as free-install-video]))
 
 (def visual-divider
   [:div.py2.mx-auto.teal.border-bottom.border-width-2.mb2-on-tb-dt
@@ -143,10 +144,13 @@
    [:div.col-8.mx-auto.h6.black copy]])
 
 (defn ^:private component
-  [{:keys [header carousel-certified-stylist ugc-carousel faq-accordion popup-data]} owner opts]
+  [{:keys [header show-video? video carousel-certified-stylist ugc-carousel faq-accordion popup-data]} owner opts]
   (component/create
    [:div
-    #?(:cljs (popup/built-component popup-data nil))
+    (when show-video?
+      (component/build free-install-video/component
+                       video
+                       {:opts {:close-attrs (utils/route-to events/navigate-install-home {:query-params {:video "0"}})}}))
     (component/build relative-header header nil)
     (component/build fixed-header header nil)
     [:div.shadow.bg-cover.bg-center.bg-top.bg-free-install-landing.col-12.p4
@@ -156,7 +160,7 @@
        {:style {:font-size "36px"}}
        "Everyone in Fayetteville can get a FREE install by a Mayvenn certified stylist."]
       [:a.shout.white.flex.items-center.pt8.h4.medium
-       (utils/fake-href events/control-install-landing-page-video-modal-open)
+       (utils/route-to events/navigate-install-home {:query-params {:video "1"}})
        (svg/clear-play-video {:class        "mr2"
                               :fill         "white"
                               :fill-opacity "0.9"
@@ -169,7 +173,7 @@
       [:div.medium.letter-spacing-1.col-7.h3.white
        "Everyone in Fayetteville can get a FREE install by a Mayvenn certified stylist."]
       [:a.shout.white.flex.items-center.pt4.h6.medium
-       (utils/fake-href events/control-install-landing-page-video-modal-open)
+       (utils/route-to events/navigate-install-home {:query-params {:video "1"}})
        (svg/clear-play-video {:class        "mr2"
                               :fill         "white"
                               :fill-opacity "0.9"
@@ -325,7 +329,8 @@
 
 (defn ^:private query [data]
   {:header                     {:text-or-call-number "1-310-733-0284"}
-   :show-video                 (get-in data keypaths/freeinstall-show-video)
+   :show-video?                (get-in data keypaths/fvlanding-show-video?)
+   :video                      (free-install-video/query data)
    :carousel-certified-stylist {:index         (get-in data keypaths/carousel-certified-stylist-index)
                                 :sliding?      (get-in data keypaths/carousel-certified-stylist-sliding?)
                                 :gallery-open? (get-in data keypaths/carousel-stylist-gallery-open?)}
@@ -335,8 +340,8 @@
    :ugc-carousel  (when-let [ugc (get-in data keypaths/ugc)]
                     (when-let [images (pixlee/images-in-album ugc :free-install-home)]
                       {:carousel-data {:album images}
-                       :index         (get-in data keypaths/carousel-freeinstall-ugc-index)
-                       :open?         (get-in data keypaths/carousel-freeinstall-ugc-open?)}))
+                       :index         (get-in data keypaths/fvlanding-carousel-ugc-index)
+                       :open?         (get-in data keypaths/fvlanding-carousel-ugc-open?)}))
    :faq-accordion {:expanded-indices (get-in data keypaths/accordion-freeinstall-home-expanded-indices)}})
 
 (defn built-component
@@ -347,19 +352,19 @@
 (defmethod effects/perform-effects events/navigate-install-home [_ _ _ _ app-state]
   #?(:cljs (pixlee-hook/fetch-album-by-keyword :free-install-home)))
 
+(defmethod transitions/transition-state events/navigate-install-home
+  [_ _ {:keys [query-params]} app-state]
+  (assoc-in app-state keypaths/fvlanding-show-video? (= "1" (:video query-params))))
+
 (defmethod transitions/transition-state events/control-install-landing-page-ugc-modal-open
   [_ _ {:keys [index]} app-state]
   (-> app-state
-      (assoc-in keypaths/carousel-freeinstall-ugc-open? true)
-      (assoc-in keypaths/carousel-freeinstall-ugc-index index)))
-
-(defmethod transitions/transition-state events/control-install-landing-page-video-modal-open
-  [_ _ _ app-state]
-  (assoc-in app-state keypaths/popup :free-install-video))
+      (assoc-in keypaths/fvlanding-carousel-ugc-open? true)
+      (assoc-in keypaths/fvlanding-carousel-ugc-index index)))
 
 (defmethod transitions/transition-state events/control-install-landing-page-ugc-modal-dismiss
   [_ _ _ app-state]
-  (assoc-in app-state keypaths/carousel-freeinstall-ugc-open? false))
+  (assoc-in app-state keypaths/fvlanding-carousel-ugc-open? false))
 
 (defmethod transitions/transition-state events/control-install-landing-page-toggle-accordion
   [_ _ {index :index} app-state]

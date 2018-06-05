@@ -11,9 +11,7 @@
             [storefront.keypaths :as keypaths]))
 
 (def popup-type->popups
-  {:free-install-video       {:query     free-install-video/query
-                              :component free-install-video/component}
-   :free-install             {:query     free-install/query
+  {:free-install             {:query     free-install/query
                               :component free-install/component}
    :seventy-five-off-install {:query     seventy-five-off-install/query
                               :component seventy-five-off-install/component}
