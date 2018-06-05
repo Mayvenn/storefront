@@ -646,7 +646,7 @@
   "Handle only requests for freeinstall
 
    Verify that the routed pages exist, and redirect root to a subpage."
-  [environment h]
+  [h environment]
   (fn [{:keys [subdomains nav-message query-params] :as req}]
     (let [on-install-page?          (routes/sub-page? nav-message [events/navigate-install])
           on-root-path?             (= events/navigate-home (get nav-message 0))
@@ -842,7 +842,9 @@
                (GET "/cms" req (-> ctx :contentful :cache deref cheshire.core/generate-string util.response/response))
                (-> (routes (static-routes ctx)
                            (wrap-leads-routes (leads-routes ctx) ctx)
-                           (wrap-freeinstall-is-for-install environment (install-routes ctx))
+                           (-> (install-routes ctx)
+                               (wrap-freeinstall-is-for-install environment)
+                               (wrap-defaults (storefront-site-defaults environment)))
                            (routes-with-orders ctx)
                            (route/not-found views/not-found))
                    (wrap-resource "public")
