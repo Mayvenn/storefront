@@ -33,7 +33,7 @@
      (ui/link :link/phone :a.inherit-color {} text-or-call-number)]]
    [:div.col.h5
     {:style {:width "100px"}}
-    (ui/teal-button (assoc (utils/route-to-shop events/navigate-home)
+    (ui/teal-button (assoc (utils/route-to-shop events/navigate-home {:query-params {:utm_medium "fvlanding"}})
                            :data-test "shop"
                            :height-class "py1")
                     "Shop")]])
@@ -273,7 +273,7 @@
      [:div.max-580.mx-auto.flex.items-center.justify-around
       [:div.px2 "Buy 3 bundles or more and get a FREE install!"]
       [:div.col-6.col-2-on-tb-dt.ml3
-       (ui/teal-button (assoc (utils/route-to-shop events/navigate-home)
+       (ui/teal-button (assoc (utils/route-to-shop events/navigate-home {:query-params {:utm_medium "fvlanding"}})
                               :data-test "shop"
                               :height-class "py1")
                        "Shop")]]]

@@ -5,7 +5,8 @@
   {:href (routes/path-for navigation-event args)})
 
 (defn route-to-shop [navigation-event & [args]]
-  {:href (routes/path-for navigation-event args)})
+  ;; TODO(jeff): make it work on acceptance
+  {:href (str "https://shop.mayvenn.com" (routes/path-for navigation-event args))})
 
 (defn noop-callback [e])
 
