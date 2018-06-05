@@ -154,7 +154,7 @@
       [:div.teal.line-height-2.bold.pt2.shout {:style {:font-size "57px"}} "free install"]
       [:div.medium.line-height-2.col-6.white.mt2
        {:style {:font-size "36px"}}
-       "Get your Mayvenn hair installed for FREE by some of the best stylists in Fayetteville, NC"]
+       "Everyone in Fayetteville can get a FREE install by a Mayvenn certified stylist."]
       [:a.shout.white.flex.items-center.pt8.h4.medium
        (utils/fake-href events/control-install-landing-page-video-modal-open)
        (svg/clear-play-video {:class        "mr2"
@@ -167,7 +167,7 @@
      [:div.hide-on-tb-dt
       [:div.teal.h1.bold.pt2.shout "free install"]
       [:div.medium.letter-spacing-1.col-7.h3.white
-       "Get your Mayvenn hair installed for FREE by some of the best stylists in Fayetteville, NC"]
+       "Everyone in Fayetteville can get a FREE install by a Mayvenn certified stylist."]
       [:a.shout.white.flex.items-center.pt4.h6.medium
        (utils/fake-href events/control-install-landing-page-video-modal-open)
        (svg/clear-play-video {:class        "mr2"
