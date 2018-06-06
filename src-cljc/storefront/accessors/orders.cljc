@@ -141,7 +141,15 @@
          (map get-sku)
          set)))
 
+(defn has-applied-promo-code [order code]
+  (some #{code} (applied-promo-code order)))
+
 (defn install-qualified?
   [{:as order :keys [promotion-codes]}]
   (and (bundle-discount? order)
-       (seq (set/intersection (set promotion-codes) #{"install" "freeinstall"}))))
+       (seq (set/intersection (set promotion-codes) #{"install"}))))
+
+(defn freeinstall-qualified?
+  [{:as order :keys [promotion-codes]}]
+  (and (bundle-discount? order)
+       (seq (set/intersection (set promotion-codes) #{"freeinstall"}))))

@@ -40,13 +40,22 @@
                            :class  "mr1 fill-white stroke-white"})
     "CONGRATS — Enjoy $100 off your next install"]))
 
-(defmethod component :free-install
+(defmethod component :freeinstall/eligible
   [_ _ _]
   (component/create
    [:a {:on-click  (utils/send-event-callback events/popup-show-free-install {})
         :data-test "free-install-promo-banner"}
     [:div.white.center.pp5.bg-teal.h5.bold.pointer
      "Mayvenn will pay for your install! " [:span.underline "Learn more"]]]))
+
+(defmethod component :freeinstall/applied
+  [_ _ _]
+  (component/create
+   [:div.white.center.p2.bg-teal.mbnp5.h6.bold.flex.items-center.justify-center
+    (svg/celebration-horn {:height "1.6em"
+                           :width  "1.6em"
+                           :class  "mr1 fill-white stroke-white"})
+    "CONGRATS — Your next install is FREE!"]))
 
 (defmethod component :basic
   [{:keys [promo]} _ _]
@@ -75,7 +84,7 @@
             events/navigate-shop-by-look-details}
 
     ;; Incentivize checkout by reminding them they are saving
-    (= :install-discount/applied promo-type)
+    (#{:install-discount/applied :freeinstall/applied} promo-type)
     (conj events/navigate-checkout-returning-or-guest
           events/navigate-checkout-address
           events/navigate-checkout-payment
@@ -99,8 +108,13 @@
     (experiments/seventy-five-off-install? data)
     :install-discount/eligible
 
+    (and
+     (orders/freeinstall-qualified? (get-in data keypaths/order))
+     (experiments/the-ville? data))
+    :freeinstall/applied
+
     (experiments/the-ville? data)
-    :free-install
+    :freeinstall/eligible
 
     :else :basic))
 
