@@ -381,6 +381,9 @@
 
 (defmethod transitions/transition-state events/control-install-landing-page-toggle-accordion
   [_ _ {index :index} app-state]
-  (assoc-in app-state
+  (update-in app-state
              keypaths/accordion-freeinstall-home-expanded-indices
-             #{index}))
+             (fn [existing-indicies]
+               (if (contains? existing-indicies index)
+                 #{}
+                 #{index}))))
