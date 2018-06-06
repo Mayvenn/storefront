@@ -1,8 +1,10 @@
 (ns storefront.components.checkout-address
   (:require [om.core :as om]
             [sablono.core :refer [html]]
+            [storefront.component :as component]
             [storefront.components.checkout-steps :as checkout-steps]
             [storefront.components.ui :as ui]
+            [storefront.components.promotion-banner :as promotion-banner]
             [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -261,10 +263,11 @@
                            :value       (:state billing-address)})]])])))
 
 (defn component
-  [{:keys [saving? step-bar billing-address-data shipping-address-data]} owner]
+  [{:keys [saving? step-bar billing-address-data shipping-address-data promotion-banner]} owner]
   (om/component
    (html
     [:div.container
+     (component/build promotion-banner/sticky-component promotion-banner nil)
      (om/build checkout-steps/component step-bar)
 
      [:div.m-auto.col-8-on-tb-dt
@@ -287,6 +290,7 @@
         field-errors   (get-in data keypaths/field-errors)]
     {:saving?               (utils/requesting? data request-keys/update-addresses)
      :step-bar              (checkout-steps/query data)
+     :promotion-banner      (promotion-banner/query data)
      :billing-address-data  {:billing-address           (get-in data keypaths/checkout-billing-address)
                              :states                    states
                              :bill-to-shipping-address? (get-in data keypaths/checkout-bill-to-shipping-address)

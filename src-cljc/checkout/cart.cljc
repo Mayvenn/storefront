@@ -26,41 +26,6 @@
    [storefront.request-keys :as request-keys]
    [storefront.accessors.facets :as facets]))
 
-(defn deploy-promotion-banner-component
-  [data owner opts]
-  #?(:clj [:div]
-     :cljs
-     (letfn [(handle-scroll [e] (om/set-state! owner :show? (< 75 (.-y (goog.dom/getDocumentScroll)))))
-             (set-height [] (om/set-state! owner :banner-height (some-> owner
-                                                                        (om/get-node "banner")
-                                                                        goog.style/getSize
-                                                                        .-height)))]
-       (reify
-         om/IInitState
-         (init-state [this]
-           {:show? false})
-         om/IDidMount
-         (did-mount [this]
-           (om/set-state! owner :description-length (count (:description (:promo data))))
-           (set-height)
-           (goog.events/listen js/window EventType/SCROLL handle-scroll))
-         om/IWillUnmount
-         (will-unmount [this]
-           (goog.events/unlisten js/window EventType/SCROLL handle-scroll))
-         om/IWillReceiveProps
-         (will-receive-props [this next-props]
-           (set-height))
-         om/IRenderState
-         (render-state [this {:keys [show? banner-height]}]
-           (component/html
-            [:div.fixed.z4.top-0.left-0.right-0
-             (if show?
-               {:style {:margin-top "0"}
-                :class "transition-2"}
-               {:class "hide"
-                :style {:margin-top (str "-" banner-height "px")}})
-             [:div {:ref "banner"}
-              (om/build promotion-banner/component data opts)]]))))))
 
 (defn seventy-five-off-install-cart-promo [qualified?]
   (if qualified?
@@ -119,7 +84,7 @@
                               show-green-banner?]} owner _]
   (component/create
    [:div.container.p2
-    (component/build deploy-promotion-banner-component promotion-banner nil)
+    (component/build promotion-banner/sticky-component promotion-banner nil)
     [:div.py3.h3.center
      [:.dark-gray
       "You have " (ui/pluralize (orders/product-quantity order) "item") " in your shopping bag."]]

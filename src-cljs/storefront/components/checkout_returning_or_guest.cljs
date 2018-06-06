@@ -1,19 +1,22 @@
 (ns storefront.components.checkout-returning-or-guest
   (:require [om.core :as om]
             [sablono.core :refer [html]]
+            [storefront.component :as component]
             [storefront.components.facebook :as facebook]
             [storefront.components.checkout-address :as checkout-address]
             [storefront.components.ui :as ui]
+            [storefront.components.promotion-banner :as promotion-banner]
             [storefront.events :as events]
             [storefront.platform.component-utils :as utils]
             [storefront.keypaths :as keypaths]
             [storefront.accessors.auth :as auth]))
 
-(defn component [{:keys [facebook-loaded? address]} owner]
+(defn component [{:keys [facebook-loaded? address promotion-banner]} owner]
   (om/component
    (html
     [:div
      [:div.container ;; Tries to match what's going on in checkout-address/component
+      (component/build promotion-banner/sticky-component promotion-banner nil)
       [:div.m-auto.col-8-on-tb-dt
        [:div.p2
         [:div.center
@@ -37,6 +40,7 @@
 
 (defn query [data]
   {:facebook-loaded? (get-in data keypaths/loaded-facebook)
+   :promotion-banner (promotion-banner/query data)
    :address          (-> (checkout-address/query data)
                          (assoc-in [:shipping-address-data :become-guest?] true))})
 

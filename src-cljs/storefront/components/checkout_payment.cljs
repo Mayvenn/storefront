@@ -3,9 +3,11 @@
             [sablono.core :refer [html]]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
+            [storefront.component :as component]
             [storefront.components.checkout-credit-card :as cc]
             [storefront.components.checkout-steps :as checkout-steps]
             [storefront.components.money-formatters :refer [as-money]]
+            [storefront.components.promotion-banner :as promotion-banner]
             [storefront.effects :as effects]
             [storefront.components.ui :as ui]
             [storefront.transitions :as transitions]
@@ -61,11 +63,13 @@
            field-errors
            credit-card
            promo-code
-           selected-payment-methods]}
+           selected-payment-methods
+           promotion-banner]}
    owner]
   (om/component
    (html
     [:div.container.p2
+     (component/build promotion-banner/sticky-component promotion-banner nil)
      (om/build checkout-steps/component step-bar)
 
      (ui/narrow-container
@@ -153,6 +157,7 @@
      {:store-credit             {:credit-available  available-store-credit
                                  :credit-applicable credit-to-use
                                  :fully-covered?    fully-covered?}
+      :promotion-banner         (promotion-banner/query data)
       :promo-code               (first (get-in data keypaths/order-promotion-codes))
       :saving?                  (cc/saving-card? data)
       :disabled?                (or (and (utils/requesting? data request-keys/get-saved-cards)

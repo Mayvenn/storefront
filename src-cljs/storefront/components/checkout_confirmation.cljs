@@ -6,10 +6,12 @@
             [storefront.platform.messages :refer [handle-message handle-later]]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
+            [storefront.component :as component]
             [storefront.components.checkout-delivery :as checkout-delivery]
             [storefront.components.checkout-credit-card :as checkout-credit-card]
             [storefront.components.checkout-steps :as checkout-steps]
             [storefront.components.order-summary :as summary]
+            [storefront.components.promotion-banner :as promotion-banner]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -49,13 +51,15 @@
            order-valid-for-affirm?
            requires-additional-payment?
            saving-card?
-           updating-shipping?]}
+           updating-shipping?
+           promotion-banner]}
    owner]
   (om/component
    (html
     (let [affirm-selected-but-not-valid?   (and (not order-valid-for-affirm?) selected-affirm?)
           affirm-selected-and-order-valid? (and selected-affirm? order-valid-for-affirm?)]
       [:div.container.p2
+       (component/build promotion-banner/sticky-component promotion-banner nil)
        (om/build checkout-steps/component checkout-steps)
 
        [:.clearfix.mxn3
@@ -280,6 +284,7 @@
      :selected-affirm?             (get-in data keypaths/order-cart-payments-affirm)
      :order-valid-for-affirm?      (affirm-components/valid-order-total? (:total order))
      :requires-additional-payment? (requires-additional-payment? data)
+     :promotion-banner             (promotion-banner/query data)
      :checkout-steps               (checkout-steps/query data)
      :products                     (get-in data keypaths/v2-products)
      :skus                         (get-in data keypaths/v2-skus)

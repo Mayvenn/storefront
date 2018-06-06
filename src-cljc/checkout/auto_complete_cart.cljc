@@ -260,7 +260,7 @@
                               show-green-banner?]} owner _]
   (component/create
    [:div.container.p2
-    (component/build cart/deploy-promotion-banner-component promotion-banner nil)
+    (component/build promotion-banner/sticky-component promotion-banner nil)
 
     (cond
       seventy-five-off-install?
