@@ -143,6 +143,13 @@
    [:div.h6.teal.bold.titlize title]
    [:div.col-8.mx-auto.h6.black copy]])
 
+(defn linked-icon-block [url svg title copy]
+  [:a.block.py3.col-12.col-4-on-tb-dt
+   {:href url}
+   svg
+   [:div.h6.teal.bold.titlize title]
+   [:div.col-8.mx-auto.h6.black copy]])
+
 (defn ^:private component
   [{:keys [header show-video? video carousel-certified-stylist ugc-carousel faq-accordion popup-data]} owner opts]
   (component/create
@@ -313,19 +320,25 @@
      [:h5 "We are here to help you"]
      visual-divider
      [:div.flex.flex-wrap.items-baseline.justify-center.col-12.col-8-on-tb-dt.mx-auto
-      (icon-block (svg/icon-sms {:height 51
-                                 :width  56})
-                  "Live Chat"
-                  (ui/link :link/sms :a.black {} "1-310-0284"))
-      (icon-block (svg/icon-call {:class  "bg-white fill-black stroke-black circle"
+      (linked-icon-block
+       (ui/sms-url "1-310-733-0284")
+       (svg/icon-sms {:height 51
+                      :width  56})
+       "Live Chat"
+       "1-310-733-0284")
+      (linked-icon-block
+       (ui/phone-url "1-310-733-0284")
+       (svg/icon-call {:class  "bg-white fill-black stroke-black circle"
                                   :height 57
                                   :width  57})
                   "Speak With Us"
-                  (ui/link :link/phone :a.black {} "1-310-0284"))
-      (icon-block (svg/icon-email {:height 39
-                                   :width  56})
-                  "Write To Us"
-                  (ui/link :link/email :a.black {} "help@mayvenn.com"))]]]))
+                  "1-310-733-0284")
+      (linked-icon-block
+       (ui/email-url "help@mayvenn.com")
+       (svg/icon-email {:height 39
+                        :width  56})
+       "Write To Us"
+       "help@mayvenn.com")]]]))
 
 (defn ^:private query [data]
   {:header                     {:text-or-call-number "1-310-733-0284"}
