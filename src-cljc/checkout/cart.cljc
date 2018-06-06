@@ -29,7 +29,7 @@
 
 (defn seventy-five-off-install-cart-promo [qualified?]
   (if qualified?
-    [:div.bg-teal.bg-100-off-install.p2.white.center {:data-test "seventy-five-off-install-cart-promo"}
+    [:div.bg-teal.bg-celebrate.p2.white.center {:data-test "seventy-five-off-install-cart-promo"}
      (ui/ucare-img {:width 46} "014c70a0-0d57-495d-add0-f2f46248d224")
      [:h3 "This order qualifies for"]
      [:h1.shout.bold.pb6 "$100 off your install"]]
@@ -44,15 +44,14 @@
 
 (defn free-install-cart-promo [qualified?]
   (if qualified?
-    [:div.bg-teal.p2.white.center {:data-test "free-install-cart-promo"}
+    [:div.bg-teal.bg-celebrate.p2.white.center {:data-test "free-install-cart-promo"}
      [:img {:src    "//ucarecdn.com/db055165-7085-4af5-b265-8aba681e6275/successwhite.png"
             :height "63px"
             :width  "68px"}]
      [:h4 "This order qualifies for a"]
      [:h1.shout.bold "Free Install"]
      [:h6
-      [:div "from a Mayvenn Certified Stylist in Fayetteville, NC."]
-      [:div "Use code " [:span.bold "FREEINSTALL"] " to get your free install."]]]
+      [:div "from a Mayvenn Certified Stylist in Fayetteville, NC."]]]
 
     [:div.p2.bg-orange.white.center {:data-test "ineligible-free-install-cart-promo"}
      [:h4 "You're almost there..."]
