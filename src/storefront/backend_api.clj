@@ -134,3 +134,14 @@
         (-> body
             select-auth-keys
             (assoc :flow "one-time-login"))))))
+
+(defn create-order-from-shared-cart [storeback-config session-id shared-cart-id user-id user-token stylist-id]
+  (let [{:keys [status body] :as r} (storeback-post storeback-config
+                                                    "/create-order-from-shared-cart"
+                                                    {:form-params {:session-id     session-id
+                                                                   :shared-cart-id shared-cart-id
+                                                                   :user-id        user-id
+                                                                   :user-token     user-token
+                                                                   :stylist-id     stylist-id}})]
+    (when (<= 200 status 299)
+      body)))

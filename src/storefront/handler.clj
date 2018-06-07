@@ -254,8 +254,8 @@
 (defn wrap-fetch-order [h storeback-config]
   (fn [{:as req :keys [nav-message]}]
     (let [params       (second nav-message)
-          order-number (get-in req [:cookies "number" :value])
-          order-token  (some-> (get-in req [:cookies "token" :value])
+          order-number (cookies/get req "number")
+          order-token  (some-> (cookies/get req "token")
                                (string/replace #" " "+"))]
       (h (cond-> req
            (and order-number order-token
@@ -814,11 +814,26 @@
    (GET "/one-time-login" req (login-and-redirect ctx req))
    (frontend-routes ctx)))
 
+(defn shared-cart-routes [ctx]
+  (GET "/create-cart-from/:shared-cart-id" req
+       (let [cookie-options {:http-only false
+                             :max-age   (cookies/days 28)}
+             order          (api/create-order-from-shared-cart (:storeback-config ctx)
+                                                               (get-in-req-state req keypaths/session-id)
+                                                               (:shared-cart-id (:params req))
+                                                               (get-in-req-state req keypaths/user-id)
+                                                               (get-in-req-state req keypaths/user-token)
+                                                               (get-in-req-state req keypaths/store-stylist-id))]
+         (-> (util.response/redirect (str "/cart" (query-string req)))
+             (cookies/set (:environment ctx) :number (:number order) cookie-options)
+             (cookies/set (:environment ctx) :token (:token order) cookie-options)))))
+
 (defn routes-with-orders [ctx]
   (-> (routes (-> (affirm-routes ctx)
                   wrap-set-affirm-checkout-token)
               (paypal-routes ctx)
-              (-> (site-routes ctx)
+              (-> (routes (site-routes ctx)
+                          (shared-cart-routes ctx))
                   (wrap-state ctx)
                   (wrap-site-routes ctx)))
       (wrap-fetch-order (:storeback-config ctx))

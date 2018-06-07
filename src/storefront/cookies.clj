@@ -10,7 +10,7 @@
 (defn days [n]
   (* 60 60 24 n))
 
-(defn get [req-or-resp name] (get-in req-or-resp [:cookies name :value]))
+(defn get [req-or-resp name] (codec/form-decode (str (get-in req-or-resp [:cookies name :value]))))
 (defn expire
   ([req-or-resp environment name] (expire req-or-resp environment name {}))
   ([req-or-resp environment name overrides]
