@@ -52,6 +52,14 @@
       (status 200)
       (content-type "application/json")))
 
+(def realistic-order-token "2OkDy7X95jblOjaTEZHNDPQm+qkz4ucv3ukjfohQLiI=")
+
+(def storeback-partially-fake-order-handler-response
+  (-> (generate-string {:number "W123456"
+                        :token realistic-order-token})
+      (response)
+      (status 200)
+      (content-type "application/json")))
 
 (def storeback-one-time-login-response
   (-> (generate-string {:user  {:email "acceptance+bob@mayvenn.com"
@@ -299,10 +307,10 @@
         (is (some #{"leads.tracking-id=old-id;Max-Age=31536000;Secure;Path=/;Domain=.mayvenn.com"} cookies))
         (is (some #{"tracking_id=;Max-Age=0;Secure;Path=/"} cookies))))
     (testing "the utm_params is passed to cljs application"
-      (let [resp (handler (mock/request :get "https://welcome.mayvenn.com/stylists/welcome?utm_content=stylistsfb"))
+      (let [resp (handler (mock/request :get "https://welcome.mayvenn.com/stylists/welcome?utm_content=stylistsfb%40"))
             cookies (get-in resp [:headers "Set-Cookie"])]
         (is (= 200 (:status resp)))
-        (is (.contains (:body resp) ":utm-content \\\"stylistsfb\\\"")
+        (is (.contains (:body resp) ":utm-content \\\"stylistsfb@\\\"")
             (pr-str (:body resp)))))
     (testing "migrates utm cookies from old leads site"
       (let [resp (handler (-> (mock/request :get "https://welcome.mayvenn.com/stylists/welcome")
@@ -353,7 +361,24 @@
         (testing "It removes one-time-login params, but keeps other query params in the url it redirects to"
           (is-redirected-to resp "bob" "/?sha=FIRST"))
         (testing "It assigns cookies to the client to automatically log them into storefront frontend"
-          (is (some #{"user-token=USERTOKEN;Max-Age=2592000;Secure;Path=/;Domain=bob.mayvenn.com"} cookies)))))))
+          (is (some #{"user-token=USERTOKEN;Max-Age=2592000;Secure;Path=/;Domain=bob.mayvenn.com"} cookies))
+          (is (some #{(format "email=%s;Max-Age=2592000;Secure;Path=/;Domain=bob.mayvenn.com"
+                              (ring.util.codec/form-encode "acceptance+bob@mayvenn.com"))}
+                    cookies)))))))
+
+(deftest create-shared-cart-from-url-redirects-to-cart-preserving-query-params
+  (with-standalone-server [storeback (standalone-server (routes
+                                                         (GET "/store" _ storeback-stylist-response)
+                                                         (POST "/create-order-from-shared-cart" _ storeback-partially-fake-order-handler-response)))]
+    (with-handler handler
+      (let [resp (handler (mock/request :get "https://bob.mayvenn.com/create-cart-from/my-shared-cart-id?utm_content=test"))
+            cookies (get-in resp [:headers "Set-Cookie"])
+            location (get-in resp [:headers "Location"])]
+        (is (= "https://bob.mayvenn.com/cart?utm_content=test" location))
+        (testing "It assigns cookies to the client to automatically associate the created order"
+          (is (some #{"number=W123456;Max-Age=2419200;Secure;Path=/"} cookies))
+          (is (some #{(format "token=%s;Max-Age=2419200;Secure;Path=/"
+                              (ring.util.codec/form-encode realistic-order-token))} cookies)))))))
 
 
 (defn- get-leads-req [handler cookie path]

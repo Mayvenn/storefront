@@ -255,8 +255,7 @@
   (fn [{:as req :keys [nav-message]}]
     (let [params       (second nav-message)
           order-number (cookies/get req "number")
-          order-token  (some-> (cookies/get req "token")
-                               (string/replace #" " "+"))]
+          order-token  (cookies/get-and-attempt-parsing-poorly-encoded req "token")]
       (h (cond-> req
            (and order-number order-token
                 (not (get-in-req-state req keypaths/order)))
@@ -284,7 +283,7 @@
            (assoc-in-req-state keypaths/user-id (str->int (cookies/get req "id")))
            (assoc-in-req-state keypaths/user-token (cookies/get req "user-token"))
            (assoc-in-req-state keypaths/user-store-slug (cookies/get req "store-slug"))
-           (assoc-in-req-state keypaths/user-email (cookies/get req "email"))))))
+           (assoc-in-req-state keypaths/user-email (cookies/get-and-attempt-parsing-poorly-encoded req "email"))))))
 
 ;;TODO Have all of these middleswarez perform event transitions, just like the frontend
 (defn wrap-state [routes {:keys [storeback-config leads-config contentful environment]}]
@@ -301,7 +300,7 @@
       (wrap-set-preferred-store environment)
       (wrap-preferred-store-redirect environment)
       (wrap-stylist-not-found-redirect environment)
-      (wrap-defaults (storefront-site-defaults environment))
+      (wrap-defaults (dissoc (storefront-site-defaults environment) :cookies))
       (wrap-remove-superfluous-www-redirect environment)
       (wrap-fetch-store storeback-config)
       (wrap-known-subdomains-redirect environment)))
@@ -754,8 +753,8 @@
                                    "utm_term"     "leads.utm-term"}
           value-from-original-req (fn [old-leads-key new-leads-key]
                                     (or (-> req :query-params (get old-leads-key))
-                                        (cookies/get req new-leads-key)
-                                        (cookies/get req old-leads-key)))
+                                        (cookies/get-and-attempt-parsing-poorly-encoded req new-leads-key)
+                                        (cookies/get-and-attempt-parsing-poorly-encoded req old-leads-key)))
           migrate-utm             (fn [req-or-resp [old-leads-key new-leads-key]]
                                     (let [utm-value (value-from-original-req old-leads-key new-leads-key)]
                                       (cond-> req-or-resp
@@ -837,8 +836,7 @@
                   (wrap-state ctx)
                   (wrap-site-routes ctx)))
       (wrap-fetch-order (:storeback-config ctx))
-      (wrap-params)
-      (wrap-cookies)))
+      (wrap-cookies (storefront-site-defaults (:environment ctx)))))
 
 (defn create-handler
   ([] (create-handler {}))
