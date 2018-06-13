@@ -103,11 +103,6 @@
   [:svg (merge {:style {:width "25px" :height "28px"}} opts)
    (svg-xlink "bag")])
 
-(defn bag-flyout [opts]
-  (component/html
-   [:svg (merge {:style {:width "35px" :height "33px"}} opts)
-    (svg-xlink "bag-flyout")]))
-
 (defn counter-inc
   ([] (counter-inc {}))
   ([opts]
