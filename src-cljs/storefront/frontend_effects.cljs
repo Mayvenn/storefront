@@ -81,7 +81,7 @@
 
 (defmethod perform-effects events/app-start [dispatch event args _ app-state]
   (svg/insert-sprite)
-  (stringer/insert-tracking)
+  (stringer/insert-tracking (get-in app-state keypaths/store-slug))
   (google-analytics/insert-tracking)
   (affirm/insert)
   (convert/insert-tracking)
