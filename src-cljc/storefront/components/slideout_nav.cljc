@@ -32,24 +32,6 @@
                       :data-test "mobile-cart"}
                      cart)]))
 
-(defn logo-and-bag [cart]
-  (list
-   [:div.flex-auto.m3 (ui/clickable-logo {:event      events/navigate-home
-                                          :data-test "header-logo"
-                                          :height    "40px"})]
-   (ui/shopping-bag-flyout {:style     {:height "70px" :width "35px"}
-                            :class     "mr2"
-                            :data-test "mobile-cart"}
-                           cart)))
-
-(defn burger-header-new-flyout [cart]
-  [:div.bg-white.flex.items-center.border-bottom.border-gray
-   [:a.px3.flex.items-center
-    {:data-test "close-slideout"
-     :on-click  #(messages/handle-message events/control-menu-collapse-all)}
-    svg/close-hamburger-menu]
-   (logo-and-bag cart)])
-
 (defn ^:private marquee-col [content]
   [:div.flex-auto
    {:style {:flex-basis 0}}
@@ -278,16 +260,14 @@
        sign-out-area])]))
 
 (defn component
-  [{:keys [promo-data cart on-taxon? menu-data new-flyout?] :as data}
+  [{:keys [promo-data cart on-taxon? menu-data] :as data}
    owner
    opts]
   (component/create
    [:div
     [:div.top-0.sticky.z4
      (promo-bar promo-data)
-     (if new-flyout?
-       (burger-header-new-flyout cart)
-       (burger-header cart))]
+     (burger-header cart)]
     (if on-taxon?
       (component/build menu/component menu-data nil)
       (component/build root-menu data nil))]))
@@ -297,7 +277,6 @@
    :on-taxon?   (get-in data keypaths/current-traverse-nav-id)
    :user        {:email (get-in data keypaths/user-email)}
    :store       (marquee/query data)
-   :new-flyout? (experiments/new-flyout? data)
    :deals?      (experiments/deals? data)
    :the-ville?  (experiments/the-ville? data)
    :shopping    {:categories (get-in data keypaths/categories)}})

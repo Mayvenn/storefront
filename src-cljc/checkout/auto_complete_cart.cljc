@@ -19,9 +19,7 @@
    [storefront.components.affirm :as affirm]
    [storefront.components.flash :as flash]
    [storefront.components.footer :as storefront.footer]
-   [storefront.components.scrim :as scrim]
    [storefront.components.money-formatters :as mf]
-   [storefront.components.header-new-flyout :as header-new-flyout]
    [storefront.components.promotion-banner :as promotion-banner]
    [storefront.components.stylist-banner :as stylist-banner]
    [storefront.components.svg :as svg]
@@ -508,11 +506,8 @@
    (promotion-banner/built-component data nil)
    #?(:cljs (popup/built-component (popup/query data) nil))
 
-   (if (experiments/new-flyout? data)
-     (header-new-flyout/built-component data nil)
-     (header/built-component data nil))
+   (header/built-component data nil)
    [:div.relative.flex.flex-column.flex-auto
-    (scrim/built-component data nil)
     (flash/built-component data nil)
 
     [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}

@@ -39,28 +39,6 @@
                [:span.teal "NEW "])
              (:copy/title category)])])]]])))
 
-(defn new-flyout-submenu-component
-  [{:keys [nav-root options]}
-   owner
-   opts]
-  (component/create
-   (let [{:keys [selector/electives]} nav-root]
-     [:div.medium
-      [:a.dark-gray.block.px3.h6.mt2.mb1
-       (utils/fake-href events/menu-home)
-       (ui/back-caret "Back")]
-      [:div.mx4.pb1.h5.flex-auto.center.border-bottom "Shop " (:copy/title nav-root)]
-      [:ul.px2.list-reset
-       (for [{:keys [page/slug] :as category} options]
-         [:li {:key slug}
-          [:a.h5.p2.block.inherit-color.flex.items-center
-           (assoc (utils/route-to events/navigate-category category)
-                  :data-test (str "menu-step-" slug))
-           [:span.flex-auto.titleize
-            (when (:category/new? category)
-              [:span.teal "NEW "])
-            (:copy/title category)]]])]])))
-
 (defn query [data]
   (let [{:keys [selector/essentials] :as nav-root} (categories/current-traverse-nav data)]
     {:nav-root    nav-root

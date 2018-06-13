@@ -42,10 +42,8 @@
             [storefront.components.forgot-password :as forgot-password]
             [storefront.components.gallery :as gallery]
             [storefront.components.header :as header]
-            [storefront.components.header-new-flyout :as header-new-flyout]
             [storefront.components.home :as home]
             [storefront.components.promotion-banner :as promotion-banner]
-            [storefront.components.scrim :as scrim]
             [storefront.components.shared-cart :as shared-cart]
             [storefront.components.sign-in :as sign-in]
             [storefront.components.sign-up :as sign-up]
@@ -124,11 +122,8 @@
    (promotion-banner/built-component data nil)
    #?(:cljs (popup/built-component (popup/query data) nil))
 
-   (if (experiments/new-flyout? data)
-     (header-new-flyout/built-component data nil)
-     (header/built-component data nil))
+   (header/built-component data nil)
    [:div.relative.flex.flex-column.flex-auto
-    (scrim/built-component data nil)
     (flash/built-component data nil)
 
     [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
