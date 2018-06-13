@@ -1,10 +1,9 @@
-(ns catalog.product-details
+(ns catalog.product-details-dropdown-experiment
   (:require [clojure.set :as set]
             [clojure.string :as string]
             [catalog.products :as products]
             [catalog.skuers :as skuers]
             [catalog.keypaths]
-            [catalog.product-details-dropdown-experiment :as product-details-dropdown-experiment]
             [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.pixlee :as pixlee]
@@ -54,7 +53,7 @@
    [:div.col-on-tb-dt.col-5-on-tb-dt.px2 wide-right-and-narrow]])
 
 (defn title [title]
-  [:h1.h2.medium.titleize.navy {:item-prop "name"} title])
+  [:h1.h2.medium.titleize {:item-prop "name"} title])
 
 (defn full-bleed-narrow [body]
   ;; The mxn2 pairs with the p2 of the container, to make the body full width
@@ -87,7 +86,7 @@
     [:span.h4 "Currently out of stock"]))
 
 (defn add-to-bag-button [adding-to-bag? sku quantity]
-  (ui/navy-button {:on-click
+  (ui/teal-button {:on-click
                    (utils/send-event-callback events/control-add-sku-to-bag
                                               {:sku sku
                                                :quantity quantity})
@@ -254,7 +253,7 @@
 (defn reviews-summary [reviews opts]
   [:div.h6
    {:style {:min-height "18px"}}
-   (component/build review-component/reviews-summary-component reviews opts)])
+   (component/build review-component/reviews-summary-dropdown-experiment-component reviews opts)])
 
 (defn component
   [{:keys [adding-to-bag?
@@ -286,13 +285,13 @@
            (carousel carousel-images product)
            [:div.hide-on-mb (component/build ugc/component ugc opts)]]
           [:div
-           [:div.center
-            (title (:copy/title product))
-            (when review? (reviews-summary reviews opts))
+           [:div
+            [:div.mx2
+             (title (:copy/title product))
+             (when review? (reviews-summary reviews opts))]
             [:meta {:item-prop "image"
                     :content   (:url (first carousel-images))}]
-            (full-bleed-narrow (carousel carousel-images product))
-            (starting-at cheapest-price)]
+            (full-bleed-narrow (carousel carousel-images product))]
            [:div
             [:div schema-org-offer-props
              [:div.my2
@@ -305,8 +304,9 @@
                             :sku-quantity sku-quantity})]
              (when (products/eligible-for-triple-bundle-discount? product)
                (triple-bundle-upsell auto-complete?))
-             (affirm/as-low-as-box {:amount      (:sku/price selected-sku)
-                                    :middle-copy "Just select Affirm at check out."})
+             (affirm/auto-complete-as-low-as-box
+              {:amount      (:sku/price selected-sku)
+               :middle-copy "Just select Affirm at check out."})
              (add-to-bag-button adding-to-bag?
                                 selected-sku
                                 sku-quantity)
@@ -452,9 +452,7 @@
      :carousel-images   carousel-images}))
 
 (defn built-component [data opts]
-  (if (experiments/pdp-dropdown? data)
-    (product-details-dropdown-experiment/built-component data opts)
-    (component/build component (query data) opts)))
+  (component/build component (query data) opts))
 
 (defn fetch-product-album
   [{:keys [legacy/named-search-slug]}]

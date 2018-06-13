@@ -92,3 +92,6 @@
 
 (defn shop-by-look? [data]
   (display-feature? data "shop-by-look"))
+
+(defn pdp-dropdown? [data]
+  (display-feature? data "pdp-dropdown"))

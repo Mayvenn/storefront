@@ -54,6 +54,31 @@
     [:div {:key (str "reviews-summary-" (:data-product-id yotpo-data-attributes))}
      (om/build reviews-summary-component-inner queried-data opts)])))
 
+
+(defn ^:private reviews-summary-component-dropdown-experiment-inner
+  [{:keys [loaded? yotpo-data-attributes]} owner opts]
+  (reify
+    om/IDidMount
+    (did-mount [_] (handle-message events/reviews-component-mounted))
+    om/IWillUnmount
+    (will-unmount [_] (handle-message events/reviews-component-will-unmount))
+    om/IRender
+    (render [_]
+      (html
+       [:div
+        (when loaded?
+          [:div.clearfix.flex.justify-start.flex-wrap.my1
+           [:.yotpo.bottomLine.mr2 yotpo-data-attributes]
+           [:.yotpo.QABottomLine yotpo-data-attributes]])]))))
+
+(defn reviews-summary-dropdown-experiment-component
+  "Yotpo summary reviews component"
+  [{:keys [yotpo-data-attributes] :as queried-data} owner opts]
+  (om/component
+   (html
+    [:div {:key (str "reviews-summary-" (:data-product-id yotpo-data-attributes))}
+     (om/build reviews-summary-component-dropdown-experiment-inner queried-data opts)])))
+
 (defn- yotpo-data-attributes
   "Uses the first Sku from a Product to determine Yotpo data- attributes"
   [product all-skus]
