@@ -18,7 +18,7 @@
 
 (defn ^:private as-low-as-html [data]
   (component/html
-   [:a.affirm-as-low-as.mx2.dark-gray
+   [:a.affirm-as-low-as.mx2.inherit-color
     {:data-promo-id       (type->promo-id (:type data))
      :data-amount         (mf/as-cents (:amount data))
      :data-learnmore-show (or (:show-learnmore data) false)
@@ -63,7 +63,7 @@
   (when (valid-order-total? (:amount data))
     [:div.py3
      [:div.center.border.rounded.border-aqua.col-12.py1.mx-auto
-      [:div.mx1.dark-gray.h6.py1
+      [:div.mx1.h6.py1
        [:p.h6 (component/build as-low-as-component data {})]
        [:p.h6 (:middle-copy data) " " (component/build modal-component data {:opts {:content "Learn more."
                                                                                     :link-classes "navy underline"}})]]]]))
@@ -72,7 +72,17 @@
   (when (valid-order-total? (:amount data))
     [:div.center.col-12.py1.mx-auto
      [:div.mx1.dark-gray.h6.py1
-      [:p.h5.flex.justify-center.black
+      [:p.h5.flex.justify-center
+       (component/build as-low-as-component data {})
+       (component/build modal-component data {:opts {:link-classes "flex self-center mxn1"
+                                                     :content      (svg/question-circle {:width "1em"
+                                                                                         :height "1em"})}})]]]))
+
+(defn pdp-dropdown-experiment-as-low-as-box [data]
+  (when (valid-order-total? (:amount data))
+    [:div.center.col-12.mx-auto.pdp-dropdown-experiment
+     [:div.mx1.navy
+      [:p.h6.flex.justify-center
        (component/build as-low-as-component data {})
        (component/build modal-component data {:opts {:link-classes "flex self-center mxn1"
                                                      :content      (svg/question-circle {:width "1em"

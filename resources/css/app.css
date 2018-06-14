@@ -74,7 +74,11 @@
 
 @import 'slick.css';
 @import 'custom-carousel.css';
+
+/* Third-party Overrides */
+
 @import 'custom-uploadcare.css';
+@import 'custom-affirm.css';
 
 /* Custom media queries */
 

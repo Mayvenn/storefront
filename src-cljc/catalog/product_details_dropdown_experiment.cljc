@@ -58,7 +58,7 @@
 (defn full-bleed-narrow [body]
   ;; The mxn2 pairs with the p2 of the container, to make the body full width
   ;; on mobile.
-  [:div.hide-on-tb-dt.mxn2.my2 body])
+  [:div.hide-on-tb-dt.mxn2.mt2 body])
 
 (def schema-org-offer-props
   {:item-prop "offers"
@@ -186,13 +186,12 @@
       (item-price price)))))
 
 (defn triple-bundle-upsell [auto-complete?]
-  [:p.center.h5.navy.flex.items-center.justify-center
-   (when-not auto-complete? {:class "p2"})
-   (when auto-complete?
-     (svg/discount-tag {:class  "mxnp6"
-                        :height "3em"
-                        :width  "3em"}))
-   promos/bundle-discount-description])
+  [:p.center.h6.flex.items-center.justify-center
+   (svg/discount-tag {:class  "mxnp6"
+                      :height "4em"
+                      :width  "4em"})
+   [:span.medium.shout "10% off "] [:span.bold.h5.mx1 "·"]
+   "Buy 3 bundles or more"])
 
 (def shipping-and-guarantee
   (component/html
@@ -202,7 +201,7 @@
 (defn product-description
   [{:keys [copy/description copy/colors copy/weights copy/materials copy/summary hair/family] :as product}]
   (when (seq description)
-    [:div.border.border-dark-gray.mt2.p2.rounded
+    [:div.border.border-dark-gray.mt7.p2.rounded
      [:h2.h3.medium.navy.shout "Description"]
      [:div {:item-prop "description"}
       (when (or colors weights materials)
@@ -255,10 +254,28 @@
    {:style {:min-height "18px"}}
    (component/build review-component/reviews-summary-dropdown-experiment-component reviews opts)])
 
+(defn field
+  ([html-widget] (field nil html-widget))
+  ([attrs html-widget]
+   [:div.border-bottom.border-light-silver.border-width-2.px4
+    (merge {:style {:height "75px"}}
+           attrs)
+    html-widget]))
+
+(defn mobile-dropdown [label-html selected-value-html]
+  [:div.flex.items-center.medium.h5
+   {:style {:height "100%"}}
+   label-html
+   [:div.ml2.flex-auto selected-value-html]
+   [:div.self-center (svg/dropdown-arrow {:height ".575em"
+                                          :width  ".575em"
+                                          :class  "stroke-teal"})]])
+
 (defn component
   [{:keys [adding-to-bag?
            cheapest-price
            bagged-skus
+           facets
            carousel-images
            options
            product
@@ -284,6 +301,7 @@
           [:div
            (carousel carousel-images product)
            [:div.hide-on-mb (component/build ugc/component ugc opts)]]
+
           [:div
            [:div
             [:div.mx2
@@ -294,22 +312,42 @@
             (full-bleed-narrow (carousel carousel-images product))]
            [:div
             [:div schema-org-offer-props
-             [:div.my2
-              [:div
-               (when (contains? (:catalog/department product) "hair")
-                 (for [facet (:selector/electives product)]
-                   (selector-html {:selector facet
-                                   :options  (get options facet)})))]
-              (sku-summary {:sku          selected-sku
-                            :sku-quantity sku-quantity})]
+             (when (contains? (:catalog/department product) "hair")
+               (let [color  (get-in facets [:hair/color :facet/options
+                                            (first (:hair/color selected-sku))])
+                     length (get-in facets [:hair/length :facet/options
+                                            (first (:hair/length selected-sku))])]
+                 [:div.mxn2
+                  (field
+                   (mobile-dropdown
+                    [:img.border.border-gray.rounded-0
+                     {:height "33px"
+                      :width  "65px"
+                      :src    (:option/rectangle-swatch color)}]
+                    (:option/name color)))
+                  [:div.flex
+                   (field
+                    {:class "border-right flex-grow-5"}
+                    (mobile-dropdown
+                     [:div.h7 "Length:"]
+                     [:span.medium (:option/name length)]))
+                   [:div.flex-auto
+                    (field
+                     (mobile-dropdown
+                      [:div.h7 "Qty:"]
+                      [:span.medium "1"]))]]]))
              (when (products/eligible-for-triple-bundle-discount? product)
-               (triple-bundle-upsell auto-complete?))
-             (affirm/auto-complete-as-low-as-box
+               [:div.pt2.pb4 (triple-bundle-upsell auto-complete?)])
+             [:div.center.mb6
+              [:div.h6.navy "Price Per Bundle"]
+              [:div.medium (item-price (:sku/price selected-sku))]]
+             (affirm/pdp-dropdown-experiment-as-low-as-box
               {:amount      (:sku/price selected-sku)
                :middle-copy "Just select Affirm at check out."})
-             (add-to-bag-button adding-to-bag?
-                                selected-sku
-                                sku-quantity)
+             [:div.mt1.mx3
+              (add-to-bag-button adding-to-bag?
+                                 selected-sku
+                                 sku-quantity)]
              (bagged-skus-and-checkout bagged-skus)
              (when (products/stylist-only? product) shipping-and-guarantee)]]
            (product-description product)
@@ -447,6 +485,7 @@
      :options           (generate-options facets product product-skus selected-sku)
      :product           product
      :selected-sku      selected-sku
+     :facets            facets
      :auto-complete?    (experiments/auto-complete? data)
      :cheapest-price    (lowest-sku-price product-skus)
      :carousel-images   carousel-images}))
