@@ -1,6 +1,7 @@
 (ns voucher.redeem
   (:require #?@(:cljs [[storefront.accessors.auth :as auth]
                        [storefront.history :as history]])
+            [storefront.accessors.experiments :as experiments]
             [storefront.component :as component]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
@@ -61,6 +62,6 @@
 (defmethod effects/perform-effects events/navigate-voucher-redeem
   [dispatch event args prev-app-state app-state]
   #?(:cljs
-     (when-not (or (auth/stylist? (auth/signed-in app-state))
-                   #_(experiments/vouchers? app-state))
+     (when-not (and (auth/stylist? (auth/signed-in app-state))
+                   (experiments/vouchers? app-state))
        (history/enqueue-redirect events/navigate-home))))

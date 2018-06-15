@@ -94,22 +94,28 @@
      (when (pos? store-credit)
        [:p.teal.h5 "You have store credit: " (as-money store-credit)])]))
 
-(def ^:private stylist-actions
+(defn ^:private stylist-actions [vouchers?]
   (component/html
    [:div
-    (marquee-row
-     (ui/ghost-button (assoc (utils/route-to events/navigate-stylist-account-profile)
-                             :data-test "account-settings")
-                      "Account settings")
-     (ui/ghost-button (assoc (utils/route-to events/navigate-stylist-share-your-store)
-                             :data-test "share-your-store")
-                      "Share your store"))
-    (marquee-row
-     (ui/ghost-button (assoc (utils/route-to events/navigate-stylist-dashboard-earnings)
-                             :data-test "dashboard")
-                      "Dashboard")
-     (ui/ghost-button stylists/community-url
-                      "Community"))]))
+    (when vouchers?
+      (ui/teal-button (assoc (utils/route-to events/navigate-voucher-redeem)
+                             :height-class "py2"
+                             :data-test    "redeem-voucher")
+                      "Redeem Client Voucher"))
+    [:div
+     (marquee-row
+      (ui/ghost-button (assoc (utils/route-to events/navigate-stylist-account-profile)
+                              :data-test "account-settings")
+                       "Account settings")
+      (ui/ghost-button (assoc (utils/route-to events/navigate-stylist-share-your-store)
+                              :data-test "share-your-store")
+                       "Share your store"))
+     (marquee-row
+      (ui/ghost-button (assoc (utils/route-to events/navigate-stylist-dashboard-earnings)
+                              :data-test "dashboard")
+                       "Dashboard")
+      (ui/ghost-button stylists/community-url
+                       "Community"))]]))
 
 (defn ^:private user-actions [the-ville?]
   (component/html
@@ -135,9 +141,9 @@
              :data-test "sign-up")
       "Sign up now, get offers!"]])))
 
-(defn ^:private actions-marquee [signed-in the-ville?]
+(defn ^:private actions-marquee [signed-in the-ville? vouchers?]
   (case (-> signed-in ::auth/as)
-    :stylist stylist-actions
+    :stylist (stylist-actions vouchers?)
     :user    (user-actions the-ville?)
     :guest   guest-actions))
 
@@ -245,14 +251,14 @@
                      "Sign out")
     [:div])))
 
-(defn ^:private root-menu [{:keys [user signed-in store deals? the-ville?] :as data} owner opts]
+(defn ^:private root-menu [{:keys [user signed-in store deals? the-ville? vouchers?] :as data} owner opts]
   (component/create
    [:div
     [:div.px6.border-bottom.border-gray
      (store-info-marquee signed-in store)
      (account-info-marquee signed-in user)
      [:div.my3.dark-gray
-      (actions-marquee signed-in the-ville?)]]
+      (actions-marquee signed-in the-ville? vouchers?)]]
     [:div.px6
      (menu-area data)]
     (when (-> signed-in ::auth/at-all)
