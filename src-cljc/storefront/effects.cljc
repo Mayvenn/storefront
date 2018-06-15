@@ -2,7 +2,9 @@
   (:require [storefront.platform.messages :as messages]
             [storefront.events :as events]))
 
-(defmulti perform-effects identity)
+(defmulti perform-effects
+  (fn [dispatch event args prev-app-state app-state]
+    dispatch))
 
 (defmethod perform-effects :default
   [dispatch event args old-app-state app-state])

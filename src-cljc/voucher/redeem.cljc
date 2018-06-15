@@ -16,12 +16,14 @@
             [storefront.effects :as effects]
             [storefront.events :as events]
             [voucher.keypaths :as keypaths]
+            [storefront.platform.messages :as messages]
             [storefront.platform.carousel :as carousel]
             [storefront.platform.component-utils :as utils]
             [storefront.transitions :as transitions]
 
             [storefront.components.free-install-video :as free-install-video]
-            [spice.date :as date]))
+            [spice.date :as date]
+            [storefront.accessors.experiments :as experiments]))
 (def divider
   [:hr.border-top.border-dark-silver.col-12.m0
    {:style {:border-bottom 0
@@ -73,3 +75,8 @@
   [data opts]
   (component/build component (query data) opts))
 
+
+(defmethod effects/perform-effects events/navigate-voucher-redeem
+  [dispatch event args prev-app-state app-state]
+  #_(when-not (experiments/vouchers? app-state)
+    (messages/handle-message events/navigate-home)))
