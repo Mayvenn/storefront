@@ -6,6 +6,7 @@
 .border-gray          { border-color: var(--gray); }
 .border-dark-gray     { border-color: var(--dark-gray); }
 .border-black         { border-color: var(--black); }
+.border-light-teal    { border-color: var(--light-teal); }
 
 .debug * { outline: 1px solid gold; }
 
@@ -20,6 +21,6 @@
   --gray:          #666666;
   --dark-gray:     #333333;
   --black:         #000000;
-
+  --light-teal:    #9fe5d5;
   --orange:        #ffc520;
 }
