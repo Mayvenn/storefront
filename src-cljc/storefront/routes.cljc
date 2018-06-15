@@ -94,6 +94,7 @@
               "/stylist/account/password"                         (edn->bidi events/navigate-stylist-account-password)
               "/stylist/account/commission"                       (edn->bidi events/navigate-stylist-account-commission)
               "/stylist/account/social"                           (edn->bidi events/navigate-stylist-account-social)
+              "/stylist/redeem"                                   (edn->bidi events/navigate-voucher-redeem)
               "/share"                                            (edn->bidi events/navigate-friend-referrals)
               "/freeinstall-share"                                (edn->bidi events/navigate-friend-referrals-freeinstall)
               "/gallery"                                          (edn->bidi events/navigate-gallery)

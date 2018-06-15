@@ -79,6 +79,8 @@
 (defpath navigate-stylist-account-commission)
 (defpath navigate-stylist-account-social)
 
+(defpath navigate-voucher-redeem)
+
 (defpath navigate-account)
 (defpath navigate-account-manage)
 (defpath navigate-account-referrals)
@@ -174,6 +176,9 @@
 (defpath control-cancel-editing-gallery)
 (defpath control-edit-gallery)
 (defpath control-delete-gallery-image)
+
+(defpath control-voucher-redeem)
+(defpath control-voucher-scan)
 
 (defpath control-menu-expand)
 (defpath control-menu-collapse-all)

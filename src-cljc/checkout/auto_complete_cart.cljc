@@ -143,7 +143,7 @@
                {:on-submit (utils/send-event-callback events/control-cart-update-coupon)}
                (ui/input-group
                 {:keypath       keypaths/cart-coupon-code
-                 :wrapper-class "flex-grow-5"
+                 :wrapper-class "flex-grow-5 clearfix"
                  :class         "h6"
                  :data-test     "promo-code"
                  :focused       focused

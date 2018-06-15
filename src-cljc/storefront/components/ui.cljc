@@ -173,17 +173,17 @@
 
 (defn ^:private field-wrapper-class [wrapper-class {:keys [error? focused?]}]
   (cond-> {:class wrapper-class}
-    true         (add-classes "rounded border pp1 x-group-item")
+    :always      (add-classes "rounded border x-group-item")
     focused?     (add-classes "glow")
     ;; .z1.relative keeps border between adjacent fields red if one of them is in error
     error?       (add-classes "border-red z1 relative")
     (not error?) (add-classes "border-gray")))
 
-(defn ^:private field-class [base {:keys [error? value?]}]
+(defn ^:private field-class [{:as base :keys [label]} {:keys [error? value?]}]
   (cond-> base
-    true                      (add-classes "floating-label--input rounded border-none")
-    error?                    (add-classes "red")
-    value?                    (add-classes "has-value")))
+    true                     (add-classes "floating-label--input rounded border-none")
+    error?                   (add-classes "red")
+    (and value? label) (add-classes "has-value")))
 
 (defn ^:private plain-text-field
   [label keypath value error? {:keys [wrapper-class id hint focused] :as input-attributes}]
@@ -194,30 +194,32 @@
                           :focused? focused?
                           :hint?    hint?
                           :value?   (seq value)}]
-    [:div.clearfix (field-wrapper-class wrapper-class status)
-     (floating-label label id status)
-     [:label
-      [:input.col-12.h4.line-height-1
-       (field-class (merge {:key         id
-                            :placeholder label
-                            :value       (or value "")}
-                           #?(:cljs
-                              {:on-focus
-                               (fn [^js/Event e]
-                                 (handle-message events/control-focus {:keypath keypath}))
-                               :on-blur
-                               (fn [^js/Event e]
-                                 (handle-message events/control-blur {:keypath keypath}))
-                               :on-change
-                               (fn [^js/Event e]
-                                 (handle-message events/control-change-state
-                                                 {:keypath keypath
-                                                  :value   (.. e -target -value)}))})
-                           input-attributes)
-                    status)]
-      (when hint? [:div.py1.px2
-                   (when error? {:class "red"})
-                   hint])]]))
+    [:div (field-wrapper-class wrapper-class status)
+     [:div.pp1
+      (floating-label label id status)
+      [:label
+       [:input.col-12.h4.line-height-1
+        (field-class (merge {:key         id
+                             :placeholder label
+                             :label       label
+                             :value       (or value "")}
+                            #?(:cljs
+                               {:on-focus
+                                (fn [^js/Event e]
+                                  (handle-message events/control-focus {:keypath keypath}))
+                                :on-blur
+                                (fn [^js/Event e]
+                                  (handle-message events/control-blur {:keypath keypath}))
+                                :on-change
+                                (fn [^js/Event e]
+                                  (handle-message events/control-change-state
+                                                  {:keypath keypath
+                                                   :value   (.. e -target -value)}))})
+                            input-attributes)
+                     status)]
+       (when hint? [:div.py1.px2
+                    (when error? {:class "red"})
+                    hint])]]]))
 
 (defn hidden-field
   [{:keys [keypath type disabled? checked?] :as attributes}]
@@ -247,6 +249,18 @@
                             (dissoc :label :keypath :value :errors)
                             (update :wrapper-class str " rounded-left x-group-item")))
       (ui-element (update args :class str " rounded-right x-group-item") content)]
+     (field-error-message error data-test)]))
+
+(defn pill-group [{:keys [label keypath value errors data-test class] :as input-attributes :or {class "col-12"}}
+                  {:keys [ui-element args content]}]
+  (let [error (first errors)]
+    [:div.mb2.stacking-context
+     [:div.flex.justify-around
+      (plain-text-field label keypath value (not (nil? error))
+                        (-> input-attributes
+                            (dissoc :label :keypath :value :errors)
+                            (update :wrapper-class str " x-group-item")))
+      (ui-element (update args :class str " x-group-item") content)]
      (field-error-message error data-test)]))
 
 (defn text-field-group

@@ -33,6 +33,7 @@
             [leads.a1.applied-thank-you]
             [leads.a1.registered-thank-you]
             [leads.home :as leads.home]
+            [voucher.redeem :as voucher-redeem]
             [leads.resolve :as leads.resolve]
             [install.home :as install.home]
             [storefront.accessors.experiments :as experiments]
@@ -91,6 +92,7 @@
     events/navigate-shared-cart             shared-cart/built-component
     events/navigate-checkout-processing     checkout-processing/built-component
     events/navigate-cart                    cart/built-component
+    events/navigate-voucher-redeem          voucher-redeem/built-component
     events/navigate-content-guarantee       content/built-component
     events/navigate-content-help            content/built-component
     events/navigate-content-privacy         content/built-component
