@@ -77,9 +77,9 @@
             [:div.border-gray {:key   idx
                                :class (when-not (zero? idx) "border-top")} row])])))))
 
-(defmulti account-info (fn [signed-in _ _] (::auth/as signed-in)))
+(defmulti account-info (fn [signed-in _ _ _] (::auth/as signed-in)))
 
-(defmethod account-info :user [_ {:keys [email expanded?]} the-ville?]
+(defmethod account-info :user [_ {:keys [email expanded?]} the-ville? _]
   (ui/drop-down
    expanded?
    keypaths/account-menu-expanded
@@ -96,22 +96,27 @@
     [:div.border-top.border-gray
      (drop-down-row (utils/fake-href events/control-sign-out) "Sign out")]]))
 
-(defmethod account-info :stylist [_ {:keys [email expanded?]} _]
+(defmethod account-info :stylist [_ {:keys [email expanded?]} _ vouchers?]
   (ui/drop-down
    expanded?
    keypaths/account-menu-expanded
    [:a.inherit-color.h6
     "Signed in with: " [:span.teal email]
     " | My dashboard" [:span.ml1 (ui/expand-icon expanded?)]]
-   [:div.bg-white.absolute.right-0
+   [:div.bg-white.absolute.right-0.border.border-gray.dark-gray.top-lit
     [:div
-     (drop-down-row (utils/route-to events/navigate-stylist-dashboard-earnings) "My dashboard")]
+     (drop-down-row (utils/route-to events/navigate-stylist-dashboard-earnings) "My Dashboard")]
+
+    (when vouchers?
+      [:div.border-top.border-gray
+       (drop-down-row (utils/route-to events/navigate-voucher-redeem) "Redeem Client Voucher")])
+
     [:div.border-top.border-gray
-     (drop-down-row (utils/route-to events/navigate-stylist-share-your-store) "Share your store")]
+     (drop-down-row (utils/route-to events/navigate-stylist-share-your-store) "Share Your store")]
     [:div.border-top.border-gray
      (drop-down-row stylists/community-url "Community")]
     [:div.border-top.border-gray
-     (drop-down-row (utils/route-to events/navigate-stylist-account-profile) "Account settings")]
+     (drop-down-row (utils/route-to events/navigate-stylist-account-profile) "Account Settings")]
     [:div.border-top.border-gray
      (drop-down-row (utils/fake-href events/control-sign-out) "Sign out")]]))
 
@@ -189,7 +194,7 @@
         (for [items columns]
           (shopping-column items (count columns)))]])))
 
-(defn component [{:keys [store user cart shopping signed-in deals? the-ville?]} _ _]
+(defn component [{:keys [store user cart shopping signed-in deals? the-ville? vouchers?]} _ _]
   (component/create
    [:div
     [:div.hide-on-mb.relative
@@ -199,7 +204,7 @@
        [:div.left (store-info signed-in store)]
        [:div.right
         [:div.h6.my2.flex.items-center
-         (account-info signed-in user the-ville?)
+         (account-info signed-in user the-ville? vouchers?)
          [:div.pl2 (ui/shopping-bag {:style {:height (str ui/header-image-size "px") :width "28px"}
                                   :data-test "desktop-cart"}
                                  cart)]]]

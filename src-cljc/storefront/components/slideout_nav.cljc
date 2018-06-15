@@ -279,6 +279,7 @@
    :store       (marquee/query data)
    :deals?      (experiments/deals? data)
    :the-ville?  (experiments/the-ville? data)
+   :vouchers?   (experiments/vouchers? data)
    :shopping    {:categories (get-in data keypaths/categories)}})
 
 (defn query [data]
