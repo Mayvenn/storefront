@@ -7,7 +7,8 @@
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
             [clojure.string :as string]
-            [storefront.components.svg :as svg]))
+            [storefront.components.svg :as svg]
+            [catalog.product-details-dropdown-experiment :as product-details-dropdown-experiment]))
 
 (defn- header [name]
   [:h2.h3.py1.my3.shout.medium.border-bottom [:a {:name (string/lower-case name)} name]])
@@ -436,6 +437,71 @@
                                   :dots true}}
                       {})]]))
 
+(def model-img
+  "http://ucarecdn.com/1a3ce0a2-d8a4-4c72-b20b-62b5ff445096/-/format/auto/-/resize/110x/")
+
+(def swatch-img
+  "http://ucarecdn.com/cf2e6d44-4e93-4792-801b-1e2aacdac408/-/format/auto/swatchnatural.png")
+
+(def simple-custom-options
+  [:section.flex.flex-column
+   [:div.col-5
+    (product-details-dropdown-experiment/length-option
+     {:length    "10″"
+      :price     "$100"
+      :selected? true
+      :sold-out? false})]
+
+   [:div.col-5
+    (product-details-dropdown-experiment/length-option
+     {:length    "10″"
+      :price     "$100"
+      :selected? false
+      :sold-out? false})]
+
+   [:div.col-5
+    (product-details-dropdown-experiment/length-option
+     {:length    "10″"
+      :price     "$100"
+      :selected? false
+      :sold-out? true})]
+   [:div.col-5
+    (product-details-dropdown-experiment/quantity-option
+     {:quantity  "1"
+      :selected? false})]
+
+   [:div.col-5
+    (product-details-dropdown-experiment/quantity-option
+     {:quantity  "2"
+      :selected? true})]])
+
+(def swatch-custom-options
+  [:section.flex.flex-column
+   [:div.col-5
+    (product-details-dropdown-experiment/color-option
+     {:color     {:option/name             "Natural Black"
+                  :option/rectangle-swatch swatch-img}
+      :model-img model-img
+      :selected? true
+      :sold-out? false})]
+
+   [:div.col-5
+    (product-details-dropdown-experiment/color-option
+     {:color     {:option/name             "Natural Black"
+                  :option/rectangle-swatch swatch-img}
+      :model-img model-img
+      :selected? false
+      :sold-out? false})]
+
+   [:div.col-5
+    (product-details-dropdown-experiment/color-option
+     {:color
+      {:option/name             "Natural Black"
+       :option/rectangle-swatch swatch-img}
+      :model-img model-img
+      :selected? false
+      :sold-out? true})]])
+
 (defn component [data owner opts]
   (component/create
    [:div
@@ -455,17 +521,20 @@
       (form-fields data)
       buttons
 
+      simple-custom-options
+      swatch-custom-options
+
       #_(condp = (get-in data keypaths/navigation-event)
-          events/navigate-style-guide typography
-          events/navigate-style-guide-color colors
-          events/navigate-style-guide-buttons buttons
-          events/navigate-style-guide-spacing spacing
-          events/navigate-style-guide-form-fields (form-fields data)
-          events/navigate-style-guide-navigation (component/build navigation data opts)
+          events/navigate-style-guide                 typography
+          events/navigate-style-guide-color           colors
+          events/navigate-style-guide-buttons         buttons
+          events/navigate-style-guide-spacing         spacing
+          events/navigate-style-guide-form-fields     (form-fields data)
+          events/navigate-style-guide-navigation      (component/build navigation data opts)
           events/navigate-style-guide-navigation-tab1 (component/build navigation data opts)
           events/navigate-style-guide-navigation-tab3 (component/build navigation data opts)
-          events/navigate-style-guide-progress (component/build progress data opts)
-          events/navigate-style-guide-carousel (component/build carousel data opts))]]]))
+          events/navigate-style-guide-progress        (component/build progress data opts)
+          events/navigate-style-guide-carousel        (component/build carousel data opts))]]]))
 
 (defn built-component [data opts]
   (component/build component data opts))

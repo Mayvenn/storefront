@@ -271,6 +271,93 @@
                                           :width  ".575em"
                                           :class  "stroke-teal"})]])
 
+
+(defn simple-sold-out-layer []
+  [:div.bg-darken-1.absolute.border.border-silver.rounded-0.overlay.flex.justify-end
+   [:div.self-center.flex.items-center.mr2.dark-gray
+    "Sold Out"]])
+
+(defn simple-content-layer [content]
+  [:div.flex.p4.rounded-0.absolute.overlay
+   [:div.self-center.flex.items-center
+    {:style {:margin-left "1.5em"}}
+    [:div {:style {:width "1em"}}]]
+   content])
+
+(defn simple-selected-layer []
+  [:div.absolute.border.border-width-3.rounded-0.border-light-teal.overlay.flex
+   [:div.self-center.flex.items-center
+    [:div {:style {:width "1em"}}]
+    (svg/circled-check {:class  "stroke-teal"
+                        :height "2em"
+                        :width  "2em"})]])
+
+(defn quantity-option [{:keys [quantity selected?]}]
+  (let [label-style (when selected? "medium")]
+    (ui/option {:key    quantity
+                :height "4em"}
+               (simple-content-layer
+                [:div.col-2
+                 (when label-style
+                   {:class label-style})
+                 quantity])
+               (when selected?
+                 (simple-selected-layer)))))
+
+(defn length-option [{:keys [length price selected? sold-out?]}]
+  (let [label-style (cond
+                      sold-out? "dark-gray"
+                      selected? "medium"
+                      :else     nil)]
+    (ui/option {:key    length
+                :height "4em"}
+               (simple-content-layer
+                (list
+                 [:div.col-2
+                  (when label-style
+                    {:class label-style})
+                  length]
+                 [:div.gray.flex-auto price]))
+               (cond
+                 sold-out? (simple-sold-out-layer)
+                 selected? (simple-selected-layer)
+                 :else     nil))))
+
+(defn swatch-selected-layer []
+  [:div.absolute.border.border-width-3.rounded-0.border-light-teal.overlay.flex
+   [:div.self-center.flex.items-center
+    {:style {:margin-left "-2em"}}
+    [:div {:style {:width "1em"}}]
+    (svg/circled-check {:class  "stroke-teal"
+                        :height "2em"
+                        :width  "2em"})]])
+
+(defn sold-out-color-swatch-layer []
+  [:div.absolute.overlay.bg-lighten-3.flex.items-center.justify-center
+   [:div.dark-gray.self-center.flex.items-center.mr2
+    {:style {:margin-top "-30px"}}
+    "Sold Out"]])
+
+(defn swatch-content-layer [{:keys [option/name option/rectangle-swatch]} model-img]
+  [:div.flex.flex-column
+   [:div.flex
+    [:img.flex-auto.rounded-top-left
+     {:height "100px"
+      :width  "225px"
+      :src    rectangle-swatch}]
+    [:img.rounded-top-right
+     {:src model-img}]]
+   [:div.py1.h6.ml3.self-start
+    name]])
+
+(defn color-option [{:keys [color model-img selected? sold-out?]}]
+  (ui/option {:key (:option/name color)}
+             (swatch-content-layer color model-img)
+             (cond
+               selected? (swatch-selected-layer)
+               sold-out? (sold-out-color-swatch-layer)
+               :else     nil)))
+
 (defn component
   [{:keys [adding-to-bag?
            cheapest-price
@@ -312,6 +399,11 @@
             (full-bleed-narrow (carousel carousel-images product))]
            [:div
             [:div schema-org-offer-props
+             [:div.hide-on-tb-dt.z4.fixed.overlay.overflow-auto.bg-light-silver
+              (when false
+                [:div.p3.h5.bg-white.clearfix
+                 [:div.dark-gray.py3.fixed.top-0.left-0.right-0.center "Color"]
+                 [:a.teal.medium.right "Done"]])]
              (when (contains? (:catalog/department product) "hair")
                (let [color  (get-in facets [:hair/color :facet/options
                                             (first (:hair/color selected-sku))])

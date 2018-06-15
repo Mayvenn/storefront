@@ -612,6 +612,18 @@
                   {:src-set (build-src-set url type src-set)
                    :type    (contentful-type->mime type)})])
 
+(defn option
+  [{:keys [key disabled? height on-click]} & content]
+  [:div.relative.my1.mx2
+   {:key   key
+    :style {:height height}}
+   [:div.absolute.overlay.rounded-0.border.border-gray]
+   content
+   (when-not disabled?
+     [:div.absolute.overlay
+      (when on-click
+        {:on-click on-click})])])
+
 (def header-image-size 36)
 
 (defn expand-icon [expanded?]
