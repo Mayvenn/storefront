@@ -120,7 +120,7 @@
     [:div.border-top.border-gray
      (drop-down-row (utils/fake-href events/control-sign-out) "Sign out")]]))
 
-(defmethod account-info :guest [_ _ _]
+(defmethod account-info :guest [_ _ _ _]
   [:div.h6
    [:a.inherit-color (utils/route-to events/navigate-sign-in) "Sign in"]
    " | "
