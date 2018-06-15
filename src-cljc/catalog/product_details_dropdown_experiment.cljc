@@ -278,7 +278,7 @@
     "Sold Out"]])
 
 (defn simple-content-layer [content]
-  [:div.flex.p4.rounded-0.absolute.overlay
+  [:div.flex.p4.rounded-0.absolute.overlay.bg-white.border.border-gray
    [:div.self-center.flex.items-center
     {:style {:margin-left "1.5em"}}
     [:div {:style {:width "1em"}}]]
@@ -292,32 +292,21 @@
                         :height "2em"
                         :width  "2em"})]])
 
-(defn quantity-option [{:keys [quantity selected?]}]
-  (let [label-style (when selected? "medium")]
-    (ui/option {:key    quantity
-                :height "4em"}
-               (simple-content-layer
-                [:div.col-2
-                 (when label-style
-                   {:class label-style})
-                 quantity])
-               (when selected?
-                 (simple-selected-layer)))))
-
-(defn length-option [{:keys [length price selected? sold-out?]}]
+(defn simple-option [{:keys [on-click primary-label secondary-label selected? sold-out?]}]
   (let [label-style (cond
                       sold-out? "dark-gray"
                       selected? "medium"
                       :else     nil)]
-    (ui/option {:key    length
-                :height "4em"}
+    (ui/option {:key      primary-label
+                :height   "4em"
+                :on-click on-click}
                (simple-content-layer
                 (list
                  [:div.col-2
                   (when label-style
                     {:class label-style})
-                  length]
-                 [:div.gray.flex-auto price]))
+                  primary-label]
+                 [:div.gray.flex-auto secondary-label]))
                (cond
                  sold-out? (simple-sold-out-layer)
                  selected? (simple-selected-layer)
@@ -339,7 +328,7 @@
     "Sold Out"]])
 
 (defn swatch-content-layer [{:keys [option/name option/rectangle-swatch]} model-img]
-  [:div.flex.flex-column
+  [:div.flex.flex-column.bg-white
    [:div.flex
     [:img.flex-auto.rounded-top-left
      {:height "100px"
@@ -370,6 +359,7 @@
            selected-sku
            sku-quantity
            auto-complete?
+           selected-picker
            ugc]}
    owner
    opts]
@@ -399,35 +389,62 @@
             (full-bleed-narrow (carousel carousel-images product))]
            [:div
             [:div schema-org-offer-props
-             [:div.hide-on-tb-dt.z4.fixed.overlay.overflow-auto.bg-light-silver
-              (when false
-                [:div.p3.h5.bg-white.clearfix
-                 [:div.dark-gray.py3.fixed.top-0.left-0.right-0.center "Color"]
-                 [:a.teal.medium.right "Done"]])]
              (when (contains? (:catalog/department product) "hair")
-               (let [color  (get-in facets [:hair/color :facet/options
-                                            (first (:hair/color selected-sku))])
-                     length (get-in facets [:hair/length :facet/options
-                                            (first (:hair/length selected-sku))])]
-                 [:div.mxn2
-                  (field
-                   (mobile-dropdown
-                    [:img.border.border-gray.rounded-0
-                     {:height "33px"
-                      :width  "65px"
-                      :src    (:option/rectangle-swatch color)}]
-                    (:option/name color)))
-                  [:div.flex
+               (list
+                (when selected-picker
+                  (let [options (get options selected-picker)]
+                    [:div.hide-on-tb-dt.z4.fixed.overlay.overflow-auto.bg-light-silver
+
+                     [:div.p3.h5.bg-white.relative.border-bottom.border-gray
+                      {:style {:min-height "3em"}}
+                      [:div.absolute.overlay.flex.items-center.justify-center
+                       [:div.dark-gray
+                        (get-in facets [selected-picker :facet/name])]]
+
+                      [:div.absolute.overlay.flex.items-center.justify-end
+                       [:a.teal.medium.p3
+                        (utils/fake-href events/control-product-detail-picker-close)
+                        "Done"]]]
+
+                     [:div.py3.px1 ;; body
+                      (for [option options]
+                        (simple-option
+                         {:primary-label   (:option/name option)
+                          :secondary-label (item-price (:price option))
+                          :selected?       (:checked? option)
+                          :sold-out?       (not (:stocked? option))
+                          :on-click        #(messages/handle-message
+                                             events/control-product-detail-picker-option-select
+                                             {:selection selected-picker
+                                              :value     (:option/slug option)})}))]]))
+
+                (let [color  (get-in facets [:hair/color :facet/options
+                                             (first (:hair/color selected-sku))])
+                      length (get-in facets [:hair/length :facet/options
+                                             (first (:hair/length selected-sku))])]
+                  [:div.mxn2
                    (field
-                    {:class "border-right flex-grow-5"}
+                    (utils/fake-href events/control-product-detail-picker-open {:facet-slug :hair/color})
                     (mobile-dropdown
-                     [:div.h7 "Length:"]
-                     [:span.medium (:option/name length)]))
-                   [:div.flex-auto
+                     [:img.border.border-gray.rounded-0
+                      {:height "33px"
+                       :width  "65px"
+                       :src    (:option/rectangle-swatch color)}]
+                     (:option/name color)))
+                   [:div.flex
                     (field
+                     (merge
+                      {:class "border-right flex-grow-5"}
+                      (utils/fake-href events/control-product-detail-picker-open {:facet-slug :hair/length}))
                      (mobile-dropdown
-                      [:div.h7 "Qty:"]
-                      [:span.medium "1"]))]]]))
+                      [:div.h7 "Length:"]
+                      [:span.medium (:option/name length)]))
+                    [:div.flex-auto
+                     (field
+                      (utils/fake-href events/control-product-detail-picker-open {:facet-slug :item/quantity})
+                      (mobile-dropdown
+                       [:div.h7 "Qty:"]
+                       [:span.medium "1"]))]]])))
              (when (products/eligible-for-triple-bundle-discount? product)
                [:div.pt2.pb4 (triple-bundle-upsell auto-complete?)])
              [:div.center.mb6
@@ -580,6 +597,7 @@
      :facets            facets
      :auto-complete?    (experiments/auto-complete? data)
      :cheapest-price    (lowest-sku-price product-skus)
+     :selected-picker   (get-in data catalog.keypaths/detailed-product-selected-picker)
      :carousel-images   carousel-images}))
 
 (defn built-component [data opts]
@@ -715,6 +733,14 @@
       (assoc-default-length selection)
       assoc-sku-from-selections))
 
+(defmethod transitions/transition-state events/control-product-detail-picker-option-select
+  [_ event {:keys [selection value]} app-state]
+  (-> app-state
+      (assoc-in (conj catalog.keypaths/detailed-product-selected-sku selection) value)
+      (assoc-in catalog.keypaths/detailed-product-selected-picker nil)
+      (assoc-default-length selection)
+      assoc-sku-from-selections))
+
 #?(:cljs
    (defmethod effects/perform-effects events/control-bundle-option-select
      [_ event {:keys [selection value]} _ app-state]
@@ -756,3 +782,11 @@
                    {:quantity quantity :sku sku})
         (assoc-in keypaths/browse-sku-quantity 1))))
 
+(defmethod transitions/transition-state events/control-product-detail-picker-open
+  [_ event {:keys [facet-slug]} app-state]
+  (assoc-in app-state catalog.keypaths/detailed-product-selected-picker
+            facet-slug))
+
+(defmethod transitions/transition-state events/control-product-detail-picker-close
+  [_ event _ app-state]
+  (assoc-in app-state catalog.keypaths/detailed-product-selected-picker nil))

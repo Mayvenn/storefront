@@ -455,34 +455,34 @@
 (def simple-custom-options
   [:section.flex.flex-column
    [:div.col-5
-    (product-details-dropdown-experiment/length-option
-     {:length    "10″"
-      :price     "$100"
-      :selected? true
-      :sold-out? false})]
+    (product-details-dropdown-experiment/simple-option
+     {:primary-label  "10″"
+      :secondary-labe "$100"
+      :selected?      true
+      :sold-out?      false})]
 
    [:div.col-5
-    (product-details-dropdown-experiment/length-option
-     {:length    "10″"
-      :price     "$100"
-      :selected? false
-      :sold-out? false})]
+    (product-details-dropdown-experiment/simple-option
+     {:primary-label  "10″"
+      :secondary-labe "$100"
+      :selected?      false
+      :sold-out?      false})]
 
    [:div.col-5
-    (product-details-dropdown-experiment/length-option
-     {:length    "10″"
-      :price     "$100"
-      :selected? false
-      :sold-out? true})]
+    (product-details-dropdown-experiment/simple-option
+     {:primary-label  "10″"
+      :secondary-labe "$100"
+      :selected?      false
+      :sold-out?      true})]
    [:div.col-5
-    (product-details-dropdown-experiment/quantity-option
-     {:quantity  "1"
-      :selected? false})]
+    (product-details-dropdown-experiment/simple-option
+     {:primary-label "1"
+      :selected?     false})]
 
    [:div.col-5
-    (product-details-dropdown-experiment/quantity-option
-     {:quantity  "2"
-      :selected? true})]])
+    (product-details-dropdown-experiment/simple-option
+     {:primary-label "2"
+      :selected?     true})]])
 
 (def swatch-custom-options
   [:section.flex.flex-column

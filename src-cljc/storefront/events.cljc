@@ -258,6 +258,10 @@
 (defpath control-category-option-unselect)
 (defpath control-category-option-clear)
 
+(defpath control-product-detail-picker-open)
+(defpath control-product-detail-picker-close)
+(defpath control-product-detail-picker-option-select)
+
 (defpath video-played)
 
 (defpath snap)

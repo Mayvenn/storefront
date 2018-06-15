@@ -9,6 +9,9 @@
 (def detailed-product-selected-sku (conj detailed-product :selected-sku))
 (def detailed-product-selected-sku-id (conj detailed-product-selected-sku :catalog/sku-id))
 
+(def detailed-product-selected-picker
+  (conj detailed-product :selected-picker))
+
 (def category (conj ui :category))
 (def category-panel (conj ui :panel))
 (def category-id (conj ui :id))
