@@ -159,7 +159,16 @@
                                                               :width  "12px"
                                                               :height "10px"
                                                               :style  {:transform "rotate(-90deg)"}})])]
-    [:div.col.col-12.p1 (ui/teal-button {:spinning? true :title ":spinning? true"})]]
+    [:div.col.col-6.p1 (ui/input-group
+                        {:type          "text"
+                         :wrapper-class "col-7 pl3 flex items-center bg-white circled-item"
+                         :placeholder   "Text"
+                         :focused       false}
+                        {:ui-element ui/teal-button
+                         :content    "Button"
+                         :args       {:class      "flex justify-center items-center circled-item"
+                                      :size-class "col-5"}})]
+    [:div.col.col-6.p1 (ui/teal-button {:spinning? true :title ":spinning? true"})]]
    [:div.clearfix.bg-teal
     [:div.col.col-4.p1.mx-auto (ui/light-ghost-button {} "ui/light-ghost-button")]]])
 
