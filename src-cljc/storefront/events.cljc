@@ -107,6 +107,8 @@
 (defpath navigate-install-home)
 (defpath navigate-install-home-video-modal-open)
 
+(defpath navigate-mayvenn-made)
+
 (defpath menu-traverse-root)
 (defpath menu-traverse-ascend)
 (defpath menu-traverse-descend)

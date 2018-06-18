@@ -36,6 +36,7 @@
             [voucher.redeem :as voucher-redeem]
             [leads.resolve :as leads.resolve]
             [install.home :as install.home]
+            [mayvenn-made.home :as mayvenn-made.home]
             [storefront.accessors.experiments :as experiments]
             [storefront.components.content :as content]
             [storefront.components.flash :as flash]
@@ -93,6 +94,7 @@
     events/navigate-checkout-processing     checkout-processing/built-component
     events/navigate-cart                    cart/built-component
     events/navigate-voucher-redeem          voucher-redeem/built-component
+    events/navigate-mayvenn-made            mayvenn-made.home/built-component
     events/navigate-content-guarantee       content/built-component
     events/navigate-content-help            content/built-component
     events/navigate-content-privacy         content/built-component

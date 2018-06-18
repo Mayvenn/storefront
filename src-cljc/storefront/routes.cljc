@@ -97,6 +97,7 @@
               "/stylist/redeem"                                   (edn->bidi events/navigate-voucher-redeem)
               "/share"                                            (edn->bidi events/navigate-friend-referrals)
               "/freeinstall-share"                                (edn->bidi events/navigate-friend-referrals-freeinstall)
+              "/mayvenn-made"                                     (edn->bidi events/navigate-mayvenn-made)
               "/gallery"                                          (edn->bidi events/navigate-gallery)
               "/gallery/add"                                      (edn->bidi events/navigate-gallery-image-picker)
               "/checkout/returning_or_guest"                      (edn->bidi events/navigate-checkout-returning-or-guest)
