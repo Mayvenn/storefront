@@ -2,6 +2,7 @@
   (:require [ajax.core :refer [GET json-response-format]]
             [storefront.events :as events]
             [storefront.config :as config]
+            [storefront.browser.tags :refer [insert-tag-pair remove-tag-pair]]
             [storefront.platform.messages :as m]))
 
 (def default-error-handler (partial m/handle-message events/api-failure-bad-server-response))
@@ -33,3 +34,28 @@
                                               :album-keyword album-keyword}))
                 :error-handler (fn [resp]
                                  (m/handle-message events/pixlee-api-failure-fetch-album resp))}))
+
+(defn insert
+  []
+  (when-not (.hasOwnProperty js/window "Pixlee")
+    (set! (.-PixleeAsyncInit js/window)
+          (fn []
+            (m/handle-message events/inserted-pixlee)))
+    (insert-tag-pair
+     "//assets.pixlee.com/assets/pixlee_widget_1_0_0.js"
+     (str "window.PixleeAsyncInit=function(){Pixlee.init({apiKey:'"
+          (:api-key config/pixlee)
+          "'});Pixlee.addSimpleWidget({widgetId:"
+          (:mayvenn-made-widget-id config/pixlee)
+          "});};")
+     "pixlee-widget")))
+
+(defn remove-tracking
+  []
+  (remove-tag-pair "pixlee-widget"))
+
+(defn add-simple-widget
+  []
+  (when (.hasOwnProperty js/window "Pixlee")
+    (let [widget-id (:mayvenn-made-widget-id config/pixlee)]
+      (Pixlee/addSimpleWidget #js {:widgetId widget-id}))))

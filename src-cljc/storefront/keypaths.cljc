@@ -271,6 +271,7 @@
 (def loaded (conj ui :loaded))
 (def loaded-convert (conj loaded :convert))
 (def loaded-facebook (conj loaded :facebook))
+(def loaded-pixlee (conj loaded :pixlee))
 (def loaded-places (conj loaded :places))
 (def loaded-reviews (conj loaded :reviews))
 (def loaded-stripe (conj loaded :stripe))

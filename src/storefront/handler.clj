@@ -525,7 +525,8 @@
    events/navigate-leads-a1-registered-thank-you render-leads-page
    events/navigate-leads-resolve                 render-leads-page
    events/navigate-install-home                  generic-server-render
-   events/navigate-checkout-processing           generic-server-render})
+   events/navigate-checkout-processing           generic-server-render
+   events/navigate-mayvenn-made                  generic-server-render})
 
 (defn robots [{:keys [subdomains]}]
   (cond

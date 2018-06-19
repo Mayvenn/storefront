@@ -398,6 +398,7 @@
 (defpath inserted)
 (defpath inserted-convert)
 (defpath inserted-facebook)
+(defpath inserted-pixlee)
 (defpath inserted-places)
 (defpath inserted-reviews)
 (defpath inserted-stripe)
@@ -421,6 +422,8 @@
 (defpath uploadcare-api-success-upload-gallery)
 
 (defpath uploadcare-api-failure)
+
+(defpath mayvenn-made-gallery-displayed)
 
 (defpath video-component-mounted)
 (defpath video-component-unmounted)

@@ -101,7 +101,8 @@
   (stringer/remove-tracking)
   (google-analytics/remove-tracking)
   (facebook-analytics/remove-tracking)
-  (pinterest/remove-tracking))
+  (pinterest/remove-tracking)
+  (pixlee/remove-tracking))
 
 (defmethod perform-effects events/determine-and-show-popup
   [_ event args previous-app-state app-state]

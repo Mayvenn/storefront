@@ -90,7 +90,8 @@
                             :water-wave        1814288
                             :yaki-straight     1814286
                             :dyed              2750237
-                            :wigs              1880465}}
+                            :wigs              1880465}
+                  :mayvenn-made-widget-id  1048394}
     {:api-key "iiQ27jLOrmKgTfIcRIk"
      :copy    pixlee-copy
      :albums  {:look              965034
@@ -110,4 +111,5 @@
                :water-wave        1912641
                :yaki-straight     1912642
                :dyed              2918644
-               :wigs              2918645}}))
+               :wigs              2918645}
+     :mayvenn-made-widget-id  1048394})) ;;TODO: replace widget id with acceptance one when we have it
