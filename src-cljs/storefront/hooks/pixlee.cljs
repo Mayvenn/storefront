@@ -58,4 +58,4 @@
   []
   (when (.hasOwnProperty js/window "Pixlee")
     (let [widget-id (:mayvenn-made-widget-id config/pixlee)]
-      (Pixlee/addSimpleWidget #js {:widgetId widget-id}))))
+      (js/Pixlee.addSimpleWidget #js {:widgetId widget-id}))))
