@@ -62,7 +62,6 @@
   (clj->js {:widgetId (:mayvenn-made-widget-id config/pixlee)}))
 
 (defn open-uploader []
-  (prn (str (fn [hello] hello)))
   (when (loaded?)
     (js/Pixlee.openUploader (widget-config))))
 

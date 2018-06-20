@@ -32,7 +32,7 @@
              (did-mount [this]
                (messages/handle-message events/mayvenn-made-gallery-displayed)))))
 
-(defn component [{:keys [query/hero]} owner opts]
+(defn component [{:keys [hero]} owner opts]
   (component/create
    [:div
     [:section (hero-image hero)]
@@ -43,10 +43,11 @@
 
 (defn query
   [data]
-  {:query/hero {:desktop-url "//ucarecdn.com/75da64bd-b00f-465a-bfb2-b3c0b5ac34cd/"
+  #_{:query/hero {:desktop-url "//ucarecdn.com/75da64bd-b00f-465a-bfb2-b3c0b5ac34cd/"
                 :mobile-url  "//ucarecdn.com/af86155d-5960-4f7c-8ecc-817c27b81269/"
                 :file-name   "mayvenn-made.png"
-                :alt         "Share your best #mayvennmade looks for a chance to be featured"}})
+                  :alt         "Share your best #mayvennmade looks for a chance to be featured"}}
+  {:image/hero })
 
 (defn built-component
   [data opts]
