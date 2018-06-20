@@ -7,17 +7,19 @@
             [storefront.components.ui :as ui]
             [storefront.keypaths :as keypaths]
             [storefront.transitions :as transitions]
-            [storefront.platform.messages :as messages]))
+            [storefront.platform.messages :as messages]
+            [storefront.platform.component-utils :as utils]))
 
 (defn hero-image
   [{:keys [desktop-url mobile-url file-name alt]}]
-  [:picture
-   ;; Tablet/Desktop
-   [:source {:media   "(min-width: 750px)"
-             :src-set (str desktop-url "-/format/auto/-/quality/best/" file-name " 1x")}]
-   ;; Mobile
-   [:img.block.col-12 {:src (str mobile-url "-/format/auto/" file-name)
-                       :alt alt}]])
+  [:a (utils/fake-href events/control-mayvenn-made-hero-clicked)
+   [:picture
+    ;; Tablet/Desktop
+    [:source {:media   "(min-width: 750px)"
+              :src-set (str desktop-url "-/format/auto/-/quality/best/" file-name " 1x")}]
+    ;; Mobile
+    [:img.block.col-12 {:src (str mobile-url "-/format/auto/" file-name)
+                        :alt alt}]]])
 
 (defn simple-widget-component
   [data owner opts]
@@ -49,6 +51,10 @@
 (defn built-component
   [data opts]
   (component/build component (query data) opts))
+
+(defmethod effects/perform-effects events/control-mayvenn-made-hero-clicked
+  [_ _ _ _ _]
+  #?(:cljs (pixlee/open-uploader)))
 
 (defmethod effects/perform-effects events/navigate-mayvenn-made
   [_ _ _ _ _]

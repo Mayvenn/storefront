@@ -35,27 +35,38 @@
                 :error-handler (fn [resp]
                                  (m/handle-message events/pixlee-api-failure-fetch-album resp))}))
 
+(defn loaded? []
+  (js/window.hasOwnProperty "Pixlee"))
+
+(defn insertion-callback-str []
+  (str "window.PixleeAsyncInit=function(){"
+       "Pixlee.init({apiKey:'" (:api-key config/pixlee) "'});"
+       "};"))
+
 (defn insert
   []
-  (when-not (.hasOwnProperty js/window "Pixlee")
+  (when-not (loaded?)
     (set! (.-PixleeAsyncInit js/window)
           (fn []
             (m/handle-message events/inserted-pixlee)))
     (insert-tag-pair
      "//assets.pixlee.com/assets/pixlee_widget_1_0_0.js"
-     (str "window.PixleeAsyncInit=function(){Pixlee.init({apiKey:'"
-          (:api-key config/pixlee)
-          "'});Pixlee.addSimpleWidget({widgetId:"
-          (:mayvenn-made-widget-id config/pixlee)
-          "});};")
+     (insertion-callback-str)
      "pixlee-widget")))
 
 (defn remove-tracking
   []
   (remove-tag-pair "pixlee-widget"))
 
+(defn widget-config []
+  (clj->js {:widgetId (:mayvenn-made-widget-id config/pixlee)}))
+
+(defn open-uploader []
+  (prn (str (fn [hello] hello)))
+  (when (loaded?)
+    (js/Pixlee.openUploader (widget-config))))
+
 (defn add-simple-widget
   []
-  (when (.hasOwnProperty js/window "Pixlee")
-    (let [widget-id (:mayvenn-made-widget-id config/pixlee)]
-      (js/Pixlee.addSimpleWidget #js {:widgetId widget-id}))))
+  (when (loaded?)
+    (js/Pixlee.addSimpleWidget (widget-config))))
