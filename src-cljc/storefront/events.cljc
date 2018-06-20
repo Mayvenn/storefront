@@ -186,7 +186,6 @@
 (defpath control-menu-collapse-all)
 
 (defpath control-menu-expand-hamburger)
-(defpath control-mayvenn-made-hero-clicked)
 
 (defpath control-sign-in-submit)
 (defpath control-sign-out)
