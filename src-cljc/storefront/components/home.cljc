@@ -330,12 +330,21 @@
                  :file-name   "talkable_banner_25.jpg"
                  :alt         "refer friends, earn rewards, get 25% off"})]))
 
-(defn component [{:keys [signed-in store categories hero-element feature-elements show-talkable-banner?]} owner opts]
+(defn component [{:keys [signed-in homepage-data store categories show-talkable-banner? seventy-five-off-install? the-ville?] :as data} owner opts]
   (component/create
    [:div.m-auto
-    [:section hero-element]
+    [:section (cond
+                seventy-five-off-install? seventy-five-off-installation-hero
+                the-ville?                free-installation-hero
+                :else                     (hero homepage-data))]
     [:section.hide-on-tb-dt (store-info signed-in store)]
-    [:section feature-elements]
+    [:section (when (seq homepage-data)
+                (let [{:keys [feature-1 feature-2 feature-3]} homepage-data]
+                  [:div.container.border-top.border-white
+                   [:div.col.col-12.my4 [:h1.center "Shop What's New"]]
+                   (feature-block feature-1)
+                   (feature-block feature-2)
+                   (feature-block feature-3)]))]
     [:section (popular-grid categories)]
     [:section video-autoplay]
     [:section about-mayvenn]
@@ -345,17 +354,15 @@
   (let [seventy-five-off-install? (experiments/seventy-five-off-install? data)
         the-ville?                (experiments/the-ville? data)
         homepage-data             (get-in data keypaths/cms-homepage)]
-    {:store                 (marquee/query data)
-     :signed-in             (auth/signed-in data)
-     :categories            (->> (get-in data keypaths/categories)
-                                 (filter :home/order)
-                                 (sort-by :home/order))
-     :hero-element          (cond
-                              seventy-five-off-install? seventy-five-off-installation-hero
-                              the-ville?                free-installation-hero
-                              :else                     (hero homepage-data))
-     :feature-elements      (feature-blocks homepage-data)
-     :show-talkable-banner? (not (and seventy-five-off-install? the-ville?))}))
+    {:store                     (marquee/query data)
+     :signed-in                 (auth/signed-in data)
+     :categories                (->> (get-in data keypaths/categories)
+                                     (filter :home/order)
+                                     (sort-by :home/order))
+     :seventy-five-off-install? seventy-five-off-install?
+     :the-ville?                the-ville?
+     :homepage-data             homepage-data
+     :show-talkable-banner?     (not (and seventy-five-off-install? the-ville?))}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
