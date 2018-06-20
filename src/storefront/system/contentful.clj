@@ -78,36 +78,42 @@
       (update :Entry (partial resolve-children includes))
       (resolve-children items)))
 
-(defn fetch-entries
-  ([contentful]
-   (fetch-entries contentful 1))
-  ([{:keys [cache space-id] :as contentful} attempt-number]
+(defn do-fetch-entries
+  ([contentful content-type]
+   (do-fetch-entries contentful content-type 1))
+  ([{:keys [cache space-id] :as contentful} content-type attempt-number]
    (when (<= attempt-number 2)
      (let [{:keys [status body]} (contentful-request contentful
-                                                     {"content_type" "homepage"
+                                                     {"content_type" (name content-type)
                                                       "limit"        1})]
        (if (<= 200 status 299)
-         (reset! cache (some-> body extract resolve-all clojure.walk/keywordize-keys))
-         (fetch-entries contentful (inc attempt-number)))))))
+         (swap! cache merge (some-> body extract resolve-all clojure.walk/keywordize-keys (select-keys [content-type])))
+         (do-fetch-entries contentful content-type (inc attempt-number)))))))
 
-(defrecord ContentfulContext
-    [logger exception-handler environment cache-timeout api-key space-id endpoint]
+(defprotocol CMSCache
+  (read-cache [_] "Returns a map representing the CMS cache"))
+
+(defrecord ContentfulContext [logger exception-handler environment cache-timeout api-key space-id endpoint]
   component/Lifecycle
   (start [c]
-    (let [pool   (at-at/mk-pool)
-          cache  (atom {})]
-      (at-at/every cache-timeout
-                   #(fetch-entries {:space-id  space-id
-                                    :endpoint  endpoint
-                                    :env-param (if (= environment "production")
-                                                 "production"
-                                                 "acceptance")
-                                    :cache     cache
-                                    :api-key   api-key})
-                   pool)
+    (let [pool          (at-at/mk-pool)
+          cache         (atom {})
+          config        {:space-id  space-id
+                         :endpoint  endpoint
+                         :env-param (if (= environment "production")
+                                      "production"
+                                      "acceptance")
+                         :cache     cache
+                         :api-key   api-key}]
+      (doseq [content-type [:homepage :mayvennMadePage]]
+        (at-at/every cache-timeout
+                     #(do-fetch-entries config content-type)
+                     pool))
       (assoc c
              :pool  pool
              :cache cache)))
   (stop [c]
     (when (:pool c) (at-at/stop-and-reset-pool! (:pool c)))
-    (dissoc c :cache :pool)))
+    (dissoc c :cache :pool))
+  CMSCache
+  (read-cache [c] (deref (:cache c))))

@@ -42,7 +42,8 @@
             [storefront.accessors.orders :as orders]
             [lambdaisland.uri :as uri]
             [spice.maps :as maps]
-            [storefront.transitions :as transitions]))
+            [storefront.transitions :as transitions]
+            [storefront.system.contentful :as contentful]))
 
 (defn ^:private str->int [s]
   (try
@@ -853,7 +854,7 @@
                (GET "/products" req (redirect-to-home environment req))
                (GET "/products/" req (redirect-to-home environment req))
                (GET "/products/:id-and-slug/:sku" req (redirect-to-product-details environment req))
-               (GET "/cms" req (-> ctx :contentful :cache deref cheshire.core/generate-string util.response/response))
+               (GET "/cms" req (-> ctx :contentful contentful/read-cache cheshire.core/generate-string util.response/response))
                (-> (routes (static-routes ctx)
                            (wrap-leads-routes (leads-routes ctx) ctx)
                            (-> (install-routes ctx)
