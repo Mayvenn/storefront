@@ -16,15 +16,15 @@
   (let [mobile-url  (-> mobile :file :url)
         desktop-url (-> desktop :file :url)]
     [:a (utils/fake-href events/control-mayvenn-made-hero-clicked)
-     (concat [:picture]
-             (for [img-type    ["webp" "jpg"]
-                   [url media] [[desktop-url "(min-width: 750px)"]
-                                [mobile-url nil]]]
-               (ui/source url
-                          {:media   media
-                           :src-set {"1x" {}}
-                           :type    img-type}))
-             [[:img.block.col-12 {:src mobile-url :alt alt}]])]))
+     (conj (into [:picture]
+                   (for [img-type    ["webp" "jpg"]
+                         [url media] [[desktop-url "(min-width: 750px)"]
+                                      [mobile-url nil]]]
+                     (ui/source url
+                                {:media   media
+                                 :src-set {"1x" {}}
+                                 :type    img-type})))
+           [:img.block.col-12 {:src mobile-url :alt alt}])]))
 
 (defn simple-widget-component
   [data owner opts]
