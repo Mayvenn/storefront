@@ -112,4 +112,4 @@
                :yaki-straight     1912642
                :dyed              2918644
                :wigs              2918645}
-     :mayvenn-made-widget-id  1048394})) ;;TODO: replace widget id with acceptance one when we have it
+     :mayvenn-made-widget-id 1057225}))
