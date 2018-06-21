@@ -41,6 +41,7 @@
   (component/create
    [:div
     [:section (hero-image hero)]
+    [:section [:h1.p8.bold.shout.center "Recently submitted looks"]]
     [:section
      [:div#pixlee_container]
      #?(:cljs (om/build simple-widget-component {}))]]))
