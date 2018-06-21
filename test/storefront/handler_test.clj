@@ -805,7 +805,7 @@
           (let [responses (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
                 requests  (txfm-requests contentful-requests identity)]
             (is (every? #(= 200 (:status %)) responses))
-            (is (= 1 (count requests))))))))
+            (is (= 2 (count requests))))))))
 
   (testing "fetches data on system start"
     (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
@@ -813,7 +813,7 @@
                                                                              :body   (generate-string (:body contentful-response))}))]
       (with-standalone-server [contentful (standalone-server contentful-handler {:port 4335})]
         (with-handler handler
-          (is (= 1 (count (txfm-requests contentful-requests identity))))))))
+          (is (= 2 (count (txfm-requests contentful-requests identity))))))))
 
   (testing "attempts-to-retry-fetch-from-contentful"
     (let [[storeback-requests storeback-handler]   (with-requests-chan (GET "/store" req storeback-stylist-response))
@@ -826,7 +826,7 @@
           (let [responses (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
                 requests  (txfm-requests contentful-requests identity)]
             (is (every? #(= 200 (:status %)) responses))
-            (is (= 2 (count requests)))))))))
+            (is (= 4 (count requests)))))))))
 
 (deftest we-do-not-ask-waiter-more-than-once-for-the-order
   (testing "Fetching normal pages fetches order once"
