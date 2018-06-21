@@ -6,6 +6,8 @@
 (def cms [:cms])
 (def cms-homepage (conj cms :homepage))
 (def cms-homepage-hero (conj cms-homepage :hero))
+(def cms-mayvenn-made (conj cms :mayvennMadePage))
+(def cms-mayvenn-made-hero (conj cms-mayvenn-made :hero))
 
 (def features [:features])
 (def welcome-url [:welcome-url])

@@ -10,16 +10,21 @@
             [storefront.platform.messages :as messages]
             [storefront.platform.component-utils :as utils]))
 
+
 (defn hero-image
-  [{:keys [desktop-url mobile-url file-name alt]}]
-  [:a (utils/fake-href events/control-mayvenn-made-hero-clicked)
-   [:picture
-    ;; Tablet/Desktop
-    [:source {:media   "(min-width: 750px)"
-              :src-set (str desktop-url "-/format/auto/-/quality/best/" file-name " 1x")}]
-    ;; Mobile
-    [:img.block.col-12 {:src (str mobile-url "-/format/auto/" file-name)
-                        :alt alt}]]])
+  [{:as hero-map :keys [desktop mobile alt]}]
+  (let [mobile-url  (-> mobile :file :url)
+        desktop-url (-> desktop :file :url)]
+    [:a (utils/fake-href events/control-mayvenn-made-hero-clicked)
+     (concat [:picture]
+             (for [img-type    ["webp" "jpg"]
+                   [url media] [[desktop-url "(min-width: 750px)"]
+                                [mobile-url nil]]]
+               (ui/source url
+                          {:media   media
+                           :src-set {"1x" {}}
+                           :type    img-type}))
+             [[:img.block.col-12 {:src mobile-url :alt alt}]])]))
 
 (defn simple-widget-component
   [data owner opts]
@@ -32,7 +37,7 @@
              (did-mount [this]
                (messages/handle-message events/mayvenn-made-gallery-displayed)))))
 
-(defn component [{:keys [hero]} owner opts]
+(defn component [{:keys [image/hero]} owner opts]
   (component/create
    [:div
     [:section (hero-image hero)]
@@ -43,11 +48,7 @@
 
 (defn query
   [data]
-  #_{:query/hero {:desktop-url "//ucarecdn.com/75da64bd-b00f-465a-bfb2-b3c0b5ac34cd/"
-                :mobile-url  "//ucarecdn.com/af86155d-5960-4f7c-8ecc-817c27b81269/"
-                :file-name   "mayvenn-made.png"
-                  :alt         "Share your best #mayvennmade looks for a chance to be featured"}}
-  {:image/hero })
+  {:image/hero (get-in data keypaths/cms-mayvenn-made-hero)})
 
 (defn built-component
   [data opts]
