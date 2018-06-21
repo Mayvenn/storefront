@@ -1,8 +1,6 @@
 (ns storefront.backend-api
-  (:require [tugboat.core :as tugboat]
-            [spice.maps :as maps]
-            [storefront.config :as config]
-            [spice.date :as date]))
+  (:require [spice.maps :as maps]
+            [tugboat.core :as tugboat]))
 
 (defn storeback-fetch [storeback-config path params]
   (tugboat/request {:endpoint (:internal-endpoint storeback-config)}
