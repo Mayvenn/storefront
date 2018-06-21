@@ -18,20 +18,23 @@
 (defn ^:private component
   [{:keys [code]} owner opts]
   (component/create
-   [:div.pt4.bg-light-silver.center
-    [:h3.pt6 "Scan the QR code to redeem a certificate"]
-    [:h6 "Your camera will be used as the scanner."]
-    [:div.py4 (ui/ucare-img {:width 50} "4bd0f715-fa5a-4d82-9cec-62dc993c5d23")]
-    [:div.mx-auto.col-10.col-3-on-tb-dt (ui/teal-button {:on-click     (utils/send-event-callback events/control-voucher-scan)
-                                                         :height-class "py2"
-                                                         :data-test    "voucher-scan"} "Scan")]
+   [:div.bg-light-silver
+    [:div.hide-on-dt.center
+     [:h3.pt6 "Scan the QR code to redeem a certificate"]
+     [:h6 "Your camera will be used as the scanner."]
+     [:div.py4 (ui/ucare-img {:width 50} "4bd0f715-fa5a-4d82-9cec-62dc993c5d23")]
+     [:div.mx-auto.col-10.col-3-on-tb-dt
+      (ui/teal-button {:on-click     (utils/send-event-callback events/control-voucher-scan)
+                       :height-class "py2"
+                       :data-test    "voucher-scan"} "Scan")]
 
-    [:div.mx-auto.col-10.pt10.pb2.flex.items-center.justify-between
-     divider
-     [:span.h6.px2 "or"]
-     divider]
+     [:div.mx-auto.col-10.pt10.pb2.flex.items-center.justify-between
+      divider
+      [:span.h6.px2 "or"]
+      divider]]
 
     [:div.p4.col-4-on-tb-dt.center.mx-auto
+     [:div.hide-on-mb-tb.py4 ]
      [:h3.pb4 "Enter the 8-digit code"]
      (ui/input-group
       {:keypath       keypaths/eight-digit-code
@@ -63,5 +66,5 @@
   [dispatch event args prev-app-state app-state]
   #?(:cljs
      (when-not (and (auth/stylist? (auth/signed-in app-state))
-                   (experiments/vouchers? app-state))
+                    (experiments/vouchers? app-state))
        (history/enqueue-redirect events/navigate-home))))

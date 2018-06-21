@@ -130,7 +130,12 @@
    [:div.relative.flex.flex-column.flex-auto
     (flash/built-component data nil)
 
-    [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
+    [:main.bg-white.flex-auto (merge
+                               {:data-test (keypaths/->component-str nav-event)}
+                               ;; Hack: one page does not have a white background, nor enough
+                               ;; content to fill its inner div.
+                               (when (= events/navigate-voucher-redeem nav-event)
+                                 {:class "bg-light-silver"}))
      ((main-component nav-event) data nil)]
 
     [:footer (footer/built-component data nil)]]])
