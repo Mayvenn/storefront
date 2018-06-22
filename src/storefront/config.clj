@@ -59,3 +59,4 @@
   (deep-merge default-config env-config overrides))
 
 (def pixlee {})
+(def voucherify {})

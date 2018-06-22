@@ -4,13 +4,14 @@
             [storefront.accessors.orders :as orders]
             [storefront.routes :as routes]
             [storefront.cache :as c]
-            [storefront.config :refer [api-base-url send-sonar-base-url send-sonar-publishable-key]]
+            [storefront.config :refer [api-base-url send-sonar-base-url send-sonar-publishable-key] :as config]
             [storefront.events :as events]
             [storefront.platform.messages :as messages]
             [storefront.request-keys :as request-keys]
             [spice.maps :as maps]
             [spice.core :as spice]
-            [clojure.set :as set]))
+            [clojure.set :as set]
+            [storefront.effects :as effects]))
 
 (defn is-rails-style? [resp]
   (or (seq (:error resp))
@@ -944,3 +945,13 @@
              request-keys/advance-lead
              {:params  params
               :handler handler}))
+
+(defn voucher-redemption [voucher-code]
+  (let [{:keys [client-app-id client-app-token base-url]} config/voucherify]
+    (api-request POST (str base-url "/redeem?code=" voucher-code)
+                 request-keys/voucher-redemption
+                 {:handler         #(messages/handle-message events/api-success-voucher-redemption %)
+                  :error-handler   #(messages/handle-message events/voucherify-api-failure %)
+                  :response-format (json-response-format {:keywords? true})
+                  :headers         {"X-Client-Application-Id" client-app-id
+                                    "X-Client-Token"          client-app-token}})))

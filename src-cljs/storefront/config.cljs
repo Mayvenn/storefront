@@ -133,3 +133,11 @@
     {"address-login" {:enabled?   false
                       :variations [{:feature "address-login-control"}
                                    {:feature "address-login"}]}}))
+
+(def voucherify
+  (assoc (case js/environment
+           "production" {:client-app-id    "TODO"
+                         :client-app-token "TODO"}
+           {:client-app-id    "8797ea1c-509d-4569-959a-8f27c2432195"
+            :client-app-token "bc631e80-99dd-4e30-b2b1-a366c842550a"})
+         :base-url "https://api.voucherify.io/client/v1"))

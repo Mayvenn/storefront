@@ -355,6 +355,8 @@
 (defpath api-success-leads-a1-lead-created)
 (defpath api-success-leads-a1-lead-registered)
 
+(defpath api-success-voucher-redemption)
+
 (defpath api-failure)
 (defpath api-failure-no-network-connectivity)
 (defpath api-failure-bad-server-response)
@@ -452,3 +454,5 @@
 (defpath determine-and-show-popup)
 
 (defpath faq-section-selected)
+
+(defpath voucherify-api-failure)

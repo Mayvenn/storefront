@@ -69,3 +69,4 @@
 (def advance-lead [:advance-lead])
 
 (def fetch-cms-data [:fetch-cms-data])
+(def voucher-redemption [:voucher-redemption])

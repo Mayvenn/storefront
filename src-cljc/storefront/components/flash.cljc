@@ -26,7 +26,7 @@
 
 (defn component [{:keys [success failure errors]} _ _]
   (component/create
-   (when (or success failure (seq errors))
+   (when (or success failure (and (seq (:error-message errors)) (seq errors)))
      (ui/narrow-container
       [:div.p2
        (cond

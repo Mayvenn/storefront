@@ -1,13 +1,16 @@
 (ns voucher.redeem
   (:require #?@(:cljs [[storefront.accessors.auth :as auth]
-                       [storefront.history :as history]])
+                       [storefront.history :as history]
+                       [storefront.api :as api]])
             [storefront.accessors.experiments :as experiments]
             [storefront.component :as component]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.platform.component-utils :as utils]
-            [voucher.keypaths :as keypaths]))
+            [storefront.platform.messages :as messages]
+            [voucher.keypaths :as voucher-keypaths]
+            [storefront.keypaths :as keypaths]))
 
 (def divider
   [:hr.border-top.border-dark-silver.col-12.m0
@@ -16,7 +19,7 @@
             :border-right 0}}])
 
 (defn ^:private component
-  [{:keys [code]} owner opts]
+  [{:keys [code field-errors]} owner opts]
   (component/create
    [:div.bg-light-silver
     [:div.hide-on-dt.center
@@ -37,26 +40,28 @@
      [:div.hide-on-mb-tb.py4 ]
      [:h3.pb4 "Enter the 8-digit code"]
      (ui/input-group
-      {:keypath       keypaths/eight-digit-code
-       :wrapper-class "col-8 pl3 flex items-center bg-white circled-item"
-       :data-test     "promo-code"
+      {:keypath       voucher-keypaths/eight-digit-code
+       :wrapper-class "col-8 pl3 bg-white circled-item"
+       :data-test     "voucher-code"
        :focused       true
        :placeholder   "xxxx-xxxx"
        :value         code
-       :errors        nil
-       :data-ref      "promo-code"}
+       :errors        (get field-errors ["voucher-code"])
+       :data-ref      "voucher-code"}
       {:ui-element ui/teal-button
        :content    "Redeem"
-       :args       {:on-click     (utils/send-event-callback events/control-voucher-redeem)
+       :args       {:on-click     (utils/send-event-callback events/control-voucher-redeem {:code code})
                     :class        "flex justify-center items-center circled-item"
                     :size-class   "col-4"
                     :height-class "py2"
                     :data-test    "voucher-redeem"}})
 
-     [:h6.pt6.line-height-2.dark-gray.center.my2 "Vouchers are sent to Mayvenn customers via text and/or email when they buy 3 or more bundles and use a special promo code."]]]))
+     [:h6.pt6.line-height-2.dark-gray.center.my2
+      "Vouchers are sent to Mayvenn customers via text and/or email when they buy 3 or more bundles and use a special promo code."]]]))
 
 (defn ^:private query [data]
-  {:code (get-in data [:temp-location])})
+  {:code         (get-in data voucher-keypaths/eight-digit-code)
+   :field-errors (get-in data keypaths/field-errors)})
 
 (defn built-component
   [data opts]
@@ -68,3 +73,24 @@
      (when-not (and (auth/stylist? (auth/signed-in app-state))
                     (experiments/vouchers? app-state))
        (history/enqueue-redirect events/navigate-home))))
+
+(defmethod effects/perform-effects events/control-voucher-redeem
+  [dispatch event {:keys [code]} prev-app-state app-state]
+  #?(:cljs
+     (api/voucher-redemption code)))
+
+(defn ^:private redemption-error [voucherify-error-code]
+  (let [[error-message field-errors] (case voucherify-error-code
+                                       "quantity_exceeded" ["Voucher previously redeemed" nil]
+                                       "voucher_expired"   ["This voucher has expired." nil]
+                                       [nil [{:long-message "We don't recognize that code. Try again"
+                                              :path         ["voucher-code"]}]])]
+    {:field-errors  field-errors
+     :error-code    voucherify-error-code
+     :error-message error-message}))
+
+(defmethod effects/perform-effects events/voucherify-api-failure
+  [_ _ response _ _]
+  (if (>= (:status response) 500)
+    (messages/handle-message events/api-failure-bad-server-response response)
+    (messages/handle-message events/api-failure-errors (redemption-error (-> response :response :key)))))
