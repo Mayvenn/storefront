@@ -62,8 +62,13 @@ gulp.task('copy-release-assets', function () {
     .pipe(gulp.dest('./resources/public/'));
 });
 
-gulp.task('clean-shaed-assets', function () {
+gulp.task('clean-hashed-assets', function () {
   return del(['./resources/public/cdn', './resources/rev-manifest.json']);
+});
+
+// Preserve external interface
+gulp.task('clean-shaed-assets', ['clean-hashed-assets'], function () {
+    console.log("'clean-shaed-assets' has been renamed to clean-hashed-assets.  Please use that.");
 });
 
 gulp.task('fix-source-map', function () {
@@ -90,7 +95,7 @@ gulp.task('save-git-sha-version', function (cb) {
   });
 });
 
-var shaedAssetSources = function () {
+var hashedAssetSources = function () {
   return merge(gulp.src('resources/public/{js,css,images,fonts}/**')
                .pipe(gulpIgnore.exclude("*.map")),
                gulp.src('resources/public/js/out/main.js.map'));
@@ -106,7 +111,7 @@ gulp.task('rev-assets', function () {
     dontSearchFile: ['.js']
   });
 
-  return shaedAssetSources()
+  return hashedAssetSources()
     .pipe(revAll.revision())
     .pipe(gulp.dest('resources/public/cdn'))
     .pipe(revAll.manifestFile())
@@ -142,7 +147,7 @@ gulp.task('gzip', function () {
 });
 
 gulp.task('cdn', function (cb) {
-  runSequence('clean-shaed-assets', 'fix-source-map', 'rev-assets', 'fix-main-js-pointing-to-source-map', 'gzip', cb);
+  runSequence('clean-hashed-assets', 'fix-source-map', 'rev-assets', 'fix-main-js-pointing-to-source-map', 'gzip', cb);
 });
 
 gulp.task('compile-assets', function(cb) {
