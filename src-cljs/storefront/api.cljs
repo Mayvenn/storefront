@@ -1,5 +1,5 @@
 (ns storefront.api
-  (:require [ajax.core :refer [GET json-response-format POST PUT raw-response-format]]
+  (:require [ajax.core :refer [GET POST PUT] :as ajax]
             [clojure.string :as str]
             [storefront.accessors.orders :as orders]
             [storefront.routes :as routes]
@@ -83,15 +83,21 @@
 (defn app-version [xhrio]
   (some-> xhrio (.getResponseHeader "X-App-Version") int))
 
-(defn header-json-response-format [config]
-  (let [default (json-response-format config)
+(defn json-response-format-with-app-version [config]
+  (let [default (ajax/json-response-format config)
         read-json (:read default)]
     (assoc default :read (fn [xhrio]
                            {:body (read-json xhrio)
                             :app-version (app-version xhrio)}))))
 
+(defn json-response-format [config]
+  (let [default (ajax/json-response-format config)
+        read-json (:read default)]
+    (assoc default :read (fn [xhrio]
+                           {:body (read-json xhrio)}))))
+
 (def default-req-opts {:format :json
-                       :response-format (header-json-response-format {:keywords? true})})
+                       :response-format (json-response-format-with-app-version {:keywords? true})})
 
 (defn- wrap-api-end [req-key req-id handler]
   (fn [response]
@@ -897,7 +903,7 @@
   (let [req-id       (str (random-uuid))
         content-opts {:format          :raw
                       :handler         (wrap-api-end req-key req-id handler)
-                      :response-format (raw-response-format)}
+                      :response-format (ajax/raw-response-format)}
         request      (method path (merge request-opts content-opts))]
     (messages/handle-message events/api-start {:xhr         request
                                                :request-key req-key
