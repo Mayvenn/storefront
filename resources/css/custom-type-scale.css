@@ -1,3 +1,4 @@
+.h00             { font-size: 58px; line-height: 64px; }
 .h0              { font-size: 48px; line-height: 56px; }
 h1, .h1          { font-size: 28px; line-height: 36px; }
 h2, .h2          { font-size: 24px; line-height: 32px; }
@@ -8,6 +9,7 @@ h6, .h6          { font-size: 14px; line-height: 22px; }
 h7, .h7          { font-size: 10px; line-height: 18px; }
 
 @media (--on-tablet-and-desktop) {
+    .h00             { font-size: 52px; line-height: 58px; }
     .h0              { font-size: 42px; line-height: 48px; }
     h1, .h1          { font-size: 24px; line-height: 30px; }
     h2, .h2          { font-size: 21px; line-height: 29px; }
