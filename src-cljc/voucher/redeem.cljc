@@ -10,7 +10,9 @@
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
             [voucher.keypaths :as voucher-keypaths]
-            [storefront.keypaths :as keypaths]))
+            [storefront.keypaths :as keypaths]
+            [storefront.request-keys :as request-keys]
+            [storefront.transitions :as transitions]))
 
 (def divider
   [:hr.border-top.border-dark-silver.col-12.m0
@@ -19,7 +21,7 @@
             :border-right 0}}])
 
 (defn ^:private component
-  [{:keys [code field-errors]} owner opts]
+  [{:keys [code spinning? field-errors]} owner opts]
   (component/create
    [:div.bg-light-silver
     [:div.hide-on-dt.center
@@ -39,28 +41,32 @@
     [:div.p4.col-4-on-tb-dt.center.mx-auto
      [:div.hide-on-mb-tb.py4 ]
      [:h3.pb4 "Enter the 8-digit code"]
-     (ui/input-group
-      {:keypath       voucher-keypaths/eight-digit-code
-       :wrapper-class "col-8 pl3 bg-white circled-item"
-       :data-test     "voucher-code"
-       :focused       true
-       :placeholder   "xxxx-xxxx"
-       :value         code
-       :errors        (get field-errors ["voucher-code"])
-       :data-ref      "voucher-code"}
-      {:ui-element ui/teal-button
-       :content    "Redeem"
-       :args       {:on-click     (utils/send-event-callback events/control-voucher-redeem {:code code})
-                    :class        "flex justify-center items-center circled-item"
-                    :size-class   "col-4"
-                    :height-class "py2"
-                    :data-test    "voucher-redeem"}})
+     [:form
+      {:on-submit (utils/send-event-callback events/control-voucher-redeem {:code code})}
+      (ui/input-group
+       {:keypath       voucher-keypaths/eight-digit-code
+        :wrapper-class "col-8 pl3 bg-white circled-item"
+        :data-test     "voucher-code"
+        :focused       true
+        :placeholder   "xxxx-xxxx"
+        :value         code
+        :errors        (get field-errors ["voucher-code"])
+        :data-ref      "voucher-code"}
+       {:ui-element ui/teal-button
+        :content    "Redeem"
+        :args       {
+                     :class        "flex justify-center items-center circled-item"
+                     :size-class   "col-4"
+                     :height-class "py2"
+                     :spinning?    spinning?
+                     :data-test    "voucher-redeem"}})]
 
      [:h6.pt6.line-height-2.dark-gray.center.my2
       "Vouchers are sent to Mayvenn customers via text and/or email when they buy 3 or more bundles and use a special promo code."]]]))
 
 (defn ^:private query [data]
   {:code         (get-in data voucher-keypaths/eight-digit-code)
+   :spinning?    (utils/requesting? data request-keys/voucher-redemption)
    :field-errors (get-in data keypaths/field-errors)})
 
 (defn built-component
@@ -83,7 +89,7 @@
   (let [[error-message field-errors] (case voucherify-error-code
                                        "quantity_exceeded" ["Voucher previously redeemed" nil]
                                        "voucher_expired"   ["This voucher has expired." nil]
-                                       [nil [{:long-message "We don't recognize that code. Try again"
+                                       [nil [{:long-message "We don't recognize that code. Try again."
                                               :path         ["voucher-code"]}]])]
     {:field-errors  field-errors
      :error-code    voucherify-error-code
@@ -94,3 +100,17 @@
   (if (>= (:status response) 500)
     (messages/handle-message events/api-failure-bad-server-response response)
     (messages/handle-message events/api-failure-errors (redemption-error (-> response :response :key)))))
+
+(defmethod transitions/transition-state events/api-success-voucher-redemption
+  [_ event {:keys [date id object result voucher]} app-state]
+  (update-in app-state voucher-keypaths/voucher merge {:date     date
+                                                       :id       id
+                                                       :object   object
+                                                       :result   result
+                                                       :discount (:discount voucher)
+                                                       :type     (:type voucher)}))
+
+(defmethod effects/perform-effects events/api-success-voucher-redemption
+  [_ _ response _ _]
+  #?(:cljs
+     (history/enqueue-navigate events/navigate-voucher-redeemed)))

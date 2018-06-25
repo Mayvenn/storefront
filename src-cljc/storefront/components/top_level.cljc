@@ -33,6 +33,7 @@
             [leads.a1.registered-thank-you]
             [leads.home :as leads.home]
             [voucher.redeem :as voucher-redeem]
+            [voucher.redeemed :as voucher-redeemed]
             [leads.resolve :as leads.resolve]
             [install.home :as install.home]
             [mayvenn-made.home :as mayvenn-made.home]
@@ -93,6 +94,7 @@
     events/navigate-checkout-processing     checkout-processing/built-component
     events/navigate-cart                    cart/built-component
     events/navigate-voucher-redeem          voucher-redeem/built-component
+    events/navigate-voucher-redeemed        voucher-redeemed/built-component
     events/navigate-mayvenn-made            mayvenn-made.home/built-component
     events/navigate-content-guarantee       content/built-component
     events/navigate-content-help            content/built-component
@@ -133,7 +135,7 @@
                                {:data-test (keypaths/->component-str nav-event)}
                                ;; Hack: one page does not have a white background, nor enough
                                ;; content to fill its inner div.
-                               (when (= events/navigate-voucher-redeem nav-event)
+                               (when ( #{events/navigate-voucher-redeem events/navigate-voucher-redeemed} nav-event)
                                  {:class "bg-light-silver"}))
      ((main-component nav-event) data nil)]
 

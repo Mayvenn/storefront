@@ -95,6 +95,7 @@
               "/stylist/account/commission"                       (edn->bidi events/navigate-stylist-account-commission)
               "/stylist/account/social"                           (edn->bidi events/navigate-stylist-account-social)
               "/stylist/redeem"                                   (edn->bidi events/navigate-voucher-redeem)
+              "/stylist/redeemed"                                 (edn->bidi events/navigate-voucher-redeemed)
               "/share"                                            (edn->bidi events/navigate-friend-referrals)
               "/freeinstall-share"                                (edn->bidi events/navigate-friend-referrals-freeinstall)
               "/mayvenn-made"                                     (edn->bidi events/navigate-mayvenn-made)

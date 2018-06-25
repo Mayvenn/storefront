@@ -80,6 +80,7 @@
 (defpath navigate-stylist-account-social)
 
 (defpath navigate-voucher-redeem)
+(defpath navigate-voucher-redeemed)
 
 (defpath navigate-account)
 (defpath navigate-account-manage)
