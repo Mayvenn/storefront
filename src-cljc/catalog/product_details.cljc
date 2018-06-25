@@ -186,13 +186,11 @@
       (counter-or-out-of-stock in-stock? sku-quantity)
       (item-price price)))))
 
-(defn triple-bundle-upsell [auto-complete?]
+(defn triple-bundle-upsell []
   [:p.center.h5.navy.flex.items-center.justify-center
-   (when-not auto-complete? {:class "p2"})
-   (when auto-complete?
-     (svg/discount-tag {:class  "mxnp6"
-                        :height "3em"
-                        :width  "3em"}))
+   (svg/discount-tag {:class  "mxnp6"
+                      :height "3em"
+                      :width  "3em"})
    promos/bundle-discount-description])
 
 (def shipping-and-guarantee
@@ -266,7 +264,6 @@
            reviews
            selected-sku
            sku-quantity
-           auto-complete?
            ugc]}
    owner
    opts]
@@ -304,7 +301,7 @@
               (sku-summary {:sku          selected-sku
                             :sku-quantity sku-quantity})]
              (when (products/eligible-for-triple-bundle-discount? product)
-               (triple-bundle-upsell auto-complete?))
+               (triple-bundle-upsell))
              (affirm/as-low-as-box {:amount      (:sku/price selected-sku)
                                     :middle-copy "Just select Affirm at check out."})
              (add-to-bag-button adding-to-bag?
@@ -447,7 +444,6 @@
      :options           (generate-options facets product product-skus selected-sku)
      :product           product
      :selected-sku      selected-sku
-     :auto-complete?    (experiments/auto-complete? data)
      :cheapest-price    (lowest-sku-price product-skus)
      :carousel-images   carousel-images}))
 
@@ -599,8 +595,7 @@
 (defmethod effects/perform-effects events/control-add-sku-to-bag
   [dispatch event {:keys [sku quantity] :as args} _ app-state]
   #?(:cljs
-     (let [auto-complete? (experiments/auto-complete? app-state)
-           nav-event      (get-in app-state keypaths/navigation-event)]
+     (let [nav-event (get-in app-state keypaths/navigation-event)]
        (api/add-sku-to-bag
         (get-in app-state keypaths/session-id)
         {:sku        sku
@@ -611,12 +606,12 @@
          :user-id    (get-in app-state keypaths/user-id)
          :user-token (get-in app-state keypaths/user-token)}
         #(do
-            (when (and auto-complete? (not= events/navigate-cart nav-event))
-              (history/enqueue-navigate events/navigate-cart))
-            (messages/handle-later events/api-success-add-sku-to-bag
-                                     {:order    %
-                                      :quantity quantity
-                                      :sku      sku}))))))
+           (when (not= events/navigate-cart nav-event)
+             (history/enqueue-navigate events/navigate-cart))
+           (messages/handle-later events/api-success-add-sku-to-bag
+                                  {:order    %
+                                   :quantity quantity
+                                   :sku      sku}))))))
 
 (defmethod transitions/transition-state events/api-success-add-sku-to-bag
   [_ event {:keys [order quantity sku]} app-state]

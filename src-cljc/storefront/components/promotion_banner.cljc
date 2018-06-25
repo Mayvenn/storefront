@@ -77,7 +77,7 @@
   "Promo code banner should only show on these nav-events
 
    Depending on experiments, this whitelist may be modified"
-  [auto-complete? no-promotions? promo-type]
+  [no-promotions? promo-type]
   (cond-> #{events/navigate-home
             events/navigate-cart
             events/navigate-shop-by-look
@@ -90,9 +90,7 @@
           events/navigate-checkout-payment
           events/navigate-checkout-confirmation)
 
-    ;; Do promotion banner on the cart page w/ auto-complete experiment
-    (and auto-complete?
-         (not no-promotions?))
+    (not no-promotions?)
     (disj events/navigate-cart)))
 
 (defn ^:private promo-type*
@@ -122,7 +120,6 @@
   [data]
   (let [nav-whitelist-for
         (partial nav-whitelist-for*
-                 (experiments/auto-complete? data)
                  (orders/no-applied-promo? (get-in data
                                                    keypaths/order)))
 

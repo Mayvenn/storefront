@@ -70,9 +70,6 @@
               variation))
           email-capture-variations)))
 
-(defn auto-complete? [data]
-  (display-feature? data "auto-complete"))
-
 (defn seventy-five-off-install?
   [data]
   (->> (get-in data keypaths/store-features)

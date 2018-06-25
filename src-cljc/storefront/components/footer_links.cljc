@@ -48,7 +48,7 @@
 
 (defn query
   [data]
-  {:minimal? (nav/show-minimal-footer? (get-in data keypaths/navigation-event) (experiments/auto-complete? data))})
+  {:minimal? (nav/show-minimal-footer? (get-in data keypaths/navigation-event))})
 
 (defn built-component
   [data opts]

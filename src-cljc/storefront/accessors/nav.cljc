@@ -38,13 +38,11 @@
 
 (def minimal-events
   (set/union checkout-events
-             payout-events))
+             payout-events
+             cart-events))
 
-(defn show-minimal-footer? [event experiment-auto-complete?]
-  (let [minimal-events' (cond-> minimal-events
-                          experiment-auto-complete?
-                          (concat cart-events))]
-    (contains? minimal-events' event)))
+(defn show-minimal-footer? [event]
+  (contains? minimal-events event))
 
 (defn lead-page? [event]
   (= events/navigate-leads (take 2 event)))

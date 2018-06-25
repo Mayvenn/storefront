@@ -185,7 +185,7 @@
       (counter-or-out-of-stock in-stock? sku-quantity)
       (item-price price)))))
 
-(defn triple-bundle-upsell [auto-complete?]
+(defn triple-bundle-upsell []
   [:p.center.h6.flex.items-center.justify-center
    (svg/discount-tag {:class  "mxnp6"
                       :height "4em"
@@ -358,7 +358,6 @@
            reviews
            selected-sku
            sku-quantity
-           auto-complete?
            selected-picker
            ugc]}
    owner
@@ -446,7 +445,7 @@
                        [:div.h7 "Qty:"]
                        [:span.medium "1"]))]]])))
              (when (products/eligible-for-triple-bundle-discount? product)
-               [:div.pt2.pb4 (triple-bundle-upsell auto-complete?)])
+               [:div.pt2.pb4 (triple-bundle-upsell)])
              [:div.center.mb6
               [:div.h6.navy "Price Per Bundle"]
               [:div.medium (item-price (:sku/price selected-sku))]]
@@ -595,7 +594,6 @@
      :product           product
      :selected-sku      selected-sku
      :facets            facets
-     :auto-complete?    (experiments/auto-complete? data)
      :cheapest-price    (lowest-sku-price product-skus)
      :selected-picker   (get-in data catalog.keypaths/detailed-product-selected-picker)
      :carousel-images   carousel-images}))
@@ -754,8 +752,7 @@
 (defmethod effects/perform-effects events/control-add-sku-to-bag
   [dispatch event {:keys [sku quantity] :as args} _ app-state]
   #?(:cljs
-     (let [auto-complete? (experiments/auto-complete? app-state)
-           nav-event      (get-in app-state keypaths/navigation-event)]
+     (let [nav-event      (get-in app-state keypaths/navigation-event)]
        (api/add-sku-to-bag
         (get-in app-state keypaths/session-id)
         {:sku        sku
@@ -766,12 +763,12 @@
          :user-id    (get-in app-state keypaths/user-id)
          :user-token (get-in app-state keypaths/user-token)}
         #(do
-            (when (and auto-complete? (not= events/navigate-cart nav-event))
-              (history/enqueue-navigate events/navigate-cart))
-            (messages/handle-later events/api-success-add-sku-to-bag
-                                     {:order    %
-                                      :quantity quantity
-                                      :sku      sku}))))))
+           (when (not= events/navigate-cart nav-event)
+             (history/enqueue-navigate events/navigate-cart))
+           (messages/handle-later events/api-success-add-sku-to-bag
+                                  {:order    %
+                                   :quantity quantity
+                                   :sku      sku}))))))
 
 (defmethod transitions/transition-state events/api-success-add-sku-to-bag
   [_ event {:keys [order quantity sku]} app-state]

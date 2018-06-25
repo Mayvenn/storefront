@@ -26,7 +26,6 @@
                        [storefront.config :as config]])
             [catalog.category :as category]
             [catalog.product-details :as product-details]
-            [checkout.auto-complete-cart :as checkout.auto-complete-cart]
             [checkout.cart :as cart]
             [checkout.processing :as checkout-processing]
             [leads.a1.applied-self-reg]
@@ -141,8 +140,7 @@
     [:footer (footer/built-component data nil)]]])
 
 (defn top-level-component [data owner opts]
-  (let [nav-event      (get-in data keypaths/navigation-event)
-        auto-complete? (experiments/auto-complete? data)]
+  (let [nav-event      (get-in data keypaths/navigation-event)]
     (component/create
      (cond
        #?@(:cljs
@@ -164,9 +162,8 @@
        [:div {:data-test (keypaths/->component-str nav-event)}
         (install.home/built-component data nil)]
 
-       (and (routes/sub-page? [nav-event] [events/navigate-cart])
-            auto-complete?)
-       (checkout.auto-complete-cart/layout data nav-event)
+       (routes/sub-page? [nav-event] [events/navigate-cart])
+       (cart/layout data nav-event)
 
        :else
        (main-layout data nav-event)))))
