@@ -87,9 +87,12 @@
 
 (defn ^:private redemption-error [voucherify-error-code]
   (let [[error-message field-errors] (case voucherify-error-code
-                                       "quantity_exceeded" ["Voucher previously redeemed" nil]
-                                       "voucher_expired"   ["This voucher has expired." nil]
-                                       [nil [{:long-message "We don't recognize that code. Try again."
+                                       "quantity_exceeded"  ["This code has already been used and cannot be used again." nil]
+                                       "voucher_expired"    ["This voucher has expired." nil]
+                                       "resource_not_found" [(str "This is not a valid code. "
+                                                                  "Please try again or contact customer service.") nil]
+                                       [nil [{:long-message (str "There was an error in processing your code. "
+                                                                 "Please try again or contact customer service.")
                                               :path         ["voucher-code"]}]])]
     {:field-errors  field-errors
      :error-code    voucherify-error-code
