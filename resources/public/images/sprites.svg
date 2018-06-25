@@ -23,10 +23,15 @@
       <path d="M11.609 37.91h7.956c6.24 0 10.609 3.954 11.935 5.272h7.957c4.226 0 4.226 5.273 0 5.273H24.87M36.804 8.91c0 4.368 3.562 7.908 7.957 7.908s7.956-3.54 7.956-7.909C52.717 4.541 49.156 1 44.761 1c-4.395 0-7.957 3.54-7.957 7.91zM24.87 27.364c0 4.368 3.561 7.909 7.956 7.909 4.395 0 7.957-3.54 7.957-7.91 0-4.368-3.562-7.908-7.957-7.908s-7.956 3.54-7.956 7.909zM32.371 24.727V30M44.571 6.273v5.272"></path>
     </g>
   </symbol>
-  <symbol id="check" viewBox="0 0 14 14">
+  <symbol id="circled-check" viewBox="0 0 14 14">
     <g fill="none" stroke-width=".5" stroke-linecap="round">
       <path d="M9.61 5.17L5.7 8.83 4.39 7.52"></path>
       <circle r="6" cx="7" cy="7"></circle>
+    </g>
+  </symbol>
+  <symbol id="check" viewBox="0 0 14 14">
+    <g fill="none" stroke-width=".5" stroke-linecap="round">
+      <path d="M9.61 5.17L5.7 8.83 4.39 7.52"></path>
     </g>
   </symbol>
   <symbol id="large-mail" viewBox="0 0 44 44">

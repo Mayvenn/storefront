@@ -97,6 +97,9 @@
 ;;
 
 (defn circled-check [svg-options]
+  [:svg svg-options (svg-xlink "circled-check")])
+
+(defn check [svg-options]
   [:svg svg-options (svg-xlink "check")])
 
 (defn bag [opts]
