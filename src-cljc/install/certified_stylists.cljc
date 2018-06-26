@@ -16,8 +16,8 @@
 (def ^:private stylist-information
   [{:stylist-name     "Aundria Carter"
     :stylist-headshot "63acc2ac-43cc-48cb-9db7-0361f01aaa25"
-    :salon-name       "Giovani Hair Salon"
-    :salon-address    "520 S Reilly Rd. Fayetteville, NC"
+    :salon-name       "Faith Beauty Haven"
+    :salon-address    "5322 Yadkin Rd. Fayetteville, NC"
     :stylist-bio      "Aundria Carter better known as Keshstyles, has logged over 10 years of experience as a stylist. She ensures a memorable and enjoyable experience while getting the style of your dreams. A sew-in specialist she focuses on accentuating the beauty of all of her clients."
     :gallery          {:images ["91566919-324f-4714-9043-f4c24ae2fe98"
                                 "caae31b7-36f3-439c-9c14-af0dd83f31e7"
