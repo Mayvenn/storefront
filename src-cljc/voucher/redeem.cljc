@@ -54,8 +54,8 @@
         :data-ref      "voucher-code"}
        {:ui-element ui/teal-button
         :content    "Redeem"
-        :args       {
-                     :class        "flex justify-center items-center circled-item"
+        :args       {:class        "flex justify-center items-center circled-item"
+                     :on-click     (utils/send-event-callback events/control-voucher-redeem {:code code})
                      :size-class   "col-4"
                      :height-class "py2"
                      :spinning?    spinning?
