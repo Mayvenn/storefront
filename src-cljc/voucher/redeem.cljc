@@ -83,7 +83,7 @@
 (defmethod effects/perform-effects events/control-voucher-redeem
   [dispatch event {:keys [code]} prev-app-state app-state]
   #?(:cljs
-     (api/voucher-redemption code)))
+     (api/voucher-redemption code (get-in app-state keypaths/store-stylist-id))))
 
 (defn ^:private redemption-error [voucherify-error-code]
   (let [[error-message field-errors] (case voucherify-error-code

@@ -952,7 +952,7 @@
              {:params  params
               :handler handler}))
 
-(defn voucher-redemption [voucher-code]
+(defn voucher-redemption [voucher-code stylist-id]
   (let [{:keys [client-app-id client-app-token base-url]} config/voucherify]
     (api-request POST (str base-url "/redeem?code=" voucher-code)
                  request-keys/voucher-redemption
@@ -960,4 +960,5 @@
                   :error-handler   #(messages/handle-message events/voucherify-api-failure %)
                   :response-format (json-response-format {:keywords? true})
                   :headers         {"X-Client-Application-Id" client-app-id
-                                    "X-Client-Token"          client-app-token}})))
+                                    "X-Client-Token"          client-app-token}
+                  :params          {:metadata {:stylist-id stylist-id}}})))
