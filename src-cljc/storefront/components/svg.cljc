@@ -301,3 +301,8 @@
   (component/html
    [:svg opts
     (svg-xlink "icon-email")]))
+
+(defn cascade [opts]
+  (component/html
+   [:svg opts
+    (svg-xlink "cascade")]))
