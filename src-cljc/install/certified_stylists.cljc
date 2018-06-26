@@ -73,18 +73,19 @@
                                 "76a6083d-1f14-4660-b70f-17134aae07cc"]}
     :stylist-bio      "As the owner and operator of ILLstylz Salon Valerie backs her love of hair with over 15 years of experience. With a focus on healthy hair a specialty in sew-ins Valerie strives to give your hair what it needs to be healthy regardless of the style or service you choose."}
 
-   {:stylist-name     "Demetria Murphy"
-    :stylist-headshot "2f98fa6e-321b-4d5c-993b-2f424cb221c0"
-    :salon-name       "Exclusive Hair Design"
-    :salon-address    "224 McPherson Church Rd. Fayetteville, NC"
-    :gallery          {:images ["e863f9a9-e549-45ba-a49f-4df7a9ad45bc"
-                                "878286ba-2be0-48f0-941c-c56d799cda94"
-                                "0fe1dd1c-19c7-434b-b56d-f125027d9193"
-                                "ea7b6e03-ad8c-4c6a-a6cc-29c3f4ddcb2e"
-                                "9626fcc8-ff4b-4d10-96c6-bcf6eb97094c"
-                                "75042965-0d9a-4a2c-bfb5-dc26acc50578"
-                                "439ca881-7410-4418-9eaa-8c36a1def1b8"]}
-    :stylist-bio      "Demetria, AKA MizDee, has been doing what she loves as a licensed stylist for over 15 years taking pride in transforming her clients into their greater self. Specializing in sew-ins, cuts, and styling she strives to ensure each one of her clients have a memorable experience."}
+   {:stylist-name     "Shenee’ Shaw"
+    :stylist-headshot "0a03aa7e-7808-4a7a-bf7c-9d352363e1b2"
+    :salon-name       "Signature Styles By Shenee'"
+    :salon-address    "5338 Yadkin Rd. STE 2 Fayetteville, NC"
+    :gallery          {:images ["644f6b35-f7cd-4098-b31b-5ef1865fe1ef"
+                                "258770ac-d3a4-4e81-ab5c-a3449b677638"
+                                "6a9f7e7f-d820-4714-81c7-ee4efeaa982f"
+                                "e0047ea3-f12a-49db-a3b1-f61d2e228168"
+                                "70d4ee24-e415-4873-8d9a-132beb864f63"
+                                "b96fd795-1bf8-44e7-bdd3-0328428afd5e"
+                                "8f9b13a1-879c-4f6a-ab77-c24f03c42577"
+                                "94b2f2a1-3246-420c-852a-acd7fe29977f"]}
+    :stylist-bio      "Shenee’ is a Master Cosmetologist who brings a wealth of experience with over 24 years of experience. Specializing in sew-ins, she also provides all phases of hair care from natural hair to demi/semi permanent hair color, relaxers, and thermal hair straightening."}
 
    {:stylist-name     "Tiara Cohen"
     :stylist-headshot "28ea9a60-1254-4325-8593-b6bac09e19e9"
