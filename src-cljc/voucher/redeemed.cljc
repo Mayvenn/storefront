@@ -1,11 +1,14 @@
 (ns voucher.redeemed
-  (:require [storefront.component :as component]
+  (:require #?@(:cljs [[storefront.history :as history]])
+   [storefront.component :as component]
             [storefront.components.money-formatters :as mf]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
+            [storefront.effects :as effects]
             [storefront.platform.component-utils :as utils]
-            [voucher.keypaths :as voucher-keypaths]))
+            [voucher.keypaths :as voucher-keypaths]
+            [storefront.effects :as effects]))
 
 (defn ^:private component
   [{:keys [voucher]} owner opts]
@@ -21,6 +24,10 @@
                           "PERCENT"
                           (str (-> voucher :discount :percent_off) "%")
 
+                          ;; TODO: What to do with percent Unit?
+                          "UNIT"
+                          (-> voucher :discount :unit_off)
+
                           "AMOUNT"
                           (-> voucher :discount :amount_off (/ 100) mf/as-money-without-cents))]
     [:div.h4 "has been added to your earnings"]
@@ -35,3 +42,8 @@
 (defn built-component
   [data opts]
   (component/build component (query data) opts))
+
+(defmethod effects/perform-effects events/navigate-voucher-redeemed [_ _ _ _ app-state]
+  #?(:cljs
+     (when-not (get-in app-state (concat voucher-keypaths/voucher [:discount :type]))
+       (history/enqueue-redirect events/navigate-home))))
