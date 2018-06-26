@@ -124,7 +124,7 @@
         store-credit              (min (:total order) (or available-store-credit
                                                           (-> order :cart-payments :store-credit :amount)
                                                           0.0))]
-    [:div
+    [:div {:data-test "cart-order-summary"}
      [:div.hide-on-dt.border-top.border-light-gray]
      [:div.py1.border-bottom.border-light-gray
       [:table.col-12
