@@ -10,6 +10,7 @@
             [storefront.platform.carousel :as carousel]
             [storefront.platform.messages :as messages]
             [storefront.components.ui :as ui]
+            [storefront.components.svg :as svg]
             [storefront.platform.component-utils :as utils]
             [storefront.transitions :as transitions]))
 
@@ -122,26 +123,26 @@
    [:div.h6.bold.dark-gray salon-name]
    [:div.h6.bold.dark-gray salon-address]
    [:div.h6.dark-gray.pt3.mx-auto.col-12.col-5-on-tb.col-3-on-dt stylist-bio]
-   [:div
-    [:a.teal.medium.h6.border-teal.border-bottom.border-width-2
-     (utils/fake-href events/control-stylist-gallery-open)
-     "View Hair Gallery"]
 
-    (when stylist-gallery-open?
-      (let [close-attrs (utils/fake-href events/control-stylist-gallery-close)]
-        (ui/modal
-         {:close-attrs close-attrs
-          :col-class "col-12"}
-         [:div.relative.mx-auto
-          {:style {:max-width "750px"}}
-          (component/build carousel/component
-                           {:slides   (map gallery-slide (:images gallery))
-                            :settings {:slidesToShow 1}}
-                           {})
-          [:div.absolute
-           {:style {:top "1.5rem" :right "1.5rem"}}
-           (ui/modal-close {:class       "stroke-dark-gray fill-gray"
-                            :close-attrs close-attrs})]])))]])
+   [:a (utils/fake-href events/control-stylist-gallery-open)
+    [:div.h6.flex.items-center.justify-center.mt2.mb1
+     (svg/cascade {:style {:height "18px" :width "23px"}})
+     [:span.teal.medium.ml1 "View Hair Gallery"]]]
+   (when stylist-gallery-open?
+     (let [close-attrs (utils/fake-href events/control-stylist-gallery-close)]
+       (ui/modal
+        {:close-attrs close-attrs
+         :col-class "col-12"}
+        [:div.relative.mx-auto
+         {:style {:max-width "750px"}}
+         (component/build carousel/component
+                          {:slides   (map gallery-slide (:images gallery))
+                           :settings {:slidesToShow 1}}
+                          {})
+         [:div.absolute
+          {:style {:top "1.5rem" :right "1.5rem"}}
+          (ui/modal-close {:class       "stroke-dark-gray fill-gray"
+                           :close-attrs close-attrs})]])))])
 
 (defn stylist-details-before-change [prev next]
   (messages/handle-message events/carousel-certified-stylist-slide))
