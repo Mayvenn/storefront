@@ -142,7 +142,11 @@
          [:div.absolute
           {:style {:top "1.5rem" :right "1.5rem"}}
           (ui/modal-close {:class       "stroke-dark-gray fill-gray"
-                           :close-attrs close-attrs})]])))])
+                           :close-attrs close-attrs})]])))
+   #_[:div.border-bottom.border-gray.mx-auto.col-10.col-4-on-tb.col-2-on-dt.my2]
+   #_[:div.flex.justify-center
+    [:div (svg/cascade {:style {:height "67px" :width "120px"}})]
+    [:div.h6 stylist-name ": Certified Mayvenn Stylist"]]])
 
 (defn stylist-details-before-change [prev next]
   (messages/handle-message events/carousel-certified-stylist-slide))
