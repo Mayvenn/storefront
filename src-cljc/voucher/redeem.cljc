@@ -1,7 +1,8 @@
 (ns voucher.redeem
   (:require #?@(:cljs [[storefront.accessors.auth :as auth]
                        [storefront.history :as history]
-                       [storefront.api :as api]])
+                       [storefront.api :as api]
+                       [voucher.components.qr-reader :as qr-reader]])
             [storefront.accessors.experiments :as experiments]
             [storefront.component :as component]
             [storefront.components.ui :as ui]
@@ -27,7 +28,10 @@
     [:div.hide-on-dt.center
      [:h3.pt6 "Scan the QR code to redeem a certificate"]
      [:h6 "Your camera will be used as the scanner."]
-     [:div.py4 (ui/ucare-img {:width 50} "4bd0f715-fa5a-4d82-9cec-62dc993c5d23")]
+     #_[:div.py4 (ui/ucare-img {:width 50} "4bd0f715-fa5a-4d82-9cec-62dc993c5d23")]
+     #?(:cljs
+        [:div (component/build qr-reader/component nil nil)])
+
      [:div.mx-auto.col-10.col-3-on-tb-dt
       (ui/teal-button {:on-click     (utils/send-event-callback events/control-voucher-scan)
                        :height-class "py2"

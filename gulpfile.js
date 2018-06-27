@@ -38,12 +38,14 @@ gulp.task('watch', ['css'], function (cb) {
 
 gulp.task('default', ['css']);
 
-gulp.task('refresh-deps', function () {
-  /* Run this after you update node module versions. */
-  /* Maybe there's a preferred way of including node modules in cljs projects? */
-  return gulp.src(['./node_modules/react-slick/dist/react-slick.js'])
-      .pipe(gulp.dest('src-cljs/storefront/'));
-});
+gulp.task('refresh-deps', 
+	/* Run this after you update node module versions. */
+	/* Maybe there's a preferred way of including node modules in cljs projects? */
+	shell.task([
+		"cp",
+		"./node_modules/react-slick/dist/react-slick.js",
+		"./node_modules/jsqr/dist/jsQR.js",
+		"src-cljs/storefront/"].join(" ")));
 
 gulp.task('clean-min-js', function () {
   return del(['./target/min-js']);

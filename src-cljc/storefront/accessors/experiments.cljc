@@ -94,4 +94,5 @@
   (display-feature? data "pdp-dropdown"))
 
 (defn vouchers? [data]
-  (display-feature? data "vouchers"))
+  (display-feature? data "vouchers")
+  true)

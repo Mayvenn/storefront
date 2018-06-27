@@ -69,7 +69,10 @@
                 :foreign-libs [{:file "src-cljs/storefront/react-slick.js"
                                 :provides ["react-slick"]}
                                {:file "src-cljs/storefront/bugsnag-2.5.0.js"
-                                :provides ["bugsnag"]}]
+                                :provides ["bugsnag"]}
+                               {:file "src-cljs/storefront/jsQR.js"
+                                :provides ["jsQR"]}
+                               ]
                 :externs ["externs/bugsnag.js"
                           "externs/convert.js"
                           "externs/facebook.js"
