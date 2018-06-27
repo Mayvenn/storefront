@@ -22,22 +22,23 @@
             :border-right 0}}])
 
 (defn ^:private component
-  [{:keys [code spinning? field-errors]} owner opts]
+  [{:keys [code spinning? field-errors scanning?]} owner opts]
   (component/create
    [:div.bg-light-silver
     [:div.hide-on-dt.center
-     [:h3.pt6 "Scan the QR code to redeem a certificate"]
-     [:h6 "Your camera will be used as the scanner."]
-     #_[:div.py4 (ui/ucare-img {:width 50} "4bd0f715-fa5a-4d82-9cec-62dc993c5d23")]
-     #?(:cljs
-        [:div (component/build qr-reader/component nil nil)])
+     (if scanning?
+       [:div #?(:cljs [:div.mt2.mx3 (component/build qr-reader/component nil nil)])]
 
-     [:div.mx-auto.col-10.col-3-on-tb-dt
-      (ui/teal-button {:on-click     (utils/send-event-callback events/control-voucher-scan)
-                       :height-class "py2"
-                       :data-test    "voucher-scan"} "Scan")]
+       [:div
+        [:h3.pt6 "Scan the QR code to redeem a certificate"]
+        [:h6 "Your camera will be used as the scanner."]
+        [:div.py4 (ui/ucare-img {:width 50} "4bd0f715-fa5a-4d82-9cec-62dc993c5d23")]
+        [:div.mx-auto.col-10.col-3-on-tb-dt
+         (ui/teal-button {:on-click     (utils/send-event-callback events/control-voucher-scan)
+                          :height-class "py2"
+                          :data-test    "voucher-scan"} "Scan")]])
 
-     [:div.mx-auto.col-10.pt10.pb2.flex.items-center.justify-between
+     [:div.mx-auto.col-10.pb2.flex.items-center.justify-between
       divider
       [:span.h6.px2 "or"]
       divider]]
@@ -70,6 +71,7 @@
 
 (defn ^:private query [data]
   {:code         (get-in data voucher-keypaths/eight-digit-code)
+   :scanning?    (get-in data voucher-keypaths/scanning?)
    :spinning?    (utils/requesting? data request-keys/voucher-redemption)
    :field-errors (get-in data keypaths/field-errors)})
 
@@ -121,3 +123,7 @@
   [_ _ response _ _]
   #?(:cljs
      (history/enqueue-navigate events/navigate-voucher-redeemed)))
+
+(defmethod transitions/transition-state events/control-voucher-scan
+  [_ event _ app-state]
+  (assoc-in app-state voucher-keypaths/scanning? true))
