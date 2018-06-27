@@ -182,6 +182,7 @@
 
 (defpath control-voucher-redeem)
 (defpath control-voucher-scan)
+(defpath control-voucher-qr-redeem)
 
 (defpath control-menu-expand)
 (defpath control-menu-collapse-all)

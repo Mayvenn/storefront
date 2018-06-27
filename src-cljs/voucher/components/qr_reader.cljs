@@ -1,7 +1,9 @@
 (ns voucher.components.qr-reader
   (:require [sablono.core :refer [html]]
             jsQR
-            [om.core :as om]))
+            [om.core :as om]
+            [storefront.events :as events]
+            [storefront.platform.messages :as messages]))
 
 (defn ^:private video-offset [v1 v2]
   (if (> v1 v2)
@@ -27,8 +29,8 @@
      :height (.-height image-data)
      :width  (.-width image-data)}))
 
-(defn image-recognized [voucher-code]
-  (prn voucher-code))
+(defn image-recognized [code]
+  (messages/handle-message events/control-voucher-qr-redeem {:code code}))
 
 (defn read-qr-response [img-data]
   (let [clj-img-data (js->clj img-data :keywordize-keys true)]
@@ -85,19 +87,18 @@
 
 (defn tick [video canvas control timestamp]
   (when-not (get @control :stop)
-    (if (= (.-readyState video) (.-HAVE_ENOUGH_DATA video))
+    (when (= (.-readyState video) (.-HAVE_ENOUGH_DATA video))
       (do
         (resize-canvas video canvas)
         (draw video canvas)
         (draw-brackets canvas)
         (let [{:keys [data width height]} (get-image-data canvas)]
           (try
-            (if-let [voucher-code (read-qr-response (js/jsQR data width height))]
-              (image-recognized voucher-code)
-              (js/requestAnimationFrame (partial tick video canvas control)))
+            (when-let [voucher-code (read-qr-response (js/jsQR data width height))]
+              (image-recognized voucher-code))
             (catch :default e
-              (js/requestAnimationFrame (partial tick video canvas control))))))
-      (js/requestAnimationFrame (partial tick video canvas control)))))
+              nil)))))
+    (js/requestAnimationFrame (partial tick video canvas control))))
 
 (defn start-render-loop [video canvas control stream]
   (set! (.-srcObject video) stream)

@@ -86,10 +86,23 @@
                     (experiments/vouchers? app-state))
        (history/enqueue-redirect events/navigate-home))))
 
+(defmethod transitions/transition-state events/navigate-voucher-redeem
+  [dispatch event args app-state]
+  (assoc-in app-state voucher-keypaths/scanned-code nil))
+
 (defmethod effects/perform-effects events/control-voucher-redeem
   [dispatch event {:keys [code]} prev-app-state app-state]
   #?(:cljs
-     (api/voucher-redemption code (get-in app-state keypaths/store-stylist-id))))
+     (when-not (utils/requesting? app-state request-keys/voucher-redemption)
+       (api/voucher-redemption code (get-in app-state keypaths/store-stylist-id)))))
+
+(defmethod effects/perform-effects events/control-voucher-qr-redeem
+  [dispatch event {:keys [code]} prev-app-state app-state]
+  #?(:cljs
+     (when (and (not (utils/requesting? app-state request-keys/voucher-redemption))
+                (not= (get-in app-state voucher-keypaths/scanned-code)
+                      (get-in prev-app-state voucher-keypaths/scanned-code)))
+       (api/voucher-redemption code (get-in app-state keypaths/store-stylist-id)))))
 
 (defn ^:private redemption-error [voucherify-error-code]
   (let [[error-message field-errors] (case voucherify-error-code
@@ -108,7 +121,7 @@
   [_ _ response _ _]
   (if (>= (:status response) 500)
     (messages/handle-message events/api-failure-bad-server-response response)
-    (messages/handle-message events/api-failure-errors (redemption-error (-> response :response :key)))))
+    (messages/handle-message events/api-failure-errors (redemption-error (-> response :response :body :key)))))
 
 (defmethod transitions/transition-state events/api-success-voucher-redemption
   [_ event {:keys [date id object result voucher]} app-state]
@@ -127,3 +140,7 @@
 (defmethod transitions/transition-state events/control-voucher-scan
   [_ event _ app-state]
   (assoc-in app-state voucher-keypaths/scanning? true))
+
+(defmethod transitions/transition-state events/control-voucher-qr-redeem
+  [_ event {:keys [code]} app-state]
+  (assoc-in app-state voucher-keypaths/scanned-code code))
