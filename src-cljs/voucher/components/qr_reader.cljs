@@ -85,7 +85,6 @@
                                                                            :resizeMode "crop-and-scale"
                                                                            }}))
                  (fn [stream]
-                   #_(set! (.-test-value js/window) stream)
                    (let [video-track (-> stream .getVideoTracks first)
                          {:keys [width height]} (-> video-track .getSettings (js->clj :keywordize-keys true))]
                      (.applyConstraints video-track (clj->js {:height (.-height canvas)
