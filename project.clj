@@ -76,6 +76,7 @@
                 :externs ["externs/bugsnag.js"
                           "externs/convert.js"
                           "externs/facebook.js"
+                          "externs/jsQR.js"
                           "externs/pixlee.js"
                           "externs/react-slick.js"
                           "externs/riskified.js"
