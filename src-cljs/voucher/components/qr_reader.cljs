@@ -107,6 +107,9 @@
     (.play))
   (js/requestAnimationFrame (partial tick video canvas control)))
 
+(defn voucher-permission-denied []
+  (messages/handle-message events/voucher-camera-permission-denied))
+
 (defn component [{:keys [] :as data} owner _]
   (reify
     om/IInitState
@@ -119,7 +122,7 @@
             control (:control (om/get-state owner))]
         (.then (js/navigator.mediaDevices.getUserMedia (clj->js {:video {:facingMode "environment"}}))
                (partial start-render-loop video canvas control)
-               (messages/handle-message events/voucher-camera-permission-denied))))
+               voucher-permission-denied)))
     om/IWillUnmount
     (will-unmount [_]
       (swap! (:control (om/get-state owner)) assoc :stop true))
