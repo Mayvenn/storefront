@@ -56,6 +56,19 @@
       (if by-self "You" "Mayvenn") " transferred " [:span.medium (mf/as-money amount)]
       [:div.h6 (str "Earnings Transfer - " payout-method-name)]]]))
 
+(defn unknown-row
+  [row-number balance-transfer]
+  (let [{:keys [id]} balance-transfer
+        {:keys [amount created-at] :as unknown} (:data balance-transfer)]
+    [:tr.pointer (merge {:key (str "unknown-" id)
+                         :data-test (str "unknown-" id)}
+                        (utils/route-to events/navigate-stylist-dashboard-balance-transfer-details {:balance-transfer-id id})
+                        (when (odd? row-number)
+                          {:class "bg-too-light-teal"}))
+     [:td.px3.py2 (f/less-year-more-day-date created-at)]
+     [:td.py2 "Unspecified Earning"]
+     [:td.pr3.py2.green.right-align "+" (mf/as-money amount)]]))
+
 (defn earnings-table [orders balance-transfers]
   [:table.col-12.mb3 {:style {:border-spacing 0}}
    [:tbody
@@ -64,7 +77,8 @@
        (case type
          "commission" (commission-row i orders balance-transfer)
          "award"      (award-row i balance-transfer)
-         "payout"     (payout-row balance-transfer)))
+         "payout"     (payout-row balance-transfer)
+         (unknown-row i balance-transfer)))
      balance-transfers)]])
 
 (def empty-commissions
