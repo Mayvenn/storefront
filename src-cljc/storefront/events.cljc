@@ -458,3 +458,5 @@
 (defpath faq-section-selected)
 
 (defpath voucherify-api-failure)
+
+(defpath voucher-camera-permission-denied)

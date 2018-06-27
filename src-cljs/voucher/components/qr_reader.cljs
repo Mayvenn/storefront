@@ -118,7 +118,8 @@
             canvas  (om/get-ref owner "qr-canvas")
             control (:control (om/get-state owner))]
         (.then (js/navigator.mediaDevices.getUserMedia (clj->js {:video {:facingMode "environment"}}))
-               (partial start-render-loop video canvas control))))
+               (partial start-render-loop video canvas control)
+               (messages/handle-message events/voucher-camera-permission-denied))))
     om/IWillUnmount
     (will-unmount [_]
       (swap! (:control (om/get-state owner)) assoc :stop true))

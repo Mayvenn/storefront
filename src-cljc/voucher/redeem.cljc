@@ -144,3 +144,7 @@
 (defmethod transitions/transition-state events/control-voucher-qr-redeem
   [_ event {:keys [code]} app-state]
   (assoc-in app-state voucher-keypaths/scanned-code code))
+
+(defmethod transitions/transition-state events/voucher-camera-permission-denied
+  [_ event _ app-state]
+  (assoc-in app-state voucher-keypaths/scanning? nil))
