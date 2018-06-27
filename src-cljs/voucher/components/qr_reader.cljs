@@ -3,13 +3,6 @@
             jsQR
             [om.core :as om]))
 
-(defn inner-component [{:keys []} owner _]
-  (om/component
-   [:div]))
-
-(defn get-video-element []
-  )
-
 (defn draw [video canvas-ref]
   (.drawImage (.getContext canvas-ref "2d") video 0 0))
 
@@ -39,35 +32,38 @@
     (set! (.-strokeStyle ctx) "white")
     (.stroke ctx)))
 
+(defn draw-brackets [canvas-ref]
+  (draw-line canvas-ref
+             {:x (- (.-width canvas-ref) 80)
+              :y (- (.-height canvas-ref) 40)}
+             {:x (- (.-width canvas-ref) 40)
+              :y (- (.-height canvas-ref) 40)}
+             {:x (- (.-width canvas-ref) 40)
+              :y (- (.-height canvas-ref) 80)})
+  (draw-line canvas-ref
+             {:x 40
+              :y (- (.-height canvas-ref) 80)}
+             {:x 40
+              :y (- (.-height canvas-ref) 40)}
+             {:x 80
+              :y (- (.-height canvas-ref) 40)})
+  (draw-line canvas-ref
+             {:x (- (.-width canvas-ref) 80)
+              :y 40}
+             {:x (- (.-width canvas-ref) 40)
+              :y 40}
+             {:x (- (.-width canvas-ref) 40)
+              :y 80})
+  (draw-line canvas-ref
+             {:x 80 :y 40}
+             {:x 40 :y 40}
+             {:x 40 :y 80}))
+
 (defn tick [video canvas-ref timestamp]
   (if (= (.-readyState video) (.-HAVE_ENOUGH_DATA video))
     (do
       (draw video canvas-ref)
-      (draw-line canvas-ref
-                 {:x (- (.-width canvas-ref) 80)
-                  :y (- (.-height canvas-ref) 40)}
-                 {:x (- (.-width canvas-ref) 40)
-                  :y (- (.-height canvas-ref) 40)}
-                 {:x (- (.-width canvas-ref) 40)
-                  :y (- (.-height canvas-ref) 80)})
-      (draw-line canvas-ref
-                 {:x 40
-                  :y (- (.-height canvas-ref) 80)}
-                 {:x 40
-                  :y (- (.-height canvas-ref) 40)}
-                 {:x 80
-                  :y (- (.-height canvas-ref) 40)})
-      (draw-line canvas-ref
-                 {:x (- (.-width canvas-ref) 80)
-                  :y 40}
-                 {:x (- (.-width canvas-ref) 40)
-                  :y 40}
-                 {:x (- (.-width canvas-ref) 40)
-                  :y 80})
-      (draw-line canvas-ref
-                 {:x 80 :y 40}
-                 {:x 40 :y 40}
-                 {:x 40 :y 80})
+      (draw-brackets canvas-ref)
       (let [{:keys [data width height]} (get-image-data canvas-ref)]
         (if-let [voucher-code (read-qr-response (js/jsQR data width height))]
           (image-recognized voucher-code)
@@ -92,22 +88,17 @@
         (let [canvas (om/get-ref owner "qr-canvas")]
           ;; Start render loop (I think)
           (.then (js/navigator.mediaDevices.getUserMedia (clj->js {:video {:facingMode "environment"
-                                        ;:aspectRatio (/ 21 4)
-                                                                           :resizeMode "crop-and-scale"
-                                                                           }}))
+                                                                           :resizeMode "crop-and-scale"}}))
                  (fn [stream]
-                   (let [video-track (-> stream .getVideoTracks first)
+                   (let [video-track            (-> stream .getVideoTracks first)
                          {:keys [width height]} (-> video-track .getSettings (js->clj :keywordize-keys true))]
-                     (.applyConstraints video-track (clj->js {:height (.-height canvas)
+                     (.applyConstraints video-track (clj->js {:height      (.-height canvas)
                                                               :aspectRatio (/ width height)})))
                    (start-render-loop video canvas stream)))))
 
       om/IRenderState
       (render-state [_ {:keys [autoplay]}]
         (html
-         ;; TODO Create video element
-         ;; TODO Create canvas element
-         ;;          (with canvas context)
-         [:canvas {:width 400
+         [:canvas {:width  400
                    :height 400
-                   :ref "qr-canvas"}])))))
+                   :ref    "qr-canvas"}])))))
