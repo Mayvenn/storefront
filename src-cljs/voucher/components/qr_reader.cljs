@@ -94,10 +94,12 @@
         (draw-brackets canvas)
         (let [{:keys [data width height]} (get-image-data canvas)]
           (try
+        (try
+          (let [{:keys [data width height]} (get-image-data canvas)]
             (when-let [voucher-code (read-qr-response (js/jsQR data width height))]
-              (image-recognized voucher-code))
-            (catch :default e
-              nil)))))
+              (image-recognized voucher-code)))
+          (catch :default e
+            nil))))
     (js/requestAnimationFrame (partial tick video canvas control))))
 
 (defn start-render-loop [video canvas control stream]
