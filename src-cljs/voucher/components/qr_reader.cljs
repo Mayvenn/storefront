@@ -85,6 +85,12 @@
              (/ (.-videoHeight video)
                 (.-videoWidth video))))))
 
+(defn draw-text [canvas]
+  (let [ctx (.getContext canvas "2d")]
+    (set! (.-font ctx) "14px Roboto")
+    (set! (.-fillStyle ctx) "white")
+    (.fillText ctx "Point camera at QR code" (- (/ (.-width canvas) 2) 78) 30)))
+
 (defn tick [video canvas control timestamp]
   (when-not (get @control :stop)
     (when (= (.-readyState video) (.-HAVE_ENOUGH_DATA video))
@@ -92,8 +98,7 @@
         (resize-canvas video canvas)
         (draw video canvas)
         (draw-brackets canvas)
-        (let [{:keys [data width height]} (get-image-data canvas)]
-          (try
+        (draw-text canvas)
         (try
           (let [{:keys [data width height]} (get-image-data canvas)]
             (when-let [voucher-code (read-qr-response (js/jsQR data width height))]
