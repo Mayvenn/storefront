@@ -121,25 +121,29 @@
     home/built-component))
 
 (defn main-layout [data nav-event]
-  [:div.flex.flex-column {:style {:min-height    "100vh"
-                                  :margin-bottom "-1px"}}
-   (stylist-banner/built-component data nil)
-   (promotion-banner/built-component data nil)
-   #?(:cljs (popup/built-component (popup/query data) nil))
+  (let [silver-background? (#{events/navigate-voucher-redeem events/navigate-voucher-redeemed} nav-event)]
+    [:div.flex.flex-column {:style {:min-height    "100vh"
+                                    :margin-bottom "-1px"}}
+     (stylist-banner/built-component data nil)
+     (promotion-banner/built-component data nil)
+     #?(:cljs (popup/built-component (popup/query data) nil))
 
-   (header/built-component data nil)
-   [:div.relative.flex.flex-column.flex-auto
-    (flash/built-component data nil)
+     (header/built-component data nil)
+     [:div.relative.flex.flex-column.flex-auto
+      ;; Hack: one page does not have a white background, nor enough
+      ;; content to fill its inner div.
+      (when silver-background?
+        {:class "bg-light-silver"})
+      (flash/built-component data nil)
 
-    [:main.bg-white.flex-auto (merge
-                               {:data-test (keypaths/->component-str nav-event)}
-                               ;; Hack: one page does not have a white background, nor enough
-                               ;; content to fill its inner div.
-                               (when ( #{events/navigate-voucher-redeem events/navigate-voucher-redeemed} nav-event)
-                                 {:class "bg-light-silver"}))
-     ((main-component nav-event) data nil)]
+      [:main.bg-white.flex-auto (merge
+                                 {:data-test (keypaths/->component-str nav-event)}
+                                 ;; Hack: See above hack
+                                 (when silver-background?
+                                   {:class "bg-light-silver"}))
+       ((main-component nav-event) data nil)]
 
-    [:footer (footer/built-component data nil)]]])
+      [:footer (footer/built-component data nil)]]]))
 
 (defn top-level-component [data owner opts]
   (let [nav-event      (get-in data keypaths/navigation-event)]
