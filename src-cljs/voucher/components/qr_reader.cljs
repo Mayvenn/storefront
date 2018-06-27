@@ -44,19 +44,30 @@
     (do
       (draw video canvas-ref)
       (draw-line canvas-ref
-                 {:x (- (.-width canvas-ref) 120)
+                 {:x (- (.-width canvas-ref) 80)
                   :y (- (.-height canvas-ref) 40)}
                  {:x (- (.-width canvas-ref) 40)
                   :y (- (.-height canvas-ref) 40)}
                  {:x (- (.-width canvas-ref) 40)
-                  :y (- (.-height canvas-ref) 120)})
+                  :y (- (.-height canvas-ref) 80)})
       (draw-line canvas-ref
-                 {:x 120
-                  :y 40}
                  {:x 40
-                  :y 40}
+                  :y (- (.-height canvas-ref) 80)}
                  {:x 40
-                  :y 120})
+                  :y (- (.-height canvas-ref) 40)}
+                 {:x 80
+                  :y (- (.-height canvas-ref) 40)})
+      (draw-line canvas-ref
+                 {:x (- (.-width canvas-ref) 80)
+                  :y 40}
+                 {:x (- (.-width canvas-ref) 40)
+                  :y 40}
+                 {:x (- (.-width canvas-ref) 40)
+                  :y 80})
+      (draw-line canvas-ref
+                 {:x 80 :y 40}
+                 {:x 40 :y 40}
+                 {:x 40 :y 80})
       (let [{:keys [data width height]} (get-image-data canvas-ref)]
         (if-let [voucher-code (read-qr-response (js/jsQR data width height))]
           (image-recognized voucher-code)
