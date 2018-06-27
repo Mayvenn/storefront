@@ -27,7 +27,7 @@
    [:div.bg-light-silver
     [:div.hide-on-dt.center
      (if scanning?
-       [:div #?(:cljs [:div.mt2.mx3 (component/build qr-reader/component nil nil)])]
+       [:div.col-10.mt3.mx-auto #?(:cljs (component/build qr-reader/component nil nil))]
 
        [:div
         [:h3.pt6 "Scan the QR code to redeem a certificate"]
