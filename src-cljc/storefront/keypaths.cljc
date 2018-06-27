@@ -301,7 +301,7 @@
 (def carousel-stylist-gallery-open? (conj carousel-stylist-gallery :open?))
 
 (def fvlanding (conj ui :fvlanding))
-(def fvlanding-show-video? (conj fvlanding :show-video))
+(def fvlanding-video (conj fvlanding :video))
 (def fvlanding-carousel-ugc (conj fvlanding :carousel-ugc))
 (def fvlanding-carousel-ugc-open? (conj fvlanding-carousel-ugc :open?))
 (def fvlanding-carousel-ugc-index (conj fvlanding-carousel-ugc :index))

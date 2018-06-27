@@ -16,101 +16,102 @@
             [clojure.string :as string]))
 
 (def ^:private stylist-information
-  [{:stylist-name     "Aundria Carter"
-    :stylist-headshot "63acc2ac-43cc-48cb-9db7-0361f01aaa25"
-    :salon-name       "Faith Beauty Haven"
-    :salon-address    "5322 Yadkin Rd. Fayetteville, NC"
-    :gallery          {:images ["91566919-324f-4714-9043-f4c24ae2fe98"
-                                "caae31b7-36f3-439c-9c14-af0dd83f31e7"
-                                "84ecceb8-443a-40fa-936a-6c639bf8280a"
-                                "1cc6eff6-308b-4f66-8fa8-98287f56c4e3"
-                                "7421e36b-1d41-4747-a6da-b5374a5bfbba"
-                                "95c3038d-025d-4185-a607-96356c6867a8"
-                                "46510df0-e1b2-45bc-8744-dec585ef165f"
-                                "7c7a433f-40e8-4a0d-af74-1b8ff2e69f7e"
-                                "f5dd7a95-53c9-4c2f-a380-3698852615e7"
-                                "343835b4-1b1d-44a3-9162-a690531f3edd"
-                                "08199689-1514-4ae3-bebc-00242dd96f51"]}
-    :video            {:thumbnail  "9f58f302-167a-4958-a71b-0e0880c9990b"
-                       :youtube-id "uw241YZ9sXs"}
-    :stylist-bio      "Aundria Carter better known as Keshstyles, has logged over 10 years of experience as a stylist. She ensures a memorable and enjoyable experience while getting the style of your dreams. A sew-in specialist she focuses on accentuating the beauty of all of her clients."}
-   {:stylist-name     "Angela White"
-    :stylist-headshot "a7903783-7c7a-4459-85a7-fc9db361696e"
-    :salon-name       "Michae's Hair Salon"
-    :salon-address    "5338 Yadkin Rd. Fayetteville, NC"
-    :gallery          {:images ["2e6076b8-dcbe-44ba-98b5-3402592d5858"
-                                "7c59eea0-952b-4775-a50c-d8b638d6cb48"
-                                "b356c268-7624-4ef9-89e3-3f5e065f6511"
-                                "2c7cd91a-50ff-4a49-9483-1962714e6493"
-                                "ca6f688f-1822-432c-ae28-73160e965a00"
-                                "69c46710-3958-4049-bb21-e435f8b33ad9"
-                                "7df1ce4b-9e85-4674-968c-dc61bc00c122"]}
-    :video            {:thumbnail  "d3f3eb80-08b7-46b2-b790-f3d3d9ce6df1"
-                       :youtube-id "UTrxfpf8Pr8"}
-    :stylist-bio      "Angela White a.k.a Hairdiva Daplug, is a licensed and versatile stylist with more than 10 years of experience. Discovering her love for all things hair at an early age Angela works with you to achieve your unique look. Specializing in sew-ins, braiding, blow outs, cuts, and coloring."}
+  (mapv #(assoc % :stylist-slug (-> % :stylist-name (string/replace #"\W" "") string/lower-case))
+       [{:stylist-name     "Aundria Carter"
+         :stylist-headshot "63acc2ac-43cc-48cb-9db7-0361f01aaa25"
+         :salon-name       "Faith Beauty Haven"
+         :salon-address    "5322 Yadkin Rd. Fayetteville, NC"
+         :gallery          {:images ["91566919-324f-4714-9043-f4c24ae2fe98"
+                                     "caae31b7-36f3-439c-9c14-af0dd83f31e7"
+                                     "84ecceb8-443a-40fa-936a-6c639bf8280a"
+                                     "1cc6eff6-308b-4f66-8fa8-98287f56c4e3"
+                                     "7421e36b-1d41-4747-a6da-b5374a5bfbba"
+                                     "95c3038d-025d-4185-a607-96356c6867a8"
+                                     "46510df0-e1b2-45bc-8744-dec585ef165f"
+                                     "7c7a433f-40e8-4a0d-af74-1b8ff2e69f7e"
+                                     "f5dd7a95-53c9-4c2f-a380-3698852615e7"
+                                     "343835b4-1b1d-44a3-9162-a690531f3edd"
+                                     "08199689-1514-4ae3-bebc-00242dd96f51"]}
+         :video            {:thumbnail  "9f58f302-167a-4958-a71b-0e0880c9990b"
+                            :youtube-id "uw241YZ9sXs"}
+         :stylist-bio      "Aundria Carter better known as Keshstyles, has logged over 10 years of experience as a stylist. She ensures a memorable and enjoyable experience while getting the style of your dreams. A sew-in specialist she focuses on accentuating the beauty of all of her clients."}
+        {:stylist-name     "Angela White"
+         :stylist-headshot "a7903783-7c7a-4459-85a7-fc9db361696e"
+         :salon-name       "Michae's Hair Salon"
+         :salon-address    "5338 Yadkin Rd. Fayetteville, NC"
+         :gallery          {:images ["2e6076b8-dcbe-44ba-98b5-3402592d5858"
+                                     "7c59eea0-952b-4775-a50c-d8b638d6cb48"
+                                     "b356c268-7624-4ef9-89e3-3f5e065f6511"
+                                     "2c7cd91a-50ff-4a49-9483-1962714e6493"
+                                     "ca6f688f-1822-432c-ae28-73160e965a00"
+                                     "69c46710-3958-4049-bb21-e435f8b33ad9"
+                                     "7df1ce4b-9e85-4674-968c-dc61bc00c122"]}
+         :video            {:thumbnail  "d3f3eb80-08b7-46b2-b790-f3d3d9ce6df1"
+                            :youtube-id "UTrxfpf8Pr8"}
+         :stylist-bio      "Angela White a.k.a Hairdiva Daplug, is a licensed and versatile stylist with more than 10 years of experience. Discovering her love for all things hair at an early age Angela works with you to achieve your unique look. Specializing in sew-ins, braiding, blow outs, cuts, and coloring."}
 
-   {:stylist-name     "Tamara Johnson"
-    :stylist-headshot "be913d9e-e69d-45e9-8a92-23b7dfca01fe"
-    :salon-name       "Sara's Hair & Nail Salon"
-    :salon-address    "5845C Yadkin Rd. Fayetteville, NC"
-    :gallery          {:images ["def0352c-0d85-49cc-904c-f6ced1482cc5"
-                                "c6710751-ea7d-4e75-b301-096292550326"
-                                "1be01c11-10ee-4b78-8252-0c345c5cf45e"
-                                "0820e925-fcd8-440f-bb32-30490e8dd676"
-                                "4e5a17f2-f721-49dc-81d7-d495cae08fef"
-                                "c2e137cc-a147-4f27-907f-08d13e2c929f"
-                                "b9cabcaf-9fcb-4d22-970b-ba3192a17abc"
-                                "21fae71d-e749-461f-8f1e-15c242e73f3f"
-                                "0a3cd9a0-308b-4de1-a563-553aa88fa66d"]}
-    :video            {:thumbnail  "b3d396fa-1a59-441e-a11f-c08bbaf6ee11"
-                       :youtube-id "X0XCK7zGsAM"}
-    :stylist-bio      "Tamara Johnson, a.k.a. Tamara Nicole brings over 9 years of experience to her chair. A graduate of the Paul Mitchell School she places an emphasis on healthy and strong, shiny hair. Specializing in sew-ins, blowouts, and locs she will make your hair grow!"}
+        {:stylist-name     "Tamara Johnson"
+         :stylist-headshot "be913d9e-e69d-45e9-8a92-23b7dfca01fe"
+         :salon-name       "Sara's Hair & Nail Salon"
+         :salon-address    "5845C Yadkin Rd. Fayetteville, NC"
+         :gallery          {:images ["def0352c-0d85-49cc-904c-f6ced1482cc5"
+                                     "c6710751-ea7d-4e75-b301-096292550326"
+                                     "1be01c11-10ee-4b78-8252-0c345c5cf45e"
+                                     "0820e925-fcd8-440f-bb32-30490e8dd676"
+                                     "4e5a17f2-f721-49dc-81d7-d495cae08fef"
+                                     "c2e137cc-a147-4f27-907f-08d13e2c929f"
+                                     "b9cabcaf-9fcb-4d22-970b-ba3192a17abc"
+                                     "21fae71d-e749-461f-8f1e-15c242e73f3f"
+                                     "0a3cd9a0-308b-4de1-a563-553aa88fa66d"]}
+         :video            {:thumbnail  "b3d396fa-1a59-441e-a11f-c08bbaf6ee11"
+                            :youtube-id "X0XCK7zGsAM"}
+         :stylist-bio      "Tamara Johnson, a.k.a. Tamara Nicole brings over 9 years of experience to her chair. A graduate of the Paul Mitchell School she places an emphasis on healthy and strong, shiny hair. Specializing in sew-ins, blowouts, and locs she will make your hair grow!"}
 
-   {:stylist-name     "Valerie Selby"
-    :stylist-headshot "f1ba9936-d310-42fb-a0fa-fa54b49e7055"
-    :salon-name       "ILLstylz Salon"
-    :salon-address    "1016 71st School Rd. Fayetteville, NC"
-    :gallery          {:images ["055147ca-5cd9-41c6-8038-18125454c478"
-                                "981e5b31-3dc8-4f3e-814a-8899ff78f395"
-                                "66e9dd27-5367-4d6b-90f2-a08670f9164b"
-                                "cb4b1290-32a0-4a16-b3df-1c214a886201"
-                                "94d355f2-fcbb-4d81-824c-9284ee5a993d"
-                                "4c16e602-3c11-441a-b035-78a986cb1b9c"
-                                "b9048896-2123-43c4-b503-786425ceee9c"
-                                "8adaf2dc-3d3e-4045-8549-85bf2b28f71e"
-                                "76a6083d-1f14-4660-b70f-17134aae07cc"]}
-    :video            {:thumbnail  "227e12d2-6a6b-419b-b598-d0cb448cc822"
-                       :youtube-id "3CWCPzxh4iI"}
-    :stylist-bio      "As the owner and operator of ILLstylz Salon Valerie backs her love of hair with over 15 years of experience. With a focus on healthy hair a specialty in sew-ins Valerie strives to give your hair what it needs to be healthy regardless of the style or service you choose."}
+        {:stylist-name     "Valerie Selby"
+         :stylist-headshot "f1ba9936-d310-42fb-a0fa-fa54b49e7055"
+         :salon-name       "ILLstylz Salon"
+         :salon-address    "1016 71st School Rd. Fayetteville, NC"
+         :gallery          {:images ["055147ca-5cd9-41c6-8038-18125454c478"
+                                     "981e5b31-3dc8-4f3e-814a-8899ff78f395"
+                                     "66e9dd27-5367-4d6b-90f2-a08670f9164b"
+                                     "cb4b1290-32a0-4a16-b3df-1c214a886201"
+                                     "94d355f2-fcbb-4d81-824c-9284ee5a993d"
+                                     "4c16e602-3c11-441a-b035-78a986cb1b9c"
+                                     "b9048896-2123-43c4-b503-786425ceee9c"
+                                     "8adaf2dc-3d3e-4045-8549-85bf2b28f71e"
+                                     "76a6083d-1f14-4660-b70f-17134aae07cc"]}
+         :video            {:thumbnail  "227e12d2-6a6b-419b-b598-d0cb448cc822"
+                            :youtube-id "3CWCPzxh4iI"}
+         :stylist-bio      "As the owner and operator of ILLstylz Salon Valerie backs her love of hair with over 15 years of experience. With a focus on healthy hair a specialty in sew-ins Valerie strives to give your hair what it needs to be healthy regardless of the style or service you choose."}
 
-   {:stylist-name     "Shenee’ Shaw"
-    :stylist-headshot "0a03aa7e-7808-4a7a-bf7c-9d352363e1b2"
-    :salon-name       "Signature Styles By Shenee'"
-    :salon-address    "5338 Yadkin Rd. STE 2 Fayetteville, NC"
-    :gallery          {:images ["644f6b35-f7cd-4098-b31b-5ef1865fe1ef"
-                                "258770ac-d3a4-4e81-ab5c-a3449b677638"
-                                "6a9f7e7f-d820-4714-81c7-ee4efeaa982f"
-                                "e0047ea3-f12a-49db-a3b1-f61d2e228168"
-                                "70d4ee24-e415-4873-8d9a-132beb864f63"
-                                "b96fd795-1bf8-44e7-bdd3-0328428afd5e"
-                                "8f9b13a1-879c-4f6a-ab77-c24f03c42577"
-                                "94b2f2a1-3246-420c-852a-acd7fe29977f"]}
-    :video            {:thumbnail  "b8fb38f2-2a6d-4024-ab15-1ed4f11a2e64"
-                       :youtube-id "bbOkP5WsB8U"}
-    :stylist-bio      "Shenee’ is a Master Cosmetologist who brings a wealth of experience with over 24 years of experience. Specializing in sew-ins, she also provides all phases of hair care from natural hair to demi/semi permanent hair color, relaxers, and thermal hair straightening."}
+        {:stylist-name     "Shenee’ Shaw"
+         :stylist-headshot "0a03aa7e-7808-4a7a-bf7c-9d352363e1b2"
+         :salon-name       "Signature Styles By Shenee'"
+         :salon-address    "5338 Yadkin Rd. STE 2 Fayetteville, NC"
+         :gallery          {:images ["644f6b35-f7cd-4098-b31b-5ef1865fe1ef"
+                                     "258770ac-d3a4-4e81-ab5c-a3449b677638"
+                                     "6a9f7e7f-d820-4714-81c7-ee4efeaa982f"
+                                     "e0047ea3-f12a-49db-a3b1-f61d2e228168"
+                                     "70d4ee24-e415-4873-8d9a-132beb864f63"
+                                     "b96fd795-1bf8-44e7-bdd3-0328428afd5e"
+                                     "8f9b13a1-879c-4f6a-ab77-c24f03c42577"
+                                     "94b2f2a1-3246-420c-852a-acd7fe29977f"]}
+         :video            {:thumbnail  "b8fb38f2-2a6d-4024-ab15-1ed4f11a2e64"
+                            :youtube-id "bbOkP5WsB8U"}
+         :stylist-bio      "Shenee’ is a Master Cosmetologist who brings a wealth of experience with over 24 years of experience. Specializing in sew-ins, she also provides all phases of hair care from natural hair to demi/semi permanent hair color, relaxers, and thermal hair straightening."}
 
-   {:stylist-name     "Tiara Cohen"
-    :stylist-headshot "28ea9a60-1254-4325-8593-b6bac09e19e9"
-    :salon-name       "Hair Miracles"
-    :salon-address    "508 Owen Dr. Suite B Fayetteville, NC"
-    :gallery          {:images ["7309ff5a-6a49-4113-bb52-41dc15fcc9b6"
-                                "3b5865d5-ca4a-4dcc-98ba-16536b55766f"
-                                "729866c4-e578-4e23-ad57-8d5945fc10b4"
-                                "baaf45a1-ce35-40f0-a26b-e21802ddd6d2"
-                                "9427d213-db31-4f29-a769-f43e3246db96"]}
-    :video            {:thumbnail  "8b4b82cb-b3f0-433e-8e37-d9bebb03d823"
-                       :youtube-id "X0XCK7zGsAM"}
-    :stylist-bio      "With over 22 years of experience Tiara knows that weaves and wigs are a choice that each one of her clients makes, not a must. Starting with a specialty in sew-ins, Tiara has the experience to meet all the needs of her clients dreams."}])
+        {:stylist-name     "Tiara Cohen"
+         :stylist-headshot "28ea9a60-1254-4325-8593-b6bac09e19e9"
+         :salon-name       "Hair Miracles"
+         :salon-address    "508 Owen Dr. Suite B Fayetteville, NC"
+         :gallery          {:images ["7309ff5a-6a49-4113-bb52-41dc15fcc9b6"
+                                     "3b5865d5-ca4a-4dcc-98ba-16536b55766f"
+                                     "729866c4-e578-4e23-ad57-8d5945fc10b4"
+                                     "baaf45a1-ce35-40f0-a26b-e21802ddd6d2"
+                                     "9427d213-db31-4f29-a769-f43e3246db96"]}
+         :video            {:thumbnail  "8b4b82cb-b3f0-433e-8e37-d9bebb03d823"
+                            :youtube-id "X0XCK7zGsAM"}
+         :stylist-bio      "With over 22 years of experience Tiara knows that weaves and wigs are a choice that each one of her clients makes, not a must. Starting with a specialty in sew-ins, Tiara has the experience to meet all the needs of her clients dreams."}]))
 
 (defn ^:private stylist-slide [selected-index index {:keys [stylist-headshot]}]
   [:div.flex.relative.justify-center.mxn2
@@ -128,7 +129,7 @@
   [:div (ui/aspect-ratio 1 1
                          (ui/ucare-img {:class "col-12"} ucare-id))])
 
-(defn ^:private stylist-info [{:keys [stylist-name salon-name salon-address stylist-bio gallery video]} stylist-gallery-open?]
+(defn ^:private stylist-info [{:as stylist :keys [stylist-name salon-name salon-address stylist-bio gallery video stylist-slug]} stylist-gallery-open?]
   [:div.py2
    [:div.h3 stylist-name]
    [:div.teal.h6.pt2.bold
@@ -162,7 +163,7 @@
      [:div (ui/ucare-img {:width "120"} (:thumbnail video))]]
     [:div.flex.flex-column.justify-center.h6.line-height-1.ml4.left-align
      [:div stylist-name ": Certified Mayvenn Stylist"]
-     [:a (utils/route-to events/navigate-install-home {:query-params {:video "free-install"}}) ;; TODO: opening video shouldn't scroll to top
+     [:a (utils/route-to events/navigate-install-home {:query-params {:video stylist-slug}}) ;; TODO: opening video shouldn't scroll to top
       [:div.bold.mt3.dark-gray
        (svg/clear-play-video {:style {:height "1em" :width "1em"} :class "mx1 fill-dark-gray"})
        "Watch Video"]]]]])

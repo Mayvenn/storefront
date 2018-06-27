@@ -154,10 +154,10 @@
   [{:keys [header show-video? video carousel-certified-stylist ugc-carousel faq-accordion popup-data]} owner opts]
   (component/create
    [:div
-    (when show-video?
+    (when video
       (component/build free-install-video/component
                        video
-                       {:opts {:close-attrs (utils/route-to events/navigate-install-home {:query-params {:video "0"}})}}))
+                       {:opts {:close-attrs (utils/route-to events/navigate-install-home)}}))
     (component/build relative-header header nil)
     (component/build fixed-header header nil)
     [:div.shadow.bg-cover.bg-center.bg-top.bg-free-install-landing.col-12.p4
@@ -167,7 +167,7 @@
        {:style {:font-size "36px"}}
        "Everyone in Fayetteville can get a FREE install by a Mayvenn certified stylist."]
       [:a.shout.white.flex.items-center.pt8.h4.medium
-       (utils/route-to events/navigate-install-home {:query-params {:video "1"}})
+       (utils/route-to events/navigate-install-home {:query-params {:video "free-install"}})
        (svg/clear-play-video {:class        "mr2"
                               :fill         "white"
                               :fill-opacity "0.9"
@@ -180,7 +180,7 @@
       [:div.medium.letter-spacing-1.col-7.h3.white
        "Everyone in Fayetteville can get a FREE install by a Mayvenn certified stylist."]
       [:a.shout.white.flex.items-center.pt4.h6.medium
-       (utils/route-to events/navigate-install-home {:query-params {:video "1"}})
+       (utils/route-to events/navigate-install-home {:query-params {:video "free-install"}})
        (svg/clear-play-video {:class        "mr2"
                               :fill         "white"
                               :fill-opacity "0.9"
@@ -342,7 +342,6 @@
 
 (defn ^:private query [data]
   {:header                     {:text-or-call-number "1-310-733-0284"}
-   :show-video?                (get-in data keypaths/fvlanding-show-video?)
    :video                      (free-install-video/query data)
    :carousel-certified-stylist {:index         (get-in data keypaths/carousel-certified-stylist-index)
                                 :sliding?      (get-in data keypaths/carousel-certified-stylist-sliding?)
@@ -367,7 +366,10 @@
 
 (defmethod transitions/transition-state events/navigate-install-home
   [_ _ {:keys [query-params]} app-state]
-  (assoc-in app-state keypaths/fvlanding-show-video? (= "1" (:video query-params))))
+  (let [url (case (:video query-params)
+              "free-install" "cWkSO_2nnD4"
+              nil)]
+    (assoc-in app-state keypaths/fvlanding-video (when url {:url url}))))
 
 (defmethod transitions/transition-state events/control-install-landing-page-ugc-modal-open
   [_ _ {:keys [index]} app-state]
