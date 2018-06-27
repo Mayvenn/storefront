@@ -3,11 +3,26 @@
             jsQR
             [om.core :as om]))
 
-(defn draw [video canvas-ref]
-  (.drawImage (.getContext canvas-ref "2d") video 0 0))
+(defn ^:private video-offset [v1 v2]
+  (if (> v1 v2)
+    (/ (- v1 v2) 2)
+    0))
 
-(defn get-image-data [canvas-ref]
-  (let [image-data (.getImageData (.getContext canvas-ref "2d") 0 0 (.-width canvas-ref) (.-height canvas-ref))]
+(defn draw [video canvas]
+  (let [vw (.-videoWidth video)
+        vh (.-videoHeight video)
+        cw (.-width canvas)
+        ch (.-height canvas)]
+    (.drawImage (.getContext canvas "2d")
+                video
+                (video-offset vw vh)
+                (video-offset vh vw)
+                (min vw vh) (min vw vh)
+                0 0
+                cw ch)))
+
+(defn get-image-data [canvas]
+  (let [image-data (.getImageData (.getContext canvas "2d") 0 0 (.-width canvas) (.-height canvas))]
     {:data   (.-data image-data)
      :height (.-height image-data)
      :width  (.-width image-data)}))
@@ -32,73 +47,81 @@
     (set! (.-strokeStyle ctx) "white")
     (.stroke ctx)))
 
-(defn draw-brackets [canvas-ref]
-  (draw-line canvas-ref
-             {:x (- (.-width canvas-ref) 80)
-              :y (- (.-height canvas-ref) 40)}
-             {:x (- (.-width canvas-ref) 40)
-              :y (- (.-height canvas-ref) 40)}
-             {:x (- (.-width canvas-ref) 40)
-              :y (- (.-height canvas-ref) 80)})
-  (draw-line canvas-ref
+(defn draw-brackets [canvas]
+  (draw-line canvas
+             {:x (- (.-width canvas) 80)
+              :y (- (.-height canvas) 40)}
+             {:x (- (.-width canvas) 40)
+              :y (- (.-height canvas) 40)}
+             {:x (- (.-width canvas) 40)
+              :y (- (.-height canvas) 80)})
+  (draw-line canvas
              {:x 40
-              :y (- (.-height canvas-ref) 80)}
+              :y (- (.-height canvas) 80)}
              {:x 40
-              :y (- (.-height canvas-ref) 40)}
+              :y (- (.-height canvas) 40)}
              {:x 80
-              :y (- (.-height canvas-ref) 40)})
-  (draw-line canvas-ref
-             {:x (- (.-width canvas-ref) 80)
+              :y (- (.-height canvas) 40)})
+  (draw-line canvas
+             {:x (- (.-width canvas) 80)
               :y 40}
-             {:x (- (.-width canvas-ref) 40)
+             {:x (- (.-width canvas) 40)
               :y 40}
-             {:x (- (.-width canvas-ref) 40)
+             {:x (- (.-width canvas) 40)
               :y 80})
-  (draw-line canvas-ref
+  (draw-line canvas
              {:x 80 :y 40}
              {:x 40 :y 40}
              {:x 40 :y 80}))
 
-(defn tick [video canvas-ref timestamp]
-  (if (= (.-readyState video) (.-HAVE_ENOUGH_DATA video))
-    (do
-      (draw video canvas-ref)
-      (draw-brackets canvas-ref)
-      (let [{:keys [data width height]} (get-image-data canvas-ref)]
-        (if-let [voucher-code (read-qr-response (js/jsQR data width height))]
-          (image-recognized voucher-code)
-          (js/requestAnimationFrame (partial tick video canvas-ref)))))
-    (js/requestAnimationFrame (partial tick video canvas-ref))))
+(defn resize-canvas [video canvas]
+  (let [canvas-parent-rectangle (.getBoundingClientRect (.-parentElement canvas))]
+    (set! (.-width canvas)
+          (.-width canvas-parent-rectangle))
+    (set! (.-height canvas)
+          (* (.-width canvas-parent-rectangle)
+             (/ (.-videoHeight video)
+                (.-videoWidth video))))))
 
-(defn start-render-loop [video canvas-ref stream]
+(defn tick [video canvas control timestamp]
+  (when-not (get @control :stop)
+    (if (= (.-readyState video) (.-HAVE_ENOUGH_DATA video))
+      (do
+        (resize-canvas video canvas)
+        (draw video canvas)
+        (draw-brackets canvas)
+        (let [{:keys [data width height]} (get-image-data canvas)]
+          (try
+            (if-let [voucher-code (read-qr-response (js/jsQR data width height))]
+              (image-recognized voucher-code)
+              (js/requestAnimationFrame (partial tick video canvas control)))
+            (catch :default e
+              (js/requestAnimationFrame (partial tick video canvas control))))))
+      (js/requestAnimationFrame (partial tick video canvas control)))))
+
+(defn start-render-loop [video canvas control stream]
   (set! (.-srcObject video) stream)
   (doto video
     (.setAttribute "playsinline" true)
     (.play))
-  (js/requestAnimationFrame (partial tick video canvas-ref)))
+  (js/requestAnimationFrame (partial tick video canvas control)))
 
-(defn component [{:keys [slides] :as data} owner _]
-  (let [video (js/document.createElement "video")]
-    (reify
-      om/IInitState
-      (init-state [_]
-        {})
-      om.core/IDidMount
-      (did-mount [_]
-        (let [canvas (om/get-ref owner "qr-canvas")]
-          ;; Start render loop (I think)
-          (.then (js/navigator.mediaDevices.getUserMedia (clj->js {:video {:facingMode "environment"
-                                                                           :resizeMode "crop-and-scale"}}))
-                 (fn [stream]
-                   (let [video-track            (-> stream .getVideoTracks first)
-                         {:keys [width height]} (-> video-track .getSettings (js->clj :keywordize-keys true))]
-                     (.applyConstraints video-track (clj->js {:height      (.-height canvas)
-                                                              :aspectRatio (/ width height)})))
-                   (start-render-loop video canvas stream)))))
-
-      om/IRenderState
-      (render-state [_ {:keys [autoplay]}]
-        (html
-         [:canvas {:width  400
-                   :height 400
-                   :ref    "qr-canvas"}])))))
+(defn component [{:keys [] :as data} owner _]
+  (reify
+    om/IInitState
+    (init-state [_]
+      {:control (atom {})})
+    om.core/IDidMount
+    (did-mount [this]
+      (let [video   (js/document.createElement "video")
+            canvas  (om/get-ref owner "qr-canvas")
+            control (:control (om/get-state owner))]
+        (.then (js/navigator.mediaDevices.getUserMedia (clj->js {:video {:facingMode "environment"}}))
+               (partial start-render-loop video canvas control))))
+    om/IWillUnmount
+    (will-unmount [_]
+      (swap! (:control (om/get-state owner)) assoc :stop true))
+    om/IRender
+    (render [_]
+      (html
+       [:canvas {:ref "qr-canvas"}]))))
