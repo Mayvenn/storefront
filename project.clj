@@ -71,8 +71,7 @@
                                {:file "src-cljs/storefront/bugsnag-2.5.0.js"
                                 :provides ["bugsnag"]}
                                {:file "src-cljs/storefront/jsQR.js"
-                                :provides ["jsQR"]}
-                               ]
+                                :provides ["jsQR"]}]
                 :externs ["externs/bugsnag.js"
                           "externs/convert.js"
                           "externs/facebook.js"
@@ -110,10 +109,13 @@
                                 :provides ["react-slick"]}
                                {:file "storefront/bugsnag-2.5.0.js"
                                 :file-min "target/min-js/bugsnag-2.5.0.js"
-                                :provides ["bugsnag"]}]
+                                :provides ["bugsnag"]}
+                               {:file "src-cljs/storefront/jsQR.js"
+                                :provides ["jsQR"]}]
                 :externs ["externs/bugsnag.js"
                           "externs/convert.js"
                           "externs/facebook.js"
+                          "externs/jsQR.js"
                           "externs/pixlee.js"
                           "externs/react-slick.js"
                           "externs/riskified.js"
