@@ -12,14 +12,14 @@
             [storefront.components.ui :as ui]
             [storefront.components.svg :as svg]
             [storefront.platform.component-utils :as utils]
-            [storefront.transitions :as transitions]))
+            [storefront.transitions :as transitions]
+            [clojure.string :as string]))
 
 (def ^:private stylist-information
   [{:stylist-name     "Aundria Carter"
     :stylist-headshot "63acc2ac-43cc-48cb-9db7-0361f01aaa25"
     :salon-name       "Faith Beauty Haven"
     :salon-address    "5322 Yadkin Rd. Fayetteville, NC"
-    :stylist-bio      "Aundria Carter better known as Keshstyles, has logged over 10 years of experience as a stylist. She ensures a memorable and enjoyable experience while getting the style of your dreams. A sew-in specialist she focuses on accentuating the beauty of all of her clients."
     :gallery          {:images ["91566919-324f-4714-9043-f4c24ae2fe98"
                                 "caae31b7-36f3-439c-9c14-af0dd83f31e7"
                                 "84ecceb8-443a-40fa-936a-6c639bf8280a"
@@ -30,7 +30,10 @@
                                 "7c7a433f-40e8-4a0d-af74-1b8ff2e69f7e"
                                 "f5dd7a95-53c9-4c2f-a380-3698852615e7"
                                 "343835b4-1b1d-44a3-9162-a690531f3edd"
-                                "08199689-1514-4ae3-bebc-00242dd96f51"]}}
+                                "08199689-1514-4ae3-bebc-00242dd96f51"]}
+    :video            {:thumbnail  "9f58f302-167a-4958-a71b-0e0880c9990b"
+                       :youtube-id "uw241YZ9sXs"}
+    :stylist-bio      "Aundria Carter better known as Keshstyles, has logged over 10 years of experience as a stylist. She ensures a memorable and enjoyable experience while getting the style of your dreams. A sew-in specialist she focuses on accentuating the beauty of all of her clients."}
    {:stylist-name     "Angela White"
     :stylist-headshot "a7903783-7c7a-4459-85a7-fc9db361696e"
     :salon-name       "Michae's Hair Salon"
@@ -42,6 +45,8 @@
                                 "ca6f688f-1822-432c-ae28-73160e965a00"
                                 "69c46710-3958-4049-bb21-e435f8b33ad9"
                                 "7df1ce4b-9e85-4674-968c-dc61bc00c122"]}
+    :video            {:thumbnail  "d3f3eb80-08b7-46b2-b790-f3d3d9ce6df1"
+                       :youtube-id "UTrxfpf8Pr8"}
     :stylist-bio      "Angela White a.k.a Hairdiva Daplug, is a licensed and versatile stylist with more than 10 years of experience. Discovering her love for all things hair at an early age Angela works with you to achieve your unique look. Specializing in sew-ins, braiding, blow outs, cuts, and coloring."}
 
    {:stylist-name     "Tamara Johnson"
@@ -57,6 +62,8 @@
                                 "b9cabcaf-9fcb-4d22-970b-ba3192a17abc"
                                 "21fae71d-e749-461f-8f1e-15c242e73f3f"
                                 "0a3cd9a0-308b-4de1-a563-553aa88fa66d"]}
+    :video            {:thumbnail  "b3d396fa-1a59-441e-a11f-c08bbaf6ee11"
+                       :youtube-id "X0XCK7zGsAM"}
     :stylist-bio      "Tamara Johnson, a.k.a. Tamara Nicole brings over 9 years of experience to her chair. A graduate of the Paul Mitchell School she places an emphasis on healthy and strong, shiny hair. Specializing in sew-ins, blowouts, and locs she will make your hair grow!"}
 
    {:stylist-name     "Valerie Selby"
@@ -72,6 +79,8 @@
                                 "b9048896-2123-43c4-b503-786425ceee9c"
                                 "8adaf2dc-3d3e-4045-8549-85bf2b28f71e"
                                 "76a6083d-1f14-4660-b70f-17134aae07cc"]}
+    :video            {:thumbnail  "227e12d2-6a6b-419b-b598-d0cb448cc822"
+                       :youtube-id "3CWCPzxh4iI"}
     :stylist-bio      "As the owner and operator of ILLstylz Salon Valerie backs her love of hair with over 15 years of experience. With a focus on healthy hair a specialty in sew-ins Valerie strives to give your hair what it needs to be healthy regardless of the style or service you choose."}
 
    {:stylist-name     "Shenee’ Shaw"
@@ -86,6 +95,8 @@
                                 "b96fd795-1bf8-44e7-bdd3-0328428afd5e"
                                 "8f9b13a1-879c-4f6a-ab77-c24f03c42577"
                                 "94b2f2a1-3246-420c-852a-acd7fe29977f"]}
+    :video            {:thumbnail  "b8fb38f2-2a6d-4024-ab15-1ed4f11a2e64"
+                       :youtube-id "bbOkP5WsB8U"}
     :stylist-bio      "Shenee’ is a Master Cosmetologist who brings a wealth of experience with over 24 years of experience. Specializing in sew-ins, she also provides all phases of hair care from natural hair to demi/semi permanent hair color, relaxers, and thermal hair straightening."}
 
    {:stylist-name     "Tiara Cohen"
@@ -97,6 +108,8 @@
                                 "729866c4-e578-4e23-ad57-8d5945fc10b4"
                                 "baaf45a1-ce35-40f0-a26b-e21802ddd6d2"
                                 "9427d213-db31-4f29-a769-f43e3246db96"]}
+    :video            {:thumbnail  "8b4b82cb-b3f0-433e-8e37-d9bebb03d823"
+                       :youtube-id "X0XCK7zGsAM"}
     :stylist-bio      "With over 22 years of experience Tiara knows that weaves and wigs are a choice that each one of her clients makes, not a must. Starting with a specialty in sew-ins, Tiara has the experience to meet all the needs of her clients dreams."}])
 
 (defn ^:private stylist-slide [selected-index index {:keys [stylist-headshot]}]
@@ -115,7 +128,7 @@
   [:div (ui/aspect-ratio 1 1
                          (ui/ucare-img {:class "col-12"} ucare-id))])
 
-(defn ^:private stylist-info [{:keys [stylist-name salon-name salon-address stylist-bio gallery]} stylist-gallery-open?]
+(defn ^:private stylist-info [{:keys [stylist-name salon-name salon-address stylist-bio gallery video]} stylist-gallery-open?]
   [:div.py2
    [:div.h3 stylist-name]
    [:div.teal.h6.pt2.bold
@@ -143,10 +156,16 @@
           {:style {:top "1.5rem" :right "1.5rem"}}
           (ui/modal-close {:class       "stroke-dark-gray fill-gray"
                            :close-attrs close-attrs})]])))
-   #_[:div.border-bottom.border-gray.mx-auto.col-10.col-4-on-tb.col-2-on-dt.my2]
-   #_[:div.flex.justify-center
-    [:div (svg/cascade {:style {:height "67px" :width "120px"}})]
-    [:div.h6 stylist-name ": Certified Mayvenn Stylist"]]])
+   #_[:div.border-top.border-gray.mx-auto.col-11.col-4-on-tb.col-2-on-dt.mt3.pt2.flex.justify-center.mb10.pb4
+    [:a (utils/route-to events/navigate-install-home {:query-params {:video "free-install"}})
+     ;; TODO: shouldn't briefly flash old thumbnail when clicking between stylists
+     [:div (ui/ucare-img {:width "120"} (:thumbnail video))]]
+    [:div.flex.flex-column.justify-center.h6.line-height-1.ml4.left-align
+     [:div stylist-name ": Certified Mayvenn Stylist"]
+     [:a (utils/route-to events/navigate-install-home {:query-params {:video "free-install"}}) ;; TODO: opening video shouldn't scroll to top
+      [:div.bold.mt3.dark-gray
+       (svg/clear-play-video {:style {:height "1em" :width "1em"} :class "mx1 fill-dark-gray"})
+       "Watch Video"]]]]])
 
 (defn stylist-details-before-change [prev next]
   (messages/handle-message events/carousel-certified-stylist-slide))
