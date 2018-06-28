@@ -196,7 +196,7 @@
          "payout"        (payout-component data)
          "commission"    (commission-component data)
          "award"         (award-component data)
-         "voucher-award" (voucher-award-component data))))))
+         "voucher_award" (voucher-award-component data))))))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

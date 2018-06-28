@@ -89,7 +89,7 @@
        (case type
          "commission"    (commission-row i orders balance-transfer)
          "award"         (award-row i balance-transfer)
-         "voucher-award" (voucher-award-row i balance-transfer)
+         "voucher_award" (voucher-award-row i balance-transfer)
          "payout"        (payout-row balance-transfer)
          (unknown-row i balance-transfer)))
      balance-transfers)]])
