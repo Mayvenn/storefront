@@ -7,7 +7,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.transitions :as transitions]))
 
-(defn component [{:keys [url]} owner {:keys [close-attrs]}]
+(defn component [{:keys [youtube-id]} owner {:keys [close-attrs]}]
   (component/create
    (ui/modal {:col-class "col-12 col-6-on-tb col-6-on-dt my8-on-tb-dt flex justify-center"
               :close-attrs close-attrs
@@ -15,7 +15,7 @@
              (ui/youtube-responsive
               (str
                "//www.youtube.com/embed/"
-               url
+               youtube-id
                "?rel=0"
                "&color=white"
                "&showinfo=0")))))

@@ -13,10 +13,11 @@
             [storefront.components.svg :as svg]
             [storefront.platform.component-utils :as utils]
             [storefront.transitions :as transitions]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [spice.maps :as maps]))
 
 (def ^:private stylist-information
-  (mapv #(assoc % :stylist-slug (-> % :stylist-name (string/replace #"\W" "") string/lower-case))
+  (mapv #(assoc % :video-slug (-> % :stylist-name (string/replace #"\W" "") string/lower-case))
        [{:stylist-name     "Aundria Carter"
          :stylist-headshot "63acc2ac-43cc-48cb-9db7-0361f01aaa25"
          :salon-name       "Faith Beauty Haven"
@@ -113,6 +114,9 @@
                             :youtube-id "X0XCK7zGsAM"}
          :stylist-bio      "With over 22 years of experience Tiara knows that weaves and wigs are a choice that each one of her clients makes, not a must. Starting with a specialty in sew-ins, Tiara has the experience to meet all the needs of her clients dreams."}]))
 
+(def video-slug->video
+  (maps/map-values :video (maps/index-by :video-slug stylist-information)))
+
 (defn ^:private stylist-slide [selected-index index {:keys [stylist-headshot]}]
   [:div.flex.relative.justify-center.mxn2
    [:div.z5.stacking-context.absolute
@@ -129,7 +133,7 @@
   [:div (ui/aspect-ratio 1 1
                          (ui/ucare-img {:class "col-12"} ucare-id))])
 
-(defn ^:private stylist-info [{:as stylist :keys [stylist-name salon-name salon-address stylist-bio gallery video stylist-slug]} stylist-gallery-open?]
+(defn ^:private stylist-info [{:as stylist :keys [stylist-name salon-name salon-address stylist-bio gallery video video-slug]} stylist-gallery-open?]
   [:div.py2
    [:div.h3 stylist-name]
    [:div.teal.h6.pt2.bold
@@ -157,13 +161,14 @@
           {:style {:top "1.5rem" :right "1.5rem"}}
           (ui/modal-close {:class       "stroke-dark-gray fill-gray"
                            :close-attrs close-attrs})]])))
-   #_[:div.border-top.border-gray.mx-auto.col-11.col-4-on-tb.col-2-on-dt.mt3.pt2.flex.justify-center.mb10.pb4
-    [:a (utils/route-to events/navigate-install-home {:query-params {:video "free-install"}})
-     ;; TODO: shouldn't briefly flash old thumbnail when clicking between stylists
-     [:div (ui/ucare-img {:width "120"} (:thumbnail video))]]
-    [:div.flex.flex-column.justify-center.h6.line-height-1.ml4.left-align
-     [:div stylist-name ": Certified Mayvenn Stylist"]
-     [:a (utils/route-to events/navigate-install-home {:query-params {:video stylist-slug}}) ;; TODO: opening video shouldn't scroll to top
+   [:div.border-top.border-gray.mx-auto.col-11.col-4-on-tb.col-2-on-dt.mt3.pt2.mb10.pb4
+    [:a.flex.justify-center.block.inherit-color
+     (utils/route-to events/navigate-install-home {:query-params {:video video-slug}})
+     [:div {:key stylist-name
+            :style {:height "67px"}}
+      (ui/ucare-img {:width "120"} (:thumbnail video))]
+     [:div.flex.flex-column.justify-center.h6.line-height-1.ml4.left-align
+      [:div stylist-name ": Certified Mayvenn Stylist"]
       [:div.bold.mt3.dark-gray
        (svg/clear-play-video {:style {:height "1em" :width "1em"} :class "mx1 fill-dark-gray"})
        "Watch Video"]]]]])
@@ -201,7 +206,7 @@
                       {})]
     [:div.center.px6
      [:div {:class (if sliding? "transition-2 transparent" "transition-1 opaque")}
-      (stylist-info (get stylist-information index)
+      (stylist-info (get stylist-information (or index 0))
                     gallery-open?)]]]))
 
 (defmethod transitions/transition-state events/carousel-certified-stylist-slide [_ _event _args app-state]

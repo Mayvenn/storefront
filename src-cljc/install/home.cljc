@@ -151,13 +151,16 @@
    [:div.col-8.mx-auto.h6.black copy]])
 
 (defn ^:private component
-  [{:keys [header show-video? video carousel-certified-stylist ugc-carousel faq-accordion popup-data]} owner opts]
+  [{:keys [header video carousel-certified-stylist ugc-carousel faq-accordion popup-data]} owner opts]
   (component/create
    [:div
     (when video
       (component/build free-install-video/component
                        video
-                       {:opts {:close-attrs (utils/route-to events/navigate-install-home)}}))
+                       ;; NOTE(jeff): we use an invalid video slug to preserve back behavior. There probably should be
+                       ;;             an investigation to why history is replaced when doing A -> B -> A navigation
+                       ;;             (B is removed from history).
+                       {:opts {:close-attrs (utils/route-to events/navigate-install-home {:query-params {:video "0"}})}}))
     (component/build relative-header header nil)
     (component/build fixed-header header nil)
     [:div.shadow.bg-cover.bg-center.bg-top.bg-free-install-landing.col-12.p4
@@ -364,12 +367,13 @@
 (defmethod effects/perform-effects events/navigate-install-home [_ _ _ _ app-state]
   #?(:cljs (pixlee-hook/fetch-album-by-keyword :free-install-home)))
 
+(def ^:private slug->video
+  (assoc certified-stylists/video-slug->video
+         "free-install" {:youtube-id "cWkSO_2nnD4"}))
+
 (defmethod transitions/transition-state events/navigate-install-home
   [_ _ {:keys [query-params]} app-state]
-  (let [url (case (:video query-params)
-              "free-install" "cWkSO_2nnD4"
-              nil)]
-    (assoc-in app-state keypaths/fvlanding-video (when url {:url url}))))
+  (assoc-in app-state keypaths/fvlanding-video (slug->video (:video query-params))))
 
 (defmethod transitions/transition-state events/control-install-landing-page-ugc-modal-open
   [_ _ {:keys [index]} app-state]

@@ -241,8 +241,8 @@
     (seo/set-tags app-state)
     (when (or (not= (get-in prev-app-state keypaths/navigation-event)
                     (get-in app-state keypaths/navigation-event))
-              (not= (dissoc (get-in prev-app-state keypaths/navigation-args) :query-params)
-                    (dissoc (get-in app-state keypaths/navigation-args) :query-params)))
+              (not= (not-empty (dissoc (get-in prev-app-state keypaths/navigation-args) :query-params))
+                    (not-empty (dissoc (get-in app-state keypaths/navigation-args) :query-params))))
       (let [restore-scroll-top (:final-scroll nav-stack-item 0)]
         (if (zero? restore-scroll-top)
           ;; We can always snap to 0, so just do it immediately. (HEAT is unhappy if the page is scrolling underneath it.)
