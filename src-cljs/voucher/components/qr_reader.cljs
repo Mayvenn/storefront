@@ -11,17 +11,8 @@
     0))
 
 (defn draw [video canvas]
-  (let [vw (.-videoWidth video)
-        vh (.-videoHeight video)
-        cw (.-width canvas)
-        ch (.-height canvas)]
-    (.drawImage (.getContext canvas "2d")
-                video
-                (video-offset vw vh)
-                (video-offset vh vw)
-                (min vw vh) (min vw vh)
-                0 0
-                cw ch)))
+  (.drawImage (.getContext canvas "2d")
+              video 0 0))
 
 (defn get-image-data [canvas]
   (let [image-data (.getImageData (.getContext canvas "2d") 0 0 (.-width canvas) (.-height canvas))]
