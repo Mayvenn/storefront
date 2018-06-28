@@ -140,8 +140,9 @@
                camera-permission-denied)))
     om/IWillUnmount
     (will-unmount [_]
-      (doseq [track (.getTracks @(:stream (om/get-state owner)))]
-        (.stop track))
+      (when-let [stream @(:stream (om/get-state owner))]
+        (doseq [track (.getTracks stream)]
+          (.stop track)))
       (swap! (:control (om/get-state owner)) assoc :stop true))
     om/IRender
     (render [_]
