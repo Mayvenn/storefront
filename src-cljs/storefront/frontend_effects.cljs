@@ -16,6 +16,7 @@
             [storefront.api :as api]
             [storefront.browser.cookie-jar :as cookie-jar]
             [storefront.browser.scroll :as scroll]
+            [storefront.browser.events :as browser-events]
             [storefront.config :as config]
             [storefront.events :as events]
             [storefront.history :as history]
@@ -91,6 +92,7 @@
   (talkable/insert)
   (places-autocomplete/insert)
   (refresh-account app-state)
+  (browser-events/attach-global-listeners)
   (doseq [feature (get-in app-state keypaths/features)]
     ;; trigger GA analytics, even though feature is already enabled
     (handle-message events/enable-feature {:feature feature})))
@@ -1110,3 +1112,7 @@
                 (stringer/browser-id)
                 (get-in app-state-before keypaths/user-id)
                 (get-in app-state-before keypaths/user-token)))
+
+(defmethod perform-effects events/browser-fullscreen-exit [_ event args app-state-before app-state]
+  (when (= events/navigate-install-home (get-in app-state keypaths/navigation-event))
+    (history/enqueue-navigate events/navigate-install-home {:query-params {:video "0"}})))

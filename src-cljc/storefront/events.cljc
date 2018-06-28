@@ -460,3 +460,6 @@
 (defpath voucherify-api-failure)
 
 (defpath voucher-camera-permission-denied)
+
+(defpath browser-fullscreen-enter)
+(defpath browser-fullscreen-exit)
