@@ -113,7 +113,7 @@
     (.fillText ctx "Point camera at QR code"
                (/ (.-width canvas) 2) (+ font-size
                                          (/ (.-height canvas)
-                                            30)))))
+                                            40)))))
 
 (defn tick [video canvas control timestamp]
   (when-not (get @control :stop)
