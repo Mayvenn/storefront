@@ -93,7 +93,7 @@
 
 (defn tick [video canvas control timestamp]
   (when-not (get @control :stop)
-    (when (= (.-readyState video) (.-HAVE_ENOUGH_DATA video))
+    (when (>= (.-readyState video) (.-HAVE_FUTURE_DATA video))
       (do
         (resize-canvas video canvas)
         (draw video canvas)
