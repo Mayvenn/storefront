@@ -11,8 +11,16 @@
     0))
 
 (defn draw [video canvas]
-  (.drawImage (.getContext canvas "2d")
-              video 0 0))
+  (let [vw (.-videoWidth video)
+        vh (.-videoHeight video)
+        cw (.-width canvas)
+        ch (.-height canvas)]
+    (.drawImage (.getContext canvas "2d")
+                video
+                0 0
+                vw vh
+                0 0
+                cw ch)))
 
 (defn get-image-data [canvas]
   (let [image-data (.getImageData (.getContext canvas "2d") 0 0 (.-width canvas) (.-height canvas))]
@@ -36,51 +44,76 @@
     (.moveTo ctx (:x begin) (:y begin))
     (doseq [{:keys [x y]} rest]
       (.lineTo ctx x y))
-    (set! (.-lineWidth ctx) 10)
+    (set! (.-lineWidth ctx) (* 10 js/devicePixelRatio))
     (set! (.-strokeStyle ctx) "white")
     (.stroke ctx)))
 
 (defn draw-brackets [canvas]
-  (draw-line canvas
-             {:x (- (.-width canvas) 80)
-              :y (- (.-height canvas) 40)}
-             {:x (- (.-width canvas) 40)
-              :y (- (.-height canvas) 40)}
-             {:x (- (.-width canvas) 40)
-              :y (- (.-height canvas) 80)})
-  (draw-line canvas
-             {:x 40
-              :y (- (.-height canvas) 80)}
-             {:x 40
-              :y (- (.-height canvas) 40)}
-             {:x 80
-              :y (- (.-height canvas) 40)})
-  (draw-line canvas
-             {:x (- (.-width canvas) 80)
-              :y 40}
-             {:x (- (.-width canvas) 40)
-              :y 40}
-             {:x (- (.-width canvas) 40)
-              :y 80})
-  (draw-line canvas
-             {:x 80 :y 40}
-             {:x 40 :y 40}
-             {:x 40 :y 80}))
+  (let [cw      (.-width canvas)
+        ch      (.-height canvas)
+        padding (/ cw 8)
+        length  (/ cw 10)]
+    (draw-line canvas
+               {:x (- cw padding)
+                :y (- ch (+ padding length))}
+               {:x (- cw padding)
+                :y (- ch padding)}
+               {:x (- cw (+ padding length))
+                :y (- ch padding)})
+    (draw-line canvas
+               {:x padding
+                :y (- ch (+ padding length))}
+               {:x padding
+                :y (- ch padding)}
+               {:x (+ padding length)
+                :y (- ch padding)})
+    (draw-line canvas
+               {:x (- cw (+ padding length))
+                :y padding}
+               {:x (- cw padding)
+                :y padding}
+               {:x (- cw padding)
+                :y (+ padding length)})
+    (draw-line canvas
+               {:x (+ padding length)
+                :y padding}
+               {:x padding
+                :y padding}
+               {:x padding
+                :y (+ padding length)})))
 
 (defn resize-canvas [video canvas]
-  (let [canvas-parent-rectangle (.getBoundingClientRect (.-parentElement canvas))]
+  (let [canvas-parent-rectangle (.getBoundingClientRect (.-parentElement canvas))
+        canvas-css-width        (.-width canvas-parent-rectangle)
+        canvas-css-height       (* canvas-css-width
+                                   (/ (.-videoHeight video)
+                                      (.-videoWidth video)))
+        scale                   (.-devicePixelRatio js/window)
+        ctx                     (.getContext canvas "2d")
+        canvas-style            (.-style canvas)]
+
+    (set! (.-width canvas-style)
+          (str canvas-css-width "px"))
+    (set! (.-height canvas-style)
+          (str canvas-css-height "px"))
+
     (set! (.-width canvas)
-          (.-width canvas-parent-rectangle))
+          (* canvas-css-width
+             scale))
     (set! (.-height canvas)
-          (* (.-width canvas-parent-rectangle)
-             (/ (.-videoHeight video)
-                (.-videoWidth video))))))
+          (* canvas-css-height scale))))
 
 (defn draw-text [canvas]
-  (let [ctx (.getContext canvas "2d")]
-    (set! (.-font ctx) "14px Roboto")
+  (let [ctx       (.getContext canvas "2d")
+        scale     (.-devicePixelRatio js/window)
+        font-size (* 16 scale)]
+    (set! (.-font ctx) (str "bold " font-size "px Roboto"))
     (set! (.-fillStyle ctx) "white")
-    (.fillText ctx "Point camera at QR code" (- (/ (.-width canvas) 2) 78) 30)))
+    (set! (.-textAlign ctx) "center")
+    (.fillText ctx "Point camera at QR code"
+               (/ (.-width canvas) 2) (+ font-size
+                                         (/ (.-height canvas)
+                                            30)))))
 
 (defn tick [video canvas control timestamp]
   (when-not (get @control :stop)
