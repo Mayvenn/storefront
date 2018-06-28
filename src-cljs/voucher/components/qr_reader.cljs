@@ -92,6 +92,7 @@
     (.fillText ctx "Point camera at QR code" (- (/ (.-width canvas) 2) 78) 30)))
 
 (defn tick [video canvas control timestamp]
+  (js/console.log "Video Stream State" (.-readyState video))
   (when-not (get @control :stop)
     (when (>= (.-readyState video) (.-HAVE_FUTURE_DATA video))
       (do
@@ -104,6 +105,7 @@
             (when-let [voucher-code (read-qr-response (js/jsQR data width height))]
               (image-recognized voucher-code)))
           (catch :default e
+            (js/console.log "Error while reading video stream: " e)
             nil))))
     (js/requestAnimationFrame (partial tick video canvas control))))
 
