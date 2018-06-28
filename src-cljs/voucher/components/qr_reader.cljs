@@ -112,8 +112,11 @@
   (set! (.-srcObject video) stream)
   (doto video
     (.setAttribute "playsinline" true)
-    (.play))
-  (js/requestAnimationFrame (partial tick video canvas control)))
+    (.play)
+    (.addEventListener "canplay"
+                       (fn [e]
+                         (js/requestAnimationFrame (partial tick video canvas control)))
+                       false)))
 
 (defn camera-permission-denied []
   (messages/handle-message events/voucher-camera-permission-denied))
