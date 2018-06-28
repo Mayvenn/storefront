@@ -94,6 +94,7 @@
 (defn tick [video canvas control timestamp]
   (js/console.log "Video Stream State" (.-readyState video))
   (when-not (get @control :stop)
+    (.play video)
     (when (>= (.-readyState video) (.-HAVE_FUTURE_DATA video))
       (do
         (resize-canvas video canvas)
