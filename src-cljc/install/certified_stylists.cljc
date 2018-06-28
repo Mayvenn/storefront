@@ -161,16 +161,16 @@
           {:style {:top "1.5rem" :right "1.5rem"}}
           (ui/modal-close {:class       "stroke-dark-gray fill-gray"
                            :close-attrs close-attrs})]])))
-   [:div.border-top.border-gray.mx-auto.col-11.col-4-on-tb.col-2-on-dt.mt3.pt2.mb10.pb4
+   [:div.border-top.border-gray.mx-auto.col-11.col-4-on-tb.col-3-on-dt.mt3.pt3.mb10.pb4.dark-gray
     [:a.flex.justify-center.block.inherit-color
      (utils/route-to events/navigate-install-home {:query-params {:video video-slug}})
      [:div {:key stylist-name
             :style {:height "67px"}}
       (ui/ucare-img {:width "120"} (:thumbnail video))]
-     [:div.flex.flex-column.justify-center.h6.line-height-1.ml4.left-align
+     [:div.flex.flex-column.justify-center.h6.line-height-2.ml4.left-align
       [:div stylist-name ": Certified Mayvenn Stylist"]
-      [:div.bold.mt3.dark-gray
-       (svg/clear-play-video {:style {:height "1em" :width "1em"} :class "mx1 fill-dark-gray"})
+      [:div.bold.mt3.flex.items-center
+       (svg/clear-play-video {:style {:height "1em" :width "1em"} :class "fill-dark-gray mr1"})
        "Watch Video"]]]]])
 
 (defn stylist-details-before-change [prev next]
