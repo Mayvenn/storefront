@@ -396,7 +396,7 @@
   (let [app-version    (get-in app-state keypaths/app-version)
         remote-version (:app-version args)
         needs-restart? (and app-version remote-version
-                            (< config/allowed-version-drift (- remote-version app-version)))]
+                            (< app-version remote-version))]
     (when needs-restart?
       (handle-later events/app-restart))))
 

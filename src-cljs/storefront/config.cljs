@@ -31,10 +31,6 @@
 (def telligent-community-secured?
   (= "production" js/environment))
 
-(def allowed-version-drift
-  "The number of versions that storefront is allowed to fall behind before requiring a refresh"
-  0)
-
 (def api-base-url js/apiUrl)
 
 (def mayvenn-leads-call-number "1-866-424-7201")
