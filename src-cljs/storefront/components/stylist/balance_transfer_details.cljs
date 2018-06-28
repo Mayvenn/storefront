@@ -175,15 +175,28 @@
      [:div.h5.center.navy.py3.border-top.border-gray
       (str (mf/as-money amount) " has been added to your next payment.")]]))
 
+(defn ^:private voucher-award-component [{:keys [balance-transfer]}]
+  (let [{:keys [id transfered-at amount data]} balance-transfer
+        {:keys [reason]}                       data]
+    [:div.container.mb4.px3
+     back-to-earnings
+     [:h3.my4 "Details - Voucher Award Received"]
+     [:div.flex.justify-between.col-12
+      [:div (f/less-year-more-day-date (or transfered-at (:transfered_at data)))]
+      [:div.green "+" (mf/as-money amount)]]
+     [:div.h5.center.navy.py3.border-gray
+      (str (mf/as-money amount) " has been added to your next payment.")]]))
+
 (defn component [{:keys [fetching? balance-transfer] :as data} owner opts]
   (component/create
    (if (and fetching? (not balance-transfer))
      [:div.my2.h2 ui/spinner]
      (when balance-transfer
        (case (:type balance-transfer)
-         "payout"     (payout-component data)
-         "commission" (commission-component data)
-         "award"      (award-component data))))))
+         "payout"        (payout-component data)
+         "commission"    (commission-component data)
+         "award"         (award-component data)
+         "voucher-award" (voucher-award-component data))))))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

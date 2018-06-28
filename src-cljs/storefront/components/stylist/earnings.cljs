@@ -44,6 +44,18 @@
      [:td.py2 "Mayvenn Admin Payment" [:div.h6 reason]]
      [:td.pr3.py2.green.right-align "+" (mf/as-money amount)]]))
 
+(defn voucher-award-row [row-number balance-transfer]
+  (let [{:keys [id]} balance-transfer
+        {:keys [amount created-at reason] :as award} (:data balance-transfer)]
+    [:tr.pointer (merge {:key (str "voucher-award-" id)
+                         :data-test (str "voucher-award-" id)}
+                        (utils/route-to events/navigate-stylist-dashboard-balance-transfer-details {:balance-transfer-id id})
+                        (when (odd? row-number)
+                          {:class "bg-too-light-teal"}))
+     [:td.px3.py2 (f/less-year-more-day-date created-at)]
+     [:td.py2 "Mayvenn Admin Payment" [:div.h6 "Install Program Payment"]]
+     [:td.pr3.py2.green.right-align "+" (mf/as-money amount)]]))
+
 (defn payout-row [balance-transfer]
   (let [{:keys [id]} balance-transfer
         {:keys [amount created-at payout-method-name by-self]} (:data balance-transfer)]
@@ -75,9 +87,10 @@
     (map-indexed
      (fn [i {:keys [type data] :as balance-transfer}]
        (case type
-         "commission" (commission-row i orders balance-transfer)
-         "award"      (award-row i balance-transfer)
-         "payout"     (payout-row balance-transfer)
+         "commission"    (commission-row i orders balance-transfer)
+         "award"         (award-row i balance-transfer)
+         "voucher-award" (voucher-award-row i balance-transfer)
+         "payout"        (payout-row balance-transfer)
          (unknown-row i balance-transfer)))
      balance-transfers)]])
 
