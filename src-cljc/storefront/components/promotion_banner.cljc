@@ -25,8 +25,7 @@
 (defmethod component :install-discount/eligible
   [_ _ _]
   (component/create
-   [:a {:on-click  (utils/send-event-callback events/popup-show-seventy-five-off-install
-                                              {})
+   [:a {:on-click  (utils/send-event-callback events/popup-show-seventy-five-off-install)
         :data-test "seventy-five-off-install-promo-banner"}
     [:div.white.center.pp5.bg-teal.h5.bold.pointer
      "Get $100 off your install! " [:span.underline "Learn more"]]]))
@@ -35,18 +34,19 @@
   [_ _ _]
   (component/create
    [:a.white.center.p2.bg-teal.mbnp5.h6.bold.flex.items-center.justify-center
-    {:on-click  (utils/send-event-callback events/popup-show-seventy-five-off-install
-                                           {})
+    {:on-click  (utils/send-event-callback events/popup-show-seventy-five-off-install)
      :data-test "seventy-five-off-install-promo-banner"}
     (svg/celebration-horn {:height "1.6em"
                            :width  "1.6em"
                            :class  "mr1 fill-white stroke-white"})
-    "CONGRATS — Enjoy $100 off your next install" [:span.underline "More info"]]))
+    [:div.pointer
+     "CONGRATS — Enjoy $100 off your next install "
+     [:span.underline "More info"]]]))
 
 (defmethod component :freeinstall/eligible
   [_ _ _]
   (component/create
-   [:a {:on-click  (utils/send-event-callback events/popup-show-free-install {})
+   [:a {:on-click  (utils/send-event-callback events/popup-show-free-install)
         :data-test "free-install-promo-banner"}
     [:div.white.center.pp5.bg-teal.h5.bold.pointer
      "Mayvenn will pay for your install! " [:span.underline "Learn more"]]]))
@@ -55,12 +55,13 @@
   [_ _ _]
   (component/create
    [:a.white.center.p2.bg-teal.mbnp5.h6.bold.flex.items-center.justify-center
-    {:on-click  (utils/send-event-callback events/popup-show-free-install {})
+    {:on-click  (utils/send-event-callback events/popup-show-free-install)
      :data-test "free-install-promo-banner"}
     (svg/celebration-horn {:height "1.6em"
                            :width  "1.6em"
                            :class  "mr1 fill-white stroke-white"})
-    "CONGRATS — Your next install is FREE!" [:span.underline "More info"]]))
+    [:div.pointer "CONGRATS — Your next install is FREE! "
+     [:span.underline "More info"]]]))
 
 (defmethod component :basic
   [{:keys [promo]} _ _]
