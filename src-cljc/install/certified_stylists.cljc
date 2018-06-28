@@ -187,6 +187,7 @@
      (component/build carousel/component
                       {:slides   (map-indexed (partial stylist-slide index) stylist-information)
                        :settings {:swipe         true
+                                  :initialSlide  (or index 0)
                                   :arrows        true
                                   :dots          false
                                   :slidesToShow  5
