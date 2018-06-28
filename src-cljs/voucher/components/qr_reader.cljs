@@ -92,9 +92,7 @@
     (.fillText ctx "Point camera at QR code" (- (/ (.-width canvas) 2) 78) 30)))
 
 (defn tick [video canvas control timestamp]
-  (js/console.log "Video Stream State" (.-readyState video))
   (when-not (get @control :stop)
-    (.play video)
     (when (>= (.-readyState video) (.-HAVE_FUTURE_DATA video))
       (do
         (resize-canvas video canvas)
@@ -110,7 +108,7 @@
             nil))))
     (js/requestAnimationFrame (partial tick video canvas control))))
 
-(defn start-render-loop [video canvas control stream]
+(defn start-render-loop [^js/HTMLMediaElement video canvas control stream]
   (set! (.-srcObject video) stream)
   (doto video
     (.setAttribute "playsinline" true)
