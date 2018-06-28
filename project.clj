@@ -111,6 +111,7 @@
                                 :file-min "target/min-js/bugsnag-2.5.0.js"
                                 :provides ["bugsnag"]}
                                {:file "src-cljs/storefront/jsQR.js"
+                                :file-min "target/min-js/jsQR.js"
                                 :provides ["jsQR"]}]
                 :externs ["externs/bugsnag.js"
                           "externs/convert.js"
