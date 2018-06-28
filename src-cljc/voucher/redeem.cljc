@@ -88,7 +88,9 @@
 
 (defmethod transitions/transition-state events/navigate-voucher-redeem
   [dispatch event args app-state]
-  (assoc-in app-state voucher-keypaths/scanned-code nil))
+  (-> app-state
+      (assoc-in voucher-keypaths/scanned-code nil)
+      (assoc-in voucher-keypaths/scanning? nil)))
 
 (defmethod effects/perform-effects events/control-voucher-redeem
   [dispatch event {:keys [code]} prev-app-state app-state]
