@@ -121,17 +121,23 @@
   (reify
     om/IInitState
     (init-state [_]
-      {:control (atom {})})
+      {:control (atom {})
+       :stream  (atom nil)})
     om.core/IDidMount
     (did-mount [this]
-      (let [video   (js/document.createElement "video")
-            canvas  (om/get-ref owner "qr-canvas")
-            control (:control (om/get-state owner))]
+      (let [video        (js/document.createElement "video")
+            canvas       (om/get-ref owner "qr-canvas")
+            control      (:control (om/get-state owner))
+            state-stream (:stream (om/get-state owner))]
         (.then (js/navigator.mediaDevices.getUserMedia (clj->js {:video {:facingMode "environment"}}))
-               (partial start-render-loop video canvas control)
+               (fn [stream]
+                 (reset! state-stream stream)
+                 (start-render-loop video canvas control stream))
                camera-permission-denied)))
     om/IWillUnmount
     (will-unmount [_]
+      (doseq [track (.getTracks @(:stream (om/get-state owner)))]
+        (.stop track))
       (swap! (:control (om/get-state owner)) assoc :stop true))
     om/IRender
     (render [_]
