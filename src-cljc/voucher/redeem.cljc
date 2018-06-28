@@ -150,3 +150,9 @@
 (defmethod transitions/transition-state events/voucher-camera-permission-denied
   [_ event _ app-state]
   (assoc-in app-state voucher-keypaths/scanning? nil))
+
+(defmethod effects/perform-effects events/voucher-camera-permission-denied
+  [_ event _ _ app-state]
+  (messages/handle-message events/flash-show-failure
+                           {:message (str "Unable to use the device's camera, "
+                                          "please enter the code manually.")}))
