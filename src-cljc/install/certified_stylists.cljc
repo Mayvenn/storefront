@@ -111,7 +111,7 @@
                                      "baaf45a1-ce35-40f0-a26b-e21802ddd6d2"
                                      "9427d213-db31-4f29-a769-f43e3246db96"]}
          :video            {:thumbnail  "8b4b82cb-b3f0-433e-8e37-d9bebb03d823"
-                            :youtube-id "X0XCK7zGsAM"}
+                            :youtube-id "I0ExZDXZJE0"}
          :stylist-bio      "With over 22 years of experience Tiara knows that weaves and wigs are a choice that each one of her clients makes, not a must. Starting with a specialty in sew-ins, Tiara has the experience to meet all the needs of her clients dreams."}]))
 
 (def video-slug->video
