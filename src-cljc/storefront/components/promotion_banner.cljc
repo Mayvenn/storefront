@@ -34,11 +34,14 @@
 (defmethod component :install-discount/applied
   [_ _ _]
   (component/create
-   [:div.white.center.p2.bg-teal.mbnp5.h6.bold.flex.items-center.justify-center
+   [:a.white.center.p2.bg-teal.mbnp5.h6.bold.flex.items-center.justify-center
+    {:on-click  (utils/send-event-callback events/popup-show-seventy-five-off-install
+                                           {})
+     :data-test "seventy-five-off-install-promo-banner"}
     (svg/celebration-horn {:height "1.6em"
                            :width  "1.6em"
                            :class  "mr1 fill-white stroke-white"})
-    "CONGRATS — Enjoy $100 off your next install"]))
+    "CONGRATS — Enjoy $100 off your next install" [:span.underline "More info"]]))
 
 (defmethod component :freeinstall/eligible
   [_ _ _]
@@ -51,11 +54,13 @@
 (defmethod component :freeinstall/applied
   [_ _ _]
   (component/create
-   [:div.white.center.p2.bg-teal.mbnp5.h6.bold.flex.items-center.justify-center
+   [:a.white.center.p2.bg-teal.mbnp5.h6.bold.flex.items-center.justify-center
+    {:on-click  (utils/send-event-callback events/popup-show-free-install {})
+     :data-test "free-install-promo-banner"}
     (svg/celebration-horn {:height "1.6em"
                            :width  "1.6em"
                            :class  "mr1 fill-white stroke-white"})
-    "CONGRATS — Your next install is FREE!"]))
+    "CONGRATS — Your next install is FREE!" [:span.underline "More info"]]))
 
 (defmethod component :basic
   [{:keys [promo]} _ _]
