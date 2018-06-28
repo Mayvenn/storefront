@@ -314,6 +314,7 @@
      (floating-label label id status)
      [:select.col-12.bg-clear
       (field-class (merge {:key         label
+                           :label       ""
                            :value       (or value "")}
                           #?(:clj nil
                              :cljs {:on-change #(handle-message events/control-change-state
