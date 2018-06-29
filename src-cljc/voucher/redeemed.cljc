@@ -32,7 +32,9 @@
                           (-> voucher :discount :amount_off (/ 100) mf/as-money-without-cents))]
     [:div.h4 "has been added to your earnings"]
 
-    [:div.pb4.my8.col-6 (ui/underline-button (utils/route-to events/navigate-stylist-dashboard-earnings) "View Earnings")]
+    [:div.pb4.my8.col-6
+     (ui/underline-button (assoc (utils/route-to events/navigate-stylist-dashboard-earnings)
+                                 :data-test "view-earnings") "View Earnings")]
 
     [:a.pt4.my8.medium.h6.border-bottom.border-teal.border-width-2.black (utils/route-to events/navigate-voucher-redeem) "Redeem Another Voucher"]]))
 
