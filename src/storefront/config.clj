@@ -16,6 +16,15 @@
   {:pre [(#{"development" "test" "acceptance" "production"} environment)]}
   (= environment "development"))
 
+(defn dev-print! [environment & msg]
+  (when (development? environment)
+    (newline)
+    (println "********************************")
+    (apply println msg)
+    (println "********************************")
+    (newline)
+    (newline)))
+
 (def feature-block-look-ids
   ;;NOTE edit the cljs config too!
   ;;NOTE @Ryan, please only change the top map

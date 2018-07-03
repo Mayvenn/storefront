@@ -175,7 +175,7 @@
              {:href "/"}
              [:div.h4.p1.letter-spacing-1 "Return to Homepage"]]]]]))
 
-(def error-page
+(defn error-page [debug? reason]
   (html5 {:lang "en"}
          [:head
           [:meta {:name "fragment" :content "!"}]
@@ -185,4 +185,8 @@
          [:body
           {:itemscope "itemscope" :itemtype "http://schema.org/Corporation"}
           [:h3.h4 "Mayvenn Will Be Back Soon"]
-          [:h4.h5 "We apologize for the inconvenience and appreciate your patience. Please check back soon."]]))
+          [:h4.h5 "We apologize for the inconvenience and appreciate your patience. Please check back soon."]
+          (when debug?
+            [:div
+             [:h2 "Debug:"]
+             [:pre reason]])]))

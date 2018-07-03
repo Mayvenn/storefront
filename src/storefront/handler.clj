@@ -161,7 +161,9 @@
         :as                                req}]
     (cond
       (= store :storefront.backend-api/storeback-unavailable)
-      (->html-resp views/error-page)
+      (do
+        (config/dev-print! environment "Could not connect to storeback")
+        (->html-resp (views/error-page (config/development? environment) "Could not connect to storeback")))
 
       store-slug
       (h req)
@@ -872,4 +874,6 @@
            (wrap-exceptions %)
            (wrap-internal-error %
                                 :log (comp (partial logger :error) exception-handler)
-                                :error-response views/error-page))))))
+                                :error-response (do
+                                                  (config/dev-print! environment "EXCEPTION")
+                                                  (views/error-page (config/development? environment) "An exception occurred"))))))))
