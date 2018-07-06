@@ -29,32 +29,33 @@
    [:h1 "Get $100 off your install"]
    [:p.h5.my2
     "Purchase any 3 bundles and Mayvenn will give you $100 for your install with a"
-    " Mayvenn stylist.  Just follow 3 easy steps:"]
-
+    " Mayvenn stylist."]
    [:div
     [:div.py4
-     (img-with-number-circle {:alt      "30 Day Satisfaction Guarantee"}
+     (img-with-number-circle {:alt "30 Day Satisfaction Guarantee"}
                              "b5671f33-4528-4a83-afa7-9fbfe0f825a6"
                              :1)
      [:h2.h2.my1 "Buy 3 bundles or more"]
      [:p.h5.dark-gray.mt1
       "Our hair is 100% human"
       " and backed by a 30 day guarantee."]]
+
     [:div.py4
-     (img-with-number-circle {:alt      "Phone showing appointments"}
-                             "68b7a726-effe-49cf-a78b-d89263c3393f"
+     (img-with-number-circle {:alt "Phone showing appointments"}
+                             "4338c2b8-ba0f-47ec-8eff-eb19c33ea4fb"
                              :2)
-     [:h2.h2.pt1 "Visit your Mayvenn Stylist"]
+     [:h2.h2.pt1 "Book your appointment"]
      [:p.h5.dark-gray.mt1
-      "Your install must be with a Mayvenn stylist"
-      " to be eligible for the $100 off promotion."]]
+      "After completing your purchase, Mayvenn will send you a voucher for $100"
+      " off your next install with your Mayvenn stylist."]]
+
     [:div.py4
      (img-with-number-circle {:alt ""}
-                             "14ad5231-c062-4eec-b516-23fd6b8e0735"
+                             "fbc724ea-c321-4b4a-b79f-fc88622c6831"
                              :3)
-     [:h2.h2.pt1 "Get $100 OFF your install"]
+     [:h2.h2.pt1 "Show your stylist the voucher"]
      [:p.h5.dark-gray.mt1
-      "Mayvenn will contact your stylist to ensure you get $100 off your install."]]]])
+      "Just show your Mayvenn stylist your voucher to get $100 off your install."]]]])
 
 (def the-hookup
   [:div.col-12.bg-transparent-teal.mt3.py8.px4
