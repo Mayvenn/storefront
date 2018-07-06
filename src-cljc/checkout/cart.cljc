@@ -237,7 +237,8 @@
     [:div.bg-teal.bg-celebrate.p2.white.center {:data-test "seventy-five-off-install-cart-promo"}
      (ui/ucare-img {:width 46} "014c70a0-0d57-495d-add0-f2f46248d224")
      [:h3 "This order qualifies for"]
-     [:h1.shout.bold.pb6 "$100 off your install"]]
+     [:h1.shout.bold "$100 off your install"]
+     [:h4.pb6 "You’ll receive a voucher via email after purchase"]]
 
     [:div.p2.bg-orange.white.center {:data-test "ineligible-seventy-five-off-install-cart-promo"}
      [:h4 "You're almost there..."]
