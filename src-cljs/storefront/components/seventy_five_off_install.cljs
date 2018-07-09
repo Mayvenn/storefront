@@ -111,9 +111,10 @@
                                            ["It’s easy! Mayvenn will pay the first $100 of your"
                                             " install directly to your Mayvenn stylist. Just purchase 3"
                                             " bundles or more (frontals and closures count as bundles) and use code"
-                                            " INSTALL at checkout. Then, schedule an appointment with your"
-                                            " Mayvenn stylist and just show up. The $100 off will be waiting"
-                                            " for you. It’s that easy!"])
+                                            " INSTALL at checkout. You’ll receive a voucher as soon as your"
+                                            " order ships. Schedule an appointment with your Mayvenn stylist, and"
+                                            " present the voucher to them at the appointment. Your stylist will"
+                                            " receive the $100 credit immediately after the voucher has been scanned!"])
                         (accordion/section "Who is going to do my hair?"
                                            ["The $100 off offer is only valid at your Mayvenn stylist."
                                             " If you are unsure if your stylist is participating in the $100"
