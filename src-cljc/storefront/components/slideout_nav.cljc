@@ -122,10 +122,10 @@
 (defn ^:private user-actions [the-ville?]
   (component/html
    (marquee-row
-    (ui/ghost-button (assoc (utils/route-to events/navigate-account-manage)
+    (ui/underline-button (assoc (utils/route-to events/navigate-account-manage)
                             :data-test "account-settings")
                      "Account settings")
-    (ui/ghost-button (if the-ville?
+    (ui/underline-button (if the-ville?
                        (utils/route-to events/navigate-friend-referrals-freeinstall)
                        (utils/route-to events/navigate-account-referrals))
                      "Refer a friend"))))
@@ -133,7 +133,7 @@
 (def ^:private guest-actions
   (component/html
    (marquee-row
-    (ui/ghost-button (assoc (utils/route-to events/navigate-sign-in)
+    (ui/underline-button (assoc (utils/route-to events/navigate-sign-in)
                             :data-test "sign-in")
                      "Sign in")
     [:div.h6.col-12.center.dark-gray
