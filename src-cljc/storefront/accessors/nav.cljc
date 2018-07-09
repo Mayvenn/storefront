@@ -30,6 +30,9 @@
 (def ^:private checkout-events
   (set/union checkout-auth-events checkout-flow-events))
 
+(def ^:private voucher-events
+  #{events/navigate-voucher-redeem events/navigate-voucher-redeemed})
+
 (def auth-events
   (set/union plain-auth-events checkout-auth-events))
 
@@ -39,7 +42,8 @@
 (def minimal-events
   (set/union checkout-events
              payout-events
-             cart-events))
+             cart-events
+             voucher-events))
 
 (defn show-minimal-footer? [event]
   (contains? minimal-events event))
