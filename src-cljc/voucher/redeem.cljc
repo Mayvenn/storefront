@@ -53,7 +53,7 @@
         :wrapper-class "col-8 pl3 bg-white circled-item"
         :data-test     "voucher-code"
         :focused       true
-        :placeholder   "xxxx-xxxx"
+        :placeholder   "xxxxxxxx"
         :value         code
         :errors        (get field-errors ["voucher-code"])
         :data-ref      "voucher-code"}
