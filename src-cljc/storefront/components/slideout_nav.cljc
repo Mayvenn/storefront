@@ -76,7 +76,7 @@
 
 (defn ^:private store-info-marquee [signed-in store]
   (when (-> signed-in ::auth/to (= :marketplace))
-    [:div.my3.flex
+    [:div.mb3.flex
      (portrait signed-in store)
      (store-actions store)]))
 
@@ -84,7 +84,7 @@
   (when (-> signed-in ::auth/at-all)
     [:div.my3
      [:div.h7.medium "Signed in with:"]
-     [:a.teal.h5
+     [:a.teal.h5.bold
       (merge
        {:data-test "signed-in-as"}
        (utils/route-to (if (-> signed-in ::auth/as (= :stylist))
@@ -92,7 +92,9 @@
                          events/navigate-account-manage)))
       email]
      (when (pos? store-credit)
-       [:p.teal.h5 "You have store credit: " (as-money store-credit)])]))
+       [:div
+        [:div.h7.medium "Store credit:"]
+        [:div.teal.h5.bold (as-money store-credit)]])]))
 
 (defn ^:private stylist-actions [vouchers?]
   (component/html
@@ -104,17 +106,17 @@
                       "Redeem Client Voucher"))
     [:div
      (marquee-row
-      (ui/ghost-button (assoc (utils/route-to events/navigate-stylist-account-profile)
+      (ui/underline-button (assoc (utils/route-to events/navigate-stylist-account-profile)
                               :data-test "account-settings")
-                       "Account settings")
-      (ui/ghost-button (assoc (utils/route-to events/navigate-stylist-share-your-store)
+                       "Settings")
+      (ui/underline-button (assoc (utils/route-to events/navigate-stylist-share-your-store)
                               :data-test "share-your-store")
                        "Share your store"))
      (marquee-row
-      (ui/ghost-button (assoc (utils/route-to events/navigate-stylist-dashboard-earnings)
+      (ui/underline-button (assoc (utils/route-to events/navigate-stylist-dashboard-earnings)
                               :data-test "dashboard")
                        "Dashboard")
-      (ui/ghost-button stylists/community-url
+      (ui/underline-button stylists/community-url
                        "Community"))]]))
 
 (defn ^:private user-actions [the-ville?]
@@ -254,7 +256,7 @@
 (defn ^:private root-menu [{:keys [user signed-in store deals? the-ville? vouchers?] :as data} owner opts]
   (component/create
    [:div
-    [:div.px6.border-bottom.border-gray
+    [:div.px6.border-bottom.border-gray.bg-light-gray.pt3
      (store-info-marquee signed-in store)
      (account-info-marquee signed-in user)
      [:div.my3.dark-gray
