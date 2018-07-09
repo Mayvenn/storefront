@@ -132,8 +132,8 @@
 
 (def voucherify
   (assoc (case js/environment
-           "production" {:client-app-id    "TODO"
-                         :client-app-token "TODO"}
+           "production" {:client-app-id    "a23e1aef-c484-4c02-9de0-efdc34d95f9c"
+                         :client-app-token "abe193c2-0147-4f5b-bd85-3a3ce159e150"}
            {:client-app-id    "8797ea1c-509d-4569-959a-8f27c2432195"
             :client-app-token "bc631e80-99dd-4e30-b2b1-a366c842550a"})
          :base-url "https://api.voucherify.io/client/v1"))
