@@ -76,8 +76,11 @@
        (some #{"install"})
        boolean))
 
+(def install? "Flat-rate install reimbursement"
+  seventy-five-off-install?)
+
 (defn the-ville?
-  "Fayetteville experiment, can't be used with $100 install experiment"
+  "Fayetteville experiment; can't be used with $100 install experiment"
   [data]
   (and (not (seventy-five-off-install? data))
        (display-feature? data "the-ville")))
@@ -93,5 +96,7 @@
 (defn pdp-dropdown? [data]
   (display-feature? data "pdp-dropdown"))
 
-(defn vouchers? [data]
-  (display-feature? data "vouchers"))
+(defn vouchers?
+  [data]
+  (or (display-feature? data "vouchers")
+      (install? data)))
