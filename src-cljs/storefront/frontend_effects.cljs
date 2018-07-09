@@ -190,7 +190,9 @@
 
 (defmethod perform-effects events/external-redirect-telligent [_ event args _ app-state]
   (set! (.-location js/window) (or (get-in app-state keypaths/telligent-community-url)
-                                   config/telligent-community-url)))
+                                   (if (experiments/install? app-state)
+                                     (str config/telligent-community-url "/100-off-leadership-team/")
+                                     config/telligent-community-url))))
 
 (defmethod perform-effects events/control-navigate [_ event {:keys [navigation-message]} _ app-state]
   ;; A user has clicked a link
