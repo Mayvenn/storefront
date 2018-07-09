@@ -38,7 +38,7 @@
        :wrapper-class "col-8 pl3 flex items-center bg-white circled-item"
        :data-test     "promo-code"
        :focused       true
-       :placeholder   "xxxx-xxxx"
+       :placeholder   "xxxxxxxx"
        :value         code
        :errors        nil
        :data-ref      "promo-code"}
