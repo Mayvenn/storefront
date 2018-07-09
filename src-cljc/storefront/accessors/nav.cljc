@@ -42,11 +42,10 @@
 (def minimal-events
   (set/union checkout-events
              payout-events
-             cart-events
-             voucher-events))
+             cart-events))
 
 (defn show-minimal-footer? [event]
-  (contains? minimal-events event))
+  (contains? (set/union minimal-events voucher-events) event))
 
 (defn lead-page? [event]
   (= events/navigate-leads (take 2 event)))
