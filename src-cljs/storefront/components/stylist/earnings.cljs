@@ -214,19 +214,17 @@
 
 (defmethod transitions/transition-state events/api-success-stylist-balance-transfers
   [_ event {:keys [stylist balance-transfers orders pagination]} app-state]
-  (let [page                  (:page pagination)
+  (let [page                           (:page pagination)
         most-recent-voucher-award-date (->> balance-transfers
                                             (filter #(= (:type %) "voucher_award"))
                                             (map :transfered-at)
                                             sort
                                             last
-                                            date/to-millis
-                                            (or 0))
-        voucher-response-date (-> (get-in app-state voucher-keypaths/voucher-response)
-                                  :date
-                                  date/to-millis
-                                  (or 0))
-        voucher-pending?      (> voucher-response-date  most-recent-voucher-award-date)]
+                                            date/to-millis)
+        voucher-response-date          (-> (get-in app-state voucher-keypaths/voucher-response)
+                                           :date
+                                           date/to-millis)
+        voucher-pending?               (> (or voucher-response-date 0) (or most-recent-voucher-award-date 0))]
     (-> (if voucher-pending?
           app-state
           (update-in app-state voucher-keypaths/voucher dissoc :response))
