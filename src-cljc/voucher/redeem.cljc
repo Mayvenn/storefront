@@ -127,7 +127,7 @@
 
 (defmethod transitions/transition-state events/api-success-voucher-redemption
   [_ event {:keys [date id object result voucher metadata] :as data} app-state]
-  (spy.core/spy data)
+  (spice.core/spy data)
   (update-in app-state voucher-keypaths/voucher merge {:date       date
                                                        :voucher-id (-> metadata :voucher-id)
                                                        :id         id
