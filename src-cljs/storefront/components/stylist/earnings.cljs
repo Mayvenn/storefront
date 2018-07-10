@@ -228,7 +228,7 @@
         voucher-pending?      (> voucher-response-date most-recent-voucher-award-date)]
     (-> (if voucher-pending?
           app-state
-          (dissoc app-state voucher-keypaths/voucher))
+          (update-in app-state voucher-keypaths/voucher dissoc))
         (update-in keypaths/stylist merge stylist)
         (update-in keypaths/stylist-earnings-orders merge orders)
         (update-in keypaths/stylist-earnings-balance-transfers merge (maps/index-by :id balance-transfers))
