@@ -35,7 +35,7 @@
   (let [clj-img-data (js->clj img-data :keywordize-keys true)]
     (when (->> (:chunks clj-img-data)
                (map :type)
-               (some (partial = "byte")))
+               (some (partial #{"byte" "alphanumeric"})))
       (:data clj-img-data))))
 
 (defn draw-line [canvas begin & rest]
