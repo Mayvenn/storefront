@@ -10,20 +10,18 @@
     (/ (- v1 v2) 2)
     0))
 
-(defn draw [video canvas]
+(defn draw [video ctx [cw ch]]
   (let [vw (.-videoWidth video)
-        vh (.-videoHeight video)
-        cw (.-width canvas)
-        ch (.-height canvas)]
-    (.drawImage (.getContext canvas "2d")
+        vh (.-videoHeight video)]
+    (.drawImage ctx
                 video
                 0 0
                 vw vh
                 0 0
                 cw ch)))
 
-(defn get-image-data [canvas]
-  (let [image-data (.getImageData (.getContext canvas "2d") 0 0 (.-width canvas) (.-height canvas))]
+(defn get-image-data [ctx [cw ch]]
+  (let [image-data (.getImageData ctx 0 0 cw ch)]
     {:data   (.-data image-data)
      :height (.-height image-data)
      :width  (.-width image-data)}))
@@ -38,43 +36,40 @@
                (some (partial contains? #{"byte" "alphanumeric"})))
       (:data clj-img-data))))
 
-(defn draw-line [canvas begin & rest]
-  (let [ctx  (.getContext canvas "2d")]
-    (.beginPath ctx)
-    (.moveTo ctx (:x begin) (:y begin))
-    (doseq [{:keys [x y]} rest]
-      (.lineTo ctx x y))
-    (set! (.-lineWidth ctx) (* 10 js/devicePixelRatio))
-    (set! (.-strokeStyle ctx) "white")
-    (.stroke ctx)))
+(defn draw-line [ctx begin & rest]
+  (.beginPath ctx)
+  (.moveTo ctx (:x begin) (:y begin))
+  (doseq [{:keys [x y]} rest]
+    (.lineTo ctx x y))
+  (set! (.-lineWidth ctx) 10)
+  (set! (.-strokeStyle ctx) "white")
+  (.stroke ctx))
 
-(defn draw-brackets [canvas]
-  (let [cw      (.-width canvas)
-        ch      (.-height canvas)
-        padding (/ cw 8)
+(defn draw-brackets [ctx [cw ch]]
+  (let [padding (/ cw 8)
         length  (/ cw 10)]
-    (draw-line canvas
+    (draw-line ctx
                {:x (- cw padding)
                 :y (- ch (+ padding length))}
                {:x (- cw padding)
                 :y (- ch padding)}
                {:x (- cw (+ padding length))
                 :y (- ch padding)})
-    (draw-line canvas
+    (draw-line ctx
                {:x padding
                 :y (- ch (+ padding length))}
                {:x padding
                 :y (- ch padding)}
                {:x (+ padding length)
                 :y (- ch padding)})
-    (draw-line canvas
+    (draw-line ctx
                {:x (- cw (+ padding length))
                 :y padding}
                {:x (- cw padding)
                 :y padding}
                {:x (- cw padding)
                 :y (+ padding length)})
-    (draw-line canvas
+    (draw-line ctx
                {:x (+ padding length)
                 :y padding}
                {:x padding
@@ -88,48 +83,38 @@
         canvas-css-height       (* canvas-css-width
                                    (/ (.-videoHeight video)
                                       (.-videoWidth video)))
-        scale                   (.-devicePixelRatio js/window)
-        ctx                     (.getContext canvas "2d")
+        scale                   1
         canvas-style            (.-style canvas)]
 
-    (set! (.-width canvas-style)
-          (str canvas-css-width "px"))
-    (set! (.-height canvas-style)
-          (str canvas-css-height "px"))
+    (set! (.-width canvas) canvas-css-width)
+    (set! (.-height canvas) canvas-css-height)
 
-    (set! (.-width canvas)
-          (* canvas-css-width
-             scale))
-    (set! (.-height canvas)
-          (* canvas-css-height scale))))
+    [canvas-css-width canvas-css-height]))
 
-(defn draw-text [canvas]
-  (let [ctx       (.getContext canvas "2d")
-        scale     (.-devicePixelRatio js/window)
+(defn draw-text [ctx [cw ch]]
+  (let [scale     1
         font-size (* 16 scale)]
     (set! (.-font ctx) (str "bold " font-size "px Roboto"))
     (set! (.-fillStyle ctx) "white")
     (set! (.-textAlign ctx) "center")
     (.fillText ctx "Point camera at QR code"
-               (/ (.-width canvas) 2) (+ font-size
-                                         (/ (.-height canvas)
-                                            40)))))
+               (/ cw 2) (+ font-size (/ ch 40)))))
 
 (defn tick [video canvas control timestamp]
   (when-not (get @control :stop)
     (when (>= (.-readyState video) (.-HAVE_FUTURE_DATA video))
-      (do
-        (resize-canvas video canvas)
-        (draw video canvas)
-        (draw-brackets canvas)
-        (draw-text canvas)
+      (let [canvas-size (resize-canvas video canvas)
+            ctx (.getContext canvas "2d")]
+        (draw video ctx canvas-size)
         (try
-          (let [{:keys [data width height]} (get-image-data canvas)]
+          (let [{:keys [data width height]} (get-image-data ctx canvas-size)]
             (when-let [voucher-code (read-qr-response (js/jsQR data width height))]
               (image-recognized voucher-code)))
           (catch :default e
             (js/console.log "Error while reading video stream: " e)
-            nil))))
+            nil))
+        (draw-brackets ctx canvas-size)
+        (draw-text ctx canvas-size)))
     (js/requestAnimationFrame (partial tick video canvas control))))
 
 (defn start-render-loop [^js/HTMLMediaElement video canvas control stream]
