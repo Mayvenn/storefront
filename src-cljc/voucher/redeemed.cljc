@@ -29,7 +29,9 @@
                           (-> voucher :discount :unit_off)
 
                           "AMOUNT"
-                          (-> voucher :discount :amount_off (/ 100) mf/as-money-without-cents))]
+                          (-> voucher :discount :amount_off (/ 100) mf/as-money-without-cents)
+
+                          nil)]
     [:div.h4 "has been added to your earnings"]
 
     [:div.pb4.my8.col-6
