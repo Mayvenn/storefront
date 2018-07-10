@@ -49,5 +49,5 @@
 
 (defmethod effects/perform-effects events/navigate-voucher-redeemed [_ _ _ _ app-state]
   #?(:cljs
-     (when-not (get-in app-state (concat voucher-keypaths/voucher-response [:discount :type]))
+     (when-not (-> (get-in app-state voucher-keypaths/voucher-response) :discount :type)
        (history/enqueue-redirect events/navigate-home))))
