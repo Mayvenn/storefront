@@ -13,10 +13,12 @@
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
+            [voucher.keypaths :as voucher-keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
             [storefront.request-keys :as request-keys]
-            [storefront.transitions :as transitions]))
+            [storefront.transitions :as transitions]
+            [spice.date :as date]))
 
 (defn commission-row
   [row-number orders balance-transfer]
@@ -81,9 +83,21 @@
      [:td.py2 "Unspecified Earning"]
      [:td.pr3.py2.green.right-align "+" (mf/as-money amount)]]))
 
-(defn earnings-table [orders balance-transfers]
+(defn pending-voucher-award-row [pending-voucher]
+  (let [{:keys [discount date]} pending-voucher]
+    [:tr (merge {:key (str "voucher-pending" -1)
+                 :data-test (str "voucher-pending-" -1)}
+                {:class "bg-too-light-teal"})
+     [:td.px3.py2 (f/less-year-more-day-date date)]
+     [:td.py2 "Mayvenn Admin Payment" [:div.h6 "Install Program Payment"]]
+     [:td.pr3.py2.orange.center "+" (mf/as-money (some-> discount :amount_off (/ 100)))
+      [:div.h6.center "Pending"]]]))
+
+(defn earnings-table [pending-voucher orders balance-transfers]
   [:table.col-12.mb3 {:style {:border-spacing 0}}
    [:tbody
+    (when pending-voucher
+      (pending-voucher-award-row pending-voucher))
     (map-indexed
      (fn [i {:keys [type data] :as balance-transfer}]
        (case type
@@ -119,7 +133,7 @@
    [:div.center.my2.h6
     [:a.dark-gray (utils/route-to events/navigate-content-program-terms) "Mayvenn Program Terms"]]])
 
-(defn component [{:keys [balance-transfers orders pagination stylist fetching?]} _ _]
+(defn component [{:keys [balance-transfers orders pagination stylist fetching? pending-voucher]} _ _]
   (om/component
    (let [{current-page :page total-pages :total} pagination]
      (html
@@ -129,13 +143,15 @@
         [:div.clearfix
          {:data-test "earnings-panel"}
          [:div.col-on-tb-dt.col-9-on-tb-dt
-          (when (seq balance-transfers)
-            (earnings-table orders balance-transfers))
+          (when (or (seq balance-transfers)
+                    pending-voucher)
+            (earnings-table pending-voucher orders balance-transfers))
           (pagination/fetch-more events/control-stylist-balance-transfers-load-more
                                  fetching?
                                  current-page
                                  total-pages)
-          (when (zero? total-pages)
+          (when (and (zero? total-pages)
+                     (not pending-voucher))
             empty-commissions)]
 
          [:div.col-on-tb-dt.col-3-on-tb-dt
@@ -157,7 +173,8 @@
      :orders            orders
      :pagination        (get-in data keypaths/stylist-earnings-pagination)
      :stylist           (get-in data keypaths/stylist)
-     :fetching?         (utils/requesting? data request-keys/get-stylist-balance-transfers)}))
+     :fetching?         (utils/requesting? data request-keys/get-stylist-balance-transfers)
+     :pending-voucher   (get-in data voucher-keypaths/voucher)}))
 
 (defmethod effects/perform-effects events/api-success-stylist-balance-transfers
   [_ _ {:keys [orders]} _ _]
@@ -197,8 +214,21 @@
 
 (defmethod transitions/transition-state events/api-success-stylist-balance-transfers
   [_ event {:keys [stylist balance-transfers orders pagination]} app-state]
-  (let [page (:page pagination)]
-    (-> app-state
+  (let [page                  (:page pagination)
+        most-recent-voucher-award-date (->> balance-transfers
+                                            (filter #(= (:type %) "voucher_award"))
+                                            (map :transfered-at)
+                                            sort
+                                            last
+                                            date/to-millis)
+        voucher-response-date (-> app-state
+                                  (get-in voucher-keypaths/voucher)
+                                  :date
+                                  date/to-millis)
+        voucher-pending?      (> voucher-response-date most-recent-voucher-award-date)]
+    (-> (if voucher-pending?
+          app-state
+          (dissoc app-state voucher-keypaths/voucher))
         (update-in keypaths/stylist merge stylist)
         (update-in keypaths/stylist-earnings-orders merge orders)
         (update-in keypaths/stylist-earnings-balance-transfers merge (maps/index-by :id balance-transfers))
