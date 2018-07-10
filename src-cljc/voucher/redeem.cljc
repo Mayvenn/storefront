@@ -126,13 +126,14 @@
     (messages/handle-message events/api-failure-errors (redemption-error (-> response :response :body :key)))))
 
 (defmethod transitions/transition-state events/api-success-voucher-redemption
-  [_ event {:keys [date id object result voucher]} app-state]
-  (update-in app-state voucher-keypaths/voucher merge {:date     date
-                                                       :id       id
-                                                       :object   object
-                                                       :result   result
-                                                       :discount (:discount voucher)
-                                                       :type     (:type voucher)}))
+  [_ event {:keys [date id object result voucher metadata] :as data} app-state]
+  (update-in app-state voucher-keypaths/voucher merge {:date       date
+                                                       :voucher-id (-> metadata :voucher-id)
+                                                       :id         id
+                                                       :object     object
+                                                       :result     result
+                                                       :discount   (:discount voucher)
+                                                       :type       (:type voucher)}))
 
 (defmethod effects/perform-effects events/api-success-voucher-redemption
   [_ _ response _ _]
