@@ -41,7 +41,7 @@
     [:a.pt4.my8.medium.h6.border-bottom.border-teal.border-width-2.black (utils/route-to events/navigate-voucher-redeem) "Redeem Another Voucher"]]))
 
 (defn ^:private query [app-state]
-  {:voucher (get-in app-state voucher-keypaths/voucher)})
+  {:voucher (get-in app-state voucher-keypaths/voucher-response)})
 
 (defn built-component
   [data opts]
@@ -49,5 +49,5 @@
 
 (defmethod effects/perform-effects events/navigate-voucher-redeemed [_ _ _ _ app-state]
   #?(:cljs
-     (when-not (get-in app-state (concat voucher-keypaths/voucher [:discount :type]))
+     (when-not (get-in app-state (concat voucher-keypaths/voucher-response [:discount :type]))
        (history/enqueue-redirect events/navigate-home))))

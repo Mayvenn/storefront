@@ -174,7 +174,7 @@
      :pagination        (get-in data keypaths/stylist-earnings-pagination)
      :stylist           (get-in data keypaths/stylist)
      :fetching?         (utils/requesting? data request-keys/get-stylist-balance-transfers)
-     :pending-voucher   (get-in data voucher-keypaths/voucher)}))
+     :pending-voucher   (get-in data voucher-keypaths/voucher-response)}))
 
 (defmethod effects/perform-effects events/api-success-stylist-balance-transfers
   [_ _ {:keys [orders]} _ _]
@@ -220,15 +220,16 @@
                                             (map :transfered-at)
                                             sort
                                             last
-                                            date/to-millis)
-        voucher-response-date (-> app-state
-                                  (get-in voucher-keypaths/voucher)
+                                            date/to-millis
+                                            (or 0))
+        voucher-response-date (-> (get-in app-state voucher-keypaths/voucher-response)
                                   :date
-                                  date/to-millis)
-        voucher-pending?      (> voucher-response-date most-recent-voucher-award-date)]
+                                  date/to-millis
+                                  (or 0))
+        voucher-pending?      (> voucher-response-date  most-recent-voucher-award-date)]
     (-> (if voucher-pending?
           app-state
-          (update-in app-state voucher-keypaths/voucher dissoc))
+          (update-in app-state voucher-keypaths/voucher dissoc :response))
         (update-in keypaths/stylist merge stylist)
         (update-in keypaths/stylist-earnings-orders merge orders)
         (update-in keypaths/stylist-earnings-balance-transfers merge (maps/index-by :id balance-transfers))
