@@ -90,6 +90,7 @@
   [dispatch event args app-state]
   (-> app-state
       (assoc-in voucher-keypaths/scanned-code nil)
+      (assoc-in voucher-keypaths/eight-digit-code nil)
       (assoc-in voucher-keypaths/scanning? nil)))
 
 (defmethod effects/perform-effects events/control-voucher-redeem
