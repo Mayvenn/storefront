@@ -32,7 +32,7 @@
                           {:class "bg-too-light-teal"}))
      [:td.px3.py2 (f/less-year-more-day-date commission-date)]
      [:td.py2 (:full-name order) [:div.h6 "Commission Earned"]]
-     [:td.pr3.py2.green.right-align "+" (mf/as-money amount)]]))
+     [:td.pr3.py2.green.right-align.bold "+" (mf/as-money amount)]]))
 
 (defn award-row [row-number balance-transfer]
   (let [{:keys [id]} balance-transfer
@@ -44,7 +44,7 @@
                           {:class "bg-too-light-teal"}))
      [:td.px3.py2 (f/less-year-more-day-date created-at)]
      [:td.py2 "Mayvenn Admin Payment" [:div.h6 reason]]
-     [:td.pr3.py2.green.right-align "+" (mf/as-money amount)]]))
+     [:td.pr3.py2.green.right-align.bold "+" (mf/as-money amount)]]))
 
 (defn voucher-award-row [row-number balance-transfer]
   (let [{:keys [id]} balance-transfer
@@ -56,7 +56,7 @@
                           {:class "bg-too-light-teal"}))
      [:td.px3.py2 (f/less-year-more-day-date created-at)]
      [:td.py2 "Mayvenn Admin Payment" [:div.h6 "Install Program Payment"]]
-     [:td.pr3.py2.green.right-align "+" (mf/as-money amount)]]))
+     [:td.pr3.py2.green.right-align.bold "+" (mf/as-money amount)]]))
 
 (defn payout-row [balance-transfer]
   (let [{:keys [id]} balance-transfer
@@ -81,7 +81,7 @@
                           {:class "bg-too-light-teal"}))
      [:td.px3.py2 (f/less-year-more-day-date created-at)]
      [:td.py2 "Unspecified Earning"]
-     [:td.pr3.py2.green.right-align "+" (mf/as-money amount)]]))
+     [:td.pr3.py2.green.right-align.bold "+" (mf/as-money amount)]]))
 
 (defn pending-voucher-award-row [pending-voucher]
   (let [{:keys [discount date]} pending-voucher]
@@ -90,8 +90,8 @@
                 {:class "bg-too-light-teal"})
      [:td.px3.py2 (f/less-year-more-day-date date)]
      [:td.py2 "Mayvenn Admin Payment" [:div.h6 "Install Program Payment"]]
-     [:td.pr3.py2.orange.center "+" (mf/as-money (some-> discount :amount_off (/ 100)))
-      [:div.h6.center "Pending"]]]))
+     [:td.pr3.py2.orange.center.bold "+" (mf/as-money (some-> discount :amount_off (/ 100)))
+      [:div.h6.center.bold "Pending"]]]))
 
 (defn earnings-table [pending-voucher orders balance-transfers]
   [:table.col-12.mb3 {:style {:border-spacing 0}}
