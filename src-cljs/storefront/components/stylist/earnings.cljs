@@ -90,8 +90,10 @@
                 {:class "bg-too-light-teal"})
      [:td.px3.py2 (f/less-year-more-day-date date)]
      [:td.py2 "Mayvenn Admin Payment" [:div.h6 "Install Program Payment"]]
-     [:td.pr3.py2.orange.center.bold "+" (mf/as-money (some-> discount :amount_off (/ 100)))
-      [:div.h6.center.bold "Pending"]]]))
+     [:td.pr3.py2.orange.bold
+      [:div.flex.justify-end.center
+       [:div "+" (mf/as-money (some-> discount :amount_off (/ 100)))
+        [:div.h6.bold "Pending"]]]]]))
 
 (defn earnings-table [pending-voucher orders balance-transfers]
   [:table.col-12.mb3 {:style {:border-spacing 0}}
