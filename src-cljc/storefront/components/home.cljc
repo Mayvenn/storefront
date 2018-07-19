@@ -5,6 +5,7 @@
             [storefront.assets :as assets]
             [storefront.component :as component]
             [storefront.components.marquee :as marquee]
+            [storefront.components.home-aladdin :as home-aladdin]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -365,4 +366,6 @@
      :show-talkable-banner?     (not (and seventy-five-off-install? the-ville?))}))
 
 (defn built-component [data opts]
-  (component/build component (query data) opts))
+  (if (experiments/aladdin-homepage? data)
+    (home-aladdin/built-component data opts)
+    (component/build component (query data) opts)))

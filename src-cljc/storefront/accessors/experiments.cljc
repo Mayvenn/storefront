@@ -70,6 +70,11 @@
               variation))
           email-capture-variations)))
 
+(defn aladdin-homepage? [data]
+  (->> (get-in data keypaths/store-features)
+       (some #{"aladdin-homepage"})
+       boolean))
+
 (defn seventy-five-off-install?
   [data]
   (->> (get-in data keypaths/store-features)
