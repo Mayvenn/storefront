@@ -469,8 +469,8 @@
    (merge {:style {:width width :height width}}
           (dissoc attrs :width))
    (if image-id
-     (ucare-img attrs image-id)
-     (svg/missing-portrait {:width width :height width}))])
+     (svg/missing-portrait {:style {:height width :width width}})
+     (ucare-img attrs image-id))])
 
 (defn circle-picture
   ([src] (circle-picture {} src))

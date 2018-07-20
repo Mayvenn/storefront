@@ -5,8 +5,10 @@
             [storefront.assets :as assets]
             [storefront.component :as component]
             [storefront.components.marquee :as marquee]
+            [storefront.components.accordion :as accordion]
             [storefront.components.ui :as ui]
             [storefront.components.svg :as svg]
+            [storefront.transitions :as transitions]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
@@ -162,7 +164,7 @@
     [:p.h6.col-10.center "Get your hair installed absolutely FREE!"]]])
 
 (def ugc-quadriptych
-  [:div.py10.px2
+  [:div.py10.px2.clearfix
    [:h2.center "#FreeInstallMayvenn"]
    [:h6.center "Over 1,000 free installs & counting"]
    [:div.col.col-6.col-3-on-tb-dt.p1 (ui/ucare-img {:class "col-12"} "63acc2ac-43cc-48cb-9db7-0361f01aaa25")]
@@ -170,10 +172,61 @@
    [:div.col.col-6.col-3-on-tb-dt.p1 (ui/ucare-img {:class "col-12"} "63acc2ac-43cc-48cb-9db7-0361f01aaa25")]
    [:div.col.col-6.col-3-on-tb-dt.p1 (ui/ucare-img {:class "col-12"} "63acc2ac-43cc-48cb-9db7-0361f01aaa25")]])
 
-(def faq [:div])
-(def our-story [:div])
+(def ^:private faq-section-copy
+  [(accordion/section "How does this all work? How do I get a FREE install?"
+                      ["It’s easy! Mayvenn will pay a stylist to install your hair."
+                       " Just purchase 3"
+                       " bundles or more (frontals and closures count as bundles) and use code"
+                       " FREEINSTALL at checkout. Then, Mayvenn will reach out to you via email"
+                       " or text to schedule an install with one of our Mayvenn Certified"
+                       " Stylists, proudly based in Fayetteville, NC."])
+   (accordion/section "Who is going to do my hair?"
+                      ["Our Mayvenn Certified Stylists are among the best in Fayetteville, with an"
+                       " average of 15 years of professional experience. Each of our stylists specializes"
+                       " in sew-in installs with leave-out, closures, frontals, and 360 frontals so you"
+                       " can feel confident that we have a stylist to achieve the look you want. Have a"
+                       " specific idea in mind? Just let us know and we’ll match you with a stylist's"
+                       " best suited to meet your needs."])
+   (accordion/section "How does the 30 day guarantee work?"
+                      ["Buy Mayvenn hair RISK FREE with easy returns and exchanges."]
+                      ["EXCHANGES" [:br] "Wear it, dye it, even flat iron it. If you do not love your"
+                       " Mayvenn hair we will exchange it within 30 days of purchase."
+                       " Just call us:"
+                       (ui/link :link/phone :a.dark-gray {} "1-888-562-7952")]
+                      ["RETURNS" [:br] "If you are not completely happy with your Mayvenn hair"
+                       " before it is installed, we will refund your purchase if the"
+                       " bundle is unopened and the hair is in its original condition."
+                       " Just call us:"
+                       (ui/link :link/phone :a.dark-gray {} "1-888-562-7952")])
+   (accordion/section "What if I want to get my hair done by my own stylist?"
+                      ["No, you must get your hair done from one of Mayvenn’s Certified Stylists in"
+                       " order to get your hair installed for free. Our stylists are licensed and"
+                       " experienced - the best in Fayetteville!"])
+   (accordion/section "Why should I order hair from Mayvenn?"
+                      ["Mayvenn hair is 100% human. Our Virgin, Dyed Virgin, and"
+                       " 100% Human hair can be found in a variety of textures from"
+                       " straight to curly. Virgin hair starts at $54 per bundle and"
+                       " 100% Human hair starts at just $30 per bundle. All orders are"
+                       " eligible for free shipping and backed by our 30 Day"
+                       " Guarantee."])])
 
-(defn component [{:keys [signed-in homepage-data store categories show-talkable-banner? seventy-five-off-install? the-ville?] :as data} owner opts]
+(defn ^:private faq [{:keys [expanded-index]}]
+  [:div.px6
+   [:h2.center "Frequently Asked Questions"]
+   (component/build
+    accordion/component
+    {:expanded-indices #{expanded-index}
+     :sections         faq-section-copy}
+    {:opts {:section-click-event events/faq-section-selected}})])
+
+(def our-story
+  [:div.p4
+   [:div.h2.center "Your beautiful, affordable hair starts here"]
+   [:h6.center "Founded in Oakland, CA • 2014"]
+
+   ])
+
+(defn component [{:keys [signed-in homepage-data store categories show-talkable-banner? seventy-five-off-install? the-ville? faq-data] :as data} owner opts]
   (component/create
    [:div
     [:div.m-auto
@@ -184,7 +237,7 @@
      [:section most-popular-looks]
      [:section the-hookup]
      [:section ugc-quadriptych]
-     [:section faq]
+     [:section (faq faq-data)]
      [:section our-story]]]))
 
 (defn query [data]
@@ -192,6 +245,7 @@
         the-ville?                (experiments/the-ville? data)
         homepage-data             (get-in data keypaths/cms-homepage)]
     {:store                     (marquee/query data)
+     :faq-data                  {:expanded-index (get-in data keypaths/faq-expanded-section)}
      :signed-in                 (auth/signed-in data)
      :categories                (->> (get-in data keypaths/categories)
                                      (filter :home/order)
@@ -203,3 +257,10 @@
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
+
+;; Copied from storefront.components.free-install. TODO: DRY up
+(defmethod transitions/transition-state events/faq-section-selected [_ _ {:keys [index]} app-state]
+  (let [expanded-index (get-in app-state keypaths/faq-expanded-section)]
+    (if (= index expanded-index)
+      (assoc-in app-state keypaths/faq-expanded-section nil)
+      (assoc-in app-state keypaths/faq-expanded-section index))))
