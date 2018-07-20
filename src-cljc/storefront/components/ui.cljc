@@ -451,7 +451,7 @@
 (defn square-image [{:keys [resizable-url]} size]
   (some-> resizable-url (str "-/scale_crop/" size "x" size "/center/")))
 
-(defn ucare-img [{:as img-attrs :keys [width class]} image-id]
+(defn ucare-img [{:as img-attrs :keys [width]} image-id]
   (let [retina-url  (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/lightest/")
                       width (str "-/resize/" (* 2 (spice/parse-int width)) "x/"))
         default-url (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/")
@@ -462,6 +462,15 @@
      [:img (-> img-attrs
                (dissoc :width)
                (assoc :src default-url))]]))
+
+(defn circle-ucare-img
+  [{:keys [width] :as attrs :or {width "4em"}} image-id]
+  [:div.circle.bg-light-gray.overflow-hidden.relative
+   (merge {:style {:width width :height width}}
+          (dissoc attrs :width))
+   (if image-id
+     (ucare-img attrs image-id)
+     (svg/missing-portrait {:width width :height width}))])
 
 (defn circle-picture
   ([src] (circle-picture {} src))
