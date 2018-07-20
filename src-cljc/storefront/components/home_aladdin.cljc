@@ -27,8 +27,8 @@
 (defn hero []
   (let [file-name "100-off-installation-hero"
         alt       "$100 off your install when you buy 3 bundles or more! Use code: INSTALL"
-        mob-uuid  "699e088d-aaf1-4b7a-b807-a5893573757f"
-        dsk-uuid  "6b872af5-b447-440d-b872-6c8a1b669969"]
+        mob-uuid  "c18c6ca3-5ada-4ec5-80dc-208b3020f43e"
+        dsk-uuid  "c18c6ca3-5ada-4ec5-80dc-208b3020f43e"]
     [:div
      [:div.relative
       [:div (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
@@ -36,7 +36,7 @@
                          :file-name   file-name
                          :alt         alt})
        [:h1.bold.shadow.white.absolute.center
-        {:style {:top "50%" :left "90px" :right "90px"}}
+        {:style {:top "50%" :left "80px" :right "80px"}}
         "Beautiful Virgin Hair Installed for FREE"]]]]))
 
 (def free-shipping-banner
@@ -73,31 +73,31 @@
     [:h2 "Get a FREE Install"]
     [:div.h6 "In 3 easy steps"]]
 
-   [:div.mt2.flex.flex-column.items-center
-    (ui/ucare-img {:alt "" :width "20" :class "bg-red"} "3a2d3f07-a120-4419-aea4-9123515c219b")
+   [:div.mt4.flex.flex-column.items-center
+    (ui/ucare-img {:alt "Buy ANY 3 Bundles or More" :width "20"} "ca7771b3-3b11-4207-a42e-301a98961c92")
     [:div.h5.teal.medium "Buy ANY 3 Bundles or More"]
     [:p.h6.col-8.center "Closures and frontals count, too! Our hair is virgin & backed by a 30-day guarantee."]]
 
-   [:div.mt2.flex.flex-column.items-center
-    (ui/ucare-img {:alt "" :width "30" :class "bg-red"} "c81da7fe-f3fb-4728-8428-e1b93bdf34cc")
+   [:div.mt4.flex.flex-column.items-center
+    (ui/ucare-img {:alt "Get Your Voucher" :width "39"} "06e84340-9dc6-4193-abc7-fbea15715084")
     [:div.h5.teal.medium "Get Your Voucher"]
     [:p.h6.col-8.center "We’ll send you a free-install voucher after purchase via SMS and email."]]
 
-   [:div.mt2.flex.flex-column.items-center
-    (ui/ucare-img {:alt "" :width "24"} "b06a282a-27a0-4a4c-aa85-77868556ac1d")
+   [:div.mt4.flex.flex-column.items-center
+    (ui/ucare-img {:alt "Show Your Stylist The Voucher" :width "24"} "b06a282a-27a0-4a4c-aa85-77868556ac1d")
     [:div.h5.teal.medium "Show Your Stylist The Voucher"]
     [:p.h6.col-8.center "Present the voucher when you go in for your appointment with:"]]
 
    [:div.mt2.flex.flex-column.items-center
-    [:div.h6.mt1.mb2 "Your Stylist"]
+    [:div.h6.my1 "Your Stylist"]
     [:div.circle
      (ui/circle-ucare-img {:width "70"} "63acc2ac-43cc-48cb-9db7-0361f01aaa25")]
     [:div.h5.bold
      "Aundria Carter"]
     [:div.h6
-     [:div.flex.items-center {:style {:height "1.5em"}}
+     [:div.flex.items-center.dark-gray {:style {:height "1.5em"}}
       (svg/check {:class "stroke-teal" :height "2em" :width "2em"}) "Licensed"]
-     [:div.flex.items-center {:style {:height "1.5em"}}
+     [:div.flex.items-center.dark-gray {:style {:height "1.5em"}}
       (svg/check {:class "stroke-teal" :height "2em" :width "2em"}) "Oakland, CA"]]
     [:div.h6.pt1.flex.items-center
      (svg/cascade {:style {:height "20px" :width "29px"}})
@@ -119,15 +119,14 @@
                                 :swipe        true
                                 :arrows       true}}
                     {})
-   [:div.col-10.mx-auto.mt2
+   [:div.col-9.mx-auto.mt2
     (ui/teal-button {:height-class "py2"}
                     (str "Shop " link " Looks"))]])
 
 (def most-popular-looks
-  [:div.col-12.mt3.py6.px2
+  [:div.col-12.col-6-on-tb.col-4-on-dt.mt3.py6.px2.mx-auto
    [:div.my2.flex.flex-column.items-center
     [:h2.center "Most Popular" [:br] "#FreeInstallMayvenn Looks"]
-    ;; TODO: put these side-by-side on desktop?
     (style-carousel "Sleek & Straight"
                     "Virgin & Dyed Virgin"
                     "Brazilian & Peruvian"
@@ -144,33 +143,34 @@
     [:div.h6 "Why Mayvenn is right for you"]]
 
    [:div.mt6.flex.flex-column.items-center
-    (ui/ucare-img {:alt "" :width "40" :class "bg-red"} "c81da7fe-f3fb-4728-8428-e1b93bdf34cc")
+    (ui/ucare-img {:alt "" :width "21"} "44a9227b-db64-42b0-ab06-5d19037baf8e")
     [:div.h6.teal.medium "World-Class Customer Service"]
-    [:p.h6.col-8.center "Our experts have first-hand experience and are ready to help you by phone, text and email."]]
+    [:p.h6.col-10.center "Our experts have first-hand experience and are ready to help you by phone, text and email."]]
 
    [:div.mt6.flex.flex-column.items-center
-    (ui/ucare-img {:alt "" :width "40" :class "bg-red"} "c81da7fe-f3fb-4728-8428-e1b93bdf34cc")
+    (ui/ucare-img {:alt "" :width "71"} "9b8cd1ed-200b-4a6a-bb5f-4335866859e5")
     [:div.h6.teal.medium "Risk-Free"]
-    [:p.h6.col-8.center "Wear it, dye it, style it. If you don’t love your hair we’ll exchange it within 30 days of purchase."]]
+    [:p.h6.col-10.center "Wear it, dye it, style it. If you don’t love your hair we’ll exchange it within 30 days of purchase."]]
 
    [:div.mt6.flex.flex-column.items-center
-    (ui/ucare-img {:alt "" :width "40" :class "bg-red"} "c81da7fe-f3fb-4728-8428-e1b93bdf34cc")
+    (ui/ucare-img {:alt "" :width "40"} "7c436000-2d6b-4349-b3c9-1d7b4ae3bb21")
     [:div.h6.teal.medium "100% Human Hair"]
-    [:p.h6.col-8.center "Available in Virgin and Dyed Virgin"]]
+    [:p.h6.col-10.center "Available in Virgin and Dyed Virgin"]]
 
    [:div.mt6.flex.flex-column.items-center
-    (ui/ucare-img {:alt "" :width "40"} "c81da7fe-f3fb-4728-8428-e1b93bdf34cc")
+    (ui/ucare-img {:alt "" :width "43"} "c81da7fe-f3fb-4728-8428-e1b93bdf34cc")
     [:div.h6.teal.medium "Free Install"]
     [:p.h6.col-10.center "Get your hair installed absolutely FREE!"]]])
 
 (def ugc-quadriptych
-  [:div.py10.px2.clearfix
+  [:div.py10.px4
    [:h2.center "#FreeInstallMayvenn"]
    [:h6.center "Over 1,000 free installs & counting"]
-   [:div.col.col-6.col-3-on-tb-dt.p1 (ui/ucare-img {:class "col-12"} "63acc2ac-43cc-48cb-9db7-0361f01aaa25")]
-   [:div.col.col-6.col-3-on-tb-dt.p1 (ui/ucare-img {:class "col-12"} "63acc2ac-43cc-48cb-9db7-0361f01aaa25")]
-   [:div.col.col-6.col-3-on-tb-dt.p1 (ui/ucare-img {:class "col-12"} "63acc2ac-43cc-48cb-9db7-0361f01aaa25")]
-   [:div.col.col-6.col-3-on-tb-dt.p1 (ui/ucare-img {:class "col-12"} "63acc2ac-43cc-48cb-9db7-0361f01aaa25")]])
+   [:div.flex.flex-wrap
+    [:div.col-6.col-3-on-tb-dt.p1 (ui/ucare-img {:class "col-12"} "63acc2ac-43cc-48cb-9db7-0361f01aaa25")]
+    [:div.col-6.col-3-on-tb-dt.p1 (ui/ucare-img {:class "col-12"} "63acc2ac-43cc-48cb-9db7-0361f01aaa25")]
+    [:div.col-6.col-3-on-tb-dt.p1 (ui/ucare-img {:class "col-12"} "63acc2ac-43cc-48cb-9db7-0361f01aaa25")]
+    [:div.col-6.col-3-on-tb-dt.p1 (ui/ucare-img {:class "col-12"} "63acc2ac-43cc-48cb-9db7-0361f01aaa25")]]])
 
 (def ^:private faq-section-copy
   [(accordion/section "How does this all work? How do I get a FREE install?"
@@ -222,14 +222,29 @@
 (def our-story
   [:div.p4
    [:div.h2.center "Your beautiful, affordable hair starts here"]
-   [:h6.center "Founded in Oakland, CA • 2014"]
-
-   ])
+   [:h6.center.mb4 "Founded in Oakland, CA • 2014"]
+   [:div.flex.flex-wrap
+    [:div.col-6.px1 (ui/ucare-img {:class "col-12"} "4a92843c-b92d-48d3-8ac0-05b744b73584")]
+    [:div.col-6.px2
+     [:h4.my1.dark-gray.medium "Our Story"]
+     [:h6.teal.flex.items-center
+      (svg/clear-play-video {:class        "mr1 fill-teal"
+                             :height       "20px"
+                             :width        "20px"})
+      "WATCH NOW"]]
+    [:div.col-6.px1 (ui/ucare-img {:class "col-12"} "34512e2b-e6a8-47c2-bc7e-0471737fc920")]
+    [:div.col-6.px1 (ui/ucare-img {:class "col-12"} "d800599c-a383-4b87-8c0d-d80bbaaf0817")]
+    [:div.col-6.px2.dark-gray
+     [:h4.my2.line-height-1 "“Our mission is to provide our community with an unbeatable product.”"]
+     [:h6.medium.line-height-1 "- Diishan Imira"]
+     [:h6 "CEO of Mayvenn"]]
+    [:div.col-6.px1 (ui/ucare-img {:class "col-12"} "ec9e0533-9eee-41ae-a61b-8dc22f045cb5")]
+   ]])
 
 (defn component [{:keys [signed-in homepage-data store categories show-talkable-banner? seventy-five-off-install? the-ville? faq-data] :as data} owner opts]
   (component/create
    [:div
-    [:div.m-auto
+    [:div
      [:section (hero)]
      [:section free-shipping-banner]
      [:section what-our-customers-are-saying]
@@ -238,6 +253,7 @@
      [:section the-hookup]
      [:section ugc-quadriptych]
      [:section (faq faq-data)]
+     [:hr.border-top.border-dark-silver.col-9.mx-auto.my6]
      [:section our-story]]]))
 
 (defn query [data]
