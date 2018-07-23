@@ -78,6 +78,7 @@
 (defpath navigate-stylist-account-password)
 (defpath navigate-stylist-account-commission)
 (defpath navigate-stylist-account-social)
+(defpath navigate-stylist-payments)
 
 (defpath navigate-voucher-redeem)
 (defpath navigate-voucher-redeemed)

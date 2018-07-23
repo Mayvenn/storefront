@@ -12,6 +12,7 @@
                        [storefront.components.reset-password :as reset-password]
                        [storefront.components.force-set-password :as force-set-password]
                        [storefront.components.stylist.dashboard :as stylist.dashboard]
+                       [storefront.components.stylist.dashboard-aladdin :as stylist.dashboard-aladdin]
                        [storefront.components.stylist.balance-transfer-details :as balance-transfer-details]
                        [storefront.components.stylist.cash-out-now :as stylist.cash-out-now]
                        [storefront.components.stylist.cash-out-pending :as stylist.cash-out-pending]
@@ -75,6 +76,7 @@
          events/navigate-stylist-account-password                   stylist.account/built-component
          events/navigate-stylist-account-commission                 stylist.account/built-component
          events/navigate-stylist-account-social                     stylist.account/built-component
+         events/navigate-stylist-payments                           stylist.dashboard-aladdin/built-component
          events/navigate-gallery-image-picker                       gallery-image-picker/built-component
          events/navigate-account-manage                             (partial sign-in/requires-sign-in account/built-component)
          events/navigate-account-referrals                          (partial sign-in/requires-sign-in friend-referrals/built-component)
