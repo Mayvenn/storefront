@@ -173,7 +173,7 @@
     [:div.col-6.col-3-on-tb-dt.p1 (ui/ucare-img {:class "col-12"} "63acc2ac-43cc-48cb-9db7-0361f01aaa25")]]])
 
 (def ^:private faq-section-copy
-  [(accordion/section "How does this all work? How do I get a FREE install?"
+  [(accordion/section "How does this all work? How do I get a FREE INSTALL?"
                       ["It’s easy! Mayvenn will pay a stylist to install your hair."
                        " Just purchase 3"
                        " bundles or more (frontals and closures count as bundles) and use code"
@@ -198,7 +198,7 @@
                        " bundle is unopened and the hair is in its original condition."
                        " Just call us:"
                        (ui/link :link/phone :a.dark-gray {} "1-888-562-7952")])
-   (accordion/section "What if I want to get my hair done by my own stylist?"
+   (accordion/section "What if I want to get my hair done by another stylist?"
                       ["No, you must get your hair done from one of Mayvenn’s Certified Stylists in"
                        " order to get your hair installed for free. Our stylists are licensed and"
                        " experienced - the best in Fayetteville!"])
