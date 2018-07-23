@@ -69,7 +69,7 @@
        "WATCH NOW"]]]]])
 
 (defn get-a-free-install
-  [{:keys [stylist-headshot stylist-name]}]
+  [{:keys [stylist-portrait stylist-name]}]
   [:div.col-12.bg-transparent-teal.mt4.p8
    [:div.mt2.flex.flex-column.items-center
     [:h2 "Get a FREE Install"]
@@ -93,9 +93,11 @@
    [:div.mt2.flex.flex-column.items-center
     [:div.h6.my1.dark-gray "Your Stylist"]
     [:div.circle
-     (ui/circle-ucare-img {:width "70"} "63acc2ac-43cc-48cb-9db7-0361f01aaa25")]
+     (if (:resizable-url stylist-portrait)
+       (ui/circle-picture (ui/square-image stylist-portrait 70))
+       (ui/circle-ucare-img {:width "70"} "23440740-c1ed-48a9-9816-7fc01f92ad2c"))]
     [:div.h5.bold
-     "Aundria Carter"]
+     stylist-name]
     [:div.h6
      [:div.flex.items-center.dark-gray {:style {:height "1.5em"}}
       (svg/check {:class "stroke-teal" :height "2em" :width "2em"}) "Licensed"]
@@ -257,7 +259,7 @@
                               ;;             (B is removed from history).
                               {:opts {:close-attrs (utils/route-to events/navigate-home {:query-params {:video "0"}})}}))
       [:section what-our-customers-are-saying]]
-     [:section (get-a-free-install {})]
+     [:section (get-a-free-install {:stylist-portrait (:portrait store) :stylist-name (:store-nickname store)})]
      [:section most-popular-looks]
      [:section the-hookup]
      [:section ugc-quadriptych]
