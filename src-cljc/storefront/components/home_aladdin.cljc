@@ -93,7 +93,7 @@
    [:div.mt2.flex.flex-column.items-center
     [:div.h6.my1.dark-gray "Your Stylist"]
     [:div.circle
-     (ui/circle-ucare-img {:width "70px"} "63acc2ac-43cc-48cb-9db7-0361f01aaa25")]
+     (ui/circle-ucare-img {:width "70"} "63acc2ac-43cc-48cb-9db7-0361f01aaa25")]
     [:div.h5.bold
      "Aundria Carter"]
     [:div.h6
