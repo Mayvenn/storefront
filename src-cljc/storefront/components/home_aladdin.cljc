@@ -13,7 +13,8 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.carousel :as carousel]
-            [storefront.routes :as routes]))
+            [storefront.routes :as routes]
+            [storefront.components.aladdin-video :as aladdin-video]))
 
 (defn hero-image [{:keys [desktop-url mobile-url file-name alt]}]
   [:picture
@@ -36,7 +37,7 @@
                          :file-name   file-name
                          :alt         alt})
        [:h1.bold.shadow.white.absolute.center
-        {:style {:top "50%" :left "80px" :right "80px"}}
+        {:style {:top "50%" :left "60px" :right "60px"}}
         "Beautiful Virgin Hair Installed for FREE"]]]]))
 
 (def free-shipping-banner
@@ -46,24 +47,25 @@
     [:div.table-cell.align-middle.mtp4
      (ui/ucare-img {:alt "" :width "50"}
                    "4c4912fe-934c-4ad3-b853-f4a932bdae1b")]
-    [:div.table-cell.align-middle.pl3
+    [:div.table-cell.align-middle.pl3.h6
      "FREE standard shipping. Express available"]]])
 
 (def what-our-customers-are-saying
-  [:div
+  [:a
+   (utils/route-to events/navigate-home {:query-params {:video "free-install"}})
    [:div.col-11.mx-auto
     [:div.flex.items-center.justify-center.py1
      [:div {:style {:height "88px"}}  ;; Without explicit height, div expands 4px downwards
       (ui/ucare-img {:alt "" :width "152"}
                     "b016b985-affb-4c97-af0a-a1f1334c0c51")]
 
-     [:div.ml1
-      [:h6.bold.dark-gray "#FreeInstallMayvenn"]
-      [:h6.mb2.dark-gray "What our customers are saying"]
-      [:h6.teal.flex.items-center
-       (svg/clear-play-video {:class        "mr1 fill-teal"
-                              :height       "20px"
-                              :width        "20px"})
+     [:div.ml2
+      [:h6.bold.dark-gray.mbnp6 "#FreeInstallMayvenn"]
+      [:h7.dark-gray "What our customers are saying"]
+      [:h6.teal.flex.items-center.mt2
+       (svg/clear-play-video {:class "mr1 fill-teal"
+                              :height  "20px"
+                              :width   "20px"})
        "WATCH NOW"]]]]])
 
 (defn get-a-free-install
@@ -91,7 +93,7 @@
    [:div.mt2.flex.flex-column.items-center
     [:div.h6.my1 "Your Stylist"]
     [:div.circle
-     (ui/circle-ucare-img {:width "70"} "63acc2ac-43cc-48cb-9db7-0361f01aaa25")]
+     (ui/circle-ucare-img {:width "70px"} "63acc2ac-43cc-48cb-9db7-0361f01aaa25")]
     [:div.h5.bold
      "Aundria Carter"]
     [:div.h6
@@ -241,13 +243,20 @@
     [:div.col-6.px1 (ui/ucare-img {:class "col-12"} "ec9e0533-9eee-41ae-a61b-8dc22f045cb5")]
    ]])
 
-(defn component [{:keys [signed-in homepage-data store categories show-talkable-banner? seventy-five-off-install? the-ville? faq-data] :as data} owner opts]
+(defn component [{:keys [signed-in homepage-data store categories show-talkable-banner? seventy-five-off-install? the-ville? faq-data video] :as data} owner opts]
   (component/create
    [:div
     [:div
      [:section (hero)]
      [:section free-shipping-banner]
-     [:section what-our-customers-are-saying]
+     [:div (when video
+             (component/build aladdin-video/component
+                              video
+                              ;; NOTE(jeff): we use an invalid video slug to preserve back behavior. There probably should be
+                              ;;             an investigation to why history is replaced when doing A -> B -> A navigation
+                              ;;             (B is removed from history).
+                              {:opts {:close-attrs (utils/route-to events/navigate-home {:query-params {:video "0"}})}}))
+      [:section what-our-customers-are-saying]]
      [:section (get-a-free-install {})]
      [:section most-popular-looks]
      [:section the-hookup]
@@ -266,6 +275,7 @@
      :categories                (->> (get-in data keypaths/categories)
                                      (filter :home/order)
                                      (sort-by :home/order))
+     :video                     (aladdin-video/query data)
      :seventy-five-off-install? seventy-five-off-install?
      :the-ville?                the-ville?
      :homepage-data             homepage-data
@@ -273,6 +283,14 @@
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
+
+(def ^:private slug->video
+  {"free-install" {:youtube-id "cWkSO_2nnD4"}})
+
+;; Copied from storefront.components.free-install. TODO: DRY up
+(defmethod transitions/transition-state events/navigate-home
+  [_ _ {:keys [query-params]} app-state]
+  (assoc-in app-state keypaths/aladdin-video (slug->video (:video query-params))))
 
 ;; Copied from storefront.components.free-install. TODO: DRY up
 (defmethod transitions/transition-state events/faq-section-selected [_ _ {:keys [index]} app-state]

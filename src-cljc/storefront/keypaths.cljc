@@ -306,6 +306,9 @@
 (def fvlanding-carousel-ugc-open? (conj fvlanding-carousel-ugc :open?))
 (def fvlanding-carousel-ugc-index (conj fvlanding-carousel-ugc :index))
 
+(def aladdin (conj ui :aladdin))
+(def aladdin-video (conj aladdin :video))
+
 (def accordion (conj ui :accordion))
 (def accordion-freeinstall-home (conj accordion :freeinstall))
 (def accordion-freeinstall-home-expanded-indices
