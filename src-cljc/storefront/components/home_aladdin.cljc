@@ -14,7 +14,7 @@
             [storefront.platform.component-utils :as utils]
             [storefront.platform.carousel :as carousel]
             [storefront.routes :as routes]
-            [storefront.components.aladdin-video :as aladdin-video]))
+            [storefront.components.video :as video]))
 
 (defn hero-image [{:keys [desktop-url mobile-url file-name alt]}]
   [:picture
@@ -250,7 +250,7 @@
      [:section (hero)]
      [:section free-shipping-banner]
      [:div (when video
-             (component/build aladdin-video/component
+             (component/build video/component
                               video
                               ;; NOTE(jeff): we use an invalid video slug to preserve back behavior. There probably should be
                               ;;             an investigation to why history is replaced when doing A -> B -> A navigation
@@ -275,7 +275,7 @@
      :categories                (->> (get-in data keypaths/categories)
                                      (filter :home/order)
                                      (sort-by :home/order))
-     :video                     (aladdin-video/query data)
+     :video                     (get-in data keypaths/aladdin-video)
      :seventy-five-off-install? seventy-five-off-install?
      :the-ville?                the-ville?
      :homepage-data             homepage-data

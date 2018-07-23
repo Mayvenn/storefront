@@ -1,4 +1,4 @@
-(ns storefront.components.free-install-video
+(ns storefront.components.video
   (:require [sablono.core :refer [html]]
             [storefront.component :as component]
             [storefront.components.ui :as ui]
@@ -19,9 +19,6 @@
                "?rel=0"
                "&color=white"
                "&showinfo=0")))))
-
-(defn query [data]
-  (get-in data keypaths/fvlanding-video))
 
 (defn built-component
   [data opts]

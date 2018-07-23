@@ -19,7 +19,7 @@
             [storefront.platform.carousel :as carousel]
             [storefront.platform.component-utils :as utils]
             [storefront.transitions :as transitions]
-            [storefront.components.free-install-video :as free-install-video]))
+            [storefront.components.video :as video]))
 
 (def visual-divider
   [:div.py2.mx-auto.teal.border-bottom.border-width-2.mb2-on-tb-dt
@@ -155,7 +155,7 @@
   (component/create
    [:div
     (when video
-      (component/build free-install-video/component
+      (component/build video/component
                        video
                        ;; NOTE(jeff): we use an invalid video slug to preserve back behavior. There probably should be
                        ;;             an investigation to why history is replaced when doing A -> B -> A navigation
@@ -345,7 +345,7 @@
 
 (defn ^:private query [data]
   {:header                     {:text-or-call-number "1-310-733-0284"}
-   :video                      (free-install-video/query data)
+   :video                      (get-in data keypaths/fvlanding-video)
    :carousel-certified-stylist {:index         (get-in data keypaths/carousel-certified-stylist-index)
                                 :sliding?      (get-in data keypaths/carousel-certified-stylist-sliding?)
                                 :gallery-open? (get-in data keypaths/carousel-stylist-gallery-open?)}

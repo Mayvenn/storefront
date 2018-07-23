@@ -4,7 +4,6 @@
             [storefront.components.share-your-cart :as share-your-cart]
             [storefront.components.email-capture :as email-capture]
             [storefront.components.free-install :as free-install]
-            [storefront.components.free-install-video :as free-install-video]
             [storefront.components.seventy-five-off-install :as seventy-five-off-install]
             [storefront.components.stylist.referrals :as stylist.referrals]
             [storefront.events :as events]
