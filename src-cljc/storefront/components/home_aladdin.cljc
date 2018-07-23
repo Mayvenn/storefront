@@ -73,7 +73,7 @@
   [:div.col-12.bg-transparent-teal.mt4.p8
    [:div.mt2.flex.flex-column.items-center
     [:h2 "Get a FREE Install"]
-    [:div.h6 "In 3 easy steps"]]
+    [:div.h6.dark-gray "In 3 easy steps"]]
 
    [:div.mt4.flex.flex-column.items-center
     (ui/ucare-img {:alt "Buy ANY 3 Bundles or More" :width "20"} "ca7771b3-3b11-4207-a42e-301a98961c92")
@@ -91,7 +91,7 @@
     [:p.h6.col-8.center "Present the voucher when you go in for your appointment with:"]]
 
    [:div.mt2.flex.flex-column.items-center
-    [:div.h6.my1 "Your Stylist"]
+    [:div.h6.my1.dark-gray "Your Stylist"]
     [:div.circle
      (ui/circle-ucare-img {:width "70px"} "63acc2ac-43cc-48cb-9db7-0361f01aaa25")]
     [:div.h5.bold
@@ -108,12 +108,12 @@
 (defn carousel-slide [image-id caption]
   [:div
    (ui/aspect-ratio 1 1 (ui/ucare-img {:class "col-12 mx1"} image-id))
-   [:div.h6.mt1 caption]])
+   [:div.h6.mt1.dark-gray caption]])
 
 (defn style-carousel [styles treatments origins link]
   [:div.my3.col-12
    [:h5.bold.center styles]
-   [:div.h6.center.mb2 treatments [:span.px2 "•"] origins]
+   [:div.h6.center.mb2.dark-gray treatments [:span.px2 "•"] origins]
    (component/build carousel/component
                     {:slides   (repeat 5 (carousel-slide "63acc2ac-43cc-48cb-9db7-0361f01aaa25"
                                                          [:span [:span.bold "$280 "] "+ FREE Install"]))
@@ -142,7 +142,7 @@
   [:div.col-12.bg-transparent-teal.mt3.py8.px4
    [:div.my2.flex.flex-column.items-center
     [:h2 "The Hookup"]
-    [:div.h6 "Why Mayvenn is right for you"]]
+    [:div.h6.dark-gray "Why Mayvenn is right for you"]]
 
    [:div.mt6.flex.flex-column.items-center
     (ui/ucare-img {:alt "" :width "21"} "44a9227b-db64-42b0-ab06-5d19037baf8e")
@@ -167,7 +167,7 @@
 (def ugc-quadriptych
   [:div.py10.px4
    [:h2.center "#FreeInstallMayvenn"]
-   [:h6.center "Over 1,000 free installs & counting"]
+   [:h6.center.dark-gray "Over 1,000 free installs & counting"]
    [:div.flex.flex-wrap
     [:div.col-6.col-3-on-tb-dt.p1 (ui/ucare-img {:class "col-12"} "63acc2ac-43cc-48cb-9db7-0361f01aaa25")]
     [:div.col-6.col-3-on-tb-dt.p1 (ui/ucare-img {:class "col-12"} "63acc2ac-43cc-48cb-9db7-0361f01aaa25")]
@@ -224,7 +224,7 @@
 (def our-story
   [:div.p4
    [:div.h2.center "Your beautiful, affordable hair starts here"]
-   [:h6.center.mb4 "Founded in Oakland, CA • 2014"]
+   [:h6.center.mb4.dark-gray "Founded in Oakland, CA • 2014"]
    [:div.flex.flex-wrap
     [:div.col-6.px1 (ui/ucare-img {:class "col-12"} "4a92843c-b92d-48d3-8ac0-05b744b73584")]
     [:div.col-6.px2
