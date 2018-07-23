@@ -132,7 +132,7 @@
     <path stroke="currentColor" fill="none" d="M9 4v7"/>
     <circle stroke="none" fill="currentColor" r="1" cx="9" cy="13"/>
   </symbol>
-  <symbol id="dropdown-arrow" viewBox="0 0 18 18" fill="none" stroke-width="3">
+  <symbol id="dropdown-arrow" viewBox="0 0 18 18" fill="none">
     <path d="M0 4 l9 9l9 -9"></path>
   </symbol>
   <symbol id="left-caret" viewBox="0 0 50 100" fill="none" stroke-width="7">

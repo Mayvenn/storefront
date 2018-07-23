@@ -530,6 +530,7 @@
    (mf/as-money-without-cents amount)
    [:span.h5 {:style {:margin "5px 3px"}} (mf/as-money-cents-only amount)]])
 
+;; To be deprecated
 (defn progress-indicator [{:keys [value maximum]}]
   (let [bar-value (-> value (/ maximum) (* 100.0) (min 100))
         bar-width (str (numbers/round bar-value) "%")

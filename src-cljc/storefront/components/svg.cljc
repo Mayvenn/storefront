@@ -33,7 +33,8 @@
     (svg-xlink "question-circle")]))
 
 (defn dropdown-arrow [opts]
-  [:svg opts (svg-xlink "dropdown-arrow")])
+  [:svg (maps/deep-merge {:style {:stroke-width "3"}} opts)
+   (svg-xlink "dropdown-arrow")])
 
 (defn left-caret [opts]
   [:svg opts
