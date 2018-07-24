@@ -38,7 +38,7 @@
   :plugins [[s3-wagon-private "1.3.0"]
             [lein-cljsbuild "1.1.2"]
             [lein-cljfmt "0.1.10"]
-            [lein-figwheel "0.5.15"]]
+            [lein-figwheel "0.5.16"]]
   :figwheel {:nrepl-port 4000
              :css-dirs ["resources/public/css"]}
   :main storefront.core
@@ -129,16 +129,20 @@
                 :optimizations :advanced}}}}
   :auto-clean false
   :profiles {:uberjar {:aot :all}
+             :repl {:dependencies
+                    [[cider/piggieback "0.3.6"]
+                     [org.clojure/tools.nrepl "0.2.13"]]}
              :dev {:source-paths ["dev/clj"]
-                   :dependencies [[com.cemerick/piggieback "0.2.2"]
+                   :dependencies [[cider/piggieback "0.3.6"]
+                                  [org.clojure/tools.nrepl "0.2.13"]
                                   [binaryage/devtools "0.9.10"]
                                   [pjstadig/humane-test-output "0.8.1"]
                                   [standalone-test-server "0.7.2"]
                                   [ring/ring-mock "0.3.0"]
                                   [org.clojure/tools.namespace "0.2.11"]
-                                  [figwheel-sidecar "0.5.15"]]
+                                  [figwheel-sidecar "0.5.16"]]
                    :injections [(require 'pjstadig.humane-test-output)
                                 (pjstadig.humane-test-output/activate!)]
-                   :repl-options {:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
+                   :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]}
                    :cljsbuild
                    {:builds {:dev {:source-paths ["dev/cljs"]}}}}})
