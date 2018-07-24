@@ -124,7 +124,8 @@
 
 (defn main-layout [data nav-event]
   (let [silver-background? (#{events/navigate-voucher-redeem events/navigate-voucher-redeemed} nav-event)
-        aladdin-home? (and (experiments/seventy-five-off-install? data) (#{events/navigate-home} nav-event))]
+        aladdin-home? (and (experiments/aladdin-homepage? data)
+                           (#{events/navigate-home} nav-event))]
     [:div.flex.flex-column {:style {:min-height    "100vh"
                                     :margin-bottom "-1px"}}
      (stylist-banner/built-component data nil)
