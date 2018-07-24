@@ -8,6 +8,7 @@
             [storefront.components.accordion :as accordion]
             [storefront.components.ui :as ui]
             [storefront.components.svg :as svg]
+            [storefront.components.modal-gallery :as modal-gallery]
             [storefront.transitions :as transitions]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -68,8 +69,12 @@
                               :width   "20px"})
        "WATCH NOW"]]]]])
 
+(defn ^:private get-ucare-id-from-url
+  [ucare-url]
+  (last (re-find #"ucarecdn.com/([a-z0-9-]+)/" (str ucare-url))))
+
 (defn get-a-free-install
-  [{:keys [stylist-portrait stylist-name]}]
+  [{:keys [gallery-ucare-ids stylist-portrait stylist-name stylist-gallery-open?]}]
   [:div.col-12.bg-transparent-teal.mt4.p8
    [:div.mt2.flex.flex-column.items-center
     [:h2 "Get a FREE Install"]
@@ -105,7 +110,13 @@
       (svg/check {:class "stroke-teal" :height "2em" :width "2em"}) "Oakland, CA"]]
     [:div.h6.pt1.flex.items-center
      (svg/cascade {:style {:height "20px" :width "29px"}})
-     [:span.ml1.teal.medium "Hair Gallery"]]]])
+     [:a.ml1.teal.medium
+      (utils/fake-href events/control-stylist-gallery-open)
+      "Hair Gallery"]
+     (modal-gallery/simple
+      {:slides      (map modal-gallery/ucare-img-slide gallery-ucare-ids)
+       :open?       stylist-gallery-open?
+       :close-event events/control-stylist-gallery-close})]]])
 
 (defn carousel-slide [image-id caption]
   [:div
@@ -245,7 +256,7 @@
     [:div.col-6.px1 (ui/ucare-img {:class "col-12"} "ec9e0533-9eee-41ae-a61b-8dc22f045cb5")]
    ]])
 
-(defn component [{:keys [signed-in homepage-data store categories show-talkable-banner? seventy-five-off-install? the-ville? faq-data video] :as data} owner opts]
+(defn component [{:keys [signed-in homepage-data store categories show-talkable-banner? seventy-five-off-install? the-ville? faq-data video gallery-ucare-ids] :as data} owner opts]
   (component/create
    [:div
     [:div
@@ -259,7 +270,9 @@
                               ;;             (B is removed from history).
                               {:opts {:close-attrs (utils/route-to events/navigate-home {:query-params {:video "0"}})}}))
       [:section what-our-customers-are-saying]]
-     [:section (get-a-free-install {:stylist-portrait (:portrait store) :stylist-name (:store-nickname store)})]
+     [:section (get-a-free-install {:gallery-ucare-ids gallery-ucare-ids
+                                    :stylist-portrait  (:portrait store)
+                                    :stylist-name      (:store-nickname store)})]
      [:section most-popular-looks]
      [:section the-hookup]
      [:section ugc-quadriptych]
@@ -270,14 +283,20 @@
 (defn query [data]
   (let [seventy-five-off-install? (experiments/seventy-five-off-install? data)
         the-ville?                (experiments/the-ville? data)
-        homepage-data             (get-in data keypaths/cms-homepage)]
-    {:store                     (marquee/query data)
+        homepage-data             (get-in data keypaths/cms-homepage)
+        store (marquee/query data)]
+    {:store                     store
+     :gallery-ucare-ids         (->> store
+                                     :gallery
+                                     :images
+                                     (map (comp get-ucare-id-from-url :resizable-url)))
      :faq-data                  {:expanded-index (get-in data keypaths/faq-expanded-section)}
      :signed-in                 (auth/signed-in data)
      :categories                (->> (get-in data keypaths/categories)
                                      (filter :home/order)
                                      (sort-by :home/order))
      :video                     (get-in data keypaths/aladdin-video)
+     :stylist-gallery-open?     (get-in data keypaths/carousel-stylist-gallery-open?)
      :seventy-five-off-install? seventy-five-off-install?
      :the-ville?                the-ville?
      :homepage-data             homepage-data
