@@ -572,6 +572,18 @@
     :handler #(messages/handle-message event
                                        (select-keys % [:lifetime-stats :next-payout :previous-payout :initiated-payout]))}))
 
+(defn get-stylist-dashboard-stats
+  [event stylist-id user-id user-token]
+  (storeback-api-req
+   GET
+   "/v2/stylist/stats"
+   request-keys/get-stylist-dashboard-stats
+   {:params {:stylist-id stylist-id
+             :user-id    user-id
+             :user-token user-token}
+    :handler #(messages/handle-message event
+                                       (select-keys % [:earnings :services :store-credit-balance :bonuses]))}))
+
 (defn cash-out-now
   [user-id user-token stylist-id]
   (storeback-api-req

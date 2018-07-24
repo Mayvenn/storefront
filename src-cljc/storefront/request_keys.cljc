@@ -32,6 +32,7 @@
 (def get-stylist-balance-transfers [:get-stylist-balance-tranfers])
 (def get-stylist-balance-transfer [:get-stylist-balance-transfer])
 (def get-stylist-payout-stats [:get-stylist-payout-stats])
+(def get-stylist-dashboard-stats [:get-stylist-dashboard-stats])
 (def get-stylist-bonus-credits [:get-stylist-bonus-credits])
 (def get-stylist-referral-program [:get-stylist-referral-program])
 (def cash-out-now [:cash-out-now])

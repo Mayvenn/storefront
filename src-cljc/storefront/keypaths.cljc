@@ -57,9 +57,9 @@
 (def store-gallery-images (conj store :gallery :images))
 (def store-features (conj store :features))
 
-(def v2-products [:v2 :products])
-(def v2-skus [:v2 :skus])
-(def v2-facets [:v2 :facets])
+(def v2-products [:catalog :products])
+(def v2-skus [:catalog :skus])
+(def v2-facets [:catalog :facets])
 
 (def db [:db])
 (def db-images (conj db :images))
@@ -250,6 +250,9 @@
 (def stylist-referral-program-referrals (conj stylist-referral-program :referrals))
 (def stylist-referral-program-page (conj stylist-referral-program :page))
 (def stylist-referral-program-pages (conj stylist-referral-program :pages))
+
+(def stylist-v2-dashboard (conj stylist :v2-dashboard))
+(def stylist-v2-dashboard-stats (conj stylist-v2-dashboard :stats))
 
 (def current-category-id (conj ui :current-category-id))
 (def current-traverse-nav (conj ui :current-traverse-nav))

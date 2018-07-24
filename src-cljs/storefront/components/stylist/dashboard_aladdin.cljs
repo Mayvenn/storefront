@@ -2,12 +2,17 @@
   (:require [storefront.component :as component]
             [storefront.components.stylist.bonus-credit :as bonuses]
             [storefront.components.stylist.earnings :as earnings]
+            [storefront.api :as api]
+            [storefront.platform.messages :as messages]
             [storefront.platform.numbers :as numbers]
             [storefront.components.stylist.referrals :as referrals]
             [storefront.components.stylist.stats :as stats]
+            [storefront.components.money-formatters :as mf]
             [storefront.components.tabs :as tabs]
             [storefront.events :as events]
+            [storefront.effects :as effects]
             [storefront.keypaths :as keypaths]
+            [storefront.transitions :as transitions]
             [storefront.components.ui :as ui]
             [storefront.components.svg :as svg]))
 
@@ -26,7 +31,9 @@
        (= value maximum) [:div.bg-teal.px2 {:style bar-style}]
        :else [:div.bg-teal.px2 {:style (merge bar-style {:width bar-width})}])]))
 
-(defn ^:private cash-balance-card []
+(defn ^:private cash-balance-card
+  [{:as earnings :keys [cash-balance lifetime-earnings monthly-earnings]}
+   {:as services :keys [lifetime-services monthly-services]}]
   [:div.h6.bg-too-light-teal.p2
 
    [:div.letter-spacing-1.shout.dark-gray.mbnp5.flex.items-center
@@ -38,7 +45,7 @@
 
    [:div.flex.items-center
     [:div.col-7
-     [:div.h1.black.bold.flex "$130"]]
+     [:div.h1.black.bold.flex (mf/as-money-without-cents cash-balance)]]
     [:div.col-5
      (ui/teal-button
       {:height-class "py2"}
@@ -47,16 +54,16 @@
        "Cash Out"])]]
    [:div.flex.mt2
     [:div.col-7
-     (earnings-count "Monthly Earnings" "$490")]
+     (earnings-count "Monthly Earnings" (mf/as-money-without-cents monthly-earnings))]
     [:div.col-5
-     (earnings-count "Lifetime Earnings" "$6,255")]]
+     (earnings-count "Lifetime Earnings" (mf/as-money-without-cents lifetime-earnings))]]
    [:div.flex.pt2
     [:div.col-7
-     (earnings-count "Monthly Services" "4")]
+     (earnings-count "Monthly Services" monthly-services)]
     [:div.col-5
-     (earnings-count "Lifetime Services" "57")]]])
+     (earnings-count "Lifetime Services" lifetime-services)]]])
 
-(defn ^:private store-credit-balance-card []
+(defn ^:private store-credit-balance-card [total-available-store-credit lifetime-earned]
   [:div.h6.bg-too-light-teal.p2
    [:div.letter-spacing-1.shout.dark-gray.mbnp5.flex.items-center
     "Store Credit Balance"
@@ -67,7 +74,7 @@
 
    [:div.flex.items-center
     [:div.col-7
-     [:div.h1.black.bold.flex "$100"]]
+     [:div.h1.black.bold.flex (mf/as-money-without-cents total-available-store-credit)]]
     [:div.col-5
      (ui/teal-button
       {:height-class "py2"}
@@ -76,31 +83,48 @@
        "Shop"])]]
    [:div.flex.pt2
     [:div.col-7
-     (earnings-count "Lifetime Bonuses" "$955")]]])
+     (earnings-count "Lifetime Bonuses" (mf/as-money-without-cents lifetime-earned))]]])
 
-(defn ^:private sales-bonus-progress []
+(defn ^:private sales-bonus-progress [{:keys [previous-level next-level lifetime-earned]}]
   [:div.p2
    [:div.h6.letter-spacing-1.shout.dark-gray "Sales Bonus Progress"]
-   [:div.h7 "You've hit $600 in non-FREEINSTALL sales and earned " [:span.bold "$100"] " in credit."]
+   [:div.h7 "You've hit " (mf/as-money-without-cents previous-level) " in non-FREEINSTALL sales and earned " [:span.bold (mf/as-money-without-cents lifetime-earned)] " in credit."]
    [:div.mtp2
-    (progress-indicator {:value   100
-                         :maximum 300})]])
+    (progress-indicator {:value   (- lifetime-earned previous-level)
+                         :maximum (- next-level previous-level)})]])
 
 (defn component
-  [{:keys []} owner opts]
-  (component/create
-   [:div.p3-on-mb
-    (cash-balance-card)
-    [:div.mt2 (store-credit-balance-card)]
-    (sales-bonus-progress)]))
+  [{:keys [stats total-available-store-credit]} owner opts]
+  (let [{:keys [bonuses earnings services]} stats
+        {:keys [lifetime-earned]}           bonuses]
+    (component/create
+     [:div.p3-on-mb
+      (cash-balance-card earnings services)
+      [:div.mt2 (store-credit-balance-card total-available-store-credit lifetime-earned)]
+      (sales-bonus-progress bonuses)])))
 
 (defn query
   [data]
-  {:nav-event (get-in data keypaths/navigation-event)
-   :earnings  (earnings/query data)
-   :bonuses   (bonuses/query data)
-   :referrals (referrals/query data)
-   :stats     (stats/query data)})
+  {:nav-event                    (get-in data keypaths/navigation-event)
+   :stats                        (get-in data keypaths/stylist-v2-dashboard-stats)
+   :total-available-store-credit (get-in data keypaths/user-total-available-store-credit)})
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
+
+(defmethod effects/perform-effects events/navigate-stylist-v2-dashboard-payments [_ event args _ app-state]
+  (messages/handle-message events/stylist-v2-dashboard-stats-fetch))
+
+(defmethod effects/perform-effects events/stylist-v2-dashboard-stats-fetch [_ event args _ app-state]
+  (let [stylist-id (get-in app-state keypaths/store-stylist-id)
+        user-id    (get-in app-state keypaths/user-id)
+        user-token (get-in app-state keypaths/user-token)]
+    (when (and user-id user-token)
+      (api/get-stylist-dashboard-stats events/api-success-stylist-v2-dashboard-stats
+                                       stylist-id
+                                       user-id
+                                       user-token))))
+
+(defmethod transitions/transition-state events/api-success-stylist-v2-dashboard-stats
+  [_ event {:as stats :keys [earnings services store-credit-balance bonuses]} app-state]
+  (assoc-in app-state keypaths/stylist-v2-dashboard-stats stats))

@@ -70,6 +70,8 @@
 (defpath navigate-stylist-dashboard-cash-out-success)
 (defpath navigate-stylist-dashboard-balance-transfer-details)
 
+(defpath navigate-stylist-v2-dashboard-payments)
+
 (defpath navigate-stylist-share-your-store)
 
 (defpath navigate-stylist-account)
@@ -78,7 +80,6 @@
 (defpath navigate-stylist-account-password)
 (defpath navigate-stylist-account-commission)
 (defpath navigate-stylist-account-social)
-(defpath navigate-stylist-payments)
 
 (defpath navigate-voucher-redeem)
 (defpath navigate-voucher-redeemed)
@@ -137,6 +138,7 @@
 (defpath stripe-component-will-unmount)
 
 (defpath stylist-balance-transfers-fetch)
+(defpath stylist-v2-dashboard-stats-fetch)
 
 (defpath ensure-sku-ids)
 
@@ -308,6 +310,7 @@
 (defpath api-success-stylist-account-social)
 (defpath api-success-stylist-balance-transfers)
 (defpath api-success-stylist-balance-transfer-details)
+(defpath api-success-stylist-v2-dashboard-stats)
 (defpath api-success-stylist-next-payout)
 (defpath api-success-stylist-payout-stats)
 (defpath api-success-stylist-payout-stats-cash-out-now)
