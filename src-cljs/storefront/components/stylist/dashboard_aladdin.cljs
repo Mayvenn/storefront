@@ -5,9 +5,11 @@
             [storefront.api :as api]
             [storefront.platform.messages :as messages]
             [storefront.platform.numbers :as numbers]
+            [storefront.accessors.payouts :as payouts]
             [storefront.components.stylist.referrals :as referrals]
             [storefront.components.stylist.stats :as stats]
             [storefront.components.money-formatters :as mf]
+            [storefront.platform.component-utils :as utils]
             [storefront.components.tabs :as tabs]
             [storefront.events :as events]
             [storefront.effects :as effects]
@@ -44,14 +46,20 @@
                          :width  ".75em"})]
 
    [:div.flex.items-center
-    [:div.col-7
-     [:div.h1.black.bold.flex (mf/as-money-without-cents cash-balance)]]
     [:div.col-5
-     (ui/teal-button
-      {:height-class "py2"}
-      [:div.flex.items-center.justify-center.regular.h5
-       (ui/ucare-img {:width "28" :class "mr2 flex items-center"} "3d651ddf-b37d-441b-a162-b83728f2a2eb")
-       "Cash Out"])]]
+     [:div.h1.black.bold.flex (mf/as-money-without-cents cash-balance)]]
+    [:div.col-7
+     (if false #_(payouts/cash-out-eligible? payout-method)
+       (ui/teal-button
+        {:height-class "py2"
+         :on-click  (utils/send-event-callback events/control-stylist-dashboard-cash-out-submit)
+                                        ;:disabled? (not (payouts/cash-out-eligible? payout-method))
+                                        ;:spinning? cashing-out?
+         }
+        [:div.flex.items-center.justify-center.regular.h5
+         (ui/ucare-img {:width "28" :class "mr2 flex items-center"} "3d651ddf-b37d-441b-a162-b83728f2a2eb")
+         "Cash Out"])
+       [:div.h7.right "Cash out now with " [:a.teal (utils/fake-href events/navigate-stylist-account-commission) "Mayvenn InstaPay"]])]]
    [:div.flex.mt2
     [:div.col-7
      (earnings-count "Monthly Earnings" (mf/as-money-without-cents monthly-earnings))]
@@ -107,6 +115,7 @@
   [data]
   {:nav-event                    (get-in data keypaths/navigation-event)
    :stats                        (get-in data keypaths/stylist-v2-dashboard-stats)
+   :payout-method                nil ;; TODO Finish this.
    :total-available-store-credit (get-in data keypaths/user-total-available-store-credit)})
 
 (defn built-component [data opts]
