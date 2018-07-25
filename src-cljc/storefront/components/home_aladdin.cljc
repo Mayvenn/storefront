@@ -74,7 +74,11 @@
   (last (re-find #"ucarecdn.com/([a-z0-9-]+)/" (str ucare-url))))
 
 (defn get-a-free-install
-  [{:keys [gallery-ucare-ids stylist-portrait stylist-name stylist-gallery-open?]}]
+  [{:keys [store-location
+           gallery-ucare-ids
+           stylist-portrait
+           stylist-name
+           stylist-gallery-open?]}]
   [:div.col-12.bg-transparent-teal.mt4.p8
    [:div.mt2.flex.flex-column.items-center
     [:h2 "Get a FREE Install"]
@@ -107,7 +111,8 @@
      [:div.flex.items-center.dark-gray {:style {:height "1.5em"}}
       (svg/check {:class "stroke-teal" :height "2em" :width "2em"}) "Licensed"]
      [:div.flex.items-center.dark-gray {:style {:height "1.5em"}}
-      (svg/check {:class "stroke-teal" :height "2em" :width "2em"}) "Oakland, CA"]]
+      (svg/check {:class "stroke-teal" :height "2em" :width "2em"})
+      (str (:city store-location) ", " (:state-abbr store-location))]]
     (when (seq gallery-ucare-ids)
       [:div.h6.pt1.flex.items-center
        (svg/cascade {:style {:height "20px" :width "29px"}})
@@ -271,7 +276,8 @@
                               ;;             (B is removed from history).
                               {:opts {:close-attrs (utils/route-to events/navigate-home {:query-params {:video "0"}})}}))
       [:section what-our-customers-are-saying]]
-     [:section (get-a-free-install {:gallery-ucare-ids     gallery-ucare-ids
+     [:section (get-a-free-install {:store-location        (:location store)
+                                    :gallery-ucare-ids     gallery-ucare-ids
                                     :stylist-portrait      (:portrait store)
                                     :stylist-name          (:store-nickname store)
                                     :stylist-gallery-open? stylist-gallery-open?})]
