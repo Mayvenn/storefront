@@ -94,10 +94,15 @@
     [:div.col-7
      (earnings-count "Lifetime Bonuses" (mf/as-money-without-cents lifetime-earned))]]])
 
-(defn ^:private sales-bonus-progress [{:keys [previous-level next-level lifetime-earned total-eligible-sales]}]
+(defn ^:private sales-bonus-progress [{:keys [previous-level next-level award-for-next-level total-eligible-sales]}]
   [:div.p2
    [:div.h6.letter-spacing-1.shout.dark-gray "Sales Bonus Progress"]
-   [:div.h7 "You've hit " (mf/as-money-without-cents previous-level) " in non-FREEINSTALL sales and earned " [:span.bold (mf/as-money-without-cents lifetime-earned)] " in credit."]
+   [:div.h7
+    "Sell "
+    (mf/as-money-without-cents (- next-level total-eligible-sales))
+    " more in non-FREEINSTALL sales to earn your next "
+    [:span.bold (mf/as-money-without-cents award-for-next-level)]
+    " in credit."]
    [:div.mtp2
     (progress-indicator {:value   (- total-eligible-sales previous-level)
                          :maximum (- next-level previous-level)})]])
