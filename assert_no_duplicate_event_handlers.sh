@@ -1,15 +1,18 @@
 #!/bin/bash
 
-event_dups () {
-  grep "defmethod $1" src-cljs/storefront/$2 | perl -pe "s/.*defmethod $1 (\S+).*/\1/" | sort | uniq -c | egrep '  1 ' -v
+
+event_dups_for_file () {
+    grep "defmethod \(\S\+\/\\)\?$1" -r src* \
+        | perl -pe "s/.*(\S+\/)?$1 (\S+).*/\2/" \
+        | sort | uniq -c | egrep '  1 ' -v
 }
 
-effect_dups ()     { event_dups perform-effects frontend_effects.cljs; }
-transition_dups () { event_dups transition-state frontend_transitions.cljs; }
-tracking_dups ()   { event_dups perform-track trackings.cljs; }
+transition_dups () { event_dups_for_file transition-state; }
+effect_dups ()     { event_dups_for_file perform-effects; }
+tracking_dups ()   { event_dups_for_file perform-track; }
 
-test "0" = `transition_dups | wc -l` && 
-  test "0" = `effect_dups | wc -l` && 
+test "0" = `transition_dups | wc -l` &&
+  test "0" = `effect_dups | wc -l` &&
   test "0" = `tracking_dups | wc -l`
 
 SOME_DUPS=$?
