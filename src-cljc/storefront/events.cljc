@@ -141,6 +141,8 @@
 (defpath stylist-balance-transfers-fetch)
 (defpath stylist-v2-dashboard-stats-fetch)
 
+(defpath aladdin-show-home)
+
 (defpath ensure-sku-ids)
 
 (defpath carousel-certified-stylist-index)

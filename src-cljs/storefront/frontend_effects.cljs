@@ -302,6 +302,8 @@
 
 (defmethod perform-effects events/navigate-home [_ _ {:keys [query-params]} _ app-state]
   (api/fetch-cms-data)
+  (when (experiments/aladdin-homepage? app-state)
+    (handle-message events/aladdin-show-home))
   (when (= config/welcome-subdomain (get-in app-state keypaths/store-slug))
     (redirect events/navigate-leads-home))
   (when (= config/install-subdomain (get-in app-state keypaths/store-slug))

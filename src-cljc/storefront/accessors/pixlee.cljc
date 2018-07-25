@@ -47,7 +47,8 @@
     (when (= 3 (count parsed-notes))
       {:texture texture
        :color   color
-       :lengths lengths})))
+       :lengths lengths
+       :price   280.00})))
 
 (defn parse-ugc-image [album-keyword {:keys [notes album_id album_photo_id user_name content_type source products title source_url] :as item}]
   (let [[nav-event nav-args :as nav-message] (product-link (first products))]

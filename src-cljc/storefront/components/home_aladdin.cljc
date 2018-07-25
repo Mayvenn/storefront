@@ -2,6 +2,8 @@
   (:require [clojure.string :as string]
             [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
+            [storefront.accessors.pixlee :as pixlee]
+            #?(:cljs [storefront.hooks.pixlee :as pixlee.hook])
             [storefront.assets :as assets]
             [storefront.component :as component]
             [storefront.components.marquee :as marquee]
@@ -15,7 +17,9 @@
             [storefront.platform.component-utils :as utils]
             [storefront.platform.carousel :as carousel]
             [storefront.routes :as routes]
-            [storefront.components.video :as video]))
+            [storefront.components.video :as video]
+            [storefront.effects :as effects]
+            [storefront.components.money-formatters :as mf]))
 
 (defn hero-image [{:keys [desktop-url mobile-url file-name alt]}]
   [:picture
@@ -125,18 +129,32 @@
          :open?       stylist-gallery-open?
          :close-event events/control-stylist-gallery-close})])]])
 
-(defn carousel-slide [image-id caption]
+(defn carousel-slide [{:as pixlee-image
+                       :keys [look-attributes]}]
   [:div
-   (ui/aspect-ratio 1 1 (ui/ucare-img {:class "col-12 mx1"} image-id))
-   [:div.h6.mt1.dark-gray caption]])
+   [:div.relative
+    (ui/aspect-ratio 1 1
+                     [:img {:class "col-12 mx1"
+                            :src   (-> pixlee-image :imgs :original :src)}])
+    (when-let [texture (:texture look-attributes)]
+      [:div.absolute.flex.justify-end.bottom-0.right-0.mb2
+       [:div {:style {:width       "0"
+                      :height      "0"
+                      :border-top  "28px solid rgba(159, 229, 213, 0.8)"
+                      :border-left "21px solid transparent"}}]
+       [:div.flex.items-center.px2.medium.h6.bg-transparent-light-teal
+        texture]])]
+   [:div.h6.mx1.mt1.dark-gray
+    [:span.medium (mf/as-money-without-cents (:price look-attributes))]
+    " + FREE Install"]])
 
-(defn style-carousel [styles treatments origins link]
+(defn style-carousel [styles treatments origins link ugc]
   [:div.my3.col-12
    [:h5.bold.center styles]
    [:div.h6.center.mb2.dark-gray treatments [:span.px2 "•"] origins]
    (component/build carousel/component
-                    {:slides   (repeat 5 (carousel-slide "63acc2ac-43cc-48cb-9db7-0361f01aaa25"
-                                                         [:span [:span.bold "$280 "] "+ FREE Install"]))
+                    {:slides
+                     (mapv carousel-slide (:images ugc))
                      :settings {:slidesToShow 2
                                 :swipe        true
                                 :arrows       true}}
@@ -145,18 +163,20 @@
     (ui/teal-button {:height-class "py2"}
                     (str "Shop " link " Looks"))]])
 
-(def most-popular-looks
+(defn most-popular-looks [sleek-ugc wave-ugc]
   [:div.col-12.col-6-on-tb.col-4-on-dt.mt3.py6.px2.mx-auto
    [:div.my2.flex.flex-column.items-center
     [:h2.center "Most Popular" [:br] "#FreeInstallMayvenn Looks"]
     (style-carousel "Sleek & Straight"
                     "Virgin & Dyed Virgin"
                     "Brazilian & Peruvian"
-                    "Sleek & Straight")
+                    "Sleek & Straight"
+                    sleek-ugc)
     (style-carousel "Waves & Curls"
                     "Virgin & Dyed Virgin"
                     "Brazilian, Malaysian & Peruvian"
-                    "Wave & Curl")]])
+                    "Wave & Curl"
+                    wave-ugc)]])
 
 (def the-hookup
   [:div.col-12.bg-transparent-teal.mt3.py8.px4
@@ -263,7 +283,21 @@
     [:div.col-6.px1 (ui/ucare-img {:class "col-12"} "ec9e0533-9eee-41ae-a61b-8dc22f045cb5")]
    ]])
 
-(defn component [{:keys [signed-in homepage-data store categories stylist-gallery-open? show-talkable-banner? seventy-five-off-install? the-ville? faq-data video gallery-ucare-ids] :as data} owner opts]
+(defn component [{:keys [signed-in
+                         homepage-data
+                         store
+                         categories
+                         stylist-gallery-open?
+                         show-talkable-banner?
+                         seventy-five-off-install?
+                         the-ville?
+                         faq-data
+                         video
+                         sleek-and-straight-ugc
+                         gallery-ucare-ids]
+                  :as data}
+                 owner
+                 opts]
   (component/create
    [:div
     [:div
@@ -282,7 +316,7 @@
                                     :stylist-portrait      (:portrait store)
                                     :stylist-name          (:store-nickname store)
                                     :stylist-gallery-open? stylist-gallery-open?})]
-     [:section most-popular-looks]
+     [:section (most-popular-looks sleek-and-straight-ugc sleek-and-straight-ugc)]
      [:section the-hookup]
      [:section ugc-quadriptych]
      [:section (faq faq-data)]
@@ -293,7 +327,9 @@
   (let [seventy-five-off-install? (experiments/seventy-five-off-install? data)
         the-ville?                (experiments/the-ville? data)
         homepage-data             (get-in data keypaths/cms-homepage)
-        store (marquee/query data)]
+        store                     (marquee/query data)
+        ugc                       (get-in data keypaths/ugc)
+        sleek-and-straight-images (pixlee/images-in-album ugc :aladdin-sleek-and-straight)]
     {:store                     store
      :gallery-ucare-ids         (->> store
                                      :gallery
@@ -305,6 +341,7 @@
                                      (filter :home/order)
                                      (sort-by :home/order))
      :video                     (get-in data keypaths/aladdin-video)
+     :sleek-and-straight-ugc    {:images sleek-and-straight-images}
      :stylist-gallery-open?     (get-in data keypaths/carousel-stylist-gallery-open?)
      :seventy-five-off-install? seventy-five-off-install?
      :the-ville?                the-ville?
@@ -317,8 +354,13 @@
 (def ^:private slug->video
   {"free-install" {:youtube-id "cWkSO_2nnD4"}})
 
-;; Copied from storefront.components.free-install. TODO: DRY up
-(defmethod transitions/transition-state events/navigate-home
+(defmethod transitions/transition-state events/aladdin-show-home
   [_ _ {:keys [query-params]} app-state]
   (assoc-in app-state keypaths/aladdin-video (slug->video (:video query-params))))
 
+(defmethod effects/perform-effects events/aladdin-show-home
+  [_ _ args prev-app-state app-state]
+  #?(:cljs (pixlee.hook/fetch-album-by-keyword :aladdin-sleek-and-straight))
+  ;; #?(:cljs (pixlee.hook/fetch-album-by-keyword :aladdin-waves-and-curly))
+
+  )
