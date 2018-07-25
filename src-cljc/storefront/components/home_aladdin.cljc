@@ -256,7 +256,7 @@
     [:div.col-6.px1 (ui/ucare-img {:class "col-12"} "ec9e0533-9eee-41ae-a61b-8dc22f045cb5")]
    ]])
 
-(defn component [{:keys [signed-in homepage-data store categories show-talkable-banner? seventy-five-off-install? the-ville? faq-data video gallery-ucare-ids] :as data} owner opts]
+(defn component [{:keys [signed-in homepage-data store categories stylist-gallery-open? show-talkable-banner? seventy-five-off-install? the-ville? faq-data video gallery-ucare-ids] :as data} owner opts]
   (component/create
    [:div
     [:div
@@ -270,9 +270,10 @@
                               ;;             (B is removed from history).
                               {:opts {:close-attrs (utils/route-to events/navigate-home {:query-params {:video "0"}})}}))
       [:section what-our-customers-are-saying]]
-     [:section (get-a-free-install {:gallery-ucare-ids gallery-ucare-ids
-                                    :stylist-portrait  (:portrait store)
-                                    :stylist-name      (:store-nickname store)})]
+     [:section (get-a-free-install {:gallery-ucare-ids     gallery-ucare-ids
+                                    :stylist-portrait      (:portrait store)
+                                    :stylist-name          (:store-nickname store)
+                                    :stylist-gallery-open? stylist-gallery-open?})]
      [:section most-popular-looks]
      [:section the-hookup]
      [:section ugc-quadriptych]
