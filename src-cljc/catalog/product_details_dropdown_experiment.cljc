@@ -631,18 +631,6 @@
          (valid-sku-ids prev-sku-id)
          (:catalog/sku-id epitome)))))
 
-(defmethod transitions/transition-state events/navigate-product-details
-  [_ event {:keys [catalog/product-id query-params]} app-state]
-  (let [product (products/product-by-id app-state product-id)
-        sku-id  (determine-sku-id app-state product (:SKU query-params))
-        sku     (get-in app-state (conj keypaths/v2-skus sku-id))]
-    (-> app-state
-        (assoc-in keypaths/ui-ugc-category-popup-offset (:offset query-params))
-        (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
-        (assoc-in catalog.keypaths/detailed-product-id product-id)
-        (assoc-in keypaths/browse-recently-added-skus [])
-        (assoc-in keypaths/browse-sku-quantity 1))))
-
 (defn url-points-to-invalid-sku? [selected-sku query-params]
   (and (:catalog/sku-id selected-sku)
        (not= (:catalog/sku-id selected-sku)
@@ -662,32 +650,6 @@
            (fetch-product-album current-product)
            (review-hooks/insert-reviews))
          (effects/redirect events/navigate-home)))))
-
-#?(:cljs
-   (defmethod effects/perform-effects events/navigate-product-details
-     [_ _ {:keys [catalog/product-id page/slug query-params]} _ app-state]
-     (let [selected-sku (get-in app-state catalog.keypaths/detailed-product-selected-sku)]
-       (if (url-points-to-invalid-sku? selected-sku query-params)
-         (effects/redirect events/navigate-product-details {:catalog/product-id product-id
-                                                            :page/slug          slug
-                                                            :query-params       {:SKU (:catalog/sku-id selected-sku)}})
-         (fetch-product-details app-state product-id)))))
-
-(defmethod effects/perform-effects events/api-success-v2-products-for-details
-  [_ _ _ _ app-state]
-  (fetch-product-album (products/current-product app-state)))
-
-(defmethod transitions/transition-state events/api-success-v2-products-for-details
-  ;; for pre-selecting skus by url
-  [_ event {:keys [skus]} app-state]
-  (let [product      (products/current-product app-state)
-        skus         (products/index-skus skus)
-        sku-id       (determine-sku-id app-state product)
-        sku          (get skus sku-id)
-        product-skus (extract-product-skus app-state product)]
-    (-> app-state
-        (assoc-in catalog.keypaths/detailed-product-product-skus product-skus)
-        (assoc-in catalog.keypaths/detailed-product-selected-sku sku))))
 
 (defn first-when-only [coll]
   (when (= 1 (count coll))
@@ -724,13 +686,6 @@
   (assoc-in app-state (conj catalog.keypaths/detailed-product-selected-sku :hair/length)
             (determine-selected-length app-state selected-option)))
 
-(defmethod transitions/transition-state events/control-bundle-option-select
-  [_ event {:keys [selection value]} app-state]
-  (-> app-state
-      (assoc-in (conj catalog.keypaths/detailed-product-selected-sku selection) value)
-      (assoc-default-length selection)
-      assoc-sku-from-selections))
-
 (defmethod transitions/transition-state events/control-product-detail-picker-option-select
   [_ event {:keys [selection value]} app-state]
   (-> app-state
@@ -738,46 +693,6 @@
       (assoc-in catalog.keypaths/detailed-product-selected-picker nil)
       (assoc-default-length selection)
       assoc-sku-from-selections))
-
-#?(:cljs
-   (defmethod effects/perform-effects events/control-bundle-option-select
-     [_ event {:keys [selection value]} _ app-state]
-     (let [sku-id                                 (get-in app-state catalog.keypaths/detailed-product-selected-sku-id)
-           {:keys [catalog/product-id page/slug]} (products/current-product app-state)]
-       (history/enqueue-redirect events/navigate-product-details
-                                 {:catalog/product-id product-id
-                                  :page/slug          slug
-                                  :query-params       {:SKU sku-id}}))))
-
-(defmethod effects/perform-effects events/control-add-sku-to-bag
-  [dispatch event {:keys [sku quantity] :as args} _ app-state]
-  #?(:cljs
-     (let [nav-event      (get-in app-state keypaths/navigation-event)]
-       (api/add-sku-to-bag
-        (get-in app-state keypaths/session-id)
-        {:sku        sku
-         :quantity   quantity
-         :stylist-id (get-in app-state keypaths/store-stylist-id)
-         :token      (get-in app-state keypaths/order-token)
-         :number     (get-in app-state keypaths/order-number)
-         :user-id    (get-in app-state keypaths/user-id)
-         :user-token (get-in app-state keypaths/user-token)}
-        #(do
-           (when (not= events/navigate-cart nav-event)
-             (history/enqueue-navigate events/navigate-cart))
-           (messages/handle-later events/api-success-add-sku-to-bag
-                                  {:order    %
-                                   :quantity quantity
-                                   :sku      sku}))))))
-
-(defmethod transitions/transition-state events/api-success-add-sku-to-bag
-  [_ event {:keys [order quantity sku]} app-state]
-  (let [previous-order (get-in app-state keypaths/order)]
-    (-> app-state
-        (update-in keypaths/browse-recently-added-skus
-                   conj
-                   {:quantity quantity :sku sku})
-        (assoc-in keypaths/browse-sku-quantity 1))))
 
 (defmethod transitions/transition-state events/control-product-detail-picker-open
   [_ event {:keys [facet-slug]} app-state]
