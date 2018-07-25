@@ -102,21 +102,56 @@
     (progress-indicator {:value   (- total-eligible-sales previous-level)
                          :maximum (- next-level previous-level)})]])
 
+(def tabs
+  [{:id :orders
+    :title "Orders"
+    :navigate events/navigate-stylist-v2-dashboard-orders}
+   {:id :payments
+    :title "Payments"
+    :navigate events/navigate-stylist-v2-dashboard-payments}])
+
+(defn ^:private activity-ledger [{:keys [active-tab-name empty-copy empty-title]} table-data]
+  [:div
+   [:div.flex.flex-wrap
+    (for [{:keys [id title navigate]} tabs]
+      [:a.h6.col-6.p2.black
+       (merge (utils/fake-href navigate)
+              {:key (name id)
+               :class (if (= id active-tab-name)
+                        "bg-gray bold"
+                        "bg-light-gray")})
+       title])]
+   (if (seq table-data)
+     [:div.my6.center
+      [:h4.gray.bold "TK"]
+      [:h6.dark-gray "TK TK TK TK TK TK TK"]]
+     [:div.my6.center
+      [:h4.gray.bold.p1 empty-title]
+      [:h6.dark-gray.col-5.mx-auto.line-height-2 empty-copy]])])
+
 (defn component
-  [{:keys [stats total-available-store-credit]} owner opts]
+  [{:keys [stats total-available-store-credit activity-ledger-tab]} owner opts]
   (let [{:keys [bonuses earnings services]} stats
         {:keys [lifetime-earned]}           bonuses]
     (component/create
-     [:div.p3-on-mb
-      (cash-balance-card earnings services)
-      [:div.mt2 (store-credit-balance-card total-available-store-credit lifetime-earned)]
-      (sales-bonus-progress bonuses)])))
+     [:div
+      [:div.p2
+       (cash-balance-card earnings services)
+       [:div.mt2 (store-credit-balance-card total-available-store-credit lifetime-earned)]
+       (sales-bonus-progress bonuses)]
+      (activity-ledger activity-ledger-tab [])])))
 
 (defn query
   [data]
-  {:nav-event                    (get-in data keypaths/navigation-event)
-   :stats                        (get-in data keypaths/stylist-v2-dashboard-stats)
+  {:stats                        (get-in data keypaths/stylist-v2-dashboard-stats)
    :payout-method                nil ;; TODO Finish this.
+   :activity-ledger-tab          ({events/navigate-stylist-v2-dashboard-payments {:active-tab-name :payments
+                                                                                  :empty-copy "Payments and bonus activity will appear here."
+                                                                                  :empty-title "No payments yet"}
+                                   events/navigate-stylist-v2-dashboard-orders   {:active-tab-name :orders
+                                                                                  :empty-copy "Orders from your store will appear here."
+                                                                                  :empty-title "No orders yet"}}
+                                  (get-in data keypaths/navigation-event))
    :total-available-store-credit (get-in data keypaths/user-total-available-store-credit)})
 
 (defn built-component [data opts]

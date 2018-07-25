@@ -97,6 +97,7 @@
               "/stylist/redeem"                                   (edn->bidi events/navigate-voucher-redeem)
               "/stylist/redeemed"                                 (edn->bidi events/navigate-voucher-redeemed)
               "/stylist/payments"                                 (edn->bidi events/navigate-stylist-v2-dashboard-payments)
+              "/stylist/orders"                                   (edn->bidi events/navigate-stylist-v2-dashboard-orders)
               "/share"                                            (edn->bidi events/navigate-friend-referrals)
               "/freeinstall-share"                                (edn->bidi events/navigate-friend-referrals-freeinstall)
               "/mayvenn-made"                                     (edn->bidi events/navigate-mayvenn-made)

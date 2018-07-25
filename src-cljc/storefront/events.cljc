@@ -71,6 +71,7 @@
 (defpath navigate-stylist-dashboard-balance-transfer-details)
 
 (defpath navigate-stylist-v2-dashboard-payments)
+(defpath navigate-stylist-v2-dashboard-orders)
 
 (defpath navigate-stylist-share-your-store)
 

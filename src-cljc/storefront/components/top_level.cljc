@@ -77,6 +77,7 @@
          events/navigate-stylist-account-commission                 stylist.account/built-component
          events/navigate-stylist-account-social                     stylist.account/built-component
          events/navigate-stylist-v2-dashboard-payments              stylist.dashboard-aladdin/built-component
+         events/navigate-stylist-v2-dashboard-orders                stylist.dashboard-aladdin/built-component
          events/navigate-gallery-image-picker                       gallery-image-picker/built-component
          events/navigate-account-manage                             (partial sign-in/requires-sign-in account/built-component)
          events/navigate-account-referrals                          (partial sign-in/requires-sign-in friend-referrals/built-component)
