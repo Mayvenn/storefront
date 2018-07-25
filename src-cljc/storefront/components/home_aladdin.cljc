@@ -74,7 +74,7 @@
   (last (re-find #"ucarecdn.com/([a-z0-9-]+)/" (str ucare-url))))
 
 (defn get-a-free-install
-  [{:keys [store-location
+  [{:keys [store
            gallery-ucare-ids
            stylist-portrait
            stylist-name
@@ -108,11 +108,12 @@
     [:div.h5.bold
      stylist-name]
     [:div.h6
-     [:div.flex.items-center.dark-gray {:style {:height "1.5em"}}
-      (svg/check {:class "stroke-teal" :height "2em" :width "2em"}) "Licensed"]
+     (when (:licensed store)
+       [:div.flex.items-center.dark-gray {:style {:height "1.5em"}}
+        (svg/check {:class "stroke-teal" :height "2em" :width "2em"}) "Licensed"])
      [:div.flex.items-center.dark-gray {:style {:height "1.5em"}}
       (svg/check {:class "stroke-teal" :height "2em" :width "2em"})
-      (str (:city store-location) ", " (:state-abbr store-location))]]
+      (str (-> store :location :city) ", " (-> store :location :state-abbr))]]
     (when (seq gallery-ucare-ids)
       [:div.h6.pt1.flex.items-center
        (svg/cascade {:style {:height "20px" :width "29px"}})
@@ -276,7 +277,7 @@
                               ;;             (B is removed from history).
                               {:opts {:close-attrs (utils/route-to events/navigate-home {:query-params {:video "0"}})}}))
       [:section what-our-customers-are-saying]]
-     [:section (get-a-free-install {:store-location        (:location store)
+     [:section (get-a-free-install {:store                 store
                                     :gallery-ucare-ids     gallery-ucare-ids
                                     :stylist-portrait      (:portrait store)
                                     :stylist-name          (:store-nickname store)
