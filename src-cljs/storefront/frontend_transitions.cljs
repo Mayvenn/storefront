@@ -690,4 +690,8 @@
               {:error-code    code
                :error-message message})))
 
-
+(defmethod transitions/transition-state events/faq-section-selected [_ _ {:keys [index]} app-state]
+  (let [expanded-index (get-in app-state keypaths/faq-expanded-section)]
+    (if (= index expanded-index)
+      (assoc-in app-state keypaths/faq-expanded-section nil)
+      (assoc-in app-state keypaths/faq-expanded-section index))))

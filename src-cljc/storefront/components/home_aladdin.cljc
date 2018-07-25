@@ -322,9 +322,3 @@
   [_ _ {:keys [query-params]} app-state]
   (assoc-in app-state keypaths/aladdin-video (slug->video (:video query-params))))
 
-;; Copied from storefront.components.free-install. TODO: DRY up
-(defmethod transitions/transition-state events/faq-section-selected [_ _ {:keys [index]} app-state]
-  (let [expanded-index (get-in app-state keypaths/faq-expanded-section)]
-    (if (= index expanded-index)
-      (assoc-in app-state keypaths/faq-expanded-section nil)
-      (assoc-in app-state keypaths/faq-expanded-section index))))

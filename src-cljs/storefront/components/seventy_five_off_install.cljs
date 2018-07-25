@@ -215,9 +215,3 @@
 
 (defmethod effects/perform-effects events/popup-show-seventy-five-off-install [_ event _ _ app-state]
   (scroll/disable-body-scrolling))
-
-(defmethod transitions/transition-state events/faq-section-selected [_ _ {:keys [index]} app-state]
-  (let [expanded-index (get-in app-state keypaths/faq-expanded-section)]
-    (if (= index expanded-index)
-      (assoc-in app-state keypaths/faq-expanded-section nil)
-      (assoc-in app-state keypaths/faq-expanded-section index))))
