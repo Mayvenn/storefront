@@ -85,7 +85,8 @@
      [:div.h1.black.bold.flex (mf/as-money-without-cents total-available-store-credit)]]
     [:div.col-5
      (ui/teal-button
-      {:height-class "py2"}
+      {:height-class "py2"
+       :disabled? (zero? total-available-store-credit)}
       [:div.flex.items-center.justify-center.regular.h5
        (ui/ucare-img {:width "28" :class "mr2 flex items-center"} "81775e67-9a83-46b7-b2ae-1cdb5a737876")
        "Shop"])]]
