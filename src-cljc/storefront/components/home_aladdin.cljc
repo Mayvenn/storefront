@@ -108,15 +108,16 @@
       (svg/check {:class "stroke-teal" :height "2em" :width "2em"}) "Licensed"]
      [:div.flex.items-center.dark-gray {:style {:height "1.5em"}}
       (svg/check {:class "stroke-teal" :height "2em" :width "2em"}) "Oakland, CA"]]
-    [:div.h6.pt1.flex.items-center
-     (svg/cascade {:style {:height "20px" :width "29px"}})
-     [:a.ml1.teal.medium
-      (utils/fake-href events/control-stylist-gallery-open)
-      "Hair Gallery"]
-     (modal-gallery/simple
-      {:slides      (map modal-gallery/ucare-img-slide gallery-ucare-ids)
-       :open?       stylist-gallery-open?
-       :close-event events/control-stylist-gallery-close})]]])
+    (when (seq gallery-ucare-ids)
+      [:div.h6.pt1.flex.items-center
+       (svg/cascade {:style {:height "20px" :width "29px"}})
+       [:a.ml1.teal.medium
+        (utils/fake-href events/control-stylist-gallery-open)
+        "Hair Gallery"]
+       (modal-gallery/simple
+        {:slides      (map modal-gallery/ucare-img-slide gallery-ucare-ids)
+         :open?       stylist-gallery-open?
+         :close-event events/control-stylist-gallery-close})])]])
 
 (defn carousel-slide [image-id caption]
   [:div
