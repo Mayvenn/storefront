@@ -274,10 +274,11 @@
     [:div.col-6.px1 (ui/ucare-img {:class "col-12"} "4a92843c-b92d-48d3-8ac0-05b744b73584")]
     [:div.col-6.px2
      [:h4.my1.dark-gray.medium "Our Story"]
-     [:h6.teal.flex.items-center
-      (svg/clear-play-video {:class        "mr1 fill-teal"
-                             :height       "20px"
-                             :width        "20px"})
+     [:a.h6.teal.flex.items-center
+      (utils/route-to events/navigate-home {:query-params {:video "we-are-mayvenn"}})
+      (svg/clear-play-video {:class  "mr1 fill-teal"
+                             :height "20px"
+                             :width  "20px"})
       "WATCH NOW"]]
     [:div.col-6.px1 (ui/ucare-img {:class "col-12"} "34512e2b-e6a8-47c2-bc7e-0471737fc920")]
     [:div.col-6.px1 (ui/ucare-img {:class "col-12"} "d800599c-a383-4b87-8c0d-d80bbaaf0817")]
@@ -285,8 +286,7 @@
      [:h4.my2.line-height-1 "“Our mission is to provide our community with an unbeatable product.”"]
      [:h6.medium.line-height-1 "- Diishan Imira"]
      [:h6 "CEO of Mayvenn"]]
-    [:div.col-6.px1 (ui/ucare-img {:class "col-12"} "ec9e0533-9eee-41ae-a61b-8dc22f045cb5")]
-   ]])
+    [:div.col-6.px1 (ui/ucare-img {:class "col-12"} "ec9e0533-9eee-41ae-a61b-8dc22f045cb5")]]])
 
 (defn component [{:keys [signed-in
                          homepage-data
@@ -366,9 +366,9 @@
   (component/build component (query data) opts))
 
 (def ^:private slug->video
-  {"free-install" {:youtube-id "cWkSO_2nnD4"}})
+  {"we-are-mayvenn" {:youtube-id "hWJjyy5POTE"}})
 
-(defmethod transitions/transition-state events/aladdin-show-home
+(defmethod transitions/transition-state events/navigate-home
   [_ _ {:keys [query-params]} app-state]
   (assoc-in app-state keypaths/aladdin-video (slug->video (:video query-params))))
 
