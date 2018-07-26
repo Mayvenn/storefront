@@ -129,7 +129,7 @@
          :open?       stylist-gallery-open?
          :close-event events/control-stylist-gallery-close})])]])
 
-(defn carousel-slide [album-keyword {:as pixlee-image :keys [look-attributes links]}]
+(defn carousel-slide [{:as pixlee-image :keys [look-attributes links]}]
   [:div
    [:div.relative
     (apply utils/route-to (:view-look links))
@@ -153,7 +153,7 @@
    [:div.h6.center.mb2.dark-gray treatments [:span.px2 "•"] origins]
    (component/build carousel/component
                     {:slides
-                     (mapv (partial carousel-slide album-keyword) (:images ugc))
+                     (mapv carousel-slide (:images ugc))
                      :settings {:slidesToShow 2
                                 :swipe        true
                                 :arrows       true}}
@@ -205,15 +205,19 @@
     [:div.h6.teal.medium "Free Install"]
     [:p.h6.col-10.center "Get your hair installed absolutely FREE!"]]])
 
-(def ugc-quadriptych
+(defn free-install-mayvenn-grid [free-install-mayvenn-ugc]
   [:div.py10.px4
    [:h2.center "#FreeInstallMayvenn"]
    [:h6.center.dark-gray "Over 1,000 free installs & counting"]
    [:div.flex.flex-wrap
-    [:div.col-6.col-3-on-tb-dt.p1 (ui/ucare-img {:class "col-12"} "63acc2ac-43cc-48cb-9db7-0361f01aaa25")]
-    [:div.col-6.col-3-on-tb-dt.p1 (ui/ucare-img {:class "col-12"} "63acc2ac-43cc-48cb-9db7-0361f01aaa25")]
-    [:div.col-6.col-3-on-tb-dt.p1 (ui/ucare-img {:class "col-12"} "63acc2ac-43cc-48cb-9db7-0361f01aaa25")]
-    [:div.col-6.col-3-on-tb-dt.p1 (ui/ucare-img {:class "col-12"} "63acc2ac-43cc-48cb-9db7-0361f01aaa25")]]])
+    (for [{:keys [links imgs]} (:images free-install-mayvenn-ugc)]
+      [:a.col-6.col-3-on-tb-dt.p1
+       (when-let [view-look (:view-look links)]
+         (apply utils/route-to view-look))
+       (ui/aspect-ratio
+        1 1
+        [:img {:class "col-12 mx1"
+               :src   (-> imgs :original :src)}])])]])
 
 (def ^:private faq-section-copy
   [(accordion/section "How does this all work? How do I get a FREE INSTALL?"
@@ -296,6 +300,7 @@
                          video
                          sleek-and-straight-ugc
                          waves-and-curly-ugc
+                         free-install-mayvenn-ugc
                          gallery-ucare-ids]
                   :as data}
                  owner
@@ -320,19 +325,20 @@
                                     :stylist-gallery-open? stylist-gallery-open?})]
      [:section (most-popular-looks sleek-and-straight-ugc waves-and-curly-ugc)]
      [:section the-hookup]
-     [:section ugc-quadriptych]
+     [:section (free-install-mayvenn-grid free-install-mayvenn-ugc)]
      [:section (faq faq-data)]
      [:hr.border-top.border-dark-silver.col-9.mx-auto.my6]
      [:section our-story]]]))
 
 (defn query [data]
-  (let [seventy-five-off-install? (experiments/seventy-five-off-install? data)
-        the-ville?                (experiments/the-ville? data)
-        homepage-data             (get-in data keypaths/cms-homepage)
-        store                     (marquee/query data)
-        ugc                       (get-in data keypaths/ugc)
-        sleek-and-straight-images (pixlee/images-in-album ugc :sleek-and-straight)
-        waves-and-curly-images    (pixlee/images-in-album ugc :waves-and-curly)]
+  (let [seventy-five-off-install?   (experiments/seventy-five-off-install? data)
+        the-ville?                  (experiments/the-ville? data)
+        homepage-data               (get-in data keypaths/cms-homepage)
+        store                       (marquee/query data)
+        ugc                         (get-in data keypaths/ugc)
+        free-install-mayvenn-images (pixlee/images-in-album ugc :free-install-mayvenn)
+        sleek-and-straight-images   (pixlee/images-in-album ugc :sleek-and-straight)
+        waves-and-curly-images      (pixlee/images-in-album ugc :waves-and-curly)]
     {:store                     store
      :gallery-ucare-ids         (->> store
                                      :gallery
@@ -346,8 +352,10 @@
      :video                     (get-in data keypaths/aladdin-video)
      :sleek-and-straight-ugc    {:images        sleek-and-straight-images
                                  :album-keyword :sleek-and-straight}
-     :waves-and-curly-ugc        {:images        waves-and-curly-images
+     :waves-and-curly-ugc       {:images        waves-and-curly-images
                                  :album-keyword :waves-and-curly}
+     :free-install-mayvenn-ugc  {:images        free-install-mayvenn-images
+                                 :album-keyword :free-install-mayvenn}
      :stylist-gallery-open?     (get-in data keypaths/carousel-stylist-gallery-open?)
      :seventy-five-off-install? seventy-five-off-install?
      :the-ville?                the-ville?
@@ -367,4 +375,5 @@
 (defmethod effects/perform-effects events/aladdin-show-home
   [_ _ args prev-app-state app-state]
   #?(:cljs (do (pixlee.hook/fetch-album-by-keyword :sleek-and-straight)
-               (pixlee.hook/fetch-album-by-keyword :waves-and-curly))))
+               (pixlee.hook/fetch-album-by-keyword :waves-and-curly)
+               (pixlee.hook/fetch-album-by-keyword :free-install-mayvenn))))
