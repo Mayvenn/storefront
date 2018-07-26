@@ -293,6 +293,7 @@
                          faq-data
                          video
                          sleek-and-straight-ugc
+                         waves-and-curly-ugc
                          gallery-ucare-ids]
                   :as data}
                  owner
@@ -315,7 +316,7 @@
                                     :stylist-portrait      (:portrait store)
                                     :stylist-name          (:store-nickname store)
                                     :stylist-gallery-open? stylist-gallery-open?})]
-     [:section (most-popular-looks sleek-and-straight-ugc sleek-and-straight-ugc)]
+     [:section (most-popular-looks sleek-and-straight-ugc waves-and-curly-ugc)]
      [:section the-hookup]
      [:section ugc-quadriptych]
      [:section (faq faq-data)]
@@ -328,7 +329,8 @@
         homepage-data             (get-in data keypaths/cms-homepage)
         store                     (marquee/query data)
         ugc                       (get-in data keypaths/ugc)
-        sleek-and-straight-images (pixlee/images-in-album ugc :aladdin-sleek-and-straight)]
+        sleek-and-straight-images (pixlee/images-in-album ugc :sleek-and-straight)
+        waves-and-curly-images    (pixlee/images-in-album ugc :waves-and-curly)]
     {:store                     store
      :gallery-ucare-ids         (->> store
                                      :gallery
@@ -341,7 +343,9 @@
                                      (sort-by :home/order))
      :video                     (get-in data keypaths/aladdin-video)
      :sleek-and-straight-ugc    {:images        sleek-and-straight-images
-                                 :album-keyword :aladdin-sleek-and-straight}
+                                 :album-keyword :sleek-and-straight}
+     :waves-and-curly-ugc        {:images        waves-and-curly-images
+                                 :album-keyword :waves-and-curly}
      :stylist-gallery-open?     (get-in data keypaths/carousel-stylist-gallery-open?)
      :seventy-five-off-install? seventy-five-off-install?
      :the-ville?                the-ville?
@@ -360,7 +364,5 @@
 
 (defmethod effects/perform-effects events/aladdin-show-home
   [_ _ args prev-app-state app-state]
-  #?(:cljs (pixlee.hook/fetch-album-by-keyword :aladdin-sleek-and-straight))
-  ;; #?(:cljs (pixlee.hook/fetch-album-by-keyword :aladdin-waves-and-curly))
-
-  )
+  #?(:cljs (do (pixlee.hook/fetch-album-by-keyword :sleek-and-straight)
+               (pixlee.hook/fetch-album-by-keyword :waves-and-curly))))
