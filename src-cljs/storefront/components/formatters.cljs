@@ -38,3 +38,6 @@
   (-> (date/to-datetime date-like)
       (.toLocaleDateString)))
 
+(defn date-tuple [date-like]
+  (let [date (date/to-datetime date-like)]
+    [(.getFullYear date) (.getMonth date) (.getDate date)]))
