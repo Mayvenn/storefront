@@ -129,9 +129,10 @@
          :open?       stylist-gallery-open?
          :close-event events/control-stylist-gallery-close})])]])
 
-(defn carousel-slide [{:as pixlee-image :keys [look-attributes]}]
+(defn carousel-slide [album-keyword {:as pixlee-image :keys [look-attributes links]}]
   [:div
    [:div.relative
+    (apply utils/route-to (:view-look links))
     (ui/aspect-ratio 1 1
                      [:img {:class "col-12 mx1"
                             :src   (-> pixlee-image :imgs :original :src)}])
@@ -145,13 +146,14 @@
         texture]])]
    [:div.h6.mx1.mt1.dark-gray.medium (:price look-attributes)]])
 
-(defn style-carousel [styles treatments origins link-text ugc]
+(defn style-carousel [styles treatments origins link-text {:as ugc
+                                                           :keys [album-keyword]}]
   [:div.my3.col-12
    [:h5.bold.center styles]
    [:div.h6.center.mb2.dark-gray treatments [:span.px2 "•"] origins]
    (component/build carousel/component
                     {:slides
-                     (mapv carousel-slide (:images ugc))
+                     (mapv (partial carousel-slide album-keyword) (:images ugc))
                      :settings {:slidesToShow 2
                                 :swipe        true
                                 :arrows       true}}
@@ -159,7 +161,7 @@
    [:div.col-9.mx-auto.mt2
     (ui/teal-button (merge
                      {:height-class "py2"}
-                     (utils/route-to events/navigate-shop-by-look {:album-keyword (:album-keyword ugc)}))
+                     (utils/route-to events/navigate-shop-by-look {:album-keyword album-keyword}))
                     (str "Shop " link-text " Looks"))]])
 
 (defn most-popular-looks [sleek-ugc wave-ugc]
