@@ -43,12 +43,16 @@
   "Expects a url encoded string that is delimited by asterisks with texture,
   color, and length"
   [notes]
-  (let [[texture color lengths :as parsed-notes] (some-> notes url/url-decode (string/split #"\*"))]
-    (when (= 3 (count parsed-notes))
-      {:texture texture
-       :color   color
-       :lengths lengths
-       :price   280.00})))
+  (let [[texture color lengths price :as parsed-notes] (some-> notes url/url-decode (string/split #"\*"))]
+    (case (count parsed-notes)
+      3 {:texture texture
+         :color   color
+         :lengths lengths}
+      4 {:texture texture
+         :color   color
+         :lengths lengths
+         :price   price}
+      nil)))
 
 (defn parse-ugc-image [album-keyword {:keys [notes album_id album_photo_id user_name content_type source products title source_url] :as item}]
   (let [[nav-event nav-args :as nav-message] (product-link (first products))]

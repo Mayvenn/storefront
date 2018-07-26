@@ -47,6 +47,19 @@
                        :seo-title            "Shop by Look | Mayvenn"
                        :og-title             "Shop by Look - Find and Buy your favorite Mayvenn bundles!"}
 
+   ;;TODO Get proper copy
+   :aladdin-sleek-and-straight {:title                "shop by look"
+                                :description          (str "Get inspiration for your next hairstyle and "
+                                                           "shop your favorite looks from the #MayvennMade community.")
+                                :button-copy          "View this look"
+                                :new-look/button-copy "Shop Look"
+                                :back-copy            "back"
+                                :default-back-event   events/navigate-home
+                                :above-button-copy    nil
+                                :short-name           "look"
+                                :seo-title            "Shop by Look | Mayvenn"
+                                :og-title             "Shop by Look - Find and Buy your favorite Mayvenn bundles!"}
+
    :install {:title                "shop by look"
              :description          (str "Get inspiration for your next hairstyle and "
                                         "shop your favorite looks from the #MayvennMade community.")

@@ -129,8 +129,7 @@
          :open?       stylist-gallery-open?
          :close-event events/control-stylist-gallery-close})])]])
 
-(defn carousel-slide [{:as pixlee-image
-                       :keys [look-attributes]}]
+(defn carousel-slide [{:as pixlee-image :keys [look-attributes]}]
   [:div
    [:div.relative
     (ui/aspect-ratio 1 1
@@ -144,11 +143,9 @@
                       :border-left "21px solid transparent"}}]
        [:div.flex.items-center.px2.medium.h6.bg-transparent-light-teal
         texture]])]
-   [:div.h6.mx1.mt1.dark-gray
-    [:span.medium (mf/as-money-without-cents (:price look-attributes))]
-    " + FREE Install"]])
+   [:div.h6.mx1.mt1.dark-gray.medium (:price look-attributes)]])
 
-(defn style-carousel [styles treatments origins link ugc]
+(defn style-carousel [styles treatments origins link-text ugc]
   [:div.my3.col-12
    [:h5.bold.center styles]
    [:div.h6.center.mb2.dark-gray treatments [:span.px2 "•"] origins]
@@ -160,8 +157,10 @@
                                 :arrows       true}}
                     {})
    [:div.col-9.mx-auto.mt2
-    (ui/teal-button {:height-class "py2"}
-                    (str "Shop " link " Looks"))]])
+    (ui/teal-button (merge
+                     {:height-class "py2"}
+                     (utils/route-to events/navigate-shop-by-look {:album-keyword (:album-keyword ugc)}))
+                    (str "Shop " link-text " Looks"))]])
 
 (defn most-popular-looks [sleek-ugc wave-ugc]
   [:div.col-12.col-6-on-tb.col-4-on-dt.mt3.py6.px2.mx-auto
@@ -341,7 +340,8 @@
                                      (filter :home/order)
                                      (sort-by :home/order))
      :video                     (get-in data keypaths/aladdin-video)
-     :sleek-and-straight-ugc    {:images sleek-and-straight-images}
+     :sleek-and-straight-ugc    {:images        sleek-and-straight-images
+                                 :album-keyword :aladdin-sleek-and-straight}
      :stylist-gallery-open?     (get-in data keypaths/carousel-stylist-gallery-open?)
      :seventy-five-off-install? seventy-five-off-install?
      :the-ville?                the-ville?
