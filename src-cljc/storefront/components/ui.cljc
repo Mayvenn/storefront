@@ -464,13 +464,14 @@
                (assoc :src default-url))]]))
 
 (defn circle-ucare-img
-  [{:keys [width] :as attrs :or {width "4em"}} image-id]
-  [:div.circle.bg-light-gray.overflow-hidden.relative
-   (merge {:style {:width width :height width}}
-          (dissoc attrs :width))
-   (if image-id
-     (ucare-img attrs image-id)
-     (svg/missing-portrait {:style {:height width :width width}}))])
+  [{:keys [width] :as attrs} image-id]
+  (let [diameter (if width (str width "px") "4em")]
+    [:div.circle.bg-light-gray.overflow-hidden.relative
+     (merge {:style {:width diameter :height diameter}}
+            (dissoc attrs :width))
+     (if image-id
+       (ucare-img attrs image-id)
+       (svg/missing-portrait {:style {:height diameter :width diameter}}))]))
 
 (defn circle-picture
   ([src] (circle-picture {} src))
