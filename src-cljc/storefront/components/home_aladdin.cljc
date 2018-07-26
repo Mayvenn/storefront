@@ -108,7 +108,7 @@
     [:div.circle
      (if (:resizable-url stylist-portrait)
        (ui/circle-picture (ui/square-image stylist-portrait 70))
-       (ui/circle-ucare-img {:width "70"} "23440740-c1ed-48a9-9816-7fc01f92ad2c"))]
+       (ui/circle-ucare-img {:width 70} "23440740-c1ed-48a9-9816-7fc01f92ad2c"))]
     [:div.h5.bold
      stylist-name]
     [:div.h6
