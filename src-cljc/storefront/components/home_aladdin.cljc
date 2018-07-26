@@ -167,7 +167,7 @@
 (defn most-popular-looks [sleek-ugc wave-ugc]
   [:div.col-12.col-6-on-tb.col-4-on-dt.mt3.py6.px2.mx-auto
    [:div.my2.flex.flex-column.items-center
-    [:h2.center "Most Popular" [:br] "#FreeInstallMayvenn Looks"]
+    [:h2.center "Our Most Popular" [:br] "#FreeInstallMayvenn Looks"]
     (style-carousel "Sleek & Straight"
                     "Virgin & Dyed Virgin"
                     "Brazilian & Peruvian"
