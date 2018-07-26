@@ -1,5 +1,6 @@
 (ns storefront.components.stylist.dashboard-aladdin
-  (:require [storefront.component :as component]
+  (:require [spice.maps :as maps]
+            [storefront.component :as component]
             [storefront.components.stylist.bonus-credit :as bonuses]
             [storefront.components.stylist.earnings :as earnings]
             [storefront.api :as api]
@@ -130,8 +131,14 @@
            (get {"commission" {:title (str "Commission Earned - " (:full-name order))
                                :date (:commission-date data)}
                  "award"      {:title "Incentive Payment"}
-                 "voucher_award" {:title (str "Service Payment - " (:full-name order))
-                                  :subtitle "Full Install"} ;; TODO: we need to read a field from balance-transfer that doesn't currently exist
+                 "voucher_award" (merge {:title (str "Service Payment - " (:full-name order))
+                                         :subtitle "Full Install"}
+                                        ;; TODO: we need to read a field from balance-transfer that doesn't currently exist
+                                        (when false
+                                          {:amount-description "Pending"
+                                           :styles {:background ""
+                                                    :title-color "black"
+                                                    :amount-color "orange"}}))
                  "payout" {:title "Money Transfer"
                            :icon "4939408b-1ec8-4a47-bb0e-5cdeb15d544d"
                            :amount-description (:payout-method-name data)
@@ -287,25 +294,25 @@
 
 (defn query
   [data]
-  (let [transfer-index    (-> balance-transfers-sample keys sort)  ; (mapcat val (get-in data keypaths/stylist-earnings-balance-transfers-index))
-        balance-transfers balance-transfers-sample] ; (get-in data keypaths/stylist-earnings-balance-transfers)
+  (let [get-balance-transfer  second
+        id->balance-transfers (get-in data keypaths/stylist-earnings-balance-transfers)]
     {:stats                        (get-in data keypaths/stylist-v2-dashboard-stats)
      :payout-method                nil ;; TODO Finish this.
      :activity-ledger-tab          ({events/navigate-stylist-v2-dashboard-payments {:active-tab-name :payments
-                                                                                    :empty-copy "Payments and bonus activity will appear here."
-                                                                                    :empty-title "No payments yet"}
+                                                                                    :empty-copy      "Payments and bonus activity will appear here."
+                                                                                    :empty-title     "No payments yet"}
                                      events/navigate-stylist-v2-dashboard-orders   {:active-tab-name :orders
-                                                                                    :empty-copy "Orders from your store will appear here."
-                                                                                    :empty-title "No orders yet"}}
+                                                                                    :empty-copy      "Orders from your store will appear here."
+                                                                                    :empty-title     "No orders yet"}}
                                     (get-in data keypaths/navigation-event))
      :total-available-store-credit (get-in data keypaths/user-total-available-store-credit)
      :balance-transfers            (into []
                                          (comp
-                                          (map (partial get balance-transfers))
+                                          (map get-balance-transfer)
                                           (remove (fn [transfer]
                                                     (when-let [status (-> transfer :data :status)]
                                                       (not= "paid" status)))))
-                                         transfer-index)
+                                         id->balance-transfers)
      :orders                       orders-sample}))
 
 (defn built-component [data opts]
@@ -322,8 +329,21 @@
       (api/get-stylist-dashboard-stats events/api-success-stylist-v2-dashboard-stats
                                        stylist-id
                                        user-id
-                                       user-token))))
+                                       user-token)
+      (api/get-stylist-balance-transfers stylist-id
+                                         user-id
+                                         user-token
+                                         (get-in app-state keypaths/stylist-earnings-pagination)
+                                         #(messages/handle-message events/api-success-stylist-balance-transfers
+                                                                   (select-keys % [:stylist
+                                                                                   :balance-transfers
+                                                                                   :orders
+                                                                                   :pagination]))))))
 
 (defmethod transitions/transition-state events/api-success-stylist-v2-dashboard-stats
-  [_ event {:as stats :keys [earnings services store-credit-balance bonuses]} app-state]
-  (assoc-in app-state keypaths/stylist-v2-dashboard-stats stats))
+  [_ event {:as stats :keys [balance-transfers stylist earnings services store-credit-balance bonuses pagination]} app-state]
+  (let [page (:page pagination)]
+    (-> app-state
+        (assoc-in keypaths/stylist-v2-dashboard-stats stats)
+        (update-in keypaths/stylist-earnings-balance-transfers merge (maps/index-by :id balance-transfers))
+        (assoc-in keypaths/stylist-earnings-pagination pagination))))
