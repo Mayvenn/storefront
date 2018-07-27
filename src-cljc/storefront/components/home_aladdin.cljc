@@ -358,7 +358,7 @@
        [:div.col-6.p1 diishan-image-2]]]
 
      [:div.hide-on-mb.pb4
-      [:div.col-6.flex.flex-wrap.mx-auto
+      [:div.col-8.flex.flex-wrap.mx-auto
        [:div.col-6.flex.flex-wrap.items-center
         [:div.col-6.p1 group-image]
         [:div.col-6.p1 support-image]
