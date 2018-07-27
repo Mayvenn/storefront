@@ -155,7 +155,7 @@
        (seq (set/intersection (set promotion-codes) #{"freeinstall"}))))
 
 (defn first-name-plus-last-name-initial [{:as order :keys [billing-address shipping-address]}]
-  (when order
+  (when (seq order)
     (str (or (:first-name billing-address)
              (:first-name shipping-address))
          " "
