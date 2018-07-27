@@ -71,17 +71,27 @@
                          :width  "20px"}))
 
 (def what-our-customers-are-saying
-  [:a.block.col-11.mx-auto.flex.justify-center.py3
+  [:a.block.col-11.mx-auto
    (utils/route-to events/navigate-home {:query-params {:video "free-install"}})
-   (ui/ucare-img {:alt "" :width "152"}
-                 "b016b985-affb-4c97-af0a-a1f1334c0c51")
+   [:div.hide-on-mb-tb.flex.justify-center.py3
+    (ui/ucare-img {:alt "" :width "212"}
+                  "b016b985-affb-4c97-af0a-a1f1334c0c51")
+    [:div.ml4.dark-gray
+     [:div.h4.bold "#FreeInstallMayvenn"]
+     [:div.h4.my2 "What our customers are saying"]
+     [:div.h5.teal.flex.items-center
+      teal-play-video
+      "WATCH NOW"]] ]
 
-   [:div.ml2
-    [:h6.bold.dark-gray.mbnp6 "#FreeInstallMayvenn"]
-    [:h7.dark-gray "What our customers are saying"]
-    [:h6.teal.flex.items-center.mt2
-     teal-play-video
-     "WATCH NOW"]]])
+   [:div.hide-on-dt.flex.justify-center.py3
+    (ui/ucare-img {:alt "" :width "152"}
+                  "b016b985-affb-4c97-af0a-a1f1334c0c51")
+    [:div.ml2.dark-gray
+     [:h6.bold.mbnp6 "#FreeInstallMayvenn"]
+     [:h7 "What our customers are saying"]
+     [:h6.teal.flex.items-center.mt2
+      teal-play-video
+      "WATCH NOW"]]]])
 
 (defn ^:private get-ucare-id-from-url
   [ucare-url]
@@ -122,12 +132,15 @@
 
    [:div.mt2.flex.flex-column.items-center
     [:div.h6.my1.dark-gray "Your Stylist"]
-    [:div.circle
+    [:div.circle.hide-on-mb-tb
+     (if (:resizable-url stylist-portrait)
+       (ui/circle-picture {:width "100"} (ui/square-image stylist-portrait 100))
+       (ui/circle-ucare-img {:width "100"} "23440740-c1ed-48a9-9816-7fc01f92ad2c"))]
+    [:div.circle.hide-on-dt
      (if (:resizable-url stylist-portrait)
        (ui/circle-picture (ui/square-image stylist-portrait 70))
        (ui/circle-ucare-img {:width "70"} "23440740-c1ed-48a9-9816-7fc01f92ad2c"))]
-    [:div.h5.bold
-     stylist-name]
+    [:div.h5.bold stylist-name]
     [:div.h6
      (when (:licensed store)
        [:div.flex.items-center.dark-gray {:style {:height "1.5em"}}
@@ -148,11 +161,12 @@
 
 (defn carousel-slide [{:as pixlee-image :keys [look-attributes links]}]
   [:div
-   [:div.relative
+   [:div.relative.m1
     (apply utils/route-to (:view-look links))
-    (ui/aspect-ratio 1 1
-                     [:img {:class "col-12 mx1"
-                            :src   (-> pixlee-image :imgs :original :src)}])
+    (ui/aspect-ratio
+     1 1
+     [:img {:class "col-12"
+            :src   (-> pixlee-image :imgs :original :src)}])
     (when-let [texture (:texture look-attributes)]
       [:div.absolute.flex.justify-end.bottom-0.right-0.mb2
        [:div {:style {:width       "0"
@@ -167,7 +181,8 @@
   (ui/teal-button (merge
                    {:height-class "py2"}
                    (utils/route-to events/navigate-shop-by-look {:album-keyword album-keyword}))
-                  (str "Shop " link-text " Looks")))
+                  [:span.bold
+                   (str "Shop " link-text " Looks")]))
 
 (defn ^:private style-carousel-component [images]
   (component/build carousel/component
@@ -188,13 +203,12 @@
 
    [:div.hide-on-mb-tb
     [:div.flex.flex-wrap.justify-between
-
      [:div.col-4.flex.justify-center.items-center.flex-column.px2
-      [:h5.bold.center styles]
-      [:div.h6.center.mb2.dark-gray.col-12
+      [:h4.medium.center styles]
+      [:div.h5.center.mb2.dark-gray.col-12
        treatments [:span.px2 "•"] origins]
-      [:div.mx-auto.mt2
-       (shop-button album-keyword link-text)]]
+
+      [:div.mx-auto.mt2 (shop-button album-keyword link-text)]]
 
      [:div.col-8 (when album-first? {:style {:order -1}})
       (style-carousel-component (:images ugc))]]]])
@@ -344,14 +358,15 @@
        [:div.col-6.p1 diishan-image-2]]]
 
      [:div.hide-on-mb.pb4
-      [:div.col-8.flex.flex-wrap.mx-auto
+      [:div.col-6.flex.flex-wrap.mx-auto
        [:div.col-6.flex.flex-wrap.items-center
         [:div.col-6.p1 group-image]
         [:div.col-6.p1 support-image]
-        [:div.col-6.px1.pb1.dark-gray
-         [:h5.line-height-1 "“Our mission is to provide our community with an unbeatable product.”"]
+        [:div.col-6.px1.pb1.dark-gray.flex.justify-start.flex-column
+         [:div.h3.line-height-3.col-11
+          "“Our mission is to provide our community with an unbeatable product.”"]
          [:h6.medium.line-height-1.mt2 "- Diishan Imira"]
-         [:h6 "CEO of Mayvenn"]]
+         [:h6.ml1 "CEO of Mayvenn"]]
         [:div.col-6.p1.flex diishan-image-2]]
        [:a.relative.col-6.p1
         we-are-mayvenn-link
@@ -360,9 +375,9 @@
          [:div ui/nbsp]
          [:div ui/nbsp]
          [:div.hide-on-dt ui/nbsp]
-         [:div.flex.flex-column.items-center.justify-center.mt4
-          [:h3.my1.dark-gray.bold "Our Story"]
-          [:div.h4.teal.flex.items-center.medium
+         [:div.flex.flex-column.items-center.justify-center.mt8
+          [:h1.my1.dark-gray.bold "Our Story"]
+          [:div.h5.teal.flex.items-center.medium
            teal-play-video
            "Watch Now"]]
          [:div ui/nbsp]]]]]]))
