@@ -75,7 +75,7 @@
        (some #{"aladdin-homepage"})
        boolean))
 
-(defn aladding-dashboard? [data]
+(defn aladdin-dashboard? [data]
   (->> (get-in data keypaths/store-features)
        (some #{"aladdin-dashboard"})
        boolean) )
