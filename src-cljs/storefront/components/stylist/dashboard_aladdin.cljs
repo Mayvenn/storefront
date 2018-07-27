@@ -1,6 +1,5 @@
 (ns storefront.components.stylist.dashboard-aladdin
-  (:require [spice.maps :as maps]
-            [storefront.component :as component]
+  (:require [storefront.component :as component]
             [storefront.components.stylist.bonus-credit :as bonuses]
             [storefront.components.stylist.earnings :as earnings]
             [storefront.api :as api]
@@ -18,7 +17,10 @@
             [storefront.keypaths :as keypaths]
             [storefront.transitions :as transitions]
             [storefront.components.ui :as ui]
-            [storefront.components.svg :as svg]))
+            [storefront.components.svg :as svg]
+            [storefront.accessors.orders :as orders]
+            [spice.core :as spice]
+            spice.maps))
 
 (defn earnings-count [title value]
   [:div.dark-gray.letter-spacing-0
@@ -117,8 +119,8 @@
     :title "Payments"
     :navigate events/navigate-stylist-v2-dashboard-payments}])
 
-(defn balance-transfer->payment [orders {:keys [id type data] :as balance-transfer}]
-  (let [order (get orders (keyword (:order-number data)))]
+(defn balance-transfer->payment [{:keys [id type data] :as balance-transfer}]
+  (let [order (:order data)]
     (merge {:id id
             :icon "68e6bcb0-a236-46fe-a8e7-f846fff0f464"
             :date (:created-at data)
@@ -128,10 +130,12 @@
             :styles {:background ""
                      :title-color "black"
                      :amount-color "teal"}}
-           (get {"commission" {:title (str "Commission Earned - " (:full-name order))
+           (get {"commission" {:title (str "Commission Earned" (when-let [name (orders/first-name-plus-last-name-initial order)]
+                                                                 (str " - " name)))
                                :date (:commission-date data)}
                  "award"      {:title "Incentive Payment"}
-                 "voucher_award" (merge {:title (str "Service Payment - " (:full-name order))
+                 "voucher_award" (merge {:title (str "Service Payment" (when-let [name (orders/first-name-plus-last-name-initial order)]
+                                                                         (str " - " name)))
                                          :subtitle "Full Install"}
                                         ;; TODO: we need to read a field from balance-transfer that doesn't currently exist
                                         (when false
@@ -160,8 +164,8 @@
       {:title (str (get f/month-names month) " " year)
        :items (year-month->payments ym)})))
 
-(defn payments-table [balance-transfers orders]
-  (let [payments (map (partial balance-transfer->payment orders) balance-transfers)
+(defn payments-table [balance-transfers]
+  (let [payments (map balance-transfer->payment balance-transfers)
         sections (group-payments-by-month payments)]
     [:div.col-12.mb3
      (for [{:keys [title items] :as section} sections]
@@ -197,7 +201,7 @@
       title])])
 
 (defn component
-  [{:keys [stats total-available-store-credit activity-ledger-tab balance-transfers orders]} owner opts]
+  [{:keys [stats total-available-store-credit activity-ledger-tab balance-transfers]} owner opts]
   (let [{:keys [bonuses earnings services]} stats
         {:keys [lifetime-earned]}           bonuses
 
@@ -212,85 +216,13 @@
       (ledger-tabs active-tab-name)
 
       (if (seq balance-transfers)
-        (payments-table balance-transfers orders)
+        (payments-table balance-transfers)
         [:div.my6.center
          [:h4.gray.bold.p1 empty-title]
-         [:h6.dark-gray.col-5.mx-auto.line-height-2 empty-copy]])
-      ])))
+         [:h6.dark-gray.col-5.mx-auto.line-height-2 empty-copy]])])))
 
 (def orders-sample
   {:W960794762 {:full-name "Ordere F. Nemme"}})
-
-(def balance-transfers-sample
-  {:41482
-   {:type          "voucher_award",
-    :id            41482,
-    :amount        "100.0",
-    :transfered-at "2018-06-29T16:43:08.662Z",
-    :data
-    {:id           8,
-     :amount       "100.0",
-     :campaign-id
-     "27f71f94-4495-4867-8834-d0e9ea4eb052",
-     :voucher-code "N9k4Gjwk",
-     :stylist-id   2,
-     :created-at   "2018-06-29T16:43:08.662Z",
-     :updated-at   "2018-06-29T16:43:08.662Z",
-     :voucher-uuid nil}}
-   :43599
-   {:type          "commission",
-    :id            43599,
-    :amount        "37.26",
-    :transfered-at "2018-07-11T21:01:41.628Z",
-    :data
-    {:updated-at            "2018-07-11T21:01:41.628Z",
-     :amount                "37.26",
-     :order-number          "W960794762",
-     :commission-date       "2018-07-11T21:01:41.621Z",
-     :stylist-id            2,
-     :id                    28211,
-     :commissionable-amount "186.3",
-     :created-at            "2018-07-11T21:01:41.628Z",
-     :order-total           "197.94"}},
-   :45417
-   {:type          "payout",
-    :id            45417,
-    :amount        "11.0",
-    :transfered-at "2018-07-20T01:18:12.018Z",
-    :data
-    {:updated-at         "2018-07-20T01:18:13.195Z",
-     :amount             "11.0",
-     :payout-method-type
-     "Mayvenn::CheckPayoutMethod",
-     :stylist-id         2,
-     :status             "paid",
-     :id                 13554,
-     :by-self            false,
-     :payout-method
-     {:id         42165,
-      :created-at "2018-07-03T21:59:37.281Z",
-      :updated-at "2018-07-03T21:59:37.281Z",
-      :name       "Check",
-      :address
-      {:updated-at        "2018-07-03T21:59:28.418Z",
-       :state-name        "California",
-       :state-abbr        "CA",
-       :country-id        49,
-       :lastname          "Bayarearapidtransit",
-       :phone             "4159449704",
-       :city              "Berkeley",
-       :zipcode           "94702",
-       :firstname         "Robert",
-       :id                1623793,
-       :address-1         "1302 Carlotta",
-       :alternative-phone nil,
-       :address-2         "#333",
-       :state-id          32,
-       :created-at        "2018-07-03T21:59:28.418Z",
-       :company           nil},
-      :type       "Mayvenn::CheckPayoutMethod"},
-     :created-at         "2018-07-20T01:18:12.018Z",
-     :payout-method-name "Check"}}})
 
 (defn query
   [data]
@@ -330,20 +262,23 @@
                                        stylist-id
                                        user-id
                                        user-token)
-      (api/get-stylist-balance-transfers stylist-id
-                                         user-id
-                                         user-token
-                                         (get-in app-state keypaths/stylist-earnings-pagination)
-                                         #(messages/handle-message events/api-success-stylist-balance-transfers
-                                                                   (select-keys % [:stylist
-                                                                                   :balance-transfers
-                                                                                   :orders
-                                                                                   :pagination]))))))
+      (api/get-stylist-dashboard-balance-transfers events/api-success-stylist-v2-dashboard-balance-transfers
+                                                   stylist-id
+                                                   user-id
+                                                   user-token
+                                                   (get-in app-state keypaths/stylist-earnings-pagination)
+                                                   #(messages/handle-message events/api-success-stylist-v2-dashboard-balance-transfers
+                                                                             (select-keys % [:balance-transfers
+                                                                                             :pagination]))))))
 
 (defmethod transitions/transition-state events/api-success-stylist-v2-dashboard-stats
-  [_ event {:as stats :keys [balance-transfers stylist earnings services store-credit-balance bonuses pagination]} app-state]
+  [_ event {:as stats :keys [stylist earnings services store-credit-balance bonuses]} app-state]
+  (-> app-state
+      (assoc-in keypaths/stylist-v2-dashboard-stats stats)))
+
+(defmethod transitions/transition-state events/api-success-stylist-v2-dashboard-balance-transfers
+  [_ event {:as stats :keys [balance-transfers pagination]} app-state]
   (let [page (:page pagination)]
     (-> app-state
-        (assoc-in keypaths/stylist-v2-dashboard-stats stats)
-        (update-in keypaths/stylist-earnings-balance-transfers merge (maps/index-by :id balance-transfers))
+        (update-in keypaths/stylist-earnings-balance-transfers merge (spice.maps/map-keys (comp spice/parse-int name) balance-transfers))
         (assoc-in keypaths/stylist-earnings-pagination pagination))))

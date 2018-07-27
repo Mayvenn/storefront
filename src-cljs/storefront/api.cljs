@@ -584,6 +584,19 @@
     :handler #(messages/handle-message event
                                        (select-keys % [:earnings :services :store-credit-balance :bonuses]))}))
 
+(defn get-stylist-dashboard-balance-transfers
+  [event stylist-id user-id user-token {:keys [page per]} handler]
+  (storeback-api-req
+   GET
+   "/v2/stylist/balance-transfers"
+   request-keys/get-stylist-dashboard-balance-transfers
+   {:params {:stylist-id stylist-id
+             :user-id    user-id
+             :user-token user-token
+             :page       page
+             :per        per}
+    :handler handler}))
+
 (defn cash-out-now
   [user-id user-token stylist-id]
   (storeback-api-req

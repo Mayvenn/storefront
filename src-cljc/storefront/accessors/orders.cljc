@@ -153,3 +153,12 @@
   [{:as order :keys [promotion-codes]}]
   (and (bundle-discount? order)
        (seq (set/intersection (set promotion-codes) #{"freeinstall"}))))
+
+(defn first-name-plus-last-name-initial [{:as order :keys [billing-address shipping-address]}]
+  (when order
+    (str (or (:first-name billing-address)
+             (:first-name shipping-address))
+         " "
+         (first (or (:last-name billing-address)
+                    (:last-name shipping-address)))
+         ".")))
