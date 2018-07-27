@@ -155,11 +155,11 @@
                 {:title "Unknown Payment"}))))
 
 (defn group-payments-by-month [payments]
-  (let [year-month (fn [{:keys [date]}]
-                     (let [[year month _] (f/date-tuple date)]
-                       [year month]))
-        year-month->payments (group-by year-month payments)
-        sorted-year-months (reverse (sort (keys year-month->payments)))]
+  (let [year-month           (fn [{:keys [date]}]
+                               (let [[year month _] (f/date-tuple date)]
+                                 [year month]))
+        year-month->payments (group-by year-month (reverse payments))
+        sorted-year-months   (reverse (sort (keys year-month->payments)))]
     (for [[year month :as ym] sorted-year-months]
       {:title (str (get f/month-names month) " " year)
        :items (year-month->payments ym)})))
