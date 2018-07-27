@@ -32,7 +32,7 @@
        [:div
         [:h3.pt6 "Scan the QR code to redeem a certificate"]
         [:h6 "Your camera will be used as the scanner."]
-        [:div.py4 (ui/ucare-img {:width 50} "4bd0f715-fa5a-4d82-9cec-62dc993c5d23")]
+        [:div.flex.justify-center.py4 (ui/ucare-img {:width 50} "4bd0f715-fa5a-4d82-9cec-62dc993c5d23")]
         [:div.mx-auto.col-10.col-3-on-tb-dt
          (ui/teal-button {:on-click     (utils/send-event-callback events/control-voucher-scan)
                           :height-class "py2"

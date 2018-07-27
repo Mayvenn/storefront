@@ -87,12 +87,12 @@
       [:div.bg-teal.border.border-white.border-width-3.circle.absolute.right-0.left-0.mx-auto.flex.items-center.justify-center
        {:style {:height (str diameter "px")
                 :width (str diameter "px")
-                :bottom (str "-" (- radius 4) "px")}}
+                :bottom (str "-" (+ radius 4) "px")}}
        content]]]))
 
 (defn ^:private easy-step [number title copy img-id]
   [:div.py4
-   [:div.px6 (img-with-circle 60 img-id [:div.h1.bold.white number])]
+   [:div.px6.mb2 (img-with-circle 60 img-id [:div.h1.bold.white number])]
    [:div.h3.px6-on-dt title]
    [:div.dark-gray.h6.px6-on-dt copy]])
 
