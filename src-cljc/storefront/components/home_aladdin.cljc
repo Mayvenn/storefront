@@ -67,6 +67,11 @@
      [:div.mt1-on-mb
       "FREE standard shipping. Express available"]]]])
 
+(def teal-play-video
+  (svg/clear-play-video {:class  "mr1 fill-teal"
+                         :height "20px"
+                         :width  "20px"}))
+
 (def what-our-customers-are-saying
   [:a.block.col-11.mx-auto.flex.justify-center.py3
    (utils/route-to events/navigate-home {:query-params {:video "free-install"}})
@@ -77,9 +82,7 @@
     [:h6.bold.dark-gray.mbnp6 "#FreeInstallMayvenn"]
     [:h7.dark-gray "What our customers are saying"]
     [:h6.teal.flex.items-center.mt2
-     (svg/clear-play-video {:class  "mr1 fill-teal"
-                            :height "20px"
-                            :width  "20px"})
+     teal-play-video
      "WATCH NOW"]]])
 
 (defn ^:private get-ucare-id-from-url
@@ -317,62 +320,57 @@
     {:opts {:section-click-event events/faq-section-selected}})])
 
 (def our-story
-  [:div.pt4.px4.pb8
-   [:div.h2.center "Your beautiful, affordable hair starts here"]
-   [:h6.center.mb2.dark-gray "Founded in Oakland, CA • 2014"]
-   [:div.hide-on-tb-dt
-    [:div.flex.flex-wrap
-     [:div.col-6.p1 (ui/ucare-img {:class "col-12"} "4a92843c-b92d-48d3-8ac0-05b744b73584")]
-     [:div.col-6.px2
-      [:h4.my1.dark-gray.medium "Our Story"]
-      [:a.h6.teal.flex.items-center
-       (utils/route-to events/navigate-home {:query-params {:video "we-are-mayvenn"}})
-       (svg/clear-play-video {:class  "mr1 fill-teal"
-                              :height "20px"
-                              :width  "20px"})
-       "WATCH NOW"]]
-     [:div.col-6.p1 (ui/ucare-img {:class "col-12"} "34512e2b-e6a8-47c2-bc7e-0471737fc920")]
-     [:div.col-6.p1 (ui/ucare-img {:class "col-12"} "d800599c-a383-4b87-8c0d-d80bbaaf0817")]
-     [:div.col-6.px2.dark-gray
-      [:h4.my2.line-height-1 "“Our mission is to provide our community with an unbeatable product.”"]
-      [:h6.medium.line-height-1 "- Diishan Imira"]
-      [:h6 "CEO of Mayvenn"]]
-     [:div.col-6.p1 (ui/ucare-img {:class "col-12"} "ec9e0533-9eee-41ae-a61b-8dc22f045cb5")]]]
+  (let [we-are-mayvenn-link (utils/route-to events/navigate-home {:query-params {:video "we-are-mayvenn"}})
+        diishan-image       (ui/ucare-img {:class "col-12"} "4a92843c-b92d-48d3-8ac0-05b744b73584")
+        group-image         (ui/ucare-img {:class "col-12"} "34512e2b-e6a8-47c2-bc7e-0471737fc920")
+        support-image       (ui/ucare-img {:class "col-12"} "d800599c-a383-4b87-8c0d-d80bbaaf0817")
+        diishan-image-2     (ui/ucare-img {:class "col-12"} "ec9e0533-9eee-41ae-a61b-8dc22f045cb5")]
+    [:div.pt4.px4.pb8
+     [:div.h2.center "Your beautiful, affordable hair starts here"]
+     [:h6.center.mb2.dark-gray "Founded in Oakland, CA • 2014"]
 
-   [:div.hide-on-mb.pb4
-    [:div.col-8.flex.flex-wrap.mx-auto
+     [:div.hide-on-tb-dt
+      [:div.flex.flex-wrap
+       [:a.col-6.p1
+        we-are-mayvenn-link
+        diishan-image]
+       [:a.col-6.px2
+        we-are-mayvenn-link
+        [:h4.my1.dark-gray.medium "Our Story"]
+        [:div.h6.teal.flex.items-center
+         teal-play-video
+         "WATCH NOW"]]
+       [:div.col-6.p1 group-image]
+       [:div.col-6.p1 support-image]
+       [:div.col-6.px2.dark-gray
+        [:h4.my2.line-height-1 "“Our mission is to provide our community with an unbeatable product.”"]
+        [:h6.medium.line-height-1 "- Diishan Imira"]
+        [:h6 "CEO of Mayvenn"]]
+       [:div.col-6.p1 diishan-image-2]]]
 
-     [:div.col-6.flex.flex-wrap.items-center
-
-      [:div.col-6.p1.flex.items-start
-       (ui/ucare-img {:class "col-12"} "34512e2b-e6a8-47c2-bc7e-0471737fc920")]
-
-      [:div.col-6.p1.flex.items-start
-       (ui/ucare-img {:class "col-12"} "d800599c-a383-4b87-8c0d-d80bbaaf0817")]
-
-      [:div.col-6.px1.pb1.dark-gray
-       [:h5.line-height-1 "“Our mission is to provide our community with an unbeatable product.”"]
-       [:h6.medium.line-height-1.mt2 "- Diishan Imira"]
-       [:h6 "CEO of Mayvenn"]]
-
-      [:div.col-6.p1.flex.items-start
-       (ui/ucare-img {:class "col-12"} "ec9e0533-9eee-41ae-a61b-8dc22f045cb5")]]
-
-     [:div.relative.col-6.p1
-      (ui/ucare-img {:class "col-12"} "4a92843c-b92d-48d3-8ac0-05b744b73584")
-      [:div.absolute.overlay.flex.flex-column.justify-between
-       [:div ui/nbsp]
-       [:div ui/nbsp]
-       [:div.hide-on-dt ui/nbsp]
-       [:div.flex.flex-column.items-center.justify-center.mt4
-        [:h3.my1.dark-gray.bold "Our Story"]
-        [:a.h4.teal.flex.items-center.medium
-         (utils/route-to events/navigate-home {:query-params {:video "we-are-mayvenn"}})
-         (svg/clear-play-video {:class  "mr1 fill-teal"
-                                :height "20px"
-                                :width  "20px"})
-         "Watch Now"]]
-       [:div ui/nbsp]]]]]])
+     [:div.hide-on-mb.pb4
+      [:div.col-8.flex.flex-wrap.mx-auto
+       [:div.col-6.flex.flex-wrap.items-center
+        [:div.col-6.p1 group-image]
+        [:div.col-6.p1 support-image]
+        [:div.col-6.px1.pb1.dark-gray
+         [:h5.line-height-1 "“Our mission is to provide our community with an unbeatable product.”"]
+         [:h6.medium.line-height-1.mt2 "- Diishan Imira"]
+         [:h6 "CEO of Mayvenn"]]
+        [:div.col-6.p1.flex diishan-image-2]]
+       [:a.relative.col-6.p1
+        we-are-mayvenn-link
+        diishan-image
+        [:div.absolute.overlay.flex.flex-column.justify-between
+         [:div ui/nbsp]
+         [:div ui/nbsp]
+         [:div.hide-on-dt ui/nbsp]
+         [:div.flex.flex-column.items-center.justify-center.mt4
+          [:h3.my1.dark-gray.bold "Our Story"]
+          [:div.h4.teal.flex.items-center.medium
+           teal-play-video
+           "Watch Now"]]
+         [:div ui/nbsp]]]]]]))
 
 (defn component [{:keys [signed-in
                          homepage-data
