@@ -33,9 +33,8 @@
 (defn hero []
   (let [file-name "free-install-hero"
         title     "Beautiful Virgin Hair Installed for FREE"
-
-        mob-uuid "c18c6ca3-5ada-4ec5-80dc-208b3020f43e"
-        dsk-uuid "ec1a7ec6-9977-417c-a7e9-0ef190c159e9"]
+        mob-uuid  "c18c6ca3-5ada-4ec5-80dc-208b3020f43e"
+        dsk-uuid  "ec1a7ec6-9977-417c-a7e9-0ef190c159e9"]
     [:div.bg-light-gray
      [:div.relative
       [:div.bold.shadow.white.center
@@ -51,8 +50,7 @@
                  :line-height "100%"
                  :top         "70%"
                  :left        "120px"
-                 :right       "120px"
-                 }}
+                 :right       "120px"}}
         title]]]]))
 
 (def free-shipping-banner
@@ -388,29 +386,28 @@
                  opts]
   (component/create
    [:div
-    [:div
-     [:section (hero)]
-     [:section free-shipping-banner]
-     [:div (when video
-             (component/build video/component
-                              video
-                              ;; NOTE(jeff): we use an invalid video slug to preserve back behavior. There probably should be
-                              ;;             an investigation to why history is replaced when doing A -> B -> A navigation
-                              ;;             (B is removed from history).
-                              {:opts {:close-attrs (utils/route-to events/navigate-home {:query-params {:video "0"}})}}))
-      [:section what-our-customers-are-saying]]
-     [:section (get-a-free-install {:store                 store
-                                    :gallery-ucare-ids     gallery-ucare-ids
-                                    :stylist-portrait      (:portrait store)
-                                    :stylist-name          (:store-nickname store)
-                                    :stylist-gallery-open? stylist-gallery-open?})]
-     [:section (most-popular-looks sleek-and-straight-ugc waves-and-curly-ugc)]
-     [:section the-hookup]
-     [:section (free-install-mayvenn-grid free-install-mayvenn-ugc)]
-     [:hr.hide-on-mb-tb.border-top.border-dark-silver.col-9.mx-auto.mb6]
-     [:section (faq faq-data)]
-     [:hr.border-top.border-dark-silver.col-9.mx-auto.my6]
-     [:section our-story]]]))
+    [:section (hero)]
+    [:section free-shipping-banner]
+    [:div (when video
+            (component/build video/component
+                             video
+                             ;; NOTE(jeff): we use an invalid video slug to preserve back behavior. There probably should be
+                             ;;             an investigation to why history is replaced when doing A -> B -> A navigation
+                             ;;             (B is removed from history).
+                             {:opts {:close-attrs (utils/route-to events/navigate-home {:query-params {:video "0"}})}}))
+     [:section what-our-customers-are-saying]]
+    [:section (get-a-free-install {:store                 store
+                                   :gallery-ucare-ids     gallery-ucare-ids
+                                   :stylist-portrait      (:portrait store)
+                                   :stylist-name          (:store-nickname store)
+                                   :stylist-gallery-open? stylist-gallery-open?})]
+    [:section (most-popular-looks sleek-and-straight-ugc waves-and-curly-ugc)]
+    [:section the-hookup]
+    [:section (free-install-mayvenn-grid free-install-mayvenn-ugc)]
+    [:hr.hide-on-mb-tb.border-top.border-dark-silver.col-9.mx-auto.mb6]
+    [:section (faq faq-data)]
+    [:hr.border-top.border-dark-silver.col-9.mx-auto.my6]
+    [:section our-story]]))
 
 (defn query [data]
   (let [seventy-five-off-install?   (experiments/seventy-five-off-install? data)
