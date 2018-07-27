@@ -19,6 +19,7 @@
             [storefront.components.ui :as ui]
             [storefront.components.svg :as svg]
             [storefront.accessors.orders :as orders]
+            [storefront.request-keys :as request-keys]
             [spice.core :as spice]
             spice.maps))
 
@@ -38,7 +39,9 @@
        :else [:div.bg-teal.px2 {:style (merge bar-style {:width bar-width})}])]))
 
 (defn ^:private cash-balance-card
-  [{:as earnings :keys [cash-balance lifetime-earnings monthly-earnings]}
+  [payout-method
+   cashing-out?
+   {:as earnings :keys [cash-balance lifetime-earnings monthly-earnings]}
    {:as services :keys [lifetime-services monthly-services]}]
   [:div.h6.bg-too-light-teal.p2
 
@@ -53,13 +56,12 @@
     [:div.col-5
      [:div.h1.black.bold.flex (mf/as-money-without-cents cash-balance)]]
     [:div.col-7
-     (if false #_(payouts/cash-out-eligible? payout-method)
+     (if (payouts/cash-out-eligible? payout-method)
        (ui/teal-button
         {:height-class "py2"
-         :on-click  (utils/send-event-callback events/control-stylist-dashboard-cash-out-submit)
-                                        ;:disabled? (not (payouts/cash-out-eligible? payout-method))
-                                        ;:spinning? cashing-out?
-         }
+         :on-click  (utils/send-event-callback events/control-stylist-dashboard-cash-out-submit
+                                               {:disabled? (not (payouts/cash-out-eligible? payout-method))
+                                                :spinning? cashing-out?})}
         [:div.flex.items-center.justify-center.regular.h5
          (ui/ucare-img {:width "28" :class "mr2 flex items-center"} "3d651ddf-b37d-441b-a162-b83728f2a2eb")
          "Cash Out"])
@@ -201,7 +203,7 @@
       title])])
 
 (defn component
-  [{:keys [stats total-available-store-credit activity-ledger-tab balance-transfers]} owner opts]
+  [{:keys [stats total-available-store-credit activity-ledger-tab balance-transfers payout-method cashing-out?]} owner opts]
   (let [{:keys [bonuses earnings services]} stats
         {:keys [lifetime-earned]}           bonuses
 
@@ -209,7 +211,7 @@
     (component/create
      [:div
       [:div.p2
-       (cash-balance-card earnings services)
+       (cash-balance-card payout-method cashing-out? earnings services)
        [:div.mt2 (store-credit-balance-card total-available-store-credit lifetime-earned)]
        (sales-bonus-progress bonuses)]
 
@@ -229,7 +231,8 @@
   (let [get-balance-transfer  second
         id->balance-transfers (get-in data keypaths/stylist-earnings-balance-transfers)]
     {:stats                        (get-in data keypaths/stylist-v2-dashboard-stats)
-     :payout-method                nil ;; TODO Finish this.
+     :cashing-out?                 (utils/requesting? data request-keys/cash-out-now)
+     :payout-method                (get-in data keypaths/stylist-manage-account-chosen-payout-method)
      :activity-ledger-tab          ({events/navigate-stylist-v2-dashboard-payments {:active-tab-name :payments
                                                                                     :empty-copy      "Payments and bonus activity will appear here."
                                                                                     :empty-title     "No payments yet"}
@@ -258,6 +261,7 @@
         user-id    (get-in app-state keypaths/user-id)
         user-token (get-in app-state keypaths/user-token)]
     (when (and user-id user-token)
+      (api/get-stylist-account user-id user-token)
       (api/get-stylist-dashboard-stats events/api-success-stylist-v2-dashboard-stats
                                        stylist-id
                                        user-id

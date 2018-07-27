@@ -214,6 +214,7 @@
 (def stylist-sales-rep-email (conj stylist :sales-rep-email))
 
 (def stylist-manage-account (conj stylist :manage-account))
+(def stylist-manage-account-chosen-payout-method (conj stylist-manage-account :chosen-payout-method))
 (def stylist-manage-account-green-dot-card-selected-id (conj stylist-manage-account :green-dot :card-selected-id))
 (def stylist-portrait-status (conj stylist-manage-account :portrait :status))
 (def stylist-portrait-url    (conj stylist-manage-account :portrait :resizable-url))
