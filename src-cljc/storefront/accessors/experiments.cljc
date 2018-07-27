@@ -78,7 +78,7 @@
 (defn aladdin-dashboard? [data]
   (->> (get-in data keypaths/store-features)
        (some #{"aladdin-dashboard"})
-       boolean) )
+       boolean))
 
 (defn seventy-five-off-install?
   [data]
