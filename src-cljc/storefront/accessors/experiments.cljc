@@ -70,6 +70,10 @@
               variation))
           email-capture-variations)))
 
+(defn aladdin-experience? [data]
+  (= (get-in data keypaths/store-experience)
+     "aladdin"))
+
 (defn aladdin-homepage? [data]
   (->> (get-in data keypaths/store-features)
        (some #{"aladdin-homepage"})

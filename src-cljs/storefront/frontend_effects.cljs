@@ -111,6 +111,7 @@
   (let [install-control?                    (experiments/install-control? app-state)
         the-ville-variation?                (experiments/the-ville? app-state)
         seventy-five-off-install-variation? (experiments/seventy-five-off-install? app-state)
+        aladdin-experience?                 (experiments/aladdin-experience? app-state)
 
         is-on-homepage? (= (get-in app-state keypaths/navigation-event)
                            events/navigate-home)
@@ -128,10 +129,12 @@
                              install-control?)
 
         show-free-install-modal? (and the-ville-variation?
-                                      (not seen-fayetteville-offer?))
+                                      (not seen-fayetteville-offer?)
+                                      (not aladdin-experience?))
 
         show-seventy-five-off-install-modal? (and (experiments/seventy-five-off-install? app-state)
-                                                  (not seen-seventy-five-off-install-offer?))
+                                                  (not seen-seventy-five-off-install-offer?)
+                                                  (not aladdin-experience?))
 
         show-email-capture? (and (not signed-in?)
                                  (not seen-email-capture?)
@@ -139,6 +142,7 @@
                                      (and the-ville-variation? seen-fayetteville-offer?)
                                      (and seventy-five-off-install-variation?
                                           seen-seventy-five-off-install-offer?)
+                                     aladdin-experience?
                                      ;; This is the original logic
                                      ;; Uncomment this when removing the fayetteville experiment
                                      ;;is-on-homepage?

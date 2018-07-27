@@ -56,6 +56,7 @@
 (def store-stylist-id (conj store :stylist-id))
 (def store-gallery-images (conj store :gallery :images))
 (def store-features (conj store :features))
+(def store-experience (conj store :experience))
 
 (def v2-products [:catalog :products])
 (def v2-skus [:catalog :skus])
