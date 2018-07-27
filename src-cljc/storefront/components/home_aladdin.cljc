@@ -165,23 +165,28 @@
         texture]])]
    [:div.h6.mx1.mt1.dark-gray.medium (:price look-attributes)]])
 
+(defn ^:private shop-button [album-keyword link-text]
+  (ui/teal-button (merge
+                   {:height-class "py2"}
+                   (utils/route-to events/navigate-shop-by-look {:album-keyword album-keyword}))
+                  (str "Shop " link-text " Looks")))
+
+(defn ^:private style-carousel-component [images]
+  (component/build carousel/component
+                   {:slides   (mapv carousel-slide images)
+                    :settings {:slidesToShow 2
+                               :swipe        true
+                               :arrows       true}}
+                   {}))
+
 (defn style-carousel [styles treatments origins link-text {:as ugc :keys [album-keyword]} album-first?]
   [:div.col-12.mt4
    [:div.hide-on-dt
     [:h5.bold.center styles]
     [:div.h6.center.mb2.dark-gray treatments [:span.px2 "•"] origins]
-    (component/build carousel/component
-                     {:slides
-                      (mapv carousel-slide (:images ugc))
-                      :settings {:slidesToShow 2
-                                 :swipe        true
-                                 :arrows       true}}
-                     {})
+    (style-carousel-component (:images ugc))
     [:div.col-8.mx-auto.mt2
-     (ui/teal-button (merge
-                      {:height-class "py2"}
-                      (utils/route-to events/navigate-shop-by-look {:album-keyword album-keyword}))
-                     (str "Shop " link-text " Looks"))]]
+     (shop-button album-keyword link-text)]]
 
    [:div.hide-on-mb-tb
     [:div.flex.flex-wrap.justify-between
@@ -191,19 +196,10 @@
       [:div.h6.center.mb2.dark-gray.col-12
        treatments [:span.px2 "•"] origins]
       [:div.mx-auto.mt2
-       (ui/teal-button (merge
-                        {:height-class "py2"}
-                        (utils/route-to events/navigate-shop-by-look {:album-keyword album-keyword}))
-                       (str "Shop " link-text " Looks"))]]
+       (shop-button album-keyword link-text)]]
 
      [:div.col-8 (when album-first? {:style {:order -1}})
-      (component/build carousel/component
-                       {:slides
-                        (mapv carousel-slide (:images ugc))
-                        :settings {:slidesToShow 2
-                                   :swipe        true
-                                   :arrows       true}}
-                       {})]]]])
+      (style-carousel-component (:images ugc))]]]])
 
 (defn most-popular-looks [sleek-ugc wave-ugc]
   [:div.col-12.col-8-on-tb-dt.mt3.px2.py5.mx-auto
@@ -273,42 +269,43 @@
                :src   (-> imgs :original :src)}])])]])
 
 (def ^:private faq-section-copy
-  [(accordion/section [:h6 "How does this all work? How do I get a free install?"]
-                      ["It’s easy! Mayvenn will pay your stylist directly for your install."
-                       " Just purchase 3 bundles or more (frontals and closures count as bundles)"
-                       " and use code FREEINSTALL at checkout. You’ll receive a voucher as soon"
-                       " as your order ships. Schedule an appointment with your Mayvenn stylist,"
-                       " and present the voucher to them at the appointment."
-                       " Your stylist will receive the full payment for your install"
-                       " immediately after the voucher has been scanned!"])
-   (accordion/section [:h6 "Who is going to do my hair?"]
-                      ["The free-install offer is only valid at your Mayvenn"
-                       " stylist. If you are unsure if your stylist is"
-                       " participating in the free-install offer, you can simply"
-                       " ask them or contact Mayvenn customer service: "
-                       (ui/link :link/phone :a.dark-gray {} "1-888-562-7952")])
-   (accordion/section [:h6 "How does the 30 day guarantee work?"]
-                      ["Buy Mayvenn hair RISK FREE with easy returns and exchanges."]
-                      ["EXCHANGES" [:br] "Wear it, dye it, even flat iron it. If you do not love your"
-                       " Mayvenn hair we will exchange it within 30 days of purchase."
-                       " Just call us:"
-                       (ui/link :link/phone :a.dark-gray {} "1-888-562-7952")]
-                      ["RETURNS" [:br] "If you are not completely happy with your Mayvenn hair"
-                       " before it is installed, we will refund your purchase if the"
-                       " bundle is unopened and the hair is in its original condition."
-                       " Just call us:"
-                       (ui/link :link/phone :a.dark-gray {} "1-888-562-7952")])
-   (accordion/section [:h6 "What if I want to get my hair done by another stylist?"]
-                      ["No, you must get your hair done from one of Mayvenn’s Certified Stylists in"
-                       " order to get your hair installed for free. Our stylists are licensed and"
-                       " experienced - the best in Fayetteville!"])
-   (accordion/section [:h6 "Why should I order hair from Mayvenn?"]
-                      ["Mayvenn hair is 100% human. Our Virgin, Dyed Virgin, and"
-                       " 100% Human hair can be found in a variety of textures from"
-                       " straight to curly. Virgin hair starts at $54 per bundle and"
-                       " 100% Human hair starts at just $30 per bundle. All orders are"
-                       " eligible for free shipping and backed by our 30 Day"
-                       " Guarantee."])])
+  (let [phone-link (ui/link :link/phone :a.dark-gray {} "1-888-562-7952")]
+    [(accordion/section [:h6 "How does this all work? How do I get a free install?"]
+                        ["It’s easy! Mayvenn will pay your stylist directly for your install."
+                         " Just purchase 3 bundles or more (frontals and closures count as bundles)"
+                         " and use code FREEINSTALL at checkout. You’ll receive a voucher as soon"
+                         " as your order ships. Schedule an appointment with your Mayvenn stylist,"
+                         " and present the voucher to them at the appointment."
+                         " Your stylist will receive the full payment for your install"
+                         " immediately after the voucher has been scanned!"])
+     (accordion/section [:h6 "Who is going to do my hair?"]
+                        ["The free-install offer is only valid at your Mayvenn"
+                         " stylist. If you are unsure if your stylist is"
+                         " participating in the free-install offer, you can simply"
+                         " ask them or contact Mayvenn customer service: "
+                         phone-link])
+     (accordion/section [:h6 "How does the 30 day guarantee work?"]
+                        ["Buy Mayvenn hair RISK FREE with easy returns and exchanges."]
+                        ["EXCHANGES" [:br] "Wear it, dye it, even flat iron it. If you do not love your"
+                         " Mayvenn hair we will exchange it within 30 days of purchase."
+                         " Just call us:"
+                         phone-link]
+                        ["RETURNS" [:br] "If you are not completely happy with your Mayvenn hair"
+                         " before it is installed, we will refund your purchase if the"
+                         " bundle is unopened and the hair is in its original condition."
+                         " Just call us:"
+                         phone-link])
+     (accordion/section [:h6 "What if I want to get my hair done by another stylist?"]
+                        ["No, you must get your hair done from one of Mayvenn’s Certified Stylists in"
+                         " order to get your hair installed for free. Our stylists are licensed and"
+                         " experienced - the best in Fayetteville!"])
+     (accordion/section [:h6 "Why should I order hair from Mayvenn?"]
+                        ["Mayvenn hair is 100% human. Our Virgin, Dyed Virgin, and"
+                         " 100% Human hair can be found in a variety of textures from"
+                         " straight to curly. Virgin hair starts at $54 per bundle and"
+                         " 100% Human hair starts at just $30 per bundle. All orders are"
+                         " eligible for free shipping and backed by our 30 Day"
+                         " Guarantee."])]))
 
 (defn ^:private faq [{:keys [expanded-index]}]
   [:div.px6.col-5-on-dt.mx-auto
