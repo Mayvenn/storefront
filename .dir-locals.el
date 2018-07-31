@@ -1,2 +1,2 @@
-((nil . ((cider-refresh-before-fn . "user/stop")
-         (cider-refresh-after-fn  . "user/go"))))
+((nil . ((cider-ns-refresh-before-fn . "user/stop")
+         (cider-ns-refresh-after-fn  . "user/go"))))
