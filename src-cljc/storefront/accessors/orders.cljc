@@ -116,12 +116,14 @@
     "10% Bundle Discount"
     name))
 
-(defn applied-promo-code [order]
-  (some :coupon-code (all-order-adjustments order)))
+(defn all-applied-promo-codes [order]
+  (into #{}
+        (keep :coupon-code)
+        (all-order-adjustments order)))
 
 (defn no-applied-promo?
   [order]
-  (or (nil? (applied-promo-code order))
+  (or (empty? (all-applied-promo-codes order))
       (= 0 (product-quantity order))))
 
 (defn- line-item-tuples [order]
@@ -141,18 +143,15 @@
          (map get-sku)
          set)))
 
-(defn has-applied-promo-code [order code]
-  (some #{code} (applied-promo-code order)))
-
-(defn install-qualified?
+(defn install-applied?
   [{:as order :keys [promotion-codes]}]
   (and (bundle-discount? order)
-       (seq (set/intersection (set promotion-codes) #{"install"}))))
+       (contains? (all-applied-promo-codes order) "install")))
 
-(defn freeinstall-qualified?
+(defn freeinstall-applied?
   [{:as order :keys [promotion-codes]}]
   (and (bundle-discount? order)
-       (seq (set/intersection (set promotion-codes) #{"freeinstall"}))))
+       (contains? (all-applied-promo-codes order) "freeinstall")))
 
 (defn first-name-plus-last-name-initial [{:as order :keys [billing-address shipping-address]}]
   (when (seq order)

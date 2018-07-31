@@ -133,7 +133,7 @@
         (when shipping-item
           (summary-row "Shipping" (* (:quantity shipping-item) (:unit-price shipping-item))))
 
-        (when-not (orders/applied-promo-code order)
+        (when (orders/no-applied-promo? order)
           (let [{:keys [focused coupon-code field-errors updating? applying? error-message]} promo-data]
             [:tr.h5
              [:td
@@ -484,8 +484,8 @@
      :line-items                line-items
      :skus                      (get-in data keypaths/v2-skus)
      :products                  products
-     :show-green-banner?        (or (orders/install-qualified? order)
-                                    (orders/freeinstall-qualified? order))
+     :show-green-banner?        (or (orders/install-applied? order)
+                                    (orders/freeinstall-applied? order))
      :coupon-code               (get-in data keypaths/cart-coupon-code)
      :promotion-banner          (promotion-banner/query data)
      :updating?                 (update-pending? data)

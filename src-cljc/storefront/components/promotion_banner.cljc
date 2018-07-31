@@ -105,7 +105,7 @@
   [data]
   (cond
     (and
-     (orders/install-qualified? (get-in data keypaths/order))
+     (orders/install-applied? (get-in data keypaths/order))
      (experiments/seventy-five-off-install? data))
     :install-discount/applied
 
@@ -113,7 +113,7 @@
     :install-discount/eligible
 
     (and
-     (orders/freeinstall-qualified? (get-in data keypaths/order))
+     (orders/freeinstall-applied? (get-in data keypaths/order))
      (experiments/the-ville? data))
     :freeinstall/applied
 
