@@ -32,26 +32,15 @@
 
 (defn hero []
   (let [file-name "free-install-hero"
-        title     "Beautiful Virgin Hair Installed for FREE"
-        mob-uuid  "c18c6ca3-5ada-4ec5-80dc-208b3020f43e"
-        dsk-uuid  "ec1a7ec6-9977-417c-a7e9-0ef190c159e9"]
+        mob-uuid  "5980306e-71f9-4dca-984c-d816f79c9f98"
+        dsk-uuid  "5980306e-71f9-4dca-984c-d816f79c9f98"]
     [:div.bg-light-gray
      [:div.relative
       [:div.bold.shadow.white.center
        (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
                     :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
                     :file-name   file-name
-                    :alt         title})
-       [:div.h2.absolute.hide-on-tb-dt
-        {:style {:top "50%" :left "60px" :right "60px"}}
-        title]
-       [:div.absolute.hide-on-mb
-        {:style {:font-size   "36px"
-                 :line-height "100%"
-                 :top         "70%"
-                 :left        "120px"
-                 :right       "120px"}}
-        title]]]]))
+                    :alt         "Beautiful Virgin Hair Installed for FREE"})]]]))
 
 (def free-shipping-banner
   [:div {:style {:height "3em"}}
@@ -60,15 +49,15 @@
     [:div.table-cell.align-middle
      [:div.mt1-on-mb
       (ui/ucare-img {:alt "" :width "50"}
-                   "4c4912fe-934c-4ad3-b853-f4a932bdae1b")]]
+                    "38d0a770-2dcd-47a3-a035-fc3ccad11037")]]
     [:div.table-cell.align-middle.pl2.h6
      [:div.mt1-on-mb
-      "FREE standard shipping. Express available"]]]])
+      "FREE standard shipping"]]]])
 
 (def teal-play-video
-  (svg/clear-play-video {:class  "mr1 fill-teal"
-                         :height "20px"
-                         :width  "20px"}))
+  (svg/white-play-video {:class  "mr1 fill-teal"
+                         :height "30px"
+                         :width  "30px"}))
 
 (def what-our-customers-are-saying
   [:a.block.col-11.mx-auto
@@ -77,20 +66,23 @@
     (ui/ucare-img {:alt "" :width "212"}
                   "b016b985-affb-4c97-af0a-a1f1334c0c51")
     [:div.ml4.dark-gray
-     [:div.h4.bold "#FreeInstallMayvenn"]
-     [:div.h4.my2 "What our customers are saying"]
+     [:div.h4.bold "#MayvennFreeInstall"]
+     [:div.h4.my2 "See why customers love their FREE Install"]
      [:div.h5.teal.flex.items-center
       teal-play-video
       "WATCH NOW"]] ]
 
    [:div.hide-on-dt.flex.justify-center.py3
-    (ui/ucare-img {:alt "" :width "152"}
-                  "b016b985-affb-4c97-af0a-a1f1334c0c51")
+    [:div
+     [:div.relative
+      (ui/ucare-img {:alt "" :width "152"}
+                    "b016b985-affb-4c97-af0a-a1f1334c0c51")
+      [:div.absolute.top-0.bottom-0.left-0.right-0.flex.items-center.justify-center
+       teal-play-video]]]
     [:div.ml2.dark-gray
-     [:h6.bold.mbnp6 "#FreeInstallMayvenn"]
-     [:h7 "What our customers are saying"]
+     [:h6.bold.mbnp6 "#MayvennFreeInstall"]
+     [:h7 "See why customers love their FREE Install"]
      [:h6.teal.flex.items-center.mt2
-      teal-play-video
       "WATCH NOW"]]]])
 
 (defn ^:private get-ucare-id-from-url
@@ -114,21 +106,25 @@
   [:div.col-12.bg-transparent-teal.mt4.p8
    [:div.mt2.flex.flex-column.items-center
     [:h2 "Get a FREE Install"]
-    [:div.h6.dark-gray "In 3 easy steps"]]
+    [:div.h6.dark-gray "In three easy steps"]]
 
    [:div.col-8-on-dt.mx-auto.flex.flex-wrap
-    (free-install-step {:icon-uuid   "ca7771b3-3b11-4207-a42e-301a98961c92"
+    (free-install-step {:icon-uuid   "e90526f9-546f-4a6d-a05a-3bea94aedc21"
                         :icon-width  "20"
-                        :title       "Buy ANY 3 Bundles or More"
-                        :description "Closures and frontals count, too! Our hair is virgin & backed by a 30-day guarantee."})
-    (free-install-step {:icon-uuid   "06e84340-9dc6-4193-abc7-fbea15715084"
+                        :title       "Buy Any 3 Bundles or More"
+                        :description "Including closures and frontals! Rest easy - your 100% virgin hair purchase is backed by our 30 day guarantee."})
+    (free-install-step {:icon-uuid   "cddd38e0-f598-4aca-90fc-4350dd4469fb"
                         :icon-width  "39"
                         :title       "Get Your Voucher"
-                        :description "We’ll send you a free-install voucher after purchase via SMS and email."})
-    (free-install-step {:icon-uuid   "b06a282a-27a0-4a4c-aa85-77868556ac1d"
+                        :description "We’ll send you a free install voucher via SMS and email after your order ships."})
+    (free-install-step {:icon-uuid   "7712537c-3805-4d92-90b5-a899748a21c5"
                         :icon-width  "24"
                         :title       "Show Your Stylist The Voucher"
-                        :description "Present the voucher when you go in for your appointment with:"})]
+                        :description (if (contains? #{"store" "shop"}
+                                                    (:store-slug store))
+                                       (str "Redeem the voucher at your appointment with a Mayvenn stylist. "
+                                            "Check out some of our certified stylists below:")
+                                       "Redeem the voucher when you go in for your appointment with: ")})]
 
    [:div.mt2.flex.flex-column.items-center
     [:div.h6.my1.dark-gray "Your Stylist"]
@@ -146,11 +142,11 @@
        [:div.flex.items-center.dark-gray {:style {:height "1.5em"}}
         (svg/check {:class "stroke-teal" :height "2em" :width "2em"}) "Licensed"])
      [:div.flex.items-center.dark-gray {:style {:height "1.5em"}}
-      (svg/check {:class "stroke-teal" :height "2em" :width "2em"})
+      (ui/ucare-img {:width "6px" :class "pr2"} "bd307d38-277d-465b-8360-ac8717aedb03")
       (str (-> store :location :city) ", " (-> store :location :state-abbr))]]
     (when (seq gallery-ucare-ids)
       [:div.h6.pt1.flex.items-center
-       (svg/cascade {:style {:height "20px" :width "29px"}})
+       (ui/ucare-img {:width "25px"} "18ced560-296f-4b6c-9c82-79a4e8c15d95")
        [:a.ml1.teal.medium
         (utils/fake-href events/control-stylist-gallery-open)
         "Hair Gallery"]
@@ -206,7 +202,7 @@
      [:div.col-4.flex.justify-center.items-center.flex-column.px2
       [:h4.medium.center styles]
       [:div.h5.center.mb2.dark-gray.col-12
-       treatments [:span.px2 "•"] origins]
+       treatments [:span "•"] origins]
 
       [:div.mx-auto.mt2 (shop-button album-keyword link-text)]]
 
@@ -216,20 +212,20 @@
 (defn most-popular-looks [sleek-ugc wave-ugc]
   [:div.col-12.col-8-on-tb-dt.mt3.px2.py5.mx-auto
    [:div.my2.flex.flex-column.items-center
-    [:h2.center "Our Most Popular" [:br.hide-on-dt] " #FreeInstallMayvenn Looks"]
+    [:h2.center "Our Most Popular" [:br.hide-on-dt] " Looks"]
     (style-carousel "Sleek & Straight"
-                    "Virgin & Dyed Virgin"
+                    "Virgin & Dyed Virgin Hair"
                     "Brazilian & Peruvian"
-                    "Sleek & Straight"
+                    "Straight"
                     sleek-ugc
                     true)
 
     [:hr.hide-on-mb-tb.border-top.border-dark-silver.col-12.mx-auto.my6]
 
-    (style-carousel "Waves & Curls"
-                    "Virgin & Dyed Virgin"
+    (style-carousel "Wavy & Curly"
+                    "Virgin & Dyed Virgin Hair"
                     "Brazilian, Malaysian & Peruvian"
-                    "Wave & Curl"
+                    "Wavy & Curly"
                     wave-ugc
                     false)]])
 
@@ -246,30 +242,30 @@
    [:div.col-11-on-dt.justify-center.flex.flex-wrap.mx-auto.pb2
 
     [:div.my2.flex.flex-column.items-center.col-12
-     [:h2 "The Hookup"]
-     [:div.h6.dark-gray "Why Mayvenn is right for you"]]
+     [:h2.titleize "Why mayvenn is right for you"]
+     [:div.h6.dark-gray.titleize "It's not just about hair"]]
 
-    (hookup-entry {:icon-uuid   "44a9227b-db64-42b0-ab06-5d19037baf8e"
-                   :icon-width  "21"
-                   :title       "World-Class Customer Service"
-                   :description "Our experts have first-hand experience and are ready to help you by phone, text and email."})
-    (hookup-entry {:icon-uuid   "9b8cd1ed-200b-4a6a-bb5f-4335866859e5"
+    (hookup-entry {:icon-uuid   "ab1d2ed4-ff93-40e6-978a-721133ca88a7"
+                   :icon-width  "29"
+                   :title       "Top Notch Customer Service"
+                   :description "Our team is made up of hair experts ready to help you by phone, text, and email."})
+    (hookup-entry {:icon-uuid   "8787e30c-2879-4a43-8d01-9d6790575084"
                    :icon-width  "71"
-                   :title       "Risk-Free"
-                   :description "Wear it, dye it, style it. If you don’t love your hair we’ll exchange it within 30 days of purchase."})
-    (hookup-entry {:icon-uuid   "7c436000-2d6b-4349-b3c9-1d7b4ae3bb21"
+                   :title       "30 Day Guarantee"
+                   :description "Wear it, dye it, event cut it! If you're not satisfied we'll exchange it within 30 days."})
+    (hookup-entry {:icon-uuid   "e02561dd-c294-43b7-bb33-c40bfabea518"
                    :icon-width  "40"
-                   :title       "100% Human Hair"
-                   :description "Available in Virgin and Dyed Virgin"})
-    (hookup-entry {:icon-uuid   "c81da7fe-f3fb-4728-8428-e1b93bdf34cc"
+                   :title       "100% Virgin Hair"
+                   :description "Our hair is gently steam processed and can last up to a year. Available in 8 textures and 8 shades."})
+    (hookup-entry {:icon-uuid   "3f622e92-6d95-49e2-a0c1-51a535b22975"
                    :icon-width  "43"
                    :title       "Free Install"
                    :description "Get your hair installed absolutely FREE!"})]])
 
 (defn free-install-mayvenn-grid [free-install-mayvenn-ugc]
   [:div.py8.col-10.mx-auto
-   [:h2.center "#FreeInstallMayvenn"]
-   [:h6.center.dark-gray "Over 1,000 free installs & counting"]
+   [:h2.center "#MayvennFreeInstall"]
+   [:h6.center.dark-gray "Show off your look by tagging us with #MayvennFreeInstall"]
    [:div.flex.flex-wrap.pt2
     (for [{:keys [links imgs]} (:images free-install-mayvenn-ugc)]
       [:a.col-6.col-3-on-tb-dt.p1
@@ -290,33 +286,39 @@
                          " and present the voucher to them at the appointment."
                          " Your stylist will receive the full payment for your install"
                          " immediately after the voucher has been scanned!"])
+     (accordion/section [:h6 "What's included in the install?"]
+                        ["Typically a full install includes a wash, braid down, and simple styling."
+                         " Service details may vary so it would be best to check with your stylist"
+                         " to confirm what is included."])
+     (accordion/section [:h6 "How does the 30 day guarantee work?"]
+                        ["Buy Mayvenn hair RISK FREE with easy returns and exchanges."]
+                        ["EXCHANGES" [:br] "Wear it, dye it, even cut it! If you're not satified with your"
+                         " hair, we'll exchange it within 30 days of purchase. Our customer service"
+                         " team is ready to answer any questions you may have. Give us a call:"
+                         phone-link]
+                        ["RETURNS" [:br] "If you are not completely happy with your Mayvenn hair"
+                         " before it is installed, we will refund your purchase if the"
+                         " bundle is unopened and the hair is in its original condition."
+                         " Give us a call to start your return:"
+                         phone-link])
      (accordion/section [:h6 "Who is going to do my hair?"]
                         ["The free-install offer is only valid at your Mayvenn"
                          " stylist. If you are unsure if your stylist is"
                          " participating in the free-install offer, you can simply"
                          " ask them or contact Mayvenn customer service: "
-                         phone-link])
-     (accordion/section [:h6 "How does the 30 day guarantee work?"]
-                        ["Buy Mayvenn hair RISK FREE with easy returns and exchanges."]
-                        ["EXCHANGES" [:br] "Wear it, dye it, even flat iron it. If you do not love your"
-                         " Mayvenn hair we will exchange it within 30 days of purchase."
-                         " Just call us:"
-                         phone-link]
-                        ["RETURNS" [:br] "If you are not completely happy with your Mayvenn hair"
-                         " before it is installed, we will refund your purchase if the"
-                         " bundle is unopened and the hair is in its original condition."
-                         " Just call us:"
-                         phone-link])
-     (accordion/section [:h6 "What if I want to get my hair done by another stylist?"]
-                        ["No, you must get your hair done from one of Mayvenn’s Certified Stylists in"
-                         " order to get your hair installed for free. Our stylists are licensed and"
-                         " experienced - the best in Fayetteville!"])
+                         phone-link
+                         [:br] "Our stylists specialize in sew-in installs with leave-out, closures,"
+                         " frontals, and 360 frontals so you can rest assured that we ahve a stylist"
+                         " to help you achieve the look you want."])
+     (accordion/section [:h6 "What if I want to get my hair done by another stylist?"
+                         " Can I still get the free install?"]
+                        ["You must get your hair done from a Mayvenn stylist in"
+                         " order to get your hair installed for free."])
      (accordion/section [:h6 "Why should I order hair from Mayvenn?"]
-                        ["Mayvenn hair is 100% human. Our Virgin, Dyed Virgin, and"
-                         " 100% Human hair can be found in a variety of textures from"
-                         " straight to curly. Virgin hair starts at $54 per bundle and"
-                         " 100% Human hair starts at just $30 per bundle. All orders are"
-                         " eligible for free shipping and backed by our 30 Day"
+                        ["Mayvenn is a Black owned company that offers 100% virgin hair."
+                         " Our Virgin and Dyed Virgin hair can be found in a variety of textures from"
+                         " straight to curly. Virgin hair starts at $54 per bundle."
+                         " All orders are eligible for free shipping and backed by our 30 Day"
                          " Guarantee."])]))
 
 (defn ^:private faq [{:keys [expanded-index]}]
@@ -331,12 +333,12 @@
 (def our-story
   (let [we-are-mayvenn-link (utils/route-to events/navigate-home {:query-params {:video "we-are-mayvenn"}})
         diishan-image       (ui/ucare-img {:class "col-12"} "4a92843c-b92d-48d3-8ac0-05b744b73584")
-        group-image         (ui/ucare-img {:class "col-12"} "34512e2b-e6a8-47c2-bc7e-0471737fc920")
-        support-image       (ui/ucare-img {:class "col-12"} "d800599c-a383-4b87-8c0d-d80bbaaf0817")
+        mikka-image         (ui/ucare-img {:class "col-12"} "838e25f5-cd4b-4e15-bfd9-8bdb4b2ac341")
+        stylist-image       (ui/ucare-img {:class "col-12"} "6735b4d5-9b65-4fa9-96cd-871141b28672")
         diishan-image-2     (ui/ucare-img {:class "col-12"} "ec9e0533-9eee-41ae-a61b-8dc22f045cb5")]
     [:div.pt4.px4.pb8
-     [:div.h2.center "Your beautiful, affordable hair starts here"]
-     [:h6.center.mb2.dark-gray "Founded in Oakland, CA • 2014"]
+     [:div.h2.center "A Better Hair Experience Starts Here"]
+     [:h6.center.mb2.dark-gray "Founded in Oakland, CA • 2013"]
 
      [:div.hide-on-tb-dt
       [:div.flex.flex-wrap
@@ -348,11 +350,11 @@
         [:h4.my1.dark-gray.medium "Our Story"]
         [:div.h6.teal.flex.items-center
          teal-play-video
-         "WATCH NOW"]]
-       [:div.col-6.p1 group-image]
-       [:div.col-6.p1 support-image]
+         "Watch Now"]]
+       [:div.col-6.p1 mikka-image]
+       [:div.col-6.p1 stylist-image]
        [:div.col-6.px2.dark-gray
-        [:h4.my2.line-height-1 "“Our mission is to provide our community with an unbeatable product.”"]
+        [:h4.my2.line-height-1 "“We're committed to giving our customers and stylists the tools they need to feel empowered.“"]
         [:h6.medium.line-height-1 "- Diishan Imira"]
         [:h6 "CEO of Mayvenn"]]
        [:div.col-6.p1 diishan-image-2]]]
@@ -360,11 +362,11 @@
      [:div.hide-on-mb.pb4
       [:div.col-8.flex.flex-wrap.mx-auto
        [:div.col-6.flex.flex-wrap.items-center
-        [:div.col-6.p1 group-image]
-        [:div.col-6.p1 support-image]
+        [:div.col-6.p1 mikka-image]
+        [:div.col-6.p1 stylist-image]
         [:div.col-6.px1.pb1.dark-gray.flex.justify-start.flex-column
          [:div.h3.line-height-3.col-11
-          "“Our mission is to provide our community with an unbeatable product.”"]
+          "“We're committed to giving our customers and stylists the tools they need to feel empowered.“"]
          [:h6.medium.line-height-1.mt2 "- Diishan Imira"]
          [:h6.ml1 "CEO of Mayvenn"]]
         [:div.col-6.p1.flex diishan-image-2]]

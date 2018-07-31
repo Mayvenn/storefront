@@ -197,15 +197,14 @@
   [:svg svg-options
    (svg-xlink "mayvenn-wave")])
 
-(def play-video
-  (component/html
-   [:svg {:class "fill-teal" :style {:width "64px" :height "64px"}}
-    (svg-xlink "play-video")]))
-
 (def play-video-muted
   (component/html
    [:svg {:class "fill-dark-gray" :style {:width "64px" :height "64px" :fill-opacity "0.6"}}
     (svg-xlink "play-video")]))
+
+(defn white-play-video [opts]
+  (component/html
+   [:svg opts (svg-xlink "play-video")]))
 
 (defn clear-play-video [opts]
   (component/html
