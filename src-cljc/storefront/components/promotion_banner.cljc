@@ -75,7 +75,7 @@
   [_ _ _]
   (component/create
    [:a.white.center.p2.bg-teal.mbnp5.h6.bold.flex.items-center.justify-center
-    {:on-click  (utils/send-event-callback events/popup-show-free-install)
+    {:on-click  (utils/send-event-callback events/popup-show-aladdin-free-install)
      :data-test "aladdin-free-install-promo-banner"}
     (svg/celebration-horn {:height "1.6em"
                            :width  "1.6em"
