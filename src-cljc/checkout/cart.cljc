@@ -270,13 +270,10 @@
 (defn aladdin-cart-promo [qualified?]
   (if qualified?
     [:div.bg-teal.bg-celebrate.p2.white.center {:data-test "aladdin-cart-promo"}
-     [:img {:src    "//ucarecdn.com/db055165-7085-4af5-b265-8aba681e6275/successwhite.png"
-            :height "63px"
-            :width  "68px"}]
+     [:div.flex.justify-center.mb1 (ui/ucare-img {:width 46} "014c70a0-0d57-495d-add0-f2f46248d224")]
      [:h4 "This order qualifies for a"]
      [:h1.shout.bold "Free Install"]
-     [:h6
-      [:div "from a Mayvenn Certified Stylist in Fayetteville, NC."]]]
+     [:h4.pb6 "You'll receive a voucher via email after purchase"]]
 
     [:div.p2.bg-orange.white.center {:data-test "ineligible-aladdin-cart-promo"}
      [:h4.medium "You're almost there..."]
