@@ -34,25 +34,23 @@
   (let [file-name "free-install-hero"
         mob-uuid  "5980306e-71f9-4dca-984c-d816f79c9f98"
         dsk-uuid  "5980306e-71f9-4dca-984c-d816f79c9f98"]
-    [:div.bg-light-gray
-     [:div.relative
-      [:div.bold.shadow.white.center
-       (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
-                    :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
-                    :file-name   file-name
-                    :alt         "Beautiful Virgin Hair Installed for FREE"})]]]))
+    [:div.bold.shadow.white.center.bg-light-gray
+     (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
+                  :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
+                  :file-name   file-name
+                  :alt         "Beautiful Virgin Hair Installed for FREE"})]))
 
 (def free-shipping-banner
   [:div {:style {:height "3em"}}
-   [:div.bg-light-gray {:style {:height "2em"}}]
-   [:div.mx-auto.medium.table.center.relative.h5 {:style {:top "-3em"}}
-    [:div.table-cell.align-middle
-     [:div.mt1-on-mb
-      (ui/ucare-img {:alt "" :width "50"}
-                    "38d0a770-2dcd-47a3-a035-fc3ccad11037")]]
-    [:div.table-cell.align-middle.pl2.h6
-     [:div.mt1-on-mb
-      "FREE standard shipping"]]]])
+   [:div.bg-black.flex.items-center.justify-center
+    {:style {:height "2.25em"
+             :margin-top "-1px"
+             :padding-top "1px"}}
+    [:div.px2
+     (ui/ucare-img {:alt "" :height "25"}
+                   "38d0a770-2dcd-47a3-a035-fc3ccad11037")]
+    [:div.h6.white.light
+     "FREE standard shipping"]]])
 
 (def teal-play-video
   (svg/white-play-video {:class  "mr1 fill-teal"
@@ -110,15 +108,15 @@
 
    [:div.col-8-on-dt.mx-auto.flex.flex-wrap
     (free-install-step {:icon-uuid   "e90526f9-546f-4a6d-a05a-3bea94aedc21"
-                        :icon-width  "20"
+                        :icon-width  "28"
                         :title       "Buy Any 3 Bundles or More"
                         :description "Including closures and frontals! Rest easy - your 100% virgin hair purchase is backed by our 30 day guarantee."})
     (free-install-step {:icon-uuid   "cddd38e0-f598-4aca-90fc-4350dd4469fb"
-                        :icon-width  "39"
+                        :icon-width  "35"
                         :title       "Get Your Voucher"
                         :description "We’ll send you a free install voucher via SMS and email after your order ships."})
     (free-install-step {:icon-uuid   "7712537c-3805-4d92-90b5-a899748a21c5"
-                        :icon-width  "24"
+                        :icon-width  "35"
                         :title       "Show Your Stylist The Voucher"
                         :description (if (contains? #{"store" "shop"}
                                                     (:store-slug store))
@@ -246,19 +244,19 @@
      [:div.h6.dark-gray.titleize "It's not just about hair"]]
 
     (hookup-entry {:icon-uuid   "ab1d2ed4-ff93-40e6-978a-721133ca88a7"
-                   :icon-width  "29"
+                   :icon-width  "35"
                    :title       "Top Notch Customer Service"
                    :description "Our team is made up of hair experts ready to help you by phone, text, and email."})
     (hookup-entry {:icon-uuid   "8787e30c-2879-4a43-8d01-9d6790575084"
-                   :icon-width  "71"
+                   :icon-width  "52"
                    :title       "30 Day Guarantee"
                    :description "Wear it, dye it, event cut it! If you're not satisfied we'll exchange it within 30 days."})
     (hookup-entry {:icon-uuid   "e02561dd-c294-43b7-bb33-c40bfabea518"
-                   :icon-width  "40"
+                   :icon-width  "35"
                    :title       "100% Virgin Hair"
                    :description "Our hair is gently steam processed and can last up to a year. Available in 8 textures and 8 shades."})
     (hookup-entry {:icon-uuid   "3f622e92-6d95-49e2-a0c1-51a535b22975"
-                   :icon-width  "43"
+                   :icon-width  "35"
                    :title       "Free Install"
                    :description "Get your hair installed absolutely FREE!"})]])
 
@@ -332,7 +330,7 @@
 
 (def our-story
   (let [we-are-mayvenn-link (utils/route-to events/navigate-home {:query-params {:video "we-are-mayvenn"}})
-        diishan-image       (ui/ucare-img {:class "col-12"} "4a92843c-b92d-48d3-8ac0-05b744b73584")
+        diishan-image       (ui/ucare-img {:class "col-12"} "e2186583-def8-4f97-95bc-180234b5d7f8")
         mikka-image         (ui/ucare-img {:class "col-12"} "838e25f5-cd4b-4e15-bfd9-8bdb4b2ac341")
         stylist-image       (ui/ucare-img {:class "col-12"} "6735b4d5-9b65-4fa9-96cd-871141b28672")
         diishan-image-2     (ui/ucare-img {:class "col-12"} "ec9e0533-9eee-41ae-a61b-8dc22f045cb5")]
@@ -342,14 +340,16 @@
 
      [:div.hide-on-tb-dt
       [:div.flex.flex-wrap
-       [:a.col-6.p1
-        we-are-mayvenn-link
-        diishan-image]
+       [:div.col-6.p1
+        ;; we-are-mayvenn-link
+        [:div.relative
+         diishan-image
+         [:div.absolute.bg-darken-4.top-0.bottom-0.left-0.right-0.flex.items-center.justify-center
+          teal-play-video]]]
        [:a.col-6.px2
         we-are-mayvenn-link
         [:h4.my1.dark-gray.medium "Our Story"]
         [:div.h6.teal.flex.items-center
-         teal-play-video
          "Watch Now"]]
        [:div.col-6.p1 mikka-image]
        [:div.col-6.p1 stylist-image]
