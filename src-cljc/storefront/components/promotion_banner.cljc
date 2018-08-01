@@ -109,13 +109,14 @@
      (experiments/seventy-five-off-install? data))
     :install-discount/applied
 
-    (experiments/seventy-five-off-install? data)
-    :install-discount/eligible
-
     (and
      (orders/freeinstall-applied? (get-in data keypaths/order))
-     (experiments/the-ville? data))
+     (or (experiments/the-ville? data)
+         (experiments/aladdin-experience? data)))
     :freeinstall/applied
+
+    (experiments/seventy-five-off-install? data)
+    :install-discount/eligible
 
     (experiments/the-ville? data)
     :freeinstall/eligible

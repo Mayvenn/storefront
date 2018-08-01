@@ -267,6 +267,25 @@
       [:div "from a Mayvenn Certified Stylist in Fayetteville, NC."]
       [:div "Use code " [:span.bold "FREEINSTALL"] " to get your free install."]]]))
 
+(defn aladdin-cart-promo [qualified?]
+  (if qualified?
+    [:div.bg-teal.bg-celebrate.p2.white.center {:data-test "aladdin-cart-promo"}
+     [:img {:src    "//ucarecdn.com/db055165-7085-4af5-b265-8aba681e6275/successwhite.png"
+            :height "63px"
+            :width  "68px"}]
+     [:h4 "This order qualifies for a"]
+     [:h1.shout.bold "Free Install"]
+     [:h6
+      [:div "from a Mayvenn Certified Stylist in Fayetteville, NC."]]]
+
+    [:div.p2.bg-orange.white.center {:data-test "ineligible-aladdin-cart-promo"}
+     [:h4.medium "You're almost there..."]
+     [:h4.medium "Buy 3 bundles or more and get a"]
+     [:h1.shout.bold "Free Install"]
+     [:h6.medium
+      [:div "from your Mayvenn Certified Stylist"]
+      [:div "Use code " [:span.bold "FREEINSTALL"] " to get your free install."]]]))
+
 (defn full-component [{:keys [products
                               order
                               disable-apple-pay-button?
@@ -285,6 +304,7 @@
                               update-line-item-requests
                               show-apple-pay?
                               the-ville?
+                              aladdin-experience?
                               applying-coupon?
                               recently-added-skus
                               delete-line-item-requests
@@ -295,6 +315,10 @@
     (component/build promotion-banner/sticky-component promotion-banner nil)
 
     (cond
+      aladdin-experience?
+      [:div.mb3
+       (aladdin-cart-promo show-green-banner?)]
+
       seventy-five-off-install?
       [:div.mb3
        (seventy-five-off-install-cart-promo show-green-banner?)]
@@ -506,6 +530,7 @@
      :error-message             (get-in data keypaths/error-message)
      :focused                   (get-in data keypaths/ui-focus)
      :the-ville?                (experiments/the-ville? data)
+     :aladdin-experience?       (experiments/aladdin-experience? data)
      :seventy-five-off-install? (experiments/seventy-five-off-install? data)
      :recently-added-skus       (get-in data keypaths/cart-recently-added-skus)}))
 
