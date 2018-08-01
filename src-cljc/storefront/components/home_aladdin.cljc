@@ -33,7 +33,7 @@
 (defn hero []
   (let [file-name "free-install-hero"
         mob-uuid  "5980306e-71f9-4dca-984c-d816f79c9f98"
-        dsk-uuid  "5980306e-71f9-4dca-984c-d816f79c9f98"]
+        dsk-uuid  "2acd6074-c481-4bbd-8667-151b5706d609"]
     [:div.bold.shadow.white.center.bg-light-gray
      (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
                   :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
@@ -52,39 +52,48 @@
     [:div.h6.white.light
      "FREE standard shipping"]]])
 
-(def teal-play-video
+(def teal-play-video-mobile
   (svg/white-play-video {:class  "mr1 fill-teal"
                          :height "30px"
                          :width  "30px"}))
 
-(def what-our-customers-are-saying
-  [:a.block.col-11.mx-auto
-   (utils/route-to events/navigate-home {:query-params {:video "free-install"}})
-   [:div.hide-on-mb-tb.flex.justify-center.py3
-    (ui/ucare-img {:alt "" :width "212"}
-                  "b016b985-affb-4c97-af0a-a1f1334c0c51")
-    [:div.ml4.dark-gray
-     [:div.h4.bold "#MayvennFreeInstall"]
-     [:div.h4.my2 "See why customers love their FREE Install"]
-     [:div.h5.teal.flex.items-center
-      teal-play-video
-      "WATCH NOW"]] ]
+(def teal-play-video-desktop
+  (svg/white-play-video {:class  "mr1 fill-teal"
+                         :height "41px"
+                         :width  "41px"}))
 
-   [:div.hide-on-dt.flex.justify-center.py3
-    [:div
-     [:div.relative
-      (ui/ucare-img {:alt "" :width "152"}
-                    "b016b985-affb-4c97-af0a-a1f1334c0c51")
-      [:div.absolute.top-0.bottom-0.left-0.right-0.flex.items-center.justify-center
-       teal-play-video]]]
-    [:div.ml2.dark-gray
-     [:h6.bold.mbnp6 "#MayvennFreeInstall"]
-     [:p.pt2.h7
-      [:span {:style {:white-space "nowrap"}} "See why customers love their"]
-      " "
-      [:span {:style {:white-space "nowrap"}} "FREE Install"]]
-     [:h6.teal.flex.items-center.mt2
-      "WATCH NOW"]]]])
+(def what-our-customers-are-saying
+  (let [video-link (utils/route-to events/navigate-home {:query-params {:video "free-install"}})]
+    [:div.col-11.mx-auto
+     [:div.hide-on-mb-tb.flex.justify-center.py3
+      [:a.block.relative
+       video-link
+       (ui/ucare-img {:alt "" :width "212"}
+                     "b016b985-affb-4c97-af0a-a1f1334c0c51")
+       [:div.absolute.top-0.bottom-0.left-0.right-0.flex.items-center.justify-center.bg-darken-3
+        teal-play-video-desktop]]
+      [:a.block.ml4.dark-gray
+       video-link
+       [:div.h4.bold "#MayvennFreeInstall"]
+       [:div.h4.my2 "See why customers love their FREE Install"]
+       [:div.h5.teal.flex.items-center "WATCH NOW"]]]
+
+     [:div.hide-on-dt.flex.justify-center.py3
+      [:a.block.relative
+       video-link
+       (ui/ucare-img {:alt "" :width "152"}
+                     "b016b985-affb-4c97-af0a-a1f1334c0c51")
+       [:div.absolute.top-0.bottom-0.left-0.right-0.flex.items-center.justify-center.bg-darken-3
+        teal-play-video-mobile]]
+      [:a.block.ml2.dark-gray
+       video-link
+       [:h6.bold.mbnp6 "#MayvennFreeInstall"]
+       [:p.pt2.h7
+        [:span {:style {:white-space "nowrap"}} "See why customers love their"]
+        " "
+        [:span {:style {:white-space "nowrap"}} "FREE Install"]]
+       [:h6.teal.flex.items-center
+        "WATCH NOW"]]]]))
 
 (defn ^:private get-ucare-id-from-url
   [ucare-url]
@@ -213,7 +222,7 @@
 (defn most-popular-looks [sleek-ugc wave-ugc]
   [:div.col-12.col-8-on-tb-dt.mt3.px2.py5.mx-auto
    [:div.my2.flex.flex-column.items-center
-    [:h2.center "Our Most Popular" [:br.hide-on-dt] " Looks"]
+    [:h2.center "Our Most Popular Looks"]
     (style-carousel "Sleek & Straight"
                     "Virgin & Dyed Virgin Hair"
                     "Brazilian & Peruvian"
@@ -308,8 +317,10 @@
                          " participating in the free-install offer, you can simply"
                          " ask them or contact Mayvenn customer service: "
                          phone-link
-                         [:br] "Our stylists specialize in sew-in installs with leave-out, closures,"
-                         " frontals, and 360 frontals so you can rest assured that we ahve a stylist"
+                         [:br]
+                         [:br]
+                         "Our stylists specialize in sew-in installs with leave-out, closures,"
+                         " frontals, and 360 frontals so you can rest assured that we have a stylist"
                          " to help you achieve the look you want."])
      (accordion/section [:h6 "What if I want to get my hair done by another stylist?"
                          " Can I still get the free install?"]
@@ -343,12 +354,12 @@
 
      [:div.hide-on-tb-dt
       [:div.flex.flex-wrap
-       [:div.col-6.p1
-        ;; we-are-mayvenn-link
+       [:a.block.col-6.p1
+        we-are-mayvenn-link
         [:div.relative
          diishan-image
-         [:div.absolute.bg-darken-4.top-0.bottom-0.left-0.right-0.flex.items-center.justify-center
-          teal-play-video]]]
+         [:div.absolute.bg-darken-3.overlay.flex.items-center.justify-center
+          teal-play-video-mobile]]]
        [:a.col-6.px2
         we-are-mayvenn-link
         [:h4.my1.dark-gray.medium "Our Story"]
@@ -375,17 +386,9 @@
         [:div.col-6.p1.flex diishan-image-2]]
        [:a.relative.col-6.p1
         we-are-mayvenn-link
-        diishan-image
-        [:div.absolute.overlay.flex.flex-column.justify-between
-         [:div ui/nbsp]
-         [:div ui/nbsp]
-         [:div.hide-on-dt ui/nbsp]
-         [:div.flex.flex-column.items-center.justify-center.mt8
-          [:h1.my1.dark-gray.bold "Our Story"]
-          [:div.h5.teal.flex.items-center.medium
-           teal-play-video
-           "Watch Now"]]
-         [:div ui/nbsp]]]]]]))
+        [:div.relative diishan-image
+         [:div.absolute.overlay.flex.items-center.justify-center.bg-darken-3
+          teal-play-video-desktop]]]]]]))
 
 (defn component [{:keys [signed-in
                          homepage-data
@@ -465,7 +468,8 @@
   (component/build component (query data) opts))
 
 (def ^:private slug->video
-  {"we-are-mayvenn" {:youtube-id "hWJjyy5POTE"}})
+  {"we-are-mayvenn" {:youtube-id "hWJjyy5POTE"}
+   "free-install"   {:youtube-id "cWkSO_2nnD4"}})
 
 (defmethod transitions/transition-state events/navigate-home
   [_ _ {:keys [query-params]} app-state]
