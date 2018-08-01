@@ -4,6 +4,7 @@
             [storefront.components.share-your-cart :as share-your-cart]
             [storefront.components.email-capture :as email-capture]
             [storefront.components.free-install :as free-install]
+            [storefront.components.aladdin-free-install :as aladdin-free-install]
             [storefront.components.seventy-five-off-install :as seventy-five-off-install]
             [storefront.components.stylist.referrals :as stylist.referrals]
             [storefront.events :as events]
@@ -12,6 +13,8 @@
 (def popup-type->popups
   {:free-install             {:query     free-install/query
                               :component free-install/component}
+   :aladdin-free-install     {:query     aladdin-free-install/query
+                              :component aladdin-free-install/component}
    :seventy-five-off-install {:query     seventy-five-off-install/query
                               :component seventy-five-off-install/component}
    :email-capture            {:query     email-capture/query

@@ -166,6 +166,10 @@
 (defpath control-free-install-shop-looks)
 (defpath control-free-install-dismiss)
 
+(defpath control-aladdin-free-install)
+(defpath control-aladdin-free-install-shop-looks)
+(defpath control-aladdin-free-install-dismiss)
+
 (defpath control-install-landing-page-look-back)
 (defpath control-install-landing-page-toggle-accordion)
 (defpath control-install-landing-page-ugc-modal-open)
@@ -444,6 +448,7 @@
 (defpath popup-show-email-capture)
 (defpath popup-show-free-install)
 (defpath popup-show-seventy-five-off-install)
+(defpath popup-show-aladdin-free-install)
 
 (defpath image-picker-component-mounted)
 (defpath image-picker-component-will-unmount)
