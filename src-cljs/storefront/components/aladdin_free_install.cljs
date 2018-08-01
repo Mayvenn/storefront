@@ -55,12 +55,13 @@
                 [:div.mb3.px2
 
                  [:h6.bold.col-12.center.mb2 "Just check out with promo code: FREEINSTALL"]
-                 [:div (ui/teal-button (merge
-                                        {:height-class "py2"}
-                                        (utils/fake-href events/control-aladdin-free-install-shop-looks))
-                                       [:span "Shop looks"])]]
+                 [:div.col-11.mx-auto
+                  (ui/teal-button (merge
+                                   {:height-class "py2"}
+                                   (utils/fake-href events/control-aladdin-free-install-shop-looks))
+                                  [:span "Shop looks"])]]
 
-                aladdin/the-hookup ;;TODO: Rename this
+                aladdin/why-mayvenn-is-right-for-you
 
                 [:div.bg-black.white.p4.flex.h6.medium.items-center
                  [:span.col-7.mr2 "Buy 3 bundles or more and get a FREE install!"]
@@ -99,7 +100,7 @@
   (component/build component data opts))
 
 (defmethod effects/perform-effects events/control-aladdin-free-install-shop-looks [_ event args _ app-state]
-  (history/enqueue-navigate events/navigate-shop-by-look {:album-keyword :free-install}))
+  (history/enqueue-navigate events/navigate-shop-by-look {:album-keyword :look}))
 
 (defmethod effects/perform-effects events/control-aladdin-free-install [_ event args _ app-state]
   (scroll/enable-body-scrolling)
