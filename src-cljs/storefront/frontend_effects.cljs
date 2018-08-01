@@ -325,7 +325,7 @@
   (api/fetch-shared-cart shared-cart-id))
 
 (defmethod perform-effects events/navigate-shop-by-look
-  [dispatch event {:keys [album-keyword look-id]} _ app-state]
+  [dispatch event {:keys [album-keyword]} _ app-state]
   (let [actual-album-keyword (accessors.pixlee/determine-look-album app-state album-keyword)]
     (cond (= :pixlee/unknown-album actual-album-keyword)
           (page-not-found)

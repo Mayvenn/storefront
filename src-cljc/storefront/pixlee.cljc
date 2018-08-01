@@ -2,27 +2,28 @@
   (:require [storefront.events :as events]))
 
 (def ^:private pixlee-copy
-  {:deals        {:title             "shop deals"
-                  :description       (str "Save more when you bundle up! "
-                                          "We wrapped our most popular textures into "
-                                          "packaged bundle deals so you can shop with ease.")
-                  :button-copy       "View this deal"
-                  :back-copy         "back to deals"
-                  :above-button-copy "*Discounts applied at check out"
-                  :short-name        "deal"
-                  :seo-title         "Shop Deals | Mayvenn"
-                  :og-title          (str "Shop Deals - "
-                                          "Find and Buy your favorite Mayvenn bundles!")}
-   :look         {:title                "shop by look"
-                  :description          (str "Get inspiration for your next hairstyle and "
-                                             "shop your favorite looks from the #MayvennMade community.")
-                  :back-copy            "back to shop by look"
-                  :new-look/button-copy "Shop Look"
-                  :button-copy          "View this look"
-                  :above-button-copy    nil
-                  :short-name           "look"
-                  :seo-title            "Shop by Look | Mayvenn"
-                  :og-title             "Shop by Look - Find and Buy your favorite Mayvenn bundles!"}
+  {:deals {:title             "shop deals"
+           :description       (str "Save more when you bundle up! "
+                                   "We wrapped our most popular textures into "
+                                   "packaged bundle deals so you can shop with ease.")
+           :button-copy       "View this deal"
+           :back-copy         "back to deals"
+           :above-button-copy "*Discounts applied at check out"
+           :short-name        "deal"
+           :seo-title         "Shop Deals | Mayvenn"
+           :og-title          (str "Shop Deals - "
+                                   "Find and Buy your favorite Mayvenn bundles!")}
+   :look  {:title                "shop by look"
+           :description          (str "Get inspiration for your next hairstyle and "
+                                      "shop your favorite looks from the #MayvennMade community.")
+           :back-copy            "back to shop by look"
+           :new-look/button-copy "Shop Look"
+           :button-copy          "View this look"
+           :above-button-copy    nil
+           :short-name           "look"
+           :seo-title            "Shop by Look | Mayvenn"
+           :og-title             "Shop by Look - Find and Buy your favorite Mayvenn bundles!"}
+
    :free-install {:title                "shop by look"
                   :description          (str "Get inspiration for your next hairstyle and "
                                              "shop your favorite looks from the #MayvennMade community.")
@@ -47,31 +48,43 @@
                        :seo-title            "Shop by Look | Mayvenn"
                        :og-title             "Shop by Look - Find and Buy your favorite Mayvenn bundles!"}
 
+   :aladdin-free-install {:title                "shop by look"
+                          :description          (str "Get inspiration for your next hairstyle and "
+                                                     "shop your favorite looks from the #MayvennMade community.")
+                          :back-copy            "back to shop by look"
+                          :new-look/button-copy "Shop Look"
+                          :button-copy          "View this look"
+                          :above-button-copy    nil
+                          :short-name           "look"
+                          :seo-title            "Shop by Look | Mayvenn"
+                          :og-title             "Shop by Look - Find and Buy your favorite Mayvenn bundles!"}
+
+
    ;;TODO Get proper copy
    :sleek-and-straight {:title                "shop by look"
-                                :description          (str "Get inspiration for your next hairstyle and "
-                                                           "shop your favorite looks from the #MayvennMade community.")
-                                :button-copy          "View this look"
-                                :new-look/button-copy "Shop Look"
-                                :back-copy            "back"
-                                :default-back-event   events/navigate-home
-                                :above-button-copy    nil
-                                :short-name           "look"
-                                :seo-title            "Shop by Look | Mayvenn"
-                                :og-title             "Shop by Look - Find and Buy your favorite Mayvenn bundles!"}
+                        :description          (str "Get inspiration for your next hairstyle and "
+                                                   "shop your favorite looks from the #MayvennMade community.")
+                        :button-copy          "View this look"
+                        :new-look/button-copy "Shop Look"
+                        :back-copy            "back"
+                        :default-back-event   events/navigate-home
+                        :above-button-copy    nil
+                        :short-name           "look"
+                        :seo-title            "Shop by Look | Mayvenn"
+                        :og-title             "Shop by Look - Find and Buy your favorite Mayvenn bundles!"}
 
    ;;TODO Get proper copy
    :waves-and-curly {:title                "shop by look"
-                             :description          (str "Get inspiration for your next hairstyle and "
-                                                        "shop your favorite looks from the #MayvennMade community.")
-                             :button-copy          "View this look"
-                             :new-look/button-copy "Shop Look"
-                             :back-copy            "back"
-                             :default-back-event   events/navigate-home
-                             :above-button-copy    nil
-                             :short-name           "look"
-                             :seo-title            "Shop by Look | Mayvenn"
-                             :og-title             "Shop by Look - Find and Buy your favorite Mayvenn bundles!"}
+                     :description          (str "Get inspiration for your next hairstyle and "
+                                                "shop your favorite looks from the #MayvennMade community.")
+                     :button-copy          "View this look"
+                     :new-look/button-copy "Shop Look"
+                     :back-copy            "back"
+                     :default-back-event   events/navigate-home
+                     :above-button-copy    nil
+                     :short-name           "look"
+                     :seo-title            "Shop by Look | Mayvenn"
+                     :og-title             "Shop by Look - Find and Buy your favorite Mayvenn bundles!"}
 
    :install {:title                "shop by look"
              :description          (str "Get inspiration for your next hairstyle and "
@@ -108,6 +121,7 @@
                            :email-deals          3130480
                            :free-install         3082797
                            :free-install-home    3093356
+                           :aladdin-free-install 3923024
                            :install              3681927
                            :look                 952508
                            :straight             1104027
@@ -133,6 +147,7 @@
               :email-deals          3130242
               :free-install         3082796
               :free-install-home    3751546
+              :aladdin-free-install 3923023
               :install              3681928
               :look                 965034
               :straight             1327330
