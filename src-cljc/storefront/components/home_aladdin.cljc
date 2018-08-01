@@ -79,7 +79,10 @@
        teal-play-video]]]
     [:div.ml2.dark-gray
      [:h6.bold.mbnp6 "#MayvennFreeInstall"]
-     [:h7 "See why customers love their FREE Install"]
+     [:p.pt2.h7
+      [:span {:style {:white-space "nowrap"}} "See why customers love their"]
+      " "
+      [:span {:style {:white-space "nowrap"}} "FREE Install"]]
      [:h6.teal.flex.items-center.mt2
       "WATCH NOW"]]]])
 
