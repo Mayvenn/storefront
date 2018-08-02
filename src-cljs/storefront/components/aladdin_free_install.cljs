@@ -51,6 +51,7 @@
                                               :gallery-ucare-ids     gallery-ucare-ids
                                               :stylist-portrait      (:portrait store)
                                               :stylist-name          (:store-nickname store)
+                                              :modal?                true
                                               :stylist-gallery-open? stylist-gallery-open?})]
                 [:div.mb3.px2
 
@@ -61,7 +62,7 @@
                                    (utils/fake-href events/control-aladdin-free-install-shop-looks))
                                   [:span "Shop looks"])]]
 
-                aladdin/why-mayvenn-is-right-for-you
+                (aladdin/why-mayvenn-is-right-for-you true)
 
                 [:div.bg-black.white.p4.flex.h6.medium.items-center
                  [:span.col-7.mr2 "Buy 3 bundles or more and get a FREE install!"]
@@ -69,12 +70,12 @@
                   [:div.col-9
                    (ui/teal-button
                     (merge (utils/fake-href events/control-aladdin-free-install-shop-looks)
-                           {:data-test "aladdin-free-install-shop"
+                           {:data-test    "aladdin-free-install-shop"
                             :height-class "py1"})
                     [:span.h6 "Shop"])]]]
 
                 [:div.mt10
-                 (aladdin/faq faq-data)]
+                 (aladdin/faq (assoc faq-data :modal? true))]
 
                 [:div.hide-on-tb-dt.pt3 ;; Footer
                  (component/build footer-modal/component footer-data nil)]]]))))

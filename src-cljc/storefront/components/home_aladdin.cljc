@@ -268,7 +268,7 @@
                                   :stylist-name          (:store-nickname store)
                                   :stylist-gallery-open? stylist-gallery-open?})]
     [:section (most-popular-looks sleek-and-straight-ugc waves-and-curly-ugc)]
-    [:section [:div aladdin/why-mayvenn-is-right-for-you]]
+    [:section [:div (aladdin/why-mayvenn-is-right-for-you)]]
     [:section (free-install-mayvenn-grid free-install-mayvenn-ugc)]
     [:hr.hide-on-mb-tb.border-top.border-dark-silver.col-9.mx-auto.mb6]
     [:section (aladdin/faq faq-data)]

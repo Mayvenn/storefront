@@ -7,105 +7,111 @@
             [storefront.platform.component-utils :as utils]
             [storefront.components.accordion :as accordion]))
 
-(defn free-install-step [{:keys [icon-uuid icon-width title description]}]
-  [:div.col-12.col-4-on-dt.mt2.center
-   [:div.flex.justify-center.items-end.mb2
-    {:style {:height "39px"}}
-    (ui/ucare-img {:alt title :width icon-width} icon-uuid)]
-   [:div.h5.teal.medium title]
-   [:p.h6.col-10.col-9-on-dt.mx-auto description]])
-
 (defn get-a-free-install
   [{:keys [store
            gallery-ucare-ids
            stylist-portrait
            stylist-name
+           modal?
            stylist-gallery-open?]}]
+  (let [step (fn [{:keys [icon-uuid icon-width title description]}]
+               [:div.col-12.mt2.center
+                (when (not modal?)
+                  {:class "col-4-on-dt"})
+                [:div.flex.justify-center.items-end.mb2
+                 {:style {:height "39px"}}
+                 (ui/ucare-img {:alt title :width icon-width} icon-uuid)]
+                [:div.h5.teal.medium title]
+                [:p.h6.col-10.col-9-on-dt.mx-auto description]])]
 
-  [:div.col-12
-   [:div.mt2.flex.flex-column.items-center
-    [:h2 "Get a FREE Install"]
-    [:div.h6.dark-gray "In three easy steps"]]
+    [:div.col-12
+     [:div.mt2.flex.flex-column.items-center
+      [:h2 "Get a FREE Install"]
+      [:div.h6.dark-gray "In three easy steps"]]
 
-   [:div.col-8-on-dt.mx-auto.flex.flex-wrap
-    (free-install-step {:icon-uuid   "e90526f9-546f-4a6d-a05a-3bea94aedc21"
-                        :icon-width  "28"
-                        :title       "Buy Any 3 Bundles or More"
-                        :description "Including closures and frontals! Rest easy - your 100% virgin hair purchase is backed by our 30 day guarantee."})
-    (free-install-step {:icon-uuid   "cddd38e0-f598-4aca-90fc-4350dd4469fb"
-                        :icon-width  "35"
-                        :title       "Get Your Voucher"
-                        :description "We’ll send you a free install voucher via SMS and email after your order ships."})
-    (free-install-step {:icon-uuid   "7712537c-3805-4d92-90b5-a899748a21c5"
-                        :icon-width  "35"
-                        :title       "Show Your Stylist The Voucher"
-                        :description (if (contains? #{"store" "shop"}
-                                                    (:store-slug store))
-                                       (str "Redeem the voucher at your appointment with a Mayvenn stylist. "
-                                            "Check out some of our certified stylists below:")
-                                       "Redeem the voucher when you go in for your appointment with: ")})]
+     [:div.col-8-on-dt.mx-auto.flex.flex-wrap
+      (step {:icon-uuid   "e90526f9-546f-4a6d-a05a-3bea94aedc21"
+             :icon-width  "28"
+             :title       "Buy Any 3 Bundles or More"
+             :description "Including closures and frontals! Rest easy - your 100% virgin hair purchase is backed by our 30 day guarantee."})
+      (step {:icon-uuid   "cddd38e0-f598-4aca-90fc-4350dd4469fb"
+             :icon-width  "35"
+             :title       "Get Your Voucher"
+             :description "We’ll send you a free install voucher via SMS and email after your order ships."})
+      (step {:icon-uuid   "7712537c-3805-4d92-90b5-a899748a21c5"
+             :icon-width  "35"
+             :title       "Show Your Stylist The Voucher"
+             :description (if (contains? #{"store" "shop"}
+                                         (:store-slug store))
+                            (str "Redeem the voucher at your appointment with a Mayvenn stylist. "
+                                 "Check out some of our certified stylists below:")
+                            "Redeem the voucher when you go in for your appointment with: ")})]
 
-   [:div.mt2.flex.flex-column.items-center
-    [:div.h6.my1.dark-gray "Your Stylist"]
-    [:div.circle.hide-on-mb-tb
-     (if (:resizable-url stylist-portrait)
-       (ui/circle-picture {:width "100"} (ui/square-image stylist-portrait 100))
-       (ui/circle-ucare-img {:width "100"} "23440740-c1ed-48a9-9816-7fc01f92ad2c"))]
-    [:div.circle.hide-on-dt
-     (if (:resizable-url stylist-portrait)
-       (ui/circle-picture (ui/square-image stylist-portrait 70))
-       (ui/circle-ucare-img {:width "70"} "23440740-c1ed-48a9-9816-7fc01f92ad2c"))]
-    [:div.h5.bold stylist-name]
-    [:div.h6
-     (when (:licensed store)
+     [:div.mt2.flex.flex-column.items-center
+      [:div.h6.my1.dark-gray "Your Stylist"]
+      [:div.circle.hide-on-mb-tb
+       (if (:resizable-url stylist-portrait)
+         (ui/circle-picture {:width "100"} (ui/square-image stylist-portrait 100))
+         (ui/circle-ucare-img {:width "100"} "23440740-c1ed-48a9-9816-7fc01f92ad2c"))]
+      [:div.circle.hide-on-dt
+       (if (:resizable-url stylist-portrait)
+         (ui/circle-picture (ui/square-image stylist-portrait 70))
+         (ui/circle-ucare-img {:width "70"} "23440740-c1ed-48a9-9816-7fc01f92ad2c"))]
+      [:div.h5.bold stylist-name]
+      [:div.h6
+       (when (:licensed store)
+         [:div.flex.items-center.dark-gray {:style {:height "1.5em"}}
+          (svg/check {:class "stroke-teal" :height "2em" :width "2em"}) "Licensed"])
        [:div.flex.items-center.dark-gray {:style {:height "1.5em"}}
-        (svg/check {:class "stroke-teal" :height "2em" :width "2em"}) "Licensed"])
-     [:div.flex.items-center.dark-gray {:style {:height "1.5em"}}
-      (ui/ucare-img {:width "7" :class "pr2"} "bd307d38-277d-465b-8360-ac8717aedb03")
-      (str (-> store :location :city) ", " (-> store :location :state-abbr))]]
-    (when (seq gallery-ucare-ids)
-      [:div.h6.pt1.flex.items-center
-       (ui/ucare-img {:width "25"} "18ced560-296f-4b6c-9c82-79a4e8c15d95")
-       [:a.ml1.teal.medium
-        (utils/fake-href events/control-stylist-gallery-open)
-        "Hair Gallery"]
-       (modal-gallery/simple
-        {:slides      (map modal-gallery/ucare-img-slide gallery-ucare-ids)
-         :open?       stylist-gallery-open?
-         :close-event events/control-stylist-gallery-close})])]])
+        (ui/ucare-img {:width "7" :class "pr2"} "bd307d38-277d-465b-8360-ac8717aedb03")
+        (str (-> store :location :city) ", " (-> store :location :state-abbr))]]
+      (when (seq gallery-ucare-ids)
+        [:div.h6.pt1.flex.items-center
+         (ui/ucare-img {:width "25"} "18ced560-296f-4b6c-9c82-79a4e8c15d95")
+         [:a.ml1.teal.medium
+          (utils/fake-href events/control-stylist-gallery-open)
+          "Hair Gallery"]
+         (modal-gallery/simple
+          {:slides      (map modal-gallery/ucare-img-slide gallery-ucare-ids)
+           :open?       stylist-gallery-open?
+           :close-event events/control-stylist-gallery-close})])]]))
 
-(def why-mayvenn-is-right-for-you
-  (let [entry (fn [{:keys [icon-uuid icon-width title description]}]
-                [:div.col-12.my2.flex.flex-column.items-center.col-3-on-dt.items-end
-                 [:div.flex.justify-center.items-end.mb1
-                  {:style {:height "35px"}}
-                  (ui/ucare-img {:alt title :width icon-width} icon-uuid)]
-                 [:div.h6.teal.medium.mbnp4 title]
+(defn why-mayvenn-is-right-for-you
+  ([] (why-mayvenn-is-right-for-you false))
+  ([modal?]
+   (let [entry (fn [{:keys [icon-uuid icon-width title description]}]
+                 [:div.col-12.my2.flex.flex-column.items-center.items-end
+                  (when (not modal?)
+                    {:class "col-3-on-dt"})
+                  [:div.flex.justify-center.items-end.mb1
+                   {:style {:height "35px"}}
+                   (ui/ucare-img {:alt title :width icon-width} icon-uuid)]
+                  [:div.h6.teal.medium.mbnp4 title]
 
-                 [:p.h6.col-11.center description]])]
-    [:div.col-12.bg-transparent-teal.mt3.py8.px4
-     [:div.col-11-on-dt.justify-center.flex.flex-wrap.mx-auto.pb2
+                  [:p.h6.col-11.center description]])]
+     [:div.col-12.bg-transparent-teal.mt3.py8.px4
+      [:div.col-11-on-dt.justify-center.flex.flex-wrap.mx-auto.pb2
 
-      [:div.my2.flex.flex-column.items-center.col-12
-       [:h2.titleize "Why mayvenn is right for you"]
-       [:div.h6.dark-gray.titleize "It's not just about hair"]]
+       [:div.my2.flex.flex-column.items-center.col-12
+        [:h2.titleize "Why mayvenn is right for you"]
+        [:div.h6.dark-gray.titleize "It's not just about hair"]]
 
-      (entry {:icon-uuid   "ab1d2ed4-ff93-40e6-978a-721133ca88a7"
-              :icon-width  "29"
-              :title       "Top Notch Customer Service"
-              :description "Our team is made up of hair experts ready to help you by phone, text, and email."})
-      (entry {:icon-uuid   "8787e30c-2879-4a43-8d01-9d6790575084"
-              :icon-width  "52"
-              :title       "30 Day Guarantee"
-              :description "Wear it, dye it, event cut it! If you're not satisfied we'll exchange it within 30 days."})
-      (entry {:icon-uuid   "e02561dd-c294-43b7-bb33-c40bfabea518"
-              :icon-width  "35"
-              :title       "100% Virgin Hair"
-              :description "Our hair is gently steam processed and can last up to a year. Available in 8 textures and 8 shades."})
-      (entry {:icon-uuid   "3f622e92-6d95-49e2-a0c1-51a535b22975"
-              :icon-width  "35"
-              :title       "Free Install"
-              :description "Get your hair installed absolutely FREE!"})]]))
+       (entry {:icon-uuid   "ab1d2ed4-ff93-40e6-978a-721133ca88a7"
+               :icon-width  "29"
+               :title       "Top Notch Customer Service"
+               :description "Our team is made up of hair experts ready to help you by phone, text, and email."})
+       (entry {:icon-uuid   "8787e30c-2879-4a43-8d01-9d6790575084"
+               :icon-width  "52"
+               :title       "30 Day Guarantee"
+               :description "Wear it, dye it, event cut it! If you're not satisfied we'll exchange it within 30 days."})
+       (entry {:icon-uuid   "e02561dd-c294-43b7-bb33-c40bfabea518"
+               :icon-width  "35"
+               :title       "100% Virgin Hair"
+               :description "Our hair is gently steam processed and can last up to a year. Available in 8 textures and 8 shades."})
+       (entry {:icon-uuid   "3f622e92-6d95-49e2-a0c1-51a535b22975"
+               :icon-width  "35"
+               :title       "Free Install"
+               :description "Get your hair installed absolutely FREE!"})]])))
 
 (def ^:private faq-section-copy
   (let [phone-link (ui/link :link/phone :a.dark-gray {} "1-888-562-7952")]
@@ -154,8 +160,10 @@
                          " All orders are eligible for free shipping and backed by our 30 Day"
                          " Guarantee."])]))
 
-(defn faq [{:keys [expanded-index]}]
-  [:div.px6.col-5-on-dt.mx-auto
+(defn faq [{:keys [expanded-index modal?]}]
+  [:div.px6.mx-auto
+   (when (not modal?)
+     {:class "col-5-on-dt"})
    [:h2.center "Frequently Asked Questions"]
    (component/build
     accordion/component
