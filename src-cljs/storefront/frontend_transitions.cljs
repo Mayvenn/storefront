@@ -189,11 +189,13 @@
   (ensure-direct-load-of-checkout-auth-advances-to-checkout-flow app-state))
 
 (defmethod transition-state events/navigate-checkout-payment [_ event args app-state]
-  (cond-> (default-credit-card-name app-state (get-in app-state (conj keypaths/order :billing-address)))
-    (orders/fully-covered-by-store-credit?
-     (get-in app-state keypaths/order)
-     (get-in app-state keypaths/user))
-    (assoc-in (conj keypaths/checkout-selected-payment-methods :store-credit) {})))
+  (let [order (get-in app-state keypaths/order)]
+    (cond-> (default-credit-card-name app-state (get-in app-state (conj keypaths/order :billing-address)))
+      (and (orders/fully-covered-by-store-credit?
+            order
+            (get-in app-state keypaths/user))
+           (not (orders/applied-install-promotion order)))
+      (assoc-in (conj keypaths/checkout-selected-payment-methods :store-credit) {}))))
 
 (defmethod transition-state events/pixlee-api-success-fetch-album [_ event {:keys [album-data album-keyword]} app-state]
   (let [images (pixlee/parse-ugc-album album-keyword album-data)]
@@ -593,15 +595,17 @@
    (update-in app-state keypaths/experiments-bucketed conj experiment))
 
 (defmethod transition-state events/enable-feature [_ event {:keys [feature]} app-state]
-  (let [fully-covered? (orders/fully-covered-by-store-credit?
-                        (get-in app-state keypaths/order)
+  (let [order          (get-in app-state keypaths/order)
+        fully-covered? (orders/fully-covered-by-store-credit?
+                        order
                         (get-in app-state keypaths/user))]
     (cond-> (update-in app-state keypaths/features conj feature)
 
       (and (= feature "affirm") fully-covered?) ;; GROT this when affirm experiment finishes
       (assoc-in keypaths/checkout-selected-payment-methods
                 (orders/form-payment-methods (get-in app-state keypaths/order-total)
-                                             (get-in app-state keypaths/user-total-available-store-credit))))))
+                                             (get-in app-state keypaths/user-total-available-store-credit)
+                                             (orders/all-applied-promo-codes order))))))
 
 (defmethod transition-state events/inserted-convert [_ event args app-state]
   (assoc-in app-state keypaths/loaded-convert true))

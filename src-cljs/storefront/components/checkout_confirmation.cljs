@@ -52,7 +52,8 @@
            requires-additional-payment?
            saving-card?
            updating-shipping?
-           promotion-banner]}
+           promotion-banner
+           install-or-free-install-applied?]}
    owner]
   (om/component
    (html
@@ -102,7 +103,8 @@
             nil)
           (summary/display-order-summary order
                                          {:read-only?             true
-                                          :use-store-credit?      (not affirm-selected-and-order-valid?)
+                                          :use-store-credit?      (and (not affirm-selected-and-order-valid?)
+                                                                       (not install-or-free-install-applied?))
                                           :available-store-credit available-store-credit})
           (when selected-affirm?
             [:div.col-12.col-6-on-tb-dt.mx-auto (affirm-components/as-low-as-box {:amount      (:total order)
@@ -277,21 +279,23 @@
 
 (defn query [data]
   (let [order (get-in data keypaths/order)]
-    {:updating-shipping?           (utils/requesting? data request-keys/update-shipping-method)
-     :saving-card?                 (checkout-credit-card/saving-card? data)
-     :placing-order?               (or (utils/requesting? data request-keys/place-order)
-                                       (utils/requesting? data request-keys/affirm-place-order))
-     :selected-affirm?             (get-in data keypaths/order-cart-payments-affirm)
-     :order-valid-for-affirm?      (affirm-components/valid-order-total? (:total order))
-     :requires-additional-payment? (requires-additional-payment? data)
-     :promotion-banner             (promotion-banner/query data)
-     :checkout-steps               (checkout-steps/query data)
-     :products                     (get-in data keypaths/v2-products)
-     :skus                         (get-in data keypaths/v2-skus)
-     :order                        order
-     :payment                      (checkout-credit-card/query data)
-     :delivery                     (checkout-delivery/query data)
-     :available-store-credit       (get-in data keypaths/user-total-available-store-credit)}))
+    {:updating-shipping?               (utils/requesting? data request-keys/update-shipping-method)
+     :saving-card?                     (checkout-credit-card/saving-card? data)
+     :placing-order?                   (or (utils/requesting? data request-keys/place-order)
+                                           (utils/requesting? data request-keys/affirm-place-order))
+     :selected-affirm?                 (get-in data keypaths/order-cart-payments-affirm)
+     :order-valid-for-affirm?          (affirm-components/valid-order-total? (:total order))
+     :requires-additional-payment?     (requires-additional-payment? data)
+     :promotion-banner                 (promotion-banner/query data)
+     :checkout-steps                   (checkout-steps/query data)
+     :products                         (get-in data keypaths/v2-products)
+     :skus                             (get-in data keypaths/v2-skus)
+     :order                            order
+     :payment                          (checkout-credit-card/query data)
+     :delivery                         (checkout-delivery/query data)
+     :install-or-free-install-applied? (or (orders/freeinstall-applied? order)
+                                           (orders/install-applied? order))
+     :available-store-credit           (get-in data keypaths/user-total-available-store-credit)}))
 
 (defn built-component [data opts]
   (let [query-data (query data)]

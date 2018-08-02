@@ -27,30 +27,31 @@
   (assoc-in app-state keypaths/checkout-selected-payment-methods
             (condp = payment-method
               :stripe (orders/form-payment-methods (get-in app-state keypaths/order-total)
-                                                   (get-in app-state keypaths/user-total-available-store-credit))
+                                                   (get-in app-state keypaths/user-total-available-store-credit)
+                                                   (orders/all-applied-promo-codes (get-in app-state keypaths/order)))
               :affirm {:affirm {}})))
 
 (defmethod effects/perform-effects events/control-checkout-choose-payment-method-submit [_ event _ _ app-state]
   (handle-message events/flash-dismiss)
-  (let [covered-by-store-credit (orders/fully-covered-by-store-credit?
-                                 (get-in app-state keypaths/order)
-                                 (get-in app-state keypaths/user))
+  (let [order                    (get-in app-state keypaths/order)
+        covered-by-store-credit  (orders/fully-covered-by-store-credit?
+                                  order
+                                  (get-in app-state keypaths/user))
         selected-payment-methods (get-in app-state keypaths/checkout-selected-payment-methods)
-        selected-saved-card-id (when (and (not covered-by-store-credit)
-                                          (not (contains? selected-payment-methods :affirm)))
-                                 (get-in app-state keypaths/checkout-credit-card-selected-id))
-        needs-stripe-token? (and (contains? #{"add-new-card" nil} selected-saved-card-id)
-                                 (not covered-by-store-credit)
-                                 (not (contains? selected-payment-methods :affirm)))]
+        selected-saved-card-id   (when (and (or (not covered-by-store-credit)
+                                                (orders/applied-install-promotion order))
+                                            (not (contains? selected-payment-methods :affirm)))
+                                   (get-in app-state keypaths/checkout-credit-card-selected-id))
+        needs-stripe-token?      (and (contains? #{"add-new-card" nil} selected-saved-card-id)
+                                      (not covered-by-store-credit)
+                                      (not (contains? selected-payment-methods :affirm)))]
     (if needs-stripe-token?
       (create-stripe-token app-state {:place-order? false})
       (api/update-cart-payments
        (get-in app-state keypaths/session-id)
-       {:order (cond-> app-state
-                 :always (get-in keypaths/order)
+       {:order (cond-> order
                  :always (select-keys [:token :number])
                  :always (merge {:cart-payments selected-payment-methods})
-
                  selected-saved-card-id (assoc-in [:cart-payments :stripe :source] selected-saved-card-id))
         :navigate events/navigate-checkout-confirmation}))))
 
@@ -64,6 +65,7 @@
            credit-card
            promo-code
            selected-payment-methods
+           applied-install-promotion
            promotion-banner]}
    owner]
   (om/component
@@ -83,7 +85,8 @@
               selected-stripe-or-store-credit? (and (seq selected-payment-methods)
                                                     (set/subset? selected-payment-methods #{:stripe :store-credit}))
               selected-affirm? (contains? selected-payment-methods :affirm)]
-          (if fully-covered?
+          (if (and fully-covered?
+                   (not applied-install-promotion))
             (ui/note-box
              {:color     "teal"
               :data-test "store-credit-note"}
@@ -106,13 +109,25 @@
                (let [{:keys [credit-available credit-applicable]} store-credit]
                  [:div.p2
                   (when (pos? credit-available)
-                    (ui/note-box
-                     {:color     "teal"
-                      :data-test "store-credit-note"}
-                     [:.p2.navy
-                      [:div [:span.medium (as-money credit-applicable)] " in store credit will be applied to this order."]
-                      [:.h6.mt1
-                       "Please enter an additional payment method below for the remaining total on your order."]]))
+                    (if applied-install-promotion
+                      (ui/note-box
+                       {:color     "orange"
+                        :data-test "store-credit-note"}
+                       [:div.p2.black
+                        [:div "Your "
+                         [:span.medium (as-money credit-applicable)]
+                         " in store credit "
+                         [:span.medium "cannot"]
+                         " be used with " [:span.shout applied-install-promotion] " orders."]
+                        [:div.h6.mt1
+                         "To use store credit, please remove promo code " [:span.shout applied-install-promotion] " from your bag."]])
+                      (ui/note-box
+                       {:color     "teal"
+                        :data-test "store-credit-note"}
+                       [:.p2.navy
+                        [:div [:span.medium (as-money credit-applicable)] " in store credit will be applied to this order."]
+                        [:.h6.mt1
+                         "Please enter an additional payment method below for the remaining total on your order."]])))
 
                   [:div
                    (om/build cc/component
@@ -149,27 +164,31 @@
 (defn query [data]
   (let [available-store-credit   (get-in data keypaths/user-total-available-store-credit)
         credit-to-use            (min available-store-credit (get-in data keypaths/order-total))
+        order                    (get-in data keypaths/order)
         fully-covered?           (orders/fully-covered-by-store-credit?
-                                  (get-in data keypaths/order)
+                                  order
                                   (get-in data keypaths/user))
         selected-payment-methods (set (keys (get-in data keypaths/checkout-selected-payment-methods)))]
     (merge
-     {:store-credit             {:credit-available  available-store-credit
-                                 :credit-applicable credit-to-use
-                                 :fully-covered?    fully-covered?}
-      :promotion-banner         (promotion-banner/query data)
-      :promo-code               (first (get-in data keypaths/order-promotion-codes))
-      :saving?                  (cc/saving-card? data)
-      :disabled?                (or (and (utils/requesting? data request-keys/get-saved-cards)
-                                         ;; Requesting cards, no existing cards, or not fully covered
-                                         (empty? (get-in data keypaths/checkout-credit-card-existing-cards))
-                                         (not fully-covered?))
-                                    (empty? selected-payment-methods))
-      :loaded-stripe?           (and (get-in data keypaths/loaded-stripe-v2)
-                                     (get-in data keypaths/loaded-stripe-v3))
-      :step-bar                 (checkout-steps/query data)
-      :field-errors             (:field-errors (get-in data keypaths/errors))
-      :selected-payment-methods selected-payment-methods}
+     {:store-credit                     {:credit-available  available-store-credit
+                                         :credit-applicable credit-to-use
+                                         :fully-covered?    fully-covered?}
+      :promotion-banner                 (promotion-banner/query data)
+      :promo-code                       (first (get-in data keypaths/order-promotion-codes))
+      :saving?                          (cc/saving-card? data)
+      :disabled?                        (or (and (utils/requesting? data request-keys/get-saved-cards)
+                                                 ;; Requesting cards, no existing cards, or not fully covered
+                                                 (empty? (get-in data keypaths/checkout-credit-card-existing-cards))
+                                                 (not fully-covered?))
+                                            (empty? selected-payment-methods))
+      :applied-install-promotion        (->> (orders/all-applied-promo-codes order)
+                                             (filter #{"freeinstall" "install"})
+                                             first)
+      :loaded-stripe?                   (and (get-in data keypaths/loaded-stripe-v2)
+                                             (get-in data keypaths/loaded-stripe-v3))
+      :step-bar                         (checkout-steps/query data)
+      :field-errors                     (:field-errors (get-in data keypaths/errors))
+      :selected-payment-methods         selected-payment-methods}
      (cc/query data))))
 
 (defn built-component [data opts]

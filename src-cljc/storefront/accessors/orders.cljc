@@ -58,13 +58,15 @@
 (defn add-rounded-floats [a b]
   (/ (.toFixed (+ (* 100.0 a) (* 100.0 b)) 0) 100.0))
 
-(defn form-payment-methods [order-total store-credit]
+(defn form-payment-methods [order-total store-credit promotions]
   (let [store-credit-used (min order-total store-credit)]
-    (merge {}
-           (when (pos? store-credit-used)
-             {:store-credit {}})
-           (when (> order-total store-credit-used)
-             {:stripe {}}))))
+    (cond-> {}
+      (or (some #{"install" "freeinstall"} promotions)
+          (> order-total store-credit-used))
+      (assoc :stripe {})
+      (and (pos? store-credit-used)
+           (not (some #{"install" "freeinstall"} promotions)))
+      (assoc :store-credit {}))))
 
 (defn line-item-subtotal [{:keys [quantity unit-price]}]
   (* quantity unit-price))
@@ -86,35 +88,17 @@
                    product-items-for-shipment
                    (map line-item-subtotal))))
 
-(defn non-store-credit-payment-amount [order]
-  (->> order
-       :payments
-       (remove (comp #{"store-credit"} :payment-type))
-       (map :amount)
-       (apply +)))
-
-(defn fully-covered-by-store-credit? [order user]
-  (boolean
-   (when (and order user)
-     (>= (:total-available-store-credit user)
-         (:total order)))))
-
 (defn tax-adjustment [order]
   {:name "Tax (Estimated)" :price (:tax-total order)})
-
-(defn all-order-adjustments [order]
-  (conj (:adjustments order)
-        (tax-adjustment order)))
 
 (defn bundle-discount? [order]
   (->> (:adjustments order)
        (map :name)
        (some #{"Bundle Discount"})))
 
-(defn display-adjustment-name [name]
-  (if (= name "Bundle Discount")
-    "10% Bundle Discount"
-    name))
+(defn all-order-adjustments [order]
+  (conj (:adjustments order)
+        (tax-adjustment order)))
 
 (defn all-applied-promo-codes [order]
   (into #{}
@@ -125,6 +109,40 @@
   [order]
   (or (empty? (all-applied-promo-codes order))
       (= 0 (product-quantity order))))
+
+(defn install-applied?
+  [{:as order :keys [promotion-codes]}]
+  (and (bundle-discount? order)
+       (contains? (all-applied-promo-codes order) "install")))
+
+(defn freeinstall-applied?
+  [{:as order :keys [promotion-codes]}]
+  (and (bundle-discount? order)
+       (contains? (all-applied-promo-codes order) "freeinstall")))
+
+(defn applied-install-promotion
+  [{:as order :keys [promotion-codes]}]
+  (some #{"freeinstall" "install"} (all-applied-promo-codes order)))
+
+(defn non-store-credit-payment-amount [order]
+  (->> order
+       :payments
+       (remove (comp #{"store-credit"} :payment-type))
+       (map :amount)
+       (apply +)))
+
+(defn fully-covered-by-store-credit? [order user]
+  (boolean
+   (when (and #_(not (applied-install-promotion order))
+              (and order user))
+     (>= (:total-available-store-credit user)
+         (:total order)))))
+
+
+(defn display-adjustment-name [name]
+  (if (= name "Bundle Discount")
+    "10% Bundle Discount"
+    name))
 
 (defn- line-item-tuples [order]
   (->> (product-items order)
@@ -142,16 +160,6 @@
                    (< quantity (prev-sku-id->quantity sku 0))))
          (map get-sku)
          set)))
-
-(defn install-applied?
-  [{:as order :keys [promotion-codes]}]
-  (and (bundle-discount? order)
-       (contains? (all-applied-promo-codes order) "install")))
-
-(defn freeinstall-applied?
-  [{:as order :keys [promotion-codes]}]
-  (and (bundle-discount? order)
-       (contains? (all-applied-promo-codes order) "freeinstall")))
 
 (defn first-name-plus-last-name-initial [{:as order :keys [billing-address shipping-address]}]
   (when (seq order)

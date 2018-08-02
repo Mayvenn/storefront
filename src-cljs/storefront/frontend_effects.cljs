@@ -849,18 +849,20 @@
                                                             keypaths/checkout-selected-shipping-method-sku)})))
 
 (defmethod perform-effects events/stripe-success-create-token [_ _ {:keys [token place-order?]} _ app-state]
-  (api/update-cart-payments
-   (get-in app-state keypaths/session-id)
-   {:order        (-> app-state
-                      (get-in keypaths/order)
-                      (select-keys [:token :number])
-                      (assoc :cart-payments (merge {:stripe {:source (:id token)
-                                                             :save? (boolean (and (get-in app-state keypaths/user-id)
-                                                                                  (get-in app-state keypaths/checkout-credit-card-save)))}}
-                                                   (when (pos? (or (get-in app-state keypaths/user-total-available-store-credit) 0.0))
-                                                     {:store-credit {}}))))
-    :navigate     events/navigate-checkout-confirmation
-    :place-order? place-order?}))
+  (let [order                  (get-in app-state keypaths/order)
+        available-store-credit (or (get-in app-state keypaths/user-total-available-store-credit) 0.0)]
+    (api/update-cart-payments
+     (get-in app-state keypaths/session-id)
+     {:order        (-> order
+                        (select-keys [:token :number])
+                        (assoc :cart-payments (merge {:stripe {:source (:id token)
+                                                               :save?  (boolean (and (get-in app-state keypaths/user-id)
+                                                                                     (get-in app-state keypaths/checkout-credit-card-save)))}}
+                                                     (when (and (pos? available-store-credit)
+                                                                (not (orders/applied-install-promotion order)))
+                                                       {:store-credit {}}))))
+      :navigate     events/navigate-checkout-confirmation
+      :place-order? place-order?})))
 
 (defn create-stripe-token [app-state args]
   ;; create stripe token (success handler commands waiter w/ payment methods (success navigates to confirm))

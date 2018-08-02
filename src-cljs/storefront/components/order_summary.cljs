@@ -62,7 +62,8 @@
         (when shipping-item
           (summary-row "Shipping" (* (:quantity shipping-item) (:unit-price shipping-item))))
 
-        (when (pos? store-credit)
+        (when (and (pos? store-credit)
+                   (not (orders/applied-install-promotion order)))
           (summary-row "Store Credit" (- store-credit)))]]]
      [:.py2.h2
       [:.flex
