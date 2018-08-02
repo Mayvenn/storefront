@@ -103,7 +103,7 @@
        (entry {:icon-uuid   "8787e30c-2879-4a43-8d01-9d6790575084"
                :icon-width  "52"
                :title       "30 Day Guarantee"
-               :description "Wear it, dye it, event cut it! If you're not satisfied we'll exchange it within 30 days."})
+               :description "Wear it, dye it, even cut it! If you're not satisfied we'll exchange it within 30 days."})
        (entry {:icon-uuid   "e02561dd-c294-43b7-bb33-c40bfabea518"
                :icon-width  "35"
                :title       "100% Virgin Hair"
