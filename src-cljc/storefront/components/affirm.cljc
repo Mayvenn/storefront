@@ -18,7 +18,7 @@
 
 (defn ^:private as-low-as-html [data]
   (component/html
-   [:a.affirm-as-low-as.mx2.inherit-color
+   [:a.affirm-as-low-as.mx2.dark-gray
     {:data-promo-id       (type->promo-id (:type data))
      :data-amount         (mf/as-cents (:amount data))
      :data-learnmore-show (or (:show-learnmore data) false)
@@ -80,7 +80,7 @@
 
 (defn pdp-dropdown-experiment-as-low-as-box [data]
   (when (valid-order-total? (:amount data))
-    [:div.center.col-12.mx-auto.pdp-dropdown-experiment
+    [:div.center.col-12.mx-auto.pdp-dropdown-experiment.dark-gray
      [:div.mx1.navy
       [:p.h6.flex.justify-center
        (component/build as-low-as-component data {})
