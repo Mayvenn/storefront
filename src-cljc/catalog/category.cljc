@@ -130,15 +130,6 @@
   [:div.mt6.mb2 [:p.py6.max-580.mx-auto.center (:copy/description category)]])
 
 
-(defn human-hair-video [video]
-  (when-let [url (:url video)]
-    #?(:cljs
-       [:div.container
-        (ui/youtube-responsive (str url
-                                    "?rel=0&"
-                                    "color=white&"
-                                    "showinfo=0"))])))
-
 (defn product-cards-empty-state [loading?]
   [:div.col-12.my8.py4.center
    (if loading?
@@ -169,7 +160,6 @@
     (hero-section category)
     [:div.max-960.col-12.mx-auto.px2-on-mb
      (copy-section category)
-     (human-hair-video (-> category :copy/videos :learn-more))
      [:div.bg-white.sticky.z1
       ;; The -5px prevents a sliver of the background from being visible above the filters
       ;; (when sticky) on android (and sometimes desktop chrome when using the inspector)
