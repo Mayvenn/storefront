@@ -176,12 +176,6 @@
                                  :catalog/category-id "16"})
     :data-test  "menu-shop-dyed-virgin-hair"
     :content    [[:span.medium.flex-auto "Dyed Virgin Hair"]]}
-   {:link-attrs (utils/route-to events/navigate-category
-                                {:page/slug           "dyed-100-human-hair"
-                                 :catalog/category-id "19"})
-    :data-test "menu-shop-dyed-100-human-hair"
-    :content [[:span.teal.pr1 "NEW"]
-              [:span.medium.flex-auto "Dyed 100% Human Hair"]]}
    {:link-attrs (utils/fake-href events/menu-list
                                  {:page/slug           "closures-and-frontals"
                                   :catalog/category-id "12"})

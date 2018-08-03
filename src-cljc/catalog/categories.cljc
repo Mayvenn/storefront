@@ -509,7 +509,7 @@
            :catalog/department  #{"hair"}
            :hair/family         #{"closures" "frontals" "360-frontals"}
            :hair/color.process  #{"dyed" "natural"}
-           :hair/source         #{"virgin" "human"}
+           :hair/source         #{"virgin"}
            :selector/essentials [:catalog/department :hair/family :hair/color.process :hair/source]
            :hamburger/order     1
            :selector/electives  []
@@ -518,67 +518,6 @@
                                       "styling. Our collection of closures and frontals blend"
                                       "seamlessly with our bundles and can be customized"
                                       "to fit your unique look.")})])
-
-(def dyed-human-hair-category
-  [(merge {:catalog/category-id "19"
-           :copy/title          "Dyed 100% Human Hair"
-           :page/slug           "dyed-100-human-hair"
-           :category/new?       true
-           :catalog/department  #{"hair"}
-           :hair/family         #{"bundles" "closures"}
-           :hair/texture        #{"straight"
-                                  "body-wave"
-                                  "deep-wave"
-                                  "loose-wave"}
-           :hair/color.process  #{"dyed"}
-           :hair/source         #{"human"}
-           :hamburger/order     1
-           :header/order        9
-           :header/group        0
-           :footer/order        9
-           :selector/essentials [:catalog/department :hair/family :hair/color.process :hair/source]
-           :selector/electives  [:hair/origin :hair/texture :hair/base-material :hair/color]
-           :copy/videos         {:learn-more {:url "https://www.youtube.com/embed/xSA_7hTH2Fg"}}
-           :images              {:hero {:filename    "Dyed100PercentHumanHair.jpg"
-                                        :desktop-url "//ucarecdn.com/93ed4255-acab-431b-9d05-f97d6826f9dd/"
-                                        :mobile-url  "//ucarecdn.com/373737cd-c441-45f9-8378-ba4f970205e3/"
-                                        :alt         "Dyed 100% Human Hair"}}
-           :copy/description    (copy "These extensions are perfect for when you need a quick style swap or when you’re ballin’ on a budget."
-                                      "Our dyed 100% human hair comes in a range of stylish hues, can take heat up to 350 degrees, and"
-                                      "will last 1-3 months with proper care.")}
-          (category->seo "Dyed 100% Human Hair Extensions"
-                         (copy "Our dyed 100% human hair comes in a range of stylish hues, can take heat up to 350 degrees,"
-                               "and will last 1-3 months with proper care. Free shipping."
-                               "Free 30 day returns. Made with 100% human hair extensions.")
-                         nil))])
-
-(def dyed-human-hair-closures-category
-  [(merge {:catalog/category-id "20"
-           :copy/title          "Dyed 100% Human Hair Closures"
-           :page/slug           "dyed-100-human-hair-closures"
-           :category/new?       true
-           :catalog/department  #{"hair"}
-           :hair/family         #{"closures"}
-           :hair/texture        :query/missing
-           :hair/color.process  #{"dyed"}
-           :hair/source         #{"human"}
-           :header/order        5
-           :header/group        1
-           :footer/order        15
-           :selector/essentials [:catalog/department :hair/family :hair/color.process :hair/source]
-           :selector/electives  [:hair/origin :hair/texture :hair/color]
-           :copy/videos         {:learn-more {:url "https://www.youtube.com/embed/xSA_7hTH2Fg"}}
-           :images              {:hero {:filename    "Dyed100PercentHumanClosures.jpg"
-                                        :desktop-url "//ucarecdn.com/0e36e6b4-ff61-484c-bcf7-4c1434f3be96/"
-                                        :mobile-url  "//ucarecdn.com/dbd46863-1f64-4731-aa81-2d12d7ee9caa/"
-                                        :alt         "Dyed 100% Human Hair Closures"}}
-           :copy/description    (copy "Save your precious strands and top your look off with the ultimate tool in protective weave styling."
-                                      "Our collection of closures and frontals blend seamlessly with our bundles and can be customized"
-                                      "to fit your unique look.")}
-          (category->seo "Dyed 100% Human Hair Closures"
-                         (copy "Our collection of closures and frontals blend seamlessly with our bundles and can be customized"
-                               "to fit your unique look. Free shipping. Free 30 day returns. Made with 100% human hair extensions.")
-                         nil))])
 
 (def seamless-clip-ins-category
   [{:catalog/category-id "21"
@@ -635,15 +574,13 @@
 
 (def menu-categories
   (concat virgin-hair
-          closures
-          dyed-human-hair-closures-category))
+          closures))
 
 (def initial-categories
   (concat wigs
           stylist-exclusives
           dyed-hair-nav-roots
           menu-categories
-          dyed-human-hair-category
           seamless-clip-ins-category
           tape-ins-category))
 
