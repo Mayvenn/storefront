@@ -156,7 +156,7 @@
      (accordion/section [:h6 "Why should I order hair from Mayvenn?"]
                         ["Mayvenn is a Black owned company that offers 100% virgin hair."
                          " Our Virgin and Dyed Virgin hair can be found in a variety of textures from"
-                         " straight to curly. Virgin hair starts at $54 per bundle."
+                         " straight to curly. Virgin hair starts at $55 per bundle."
                          " All orders are eligible for free shipping and backed by our 30 Day"
                          " Guarantee."])]))
 
