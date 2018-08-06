@@ -195,7 +195,7 @@
             order
             (get-in app-state keypaths/user))
            (not (orders/applied-install-promotion order)))
-      (assoc-in (conj keypaths/checkout-selected-payment-methods :store-credit) {}))))
+      (assoc-in keypaths/checkout-selected-payment-methods {:store-credit {}}))))
 
 (defmethod transition-state events/pixlee-api-success-fetch-album [_ event {:keys [album-data album-keyword]} app-state]
   (let [images (pixlee/parse-ugc-album album-keyword album-data)]
