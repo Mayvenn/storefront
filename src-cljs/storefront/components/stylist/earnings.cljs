@@ -9,6 +9,7 @@
             [storefront.components.money-formatters :as mf]
             [storefront.components.stylist.pagination :as pagination]
             [storefront.components.svg :as svg]
+            [storefront.accessors.service-menu :as service-menu]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
             [storefront.events :as events]
@@ -83,7 +84,7 @@
      [:td.py2 "Unspecified Earning"]
      [:td.pr3.py2.green.right-align.bold "+" (mf/as-money amount)]]))
 
-(defn pending-voucher-award-row [pending-voucher]
+(defn pending-voucher-award-row [service-menu pending-voucher]
   (let [{:keys [discount date]} pending-voucher]
     [:tr (merge {:key (str "voucher-pending" -1)
                  :data-test (str "voucher-pending-" -1)}
@@ -92,14 +93,14 @@
      [:td.py2 "Mayvenn Admin Payment" [:div.h6 "Install Program Payment"]]
      [:td.pr3.py2.orange.bold
       [:div.flex.justify-end.center
-       [:div "+" (mf/as-money (some-> discount :amount_off (/ 100)))
+       [:div "+" (service-menu/display-voucher-amount service-menu mf/as-money pending-voucher)
         [:div.h6.bold "Pending"]]]]]))
 
-(defn earnings-table [pending-voucher orders balance-transfers]
+(defn earnings-table [service-menu pending-voucher orders balance-transfers]
   [:table.col-12.mb3 {:style {:border-spacing 0}}
    [:tbody
     (when pending-voucher
-      (pending-voucher-award-row pending-voucher))
+      (pending-voucher-award-row service-menu pending-voucher))
     (map-indexed
      (fn [i {:keys [type data] :as balance-transfer}]
        (case type
@@ -135,7 +136,7 @@
    [:div.center.my2.h6
     [:a.dark-gray (utils/route-to events/navigate-content-program-terms) "Mayvenn Program Terms"]]])
 
-(defn component [{:keys [balance-transfers orders pagination stylist fetching? pending-voucher]} _ _]
+(defn component [{:keys [service-menu balance-transfers orders pagination stylist fetching? pending-voucher]} _ _]
   (om/component
    (let [{current-page :page total-pages :total} pagination]
      (html
@@ -147,7 +148,7 @@
          [:div.col-on-tb-dt.col-9-on-tb-dt
           (when (or (seq balance-transfers)
                     pending-voucher)
-            (earnings-table pending-voucher orders balance-transfers))
+            (earnings-table service-menu pending-voucher orders balance-transfers))
           (pagination/fetch-more events/control-stylist-balance-transfers-load-more
                                  fetching?
                                  current-page
@@ -176,6 +177,7 @@
      :pagination        (get-in data keypaths/stylist-earnings-pagination)
      :stylist           (get-in data keypaths/stylist)
      :fetching?         (utils/requesting? data request-keys/get-stylist-balance-transfers)
+     :service-menu      (get-in data keypaths/stylist-service-menu)
      :pending-voucher   (get-in data voucher-keypaths/voucher-response)}))
 
 (defmethod effects/perform-effects events/api-success-stylist-balance-transfers

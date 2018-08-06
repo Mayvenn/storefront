@@ -1,27 +1,17 @@
 (ns voucher.redeemed
   (:require #?@(:cljs [[storefront.history :as history]])
-   [storefront.component :as component]
+            [storefront.component :as component]
             [storefront.components.money-formatters :as mf]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
+            [storefront.accessors.service-menu :as service-menu]
             [storefront.effects :as effects]
             [storefront.platform.component-utils :as utils]
             [voucher.keypaths :as voucher-keypaths]
             [storefront.keypaths :as keypaths]
             [storefront.effects :as effects]
             [storefront.request-keys :as request-keys]))
-
-(defn parse-type [unit-type]
-  (some->> unit-type
-           (re-find #"\((.*)\)")
-           second))
-
-(def unit-type->menu-kw
-  {"with Closure" :install-sew-in-closure
-   "with 360"     :install-sew-in-360-frontal
-   "with Frontal" :install-sew-in-frontal
-   "Leave Out"    :install-sew-in-leave-out})
 
 (defn ^:private component
   [{:keys [spinning? voucher service-menu]} owner opts]
@@ -37,18 +27,7 @@
                     :width  "3em"})
         "Voucher Redeemed"]
        [:div.h00.teal.bold {:data-test "redemption-amount"}
-        (case (-> voucher :discount :type)
-          ;; TODO: What to do with percent off?
-          "PERCENT"
-          (str (-> voucher :discount :percent_off) "%")
-
-          "UNIT"
-          (some-> voucher :discount :unit_type parse-type unit-type->menu-kw service-menu mf/as-money-without-cents)
-
-          "AMOUNT"
-          (-> voucher :discount :amount_off (/ 100) mf/as-money-without-cents)
-
-          nil)]
+        (service-menu/display-voucher-amount service-menu voucher)]
        [:div.h4 "has been added to your earnings"]
 
        [:div.pb4.my8.col-6
