@@ -36,7 +36,7 @@
                     :height "3em"
                     :width  "3em"})
         "Voucher Redeemed"]
-       [:div.h00.teal.bold
+       [:div.h00.teal.bold {:data-test "redemption-amount"}
         (case (-> voucher :discount :type)
           ;; TODO: What to do with percent off?
           "PERCENT"
