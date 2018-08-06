@@ -37,9 +37,8 @@
                        " order to get your hair installed for free. Our stylists are licensed and"
                        " experienced - the best in Fayetteville!"])
    (accordion/section "Why should I order hair from Mayvenn?"
-                      ["Mayvenn hair is 100% human. Our Virgin, Dyed Virgin, and"
-                       " 100% Human hair can be found in a variety of textures from"
-                       " straight to curly. Virgin hair starts at $54 per bundle and"
-                       " 100% Human hair starts at just $30 per bundle. All orders are"
-                       " eligible for free shipping and backed by our 30 Day"
+                      ["Mayvenn hair is 100% human. Our Virgin and Dyed Virgin hair"
+                       " can be found in a variety of textures from"
+                       " straight to curly. Virgin hair starts at $55 per bundle."
+                       " All orders are eligible for free shipping and backed by our 30 Day"
                        " Guarantee."])])

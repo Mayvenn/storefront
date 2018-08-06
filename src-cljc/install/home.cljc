@@ -215,7 +215,7 @@
      [:div.flex-on-tb-dt.items-start.justify-center
       (easy-step 1
                  "Buy 3 bundles or more"
-                 "Closures and fronts count, too! Our hair is 100% human, backed by a 30 day guarantee and starts at $30 per bundle."
+                 "Closures and fronts count, too! Our hair is 100% human, backed by a 30 day guarantee and starts at $55 per bundle."
                  "fdcc8acc-443c-4b2f-b510-0d940297f997")
       (easy-step 2
                  "A Fayetteville, NC exclusive offer"

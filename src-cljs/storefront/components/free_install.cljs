@@ -42,7 +42,7 @@
       "Closures and frontals count, too!"
       " Our hair is 100% human"
       " and backed by a 30 day guarantee"
-      " and starts at $30 per bundle."]]
+      " and starts at $55 per bundle."]]
     [:div.py4
      (img-with-number-circle {:alt      ""}
                              "6263c536-f548-45dc-ba89-ca68ad7c44c8"
