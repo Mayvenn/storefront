@@ -354,6 +354,12 @@
    "peruvian-loose-wave-silk-closure"  [:product "36"]
    "peruvian-straight"                 [:product "37"]})
 
+(def discontinued-categories
+  #{"19" "20"})
+
+(def discontinued-products
+  #{"102" "103" "104" "105" "106" "107" "108" "109" "116" "117"})
+
 (defn redirect-legacy-product-page
   [render-ctx data req {:keys [legacy/product-slug]}]
   (when-let [[type id] (legacy-product-slug->new-location product-slug)]
@@ -366,43 +372,47 @@
 
 (defn render-category
   [render-ctx data req {:keys [catalog/category-id page/slug]}]
-  (let [categories (get-in data keypaths/categories)]
-    (when-let [category (categories/id->category category-id categories)]
-      (if (not= slug (:page/slug category))
-        (-> (routes/path-for events/navigate-category category)
-            (util.response/redirect :moved-permanently))
-        (->> (assoc-in data
-                       keypaths/current-category-id
-                       (:catalog/category-id category))
-             (html-response render-ctx))))))
+  (if (contains? discontinued-categories category-id)
+    (util.response/redirect (routes/path-for events/navigate-home) :moved-permanently)
+    (let [categories (get-in data keypaths/categories)]
+      (when-let [category (categories/id->category category-id categories)]
+        (if (not= slug (:page/slug category))
+          (-> (routes/path-for events/navigate-category category)
+              (util.response/redirect :moved-permanently))
+          (->> (assoc-in data
+                         keypaths/current-category-id
+                         (:catalog/category-id category))
+               (html-response render-ctx)))))))
 
 (defn render-product-details [{:keys [environment] :as render-ctx}
                               data
                               {:keys [params] :as req}
                               {:keys [catalog/product-id
                                       page/slug]}]
-  (when-let [product (get-in data (conj keypaths/v2-products product-id))]
-    (let [sku-id         (product-details/determine-sku-id data product (:SKU params))
-          sku            (get-in data (conj keypaths/v2-skus sku-id))
-          canonical-slug (:page/slug product)
-          redirect?      (and canonical-slug
-                              (or (not= slug canonical-slug)
-                                  (and sku-id (not sku))))
-          permitted?     (auth/permitted-product? data product)]
-      (cond
-        (not permitted?)
-        (redirect-to-home environment req)
+  (if (contains? discontinued-products product-id)
+    (util.response/redirect (routes/path-for events/navigate-home) :moved-permanently)
+    (when-let [product (get-in data (conj keypaths/v2-products product-id))]
+      (let [sku-id         (product-details/determine-sku-id data product (:SKU params))
+            sku            (get-in data (conj keypaths/v2-skus sku-id))
+            canonical-slug (:page/slug product)
+            redirect?      (and canonical-slug
+                                (or (not= slug canonical-slug)
+                                    (and sku-id (not sku))))
+            permitted?     (auth/permitted-product? data product)]
+        (cond
+          (not permitted?)
+          (redirect-to-home environment req)
 
-        redirect?
-        (let [path (products/path-for-sku product-id canonical-slug sku-id)]
-          (util.response/redirect path))
+          redirect?
+          (let [path (products/path-for-sku product-id canonical-slug sku-id)]
+            (util.response/redirect path))
 
-        :else
-        (html-response render-ctx
-                       (-> data
-                           (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
-                           (assoc-in catalog.keypaths/detailed-product-selected-sku-id sku-id)
-                           (assoc-in catalog.keypaths/detailed-product-id product-id)))))))
+          :else
+          (html-response render-ctx
+                         (-> data
+                             (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
+                             (assoc-in catalog.keypaths/detailed-product-selected-sku-id sku-id)
+                             (assoc-in catalog.keypaths/detailed-product-id product-id))))))))
 
 (defn- redirect-if-necessary [render-ctx data event]
   (if (not= (get-in data keypaths/navigation-event) event)
