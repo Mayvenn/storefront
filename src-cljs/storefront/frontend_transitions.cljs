@@ -699,3 +699,6 @@
     (if (= index expanded-index)
       (assoc-in app-state keypaths/faq-expanded-section nil)
       (assoc-in app-state keypaths/faq-expanded-section index))))
+
+(defmethod transition-state events/api-success-stylist-service-menu-fetch [_ event {:keys [menu]} app-state]
+  (assoc-in app-state keypaths/stylist-service-menu menu))

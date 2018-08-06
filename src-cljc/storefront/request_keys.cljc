@@ -72,3 +72,4 @@
 
 (def fetch-cms-data [:fetch-cms-data])
 (def voucher-redemption [:voucher-redemption])
+(def fetch-stylist-service-menu [:fetch-stylist-service-menu])

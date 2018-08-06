@@ -211,6 +211,8 @@
 
 (def stylist [:stylist])
 
+(def stylist-service-menu (conj stylist :service-menu))
+
 (def stylist-sales-rep-email (conj stylist :sales-rep-email))
 
 (def stylist-manage-account (conj stylist :manage-account))

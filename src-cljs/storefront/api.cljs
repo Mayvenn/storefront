@@ -987,3 +987,14 @@
                   :headers         {"X-Client-Application-Id" client-app-id
                                     "X-Client-Token"          client-app-token}
                   :params          {:metadata {:stylist-id stylist-id}}})))
+
+(defn fetch-stylist-service-menu [cache {:as params :keys [user-id user-token stylist-id]}]
+  (cache-req
+   cache
+   GET
+   "/v1/stylist/service-menu"
+   request-keys/fetch-stylist-service-menu
+   {:params  {:stylist-id stylist-id
+              :user-id    user-id
+              :user-token user-token}
+    :handler #(messages/handle-message events/api-success-stylist-service-menu-fetch %)}))

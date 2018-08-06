@@ -82,6 +82,7 @@
 (defpath navigate-stylist-account-commission)
 (defpath navigate-stylist-account-social)
 
+(defpath navigate-voucher)
 (defpath navigate-voucher-redeem)
 (defpath navigate-voucher-redeemed)
 
@@ -328,6 +329,7 @@
 (defpath api-success-cash-out-complete)
 (defpath api-success-stylist-bonus-credits)
 (defpath api-success-stylist-referral-program)
+(defpath api-success-stylist-service-menu-fetch)
 (defpath api-success-send-stylist-referrals)
 (defpath api-partial-success-send-stylist-referrals)
 

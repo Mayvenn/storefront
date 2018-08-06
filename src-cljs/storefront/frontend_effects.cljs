@@ -1087,7 +1087,6 @@
   (api/get-promotions (get-in app-state keypaths/api-cache)
                       (first (get-in app-state keypaths/order-promotion-codes))))
 
-
 (defmethod perform-effects events/inserted-talkable [_ event args _ app-state]
   (talkable/show-pending-offer app-state)
   (let [nav-event (get-in app-state keypaths/navigation-event)]
@@ -1127,3 +1126,9 @@
 (defmethod perform-effects events/browser-fullscreen-exit [_ event args app-state-before app-state]
   (when (= events/navigate-install-home (get-in app-state keypaths/navigation-event))
     (history/enqueue-navigate events/navigate-install-home {:query-params {:video "0"}})))
+
+(defmethod perform-effects events/navigate-voucher [_ event args app-state-before app-state]
+  (api/fetch-stylist-service-menu (get-in app-state keypaths/api-cache)
+                                  {:user-id    (get-in app-state keypaths/user-id)
+                                   :user-token (get-in app-state keypaths/user-token)
+                                   :stylist-id (get-in app-state keypaths/store-stylist-id)}))
