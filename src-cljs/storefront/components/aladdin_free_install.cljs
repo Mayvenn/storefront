@@ -59,7 +59,8 @@
                  [:div.col-11.mx-auto
                   (ui/teal-button (merge
                                    {:height-class "py2"}
-                                   (utils/fake-href events/control-aladdin-free-install-shop-looks))
+                                   (utils/route-to events/navigate-shop-by-look {:album-keyword :look
+                                                                                 :query-params {:sha "freeinstall"}}))
                                   [:span "Shop looks"])]]
 
                 (aladdin/why-mayvenn-is-right-for-you true)
@@ -69,7 +70,8 @@
                  [:div.col-5.flex.justify-end
                   [:div.col-9
                    (ui/teal-button
-                    (merge (utils/fake-href events/control-aladdin-free-install-shop-looks)
+                    (merge (utils/route-to events/navigate-shop-by-look {:album-keyword :look
+                                                                         :query-params {:sha "freeinstall"}})
                            {:data-test    "aladdin-free-install-shop"
                             :height-class "py1"})
                     [:span.h6 "Shop"])]]]
@@ -99,9 +101,6 @@
 (defn built-component
   [data opts]
   (component/build component data opts))
-
-(defmethod effects/perform-effects events/control-aladdin-free-install-shop-looks [_ event args _ app-state]
-  (history/enqueue-navigate events/navigate-shop-by-look {:album-keyword :look}))
 
 (defmethod effects/perform-effects events/control-aladdin-free-install [_ event args _ app-state]
   (scroll/enable-body-scrolling)

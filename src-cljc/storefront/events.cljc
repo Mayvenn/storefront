@@ -168,7 +168,6 @@
 (defpath control-free-install-dismiss)
 
 (defpath control-aladdin-free-install)
-(defpath control-aladdin-free-install-shop-looks)
 (defpath control-aladdin-free-install-dismiss)
 
 (defpath control-install-landing-page-look-back)
