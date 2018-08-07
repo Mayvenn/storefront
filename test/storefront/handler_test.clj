@@ -604,6 +604,17 @@
         (with-handler handler
           (let [resp (handler (mock/request :get "https://bob.mayvenn.com/products/99-red-balloons"))]
             (is (= 404 (:status resp))))))))
+  (testing "when whitelisted for discontinued"
+    (let [[storeback-requests storeback-handler] (with-requests-chan (routes
+                                                                      (GET "/store" req storeback-stylist-response)
+                                                                      (GET "/v2/products" req
+                                                                           {:status 200
+                                                                            :body   (generate-string {:products []
+                                                                                                      :skus []})})))]
+      (with-standalone-server [storeback (standalone-server storeback-handler)]
+        (with-handler handler
+          (let [resp (handler (mock/request :get "https://bob.mayvenn.com/products/104-dyed-100-human-hair-brazilian-loose-wave-bundle?SKU=BLWLR1JB1"))]
+            (is (= 301 (:status resp))))))))
   (testing "when the product exists"
     (let [[_ storeback-handler]
           (with-requests-chan (routes
