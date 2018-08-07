@@ -35,7 +35,8 @@
   (let [file-name "free-install-hero"
         mob-uuid  "5980306e-71f9-4dca-984c-d816f79c9f98"
         dsk-uuid  "2acd6074-c481-4bbd-8667-151b5706d609"]
-    [:div.bold.shadow.white.center.bg-light-gray
+    [:a.bold.shadow.white.center.bg-light-gray
+     (utils/scroll-href "get-a-free-install")
      (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
                   :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
                   :file-name   file-name

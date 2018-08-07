@@ -26,7 +26,7 @@
 
     [:div.col-12
      [:div.mt2.flex.flex-column.items-center
-      [:h2 "Get a FREE Install"]
+      [:h2 [:a {:name "get-a-free-install"} "Get a FREE Install"]]
       [:div.h6.dark-gray "In three easy steps"]]
 
      [:div.col-8-on-dt.mx-auto.flex.flex-wrap
