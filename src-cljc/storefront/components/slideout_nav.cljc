@@ -7,7 +7,6 @@
             [storefront.component :as component]
             [storefront.components.marquee :as marquee]
             [storefront.components.money-formatters :refer [as-money]]
-            [storefront.components.promotion-banner :as promotion-banner]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
@@ -16,9 +15,6 @@
             [storefront.platform.messages :as messages]))
 
 (def blog-url "https://blog.mayvenn.com")
-
-(defn ^:private promo-bar [promo-data]
-  (component/build promotion-banner/component promo-data nil))
 
 (defn burger-header [cart]
   (component/html
@@ -268,7 +264,6 @@
   (component/create
    [:div
     [:div.top-0.sticky.z4
-     (promo-bar promo-data)
      (burger-header cart)]
     (if on-taxon?
       (component/build menu/component menu-data nil)
@@ -287,7 +282,6 @@
 (defn query [data]
   (-> (basic-query data)
       (assoc-in [:user :store-credit] (get-in data keypaths/user-total-available-store-credit))
-      (assoc-in [:promo-data] (promotion-banner/query data))
       (assoc-in [:cart :quantity]  (orders/product-quantity (get-in data keypaths/order)))
       (assoc-in [:menu-data] (menu/query data))))
 
