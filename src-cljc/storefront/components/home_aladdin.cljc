@@ -36,7 +36,7 @@
         mob-uuid  "5980306e-71f9-4dca-984c-d816f79c9f98"
         dsk-uuid  "2acd6074-c481-4bbd-8667-151b5706d609"]
     [:a.bold.shadow.white.center.bg-light-gray
-     (utils/scroll-href "get-a-free-install")
+     (utils/scroll-href "mayvenn-free-install-video")
      (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
                   :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
                   :file-name   file-name
@@ -254,7 +254,9 @@
    [:div
     [:section (hero)]
     [:section free-shipping-banner]
-    [:div (when video
+    [:a {:name "mayvenn-free-install-video"}]
+    [:div
+     (when video
             (component/build video/component
                              video
                              ;; NOTE(jeff): we use an invalid video slug to preserve back behavior. There probably should be
