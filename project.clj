@@ -129,6 +129,7 @@
                 :optimizations :advanced}}}}
   :auto-clean false
   :profiles {:uberjar {:aot :all}
+             :test {:plugins [[lein-test-report-junit-xml "0.2.0"]]}
              :repl {:dependencies
                     [[cider/piggieback "0.3.6"]
                      [org.clojure/tools.nrepl "0.2.13"]]}
