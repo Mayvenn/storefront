@@ -77,9 +77,9 @@
             [:div.border-gray {:key   idx
                                :class (when-not (zero? idx) "border-top")} row])])))))
 
-(defmulti account-info (fn [signed-in _ _ _] (::auth/as signed-in)))
+(defmulti account-info (fn [signed-in _ _ _ _] (::auth/as signed-in)))
 
-(defmethod account-info :user [_ {:keys [email expanded?]} the-ville? _]
+(defmethod account-info :user [_ {:keys [email expanded?]} the-ville? _ _]
   (ui/drop-down
    expanded?
    keypaths/account-menu-expanded
@@ -96,7 +96,7 @@
     [:div.border-top.border-gray
      (drop-down-row (utils/fake-href events/control-sign-out) "Sign out")]]))
 
-(defmethod account-info :stylist [_ {:keys [email expanded?]} _ vouchers?]
+(defmethod account-info :stylist [_ {:keys [email expanded?]} _ vouchers? aladdin?]
   (ui/drop-down
    expanded?
    keypaths/account-menu-expanded
@@ -105,7 +105,9 @@
     " | My dashboard" [:span.ml1 (ui/expand-icon expanded?)]]
    [:div.bg-white.absolute.right-0.border.border-gray.dark-gray.top-lit
     [:div
-     (drop-down-row (utils/route-to events/navigate-stylist-dashboard-earnings) "My Dashboard")]
+     (if aladdin?
+       (drop-down-row (utils/route-to events/navigate-stylist-v2-dashboard-payments) "My Dashboard")
+       (drop-down-row (utils/route-to events/navigate-stylist-dashboard-earnings) "My Dashboard"))]
 
     (when vouchers?
       [:div.border-top.border-gray
@@ -120,7 +122,7 @@
     [:div.border-top.border-gray
      (drop-down-row (utils/fake-href events/control-sign-out) "Sign out")]]))
 
-(defmethod account-info :guest [_ _ _ _]
+(defmethod account-info :guest [_ _ _ _ _]
   [:div.h6
    [:a.inherit-color (utils/route-to events/navigate-sign-in) "Sign in"]
    " | "
@@ -194,7 +196,7 @@
         (for [items columns]
           (shopping-column items (count columns)))]])))
 
-(defn component [{:keys [store user cart shopping signed-in deals? the-ville? vouchers?]} _ _]
+(defn component [{:keys [store user cart shopping signed-in deals? the-ville? vouchers? aladdin?]} _ _]
   (component/create
    [:div
     [:div.hide-on-mb.relative
@@ -204,7 +206,7 @@
        [:div.left (store-info signed-in store)]
        [:div.right
         [:div.h6.my2.flex.items-center
-         (account-info signed-in user the-ville? vouchers?)
+         (account-info signed-in user the-ville? vouchers? aladdin?)
          [:div.pl2 (ui/shopping-bag {:style {:height (str ui/header-image-size "px") :width "28px"}
                                   :data-test "desktop-cart"}
                                  cart)]]]

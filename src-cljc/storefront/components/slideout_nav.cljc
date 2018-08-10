@@ -92,7 +92,7 @@
         [:div.h7.medium "Store credit:"]
         [:div.teal.h5.bold (as-money store-credit)]])]))
 
-(defn ^:private stylist-actions [vouchers?]
+(defn ^:private stylist-actions [vouchers? aladdin?]
   (component/html
    [:div
     (when vouchers?
@@ -109,9 +109,13 @@
                               :data-test "share-your-store")
                        "Share your store"))
      (marquee-row
-      (ui/underline-button (assoc (utils/route-to events/navigate-stylist-dashboard-earnings)
-                              :data-test "dashboard")
-                       "Dashboard")
+      (if aladdin?
+        (ui/underline-button (assoc (utils/route-to events/navigate-stylist-v2-dashboard-payments)
+                                    :data-test "aladdin-dashboard")
+                             "Dashboard")
+        (ui/underline-button (assoc (utils/route-to events/navigate-stylist-dashboard-earnings)
+                                    :data-test "dashboard")
+                             "Dashboard"))
       (ui/underline-button stylists/community-url
                        "Community"))]]))
 
@@ -139,9 +143,9 @@
              :data-test "sign-up")
       "Sign up now, get offers!"]])))
 
-(defn ^:private actions-marquee [signed-in the-ville? vouchers?]
+(defn ^:private actions-marquee [signed-in the-ville? vouchers? aladdin?]
   (case (-> signed-in ::auth/as)
-    :stylist (stylist-actions vouchers?)
+    :stylist (stylist-actions vouchers? aladdin?)
     :user    (user-actions the-ville?)
     :guest   guest-actions))
 
@@ -243,14 +247,14 @@
                      "Sign out")
     [:div])))
 
-(defn ^:private root-menu [{:keys [user signed-in store deals? the-ville? vouchers?] :as data} owner opts]
+(defn ^:private root-menu [{:keys [user signed-in store deals? the-ville? vouchers? aladdin?] :as data} owner opts]
   (component/create
    [:div
     [:div.px6.border-bottom.border-gray.bg-light-gray.pt3
      (store-info-marquee signed-in store)
      (account-info-marquee signed-in user)
      [:div.my3.dark-gray
-      (actions-marquee signed-in the-ville? vouchers?)]]
+      (actions-marquee signed-in the-ville? vouchers? aladdin?)]]
     [:div.px6
      (menu-area data)]
     (when (-> signed-in ::auth/at-all)
@@ -258,7 +262,7 @@
        sign-out-area])]))
 
 (defn component
-  [{:keys [promo-data cart on-taxon? menu-data] :as data}
+  [{:keys [promo-data cart on-taxon? aladdin? menu-data] :as data}
    owner
    opts]
   (component/create
@@ -277,6 +281,7 @@
    :deals?      (experiments/deals? data)
    :the-ville?  (experiments/the-ville? data)
    :vouchers?   (experiments/vouchers? data)
+   :aladdin?    (experiments/aladdin-dashboard? data)
    :shopping    {:categories (get-in data keypaths/categories)}})
 
 (defn query [data]
