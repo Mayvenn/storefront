@@ -138,27 +138,33 @@
                      :amount-color "teal"}}
            (get {"commission" {:title (str "Commission Earned" (when-let [name (orders/first-name-plus-last-name-initial order)]
                                                                  (str " - " name)))
+                               :data-test (str "commission-" id)
                                :date (:commission-date data)}
-                 "award"      {:title "Incentive Payment"}
+                 "award"      {:title "Incentive Payment"
+                               :data-test (str "award-" id)}
                  "voucher_award" {:title (str "Service Payment" (when-let [name (orders/first-name-plus-last-name-initial order)]
                                                                   (str " - " name)))
+                                  :data-test (str "voucher-award-" id)
                                   :subtitle (:campaign-name data)}
                  "payout" {:title "Money Transfer"
                            :icon "4939408b-1ec8-4a47-bb0e-5cdeb15d544d"
+                           :data-test (str "payout-" id)
                            :amount-description (:payout-method-name data)
                            :styles {:background "bg-too-light-teal"
                                     :title-color "teal"
                                     :amount-color "teal"}}
                  "sales_bonus" {:title "Sales Bonus"
+                                :data-test (str "sales-bonus-" id)
                                 :icon "56bfbe66-6db0-48c7-9069-f86c6393b15d"}}
                 type
                 {:title "Unknown Payment"}))))
 
-(defn payment-row [{:as item :keys [id icon title date subtitle amount amount-description styles]}]
+(defn payment-row [{:as item :keys [id icon title date subtitle amount amount-description styles data-test]}]
   [:a.block.border-bottom.border-light-gray.px3.py2.flex.items-center
-   {:key id
-    :href "#"
-    :class (:background styles)}
+   {:key       id
+    :href      "#"
+    :data-test data-test
+    :class     (:background styles)}
    (ui/ucare-img {:width 20} icon)
    [:div.flex-auto.mx3
     [:h5.medium {:class (:title-color styles)} title]
