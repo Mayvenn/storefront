@@ -13,7 +13,7 @@
    "Leave Out"    :install-sew-in-leave-out})
 
 (defn display-voucher-amount
-  ([service-menu  voucher]
+  ([service-menu voucher]
    (display-voucher-amount service-menu mf/as-money-without-cents voucher))
   ([service-menu money-formatter {:as voucher :keys [discount]}]
    (case (-> discount :type)
@@ -22,7 +22,7 @@
      (str (-> discount :percent_off) "%")
 
      "UNIT"
-     (some-> discount :unit_type parse-type unit-type->menu-kw service-menu money-formatter)
+     (some-> discount :unit_type parse-type unit-type->menu-kw (get service-menu) money-formatter)
 
      "AMOUNT"
      (-> discount :amount_off (/ 100) money-formatter)
