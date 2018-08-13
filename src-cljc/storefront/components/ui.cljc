@@ -52,13 +52,13 @@
    (into [:div.absolute.overlay] content)])
 
 (defn button
-  [{:keys [disabled? spinning?]
+  [{:keys [disabled? disabled-class spinning?]
     :as opts}
    & content]
   (let [attrs    (cond-> opts
                   :always                  (dissoc :spinning? :disabled?)
                   (or disabled? spinning?) (assoc :on-click utils/noop-callback)
-                  disabled?                (update :class str " is-disabled "))
+                  disabled?                (update :class str (or disabled-class " is-disabled ")))
         content (if spinning? spinner content)]
     [:a (merge {:href "#"} attrs)
      content]))
