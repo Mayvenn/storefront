@@ -54,21 +54,22 @@
                          :height ".75em"
                          :width  ".75em"})]
 
-   [:div.flex.items-center
+   [:div.flex.items-center.justify-between
     [:div.col-5
      [:div.h1.black.bold.flex (mf/as-money-without-cents cash-balance)]]
-    [:div.col-7
+    [:div.col-5
      (if (payouts/cash-out-eligible? payout-method)
        (ui/teal-button
-        {:height-class "py2"
-         :on-click  (utils/send-event-callback events/control-stylist-dashboard-cash-out-submit
-                                               {:disabled? (not (payouts/cash-out-eligible? payout-method))
-                                                :spinning? cashing-out?})}
+        {:height-class   "py2"
+         :data-test      "cash-out-now-submit"
+         :on-click       (utils/send-event-callback events/control-stylist-dashboard-cash-out-submit)
+         :disabled?      (not (pos? cash-balance))
+         :disabled-class "bg-gray"
+         :spinning?      cashing-out?}
         [:div.flex.items-center.justify-center.regular.h5
          (ui/ucare-img {:width "28" :class "mr2 flex items-center"} "3d651ddf-b37d-441b-a162-b83728f2a2eb")
          "Cash Out"])
        [:div.h7.right
-        {:data-test "cash-out-now"}
         "Cash out now with " [:a.teal (utils/fake-href events/navigate-stylist-account-commission) "Mayvenn InstaPay"]])]]
    [:div.flex.mt2
     [:div.col-7
@@ -219,6 +220,7 @@
      [:a.h6.col-6.p2.black
       (merge (utils/fake-href navigate)
              {:key (name id)
+              :data-test (str "nav-" (name id))
               :class (if (= id active-tab-name)
                        "bg-gray bold"
                        "bg-light-gray")})
