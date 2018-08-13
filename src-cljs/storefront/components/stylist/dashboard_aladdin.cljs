@@ -1,26 +1,28 @@
 (ns storefront.components.stylist.dashboard-aladdin
   (:require [storefront.component :as component]
-            [storefront.components.stylist.bonus-credit :as bonuses]
-            [storefront.components.stylist.earnings :as earnings]
-            [storefront.api :as api]
-            [storefront.platform.messages :as messages]
-            [storefront.platform.numbers :as numbers]
+            [spice.core :as spice]
+            [storefront.accessors.orders :as orders]
             [storefront.accessors.payouts :as payouts]
-            [storefront.components.stylist.referrals :as referrals]
-            [storefront.components.stylist.stats :as stats]
+            [storefront.accessors.service-menu :as service-menu]
+            [storefront.api :as api]
             [storefront.components.formatters :as f]
             [storefront.components.money-formatters :as mf]
-            [storefront.platform.component-utils :as utils]
-            [storefront.components.tabs :as tabs]
-            [storefront.events :as events]
-            [storefront.effects :as effects]
-            [storefront.keypaths :as keypaths]
-            [storefront.transitions :as transitions]
-            [storefront.components.ui :as ui]
+            [storefront.components.stylist.bonus-credit :as bonuses]
+            [storefront.components.stylist.earnings :as earnings]
+            [storefront.components.stylist.referrals :as referrals]
+            [storefront.components.stylist.stats :as stats]
             [storefront.components.svg :as svg]
-            [storefront.accessors.orders :as orders]
+            [storefront.components.tabs :as tabs]
+            [storefront.components.ui :as ui]
+            [storefront.effects :as effects]
+            [storefront.events :as events]
+            [storefront.keypaths :as keypaths]
+            [storefront.platform.component-utils :as utils]
+            [storefront.platform.messages :as messages]
+            [storefront.platform.numbers :as numbers]
             [storefront.request-keys :as request-keys]
-            [spice.core :as spice]
+            [storefront.transitions :as transitions]
+            [voucher.keypaths :as voucher-keypaths]
             spice.maps))
 
 (defn earnings-count [title value]
@@ -138,15 +140,9 @@
                                                                  (str " - " name)))
                                :date (:commission-date data)}
                  "award"      {:title "Incentive Payment"}
-                 "voucher_award" (merge {:title (str "Service Payment" (when-let [name (orders/first-name-plus-last-name-initial order)]
-                                                                         (str " - " name)))
-                                         :subtitle "Full Install"}
-                                        ;; TODO: we need to read a field from balance-transfer that doesn't currently exist
-                                        (when false
-                                          {:amount-description "Pending"
-                                           :styles {:background ""
-                                                    :title-color "black"
-                                                    :amount-color "orange"}}))
+                 "voucher_award" {:title (str "Service Payment" (when-let [name (orders/first-name-plus-last-name-initial order)]
+                                                                  (str " - " name)))
+                                  :subtitle (:campaign-name data)}
                  "payout" {:title "Money Transfer"
                            :icon "4939408b-1ec8-4a47-bb0e-5cdeb15d544d"
                            :amount-description (:payout-method-name data)
@@ -158,6 +154,36 @@
                 type
                 {:title "Unknown Payment"}))))
 
+(defn payment-row [{:as item :keys [id icon title date subtitle amount amount-description styles]}]
+  [:a.block.border-bottom.border-light-gray.px3.py2.flex.items-center
+   {:key id
+    :href "#"
+    :class (:background styles)}
+   (ui/ucare-img {:width 20} icon)
+   [:div.flex-auto.mx3
+    [:h5.medium {:class (:title-color styles)} title]
+    [:div.flex.h7.dark-gray
+     [:div.mr4 (f/long-date date)]
+     subtitle]]
+   [:div.right-align
+    [:div.bold {:class (:amount-color styles)} amount]
+    [:div.h7.dark-gray (or amount-description
+                           ui/nbsp)]]])
+
+(defn pending-voucher-row [{:as pending-voucher :keys [discount date]} service-menu]
+  (let [item {:id                 (str "pending-voucher-" 1)
+              :icon               "68e6bcb0-a236-46fe-a8e7-f846fff0f464"
+              :title              "Service Payment"
+              :date               date
+              ;; TODO: Future Us: Strictly aladdin services (not $100-off)
+              :subtitle           (service-menu/discount->campaign-name discount)
+              :amount             (service-menu/display-voucher-amount service-menu mf/as-money pending-voucher)
+              :amount-description nil
+              :styles             {:background  ""
+                                   :title-color "black"
+                                   :amount-color "orange"}}]
+    (payment-row item)))
+
 (defn group-payments-by-month [payments]
   (let [year-month           (fn [{:keys [date]}]
                                (let [[year month _] (f/date-tuple date)]
@@ -168,30 +194,18 @@
       {:title (str (get f/month-names month) " " year)
        :items (year-month->payments ym)})))
 
-(defn payments-table [balance-transfers]
+(defn payments-table [pending-voucher service-menu balance-transfers]
   (let [payments (map balance-transfer->payment balance-transfers)
         sections (group-payments-by-month payments)]
     [:div.col-12.mb3
+     (when pending-voucher
+       (pending-voucher-row pending-voucher service-menu))
      (for [{:keys [title items] :as section} sections]
        [:div {:key title}
         [:div.h7.bg-gray.px2.py1.medium title]
-        ;; TODO: pending service payments should have amount text be yellow
         ;; ASK: Sales Bonus row
-        (for [{:keys [id icon title date subtitle amount amount-description styles]} items]
-          [:a.block.border-bottom.border-light-gray.px3.py2.flex.items-center
-           {:key id
-            :href "#"
-            :class (:background styles)}
-           (ui/ucare-img {:width 20} icon)
-           [:div.flex-auto.mx3
-            [:h5.medium {:class (:title-color styles)} title]
-            [:div.flex.h7.dark-gray
-             [:div.mr4 (f/long-date date)]
-             subtitle]]
-           [:div.right-align
-            [:div.bold {:class (:amount-color styles)} amount]
-            [:div.h7.dark-gray (or amount-description
-                                   ui/nbsp)]]])])]))
+        (for [item items]
+          (payment-row item))])]))
 
 (defn ^:private ledger-tabs [active-tab-name]
   [:div.flex.flex-wrap
@@ -205,34 +219,36 @@
       title])])
 
 (defn component
-  [{:keys [stats total-available-store-credit activity-ledger-tab balance-transfers payout-method cashing-out?]} owner opts]
+  [{:keys [fetching? stats total-available-store-credit activity-ledger-tab balance-transfers payout-method cashing-out? pending-voucher service-menu]} owner opts]
   (let [{:keys [bonuses earnings services]} stats
         {:keys [lifetime-earned]}           bonuses
 
         {:keys [active-tab-name empty-title empty-copy]} activity-ledger-tab]
     (component/create
-     [:div
-      [:div.p2
-       (cash-balance-card payout-method cashing-out? earnings services)
-       [:div.mt2 (store-credit-balance-card total-available-store-credit lifetime-earned)]
-       (sales-bonus-progress bonuses)]
+     (if fetching?
+       [:div.my2.h2 ui/spinner]
+       [:div
+        [:div.p2
+         (cash-balance-card payout-method cashing-out? earnings services)
+         [:div.mt2 (store-credit-balance-card total-available-store-credit lifetime-earned)]
+         (sales-bonus-progress bonuses)]
 
-      (ledger-tabs active-tab-name)
+        (ledger-tabs active-tab-name)
 
-      (if (seq balance-transfers)
-        (payments-table balance-transfers)
-        [:div.my6.center
-         [:h4.gray.bold.p1 empty-title]
-         [:h6.dark-gray.col-5.mx-auto.line-height-2 empty-copy]])])))
-
-(def orders-sample
-  {:W960794762 {:full-name "Ordere F. Nemme"}})
+        (if (or (seq balance-transfers)
+                pending-voucher)
+          (payments-table pending-voucher service-menu balance-transfers)
+          [:div.my6.center
+           [:h4.gray.bold.p1 empty-title]
+           [:h6.dark-gray.col-5.mx-auto.line-height-2 empty-copy]])]))))
 
 (defn query
   [data]
   (let [get-balance-transfer  second
         id->balance-transfers (get-in data keypaths/stylist-earnings-balance-transfers)]
-    {:stats                        (get-in data keypaths/stylist-v2-dashboard-stats)
+    {:fetching?                    (or (utils/requesting? data request-keys/get-stylist-balance-transfers)
+                                       (utils/requesting? data request-keys/fetch-stylist-service-menu))
+     :stats                        (get-in data keypaths/stylist-v2-dashboard-stats)
      :cashing-out?                 (utils/requesting? data request-keys/cash-out-now)
      :payout-method                (get-in data keypaths/stylist-manage-account-chosen-payout-method)
      :activity-ledger-tab          ({events/navigate-stylist-v2-dashboard-payments {:active-tab-name :payments
@@ -250,7 +266,8 @@
                                                     (when-let [status (-> transfer :data :status)]
                                                       (not= "paid" status)))))
                                          id->balance-transfers)
-     :orders                       orders-sample}))
+     :service-menu                 (get-in data keypaths/stylist-service-menu)
+     :pending-voucher              (get-in data voucher-keypaths/voucher-response)}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
@@ -263,6 +280,10 @@
         user-id    (get-in app-state keypaths/user-id)
         user-token (get-in app-state keypaths/user-token)]
     (when (and user-id user-token)
+      (api/fetch-stylist-service-menu (get-in app-state keypaths/api-cache)
+                                      {:user-id    user-id
+                                       :user-token user-token
+                                       :stylist-id stylist-id})
       (api/get-stylist-account user-id user-token)
       (api/get-stylist-dashboard-stats events/api-success-stylist-v2-dashboard-stats
                                        stylist-id

@@ -12,6 +12,15 @@
    "with Frontal" :install-sew-in-frontal
    "Leave Out"    :install-sew-in-leave-out})
 
+(def unit-type->campaign-name
+  {"with Closure" "Free Install - Closure"
+   "with 360"     "Free Install - 360"
+   "with Frontal" "Free Install - Frontal"
+   "Leave Out"    "Free Install - Leave Out"})
+
+(defn discount->campaign-name [discount]
+  (some->> discount :unit_type parse-type unit-type->campaign-name))
+
 (defn display-voucher-amount
   ([service-menu voucher]
    (display-voucher-amount service-menu mf/as-money-without-cents voucher))
