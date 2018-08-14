@@ -311,9 +311,21 @@
   (-> app-state
       (assoc-in keypaths/stylist-v2-dashboard-stats stats)))
 
+(defn most-recent-voucher-award [balance-transfers]
+  (->> balance-transfers
+       (filter #(= (:type %) "voucher_award"))
+       (sort-by :transfered-at)
+       last))
+
+;; TODO: Verify this works
 (defmethod transitions/transition-state events/api-success-stylist-v2-dashboard-balance-transfers
   [_ event {:as stats :keys [balance-transfers pagination]} app-state]
-  (let [page (:page pagination)]
-    (-> app-state
+  (let [page                           (:page pagination)
+        most-recent-voucher-award-date (most-recent-voucher-award balance-transfers)
+        voucher-response-date          (-> (get-in app-state voucher-keypaths/voucher-response)
+                                           :date
+                                           date/to-millis)
+        voucher-pending?               (> (or voucher-response-date 0) (or most-recent-voucher-award-date 0))]
+    (-> (if voucher-pending? app-state (update-in app-state voucher-keypaths/voucher dissoc :response))
         (update-in keypaths/stylist-earnings-balance-transfers merge (spice.maps/map-keys (comp spice/parse-int name) balance-transfers))
         (assoc-in keypaths/stylist-earnings-pagination pagination))))
