@@ -620,7 +620,7 @@
               :status-id  status-id
               :stylist-id stylist-id}
     :handler #(messages/handle-message events/api-success-cash-out-status
-                                       (select-keys % [:status :balance-transfer-id :amount :payout-method]))}))
+                                       (select-keys % [:status :status-id :balance-transfer-id :amount :payout-method]))}))
 
 (defn get-stylist-bonus-credits [user-id user-token {:keys [page]}]
   (storeback-api-req
