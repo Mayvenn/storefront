@@ -78,7 +78,8 @@
        video-link
        [:div.h4.bold "#MayvennFreeInstall"]
        [:div.h4.my2 "See why customers love their FREE Install"]
-       [:div.h5.teal.flex.items-center "WATCH NOW"]]]
+       [:div.h5.teal.flex.items-center.medium.shout
+        "Watch Now"]]]
 
      [:div.hide-on-dt.flex.justify-center.py3
       [:a.block.relative
@@ -94,8 +95,8 @@
         [:span {:style {:white-space "nowrap"}} "See why customers love their"]
         " "
         [:span {:style {:white-space "nowrap"}} "FREE Install"]]
-       [:h6.teal.flex.items-center
-        "WATCH NOW"]]]]))
+       [:h6.teal.flex.items-center.medium.shout
+        "Watch Now"]]]]))
 
 (defn carousel-slide [{:as pixlee-image :keys [look-attributes links]}]
   [:div
@@ -206,7 +207,7 @@
        [:a.col-6.px2
         we-are-mayvenn-link
         [:h4.my1.dark-gray.medium "Our Story"]
-        [:div.h6.teal.flex.items-center
+        [:div.h6.teal.flex.items-center.medium.shout
          "Watch Now"]]
        [:div.col-6.p1 mikka-image]
        [:div.col-6.p1 stylist-image]
