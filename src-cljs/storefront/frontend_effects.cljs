@@ -38,6 +38,7 @@
             [storefront.hooks.uploadcare :as uploadcare]
             [storefront.hooks.wistia :as wistia]
             [storefront.hooks.affirm :as affirm]
+            [storefront.hooks.lucky-orange :as lucky-orange]
             [storefront.keypaths :as keypaths]
             [storefront.platform.messages :refer [handle-later handle-message]]
             [storefront.routes :as routes]
@@ -93,6 +94,7 @@
   (places-autocomplete/insert)
   (refresh-account app-state)
   (browser-events/attach-global-listeners)
+  (lucky-orange/track-store-experience (get-in app-state keypaths/store-experience))
   (doseq [feature (get-in app-state keypaths/features)]
     ;; trigger GA analytics, even though feature is already enabled
     (handle-message events/enable-feature {:feature feature})))
@@ -104,6 +106,7 @@
   (google-analytics/remove-tracking)
   (facebook-analytics/remove-tracking)
   (pinterest/remove-tracking)
+  (lucky-orange/remove-tracking)
   (pixlee/remove-tracking))
 
 (defmethod perform-effects events/determine-and-show-popup
