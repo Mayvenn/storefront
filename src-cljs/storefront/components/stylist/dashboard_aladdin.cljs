@@ -185,7 +185,7 @@
               ;; TODO: Future Us: Strictly aladdin services (not $100-off)
               :subtitle           (service-menu/discount->campaign-name discount)
               :amount             (service-menu/display-voucher-amount service-menu mf/as-money pending-voucher)
-              :amount-description nil
+              :amount-description "Pending"
               :styles             {:background  ""
                                    :title-color "black"
                                    :amount-color "orange"}}]
