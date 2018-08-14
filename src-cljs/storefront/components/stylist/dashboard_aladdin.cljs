@@ -23,7 +23,8 @@
             [storefront.request-keys :as request-keys]
             [storefront.transitions :as transitions]
             [voucher.keypaths :as voucher-keypaths]
-            spice.maps))
+            [spice.maps :as maps]
+            [spice.date :as date]))
 
 (defn earnings-count [title value]
   [:div.dark-gray.letter-spacing-0
@@ -327,5 +328,5 @@
                                            date/to-millis)
         voucher-pending?               (> (or voucher-response-date 0) (or most-recent-voucher-award-date 0))]
     (-> (if voucher-pending? app-state (update-in app-state voucher-keypaths/voucher dissoc :response))
-        (update-in keypaths/stylist-earnings-balance-transfers merge (spice.maps/map-keys (comp spice/parse-int name) balance-transfers))
+        (update-in keypaths/stylist-earnings-balance-transfers merge (maps/map-keys (comp spice/parse-int name) balance-transfers))
         (assoc-in keypaths/stylist-earnings-pagination pagination))))
