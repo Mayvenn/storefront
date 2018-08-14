@@ -18,7 +18,7 @@
      :card-number      (green-dot :card-number)
      :expiration-date  (green-dot :expiration-date)
      :card-selected-id (get-in data keypaths/stylist-manage-account-green-dot-card-selected-id)
-     :card-last4       (green-dot :last4)
+     :card-last4       (green-dot :last-4)
      :payout-timeframe (green-dot :payout-timeframe)}))
 
 (defn green-dot-component
