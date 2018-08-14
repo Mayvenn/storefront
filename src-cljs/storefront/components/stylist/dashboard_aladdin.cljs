@@ -211,7 +211,7 @@
        [:div {:key title}
         [:div.h7.bg-gray.px2.py1.medium title]
         ;; ASK: Sales Bonus row
-        (for [item items]
+        (for [item (reverse (sort-by :date items))]
           (payment-row item))])]))
 
 (defn ^:private ledger-tabs [active-tab-name]
