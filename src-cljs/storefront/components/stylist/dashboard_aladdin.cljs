@@ -61,7 +61,7 @@
      (if (payouts/cash-out-eligible? payout-method)
        (ui/teal-button
         {:height-class   "py2"
-         :data-test      "cash-out-button"
+         :data-test      "cash-out-now-button"
          :on-click       (utils/send-event-callback events/control-stylist-dashboard-cash-out-now-submit)
          :disabled?      (not (pos? cash-balance))
          :disabled-class "bg-gray"
