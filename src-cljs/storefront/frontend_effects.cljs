@@ -142,11 +142,7 @@
                                      (and the-ville-variation? seen-fayetteville-offer?)
                                      (and seventy-five-off-install-variation?
                                           seen-seventy-five-off-install-offer?)
-                                     aladdin-experience?
-                                     ;; This is the original logic
-                                     ;; Uncomment this when removing the fayetteville experiment
-                                     ;;is-on-homepage?
-                                     ))]
+                                     aladdin-experience?))]
     (cond
       is-on-free-install-landing-page? nil
 

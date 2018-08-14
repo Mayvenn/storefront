@@ -59,17 +59,6 @@
 (defn deals? [data]
   (display-feature? data "deals"))
 
-(defn email-capture-test-variation [data]
-  (let [email-capture-variations ["email-capture-40-dollars"
-                                  "email-capture-25-percent"
-                                  "email-capture-35-percent"
-                                  "email-capture-bundle-deal"
-                                  "email-capture-control"]]
-    (some (fn [variation]
-            (when (display-feature? data variation)
-              variation))
-          email-capture-variations)))
-
 (defn aladdin-experience? [data]
   (= (get-in data keypaths/store-experience)
      "aladdin"))

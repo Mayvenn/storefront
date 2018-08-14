@@ -338,7 +338,10 @@
   (when (empty? (get-in app-state keypaths/errors))
     (let [captured-email (get-in app-state keypaths/captured-email)]
       (stringer/identify {:email captured-email})
-      (stringer/track-event "email_capture-capture" {:email captured-email :test-variations (get-in app-state keypaths/features)}))))
+      (stringer/track-event "email_capture-capture"
+                            {:email            captured-email
+                             :test-variations  (get-in app-state keypaths/features)
+                             :store-experience (get-in app-state keypaths/store-experience)}))))
 
 (defmethod perform-track events/popup-show-email-capture [_ events args app-state]
   (stringer/track-event "email_capture-deploy" {}))

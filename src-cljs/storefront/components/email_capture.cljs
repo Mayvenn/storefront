@@ -7,31 +7,12 @@
             [storefront.platform.component-utils :as utils]
             [storefront.accessors.experiments :as experiments]))
 
-(def email-capture-copy
-  {"email-capture-bundle-deal"
-   {:header "Exclusive Bundle Deal"
-    :body "Sign up now and we'll email you an exclusive bundle deal plus free
-    shipping."}
-
-   "email-capture-40-dollars"
-   {:header "Get $40 Off!"
-    :body "Sign up now and we'll email you a promotion code for $40 off your
-    first order plus free shipping."}
-
-   "email-capture-35-percent"
-   {:header "Get 35% Off!"
-    :body "Sign up now and we'll email you a promotion code for 35% off your
-    first order of 3 bundles or more."}
-
-   "email-capture-25-percent"
-   {:header "Get 25% Off!"
-    :body "Sign up now and we'll email you a promotion code for 25% off your
-    first order plus free shipping."}})
-
-(defn component [{:keys [email field-errors focused variation-contents test-variation]} owner _]
+(defn component [{:keys [email field-errors focused the-ville? store-experience]} owner _]
   (component/create
    (html
-    (let [close-attrs (utils/fake-href events/control-email-captured-dismiss)]
+    (let [close-attrs (utils/fake-href events/control-email-captured-dismiss)
+          discount-email-capture? (and (= "mayvenn-classic" store-experience)
+                                       (not the-ville?))]
       (ui/modal {:close-attrs close-attrs
                  :col-class   "col-11 col-5-on-tb col-4-on-dt flex justify-center"
                  :bg-class    "bg-darken-4"}
@@ -42,20 +23,19 @@
                  [:div {:style {:height "110px"}}]
                  [:div.px4.pt1.py3.m4.bg-lighten-4
                   [:form.col-12.flex.flex-column.items-center
-                   {:on-submit (utils/send-event-callback events/control-email-captured-submit {:test-variation test-variation})}
-                   (if (and (not (nil? test-variation)) ;; Remove nil case once convert starts bucketing
-                            (not= "email-capture-control" test-variation))
-                     (let [{:keys [header body]} variation-contents]
-                       [:div.center.line-height-3
-                        [:h1.bold.teal.mb2 {:style {:font-size "36px"}} header]
-                        [:p.h5.m2
-                         body]])
+                   {:on-submit (utils/send-event-callback events/control-email-captured-submit)}
+                   (if discount-email-capture?
+                     [:div.center.line-height-3
+                      [:h1.bold.teal.mb2 {:style {:font-size "36px"}} "Get 35% Off!"]
+                      [:p.h5.m2
+                       (str "Sign up now and we'll email you a promotion code for "
+                            "35% off your first order of 3 bundles or more.")]]
                      [:span
                       [:div [:h1.bold.teal.mb0.center {:style {:font-size "36px"}} "You're Flawless"]
                        [:p.h5.mb1.center "Make sure your hair is too"]]
                       [:p.h5.my2.line-height-2.center
-                       "Sign up now for exclusive discounts, stylist-approved hair
-                     tips, and first access to new products."]])
+                       "Sign up now for exclusive discounts, stylist-approved hair "
+                       "tips, and first access to new products."]])
                    [:div.col-12.mx-auto
                     (ui/text-field {:errors   (get field-errors ["email"])
                                     :keypath  keypaths/captured-email
@@ -69,12 +49,11 @@
                     (ui/submit-button "Sign Up Now")]]]])))))
 
 (defn query [data]
-  (let [test-variation (experiments/email-capture-test-variation data)]
-    {:email              (get-in data keypaths/captured-email)
-     :field-errors       (get-in data keypaths/field-errors)
-     :focused            (get-in data keypaths/ui-focus)
-     :test-variation     test-variation
-     :variation-contents (email-capture-copy test-variation)}))
+  {:email            (get-in data keypaths/captured-email)
+   :field-errors     (get-in data keypaths/field-errors)
+   :focused          (get-in data keypaths/ui-focus)
+   :the-ville?       (experiments/the-ville? data)
+   :store-experience (get-in data keypaths/store-experience)})
 
 (defn built-component [data opts]
   (component/build component data opts))
