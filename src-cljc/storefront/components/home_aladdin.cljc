@@ -33,8 +33,8 @@
 
 (defn hero []
   (let [file-name "free-install-hero"
-        mob-uuid  "5980306e-71f9-4dca-984c-d816f79c9f98"
-        dsk-uuid  "2acd6074-c481-4bbd-8667-151b5706d609"]
+        mob-uuid  "b484a3f6-4cc9-4e86-b743-5831dcd10d8b"
+        dsk-uuid  "90d71997-dadb-47ef-9dae-d64b3607d22c"]
     [:a.bold.shadow.white.center.bg-light-gray
      (utils/scroll-href "mayvenn-free-install-video")
      (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
@@ -71,7 +71,7 @@
       [:a.block.relative
        video-link
        (ui/ucare-img {:alt "" :width "212"}
-                     "b016b985-affb-4c97-af0a-a1f1334c0c51")
+                     "c487eeef-0f84-4378-a9be-13dc7c311e23")
        [:div.absolute.top-0.bottom-0.left-0.right-0.flex.items-center.justify-center.bg-darken-3
         teal-play-video-desktop]]
       [:a.block.ml4.dark-gray
@@ -84,7 +84,7 @@
       [:a.block.relative
        video-link
        (ui/ucare-img {:alt "" :width "152"}
-                     "b016b985-affb-4c97-af0a-a1f1334c0c51")
+                     "1b58b859-842a-44b1-885c-eac965eeaa0f")
        [:div.absolute.top-0.bottom-0.left-0.right-0.flex.items-center.justify-center.bg-darken-3
         teal-play-video-mobile]]
       [:a.block.ml2.dark-gray
