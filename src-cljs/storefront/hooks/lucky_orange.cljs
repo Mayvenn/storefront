@@ -3,7 +3,6 @@
             [storefront.config :as config]))
 
 (defn track-store-experience [store-experience]
-  (prn store-experience)
   (tags/insert-tag-with-text
    (str
     " window._loq = window._loq || [];"
