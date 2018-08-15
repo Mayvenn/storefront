@@ -9,6 +9,7 @@
             [storefront.components.money-formatters :as mf]
             [storefront.components.stylist.pagination :as pagination]
             [storefront.components.svg :as svg]
+            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.service-menu :as service-menu]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
@@ -209,7 +210,9 @@
                                                                                    :pagination]))))))
 
 (defmethod effects/perform-effects events/navigate-stylist-dashboard-earnings [_ event args _ app-state]
-  (messages/handle-message events/stylist-balance-transfers-fetch))
+  (if (experiments/aladdin-dashboard? app-state)
+    (effects/redirect events/navigate-stylist-v2-dashboard-orders)
+    (messages/handle-message events/stylist-balance-transfers-fetch)))
 
 (defmethod transitions/transition-state events/navigate-stylist-dashboard-earnings
   [_ event {:keys [stylist balance-transfers orders pagination]} app-state]

@@ -1,6 +1,7 @@
 (ns storefront.components.stylist.balance-transfer-details
   (:require [spice.date :as date]
             [storefront.accessors.orders :as orders]
+            [storefront.accessors.experiments :as experiments]
             [storefront.component :as component]
             [storefront.components.formatters :as f]
             [storefront.components.money-formatters :as mf]
@@ -52,17 +53,20 @@
                                                balance-transfer-id))
         type                (:type balance-transfer)]
     (merge
-     {:balance-transfer balance-transfer
-      :fetching?        (utils/requesting? data request-keys/get-stylist-balance-transfer)}
+     {:balance-transfer   balance-transfer
+      :fetching?          (utils/requesting? data request-keys/get-stylist-balance-transfer)
+      :aladdin-dashboard? (experiments/aladdin-dashboard? data)}
      (when (= type "commission")
-       {:skus      (all-skus-in-balance-transfer (get-in data keypaths/v2-skus)
-                                                 balance-transfer)}))))
+       {:skus (all-skus-in-balance-transfer (get-in data keypaths/v2-skus)
+                                            balance-transfer)}))))
 
-(def ^:private back-to-earnings
+(defn ^:private back-to-earnings [aladdin-dashboard?]
   [:a.left.col-12.dark-gray.flex.items-center.py3
    (merge
     {:data-test "back-link"}
-    (utils/route-to events/navigate-stylist-dashboard-earnings))
+    (if aladdin-dashboard?
+      (utils/route-to events/navigate-stylist-v2-dashboard-payments)
+      (utils/route-to events/navigate-stylist-dashboard-earnings)))
    (ui/back-caret "back to earnings")])
 
 (defn ^:private info-columns [[left-header left-content] [right-header right-content]]
@@ -74,7 +78,7 @@
     [:span.h5.dark-gray right-header]
     [:div.h5 right-content]]])
 
-(defn ^:private commission-component [{:keys [balance-transfer fetching? skus]}]
+(defn ^:private commission-component [{:keys [balance-transfer fetching? skus aladdin-dashboard?]}]
   (let [{:keys [id number amount data]} balance-transfer
         {:keys [order
                 commission-date
@@ -86,7 +90,7 @@
       [:div.my2.h2 ui/spinner]
 
       [:div.container.mb4.px3
-       back-to-earnings
+       (back-to-earnings aladdin-dashboard?)
        [:h3.my4 "Details - Commission Earned"]
        [:div.flex.justify-between.col-12
         [:div (f/less-year-more-day-date commission-date)]
@@ -143,7 +147,7 @@
       "Check"            (check-payout-details payout-method)
       "Venmo"            (venmo-payout-details payout-method))))
 
-(defn ^:private payout-component [{:keys [balance-transfer]}]
+(defn ^:private payout-component [{:keys [balance-transfer aladdin-dashboard?]}]
   (let [{:keys [id
                 number
                 amount
@@ -153,18 +157,18 @@
                 payout-method-name
                 by-self]} data]
     [:div.container.mb4.px3
-     back-to-earnings
+     (back-to-earnings aladdin-dashboard?)
      [:h3.my4 "Details - Earnings Transfer - " (or payout-method-name (:payout_method_name data))]
      [:div.flex.justify-between.col-12
       [:div (f/less-year-more-day-date (or created-at (:created_at data)))]
       [:div.pr4 (if by-self "You" "Mayvenn") " transferred " (mf/as-money amount)]]
      (payout-method-details (or payout-method (:payout_method data)))]))
 
-(defn ^:private award-component [{:keys [balance-transfer]}]
+(defn ^:private award-component [{:keys [balance-transfer aladdin-dashboard?]}]
   (let [{:keys [id transfered-at amount data]} balance-transfer
         {:keys [reason]}                       data]
     [:div.container.mb4.px3
-     back-to-earnings
+     (back-to-earnings aladdin-dashboard?)
      [:h3.my4 "Details - Award Received"]
      [:div.flex.justify-between.col-12
       [:div (f/less-year-more-day-date (or transfered-at (:transfered_at data)))]
@@ -175,11 +179,11 @@
      [:div.h5.center.navy.py3.border-top.border-gray
       (str (mf/as-money amount) " has been added to your next payment.")]]))
 
-(defn ^:private voucher-award-component [{:keys [balance-transfer]}]
+(defn ^:private voucher-award-component [{:keys [balance-transfer aladdin-dashboard?]}]
   (let [{:keys [id transfered-at amount data]} balance-transfer
         {:keys [reason]}                       data]
     [:div.container.mb4.px3
-     back-to-earnings
+     (back-to-earnings aladdin-dashboard?)
      [:h3.my4 "Details - Voucher Award Received"]
      [:div.flex.justify-between.col-12
       [:div (f/less-year-more-day-date (or transfered-at (:transfered_at data)))]

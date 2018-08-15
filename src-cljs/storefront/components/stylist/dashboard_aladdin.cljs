@@ -96,6 +96,7 @@
     [:div.col-7
      [:div.h1.black.bold.flex (mf/as-money-without-cents total-available-store-credit)]]
     [:div.col-5
+     ;; TODO(JH + LE) This should really go somewhere.
      (ui/teal-button
       {:height-class "py2"
        :disabled? (zero? total-available-store-credit)}

@@ -423,8 +423,10 @@
                                   (get-in app-state keypaths/user-token))))
 
 (defmethod perform-effects events/navigate-stylist-dashboard-bonus-credit [_ event args _ app-state]
-  (when (zero? (get-in app-state keypaths/stylist-bonuses-page 0))
-    (handle-message events/control-stylist-bonuses-fetch)))
+  (if (experiments/aladdin-dashboard? app-state)
+    (effects/redirect events/navigate-stylist-v2-dashboard-orders)
+    (when (zero? (get-in app-state keypaths/stylist-bonuses-page 0))
+      (handle-message events/control-stylist-bonuses-fetch))))
 
 (defmethod perform-effects events/control-stylist-bonuses-fetch [_ event args _ app-state]
   (let [user-id    (get-in app-state keypaths/user-id)
@@ -436,8 +438,10 @@
                                      {:page page}))))
 
 (defmethod perform-effects events/navigate-stylist-dashboard-referrals [_ event args _ app-state]
-  (when (zero? (get-in app-state keypaths/stylist-referral-program-page 0))
-    (handle-message events/control-stylist-referrals-fetch)))
+  (if (experiments/aladdin-dashboard? app-state)
+    (effects/redirect events/navigate-stylist-v2-dashboard-orders)
+    (when (zero? (get-in app-state keypaths/stylist-referral-program-page 0))
+      (handle-message events/control-stylist-referrals-fetch))))
 
 (defmethod perform-effects events/control-stylist-referrals-fetch [_ event args _ app-state]
   (let [user-id    (get-in app-state keypaths/user-id)
