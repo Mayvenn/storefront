@@ -163,10 +163,12 @@
 
 (defn payment-row [{:as item :keys [id icon title date subtitle amount amount-description styles data-test]}]
   [:a.block.border-bottom.border-light-gray.px3.py2.flex.items-center
-   {:key       id
-    :href      "#"
-    :data-test data-test
-    :class     (:background styles)}
+   (merge
+    (utils/route-to events/navigate-stylist-dashboard-balance-transfer-details
+                    {:balance-transfer-id id})
+    {:key       id
+     :data-test data-test
+     :class     (:background styles)})
    (ui/ucare-img {:width 20} icon)
    [:div.flex-auto.mx3
     [:h5.medium {:class (:title-color styles)} title]
