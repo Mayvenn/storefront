@@ -597,16 +597,16 @@
              :per        per}
     :handler handler}))
 
-(defn cash-out-now
+(defn cash-out-commit
   [user-id user-token stylist-id]
   (storeback-api-req
    POST
    "/v1/stylist/cash-out"
-   request-keys/cash-out-now
+   request-keys/cash-out-commit
    {:params  {:user-id    user-id
               :user-token user-token
               :stylist-id stylist-id}
-    :handler #(messages/handle-message events/api-success-cash-out-now
+    :handler #(messages/handle-message events/api-success-cash-out-commit
                                        (select-keys % [:status-id :balance-transfer-id :amount :payout-method]))}))
 
 (defn cash-out-status

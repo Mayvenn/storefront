@@ -36,7 +36,7 @@
 (def get-stylist-dashboard-balance-transfers [:get-stylist-dashboard-balance-transfers])
 (def get-stylist-bonus-credits [:get-stylist-bonus-credits])
 (def get-stylist-referral-program [:get-stylist-referral-program])
-(def cash-out-now [:cash-out-now])
+(def cash-out-commit [:cash-out-commit])
 (def cash-out-status [:cash-out-status])
 (def get-gallery [:get-gallery])
 (def delete-gallery-image [:delete-gallery-image])

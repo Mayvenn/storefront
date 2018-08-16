@@ -1,4 +1,4 @@
-(ns storefront.components.stylist.cash-out-now
+(ns storefront.components.stylist.cash-out
   (:require [om.core :as om]
             [sablono.core :refer [html]]
             [storefront.events :as events]
@@ -35,7 +35,9 @@
         [:div.my3
          {:data-test "cash-out-button"
           :data-ref  "cash-out-button"}
-         (ui/teal-button {:on-click  (utils/send-event-callback events/control-stylist-dashboard-cash-out-submit)
+         (ui/teal-button {:on-click  (utils/send-event-callback events/control-stylist-dashboard-cash-out-submit
+                                                                {:amount amount
+                                                                 :payout-method-name name})
                           :disabled? (not (payouts/cash-out-eligible? payout-method))
                           :spinning? cashing-out?}
           "Cash out")]]]))))
@@ -44,7 +46,7 @@
   (let [{:keys [amount payout-method]} (get-in data keypaths/stylist-payout-stats-next-payout)]
     {:amount            amount
      :payout-method     payout-method
-     :cashing-out?      (utils/requesting? data request-keys/cash-out-now)}))
+     :cashing-out?      (utils/requesting? data request-keys/cash-out-commit)}))
 
 (defn built-component [data opts]
   (om/build component (query data) opts))
@@ -55,10 +57,10 @@
     (some-> next-payout :amount pos? not)                              true
     :else                                                              false))
 
-(defmethod effects/perform-effects events/navigate-stylist-dashboard-cash-out-now [_ _ _ _ app-state]
+(defmethod effects/perform-effects events/navigate-stylist-dashboard-cash-out-begin [_ _ _ _ app-state]
   (if (should-redirect? (get-in app-state keypaths/stylist-payout-stats-next-payout))
     (effects/redirect events/navigate-stylist-dashboard-earnings)
-    (api/get-stylist-payout-stats events/api-success-stylist-payout-stats-cash-out-now
+    (api/get-stylist-payout-stats events/api-success-stylist-payout-stats-cash-out
                                   (get-in app-state keypaths/store-stylist-id)
                                   (get-in app-state keypaths/user-id)
                                   (get-in app-state keypaths/user-token))))
@@ -67,13 +69,13 @@
   (let [stylist-id (get-in app-state keypaths/store-stylist-id)
         user-id    (get-in app-state keypaths/user-id)
         user-token (get-in app-state keypaths/user-token)]
-    (api/cash-out-now user-id user-token stylist-id)))
+    (api/cash-out-commit user-id user-token stylist-id)))
 
-(defmethod effects/perform-effects events/api-success-cash-out-now
+(defmethod effects/perform-effects events/api-success-cash-out-commit
   [_ _ {:keys [status-id balance-transfer-id]} _ app-state]
   (effects/redirect events/navigate-stylist-dashboard-cash-out-pending {:status-id status-id}))
 
-(defmethod transitions/transition-state events/api-success-cash-out-now
+(defmethod transitions/transition-state events/api-success-cash-out-commit
   [_ _ {:keys [status-id balance-transfer-id amount payout-method]} app-state]
   (-> app-state
       (assoc-in keypaths/stylist-payout-stats-initiated-payout {:amount amount
@@ -81,7 +83,7 @@
       (assoc-in keypaths/stylist-cash-out-status-id status-id)
       (assoc-in keypaths/stylist-cash-out-balance-transfer-id balance-transfer-id)))
 
-(defmethod effects/perform-effects events/api-success-stylist-payout-stats-cash-out-now
+(defmethod effects/perform-effects events/api-success-stylist-payout-stats-cash-out
   [_ _ {next-payout :next-payout} _ app-state]
   (when (should-redirect? next-payout)
     (effects/redirect events/navigate-stylist-dashboard-earnings)))

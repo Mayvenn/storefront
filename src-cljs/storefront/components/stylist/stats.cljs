@@ -45,7 +45,7 @@
 (defmulti payout-slide (fn [slide-name next-payout]
                          slide-name))
 
-(defmethod payout-slide :stats/cash-out-now [_ {:keys [next-payout]}]
+(defmethod payout-slide :stats/cash-out [_ {:keys [next-payout]}]
   (let [amount (:amount next-payout)]
     [:div.my4.clearfix
      [:.my4
@@ -56,10 +56,10 @@
          [:.py2.h0 re-center-money (ui/big-money amount)]
          (when (payouts/cash-out-eligible? (:payout-method next-payout))
            [:div.col-5.mt1.mb2.mx-auto
-            (ui/light-ghost-button {:on-click     (utils/send-event-callback events/control-stylist-dashboard-cash-out-now-submit)
+            (ui/light-ghost-button {:on-click     (utils/send-event-callback events/control-stylist-dashboard-cash-out-commit)
                                     :class        "light"
                                     :height-class "py2"
-                                    :data-test    "cash-out-now-button"}
+                                    :data-test    "cash-out-begin-button"}
                                    [:span.ml1 "Cash Out Now"]
                                    [:span.ml2
                                     (svg/dropdown-arrow {:class  "stroke-white"
@@ -116,11 +116,11 @@
                              (-> payout-stats
                                  :initiated-payout
                                  :status-id)    :stats/transfer-in-progress
-                             cash-out-eligible? :stats/cash-out-now
+                             cash-out-eligible? :stats/cash-out
                              :else              :stats/next-payout)]
     {:payout-stats        payout-stats
      :next-payout-slide   next-payout-slide
-     :initial-slide-index (if (= :stats/cash-out-now next-payout-slide) 1 0) }))
+     :initial-slide-index (if (= :stats/cash-out next-payout-slide) 1 0) }))
 
 (defn component
   [{:keys [payout-stats next-payout-slide initial-slide-index]} owner _]
@@ -138,6 +138,6 @@
                                   :slickGoTo    initial-slide-index}}
                       {:react-key "stat-swiper"})]]))
 
-(defmethod effects/perform-effects events/control-stylist-dashboard-cash-out-now-submit
+(defmethod effects/perform-effects events/control-stylist-dashboard-cash-out-begin
   [_ _ _ _ app-state]
-  (history/enqueue-navigate events/navigate-stylist-dashboard-cash-out-now))
+  (history/enqueue-navigate events/navigate-stylist-dashboard-cash-out-begin))

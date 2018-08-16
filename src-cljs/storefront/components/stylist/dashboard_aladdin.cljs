@@ -62,8 +62,8 @@
      (if (payouts/cash-out-eligible? payout-method)
        (ui/teal-button
         {:height-class   "py2"
-         :data-test      "cash-out-now-button"
-         :on-click       (utils/send-event-callback events/control-stylist-dashboard-cash-out-now-submit)
+         :data-test      "cash-out-begin-button"
+         :on-click       (utils/send-event-callback events/control-stylist-dashboard-cash-out-begin)
          :disabled?      (not (pos? cash-balance))
          :disabled-class "bg-gray"
          :spinning?      cashing-out?}
@@ -261,7 +261,7 @@
     {:fetching?                    (or (utils/requesting? data request-keys/get-stylist-balance-transfers)
                                        (utils/requesting? data request-keys/fetch-stylist-service-menu))
      :stats                        (get-in data keypaths/stylist-v2-dashboard-stats)
-     :cashing-out?                 (utils/requesting? data request-keys/cash-out-now)
+     :cashing-out?                 (utils/requesting? data request-keys/cash-out-commit)
      :payout-method                (get-in data keypaths/stylist-manage-account-chosen-payout-method)
      :activity-ledger-tab          ({events/navigate-stylist-v2-dashboard-payments {:active-tab-name :payments
                                                                                     :empty-copy      "Payments and bonus activity will appear here."

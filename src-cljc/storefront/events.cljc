@@ -65,7 +65,7 @@
 (defpath navigate-stylist-dashboard-earnings)
 (defpath navigate-stylist-dashboard-referrals)
 (defpath navigate-stylist-dashboard-bonus-credit)
-(defpath navigate-stylist-dashboard-cash-out-now)
+(defpath navigate-stylist-dashboard-cash-out-begin)
 (defpath navigate-stylist-dashboard-cash-out-pending)
 (defpath navigate-stylist-dashboard-cash-out-success)
 (defpath navigate-stylist-dashboard-balance-transfer-details)
@@ -260,7 +260,7 @@
 (defpath control-stylist-account-commission-submit)
 (defpath control-stylist-account-social-submit)
 
-(defpath control-stylist-dashboard-cash-out-now-submit)
+(defpath control-stylist-dashboard-cash-out-begin)
 (defpath control-stylist-dashboard-cash-out-submit)
 
 (defpath control-commission-order-expand)
@@ -321,8 +321,8 @@
 (defpath api-success-stylist-v2-dashboard-balance-transfers)
 (defpath api-success-stylist-next-payout)
 (defpath api-success-stylist-payout-stats)
-(defpath api-success-stylist-payout-stats-cash-out-now)
-(defpath api-success-cash-out-now)
+(defpath api-success-stylist-payout-stats-cash-commit)
+(defpath api-success-cash-out-commit)
 (defpath api-success-cash-out-status)
 (defpath api-success-cash-out-failed)
 (defpath api-success-cash-out-complete)

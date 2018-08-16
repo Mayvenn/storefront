@@ -423,14 +423,13 @@
   (stringer/track-event "sign_out")
   (stringer/track-clear))
 
-(defmethod perform-track events/control-stylist-dashboard-cash-out-now-submit
-  [_ _ _ app-state]
-  (let [stylist-id                     (get-in app-state keypaths/store-stylist-id)
-        {:keys [amount payout-method]} (get-in app-state keypaths/stylist-payout-stats-next-payout)]
+(defmethod perform-track events/control-stylist-dashboard-cash-out-commit
+  [_ _ {:keys [amount payout-method-name]} app-state]
+  (let [stylist-id                     (get-in app-state keypaths/store-stylist-id)]
     (stringer/track-event "dashboard_cash_out_now_button_pressed"
                           {:stylist_id         stylist-id
-                           :amount             (js/parseFloat amount)
-                           :payout_method_name (:name payout-method)})))
+                           :amount             amount
+                           :payout_method_name payout-method-name})))
 
 (defmethod perform-track events/control-stylist-dashboard-cash-out-submit
   [_ _ _ app-state]
