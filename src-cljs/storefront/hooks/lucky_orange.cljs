@@ -6,7 +6,7 @@
   (tags/insert-tag-with-text
    (str
     " window._loq = window._loq || [];"
-    " window._loq.push(['store_experience', '" store-experience "']);")
+    " window._loq.push(['tag', '" store-experience "']);")
    "lucky-orange-store-experience"))
 
 (defn remove-tracking []
