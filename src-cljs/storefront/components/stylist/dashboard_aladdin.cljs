@@ -1,10 +1,13 @@
 (ns storefront.components.stylist.dashboard-aladdin
-  (:require [storefront.component :as component]
-            [spice.core :as spice]
+  (:require [spice.core :as spice]
+            [spice.date :as date]
+            [spice.maps :as maps]
+            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.payouts :as payouts]
             [storefront.accessors.service-menu :as service-menu]
             [storefront.api :as api]
+            [storefront.component :as component]
             [storefront.components.formatters :as f]
             [storefront.components.money-formatters :as mf]
             [storefront.components.stylist.bonus-credit :as bonuses]
@@ -22,9 +25,7 @@
             [storefront.platform.numbers :as numbers]
             [storefront.request-keys :as request-keys]
             [storefront.transitions :as transitions]
-            [voucher.keypaths :as voucher-keypaths]
-            [spice.maps :as maps]
-            [spice.date :as date]))
+            [voucher.keypaths :as voucher-keypaths]))
 
 (defn earnings-count [title value]
   [:div.dark-gray.letter-spacing-0
@@ -287,7 +288,13 @@
   (component/build component (query data) opts))
 
 (defmethod effects/perform-effects events/navigate-stylist-v2-dashboard-payments [_ event args _ app-state]
-  (messages/handle-message events/stylist-v2-dashboard-stats-fetch))
+  (if (experiments/aladdin-dashboard? app-state)
+    (messages/handle-message events/stylist-v2-dashboard-stats-fetch)
+    (effects/redirect events/navigate-stylist-dashboard-earnings)))
+
+(defmethod effects/perform-effects events/navigate-stylist-v2-dashboard-orders [_ event args _ app-state]
+  (when-not (experiments/aladdin-dashboard? app-state)
+    (effects/redirect events/navigate-stylist-dashboard-earnings)))
 
 (defmethod effects/perform-effects events/stylist-v2-dashboard-stats-fetch [_ event args _ app-state]
   (let [stylist-id (get-in app-state keypaths/store-stylist-id)
