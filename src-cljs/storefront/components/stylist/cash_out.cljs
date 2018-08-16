@@ -35,7 +35,7 @@
         [:div.my3
          {:data-test "cash-out-button"
           :data-ref  "cash-out-button"}
-         (ui/teal-button {:on-click  (utils/send-event-callback events/control-stylist-dashboard-cash-out-submit
+         (ui/teal-button {:on-click  (utils/send-event-callback events/control-stylist-dashboard-cash-out-commit
                                                                 {:amount amount
                                                                  :payout-method-name name})
                           :disabled? (not (payouts/cash-out-eligible? payout-method))
@@ -65,7 +65,7 @@
                                   (get-in app-state keypaths/user-id)
                                   (get-in app-state keypaths/user-token))))
 
-(defmethod effects/perform-effects events/control-stylist-dashboard-cash-out-submit [_ _ _ _ app-state]
+(defmethod effects/perform-effects events/control-stylist-dashboard-cash-out-commit [_ _ _ _ app-state]
   (let [stylist-id (get-in app-state keypaths/store-stylist-id)
         user-id    (get-in app-state keypaths/user-id)
         user-token (get-in app-state keypaths/user-token)]

@@ -261,7 +261,7 @@
 (defpath control-stylist-account-social-submit)
 
 (defpath control-stylist-dashboard-cash-out-begin)
-(defpath control-stylist-dashboard-cash-out-submit)
+(defpath control-stylist-dashboard-cash-out-commit)
 
 (defpath control-commission-order-expand)
 
@@ -321,7 +321,7 @@
 (defpath api-success-stylist-v2-dashboard-balance-transfers)
 (defpath api-success-stylist-next-payout)
 (defpath api-success-stylist-payout-stats)
-(defpath api-success-stylist-payout-stats-cash-commit)
+(defpath api-success-stylist-payout-stats-cash-out)
 (defpath api-success-cash-out-commit)
 (defpath api-success-cash-out-status)
 (defpath api-success-cash-out-failed)

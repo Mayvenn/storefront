@@ -63,7 +63,9 @@
        (ui/teal-button
         {:height-class   "py2"
          :data-test      "cash-out-begin-button"
-         :on-click       (utils/send-event-callback events/control-stylist-dashboard-cash-out-begin)
+         :on-click       (utils/send-event-callback events/control-stylist-dashboard-cash-out-begin
+                                                    {:amount cash-balance
+                                                     :payout-method-name payout-method})
          :disabled?      (not (pos? cash-balance))
          :disabled-class "bg-gray"
          :spinning?      cashing-out?}
