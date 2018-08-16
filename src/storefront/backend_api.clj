@@ -82,9 +82,9 @@
 
 (defn fetch-v2-products [storeback-config criteria-or-id]
   (let [response (storeback-fetch storeback-config "/v2/products"
-                                  {:query-params (if (map? criteria-or-id)
-                                                   (criteria->query-params criteria-or-id)
-                                                   {:catalog/product-id criteria-or-id})})]
+                                  {:query-params (criteria->query-params (if (map? criteria-or-id)
+                                                                           criteria-or-id
+                                                                           {:catalog/product-id criteria-or-id}))})]
     (when (not-404 response)
       (:body response))))
 
