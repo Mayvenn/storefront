@@ -324,14 +324,18 @@
                                        stylist-id
                                        user-id
                                        user-token)
-      (api/get-stylist-dashboard-balance-transfers events/api-success-stylist-v2-dashboard-balance-transfers
-                                                   stylist-id
+      (api/get-stylist-dashboard-balance-transfers stylist-id
                                                    user-id
                                                    user-token
                                                    (get-in app-state keypaths/stylist-earnings-pagination)
                                                    #(messages/handle-message events/api-success-stylist-v2-dashboard-balance-transfers
-                                                                             (select-keys % [:balance-transfers
-                                                                                             :pagination]))))))
+                                                                             (select-keys % [:balance-transfers :pagination])))
+      (api/get-stylist-dashboard-sales             stylist-id
+                                                   user-id
+                                                   user-token
+                                                   (get-in app-state keypaths/stylist-v2-dashboard-sales-pagination)
+                                                   #(messages/handle-message events/api-success-stylist-v2-dashboard-sales
+                                                                             (select-keys % [:sales :pagination]))))))
 
 (defmethod transitions/transition-state events/api-success-stylist-v2-dashboard-stats
   [_ event {:as stats :keys [stylist earnings services store-credit-balance bonuses]} app-state]
@@ -344,19 +348,25 @@
        (sort-by :transfered-at)
        last))
 
-;; TODO: Verify this works
 (defmethod transitions/transition-state events/api-success-stylist-v2-dashboard-balance-transfers
-  [_ event {:as stats :keys [balance-transfers pagination]} app-state]
-  (let [page                           (:page pagination)
-        most-recent-voucher-award-date (most-recent-voucher-award balance-transfers)
+  [_ event {:keys [balance-transfers pagination]} app-state]
+  (let [most-recent-voucher-award-date (most-recent-voucher-award balance-transfers)
         voucher-response-date          (-> (get-in app-state voucher-keypaths/voucher-response)
                                            :date
                                            date/to-millis)
         voucher-pending?               (> (or voucher-response-date 0) (or most-recent-voucher-award-date 0))]
-    (-> (if voucher-pending? app-state (update-in app-state voucher-keypaths/voucher dissoc :response))
+    (-> (if voucher-pending?
+          app-state
+          (update-in app-state voucher-keypaths/voucher dissoc :response))
         (update-in keypaths/stylist-earnings-balance-transfers merge (maps/map-keys (comp spice/parse-int name) balance-transfers))
         (assoc-in keypaths/stylist-earnings-pagination pagination))))
 
 (defmethod transitions/transition-state events/control-stylist-v2-dashboard-section-toggle
   [_ event {:keys [keypath]} app-state]
   (update-in app-state keypath not))
+
+(defmethod transitions/transition-state events/api-success-stylist-v2-dashboard-sales
+  [_ event {:keys [sales pagination]} app-state]
+  (-> app-state
+      (update-in keypaths/stylist-v2-dashboard-sales-elements merge sales)
+      (assoc-in keypaths/stylist-v2-dashboard-sales-pagination pagination)))

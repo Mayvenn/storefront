@@ -320,6 +320,7 @@
 (defpath api-success-stylist-balance-transfer-details)
 (defpath api-success-stylist-v2-dashboard-stats)
 (defpath api-success-stylist-v2-dashboard-balance-transfers)
+(defpath api-success-stylist-v2-dashboard-sales)
 (defpath api-success-stylist-next-payout)
 (defpath api-success-stylist-payout-stats)
 (defpath api-success-stylist-payout-stats-cash-out)
