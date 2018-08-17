@@ -233,11 +233,15 @@
         (for [item (reverse (sort-by :date items))]
           (payment-row item))])]))
 
+(defn orders-table [orders]
+  (for [order (vals orders)]
+    [:div (:order-number order)]))
+
 (defn ^:private ledger-tabs [active-tab-name]
   [:div.flex.flex-wrap
    (for [{:keys [id title navigate]} tabs]
      [:a.h6.col-6.p2.black
-      (merge (utils/fake-href navigate)
+      (merge (utils/route-to navigate)
              {:key (name id)
               :data-test (str "nav-" (name id))
               :class (if (= id active-tab-name)
@@ -245,12 +249,16 @@
                        "bg-light-gray")})
       title])])
 
+(defn ^:private empty-ledger [{:keys [empty-title empty-copy]}]
+  [:div.my6.center
+   [:h4.gray.bold.p1 empty-title]
+   [:h6.dark-gray.col-5.mx-auto.line-height-2 empty-copy]])
+
 (defn component
-  [{:keys [fetching? cash-balance-section-expanded? store-credit-balance-section-expanded? stats total-available-store-credit activity-ledger-tab balance-transfers payout-method cashing-out? pending-voucher service-menu]} owner opts]
+  [{:keys [fetching? cash-balance-section-expanded? store-credit-balance-section-expanded? stats total-available-store-credit activity-ledger-tab balance-transfers orders payout-method cashing-out? pending-voucher service-menu]} owner opts]
   (let [{:keys [bonuses earnings services]} stats
         {:keys [lifetime-earned]}           bonuses
-
-        {:keys [active-tab-name empty-title empty-copy]} activity-ledger-tab]
+        {:keys [active-tab-name]} activity-ledger-tab]
     (component/create
      (if fetching?
        [:div.my2.h2 ui/spinner]
@@ -262,52 +270,78 @@
 
         (ledger-tabs active-tab-name)
 
-        (if (or (seq balance-transfers)
-                pending-voucher)
-          (payments-table pending-voucher service-menu balance-transfers)
-          [:div.my6.center
-           [:h4.gray.bold.p1 empty-title]
-           [:h6.dark-gray.col-5.mx-auto.line-height-2 empty-copy]])]))))
+        (case active-tab-name
+
+          :payments
+          (if (or (seq balance-transfers)
+                  pending-voucher)
+            (payments-table pending-voucher service-menu balance-transfers)
+            (empty-ledger activity-ledger-tab))
+
+          :orders
+          (if (seq orders)
+            (orders-table orders)
+            (empty-ledger activity-ledger-tab)))]))))
 
 (defn query
   [data]
   (let [get-balance-transfer  second
         id->balance-transfers (get-in data keypaths/stylist-earnings-balance-transfers)]
-    {:fetching?                              (or (utils/requesting? data request-keys/get-stylist-balance-transfers)
-                                                 (utils/requesting? data request-keys/fetch-stylist-service-menu))
-     :stats                                  (get-in data keypaths/stylist-v2-dashboard-stats)
-     :cashing-out?                           (utils/requesting? data request-keys/cash-out-commit)
-     :payout-method                          (get-in data keypaths/stylist-manage-account-chosen-payout-method)
-     :activity-ledger-tab                    ({events/navigate-stylist-v2-dashboard-payments {:active-tab-name :payments
-                                                                                              :empty-copy      "Payments and bonus activity will appear here."
-                                                                                              :empty-title     "No payments yet"}
-                                               events/navigate-stylist-v2-dashboard-orders   {:active-tab-name :orders
-                                                                                              :empty-copy      "Orders from your store will appear here."
-                                                                                              :empty-title     "No orders yet"}}
-                                              (get-in data keypaths/navigation-event))
+    {:fetching?                    (or (utils/requesting? data request-keys/get-stylist-balance-transfers)
+                                       (utils/requesting? data request-keys/fetch-stylist-service-menu))
+     :stats                        (get-in data keypaths/stylist-v2-dashboard-stats)
+     :cashing-out?                 (utils/requesting? data request-keys/cash-out-commit)
+     :payout-method                (get-in data keypaths/stylist-manage-account-chosen-payout-method)
+     :activity-ledger-tab          ({events/navigate-stylist-v2-dashboard-payments {:active-tab-name :payments
+                                                                                    :empty-copy      "Payments and bonus activity will appear here."
+                                                                                    :empty-title     "No payments yet"}
+                                     events/navigate-stylist-v2-dashboard-orders   {:active-tab-name :orders
+                                                                                    :empty-copy      "Orders from your store will appear here."
+                                                                                    :empty-title     "No orders yet"}}
+                                    (get-in data keypaths/navigation-event))
      :cash-balance-section-expanded?         (get-in data keypaths/aladdin-dashboard-cash-balance-section-expanded?)
      :store-credit-balance-section-expanded? (get-in data keypaths/aladdin-dashboard-store-credit-section-expanded?)
-     :total-available-store-credit           (get-in data keypaths/user-total-available-store-credit)
-     :balance-transfers                      (into []
-                                                   (comp
-                                                     (map get-balance-transfer)
-                                                     (remove (fn [transfer]
-                                                               (when-let [status (-> transfer :data :status)]
-                                                                 (not= "paid" status)))))
-                                                   id->balance-transfers)
-     :service-menu                           (get-in data keypaths/stylist-service-menu)
-     :pending-voucher                        (get-in data voucher-keypaths/voucher-response)}))
+     :total-available-store-credit (get-in data keypaths/user-total-available-store-credit)
+     :balance-transfers            (into []
+                                         (comp
+                                          (map get-balance-transfer)
+                                          (remove (fn [transfer]
+                                                    (when-let [status (-> transfer :data :status)]
+                                                      (not= "paid" status)))))
+                                         id->balance-transfers)
+     :orders                       (get-in data keypaths/stylist-v2-dashboard-sales-elements)
+     :service-menu                 (get-in data keypaths/stylist-service-menu)
+     :pending-voucher              (get-in data voucher-keypaths/voucher-response)}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
 
 (defmethod effects/perform-effects events/navigate-stylist-v2-dashboard-payments [_ event args _ app-state]
   (if (experiments/aladdin-dashboard? app-state)
-    (messages/handle-message events/stylist-v2-dashboard-stats-fetch)
+    (let [stylist-id (get-in app-state keypaths/store-stylist-id)
+          user-id    (get-in app-state keypaths/user-id)
+          user-token (get-in app-state keypaths/user-token)]
+      (messages/handle-message events/stylist-v2-dashboard-stats-fetch)
+      (api/get-stylist-dashboard-balance-transfers stylist-id
+                                                   user-id
+                                                   user-token
+                                                   (get-in app-state keypaths/stylist-earnings-pagination)
+                                                   #(messages/handle-message events/api-success-stylist-v2-dashboard-balance-transfers
+                                                                             (select-keys % [:balance-transfers :pagination]))))
     (effects/redirect events/navigate-stylist-dashboard-earnings)))
 
 (defmethod effects/perform-effects events/navigate-stylist-v2-dashboard-orders [_ event args _ app-state]
-  (when-not (experiments/aladdin-dashboard? app-state)
+  (if (experiments/aladdin-dashboard? app-state)
+    (let [stylist-id (get-in app-state keypaths/store-stylist-id)
+          user-id    (get-in app-state keypaths/user-id)
+          user-token (get-in app-state keypaths/user-token)]
+      (messages/handle-message events/stylist-v2-dashboard-stats-fetch)
+      (api/get-stylist-dashboard-sales stylist-id
+                                       user-id
+                                       user-token
+                                       (get-in app-state keypaths/stylist-v2-dashboard-sales-pagination)
+                                       #(messages/handle-message events/api-success-stylist-v2-dashboard-sales
+                                                                 (select-keys % [:sales :pagination]))))
     (effects/redirect events/navigate-stylist-dashboard-earnings)))
 
 (defmethod effects/perform-effects events/stylist-v2-dashboard-stats-fetch [_ event args _ app-state]
@@ -323,19 +357,7 @@
       (api/get-stylist-dashboard-stats events/api-success-stylist-v2-dashboard-stats
                                        stylist-id
                                        user-id
-                                       user-token)
-      (api/get-stylist-dashboard-balance-transfers stylist-id
-                                                   user-id
-                                                   user-token
-                                                   (get-in app-state keypaths/stylist-earnings-pagination)
-                                                   #(messages/handle-message events/api-success-stylist-v2-dashboard-balance-transfers
-                                                                             (select-keys % [:balance-transfers :pagination])))
-      (api/get-stylist-dashboard-sales             stylist-id
-                                                   user-id
-                                                   user-token
-                                                   (get-in app-state keypaths/stylist-v2-dashboard-sales-pagination)
-                                                   #(messages/handle-message events/api-success-stylist-v2-dashboard-sales
-                                                                             (select-keys % [:sales :pagination]))))))
+                                       user-token))))
 
 (defmethod transitions/transition-state events/api-success-stylist-v2-dashboard-stats
   [_ event {:as stats :keys [stylist earnings services store-credit-balance bonuses]} app-state]
