@@ -262,6 +262,7 @@
 
 (defpath control-stylist-dashboard-cash-out-begin)
 (defpath control-stylist-dashboard-cash-out-commit)
+(defpath control-stylist-v2-dashboard-section-toggle)
 
 (defpath control-commission-order-expand)
 

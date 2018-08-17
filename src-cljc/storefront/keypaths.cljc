@@ -316,6 +316,10 @@
 (def aladdin (conj ui :aladdin))
 (def aladdin-video (conj aladdin :video))
 
+(def aladdin-dashboard (conj aladdin :dashboard))
+(def aladdin-dashboard-cash-balance-section-expanded? (conj aladdin-dashboard :cash-balance-section-expanded?))
+(def aladdin-dashboard-store-credit-section-expanded? (conj aladdin-dashboard :store-credit-section-expanded?))
+
 (def accordion (conj ui :accordion))
 (def accordion-freeinstall-home (conj accordion :freeinstall))
 (def accordion-freeinstall-home-expanded-indices

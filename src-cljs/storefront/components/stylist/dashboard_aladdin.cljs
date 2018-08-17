@@ -44,71 +44,83 @@
 
 (defn ^:private cash-balance-card
   [payout-method
+   expanded?
    cashing-out?
    {:as earnings :keys [cash-balance lifetime-earnings monthly-earnings]}
    {:as services :keys [lifetime-services monthly-services]}]
-  [:div.h6.bg-too-light-teal.p2
+  (let [toggle-expand (utils/fake-href events/control-stylist-v2-dashboard-section-toggle
+                                       {:keypath keypaths/aladdin-dashboard-cash-balance-section-expanded?})]
+    [:div.h6.bg-too-light-teal.p2
 
-   [:div.letter-spacing-1.shout.dark-gray.mbnp5.flex.items-center
-    "Cash Balance"
-    (svg/dropdown-arrow {:class  "ml1 stroke-dark-gray rotate-180"
-                         :style  {:stroke-width "2"}
-                         :height ".75em"
-                         :width  ".75em"})]
+     [:div.letter-spacing-1.shout.dark-gray.mbnp5.flex.items-center
+      [:a.black toggle-expand
+       "Cash Balance"
+       (svg/dropdown-arrow {:class  (str "ml1 stroke-dark-gray "
+                                         (when expanded? "rotate-180"))
+                            :style  {:stroke-width "2"}
+                            :height ".75em"
+                            :width  ".75em"})]]
 
-   [:div.flex.items-center.justify-between
-    [:div.col-5
-     [:div.h1.black.bold.flex (mf/as-money-without-cents cash-balance)]]
-    [:div.col-5
-     (if (payouts/cash-out-eligible? payout-method)
-       (ui/teal-button
-        {:height-class   "py2"
-         :data-test      "cash-out-begin-button"
-         :on-click       (utils/send-event-callback events/control-stylist-dashboard-cash-out-begin
-                                                    {:amount cash-balance
-                                                     :payout-method-name payout-method})
-         :disabled?      (not (pos? cash-balance))
-         :disabled-class "bg-gray"
-         :spinning?      cashing-out?}
+     [:div.flex.items-center.justify-between
+      [:a.col-5 toggle-expand
+       [:div.h1.black.bold.flex (mf/as-money-without-cents cash-balance)]]
+      [:div.col-5
+       (if (payouts/cash-out-eligible? payout-method)
+         (ui/teal-button
+           {:height-class   "py2"
+            :data-test      "cash-out-begin-button"
+            :on-click       (utils/send-event-callback events/control-stylist-dashboard-cash-out-begin
+                                                       {:amount cash-balance
+                                                        :payout-method-name payout-method})
+            :disabled?      (not (pos? cash-balance))
+            :disabled-class "bg-gray"
+            :spinning?      cashing-out?}
+           [:div.flex.items-center.justify-center.regular.h5
+            (ui/ucare-img {:width "28" :class "mr2 flex items-center"} "3d651ddf-b37d-441b-a162-b83728f2a2eb")
+            "Cash Out"])
+         [:div.h7.right
+          "Cash out now with " [:a.teal (utils/fake-href events/navigate-stylist-account-commission) "Mayvenn InstaPay"]])]]
+     [:div
+      (when-not expanded? {:class "hide"})
+      [:div.flex.mt2
+       [:div.col-7
+        (earnings-count "Monthly Earnings" (mf/as-money-without-cents monthly-earnings))]
+       [:div.col-5
+        (earnings-count "Lifetime Earnings" (mf/as-money-without-cents lifetime-earnings))]]
+      [:div.flex.pt2
+       [:div.col-7
+        (earnings-count "Monthly Services" monthly-services)]
+       [:div.col-5
+        (earnings-count "Lifetime Services" lifetime-services)]]]]))
+
+(defn ^:private store-credit-balance-card [total-available-store-credit lifetime-earned expanded?]
+  (let [toggle-expand (utils/fake-href events/control-stylist-v2-dashboard-section-toggle
+                                       {:keypath keypaths/aladdin-dashboard-store-credit-section-expanded?})]
+   [:div.h6.bg-too-light-teal.p2
+    [:div.letter-spacing-1.shout.dark-gray.mbnp5.flex.items-center
+     [:a.black toggle-expand
+      "Store Credit Balance"
+      (svg/dropdown-arrow {:class  (str "ml1 stroke-dark-gray "
+                                        (when expanded? "rotate-180"))
+                           :style  {:stroke-width "2"}
+                           :height ".75em"
+                           :width  ".75em"})]]
+
+    [:div.flex.items-center
+     [:a.col-7 toggle-expand
+      [:div.h1.black.bold.flex (mf/as-money-without-cents total-available-store-credit)]]
+     [:div.col-5
+      ;; TODO(JH + LE) This should really go somewhere.
+      (ui/teal-button
+        {:height-class "py2"
+         :disabled? (zero? total-available-store-credit)}
         [:div.flex.items-center.justify-center.regular.h5
-         (ui/ucare-img {:width "28" :class "mr2 flex items-center"} "3d651ddf-b37d-441b-a162-b83728f2a2eb")
-         "Cash Out"])
-       [:div.h7.right
-        "Cash out now with " [:a.teal (utils/fake-href events/navigate-stylist-account-commission) "Mayvenn InstaPay"]])]]
-   [:div.flex.mt2
-    [:div.col-7
-     (earnings-count "Monthly Earnings" (mf/as-money-without-cents monthly-earnings))]
-    [:div.col-5
-     (earnings-count "Lifetime Earnings" (mf/as-money-without-cents lifetime-earnings))]]
-   [:div.flex.pt2
-    [:div.col-7
-     (earnings-count "Monthly Services" monthly-services)]
-    [:div.col-5
-     (earnings-count "Lifetime Services" lifetime-services)]]])
-
-(defn ^:private store-credit-balance-card [total-available-store-credit lifetime-earned]
-  [:div.h6.bg-too-light-teal.p2
-   [:div.letter-spacing-1.shout.dark-gray.mbnp5.flex.items-center
-    "Store Credit Balance"
-    (svg/dropdown-arrow {:class  "ml1 stroke-dark-gray rotate-180"
-                         :style  {:stroke-width "2"}
-                         :height ".75em"
-                         :width  ".75em"})]
-
-   [:div.flex.items-center
-    [:div.col-7
-     [:div.h1.black.bold.flex (mf/as-money-without-cents total-available-store-credit)]]
-    [:div.col-5
-     ;; TODO(JH + LE) This should really go somewhere.
-     (ui/teal-button
-      {:height-class "py2"
-       :disabled? (zero? total-available-store-credit)}
-      [:div.flex.items-center.justify-center.regular.h5
-       (ui/ucare-img {:width "28" :class "mr2 flex items-center"} "81775e67-9a83-46b7-b2ae-1cdb5a737876")
-       "Shop"])]]
-   [:div.flex.pt2
-    [:div.col-7
-     (earnings-count "Lifetime Bonuses" (mf/as-money-without-cents lifetime-earned))]]])
+         (ui/ucare-img {:width "28" :class "mr2 flex items-center"} "81775e67-9a83-46b7-b2ae-1cdb5a737876")
+         "Shop"])]]
+    [:div.flex.pt2 {:class (when-not expanded? "hide")}
+     [:div.col-7
+      (earnings-count "Lifetime Bonuses" (mf/as-money-without-cents lifetime-earned))]]]
+   ))
 
 (defn ^:private sales-bonus-progress [{:keys [previous-level next-level award-for-next-level total-eligible-sales]}]
   [:div.p2
@@ -234,7 +246,7 @@
       title])])
 
 (defn component
-  [{:keys [fetching? stats total-available-store-credit activity-ledger-tab balance-transfers payout-method cashing-out? pending-voucher service-menu]} owner opts]
+  [{:keys [fetching? cash-balance-section-expanded? store-credit-balance-section-expanded? stats total-available-store-credit activity-ledger-tab balance-transfers payout-method cashing-out? pending-voucher service-menu]} owner opts]
   (let [{:keys [bonuses earnings services]} stats
         {:keys [lifetime-earned]}           bonuses
 
@@ -244,8 +256,8 @@
        [:div.my2.h2 ui/spinner]
        [:div
         [:div.p2
-         (cash-balance-card payout-method cashing-out? earnings services)
-         [:div.mt2 (store-credit-balance-card total-available-store-credit lifetime-earned)]
+         (cash-balance-card payout-method cash-balance-section-expanded? cashing-out? earnings services)
+         [:div.mt2 (store-credit-balance-card total-available-store-credit lifetime-earned store-credit-balance-section-expanded?)]
          (sales-bonus-progress bonuses)]
 
         (ledger-tabs active-tab-name)
@@ -261,28 +273,30 @@
   [data]
   (let [get-balance-transfer  second
         id->balance-transfers (get-in data keypaths/stylist-earnings-balance-transfers)]
-    {:fetching?                    (or (utils/requesting? data request-keys/get-stylist-balance-transfers)
-                                       (utils/requesting? data request-keys/fetch-stylist-service-menu))
-     :stats                        (get-in data keypaths/stylist-v2-dashboard-stats)
-     :cashing-out?                 (utils/requesting? data request-keys/cash-out-commit)
-     :payout-method                (get-in data keypaths/stylist-manage-account-chosen-payout-method)
-     :activity-ledger-tab          ({events/navigate-stylist-v2-dashboard-payments {:active-tab-name :payments
-                                                                                    :empty-copy      "Payments and bonus activity will appear here."
-                                                                                    :empty-title     "No payments yet"}
-                                     events/navigate-stylist-v2-dashboard-orders   {:active-tab-name :orders
-                                                                                    :empty-copy      "Orders from your store will appear here."
-                                                                                    :empty-title     "No orders yet"}}
-                                    (get-in data keypaths/navigation-event))
-     :total-available-store-credit (get-in data keypaths/user-total-available-store-credit)
-     :balance-transfers            (into []
-                                         (comp
-                                          (map get-balance-transfer)
-                                          (remove (fn [transfer]
-                                                    (when-let [status (-> transfer :data :status)]
-                                                      (not= "paid" status)))))
-                                         id->balance-transfers)
-     :service-menu                 (get-in data keypaths/stylist-service-menu)
-     :pending-voucher              (get-in data voucher-keypaths/voucher-response)}))
+    {:fetching?                              (or (utils/requesting? data request-keys/get-stylist-balance-transfers)
+                                                 (utils/requesting? data request-keys/fetch-stylist-service-menu))
+     :stats                                  (get-in data keypaths/stylist-v2-dashboard-stats)
+     :cashing-out?                           (utils/requesting? data request-keys/cash-out-commit)
+     :payout-method                          (get-in data keypaths/stylist-manage-account-chosen-payout-method)
+     :activity-ledger-tab                    ({events/navigate-stylist-v2-dashboard-payments {:active-tab-name :payments
+                                                                                              :empty-copy      "Payments and bonus activity will appear here."
+                                                                                              :empty-title     "No payments yet"}
+                                               events/navigate-stylist-v2-dashboard-orders   {:active-tab-name :orders
+                                                                                              :empty-copy      "Orders from your store will appear here."
+                                                                                              :empty-title     "No orders yet"}}
+                                              (get-in data keypaths/navigation-event))
+     :cash-balance-section-expanded?         (get-in data keypaths/aladdin-dashboard-cash-balance-section-expanded?)
+     :store-credit-balance-section-expanded? (get-in data keypaths/aladdin-dashboard-store-credit-section-expanded?)
+     :total-available-store-credit           (get-in data keypaths/user-total-available-store-credit)
+     :balance-transfers                      (into []
+                                                   (comp
+                                                     (map get-balance-transfer)
+                                                     (remove (fn [transfer]
+                                                               (when-let [status (-> transfer :data :status)]
+                                                                 (not= "paid" status)))))
+                                                   id->balance-transfers)
+     :service-menu                           (get-in data keypaths/stylist-service-menu)
+     :pending-voucher                        (get-in data voucher-keypaths/voucher-response)}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
@@ -342,3 +356,7 @@
     (-> (if voucher-pending? app-state (update-in app-state voucher-keypaths/voucher dissoc :response))
         (update-in keypaths/stylist-earnings-balance-transfers merge (maps/map-keys (comp spice/parse-int name) balance-transfers))
         (assoc-in keypaths/stylist-earnings-pagination pagination))))
+
+(defmethod transitions/transition-state events/control-stylist-v2-dashboard-section-toggle
+  [_ event {:keys [keypath]} app-state]
+  (update-in app-state keypath not))

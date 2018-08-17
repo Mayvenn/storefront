@@ -153,6 +153,8 @@
           (cookie-jar/get-dismissed-free-install cookie)
           :dismissed-seventy-five-off-install
           (cookie-jar/get-dismissed-seventy-five-off-install cookie)
+          :aladdin {:dashboard {:cash-balance-section-expanded? false
+                                :store-credit-balance-section-expanded? false}}
 
           :sign-in {:email ""
                     :password ""}
