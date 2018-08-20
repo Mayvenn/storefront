@@ -70,9 +70,9 @@
    (ui/back-caret "Back")])
 
 (defn ^:private info-block [header content]
-  [:div.align-top
+  [:div.align-top.mb2
    [:span.h6.dark-gray.shout header]
-   [:div.h6.medium content]])
+   [:div.h6.medium (or content "--")]])
 
 (defn ^:private info-columns [[left-header left-content] [right-header right-content]]
   [:div.col-12.pt2
@@ -203,16 +203,24 @@
        [:div.h7.dark-gray "Cash"]]]]))
 
 (defn ^:private voucher-award-component [{:keys [balance-transfer aladdin-dashboard?]}]
-  (let [{:keys [id transfered-at amount data]} balance-transfer
-        {:keys [reason]}                       data]
+  (let [{:keys [id transfered-at amount data]}     balance-transfer
+        {:keys [order campaign-name order-number]} data
+        client-name                                (orders/first-name-plus-last-name-initial order)]
     [:div.container.mb4.px3
      (back-to-earnings aladdin-dashboard?)
-     [:h3.my4 "Details - Voucher Award Received"]
-     [:div.flex.justify-between.col-12
-      [:div (f/less-year-more-day-date (or transfered-at (:transfered_at data)))]
-      [:div.green "+" (mf/as-money amount)]]
-     [:div.h5.center.navy.py3.border-gray
-      (str (mf/as-money amount) " has been added to your next payment.")]]))
+     [:div
+      [:div.col.col-1.px2 (svg/coin-in-slot {:height 14
+                                             :width  20})]
+      [:div.col.col-9.pl2
+       [:h4.col-12.left.medium.pb4 "Service Payment"
+        (when client-name (str " - " client-name))]
+       [:div.col-12
+        (info-block "deposit date" (f/long-date (or transfered-at (:transfered_at data))))
+        (info-block "client" client-name)
+        (info-block "service type" campaign-name)
+        (info-block "order number" order-number)]]
+      [:div.col.col-2.mtp1.right-align
+       [:div.h5.medium.green (mf/as-money-without-cents amount)]]]]))
 
 (defn component [{:keys [fetching? balance-transfer] :as data} owner opts]
   (component/create
