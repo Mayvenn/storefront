@@ -11,7 +11,7 @@
   (component/create
    (html
     (let [close-attrs (utils/fake-href events/control-email-captured-dismiss)
-          discount-email-capture? (and (= "mayvenn-classic" store-experience)
+          discount-email-capture? (and (#{"mayvenn-classic" "influencer"} store-experience)
                                        (not the-ville?))]
       (ui/modal {:close-attrs close-attrs
                  :col-class   "col-11 col-5-on-tb col-4-on-dt flex justify-center"
