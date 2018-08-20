@@ -15,19 +15,20 @@
                    clj->js
                    js/JSON.stringify)
         assignment-var (str "_affirm_config = " config)]
-    (when-not (.hasOwnProperty js/window "affirm")
+    (when-not (affirm-loaded?)
       (tags/insert-tag-with-text (str assignment-var "; " affirm-anon-fn) "affirm")
-      (js/affirm.ui.ready
-       (fn insertOnReady []
-         (if (.hasOwnProperty js/affirm.checkout "on")
-           (js/affirm.checkout.on
-            "error"
-            (fn [err]
-              (handle-message events/affirm-checkout-error (js->clj err :keywordize-keys true))))
-           (js/affirm.ui.error.on
-            "close"
-            (fn []
-              (handle-message events/affirm-ui-error-closed)))))))))
+      (when-not (affirm-loaded?) ;; incase affirm js doesn't load
+        (js/affirm.ui.ready
+         (fn insertOnReady []
+           (if (.hasOwnProperty js/affirm.checkout "on")
+             (js/affirm.checkout.on
+              "error"
+              (fn [err]
+                (handle-message events/affirm-checkout-error (js->clj err :keywordize-keys true))))
+             (js/affirm.ui.error.on
+              "close"
+              (fn []
+                (handle-message events/affirm-ui-error-closed))))))))))
 
 (defn refresh []
   (when (affirm-loaded?)
