@@ -282,6 +282,16 @@
    [:svg opts
     (svg-xlink "coin-stack")]))
 
+(defn coin-in-slot [opts]
+  (component/html
+    [:svg opts
+     (svg-xlink "coin-in-slot")]))
+
+(defn stack-o-cash [opts]
+  (component/html
+    [:svg opts
+     (svg-xlink "stack-o-cash")]))
+
 (defn certified-ribbon [opts]
   (component/html
    [:svg opts

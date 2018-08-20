@@ -61,22 +61,25 @@
                                             balance-transfer)}))))
 
 (defn ^:private back-to-earnings [aladdin-dashboard?]
-  [:a.left.col-12.dark-gray.flex.items-center.py3
+  [:a.col-12.dark-gray.flex.items-center.py3
    (merge
     {:data-test "back-link"}
     (if aladdin-dashboard?
       (utils/route-to events/navigate-stylist-v2-dashboard-payments)
       (utils/route-to events/navigate-stylist-dashboard-earnings)))
-   (ui/back-caret "back to earnings")])
+   (ui/back-caret "Back")])
+
+(defn ^:private info-block [header content]
+  [:div.align-top
+   [:span.h6.dark-gray.shout header]
+   [:div.h6.medium content]])
 
 (defn ^:private info-columns [[left-header left-content] [right-header right-content]]
   [:div.col-12.pt2
-   [:div.col-6.inline-block.align-top
-    [:span.h5.dark-gray left-header]
-    [:div.h5 left-content]]
-   [:div.col-6.inline-block.align-top
-    [:span.h5.dark-gray right-header]
-    [:div.h5 right-content]]])
+   [:div.inline-block.col-6
+    (info-block left-header left-content)]
+   [:div.inline-block.col-6
+    (info-block right-header right-content)]])
 
 (defn ^:private commission-component [{:keys [balance-transfer fetching? skus aladdin-dashboard?]}]
   (let [{:keys [id number amount data]} balance-transfer
@@ -111,41 +114,54 @@
 
 
 
-(defn ^:private instapay-payout-details [payout-method]
-  (info-columns ["Card" (str "xxxx-xxxx-xxxx-" (or (:last-4 payout-method)
-                                                   (:last4 payout-method)
-                                                   "????"))]
-                ["Estimated Arrival" (or (:payout-timeframe payout-method)
-                                         (:payout_timeframe payout-method)
-                                         "Unknown")]))
+(defn ^:private instapay-payout-details [date-string payout-method]
+  [:div
+   (info-columns
+     ["Date Sent" date-string]
+     ["Estimated Arrival" (or (:payout-timeframe payout-method)
+                              (:payout_timeframe payout-method)
+                              "Unknown")])
+   (info-block
+     "Card" (str "xxxx-xxxx-xxxx-" (or (:last-4 payout-method)
+                                       (:last4 payout-method)
+                                       "????")))])
 
-(defn ^:private paypal-payout-details [payout-method]
-  (info-columns ["Paypal Email Address" (:email payout-method)]
-                ["Estimated Arrival" "Instant"]))
+(defn ^:private paypal-payout-details [date-string payout-method]
+  [:div
+   (info-columns
+     ["Date Sent" date-string]
+     ["Estimated Arrival" "Instant"])
+   (info-block "Paypal Email Address" (:email payout-method))])
 
-(defn ^:private check-payout-details [payout-method]
-  (info-columns ["Mailing Address " [:div
-                                     [:div (-> payout-method :address :address1)]
-                                     [:div (-> payout-method :address :address2)]
-                                     [:div (str (-> payout-method :address :city)
-                                                ", "
-                                                (or (-> payout-method :address :state-name)
-                                                    (-> payout-method :address :state_name))
-                                                " "
-                                                (-> payout-method :address :zipcode))]]]
-                ["Estimated Arrival" "7-10 Business Days"]))
+(defn ^:private check-payout-details [date-string payout-method]
+  [:div
+   (info-columns
+     ["Date Sent" date-string]
+     ["Estimated Arrival" "7-10 Business Days"])
+   (info-block  "Mailing Address " [:div
+                                    [:div (-> payout-method :address :address1)]
+                                    [:div (-> payout-method :address :address2)]
+                                    [:div (str (-> payout-method :address :city)
+                                               ", "
+                                               (or (-> payout-method :address :state-name)
+                                                   (-> payout-method :address :state_name))
+                                               " "
+                                               (-> payout-method :address :zipcode))]])])
 
-(defn ^:private venmo-payout-details [payout-method]
-  (info-columns ["Venmo Phone" (:phone payout-method)]
-                ["Estimated Arrival" "Instant"]))
+(defn ^:private venmo-payout-details [date-string payout-method]
+  [:div
+   (info-columns
+     ["Date Sent" date-string]
+     ["Estimated Arrival" "Instant"])
+   (info-block "Venmo Phone" (:phone payout-method))])
 
-(defn ^:private payout-method-details [payout-method]
+(defn ^:private payout-method-details [date-string payout-method]
   (when (:name payout-method)
     (case (:name payout-method)
-      "Mayvenn InstaPay" (instapay-payout-details payout-method)
-      "Paypal"           (paypal-payout-details payout-method)
-      "Check"            (check-payout-details payout-method)
-      "Venmo"            (venmo-payout-details payout-method))))
+      "Mayvenn InstaPay" (instapay-payout-details date-string payout-method)
+      "Paypal"           (paypal-payout-details date-string payout-method)
+      "Check"            (check-payout-details date-string payout-method)
+      "Venmo"            (venmo-payout-details date-string payout-method))))
 
 (defn ^:private payout-component [{:keys [balance-transfer aladdin-dashboard?]}]
   (let [{:keys [id
@@ -158,26 +174,33 @@
                 by-self]} data]
     [:div.container.mb4.px3
      (back-to-earnings aladdin-dashboard?)
-     [:h3.my4 "Details - Earnings Transfer - " (or payout-method-name (:payout_method_name data))]
-     [:div.flex.justify-between.col-12
-      [:div (f/less-year-more-day-date (or created-at (:created_at data)))]
-      [:div.pr4 (if by-self "You" "Mayvenn") " transferred " (mf/as-money amount)]]
-     (payout-method-details (or payout-method (:payout_method data)))]))
+     [:div
+      [:div.col.col-1.px2 (svg/stack-o-cash {:height 14
+                                             :width  20})]
+      [:div.col.col-9.pl2
+       [:h4.col-12.left.medium.pb4 "Money Transfer"]
+       (payout-method-details
+         (f/long-date (or created-at (:transfered_at data)))
+         (or payout-method (:payout_method data)))]
+      [:div.col.col-2.mtp1.right-align
+       [:div.h5.medium.green (mf/as-money-without-cents amount)]
+       [:div.h7.dark-gray payout-method-name]]]]))
 
 (defn ^:private award-component [{:keys [balance-transfer aladdin-dashboard?]}]
   (let [{:keys [id transfered-at amount data]} balance-transfer
         {:keys [reason]}                       data]
     [:div.container.mb4.px3
      (back-to-earnings aladdin-dashboard?)
-     [:h3.my4 "Details - Award Received"]
-     [:div.flex.justify-between.col-12
-      [:div (f/less-year-more-day-date (or transfered-at (:transfered_at data)))]
-      [:div.green "+" (mf/as-money amount)]]
-     [:div.col-12.inline-block.align-top.mb3
-      [:span.h5.dark-gray "Reason"]
-      [:div.h5 reason]]
-     [:div.h5.center.navy.py3.border-top.border-gray
-      (str (mf/as-money amount) " has been added to your next payment.")]]))
+     [:div
+      [:div.col.col-1.px2 (svg/coin-in-slot {:height 14
+                                             :width  20})]
+      [:div.col.col-9.pl2
+       [:h4.col-12.left.medium.pb4 reason]
+       [:div.col-12
+        (info-block "Deposit Date" (f/long-date (or transfered-at (:transfered_at data))))]]
+      [:div.col.col-2.mtp1.right-align
+       [:div.h5.medium.green (mf/as-money-without-cents amount)]
+       [:div.h7.dark-gray "Cash"]]]]))
 
 (defn ^:private voucher-award-component [{:keys [balance-transfer aladdin-dashboard?]}]
   (let [{:keys [id transfered-at amount data]} balance-transfer
