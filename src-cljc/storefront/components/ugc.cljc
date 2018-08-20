@@ -20,16 +20,6 @@
         {:data-test (str "look-" (:look-id nav-args))}))
      button-copy)))
 
-(defn image-thumbnail [img]
-  [:img.col-12.block img])
-
-(defn image-attribution [look {:keys [button-copy back-copy short-name]}]
-  [:div.bg-light-gray.p1
-   [:div.h5.mt1.mb2.mx3-on-mb.mx1-on-tb-dt
-    (user-attribution look)]
-   (view-look-button look button-copy {:back-copy back-copy
-                                       :short-name short-name})])
-
 (defn content-view [{:keys [imgs content-type source-url] :as item}]
   (ui/aspect-ratio
    1 1
@@ -40,23 +30,7 @@
      [:div.container-size.bg-cover.bg-no-repeat.bg-center
       {:style {:background-image (str "url(" (-> imgs :large :src) ")")}}])))
 
-(defn component [{:keys [looks]} owner {:keys [copy]}]
-  (component/create
-   [:div.container.clearfix.mtn2
-    (for [{:keys [id imgs] :as look} looks]
-      [:div
-       {:key id}
-       [:div.py2.col-12.col.hide-on-tb-dt {:key (str "small-" id)}
-        (image-thumbnail (:medium imgs))
-        (image-attribution look copy)]
-       [:div.p2.col.col-4.hide-on-mb {:key (str "large-" id)}
-        (ui/aspect-ratio
-         1 1
-         {:class "hoverable"}
-         (image-thumbnail (:medium imgs))
-         [:div.absolute.bottom-0.col-12.show-on-hover (image-attribution look copy)])]])]))
-
-(defn shop-by-look-experiment-component [{:keys [looks color-details]} owner {:keys [copy]}]
+(defn component [{:keys [looks color-details]} owner {:keys [copy]}]
   (component/create
    [:div.flex.flex-wrap.mtn2.py4.px2.justify-center.justify-start-on-tb-dt
     (for [{:keys [id imgs] :as look} looks
@@ -68,7 +42,7 @@
         (ui/aspect-ratio
          1 1
          {}
-         (image-thumbnail (:medium imgs)))
+         [:img.col-12.block (:medium imgs)])
         (when-let [texture (:texture look-attributes)]
           [:div.absolute.flex.justify-end.bottom-0.right-0.mb8
            [:div {:style {:width       "0"

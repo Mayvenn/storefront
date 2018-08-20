@@ -10,7 +10,7 @@
             [storefront.accessors.experiments :as experiments]
             [spice.maps :as maps]))
 
-(defn component [{:keys [looks color-details copy spinning? shop-by-look?]} owner opts]
+(defn component [{:keys [looks color-details copy spinning?]} owner opts]
   (om/component
    (html
     (if spinning?
@@ -21,11 +21,9 @@
         [:div.img-shop-by-look-icon.bg-no-repeat.bg-contain.mx-auto.my2
          {:style {:width "101px" :height "85px"}} ]
         [:p.dark-gray.col-10.col-6-on-tb-dt.mx-auto (:description copy)]]
-       (if shop-by-look?
-         (om/build ugc/shop-by-look-experiment-component
-                   {:color-details color-details :looks looks}
-                   {:opts {:copy copy}})
-         (om/build ugc/component {:looks looks} {:opts {:copy copy}}))]))))
+       (om/build ugc/component
+                 {:color-details color-details :looks looks}
+                 {:opts {:copy copy}})]))))
 
 (defn query [data]
   (let [ugc-content       (get-in data keypaths/ugc)
@@ -39,8 +37,7 @@
                          (filter #(= :hair/color (:facet/slug %)))
                          first
                          :facet/options
-                         (maps/index-by :option/slug))
-     :shop-by-look? (experiments/shop-by-look? data)}))
+                         (maps/index-by :option/slug))}))
 
 (defn built-component [data opts]
   (om/build component (query data) opts))
