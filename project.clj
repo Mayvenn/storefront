@@ -35,7 +35,7 @@
                  [overtone/at-at "1.2.0"]
                  [camel-snake-kebab "0.4.0"]]
   :repositories [["private" {:url "s3p://mayvenn-dependencies/releases/" :no-auth true}]]
-  :plugins [[s3-wagon-private "1.3.0"]
+  :plugins [[s3-wagon-private "1.3.1"]
             [lein-cljsbuild "1.1.2"]
             [lein-cljfmt "0.1.10"]
             [lein-figwheel "0.5.16"]]
