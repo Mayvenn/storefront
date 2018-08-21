@@ -9,7 +9,7 @@
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]))
 
-(def green-dot-keypath (partial conj keypaths/stylist-manage-account :green-dot-payout-attributes))
+(def green-dot-keypath (partial conj keypaths/stylist-manage-account-green-dot-payout-attributes))
 
 (defn green-dot-query [data]
   (let [green-dot #(get-in data (green-dot-keypath %))]

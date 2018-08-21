@@ -322,7 +322,7 @@
     (cond-> (update-in app-state keypaths/stylist-manage-account dissoc :green-dot-payout-attributes)
       (= "green_dot" (:chosen-payout-method stylist))
       (-> (assoc-in keypaths/stylist-manage-account-green-dot-card-selected-id (:last-4 green-dot-payout-attributes))
-          (assoc-in (conj keypaths/stylist-manage-account :green-dot-payout-attributes) green-dot-payout-attributes)))))
+          (assoc-in keypaths/stylist-manage-account-green-dot-payout-attributes green-dot-payout-attributes)))))
 
 (defmethod transition-state events/api-success-gallery [_ event {:keys [images]} app-state]
   (-> app-state
@@ -458,10 +458,10 @@
 
 (defmethod transition-state events/control-stylist-account-commission-submit [_ event args app-state]
   (let [selected-id (get-in app-state keypaths/stylist-manage-account-green-dot-card-selected-id)
-        last-4      (get-in app-state (conj keypaths/stylist-manage-account :green-dot-payout-attributes :last-4))]
+        last-4      (:last-4 (get-in app-state keypaths/stylist-manage-account-green-dot-payout-attributes))]
     (cond-> app-state
       (and (seq last-4) (= selected-id last-4))
-      (assoc-in (conj keypaths/stylist-manage-account :green-dot-payout-attributes) {:last-4 last-4}))))
+      (assoc-in keypaths/stylist-manage-account-green-dot-payout-attributes {:last-4 last-4}))))
 
 (defmethod transition-state events/control-stylist-account-password-submit [_ event args app-state]
   (let [stylist-account       (get-in app-state keypaths/stylist-manage-account)
