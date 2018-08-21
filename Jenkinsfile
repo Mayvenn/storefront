@@ -51,7 +51,6 @@ def deploy(String app, String env) {
 pipeline {
     agent any
     environment {
-        RISKIFIED_API_KEY = 'riskified-api-key'
         PATH = '/sbin:/usr/local/bin/:/usr/sbin:/bin:/usr/bin'
     }
 
@@ -68,7 +67,6 @@ pipeline {
         }
 
         stage('Verify') {
-            failFast true
             parallel {
                 // stage('Lint') {
                 //     steps {
