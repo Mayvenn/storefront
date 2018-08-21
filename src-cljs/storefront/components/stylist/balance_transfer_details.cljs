@@ -218,7 +218,7 @@
         (info-block "deposit date" (f/long-date (or transfered-at (:transfered_at data))))
         (info-block "client" client-name)
         (info-block "service type" campaign-name)
-        (info-block "order number" order-number)]]
+        (when order-number (info-block "order number" order-number))]]
       [:div.col.col-2.mtp1.right-align
        [:div.h5.medium.green (mf/as-money-without-cents amount)]]]]))
 
