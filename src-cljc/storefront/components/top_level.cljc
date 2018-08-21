@@ -14,6 +14,7 @@
                        [storefront.components.stylist.dashboard :as stylist.dashboard]
                        [storefront.components.stylist.dashboard-aladdin :as stylist.dashboard-aladdin]
                        [storefront.components.stylist.balance-transfer-details :as balance-transfer-details]
+                       [storefront.components.stylist.order-details :as stylist.order-details]
                        [storefront.components.stylist.cash-out :as stylist.cash-out]
                        [storefront.components.stylist.cash-out-pending :as stylist.cash-out-pending]
                        [storefront.components.stylist.cash-out-success :as stylist.cash-out-success]
@@ -65,6 +66,7 @@
          events/navigate-shop-by-look-details                       shop-by-look-details/built-component
          events/navigate-stylist-dashboard-balance-transfer-details balance-transfer-details/built-component
          events/navigate-stylist-dashboard-earnings                 stylist.dashboard/built-component
+         events/navigate-stylist-dashboard-order-details            stylist.order-details/built-component
          events/navigate-stylist-dashboard-bonus-credit             stylist.dashboard/built-component
          events/navigate-stylist-dashboard-referrals                stylist.dashboard/built-component
          events/navigate-stylist-dashboard-cash-out-begin           stylist.cash-out/built-component

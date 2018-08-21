@@ -610,6 +610,18 @@
              :per        per}
     :handler handler}))
 
+(defn get-stylist-dashboard-sale
+  [{:keys [stylist-id user-id user-token order-number handler]}]
+  (storeback-api-req
+    GET
+    "/v2/stylist/sale"
+    request-keys/get-stylist-dashboard-sale
+    {:params {:stylist-id stylist-id
+              :user-id    user-id
+              :user-token user-token
+              :order-number order-number}
+     :handler handler}))
+
 (defn cash-out-commit
   [user-id user-token stylist-id]
   (storeback-api-req

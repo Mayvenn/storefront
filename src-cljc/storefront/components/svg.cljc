@@ -74,6 +74,11 @@
    [:svg {:style {:width "44px" :height "44px"}}
     (svg-xlink "large-mail")]))
 
+(defn box-package [opts]
+  (component/html
+    [:svg opts
+     (svg-xlink "box-package")]))
+
 ;; Vendor Logos
 
 (defn affirm [opts]

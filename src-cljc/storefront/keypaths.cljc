@@ -259,6 +259,7 @@
 (def stylist-v2-dashboard (conj stylist :v2-dashboard))
 (def stylist-v2-dashboard-stats (conj stylist-v2-dashboard :stats))
 (def stylist-v2-dashboard-sales (conj stylist-v2-dashboard :sales))
+(def stylist-v2-dashboard-current-sale-id (conj stylist-v2-dashboard-sales :current-sale-id))
 (def stylist-v2-dashboard-sales-elements (conj stylist-v2-dashboard-sales :elements))
 (def stylist-v2-dashboard-sales-pagination (conj stylist-v2-dashboard-sales :pagination))
 

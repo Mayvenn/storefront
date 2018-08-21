@@ -83,6 +83,7 @@
               ["/shop/" [ keyword :album-keyword ] "/" :look-id]  (edn->bidi events/navigate-shop-by-look-details)
               ["/stylist/earnings/" :balance-transfer-id]         (edn->bidi events/navigate-stylist-dashboard-balance-transfer-details)
               "/stylist/earnings"                                 (edn->bidi events/navigate-stylist-dashboard-earnings)
+              ["/stylist/orders/" :order-number]                  (edn->bidi events/navigate-stylist-dashboard-order-details)
               "/stylist/cash-out-now"                             (edn->bidi events/navigate-stylist-dashboard-cash-out-begin)
               ["/stylist/cash-out-pending/" :status-id]           (edn->bidi events/navigate-stylist-dashboard-cash-out-pending)
               ["/stylist/cash-out-success/" :balance-transfer-id] (edn->bidi events/navigate-stylist-dashboard-cash-out-success)

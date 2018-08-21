@@ -35,6 +35,7 @@
 (def get-stylist-dashboard-stats [:get-stylist-dashboard-stats])
 (def get-stylist-dashboard-balance-transfers [:get-stylist-dashboard-balance-transfers])
 (def get-stylist-dashboard-sales [:get-stylist-dashboard-sales])
+(def get-stylist-dashboard-sale [:get-stylist-dashboard-sale])
 (def get-stylist-bonus-credits [:get-stylist-bonus-credits])
 (def get-stylist-referral-program [:get-stylist-referral-program])
 (def cash-out-commit [:cash-out-commit])
