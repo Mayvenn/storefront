@@ -123,7 +123,6 @@
                               "Unknown")])
    (info-block
      "Card" (str "xxxx-xxxx-xxxx-" (or (:last-4 payout-method)
-                                       (:last4 payout-method)
                                        "????")))])
 
 (defn ^:private paypal-payout-details [date-string payout-method]

@@ -18,16 +18,16 @@
      :card-number      (green-dot :card-number)
      :expiration-date  (green-dot :expiration-date)
      :card-selected-id (get-in data keypaths/stylist-manage-account-green-dot-card-selected-id)
-     :card-last4       (green-dot :last-4)
+     :card-last-4      (green-dot :last-4)
      :payout-timeframe (green-dot :payout-timeframe)}))
 
 (defn green-dot-component
   [{:keys [green-dot focused field-errors]} owner opts]
-  (let [{:keys [first-name last-name card-number card-last4 expiration-date card-selected-id payout-timeframe]} green-dot]
+  (let [{:keys [first-name last-name card-number card-last-4 expiration-date card-selected-id payout-timeframe]} green-dot]
     (component/create
      [:div
-      (when card-last4
-        (let [card-options [[(str "xxxx-xxxx-xxxx-" card-last4) card-last4] ["Replace Card" "replace-card"]]]
+      (when card-last-4
+        (let [card-options [[(str "xxxx-xxxx-xxxx-" card-last-4) card-last-4] ["Replace Card" "replace-card"]]]
           (ui/select-field {:data-test "green-dot-saved-card"
                             :id        "green-dot-saved-card"
                             :keypath   keypaths/stylist-manage-account-green-dot-card-selected-id
@@ -36,7 +36,7 @@
                             :options   card-options
                             :required  true
                             :value     card-selected-id})))
-      (when (or (empty? card-last4)
+      (when (or (empty? card-last-4)
                 (= card-selected-id "replace-card"))
         [:div
          (ui/text-field-group {:data-test "green-dot-first-name"

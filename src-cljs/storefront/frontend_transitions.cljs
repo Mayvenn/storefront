@@ -318,10 +318,10 @@
       (update-in keypaths/store merge (select-keys stylist [:instagram-account :styleseat-account :portrait]))))
 
 (defmethod transition-state events/api-success-stylist-account-commission [_ event {:keys [stylist]} app-state]
-  (let [green-dot-payout-attributes (some-> stylist :green-dot-payout-attributes (select-keys [:last4 :payout-timeframe]))]
+  (let [green-dot-payout-attributes (some-> stylist :green-dot-payout-attributes (select-keys [:last-4 :payout-timeframe]))]
     (cond-> (update-in app-state keypaths/stylist-manage-account dissoc :green-dot-payout-attributes)
       (= "green_dot" (:chosen-payout-method stylist))
-      (-> (assoc-in keypaths/stylist-manage-account-green-dot-card-selected-id (:last4 green-dot-payout-attributes))
+      (-> (assoc-in keypaths/stylist-manage-account-green-dot-card-selected-id (:last-4 green-dot-payout-attributes))
           (assoc-in (conj keypaths/stylist-manage-account :green-dot-payout-attributes) green-dot-payout-attributes)))))
 
 (defmethod transition-state events/api-success-gallery [_ event {:keys [images]} app-state]
@@ -458,10 +458,10 @@
 
 (defmethod transition-state events/control-stylist-account-commission-submit [_ event args app-state]
   (let [selected-id (get-in app-state keypaths/stylist-manage-account-green-dot-card-selected-id)
-        last4       (get-in app-state (conj keypaths/stylist-manage-account :green-dot-payout-attributes :last4))]
+        last-4      (get-in app-state (conj keypaths/stylist-manage-account :green-dot-payout-attributes :last-4))]
     (cond-> app-state
-      (and (seq last4) (= selected-id last4))
-      (assoc-in (conj keypaths/stylist-manage-account :green-dot-payout-attributes) {:last4 last4}))))
+      (and (seq last-4) (= selected-id last-4))
+      (assoc-in (conj keypaths/stylist-manage-account :green-dot-payout-attributes) {:last-4 last-4}))))
 
 (defmethod transition-state events/control-stylist-account-password-submit [_ event args app-state]
   (let [stylist-account       (get-in app-state keypaths/stylist-manage-account)
