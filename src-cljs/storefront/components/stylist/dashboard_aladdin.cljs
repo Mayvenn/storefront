@@ -206,10 +206,12 @@
               :date               date
               ;; TODO: Future Us: Strictly aladdin services (not $100-off)
               :subtitle           (service-menu/discount->campaign-name discount)
-              :amount             (service-menu/display-voucher-amount service-menu mf/as-money pending-voucher)
+              :amount             (service-menu/display-voucher-amount
+                                   service-menu
+                                   mf/as-money-without-cents pending-voucher)
               :amount-description "Pending"
-              :styles             {:background  ""
-                                   :title-color "black"
+              :styles             {:background   ""
+                                   :title-color  "black"
                                    :amount-color "orange"}}]
     (payment-row item)))
 
