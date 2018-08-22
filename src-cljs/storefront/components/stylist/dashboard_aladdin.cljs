@@ -182,7 +182,7 @@
    (merge
     (utils/route-to events/navigate-stylist-dashboard-balance-transfer-details
                     {:balance-transfer-id id})
-    {:key       id
+    {:key       (str "payment" id)
      :data-test data-test
      :class     (:background styles)
      :style     (when non-clickable? {:pointer-events "none"})})
@@ -231,7 +231,7 @@
      (when pending-voucher
        (pending-voucher-row pending-voucher service-menu))
      (for [{:keys [title items] :as section} sections]
-       [:div {:key title}
+       [:div {:key (str "payments-table-" title)}
         [:div.h7.bg-gray.px2.py1.medium title]
         ;; ASK: Sales Bonus row
         (for [item (reverse (sort-by :date items))]
@@ -260,7 +260,7 @@
     (for [{:as sale :keys [id order-number order placed-at shipped-at returned-at updated-at voucher]} (vals sales)]
       [:tr.border-bottom.border-gray.py2
        (merge (utils/route-to events/navigate-stylist-dashboard)
-              {:key       id
+              {:key       (str "sales-table-" id)
                :data-test (str "sales-" order-number)})
        [:td.p2.left-align.dark-gray.h6.col-3 (some-> updated-at f/abbr-date)]
        [:td.p2.left-align.medium.col-3.h3 (some-> order orders/first-name-plus-last-name-initial)]
@@ -277,7 +277,7 @@
    (for [{:keys [id title navigate]} tabs]
      [:a.h6.col-6.p2.black
       (merge (utils/route-to navigate)
-             {:key (name id)
+             {:key (str "ledger-tabs-" id)
               :data-test (str "nav-" (name id))
               :class (if (= id active-tab-name)
                        "bg-gray bold"
