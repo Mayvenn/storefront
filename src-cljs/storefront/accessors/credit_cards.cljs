@@ -41,5 +41,6 @@
    "JCB"              "JCB "
    "Unknown"          ""})
 
-(defn display-credit-card [{:keys [brand last-4 exp-month exp-year]}]
-  (apply str (credit-card-brand->abbrev brand) "xxxx-xxxx-xxxx-" last-4 " - Ex. " exp-month "/" (drop 2 (str exp-year))))
+
+(defn display-credit-card [{:keys [brand last4 exp-month exp-year]}]
+  (apply str (credit-card-brand->abbrev brand) "xxxx-xxxx-xxxx-" last4 " - Ex. " exp-month "/" (drop 2 (str exp-year))))
