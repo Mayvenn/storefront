@@ -1,3 +1,4 @@
+.yellow        { color: var(--yellow); }
 .white         { color: var(--white); }
 .light-silver  { color: var(--light-silver); }
 .silver        { color: var(--silver); }
@@ -11,6 +12,7 @@
 
 
 :root {
+  --yellow:       #ffc520;
   --white:        #ffffff;
   --light-silver: #f2f2f2;
   --silver:       #ebebeb;

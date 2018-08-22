@@ -237,9 +237,40 @@
         (for [item (reverse (sort-by :date items))]
           (payment-row item))])]))
 
-(defn orders-table [orders]
-  (for [order (vals orders)]
-    [:div (:order-number order)]))
+(defn ^:private sale-status-cell
+  ([text color]
+   (sale-status-cell text color false))
+  ([text color spanning?]
+   [:td.p2.bold (if spanning?
+                    {:col-span 2
+                     :class "shout center"}
+                    {:class "left-align"})
+    [:p.h6 {:class color} text]]))
+
+(defn sales-table
+  [sales]
+  [:table.col-12 {:style {:border-collapse "collapse"}}
+   [:thead.bg-gray.border-0
+    [:tr.h6
+     [:th.p2.left-align.medium.col-3 "Order Updated"]
+     [:th.p2.left-align.medium "Client"]
+     [:th.p2.left-align.medium.col-1 "Delivery"]
+     [:th.p2.left-align.medium.col-1 "Voucher"]]]
+   [:tbody
+    (for [{:as sale :keys [id order-number order placed-at shipped-at returned-at updated-at voucher]} (vals sales)]
+      [:tr.border-bottom.border-gray.py2
+       (merge (utils/route-to events/navigate-stylist-dashboard)
+              {:key       id
+               :data-test (str "sales-" order-number)})
+       [:td.p2.left-align.dark-gray.h6.col-3 (some-> updated-at f/abbr-date)]
+       [:td.p2.left-align.medium.col-3.h3 (some-> order orders/first-name-plus-last-name-initial)]
+       (cond
+         shipped-at  (sale-status-cell "Shipped" "teal")
+         returned-at (sale-status-cell "Returned" "red" :spanning)
+         :always     (sale-status-cell "Processing" "yellow" :spanning))
+       (cond
+         (not shipped-at) nil
+         :always          (sale-status-cell "None" "gray"))])]])
 
 (defn ^:private ledger-tabs [active-tab-name]
   [:div.flex.flex-wrap
@@ -259,7 +290,7 @@
    [:h6.dark-gray.col-5.mx-auto.line-height-2 empty-copy]])
 
 (defn component
-  [{:keys [fetching? cash-balance-section-expanded? store-credit-balance-section-expanded? stats total-available-store-credit activity-ledger-tab balance-transfers orders payout-method cashing-out? pending-voucher service-menu]} owner opts]
+  [{:keys [fetching? cash-balance-section-expanded? store-credit-balance-section-expanded? stats total-available-store-credit activity-ledger-tab balance-transfers sales payout-method cashing-out? pending-voucher service-menu]} owner opts]
   (let [{:keys [bonuses earnings services]} stats
         {:keys [lifetime-earned]}           bonuses
         {:keys [active-tab-name]} activity-ledger-tab]
@@ -283,39 +314,39 @@
             (empty-ledger activity-ledger-tab))
 
           :orders
-          (if (seq orders)
-            (orders-table orders)
+          (if (seq sales)
+            (sales-table sales)
             (empty-ledger activity-ledger-tab)))]))))
 
 (defn query
   [data]
   (let [get-balance-transfer  second
         id->balance-transfers (get-in data keypaths/stylist-earnings-balance-transfers)]
-    {:fetching?                    (or (utils/requesting? data request-keys/get-stylist-balance-transfers)
-                                       (utils/requesting? data request-keys/fetch-stylist-service-menu))
-     :stats                        (get-in data keypaths/stylist-v2-dashboard-stats)
-     :cashing-out?                 (utils/requesting? data request-keys/cash-out-commit)
-     :payout-method                (get-in data keypaths/stylist-manage-account-chosen-payout-method)
-     :activity-ledger-tab          ({events/navigate-stylist-v2-dashboard-payments {:active-tab-name :payments
-                                                                                    :empty-copy      "Payments and bonus activity will appear here."
-                                                                                    :empty-title     "No payments yet"}
-                                     events/navigate-stylist-v2-dashboard-orders   {:active-tab-name :orders
-                                                                                    :empty-copy      "Orders from your store will appear here."
-                                                                                    :empty-title     "No orders yet"}}
-                                    (get-in data keypaths/navigation-event))
+    {:fetching?                              (or (utils/requesting? data request-keys/get-stylist-balance-transfers)
+                                                 (utils/requesting? data request-keys/fetch-stylist-service-menu))
+     :stats                                  (get-in data keypaths/stylist-v2-dashboard-stats)
+     :cashing-out?                           (utils/requesting? data request-keys/cash-out-commit)
+     :payout-method                          (get-in data keypaths/stylist-manage-account-chosen-payout-method)
+     :activity-ledger-tab                    ({events/navigate-stylist-v2-dashboard-payments {:active-tab-name :payments
+                                                                                              :empty-copy      "Payments and bonus activity will appear here."
+                                                                                              :empty-title     "No payments yet"}
+                                               events/navigate-stylist-v2-dashboard-orders   {:active-tab-name :orders
+                                                                                              :empty-copy      "Orders from your store will appear here."
+                                                                                              :empty-title     "No orders yet"}}
+                                              (get-in data keypaths/navigation-event))
      :cash-balance-section-expanded?         (get-in data keypaths/aladdin-dashboard-cash-balance-section-expanded?)
      :store-credit-balance-section-expanded? (get-in data keypaths/aladdin-dashboard-store-credit-section-expanded?)
-     :total-available-store-credit (get-in data keypaths/user-total-available-store-credit)
-     :balance-transfers            (into []
-                                         (comp
-                                          (map get-balance-transfer)
-                                          (remove (fn [transfer]
-                                                    (when-let [status (-> transfer :data :status)]
-                                                      (not= "paid" status)))))
-                                         id->balance-transfers)
-     :orders                       (get-in data keypaths/stylist-v2-dashboard-sales-elements)
-     :service-menu                 (get-in data keypaths/stylist-service-menu)
-     :pending-voucher              (get-in data voucher-keypaths/voucher-response)}))
+     :total-available-store-credit           (get-in data keypaths/user-total-available-store-credit)
+     :balance-transfers                      (into []
+                                                   (comp
+                                                    (map get-balance-transfer)
+                                                    (remove (fn [transfer]
+                                                              (when-let [status (-> transfer :data :status)]
+                                                                (not= "paid" status)))))
+                                                   id->balance-transfers)
+     :sales                                  (get-in data keypaths/stylist-v2-dashboard-sales-elements)
+     :service-menu                           (get-in data keypaths/stylist-service-menu)
+     :pending-voucher                        (get-in data voucher-keypaths/voucher-response)}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
