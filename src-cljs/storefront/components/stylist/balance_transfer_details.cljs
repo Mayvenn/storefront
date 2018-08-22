@@ -217,7 +217,15 @@
         (info-block "deposit date" (f/long-date (or transfered-at (:transfered_at data))))
         (info-block "client" client-name)
         (info-block "service type" campaign-name)
-        (when order-number (info-block "order number" order-number))]]
+
+        (when order-number
+          (info-block "order number"
+                      [:a.inherit-color
+                       (utils/route-to
+                        events/navigate-stylist-dashboard-order-details
+                        {:order-number order-number})
+                       order-number
+                       [:span.teal " View" ]]))]]
       [:div.col.col-2.mtp1.right-align
        [:div.h5.medium.green (mf/as-money-without-cents amount)]]]]))
 
