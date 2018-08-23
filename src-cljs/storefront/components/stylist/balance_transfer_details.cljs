@@ -182,7 +182,7 @@
          (f/long-date (or created-at (:transfered_at data)))
          (or payout-method (:payout_method data)))]
       [:div.col.col-2.mtp1.right-align
-       [:div.h5.medium.green (mf/as-money-without-cents amount)]
+       [:div.h5.medium.green (mf/as-money amount)]
        [:div.h7.dark-gray payout-method-name]]]]))
 
 (defn ^:private award-component [{:keys [balance-transfer aladdin-dashboard?]}]
@@ -198,7 +198,7 @@
        [:div.col-12
         (info-block "Deposit Date" (f/long-date (or transfered-at (:transfered_at data))))]]
       [:div.col.col-2.mtp1.right-align
-       [:div.h5.medium.green (mf/as-money-without-cents amount)]
+       [:div.h5.medium.green (mf/as-money amount)]
        [:div.h7.dark-gray "Cash"]]]]))
 
 (defn ^:private voucher-award-component [{:keys [balance-transfer aladdin-dashboard?]}]
@@ -227,7 +227,7 @@
                        order-number
                        [:span.teal " View" ]]))]]
       [:div.col.col-2.mtp1.right-align
-       [:div.h5.medium.green (mf/as-money-without-cents amount)]]]]))
+       [:div.h5.medium.green (mf/as-money amount)]]]]))
 
 (defn component [{:keys [fetching? balance-transfer] :as data} owner opts]
   (component/create
