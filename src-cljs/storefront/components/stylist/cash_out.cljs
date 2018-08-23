@@ -33,7 +33,7 @@
            "two_to_five_business_days" "Funds paid out to this card will become available two to five business days later."
            "")]
         [:div.my3
-         {:data-test "cash-out-button"
+         {:data-test "cash-out-commit-button"
           :data-ref  "cash-out-button"}
          (ui/teal-button {:on-click  (utils/send-event-callback events/control-stylist-dashboard-cash-out-commit
                                                                 {:amount amount
