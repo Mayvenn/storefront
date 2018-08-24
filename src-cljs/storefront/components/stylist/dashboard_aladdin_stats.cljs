@@ -84,7 +84,7 @@
    [:div.h6.bg-too-light-teal.p2
     [:div.letter-spacing-1.shout.dark-gray.mbnp5.flex.items-center
      [:a.black toggle-expand
-      "Store Credit Balance"
+      "Credit Balance"
       (svg/dropdown-arrow {:class  (str "ml1 stroke-dark-gray "
                                         (when expanded? "rotate-180"))
                            :style  {:stroke-width "2"}
