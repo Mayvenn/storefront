@@ -133,7 +133,7 @@
     [:p.h6 {:class color} text]]))
 
 (defn sales-table
-  [sales]
+  [sales sales-pagination]
   [:table.col-12 {:style {:border-collapse "collapse"}}
    [:thead.bg-gray.border-0
     [:tr.h6
@@ -142,7 +142,8 @@
      [:th.p2.left-align.medium.col-1 "Delivery"]
      [:th.p2.left-align.medium.col-1 "Voucher"]]]
    [:tbody
-    (for [{:as sale :keys [id order-number order placed-at shipped-at returned-at updated-at voucher]} (vals sales)]
+    (for [{:as sale
+           :keys [id order-number order placed-at shipped-at returned-at updated-at voucher]} (map sales (:ordering sales-pagination))]
       [:tr.border-bottom.border-gray.py2
        (merge (utils/route-to events/navigate-stylist-dashboard)
               {:key       (str "sales-table-" id)
@@ -175,7 +176,7 @@
    [:h6.dark-gray.col-5.mx-auto.line-height-2 empty-copy]])
 
 (defn component
-  [{:keys [fetching? stats-cards activity-ledger-tab balance-transfers sales pending-voucher service-menu] :as data} owner opts]
+  [{:keys [fetching? stats-cards activity-ledger-tab balance-transfers sales sales-pagination pending-voucher service-menu] :as data} owner opts]
   (let [{:keys [active-tab-name]} activity-ledger-tab]
     (component/create
      (if fetching?
@@ -194,7 +195,7 @@
 
           :orders
           (if (seq sales)
-            (sales-table sales)
+            (sales-table sales sales-pagination)
             (empty-ledger activity-ledger-tab)))]))))
 
 (defn query
@@ -224,6 +225,7 @@
                                              (not= "paid" status)))))
                                 id->balance-transfers)
      :sales               (get-in data keypaths/stylist-v2-dashboard-sales-elements)
+     :sales-pagination    (get-in data keypaths/stylist-v2-dashboard-sales-pagination)
      :service-menu        (get-in data keypaths/stylist-service-menu)
      :pending-voucher     (get-in data voucher-keypaths/voucher-response)}))
 
@@ -280,5 +282,5 @@
 (defmethod transitions/transition-state events/api-success-stylist-v2-dashboard-sales
   [_ event {:keys [sales pagination]} app-state]
   (-> app-state
-      (update-in keypaths/stylist-v2-dashboard-sales-elements merge sales)
+      (update-in keypaths/stylist-v2-dashboard-sales-elements merge (maps/map-keys (comp spice/parse-int name) sales))
       (assoc-in keypaths/stylist-v2-dashboard-sales-pagination pagination)))
