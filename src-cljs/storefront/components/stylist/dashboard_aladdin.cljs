@@ -198,6 +198,14 @@
             (sales-table sales sales-pagination)
             (empty-ledger activity-ledger-tab)))]))))
 
+(def determine-active-tab
+  {events/navigate-stylist-v2-dashboard-payments {:active-tab-name :payments
+                                                  :empty-copy      "Payments and bonus activity will appear here."
+                                                  :empty-title     "No payments yet"}
+   events/navigate-stylist-v2-dashboard-orders   {:active-tab-name :orders
+                                                  :empty-copy      "Orders from your store will appear here."
+                                                  :empty-title     "No orders yet"}})
+
 (defn query
   [data]
   (let [get-balance-transfer  second
@@ -210,13 +218,7 @@
                            :cash-balance-section-expanded?         (get-in data keypaths/aladdin-dashboard-cash-balance-section-expanded?)
                            :store-credit-balance-section-expanded? (get-in data keypaths/aladdin-dashboard-store-credit-section-expanded?)
                            :total-available-store-credit           (get-in data keypaths/user-total-available-store-credit)}
-     :activity-ledger-tab ({events/navigate-stylist-v2-dashboard-payments {:active-tab-name :payments
-                                                                           :empty-copy      "Payments and bonus activity will appear here."
-                                                                           :empty-title     "No payments yet"}
-                            events/navigate-stylist-v2-dashboard-orders   {:active-tab-name :orders
-                                                                           :empty-copy      "Orders from your store will appear here."
-                                                                           :empty-title     "No orders yet"}}
-                           (get-in data keypaths/navigation-event))
+     :activity-ledger-tab (determine-active-tab (get-in data keypaths/navigation-event))
      :balance-transfers   (into []
                                 (comp
                                  (map get-balance-transfer)
