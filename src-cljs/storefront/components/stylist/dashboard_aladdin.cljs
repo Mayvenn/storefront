@@ -167,7 +167,7 @@
               :data-test (str "nav-" (name id))
               :class (if (= id active-tab-name)
                        "bg-silver bold"
-                       "bg-light-silver")})
+                       "bg-fate-white")})
       title])])
 
 (defn ^:private empty-ledger [{:keys [empty-title empty-copy]}]
