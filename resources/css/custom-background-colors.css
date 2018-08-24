@@ -4,6 +4,7 @@
 .bg-light-orange           { background-color: var(--light-orange); }
 
 .bg-white                  { background-color: var(--white); }
+.bg-fate-white             { background-color: var(--fate-white); }
 .bg-light-silver           { background-color: var(--light-silver); }
 .bg-silver                 { background-color: var(--silver); }
 .bg-dark-silver            { background-color: var(--dark-silver); }
@@ -21,6 +22,7 @@
 
 :root {
     --white:          #ffffff;
+    --fate-white:     #f8f8f8;
     --light-silver:   #f2f2f2;
     --silver:         #ebebeb;
     --dark-silver:    #dadada;

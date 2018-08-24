@@ -259,7 +259,7 @@
     [:div.p4
      {:class (str "bg-" color-class
                   (when (#{"black" "fb-blue" "dark-gray"} color-class) " white")
-                  (when (#{"white"} color-class) " border border-gray"))
+                  (when (string/ends-with? color-class "white") " border border-gray"))
       :style {:height "8em"}}
      [:div.mt4
       [:div color-class]
@@ -281,6 +281,7 @@
    (color-swatch "dark-gray" "666666")
    (color-swatch "gray" "cccccc")
    (color-swatch "light-gray" "ebebeb")
+   (color-swatch "fate-white" "f8f8f8")
    (color-swatch "white" "ffffff")]
 
   (subheader "Success dialog and error handling")
