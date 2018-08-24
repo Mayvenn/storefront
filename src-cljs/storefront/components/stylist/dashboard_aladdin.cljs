@@ -117,7 +117,7 @@
        (pending-voucher-row pending-voucher service-menu))
      (for [{:keys [title items] :as section} sections]
        [:div {:key (str "payments-table-" title)}
-        [:div.h7.bg-gray.px2.py1.medium title]
+        [:div.h7.bg-silver.px2.py1.medium title]
         ;; ASK: Sales Bonus row
         (for [item (reverse (sort-by :date items))]
           (payment-row item))])]))
@@ -135,7 +135,7 @@
 (defn sales-table
   [sales sales-pagination]
   [:table.col-12 {:style {:border-collapse "collapse"}}
-   [:thead.bg-gray.border-0
+   [:thead.bg-silver.border-0
     [:tr.h6
      [:th.p2.left-align.medium.col-3 "Order Updated"]
      [:th.p2.left-align.medium "Client"]
@@ -166,8 +166,8 @@
              {:key (str "ledger-tabs-" id)
               :data-test (str "nav-" (name id))
               :class (if (= id active-tab-name)
-                       "bg-gray bold"
-                       "bg-light-gray")})
+                       "bg-silver bold"
+                       "bg-light-silver")})
       title])])
 
 (defn ^:private empty-ledger [{:keys [empty-title empty-copy]}]
