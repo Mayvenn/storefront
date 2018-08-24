@@ -19,13 +19,14 @@
 
 ;; TODO Remove handling of underscored keys after storeback has been deployed.
 
-(defn ^:private back-button [aladdin-dashboard?]
+(defn ^:private back-button [back aladdin-dashboard?]
   [:a.col-12.dark-gray.flex.items-center.py3
    (merge
-     {:data-test "back-link"}
-     (if aladdin-dashboard?
-       (utils/route-to events/navigate-stylist-v2-dashboard-orders)
-       (utils/route-to events/navigate-stylist-dashboard-earnings)))
+    {:data-test "back-link"}
+    (utils/route-back-or-to back
+                            (if aladdin-dashboard?
+                              events/navigate-stylist-v2-dashboard-orders
+                              events/navigate-stylist-dashboard-earnings)))
    (ui/back-caret "Back")])
 
 (defn ^:private info-block [header content]
@@ -63,12 +64,12 @@
 
 (defmethod effects/perform-effects events/navigate-stylist-dashboard-order-details
   [_ event {:keys [order-number] :as args} _ app-state]
-  (let [user-info (get-user-info app-state)
+  (let [user-info  (get-user-info app-state)
         stylist-id (get-in app-state keypaths/store-stylist-id)
-        handler #(messages/handle-message events/api-success-stylist-v2-dashboard-sale %)
-        params (merge {:stylist-id stylist-id
-                       :order-number order-number
-                       :handler handler} user-info)]
+        handler    #(messages/handle-message events/api-success-stylist-v2-dashboard-sale %)
+        params     (merge {:stylist-id   stylist-id
+                           :order-number order-number
+                           :handler      handler} user-info)]
     (when (:user-token user-info)
       (api/get-stylist-dashboard-sale params))))
 
@@ -80,37 +81,36 @@
         (assoc-in keypaths/stylist-v2-dashboard-current-sale-id sale-id))))
 
 (defn query [data]
-  (let [sale-id (get-in data keypaths/stylist-v2-dashboard-current-sale-id)]
-    {:sale (get-in data (conj keypaths/stylist-v2-dashboard-sales-elements sale-id))
-     :aladdin-dashboard? (experiments/aladdin-dashboard? data)}))
+  (let [sale-id (get-in data keypaths/stylist-v2-dashboard-current-sale-id)
+        sale    (get-in data (conj keypaths/stylist-v2-dashboard-sales-elements sale-id))]
+    {:sale               sale
+     :loading?           (utils/requesting? data request-keys/get-stylist-dashboard-sale)
+     :aladdin-dashboard? (experiments/aladdin-dashboard? data)
+     :back               (first (get-in data keypaths/navigation-undo-stack))}))
 
-(defn component [{:keys [sale aladdin-dashboard?]} owner opts]
+(defn component [{:keys [sale aladdin-dashboard? loading? back]} owner opts]
   (let [{:keys [order-number
                 voucher-type
                 voucher-status
                 placed-at
                 order]} sale]
     (component/create
-      [:div.container.mb4.px3
-       (back-button aladdin-dashboard?)
-       [:div
-        [:div.col.col-1.px2 (svg/box-package {:height 18
-                                              :width  25})]
-
-        [:div.col.col-9.pl2
-         [:h4.col-12.left.medium.pb4 (orders/first-name-plus-last-name-initial order)]
-         (info-columns
+     (if (or (not order-number) loading?)
+       [:div.my6.h2 ui/spinner]
+       [:div.container.mb4.px3
+        (back-button back aladdin-dashboard?)
+        [:div
+         [:div.col.col-1.px2 (svg/box-package {:height 18
+                                               :width  25})]
+         [:div.col.col-9.pl2
+          [:h4.col-12.left.medium.pb4 (orders/first-name-plus-last-name-initial order)]
+          (info-columns
            ["order number" order-number]
            ["voucher type" voucher-type])
-         (info-columns
-           ["order date" (f/long-date placed-at)]
-           ["voucher status" voucher-status])
-         (shipment-details order)
-         ]
-        ;; [:div.col.col-2.mtp1.right-align
-        ;;  #_[:div.h5.medium.green (mf/as-money-without-cents amount)]]
-        ]]
-      )))
+          (info-columns
+             ["order date" (f/long-date placed-at)]
+             ["voucher status" voucher-status])
+          (shipment-details order)]]])) ))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

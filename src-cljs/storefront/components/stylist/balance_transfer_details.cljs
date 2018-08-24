@@ -221,9 +221,11 @@
         (when order-number
           (info-block "order number"
                       [:a.inherit-color
-                       (utils/route-to
-                        events/navigate-stylist-dashboard-order-details
-                        {:order-number order-number})
+                       (merge
+                        {:data-test "view-order"}
+                        (utils/route-to
+                         events/navigate-stylist-dashboard-order-details
+                         {:order-number order-number}))
                        order-number
                        [:span.teal " View" ]]))]]
       [:div.col.col-2.mtp1.right-align
