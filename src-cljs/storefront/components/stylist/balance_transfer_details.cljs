@@ -220,14 +220,16 @@
 
         (when order-number
           (info-block "order number"
-                      [:a.inherit-color
-                       (merge
-                        {:data-test "view-order"}
-                        (utils/route-to
-                         events/navigate-stylist-dashboard-order-details
-                         {:order-number order-number}))
-                       order-number
-                       [:span.teal " View" ]]))]]
+                      (if aladdin-dashboard?
+                        [:a.inherit-color
+                         (merge
+                          {:data-test "view-order"}
+                          (utils/route-to
+                           events/navigate-stylist-dashboard-order-details
+                           {:order-number order-number}))
+                         order-number
+                         [:span.teal " View" ]]
+                        order-number)))]]
       [:div.col.col-2.mtp1.right-align
        [:div.h5.medium.green (mf/as-money amount)]]]]))
 
