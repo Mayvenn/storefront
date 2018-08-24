@@ -174,16 +174,17 @@
     [:div.container.mb4.px3
      (back-to-earnings aladdin-dashboard?)
      [:div
-      [:div.col.col-1.px2 (svg/stack-o-cash {:height 14
+      [:div.col.col-1 (svg/stack-o-cash {:height 14
                                              :width  20})]
-      [:div.col.col-9.pl2
-       [:h4.col-12.left.medium.pb4 "Money Transfer"]
+      [:div.col.col-11.pl1
+       [:div.col.col-9
+        [:h4.col-12.left.medium.pb4 "Money Transfer"]]
+       [:div.col.col-3.mtp1.right-align
+        [:div.h5.medium.green (mf/as-money amount)]
+        [:div.h7.dark-gray payout-method-name]]
        (payout-method-details
-         (f/long-date (or created-at (:transfered_at data)))
-         (or payout-method (:payout_method data)))]
-      [:div.col.col-2.mtp1.right-align
-       [:div.h5.medium.green (mf/as-money amount)]
-       [:div.h7.dark-gray payout-method-name]]]]))
+        (f/long-date (or created-at (:transfered_at data)))
+        (or payout-method (:payout_method data)))]]]))
 
 (defn ^:private award-component [{:keys [balance-transfer aladdin-dashboard?]}]
   (let [{:keys [id transfered-at amount data]} balance-transfer
