@@ -120,7 +120,6 @@
     (if (= "immediate" payout-method-name) "Instant" payout-method-name)))
 
 (defn ^:private instapay-payout-details [date-string payout-method]
-  (let [payout-timeframe ])
   [:div
    (info-columns
      ["Date Sent" date-string]
