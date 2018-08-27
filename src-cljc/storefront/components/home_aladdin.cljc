@@ -322,7 +322,7 @@
   [_ _ {:keys [query-params]} app-state]
   (assoc-in app-state keypaths/aladdin-video (slug->video (:video query-params))))
 
-(defmethod effects/perform-effects events/aladdin-show-home
+(defmethod effects/perform-effects events/v2-show-home
   [_ _ args prev-app-state app-state]
   #?(:cljs (do (pixlee.hook/fetch-album-by-keyword :sleek-and-straight)
                (pixlee.hook/fetch-album-by-keyword :waves-and-curly)
