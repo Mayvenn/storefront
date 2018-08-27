@@ -113,14 +113,18 @@
         (str (mf/as-money amount) " has been added to your next payment.")]])))
 
 
+(defn ^:private estimated-arrival [payout-method]
+  (let [payout-method-name (or (:payout-timeframe payout-method)
+                               (:payout_timeframe payout-method)
+                               "Unknown")]
+    (if (= "immediate" payout-method-name) "Instant" payout-method-name)))
 
 (defn ^:private instapay-payout-details [date-string payout-method]
+  (let [payout-timeframe ])
   [:div
    (info-columns
      ["Date Sent" date-string]
-     ["Estimated Arrival" (or (:payout-timeframe payout-method)
-                              (:payout_timeframe payout-method)
-                              "Unknown")])
+     ["Estimated Arrival" (estimated-arrival payout-method)])
    (info-block
      "Card" (str "xxxx-xxxx-xxxx-" (or (:last-4 payout-method)
                                        "????")))])
