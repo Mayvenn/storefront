@@ -178,4 +178,5 @@
                    :talkable false}}
 
      :v2 {:ui {:dashboard {:cash-balance-section-expanded? false
-                           :store-credit-balance-section-expanded? false}}}}))
+                           :store-credit-balance-section-expanded? false}}
+          :db {}}}))
