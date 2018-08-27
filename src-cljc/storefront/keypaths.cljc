@@ -256,13 +256,6 @@
 (def stylist-referral-program-page (conj stylist-referral-program :page))
 (def stylist-referral-program-pages (conj stylist-referral-program :pages))
 
-(def stylist-v2-dashboard (conj stylist :v2-dashboard))
-(def stylist-v2-dashboard-stats (conj stylist-v2-dashboard :stats))
-(def stylist-v2-dashboard-sales (conj stylist-v2-dashboard :sales))
-(def stylist-v2-dashboard-current-sale-id (conj stylist-v2-dashboard-sales :current-sale-id))
-(def stylist-v2-dashboard-sales-elements (conj stylist-v2-dashboard-sales :elements))
-(def stylist-v2-dashboard-sales-pagination (conj stylist-v2-dashboard-sales :pagination))
-
 (def current-category-id (conj ui :current-category-id))
 (def current-traverse-nav (conj ui :current-traverse-nav))
 (def current-traverse-nav-id (conj current-traverse-nav :id))
@@ -326,6 +319,19 @@
 (def v2-dashboard (conj v2-ui :dashboard))
 (def v2-dashboard-cash-balance-section-expanded? (conj v2-dashboard :cash-balance-section-expanded?))
 (def v2-dashboard-store-credit-section-expanded? (conj v2-dashboard :store-credit-section-expanded?))
+(def v2-dashboard-stats (conj v2-dashboard :stats))
+(def v2-dashboard-sales (conj v2-dashboard :sales))
+(def v2-dashboard-sales-current-sale-id (conj v2-dashboard-sales :current-sale-id))
+(def v2-dashboard-sales-elements (conj v2-dashboard-sales :elements))
+(def v2-dashboard-sales-pagination (conj v2-dashboard-sales :pagination))
+
+;TODO(ellie) GROT
+(def stylist-v2-dashboard v2-dashboard)
+(def stylist-v2-dashboard-stats v2-dashboard-stats)
+(def stylist-v2-dashboard-sales v2-dashboard-sales)
+(def stylist-v2-dashboard-current-sale-id v2-dashboard-sales-current-sale-id)
+(def stylist-v2-dashboard-sales-elements v2-dashboard-sales-elements)
+(def stylist-v2-dashboard-sales-pagination v2-dashboard-sales-pagination)
 
 ;;TODO(ellie) GROT
 (def aladdin v2-ui)
