@@ -60,19 +60,22 @@
   (display-feature? data "deals"))
 
 (defn aladdin-experience? [data]
-  (= (get-in data keypaths/store-experience)
-     "aladdin"))
+  (or (= (get-in data keypaths/store-experience)
+         "aladdin")
+      (= (get-in data keypaths/store-experience)
+         "phoenix")))
 
 (defn aladdin-homepage? [data]
   (->> (get-in data keypaths/store-features)
-       (some #{"aladdin-homepage"})
+       (some #{"aladdin-homepage" "phoenix-homepage"})
        boolean))
 
 (defn aladdin-dashboard? [data]
   (or (->> (get-in data keypaths/store-features)
-           (some #{"aladdin-dashboard"})
+           (some #{"aladdin-dashboard" "phoenix-dashbaord"})
            boolean)
-      (display-feature? data "force-aladdin-dashboard")))
+      (display-feature? data "force-aladdin-dashboard")
+      (display-feature? data "force-phoenix-dashboard")))
 
 (defn seventy-five-off-install?
   [data]
