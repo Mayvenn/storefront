@@ -117,8 +117,8 @@
       (assoc-in keypaths/popup nil)
       (assoc-in keypaths/dismissed-free-install true)))
 
-(defmethod transitions/transition-state events/popup-show-aladdin-free-install [_ event args app-state]
+(defmethod transitions/transition-state events/popup-show-v2-free-install [_ event args app-state]
   (assoc-in app-state keypaths/popup :aladdin-free-install))
 
-(defmethod effects/perform-effects events/popup-show-aladdin-free-install [_ event _ _ app-state]
+(defmethod effects/perform-effects events/popup-show-v2-free-install [_ event _ _ app-state]
   (scroll/disable-body-scrolling))
