@@ -5,7 +5,9 @@
 (def get-states [:get-states])
 (def get-saved-cards [:get-saved-cards])
 (def get-static-content [:get-static-content])
+;;TODO(ellie) Rename to "get-products"
 (def search-v2-products [:search-v2-products])
+;;TODO(ellie) Rename to "get-skus"
 (def search-v2-skus [:search-v2-skus])
 
 (def sign-out [:sign-out])

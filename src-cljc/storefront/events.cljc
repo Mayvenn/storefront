@@ -71,9 +71,6 @@
 (defpath navigate-stylist-dashboard-cash-out-success)
 (defpath navigate-stylist-dashboard-balance-transfer-details)
 
-(defpath navigate-stylist-v2-dashboard-payments)
-(defpath navigate-stylist-v2-dashboard-orders)
-
 (defpath navigate-stylist-share-your-store)
 
 (defpath navigate-stylist-account)
@@ -143,8 +140,6 @@
 (defpath stylist-balance-transfers-fetch)
 (defpath stylist-v2-dashboard-stats-fetch)
 
-(defpath aladdin-show-home)
-
 (defpath ensure-sku-ids)
 
 (defpath carousel-certified-stylist-index)
@@ -167,9 +162,6 @@
 (defpath control-free-install)
 (defpath control-free-install-shop-looks)
 (defpath control-free-install-dismiss)
-
-(defpath control-aladdin-free-install)
-(defpath control-aladdin-free-install-dismiss)
 
 (defpath control-install-landing-page-look-back)
 (defpath control-install-landing-page-toggle-accordion)
@@ -263,7 +255,6 @@
 
 (defpath control-stylist-dashboard-cash-out-begin)
 (defpath control-stylist-dashboard-cash-out-commit)
-(defpath control-stylist-v2-dashboard-section-toggle)
 
 (defpath control-commission-order-expand)
 
@@ -453,7 +444,6 @@
 (defpath popup-show-email-capture)
 (defpath popup-show-free-install)
 (defpath popup-show-seventy-five-off-install)
-(defpath popup-show-aladdin-free-install)
 
 (defpath image-picker-component-mounted)
 (defpath image-picker-component-will-unmount)
@@ -481,3 +471,28 @@
 
 (defpath browser-fullscreen-enter)
 (defpath browser-fullscreen-exit)
+
+;;SECTION v2
+(defpath v2-show-home)
+
+;;SECTION v2 popup
+(defpath popup-show-v2-free-install)
+
+;;SECTION v2 Control
+(defpath control-v2-free-install)
+(defpath control-v2-free-install-dismiss)
+(defpath control-v2-stylist-dashboard-section-toggle)
+
+;;SECTION v2 Navigate
+;;TODO(ellie) rename
+(defpath navigate-stylist-v2-dashboard-payments)
+(defpath navigate-stylist-v2-dashboard-orders)
+
+;;TODO(ellie) GROT
+;;SECTION shims
+(def aladdin-show-home v2-show-home)
+(def popup-show-aladdin-free-install popup-show-v2-free-install)
+(def control-aladdin-free-install control-v2-free-install)
+(def control-aladdin-free-install-dismiss control-v2-free-install-dismiss)
+(def control-stylist-v2-dashboard-section-toggle control-v2-stylist-dashboard-section-toggle)
+

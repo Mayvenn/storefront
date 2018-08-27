@@ -318,12 +318,22 @@
 (def fvlanding-carousel-ugc-open? (conj fvlanding-carousel-ugc :open?))
 (def fvlanding-carousel-ugc-index (conj fvlanding-carousel-ugc :index))
 
-(def aladdin (conj ui :aladdin))
-(def aladdin-video (conj aladdin :video))
+(def v2-root [:v2])
+(def v2-ui (conj v2-root :ui))
 
-(def aladdin-dashboard (conj aladdin :dashboard))
-(def aladdin-dashboard-cash-balance-section-expanded? (conj aladdin-dashboard :cash-balance-section-expanded?))
-(def aladdin-dashboard-store-credit-section-expanded? (conj aladdin-dashboard :store-credit-section-expanded?))
+(def v2-ui-home (conj v2-ui :home))
+(def v2-ui-home-video (conj v2-ui-home :video))
+(def v2-dashboard (conj v2-ui :dashboard))
+(def v2-dashboard-cash-balance-section-expanded? (conj v2-dashboard :cash-balance-section-expanded?))
+(def v2-dashboard-store-credit-section-expanded? (conj v2-dashboard :store-credit-section-expanded?))
+
+;;TODO(ellie) GROT
+(def aladdin v2-ui)
+(def aladdin-home v2-ui-home)
+(def aladdin-video v2-ui-home-video)
+(def aladdin-dashboard v2-dashboard)
+(def aladdin-dashboard-cash-balance-section-expanded? v2-dashboard-cash-balance-section-expanded?)
+(def aladdin-dashboard-store-credit-section-expanded? v2-dashboard-store-credit-section-expanded?)
 
 (def accordion (conj ui :accordion))
 (def accordion-freeinstall-home (conj accordion :freeinstall))

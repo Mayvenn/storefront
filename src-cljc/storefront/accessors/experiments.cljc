@@ -59,23 +59,26 @@
 (defn deals? [data]
   (display-feature? data "deals"))
 
-(defn aladdin-experience? [data]
-  (or (= (get-in data keypaths/store-experience)
-         "aladdin")
-      (= (get-in data keypaths/store-experience)
-         "phoenix")))
+(defn v2-experience? [data]
+  (contains? #{"aladdin" "phoenix"}
+             (get-in data keypaths/store-experience)))
 
-(defn aladdin-homepage? [data]
+(defn v2-homepage? [data]
   (->> (get-in data keypaths/store-features)
        (some #{"aladdin-homepage" "phoenix-homepage"})
        boolean))
 
-(defn aladdin-dashboard? [data]
+(defn v2-dashboard? [data]
   (or (->> (get-in data keypaths/store-features)
            (some #{"aladdin-dashboard" "phoenix-dashbaord"})
            boolean)
       (display-feature? data "force-aladdin-dashboard")
       (display-feature? data "force-phoenix-dashboard")))
+
+;;TODO(ellie) GROT
+(def aladdin-experience? v2-experience?)
+(def aladdin-homepage? v2-homepage?)
+(def aladdin-dashboard? v2-dashboard?)
 
 (defn seventy-five-off-install?
   [data]
