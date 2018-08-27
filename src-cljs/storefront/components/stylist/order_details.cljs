@@ -77,12 +77,12 @@
   [_ _ sale app-state]
   (let [sale-id (first (keys sale))]
     (-> app-state
-        (update-in keypaths/stylist-v2-dashboard-sales-elements merge sale)
-        (assoc-in keypaths/stylist-v2-dashboard-current-sale-id sale-id))))
+        (update-in keypaths/v2-dashboard-sales-elements merge sale)
+        (assoc-in keypaths/v2-dashboard-sales-current-sale-id sale-id))))
 
 (defn query [data]
-  (let [sale-id (get-in data keypaths/stylist-v2-dashboard-current-sale-id)
-        sale    (get-in data (conj keypaths/stylist-v2-dashboard-sales-elements sale-id))]
+  (let [sale-id (get-in data keypaths/v2-dashboard-sales-current-sale-id)
+        sale    (get-in data (conj keypaths/v2-dashboard-sales-elements sale-id))]
     {:sale               sale
      :loading?           (utils/requesting? data request-keys/get-stylist-dashboard-sale)
      :aladdin-dashboard? (experiments/aladdin-dashboard? data)

@@ -35,7 +35,7 @@
    {:as earnings :keys [cash-balance lifetime-earnings monthly-earnings]}
    {:as services :keys [lifetime-services monthly-services]}]
   (let [toggle-expand (utils/fake-href events/control-v2-stylist-dashboard-section-toggle
-                                       {:keypath keypaths/aladdin-dashboard-cash-balance-section-expanded?})]
+                                       {:keypath keypaths/v2-ui-dashboard-cash-balance-section-expanded?})]
     [:div.h6.bg-too-light-teal.p2
      [:div.letter-spacing-1.shout.dark-gray.mbnp5.flex.items-center
       [:a.black toggle-expand
@@ -80,7 +80,7 @@
 
 (defn ^:private store-credit-balance-card [total-available-store-credit lifetime-earned expanded?]
   (let [toggle-expand (utils/fake-href events/control-v2-stylist-dashboard-section-toggle
-                                       {:keypath keypaths/aladdin-dashboard-store-credit-section-expanded?})]
+                                       {:keypath keypaths/v2-ui-dashboard-store-credit-section-expanded?})]
    [:div.h6.bg-too-light-teal.p2
     [:div.letter-spacing-1.shout.dark-gray.mbnp5.flex.items-center
      [:a.black toggle-expand
@@ -146,7 +146,7 @@
 (defmethod transitions/transition-state events/api-success-v2-stylist-dashboard-stats
   [_ event {:as stats :keys [stylist earnings services store-credit-balance bonuses]} app-state]
   (-> app-state
-      (assoc-in keypaths/stylist-v2-dashboard-stats stats)))
+      (assoc-in keypaths/v2-dashboard-stats stats)))
 
 (defmethod transitions/transition-state events/control-v2-stylist-dashboard-section-toggle
   [_ event {:keys [keypath]} app-state]

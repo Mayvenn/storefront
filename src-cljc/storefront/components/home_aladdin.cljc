@@ -298,7 +298,7 @@
      :categories                (->> (get-in data keypaths/categories)
                                      (filter :home/order)
                                      (sort-by :home/order))
-     :video                     (get-in data keypaths/aladdin-video)
+     :video                     (get-in data keypaths/v2-ui-home-video)
      :sleek-and-straight-ugc    {:images        sleek-and-straight-images
                                  :album-keyword :sleek-and-straight}
      :waves-and-curly-ugc       {:images        waves-and-curly-images
@@ -320,7 +320,7 @@
 
 (defmethod transitions/transition-state events/navigate-home
   [_ _ {:keys [query-params]} app-state]
-  (assoc-in app-state keypaths/aladdin-video (slug->video (:video query-params))))
+  (assoc-in app-state keypaths/v2-ui-home-video (slug->video (:video query-params))))
 
 (defmethod effects/perform-effects events/v2-show-home
   [_ _ args prev-app-state app-state]

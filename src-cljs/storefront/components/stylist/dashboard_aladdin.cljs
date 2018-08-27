@@ -214,11 +214,11 @@
         id->balance-transfers (get-in data keypaths/stylist-earnings-balance-transfers)]
     {:fetching?           (or (utils/requesting? data request-keys/get-stylist-balance-transfers)
                               (utils/requesting? data request-keys/fetch-stylist-service-menu))
-     :stats-cards         {:stats                                  (get-in data keypaths/stylist-v2-dashboard-stats)
+     :stats-cards         {:stats                                  (get-in data keypaths/v2-dashboard-stats)
                            :cashing-out?                           (utils/requesting? data request-keys/cash-out-commit)
                            :payout-method                          (get-in data keypaths/stylist-manage-account-chosen-payout-method)
-                           :cash-balance-section-expanded?         (get-in data keypaths/aladdin-dashboard-cash-balance-section-expanded?)
-                           :store-credit-balance-section-expanded? (get-in data keypaths/aladdin-dashboard-store-credit-section-expanded?)
+                           :cash-balance-section-expanded?         (get-in data keypaths/v2-ui-dashboard-cash-balance-section-expanded?)
+                           :store-credit-balance-section-expanded? (get-in data keypaths/v2-ui-dashboard-store-credit-section-expanded?)
                            :total-available-store-credit           (get-in data keypaths/user-total-available-store-credit)}
      :activity-ledger-tab (determine-active-tab (get-in data keypaths/navigation-event))
      :balance-transfers   (into []
@@ -228,8 +228,8 @@
                                            (when-let [status (-> transfer :data :status)]
                                              (not= "paid" status)))))
                                 id->balance-transfers)
-     :sales               (get-in data keypaths/stylist-v2-dashboard-sales-elements)
-     :sales-pagination    (get-in data keypaths/stylist-v2-dashboard-sales-pagination)
+     :sales               (get-in data keypaths/v2-dashboard-sales-elements)
+     :sales-pagination    (get-in data keypaths/v2-dashboard-sales-pagination)
      :service-menu        (get-in data keypaths/stylist-service-menu)
      :pending-voucher     (get-in data voucher-keypaths/voucher-response)}))
 
@@ -259,7 +259,7 @@
       (api/get-stylist-dashboard-sales stylist-id
                                        user-id
                                        user-token
-                                       (get-in app-state keypaths/stylist-v2-dashboard-sales-pagination)
+                                       (get-in app-state keypaths/v2-dashboard-sales-pagination)
                                        #(messages/handle-message events/api-success-v2-stylist-dashboard-sales
                                                                  (select-keys % [:sales :pagination]))))
     (effects/redirect events/navigate-stylist-dashboard-earnings)))
@@ -286,5 +286,5 @@
 (defmethod transitions/transition-state events/api-success-v2-stylist-dashboard-sales
   [_ event {:keys [sales pagination]} app-state]
   (-> app-state
-      (update-in keypaths/stylist-v2-dashboard-sales-elements merge (maps/map-keys (comp spice/parse-int name) sales))
-      (assoc-in keypaths/stylist-v2-dashboard-sales-pagination pagination)))
+      (update-in keypaths/v2-dashboard-sales-elements merge (maps/map-keys (comp spice/parse-int name) sales))
+      (assoc-in keypaths/v2-dashboard-sales-pagination pagination)))

@@ -312,34 +312,22 @@
 (def fvlanding-carousel-ugc-index (conj fvlanding-carousel-ugc :index))
 
 (def v2-root [:v2])
+
 (def v2-ui (conj v2-root :ui))
+(def v2-db (conj v2-root :db))
 
 (def v2-ui-home (conj v2-ui :home))
 (def v2-ui-home-video (conj v2-ui-home :video))
-(def v2-dashboard (conj v2-ui :dashboard))
-(def v2-dashboard-cash-balance-section-expanded? (conj v2-dashboard :cash-balance-section-expanded?))
-(def v2-dashboard-store-credit-section-expanded? (conj v2-dashboard :store-credit-section-expanded?))
+(def v2-ui-dashboard (conj v2-ui :dashboard))
+(def v2-ui-dashboard-cash-balance-section-expanded? (conj v2-ui-dashboard :cash-balance-section-expanded?))
+(def v2-ui-dashboard-store-credit-section-expanded? (conj v2-ui-dashboard :store-credit-section-expanded?))
+
+(def v2-dashboard (conj v2-db :dashboard))
 (def v2-dashboard-stats (conj v2-dashboard :stats))
 (def v2-dashboard-sales (conj v2-dashboard :sales))
 (def v2-dashboard-sales-current-sale-id (conj v2-dashboard-sales :current-sale-id))
 (def v2-dashboard-sales-elements (conj v2-dashboard-sales :elements))
 (def v2-dashboard-sales-pagination (conj v2-dashboard-sales :pagination))
-
-;TODO(ellie) GROT
-(def stylist-v2-dashboard v2-dashboard)
-(def stylist-v2-dashboard-stats v2-dashboard-stats)
-(def stylist-v2-dashboard-sales v2-dashboard-sales)
-(def stylist-v2-dashboard-current-sale-id v2-dashboard-sales-current-sale-id)
-(def stylist-v2-dashboard-sales-elements v2-dashboard-sales-elements)
-(def stylist-v2-dashboard-sales-pagination v2-dashboard-sales-pagination)
-
-;;TODO(ellie) GROT
-(def aladdin v2-ui)
-(def aladdin-home v2-ui-home)
-(def aladdin-video v2-ui-home-video)
-(def aladdin-dashboard v2-dashboard)
-(def aladdin-dashboard-cash-balance-section-expanded? v2-dashboard-cash-balance-section-expanded?)
-(def aladdin-dashboard-store-credit-section-expanded? v2-dashboard-store-credit-section-expanded?)
 
 (def accordion (conj ui :accordion))
 (def accordion-freeinstall-home (conj accordion :freeinstall))
