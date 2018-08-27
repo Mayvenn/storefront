@@ -71,7 +71,7 @@
 
 (defn ^:private info-block [header content]
   [:div.align-top.mb2
-   [:span.h6.dark-gray.shout header]
+   [:span.h6.dark-gray.shout.nowrap header]
    [:div.h6.medium (or content "--")]])
 
 (defn ^:private info-columns [[left-header left-content] [right-header right-content]]
@@ -178,10 +178,10 @@
                                              :width  20})]
       [:div.col.col-11.pl1
        [:div.col.col-9
-        [:h4.col-12.left.medium.pb4 "Money Transfer"]]
+        [:h4.col-12.left.medium "Money Transfer"]]
        [:div.col.col-3.mtp1.right-align
-        [:div.h5.medium.green (mf/as-money amount)]
-        [:div.h7.dark-gray payout-method-name]]
+        [:div.h5.medium.green (mf/as-money amount)]]
+       [:div.h7.dark-gray.col.col-12.pb4.right-align payout-method-name]
        (payout-method-details
         (f/long-date (or created-at (:transfered_at data)))
         (or payout-method (:payout_method data)))]]]))
