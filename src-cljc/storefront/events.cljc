@@ -490,7 +490,5 @@
 
 ;;TODO(ellie) GROT
 ;;SECTION shims
-(def control-aladdin-free-install control-v2-free-install)
-(def control-aladdin-free-install-dismiss control-v2-free-install-dismiss)
 (def control-stylist-v2-dashboard-section-toggle control-v2-stylist-dashboard-section-toggle)
 

@@ -102,7 +102,7 @@
   [data opts]
   (component/build component data opts))
 
-(defmethod effects/perform-effects events/control-aladdin-free-install [_ event args _ app-state]
+(defmethod effects/perform-effects events/control-v2-free-install [_ event args _ app-state]
   (scroll/enable-body-scrolling)
   (api/get-promotions (get-in app-state keypaths/api-cache)
                       (or (first (get-in app-state keypaths/order-promotion-codes))
@@ -111,7 +111,7 @@
   (when-let [value (get-in app-state keypaths/dismissed-free-install)]
     (cookie-jar/save-dismissed-free-install (get-in app-state keypaths/cookie) value)))
 
-(defmethod transitions/transition-state events/control-aladdin-free-install [_ event args app-state]
+(defmethod transitions/transition-state events/control-v2-free-install [_ event args app-state]
   (-> app-state
       (assoc-in keypaths/pending-promo-code "freeinstall")
       (assoc-in keypaths/popup nil)
