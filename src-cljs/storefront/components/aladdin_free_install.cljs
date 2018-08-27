@@ -1,3 +1,5 @@
+;;TODO(ellie): Rename this namespace to something that *actually* explains what the heck this is.
+;;             Maybe "v2 homepage popup"
 (ns storefront.components.aladdin-free-install
   (:require [install.faq-accordion :as faq-accordion]
             [sablono.core :refer [html]]
