@@ -53,18 +53,18 @@
                                                balance-transfer-id))
         type                (:type balance-transfer)]
     (merge
-     {:balance-transfer   balance-transfer
-      :fetching?          (utils/requesting? data request-keys/get-stylist-balance-transfer)
-      :aladdin-dashboard? (experiments/aladdin-dashboard? data)}
+     {:balance-transfer balance-transfer
+      :fetching?        (utils/requesting? data request-keys/get-stylist-balance-transfer)
+      :v2-dashboard?    (experiments/v2-dashboard? data)}
      (when (= type "commission")
        {:skus (all-skus-in-balance-transfer (get-in data keypaths/v2-skus)
                                             balance-transfer)}))))
 
-(defn ^:private back-to-earnings [aladdin-dashboard?]
+(defn ^:private back-to-earnings [v2-dashboard?]
   [:a.col-12.dark-gray.flex.items-center.py3
    (merge
     {:data-test "back-link"}
-    (if aladdin-dashboard?
+    (if v2-dashboard?
       (utils/route-to events/navigate-v2-stylist-dashboard-payments)
       (utils/route-to events/navigate-stylist-dashboard-earnings)))
    (ui/back-caret "Back")])
@@ -81,7 +81,7 @@
    [:div.inline-block.col-6
     (info-block right-header right-content)]])
 
-(defn ^:private commission-component [{:keys [balance-transfer fetching? skus aladdin-dashboard?]}]
+(defn ^:private commission-component [{:keys [balance-transfer fetching? skus v2-dashboard?]}]
   (let [{:keys [id number amount data]} balance-transfer
         {:keys [order
                 commission-date
@@ -93,7 +93,7 @@
       [:div.my2.h2 ui/spinner]
 
       [:div.container.mb4.px3
-       (back-to-earnings aladdin-dashboard?)
+       (back-to-earnings v2-dashboard?)
        [:h3.my4 "Details - Commission Earned"]
        [:div.flex.justify-between.col-12
         [:div (f/less-year-more-day-date commission-date)]
@@ -165,7 +165,7 @@
       "Check"            (check-payout-details date-string payout-method)
       "Venmo"            (venmo-payout-details date-string payout-method))))
 
-(defn ^:private payout-component [{:keys [balance-transfer aladdin-dashboard?]}]
+(defn ^:private payout-component [{:keys [balance-transfer v2-dashboard?]}]
   (let [{:keys [id
                 number
                 amount
@@ -175,7 +175,7 @@
                 payout-method-name
                 by-self]} data]
     [:div.container.mb4.px3
-     (back-to-earnings aladdin-dashboard?)
+     (back-to-earnings v2-dashboard?)
      [:div
       [:div.col.col-1 (svg/stack-o-cash {:height 14
                                              :width  20})]
@@ -189,11 +189,11 @@
         (f/long-date (or created-at (:transfered_at data)))
         (or payout-method (:payout_method data)))]]]))
 
-(defn ^:private award-component [{:keys [balance-transfer aladdin-dashboard?]}]
+(defn ^:private award-component [{:keys [balance-transfer v2-dashboard?]}]
   (let [{:keys [id transfered-at amount data]} balance-transfer
         {:keys [reason]}                       data]
     [:div.container.mb4.px3
-     (back-to-earnings aladdin-dashboard?)
+     (back-to-earnings v2-dashboard?)
      [:div
       [:div.col.col-1.px2 (svg/coin-in-slot {:height 14
                                              :width  20})]
@@ -205,12 +205,12 @@
        [:div.h5.medium.green (mf/as-money amount)]
        [:div.h7.dark-gray "Cash"]]]]))
 
-(defn ^:private voucher-award-component [{:keys [balance-transfer aladdin-dashboard?]}]
+(defn ^:private voucher-award-component [{:keys [balance-transfer v2-dashboard?]}]
   (let [{:keys [id transfered-at amount data]}     balance-transfer
         {:keys [order campaign-name order-number]} data
         client-name                                (orders/first-name-plus-last-name-initial order)]
     [:div.container.mb4.px3
-     (back-to-earnings aladdin-dashboard?)
+     (back-to-earnings v2-dashboard?)
      [:div
       [:div.col.col-1.px2 (svg/coin-in-slot {:height 14
                                              :width  20})]
@@ -224,7 +224,7 @@
 
         (when order-number
           (info-block "order number"
-                      (if aladdin-dashboard?
+                      (if v2-dashboard?
                         [:a.inherit-color
                          (merge
                           {:data-test "view-order"}

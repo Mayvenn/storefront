@@ -92,7 +92,7 @@
         [:div.h7.medium "Store credit:"]
         [:div.teal.h5.bold (as-money store-credit)]])]))
 
-(defn ^:private stylist-actions [vouchers? aladdin-dashboard?]
+(defn ^:private stylist-actions [vouchers? v2-dashboard?]
   (component/html
    [:div
     (when vouchers?
@@ -109,7 +109,7 @@
                               :data-test "share-your-store")
                        "Share your store"))
      (marquee-row
-      (ui/underline-button (assoc (if aladdin-dashboard?
+      (ui/underline-button (assoc (if v2-dashboard?
                                     (utils/route-to events/navigate-v2-stylist-dashboard-payments)
                                     (utils/route-to events/navigate-stylist-dashboard-earnings))
                                   :data-test "dashboard")
@@ -141,9 +141,9 @@
              :data-test "sign-up")
       "Sign up now, get offers!"]])))
 
-(defn ^:private actions-marquee [signed-in the-ville? vouchers? aladdin-dashboard?]
+(defn ^:private actions-marquee [signed-in the-ville? vouchers? v2-dashboard?]
   (case (-> signed-in ::auth/as)
-    :stylist (stylist-actions vouchers? aladdin-dashboard?)
+    :stylist (stylist-actions vouchers? v2-dashboard?)
     :user    (user-actions the-ville?)
     :guest   guest-actions))
 
@@ -245,14 +245,14 @@
                      "Sign out")
     [:div])))
 
-(defn ^:private root-menu [{:keys [user signed-in store deals? the-ville? vouchers? aladdin-dashboard?] :as data} owner opts]
+(defn ^:private root-menu [{:keys [user signed-in store deals? the-ville? vouchers? v2-dashboard?] :as data} owner opts]
   (component/create
    [:div
     [:div.px6.border-bottom.border-gray.bg-light-gray.pt3
      (store-info-marquee signed-in store)
      (account-info-marquee signed-in user)
      [:div.my3.dark-gray
-      (actions-marquee signed-in the-ville? vouchers? aladdin-dashboard?)]]
+      (actions-marquee signed-in the-ville? vouchers? v2-dashboard?)]]
     [:div.px6
      (menu-area data)]
     (when (-> signed-in ::auth/at-all)
@@ -272,15 +272,15 @@
       (component/build root-menu data nil))]))
 
 (defn basic-query [data]
-  {:signed-in          (auth/signed-in data)
-   :on-taxon?          (get-in data keypaths/current-traverse-nav-id)
-   :user               {:email (get-in data keypaths/user-email)}
-   :store              (marquee/query data)
-   :deals?             (experiments/deals? data)
-   :the-ville?         (experiments/the-ville? data)
-   :vouchers?          (experiments/vouchers? data)
-   :aladdin-dashboard? (experiments/aladdin-dashboard? data)
-   :shopping           {:categories (get-in data keypaths/categories)}})
+  {:signed-in     (auth/signed-in data)
+   :on-taxon?     (get-in data keypaths/current-traverse-nav-id)
+   :user          {:email (get-in data keypaths/user-email)}
+   :store         (marquee/query data)
+   :deals?        (experiments/deals? data)
+   :the-ville?    (experiments/the-ville? data)
+   :vouchers?     (experiments/vouchers? data)
+   :v2-dashboard? (experiments/v2-dashboard? data)
+   :shopping      {:categories (get-in data keypaths/categories)}})
 
 (defn query [data]
   (-> (basic-query data)

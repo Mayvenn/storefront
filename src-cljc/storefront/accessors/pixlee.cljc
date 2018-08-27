@@ -97,23 +97,23 @@
   (let [the-ville?                (experiments/the-ville? data)
         install-control?          (experiments/install-control? data)
         seventy-five-off-install? (experiments/seventy-five-off-install? data)
-        aladdin-experience?       (experiments/aladdin-experience? data)
+        v2-experience?            (experiments/v2-experience? data)
 
-        actual-album              (cond
+        actual-album (cond
 
-                                    aladdin-experience?
-                                    :aladdin-free-install
+                       v2-experience?
+                       :aladdin-free-install
 
-                                    (and seventy-five-off-install? (= target-album-keyword :look))
-                                    :install
+                       (and seventy-five-off-install? (= target-album-keyword :look))
+                       :install
 
-                                    (and the-ville? (= target-album-keyword :look))
-                                    :free-install
+                       (and the-ville? (= target-album-keyword :look))
+                       :free-install
 
-                                    (some? target-album-keyword)
-                                    target-album-keyword
+                       (some? target-album-keyword)
+                       target-album-keyword
 
-                                    :elsewise target-album-keyword)]
+                       :elsewise target-album-keyword)]
     (if (-> config/pixlee :albums (contains? actual-album))
       actual-album
       :pixlee/unknown-album)))

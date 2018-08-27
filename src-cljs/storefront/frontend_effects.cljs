@@ -114,7 +114,7 @@
   (let [install-control?                    (experiments/install-control? app-state)
         the-ville-variation?                (experiments/the-ville? app-state)
         seventy-five-off-install-variation? (experiments/seventy-five-off-install? app-state)
-        aladdin-experience?                 (experiments/aladdin-experience? app-state)
+        v2-experience?                 (experiments/v2-experience? app-state)
 
         is-on-homepage? (= (get-in app-state keypaths/navigation-event)
                            events/navigate-home)
@@ -133,11 +133,11 @@
 
         show-free-install-modal? (and the-ville-variation?
                                       (not seen-fayetteville-offer?)
-                                      (not aladdin-experience?))
+                                      (not v2-experience?))
 
         show-seventy-five-off-install-modal? (and (experiments/seventy-five-off-install? app-state)
                                                   (not seen-seventy-five-off-install-offer?)
-                                                  (not aladdin-experience?))
+                                                  (not v2-experience?))
 
         show-email-capture? (and (not signed-in?)
                                  (not seen-email-capture?)
@@ -145,7 +145,7 @@
                                      (and the-ville-variation? seen-fayetteville-offer?)
                                      (and seventy-five-off-install-variation?
                                           seen-seventy-five-off-install-offer?)
-                                     aladdin-experience?))]
+                                     v2-experience?))]
     (cond
       is-on-free-install-landing-page? nil
 
@@ -194,7 +194,7 @@
 (defmethod perform-effects events/external-redirect-telligent [_ event args _ app-state]
   (set! (.-location js/window) (or (get-in app-state keypaths/telligent-community-url)
                                    (if (and (experiments/install? app-state)
-                                            (not (experiments/aladdin-experience? app-state)))
+                                            (not (experiments/v2-experience? app-state)))
                                      "https://www.facebook.com/groups/1798170053598507/"
                                      config/telligent-community-url))))
 
@@ -306,7 +306,7 @@
 
 (defmethod perform-effects events/navigate-home [_ _ {:keys [query-params]} _ app-state]
   (api/fetch-cms-data)
-  (when (experiments/aladdin-homepage? app-state)
+  (when (experiments/v2-homepage? app-state)
     (handle-message events/v2-show-home))
   (when (= config/welcome-subdomain (get-in app-state keypaths/store-slug))
     (redirect events/navigate-leads-home))
@@ -423,7 +423,7 @@
                                   (get-in app-state keypaths/user-token))))
 
 (defmethod perform-effects events/navigate-stylist-dashboard-bonus-credit [_ event args _ app-state]
-  (if (experiments/aladdin-dashboard? app-state)
+  (if (experiments/v2-dashboard? app-state)
     (effects/redirect events/navigate-v2-stylist-dashboard-orders)
     (when (zero? (get-in app-state keypaths/stylist-bonuses-page 0))
       (handle-message events/control-stylist-bonuses-fetch))))
@@ -438,7 +438,7 @@
                                      {:page page}))))
 
 (defmethod perform-effects events/navigate-stylist-dashboard-referrals [_ event args _ app-state]
-  (if (experiments/aladdin-dashboard? app-state)
+  (if (experiments/v2-dashboard? app-state)
     (effects/redirect events/navigate-v2-stylist-dashboard-orders)
     (when (zero? (get-in app-state keypaths/stylist-referral-program-page 0))
       (handle-message events/control-stylist-referrals-fetch))))

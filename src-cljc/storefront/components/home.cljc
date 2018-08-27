@@ -366,6 +366,6 @@
      :show-talkable-banner?     (not (and seventy-five-off-install? the-ville?))}))
 
 (defn built-component [data opts]
-  (if (experiments/aladdin-homepage? data)
+  (if (experiments/v2-homepage? data)
     (home-aladdin/built-component data opts)
     (component/build component (query data) opts)))

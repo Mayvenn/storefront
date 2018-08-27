@@ -127,7 +127,7 @@
 
 (defn main-layout [data nav-event]
   (let [silver-background? (#{events/navigate-voucher-redeem events/navigate-voucher-redeemed} nav-event)
-        aladdin-home? (and (experiments/aladdin-homepage? data)
+        aladdin-home? (and (experiments/v2-homepage? data)
                            (#{events/navigate-home} nav-event))]
     [:div.flex.flex-column {:style {:min-height    "100vh"
                                     :margin-bottom "-1px"}}

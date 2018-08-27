@@ -237,7 +237,7 @@
   (component/build component (query data) opts))
 
 (defmethod effects/perform-effects events/navigate-v2-stylist-dashboard-payments [_ event args _ app-state]
-  (if (experiments/aladdin-dashboard? app-state)
+  (if (experiments/v2-dashboard? app-state)
     (let [stylist-id (get-in app-state keypaths/store-stylist-id)
           user-id    (get-in app-state keypaths/user-id)
           user-token (get-in app-state keypaths/user-token)]
@@ -251,7 +251,7 @@
     (effects/redirect events/navigate-stylist-dashboard-earnings)))
 
 (defmethod effects/perform-effects events/navigate-v2-stylist-dashboard-orders [_ event args _ app-state]
-  (if (experiments/aladdin-dashboard? app-state)
+  (if (experiments/v2-dashboard? app-state)
     (let [stylist-id (get-in app-state keypaths/store-stylist-id)
           user-id    (get-in app-state keypaths/user-id)
           user-token (get-in app-state keypaths/user-token)]

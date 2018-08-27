@@ -127,10 +127,10 @@
 
     (and
      (orders/freeinstall-applied? (get-in data keypaths/order))
-     (experiments/aladdin-experience? data))
+     (experiments/v2-experience? data))
     :aladdin-freeinstall/applied
 
-    (experiments/aladdin-experience? data)
+    (experiments/v2-experience? data)
     :aladdin-freeinstall/eligible
 
     (and

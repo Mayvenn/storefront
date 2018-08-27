@@ -301,7 +301,7 @@
                               update-line-item-requests
                               show-apple-pay?
                               the-ville?
-                              aladdin-experience?
+                              v2-experience?
                               applying-coupon?
                               recently-added-skus
                               delete-line-item-requests
@@ -312,7 +312,7 @@
     (component/build promotion-banner/sticky-component promotion-banner nil)
 
     (cond
-      aladdin-experience?
+      v2-experience?
       [:div.mb3
        (aladdin-cart-promo show-green-banner?)]
 
@@ -527,7 +527,7 @@
      :error-message             (get-in data keypaths/error-message)
      :focused                   (get-in data keypaths/ui-focus)
      :the-ville?                (experiments/the-ville? data)
-     :aladdin-experience?       (experiments/aladdin-experience? data)
+     :v2-experience?            (experiments/v2-experience? data)
      :seventy-five-off-install? (experiments/seventy-five-off-install? data)
      :recently-added-skus       (get-in data keypaths/cart-recently-added-skus)}))
 

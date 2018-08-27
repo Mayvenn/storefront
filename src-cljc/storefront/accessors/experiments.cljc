@@ -75,11 +75,6 @@
       (display-feature? data "force-aladdin-dashboard")
       (display-feature? data "force-phoenix-dashboard")))
 
-;;TODO(ellie) GROT
-(def aladdin-experience? v2-experience?)
-(def aladdin-homepage? v2-homepage?)
-(def aladdin-dashboard? v2-dashboard?)
-
 (defn seventy-five-off-install?
   [data]
   (->> (get-in data keypaths/store-features)

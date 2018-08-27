@@ -210,7 +210,7 @@
                                                                                    :pagination]))))))
 
 (defmethod effects/perform-effects events/navigate-stylist-dashboard-earnings [_ event args _ app-state]
-  (if (experiments/aladdin-dashboard? app-state)
+  (if (experiments/v2-dashboard? app-state)
     (effects/redirect events/navigate-v2-stylist-dashboard-orders)
     (messages/handle-message events/stylist-balance-transfers-fetch)))
 

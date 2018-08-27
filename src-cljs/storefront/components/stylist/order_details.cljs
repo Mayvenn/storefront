@@ -19,12 +19,12 @@
 
 ;; TODO Remove handling of underscored keys after storeback has been deployed.
 
-(defn ^:private back-button [back aladdin-dashboard?]
+(defn ^:private back-button [back v2-dashboard?]
   [:a.col-12.dark-gray.flex.items-center.py3
    (merge
     {:data-test "back-link"}
     (utils/route-back-or-to back
-                            (if aladdin-dashboard?
+                            (if v2-dashboard?
                               events/navigate-v2-stylist-dashboard-orders
                               events/navigate-stylist-dashboard-earnings)))
    (ui/back-caret "Back")])
@@ -83,12 +83,12 @@
 (defn query [data]
   (let [sale-id (get-in data keypaths/v2-dashboard-sales-current-sale-id)
         sale    (get-in data (conj keypaths/v2-dashboard-sales-elements sale-id))]
-    {:sale               sale
-     :loading?           (utils/requesting? data request-keys/get-stylist-dashboard-sale)
-     :aladdin-dashboard? (experiments/aladdin-dashboard? data)
-     :back               (first (get-in data keypaths/navigation-undo-stack))}))
+    {:sale          sale
+     :loading?      (utils/requesting? data request-keys/get-stylist-dashboard-sale)
+     :v2-dashboard? (experiments/v2-dashboard? data)
+     :back          (first (get-in data keypaths/navigation-undo-stack))}))
 
-(defn component [{:keys [sale aladdin-dashboard? loading? back]} owner opts]
+(defn component [{:keys [sale v2-dashboard? loading? back]} owner opts]
   (let [{:keys [order-number
                 voucher-type
                 voucher-status
@@ -98,7 +98,7 @@
      (if (or (not order-number) loading?)
        [:div.my6.h2 ui/spinner]
        [:div.container.mb4.px3
-        (back-button back aladdin-dashboard?)
+        (back-button back v2-dashboard?)
         [:div
          [:div.col.col-1.px2 (svg/box-package {:height 18
                                                :width  25})]
