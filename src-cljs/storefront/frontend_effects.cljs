@@ -424,7 +424,7 @@
 
 (defmethod perform-effects events/navigate-stylist-dashboard-bonus-credit [_ event args _ app-state]
   (if (experiments/aladdin-dashboard? app-state)
-    (effects/redirect events/navigate-stylist-v2-dashboard-orders)
+    (effects/redirect events/navigate-v2-stylist-dashboard-orders)
     (when (zero? (get-in app-state keypaths/stylist-bonuses-page 0))
       (handle-message events/control-stylist-bonuses-fetch))))
 
@@ -439,7 +439,7 @@
 
 (defmethod perform-effects events/navigate-stylist-dashboard-referrals [_ event args _ app-state]
   (if (experiments/aladdin-dashboard? app-state)
-    (effects/redirect events/navigate-stylist-v2-dashboard-orders)
+    (effects/redirect events/navigate-v2-stylist-dashboard-orders)
     (when (zero? (get-in app-state keypaths/stylist-referral-program-page 0))
       (handle-message events/control-stylist-referrals-fetch))))
 

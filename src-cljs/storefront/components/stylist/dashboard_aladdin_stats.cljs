@@ -34,7 +34,7 @@
    cashing-out?
    {:as earnings :keys [cash-balance lifetime-earnings monthly-earnings]}
    {:as services :keys [lifetime-services monthly-services]}]
-  (let [toggle-expand (utils/fake-href events/control-stylist-v2-dashboard-section-toggle
+  (let [toggle-expand (utils/fake-href events/control-v2-stylist-dashboard-section-toggle
                                        {:keypath keypaths/aladdin-dashboard-cash-balance-section-expanded?})]
     [:div.h6.bg-too-light-teal.p2
      [:div.letter-spacing-1.shout.dark-gray.mbnp5.flex.items-center
@@ -79,7 +79,7 @@
         (earnings-count "Lifetime Services" lifetime-services)]]]]))
 
 (defn ^:private store-credit-balance-card [total-available-store-credit lifetime-earned expanded?]
-  (let [toggle-expand (utils/fake-href events/control-stylist-v2-dashboard-section-toggle
+  (let [toggle-expand (utils/fake-href events/control-v2-stylist-dashboard-section-toggle
                                        {:keypath keypaths/aladdin-dashboard-store-credit-section-expanded?})]
    [:div.h6.bg-too-light-teal.p2
     [:div.letter-spacing-1.shout.dark-gray.mbnp5.flex.items-center
@@ -128,7 +128,7 @@
      [:div.mt2 (store-credit-balance-card total-available-store-credit lifetime-earned store-credit-balance-section-expanded?)]
      (sales-bonus-progress bonuses)]))
 
-(defmethod effects/perform-effects events/stylist-v2-dashboard-stats-fetch [_ event args _ app-state]
+(defmethod effects/perform-effects events/v2-stylist-dashboard-stats-fetch [_ event args _ app-state]
   (let [stylist-id (get-in app-state keypaths/store-stylist-id)
         user-id    (get-in app-state keypaths/user-id)
         user-token (get-in app-state keypaths/user-token)]
@@ -138,17 +138,17 @@
                                        :user-token user-token
                                        :stylist-id stylist-id})
       (api/get-stylist-account user-id user-token)
-      (api/get-stylist-dashboard-stats events/api-success-stylist-v2-dashboard-stats
+      (api/get-stylist-dashboard-stats events/api-success-v2-stylist-dashboard-stats
                                        stylist-id
                                        user-id
                                        user-token))))
 
-(defmethod transitions/transition-state events/api-success-stylist-v2-dashboard-stats
+(defmethod transitions/transition-state events/api-success-v2-stylist-dashboard-stats
   [_ event {:as stats :keys [stylist earnings services store-credit-balance bonuses]} app-state]
   (-> app-state
       (assoc-in keypaths/stylist-v2-dashboard-stats stats)))
 
-(defmethod transitions/transition-state events/control-stylist-v2-dashboard-section-toggle
+(defmethod transitions/transition-state events/control-v2-stylist-dashboard-section-toggle
   [_ event {:keys [keypath]} app-state]
   (update-in app-state keypath not))
 

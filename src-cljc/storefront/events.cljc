@@ -138,7 +138,6 @@
 (defpath stripe-component-will-unmount)
 
 (defpath stylist-balance-transfers-fetch)
-(defpath stylist-v2-dashboard-stats-fetch)
 
 (defpath ensure-sku-ids)
 
@@ -310,10 +309,6 @@
 (defpath api-success-stylist-account-social)
 (defpath api-success-stylist-balance-transfers)
 (defpath api-success-stylist-balance-transfer-details)
-(defpath api-success-stylist-v2-dashboard-stats)
-(defpath api-success-stylist-v2-dashboard-balance-transfers)
-(defpath api-success-stylist-v2-dashboard-sales)
-(defpath api-success-stylist-v2-dashboard-sale)
 (defpath api-success-stylist-next-payout)
 (defpath api-success-stylist-payout-stats)
 (defpath api-success-stylist-payout-stats-cash-out)
@@ -476,19 +471,23 @@
 (defpath v2-show-home)
 
 ;;SECTION v2 popup
-(defpath popup-show-v2-free-install)
+(defpath popup-v2-show-free-install)
 
 ;;SECTION v2 Control
 (defpath control-v2-free-install)
 (defpath control-v2-free-install-dismiss)
 (defpath control-v2-stylist-dashboard-section-toggle)
 
+;;SECTION v2 Api
+;; ;; REQUESTS
+(defpath v2-stylist-dashboard-stats-fetch)
+
+;; ;; SUCCESS
+(defpath api-success-v2-stylist-dashboard-stats)
+(defpath api-success-v2-stylist-dashboard-balance-transfers)
+(defpath api-success-v2-stylist-dashboard-sales)
+(defpath api-success-v2-stylist-dashboard-sale)
+
 ;;SECTION v2 Navigate
-;;TODO(ellie) rename
-(defpath navigate-stylist-v2-dashboard-payments)
-(defpath navigate-stylist-v2-dashboard-orders)
-
-;;TODO(ellie) GROT
-;;SECTION shims
-(def control-stylist-v2-dashboard-section-toggle control-v2-stylist-dashboard-section-toggle)
-
+(defpath navigate-v2-stylist-dashboard-payments)
+(defpath navigate-v2-stylist-dashboard-orders)

@@ -23,10 +23,10 @@
 (def tabs
   [{:id :orders
     :title "Orders"
-    :navigate events/navigate-stylist-v2-dashboard-orders}
+    :navigate events/navigate-v2-stylist-dashboard-orders}
    {:id :payments
     :title "Payments"
-    :navigate events/navigate-stylist-v2-dashboard-payments}])
+    :navigate events/navigate-v2-stylist-dashboard-payments}])
 
 (defn balance-transfer->payment [balance-transfer]
   (let [{:keys [id type data]} balance-transfer
@@ -201,10 +201,10 @@
             (empty-ledger activity-ledger-tab)))]))))
 
 (def determine-active-tab
-  {events/navigate-stylist-v2-dashboard-payments {:active-tab-name :payments
+  {events/navigate-v2-stylist-dashboard-payments {:active-tab-name :payments
                                                   :empty-copy      "Payments and bonus activity will appear here."
                                                   :empty-title     "No payments yet"}
-   events/navigate-stylist-v2-dashboard-orders   {:active-tab-name :orders
+   events/navigate-v2-stylist-dashboard-orders   {:active-tab-name :orders
                                                   :empty-copy      "Orders from your store will appear here."
                                                   :empty-title     "No orders yet"}})
 
@@ -236,31 +236,31 @@
 (defn built-component [data opts]
   (component/build component (query data) opts))
 
-(defmethod effects/perform-effects events/navigate-stylist-v2-dashboard-payments [_ event args _ app-state]
+(defmethod effects/perform-effects events/navigate-v2-stylist-dashboard-payments [_ event args _ app-state]
   (if (experiments/aladdin-dashboard? app-state)
     (let [stylist-id (get-in app-state keypaths/store-stylist-id)
           user-id    (get-in app-state keypaths/user-id)
           user-token (get-in app-state keypaths/user-token)]
-      (messages/handle-message events/stylist-v2-dashboard-stats-fetch)
+      (messages/handle-message events/v2-stylist-dashboard-stats-fetch)
       (api/get-stylist-dashboard-balance-transfers stylist-id
                                                    user-id
                                                    user-token
                                                    (get-in app-state keypaths/stylist-earnings-pagination)
-                                                   #(messages/handle-message events/api-success-stylist-v2-dashboard-balance-transfers
+                                                   #(messages/handle-message events/api-success-v2-stylist-dashboard-balance-transfers
                                                                              (select-keys % [:balance-transfers :pagination]))))
     (effects/redirect events/navigate-stylist-dashboard-earnings)))
 
-(defmethod effects/perform-effects events/navigate-stylist-v2-dashboard-orders [_ event args _ app-state]
+(defmethod effects/perform-effects events/navigate-v2-stylist-dashboard-orders [_ event args _ app-state]
   (if (experiments/aladdin-dashboard? app-state)
     (let [stylist-id (get-in app-state keypaths/store-stylist-id)
           user-id    (get-in app-state keypaths/user-id)
           user-token (get-in app-state keypaths/user-token)]
-      (messages/handle-message events/stylist-v2-dashboard-stats-fetch)
+      (messages/handle-message events/v2-stylist-dashboard-stats-fetch)
       (api/get-stylist-dashboard-sales stylist-id
                                        user-id
                                        user-token
                                        (get-in app-state keypaths/stylist-v2-dashboard-sales-pagination)
-                                       #(messages/handle-message events/api-success-stylist-v2-dashboard-sales
+                                       #(messages/handle-message events/api-success-v2-stylist-dashboard-sales
                                                                  (select-keys % [:sales :pagination]))))
     (effects/redirect events/navigate-stylist-dashboard-earnings)))
 
@@ -270,7 +270,7 @@
        (sort-by :transfered-at)
        last))
 
-(defmethod transitions/transition-state events/api-success-stylist-v2-dashboard-balance-transfers
+(defmethod transitions/transition-state events/api-success-v2-stylist-dashboard-balance-transfers
   [_ event {:keys [balance-transfers pagination]} app-state]
   (let [most-recent-voucher-award-date (most-recent-voucher-award balance-transfers)
         voucher-response-date          (-> (get-in app-state voucher-keypaths/voucher-response)
@@ -283,7 +283,7 @@
         (update-in keypaths/stylist-earnings-balance-transfers merge (maps/map-keys (comp spice/parse-int name) balance-transfers))
         (assoc-in keypaths/stylist-earnings-pagination pagination))))
 
-(defmethod transitions/transition-state events/api-success-stylist-v2-dashboard-sales
+(defmethod transitions/transition-state events/api-success-v2-stylist-dashboard-sales
   [_ event {:keys [sales pagination]} app-state]
   (-> app-state
       (update-in keypaths/stylist-v2-dashboard-sales-elements merge (maps/map-keys (comp spice/parse-int name) sales))

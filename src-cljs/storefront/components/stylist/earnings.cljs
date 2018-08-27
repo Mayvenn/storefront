@@ -211,7 +211,7 @@
 
 (defmethod effects/perform-effects events/navigate-stylist-dashboard-earnings [_ event args _ app-state]
   (if (experiments/aladdin-dashboard? app-state)
-    (effects/redirect events/navigate-stylist-v2-dashboard-orders)
+    (effects/redirect events/navigate-v2-stylist-dashboard-orders)
     (messages/handle-message events/stylist-balance-transfers-fetch)))
 
 (defmethod transitions/transition-state events/navigate-stylist-dashboard-earnings

@@ -65,7 +65,7 @@
    (merge
     {:data-test "back-link"}
     (if aladdin-dashboard?
-      (utils/route-to events/navigate-stylist-v2-dashboard-payments)
+      (utils/route-to events/navigate-v2-stylist-dashboard-payments)
       (utils/route-to events/navigate-stylist-dashboard-earnings)))
    (ui/back-caret "Back")])
 

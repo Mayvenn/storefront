@@ -25,7 +25,7 @@
     {:data-test "back-link"}
     (utils/route-back-or-to back
                             (if aladdin-dashboard?
-                              events/navigate-stylist-v2-dashboard-orders
+                              events/navigate-v2-stylist-dashboard-orders
                               events/navigate-stylist-dashboard-earnings)))
    (ui/back-caret "Back")])
 
@@ -66,14 +66,14 @@
   [_ event {:keys [order-number] :as args} _ app-state]
   (let [user-info  (get-user-info app-state)
         stylist-id (get-in app-state keypaths/store-stylist-id)
-        handler    #(messages/handle-message events/api-success-stylist-v2-dashboard-sale %)
+        handler    #(messages/handle-message events/api-success-v2-stylist-dashboard-sale %)
         params     (merge {:stylist-id   stylist-id
                            :order-number order-number
                            :handler      handler} user-info)]
     (when (:user-token user-info)
       (api/get-stylist-dashboard-sale params))))
 
-(defmethod transitions/transition-state events/api-success-stylist-v2-dashboard-sale
+(defmethod transitions/transition-state events/api-success-v2-stylist-dashboard-sale
   [_ _ sale app-state]
   (let [sale-id (first (keys sale))]
     (-> app-state

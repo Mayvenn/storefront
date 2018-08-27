@@ -66,7 +66,7 @@
 (defmethod component :aladdin-freeinstall/eligible
   [_ _ _]
   (component/create
-   [:a {:on-click  (utils/send-event-callback events/popup-show-v2-free-install)
+   [:a {:on-click  (utils/send-event-callback events/popup-v2-show-free-install)
         :data-test "aladdin-free-install-promo-banner"}
     [:div.white.center.pp5.bg-teal.h5.bold.pointer
      "Mayvenn will pay for your install! " [:span.underline "Learn more"]]]))
@@ -75,7 +75,7 @@
   [_ _ _]
   (component/create
    [:a.white.center.p2.bg-teal.mbnp5.h6.bold.flex.items-center.justify-center
-    {:on-click  (utils/send-event-callback events/popup-show-v2-free-install)
+    {:on-click  (utils/send-event-callback events/popup-v2-show-free-install)
      :data-test "aladdin-free-install-promo-banner"}
     (svg/celebration-horn {:height "1.6em"
                            :width  "1.6em"

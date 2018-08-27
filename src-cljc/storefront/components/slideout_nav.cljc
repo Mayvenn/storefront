@@ -110,7 +110,7 @@
                        "Share your store"))
      (marquee-row
       (ui/underline-button (assoc (if aladdin-dashboard?
-                                    (utils/route-to events/navigate-stylist-v2-dashboard-payments)
+                                    (utils/route-to events/navigate-v2-stylist-dashboard-payments)
                                     (utils/route-to events/navigate-stylist-dashboard-earnings))
                                   :data-test "dashboard")
                            "Dashboard")
