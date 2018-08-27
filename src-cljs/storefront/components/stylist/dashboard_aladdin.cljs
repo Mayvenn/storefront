@@ -28,39 +28,40 @@
     :title "Payments"
     :navigate events/navigate-stylist-v2-dashboard-payments}])
 
-(defn balance-transfer->payment [{:keys [id type data] :as balance-transfer}]
-  (let [order (:order data)]
+(defn balance-transfer->payment [balance-transfer]
+  (let [{:keys [id type data]} balance-transfer
+        {:keys [order created-at amount campaign-name reason commission-date payout-method-name]} data]
     (merge {:id id
             :icon "68e6bcb0-a236-46fe-a8e7-f846fff0f464"
-            :date (:created-at data)
+            :date created-at
             :subtitle ""
-            :amount (mf/as-money (:amount data))
+            :amount (mf/as-money amount)
             :amount-description nil
             :styles {:background ""
                      :title-color "black"
                      :amount-color "teal"}}
-           (get {"commission" {:title (str "Commission Earned" (when-let [name (orders/first-name-plus-last-name-initial order)]
-                                                                 (str " - " name)))
-                               :data-test (str "commission-" id)
-                               :date (:commission-date data)}
-                 "award"      {:title "Incentive Payment"
-                               :data-test (str "award-" id)}
-                 "voucher_award" {:title (str "Service Payment" (when-let [name (orders/first-name-plus-last-name-initial order)]
-                                                                  (str " - " name)))
-                                  :data-test (str "voucher-award-" id)
-                                  :subtitle (:campaign-name data)}
-                 "payout" {:title "Money Transfer"
-                           :icon "4939408b-1ec8-4a47-bb0e-5cdeb15d544d"
-                           :data-test (str "payout-" id)
-                           :amount-description (:payout-method-name data)
-                           :styles {:background "bg-too-light-teal"
-                                    :title-color "teal"
-                                    :amount-color "teal"}}
-                 "sales_bonus" {:title "Sales Bonus"
-                                :data-test (str "sales-bonus-" id)
-                                :icon "56bfbe66-6db0-48c7-9069-f86c6393b15d"}}
-                type
-                {:title "Unknown Payment"}))))
+           (case type
+             "commission" {:title (str "Commission Earned" (when-let [name (orders/first-name-plus-last-name-initial order)]
+                                                             (str " - " name)))
+                           :data-test (str "commission-" id)
+                           :date commission-date}
+             "award"      {:title reason
+                           :data-test (str "award-" id)}
+             "voucher_award" {:title (str "Service Payment" (when-let [name (orders/first-name-plus-last-name-initial order)]
+                                                              (str " - " name)))
+                              :data-test (str "voucher-award-" id)
+                              :subtitle campaign-name}
+             "payout" {:title "Money Transfer"
+                       :icon "4939408b-1ec8-4a47-bb0e-5cdeb15d544d"
+                       :data-test (str "payout-" id)
+                       :amount-description payout-method-name
+                       :styles {:background "bg-too-light-teal"
+                                :title-color "teal"
+                                :amount-color "teal"}}
+             "sales_bonus" {:title "Sales Bonus"
+                            :data-test (str "sales-bonus-" id)
+                            :icon "56bfbe66-6db0-48c7-9069-f86c6393b15d"}
+             {:title "Unknown Payment"}))))
 
 (defn payment-row [item]
   (let [{:keys [id icon title date subtitle amount amount-description styles data-test non-clickable?]} item]
