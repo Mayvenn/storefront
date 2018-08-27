@@ -62,25 +62,26 @@
                 type
                 {:title "Unknown Payment"}))))
 
-(defn payment-row [{:as item :keys [id icon title date subtitle amount amount-description styles data-test non-clickable?]}]
-  [:a.block.border-bottom.border-light-gray.px3.py2.flex.items-center
-   (merge
-    (utils/route-to events/navigate-stylist-dashboard-balance-transfer-details
-                    {:balance-transfer-id id})
-    {:key       (str "payment" id)
-     :data-test data-test
-     :class     (:background styles)
-     :style     (when non-clickable? {:pointer-events "none"})})
-   (ui/ucare-img {:width 20} icon)
-   [:div.flex-auto.mx3
-    [:h5.medium {:class (:title-color styles)} title]
-    [:div.flex.h7.dark-gray
-     [:div.mr4 (f/long-date date)]
-     subtitle]]
-   [:div.right-align
-    [:div.bold {:class (:amount-color styles)} amount]
-    [:div.h7.dark-gray (or amount-description
-                           ui/nbsp)]]])
+(defn payment-row [item]
+  (let [{:keys [id icon title date subtitle amount amount-description styles data-test non-clickable?]} item]
+    [:a.block.border-bottom.border-light-gray.px3.py2.flex.items-center
+     (merge
+       (utils/route-to events/navigate-stylist-dashboard-balance-transfer-details
+                       {:balance-transfer-id id})
+       {:key       (str "payment" id)
+        :data-test data-test
+        :class     (:background styles)
+        :style     (when non-clickable? {:pointer-events "none"})})
+     (ui/ucare-img {:width 20} icon)
+     [:div.flex-auto.mx3
+      [:h5.medium {:class (:title-color styles)} title]
+      [:div.flex.h7.dark-gray
+       [:div.mr4 (f/long-date date)]
+       subtitle]]
+     [:div.right-align
+      [:div.bold {:class (:amount-color styles)} amount]
+      [:div.h7.dark-gray (or amount-description
+                             ui/nbsp)]]]))
 
 (defn pending-voucher-row [{:as pending-voucher :keys [discount date]} service-menu]
   (let [item {:id                 (str "pending-voucher-" 1)
