@@ -124,14 +124,14 @@
           (payment-row item))])]))
 
 (defn ^:private sale-status-cell
-  ([text color]
-   (sale-status-cell text color false))
-  ([text color spanning?]
+  ([text class]
+   (sale-status-cell text class false))
+  ([text class spanning?]
    [:td.p2.bold (if spanning?
                     {:col-span 2
                      :class "shout center"}
                     {:class "left-align"})
-    [:p.h6 {:class color} text]]))
+    [:p.h6 {:class class} text]]))
 
 (defn sales-table
   [sales sales-pagination]
@@ -157,7 +157,7 @@
          :always     (sale-status-cell "Processing" "yellow" :spanning))
        (cond
          (not shipped-at) nil
-         :always          (sale-status-cell "None" "gray"))])]])
+         :always          (sale-status-cell "None" "gray light"))])]])
 
 (defn ^:private ledger-tabs [active-tab-name]
   [:div.flex.flex-wrap
