@@ -424,7 +424,7 @@
            [request-key-prefix request-keys/update-line-item]
            [request-key-prefix request-keys/delete-line-item]])))
 
-(defn ^:private add-product-title-and-color-to-line-item [products facets line-item]
+(defn add-product-title-and-color-to-line-item [products facets line-item]
   (merge line-item {:product-title (->> line-item
                                         :sku
                                         (products/find-product-by-sku-id products)

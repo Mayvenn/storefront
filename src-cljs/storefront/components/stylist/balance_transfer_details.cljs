@@ -1,5 +1,6 @@
 (ns storefront.components.stylist.balance-transfer-details
   (:require [spice.date :as date]
+            [checkout.cart :as cart]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.experiments :as experiments]
             [storefront.component :as component]
@@ -40,13 +41,6 @@
       (assoc-in (conj keypaths/stylist-earnings-balance-transfers (:id balance-transfer))
                 balance-transfer)))
 
-(defn ^:private all-skus-in-balance-transfer [skus balance-transfer]
-  (->> (:order (:data balance-transfer))
-       orders/first-commissioned-shipment
-       orders/product-items-for-shipment
-       (mapv :sku)
-       (select-keys skus)))
-
 (defn query [data]
   (let [balance-transfer-id (get-in data keypaths/stylist-earnings-balance-transfer-details-id)
         balance-transfer    (get-in data (conj keypaths/stylist-earnings-balance-transfers
@@ -57,8 +51,13 @@
       :fetching?        (utils/requesting? data request-keys/get-stylist-balance-transfer)
       :v2-dashboard?    (experiments/v2-dashboard? data)}
      (when (= type "commission")
-       {:skus (all-skus-in-balance-transfer (get-in data keypaths/v2-skus)
-                                            balance-transfer)}))))
+       (let [line-items (->> (:order (:data balance-transfer))
+                             orders/first-commissioned-shipment
+                             orders/product-items-for-shipment)]
+         {:line-items (mapv (partial cart/add-product-title-and-color-to-line-item
+                                     (get-in data keypaths/v2-products)
+                                     (get-in data keypaths/v2-facets))
+                            line-items)})))))
 
 (defn ^:private back-to-earnings [v2-dashboard?]
   [:a.col-12.dark-gray.flex.items-center.py3
@@ -81,11 +80,52 @@
    [:div.inline-block.col-6
     (info-block right-header right-content)]])
 
-(defn ^:private commission-component [{:keys [balance-transfer fetching? skus v2-dashboard?]}]
+(defn ^:private display-line-item
+  ([line-item] (display-line-item line-item true))
+  ([{:keys [product-title color-name unit-price quantity sku id legacy/variant-id variant-attrs]} show-price?]
+   [:div.h6.pb2 {:key (or variant-id id)}
+    [:div.medium {:data-test (str "line-item-title-" sku)} product-title]
+    [:div {:data-test (str "line-item-color-" sku)} color-name]
+    (when show-price?
+      [:div {:data-test (str "line-item-price-ea-" sku)} "Price: " (mf/as-money-without-cents unit-price) " ea"])
+    [:div
+     (when-let [length (:length variant-attrs)]
+       [:span {:data-test (str "line-item-length-" sku)} length "” " ])
+     [:span {:data-test (str "line-item-quantity-" sku)} "(Qty: " quantity ")"]]]))
+
+(defn ^:private summary-row
+  ([name amount] (summary-row {} name amount))
+  ([row-attrs name amount]
+   [:div.h6.pb1.clearfix
+    row-attrs
+    [:div.col.col-6 name]
+    [:div.col.col-6.right-align (mf/as-money-or-free amount)]]))
+
+(defn display-order-summary-for-commissions [order commissionable-amount]
+  (let [adjustments       (:adjustments order)
+        store-credit-used (:total-store-credit-used order)
+        shipping-item     (orders/shipping-item order)
+        subtotal          (orders/commissioned-products-subtotal order)
+        shipping-total    (* (:quantity shipping-item) (:unit-price shipping-item))]
+    [:div.pt2.pb6.border-top.border-gray
+     (summary-row "Subtotal" subtotal)
+
+     (for [{:keys [name price coupon-code]} adjustments]
+       (when (or (not (= price 0))
+                 (#{"amazon" "freeinstall" "install"} coupon-code))
+         (summary-row {:key name} [:div (orders/display-adjustment-name name)] price)))
+
+     (when (pos? store-credit-used)
+       (summary-row "Store Credit" (- store-credit-used)))
+
+     (when shipping-item
+       (summary-row "Shipping" shipping-total))
+
+     (summary-row "Total" commissionable-amount)]))
+
+(defn ^:private commission-component [{:keys [balance-transfer fetching? line-items v2-dashboard?]}]
   (let [{:keys [id number amount data]} balance-transfer
-        {:keys [order
-                commission-date
-                commissionable-amount]} data
+        {:keys [order commission-date commissionable-amount]} data
         shipment                        (orders/first-commissioned-shipment order)
         commission-date                 (or commission-date (:commission_date data))
         shipped-at                      (:shipped-at shipment)]
@@ -94,24 +134,30 @@
 
       [:div.container.mb4.px3
        (back-to-earnings v2-dashboard?)
-       [:h3.my4 "Details - Commission Earned"]
-       [:div.flex.justify-between.col-12
-        [:div (f/less-year-more-day-date commission-date)]
-        [:div (:full-name order)]
-        [:div.green "+" (mf/as-money amount)]]
+       [:div.col.col-1 (svg/coin-in-slot {:height 14
+                                          :width  20})]
+       [:div.col.col-11.pl1
+        [:div.col.col-9.pb2
+         [:h5.col-12.left.medium (str "Commission Earned" (when-let [name (orders/first-name-plus-last-name-initial order)]
+                                                            (str " - " name)))]]
+        [:div.col.col-3.mtp1.right-align.pb2
+         [:div.h5.medium.teal (mf/as-money amount)]]
 
-       (info-columns ["Order Number" (:number order)]
-                     ["Ship Date" (f/less-year-more-day-date (or shipped-at commission-date))])
+        (info-columns
+         ["Deposit Date" (f/long-date commission-date)]
+         ["Order Number" (:number order)])
 
-       [:div.mt2.mbnp2.mtnp2.border-top.border-gray
+        [:h6.shout.bold.pt2 "Payment Details"]
+        (info-block
+         "Shipped Date" (f/long-date (or shipped-at commission-date)))
 
-        (summary/display-line-items (orders/product-items-for-shipment shipment) skus)]
+        [:div.align-top
+         [:span.h6.dark-gray.shout.nowrap "order details"]
+         (mapv display-line-item line-items)]
 
-       (summary/display-order-summary-for-commissions order (or commissionable-amount (:commissionable_amount data)))
+        (display-order-summary-for-commissions order (or commissionable-amount (:commissionable_amount data)))
 
-       [:div.h5.center.navy
-        (str (mf/as-money amount) " has been added to your next payment.")]])))
-
+        (info-block "Commission" [:div.light "Added to next payment: " [:span.medium (mf/as-money amount)]])]])))
 
 (defn ^:private estimated-arrival [payout-method]
   (let [payout-method-name (or (:payout-timeframe payout-method)
