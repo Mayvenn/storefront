@@ -1,4 +1,4 @@
-(ns storefront.components.stylist.dashboard-aladdin-stats
+(ns storefront.components.stylist.v2-dashboard-stats
   (:require [storefront.accessors.payouts :as payouts]
             [storefront.api :as api]
             [storefront.components.money-formatters :as mf]

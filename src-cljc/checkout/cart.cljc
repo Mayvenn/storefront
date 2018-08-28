@@ -267,15 +267,15 @@
       [:div "from a Mayvenn Certified Stylist in Fayetteville, NC."]
       [:div "Use code " [:span.bold "FREEINSTALL"] " to get your free install."]]]))
 
-(defn aladdin-cart-promo [qualified?]
+(defn v2-cart-promo [qualified?]
   (if qualified?
-    [:div.bg-teal.bg-celebrate.p2.white.center {:data-test "aladdin-cart-promo"}
+    [:div.bg-teal.bg-celebrate.p2.white.center {:data-test "v2-cart-promo"}
      [:div.flex.justify-center.mb1 (ui/ucare-img {:width 46} "014c70a0-0d57-495d-add0-f2f46248d224")]
      [:h4 "This order qualifies for a"]
      [:h1.shout.bold "Free Install"]
      [:h4.pb6 "You'll receive a voucher via email after purchase"]]
 
-    [:div.p2.bg-orange.white.center {:data-test "ineligible-aladdin-cart-promo"}
+    [:div.p2.bg-orange.white.center {:data-test "ineligible-v2-cart-promo"}
      [:h4.medium "You're almost there..."]
      [:h4.medium "Buy 3 bundles or more and get a"]
      [:h1.shout.bold "Free Install"]
@@ -314,7 +314,7 @@
     (cond
       v2-experience?
       [:div.mb3
-       (aladdin-cart-promo show-green-banner?)]
+       (v2-cart-promo show-green-banner?)]
 
       seventy-five-off-install?
       [:div.mb3

@@ -1,13 +1,11 @@
-;;TODO(ellie): Rename this namespace to something that *actually* explains what the heck this is.
-;;             Maybe "v2 homepage popup"
-(ns storefront.components.aladdin-free-install
+(ns storefront.components.v2-homepage-popup
   (:require [install.faq-accordion :as faq-accordion]
             [sablono.core :refer [html]]
             [storefront.api :as api]
             [storefront.browser.cookie-jar :as cookie-jar]
             [storefront.browser.scroll :as scroll]
             [storefront.component :as component]
-            [storefront.components.aladdin :as aladdin]
+            [storefront.components.v2 :as v2]
             [storefront.components.accordion :as accordion]
             [storefront.components.footer-modal :as footer-modal]
             [storefront.components.svg :as svg]
@@ -32,7 +30,7 @@
                 [:div.right.pt2.pr2.pointer
                  (svg/simple-x
                   (merge (utils/fake-href events/control-free-install-dismiss)
-                         {:data-test    "aladdin-free-install-dismiss"
+                         {:data-test    "v2-homepage-popup-dismiss"
                           :height       "1.5rem"
                           :width        "1.5rem"
                           :class        "stroke-black"
@@ -49,7 +47,7 @@
                    [:br]
                    "buy 3 bundles or more"]]]
                 [:div.my10
-                 (aladdin/get-a-free-install {:store                 store
+                 (v2/get-a-free-install {:store                 store
                                               :gallery-ucare-ids     gallery-ucare-ids
                                               :stylist-portrait      (:portrait store)
                                               :stylist-name          (:store-nickname store)
@@ -65,7 +63,7 @@
                                                                                  :query-params {:sha "freeinstall"}}))
                                   [:span "Shop looks"])]]
 
-                (aladdin/why-mayvenn-is-right-for-you true)
+                (v2/why-mayvenn-is-right-for-you true)
 
                 [:div.bg-black.white.p4.flex.h6.medium.items-center
                  [:span.col-7.mr2 "Buy 3 bundles or more and get a FREE install!"]
@@ -74,12 +72,12 @@
                    (ui/teal-button
                     (merge (utils/route-to events/navigate-shop-by-look {:album-keyword :look
                                                                          :query-params {:sha "freeinstall"}})
-                           {:data-test    "aladdin-free-install-shop"
+                           {:data-test    "v2-homepage-popup-shop"
                             :height-class "py1"})
                     [:span.h6 "Shop"])]]]
 
                 [:div.mt10
-                 (aladdin/faq (assoc faq-data :modal? true))]
+                 (v2/faq (assoc faq-data :modal? true))]
 
                 [:div.hide-on-tb-dt.pt3 ;; Footer
                  (component/build footer-modal/component footer-data nil)]]]))))
@@ -95,7 +93,7 @@
      :gallery-ucare-ids     (->> store
                                  :gallery
                                  :images
-                                 (map (comp aladdin/get-ucare-id-from-url :resizable-url)))
+                                 (map (comp v2/get-ucare-id-from-url :resizable-url)))
      :stylist-gallery-open? (get-in data keypaths/carousel-stylist-gallery-open?)
      :faq-data              (faq-query data)
      :footer-data           (footer-modal/query data)}))
@@ -104,7 +102,7 @@
   [data opts]
   (component/build component data opts))
 
-(defmethod effects/perform-effects events/control-v2-free-install [_ event args _ app-state]
+(defmethod effects/perform-effects events/control-v2-homepage-popup [_ event args _ app-state]
   (scroll/enable-body-scrolling)
   (api/get-promotions (get-in app-state keypaths/api-cache)
                       (or (first (get-in app-state keypaths/order-promotion-codes))
@@ -113,14 +111,14 @@
   (when-let [value (get-in app-state keypaths/dismissed-free-install)]
     (cookie-jar/save-dismissed-free-install (get-in app-state keypaths/cookie) value)))
 
-(defmethod transitions/transition-state events/control-v2-free-install [_ event args app-state]
+(defmethod transitions/transition-state events/control-v2-homepage-popup [_ event args app-state]
   (-> app-state
       (assoc-in keypaths/pending-promo-code "freeinstall")
       (assoc-in keypaths/popup nil)
       (assoc-in keypaths/dismissed-free-install true)))
 
-(defmethod transitions/transition-state events/popup-v2-show-free-install [_ event args app-state]
-  (assoc-in app-state keypaths/popup :aladdin-free-install))
+(defmethod transitions/transition-state events/popup-show-v2-homepage [_ event args app-state]
+  (assoc-in app-state keypaths/popup :v2-homepage))
 
-(defmethod effects/perform-effects events/popup-v2-show-free-install [_ event _ _ app-state]
+(defmethod effects/perform-effects events/popup-show-v2-homepage [_ event _ _ app-state]
   (scroll/disable-body-scrolling))

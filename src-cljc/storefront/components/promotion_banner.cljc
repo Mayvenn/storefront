@@ -63,20 +63,20 @@
     [:div.pointer "CONGRATS — Your next install is FREE! "
      [:span.underline "More info"]]]))
 
-(defmethod component :aladdin-freeinstall/eligible
+(defmethod component :v2-freeinstall/eligible
   [_ _ _]
   (component/create
-   [:a {:on-click  (utils/send-event-callback events/popup-v2-show-free-install)
-        :data-test "aladdin-free-install-promo-banner"}
+   [:a {:on-click  (utils/send-event-callback events/popup-show-v2-homepage)
+        :data-test "v2-free-install-promo-banner"}
     [:div.white.center.pp5.bg-teal.h5.bold.pointer
      "Mayvenn will pay for your install! " [:span.underline "Learn more"]]]))
 
-(defmethod component :aladdin-freeinstall/applied
+(defmethod component :v2-freeinstall/applied
   [_ _ _]
   (component/create
    [:a.white.center.p2.bg-teal.mbnp5.h6.bold.flex.items-center.justify-center
-    {:on-click  (utils/send-event-callback events/popup-v2-show-free-install)
-     :data-test "aladdin-free-install-promo-banner"}
+    {:on-click  (utils/send-event-callback events/popup-show-v2-homepage)
+     :data-test "v2-free-install-promo-banner"}
     (svg/celebration-horn {:height "1.6em"
                            :width  "1.6em"
                            :class  "mr1 fill-white stroke-white"})
@@ -110,7 +110,7 @@
             events/navigate-shop-by-look-details}
 
     ;; Incentivize checkout by reminding them they are saving
-    (#{:install-discount/applied :freeinstall/applied :aladdin-freeinstall/applied} promo-type)
+    (#{:install-discount/applied :freeinstall/applied :v2-freeinstall/applied} promo-type)
     (conj events/navigate-checkout-returning-or-guest
           events/navigate-checkout-address
           events/navigate-checkout-payment
@@ -128,10 +128,10 @@
     (and
      (orders/freeinstall-applied? (get-in data keypaths/order))
      (experiments/v2-experience? data))
-    :aladdin-freeinstall/applied
+    :v2-freeinstall/applied
 
     (experiments/v2-experience? data)
-    :aladdin-freeinstall/eligible
+    :v2-freeinstall/eligible
 
     (and
      (orders/install-applied? (get-in data keypaths/order))

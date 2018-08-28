@@ -48,6 +48,7 @@
                        :seo-title            "Shop by Look | Mayvenn"
                        :og-title             "Shop by Look - Find and Buy your favorite Mayvenn bundles!"}
 
+   ;;TODO Rename aladdin-free-install album
    :aladdin-free-install {:title                "shop by look"
                           :description          (str "Get inspiration for your next hairstyle and "
                                                      "shop your favorite looks from the #MayvennMade community.")

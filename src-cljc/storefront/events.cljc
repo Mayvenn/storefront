@@ -471,11 +471,11 @@
 (defpath v2-show-home)
 
 ;;SECTION v2 popup
-(defpath popup-v2-show-free-install)
+(defpath popup-show-v2-homepage)
 
 ;;SECTION v2 Control
-(defpath control-v2-free-install)
-(defpath control-v2-free-install-dismiss)
+(defpath control-v2-homepage-popup)
+(defpath control-v2-homepage-popup-dismiss)
 (defpath control-v2-stylist-dashboard-section-toggle)
 
 ;;SECTION v2 Api

@@ -12,7 +12,7 @@
                        [storefront.components.reset-password :as reset-password]
                        [storefront.components.force-set-password :as force-set-password]
                        [storefront.components.stylist.dashboard :as stylist.dashboard]
-                       [storefront.components.stylist.dashboard-aladdin :as stylist.dashboard-aladdin]
+                       [storefront.components.stylist.v2-dashboard :as v2.dashboard]
                        [storefront.components.stylist.balance-transfer-details :as balance-transfer-details]
                        [storefront.components.stylist.order-details :as stylist.order-details]
                        [storefront.components.stylist.cash-out :as stylist.cash-out]
@@ -78,8 +78,8 @@
          events/navigate-stylist-account-password                   stylist.account/built-component
          events/navigate-stylist-account-commission                 stylist.account/built-component
          events/navigate-stylist-account-social                     stylist.account/built-component
-         events/navigate-v2-stylist-dashboard-payments              stylist.dashboard-aladdin/built-component
-         events/navigate-v2-stylist-dashboard-orders                stylist.dashboard-aladdin/built-component
+         events/navigate-v2-stylist-dashboard-payments              v2.dashboard/built-component
+         events/navigate-v2-stylist-dashboard-orders                v2.dashboard/built-component
          events/navigate-gallery-image-picker                       gallery-image-picker/built-component
          events/navigate-account-manage                             (partial sign-in/requires-sign-in account/built-component)
          events/navigate-account-referrals                          (partial sign-in/requires-sign-in friend-referrals/built-component)
@@ -127,12 +127,12 @@
 
 (defn main-layout [data nav-event]
   (let [silver-background? (#{events/navigate-voucher-redeem events/navigate-voucher-redeemed} nav-event)
-        aladdin-home? (and (experiments/v2-homepage? data)
-                           (#{events/navigate-home} nav-event))]
+        v2-home?           (and (experiments/v2-homepage? data)
+                                (#{events/navigate-home} nav-event))]
     [:div.flex.flex-column {:style {:min-height    "100vh"
                                     :margin-bottom "-1px"}}
      (stylist-banner/built-component data nil)
-     (when-not aladdin-home?
+     (when-not v2-home?
        (promotion-banner/built-component data nil))
 
      #?(:cljs (popup/built-component (popup/query data) nil))

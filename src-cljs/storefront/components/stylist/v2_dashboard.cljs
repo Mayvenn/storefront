@@ -1,4 +1,4 @@
-(ns storefront.components.stylist.dashboard-aladdin
+(ns storefront.components.stylist.v2-dashboard
   (:require [spice.core :as spice]
             [spice.date :as date]
             [spice.maps :as maps]
@@ -9,7 +9,7 @@
             [storefront.component :as component]
             [storefront.components.formatters :as f]
             [storefront.components.money-formatters :as mf]
-            [storefront.components.stylist.dashboard-aladdin-stats :as dashboard-aladdin-stats]
+            [storefront.components.stylist.v2-dashboard-stats :as v2-dashboard-stats]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
             [storefront.events :as events]
@@ -89,7 +89,7 @@
               :icon               "68e6bcb0-a236-46fe-a8e7-f846fff0f464"
               :title              "Service Payment"
               :date               date
-              ;; TODO: Future Us: Strictly aladdin services (not $100-off)
+              ;; TODO: Future Us: Strictly v2 services (not $100-off)
               :subtitle           (service-menu/discount->campaign-name discount)
               :amount             (service-menu/display-voucher-amount
                                    service-menu
@@ -184,7 +184,7 @@
      (if fetching?
        [:div.my2.h2 ui/spinner]
        [:div
-        (dashboard-aladdin-stats/component stats-cards)
+        (v2-dashboard-stats/component stats-cards)
         (ledger-tabs active-tab-name)
 
         (case active-tab-name

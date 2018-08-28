@@ -1,4 +1,4 @@
-(ns storefront.components.home-aladdin
+(ns storefront.components.v2-home
   (:require [clojure.string :as string]
             [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
@@ -20,7 +20,7 @@
             [storefront.components.video :as video]
             [storefront.effects :as effects]
             [storefront.components.money-formatters :as mf]
-            [storefront.components.aladdin :as aladdin]))
+            [storefront.components.v2 :as v2]))
 
 (defn hero-image [{:keys [desktop-url mobile-url file-name alt]}]
   [:picture
@@ -266,16 +266,16 @@
                              {:opts {:close-attrs (utils/route-to events/navigate-home {:query-params {:video "0"}})}}))
      [:section what-our-customers-are-saying]]
     [:section.py10.bg-transparent-teal
-     (aladdin/get-a-free-install {:store                 store
+     (v2/get-a-free-install {:store                 store
                                   :gallery-ucare-ids     gallery-ucare-ids
                                   :stylist-portrait      (:portrait store)
                                   :stylist-name          (:store-nickname store)
                                   :stylist-gallery-open? stylist-gallery-open?})]
     [:section (most-popular-looks sleek-and-straight-ugc waves-and-curly-ugc)]
-    [:section [:div (aladdin/why-mayvenn-is-right-for-you)]]
+    [:section [:div (v2/why-mayvenn-is-right-for-you)]]
     [:section (free-install-mayvenn-grid free-install-mayvenn-ugc)]
     [:hr.hide-on-mb-tb.border-top.border-dark-silver.col-9.mx-auto.mb6]
-    [:section (aladdin/faq faq-data)]
+    [:section (v2/faq faq-data)]
     [:hr.border-top.border-dark-silver.col-9.mx-auto.my6]
     [:section our-story]]))
 
@@ -292,7 +292,7 @@
      :gallery-ucare-ids         (->> store
                                      :gallery
                                      :images
-                                     (map (comp aladdin/get-ucare-id-from-url :resizable-url)))
+                                     (map (comp v2/get-ucare-id-from-url :resizable-url)))
      :faq-data                  {:expanded-index (get-in data keypaths/faq-expanded-section)}
      :signed-in                 (auth/signed-in data)
      :categories                (->> (get-in data keypaths/categories)

@@ -5,7 +5,7 @@
             [storefront.assets :as assets]
             [storefront.component :as component]
             [storefront.components.marquee :as marquee]
-            [storefront.components.home-aladdin :as home-aladdin]
+            [storefront.components.v2-home :as v2-home]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -367,5 +367,5 @@
 
 (defn built-component [data opts]
   (if (experiments/v2-homepage? data)
-    (home-aladdin/built-component data opts)
+    (v2-home/built-component data opts)
     (component/build component (query data) opts)))

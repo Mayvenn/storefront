@@ -1,4 +1,4 @@
-(ns storefront.components.aladdin
+(ns storefront.components.v2
   (:require [storefront.components.modal-gallery :as modal-gallery]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
