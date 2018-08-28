@@ -101,37 +101,6 @@
      [:.py2.h2.right-align
       (as-money commissionable-amount)]]))
 
-(defn ^:private display-line-item
-  "Storeback now returns shared-cart line-items as a v2 Sku + item/quantity, aka
-  'line-item-skuer' This component is also used to display line items that are
-  coming off of a waiter order which is a 'variant' with a :quantity
-  Until waiter is updated to return 'line-item-skuers', this function must handle
-  the two different types of input"
-  [line-item {:keys [catalog/sku-id] :as sku} thumbnail quantity-line]
-  (let [legacy-variant-id (or (:legacy/variant-id line-item) (:id line-item))
-        price             (or (:sku/price line-item)         (:unit-price line-item))
-        title             (or (:sku/title line-item)         (products/product-title line-item))]
-    [:div.clearfix.border-bottom.border-gray.py3 {:key legacy-variant-id}
-     [:a.left.mr1
-      [:img.block.border.border-gray.rounded
-       (assoc thumbnail :style {:width  "7.33em"
-                                :height "7.33em"})]]
-     [:div.overflow-hidden
-      [:div.ml1
-       [:a.medium.titleize.h5
-        {:data-test (str "line-item-title-" sku-id)}
-        title]
-       [:div.h6.mt1.line-height-1
-        (when-let [length (:hair/length sku)]
-          ;; TODO use facets once it's not painful to do so
-          [:div.pyp2
-           {:data-test (str "line-item-length-" sku-id)}
-           "Length: " length "\""])
-        [:div.pyp2
-         {:data-test (str "line-item-price-ea-" sku-id)}
-         "Price Each: " (as-money-without-cents price)]
-        quantity-line]]]]))
-
 (defn display-line-items [line-items skus]
   (for [line-item line-items]
     (let [sku-id   (or (:catalog/sku-id line-item) (:sku line-item))
