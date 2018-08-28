@@ -24,3 +24,5 @@ resources/rev-manifest.json
 resources/client_version.txt
 node_modules/
 /package-lock.json
+.cpcache/
+.rebel_readline_history
