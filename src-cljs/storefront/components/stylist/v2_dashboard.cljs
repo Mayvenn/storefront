@@ -128,7 +128,7 @@
   ([text class]
    (sale-status-cell text class false))
   ([text class spanning?]
-   [:td.p2.bold (if spanning?
+   [:td.p2.medium (if spanning?
                     {:col-span 2
                      :class "shout center"}
                     {:class "left-align"})
@@ -144,8 +144,18 @@
      [:th.p2.left-align.medium.col-1 "Delivery"]
      [:th.p2.left-align.medium.col-1 "Voucher"]]]
    [:tbody
-    (for [{:as sale
-           :keys [id order-number order placed-at shipped-at returned-at updated-at voucher]} (map sales (:ordering sales-pagination))]
+    (for [sale (map sales (:ordering sales-pagination))
+          :let [{:keys [id
+                        order-number
+                        order
+                        placed-at
+                        shipped-at
+                        returned-at
+                        updated-at
+                        voucher-redeemed-at
+                        voucher-fulfilled-at
+                        voucher-expiration-date
+                        voucher]} sale]]
       [:tr.border-bottom.border-gray.py2
        (merge (utils/route-to events/navigate-stylist-dashboard)
               {:key       (str "sales-table-" id)
@@ -157,8 +167,16 @@
          returned-at (sale-status-cell "Returned" "red" :spanning)
          :always     (sale-status-cell "Processing" "yellow" :spanning))
        (cond
-         (not shipped-at) nil
-         :always          (sale-status-cell "None" "gray light"))])]])
+         (not shipped-at)                      nil
+         voucher-redeemed-at                   (sale-status-cell "Redeemed" "teal")
+
+         (and (not voucher-redeemed-at)
+              voucher-expiration-date
+              (< (date/to-millis voucher-expiration-date)
+                 (date/to-millis (date/now)))) (sale-status-cell "Expired" "red")
+
+         voucher-fulfilled-at                  (sale-status-cell "Active" "purple")
+         :always                               (sale-status-cell "None" "gray light"))])]])
 
 (defn ^:private ledger-tabs [active-tab-name]
   [:div.flex.flex-wrap
