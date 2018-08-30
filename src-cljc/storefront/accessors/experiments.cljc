@@ -70,7 +70,7 @@
 
 (defn v2-dashboard? [data]
   (or (->> (get-in data keypaths/store-features)
-           (some #{"aladdin-dashboard" "phoenix-dashbaord"})
+           (some #{"aladdin-dashboard" "phoenix-dashboard"})
            boolean)
       (display-feature? data "force-aladdin-dashboard")
       (display-feature? data "force-phoenix-dashboard")))
