@@ -156,8 +156,8 @@
                         voucher-fulfilled-at
                         voucher-expiration-date
                         voucher]} sale]]
-      [:tr.border-bottom.border-gray.py2
-       (merge (utils/route-to events/navigate-stylist-dashboard)
+      [:tr.border-bottom.border-gray.py2.pointer.fate-white-hover
+       (merge (utils/route-to events/navigate-stylist-dashboard-order-details {:order-number order-number})
               {:key       (str "sales-table-" id)
                :data-test (str "sales-" order-number)})
        [:td.p2.left-align.dark-gray.h6.col-3 (some-> order-updated-at f/abbr-date)]

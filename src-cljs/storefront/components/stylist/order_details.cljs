@@ -55,7 +55,7 @@
      [:div "Latest Shipment "
       [:span (str n " of " n)]]
      (info-columns
-       ["shipped date" (f/long-date shipped-at)]
+      ["shipped date" (some-> shipped-at f/long-date)]
        ["status" state])]))
 
 (defn ^:private get-user-info [app-state]
