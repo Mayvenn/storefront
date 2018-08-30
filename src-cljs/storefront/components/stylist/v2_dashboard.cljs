@@ -151,6 +151,7 @@
                         placed-at
                         shipped-at
                         returned-at
+                        order-updated-at
                         voucher-redeemed-at
                         voucher-fulfilled-at
                         voucher-expiration-date
