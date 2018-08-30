@@ -151,7 +151,6 @@
                         placed-at
                         shipped-at
                         returned-at
-                        updated-at
                         voucher-redeemed-at
                         voucher-fulfilled-at
                         voucher-expiration-date
@@ -160,7 +159,7 @@
        (merge (utils/route-to events/navigate-stylist-dashboard)
               {:key       (str "sales-table-" id)
                :data-test (str "sales-" order-number)})
-       [:td.p2.left-align.dark-gray.h6.col-3 (some-> updated-at f/abbr-date)]
+       [:td.p2.left-align.dark-gray.h6.col-3 (some-> order-updated-at f/abbr-date)]
        [:td.p2.left-align.medium.col-3.h3 (some-> order orders/first-name-plus-last-name-initial)]
        (cond
          shipped-at  (sale-status-cell "Shipped" "teal")
@@ -172,8 +171,9 @@
 
          (and (not voucher-redeemed-at)
               voucher-expiration-date
-              (< (date/to-millis voucher-expiration-date)
-                 (date/to-millis (date/now)))) (sale-status-cell "Expired" "red")
+              (date/after? (date/now)
+                           (date/to-datetime voucher-expiration-date)))
+         (sale-status-cell "Expired" "red")
 
          voucher-fulfilled-at                  (sale-status-cell "Active" "purple")
          :always                               (sale-status-cell "None" "gray light"))])]])
