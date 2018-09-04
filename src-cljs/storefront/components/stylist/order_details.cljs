@@ -75,15 +75,15 @@
       (api/get-stylist-dashboard-sale params))))
 
 (defmethod transitions/transition-state events/api-success-v2-stylist-dashboard-sale
-  [_ _ sale app-state]
-  (let [sale-id (first (keys sale))]
-    (-> app-state
-        (update-in keypaths/v2-dashboard-sales-elements merge sale)
-        (assoc-in keypaths/v2-dashboard-sales-current-sale-id sale-id))))
+  [_ _ single-sale-map app-state]
+  (update-in app-state keypaths/v2-dashboard-sales-elements merge single-sale-map))
 
 (defn query [data]
-  (let [sale-id (get-in data keypaths/v2-dashboard-sales-current-sale-id)
-        sale    (get-in data (conj keypaths/v2-dashboard-sales-elements sale-id))]
+  (let [order-number (:order-number (get-in data keypaths/navigation-args))
+        sale         (->> (get-in data keypaths/v2-dashboard-sales-elements)
+                          vals
+                          (filter (fn [sale] (= order-number (:order-number sale))))
+                          first)]
     {:sale          sale
      :loading?      (utils/requesting? data request-keys/get-stylist-dashboard-sale)
      :v2-dashboard? (experiments/v2-dashboard? data)
