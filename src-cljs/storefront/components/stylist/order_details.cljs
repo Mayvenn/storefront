@@ -108,10 +108,10 @@
            ["order number" order-number]
            ["voucher type" voucher-type])
           (info-columns
-             ["order date" (f/long-date placed-at)]
-             ["voucher status" (-> sale
-                                   sales/voucher-status
-                                   sales/voucher-status->copy)])
+           ["order date" (f/long-date placed-at)]
+           ["voucher status" (-> sale
+                                 sales/voucher-status
+                                 sales/voucher-status->copy)])
           (shipment-details order)]]])) ))
 
 (defn built-component [data opts]
