@@ -1,6 +1,7 @@
 (ns storefront.components.stylist.order-details
   (:require [spice.date :as date]
             [storefront.accessors.orders :as orders]
+            [storefront.accessors.sales :as sales]
             [storefront.accessors.experiments :as experiments]
             [storefront.component :as component]
             [storefront.components.formatters :as f]
@@ -91,7 +92,6 @@
 (defn component [{:keys [sale v2-dashboard? loading? back]} owner opts]
   (let [{:keys [order-number
                 voucher-type
-                voucher-status
                 placed-at
                 order]} sale]
     (component/create
@@ -109,7 +109,9 @@
            ["voucher type" voucher-type])
           (info-columns
              ["order date" (f/long-date placed-at)]
-             ["voucher status" voucher-status])
+             ["voucher status" (-> sale
+                                   sales/voucher-status
+                                   sales/voucher-status->copy)])
           (shipment-details order)]]])) ))
 
 (defn built-component [data opts]

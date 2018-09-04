@@ -4,6 +4,7 @@
             [spice.maps :as maps]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
+            [storefront.accessors.sales :as sales]
             [storefront.accessors.service-menu :as service-menu]
             [storefront.api :as api]
             [storefront.component :as component]
@@ -124,15 +125,43 @@
         (for [item (reverse (sort-by :date items))]
           (payment-row item))])]))
 
-(defn ^:private sale-status-cell
+(defn ^:private generic-status-cell
   ([text class]
-   (sale-status-cell text class false))
+   (generic-status-cell text class false))
   ([text class spanning?]
-   [:td.p2.medium (if spanning?
-                    {:col-span 2
-                     :class "shout center"}
-                    {:class "left-align"})
-    [:p.h6 {:class class} text]]))
+   [:td.yellow.p2.medium (when spanning? {:col-span 2})
+    text
+    #_[:p.center.h6 {:class class} text]]))
+
+(defn status->appearance [status]
+  (case status
+    :sale/shipped     [1 ["titleize" "teal"] ]
+    :sale/returned    [2 ["shout"    "yellow"]]
+    :sale/pending     [2 ["shout"    "yellow"]]
+    :sale/unknown     [2 ["shout"    "red"]]
+    :voucher/pending  nil
+    :voucher/redeemed [1 ["titleize" "teal"]]
+    :voucher/expired  [1 ["titleize" "red"]]
+    :voucher/active   [1 ["titleize" "purple"]]
+    :voucher/none     [1 ["titleize" "light" "gray"]]))
+
+(defn status-cell [[span classes] text]
+  [:td.p2.h6.center.medium {:col-span span}
+   [:span {:class classes} text]])
+
+(defn sale-status-cell [sale]
+  (let [status     (sales/sale-status sale)
+        copy       (sales/status->copy status)
+        appearance (status->appearance status)]
+    (when (seq appearance)
+      (status-cell appearance copy))))
+
+(defn voucher-status-cell [sale]
+  (let [status     (sales/voucher-status sale)
+        copy       (sales/status->copy status)
+        appearance (status->appearance status)]
+    (when (seq appearance)
+      (status-cell appearance copy))))
 
 (defn sales-table
   [sales sales-pagination]
@@ -141,43 +170,22 @@
     [:tr.h6
      [:th.p2.left-align.medium.col-3 "Order Updated"]
      [:th.p2.left-align.medium "Client"]
-     [:th.p2.left-align.medium.col-1 "Delivery"]
-     [:th.p2.left-align.medium.col-1 "Voucher"]]]
+     [:th.p2.center.medium.col-1 "Delivery"]
+     [:th.p2.center.medium.col-1 "Voucher"]]]
    [:tbody
     (for [sale (map sales (:ordering sales-pagination))
           :let [{:keys [id
                         order-number
                         order
-                        placed-at
-                        shipped-at
-                        returned-at
-                        order-updated-at
-                        voucher-redeemed-at
-                        voucher-fulfilled-at
-                        voucher-expiration-date
-                        voucher]} sale]]
+                        order-updated-at]} sale]]
       [:tr.border-bottom.border-gray.py2.pointer.fate-white-hover
        (merge (utils/route-to events/navigate-stylist-dashboard-order-details {:order-number order-number})
               {:key       (str "sales-table-" id)
                :data-test (str "sales-" order-number)})
        [:td.p2.left-align.dark-gray.h6.col-3 (some-> order-updated-at f/abbr-date)]
        [:td.p2.left-align.medium.col-3.h3 (some-> order orders/first-name-plus-last-name-initial)]
-       (cond
-         shipped-at  (sale-status-cell "Shipped" "teal")
-         returned-at (sale-status-cell "Returned" "red" :spanning)
-         :always     (sale-status-cell "Processing" "yellow" :spanning))
-       (cond
-         (not shipped-at)                      nil
-         voucher-redeemed-at                   (sale-status-cell "Redeemed" "teal")
-
-         (and (not voucher-redeemed-at)
-              voucher-expiration-date
-              (date/after? (date/now)
-                           (date/to-datetime voucher-expiration-date)))
-         (sale-status-cell "Expired" "red")
-
-         voucher-fulfilled-at                  (sale-status-cell "Active" "purple")
-         :always                               (sale-status-cell "None" "gray light"))])]])
+       (sale-status-cell sale)
+       (voucher-status-cell sale)])]])
 
 (defn ^:private ledger-tabs [active-tab-name]
   [:div.flex.flex-wrap
