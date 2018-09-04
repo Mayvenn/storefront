@@ -1,5 +1,6 @@
 (ns storefront.accessors.sales
-  (:require [spice.date :as date]))
+  (:require [spice.date :as date]
+            [storefront.accessors.orders :as orders]))
 
 (defn voucher-expired?
   [sale]
@@ -10,6 +11,17 @@
          voucher-expiration-date
          (date/after? (date/now)
                       (date/to-datetime voucher-expiration-date)))))
+
+(defn order-returned? [{:as sale :keys [order]}]
+  (let [{:keys [shipments returns]} order
+        return-quantity             (->> (mapcat :line-items returns)
+                                         (map :quantity)
+                                         (reduce + 0))
+        shipped-quantity            (->> (mapcat orders/product-items-for-shipment shipments)
+                                         (map :quantity)
+                                         (reduce + 0))]
+    (or (every? #(= "canceled" %) (map :state shipments))
+        (= return-quantity shipped-quantity))))
 
 (defn sale-status
   "Maps a sale to a keyword representing the state of the sale.
@@ -26,10 +38,10 @@
                 shipped-at
                 returned-at]} sale]
     (cond
-      shipped-at  :sale/shipped
-      returned-at :sale/returned
-      placed-at   :sale/pending
-      :otherwise  :sale/unknown)))
+      (order-returned? sale) :sale/returned
+      shipped-at             :sale/shipped
+      placed-at              :sale/pending
+      :otherwise             :sale/unknown)))
 
 (defn voucher-status
   "Maps a sale to a keyword representing the state of the voucher on the sale.
@@ -50,6 +62,9 @@
                 voucher-expiration-date
                 voucher]} sale]
     (cond
+      (order-returned? sale)  nil ;; HACK(justin): There are incoming stories to mark vouchers as returned.
+                                  ;; This will currently hide the voucher status if the order has been
+                                  ;; returned
       (not shipped-at)        :voucher/pending
       voucher-redeemed-at     :voucher/redeemed
       (voucher-expired? sale) :voucher/expired
@@ -64,10 +79,10 @@
    :voucher/none     "none"})
 
 (def sale-status->copy
-  {:sale/pending "processing"
-   :sale/return  "returned"
-   :sale/shipped "shipped"
-   :sale/unknown "error"})
+  {:sale/pending  "processing"
+   :sale/returned "returned"
+   :sale/shipped  "shipped"
+   :sale/unknown  "error"})
 
 (def status->copy
   (merge voucher-status->copy sale-status->copy))

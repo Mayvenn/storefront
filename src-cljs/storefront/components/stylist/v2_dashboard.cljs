@@ -128,14 +128,15 @@
 (defn status->appearance [status]
   (case status
     :sale/shipped     [1 ["titleize" "teal"] ]
-    :sale/returned    [2 ["shout"    "yellow"]]
+    :sale/returned    [2 ["shout"    "red"]]
     :sale/pending     [2 ["shout"    "yellow"]]
     :sale/unknown     [2 ["shout"    "red"]]
     :voucher/pending  nil
     :voucher/redeemed [1 ["titleize" "teal"]]
     :voucher/expired  [1 ["titleize" "red"]]
     :voucher/active   [1 ["titleize" "purple"]]
-    :voucher/none     [1 ["titleize" "light" "gray"]]))
+    :voucher/none     [1 ["titleize" "light" "gray"]]
+    nil               nil))
 
 (defn status-cell [[span classes] text]
   [:td.p2.h6.center.medium {:col-span span}
