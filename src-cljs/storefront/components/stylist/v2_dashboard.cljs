@@ -285,9 +285,12 @@
 
 (defn most-recent-voucher-award [balance-transfers]
   (->> balance-transfers
+       vals
        (filter #(= (:type %) "voucher_award"))
        (sort-by :transfered-at)
-       last))
+       last
+       :transfered-at
+       date/to-millis))
 
 (defmethod transitions/transition-state events/api-success-v2-stylist-dashboard-balance-transfers
   [_ event {:keys [balance-transfers pagination]} app-state]
