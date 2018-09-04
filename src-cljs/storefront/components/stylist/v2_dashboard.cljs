@@ -125,14 +125,6 @@
         (for [item (reverse (sort-by :date items))]
           (payment-row item))])]))
 
-(defn ^:private generic-status-cell
-  ([text class]
-   (generic-status-cell text class false))
-  ([text class spanning?]
-   [:td.yellow.p2.medium (when spanning? {:col-span 2})
-    text
-    #_[:p.center.h6 {:class class} text]]))
-
 (defn status->appearance [status]
   (case status
     :sale/shipped     [1 ["titleize" "teal"] ]
