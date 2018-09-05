@@ -34,11 +34,11 @@
 
 (defn ^:private info-block [header content]
   [:div.align-top.mb2
-   [:span.h6.dark-gray.shout header]
-   [:div.h6.medium (or content "--")]])
+   [:span.dark-gray.shout header]
+   [:div.medium (or content "--")]])
 
 (defn ^:private info-columns [[left-header left-content] [right-header right-content]]
-  [:div.col-12.pt2
+  [:div.col-12.pt2.h6
    [:div.inline-block.col-6
     (info-block left-header left-content)]
    [:div.inline-block.col-6
@@ -54,14 +54,14 @@
   (let [{:keys [shipments]}        order
         n                          (fmt-with-leading-zero (count shipments))
         {:keys [shipped-at state]} (last shipments)]
-    [:div
-     [:div "Latest Shipment "
-      [:span (str n " of " n)]]
+    [:div.pt4.h6
+     [:span.bold.shout "Latest Shipment "]
+     [:span (str n " of " n)]
      (info-columns
       ["shipped date" (some-> shipped-at f/long-date)]
       ["status" state])
      [:div.align-top.mb2
-      [:span.h6.dark-gray.shout "order details"]
+      [:span.dark-gray.shout "order details"]
       (component/build line-items/component {:line-items line-items
                                              :show-price? false}
                        {})]]))
@@ -83,7 +83,7 @@
         [:div
          [:div.col.col-1.px2 (svg/box-package {:height 18
                                                :width  25})]
-         [:div.col.col-9.pl2
+         [:div.col.col-11.pl2
           [:h4.col-12.left.medium.pb4 (orders/first-name-plus-last-name-initial order)]
           (info-columns
            ["order number" order-number]
