@@ -1,5 +1,6 @@
 (ns storefront.components.stylist.order-details
   (:require [spice.date :as date]
+            [checkout.cart :as cart]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.sales :as sales]
             [storefront.accessors.experiments :as experiments]
@@ -48,16 +49,33 @@
   [n]
   (cljs.pprint/cl-format nil "~2,'0D" n))
 
-(defn ^:private shipment-details [order]
-  (let [{:keys [shipments]} order
-        n (fmt-with-leading-zero (count shipments))
+(defn ^:private display-line-item
+  ([line-item] (display-line-item line-item true))
+  ([{:keys [product-title color-name unit-price quantity sku id legacy/variant-id variant-attrs]} show-price?]
+   [:div.h6.pb2 {:key (or variant-id id)}
+    [:div.medium {:data-test (str "line-item-title-" sku)} product-title]
+    [:div {:data-test (str "line-item-color-" sku)} color-name]
+    (when show-price?
+      [:div {:data-test (str "line-item-price-ea-" sku)} "Price: " (mf/as-money-without-cents unit-price) " ea"])
+    [:div
+     (when-let [length (:length variant-attrs)]
+       [:span {:data-test (str "line-item-length-" sku)} length "” " ])
+     [:span {:data-test (str "line-item-quantity-" sku)} "(Qty: " quantity ")"]]]))
+
+(defn ^:private shipment-details [order line-items]
+  (let [{:keys [shipments]}        order
+        n                          (fmt-with-leading-zero (count shipments))
         {:keys [shipped-at state]} (last shipments)]
     [:div
      [:div "Latest Shipment "
       [:span (str n " of " n)]]
      (info-columns
       ["shipped date" (some-> shipped-at f/long-date)]
-       ["status" state])]))
+      ["status" state])
+     [:div.align-top.mb2
+      [:span.h6.dark-gray.shout "order details"]
+      (for [line-item line-items]
+        (display-line-item line-item false))]]))
 
 (defn ^:private get-user-info [app-state]
   {:user-id (get-in app-state keypaths/user-id)
@@ -83,13 +101,20 @@
         sale         (->> (get-in data keypaths/v2-dashboard-sales-elements)
                           vals
                           (filter (fn [sale] (= order-number (:order-number sale))))
-                          first)]
+                          first)
+        line-items   (->> (:order sale)
+                          orders/first-commissioned-shipment
+                          orders/product-items-for-shipment)]
     {:sale          sale
      :loading?      (utils/requesting? data request-keys/get-stylist-dashboard-sale)
      :v2-dashboard? (experiments/v2-dashboard? data)
-     :back          (first (get-in data keypaths/navigation-undo-stack))}))
+     :back          (first (get-in data keypaths/navigation-undo-stack))
+     :line-items    (mapv (partial cart/add-product-title-and-color-to-line-item
+                                   (get-in data keypaths/v2-products)
+                                   (get-in data keypaths/v2-facets))
+                          line-items)}))
 
-(defn component [{:keys [sale v2-dashboard? loading? back]} owner opts]
+(defn component [{:keys [sale v2-dashboard? loading? back line-items]} owner opts]
   (let [{:keys [order-number
                 voucher-type
                 placed-at
@@ -112,7 +137,7 @@
            ["voucher status" (-> sale
                                  sales/voucher-status
                                  sales/voucher-status->copy)])
-          (shipment-details order)]]])) ))
+          (shipment-details order line-items)]]])) ))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
