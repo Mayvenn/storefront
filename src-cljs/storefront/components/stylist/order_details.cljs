@@ -39,9 +39,9 @@
 
 (defn ^:private info-columns [[left-header left-content] [right-header right-content]]
   [:div.col-12.pt2.h6
-   [:div.inline-block.col-6
+   [:div.col.col-6
     (info-block left-header left-content)]
-   [:div.inline-block.col-6
+   [:div.col.col-6
     (info-block right-header right-content)]])
 
 (defn ^:private fmt-with-leading-zero
@@ -50,16 +50,32 @@
   [n]
   (cljs.pprint/cl-format nil "~2,'0D" n))
 
-(defn ^:private shipment-details [order line-items]
-  (let [{:keys [shipments]}        order
+(defn ^:private delivery-status [sale]
+  (let [shipping-name    (->> sale
+                              :order
+                              :shipments
+                              last
+                              :line-items
+                              (filter #(= (:source %) "waiter"))
+                              first
+                              :product-name)
+        sale-status      (sales/sale-status sale)
+        sale-status-copy (sales/sale-status->copy sale-status)]
+    [:div
+     [:div.titleize sale-status-copy]
+     (when (not= sale-status :sale/returned) [:div "(" shipping-name ")"])]))
+
+(defn ^:private shipment-details [sale line-items]
+  (let [{:keys [order]}            sale
+        {:keys [shipments]}        order
         n                          (fmt-with-leading-zero (count shipments))
-        {:keys [shipped-at state]} (last shipments)]
+        shipment                   (last shipments)]
     [:div.pt4.h6
      [:span.bold.shout "Latest Shipment "]
      [:span (str n " of " n)]
      (info-columns
-      ["shipped date" (some-> shipped-at f/long-date)]
-      ["status" state])
+      ["shipped date" (some-> shipment :shipped-at f/long-date)]
+      ["delivery status" (delivery-status sale)])
      [:div.align-top.mb2
       [:span.dark-gray.shout "order details"]
       (component/build line-items/component {:line-items line-items
@@ -93,7 +109,7 @@
            ["voucher status" (-> sale
                                  sales/voucher-status
                                  sales/voucher-status->copy)])
-          (shipment-details order line-items)]]])) ))
+          (shipment-details sale line-items)]]]))))
 
 (defn query [data]
   (let [order-number (:order-number (get-in data keypaths/navigation-args))
