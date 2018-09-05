@@ -20,45 +20,6 @@
 
 ;; TODO Remove handling of underscored keys after storeback has been deployed.
 
-(defmethod effects/perform-effects events/navigate-stylist-dashboard-balance-transfer-details
-  [_ event {:keys [balance-transfer-id] :as args} _ app-state]
-  (let [user-id    (get-in app-state keypaths/user-id)
-        user-token (get-in app-state keypaths/user-token)]
-    (when user-token
-      (api/get-stylist-balance-transfer user-id user-token balance-transfer-id))))
-
-(defmethod effects/perform-effects events/api-success-stylist-balance-transfer-details
-  [_ _ {:keys [data]} _ _]
-  (messages/handle-message events/ensure-sku-ids
-                           {:sku-ids (->> (:order data)
-                                          orders/first-commissioned-shipment
-                                          orders/product-items-for-shipment
-                                          (map :sku))}))
-
-(defmethod transitions/transition-state events/api-success-stylist-balance-transfer-details [_ _ balance-transfer app-state]
-  (-> app-state
-      (assoc-in keypaths/stylist-earnings-balance-transfer-details-id (:id balance-transfer))
-      (assoc-in (conj keypaths/stylist-earnings-balance-transfers (:id balance-transfer))
-                balance-transfer)))
-
-(defn query [data]
-  (let [balance-transfer-id (get-in data keypaths/stylist-earnings-balance-transfer-details-id)
-        balance-transfer    (get-in data (conj keypaths/stylist-earnings-balance-transfers
-                                               balance-transfer-id))
-        type                (:type balance-transfer)]
-    (merge
-     {:balance-transfer balance-transfer
-      :fetching?        (utils/requesting? data request-keys/get-stylist-balance-transfer)
-      :v2-dashboard?    (experiments/v2-dashboard? data)}
-     (when (= type "commission")
-       (let [line-items (->> (:order (:data balance-transfer))
-                             orders/first-commissioned-shipment
-                             orders/product-items-for-shipment)]
-         {:line-items (mapv (partial cart/add-product-title-and-color-to-line-item
-                                     (get-in data keypaths/v2-products)
-                                     (get-in data keypaths/v2-facets))
-                            line-items)})))))
-
 (defn ^:private back-to-earnings [v2-dashboard?]
   [:a.col-12.dark-gray.flex.items-center.py3
    (merge
@@ -283,6 +244,24 @@
       [:div.col.col-2.mtp1.right-align
        [:div.h5.medium.green (mf/as-money amount)]]]]))
 
+(defn query [data]
+  (let [balance-transfer-id (get-in data keypaths/stylist-earnings-balance-transfer-details-id)
+        balance-transfer    (get-in data (conj keypaths/stylist-earnings-balance-transfers
+                                               balance-transfer-id))
+        type                (:type balance-transfer)]
+    (merge
+     {:balance-transfer balance-transfer
+      :fetching?        (utils/requesting? data request-keys/get-stylist-balance-transfer)
+      :v2-dashboard?    (experiments/v2-dashboard? data)}
+     (when (= type "commission")
+       (let [line-items (->> (:order (:data balance-transfer))
+                             orders/first-commissioned-shipment
+                             orders/product-items-for-shipment)]
+         {:line-items (mapv (partial cart/add-product-title-and-color-to-line-item
+                                     (get-in data keypaths/v2-products)
+                                     (get-in data keypaths/v2-facets))
+                            line-items)})))))
+
 (defn component [{:keys [fetching? balance-transfer] :as data} owner opts]
   (component/create
    (if (and fetching? (not balance-transfer))
@@ -296,3 +275,24 @@
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
+
+(defmethod effects/perform-effects events/navigate-stylist-dashboard-balance-transfer-details
+  [_ event {:keys [balance-transfer-id] :as args} _ app-state]
+  (let [user-id    (get-in app-state keypaths/user-id)
+        user-token (get-in app-state keypaths/user-token)]
+    (when user-token
+      (api/get-stylist-balance-transfer user-id user-token balance-transfer-id))))
+
+(defmethod effects/perform-effects events/api-success-stylist-balance-transfer-details
+  [_ _ {:keys [data]} _ _]
+  (messages/handle-message events/ensure-sku-ids
+                           {:sku-ids (->> (:order data)
+                                          orders/first-commissioned-shipment
+                                          orders/product-items-for-shipment
+                                          (map :sku))}))
+
+(defmethod transitions/transition-state events/api-success-stylist-balance-transfer-details [_ _ balance-transfer app-state]
+  (-> app-state
+      (assoc-in keypaths/stylist-earnings-balance-transfer-details-id (:id balance-transfer))
+      (assoc-in (conj keypaths/stylist-earnings-balance-transfers (:id balance-transfer))
+                balance-transfer)))
