@@ -67,8 +67,8 @@
                     :birth-date nil
                     :address {:firstname nil
                               :lastname nil
-                              :address1 nil
-                              :address2 nil
+                              :address-1 nil
+                              :address-2 nil
                               :city nil
                               :state-id nil
                               :country-id nil

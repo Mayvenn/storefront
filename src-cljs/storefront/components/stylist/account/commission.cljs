@@ -97,8 +97,8 @@
                          venmo-phone
                          paypal-email
                          green-dot
-                         address1
-                         address2
+                         address-1
+                         address-2
                          zipcode
                          city
                          state-id
@@ -164,21 +164,21 @@
        (ui/text-field {:data-test "account-address1"
                        :errors    (get field-errors ["address" "address1"])
                        :id        "account-address1"
-                       :keypath   (conj keypaths/stylist-manage-account :address :address1)
+                       :keypath   (conj keypaths/stylist-manage-account :address :address-1)
                        :focused   focused
                        :label     "Address"
                        :name      "account-address1"
                        :required  true
                        :type      "text"
-                       :value     address1})
+                       :value     address-1})
 
        [:div.col-12
         (ui/text-field-group
          {:type      "text"
           :label     "Apt/Suite"
-          :keypath   (conj keypaths/stylist-manage-account :address :address2)
+          :keypath   (conj keypaths/stylist-manage-account :address :address-2)
           :focused   focused
-          :value     address2
+          :value     address-2
           :errors    (get field-errors ["address" "address2"])
           :name      "account-address2"
           :data-test "account-address2"
@@ -258,8 +258,8 @@
    :paypal-email   (get-in data (conj keypaths/stylist-manage-account :paypal-payout-attributes :email))
    :venmo-phone    (get-in data (conj keypaths/stylist-manage-account :venmo-payout-attributes :phone))
    :green-dot      (green-dot-query data)
-   :address1       (get-in data (conj keypaths/stylist-manage-account :address :address-1))
-   :address2       (get-in data (conj keypaths/stylist-manage-account :address :address-2))
+   :address-1      (get-in data (conj keypaths/stylist-manage-account :address :address-1))
+   :address-2      (get-in data (conj keypaths/stylist-manage-account :address :address-2))
    :city           (get-in data (conj keypaths/stylist-manage-account :address :city))
    :zipcode        (get-in data (conj keypaths/stylist-manage-account :address :zipcode))
    :state-id       (get-in data (conj keypaths/stylist-manage-account :address :state-id))
