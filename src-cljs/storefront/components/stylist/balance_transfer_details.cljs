@@ -7,6 +7,7 @@
             [storefront.components.formatters :as f]
             [storefront.components.money-formatters :as mf]
             [storefront.components.order-summary :as summary]
+            [storefront.components.stylist.line-items :as line-items]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
@@ -114,7 +115,9 @@
 
         [:div.align-top
          [:span.h6.dark-gray.shout.nowrap "order details"]
-         (mapv display-line-item line-items)]
+         (component/build line-items/component {:line-items line-items
+                                                :show-price? true}
+                          {})]
 
         (display-order-summary-for-commissions order (or commissionable-amount (:commissionable_amount data)))
 

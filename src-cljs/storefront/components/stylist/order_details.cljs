@@ -8,6 +8,7 @@
             [storefront.components.formatters :as f]
             [storefront.components.money-formatters :as mf]
             [storefront.components.order-summary :as summary]
+            [storefront.components.stylist.line-items :as line-items]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
@@ -49,19 +50,6 @@
   [n]
   (cljs.pprint/cl-format nil "~2,'0D" n))
 
-(defn ^:private display-line-item
-  ([line-item] (display-line-item line-item true))
-  ([{:keys [product-title color-name unit-price quantity sku id legacy/variant-id variant-attrs]} show-price?]
-   [:div.h6.pb2 {:key (or variant-id id)}
-    [:div.medium {:data-test (str "line-item-title-" sku)} product-title]
-    [:div {:data-test (str "line-item-color-" sku)} color-name]
-    (when show-price?
-      [:div {:data-test (str "line-item-price-ea-" sku)} "Price: " (mf/as-money-without-cents unit-price) " ea"])
-    [:div
-     (when-let [length (:length variant-attrs)]
-       [:span {:data-test (str "line-item-length-" sku)} length "” " ])
-     [:span {:data-test (str "line-item-quantity-" sku)} "(Qty: " quantity ")"]]]))
-
 (defn ^:private shipment-details [order line-items]
   (let [{:keys [shipments]}        order
         n                          (fmt-with-leading-zero (count shipments))
@@ -74,45 +62,13 @@
       ["status" state])
      [:div.align-top.mb2
       [:span.h6.dark-gray.shout "order details"]
-      (for [line-item line-items]
-        (display-line-item line-item false))]]))
+      (component/build line-items/component {:line-items line-items
+                                             :show-price? false}
+                       {})]]))
 
 (defn ^:private get-user-info [app-state]
   {:user-id (get-in app-state keypaths/user-id)
    :user-token (get-in app-state keypaths/user-token)})
-
-(defmethod effects/perform-effects events/navigate-stylist-dashboard-order-details
-  [_ event {:keys [order-number] :as args} _ app-state]
-  (let [user-info  (get-user-info app-state)
-        stylist-id (get-in app-state keypaths/store-stylist-id)
-        handler    #(messages/handle-message events/api-success-v2-stylist-dashboard-sale %)
-        params     (merge {:stylist-id   stylist-id
-                           :order-number order-number
-                           :handler      handler} user-info)]
-    (when (:user-token user-info)
-      (api/get-stylist-dashboard-sale params))))
-
-(defmethod transitions/transition-state events/api-success-v2-stylist-dashboard-sale
-  [_ _ single-sale-map app-state]
-  (update-in app-state keypaths/v2-dashboard-sales-elements merge single-sale-map))
-
-(defn query [data]
-  (let [order-number (:order-number (get-in data keypaths/navigation-args))
-        sale         (->> (get-in data keypaths/v2-dashboard-sales-elements)
-                          vals
-                          (filter (fn [sale] (= order-number (:order-number sale))))
-                          first)
-        line-items   (->> (:order sale)
-                          orders/first-commissioned-shipment
-                          orders/product-items-for-shipment)]
-    {:sale          sale
-     :loading?      (utils/requesting? data request-keys/get-stylist-dashboard-sale)
-     :v2-dashboard? (experiments/v2-dashboard? data)
-     :back          (first (get-in data keypaths/navigation-undo-stack))
-     :line-items    (mapv (partial cart/add-product-title-and-color-to-line-item
-                                   (get-in data keypaths/v2-products)
-                                   (get-in data keypaths/v2-facets))
-                          line-items)}))
 
 (defn component [{:keys [sale v2-dashboard? loading? back line-items]} owner opts]
   (let [{:keys [order-number
@@ -139,5 +95,43 @@
                                  sales/voucher-status->copy)])
           (shipment-details order line-items)]]])) ))
 
+(defn query [data]
+  (let [order-number (:order-number (get-in data keypaths/navigation-args))
+        sale         (->> (get-in data keypaths/v2-dashboard-sales-elements)
+                          vals
+                          (filter (fn [sale] (= order-number (:order-number sale))))
+                          first)]
+    {:sale          sale
+     :loading?      (utils/requesting? data request-keys/get-stylist-dashboard-sale)
+     :v2-dashboard? (experiments/v2-dashboard? data)
+     :back          (first (get-in data keypaths/navigation-undo-stack))
+     :line-items    (line-items/query data)}))
+
 (defn built-component [data opts]
   (component/build component (query data) opts))
+
+(defmethod effects/perform-effects events/navigate-stylist-dashboard-order-details
+  [_ event {:keys [order-number] :as args} _ app-state]
+  (let [user-info  (get-user-info app-state)
+        stylist-id (get-in app-state keypaths/store-stylist-id)
+        handler    #(messages/handle-message events/api-success-v2-stylist-dashboard-sale %)
+        params     (merge {:stylist-id   stylist-id
+                           :order-number order-number
+                           :handler      handler} user-info)]
+    (when (:user-token user-info)
+      (api/get-stylist-dashboard-sale params))))
+
+(defmethod transitions/transition-state events/api-success-v2-stylist-dashboard-sale
+  [_ _ single-sale-map app-state]
+  (update-in app-state keypaths/v2-dashboard-sales-elements merge single-sale-map))
+
+(defmethod effects/perform-effects events/api-success-v2-stylist-dashboard-sale
+  [_ _ single-sale-map _ _]
+  (messages/handle-message events/ensure-sku-ids
+                           {:sku-ids (->> single-sale-map
+                                          vals
+                                          first
+                                          :order
+                                          orders/first-commissioned-shipment
+                                          orders/product-items-for-shipment
+                                          (map :sku))}))
