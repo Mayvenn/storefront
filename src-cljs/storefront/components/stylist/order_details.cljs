@@ -106,9 +106,9 @@
            ["voucher type" voucher-type])
           (info-columns
            ["order date" (f/long-date placed-at)]
-           ["voucher status" (-> sale
-                                 sales/voucher-status
-                                 sales/voucher-status->copy)])
+           ["voucher status" [:span.titleize (-> sale
+                                                 sales/voucher-status
+                                                 sales/voucher-status->copy)]])
           (shipment-details sale line-items)]]]))))
 
 (defn query [data]

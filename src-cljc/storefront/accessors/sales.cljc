@@ -72,11 +72,12 @@
       :otherwise              :voucher/none)))
 
 (def voucher-status->copy
-  {:voucher/pending  "pending"
+  {:voucher/pending  "processing"
    :voucher/redeemed "redeemed"
    :voucher/expired  "expired"
    :voucher/active   "active"
-   :voucher/none     "none"})
+   :voucher/none     "none"
+   nil "--"})
 
 (def sale-status->copy
   {:sale/pending  "processing"
