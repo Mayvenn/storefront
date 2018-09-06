@@ -36,9 +36,9 @@
    {:as services :keys [lifetime-services monthly-services]}]
   (let [toggle-expand (utils/fake-href events/control-v2-stylist-dashboard-section-toggle
                                        {:keypath keypaths/v2-ui-dashboard-cash-balance-section-expanded?})]
-    [:div.h6.bg-too-light-teal.p2
+    [:div.h6.bg-too-light-teal.px2.pt2.pb3
      [:div.letter-spacing-1.shout.dark-gray.mbnp5.flex.items-center
-      [:a.black toggle-expand
+      [:a.dark-gray toggle-expand
        "Cash Balance"
        (svg/dropdown-arrow {:class  (str "ml1 stroke-dark-gray "
                                          (when expanded? "rotate-180"))
@@ -46,9 +46,9 @@
                             :height ".75em"
                             :width  ".75em"})]]
 
-     [:div.flex.items-center.justify-between
+     [:div.flex.mt1.items-center.justify-between
       [:a.col-5 toggle-expand
-       [:div.h1.black.bold.flex (mf/as-money cash-balance)]]
+       [:div.h1.black.medium.flex (mf/as-money cash-balance)]]
       [:div.col-5
        (if (payouts/cash-out-eligible? payout-method)
          (ui/teal-button
@@ -81,30 +81,30 @@
 (defn ^:private store-credit-balance-card [total-available-store-credit lifetime-earned expanded?]
   (let [toggle-expand (utils/fake-href events/control-v2-stylist-dashboard-section-toggle
                                        {:keypath keypaths/v2-ui-dashboard-store-credit-section-expanded?})]
-   [:div.h6.bg-too-light-teal.p2
-    [:div.letter-spacing-1.shout.dark-gray.mbnp5.flex.items-center
-     [:a.black toggle-expand
-      "Credit Balance"
-      (svg/dropdown-arrow {:class  (str "ml1 stroke-dark-gray "
-                                        (when expanded? "rotate-180"))
-                           :style  {:stroke-width "2"}
-                           :height ".75em"
-                           :width  ".75em"})]]
+    [:div.h6.bg-too-light-teal.px2.pt2.pb3
+     [:div.letter-spacing-1.shout.dark-gray.mbnp5.flex.items-center
+      [:a.dark-gray toggle-expand
+       "Credit Balance"
+       (svg/dropdown-arrow {:class  (str "ml1 stroke-dark-gray "
+                                         (when expanded? "rotate-180"))
+                            :style  {:stroke-width "2"}
+                            :height ".75em"
+                            :width  ".75em"})]]
 
-    [:div.flex.items-center
-     [:a.col-7 toggle-expand
-      [:div.h1.black.bold.flex (mf/as-money total-available-store-credit)]]
-     [:div.col-5
-      (ui/teal-button (merge (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
-                             {:height-class "py2"
-                              :disabled? (zero? total-available-store-credit)})
-        [:div.flex.items-center.justify-center.regular.h5
-         (ui/ucare-img {:width "28" :class "mr2 flex items-center"} "81775e67-9a83-46b7-b2ae-1cdb5a737876")
-         "Shop"])]]
-    [:div.flex.pt2 {:class (when-not expanded? "hide")}
-     [:div.col-7
-      (earnings-count "Lifetime Bonuses" (mf/as-money lifetime-earned))]]]
-   ))
+     [:div.flex.items-center
+      [:a.col-7 toggle-expand
+       [:div.h1.black.medium.flex (mf/as-money total-available-store-credit)]]
+      [:div.col-5
+       (ui/teal-button (merge (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
+                              {:height-class "py2"
+                               :disabled? (zero? total-available-store-credit)})
+                       [:div.flex.items-center.justify-center.regular.h5
+                        (ui/ucare-img {:width "28" :class "mr2 flex items-center"} "81775e67-9a83-46b7-b2ae-1cdb5a737876")
+                        "Shop"])]]
+     [:div.flex.pt2 {:class (when-not expanded? "hide")}
+      [:div.col-7
+       (earnings-count "Lifetime Bonuses" (mf/as-money lifetime-earned))]]]
+    ))
 
 (defn ^:private sales-bonus-progress [{:keys [previous-level next-level award-for-next-level total-eligible-sales]}]
   [:div.p2

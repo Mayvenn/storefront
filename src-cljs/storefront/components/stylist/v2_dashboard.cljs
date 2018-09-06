@@ -139,7 +139,7 @@
     nil               nil))
 
 (defn status-cell [[span classes] text]
-  [:td.p2.h6.center.medium {:col-span span}
+  [:td.p2.h7.center.medium {:col-span span}
    [:span {:class classes} text]])
 
 (defn sale-status-cell [sale]
@@ -160,11 +160,11 @@
   [sales sales-pagination]
   [:table.col-12 {:style {:border-collapse "collapse"}}
    [:thead.bg-silver.border-0
-    [:tr.h6
-     [:th.p2.left-align.medium.col-3 "Order Updated"]
-     [:th.p2.left-align.medium "Client"]
-     [:th.p2.center.medium.col-1 "Delivery"]
-     [:th.p2.center.medium.col-1 "Voucher"]]]
+    [:tr.h7
+     [:th.px2.py1.left-align.medium.col-3.nowrap "Order Updated"]
+     [:th.px2.py1.left-align.medium "Client"]
+     [:th.px2.py1.center.medium.col-1 "Delivery"]
+     [:th.px2.py1.center.medium.col-1 "Voucher"]]]
    [:tbody
     (for [sale (map sales (:ordering sales-pagination))
           :let [{:keys [id
@@ -175,15 +175,17 @@
        (merge (utils/route-to events/navigate-stylist-dashboard-order-details {:order-number order-number})
               {:key       (str "sales-table-" id)
                :data-test (str "sales-" order-number)})
-       [:td.p2.left-align.dark-gray.h6.col-3 (some-> order-updated-at f/abbr-date)]
-       [:td.p2.left-align.medium.col-3.h3 (some-> order orders/first-name-plus-last-name-initial)]
+       [:td.p2.left-align.dark-gray.h7.col-3 (some-> order-updated-at f/abbr-date)]
+       [:td.p2.left-align.medium.col-3.h5
+        {:style {:overflow-x :hidden :max-width 120 :text-overflow :ellipsis}}  ; For real long first names
+        (some-> order orders/first-name-plus-last-name-initial)]
        (sale-status-cell sale)
        (voucher-status-cell sale)])]])
 
 (defn ^:private ledger-tabs [active-tab-name]
   [:div.flex.flex-wrap
    (for [{:keys [id title navigate]} tabs]
-     [:a.h6.col-6.p2.black
+     [:a.h5.col-6.p2.black
       (merge (utils/route-to navigate)
              {:key (str "ledger-tabs-" id)
               :data-test (str "nav-" (name id))
