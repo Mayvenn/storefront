@@ -88,9 +88,9 @@
 
 (defn component [{:keys [sale v2-dashboard? loading? back line-items]} owner opts]
   (let [{:keys [order-number
-                voucher-type
                 placed-at
-                order]} sale]
+                order
+                voucher]} sale]
     (component/create
      (if (or (not order-number) loading?)
        [:div.my6.h2 ui/spinner]
@@ -103,7 +103,7 @@
           [:h4.col-12.left.medium.pb4 (orders/first-name-plus-last-name-initial order)]
           (info-columns
            ["order number" order-number]
-           ["voucher type" voucher-type])
+           ["voucher type" (get voucher :campaign-name "--")])
           (info-columns
            ["order date" (f/long-date placed-at)]
            ["voucher status" [:span.titleize (-> sale
