@@ -110,7 +110,11 @@
 (def ^:private typography
   [:section
    (header "Typography")
-
+   (subheader "Font sizes are specific to browser breakpoint."
+              [:div "Current Breakpoint: "
+               [:span.hide-on-tb-dt "mobile"]
+               [:span.hide-on-mb.hide-on-dt "tablet"]
+               [:span.hide-on-mb-tb "desktop"]])
    [:div.col-8-on-tb-dt.my3
     [:div.mb2 (subheader "font-size/line-height")]
 
@@ -515,7 +519,6 @@
 (defn component [data owner opts]
   (component/create
    [:div
-    (compression data)
     [:div.mx3
      [:div.container
       [:div {:style {:margin "50px 0"}}
@@ -526,6 +529,7 @@
         [:span.hide-on-mb-tb "desktop"]
         " breakpoint")]
 
+      (compression data)
       colors
       typography
       (form-fields data)
