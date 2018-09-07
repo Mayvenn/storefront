@@ -11,6 +11,8 @@
             [storefront.components.formatters :as f]
             [storefront.components.money-formatters :as mf]
             [storefront.components.stylist.v2-dashboard-stats :as v2-dashboard-stats]
+            [storefront.components.stylist.v2-dashboard-payments-tab :as payments-tab]
+            [storefront.components.stylist.v2-dashboard-orders-tab :as orders-tab]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
             [storefront.events :as events]
@@ -29,166 +31,6 @@
    {:id :payments
     :title "Payments"
     :navigate events/navigate-v2-stylist-dashboard-payments}])
-
-(defn balance-transfer->payment [balance-transfer]
-  (let [{:keys [id type data]} balance-transfer
-        {:keys [order created-at amount campaign-name reason commission-date payout-method-name]} data]
-    (merge {:id id
-            :icon "68e6bcb0-a236-46fe-a8e7-f846fff0f464"
-            :date created-at
-            :subtitle ""
-            :amount (mf/as-money amount)
-            :amount-description nil
-            :styles {:background ""
-                     :title-color "black"
-                     :amount-color "teal"}}
-           (case type
-             "commission" {:title (str "Commission Earned" (when-let [name (orders/first-name-plus-last-name-initial order)]
-                                                             (str " - " name)))
-                           :data-test (str "commission-" id)
-                           :date commission-date}
-             "award"      {:title reason
-                           :data-test (str "award-" id)}
-             "voucher_award" {:title (str "Service Payment" (when-let [name (orders/first-name-plus-last-name-initial order)]
-                                                              (str " - " name)))
-                              :data-test (str "voucher-award-" id)
-                              :subtitle campaign-name}
-             "payout" {:title "Money Transfer"
-                       :icon "4939408b-1ec8-4a47-bb0e-5cdeb15d544d"
-                       :data-test (str "payout-" id)
-                       :amount-description payout-method-name
-                       :styles {:background "bg-too-light-teal"
-                                :title-color "teal"
-                                :amount-color "teal"}}
-             "sales_bonus" {:title "Sales Bonus"
-                            :data-test (str "sales-bonus-" id)
-                            :icon "56bfbe66-6db0-48c7-9069-f86c6393b15d"}
-             {:title "Unknown Payment"}))))
-
-(defn payment-row [item]
-  (let [{:keys [id icon title date subtitle amount amount-description styles data-test non-clickable?]} item]
-    [:a.block.border-bottom.border-light-gray.px3.py2.flex.items-center
-     (merge
-       (utils/route-to events/navigate-stylist-dashboard-balance-transfer-details
-                       {:balance-transfer-id id})
-       {:key       (str "payment" id)
-        :data-test data-test
-        :class     (:background styles)
-        :style     (when non-clickable? {:pointer-events "none"})})
-     (ui/ucare-img {:width 20} icon)
-     [:div.flex-auto.mx3
-      [:h5.medium {:class (:title-color styles)} title]
-      [:div.flex.h7.dark-gray
-       [:div.mr4 (f/long-date date)]
-       subtitle]]
-     [:div.right-align
-      [:div.bold {:class (:amount-color styles)} amount]
-      [:div.h7.dark-gray (or amount-description
-                             ui/nbsp)]]]))
-
-(defn pending-voucher-row [{:as pending-voucher :keys [discount date]} service-menu]
-  (let [item {:id                 (str "pending-voucher-" 1)
-              :icon               "68e6bcb0-a236-46fe-a8e7-f846fff0f464"
-              :title              "Service Payment"
-              :date               date
-              ;; TODO: Future Us: Strictly v2 services (not $100-off)
-              :subtitle           (service-menu/discount->campaign-name discount)
-              :amount             (service-menu/display-voucher-amount
-                                   service-menu
-                                   mf/as-money pending-voucher)
-              :amount-description "Pending"
-              :styles             {:background   ""
-                                   :title-color  "black"
-                                   :amount-color "orange"}
-              :non-clickable?     true}]
-    (payment-row item)))
-
-(defn group-payments-by-month [payments]
-  (let [year-month           (fn [{:keys [date]}]
-                               (let [[year month _] (f/date-tuple date)]
-                                 [year month]))
-        year-month->payments (group-by year-month (reverse payments))
-        sorted-year-months   (reverse (sort (keys year-month->payments)))]
-    (for [[year month :as ym] sorted-year-months]
-      {:title (str (get f/month-names month) " " year)
-       :items (year-month->payments ym)})))
-
-(defn payments-table [pending-voucher service-menu balance-transfers]
-  (let [payments (map balance-transfer->payment balance-transfers)
-        sections (group-payments-by-month payments)]
-    [:div.col-12.mb3
-     (when pending-voucher
-       (pending-voucher-row pending-voucher service-menu))
-     (for [{:keys [title items] :as section} sections]
-       [:div {:key (str "payments-table-" title)}
-        [:div.h7.bg-silver.px2.py1.medium title]
-        ;; ASK: Sales Bonus row
-        (for [item (reverse (sort-by :date items))]
-          (payment-row item))])]))
-
-(defn status->appearance [status]
-  (case status
-    :sale/shipped     [1 ["titleize" "teal"] ]
-    :sale/returned    [2 ["shout"    "red"]]
-    :sale/pending     [2 ["shout"    "yellow"]]
-    :sale/unknown     [2 ["shout"    "red"]]
-    :voucher/pending  nil
-    :voucher/redeemed [1 ["titleize" "teal"]]
-    :voucher/expired  [1 ["titleize" "red"]]
-    :voucher/active   [1 ["titleize" "purple"]]
-    :voucher/none     [1 ["titleize" "light" "gray"]]
-    nil               nil))
-
-(defn status-cell [[span classes] text]
-  [:td.p2.h7.center.medium {:col-span span}
-   [:span {:class classes} text]])
-
-(defn sale-status-cell [sale]
-  (let [status     (sales/sale-status sale)
-        copy       (sales/status->copy status)
-        appearance (status->appearance status)]
-    (when (seq appearance)
-      (status-cell appearance copy))))
-
-(defn voucher-status-cell [sale]
-  (let [status     (sales/voucher-status sale)
-        copy       (sales/status->copy status)
-        appearance (status->appearance status)]
-    (when (seq appearance)
-      (status-cell appearance copy))))
-
-(defn sales-table [sales sales-pagination fetching-sales?]
-  (let [{current-page :page
-         total-pages  :total
-         ordering     :ordering} sales-pagination]
-    [:div
-     [:table.col-12 {:style {:border-collapse "collapse"}}
-      [:thead.bg-silver.border-0
-       [:tr.h7.medium
-        [:th.px2.py1.left-align.medium.col-3.nowrap "Order Updated"]
-        [:th.px2.py1.left-align.medium "Client"]
-        [:th.px2.py1.center.medium.col-1 "Delivery"]
-        [:th.px2.py1.center.medium.col-1 "Voucher"]]]
-      [:tbody
-       (for [sale (map sales ordering)
-             :let [{:keys [id
-                           order-number
-                           order
-                           order-updated-at]} sale]]
-         [:tr.border-bottom.border-gray.py2.pointer.fate-white-hover
-          (merge (utils/route-to events/navigate-stylist-dashboard-order-details {:order-number order-number})
-                 {:key       (str "sales-table-" id)
-                  :data-test (str "sales-" order-number)})
-          [:td.p2.left-align.dark-gray.h7.col-3 (some-> order-updated-at f/abbr-date)]
-          [:td.p2.left-align.medium.col-3.h5
-           {:style {:overflow-x :hidden :max-width 120 :text-overflow :ellipsis}}  ; For real long first names
-           (some-> order orders/first-name-plus-last-name-initial)]
-          (sale-status-cell sale)
-          (voucher-status-cell sale)])]]
-     (pagination/fetch-more events/control-stylist-sales-load-more
-                            fetching-sales?
-                            current-page
-                            total-pages)]))
 
 (defn ^:private ledger-tabs [active-tab-name]
   [:div.flex.flex-wrap
@@ -222,12 +64,12 @@
           :payments
           (if (or (seq balance-transfers)
                   pending-voucher)
-            (payments-table pending-voucher service-menu balance-transfers)
+            (payments-tab/payments-table pending-voucher service-menu balance-transfers)
             (empty-ledger activity-ledger-tab))
 
           :orders
           (if (seq sales)
-            (sales-table sales sales-pagination fetching-sales?)
+            (orders-tab/sales-table sales sales-pagination fetching-sales?)
             (empty-ledger activity-ledger-tab)))]))))
 
 (def determine-active-tab
@@ -271,65 +113,4 @@
     (messages/handle-message events/v2-stylist-dashboard-stats-fetch)
     (effects/redirect events/navigate-stylist-dashboard-earnings)))
 
-(defmethod effects/perform-effects events/navigate-v2-stylist-dashboard-payments [_ event args _ app-state]
-  (let [stylist-id (get-in app-state keypaths/store-stylist-id)
-        user-id    (get-in app-state keypaths/user-id)
-        user-token (get-in app-state keypaths/user-token)]
-    (api/get-stylist-dashboard-balance-transfers stylist-id
-                                                 user-id
-                                                 user-token
-                                                 (get-in app-state keypaths/stylist-earnings-pagination)
-                                                 #(messages/handle-message events/api-success-v2-stylist-dashboard-balance-transfers
-                                                                           (select-keys % [:balance-transfers :pagination])))))
 
-(defmethod effects/perform-effects events/navigate-v2-stylist-dashboard-orders [_ event args _ app-state]
-  (messages/handle-message events/stylist-sales-fetch))
-
-(defmethod effects/perform-effects events/stylist-sales-fetch [_ event args _ app-state]
-  (let [stylist-id (get-in app-state keypaths/store-stylist-id)
-        user-id    (get-in app-state keypaths/user-id)
-        user-token (get-in app-state keypaths/user-token)]
-    (api/get-stylist-dashboard-sales stylist-id
-                                     user-id
-                                     user-token
-                                     (get-in app-state keypaths/v2-dashboard-sales-pagination)
-                                     #(messages/handle-message events/api-success-v2-stylist-dashboard-sales
-                                                               (select-keys % [:sales :pagination])))))
-
-(defn most-recent-voucher-award [balance-transfers]
-  (->> balance-transfers
-       vals
-       (filter #(= (:type %) "voucher_award"))
-       (sort-by :transfered-at)
-       last
-       :transfered-at
-       date/to-millis))
-
-(defmethod transitions/transition-state events/api-success-v2-stylist-dashboard-balance-transfers
-  [_ event {:keys [balance-transfers pagination]} app-state]
-  (let [most-recent-voucher-award-date (most-recent-voucher-award balance-transfers)
-        voucher-response-date          (-> (get-in app-state voucher-keypaths/voucher-response)
-                                           :date
-                                           date/to-millis)
-        voucher-pending?               (> (or voucher-response-date 0) (or most-recent-voucher-award-date 0))]
-    (-> (if voucher-pending?
-          app-state
-          (update-in app-state voucher-keypaths/voucher dissoc :response))
-        (update-in keypaths/stylist-earnings-balance-transfers merge (maps/map-keys (comp spice/parse-int name) balance-transfers))
-        (assoc-in keypaths/stylist-earnings-pagination pagination))))
-
-(defmethod transitions/transition-state events/api-success-v2-stylist-dashboard-sales
-  [_ event {:keys [sales pagination]} app-state]
-  (let [old-ordering (:ordering (get-in app-state keypaths/v2-dashboard-sales-pagination))
-        new-ordering (concat old-ordering (:ordering pagination))
-        new-pagination (assoc pagination :ordering new-ordering)]
-    (-> app-state
-        (update-in keypaths/v2-dashboard-sales-elements merge (maps/map-keys (comp spice/parse-int name) sales))
-        ;; TODO: Do this with an update-in and without so much letting
-        (assoc-in keypaths/v2-dashboard-sales-pagination new-pagination))))
-
-(defmethod effects/perform-effects events/control-stylist-sales-load-more [_ _ args _ app-state]
-  (messages/handle-message events/stylist-sales-fetch))
-
-(defmethod transitions/transition-state events/control-stylist-sales-load-more [_ args _ app-state]
-  (update-in app-state keypaths/v2-dashboard-sales-pagination-page inc))
