@@ -50,7 +50,7 @@
    [:h6.dark-gray.col-5.mx-auto.line-height-2 empty-copy]])
 
 (defn component
-  [{:keys [fetching? stats-cards activity-ledger-tab
+  [{:keys [stats-cards activity-ledger-tab
            balance-transfers balance-transfers-pagination fetching-balance-transfers?
            sales sales-pagination fetching-sales?
            pending-voucher service-menu] :as data} owner opts]
@@ -63,15 +63,10 @@
       (case active-tab-name
 
         :payments
-        (if (or (seq balance-transfers)
-                pending-voucher)
-          (payments-tab/payments-table pending-voucher service-menu balance-transfers balance-transfers-pagination fetching-balance-transfers?)
-          (empty-ledger activity-ledger-tab))
+        (payments-tab/payments-table pending-voucher service-menu balance-transfers balance-transfers-pagination fetching-balance-transfers?)
 
         :orders
-        (if (seq sales)
-          (orders-tab/sales-table sales sales-pagination fetching-sales?)
-          (empty-ledger activity-ledger-tab)))])))
+        (orders-tab/sales-table sales sales-pagination fetching-sales?))])))
 
 (def determine-active-tab
   {events/navigate-v2-stylist-dashboard-payments {:active-tab-name :payments

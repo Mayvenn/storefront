@@ -6,6 +6,7 @@
             [storefront.api :as api]
             [storefront.components.formatters :as f]
             [storefront.components.stylist.pagination :as pagination]
+            [storefront.components.ui :as ui]
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -44,38 +45,52 @@
     (when (seq appearance)
       (status-cell appearance copy))))
 
+(def empty-ledger
+  [:div.my6.center
+   [:h4.gray.bold.p1 "No orders yet"]
+   [:h6.dark-gray.col-5.mx-auto.line-height-2 "Orders from your store will appear here."]])
+
 (defn sales-table [sales sales-pagination fetching?]
   (let [{current-page :page
          total-pages  :total
          ordering     :ordering} sales-pagination]
-    [:div
-     [:table.col-12 {:style {:border-collapse "collapse"}}
-      [:thead.bg-silver.border-0
-       [:tr.h7.medium
-        [:th.px2.py1.left-align.medium.col-3.nowrap "Order Updated"]
-        [:th.px2.py1.left-align.medium "Client"]
-        [:th.px2.py1.center.medium.col-1 "Delivery"]
-        [:th.px2.py1.center.medium.col-1 "Voucher"]]]
-      [:tbody
-       (for [sale (map sales ordering)
-             :let [{:keys [id
-                           order-number
-                           order
-                           order-updated-at]} sale]]
-         [:tr.border-bottom.border-gray.py2.pointer.fate-white-hover
-          (merge (utils/route-to events/navigate-stylist-dashboard-order-details {:order-number order-number})
-                 {:key       (str "sales-table-" id)
-                  :data-test (str "sales-" order-number)})
-          [:td.p2.left-align.dark-gray.h7.col-3 (some-> order-updated-at f/abbr-date)]
-          [:td.p2.left-align.medium.col-3.h5
-           {:style {:overflow-x :hidden :max-width 120 :text-overflow :ellipsis}}  ; For real long first names
-           (some-> order orders/first-name-plus-last-name-initial)]
-          (sale-status-cell sale)
-          (voucher-status-cell sale)])]]
-     (pagination/fetch-more events/control-stylist-sales-load-more
-                            fetching?
-                            current-page
-                            total-pages)]))
+    (cond
+
+      (seq sales)
+      [:div
+       [:table.col-12 {:style {:border-collapse "collapse"}}
+        [:thead.bg-silver.border-0
+         [:tr.h7.medium
+          [:th.px2.py1.left-align.medium.col-3.nowrap "Order Updated"]
+          [:th.px2.py1.left-align.medium "Client"]
+          [:th.px2.py1.center.medium.col-1 "Delivery"]
+          [:th.px2.py1.center.medium.col-1 "Voucher"]]]
+        [:tbody
+         (for [sale (map sales ordering)
+               :let [{:keys [id
+                             order-number
+                             order
+                             order-updated-at]} sale]]
+           [:tr.border-bottom.border-gray.py2.pointer.fate-white-hover
+            (merge (utils/route-to events/navigate-stylist-dashboard-order-details {:order-number order-number})
+                   {:key       (str "sales-table-" id)
+                    :data-test (str "sales-" order-number)})
+            [:td.p2.left-align.dark-gray.h7.col-3 (some-> order-updated-at f/abbr-date)]
+            [:td.p2.left-align.medium.h5
+             {:style {:overflow-x :hidden :max-width 120 :text-overflow :ellipsis}}  ; For real long first names
+             (some-> order orders/first-name-plus-last-name-initial)]
+            (sale-status-cell sale)
+            (voucher-status-cell sale)])]]
+       (pagination/fetch-more events/control-stylist-sales-load-more
+                              fetching?
+                              current-page
+                              total-pages)]
+
+      fetching?
+      [:div.my2.h2 ui/spinner]
+
+      :else
+      empty-ledger)))
 
 (defmethod effects/perform-effects events/navigate-v2-stylist-dashboard-orders [_ event args _ app-state]
   (let [no-orders-loaded? (empty? (get-in app-state keypaths/v2-dashboard-sales-pagination))]
