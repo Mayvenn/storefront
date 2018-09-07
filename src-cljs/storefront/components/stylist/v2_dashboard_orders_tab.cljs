@@ -87,7 +87,9 @@
                             total-pages)]))
 
 (defmethod effects/perform-effects events/navigate-v2-stylist-dashboard-orders [_ event args _ app-state]
-  (messages/handle-message events/stylist-sales-fetch))
+  (let [no-orders-loaded? (not (get-in app-state keypaths/v2-dashboard-sales-pagination))]
+    (when no-orders-loaded?
+      (messages/handle-message events/stylist-sales-fetch))))
 
 (defmethod effects/perform-effects events/stylist-sales-fetch [_ event args _ app-state]
   (let [stylist-id (get-in app-state keypaths/store-stylist-id)
