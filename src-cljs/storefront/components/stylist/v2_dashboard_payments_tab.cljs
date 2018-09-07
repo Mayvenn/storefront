@@ -2,25 +2,19 @@
   (:require [spice.core :as spice]
             [spice.date :as date]
             [spice.maps :as maps]
-            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
-            [storefront.accessors.sales :as sales]
             [storefront.accessors.service-menu :as service-menu]
             [storefront.api :as api]
-            [storefront.component :as component]
             [storefront.components.formatters :as f]
             [storefront.components.money-formatters :as mf]
-            [storefront.components.stylist.v2-dashboard-stats :as v2-dashboard-stats]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
-            [storefront.request-keys :as request-keys]
             [storefront.transitions :as transitions]
-            [voucher.keypaths :as voucher-keypaths]
-            [storefront.components.stylist.pagination :as pagination]))
+            [voucher.keypaths :as voucher-keypaths]))
 
 (defn balance-transfer->payment [balance-transfer]
   (let [{:keys [id type data]} balance-transfer
@@ -119,6 +113,11 @@
           (payment-row item))])]))
 
 (defmethod effects/perform-effects events/navigate-v2-stylist-dashboard-payments [_ event args _ app-state]
+  (let [no-balance-transfers-loaded? (empty? (get-in app-state keypaths/stylist-earnings-balance-transfers-index))]
+    (when no-balance-transfers-loaded?
+      (messages/handle-message events/stylist-balance-transfers-fetch))))
+
+(defmethod effects/perform-effects events/stylist-balance-transfers-fetch [_ event args _ app-state]
   (let [stylist-id (get-in app-state keypaths/store-stylist-id)
         user-id    (get-in app-state keypaths/user-id)
         user-token (get-in app-state keypaths/user-token)]
