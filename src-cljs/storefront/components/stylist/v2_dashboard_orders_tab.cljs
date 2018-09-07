@@ -102,12 +102,10 @@
 
 (defmethod transitions/transition-state events/api-success-v2-stylist-dashboard-sales
   [_ event {:keys [sales pagination]} app-state]
-  (let [old-ordering (:ordering (get-in app-state keypaths/v2-dashboard-sales-pagination))
-        new-ordering (concat old-ordering (:ordering pagination))
-        new-pagination (assoc pagination :ordering new-ordering)]
+  (let [old-ordering (get-in app-state keypaths/v2-dashboard-sales-pagination-ordering)
+        new-pagination (update pagination :ordering #(concat old-ordering %))]
     (-> app-state
         (update-in keypaths/v2-dashboard-sales-elements merge (maps/map-keys (comp spice/parse-int name) sales))
-        ;; TODO: Do this with an update-in and without so much letting
         (assoc-in keypaths/v2-dashboard-sales-pagination new-pagination))))
 
 (defmethod effects/perform-effects events/control-stylist-sales-load-more [_ _ args _ app-state]

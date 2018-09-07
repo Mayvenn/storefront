@@ -329,6 +329,7 @@
 (def v2-dashboard-sales-elements (conj v2-dashboard-sales :elements))
 (def v2-dashboard-sales-pagination (conj v2-dashboard-sales :pagination))
 (def v2-dashboard-sales-pagination-page (conj v2-dashboard-sales-pagination :page))
+(def v2-dashboard-sales-pagination-ordering (conj v2-dashboard-sales-pagination :ordering))
 
 (def accordion (conj ui :accordion))
 (def accordion-freeinstall-home (conj accordion :freeinstall))
