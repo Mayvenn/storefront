@@ -86,6 +86,7 @@
         id->balance-transfers (get-in data keypaths/stylist-earnings-balance-transfers)]
     {:fetching?           (or (utils/requesting? data request-keys/get-stylist-balance-transfers)
                               (utils/requesting? data request-keys/fetch-stylist-service-menu))
+     :fetching-sales?     (utils/requesting? data request-keys/get-stylist-dashboard-sales)
      :stats-cards         {:stats                                  (get-in data keypaths/v2-dashboard-stats)
                            :cashing-out?                           (utils/requesting? data request-keys/cash-out-commit)
                            :payout-method                          (get-in data keypaths/stylist-manage-account-chosen-payout-method)

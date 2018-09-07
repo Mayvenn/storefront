@@ -1,26 +1,17 @@
 (ns storefront.components.stylist.v2-dashboard-orders-tab
   (:require [spice.core :as spice]
-            [spice.date :as date]
             [spice.maps :as maps]
-            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.sales :as sales]
-            [storefront.accessors.service-menu :as service-menu]
             [storefront.api :as api]
-            [storefront.component :as component]
             [storefront.components.formatters :as f]
-            [storefront.components.money-formatters :as mf]
-            [storefront.components.stylist.v2-dashboard-stats :as v2-dashboard-stats]
-            [storefront.components.ui :as ui]
+            [storefront.components.stylist.pagination :as pagination]
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
-            [storefront.request-keys :as request-keys]
-            [storefront.transitions :as transitions]
-            [voucher.keypaths :as voucher-keypaths]
-            [storefront.components.stylist.pagination :as pagination]))
+            [storefront.transitions :as transitions]))
 
 (defn status-cell [[span classes] text]
   [:td.p2.h7.center.medium {:col-span span}
@@ -53,7 +44,7 @@
     (when (seq appearance)
       (status-cell appearance copy))))
 
-(defn sales-table [sales sales-pagination fetching-sales?]
+(defn sales-table [sales sales-pagination fetching?]
   (let [{current-page :page
          total-pages  :total
          ordering     :ordering} sales-pagination]
@@ -82,7 +73,7 @@
           (sale-status-cell sale)
           (voucher-status-cell sale)])]]
      (pagination/fetch-more events/control-stylist-sales-load-more
-                            fetching-sales?
+                            fetching?
                             current-page
                             total-pages)]))
 
