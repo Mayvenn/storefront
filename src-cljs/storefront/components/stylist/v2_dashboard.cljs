@@ -50,27 +50,28 @@
    [:h6.dark-gray.col-5.mx-auto.line-height-2 empty-copy]])
 
 (defn component
-  [{:keys [fetching? stats-cards activity-ledger-tab balance-transfers sales sales-pagination fetching-sales? pending-voucher service-menu] :as data} owner opts]
+  [{:keys [fetching? stats-cards activity-ledger-tab
+           balance-transfers balance-transfers-pagination fetching-balance-transfers?
+           sales sales-pagination fetching-sales?
+           pending-voucher service-menu] :as data} owner opts]
   (let [{:keys [active-tab-name]} activity-ledger-tab]
     (component/create
-     (if fetching?
-       [:div.my2.h2 ui/spinner]
-       [:div
-        (v2-dashboard-stats/component stats-cards)
-        (ledger-tabs active-tab-name)
+     [:div
+      (v2-dashboard-stats/component stats-cards)
+      (ledger-tabs active-tab-name)
 
-        (case active-tab-name
+      (case active-tab-name
 
-          :payments
-          (if (or (seq balance-transfers)
-                  pending-voucher)
-            (payments-tab/payments-table pending-voucher service-menu balance-transfers)
-            (empty-ledger activity-ledger-tab))
+        :payments
+        (if (or (seq balance-transfers)
+                pending-voucher)
+          (payments-tab/payments-table pending-voucher service-menu balance-transfers balance-transfers-pagination fetching-balance-transfers?)
+          (empty-ledger activity-ledger-tab))
 
-          :orders
-          (if (seq sales)
-            (orders-tab/sales-table sales sales-pagination fetching-sales?)
-            (empty-ledger activity-ledger-tab)))]))))
+        :orders
+        (if (seq sales)
+          (orders-tab/sales-table sales sales-pagination fetching-sales?)
+          (empty-ledger activity-ledger-tab)))])))
 
 (def determine-active-tab
   {events/navigate-v2-stylist-dashboard-payments {:active-tab-name :payments
@@ -83,28 +84,31 @@
 (defn query
   [data]
   (let [get-balance-transfer  second
-        id->balance-transfers (get-in data keypaths/stylist-earnings-balance-transfers)]
-    {:fetching?           (or (utils/requesting? data request-keys/get-stylist-balance-transfers)
-                              (utils/requesting? data request-keys/fetch-stylist-service-menu))
-     :fetching-sales?     (utils/requesting? data request-keys/get-stylist-dashboard-sales)
-     :stats-cards         {:stats                                  (get-in data keypaths/v2-dashboard-stats)
+        balance-transfers (get-in data keypaths/stylist-earnings-balance-transfers)]
+    {:stats-cards         {:stats                                  (get-in data keypaths/v2-dashboard-stats)
                            :cashing-out?                           (utils/requesting? data request-keys/cash-out-commit)
                            :payout-method                          (get-in data keypaths/stylist-manage-account-chosen-payout-method)
                            :cash-balance-section-expanded?         (get-in data keypaths/v2-ui-dashboard-cash-balance-section-expanded?)
                            :store-credit-balance-section-expanded? (get-in data keypaths/v2-ui-dashboard-store-credit-section-expanded?)
                            :total-available-store-credit           (get-in data keypaths/user-total-available-store-credit)}
      :activity-ledger-tab (determine-active-tab (get-in data keypaths/navigation-event))
-     :balance-transfers   (into []
-                                (comp
-                                 (map get-balance-transfer)
-                                 (remove (fn [transfer]
-                                           (when-let [status (-> transfer :data :status)]
-                                             (not= "paid" status)))))
-                                id->balance-transfers)
-     :sales               (get-in data keypaths/v2-dashboard-sales-elements)
-     :sales-pagination    (get-in data keypaths/v2-dashboard-sales-pagination)
      :service-menu        (get-in data keypaths/stylist-service-menu)
-     :pending-voucher     (get-in data voucher-keypaths/voucher-response)}))
+     :pending-voucher     (get-in data voucher-keypaths/voucher-response)
+
+     :balance-transfers           (into []
+                                        (comp
+                                         (map get-balance-transfer)
+                                         (remove (fn [transfer]
+                                                   (when-let [status (-> transfer :data :status)]
+                                                     (not= "paid" status)))))
+                                        balance-transfers)
+     :fetching-balance-transfers? (or (utils/requesting? data request-keys/get-stylist-dashboard-balance-transfers)
+                                      (utils/requesting? data request-keys/fetch-stylist-service-menu))
+     :balance-transfers-pagination     (get-in data keypaths/stylist-earnings-pagination)
+
+     :sales            (get-in data keypaths/v2-dashboard-sales-elements)
+     :fetching-sales?  (utils/requesting? data request-keys/get-stylist-dashboard-sales)
+     :sales-pagination (get-in data keypaths/v2-dashboard-sales-pagination)}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

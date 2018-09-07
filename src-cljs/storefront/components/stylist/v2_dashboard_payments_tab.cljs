@@ -7,6 +7,7 @@
             [storefront.api :as api]
             [storefront.components.formatters :as f]
             [storefront.components.money-formatters :as mf]
+            [storefront.components.stylist.pagination :as pagination]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
             [storefront.events :as events]
@@ -99,18 +100,24 @@
       {:title (str (get f/month-names month) " " year)
        :items (year-month->payments ym)})))
 
-(defn payments-table [pending-voucher service-menu balance-transfers]
+(defn payments-table [pending-voucher service-menu balance-transfers pagination fetching?]
   (let [payments (map balance-transfer->payment balance-transfers)
-        sections (group-payments-by-month payments)]
-    [:div.col-12.mb3
-     (when pending-voucher
-       (pending-voucher-row pending-voucher service-menu))
-     (for [{:keys [title items] :as section} sections]
-       [:div {:key (str "payments-table-" title)}
-        [:div.h7.bg-silver.px2.py1.medium title]
-        ;; ASK: Sales Bonus row
-        (for [item (reverse (sort-by :date items))]
-          (payment-row item))])]))
+        sections (group-payments-by-month payments)
+        {current-page :page total-pages :total} pagination]
+    [:div
+     [:div.col-12.mb3
+      (when pending-voucher
+        (pending-voucher-row pending-voucher service-menu))
+      (for [{:keys [title items] :as section} sections]
+        [:div {:key (str "payments-table-" title)}
+         [:div.h7.bg-silver.px2.py1.medium title]
+         ;; ASK: Sales Bonus row
+         (for [item (reverse (sort-by :date items))]
+           (payment-row item))])]
+     (pagination/fetch-more events/control-stylist-balance-transfers-load-more
+                            fetching?
+                            current-page
+                            total-pages)]))
 
 (defmethod effects/perform-effects events/navigate-v2-stylist-dashboard-payments [_ event args _ app-state]
   (let [no-balance-transfers-loaded? (empty? (get-in app-state keypaths/stylist-earnings-balance-transfers-index))]
