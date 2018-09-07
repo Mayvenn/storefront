@@ -489,5 +489,6 @@
 (defpath api-success-v2-stylist-dashboard-sale)
 
 ;;SECTION v2 Navigate
+(defpath navigate-v2-stylist-dashboard)
 (defpath navigate-v2-stylist-dashboard-payments)
 (defpath navigate-v2-stylist-dashboard-orders)
