@@ -115,9 +115,9 @@
 (defmethod effects/perform-effects events/navigate-v2-stylist-dashboard-payments [_ event args _ app-state]
   (let [no-balance-transfers-loaded? (empty? (get-in app-state keypaths/stylist-earnings-balance-transfers-index))]
     (when no-balance-transfers-loaded?
-      (messages/handle-message events/stylist-balance-transfers-fetch))))
+      (messages/handle-message events/v2-stylist-dashboard-balance-transfers-fetch))))
 
-(defmethod effects/perform-effects events/stylist-balance-transfers-fetch [_ event args _ app-state]
+(defmethod effects/perform-effects events/v2-stylist-dashboard-balance-transfers-fetch [_ event args _ app-state]
   (let [stylist-id (get-in app-state keypaths/store-stylist-id)
         user-id    (get-in app-state keypaths/user-id)
         user-token (get-in app-state keypaths/user-token)]

@@ -138,7 +138,6 @@
 (defpath stripe-component-will-unmount)
 
 (defpath stylist-balance-transfers-fetch)
-(defpath stylist-sales-fetch)
 
 (defpath ensure-sku-ids)
 
@@ -483,6 +482,8 @@
 ;;SECTION v2 Api
 ;; ;; REQUESTS
 (defpath v2-stylist-dashboard-stats-fetch)
+(defpath v2-stylist-dashboard-balance-transfers-fetch)
+(defpath v2-stylist-dashboard-sales-fetch)
 
 ;; ;; SUCCESS
 (defpath api-success-v2-stylist-dashboard-stats)

@@ -80,9 +80,9 @@
 (defmethod effects/perform-effects events/navigate-v2-stylist-dashboard-orders [_ event args _ app-state]
   (let [no-orders-loaded? (empty? (get-in app-state keypaths/v2-dashboard-sales-pagination))]
     (when no-orders-loaded?
-      (messages/handle-message events/stylist-sales-fetch))))
+      (messages/handle-message events/v2-stylist-dashboard-sales-fetch))))
 
-(defmethod effects/perform-effects events/stylist-sales-fetch [_ event args _ app-state]
+(defmethod effects/perform-effects events/v2-stylist-dashboard-sales-fetch [_ event args _ app-state]
   (let [stylist-id (get-in app-state keypaths/store-stylist-id)
         user-id    (get-in app-state keypaths/user-id)
         user-token (get-in app-state keypaths/user-token)]
@@ -102,7 +102,7 @@
         (assoc-in keypaths/v2-dashboard-sales-pagination new-pagination))))
 
 (defmethod effects/perform-effects events/control-stylist-sales-load-more [_ _ args _ app-state]
-  (messages/handle-message events/stylist-sales-fetch))
+  (messages/handle-message events/v2-stylist-dashboard-sales-fetch))
 
 (defmethod transitions/transition-state events/control-stylist-sales-load-more [_ args _ app-state]
   (update-in app-state keypaths/v2-dashboard-sales-pagination-page inc))
