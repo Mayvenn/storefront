@@ -19,7 +19,8 @@
             [storefront.platform.messages :as messages]
             [storefront.request-keys :as request-keys]
             [storefront.transitions :as transitions]
-            [voucher.keypaths :as voucher-keypaths]))
+            [voucher.keypaths :as voucher-keypaths]
+            [storefront.components.stylist.pagination :as pagination]))
 
 (def tabs
   [{:id :orders
@@ -156,31 +157,38 @@
     (when (seq appearance)
       (status-cell appearance copy))))
 
-(defn sales-table
-  [sales sales-pagination]
-  [:table.col-12 {:style {:border-collapse "collapse"}}
-   [:thead.bg-silver.border-0
-    [:tr.h7
-     [:th.px2.py1.left-align.medium.col-3.nowrap "Order Updated"]
-     [:th.px2.py1.left-align.medium "Client"]
-     [:th.px2.py1.center.medium.col-1 "Delivery"]
-     [:th.px2.py1.center.medium.col-1 "Voucher"]]]
-   [:tbody
-    (for [sale (map sales (:ordering sales-pagination))
-          :let [{:keys [id
-                        order-number
-                        order
-                        order-updated-at]} sale]]
-      [:tr.border-bottom.border-gray.py2.pointer.fate-white-hover
-       (merge (utils/route-to events/navigate-stylist-dashboard-order-details {:order-number order-number})
-              {:key       (str "sales-table-" id)
-               :data-test (str "sales-" order-number)})
-       [:td.p2.left-align.dark-gray.h7.col-3 (some-> order-updated-at f/abbr-date)]
-       [:td.p2.left-align.medium.col-3.h5
-        {:style {:overflow-x :hidden :max-width 120 :text-overflow :ellipsis}}  ; For real long first names
-        (some-> order orders/first-name-plus-last-name-initial)]
-       (sale-status-cell sale)
-       (voucher-status-cell sale)])]])
+(defn sales-table [sales sales-pagination fetching-sales?]
+  (let [{current-page :page
+         total-pages  :total
+         ordering     :ordering} sales-pagination]
+    [:div
+     [:table.col-12 {:style {:border-collapse "collapse"}}
+      [:thead.bg-silver.border-0
+       [:tr.h7.medium
+        [:th.px2.py1.left-align.medium.col-3.nowrap "Order Updated"]
+        [:th.px2.py1.left-align.medium "Client"]
+        [:th.px2.py1.center.medium.col-1 "Delivery"]
+        [:th.px2.py1.center.medium.col-1 "Voucher"]]]
+      [:tbody
+       (for [sale (map sales ordering)
+             :let [{:keys [id
+                           order-number
+                           order
+                           order-updated-at]} sale]]
+         [:tr.border-bottom.border-gray.py2.pointer.fate-white-hover
+          (merge (utils/route-to events/navigate-stylist-dashboard-order-details {:order-number order-number})
+                 {:key       (str "sales-table-" id)
+                  :data-test (str "sales-" order-number)})
+          [:td.p2.left-align.dark-gray.h7.col-3 (some-> order-updated-at f/abbr-date)]
+          [:td.p2.left-align.medium.col-3.h5
+           {:style {:overflow-x :hidden :max-width 120 :text-overflow :ellipsis}}  ; For real long first names
+           (some-> order orders/first-name-plus-last-name-initial)]
+          (sale-status-cell sale)
+          (voucher-status-cell sale)])]]
+     (pagination/fetch-more events/control-stylist-sales-load-more
+                            fetching-sales?
+                            current-page
+                            total-pages)]))
 
 (defn ^:private ledger-tabs [active-tab-name]
   [:div.flex.flex-wrap
@@ -200,7 +208,7 @@
    [:h6.dark-gray.col-5.mx-auto.line-height-2 empty-copy]])
 
 (defn component
-  [{:keys [fetching? stats-cards activity-ledger-tab balance-transfers sales sales-pagination pending-voucher service-menu] :as data} owner opts]
+  [{:keys [fetching? stats-cards activity-ledger-tab balance-transfers sales sales-pagination fetching-sales? pending-voucher service-menu] :as data} owner opts]
   (let [{:keys [active-tab-name]} activity-ledger-tab]
     (component/create
      (if fetching?
@@ -219,7 +227,7 @@
 
           :orders
           (if (seq sales)
-            (sales-table sales sales-pagination)
+            (sales-table sales sales-pagination fetching-sales?)
             (empty-ledger activity-ledger-tab)))]))))
 
 (def determine-active-tab
@@ -275,6 +283,9 @@
                                                                            (select-keys % [:balance-transfers :pagination])))))
 
 (defmethod effects/perform-effects events/navigate-v2-stylist-dashboard-orders [_ event args _ app-state]
+  (messages/handle-message events/stylist-sales-fetch))
+
+(defmethod effects/perform-effects events/stylist-sales-fetch [_ event args _ app-state]
   (let [stylist-id (get-in app-state keypaths/store-stylist-id)
         user-id    (get-in app-state keypaths/user-id)
         user-token (get-in app-state keypaths/user-token)]
@@ -309,6 +320,16 @@
 
 (defmethod transitions/transition-state events/api-success-v2-stylist-dashboard-sales
   [_ event {:keys [sales pagination]} app-state]
-  (-> app-state
-      (update-in keypaths/v2-dashboard-sales-elements merge (maps/map-keys (comp spice/parse-int name) sales))
-      (assoc-in keypaths/v2-dashboard-sales-pagination pagination)))
+  (let [old-ordering (:ordering (get-in app-state keypaths/v2-dashboard-sales-pagination))
+        new-ordering (concat old-ordering (:ordering pagination))
+        new-pagination (assoc pagination :ordering new-ordering)]
+    (-> app-state
+        (update-in keypaths/v2-dashboard-sales-elements merge (maps/map-keys (comp spice/parse-int name) sales))
+        ;; TODO: Do this with an update-in and without so much letting
+        (assoc-in keypaths/v2-dashboard-sales-pagination new-pagination))))
+
+(defmethod effects/perform-effects events/control-stylist-sales-load-more [_ _ args _ app-state]
+  (messages/handle-message events/stylist-sales-fetch))
+
+(defmethod transitions/transition-state events/control-stylist-sales-load-more [_ args _ app-state]
+  (update-in app-state keypaths/v2-dashboard-sales-pagination-page inc))

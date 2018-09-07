@@ -138,6 +138,7 @@
 (defpath stripe-component-will-unmount)
 
 (defpath stylist-balance-transfers-fetch)
+(defpath stylist-sales-fetch)
 
 (defpath ensure-sku-ids)
 
@@ -175,6 +176,7 @@
 (defpath control-stylist-balance-transfers-load-more)
 (defpath control-stylist-referrals-fetch)
 (defpath control-stylist-bonuses-fetch)
+(defpath control-stylist-sales-load-more)
 (defpath control-stylist-community)
 (defpath poll-stylist-portrait)
 (defpath poll-gallery)
