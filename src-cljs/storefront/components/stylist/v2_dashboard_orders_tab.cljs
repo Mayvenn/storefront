@@ -61,8 +61,8 @@
        [:table.col-12 {:style {:border-collapse "collapse"}}
         [:thead.bg-silver.border-0
          [:tr.h7.medium
-          [:th.px2.py1.left-align.medium.col-3.nowrap "Order Updated"]
-          [:th.px2.py1.left-align.medium "Client"]
+          [:th.px2.py1.left-align.medium.col-2.nowrap "Order Updated"]
+          [:th.px2.py1.left-align.medium.col-8 "Client"]
           [:th.px2.py1.center.medium.col-1 "Delivery"]
           [:th.px2.py1.center.medium.col-1 "Voucher"]]]
         [:tbody
@@ -75,8 +75,8 @@
             (merge (utils/route-to events/navigate-stylist-dashboard-order-details {:order-number order-number})
                    {:key       (str "sales-table-" id)
                     :data-test (str "sales-" order-number)})
-            [:td.p2.left-align.dark-gray.h7.col-3 (some-> order-updated-at f/abbr-date)]
-            [:td.p2.left-align.medium.h5
+            [:td.p2.left-align.dark-gray.h7 (some-> order-updated-at f/abbr-date)]
+            [:td.p2.left-align.medium.h5.nowrap
              {:style {:overflow-x :hidden :max-width 120 :text-overflow :ellipsis}}  ; For real long first names
              (some-> order orders/first-name-plus-last-name-initial)]
             (sale-status-cell sale)
