@@ -81,7 +81,7 @@
              (some-> order orders/first-name-plus-last-name-initial)]
             (sale-status-cell sale)
             (voucher-status-cell sale)])]]
-       (pagination/fetch-more events/control-stylist-sales-load-more
+       (pagination/fetch-more events/control-v2-stylist-dashboard-sales-load-more
                               fetching?
                               current-page
                               total-pages)]
@@ -116,8 +116,8 @@
         (update-in keypaths/v2-dashboard-sales-elements merge (maps/map-keys (comp spice/parse-int name) sales))
         (assoc-in keypaths/v2-dashboard-sales-pagination new-pagination))))
 
-(defmethod effects/perform-effects events/control-stylist-sales-load-more [_ _ args _ app-state]
+(defmethod effects/perform-effects events/control-v2-stylist-dashboard-sales-load-more [_ _ args _ app-state]
   (messages/handle-message events/v2-stylist-dashboard-sales-fetch))
 
-(defmethod transitions/transition-state events/control-stylist-sales-load-more [_ args _ app-state]
+(defmethod transitions/transition-state events/control-v2-stylist-dashboard-sales-load-more [_ args _ app-state]
   (update-in app-state keypaths/v2-dashboard-sales-pagination-page inc))

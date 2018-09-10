@@ -79,7 +79,7 @@
 (defn query
   [data]
   (let [get-balance-transfer  second
-        balance-transfers (get-in data keypaths/stylist-earnings-balance-transfers)]
+        balance-transfers (get-in data keypaths/v2-dashboard-balance-transfers-elements)]
     {:stats-cards         {:stats                                  (get-in data keypaths/v2-dashboard-stats)
                            :cashing-out?                           (utils/requesting? data request-keys/cash-out-commit)
                            :payout-method                          (get-in data keypaths/stylist-manage-account-chosen-payout-method)
@@ -99,7 +99,7 @@
                                         balance-transfers)
      :fetching-balance-transfers? (or (utils/requesting? data request-keys/get-stylist-dashboard-balance-transfers)
                                       (utils/requesting? data request-keys/fetch-stylist-service-menu))
-     :balance-transfers-pagination     (get-in data keypaths/stylist-earnings-pagination)
+     :balance-transfers-pagination     (get-in data keypaths/v2-dashboard-balance-transfers-pagination)
 
      :sales            (get-in data keypaths/v2-dashboard-sales-elements)
      :fetching-sales?  (utils/requesting? data request-keys/get-stylist-dashboard-sales)

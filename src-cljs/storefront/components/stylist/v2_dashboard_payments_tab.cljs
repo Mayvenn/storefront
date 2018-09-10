@@ -114,13 +114,13 @@
          ;; ASK: Sales Bonus row
          (for [item (reverse (sort-by :date items))]
            (payment-row item))])]
-     (pagination/fetch-more events/control-stylist-balance-transfers-load-more
+     (pagination/fetch-more events/control-v2-stylist-dashboard-balance-transfers-load-more
                             fetching?
                             current-page
                             total-pages)]))
 
 (defmethod effects/perform-effects events/navigate-v2-stylist-dashboard-payments [_ event args _ app-state]
-  (let [no-balance-transfers-loaded? (empty? (get-in app-state keypaths/stylist-earnings-balance-transfers-index))]
+  (let [no-balance-transfers-loaded? (empty? (get-in app-state keypaths/v2-dashboard-balance-transfers-pagination-ordering))]
     (when no-balance-transfers-loaded?
       (messages/handle-message events/v2-stylist-dashboard-balance-transfers-fetch))))
 
@@ -131,7 +131,7 @@
     (api/get-stylist-dashboard-balance-transfers stylist-id
                                                  user-id
                                                  user-token
-                                                 (get-in app-state keypaths/stylist-earnings-pagination)
+                                                 (get-in app-state keypaths/v2-dashboard-balance-transfers-pagination)
                                                  #(messages/handle-message events/api-success-v2-stylist-dashboard-balance-transfers
                                                                            (select-keys % [:balance-transfers :pagination])))))
 
@@ -154,6 +154,11 @@
     (-> (if voucher-pending?
           app-state
           (update-in app-state voucher-keypaths/voucher dissoc :response))
-        (update-in keypaths/stylist-earnings-balance-transfers merge (maps/map-keys (comp spice/parse-int name) balance-transfers))
-        (assoc-in keypaths/stylist-earnings-pagination pagination))))
+        (update-in keypaths/v2-dashboard-balance-transfers-elements merge (maps/map-keys (comp spice/parse-int name) balance-transfers))
+        (assoc-in keypaths/v2-dashboard-balance-transfers-pagination pagination))))
 
+(defmethod effects/perform-effects events/control-v2-stylist-dashboard-balance-transfers-load-more [_ _ args _ app-state]
+  (messages/handle-message events/v2-stylist-dashboard-balance-transfers-fetch))
+
+(defmethod transitions/transition-state events/control-v2-stylist-dashboard-balance-transfers-load-more [_ args _ app-state]
+  (update-in app-state keypaths/v2-dashboard-balance-transfers-pagination-page inc))

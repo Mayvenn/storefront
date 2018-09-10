@@ -330,6 +330,12 @@
 (def v2-dashboard-sales-pagination (conj v2-dashboard-sales :pagination))
 (def v2-dashboard-sales-pagination-page (conj v2-dashboard-sales-pagination :page))
 (def v2-dashboard-sales-pagination-ordering (conj v2-dashboard-sales-pagination :ordering))
+(def v2-dashboard-balance-transfers (conj v2-dashboard :balance-transfers))
+(def v2-dashboard-balance-transfers-current-sale-id (conj v2-dashboard-balance-transfers :current-sale-id))
+(def v2-dashboard-balance-transfers-elements (conj v2-dashboard-balance-transfers :elements))
+(def v2-dashboard-balance-transfers-pagination (conj v2-dashboard-balance-transfers :pagination))
+(def v2-dashboard-balance-transfers-pagination-page (conj v2-dashboard-balance-transfers-pagination :page))
+(def v2-dashboard-balance-transfers-pagination-ordering (conj v2-dashboard-balance-transfers-pagination :ordering))
 
 (def accordion (conj ui :accordion))
 (def accordion-freeinstall-home (conj accordion :freeinstall))

@@ -175,7 +175,6 @@
 (defpath control-stylist-balance-transfers-load-more)
 (defpath control-stylist-referrals-fetch)
 (defpath control-stylist-bonuses-fetch)
-(defpath control-stylist-sales-load-more)
 (defpath control-stylist-community)
 (defpath poll-stylist-portrait)
 (defpath poll-gallery)
@@ -478,6 +477,8 @@
 (defpath control-v2-homepage-popup)
 (defpath control-v2-homepage-popup-dismiss)
 (defpath control-v2-stylist-dashboard-section-toggle)
+(defpath control-v2-stylist-dashboard-sales-load-more)
+(defpath control-v2-stylist-dashboard-balance-transfers-load-more)
 
 ;;SECTION v2 Api
 ;; ;; REQUESTS
