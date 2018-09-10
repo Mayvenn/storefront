@@ -39,8 +39,8 @@
         [:span.red (str returned-quantity " Items Returned")]])]]))
 
 (defn component [{:keys [line-items show-price?]} owner opts]
-   (component/create
-    [:div (for [line-item line-items]
+  (component/create
+   [:div (for [line-item line-items]
            (display-line-item line-item show-price?))]))
 
 (defn query [app-state]
@@ -52,9 +52,9 @@
                                  :order)
         returned-quantities (orders/returned-quantities order)
         line-items          (->> order
-                                 orders/first-commissioned-shipment
-                                 orders/product-items-for-shipment
-                                 (mapv #(assoc % :returned-quantity (get returned-quantities (:id %) 0))))]
+                                 orders/product-items
+                                 (mapv #(assoc % :returned-quantity (get returned-quantities (:id %) 0))))
+]
     (mapv (partial cart/add-product-title-and-color-to-line-item
                    (get-in app-state keypaths/v2-products)
                    (get-in app-state keypaths/v2-facets))

@@ -156,6 +156,5 @@
                                           vals
                                           first
                                           :order
-                                          orders/first-commissioned-shipment
-                                          orders/product-items-for-shipment
+                                          orders/product-items
                                           (map :sku))}))
