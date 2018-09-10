@@ -6,10 +6,10 @@
   (> (or pages 0) (or page 0)))
 
 (defn fetch-more [event fetching? page pages]
-  (if fetching?
-    [:.h2 ui/spinner]
-    (when (more-pages? page pages)
-      [:.col-5.mx-auto.my3
+  [:.col-5.mx-auto.my3
+   (if fetching?
+     [:.h2 ui/spinner]
+     (when (more-pages? page pages)
        [:.btn.btn-outline.navy.col-12
         {:on-click (utils/send-event-callback event)}
-        "Load More"]])))
+        "Load More"]))])
