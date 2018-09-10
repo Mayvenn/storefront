@@ -169,3 +169,11 @@
          (first (or (:last-name billing-address)
                     (:last-name shipping-address)))
          ".")))
+
+(defn returned-quantities [order]
+  "Returns a map of returned line-items, with variant-id as the key and quantity as the value"
+  (->> order
+       :returns
+       (mapv :line-items)
+       (apply concat)
+       (reduce (fn [acc {:keys [id quantity]}] (update acc id (partial + quantity))) {})))
