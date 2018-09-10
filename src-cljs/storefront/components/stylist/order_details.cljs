@@ -95,21 +95,29 @@
      (if (or (not order-number) loading?)
        [:div.my6.h2 ui/spinner]
        [:div.container.mb4.px3
-        (back-button back v2-dashboard?)
+        {:style {:display               :grid
+                 :grid-template-columns "2em 100%"
+                 :grid-template-areas   (str "'back-btn back-btn'"
+                                             "'type-icon title'"
+                                             "'spacer fields'")}}
+        [:div {:style {:grid-area "back-btn"}}
+         (back-button back v2-dashboard?)]
+        [:div {:style {:grid-area "type-icon"}}
+         (svg/box-package {:height 18
+                           :width  25})]
         [:div
-         [:div.col.col-1.px2 (svg/box-package {:height 18
-                                               :width  25})]
-         [:div.col.col-11.pl2
-          [:h4.col-12.left.medium.pb4 (orders/first-name-plus-last-name-initial order)]
-          (info-columns
-           ["order number" order-number]
-           ["voucher type" (get voucher :campaign-name "--")])
-          (info-columns
-           ["order date" (f/long-date placed-at)]
-           ["voucher status" [:span.titleize (-> sale
-                                                 sales/voucher-status
-                                                 sales/voucher-status->copy)]])
-          (shipment-details sale line-items)]]]))))
+         {:style {:grid-area "title"}}
+         [:h4.medium (orders/first-name-plus-last-name-initial order)]]
+        [:div {:style {:grid-area "fields"}}
+         (info-columns
+          ["order number" order-number]
+          ["voucher type" (get voucher :campaign-name "--")])
+         (info-columns
+          ["order date" (f/long-date placed-at)]
+          ["voucher status" [:span.titleize (-> sale
+                                                sales/voucher-status
+                                                sales/voucher-status->copy)]])
+         (shipment-details sale line-items)]]))))
 
 (defn query [data]
   (let [order-number (:order-number (get-in data keypaths/navigation-args))
