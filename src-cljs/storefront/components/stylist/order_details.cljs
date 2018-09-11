@@ -27,11 +27,11 @@
 (defn ^:private back-button [back v2-dashboard?]
   [:a.col-12.dark-gray.flex.items-center.py3
    (merge
-    {:data-test "back-link"}
-    (utils/route-back-or-to back
-                            (if v2-dashboard?
-                              events/navigate-v2-stylist-dashboard-orders
-                              events/navigate-stylist-dashboard-earnings)))
+     {:data-test "back-link"}
+     (utils/route-back-or-to back
+                             (if v2-dashboard?
+                               events/navigate-v2-stylist-dashboard-orders
+                               events/navigate-stylist-dashboard-earnings)))
    (ui/back-caret "Back")])
 
 (defn ^:private info-block [header content]
@@ -64,8 +64,8 @@
 
 (defn ^:private shipment-details [{:as shipment :keys [line-items]}]
   [(info-columns
-    ["shipped date" (some-> shipment :shipped-at f/long-date)]
-    ["delivery status" (delivery-status shipment)])
+     ["shipped date" (some-> shipment :shipped-at f/long-date)]
+     ["delivery status" (delivery-status shipment)])
    [:div.align-top.mb2
     [:span.dark-gray.shout "order details"]
     (component/build line-items/component
@@ -123,7 +123,7 @@
   "Adds :quantity-returned to each line item of each shipment in a sequence of shipments.
 Second parameter is of the form {variant-id quantity...}."
   ;; TODO eveything
-shipments
+  shipments
   )
 
 (defn query [app-state]
