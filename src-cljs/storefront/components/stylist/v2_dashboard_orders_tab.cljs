@@ -25,6 +25,7 @@
     :sale/pending     [2 ["shout"    "yellow"]]
     :sale/unknown     [2 ["shout"    "red"]]
     :voucher/pending  nil
+    :voucher/returned nil
     :voucher/redeemed [1 ["titleize" "teal"]]
     :voucher/expired  [1 ["titleize" "red"]]
     :voucher/active   [1 ["titleize" "purple"]]
