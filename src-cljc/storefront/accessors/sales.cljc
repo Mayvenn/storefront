@@ -83,7 +83,7 @@
   {:voucher/pending     "The voucher is being processed and will be active once the shipment is in transit."
    :voucher/redeemed    nil
    :voucher/returned    "Orders that qualified for a voucher and have been returned result in a returned voucher."
-   :voucher/expired     nil
+   :voucher/expired     "This voucher has expired and is no longer redeemable. Please contact customer service if you have more questions."
    :voucher/active      "Active voucher have not yet been redeemed."
    :voucher/transferred "Vouchers are transferred when a voucher-eligable order is placed through your store but the associated voucher is redeemed by another Mayvenn stylist."
    :voucher/none        "Orders must include 3 bundles (closures and frontals count towards the 3) to qualify for a voucher."})
