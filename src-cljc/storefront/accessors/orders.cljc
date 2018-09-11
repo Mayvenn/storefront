@@ -171,7 +171,7 @@
          ".")))
 
 (defn returned-quantities [order]
-  "Returns a map of returned line-items, with variant-id as the key and quantity as the value"
+  "Returns a map of returned items, with variant-id as the key and quantity as the value"
   (->> order
        :returns
        (mapcat :line-items)

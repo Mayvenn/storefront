@@ -18,7 +18,9 @@
             [storefront.transitions :as transitions]
             [storefront.effects :as effects]
             [storefront.request-keys :as request-keys]
-            [storefront.api :as api]))
+            [storefront.api :as api]
+            [clojure.string :as string]
+            [spice.core :as spice]))
 
 ;; TODO Remove handling of underscored keys after storeback has been deployed.
 
@@ -50,47 +52,38 @@
   [n]
   (cljs.pprint/cl-format nil "~2,'0D" n))
 
-(defn ^:private delivery-status [sale]
-  (let [shipping-name    (->> sale
-                              :order
-                              :shipments
-                              last
+(defn ^:private delivery-status [shipment]
+  (let [shipping-name    (->> shipment
                               :line-items
                               (filter #(= (:source %) "waiter"))
                               first
-                              :product-name)
-        sale-status      (sales/sale-status sale)
-        sale-status-copy (sales/sale-status->copy sale-status)]
+                              :product-name)]
     [:div
-     [:div.titleize sale-status-copy]
-     (when (not= sale-status :sale/returned) [:div "(" shipping-name ")"])]))
+     [:div.titleize (:state shipment)] ;; TODO: Deal with pending (processing) and returned
+     [:div "(" shipping-name ")"]]))
 
-(defn ^:private shipment-details [sale line-items]
-  (let [{:keys [order]}            sale
-        {:keys [shipments]}        order
-        n                          (fmt-with-leading-zero (count shipments))
-        shipment                   (last shipments)]
-    [:div.pt4.h6
-     [:span.bold.shout "Latest Shipment "]
-     [:span (str n " of " n)]
-     (info-columns
-      ["shipped date" (some-> shipment :shipped-at f/long-date)]
-      ["delivery status" (delivery-status sale)])
-     [:div.align-top.mb2
-      [:span.dark-gray.shout "order details"]
-      (component/build line-items/component {:line-items line-items
-                                             :show-price? false}
-                       {})]]))
+(defn ^:private shipment-details [{:as shipment :keys [line-items]}]
+  [(info-columns
+    ["shipped date" (some-> shipment :shipped-at f/long-date)]
+    ["delivery status" (delivery-status shipment)])
+   [:div.align-top.mb2
+    [:span.dark-gray.shout "order details"]
+    (component/build line-items/component
+                     {:line-items line-items
+                      :show-price? false}
+                     {})]])
 
 (defn ^:private get-user-info [app-state]
   {:user-id (get-in app-state keypaths/user-id)
    :user-token (get-in app-state keypaths/user-token)})
 
-(defn component [{:keys [sale v2-dashboard? loading? back line-items]} owner opts]
+(defn component [{:keys [sale v2-dashboard? loading? back]} owner opts]
   (let [{:keys [order-number
                 placed-at
                 order
-                voucher]} sale]
+                voucher]} sale
+        shipments         (-> sale :order :shipments reverse)
+        shipment-count    (-> shipments count fmt-with-leading-zero)]
     (component/create
      (if (or (not order-number) loading?)
        [:div.my6.h2 ui/spinner]
@@ -117,19 +110,41 @@
           ["voucher status" [:span.titleize (-> sale
                                                 sales/voucher-status
                                                 sales/voucher-status->copy)]])
-         (shipment-details sale line-items)]]))))
+         (for [shipment shipments]
+           (let [nth-shipment (-> shipment :number (subs 1) spice/parse-int fmt-with-leading-zero)]
+             [:div.pt4.h6
+              [:span.bold.shout (when (= nth-shipment shipment-count) "Latest ") "Shipment "]
+              [:span nth-shipment
+               " of "
+               shipment-count]
+              (shipment-details shipment)]))]]))))
 
-(defn query [data]
-  (let [order-number (:order-number (get-in data keypaths/navigation-args))
-        sale         (->> (get-in data keypaths/v2-dashboard-sales-elements)
-                          vals
-                          (filter (fn [sale] (= order-number (:order-number sale))))
-                          first)]
-    {:sale          sale
-     :loading?      (utils/requesting? data request-keys/get-stylist-dashboard-sale)
-     :v2-dashboard? (experiments/v2-dashboard? data)
-     :back          (first (get-in data keypaths/navigation-undo-stack))
-     :line-items    (line-items/query data)}))
+(defn assign-returns-to-shipments [shipments returns]
+  "Adds :quantity-returned to each line item of each shipment in a sequence of shipments.
+Second parameter is of the form {variant-id quantity...}."
+  ;; TODO eveything
+shipments
+  )
+
+(defn query [app-state]
+  (let [order-number           (:order-number (get-in app-state keypaths/navigation-args))
+        sale                   (->> (get-in app-state keypaths/v2-dashboard-sales-elements)
+                                    vals
+                                    (filter (fn [sale] (= order-number (:order-number sale))))
+                                    first)
+        shipments-enriched     (for [shipment (-> sale :order :shipments)]
+                                 (let [product-line-items (remove (comp #{"waiter"} :source) (:line-items shipment))]
+                                   (assoc shipment :line-items
+                                          (mapv (partial cart/add-product-title-and-color-to-line-item
+                                                         (get-in app-state keypaths/v2-products)
+                                                         (get-in app-state keypaths/v2-facets))
+                                                product-line-items))))
+        returned-quantities    (orders/returned-quantities (:order sale))
+        shipments-with-returns (assign-returns-to-shipments shipments-enriched returned-quantities)]
+    {:sale          (assoc-in sale [:order :shipments] shipments-enriched)
+     :loading?      (utils/requesting? app-state request-keys/get-stylist-dashboard-sale)
+     :v2-dashboard? (experiments/v2-dashboard? app-state)
+     :back          (first (get-in app-state keypaths/navigation-undo-stack))}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

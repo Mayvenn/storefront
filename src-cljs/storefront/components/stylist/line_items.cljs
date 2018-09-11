@@ -43,22 +43,5 @@
    [:div (for [line-item line-items]
            (display-line-item line-item show-price?))]))
 
-(defn query [app-state]
-  (let [order-number        (:order-number (get-in app-state keypaths/navigation-args))
-        order               (->> (get-in app-state keypaths/v2-dashboard-sales-elements)
-                                 vals
-                                 (filter (fn [sale] (= order-number (:order-number sale))))
-                                 first
-                                 :order)
-        returned-quantities (orders/returned-quantities order)
-        line-items          (->> order
-                                 orders/product-items
-                                 (mapv #(assoc % :returned-quantity (get returned-quantities (:id %) 0))))
-]
-    (mapv (partial cart/add-product-title-and-color-to-line-item
-                   (get-in app-state keypaths/v2-products)
-                   (get-in app-state keypaths/v2-facets))
-          line-items)))
-
 (defn built-component [data opts]
   (component/build component data opts))
