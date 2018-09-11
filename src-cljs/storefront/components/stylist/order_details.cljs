@@ -77,6 +77,41 @@
   {:user-id (get-in app-state keypaths/user-id)
    :user-token (get-in app-state keypaths/user-token)})
 
+(defn popup [text]
+  [:div.absolute.mtp5
+   {:style {:width "180px"
+            :left "-82px"}}
+   [:div.mx-auto.mbnp1.border-teal.relative
+    {:style {:border-left "8px solid transparent"
+             :border-right "8px solid transparent"
+             :border-bottom-width "8px"
+             :border-bottom-style "solid"
+             :width "12px"}}
+    [:div.mx-auto.mbnp1.border-teal.absolute
+     {:style {:border-left "8px solid transparent"
+              :border-right "8px solid transparent"
+              :border-bottom "8px solid white"
+              :width "12px"
+              :top "1px"
+              :left "-8px"}}]]
+   [:div.bg-white.p1.top-lit-light.border.border-teal text]])
+
+(defn voucher-status [sale]
+  ["voucher status" [:div
+                     [:span.titleize (-> sale
+                                         sales/voucher-status
+                                         sales/voucher-status->copy)]
+                     (when-let [tooltip-text (-> sale
+                                                 sales/voucher-status
+                                                 sales/voucher-status->description)]
+                       [:div.border.border-teal.circle.teal.center.inline-block.ml1
+                        {:style {:width "18px"
+                                 :height "18px"
+                                 :line-height "15px"}}
+                        [:div.relative
+                         [:span.medium "i"]
+                         (popup tooltip-text)]])]])
+
 (defn component [{:keys [sale v2-dashboard? loading? back]} owner opts]
   (let [{:keys [order-number
                 placed-at
@@ -85,39 +120,37 @@
         shipments         (-> sale :order :shipments reverse)
         shipment-count    (-> shipments count fmt-with-leading-zero)]
     (component/create
-     (if (or (not order-number) loading?)
-       [:div.my6.h2 ui/spinner]
-       [:div.container.mb4.px3
-        {:style {:display               :grid
-                 :grid-template-columns "2em 100%"
-                 :grid-template-areas   (str "'back-btn back-btn'"
-                                             "'type-icon title'"
-                                             "'spacer fields'")}}
-        [:div {:style {:grid-area "back-btn"}}
-         (back-button back v2-dashboard?)]
-        [:div {:style {:grid-area "type-icon"}}
-         (svg/box-package {:height 18
-                           :width  25})]
-        [:div
-         {:style {:grid-area "title"}}
-         [:h4.medium (orders/first-name-plus-last-name-initial order)]]
-        [:div {:style {:grid-area "fields"}}
-         (info-columns
-          ["order number" order-number]
-          ["voucher type" (get voucher :campaign-name "--")])
-         (info-columns
-          ["order date" (f/long-date placed-at)]
-          ["voucher status" [:span.titleize (-> sale
-                                                sales/voucher-status
-                                                sales/voucher-status->copy)]])
-         (for [shipment shipments]
-           (let [nth-shipment (-> shipment :number (subs 1) spice/parse-int fmt-with-leading-zero)]
-             [:div.pt4.h6
-              [:span.bold.shout (when (= nth-shipment shipment-count) "Latest ") "Shipment "]
-              [:span nth-shipment
-               " of "
-               shipment-count]
-              (shipment-details shipment)]))]]))))
+      (if (or (not order-number) loading?)
+        [:div.my6.h2 ui/spinner]
+        [:div.container.mb4.px3
+         {:style {:display               :grid
+                  :grid-template-columns "2em 100%"
+                  :grid-template-areas   (str "'back-btn back-btn'"
+                                              "'type-icon title'"
+                                              "'spacer fields'")}}
+         [:div {:style {:grid-area "back-btn"}}
+          (back-button back v2-dashboard?)]
+         [:div {:style {:grid-area "type-icon"}}
+          (svg/box-package {:height 18
+                            :width  25})]
+         [:div
+          {:style {:grid-area "title"}}
+          [:h4.medium (orders/first-name-plus-last-name-initial order)]]
+         [:div {:style {:grid-area "fields"}}
+          (info-columns
+            ["order number" order-number]
+            ["voucher type" (get voucher :campaign-name "--")])
+          (info-columns
+            ["order date" (f/long-date placed-at)]
+            (voucher-status sale))
+          (for [shipment shipments]
+            (let [nth-shipment (-> shipment :number (subs 1) spice/parse-int fmt-with-leading-zero)]
+              [:div.pt4.h6
+               [:span.bold.shout (when (= nth-shipment shipment-count) "Latest ") "Shipment "]
+               [:span nth-shipment
+                " of "
+                shipment-count]
+               (shipment-details shipment)]))]]))))
 
 (defn assign-returns-to-shipments [shipments returns]
   "Adds :quantity-returned to each line item of each shipment in a sequence of shipments.

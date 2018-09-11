@@ -54,6 +54,7 @@
   | :voucher/expired     | The voucher is past its expiration date and cannot be used.                              |
   | :voucher/active      | The voucher has been fulfilled (provisioned to the order) and is ready for use           |
   | :voucher/transferred | The voucher has been redeemed by another stylist.                                        |
+  | :voucher/returned    | The order has been returned by the customer.                                             |
   | :voucher/none        | There is no associated voucher for this sale                                             |"
   [sale]
   (let [{:keys [shipped-at
@@ -62,9 +63,7 @@
                 voucher-expiration-date
                 voucher]} sale]
     (cond
-      (order-returned? sale)  nil ;; HACK(justin): There are incoming stories to mark vouchers as returned.
-                                  ;; This will currently hide the voucher status if the order has been
-                                  ;; returned
+      (order-returned? sale)  :voucher/returned
       (not shipped-at)        :voucher/pending
       voucher-redeemed-at     :voucher/redeemed
       (voucher-expired? sale) :voucher/expired
@@ -72,12 +71,22 @@
       :otherwise              :voucher/none)))
 
 (def voucher-status->copy
-  {:voucher/pending  "processing"
-   :voucher/redeemed "redeemed"
-   :voucher/expired  "expired"
-   :voucher/active   "active"
-   :voucher/none     "none"
-   nil "--"})
+  {:voucher/pending     "processing"
+   :voucher/redeemed    "redeemed"
+   :voucher/expired     "expired"
+   :voucher/active      "active"
+   :voucher/transferred "transferred"
+   :voucher/none        "none"
+   nil                  "--"})
+
+(def voucher-status->description
+  {:voucher/pending     "The voucher is being processed and will be active once the shipment is in transit."
+   :voucher/redeemed    nil
+   :voucher/returned    "Orders that qualified for a voucher and have been returned result in a returned voucher."
+   :voucher/expired     nil
+   :voucher/active      "Active voucher have not yet been redeemed."
+   :voucher/transferred "Vouchers are transferred when a voucher-eligable order is placed through your store but the associated voucher is redeemed by another Mayvenn stylist."
+   :voucher/none        "Orders must include 3 bundles (closures and frontals count towards the 3) to qualify for a voucher."})
 
 (def sale-status->copy
   {:sale/pending  "processing"
