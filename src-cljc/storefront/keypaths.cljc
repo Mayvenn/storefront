@@ -336,6 +336,7 @@
 (def v2-dashboard-balance-transfers-pagination (conj v2-dashboard-balance-transfers :pagination))
 (def v2-dashboard-balance-transfers-pagination-page (conj v2-dashboard-balance-transfers-pagination :page))
 (def v2-dashboard-balance-transfers-pagination-ordering (conj v2-dashboard-balance-transfers-pagination :ordering))
+(def v2-dashboard-balance-transfers-voucher-popup-visible? (conj v2-dashboard-balance-transfers :voucher-popup-visible?))
 
 (def accordion (conj ui :accordion))
 (def accordion-freeinstall-home (conj accordion :freeinstall))

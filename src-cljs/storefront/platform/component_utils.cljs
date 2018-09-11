@@ -15,11 +15,15 @@
 
 (defn noop-callback [e] (.preventDefault e))
 
-(defn send-event-callback [event & [args]]
-  (fn [e]
-    (.preventDefault e)
-    (handle-message event args)
-    nil))
+(defn send-event-callback
+  ([event] (send-event-callback event nil))
+  ([event args] (send-event-callback event args nil))
+  ([event args {:keys [prevent-default?] :or {prevent-default? true}}]
+   (fn [e]
+     (when prevent-default?
+       (.preventDefault e))
+     (handle-message event args)
+     nil)))
 
 (defn expand-menu-callback [keypath]
   (send-event-callback events/control-menu-expand {:keypath keypath}))

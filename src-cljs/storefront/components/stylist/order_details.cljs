@@ -96,23 +96,33 @@
               :left "-8px"}}]]
    [:div.bg-white.p1.top-lit-light.border.border-teal text]])
 
-(defn voucher-status [sale]
-  ["voucher status" [:div
-                     [:span.titleize (-> sale
-                                         sales/voucher-status
-                                         sales/voucher-status->copy)]
-                     (when-let [tooltip-text (-> sale
-                                                 sales/voucher-status
-                                                 sales/voucher-status->description)]
-                       [:div.border.border-teal.circle.teal.center.inline-block.ml1
-                        {:style {:width "18px"
-                                 :height "18px"
-                                 :line-height "15px"}}
-                        [:div.relative
-                         [:span.medium "i"]
-                         (popup tooltip-text)]])]])
+(defn voucher-status [sale popup-visible?]
+  (let [tooltip-text (-> sale
+                         sales/voucher-status
+                         sales/voucher-status->description)
+        set-popup-visible #(utils/send-event-callback
+                             events/control-v2-stylist-dashboard-balance-transfers-voucher-popup-set-visible
+                             {:value %1}
+                             %2)]
+    [:div
+     (when tooltip-text
+       {:on-touch-start (set-popup-visible (not popup-visible?) {:prevent-default? false})
+        :on-mouse-enter (set-popup-visible true {:prevent-default? true})
+        :on-mouse-leave (set-popup-visible false {:prevent-default? true})})
+     [:span.titleize (-> sale
+                         sales/voucher-status
+                         sales/voucher-status->copy)]
+     (when tooltip-text
+       [:div.border.border-teal.circle.teal.center.inline-block.ml1
+        {:style {:width       "18px"
+                 :height      "18px"
+                 :line-height "15px"}}
+        [:div.relative
+         [:span.medium "i"]
+         (when popup-visible?
+           (popup tooltip-text))]])]))
 
-(defn component [{:keys [sale v2-dashboard? loading? back]} owner opts]
+(defn component [{:keys [sale v2-dashboard? loading? popup-visible? back]} owner opts]
   (let [{:keys [order-number
                 placed-at
                 order
@@ -142,7 +152,7 @@
             ["voucher type" (get voucher :campaign-name "--")])
           (info-columns
             ["order date" (f/long-date placed-at)]
-            (voucher-status sale))
+            ["voucher status" (voucher-status sale popup-visible?)])
           (for [shipment shipments]
             (let [nth-shipment (-> shipment :number (subs 1) spice/parse-int fmt-with-leading-zero)]
               [:div.pt4.h6
@@ -160,27 +170,32 @@ Second parameter is of the form {variant-id quantity...}."
   )
 
 (defn query [app-state]
-  (let [order-number           (:order-number (get-in app-state keypaths/navigation-args))
-        sale                   (->> (get-in app-state keypaths/v2-dashboard-sales-elements)
-                                    vals
-                                    (filter (fn [sale] (= order-number (:order-number sale))))
-                                    first)
-        shipments-enriched     (for [shipment (-> sale :order :shipments)]
-                                 (let [product-line-items (remove (comp #{"waiter"} :source) (:line-items shipment))]
-                                   (assoc shipment :line-items
-                                          (mapv (partial cart/add-product-title-and-color-to-line-item
-                                                         (get-in app-state keypaths/v2-products)
-                                                         (get-in app-state keypaths/v2-facets))
-                                                product-line-items))))
-        returned-quantities    (orders/returned-quantities (:order sale))
+  (let [order-number (:order-number (get-in app-state keypaths/navigation-args))
+        sale (->> (get-in app-state keypaths/v2-dashboard-sales-elements)
+                  vals
+                  (filter (fn [sale] (= order-number (:order-number sale))))
+                  first)
+        shipments-enriched (for [shipment (-> sale :order :shipments)]
+                             (let [product-line-items (remove (comp #{"waiter"} :source) (:line-items shipment))]
+                               (assoc shipment :line-items
+                                      (mapv (partial cart/add-product-title-and-color-to-line-item
+                                                     (get-in app-state keypaths/v2-products)
+                                                     (get-in app-state keypaths/v2-facets))
+                                            product-line-items))))
+        returned-quantities (orders/returned-quantities (:order sale))
         shipments-with-returns (assign-returns-to-shipments shipments-enriched returned-quantities)]
-    {:sale          (assoc-in sale [:order :shipments] shipments-enriched)
-     :loading?      (utils/requesting? app-state request-keys/get-stylist-dashboard-sale)
-     :v2-dashboard? (experiments/v2-dashboard? app-state)
-     :back          (first (get-in app-state keypaths/navigation-undo-stack))}))
+    {:sale           (assoc-in sale [:order :shipments] shipments-enriched)
+     :loading?       (utils/requesting? app-state request-keys/get-stylist-dashboard-sale)
+     :v2-dashboard?  (experiments/v2-dashboard? app-state)
+     :popup-visible? (get-in app-state keypaths/v2-dashboard-balance-transfers-voucher-popup-visible?)
+     :back           (first (get-in app-state keypaths/navigation-undo-stack))}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
+
+(defmethod transitions/transition-state events/control-v2-stylist-dashboard-balance-transfers-voucher-popup-set-visible
+  [_ event {:keys [value]} app-state]
+  (assoc-in app-state keypaths/v2-dashboard-balance-transfers-voucher-popup-visible? value))
 
 (defmethod effects/perform-effects events/navigate-stylist-dashboard-order-details
   [_ event {:keys [order-number] :as args} _ app-state]
