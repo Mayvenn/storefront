@@ -264,17 +264,31 @@
       (ui-element (update args :class str " x-group-item") content)]
      (field-error-message error data-test)]))
 
-(defn raw-text-field-group
+(defn text-field-group
   "For grouping many fields on one line. Sets up columns, rounding of
-  first and last fields, and avoids doubling of borders between fields."
-  [attrs & fields]
+  first and last fields, and avoids doubling of borders between fields.
+
+  column expects the css grid column, but as a vector:
+  [''2fr'' ''1fr'']
+
+  areas expects a vector of the field ids for their positions:
+  [''field-id1'' ''field-id2'']"
+  [& fields]
   {:pre [(zero? (rem 12 (count fields)))]}
-  (let [some-errors? (some (comp seq :errors) fields)]
+  (let [areas        (map :id fields)
+        columns        (map (fn [field] (get field :column-size "1fr")) fields)
+        some-errors? (some (comp seq :errors) fields)]
     [:div.mb2
      (into [:div.clearfix.stacking-context
-            attrs]
+            {:style {:display               :grid
+                     :grid-template-columns (string/join " " columns)
+                     :grid-template-areas   (str "'"
+                                                 (string/join " " areas)
+                                                 "' '"
+                                                 (string/join " " (map (fn [c] (str c "--error")) areas))
+                                                 "'")}}]
            (concat
-            (for [[idx {:keys [label keypath value errors wrapper-style] :as field}]
+            (for [[idx {:keys [label keypath value errors id] :as field}]
                   (map-indexed vector fields)]
               (let [first?        (zero? idx)
                     last?         (= idx (dec (count fields)))
@@ -285,43 +299,13 @@
                  (-> field
                      (dissoc :label :keypath :value :errors)
                      (assoc :wrapper-class wrapper-class)
-                     (assoc :wrapper-style wrapper-style)))))
-            (for [{:keys [errors data-test error-style]} fields]
-              [:div {:style error-style}
+                     (assoc :wrapper-style {:grid-area id})))))
+            (for [{:keys [errors data-test error-style id]} fields]
+              [:div {:style {:grid-area (str id "--error")}}
                (cond
                  (seq errors) (field-error-message (first errors) data-test)
                  some-errors? nbsp
                  :else        nil)])))]))
-
-(defn text-field-group
-  "For grouping many fields on one line. Sets up columns, rounding of
-  first and last fields, and avoids doubling of borders between fields."
-  [& fields]
-  {:pre [(zero? (rem 12 (count fields)))]}
-  (let [col-size (str "col col-" (/ 12 (count fields)))
-        some-errors? (some (comp seq :errors) fields)]
-    [:div.mb2
-     (into [:div.clearfix.stacking-context]
-           (concat
-            (for [[idx {:keys [label keypath value errors] :as field}]
-                  (map-indexed vector fields)
-
-                  :let [first? (zero? idx)
-                        last? (= idx (dec (count fields)))]]
-              (let [wrapper-class (str col-size
-                                       (when first? " rounded-left")
-                                       (when last? " rounded-right"))]
-                (plain-text-field
-                 label keypath value (seq errors)
-                 (-> field
-                     (dissoc :label :keypath :value :errors)
-                     (assoc :wrapper-class wrapper-class)))))
-            (for [{:keys [errors data-test]} fields]
-              [:div {:class col-size}
-               (cond
-                 (seq errors) (field-error-message (first errors) data-test)
-                 some-errors? nbsp
-                 :else nil)])))]))
 
 (def ^:private custom-select-dropdown
   (component/html

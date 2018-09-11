@@ -70,14 +70,8 @@
                          :auto-complete "off"
                          :type          "tel"
                          :value         (cc/format-cc-number card-number)})
-         (ui/raw-text-field-group
-          {:style {:display               :grid
-                   :grid-template-columns "2fr 1fr"
-                   :grid-template-areas   (str "'expiration-date zipcode' "
-                                               "'expiration-date-error zipcode-error'")}}
+         (ui/text-field-group
           {:data-test     "green-dot-expiration-date"
-           :wrapper-style {:grid-area "expiration-date"}
-           :error-style   {:grid-area "expiration-date-error"}
            :errors        (get field-errors ["payout-method" "expiration-date"])
            :id            "green-dot-expiration-date"
            :keypath       (green-dot-keypath :expiration-date)
@@ -87,10 +81,9 @@
            :required      true
            :auto-complete "off"
            :type          "tel"
-           :value         (cc/format-expiration expiration-date)}
+           :value         (cc/format-expiration expiration-date)
+           :column-size    "5fr"}
           {:data-test     "green-dot-zipcode"
-           :wrapper-style {:grid-area "zipcode"}
-           :error-style   {:grid-area "zipcode-error"}
            :errors        (get field-errors ["payout-method" "zipcode"])
            :id            "green-dot-zipcode"
            :keypath       (green-dot-keypath :zipcode)
@@ -101,7 +94,8 @@
            :auto-complete "off"
            :max-length    5
            :type          "zipcode"
-           :value         zipcode})])
+           :value         zipcode
+           :column-size    "3fr"})])
       [:div.mx1
        [:p.h6
         "We accept most bank or debit cards. Your commissions will be sent to this card and ready for use after payout is complete."]
