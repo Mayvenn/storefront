@@ -11,10 +11,11 @@
             [voucher.keypaths :as voucher-keypaths]
             [storefront.keypaths :as keypaths]
             [storefront.effects :as effects]
-            [storefront.request-keys :as request-keys]))
+            [storefront.request-keys :as request-keys]
+            [storefront.accessors.experiments :as experiments]))
 
 (defn ^:private component
-  [{:keys [spinning? voucher service-menu]} owner opts]
+  [{:keys [spinning? voucher service-menu v2-dashboard?]} owner opts]
   (component/create
    [:div
     (if spinning?
@@ -29,17 +30,20 @@
        [:div.h00.teal.bold {:data-test "redemption-amount"}
         (service-menu/display-voucher-amount service-menu voucher)]
        [:div.h4 "has been added to your earnings"]
-
        [:div.pb4.my8.col-6
-        (ui/underline-button (assoc (utils/route-to events/navigate-stylist-dashboard-earnings)
-                                    :data-test "view-earnings") "View Earnings")]
-
-       [:a.pt4.my8.medium.h6.border-bottom.border-teal.border-width-2.black (utils/route-to events/navigate-voucher-redeem) "Redeem Another Voucher"]])]))
+        (let [earnings-page-event (if v2-dashboard?
+                                    events/navigate-v2-stylist-dashboard-payments
+                                    events/navigate-stylist-dashboard-earnings)]
+          (ui/underline-button (assoc (utils/route-to earnings-page-event)
+                                      :data-test "view-earnings") "View Earnings"))]
+       [:a.pt4.my8.medium.h6.border-bottom.border-teal.border-width-2.black
+        (utils/route-to events/navigate-voucher-redeem) "Redeem Another Voucher"]])]))
 
 (defn ^:private query [app-state]
-  {:voucher      (get-in app-state voucher-keypaths/voucher-response)
-   :spinning?    (utils/requesting? app-state request-keys/fetch-stylist-service-menu)
-   :service-menu (get-in app-state keypaths/stylist-service-menu)})
+  {:v2-dashboard? (experiments/v2-dashboard? app-state)
+   :voucher       (get-in app-state voucher-keypaths/voucher-response)
+   :spinning?     (utils/requesting? app-state request-keys/fetch-stylist-service-menu)
+   :service-menu  (get-in app-state keypaths/stylist-service-menu)})
 
 (defn built-component
   [data opts]
