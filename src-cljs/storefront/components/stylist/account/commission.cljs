@@ -17,13 +17,14 @@
      :last-name        (green-dot :card-last-name)
      :card-number      (green-dot :card-number)
      :expiration-date  (green-dot :expiration-date)
+     :zipcode          (green-dot :zipcode)
      :card-selected-id (get-in data keypaths/stylist-manage-account-green-dot-card-selected-id)
      :card-last-4      (green-dot :last-4)
      :payout-timeframe (green-dot :payout-timeframe)}))
 
 (defn green-dot-component
   [{:keys [green-dot focused field-errors]} owner opts]
-  (let [{:keys [first-name last-name card-number card-last-4 expiration-date card-selected-id payout-timeframe]} green-dot]
+  (let [{:keys [first-name last-name card-number card-last-4 expiration-date card-selected-id payout-timeframe zipcode]} green-dot]
     (component/create
      [:div
       (when card-last-4
@@ -69,18 +70,38 @@
                          :auto-complete "off"
                          :type          "tel"
                          :value         (cc/format-cc-number card-number)})
-         (ui/text-field {:data-test     "green-dot-expiration-date"
-                         :errors        (get field-errors ["payout-method" "expiration-date"])
-                         :id            "green-dot-expiration-date"
-                         :keypath       (green-dot-keypath :expiration-date)
-                         :focused       focused
-                         :label         "Expiration Date (MM/YY)"
-                         :name          "green-dot-expiration-date"
-                         :required      true
-                         :auto-complete "off"
-                         :max-length    9
-                         :type          "tel"
-                         :value         (cc/format-expiration expiration-date)})])
+         (ui/raw-text-field-group
+          {:style {:display               :grid
+                   :grid-template-columns "2fr 1fr"
+                   :grid-template-areas   (str "'expiration-date zipcode' "
+                                               "'expiration-date-error zipcode-error'")}}
+          {:data-test     "green-dot-expiration-date"
+           :wrapper-style {:grid-area "expiration-date"}
+           :error-style   {:grid-area "expiration-date-error"}
+           :errors        (get field-errors ["payout-method" "expiration-date"])
+           :id            "green-dot-expiration-date"
+           :keypath       (green-dot-keypath :expiration-date)
+           :focused       focused
+           :label         "Expiration Date (MM/YY)"
+           :name          "green-dot-expiration-date"
+           :required      true
+           :auto-complete "off"
+           :type          "tel"
+           :value         (cc/format-expiration expiration-date)}
+          {:data-test     "green-dot-zipcode"
+           :wrapper-style {:grid-area "zipcode"}
+           :error-style   {:grid-area "zipcode-error"}
+           :errors        (get field-errors ["payout-method" "zipcode"])
+           :id            "green-dot-zipcode"
+           :keypath       (green-dot-keypath :zipcode)
+           :focused       focused
+           :label         "Zip Code"
+           :name          "green-dot-zipcode"
+           :required      true
+           :auto-complete "off"
+           :max-length    5
+           :type          "zipcode"
+           :value         zipcode})])
       [:div.mx1
        [:p.h6
         "We accept most bank or debit cards. Your commissions will be sent to this card and ready for use after payout is complete."]

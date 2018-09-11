@@ -186,7 +186,7 @@
     (and value? label) (add-classes "has-value")))
 
 (defn ^:private plain-text-field
-  [label keypath value error? {:keys [wrapper-class id hint focused] :as input-attributes}]
+  [label keypath value error? {:keys [wrapper-class wrapper-style id hint focused] :as input-attributes}]
   (let [input-attributes (dissoc input-attributes :wrapper-class :hint :focused)
         hint?            (seq hint)
         focused?         (= focused keypath)
@@ -194,7 +194,8 @@
                           :focused? focused?
                           :hint?    hint?
                           :value?   (seq value)}]
-    [:div (field-wrapper-class wrapper-class status)
+    [:div (merge (field-wrapper-class wrapper-class status)
+                 {:style wrapper-style})
      [:div.pp1
       (floating-label label id status)
       [:label
@@ -262,6 +263,35 @@
                             (update :wrapper-class str " x-group-item")))
       (ui-element (update args :class str " x-group-item") content)]
      (field-error-message error data-test)]))
+
+(defn raw-text-field-group
+  "For grouping many fields on one line. Sets up columns, rounding of
+  first and last fields, and avoids doubling of borders between fields."
+  [attrs & fields]
+  {:pre [(zero? (rem 12 (count fields)))]}
+  (let [some-errors? (some (comp seq :errors) fields)]
+    [:div.mb2
+     (into [:div.clearfix.stacking-context
+            attrs]
+           (concat
+            (for [[idx {:keys [label keypath value errors wrapper-style] :as field}]
+                  (map-indexed vector fields)]
+              (let [first?        (zero? idx)
+                    last?         (= idx (dec (count fields)))
+                    wrapper-class (str (when first? " rounded-left")
+                                       (when last? " rounded-right"))]
+                (plain-text-field
+                 label keypath value (seq errors)
+                 (-> field
+                     (dissoc :label :keypath :value :errors)
+                     (assoc :wrapper-class wrapper-class)
+                     (assoc :wrapper-style wrapper-style)))))
+            (for [{:keys [errors data-test error-style]} fields]
+              [:div {:style error-style}
+               (cond
+                 (seq errors) (field-error-message (first errors) data-test)
+                 some-errors? nbsp
+                 :else        nil)])))]))
 
 (defn text-field-group
   "For grouping many fields on one line. Sets up columns, rounding of
