@@ -53,11 +53,12 @@
   [n]
   (cljs.pprint/cl-format nil "~2,'0D" n))
 
-(defn ^:private shipment-details [{:as shipment :keys [line-items state shipping-copy]}]
+(defn ^:private shipment-details [{:as shipment :keys [line-items state shipping-details]}]
   [(info-columns
      ["shipped date" (some-> shipment :shipped-at f/long-date)]
-     ["delivery status" (str (string/capitalize state)
-                             (when shipping-copy (str " (" shipping-copy ")")))])
+     ["delivery status" (case (:state shipping-details)
+                          "shipped" (str "Shipped (" (:name shipping-details) ")")
+                          "Processing")])
    [:div.align-top.mb2
     [:span.dark-gray.shout "order details"]
     (component/build line-items/component
@@ -198,18 +199,14 @@
                                     (filter (fn [sale] (= order-number (:order-number sale))))
                                     first)
         shipments-enriched     (for [shipment (-> sale :order :shipments)]
-                                 (let [shipping-copy               (->> shipment
-                                                                        :line-items
-                                                                        (keep (comp shipping/timeframe :sku))
-                                                                        first)
-                                       product-line-items          (remove (comp #{"waiter"} :source) (:line-items shipment))
+                                 (let [product-line-items          (remove (comp #{"waiter"} :source) (:line-items shipment))
                                        enriched-product-line-items (mapv (partial cart/add-product-title-and-color-to-line-item
                                                                                   (get-in app-state keypaths/v2-products)
                                                                                   (get-in app-state keypaths/v2-facets))
                                                                          product-line-items)]
                                    (assoc shipment
                                           :line-items enriched-product-line-items
-                                          :shipping-copy shipping-copy)))
+                                          :shipping-details (shipping/shipping-details shipment))))
         returned-quantities    (orders/returned-quantities (:order sale))
         shipments-with-returns (spice.core/spy (add-returns (vec shipments-enriched) returned-quantities))]
     {:sale           (assoc-in sale [:order :shipments] shipments-with-returns)
