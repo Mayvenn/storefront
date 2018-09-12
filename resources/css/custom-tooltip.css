@@ -1,0 +1,27 @@
+.tooltip-popup {
+  position: absolute;
+  width: 210px;
+  right: -10px;
+  margin-top: 11px;
+}
+
+.tooltip-popup-before {
+  position: absolute;
+  right: 10px;
+  top: -7px;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom-width: 8px;
+  border-bottom-style: solid;
+  width: 12px;
+}
+
+.tooltip-popup-after {
+  position: absolute;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid white;
+  width: 12px;
+  top: 1px;
+  left: -8px;
+}

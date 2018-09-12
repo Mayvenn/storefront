@@ -57,6 +57,7 @@
 /* @import 'basscss-addons/modules/background-images'; */
 @import 'basscss-background-images';
 @import 'custom-background-images.css';
+@import 'custom-tooltip.css';
 
 /* More from v8 */
 /*

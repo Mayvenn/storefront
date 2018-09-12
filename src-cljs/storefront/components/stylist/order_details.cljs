@@ -78,23 +78,10 @@
    :user-token (get-in app-state keypaths/user-token)})
 
 (defn popup [text]
-  [:div.absolute.mtp5
-   {:style {:width "180px"
-            :left "-82px"}}
-   [:div.mx-auto.mbnp1.border-teal.relative
-    {:style {:border-left "8px solid transparent"
-             :border-right "8px solid transparent"
-             :border-bottom-width "8px"
-             :border-bottom-style "solid"
-             :width "12px"}}
-    [:div.mx-auto.mbnp1.border-teal.absolute
-     {:style {:border-left "8px solid transparent"
-              :border-right "8px solid transparent"
-              :border-bottom "8px solid white"
-              :width "12px"
-              :top "1px"
-              :left "-8px"}}]]
-   [:div.bg-white.p1.top-lit-light.border.border-teal text]])
+  [:div.tooltip-popup
+   [:div.tooltip-popup-before.border-teal
+    [:div.tooltip-popup-after.border-teal]]
+   [:div.bg-white.p1.top-lit-light.border.border-teal.dark-gray.light.h6 text]])
 
 (defn voucher-status [sale balance-transfer-id popup-visible?]
   (let [set-popup-visible #(utils/send-event-callback
