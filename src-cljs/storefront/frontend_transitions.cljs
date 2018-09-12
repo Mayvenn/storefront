@@ -313,9 +313,11 @@
 
 (defmethod transition-state events/api-success-stylist-account
   [_ event {:keys [stylist]} app-state]
-  (-> app-state
-      (update-in keypaths/stylist-manage-account merge stylist)
-      (update-in keypaths/store merge (select-keys stylist [:instagram-account :styleseat-account :portrait]))))
+  (let [stylist-zipcode (-> stylist :address :zipcode)]
+    (-> app-state
+        (update-in keypaths/stylist-manage-account merge stylist)
+        (update-in (conj keypaths/stylist-manage-account-green-dot-payout-attributes :zipcode) #(or % stylist-zipcode))
+        (update-in keypaths/store merge (select-keys stylist [:instagram-account :styleseat-account :portrait])))))
 
 (defmethod transition-state events/api-success-stylist-account-commission [_ event {:keys [stylist]} app-state]
   (let [green-dot-payout-attributes (some-> stylist :green-dot-payout-attributes (select-keys [:last-4 :payout-timeframe]))]
