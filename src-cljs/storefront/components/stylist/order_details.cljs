@@ -53,11 +53,11 @@
   (cljs.pprint/cl-format nil "~2,'0D" n))
 
 (defn ^:private delivery-status [shipment]
-  (let [shipping-name    (->> shipment
-                              :line-items
-                              (filter #(= (:source %) "waiter"))
-                              first
-                              :product-name)]
+  (let [shipping-name (some->> shipment
+                               :line-items
+                               (filter #(= (:source %) "waiter"))
+                               first
+                               :product-name)]
     [:div
      [:div.titleize (:state shipment)] ;; TODO: Deal with pending (processing) and returned
      [:div "(" shipping-name ")"]]))
@@ -143,10 +143,10 @@
             ["order number" order-number]
             ["voucher type" (get voucher :campaign-name "--")])
           (info-columns
-            ["order date" (f/long-date placed-at)]
+            ["order date" (some-> placed-at f/long-date)]
             ["voucher status" (voucher-status sale balance-transfer-id popup-visible?)])
           (for [shipment shipments]
-            (let [nth-shipment (-> shipment :number (subs 1) spice/parse-int fmt-with-leading-zero)]
+            (let [nth-shipment (some-> shipment :number (subs 1) spice/parse-int fmt-with-leading-zero)]
               [:div.pt4.h6
                [:span.bold.shout (when (= nth-shipment shipment-count) "Latest ") "Shipment "]
                [:span nth-shipment
