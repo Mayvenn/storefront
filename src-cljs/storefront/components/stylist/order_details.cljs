@@ -3,6 +3,7 @@
             [checkout.cart :as cart]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.sales :as sales]
+            [storefront.accessors.shipping :as shipping]
             [storefront.accessors.experiments :as experiments]
             [storefront.component :as component]
             [storefront.components.formatters :as f]
@@ -52,20 +53,11 @@
   [n]
   (cljs.pprint/cl-format nil "~2,'0D" n))
 
-(defn ^:private delivery-status [shipment]
-  (let [shipping-name (some->> shipment
-                               :line-items
-                               (filter #(= (:source %) "waiter"))
-                               first
-                               :product-name)]
-    [:div
-     [:div.titleize (:state shipment)] ;; TODO: Deal with pending (processing) and returned
-     [:div "(" shipping-name ")"]]))
-
-(defn ^:private shipment-details [{:as shipment :keys [line-items]}]
+(defn ^:private shipment-details [{:as shipment :keys [line-items state shipping-copy]}]
   [(info-columns
      ["shipped date" (some-> shipment :shipped-at f/long-date)]
-     ["delivery status" (delivery-status shipment)])
+     ["delivery status" (str (string/capitalize state)
+                             (when shipping-copy (str " (" shipping-copy ")")))])
    [:div.align-top.mb2
     [:span.dark-gray.shout "order details"]
     (component/build line-items/component
@@ -154,29 +146,72 @@
                 shipment-count]
                (shipment-details shipment)]))]]))))
 
-(defn assign-returns-to-shipments [shipments returns]
-  "Adds :quantity-returned to each line item of each shipment in a sequence of shipments.
-Second parameter is of the form {variant-id quantity...}."
-  ;; TODO eveything
-  shipments
-  )
+(defn initialize-shipments-for-returns [shipments]
+  (for [shipment shipments]
+    (assoc shipment :line-items
+           (mapv (merge {:quantity-returned 0})
+                (:line-items shipment) ))))
+
+(defn allocate-returned-quantity [returned-quantities {:as line-item :keys [id quantity]}]
+  (assoc line-item
+         :returned-quantity
+         (min quantity
+              (get returned-quantities id 0))))
+
+
+(defn subtract-allocated-returns [returned-line-items returned-quantities]
+  (let [indexed-returned-line-items (->> returned-line-items
+                                         (spice.maps/index-by :id)
+                                         (spice.maps/map-values :returned-quantity))]
+    (into {}
+          (map
+           (fn [[variant-id r-qty]]
+             [variant-id (or (- r-qty
+                                (get indexed-returned-line-items variant-id 0))
+                             0)]))
+          returned-quantities)))
+
+(defn return-shipment-line-items [shipment returned-quantities]
+  (->> (:line-items shipment)
+       (map (partial allocate-returned-quantity returned-quantities))))
+
+(defn add-returns [shipments returned-quantities]
+  (loop [index               0
+         shipments           shipments
+         returned-quantities returned-quantities]
+    (if (and (< index (count shipments))
+             (seq returned-quantities)
+             (some pos? (vals returned-quantities)))
+      (let [shipment            (get shipments index)
+            returned-line-items (return-shipment-line-items shipment returned-quantities)
+            remaining-returns   (subtract-allocated-returns returned-line-items returned-quantities)]
+        (recur (inc index)
+               (assoc-in shipments [index :line-items] returned-line-items)
+               remaining-returns))
+      shipments)))
 
 (defn query [app-state]
-  (let [order-number (:order-number (get-in app-state keypaths/navigation-args))
-        sale (->> (get-in app-state keypaths/v2-dashboard-sales-elements)
-                  vals
-                  (filter (fn [sale] (= order-number (:order-number sale))))
-                  first)
-        shipments-enriched (for [shipment (-> sale :order :shipments)]
-                             (let [product-line-items (remove (comp #{"waiter"} :source) (:line-items shipment))]
-                               (assoc shipment :line-items
-                                      (mapv (partial cart/add-product-title-and-color-to-line-item
-                                                     (get-in app-state keypaths/v2-products)
-                                                     (get-in app-state keypaths/v2-facets))
-                                            product-line-items))))
-        returned-quantities (orders/returned-quantities (:order sale))
-        shipments-with-returns (assign-returns-to-shipments shipments-enriched returned-quantities)]
-    {:sale           (assoc-in sale [:order :shipments] shipments-enriched)
+  (let [order-number           (:order-number (get-in app-state keypaths/navigation-args))
+        sale                   (->> (get-in app-state keypaths/v2-dashboard-sales-elements)
+                                    vals
+                                    (filter (fn [sale] (= order-number (:order-number sale))))
+                                    first)
+        shipments-enriched     (for [shipment (-> sale :order :shipments)]
+                                 (let [shipping-copy               (->> shipment
+                                                                        :line-items
+                                                                        (keep (comp shipping/timeframe :sku))
+                                                                        first)
+                                       product-line-items          (remove (comp #{"waiter"} :source) (:line-items shipment))
+                                       enriched-product-line-items (mapv (partial cart/add-product-title-and-color-to-line-item
+                                                                                  (get-in app-state keypaths/v2-products)
+                                                                                  (get-in app-state keypaths/v2-facets))
+                                                                         product-line-items)]
+                                   (assoc shipment
+                                          :line-items enriched-product-line-items
+                                          :shipping-copy shipping-copy)))
+        returned-quantities    (orders/returned-quantities (:order sale))
+        shipments-with-returns (spice.core/spy (add-returns (vec shipments-enriched) returned-quantities))]
+    {:sale           (assoc-in sale [:order :shipments] shipments-with-returns)
      :loading?       (utils/requesting? app-state request-keys/get-stylist-dashboard-sale)
      :v2-dashboard?  (experiments/v2-dashboard? app-state)
      :popup-visible? (get-in app-state keypaths/v2-dashboard-balance-transfers-voucher-popup-visible?)

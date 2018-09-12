@@ -31,7 +31,7 @@
      (when-let [length (:length variant-attrs)]
        [:span {:data-test (str "line-item-length-" sku)} length "” " ])
      [:span {:data-test (str "line-item-quantity-" sku)} ]
-     (case returned-quantity
+     (case (or returned-quantity 0)
        0 [:span "(Qty: " quantity ")"]
        1 [:span "(Qty: " [:span.strike quantity] " " (- quantity returned-quantity) ") "
           [:span.red (str returned-quantity " Item Returned")]]
