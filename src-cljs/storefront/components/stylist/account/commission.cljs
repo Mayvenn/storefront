@@ -17,14 +17,14 @@
      :last-name        (green-dot :card-last-name)
      :card-number      (green-dot :card-number)
      :expiration-date  (green-dot :expiration-date)
-     :zipcode          (green-dot :zipcode)
+     :postalcode       (green-dot :postalcode)
      :card-selected-id (get-in data keypaths/stylist-manage-account-green-dot-card-selected-id)
      :card-last-4      (green-dot :last-4)
      :payout-timeframe (green-dot :payout-timeframe)}))
 
 (defn green-dot-component
   [{:keys [green-dot focused field-errors]} owner opts]
-  (let [{:keys [first-name last-name card-number card-last-4 expiration-date card-selected-id payout-timeframe zipcode]} green-dot]
+  (let [{:keys [first-name last-name card-number card-last-4 expiration-date card-selected-id payout-timeframe postalcode]} green-dot]
     (component/create
      [:div
       (when card-last-4
@@ -82,20 +82,20 @@
            :auto-complete "off"
            :type          "tel"
            :value         (cc/format-expiration expiration-date)
-           :column-size    "5fr"}
-          {:data-test     "green-dot-zipcode"
-           :errors        (get field-errors ["payout-method" "zipcode"])
-           :id            "green-dot-zipcode"
-           :keypath       (green-dot-keypath :zipcode)
+           :column-size   "5fr"}
+          {:data-test     "green-dot-postalcode"
+           :errors        (get field-errors ["payout-method" "postalcode"])
+           :id            "green-dot-postalcode"
+           :keypath       (green-dot-keypath :postalcode)
            :focused       focused
            :label         "Zip Code"
-           :name          "green-dot-zipcode"
+           :name          "green-dot-postalcode"
            :required      true
            :auto-complete "off"
            :max-length    5
-           :type          "zipcode"
-           :value         zipcode
-           :column-size    "3fr"})])
+           :type          "postalcode"
+           :value         postalcode
+           :column-size   "3fr"})])
       [:div.mx1
        [:p.h6
         "We accept most bank or debit cards. Your commissions will be sent to this card and ready for use after payout is complete."]
