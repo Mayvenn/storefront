@@ -137,14 +137,15 @@
           (info-columns
             ["order date" (some-> placed-at f/long-date)]
             ["voucher status" (voucher-status sale balance-transfer-id popup-visible?)])
-          (for [shipment shipments]
-            (let [nth-shipment (some-> shipment :number (subs 1) spice/parse-int fmt-with-leading-zero)]
-              [:div.pt4.h6
-               [:span.bold.shout (when (= nth-shipment shipment-count) "Latest ") "Shipment "]
-               [:span nth-shipment
-                " of "
-                shipment-count]
-               (shipment-details shipment)]))]]))))
+          [:div.col.col-12.pt4
+           (for [shipment shipments]
+             (let [nth-shipment (some-> shipment :number (subs 1) spice/parse-int fmt-with-leading-zero)]
+               [:div.pt3.h6
+                [:span.bold.shout (when (= nth-shipment shipment-count) "Latest ") "Shipment "]
+                [:span nth-shipment
+                 " of "
+                 shipment-count]
+                (shipment-details shipment)]))]]]))))
 
 (defn initialize-shipments-for-returns [shipments]
   (for [shipment shipments]
