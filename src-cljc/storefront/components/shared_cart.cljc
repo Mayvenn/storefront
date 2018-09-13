@@ -26,7 +26,7 @@
         [:p.center.h3.navy.medium
          store-nickname " has created a bag for you!"]]
        [:div.flex.items-center.px1.py3.border-dark-gray.border-top.border-bottom
-        (svg/guarantee {:class "fill-teal" :height "5em"})
+        (ui/ucare-img {:width 90} "8787e30c-2879-4a43-8d01-9d6790575084")
         [:div.ml2.flex-auto
          [:p.medium.navy.shout.mb2 "Free shipping & 30 day guarantee"]
          [:p.dark-gray
