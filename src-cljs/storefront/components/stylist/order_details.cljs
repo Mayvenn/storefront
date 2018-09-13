@@ -38,7 +38,9 @@
 (defn ^:private info-block [header content]
   [:div.align-top.mb2
    [:span.dark-gray.shout header]
-   [:div.medium (or content "--")]])
+   [:div.medium
+    {:data-test (str "info-block-" (-> header string/lower-case (string/replace #" " "-")))}
+    (or content "--")]])
 
 (defn ^:private info-columns [[left-header left-content] [right-header right-content]]
   [:div.col-12.pt2.h6
@@ -53,17 +55,23 @@
   [n]
   (cljs.pprint/cl-format nil "~2,'0D" n))
 
-(defn ^:private shipment-details [{:as shipment :keys [line-items state shipping-details]}]
+(defn shipment-status-field [shipping-details shipment-count]
+  (if (= "shipped" (:state shipping-details))
+    [:span
+     [:span {:data-test (str "shipment-" shipment-count "-status")} "Shipped"]
+     [:span " (" (:name shipping-details) ")"]]
+    [:span {:data-test (str "shipment-" shipment-count "-status")} "Processing"]))
+
+(defn ^:private shipment-details [{:as shipment :keys [line-items state shipping-details]} shipment-count]
   [(info-columns
      ["shipped date" (some-> shipment :shipped-at f/long-date)]
-     ["delivery status" (case (:state shipping-details)
-                          "shipped" (str "Shipped (" (:name shipping-details) ")")
-                          "Processing")])
+     ["delivery status" (shipment-status-field shipping-details shipment-count)])
    [:div.align-top.mb2
     [:span.dark-gray.shout "order details"]
     (component/build line-items/component
-                     {:line-items line-items
-                      :show-price? false}
+                     {:line-items     line-items
+                      :shipment-count shipment-count
+                      :show-price?    false}
                      {})]])
 
 (defn ^:private get-user-info [app-state]
@@ -142,11 +150,12 @@
            (for [shipment shipments]
              (let [nth-shipment (some-> shipment :number (subs 1) spice/parse-int fmt-with-leading-zero)]
                [:div.pt3.h6
+                {:data-test (str "shipment-" nth-shipment)}
                 [:span.bold.shout (when (= nth-shipment shipment-count) "Latest ") "Shipment "]
                 [:span nth-shipment
                  " of "
                  shipment-count]
-                (shipment-details shipment)]))]]]))))
+                (shipment-details shipment nth-shipment)]))]]]))))
 
 (defn initialize-shipments-for-returns [shipments]
   (for [shipment shipments]

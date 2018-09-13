@@ -19,29 +19,37 @@
             [storefront.request-keys :as request-keys]
             [storefront.api :as api]))
 
-(defn ^:private display-line-item
-  ([line-item] (display-line-item line-item true))
-  ([{:keys [product-title color-name unit-price quantity returned-quantity sku id legacy/variant-id variant-attrs]} show-price?]
-   [:div.h6.pb2 {:key (or variant-id id)}
-    [:div.medium {:data-test (str "line-item-title-" sku)} product-title]
-    [:div {:data-test (str "line-item-color-" sku)} color-name]
-    (when show-price?
-      [:div {:data-test (str "line-item-price-ea-" sku)} "Price: " (mf/as-money-without-cents unit-price) " ea"])
-    [:div
-     (when-let [length (:length variant-attrs)]
-       [:span {:data-test (str "line-item-length-" sku)} length "” " ])
-     [:span {:data-test (str "line-item-quantity-" sku)} ]
-     (case (or returned-quantity 0)
-       0 [:span "(Qty: " quantity ")"]
-       1 [:span "(Qty: " [:span.strike quantity] " " (- quantity returned-quantity) ") "
-          [:span.red (str returned-quantity " Item Returned")]]
-       [:span "(Qty: " [:span.strike quantity] " " (- quantity returned-quantity) ") "
-        [:span.red (str returned-quantity " Items Returned")]])]]))
+(defn ^:private returned-quantity-element [shipment-count sku qt returned-qt]
+  (let [base-dt (str "shipment-" shipment-count "-line-item-" sku)]
+    [:span
+     "(Qty: "
+     [:span.strike {:data-test (str base-dt "-struck-out-quantity")} qt]
+     " "
+     [:span {:data-test (str base-dt "-remaining-quantity")} (- qt returned-qt)]
+     ") "
+     [:span.red (str returned-qt " Item" (when (< 1 returned-qt) "s") " Returned")]]))
 
-(defn component [{:keys [line-items show-price?]} owner opts]
+(defn ^:private display-line-item
+  ([shipment-count line-item] (display-line-item shipment-count line-item true))
+  ([shipment-count {:keys [product-title color-name unit-price quantity returned-quantity sku id legacy/variant-id variant-attrs]} show-price?]
+   (let [base-dt (str "shipment-" shipment-count "-line-item-" sku)]
+     [:div.h6.pb2 {:key (or variant-id id)}
+      [:div.medium {:data-test (str base-dt "-title")} product-title]
+      [:div {:data-test (str base-dt "-color")} color-name]
+      (when show-price?
+        [:div {:data-test (str base-dt "-price-ea")} "Price: " (mf/as-money-without-cents unit-price) " ea"])
+      [:div
+       (when-let [length (:length variant-attrs)]
+         [:span {:data-test (str base-dt "-length")} length "” " ])
+       [:span {:data-test (str base-dt "-quantity")} ]
+       (if (pos? (or returned-quantity 0))
+         (returned-quantity-element shipment-count sku quantity returned-quantity)
+         [:span "(Qty: " quantity ")"])]])))
+
+(defn component [{:keys [line-items shipment-count show-price?]} owner opts]
   (component/create
    [:div (for [line-item line-items]
-           (display-line-item line-item show-price?))]))
+           (display-line-item shipment-count line-item show-price?))]))
 
 (defn built-component [data opts]
   (component/build component data opts))
