@@ -118,7 +118,7 @@
                   :albums {:sleek-and-straight   3892338
                            :waves-and-curly      3892339
                            :free-install-mayvenn 3896653
-                           :deals                3091418
+                           :deals                2585224
                            :email-deals          3130480
                            :free-install         3082797
                            :free-install-home    3093356
