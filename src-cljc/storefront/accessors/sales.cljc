@@ -77,6 +77,7 @@
    :voucher/active      "active"
    :voucher/transferred "transferred"
    :voucher/none        "none"
+   :voucher/returned    "returned"
    nil                  "--"})
 
 (def voucher-status->description
