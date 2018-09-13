@@ -10,7 +10,7 @@
             [storefront.accessors.experiments :as experiments]
             [spice.maps :as maps]))
 
-(defn component [{:keys [looks color-details copy spinning?]} owner opts]
+(defn component [{:keys [looks deals? color-details copy spinning?]} owner opts]
   (om/component
    (html
     (if spinning?
@@ -18,8 +18,12 @@
       [:div
        [:div.center.bg-light-gray.py3
         [:h1.h2.navy (:title copy)]
-        [:div.img-shop-by-look-icon.bg-no-repeat.bg-contain.mx-auto.my2
-         {:style {:width "101px" :height "85px"}} ]
+        [:div.bg-no-repeat.bg-contain.mx-auto
+         (if deals?
+           {:class "img-shop-by-bundle-deal-icon"
+            :style {:width "110px" :height "110px"}}
+           {:class "img-shop-by-look-icon my2"
+            :style {:width "101px" :height "85px"}})]
         [:p.dark-gray.col-10.col-6-on-tb-dt.mx-auto (:description copy)]]
        (om/build ugc/component
                  {:color-details color-details :looks looks}
@@ -33,6 +37,7 @@
     {:looks         looks
      :copy          (-> config/pixlee :copy actual-album-kw)
      :spinning?     (empty? looks)
+     :deals?        (= selected-album-kw :deals)
      :color-details (->> (get-in data keypaths/v2-facets)
                          (filter #(= :hair/color (:facet/slug %)))
                          first
