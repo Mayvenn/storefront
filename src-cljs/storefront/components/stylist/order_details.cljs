@@ -251,7 +251,6 @@
   (messages/handle-message events/ensure-sku-ids
                            {:sku-ids (->> single-sale-map
                                           vals
-                                          first
-                                          :order
-                                          orders/product-items
+                                          (map :order)
+                                          (mapcat orders/all-product-items)
                                           (map :sku))}))

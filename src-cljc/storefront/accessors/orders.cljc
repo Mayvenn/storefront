@@ -5,10 +5,20 @@
   (and (-> order :state #{"cart"} boolean)
        (not (:frozen? order))))
 
+(defn all-line-items
+  "Returns line items from an order hashmap.
+
+   Takes into account *ALL* shipments on the order "
+  [order]
+  (when order
+    (->> order
+         :shipments
+         (mapcat :line-items))))
+
 (defn line-items
   "Returns line items from an order hashmap.
-  Storefront should only be concerned about items in the first shipment.
-  Line-items are from first shipment as it is the user created shipment."
+   Storefront should only be concerned about items in the first shipment.
+   Line-items are from first shipment as it is the user created shipment."
   [order]
   (when order
     (->> order
@@ -33,6 +43,13 @@
        :shipments
        (filter (comp #{"released" "shipped"} :state))
        first))
+
+(defn all-product-items
+  "Returns cart items from an order hashmap.
+   Excludes shipping and items added by El Jefe.
+   Takes into account *ALL* shipments on the order "
+  [order]
+  (->> order all-line-items (remove shipping-item?)))
 
 (defn product-items
   "Returns cart items from an order hashmap.
