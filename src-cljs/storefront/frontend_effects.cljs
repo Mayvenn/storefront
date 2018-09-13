@@ -321,9 +321,6 @@
 (defmethod perform-effects events/navigate-content-about-us [_ _ _ _ app-state]
   (wistia/load))
 
-(defmethod perform-effects events/navigate-shared-cart [_ _ {:keys [shared-cart-id]} _ app-state]
-  (api/fetch-shared-cart shared-cart-id))
-
 (defmethod perform-effects events/navigate-shop-by-look
   [dispatch event {:keys [album-keyword]} _ app-state]
   (let [actual-album-keyword (accessors.pixlee/determine-look-album app-state album-keyword)]

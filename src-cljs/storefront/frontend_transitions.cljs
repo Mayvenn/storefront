@@ -2,7 +2,6 @@
   (:require [cemerick.url :as url]
             [clojure.string :as string]
             [catalog.categories :as categories]
-            [catalog.products :as products]
             [storefront.accessors.nav :as nav]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.pixlee :as pixlee]
@@ -171,9 +170,6 @@
 
 (defmethod transition-state events/control-commission-order-expand [_ _ {:keys [number]} app-state]
   (assoc-in app-state keypaths/expanded-commission-order-id #{number}))
-
-(defmethod transition-state events/navigate-shared-cart [_ event {:keys [shared-cart-id]} app-state]
-  (assoc-in app-state keypaths/shared-cart-id shared-cart-id))
 
 (defn ensure-direct-load-of-checkout-auth-advances-to-checkout-flow [app-state]
   (let [direct-load? (= [events/navigate-home {}]
@@ -419,13 +415,6 @@
   (-> app-state
       (assoc-in keypaths/shared-cart-url (str (.-protocol js/location) "//" (.-host js/location) "/c/" (:number cart)))
       (assoc-in keypaths/popup :share-cart)))
-
-(defmethod transition-state events/api-success-shared-cart-fetch
-  [_ event {:keys [shared-cart skus products]} app-state]
-  (-> app-state
-      (assoc-in keypaths/shared-cart-current shared-cart)
-      (update-in keypaths/v2-skus merge (products/index-skus skus))
-      (update-in keypaths/v2-products merge (products/index-products products))))
 
 (defmethod transition-state events/api-success-fetch-cms-data [_ event cms-data app-state]
   (assoc-in app-state keypaths/cms cms-data))
