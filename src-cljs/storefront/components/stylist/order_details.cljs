@@ -63,16 +63,17 @@
     [:span {:data-test (str "shipment-" shipment-count "-status")} "Processing"]))
 
 (defn ^:private shipment-details [{:as shipment :keys [line-items state shipping-details]} shipment-count]
-  [(info-columns
-     ["shipped date" (some-> shipment :shipped-at f/long-date)]
-     ["delivery status" (shipment-status-field shipping-details shipment-count)])
+  [:div
+   (info-columns
+    ["shipped date" (some-> shipment :shipped-at f/long-date)]
+    ["delivery status" (shipment-status-field shipping-details shipment-count)])
    [:div.align-top.mb2
     [:span.dark-gray.shout "order details"]
     (component/build line-items/component
-                     {:line-items     line-items
-                      :shipment-count shipment-count
-                      :show-price?    false}
-                     {})]])
+                       {:line-items     line-items
+                        :shipment-count shipment-count
+                        :show-price?    false}
+                       {})]])
 
 (defn ^:private get-user-info [app-state]
   {:user-id (get-in app-state keypaths/user-id)
@@ -120,8 +121,8 @@
                 order
                 voucher
                 balance-transfer-id]} sale
-        shipments         (-> sale :order :shipments reverse)
-        shipment-count    (-> shipments count fmt-with-leading-zero)]
+        shipments                     (-> sale :order :shipments reverse)
+        shipment-count                (-> shipments count fmt-with-leading-zero)]
     (component/create
       (if (or (not order-number) loading?)
         [:div.my6.h2 ui/spinner]
