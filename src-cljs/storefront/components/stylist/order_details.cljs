@@ -127,7 +127,7 @@
         [:div.my6.h2 ui/spinner]
         [:div.container.mb4.px3
          {:style {:display               :grid
-                  :grid-template-columns "2em 100%"
+                  :grid-template-columns "2em 1fr"
                   :grid-template-areas   (str "'back-btn back-btn'"
                                               "'type-icon title'"
                                               "'spacer fields'")}}
