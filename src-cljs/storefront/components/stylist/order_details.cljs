@@ -208,7 +208,7 @@
                                           :line-items enriched-product-line-items
                                           :shipping-details (shipping/shipping-details shipment))))
         returned-quantities    (orders/returned-quantities (:order sale))
-        shipments-with-returns (spice.core/spy (add-returns (vec shipments-enriched) returned-quantities))]
+        shipments-with-returns (add-returns (vec shipments-enriched) returned-quantities)]
     {:sale           (assoc-in sale [:order :shipments] shipments-with-returns)
      :loading?       (utils/requesting? app-state request-keys/get-stylist-dashboard-sale)
      :v2-dashboard?  (experiments/v2-dashboard? app-state)
