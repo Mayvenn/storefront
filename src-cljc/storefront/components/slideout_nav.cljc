@@ -110,7 +110,7 @@
                        "Share your store"))
      (marquee-row
       (ui/underline-button (assoc (if v2-dashboard?
-                                    (utils/route-to events/navigate-v2-stylist-dashboard-payments)
+                                    (utils/route-to events/navigate-v2-stylist-dashboard-orders)
                                     (utils/route-to events/navigate-stylist-dashboard-earnings))
                                   :data-test "dashboard")
                            "Dashboard")

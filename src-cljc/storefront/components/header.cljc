@@ -106,7 +106,7 @@
    [:div.bg-white.absolute.right-0.border.border-gray.dark-gray.top-lit
     [:div
      (if v2-dashboard?
-       (drop-down-row (utils/route-to events/navigate-v2-stylist-dashboard-payments) "My Dashboard")
+       (drop-down-row (utils/route-to events/navigate-v2-stylist-dashboard-orders) "My Dashboard")
        (drop-down-row (utils/route-to events/navigate-stylist-dashboard-earnings) "My Dashboard"))]
 
     (when vouchers?
