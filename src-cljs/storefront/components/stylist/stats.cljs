@@ -56,7 +56,7 @@
          [:.py2.h0 re-center-money (ui/big-money amount)]
          (when (payouts/cash-out-eligible? (:payout-method next-payout))
            [:div.col-5.mt1.mb2.mx-auto
-            (ui/light-ghost-button {:on-click     (utils/send-event-callback events/control-stylist-dashboard-cash-out-commit)
+            (ui/light-ghost-button {:on-click     (utils/send-event-callback events/control-stylist-dashboard-cash-out-begin)
                                     :class        "light"
                                     :height-class "py2"
                                     :data-test    "cash-out-begin-button"}
