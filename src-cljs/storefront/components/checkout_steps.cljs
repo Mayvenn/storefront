@@ -8,7 +8,7 @@
 (def ^:private steps
   [{:step-index 1 :events [events/navigate-checkout-address events/navigate-checkout-returning-or-guest] :name "your details" :id "address"}
    {:step-index 2 :events [events/navigate-checkout-payment] :name "payment" :id "payment"}
-   {:step-index 3 :events [events/navigate-checkout-confirmation] :name "review" :id "confirm"}])
+   {:step-index 3 :events [events/navigate-checkout-confirmation] :name "review & pay" :id "confirm"}])
 
 (defn component [{:keys [current-navigation-event]} owner]
   (om/component
