@@ -101,17 +101,17 @@
 
         actual-album (cond
 
+                       (not= target-album-keyword :look)
+                       target-album-keyword
+
                        v2-experience?
                        :aladdin-free-install
 
-                       (and seventy-five-off-install? (= target-album-keyword :look))
+                       seventy-five-off-install?
                        :install
 
-                       (and the-ville? (= target-album-keyword :look))
+                       the-ville?
                        :free-install
-
-                       (some? target-album-keyword)
-                       target-album-keyword
 
                        :elsewise target-album-keyword)]
     (if (-> config/pixlee :albums (contains? actual-album))

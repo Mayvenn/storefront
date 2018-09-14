@@ -72,4 +72,4 @@
                                              :short-name (:short-name copy)})
           (when view-look
             {:data-test (str "look-" (:look-id nav-args))}))
-         [:span.bold (:new-look/button-copy copy)])]])]))
+         [:span.bold (:button-copy copy)])]])]))
