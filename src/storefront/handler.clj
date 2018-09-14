@@ -45,6 +45,9 @@
             [storefront.transitions :as transitions]
             [storefront.system.contentful :as contentful]))
 
+(def root-domain-pages-to-preserve-paths-in-redirects
+  #{"/mayvenn-made"})
+
 (defn ^:private str->int [s]
   (try
     (Integer/parseInt s)
@@ -187,6 +190,10 @@
       ;; Old stylist resource page has moved into the community, Aug-2017
       (= "stylist" (first subdomains))
       (util.response/redirect "https://community.mayvenn.com" 301)
+
+      (and (#{[] ["www"] ["internal"]} subdomains)
+           (root-domain-pages-to-preserve-paths-in-redirects (:uri req)))
+      (util.response/redirect (store-url "shop" environment req) 301)
 
       (#{[] ["www"] ["internal"]} subdomains)
       (util.response/redirect (store-homepage "shop" environment req) 301)

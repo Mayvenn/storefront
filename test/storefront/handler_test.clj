@@ -861,3 +861,28 @@
             (is (= 200 (:status resp))
                 (get-in resp [:headers "Location"]))
             (is (= 1 (count (txfm-requests storeback-requests identity))))))))))
+
+
+(deftest mayvenn-made-without-store-slug-correctly-redirects
+  (let [[storeback-requests storeback-handler]
+        (with-requests-chan (constantly {:status  200
+                                         :headers {"Content-Type" "application/json"}
+                                         :body    (generate-string {:number "W123456"
+                                                                    :token  "order-token"
+                                                                    :state  "cart"})}))]
+    (with-standalone-server [storeback (standalone-server
+                                        (routes (GET "/store" req storeback-stylist-response)
+                                                (GET "/v2/facets" req {:status 200
+                                                                       :body   ""})
+                                                storeback-handler))]
+      (with-handler handler
+        (let [resp (-> (mock/request :get "https://mayvenn.com/mayvenn-made")
+                       (set-cookies {"number"  "W123456"
+                                     "token"   "order-token"
+                                     "expires" "Sat, 03 May 2025 17:44:22 GMT"})
+                       handler)
+              location (get-in resp [:headers "Location"])]
+          (is (= 301 (:status resp)) location)
+          (is (= "https://shop.mayvenn.com/mayvenn-made" location) location)
+          (is (= 1 (count (txfm-requests storeback-requests identity)))))))))
+
