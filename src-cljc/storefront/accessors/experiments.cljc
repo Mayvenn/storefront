@@ -56,6 +56,9 @@
 (defn ^:private display-feature? [data feature]
   (contains? (set (get-in data keypaths/features)) feature))
 
+(defn deals? [data]
+  (display-feature? data "deals"))
+
 (defn v2-experience? [data]
   (contains? #{"aladdin" "phoenix"}
              (get-in data keypaths/store-experience)))

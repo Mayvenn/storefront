@@ -152,12 +152,13 @@
    [:div.h4.border-bottom.border-gray.py3
     (into [:a.block.inherit-color.flex.items-center (assoc link-attrs :data-test data-test)] content)]])
 
-(defn shopping-rows [caret]
-  [{:link-attrs (utils/route-to events/navigate-shop-by-look {:album-keyword :deals})
-    :data-test  "menu-shop-by-deals"
-    :content    [[:span.medium "Deals"]]}
+(def deal-row
+  {:link-attrs (utils/route-to events/navigate-shop-by-look {:album-keyword :deals})
+   :data-test  "menu-shop-by-look"
+   :content    [[:span.medium "Deals"]]})
 
-   {:link-attrs (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
+(defn shopping-rows [caret]
+  [{:link-attrs (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
     :data-test "menu-shop-by-look"
     :content [[:span.medium "Shop Looks"]]}
 
@@ -224,8 +225,10 @@
     :data-test  "content-help"
     :content    ["Contact Us"]}])
 
-(defn ^:private menu-area [{:keys [signed-in]}]
+(defn ^:private menu-area [{:keys [deals? signed-in]}]
   [:ul.list-reset.mb3
+   (when deals?
+     (menu-row deal-row))
    (for [row (shopping-rows (ui/forward-caret {:width  "23px"
                                                :height "20px"}))]
      (menu-row row))
@@ -242,7 +245,7 @@
                      "Sign out")
     [:div])))
 
-(defn ^:private root-menu [{:keys [user signed-in store the-ville? vouchers? v2-dashboard?] :as data} owner opts]
+(defn ^:private root-menu [{:keys [user signed-in store deals? the-ville? vouchers? v2-dashboard?] :as data} owner opts]
   (component/create
    [:div
     [:div.px6.border-bottom.border-gray.bg-light-gray.pt3
@@ -273,6 +276,7 @@
    :on-taxon?     (get-in data keypaths/current-traverse-nav-id)
    :user          {:email (get-in data keypaths/user-email)}
    :store         (marquee/query data)
+   :deals?        (experiments/deals? data)
    :the-ville?    (experiments/the-ville? data)
    :vouchers?     (experiments/vouchers? data)
    :v2-dashboard? (experiments/v2-dashboard? data)
