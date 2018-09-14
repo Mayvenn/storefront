@@ -136,13 +136,12 @@
    (merge opts {:style {:padding-left "24px" :padding-right "24px"}})
    text])
 
-(defn menu [deals?]
+(def menu
   (component/html
    [:div.center
-    (if deals?
-      (header-menu-link (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :deals})
-                               :on-mouse-enter close-shopping)
-                        "Deals"))
+    (header-menu-link (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :deals})
+                             :on-mouse-enter close-shopping)
+                      "Deals")
     (header-menu-link (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
                              :on-mouse-enter close-shopping)
                       "Shop looks")
@@ -196,7 +195,7 @@
         (for [items columns]
           (shopping-column items (count columns)))]])))
 
-(defn component [{:keys [store user cart shopping signed-in deals? the-ville? vouchers? v2-dashboard?]} _ _]
+(defn component [{:keys [store user cart shopping signed-in the-ville? vouchers? v2-dashboard?]} _ _]
   (component/create
    [:div
     [:div.hide-on-mb.relative
@@ -214,7 +213,7 @@
         [:div.mb4 (ui/clickable-logo {:event events/navigate-home
                                       :data-test "desktop-header-logo"
                                       :height "60px"})]
-        [:div.mb1 (menu deals?)]]]]
+        [:div.mb1 menu]]]]
      (shopping-flyout signed-in shopping)]
     [:div.hide-on-tb-dt.border-bottom.border-gray.flex.items-center
      hamburger
