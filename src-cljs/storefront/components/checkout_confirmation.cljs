@@ -65,7 +65,8 @@
            updating-shipping?
            promotion-banner
            install-or-free-install-applied?
-           second-checkout-button?]}
+           second-checkout-button?
+           second-checkout-button-total?]}
    owner]
   (om/component
    (html
@@ -87,10 +88,12 @@
          [:.col-on-tb-dt.col-6-on-tb-dt.px3
           (when second-checkout-button?
             [:div.border-bottom.border-gray.pt2.pb5.mb4.hide-on-tb-dt
-             [:div.h3.light.pb2
-              (google-string/format "Total (%s): "
-                                    (ui/pluralize (orders/product-quantity order) "item" "items"))
-              [:span.h2.medium (mf/as-money (:total order))]]
+             (when second-checkout-button-total?
+               [:div.h3.light.pb2
+                (google-string/format
+                 "Total (%s): "
+                 (ui/pluralize (orders/product-quantity order) "item" "items"))
+                [:span.h2.medium (mf/as-money (:total order))]])
              (checkout-button {:spinning?     (or saving-card? placing-order?)
                                :disabled?     updating-shipping?
                                :affirm-order? affirm-selected-and-order-valid?})])
@@ -315,7 +318,8 @@
      :install-or-free-install-applied? (or (orders/freeinstall-applied? order)
                                            (orders/install-applied? order))
      :available-store-credit           (get-in data keypaths/user-total-available-store-credit)
-     :second-checkout-button?          (experiments/second-checkout-button? data)}))
+     :second-checkout-button?          (experiments/second-checkout-button? data)
+     :second-checkout-button-total?    (experiments/second-checkout-button-total? data)}))
 
 (defn built-component [data opts]
   (let [query-data (query data)]
