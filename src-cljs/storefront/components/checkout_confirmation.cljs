@@ -2,6 +2,8 @@
   (:require [om.core :as om]
             [cemerick.url :refer [url-encode]]
             [sablono.core :refer [html]]
+            [goog.string :as google-string]
+            [storefront.components.money-formatters :as mf]
             [storefront.hooks.stringer :as stringer]
             [storefront.platform.messages :refer [handle-message handle-later]]
             [storefront.accessors.experiments :as experiments]
@@ -84,7 +86,11 @@
         [:.clearfix.mxn3
          [:.col-on-tb-dt.col-6-on-tb-dt.px3
           (when second-checkout-button?
-            [:div.border-bottom.border-gray.pt3.pb5.mb4.hide-on-tb-dt
+            [:div.border-bottom.border-gray.pt2.pb5.mb4.hide-on-tb-dt
+             [:div.h3.light.pb2
+              (google-string/format "Total (%s): "
+                                    (ui/pluralize (orders/product-quantity order) "item" "items"))
+              [:span.h2.medium (mf/as-money (:total order))]]
              (checkout-button {:spinning?     (or saving-card? placing-order?)
                                :disabled?     updating-shipping?
                                :affirm-order? affirm-selected-and-order-valid?})])
