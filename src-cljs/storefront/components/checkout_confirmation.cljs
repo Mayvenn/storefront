@@ -40,6 +40,15 @@
      ;; is total covered by remaining store-credit?
      (> order-total store-credit-amount))))
 
+(defn checkout-button [{:keys [affirm-order? spinning? disabled?]}]
+  (if affirm-order?
+    (ui/submit-button "Checkout with Affirm" {:spinning? spinning?
+                                              :disabled? disabled?
+                                              :data-test "confirm-affirm-form-submit"})
+    (ui/submit-button "Place Order" {:spinning? spinning?
+                                     :disabled? disabled?
+                                     :data-test "confirm-form-submit"})))
+
 ;; TODO merge with affirm component (if possible)
 (defn component
   [{:keys [available-store-credit
@@ -53,7 +62,8 @@
            saving-card?
            updating-shipping?
            promotion-banner
-           install-or-free-install-applied?]}
+           install-or-free-install-applied?
+           second-checkout-button?]}
    owner]
   (om/component
    (html
@@ -63,23 +73,30 @@
        (component/build promotion-banner/sticky-component promotion-banner nil)
        (om/build checkout-steps/component checkout-steps)
 
-       [:.clearfix.mxn3
-        [:.col-on-tb-dt.col-6-on-tb-dt.px3
-         [:.h3.left-align "Order Summary"]
+       [:form
+        {:on-submit
+         (if (and order-valid-for-affirm? selected-affirm?)
+           (utils/send-event-callback events/control-checkout-affirm-confirmation-submit)
+           (utils/send-event-callback events/control-checkout-confirmation-submit
+                                      {:place-order? (or affirm-selected-but-not-valid?
+                                                         requires-additional-payment?)}))}
 
-         [:div.my2
-          {:data-test "confirmation-line-items"}
-          (summary/display-line-items (orders/product-items order) skus)]]
+        [:.clearfix.mxn3
+         [:.col-on-tb-dt.col-6-on-tb-dt.px3
+          (when second-checkout-button?
+            [:div.border-bottom.border-gray.pt3.pb5.mb4.hide-on-tb-dt
+             (checkout-button {:spinning?     (or saving-card? placing-order?)
+                               :disabled?     updating-shipping?
+                               :affirm-order? affirm-selected-and-order-valid?})])
 
-        [:.col-on-tb-dt.col-6-on-tb-dt.px3
-         (om/build checkout-delivery/component delivery)
-         [:form
-          {:on-submit
-           (if (and order-valid-for-affirm? selected-affirm?)
-             (utils/send-event-callback events/control-checkout-affirm-confirmation-submit)
-             (utils/send-event-callback events/control-checkout-confirmation-submit
-                                        {:place-order?             (or affirm-selected-but-not-valid?
-                                                                       requires-additional-payment?)}))}
+          [:.h3.left-align "Order Summary"]
+
+          [:div.my2
+           {:data-test "confirmation-line-items"}
+           (summary/display-line-items (orders/product-items order) skus)]]
+
+         [:.col-on-tb-dt.col-6-on-tb-dt.px3
+          (om/build checkout-delivery/component delivery)
           (cond
             requires-additional-payment?
             [:div
@@ -110,13 +127,9 @@
             [:div.col-12.col-6-on-tb-dt.mx-auto (affirm-components/as-low-as-box {:amount      (:total order)
                                                                                   :middle-copy "Continue with Affirm below."})])
           [:div.col-12.col-6-on-tb-dt.mx-auto
-           (if affirm-selected-and-order-valid?
-             (ui/submit-button "Checkout with Affirm" {:spinning? (or saving-card? placing-order?) ;; We need a boolean for affirm request
-                                                       :disabled? updating-shipping?
-                                                       :data-test "confirm-affirm-form-submit"})
-             (ui/submit-button "Place Order" {:spinning? (or saving-card? placing-order?)
-                                              :disabled? updating-shipping?
-                                              :data-test "confirm-form-submit"}))]]]]]))))
+           (checkout-button {:spinning?     (or saving-card? placing-order?)
+                             :disabled?     updating-shipping?
+                             :affirm-order? affirm-selected-and-order-valid?})]]]]]))))
 
 (defn ->affirm-address [{:keys [address1 address2 city state zipcode]}]
   {:line1   address1
@@ -295,7 +308,8 @@
      :delivery                         (checkout-delivery/query data)
      :install-or-free-install-applied? (or (orders/freeinstall-applied? order)
                                            (orders/install-applied? order))
-     :available-store-credit           (get-in data keypaths/user-total-available-store-credit)}))
+     :available-store-credit           (get-in data keypaths/user-total-available-store-credit)
+     :second-checkout-button?          (experiments/second-checkout-button? data)}))
 
 (defn built-component [data opts]
   (let [query-data (query data)]

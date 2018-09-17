@@ -99,3 +99,6 @@
   [data]
   (or (display-feature? data "vouchers")
       (install? data)))
+
+(defn second-checkout-button? [data]
+  (display-feature? data "second-checkout-button"))
