@@ -60,6 +60,15 @@
   (contains? #{"aladdin" "phoenix"}
              (get-in data keypaths/store-experience)))
 
+(defn aladdin-experience?
+  "Use v2-experience? unless you absolutely need just aladdin"
+  [data]
+  (= "aladdin" (get-in data keypaths/store-experience)))
+
+(defn aladdin-freeinstall-line-item?
+  [data]
+  (display-feature? data "aladdin-freeinstall-line-item"))
+
 (defn v2-homepage? [data]
   (->> (get-in data keypaths/store-features)
        (some #{"aladdin-homepage" "phoenix-homepage"})

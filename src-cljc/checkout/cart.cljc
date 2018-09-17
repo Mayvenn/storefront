@@ -5,6 +5,7 @@
               [storefront.api :as api]])
    [storefront.component :as component]
    [checkout.header :as header]
+   [checkout.accessors.vouchers :as vouchers]
    [spice.selector :as selector]
    [clojure.string :as string]
    [spice.core :as spice]
@@ -100,6 +101,29 @@
                                    (utils/send-event-callback events/control-cart-line-item-dec {:variant line-item})
                                    (utils/send-event-callback events/control-cart-line-item-inc {:variant line-item}))]
         [:div.h5 {:data-test (str "line-item-price-ea-" sku-id)} (mf/as-money-without-cents price) " ea"]]]]]))
+
+(defn ^:private non-adjustable-line-item
+  [{:keys [removing? id title detail price remove-event thumbnail-image]}]
+  [:div.pt1.pb2.clearfix
+   [:div.left.pr3 thumbnail-image]
+   [:div
+    [:a.medium.titleize.h5
+     {:data-test (str "line-item-title" id)}
+     title]
+    [:div.h6
+     [:div.flex.justify-between.mt1
+      [:div {:data-test (str "line-item-detail-" id)}
+       detail]
+      [:div.flex.items-center.justify-between
+       (if removing?
+         [:div.h3 {:style {:width "1.2em"}} ui/spinner]
+         [:a.gray.medium
+          (merge {:data-test (str "line-item-remove-" id)}
+                 (apply utils/fake-href remove-event))
+          (svg/trash-can {:height "1.1em"
+                          :width  "1.1em"
+                          :class  "stroke-dark-gray"})])]]
+     [:div.h5.right {:data-test (str "line-item-price-ea-" id)} (mf/as-money price)]]]])
 
 (defn ^:private summary-row
   ([content amount] (summary-row {} content amount))
@@ -306,7 +330,8 @@
                               recently-added-skus
                               delete-line-item-requests
                               seventy-five-off-install?
-                              show-green-banner?]} owner _]
+                              show-green-banner?
+                              freeinstall-line-item]} owner _]
   (component/create
    [:div.container.p2
     (component/build promotion-banner/sticky-component promotion-banner nil)
@@ -334,6 +359,8 @@
                                      skus
                                      update-line-item-requests
                                      delete-line-item-requests)
+      (when freeinstall-line-item
+        (non-adjustable-line-item freeinstall-line-item))
 
       (component/build auto-complete-component auto-complete nil)]
 
@@ -494,12 +521,24 @@
     {:suggestions (suggest-bundles data products skus line-items)}))
 
 (defn full-cart-query [data]
-  (let [order         (get-in data keypaths/order)
-        products      (get-in data keypaths/v2-products)
-        facets        (get-in data keypaths/v2-facets)
-        line-items    (map (partial add-product-title-and-color-to-line-item products facets) (orders/product-items order))
-        variant-ids   (map :id line-items)
-        auto-complete (auto-complete-query data)]
+  (let [order                        (get-in data keypaths/order)
+        products                     (get-in data keypaths/v2-products)
+        facets                       (get-in data keypaths/v2-facets)
+        line-items                   (map (partial add-product-title-and-color-to-line-item products facets) (orders/product-items order))
+        variant-ids                  (map :id line-items)
+        auto-complete                (auto-complete-query data)
+        store-nickname               (get-in data keypaths/store-nickname)
+        highest-value-service        (-> order
+                                         orders/product-items
+                                         vouchers/product-items->highest-value-service)
+        {:as   campaign
+         :keys [:voucherify/campaign-name
+                :service/diva-type]} (->> (get-in data keypaths/environment)
+                                          vouchers/campaign-configuration
+                                          (filter #(= (:service/type %) highest-value-service))
+                                          first)
+        store-service-menu           (get-in data keypaths/store-service-menu)
+        service-price                (get store-service-menu diva-type)]
     {:auto-complete             auto-complete
      :order                     order
      :line-items                line-items
@@ -529,7 +568,22 @@
      :the-ville?                (experiments/the-ville? data)
      :v2-experience?            (experiments/v2-experience? data)
      :seventy-five-off-install? (experiments/seventy-five-off-install? data)
-     :recently-added-skus       (get-in data keypaths/cart-recently-added-skus)}))
+     :recently-added-skus       (get-in data keypaths/cart-recently-added-skus)
+     :stylist-service-menu      (get-in data keypaths/stylist-service-menu)
+     :freeinstall-line-item     (when (and (experiments/aladdin-freeinstall-line-item? data)
+                                           (experiments/aladdin-experience? data)
+                                           (orders/freeinstall-applied? order))
+                                  {:removing?       (utils/requesting? data request-keys/remove-promotion-code)
+                                   :id              "freeinstall"
+                                   :title           campaign-name
+                                   :detail          (str "w/ " store-nickname)
+                                   :price           service-price
+                                   :remove-event    [events/control-checkout-remove-promotion {:code "freeinstall"}]
+                                   :thumbnail-image [:div.flex.items-center.justify-center.ml1
+                                                     {:style {:width  "79px"
+                                                              :height "79px"}}
+                                                     (ui/ucare-img {:width 79}
+                                                                   "d2a9e626-a6f3-4cbe-804f-214ea1d92f9b")]})}))
 
 (defn empty-cart-query [data]
   {:promotions (get-in data keypaths/promotions)})

@@ -57,6 +57,7 @@
 (def store-gallery-images (conj store :gallery :images))
 (def store-features (conj store :features))
 (def store-experience (conj store :experience))
+(def store-service-menu (conj store :service-menu))
 
 (def v2-products [:catalog :products])
 (def v2-skus [:catalog :skus])
