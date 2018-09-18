@@ -1,31 +1,31 @@
 (ns storefront.frontend-effects
   (:require [ajax.core :refer [-abort]]
-            [cemerick.url :refer [url-encode]]
             [clojure.set :as set]
-            [goog.labs.userAgent.device :as device]
-            [storefront.effects :refer [perform-effects redirect page-not-found] :as effects]
-            [storefront.accessors.credit-cards :refer [parse-expiration filter-cc-number-format]]
-            [storefront.accessors.experiments :as experiments]
-            [catalog.categories :as categories]
+            [clojure.string :as string]
+            [spice.maps :as maps]
             [storefront.accessors.auth :as auth]
+            [storefront.accessors.credit-cards :refer [filter-cc-number-format parse-expiration]]
+            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.pixlee :as accessors.pixlee]
-            [storefront.accessors.products :as products]
-            [storefront.accessors.stylist-urls :as stylist-urls]
             [storefront.accessors.stylists :as stylists]
             [storefront.api :as api]
             [storefront.browser.cookie-jar :as cookie-jar]
-            [storefront.browser.scroll :as scroll]
             [storefront.browser.events :as browser-events]
+            [storefront.browser.scroll :as scroll]
             [storefront.config :as config]
+            [storefront.effects :as effects :refer [page-not-found perform-effects redirect]]
             [storefront.events :as events]
             [storefront.history :as history]
+            [storefront.hooks.affirm :as affirm]
             [storefront.hooks.apple-pay :as apple-pay]
             [storefront.hooks.convert :as convert]
             [storefront.hooks.exception-handler :as exception-handler]
             [storefront.hooks.facebook :as facebook]
             [storefront.hooks.facebook-analytics :as facebook-analytics]
             [storefront.hooks.google-analytics :as google-analytics]
+            [storefront.hooks.lucky-orange :as lucky-orange]
+            [storefront.hooks.pinterest :as pinterest]
             [storefront.hooks.pixlee :as pixlee]
             [storefront.hooks.places-autocomplete :as places-autocomplete]
             [storefront.hooks.reviews :as reviews]
@@ -37,15 +37,9 @@
             [storefront.hooks.talkable :as talkable]
             [storefront.hooks.uploadcare :as uploadcare]
             [storefront.hooks.wistia :as wistia]
-            [storefront.hooks.affirm :as affirm]
-            [storefront.hooks.lucky-orange :as lucky-orange]
             [storefront.keypaths :as keypaths]
-            [storefront.platform.messages :refer [handle-later handle-message]]
-            [storefront.routes :as routes]
-            [spice.maps :as maps]
-            [storefront.hooks.pinterest :as pinterest]
-            [clojure.string :as string]
-            [storefront.platform.messages :as messages]))
+            [storefront.platform.messages :as messages :refer [handle-later handle-message]]
+            [storefront.routes :as routes]))
 
 (defn changed? [previous-app-state app-state keypath]
   (not= (get-in previous-app-state keypath)
@@ -680,20 +674,6 @@
                         (get-in app-state keypaths/manage-account-password)
                         (get-in app-state keypaths/user-token))))
 
-(defmethod perform-effects events/control-cart-update-coupon [_ event args _ app-state]
-  (let [coupon-code (get-in app-state keypaths/cart-coupon-code)]
-    (when-not (empty? coupon-code)
-      (api/add-promotion-code (get-in app-state keypaths/session-id)
-                              (get-in app-state keypaths/order-number)
-                              (get-in app-state keypaths/order-token)
-                              coupon-code
-                              false))))
-
-(defmethod perform-effects events/control-cart-share-show [dispatch event args _ app-state]
-  (api/create-shared-cart (get-in app-state keypaths/session-id)
-                          (get-in app-state keypaths/order-number)
-                          (get-in app-state keypaths/order-token)))
-
 (defmethod perform-effects events/control-create-order-from-shared-cart [_ event {:keys [look-id shared-cart-id] :as args} _ app-state]
   (api/create-order-from-cart (get-in app-state keypaths/session-id)
                               shared-cart-id
@@ -701,71 +681,6 @@
                               (get-in app-state keypaths/user-id)
                               (get-in app-state keypaths/user-token)
                               (get-in app-state keypaths/store-stylist-id)))
-
-(defmethod perform-effects events/control-cart-line-item-inc [_ event {:keys [variant]} _ app-state]
-  (let [sku      (get (get-in app-state keypaths/v2-skus) (:sku variant))
-        order    (get-in app-state keypaths/order)
-        quantity 1]
-    (api/add-sku-to-bag (get-in app-state keypaths/session-id)
-                        {:sku      sku
-                         :token    (:token order)
-                         :number   (:number order)
-                         :quantity quantity}
-                        #(handle-message events/api-success-add-sku-to-bag
-                                         {:order    %
-                                          :quantity quantity
-                                          :sku      sku}))))
-
-(defmethod perform-effects events/control-cart-line-item-dec [_ event {:keys [variant]} _ app-state]
-  (let [order (get-in app-state keypaths/order)]
-    (api/remove-line-item (get-in app-state keypaths/session-id)
-                          {:number     (:number order)
-                           :token      (:token order)
-                           :variant-id (:id variant)
-                           :sku-code   (:sku variant)}
-                          #(handle-message events/api-success-add-to-bag {:order %}))))
-
-(defmethod perform-effects events/control-cart-remove [_ event variant-id _ app-state]
-  (api/delete-line-item (get-in app-state keypaths/session-id) (get-in app-state keypaths/order) variant-id))
-
-(defmethod perform-effects events/control-checkout-cart-submit [dispatch event args _ app-state]
-  ;; If logged in, this will send user to checkout-address. If not, this sets
-  ;; things up so that if the user chooses sign-in from the returning-or-guest
-  ;; page, then signs-in, they end up on the address page. Convoluted.
-  (history/enqueue-navigate events/navigate-checkout-address))
-
-(defmethod perform-effects events/control-checkout-cart-apple-pay [dispatch event args _ app-state]
-  (apple-pay/begin (get-in app-state keypaths/order)
-                   (get-in app-state keypaths/session-id)
-                   (cookie-jar/retrieve-utm-params (get-in app-state keypaths/cookie))
-                   (get-in app-state keypaths/shipping-methods)
-                   (get-in app-state keypaths/states)))
-
-(defmethod perform-effects events/control-checkout-cart-paypal-setup [dispatch event args _ app-state]
-  (let [order (get-in app-state keypaths/order)]
-    (api/update-cart-payments
-     (get-in app-state keypaths/session-id)
-     {:order (-> app-state
-                 (get-in keypaths/order)
-                 (select-keys [:token :number])
-                 ;;; Get ready for some nonsense!
-                 ;;
-                 ;; Paypal requires that urls are *double* url-encoded, such as
-                 ;; the token part of the return url, but that *query
-                 ;; parameters* are only singley encoded.
-                 ;;
-                 ;; Thanks for the /totally sane/ API, PayPal.
-                 (assoc-in [:cart-payments]
-                           {:paypal {:amount (get-in app-state keypaths/order-total)
-                                     :mobile-checkout? (not (device/isDesktop))
-                                     :return-url (str stylist-urls/store-url "/orders/" (:number order) "/paypal/"
-                                                      (url-encode (url-encode (:token order)))
-                                                      "?sid="
-                                                      (url-encode (get-in app-state keypaths/session-id)))
-                                     :callback-url (str config/api-base-url "/v2/paypal-callback?number=" (:number order)
-                                                        "&order-token=" (url-encode (:token order)))
-                                     :cancel-url (str stylist-urls/store-url "/cart?error=paypal-cancel")}}))
-      :event events/external-redirect-paypal-setup})))
 
 (defmethod perform-effects events/control-stylist-account-profile-submit [_ _ args _ app-state]
   (let [session-id      (get-in app-state keypaths/session-id)

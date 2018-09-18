@@ -2,7 +2,13 @@
   (:require
    #?@(:cljs [[storefront.components.popup :as popup]
               [storefront.components.order-summary :as summary]
-              [storefront.api :as api]])
+              [storefront.api :as api]
+              [storefront.history :as history]
+              [storefront.hooks.apple-pay :as apple-pay]
+              [storefront.browser.cookie-jar :as cookie-jar]
+              [storefront.accessors.stylist-urls :as stylist-urls]
+              [goog.labs.userAgent.device :as device]])
+   [cemerick.url :refer [url-encode]]
    [storefront.component :as component]
    [checkout.header :as header]
    [checkout.accessors.vouchers :as vouchers]
@@ -24,9 +30,11 @@
    [storefront.components.stylist-banner :as stylist-banner]
    [storefront.components.svg :as svg]
    [storefront.components.ui :as ui]
+   [storefront.config :as config]
    [storefront.platform.messages :as messages]
    [storefront.css-transitions :as css-transitions]
    [storefront.events :as events]
+   [storefront.transitions :as transitions]
    [storefront.effects :as effects]
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
@@ -499,18 +507,116 @@
                                                                           (subvec (:request-key req []) 0 1))
                                                                    request-keys/add-to-bag)
                         :this-is-adding-to-bag? (utils/requesting? data (conj request-keys/add-to-bag (set (map :catalog/sku-id skus))))}))))))))
+(defmethod effects/perform-effects events/control-suggested-add-to-bag
+  [_ _ {:keys [skus initial-sku]} _ app-state]
+  #?(:cljs
+     (api/add-skus-to-bag (get-in app-state keypaths/session-id)
+                          {:number           (get-in app-state keypaths/order-number)
+                           :token            (get-in app-state keypaths/order-token)
+                           :sku-id->quantity (into {}
+                                                   (map (fn [[sku-id skus]] [sku-id (count skus)])
+                                                        (group-by :catalog/sku-id skus)))}
+                          #(messages/handle-message events/api-success-suggested-add-to-bag
+                                                    (assoc % :initial-sku initial-sku)))))
 
-#?(:cljs
-   (defmethod effects/perform-effects events/control-suggested-add-to-bag [_ _ {:keys [skus initial-sku]} _ app-state]
-     (api/add-skus-to-bag (get-in app-state keypaths/session-id) {:number           (get-in app-state keypaths/order-number)
-                                                                  :token            (get-in app-state keypaths/order-token)
-                                                                  :sku-id->quantity (into {} (map (fn [[sku-id skus]] [sku-id (count skus)])
-                                                                                                  (group-by :catalog/sku-id skus)))}
-                          #(messages/handle-message events/api-success-suggested-add-to-bag (assoc % :initial-sku initial-sku)))))
+(defmethod effects/perform-effects events/api-success-suggested-add-to-bag
+  [_ _ {:keys [order]} _ _]
+  (messages/handle-message events/save-order
+                           {:order order}))
+(defmethod effects/perform-effects events/control-cart-update-coupon
+  [_ _ _ _ app-state]
+  #?(:cljs
+     (let [coupon-code (get-in app-state keypaths/cart-coupon-code)]
+       (when-not (empty? coupon-code)
+         (api/add-promotion-code (get-in app-state keypaths/session-id)
+                                 (get-in app-state keypaths/order-number)
+                                 (get-in app-state keypaths/order-token)
+                                 coupon-code
+                                 false)))))
 
-#?(:cljs
-   (defmethod effects/perform-effects events/api-success-suggested-add-to-bag [_ _ {:keys [order]} previous-app-state app-state]
-     (messages/handle-message events/save-order {:order order})))
+(defmethod effects/perform-effects events/control-cart-share-show
+  [_ _ _ _ app-state]
+  #?(:cljs
+     (api/create-shared-cart (get-in app-state keypaths/session-id)
+                             (get-in app-state keypaths/order-number)
+                             (get-in app-state keypaths/order-token))))
+
+(defmethod effects/perform-effects events/control-cart-remove
+  [_ event variant-id _ app-state]
+  #?(:cljs
+     (api/delete-line-item (get-in app-state keypaths/session-id) (get-in app-state keypaths/order) variant-id)))
+
+(defmethod effects/perform-effects events/control-cart-line-item-inc
+  [_ event {:keys [variant]} _ app-state]
+  #?(:cljs
+     (let [sku      (get (get-in app-state keypaths/v2-skus) (:sku variant))
+           order    (get-in app-state keypaths/order)
+           quantity 1]
+       (api/add-sku-to-bag (get-in app-state keypaths/session-id)
+                           {:sku      sku
+                            :token    (:token order)
+                            :number   (:number order)
+                            :quantity quantity}
+                           #(messages/handle-message events/api-success-add-sku-to-bag
+                                            {:order    %
+                                             :quantity quantity
+                                             :sku      sku})))))
+
+(defmethod effects/perform-effects events/control-cart-line-item-dec
+  [_ event {:keys [variant]} _ app-state]
+  #?(:cljs
+     (let [order (get-in app-state keypaths/order)]
+       (api/remove-line-item (get-in app-state keypaths/session-id)
+                             {:number     (:number order)
+                              :token      (:token order)
+                              :variant-id (:id variant)
+                              :sku-code   (:sku variant)}
+                             #(messages/handle-message events/api-success-add-to-bag {:order %})))))
+
+(defmethod effects/perform-effects events/control-checkout-cart-submit
+  [dispatch event args _ app-state]
+  #?(:cljs
+     ;; If logged in, this will send user to checkout-address. If not, this sets
+     ;; things up so that if the user chooses sign-in from the returning-or-guest
+     ;; page, then signs-in, they end up on the address page. Convoluted.
+     (history/enqueue-navigate events/navigate-checkout-address)))
+
+(defmethod effects/perform-effects events/control-checkout-cart-apple-pay
+  [dispatch event args _ app-state]
+  #?(:cljs
+     (apple-pay/begin (get-in app-state keypaths/order)
+                      (get-in app-state keypaths/session-id)
+                      (cookie-jar/retrieve-utm-params (get-in app-state keypaths/cookie))
+                      (get-in app-state keypaths/shipping-methods)
+                      (get-in app-state keypaths/states))))
+
+(defmethod effects/perform-effects events/control-checkout-cart-paypal-setup
+  [dispatch event args _ app-state]
+  #?(:cljs
+     (let [order (get-in app-state keypaths/order)]
+       (api/update-cart-payments
+        (get-in app-state keypaths/session-id)
+        {:order (-> app-state
+                    (get-in keypaths/order)
+                    (select-keys [:token :number])
+                 ;;; Get ready for some nonsense!
+                    ;;
+                    ;; Paypal requires that urls are *double* url-encoded, such as
+                    ;; the token part of the return url, but that *query
+                    ;; parameters* are only singley encoded.
+                    ;;
+                    ;; Thanks for the /totally sane/ API, PayPal.
+                    (assoc-in [:cart-payments]
+                              {:paypal {:amount (get-in app-state keypaths/order-total)
+                                        :mobile-checkout? (not (device/isDesktop))
+                                        :return-url (str stylist-urls/store-url "/orders/" (:number order) "/paypal/"
+                                                         (url-encode (url-encode (:token order)))
+                                                         "?sid="
+                                                         (url-encode (get-in app-state keypaths/session-id)))
+                                        :callback-url (str config/api-base-url "/v2/paypal-callback?number=" (:number order)
+                                                           "&order-token=" (url-encode (:token order)))
+                                        :cancel-url (str stylist-urls/store-url "/cart?error=paypal-cancel")}}))
+         :event events/external-redirect-paypal-setup}))))
 
 (defn auto-complete-query
   [data]
