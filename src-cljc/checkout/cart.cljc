@@ -134,7 +134,7 @@
           (svg/trash-can {:height "1.1em"
                           :width  "1.1em"
                           :class  "stroke-dark-gray"})])]]
-     [:div.h5.right {:data-test (str "line-item-price-ea-" id)} (mf/as-money price)]]]])
+     [:div.h5.right {:data-test (str "line-item-price-ea-" id)} (some-> price mf/as-money)]]]])
 
 (defn ^:private summary-row
   ([content amount] (summary-row {} content amount))
@@ -524,8 +524,6 @@
                                         :cancel-url (str stylist-urls/store-url "/cart?error=paypal-cancel")}}))
          :event events/external-redirect-paypal-setup}))))
 
-
-
 (defn full-cart-query [data]
   (let [order                        (get-in data keypaths/order)
         products                     (get-in data keypaths/v2-products)
@@ -533,17 +531,18 @@
         line-items                   (map (partial add-product-title-and-color-to-line-item products facets) (orders/product-items order))
         variant-ids                  (map :id line-items)
         store-nickname               (get-in data keypaths/store-nickname)
-        highest-value-service        (-> order
-                                         orders/product-items
-                                         vouchers/product-items->highest-value-service)
+        highest-value-service        (some-> order
+                                             orders/product-items
+                                             vouchers/product-items->highest-value-service)
         {:as   campaign
          :keys [:voucherify/campaign-name
                 :service/diva-type]} (->> (get-in data keypaths/environment)
                                           vouchers/campaign-configuration
                                           (filter #(= (:service/type %) highest-value-service))
                                           first)
-        store-service-menu           (get-in data keypaths/store-service-menu)
-        service-price                (get store-service-menu diva-type)]
+        service-price                (some-> data
+                                             (get-in keypaths/store-service-menu)
+                                             (get diva-type))]
     {:suggestions               (suggestions/query data)
      :order                     order
      :line-items                line-items
