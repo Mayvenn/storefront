@@ -12,7 +12,7 @@
    [storefront.component :as component]
    [checkout.header :as header]
    [checkout.accessors.vouchers :as vouchers]
-   [checkout.cart-promo-banners :as promo-banners]
+   [checkout.cart-call-out :as call-out]
    [checkout.suggestions :as suggestions]
    [spice.selector :as selector]
    [clojure.string :as string]
@@ -256,15 +256,15 @@
     (cond
       v2-experience?
       [:div.mb3
-       (promo-banners/v2-cart-promo show-green-banner?)]
+       (call-out/v2-cart-promo show-green-banner?)]
 
       seventy-five-off-install?
       [:div.mb3
-       (promo-banners/seventy-five-off-install-cart-promo show-green-banner?)]
+       (call-out/seventy-five-off-install-cart-promo show-green-banner?)]
 
       the-ville?
       [:div.mb3
-       (promo-banners/free-install-cart-promo show-green-banner?)]
+       (call-out/free-install-cart-promo show-green-banner?)]
 
       :else nil)
 

@@ -1,4 +1,4 @@
-(ns checkout.cart-promo-banners
+(ns checkout.cart-call-out
   (:require [storefront.components.ui :as ui]))
 
 (defn seventy-five-off-install-cart-promo [qualified?]
