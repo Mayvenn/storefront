@@ -64,15 +64,15 @@
     [:div.py3
      [:div.center.border.rounded.border-aqua.col-12.py1.mx-auto
       [:div.mx1.h6.py1
-       [:p.h6 (component/build as-low-as-component data {})]
-       [:p.h6 (:middle-copy data) " " (component/build modal-component data {:opts {:content "Learn more."
+       [:div.h6 (component/build as-low-as-component data {})]
+       [:div.h6 (:middle-copy data) " " (component/build modal-component data {:opts {:content "Learn more."
                                                                                     :link-classes "navy underline"}})]]]]))
 
 (defn auto-complete-as-low-as-box [data]
   (when (valid-order-total? (:amount data))
     [:div.center.col-12.py1.mx-auto
      [:div.mx1.dark-gray.h6.py1
-      [:p.h5.flex.justify-center
+      [:div.h5.flex.justify-center
        (component/build as-low-as-component data {})
        (component/build modal-component data {:opts {:link-classes "flex self-center mxn1"
                                                      :content      (svg/question-circle {:width "1em"
@@ -82,7 +82,7 @@
   (when (valid-order-total? (:amount data))
     [:div.center.col-12.mx-auto.pdp-dropdown-experiment.dark-gray
      [:div.mx1.navy
-      [:p.h6.flex.justify-center
+      [:div.h6.flex.justify-center
        (component/build as-low-as-component data {})
        (component/build modal-component data {:opts {:link-classes "flex self-center mxn1"
                                                      :content      (svg/question-circle {:width "1em"
