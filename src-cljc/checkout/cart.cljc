@@ -12,6 +12,7 @@
    [storefront.component :as component]
    [checkout.header :as header]
    [checkout.accessors.vouchers :as vouchers]
+   [checkout.suggestions :as suggestions]
    [spice.selector :as selector]
    [clojure.string :as string]
    [spice.core :as spice]
@@ -54,27 +55,27 @@
 (defn display-adjustable-line-items
   [recently-added-skus line-items skus update-line-item-requests delete-line-item-requests]
   (for [{sku-id :sku variant-id :id :as line-item} line-items
-        :let [sku                  (get skus sku-id)
-              legacy-variant-id    (or (:legacy/variant-id line-item) (:id line-item))
-              price                (or (:sku/price line-item)         (:unit-price line-item))
-              thumbnail            (merge
-                                    (images/cart-image sku)
-                                    {:data-test (str "line-item-img-" (:catalog/sku-id sku))})
-              removing?            (get delete-line-item-requests variant-id)
-              updating?            (get update-line-item-requests sku-id)
-              just-added-to-order? (contains? recently-added-skus sku-id)]]
+        :let                                       [sku                  (get skus sku-id)
+                                                    legacy-variant-id    (or (:legacy/variant-id line-item) (:id line-item))
+                                                    price                (or (:sku/price line-item)         (:unit-price line-item))
+                                                    thumbnail            (merge
+                                                                          (images/cart-image sku)
+                                                                          {:data-test (str "line-item-img-" (:catalog/sku-id sku))})
+                                                    removing?            (get delete-line-item-requests variant-id)
+                                                    updating?            (get update-line-item-requests sku-id)
+                                                    just-added-to-order? (contains? recently-added-skus sku-id)]]
     [:div.pt1.pb2 {:key (str (:catalog/sku-id sku) (:quantity line-item))}
 
      [:div.left.pr1
       (when-let [length (-> sku :hair/length first)]
         (transition-background-color just-added-to-order?
                                      [:div.right.z1.circle.stacking-context.border.border-light-gray.flex.items-center.justify-center.medium.h5.bg-too-light-teal
-                                      {:key   (str "length-circle-" sku-id)
+                                      {:key       (str "length-circle-" sku-id)
                                        :data-test (str "line-item-length-" sku-id)
-                                       :style {:margin-left "-21px"
-                                               :margin-top  "-10px"
-                                               :width       "32px"
-                                               :height      "32px"}} (str length "”")]))
+                                       :style     {:margin-left "-21px"
+                                                   :margin-top  "-10px"
+                                                   :width       "32px"
+                                                   :height      "32px"}} (str length "”")]))
 
       (transition-background-color just-added-to-order?
                                    [:div.flex.items-center.justify-center.ml1 {:key   (str "thumbnail-" sku-id)
@@ -106,8 +107,10 @@
          (ui/auto-complete-counter {:spinning? updating?
                                     :data-test sku-id}
                                    (:quantity line-item)
-                                   (utils/send-event-callback events/control-cart-line-item-dec {:variant line-item})
-                                   (utils/send-event-callback events/control-cart-line-item-inc {:variant line-item}))]
+                                   (utils/send-event-callback events/control-cart-line-item-dec
+                                                              {:variant line-item})
+                                   (utils/send-event-callback events/control-cart-line-item-inc
+                                                              {:variant line-item}))]
         [:div.h5 {:data-test (str "line-item-price-ea-" sku-id)} (mf/as-money-without-cents price) " ea"]]]]]))
 
 (defn ^:private non-adjustable-line-item
@@ -220,50 +223,6 @@
           use-store-credit? (- store-credit)
           true              mf/as-money)]]]]))
 
-(defn suggested-bundles
-  [{:keys [image position skus initial-sku this-is-adding-to-bag? any-adding-to-bag?]}]
-  (let [[short-sku long-sku] skus
-        sized-image          (update image :style merge {:height "36px" :width "40px"})]
-    [:div.mx2.my4.col-11
-     {:data-test (str "suggestion-" (name position))
-      :key       (str "suggestion-" (map :catalog/sku-id skus) "-" (name position))}
-     [:div.absolute (svg/discount-tag {:style {:height      "3em"
-                                               :width       "3em"
-                                               :margin-left "-23px"
-                                               :margin-top  "-20px"}})]
-     [:div.border.border-light-gray.bg-light-gray
-      {:style {:height "68px"}}
-      [:div.bg-white.h5.medium.center
-       (first (:hair/length short-sku))
-       "” & "
-       (first (:hair/length long-sku))
-       "”"]
-      [:div.flex.justify-center
-       [:img.m1 sized-image]
-       [:img.m1 sized-image]]
-      [:div.col-10.mx-auto
-       (ui/navy-button {:class        "p1"
-                        :height-class "py1"
-                        ;; we don't want to draw attention to the disabling of the other 'Add' button,
-                        ;; but we do want to prevent people from clicking both.
-                        ;; :disabled? (and (not this-is-adding-to-bag?) any-adding-to-bag?)
-                        :on-click     (if (and (not this-is-adding-to-bag?) any-adding-to-bag?)
-                                        utils/noop-callback
-                                        (utils/send-event-callback events/control-suggested-add-to-bag {:skus        skus
-                                                                                                        :initial-sku initial-sku}))
-                        :spinning?    this-is-adding-to-bag?
-                        :data-test    (str "add-" (name position))
-                        :style        {:margin-top "-10px"}}
-                       "Add")]]]))
-
-(defn auto-complete-component [{:keys [suggestions]} _ _]
-  (component/create
-   (when (seq suggestions)
-     [:div.mb4.px1.col-12.mx-auto.bg-light-orange
-      {:style     {:height "135px"}
-       :data-test "auto-complete"}
-      [:div.flex.justify-center (map suggested-bundles suggestions)]])))
-
 (defn seventy-five-off-install-cart-promo [qualified?]
   (if qualified?
     [:div.bg-teal.bg-celebrate.p2.white.center {:data-test "seventy-five-off-install-cart-promo"}
@@ -324,7 +283,7 @@
                               redirecting-to-paypal?
                               share-carts?
                               requesting-shared-cart?
-                              auto-complete
+                              suggestions
                               focused
                               field-errors
                               line-items
@@ -370,7 +329,7 @@
       (when freeinstall-line-item
         (non-adjustable-line-item freeinstall-line-item))
 
-      (component/build auto-complete-component auto-complete nil)]
+      (component/build suggestions/component suggestions nil)]
 
      [:div.col-on-tb-dt.col-6-on-tb-dt.px3
       (display-order-summary order
@@ -470,59 +429,6 @@
                                        (facets/get-color facets)
                                        :option/name)}))
 
-(defn suggest-bundles
-  [data products skus items]
-  (when (= 1 (orders/line-item-quantity items))
-    (let [{:keys [variant-attrs] sku-id :sku} (first items)]
-      (when (= "bundles" (variant-attrs :hair/family))
-        (let [sku               (get skus sku-id)
-              image             (images/cart-image sku)
-              adjacent-skus     (->> sku
-                                     :selector/from-products
-                                     first
-                                     (get products)
-                                     :selector/sku-ids
-                                     (map (partial get skus))
-                                     (selector/match-all {} {:hair/color (:hair/color sku)})
-                                     (sort-by (comp first :hair/length))
-                                     (partition-by #(= (:catalog/sku-id sku) (:catalog/sku-id %))))
-              shorter-skus      (first adjacent-skus)
-              longer-skus       (last adjacent-skus)
-              short-suggestions (if (< (count shorter-skus) 2)
-                                  (repeat 2 sku)
-                                  (take-last 2 shorter-skus))
-              long-suggestions  (if (< (count longer-skus) 2)
-                                  (repeat 2 sku)
-                                  (take 2 longer-skus))]
-          (->> {:shorter-lengths short-suggestions
-                :longer-lengths  long-suggestions}
-               (filterv (fn in-stock? [[_ skus]]
-                          (every? :inventory/in-stock? skus)))
-               (mapv (fn transform [[position skus]]
-                       {:position               position
-                        :image                  image
-                        :skus                   skus
-                        :initial-sku             sku
-                        :any-adding-to-bag?     (utils/requesting? data (fn [req]
-                                                                          (subvec (:request-key req []) 0 1))
-                                                                   request-keys/add-to-bag)
-                        :this-is-adding-to-bag? (utils/requesting? data (conj request-keys/add-to-bag (set (map :catalog/sku-id skus))))}))))))))
-(defmethod effects/perform-effects events/control-suggested-add-to-bag
-  [_ _ {:keys [skus initial-sku]} _ app-state]
-  #?(:cljs
-     (api/add-skus-to-bag (get-in app-state keypaths/session-id)
-                          {:number           (get-in app-state keypaths/order-number)
-                           :token            (get-in app-state keypaths/order-token)
-                           :sku-id->quantity (into {}
-                                                   (map (fn [[sku-id skus]] [sku-id (count skus)])
-                                                        (group-by :catalog/sku-id skus)))}
-                          #(messages/handle-message events/api-success-suggested-add-to-bag
-                                                    (assoc % :initial-sku initial-sku)))))
-
-(defmethod effects/perform-effects events/api-success-suggested-add-to-bag
-  [_ _ {:keys [order]} _ _]
-  (messages/handle-message events/save-order
-                           {:order order}))
 (defmethod effects/perform-effects events/control-cart-update-coupon
   [_ _ _ _ app-state]
   #?(:cljs
@@ -618,13 +524,7 @@
                                         :cancel-url (str stylist-urls/store-url "/cart?error=paypal-cancel")}}))
          :event events/external-redirect-paypal-setup}))))
 
-(defn auto-complete-query
-  [data]
-  ;; TODO(jeff): refactor this as we are passing data in, as well as things that come off of data
-  (let [skus       (get-in data keypaths/v2-skus)
-        products   (get-in data keypaths/v2-products)
-        line-items (orders/product-items (get-in data keypaths/order))]
-    {:suggestions (suggest-bundles data products skus line-items)}))
+
 
 (defn full-cart-query [data]
   (let [order                        (get-in data keypaths/order)
@@ -632,7 +532,6 @@
         facets                       (get-in data keypaths/v2-facets)
         line-items                   (map (partial add-product-title-and-color-to-line-item products facets) (orders/product-items order))
         variant-ids                  (map :id line-items)
-        auto-complete                (auto-complete-query data)
         store-nickname               (get-in data keypaths/store-nickname)
         highest-value-service        (-> order
                                          orders/product-items
@@ -645,7 +544,7 @@
                                           first)
         store-service-menu           (get-in data keypaths/store-service-menu)
         service-price                (get store-service-menu diva-type)]
-    {:auto-complete             auto-complete
+    {:suggestions               (suggestions/query data)
      :order                     order
      :line-items                line-items
      :skus                      (get-in data keypaths/v2-skus)
