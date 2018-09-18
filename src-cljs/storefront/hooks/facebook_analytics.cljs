@@ -36,3 +36,6 @@ fbq('init', '" config/facebook-pixel-id "');")
 
 (defn track-page [path]
   (track-event "PageView"))
+
+(defn subscribe []
+  (track-event "Subscribe"))

@@ -37,16 +37,17 @@
                        "Sign up now for exclusive discounts, stylist-approved hair "
                        "tips, and first access to new products."]])
                    [:div.col-12.mx-auto
-                    (ui/text-field {:errors   (get field-errors ["email"])
-                                    :keypath  keypaths/captured-email
-                                    :focused  focused
-                                    :label    "Your E-Mail Address"
-                                    :name     "email"
-                                    :required true
-                                    :type     "email"
-                                    :value    email
-                                    :class    "col-12 center"})
-                    (ui/submit-button "Sign Up Now")]]]])))))
+                    (ui/text-field {:errors    (get field-errors ["email"])
+                                    :keypath   keypaths/captured-email
+                                    :focused   focused
+                                    :label     "Your E-Mail Address"
+                                    :name      "email"
+                                    :required  true
+                                    :type      "email"
+                                    :value     email
+                                    :class     "col-12 center"
+                                    :data-test "email-input"})
+                    (ui/submit-button "Sign Up Now" {:data-test "email-input-submit"})]]]])))))
 
 (defn query [data]
   {:email            (get-in data keypaths/captured-email)

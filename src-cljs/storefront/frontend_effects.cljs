@@ -388,6 +388,7 @@
 
 (defmethod perform-effects events/control-email-captured-submit [_ _ args _ app-state]
   (when (empty? (get-in app-state keypaths/errors))
+    (facebook-analytics/subscribe)
     (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) "opted-in")))
 
 (defmethod perform-effects events/app-restart [_ _ _ _]
