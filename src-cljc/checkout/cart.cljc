@@ -12,7 +12,7 @@
    [storefront.component :as component]
    [checkout.header :as header]
    [checkout.accessors.vouchers :as vouchers]
-   [checkout.cart-call-out :as call-out]
+   [checkout.call-out :as call-out]
    [checkout.suggestions :as suggestions]
    [spice.selector :as selector]
    [clojure.string :as string]
@@ -229,6 +229,7 @@
                               disable-apple-pay-button?
                               skus
                               promotion-banner
+                              call-out
                               updating?
                               redirecting-to-paypal?
                               share-carts?
@@ -241,32 +242,15 @@
                               coupon-code
                               update-line-item-requests
                               show-apple-pay?
-                              the-ville?
-                              v2-experience?
                               applying-coupon?
                               recently-added-skus
                               delete-line-item-requests
-                              seventy-five-off-install?
-                              show-green-banner?
                               freeinstall-line-item]} owner _]
   (component/create
    [:div.container.p2
     (component/build promotion-banner/sticky-component promotion-banner nil)
 
-    (cond
-      v2-experience?
-      [:div.mb3
-       (call-out/v2-cart-promo show-green-banner?)]
-
-      seventy-five-off-install?
-      [:div.mb3
-       (call-out/seventy-five-off-install-cart-promo show-green-banner?)]
-
-      the-ville?
-      [:div.mb3
-       (call-out/free-install-cart-promo show-green-banner?)]
-
-      :else nil)
+    (component/build call-out/component call-out nil)
 
     [:div.clearfix.mxn3
      [:div.col-on-tb-dt.col-6-on-tb-dt.px3
@@ -498,10 +482,9 @@
      :line-items                line-items
      :skus                      (get-in data keypaths/v2-skus)
      :products                  products
-     :show-green-banner?        (or (orders/install-applied? order)
-                                    (orders/freeinstall-applied? order))
      :coupon-code               (get-in data keypaths/cart-coupon-code)
      :promotion-banner          (promotion-banner/query data)
+     :call-out                  (call-out/query data)
      :updating?                 (update-pending? data)
      :applying-coupon?          (utils/requesting? data request-keys/add-promotion-code)
      :redirecting-to-paypal?    (get-in data keypaths/cart-paypal-redirect)
@@ -519,9 +502,6 @@
      :field-errors              (get-in data keypaths/field-errors)
      :error-message             (get-in data keypaths/error-message)
      :focused                   (get-in data keypaths/ui-focus)
-     :the-ville?                (experiments/the-ville? data)
-     :v2-experience?            (experiments/v2-experience? data)
-     :seventy-five-off-install? (experiments/seventy-five-off-install? data)
      :recently-added-skus       (get-in data keypaths/cart-recently-added-skus)
      :stylist-service-menu      (get-in data keypaths/stylist-service-menu)
      :freeinstall-line-item     (when (and (experiments/aladdin-freeinstall-line-item? data)
