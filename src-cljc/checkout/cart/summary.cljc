@@ -28,15 +28,44 @@
     [:td.pyp1.right-align.medium
      (mf/as-money-or-free amount)]]))
 
+(defn promo-entry
+  [{:keys [focused coupon-code field-errors updating? applying? error-message] :as promo-data}]
+  [:form.mt2
+   {:on-submit (utils/send-event-callback events/control-cart-update-coupon)}
+   (ui/input-group
+    {:keypath       keypaths/cart-coupon-code
+     :wrapper-class "flex-grow-5 clearfix"
+     :class         "h6"
+     :data-test     "promo-code"
+     :focused       focused
+     :label         "Promo code"
+     :value         coupon-code
+     :errors        (when (get field-errors ["promo-code"])
+                      [{:long-message error-message
+                        :path         ["promo-code"]}])
+     :data-ref      "promo-code"}
+    {:ui-element ui/teal-button
+     :content    "Apply"
+     :args       {:on-click   (utils/send-event-callback events/control-cart-update-coupon)
+                  :class      "flex justify-center items-center"
+                  :size-class "flex-grow-3"
+                  :data-test  "cart-apply-promo"
+                  :disabled?  updating? :spinning?  applying?}})])
+
 (defn non-zero-adjustment? [{:keys [price coupon-code]}]
   (or (not (= price 0))
       (#{"amazon" "freeinstall" "install"} coupon-code)))
+
+(defn order-total-title [free-install-line-item]
+  (if free-install-line-item
+    "Hair + Install Total"
+    "Total"))
 
 (defn component
   [{:keys [free-install-line-item
            order
            store-credit
-           shipping-item
+           shipping-cost
            adjustments-including-tax
            promo-data]} owner _]
   (component/create
@@ -46,36 +75,14 @@
      [:table.col-12
       [:tbody
        (summary-row "Subtotal" (orders/products-subtotal order))
-       (when shipping-item
-         (summary-row "Shipping" (* (:quantity shipping-item) (:unit-price shipping-item))))
+       (when shipping-cost
+         (summary-row "Shipping" shipping-cost))
 
        (when (orders/no-applied-promo? order)
-         (let [{:keys [focused coupon-code field-errors updating? applying? error-message]} promo-data]
-           [:tr.h5
-            [:td
-             {:col-span "2"}
-             [:form.mt2
-              {:on-submit (utils/send-event-callback events/control-cart-update-coupon)}
-              (ui/input-group
-               {:keypath       keypaths/cart-coupon-code
-                :wrapper-class "flex-grow-5 clearfix"
-                :class         "h6"
-                :data-test     "promo-code"
-                :focused       focused
-                :label         "Promo code"
-                :value         coupon-code
-                :errors        (when (get field-errors ["promo-code"])
-                                 [{:long-message error-message
-                                   :path         ["promo-code"]}])
-                :data-ref      "promo-code"}
-               {:ui-element ui/teal-button
-                :content    "Apply"
-                :args       {:on-click   (utils/send-event-callback events/control-cart-update-coupon)
-                             :class      "flex justify-center items-center"
-                             :size-class "flex-grow-3"
-                             :data-test  "cart-apply-promo"
-                             :disabled?  updating?
-                             :spinning?  applying?}})]]]))
+         [:tr.h5
+          [:td
+           {:col-span "2"}
+           (promo-entry promo-data)]])
 
        (for [{:keys [name price coupon-code] :as adjustment} adjustments-including-tax]
          (when (non-zero-adjustment? adjustment)
@@ -101,9 +108,7 @@
          (summary-row "Store Credit" (- store-credit)))]]]
     [:div.py2.h2
      [:div.flex
-      [:div.flex-auto.light (if free-install-line-item
-                              "Hair + Install Total"
-                              "Total")]
+      [:div.flex-auto.light (order-total-title free-install-line-item)]
       [:div.right-align.medium
        (some-> order :total mf/as-money)]]
      (when free-install-line-item
@@ -117,10 +122,11 @@
           [:span.bold (mf/as-money (:total-savings free-install-line-item))]]]])]]))
 
 (defn query [data]
-  (let [order (get-in data keypaths/order)]
+  (let [order         (get-in data keypaths/order)
+        shipping-item (orders/shipping-item order)]
     {:free-install-line-item    (cart-items/freeinstall-line-item-query data)
      :order                     order
-     :shipping-item             (orders/shipping-item order)
+     :shipping-cost             (* (:quantity shipping-item) (:unit-price shipping-item))
      :adjustments-including-tax (orders/all-order-adjustments order)
      :promo-data                {:coupon-code   (get-in data keypaths/cart-coupon-code)
                                  :applying?     (utils/requesting? data request-keys/add-promotion-code)
