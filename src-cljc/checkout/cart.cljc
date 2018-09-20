@@ -221,11 +221,22 @@
           (summary-row "Store Credit" (- store-credit)))]]]
      [:div.py2.h2
       [:div.flex
-       [:div.flex-auto.light "Total"]
+       [:div.flex-auto.light (if free-install-line-item
+                               "Hair + Install Total"
+                               "Total")]
        [:div.right-align.medium
         (cond-> (:total order)
           use-store-credit? (- store-credit)
-          true              mf/as-money)]]]]))
+          true              mf/as-money)]]
+      (when free-install-line-item
+        [:div
+         [:div.flex.justify-end
+          [:div.h6.bg-purple.white.px1.nowrap.medium.mb1
+           "Includes Free Install"]]
+         [:div.flex.justify-end
+          [:div.h6.light.dark-gray.px1.nowrap.italic
+           "You've saved "
+           [:span.bold (mf/as-money (:total-savings free-install-line-item))]]]])]]))
 
 (defn full-component [{:keys [products
                               order
@@ -462,6 +473,18 @@
                                         :cancel-url (str stylist-urls/store-url "/cart?error=paypal-cancel")}}))
          :event events/external-redirect-paypal-setup}))))
 
+(defn abs [num]
+  (when num
+    #?(:cljs (js/Math.abs num)
+       :clj (java.lang.Math/abs num))))
+
+(defn total-savings [order service-price]
+  (->> order
+       :adjustments
+       (map (comp abs :price))
+       (reduce + 0)
+       ((fnil + 0) (abs (spice.core/parse-double service-price)))))
+
 (defn full-cart-query [data]
   (let [order                        (get-in data keypaths/order)
         products                     (get-in data keypaths/v2-products)
@@ -516,6 +539,7 @@
                                    :title           campaign-name
                                    :detail          (str "w/ " store-nickname)
                                    :price           service-price
+                                   :total-savings   (total-savings order service-price)
                                    :remove-event    [events/control-checkout-remove-promotion {:code "freeinstall"}]
                                    :thumbnail-image [:div.flex.items-center.justify-center.ml1
                                                      {:style {:width  "79px"
