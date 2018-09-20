@@ -9,14 +9,14 @@
               [storefront.accessors.stylist-urls :as stylist-urls]
               [goog.labs.userAgent.device :as device]])
    [cemerick.url :refer [url-encode]]
-   [storefront.component :as component]
-   [checkout.header :as header]
    [checkout.accessors.vouchers :as vouchers]
    [checkout.call-out :as call-out]
+   [checkout.cart.items :as cart-items]
+   [checkout.cart.summary :as cart-summary]
+   [checkout.header :as header]
    [checkout.suggestions :as suggestions]
-   [spice.selector :as selector]
-   [clojure.string :as string]
    [spice.core :as spice]
+   [spice.selector :as selector]
    [storefront.accessors.experiments :as experiments]
    [storefront.accessors.facets :as facets]
    [storefront.accessors.images :as images]
@@ -24,6 +24,7 @@
    [storefront.accessors.products :as products]
    [storefront.accessors.promos :as promos]
    [storefront.accessors.stylists :as stylists]
+   [storefront.component :as component]
    [storefront.components.affirm :as affirm]
    [storefront.components.flash :as flash]
    [storefront.components.footer :as storefront.footer]
@@ -33,14 +34,14 @@
    [storefront.components.svg :as svg]
    [storefront.components.ui :as ui]
    [storefront.config :as config]
-   [storefront.platform.messages :as messages]
    [storefront.css-transitions :as css-transitions]
-   [storefront.events :as events]
-   [storefront.transitions :as transitions]
    [storefront.effects :as effects]
+   [storefront.events :as events]
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
-   [storefront.request-keys :as request-keys]))
+   [storefront.platform.messages :as messages]
+   [storefront.request-keys :as request-keys]
+   [storefront.transitions :as transitions]))
 
 (defn transition-background-color [run-transition? & content]
   (if run-transition?
@@ -137,109 +138,7 @@
                           :class  "stroke-dark-gray"})])]]
      [:div.h5.right {:data-test (str "line-item-price-ea-" id)} (some-> price mf/as-money)]]]])
 
-(defn ^:private summary-row
-  ([content amount] (summary-row {} content amount))
-  ([row-attrs content amount]
-   [:tr.h5
-    (merge (when (neg? amount)
-             {:class "teal"})
-           row-attrs)
-    [:td.pyp1 content]
-    [:td.pyp1.right-align.medium
-     (mf/as-money-or-free amount)]]))
-
-(defn ^:private text->data-test-name [name]
-  (-> name
-      (string/replace #"[0-9]" (comp spice/number->word int))
-      string/lower-case
-      (string/replace #"[^a-z]+" "-")))
-
-(defn display-order-summary [free-install-line-item order {:keys [read-only? available-store-credit use-store-credit? promo-data]}]
-  (let [adjustments-including-tax (orders/all-order-adjustments order)
-        shipping-item             (orders/shipping-item order)
-        store-credit              (min (:total order) (or available-store-credit
-                                                          (-> order :cart-payments :store-credit :amount)
-                                                          0.0))]
-    [:div {:data-test "cart-order-summary"}
-     [:div.hide-on-dt.border-top.border-light-gray]
-     [:div.py1.border-bottom.border-light-gray
-      [:table.col-12
-       [:tbody
-        (summary-row "Subtotal" (orders/products-subtotal order))
-        (when shipping-item
-          (summary-row "Shipping" (* (:quantity shipping-item) (:unit-price shipping-item))))
-
-        (when (orders/no-applied-promo? order)
-          (let [{:keys [focused coupon-code field-errors updating? applying? error-message]} promo-data]
-            [:tr.h5
-             [:td
-              {:col-span "2"}
-              [:form.mt2
-               {:on-submit (utils/send-event-callback events/control-cart-update-coupon)}
-               (ui/input-group
-                {:keypath       keypaths/cart-coupon-code
-                 :wrapper-class "flex-grow-5 clearfix"
-                 :class         "h6"
-                 :data-test     "promo-code"
-                 :focused       focused
-                 :label         "Promo code"
-                 :value         coupon-code
-                 :errors        (when (get field-errors ["promo-code"])
-                                  [{:long-message error-message
-                                    :path         ["promo-code"]}])
-                 :data-ref      "promo-code"}
-                {:ui-element ui/teal-button
-                 :content    "Apply"
-                 :args       {:on-click   (utils/send-event-callback events/control-cart-update-coupon)
-                              :class      "flex justify-center items-center"
-                              :size-class "flex-grow-3"
-                              :data-test  "cart-apply-promo"
-                              :disabled?  updating?
-                              :spinning?  applying?}})]]]))
-
-        (for [{:keys [name price coupon-code]} adjustments-including-tax]
-          (when (or (not (= price 0)) (#{"amazon" "freeinstall" "install"} coupon-code))
-            (summary-row
-             {:key name}
-             [:div.flex.items-center.align-middle {:data-test (text->data-test-name name)}
-              (when (= "Bundle Discount" name)
-                (svg/discount-tag {:class  "mxnp6"
-                                   :height "2em" :width "2em"}))
-              (orders/display-adjustment-name name)
-              (when (and (not read-only?) coupon-code)
-                [:a.ml1.h6.gray.flex.items-center
-                 (merge {:data-test "cart-remove-promo"}
-                        (utils/fake-href events/control-checkout-remove-promotion
-                                         {:code coupon-code}))
-                 (svg/close-x {:class "stroke-white fill-gray"})])]
-             (if (and free-install-line-item
-                      (= "freeinstall" coupon-code))
-               (- 0 (:price free-install-line-item))
-               price))))
-
-        (when (pos? store-credit)
-          (summary-row "Store Credit" (- store-credit)))]]]
-     [:div.py2.h2
-      [:div.flex
-       [:div.flex-auto.light (if free-install-line-item
-                               "Hair + Install Total"
-                               "Total")]
-       [:div.right-align.medium
-        (cond-> (:total order)
-          use-store-credit? (- store-credit)
-          true              mf/as-money)]]
-      (when free-install-line-item
-        [:div
-         [:div.flex.justify-end
-          [:div.h6.bg-purple.white.px1.nowrap.medium.mb1
-           "Includes Free Install"]]
-         [:div.flex.justify-end
-          [:div.h6.light.dark-gray.px1.nowrap.italic
-           "You've saved "
-           [:span.bold (mf/as-money (:total-savings free-install-line-item))]]]])]]))
-
-(defn full-component [{:keys [products
-                              order
+(defn full-component [{:keys [order
                               disable-apple-pay-button?
                               skus
                               promotion-banner
@@ -249,17 +148,13 @@
                               share-carts?
                               requesting-shared-cart?
                               suggestions
-                              focused
-                              field-errors
                               line-items
-                              error-message
-                              coupon-code
                               update-line-item-requests
                               show-apple-pay?
-                              applying-coupon?
                               recently-added-skus
                               delete-line-item-requests
-                              freeinstall-line-item]} owner _]
+                              freeinstall-line-item
+                              cart-summary]} owner _]
   (component/create
    [:div.container.p2
     (component/build promotion-banner/sticky-component promotion-banner nil)
@@ -280,15 +175,8 @@
       (component/build suggestions/component suggestions nil)]
 
      [:div.col-on-tb-dt.col-6-on-tb-dt.px3
-      (display-order-summary freeinstall-line-item
-                             order
-                             {:read-only?        false
-                              :use-store-credit? false
-                              :promo-data        {:coupon-code   coupon-code
-                                                  :applying?     applying-coupon?
-                                                  :focused       focused
-                                                  :error-message error-message
-                                                  :field-errors  field-errors}})
+
+      (component/build cart-summary/component cart-summary nil)
 
       (affirm/auto-complete-as-low-as-box {:amount (:total order)})
 
@@ -474,34 +362,20 @@
          :event events/external-redirect-paypal-setup}))))
 
 (defn full-cart-query [data]
-  (let [order                        (get-in data keypaths/order)
-        products                     (get-in data keypaths/v2-products)
-        facets                       (get-in data keypaths/v2-facets)
-        line-items                   (map (partial add-product-title-and-color-to-line-item products facets) (orders/product-items order))
-        variant-ids                  (map :id line-items)
-        store-nickname               (get-in data keypaths/store-nickname)
-        highest-value-service        (some-> order
-                                             orders/product-items
-                                             vouchers/product-items->highest-value-service)
-        {:as   campaign
-         :keys [:voucherify/campaign-name
-                :service/diva-type]} (->> (get-in data keypaths/environment)
-                                          vouchers/campaign-configuration
-                                          (filter #(= (:service/type %) highest-value-service))
-                                          first)
-        service-price                (some-> data
-                                             (get-in keypaths/store-service-menu)
-                                             (get diva-type))]
+  (let [order       (get-in data keypaths/order)
+        products    (get-in data keypaths/v2-products)
+        facets      (get-in data keypaths/v2-facets)
+        line-items  (map (partial add-product-title-and-color-to-line-item products facets)
+                         (orders/product-items order))
+        variant-ids (map :id line-items)]
     {:suggestions               (suggestions/query data)
      :order                     order
      :line-items                line-items
      :skus                      (get-in data keypaths/v2-skus)
      :products                  products
-     :coupon-code               (get-in data keypaths/cart-coupon-code)
      :promotion-banner          (promotion-banner/query data)
      :call-out                  (call-out/query data)
      :updating?                 (update-pending? data)
-     :applying-coupon?          (utils/requesting? data request-keys/add-promotion-code)
      :redirecting-to-paypal?    (get-in data keypaths/cart-paypal-redirect)
      :share-carts?              (stylists/own-store? data)
      :requesting-shared-cart?   (utils/requesting? data request-keys/create-shared-cart)
@@ -513,27 +387,11 @@
                                  #(or %1 %2)
                                  (variants-requests data request-keys/add-to-bag (map :sku line-items))
                                  (variants-requests data request-keys/update-line-item (map :sku line-items)))
+     :cart-summary              (cart-summary/query data)
      :delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)
-     :field-errors              (get-in data keypaths/field-errors)
-     :error-message             (get-in data keypaths/error-message)
-     :focused                   (get-in data keypaths/ui-focus)
      :recently-added-skus       (get-in data keypaths/cart-recently-added-skus)
      :stylist-service-menu      (get-in data keypaths/stylist-service-menu)
-     :freeinstall-line-item     (when (and (experiments/aladdin-freeinstall-line-item? data)
-                                           (experiments/aladdin-experience? data)
-                                           (orders/freeinstall-applied? order))
-                                  {:removing?       (utils/requesting? data request-keys/remove-promotion-code)
-                                   :id              "freeinstall"
-                                   :title           campaign-name
-                                   :detail          (str "w/ " store-nickname)
-                                   :price           service-price
-                                   :total-savings   (total-savings order service-price)
-                                   :remove-event    [events/control-checkout-remove-promotion {:code "freeinstall"}]
-                                   :thumbnail-image [:div.flex.items-center.justify-center.ml1
-                                                     {:style {:width  "79px"
-                                                              :height "79px"}}
-                                                     (ui/ucare-img {:width 79}
-                                                                   "d2a9e626-a6f3-4cbe-804f-214ea1d92f9b")]})}))
+     :freeinstall-line-item     (cart-items/freeinstall-line-item-query data)}))
 
 (defn empty-cart-query [data]
   {:promotions (get-in data keypaths/promotions)})
