@@ -1,4 +1,4 @@
-(ns storefront.components.checkout-confirmation
+(ns checkout.confirmation
   (:require [om.core :as om]
             [cemerick.url :refer [url-encode]]
             [sablono.core :refer [html]]

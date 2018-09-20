@@ -4,7 +4,7 @@
                        [storefront.components.checkout-returning-or-guest :as checkout-returning-or-guest]
                        [storefront.components.checkout-address :as checkout-address]
                        [storefront.components.checkout-complete :as checkout-complete]
-                       [storefront.components.checkout-confirmation :as checkout-confirmation]
+                       [checkout.confirmation :as checkout-confirmation]
                        [storefront.components.checkout-payment :as checkout-payment]
                        [storefront.components.shop-by-look :as shop-by-look]
                        [storefront.components.shop-by-look-details :as shop-by-look-details]
