@@ -28,11 +28,13 @@
     [:td.pyp1.right-align.medium
      (mf/as-money-or-free amount)]]))
 
+(defn non-zero-adjustment? [{:keys [price coupon-code]}]
+  (or (not (= price 0))
+      (#{"amazon" "freeinstall" "install"} coupon-code)))
+
 (defn component
   [{:keys [free-install-line-item
            order
-           read-only?
-           use-store-credit?
            store-credit
            shipping-item
            adjustments-including-tax
@@ -75,8 +77,8 @@
                              :disabled?  updating?
                              :spinning?  applying?}})]]]))
 
-       (for [{:keys [name price coupon-code]} adjustments-including-tax]
-         (when (or (not (= price 0)) (#{"amazon" "freeinstall" "install"} coupon-code))
+       (for [{:keys [name price coupon-code] :as adjustment} adjustments-including-tax]
+         (when (non-zero-adjustment? adjustment)
            (summary-row
             {:key name}
             [:div.flex.items-center.align-middle {:data-test (text->data-test-name name)}
@@ -84,7 +86,7 @@
                (svg/discount-tag {:class  "mxnp6"
                                   :height "2em" :width "2em"}))
              (orders/display-adjustment-name name)
-             (when (and (not read-only?) coupon-code)
+             (when coupon-code
                [:a.ml1.h6.gray.flex.items-center
                 (merge {:data-test "cart-remove-promo"}
                        (utils/fake-href events/control-checkout-remove-promotion
@@ -103,9 +105,7 @@
                               "Hair + Install Total"
                               "Total")]
       [:div.right-align.medium
-       (cond-> (:total order)
-         use-store-credit? (- store-credit)
-         true              mf/as-money)]]
+       (some-> order :total mf/as-money)]]
      (when free-install-line-item
        [:div
         [:div.flex.justify-end
@@ -120,11 +120,6 @@
   (let [order (get-in data keypaths/order)]
     {:free-install-line-item    (cart-items/freeinstall-line-item-query data)
      :order                     order
-     :read-only?                false
-     :use-store-credit?         false
-     :store-credit              (min (:total order) (or ;;available-store-credit ???
-                                                     (-> order :cart-payments :store-credit :amount)
-                                                     0.0))
      :shipping-item             (orders/shipping-item order)
      :adjustments-including-tax (orders/all-order-adjustments order)
      :promo-data                {:coupon-code   (get-in data keypaths/cart-coupon-code)
@@ -132,4 +127,3 @@
                                  :focused       (get-in data keypaths/ui-focus)
                                  :error-message (get-in data keypaths/error-message)
                                  :field-errors  (get-in data keypaths/field-errors)}}))
-
