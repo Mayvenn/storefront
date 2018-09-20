@@ -473,18 +473,6 @@
                                         :cancel-url (str stylist-urls/store-url "/cart?error=paypal-cancel")}}))
          :event events/external-redirect-paypal-setup}))))
 
-(defn abs [num]
-  (when num
-    #?(:cljs (js/Math.abs num)
-       :clj (java.lang.Math/abs num))))
-
-(defn total-savings [order service-price]
-  (->> order
-       :adjustments
-       (map (comp abs :price))
-       (reduce + 0)
-       ((fnil + 0) (abs (spice.core/parse-double service-price)))))
-
 (defn full-cart-query [data]
   (let [order                        (get-in data keypaths/order)
         products                     (get-in data keypaths/v2-products)

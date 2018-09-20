@@ -1,5 +1,6 @@
 (ns storefront.accessors.orders
-  (:require [clojure.set :as set]))
+  (:require [clojure.set :as set]
+            [storefront.platform.numbers :as numbers]))
 
 (defn incomplete? [order]
   (and (-> order :state #{"cart"} boolean)
@@ -194,3 +195,14 @@
        (mapcat :line-items)
        (reduce (fn [acc {:keys [id quantity]}]
                  (update acc id (fnil + 0) quantity)) {})))
+
+(defn total-savings
+  "Takes `order` and amount that stylist charges for a service and
+  calculates total savings based on promotions, discounts and other
+  `adjustments`"
+  [order service-price]
+  (->> order
+       :adjustments
+       (map (comp numbers/abs :price))
+       (reduce + 0)
+       ((fnil + 0) (numbers/abs (spice.core/parse-double service-price)))))
