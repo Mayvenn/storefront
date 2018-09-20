@@ -154,7 +154,7 @@
       string/lower-case
       (string/replace #"[^a-z]+" "-")))
 
-(defn display-order-summary [order {:keys [read-only? available-store-credit use-store-credit? promo-data]}]
+(defn display-order-summary [free-install-line-item order {:keys [read-only? available-store-credit use-store-credit? promo-data]}]
   (let [adjustments-including-tax (orders/all-order-adjustments order)
         shipping-item             (orders/shipping-item order)
         store-credit              (min (:total order) (or available-store-credit
@@ -212,7 +212,10 @@
                         (utils/fake-href events/control-checkout-remove-promotion
                                          {:code coupon-code}))
                  (svg/close-x {:class "stroke-white fill-gray"})])]
-             price)))
+             (if (and free-install-line-item
+                      (= "freeinstall" coupon-code))
+               (- 0 (:price free-install-line-item))
+               price))))
 
         (when (pos? store-credit)
           (summary-row "Store Credit" (- store-credit)))]]]
@@ -266,7 +269,8 @@
       (component/build suggestions/component suggestions nil)]
 
      [:div.col-on-tb-dt.col-6-on-tb-dt.px3
-      (display-order-summary order
+      (display-order-summary freeinstall-line-item
+                             order
                              {:read-only?        false
                               :use-store-credit? false
                               :promo-data        {:coupon-code   coupon-code
