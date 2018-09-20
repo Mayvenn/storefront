@@ -51,22 +51,47 @@
                                      :disabled? disabled?
                                      :data-test "confirm-form-submit"})))
 
-;; TODO merge with affirm component (if possible)
+(defn checkout-button-query [data]
+  (let [order                   (get-in data keypaths/order)
+        selected-affirm?        (get-in data keypaths/order-cart-payments-affirm)
+        order-valid-for-affirm? (affirm-components/valid-order-total? (:total order))
+
+        saving-card?   (checkout-credit-card/saving-card? data)
+        placing-order? (or (utils/requesting? data request-keys/place-order)
+                           (utils/requesting? data request-keys/affirm-place-order))]
+    {:affirm-order?          (and selected-affirm? order-valid-for-affirm?)
+     :second-checkout-button {:show?       (experiments/second-checkout-button? data)
+                              :show-total? (experiments/second-checkout-button-total? data)
+                              :order-total            (mf/as-money (:total order))
+                              :total-quantity         (google-string/format
+                                                       "Total (%s): "
+                                                       (ui/pluralize (orders/product-quantity order) "item" "items"))}
+     :disabled?              (utils/requesting? data request-keys/update-shipping-method)
+     :spinning?              (or saving-card? placing-order?)}))
+
+(defn second-checkout-button-component [{:keys [second-checkout-button affirm-order? disabled? spinning?]}]
+  (let [{:keys [show? show-total? order-total total-quantity]} second-checkout-button]
+    (when show?
+     [:div.border-bottom.border-gray.pt2.pb5.mb4.hide-on-tb-dt
+      (when show-total?
+        [:div.h3.light.pb2
+         total-quantity
+         [:span.h2.medium order-total]])
+      (checkout-button {:spinning?     spinning?
+                        :disabled?     disabled?
+                        :affirm-order? affirm-order?})])))
+
 (defn component
   [{:keys [available-store-credit
            checkout-steps
            payment delivery order
-           placing-order?
            skus
            selected-affirm?
            order-valid-for-affirm?
            requires-additional-payment?
-           saving-card?
-           updating-shipping?
            promotion-banner
            install-or-free-install-applied?
-           second-checkout-button?
-           second-checkout-button-total?]}
+           checkout-button-data]}
    owner]
   (om/component
    (html
@@ -86,17 +111,7 @@
 
         [:.clearfix.mxn3
          [:.col-on-tb-dt.col-6-on-tb-dt.px3
-          (when second-checkout-button?
-            [:div.border-bottom.border-gray.pt2.pb5.mb4.hide-on-tb-dt
-             (when second-checkout-button-total?
-               [:div.h3.light.pb2
-                (google-string/format
-                 "Total (%s): "
-                 (ui/pluralize (orders/product-quantity order) "item" "items"))
-                [:span.h2.medium (mf/as-money (:total order))]])
-             (checkout-button {:spinning?     (or saving-card? placing-order?)
-                               :disabled?     updating-shipping?
-                               :affirm-order? affirm-selected-and-order-valid?})])
+          (second-checkout-button-component checkout-button-data)
 
           [:.h3.left-align "Order Summary"]
 
@@ -136,9 +151,7 @@
             [:div.col-12.col-6-on-tb-dt.mx-auto (affirm-components/as-low-as-box {:amount      (:total order)
                                                                                   :middle-copy "Continue with Affirm below."})])
           [:div.col-12.col-6-on-tb-dt.mx-auto
-           (checkout-button {:spinning?     (or saving-card? placing-order?)
-                             :disabled?     updating-shipping?
-                             :affirm-order? affirm-selected-and-order-valid?})]]]]]))))
+           (checkout-button checkout-button-data)]]]]]))))
 
 (defn ->affirm-address [{:keys [address1 address2 city state zipcode]}]
   {:line1   address1
@@ -301,10 +314,7 @@
 
 (defn query [data]
   (let [order (get-in data keypaths/order)]
-    {:updating-shipping?               (utils/requesting? data request-keys/update-shipping-method)
-     :saving-card?                     (checkout-credit-card/saving-card? data)
-     :placing-order?                   (or (utils/requesting? data request-keys/place-order)
-                                           (utils/requesting? data request-keys/affirm-place-order))
+    {
      :selected-affirm?                 (get-in data keypaths/order-cart-payments-affirm)
      :order-valid-for-affirm?          (affirm-components/valid-order-total? (:total order))
      :requires-additional-payment?     (requires-additional-payment? data)
@@ -318,8 +328,7 @@
      :install-or-free-install-applied? (or (orders/freeinstall-applied? order)
                                            (orders/install-applied? order))
      :available-store-credit           (get-in data keypaths/user-total-available-store-credit)
-     :second-checkout-button?          (experiments/second-checkout-button? data)
-     :second-checkout-button-total?    (experiments/second-checkout-button-total? data)}))
+     :checkout-button-data             (checkout-button-query data)}))
 
 (defn built-component [data opts]
   (let [query-data (query data)]
