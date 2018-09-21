@@ -38,4 +38,4 @@
          :remove-event       [events/control-checkout-remove-promotion {:code "freeinstall"}]
          :thumbnail-image-fn (fn [height-width-int]
                                (ui/ucare-img {:width height-width-int}
-                                             "40eadc97-938f-408d-b783-e09ad31c3742"))}))))
+                                             "688ebf23-5e54-45ef-a8bb-7d7480317022"))}))))
