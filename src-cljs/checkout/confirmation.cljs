@@ -31,7 +31,8 @@
             [spice.core :as spice]
             [clojure.string :as string]
             [checkout.control-cart :as cart]
-            [checkout.cart.items :as cart-items]))
+            [checkout.cart.items :as cart-items]
+            [checkout.confirmation.summary :as confirmation-summary]))
 
 (defn requires-additional-payment? [data]
   (let [no-stripe-payment?  (nil? (get-in data keypaths/order-cart-payments-stripe))
@@ -342,8 +343,7 @@
 
 (defn query [data]
   (let [order (get-in data keypaths/order)]
-    {
-     :selected-affirm?                 (get-in data keypaths/order-cart-payments-affirm)
+    {:selected-affirm?                 (get-in data keypaths/order-cart-payments-affirm)
      :order-valid-for-affirm?          (affirm-components/valid-order-total? (:total order))
      :requires-additional-payment?     (requires-additional-payment? data)
      :promotion-banner                 (promotion-banner/query data)
@@ -357,6 +357,7 @@
                                            (orders/install-applied? order))
      :available-store-credit           (get-in data keypaths/user-total-available-store-credit)
      :checkout-button-data             (checkout-button-query data)
+     :confirmation-summary             (confirmation-summary/query data)
      :freeinstall-line-item-data       (cart-items/freeinstall-line-item-query data)}))
 
 (defn built-component [data opts]
