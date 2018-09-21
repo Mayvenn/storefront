@@ -18,9 +18,12 @@
         title             (or (:sku/title line-item)         (products/product-title line-item))]
     [:div.clearfix.border-bottom.border-gray.py3 {:key legacy-variant-id}
      [:a.left.mr1
-      [:img.block.border.border-gray.rounded
-       (assoc thumbnail :style {:width  "7.33em"
-                                :height "7.33em"})]]
+      [:img.block.border.border-gray.rounded.hide-on-mb
+       (assoc thumbnail :style {:width  "117px"
+                                :height "117px"})]
+      [:img.block.border.border-gray.rounded.hide-on-tb-dt
+       (assoc thumbnail :style {:width  "132px"
+                                :height "132px"})]]
      [:div.overflow-hidden
       [:div.ml1
        [:a.medium.titleize.h5
