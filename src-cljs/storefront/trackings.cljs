@@ -178,6 +178,7 @@
                                                  {:order_number     (:number order)
                                                   :order_total      (:total order)
                                                   :order_quantity   (orders/product-quantity order)
+                                                  :store_experience (get-in app-state keypaths/store-experience)
                                                   :variant_quantity quantity
                                                   :quantity         quantity
                                                   :context          {:cart-items cart-items}})))))
