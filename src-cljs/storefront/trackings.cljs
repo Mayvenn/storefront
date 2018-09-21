@@ -341,7 +341,8 @@
       (stringer/track-event "email_capture-capture"
                             {:email            captured-email
                              :test-variations  (get-in app-state keypaths/features)
-                             :store-experience (get-in app-state keypaths/store-experience)}))))
+                             :store-experience (get-in app-state keypaths/store-experience)})
+      (pinterest/track-event "EmailCapture"))))
 
 (defmethod perform-track events/popup-show-email-capture [_ events args app-state]
   (stringer/track-event "email_capture-deploy" {}))
