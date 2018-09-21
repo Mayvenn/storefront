@@ -56,7 +56,7 @@
            pending-voucher service-menu] :as data} owner opts]
   (let [{:keys [active-tab-name]} activity-ledger-tab]
     (component/create
-     [:div
+     [:div.col-6-on-dt.col-9-on-tb.mx-auto
       (v2-dashboard-stats/component stats-cards)
       (ledger-tabs active-tab-name)
 
