@@ -26,8 +26,8 @@
              (when callback-event
                (fn [] (handle-message callback-event {:tracking-event event-name :payload payload})))))))
 
-(defn track-page []
-  (track-event "pageview"))
+(defn track-page [store-experience]
+  (track-event "pageview" {:store-experience store-experience}))
 
 (defn identify [{:keys [id email]}]
   (when (.hasOwnProperty js/window "stringer")

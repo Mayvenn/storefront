@@ -76,7 +76,7 @@
       (when (not (nav-was-selecting-bundle-option? app-state))
         (pinterest/track-page)
         (riskified/track-page path)
-        (stringer/track-page)
+        (stringer/track-page (get-in app-state keypaths/store-experience))
         (facebook-analytics/track-page path)))))
 
 (defmethod perform-track events/control-category-panel-open
