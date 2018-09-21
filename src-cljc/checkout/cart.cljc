@@ -153,7 +153,7 @@
                               show-apple-pay?
                               recently-added-skus
                               delete-line-item-requests
-                              freeinstall-line-item
+                              freeinstall-line-item-data
                               cart-summary]} owner _]
   (component/create
    [:div.container.p2
@@ -169,8 +169,8 @@
                                      skus
                                      update-line-item-requests
                                      delete-line-item-requests)
-      (when freeinstall-line-item
-        (non-adjustable-line-item freeinstall-line-item))
+      (when freeinstall-line-item-data
+        (non-adjustable-line-item freeinstall-line-item-data))
 
       (component/build suggestions/component suggestions nil)]
 
@@ -368,30 +368,30 @@
         line-items  (map (partial add-product-title-and-color-to-line-item products facets)
                          (orders/product-items order))
         variant-ids (map :id line-items)]
-    {:suggestions               (suggestions/query data)
-     :order                     order
-     :line-items                line-items
-     :skus                      (get-in data keypaths/v2-skus)
-     :products                  products
-     :promotion-banner          (promotion-banner/query data)
-     :call-out                  (call-out/query data)
-     :updating?                 (update-pending? data)
-     :redirecting-to-paypal?    (get-in data keypaths/cart-paypal-redirect)
-     :share-carts?              (stylists/own-store? data)
-     :requesting-shared-cart?   (utils/requesting? data request-keys/create-shared-cart)
-     :show-apple-pay?           (and (get-in data keypaths/show-apple-pay?)
-                                     (seq (get-in data keypaths/shipping-methods))
-                                     (seq (get-in data keypaths/states)))
-     :disable-apple-pay-button? (get-in data keypaths/disable-apple-pay-button?)
-     :update-line-item-requests (merge-with
-                                 #(or %1 %2)
-                                 (variants-requests data request-keys/add-to-bag (map :sku line-items))
-                                 (variants-requests data request-keys/update-line-item (map :sku line-items)))
-     :cart-summary              (cart-summary/query data)
-     :delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)
-     :recently-added-skus       (get-in data keypaths/cart-recently-added-skus)
-     :stylist-service-menu      (get-in data keypaths/stylist-service-menu)
-     :freeinstall-line-item     (cart-items/freeinstall-line-item-query data)}))
+    {:suggestions                (suggestions/query data)
+     :order                      order
+     :line-items                 line-items
+     :skus                       (get-in data keypaths/v2-skus)
+     :products                   products
+     :promotion-banner           (promotion-banner/query data)
+     :call-out                   (call-out/query data)
+     :updating?                  (update-pending? data)
+     :redirecting-to-paypal?     (get-in data keypaths/cart-paypal-redirect)
+     :share-carts?               (stylists/own-store? data)
+     :requesting-shared-cart?    (utils/requesting? data request-keys/create-shared-cart)
+     :show-apple-pay?            (and (get-in data keypaths/show-apple-pay?)
+                                      (seq (get-in data keypaths/shipping-methods))
+                                      (seq (get-in data keypaths/states)))
+     :disable-apple-pay-button?  (get-in data keypaths/disable-apple-pay-button?)
+     :update-line-item-requests  (merge-with
+                                  #(or %1 %2)
+                                  (variants-requests data request-keys/add-to-bag (map :sku line-items))
+                                  (variants-requests data request-keys/update-line-item (map :sku line-items)))
+     :cart-summary               (cart-summary/query data)
+     :delete-line-item-requests  (variants-requests data request-keys/delete-line-item variant-ids)
+     :recently-added-skus        (get-in data keypaths/cart-recently-added-skus)
+     :stylist-service-menu       (get-in data keypaths/stylist-service-menu)
+     :freeinstall-line-item-data (cart-items/freeinstall-line-item-query data)}))
 
 (defn empty-cart-query [data]
   {:promotions (get-in data keypaths/promotions)})

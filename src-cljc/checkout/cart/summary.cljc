@@ -56,13 +56,13 @@
   (or (not (= price 0))
       (#{"amazon" "freeinstall" "install"} coupon-code)))
 
-(defn order-total-title [free-install-line-item]
-  (if free-install-line-item
+(defn order-total-title [freeinstall-line-item-data]
+  (if freeinstall-line-item-data
     "Hair + Install Total"
     "Total"))
 
 (defn component
-  [{:keys [free-install-line-item
+  [{:keys [freeinstall-line-item-data
            order
            store-credit
            shipping-cost
@@ -99,19 +99,19 @@
                        (utils/fake-href events/control-checkout-remove-promotion
                                         {:code coupon-code}))
                 (svg/close-x {:class "stroke-white fill-gray"})])]
-            (if (and free-install-line-item
+            (if (and freeinstall-line-item-data
                      (= "freeinstall" coupon-code))
-              (- 0 (:price free-install-line-item))
+              (- 0 (:price freeinstall-line-item-data))
               price))))
 
        (when (pos? store-credit)
          (summary-row "Store Credit" (- store-credit)))]]]
     [:div.py2.h2
      [:div.flex
-      [:div.flex-auto.light (order-total-title free-install-line-item)]
+      [:div.flex-auto.light (order-total-title freeinstall-line-item-data)]
       [:div.right-align.medium
        (some-> order :total mf/as-money)]]
-     (when free-install-line-item
+     (when freeinstall-line-item-data
        [:div
         [:div.flex.justify-end
          [:div.h6.bg-purple.white.px1.nowrap.medium.mb1
@@ -119,17 +119,17 @@
         [:div.flex.justify-end
          [:div.h6.light.dark-gray.px1.nowrap.italic
           "You've saved "
-          [:span.bold (mf/as-money (:total-savings free-install-line-item))]]]])]]))
+          [:span.bold (mf/as-money (:total-savings freeinstall-line-item-data))]]]])]]))
 
 (defn query [data]
   (let [order         (get-in data keypaths/order)
         shipping-item (orders/shipping-item order)]
-    {:free-install-line-item    (cart-items/freeinstall-line-item-query data)
-     :order                     order
-     :shipping-cost             (* (:quantity shipping-item) (:unit-price shipping-item))
-     :adjustments-including-tax (orders/all-order-adjustments order)
-     :promo-data                {:coupon-code   (get-in data keypaths/cart-coupon-code)
-                                 :applying?     (utils/requesting? data request-keys/add-promotion-code)
-                                 :focused       (get-in data keypaths/ui-focus)
-                                 :error-message (get-in data keypaths/error-message)
-                                 :field-errors  (get-in data keypaths/field-errors)}}))
+    {:freeinstall-line-item-data (cart-items/freeinstall-line-item-query data)
+     :order                       order
+     :shipping-cost               (* (:quantity shipping-item) (:unit-price shipping-item))
+     :adjustments-including-tax   (orders/all-order-adjustments order)
+     :promo-data                  {:coupon-code   (get-in data keypaths/cart-coupon-code)
+                                   :applying?     (utils/requesting? data request-keys/add-promotion-code)
+                                   :focused       (get-in data keypaths/ui-focus)
+                                   :error-message (get-in data keypaths/error-message)
+                                   :field-errors  (get-in data keypaths/field-errors)}}))
