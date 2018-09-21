@@ -27,7 +27,11 @@
             [storefront.components.affirm :as affirm-components]
             [storefront.transitions :as transitions]
             [storefront.api :as api]
-            [storefront.accessors.images :as images]))
+            [storefront.accessors.images :as images]
+            [spice.core :as spice]
+            [clojure.string :as string]
+            [checkout.control-cart :as cart]
+            [checkout.cart.items :as cart-items]))
 
 (defn requires-additional-payment? [data]
   (let [no-stripe-payment?  (nil? (get-in data keypaths/order-cart-payments-stripe))
@@ -81,6 +85,27 @@
                         :disabled?     disabled?
                         :affirm-order? affirm-order?})])))
 
+(defn ^:private text->data-test-name [name]
+  (-> name
+      (string/replace #"[0-9]" (comp spice/number->word int))
+      string/lower-case
+      (string/replace #"[^a-z]+" "-")))
+
+(defn ^:private display-freeinstall-line-item [{:keys [price title thumbnail-image-fn] :as freeinstall-line-item-data}]
+  [:div.clearfix.border-bottom.border-gray.py3
+   [:a.left.mr1
+    [:div.block.border.border-gray.rounded.hide-on-mb
+     (thumbnail-image-fn 117)]
+    [:div.block.border.border-gray.rounded.hide-on-tb-dt
+     (thumbnail-image-fn 132)]]
+   [:div.overflow-hidden
+    [:div.ml1
+     [:a.medium.titleize.h5     ; TODO data-test
+      title]
+     [:div.h6.mt1.line-height-1
+      [:div.pyp2                ; TODO data-test
+       "Price Each: " (mf/as-money-without-cents price)]]]]])
+
 (defn component
   [{:keys [available-store-credit
            checkout-steps
@@ -91,6 +116,7 @@
            requires-additional-payment?
            promotion-banner
            install-or-free-install-applied?
+           freeinstall-line-item-data
            checkout-button-data]}
    owner]
   (om/component
@@ -117,7 +143,9 @@
 
           [:div.my2
            {:data-test "confirmation-line-items"}
-           (summary/display-line-items (orders/product-items order) skus)]]
+           (summary/display-line-items (orders/product-items order) skus)
+           (when freeinstall-line-item-data
+             (display-freeinstall-line-item freeinstall-line-item-data))]]
 
          [:.col-on-tb-dt.col-6-on-tb-dt.px3
           (om/build checkout-delivery/component delivery)
@@ -314,7 +342,8 @@
 
 (defn query [data]
   (let [order (get-in data keypaths/order)]
-    {:selected-affirm?                 (get-in data keypaths/order-cart-payments-affirm)
+    {
+     :selected-affirm?                 (get-in data keypaths/order-cart-payments-affirm)
      :order-valid-for-affirm?          (affirm-components/valid-order-total? (:total order))
      :requires-additional-payment?     (requires-additional-payment? data)
      :promotion-banner                 (promotion-banner/query data)
@@ -327,7 +356,8 @@
      :install-or-free-install-applied? (or (orders/freeinstall-applied? order)
                                            (orders/install-applied? order))
      :available-store-credit           (get-in data keypaths/user-total-available-store-credit)
-     :checkout-button-data             (checkout-button-query data)}))
+     :checkout-button-data             (checkout-button-query data)
+     :freeinstall-line-item-data       (cart-items/freeinstall-line-item-query data)}))
 
 (defn built-component [data opts]
   (let [query-data (query data)]
