@@ -116,9 +116,9 @@
         [:div.h5 {:data-test (str "line-item-price-ea-" sku-id)} (mf/as-money-without-cents price) " ea"]]]]]))
 
 (defn ^:private non-adjustable-line-item
-  [{:keys [removing? id title detail price remove-event thumbnail-image]}]
+  [{:keys [removing? id title detail price remove-event thumbnail-image-fn]}]
   [:div.pt1.pb2.clearfix
-   [:div.left.pr3 thumbnail-image]
+   [:div.left.pr3 (thumbnail-image-fn 79)]
    [:div
     [:a.medium.titleize.h5
      {:data-test (str "line-item-title" id)}

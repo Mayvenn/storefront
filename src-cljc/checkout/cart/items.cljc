@@ -29,15 +29,13 @@
             service-price (some-> data
                                   (get-in keypaths/store-service-menu)
                                   (get diva-type))]
-        {:removing?       (utils/requesting? data request-keys/remove-promotion-code)
-         :id              "freeinstall"
-         :title           campaign-name
-         :detail          (str "w/ " store-nickname)
-         :price           service-price
-         :total-savings   (orders/total-savings order service-price)
-         :remove-event    [events/control-checkout-remove-promotion {:code "freeinstall"}]
-         :thumbnail-image [:div.flex.items-center.justify-center.ml1
-                           {:style {:width  "79px"
-                                    :height "79px"}}
-                           (ui/ucare-img {:width 79}
-                                         "d2a9e626-a6f3-4cbe-804f-214ea1d92f9b")]}))))
+        {:removing?          (utils/requesting? data request-keys/remove-promotion-code)
+         :id                 "freeinstall"
+         :title              campaign-name
+         :detail             (str "w/ " store-nickname)
+         :price              service-price
+         :total-savings      (orders/total-savings order service-price)
+         :remove-event       [events/control-checkout-remove-promotion {:code "freeinstall"}]
+         :thumbnail-image-fn (fn [height-width-int]
+                               (ui/ucare-img {:width height-width-int}
+                                             "40eadc97-938f-408d-b783-e09ad31c3742"))}))))
