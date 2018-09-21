@@ -314,8 +314,7 @@
 
 (defn query [data]
   (let [order (get-in data keypaths/order)]
-    {
-     :selected-affirm?                 (get-in data keypaths/order-cart-payments-affirm)
+    {:selected-affirm?                 (get-in data keypaths/order-cart-payments-affirm)
      :order-valid-for-affirm?          (affirm-components/valid-order-total? (:total order))
      :requires-additional-payment?     (requires-additional-payment? data)
      :promotion-banner                 (promotion-banner/query data)
