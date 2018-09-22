@@ -214,6 +214,7 @@
                                                  :content_ids  (map :catalog/sku-id line-item-skuers)
                                                  :num_items    (->> line-item-skuers (map :item/quantity) (reduce + 0))})
     (stringer/track-event "bulk_add_to_cart" (merge {:shared_cart_id shared-cart-id
+                                                     :store_experience (get-in app-state keypaths/store-experience)
                                                      :order_number   (:number order)
                                                      :order_total    (:total order)
                                                      :order_quantity (orders/product-quantity order)
