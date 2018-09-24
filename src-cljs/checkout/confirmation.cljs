@@ -118,6 +118,7 @@
            promotion-banner
            install-or-free-install-applied?
            freeinstall-line-item-data
+           confirmation-summary
            checkout-button-data]}
    owner]
   (om/component
@@ -171,11 +172,13 @@
 
             :else
             nil)
-          (summary/display-order-summary order
-                                         {:read-only?             true
-                                          :use-store-credit?      (and (not affirm-selected-and-order-valid?)
-                                                                       (not install-or-free-install-applied?))
-                                          :available-store-credit available-store-credit})
+          (if confirmation-summary
+            (component/build confirmation-summary/component confirmation-summary {})
+            (summary/display-order-summary order
+                                           {:read-only?             true
+                                            :use-store-credit?      (and (not affirm-selected-and-order-valid?)
+                                                                         (not install-or-free-install-applied?))
+                                            :available-store-credit available-store-credit}))
           (when selected-affirm?
             [:div.col-12.col-6-on-tb-dt.mx-auto (affirm-components/as-low-as-box {:amount      (:total order)
                                                                                   :middle-copy "Continue with Affirm below."})])

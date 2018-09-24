@@ -3,6 +3,7 @@
             [clojure.string :as string]
             [spice.core :as spice]
             [storefront.accessors.orders :as orders]
+            [storefront.accessors.experiments :as experiments]
             [storefront.component :as component]
             [storefront.components.money-formatters :as mf]
             [storefront.components.svg :as svg]
@@ -16,7 +17,6 @@
   (if freeinstall-line-item-data
     "Hair + Install Total"
     "Total"))
-
 
 (defn non-zero-adjustment? [{:keys [price coupon-code]}]
   (or (not (= price 0))
@@ -99,15 +99,18 @@
 (defn query [data]
   (let [order         (get-in data keypaths/order)
         shipping-item (orders/shipping-item order)]
-    {:freeinstall-line-item-data (cart-items/freeinstall-line-item-query data)
-     :order                       order
-     :shipping-cost               (* (:quantity shipping-item) (:unit-price shipping-item))
-     :adjustments-including-tax   (orders/all-order-adjustments order)
-     :promo-data                  {:coupon-code   (get-in data keypaths/cart-coupon-code)
-                                   :applying?     (utils/requesting? data request-keys/add-promotion-code)
-                                   :focused       (get-in data keypaths/ui-focus)
-                                   :error-message (get-in data keypaths/error-message)
-                                   :field-errors  (get-in data keypaths/field-errors)}}))
+    (when (and (experiments/aladdin-freeinstall-promo-cart? data)
+               (experiments/aladdin-experience? data)
+               (orders/freeinstall-applied? order))
+      {:freeinstall-line-item-data (cart-items/freeinstall-line-item-query data)
+       :order                       order
+       :shipping-cost               (* (:quantity shipping-item) (:unit-price shipping-item))
+       :adjustments-including-tax   (orders/all-order-adjustments order)
+       :promo-data                  {:coupon-code   (get-in data keypaths/cart-coupon-code)
+                                     :applying?     (utils/requesting? data request-keys/add-promotion-code)
+                                     :focused       (get-in data keypaths/ui-focus)
+                                     :error-message (get-in data keypaths/error-message)
+                                     :field-errors  (get-in data keypaths/field-errors)}})))
 
 
 ;; TODO: keeping it for reference. Remove it soon!
