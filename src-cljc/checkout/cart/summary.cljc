@@ -22,7 +22,7 @@
   ([content amount] (summary-row {} content amount))
   ([row-attrs content amount]
    [:tr.h5
-    (merge (when (neg? amount)
+    (merge (when-not (pos? amount)
              {:class "teal"})
            row-attrs) [:td.pyp1 content]
     [:td.pyp1.right-align.medium
@@ -92,7 +92,7 @@
       [:tbody
        (summary-row "Subtotal" (orders/products-subtotal order))
        (when shipping-cost
-         (summary-row "Shipping" shipping-cost))
+         (summary-row {:class "black"} "Shipping" shipping-cost))
 
        (when (orders/no-applied-promo? order)
          [:tr.h5
