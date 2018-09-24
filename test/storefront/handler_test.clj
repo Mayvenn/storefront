@@ -19,7 +19,7 @@
 
 (def test-overrides {:environment       "test"
                      :server-opts       {:port 2390}
-                     :logging           (constantly nil)
+                     :logging           {:system-name "storefront.tests"}
                      :contentful-config {:endpoint "http://localhost:4335"
                                          :space-id "fake-space-id"
                                          :api-key  "fake-api-key"}
