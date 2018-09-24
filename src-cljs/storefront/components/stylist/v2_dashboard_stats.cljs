@@ -11,7 +11,8 @@
             [storefront.platform.component-utils :as utils]
             [storefront.platform.numbers :as numbers]
             [storefront.request-keys :as request-keys]
-            [storefront.transitions :as transitions]))
+            [storefront.transitions :as transitions]
+            [storefront.component :as component]))
 
 (defn earnings-count [title value]
   [:div.dark-gray.letter-spacing-0
@@ -52,20 +53,20 @@
       [:div.col-5
        (if (payouts/cash-out-eligible? payout-method)
          (ui/teal-button
-           {:height-class   "py2"
-            :data-test      "cash-out-begin-button"
-            :on-click       (utils/send-event-callback events/control-stylist-dashboard-cash-out-begin
-                                                       {:amount cash-balance
-                                                        :payout-method-name payout-method})
-            :disabled?      (not (pos? cash-balance))
-            :disabled-class "bg-gray"
-            :spinning?      cashing-out?}
-           [:div.flex.items-center.justify-center.regular.h5
-            (ui/ucare-img {:width "28" :class "mr2 flex items-center"} "3d651ddf-b37d-441b-a162-b83728f2a2eb")
-            "Cash Out"])
+          {:height-class   "py2"
+           :data-test      "cash-out-begin-button"
+           :on-click       (utils/send-event-callback events/control-stylist-dashboard-cash-out-begin
+                                                      {:amount             cash-balance
+                                                       :payout-method-name payout-method})
+           :disabled?      (not (pos? cash-balance))
+           :disabled-class "bg-gray"
+           :spinning?      cashing-out?}
+          [:div.flex.items-center.justify-center.regular.h5
+           (ui/ucare-img {:width "28" :class "mr2 flex items-center"} "3d651ddf-b37d-441b-a162-b83728f2a2eb")
+           "Cash Out"])
          [:div.h7.right
           "Cash out now with " [:a.teal (utils/fake-href events/navigate-stylist-account-commission) "Mayvenn InstaPay"]])]]
-     [:div
+   [:div
       (when-not expanded? {:class "hide"})
       [:div.flex.mt2
        [:div.col-7
@@ -119,13 +120,27 @@
                          :maximum (- next-level previous-level)})]])
 
 (defn component
-  [{:keys [cash-balance-section-expanded? store-credit-balance-section-expanded? stats total-available-store-credit payout-method cashing-out?]}]
+  [{:keys [cash-balance-section-expanded? store-credit-balance-section-expanded? stats total-available-store-credit payout-method cashing-out? fetching-stats?]} owner opts]
   (let [{:keys [bonuses earnings services]} stats
         {:keys [lifetime-earned]}           bonuses]
-    [:div.p2
-     (cash-balance-card payout-method cash-balance-section-expanded? cashing-out? earnings services)
-     [:div.mt2 (store-credit-balance-card total-available-store-credit lifetime-earned store-credit-balance-section-expanded?)]
-     (sales-bonus-progress bonuses)]))
+    (component/create
+     (if fetching-stats?
+       [:div.my2.h2 ui/spinner]
+       [:div.p2
+        (cash-balance-card payout-method cash-balance-section-expanded? cashing-out? earnings services)
+        [:div.mt2 (store-credit-balance-card total-available-store-credit lifetime-earned store-credit-balance-section-expanded?)]
+        (sales-bonus-progress bonuses)]))))
+
+(defn query [data]
+  (let [stats (get-in data keypaths/v2-dashboard-stats)]
+    {:stats                                  stats
+     :cashing-out?                           (utils/requesting? data request-keys/cash-out-commit)
+     :payout-method                          (get-in data keypaths/stylist-manage-account-chosen-payout-method)
+     :cash-balance-section-expanded?         (get-in data keypaths/v2-ui-dashboard-cash-balance-section-expanded?)
+     :store-credit-balance-section-expanded? (get-in data keypaths/v2-ui-dashboard-store-credit-section-expanded?)
+     :total-available-store-credit           (get-in data keypaths/user-total-available-store-credit)
+     :fetching-stats?                        (or (utils/requesting? data request-keys/get-stylist-dashboard-stats)
+                                                 (not stats))}))
 
 (defmethod effects/perform-effects events/v2-stylist-dashboard-stats-fetch [_ event args _ app-state]
   (let [stylist-id (get-in app-state keypaths/store-stylist-id)
