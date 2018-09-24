@@ -2,22 +2,22 @@
   :description "The front of the store"
   :url "https://github.com/Mayvenn/storefront"
   :license {:name "All rights reserved"}
-  :dependencies [[org.clojure/clojure "1.8.0"]
+  :dependencies [[org.clojure/clojure "1.9.0"]
                  [com.stuartsierra/component "0.3.2"]
                  [environ "1.1.0"]
                  [tocsin "0.1.4"]
                  [tugboat "0.1.6"]
                  [mayvenn/spice "0.1.48"]
-                 [compojure "1.4.0"]
+                 [compojure "1.6.1"]
                  [noir-exception "0.2.3"]
                  [ring/ring-json "0.3.1"]
                  [ring/ring-defaults "0.1.4"]
                  [ring-jetty-component "0.3.1"]
                  [org.eclipse.jetty/jetty-server "9.3.9.v20160517"]
                  [hiccup "1.0.5"]
-                 [cheshire "5.5.0"]
+                 [cheshire "5.8.0"]
                  [cljsjs/google-maps "3.18-1"]
-                 [org.clojure/clojurescript "1.9.671"]
+                 [org.clojure/clojurescript "1.9.946"]
                  [cljsjs/react "15.6.1-2"]
                  [cljsjs/react-dom "15.6.1-2"]
                  [cljsjs/react-dom-server "15.6.1-2"]
@@ -137,8 +137,7 @@
                                   [pjstadig/humane-test-output "0.8.1"]
                                   [standalone-test-server "0.7.2"]
                                   [ring/ring-mock "0.3.0"]
-                                  [org.clojure/tools.namespace "0.2.11"]
-                                  [figwheel-sidecar "0.5.16"]]
+                                  [org.clojure/tools.namespace "0.2.11"]]
                    :injections [(require 'pjstadig.humane-test-output)
                                 (pjstadig.humane-test-output/activate!)]
                    :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]}
