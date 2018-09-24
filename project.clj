@@ -3,7 +3,6 @@
   :url "https://github.com/Mayvenn/storefront"
   :license {:name "All rights reserved"}
   :dependencies [[org.clojure/clojure "1.8.0"]
-                 [com.taoensso/timbre "3.4.0" :exclusions [org.clojure/tools.reader]]
                  [com.stuartsierra/component "0.3.2"]
                  [environ "1.1.0"]
                  [tocsin "0.1.4"]

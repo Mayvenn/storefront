@@ -6,7 +6,7 @@
             [storefront.handler :refer [create-handler]]
             [storefront.jetty :as jetty]
             [storefront.system.contentful :as contentful]
-            [taoensso.timbre :as timbre]
+            [spice.logger.core :as logger]
             [tocsin.core :as tocsin]))
 
 (defrecord AppHandler [logger exception-handler storeback-config leads-config environment client-version]
@@ -15,20 +15,15 @@
     (assoc c :handler (create-handler (dissoc c :handler))))
   (stop [c] c))
 
-(defn logger [logger-config]
-  (fn [level str]
-    (timbre/log logger-config level str)))
-
 (defn exception-handler [bugsnag-token environment]
   (fn [e]
     (tocsin/notify e {:api-key bugsnag-token
                       :environment environment
                       :project-ns "storefront"})))
 
-
 (defn system-map [config]
   (component/system-map
-   :logger (logger (config :logging))
+   :logger (logger/create-logger (config :logging))
    :contentful  (contentful/map->ContentfulContext (merge (:contentful-config config)
                                                           (select-keys config [:environment])))
    :app-handler (map->AppHandler (select-keys config [:storeback-config

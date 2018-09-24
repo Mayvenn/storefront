@@ -1,7 +1,6 @@
 (ns storefront.config
   (:require [environ.core :refer [env]]
-            [clojure.java.io :as io]
-            [taoensso.timbre :as timbre]))
+            [clojure.java.io :as io]))
 
 ;; TODO: These numbers also exist in config.cljs - consider creating cljc
 (def mayvenn-leads-call-number "1-866-424-7201")
@@ -43,12 +42,8 @@
 (def default-config {:server-opts       {:port 3006}
                      :client-version    client-version
                      :contentful-config {:cache-timeout 120000
-                                         :endpoint "https://cdn.contentful.com"}
-
-                     :logging (merge (timbre/get-default-config)
-                                     {:appenders
-                                      {:standard-out
-                                       (get-in timbre/example-config [:appenders :standard-out])}})})
+                                         :endpoint      "https://cdn.contentful.com"}
+                     :logging           {:system-name "storefront.system"}})
 
 (def env-config {:environment       (env :environment)
                  :bugsnag-token     (env :bugsnag-token)
