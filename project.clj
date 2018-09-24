@@ -22,8 +22,8 @@
                  [cljsjs/react-dom "15.6.1-2"]
                  [cljsjs/react-dom-server "15.6.1-2"]
                  [cljsjs/react-transition-group "1.2.0-0"]
-                 [org.omcljs/om "1.0.0-beta1" :exclusions [cljsjs/react]]
-                 [cljs-ajax "0.7.3"]
+                 [org.omcljs/om "1.0.0-beta1" :exclusions [cljsjs/react com.cognitect/transit-cljs]]
+                 [cljs-ajax "0.7.3" :exclusions [org.apache.httpcomponents/httpclient]]
                  [comb "0.1.0"]
                  [sablono "0.8.0"]
                  [bidi "2.0.16"]
@@ -33,7 +33,7 @@
                  [camel-snake-kebab "0.4.0"]]
   :repositories [["private" {:url "s3p://mayvenn-dependencies/releases/" :no-auth true}]]
   :plugins [[s3-wagon-private "1.3.1"]
-            [lein-cljsbuild "1.1.2"]
+            [lein-cljsbuild "1.1.7"]
             [lein-cljfmt "0.1.10"]
             [lein-figwheel "0.5.16"]]
   :figwheel {:nrepl-port 4000
@@ -101,10 +101,10 @@
                 :infer-externs true
                 :static-fns true
                 :fn-invoke-direct true
-                :foreign-libs [{:file "storefront/react-slick.js"
+                :foreign-libs [{:file "src-cljs/storefront/react-slick.js"
                                 :file-min "target/min-js/react-slick.js" ;; created by gulp
                                 :provides ["react-slick"]}
-                               {:file "storefront/bugsnag-2.5.0.js"
+                               {:file "src-cljs/storefront/bugsnag-2.5.0.js"
                                 :file-min "target/min-js/bugsnag-2.5.0.js"
                                 :provides ["bugsnag"]}
                                {:file "src-cljs/storefront/jsQR.js"
