@@ -18,8 +18,6 @@
                  [cheshire "5.5.0"]
                  [cljsjs/google-maps "3.18-1"]
                  [org.clojure/clojurescript "1.9.671"]
-                 [org.clojure/core.cache "0.6.3"]
-                 [org.clojure/core.memoize "0.5.6" :exclusions [org.clojure/core.cache]]
                  [cljsjs/react "15.6.1-2"]
                  [cljsjs/react-dom "15.6.1-2"]
                  [cljsjs/react-dom-server "15.6.1-2"]
