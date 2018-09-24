@@ -1,5 +1,5 @@
 (ns storefront.frontend-effects
-  (:require [ajax.core :refer [-abort]]
+  (:require [ajax.core :as ajax]
             [clojure.set :as set]
             [clojure.string :as string]
             [spice.maps :as maps]
@@ -638,7 +638,7 @@
                   {:message "We need your Facebook email address to communicate with you about your orders. Please try again."}))
 
 (defn- abort-pending-requests [requests]
-  (doseq [{xhr :xhr} requests] (when xhr (-abort xhr))))
+  (doseq [{xhr :xhr} requests] (when xhr (ajax/abort xhr))))
 
 (defmethod perform-effects events/control-sign-out [_ event args _ app-state]
   (handle-message events/sign-out))

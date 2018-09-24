@@ -118,8 +118,20 @@
                                                                     :app-version (-> res :response :app-version)})
                            ((or error-handler default-error-handler) res))}))
 
+(defn ^:private set->vec
+  "In newer releases of cljs-ajax sets are serialized via str, which is less than ideal for us.
+  We should never send sets as set semantics cannot be enforced in query params.
+  So as a hack, we are simply making sets vecs.
+  Using a more capable format such as transit or edn would also work."
+  [params]
+  (clojure.walk/postwalk #(cond (set? %) (vec %)
+                                :else %)
+                         params))
+
 (defn api-request [method url req-key request-opts]
-  (let [request-opts (update-in request-opts [:params] maps/remove-nils)
+  (let [request-opts (-> request-opts
+                         (update-in [:params] maps/remove-nils)
+                         (update-in [:params] set->vec))
         req-id       (str (random-uuid))
         request      (method url (merge-req-opts req-key req-id request-opts))]
     (messages/handle-message events/api-start {:xhr         request
