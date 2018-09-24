@@ -15,12 +15,15 @@
   (let [base-params {:access_token                     api-key
                      :order                            (str "-fields." env-param)
                      (str "fields." env-param "[lte]") (date/to-iso (date/now)) }]
-    (tugboat/request {:endpoint endpoint}
-                     :get (str "/spaces/" space-id "/entries")
-                     {:socket-timeout 30000
-                      :conn-timeout   30000
-                      :as             :json
-                      :query-params   (merge base-params params)})))
+    (try
+      (tugboat/request {:endpoint endpoint}
+                       :get (str "/spaces/" space-id "/entries")
+                       {:socket-timeout 30000
+                        :conn-timeout   30000
+                        :as             :json
+                        :query-params   (merge base-params params)})
+      (catch java.io.IOException ioe
+        nil))))
 
 (defn extract-fields
   "Contentful resources are boxed.
@@ -81,14 +84,20 @@
 (defn do-fetch-entries
   ([contentful content-type]
    (do-fetch-entries contentful content-type 1))
-  ([{:keys [cache space-id] :as contentful} content-type attempt-number]
-   (when (<= attempt-number 2)
-     (let [{:keys [status body]} (contentful-request contentful
-                                                     {"content_type" (name content-type)
-                                                      "limit"        1})]
-       (if (<= 200 status 299)
-         (swap! cache merge (some-> body extract resolve-all clojure.walk/keywordize-keys (select-keys [content-type])))
-         (do-fetch-entries contentful content-type (inc attempt-number)))))))
+  ([{:keys [logger exception-handler cache space-id] :as contentful} content-type attempt-number]
+   (try
+     (when (<= attempt-number 2)
+       (let [{:keys [status body]} (contentful-request contentful
+                                                       {"content_type" (name content-type)
+                                                        "limit"        1})]
+         (if (and status (<= 200 status 299))
+           (swap! cache merge (some-> body extract resolve-all clojure.walk/keywordize-keys (select-keys [content-type])))
+           (do-fetch-entries contentful content-type (inc attempt-number)))))
+     (catch Throwable t
+       ;; Ideally, we should never get here, but at-at halts all polls that throw exceptions silently.
+       ;; This simply reports it and lets the polling continue
+       (exception-handler t)
+       (logger :error t)))))
 
 (defprotocol CMSCache
   (read-cache [_] "Returns a map representing the CMS cache"))
