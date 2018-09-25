@@ -134,6 +134,7 @@
                    :dependencies [[cider/piggieback "0.3.6"]
                                   [org.clojure/tools.nrepl "0.2.13"]
                                   [binaryage/devtools "0.9.10"]
+                                  [org.clojure/tools.reader "1.3.0"]
                                   [pjstadig/humane-test-output "0.8.1"]
                                   [standalone-test-server "0.7.2"]
                                   [ring/ring-mock "0.3.0"]
