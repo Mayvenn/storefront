@@ -11,8 +11,7 @@
 
 (defn freeinstall-line-item-query [data]
   (let [order (get-in data keypaths/order)]
-    (when (and (experiments/aladdin-freeinstall-promo-cart? data)
-               (experiments/aladdin-experience? data)
+    (when (and (experiments/aladdin-experience? data)
                (orders/freeinstall-applied? order))
       (let [store-nickname        (get-in data keypaths/store-nickname)
             highest-value-service (some-> order

@@ -65,10 +65,6 @@
   [data]
   (= "aladdin" (get-in data keypaths/store-experience)))
 
-(defn aladdin-freeinstall-promo-cart?
-  [data]
-  (display-feature? data "aladdin-freeinstall-promo-cart"))
-
 (defn v2-homepage? [data]
   (->> (get-in data keypaths/store-features)
        (some #{"aladdin-homepage" "phoenix-homepage"})

@@ -99,8 +99,7 @@
 (defn query [data]
   (let [order         (get-in data keypaths/order)
         shipping-item (orders/shipping-item order)]
-    (when (and (experiments/aladdin-freeinstall-promo-cart? data)
-               (experiments/aladdin-experience? data)
+    (when (and (experiments/aladdin-experience? data)
                (orders/freeinstall-applied? order))
       {:freeinstall-line-item-data (cart-items/freeinstall-line-item-query data)
        :order                       order
