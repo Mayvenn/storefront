@@ -132,7 +132,7 @@
                     [[cider/piggieback "0.3.6"]
                      [org.clojure/tools.nrepl "0.2.13"]]}
              :dev {:source-paths ["dev/clj"]
-                   :dependencies [[cider/piggieback "0.3.6"]
+                   :dependencies [[cider/piggieback "0.3.9"]
                                   [figwheel-sidecar "0.5.16"]
                                   [org.clojure/tools.nrepl "0.2.13"]
                                   [binaryage/devtools "0.9.10"]
