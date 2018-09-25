@@ -10,6 +10,7 @@
              [codec :as codec]
              [response :refer [content-type response status]]]
             [standalone-test-server.core :refer :all]
+            [lambdaisland.uri :as uri]
             [storefront
              [handler :refer :all]
              [system :refer [create-system]]]
@@ -591,26 +592,41 @@
       (is (= "/products/12-indian-straight-bundles?SKU=INSDB14"
              (get-in resp [:headers "Location"]))))))
 
+(defmacro has-canonized-link [handler url]
+  `(let [handler#       ~handler
+         url#           ~url
+         canonized-url# (-> (uri/uri url#)
+                            (assoc :host "shop.mayvenn.com"))
+         link-url#      (some->> (mock/request :get (str "https:" url#))
+                             handler#
+                             :body
+                             (re-find #"<link[^>]+rel=\"canonical[^>]+>")
+                             (re-find #"href=\"[^\"]+\"")
+                             (re-find #"\"[^\"]+\"")
+                             (re-find #"[^\"]+")
+                             uri/uri)]
+     (is (= canonized-url# link-url#))))
+
 (deftest server-side-renders-product-details-page
   (testing "when the product does not exist storefront returns 404"
-    (let [[storeback-requests storeback-handler] (with-requests-chan (routes
-                                                                      (GET "/v2/orders/:number" req {:status 404
-                                                                                                     :body   "{}"})
-                                                                      (GET "/v2/products" req
-                                                                           {:status 200
-                                                                            :body   (generate-string {:products []})})
-                                                                      (GET "/store" req storeback-stylist-response)))]
+      (let [[storeback-requests storeback-handler] (with-requests-chan (routes
+                                                                        (GET "/v2/orders/:number" req {:status 404
+                                                                                                       :body   "{}"})
+                                                                        (GET "/v2/products" req
+                                                                             {:status 200
+                                                                              :body   (generate-string {:products []})})
+                                                                        (GET "/store" req storeback-stylist-response)))]
       (with-standalone-server [storeback (standalone-server storeback-handler)]
         (with-handler handler
           (let [resp (handler (mock/request :get "https://bob.mayvenn.com/products/99-red-balloons"))]
             (is (= 404 (:status resp))))))))
   (testing "when whitelisted for discontinued"
-    (let [[storeback-requests storeback-handler] (with-requests-chan (routes
-                                                                      (GET "/store" req storeback-stylist-response)
-                                                                      (GET "/v2/products" req
-                                                                           {:status 200
-                                                                            :body   (generate-string {:products []
-                                                                                                      :skus []})})))]
+      (let [[storeback-requests storeback-handler] (with-requests-chan (routes
+                                                                        (GET "/store" req storeback-stylist-response)
+                                                                        (GET "/v2/products" req
+                                                                             {:status 200
+                                                                              :body   (generate-string {:products []
+                                                                                                        :skus     []})})))]
       (with-standalone-server [storeback (standalone-server storeback-handler)]
         (with-handler handler
           (let [resp (handler (mock/request :get "https://bob.mayvenn.com/products/104-dyed-100-human-hair-brazilian-loose-wave-bundle?SKU=BLWLR1JB1"))]
@@ -634,22 +650,38 @@
                                                                            :hair/source         #{"virgin"}
                                                                            :hair/texture        #{"water-wave"}
                                                                            :selector/electives  [:hair/color :hair/length]
-                                                                           :selector/essentials [:catalog/department :hair/grade :hair/origin :hair/texture :hair/base-material :hair/family :hair/color.process :hair/source]
+                                                                           :selector/essentials [:catalog/department
+                                                                                                 :hair/grade
+                                                                                                 :hair/origin
+                                                                                                 :hair/texture
+                                                                                                 :hair/base-material
+                                                                                                 :hair/family
+                                                                                                 :hair/color.process
+                                                                                                 :hair/source]
                                                                            :page/slug           "peruvian-water-wave-lace-closures"}]
-                                                               :skus     [{:catalog/sku-id        "PWWLC18"
-                                                                           :catalog/stylist-only? false
-                                                                           :catalog/launched-at   "2016-01-01T00:00:00.000Z"
-                                                                           :catalog/department    #{"hair"}
-                                                                           :selector/essentials   [:hair/family :hair/color :hair/origin :hair/base-material :hair/length :catalog/department :hair/color.process :hair/grade :hair/texture :hair/source]
-                                                                           :selector/electives    []
-                                                                           :hair/base-material    #{"lace"}
-                                                                           :hair/color.process    #{"natural"}
-                                                                           :hair/family           #{"closures"}
-                                                                           :hair/grade            #{"6a"}
-                                                                           :hair/origin           #{"peruvian"}
-                                                                           :hair/source           #{"virgin"}
-                                                                           :hair/texture          #{"water-wave"}
-                                                                           :hair/color            #{"black"}
+                                                               :skus     [{:catalog/sku-id               "PWWLC18"
+                                                                           :catalog/stylist-only?        false
+                                                                           :catalog/launched-at          "2016-01-01T00:00:00.000Z"
+                                                                           :catalog/department           #{"hair"}
+                                                                           :selector/essentials          [:hair/family
+                                                                                                          :hair/color
+                                                                                                          :hair/origin
+                                                                                                          :hair/base-material
+                                                                                                          :hair/length
+                                                                                                          :catalog/department
+                                                                                                          :hair/color.process
+                                                                                                          :hair/grade
+                                                                                                          :hair/texture
+                                                                                                          :hair/source]
+                                                                           :selector/electives           []
+                                                                           :hair/base-material           #{"lace"}
+                                                                           :hair/color.process           #{"natural"}
+                                                                           :hair/family                  #{"closures"}
+                                                                           :hair/grade                   #{"6a"}
+                                                                           :hair/origin                  #{"peruvian"}
+                                                                           :hair/source                  #{"virgin"}
+                                                                           :hair/texture                 #{"water-wave"}
+                                                                           :hair/color                   #{"black"}
                                                                            :selector/images              [{:filename  "Water-Wave-Bundle.jpg"
                                                                                                            :url       "//ucarecdn.com/5f6c669f-8274-4bef-afa9-3c08813842f6/"
                                                                                                            :use-cases {:seo      {:alt ""}
@@ -657,7 +689,12 @@
                                                                                                                                   :order 5}
                                                                                                                        :catalog  {:alt ""}}
                                                                                                            :criteria/attributes
-                                                                                                           {:catalog/department "hair" :image/of "product" :hair/grade "6a" :hair/texture "water-wave" :hair/color "black" :hair/family "bundles"}}]
+                                                                                                           {:catalog/department "hair"
+                                                                                                            :image/of           "product"
+                                                                                                            :hair/grade         "6a"
+                                                                                                            :hair/texture       "water-wave"
+                                                                                                            :hair/color         "black"
+                                                                                                            :hair/family        "bundles"}}]
                                                                            :selector/from-products       ["67"]
                                                                            :inventory/in-stock?          true
                                                                            :sku/price                    104.0
@@ -670,17 +707,10 @@
                                     storeback-stylist-response)))]
       (with-standalone-server [storeback (standalone-server storeback-handler)]
         (with-handler handler
-          (are [url] (string/includes?
-                      (->> (str "https:" url)
-                           (mock/request :get)
-                           handler
-                           :body
-                           (re-find #"<link[^>]+rel=\"canonical[^>]+>"))
-                      (string/replace url #"bob" "shop"))
-            "//bob.mayvenn.com/products/67-peruvian-water-wave-lace-closures?SKU=PWWLC10"
-            "//bob.mayvenn.com/categories/10-virgin-360-frontals"
-            "//bob.mayvenn.com/our-hair"
-            "//bob.mayvenn.com/"))))))
+          (has-canonized-link handler "//bob.mayvenn.com/products/67-peruvian-water-wave-lace-closures?SKU=PWWLC10")
+          (has-canonized-link handler "//bob.mayvenn.com/categories/10-virgin-360-frontals")
+          (has-canonized-link handler "//bob.mayvenn.com/our-hair")
+          (has-canonized-link handler "//bob.mayvenn.com/"))))))
 
 (deftest server-side-fetching-of-orders
   (testing "storefront retrieves an order from storeback"
@@ -885,4 +915,3 @@
           (is (= 301 (:status resp)) location)
           (is (= "https://shop.mayvenn.com/mayvenn-made" location) location)
           (is (= 1 (count (txfm-requests storeback-requests identity)))))))))
-
