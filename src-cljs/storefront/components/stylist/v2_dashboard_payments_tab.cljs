@@ -100,24 +100,37 @@
       {:title (str (get f/month-names month) " " year)
        :items (year-month->payments ym)})))
 
+(def empty-payments
+  [:div.my6.center
+   [:h4.gray.bold.p1 "No payments yet"]
+   [:h6.dark-gray.col-5.mx-auto.line-height-2 "Payments and bonus activity will appear here"]])
+
 (defn payments-table [pending-voucher service-menu balance-transfers pagination fetching?]
   (let [payments (map balance-transfer->payment balance-transfers)
         sections (group-payments-by-month payments)
         {current-page :page total-pages :total} pagination]
     [:div
-     [:div.col-12.mb3
-      (when pending-voucher
-        (pending-voucher-row pending-voucher service-menu))
-      (for [{:keys [title items] :as section} sections]
-        [:div {:key (str "payments-table-" title)}
-         [:div.h7.bg-silver.px2.py1.medium title]
-         ;; ASK: Sales Bonus row
-         (for [item (reverse (sort-by :date items))]
-           (payment-row item))])]
-     (pagination/fetch-more events/control-v2-stylist-dashboard-balance-transfers-load-more
-                            fetching?
-                            current-page
-                            total-pages)]))
+     (cond
+       (and (nil? pending-voucher) (empty? payments)) empty-payments
+
+       fetching?
+       [:div.my2.h2 ui/spinner]
+
+       :else
+       [:div
+        [:div.col-12.mb3
+         (when pending-voucher
+           (pending-voucher-row pending-voucher service-menu))
+         (for [{:keys [title items] :as section} sections]
+           [:div {:key (str "payments-table-" title)}
+            [:div.h7.bg-silver.px2.py1.medium title]
+            ;; ASK: Sales Bonus row
+            (for [item (reverse (sort-by :date items))]
+              (payment-row item))])]
+        (pagination/fetch-more events/control-v2-stylist-dashboard-balance-transfers-load-more
+                               fetching?
+                               current-page
+                               total-pages)])]))
 
 (defmethod effects/perform-effects events/navigate-v2-stylist-dashboard-payments [_ event args _ app-state]
   (let [no-balance-transfers-loaded? (empty? (get-in app-state keypaths/v2-dashboard-balance-transfers-pagination-ordering))]
