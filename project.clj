@@ -23,6 +23,7 @@
                  [cljsjs/react-dom-server "15.6.1-2"]
                  [cljsjs/react-transition-group "1.2.0-0"]
                  [org.omcljs/om "1.0.0-beta1" :exclusions [cljsjs/react com.cognitect/transit-cljs]]
+                 [org.clojure/core.async "0.3.443"]
                  [cljs-ajax "0.7.3" :exclusions [org.apache.httpcomponents/httpclient]]
                  [comb "0.1.0"]
                  [sablono "0.8.0"]
@@ -132,6 +133,7 @@
                      [org.clojure/tools.nrepl "0.2.13"]]}
              :dev {:source-paths ["dev/clj"]
                    :dependencies [[cider/piggieback "0.3.6"]
+                                  [figwheel-sidecar "0.5.16"]
                                   [org.clojure/tools.nrepl "0.2.13"]
                                   [binaryage/devtools "0.9.10"]
                                   [org.clojure/tools.reader "1.3.0"]
