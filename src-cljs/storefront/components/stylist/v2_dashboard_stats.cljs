@@ -64,7 +64,7 @@
           [:div.flex.items-center.justify-center.regular.h5
            (ui/ucare-img {:width "28" :class "mr2 flex items-center"} "3d651ddf-b37d-441b-a162-b83728f2a2eb")
            "Cash Out"])
-         [:div.h7.right
+         [:div.h7
           "Cash out now with " [:a.teal (utils/fake-href events/navigate-stylist-account-commission) "Mayvenn InstaPay"]])]]
    [:div
       (when-not expanded? {:class "hide"})
