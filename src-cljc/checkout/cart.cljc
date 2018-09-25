@@ -118,7 +118,7 @@
 (defn ^:private non-adjustable-line-item
   [{:keys [removing? id title detail price remove-event thumbnail-image-fn]}]
   [:div.pt1.pb2.clearfix
-   [:div.left.ml1.pr2
+   [:div.left.ml1.pr3
     [:div.flex.justify-center {:style {:height "79px"
                                        :width  "79px"}}
      (thumbnail-image-fn 75)]]
