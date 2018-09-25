@@ -124,7 +124,7 @@
   (let [{:keys [bonuses earnings services]} stats
         {:keys [lifetime-earned]}           bonuses]
     (component/create
-     (if fetching-stats?
+     (if (and (not lifetime-earned) fetching-stats?)
        [:div.my2.h2 ui/spinner]
        [:div.p2
         (cash-balance-card payout-method cash-balance-section-expanded? cashing-out? earnings services)
