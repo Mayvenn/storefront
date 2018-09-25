@@ -152,6 +152,37 @@
      [:div.col-8 (when album-first? {:style {:order -1}})
       (style-carousel-component (:images ugc))]]]])
 
+(def an-amazing-deal
+  [:div]
+  #_
+  [:div.center.clearfix.py3.h6
+   [:h2.mt4.mb6 "An Amazing Deal"]
+   [:div.col.col-7
+    [:div.img-logo.bg-no-repeat.bg-center.bg-contain.teal
+     {:style {:height "45"}}]
+    [:div "3 bundles..............$189"]
+    [:div "Install................FREE"]
+    [:div
+     [:div.col.col-6.shout
+      [:div "Install"]
+      [:div "+ Hair"]]
+     [:div.col.col-6
+      [:div "$189"]
+      [:div "a $54 savings"]]]]
+   [:div.col.col-5
+    (ui/ucare-img {:width "90" :class "mx-auto"}
+                  "9f1657d1-c792-44fb-b8e7-20ce64c7dbf4")
+    [:div "3 bundles..............$93"]
+    [:div "Install................$$$$"]
+    [:div
+     [:div.col.col-6.shout
+      [:div "Install"]
+      [:div "+ Hair"]]
+     [:div.col.col-6
+      [:div "$243"]
+      ]]]
+   ])
+
 (defn most-popular-looks [sleek-ugc wave-ugc]
   [:div.col-12.col-8-on-tb-dt.mt3.px2.py5.mx-auto
    [:div.my2.flex.flex-column.items-center
@@ -270,7 +301,8 @@
                                   :gallery-ucare-ids     gallery-ucare-ids
                                   :stylist-portrait      (:portrait store)
                                   :stylist-name          (:store-nickname store)
-                                  :stylist-gallery-open? stylist-gallery-open?})]
+                             :stylist-gallery-open? stylist-gallery-open?})]
+    [:section an-amazing-deal]
     [:section (most-popular-looks sleek-and-straight-ugc waves-and-curly-ugc)]
     [:section [:div (v2/why-mayvenn-is-right-for-you)]]
     [:section (free-install-mayvenn-grid free-install-mayvenn-ugc)]
