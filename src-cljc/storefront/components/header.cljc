@@ -72,7 +72,7 @@
          expanded?
          keypaths/store-info-expanded
          [:div (store-welcome signed-in store true)]
-         [:div.bg-white.absolute.left-0
+         [:div.bg-white.absolute.left-0.top-lit
           (for [[idx row] (map-indexed vector rows)]
             [:div.border-gray {:key   idx
                                :class (when-not (zero? idx) "border-top")} row])])))))
