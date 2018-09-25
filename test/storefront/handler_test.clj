@@ -18,14 +18,81 @@
             [storefront.config :as config]
             [spice.core :as spice]))
 
+(def contentful-port 4335)
+
 (def test-overrides {:environment       "test"
                      :server-opts       {:port 2390}
                      :logging           {:system-name "storefront.tests"}
-                     :contentful-config {:endpoint "http://localhost:4335"
+                     :contentful-config {:endpoint (str "http://localhost:" contentful-port)
                                          :space-id "fake-space-id"
                                          :api-key  "fake-api-key"}
                      :storeback-config  {:endpoint          "http://localhost:4334/"
                                          :internal-endpoint "http://localhost:4334/"}})
+
+(def contentful-response
+  {:body
+   {:sys   {:type "Array"}
+    :total 2
+    :skip  0
+    :limit 100
+    :items
+    [{:sys
+      {:space     {:sys {:type "Link" :linkType "Space" :id "76m8os65degn"}}
+       :id        "6VN7YwJeAoQagIaEyOqk4S"
+       :type      "Entry"
+       :createdAt "2018-04-03T00:24:17.795Z"
+       :updatedAt "2018-04-03T21:47:26.208Z"
+       :revision  2
+       :contentType
+       {:sys {:type "Link" :linkType "ContentType" :id "homepage"}}
+       :locale    "en-US"}
+      :fields
+      {:heroImageDesktopUuid       "8cb671b1-33b8-496b-a77b-7281ac72c571"
+       :heroImageMobileUuid        "666b02ba-26f2-4349-aa98-1d251edc701c"
+       :heroImageFileName          "Hair-Always-On-Beat.jpg"
+       :heroImageAltText           "Hair always on beat! 15% off everything! Shop looks!"
+       :leftFeatureBlockFileName   "Left"
+       :middleFeatureBlockFileName "Middle"
+       :rightFeatureBlockFileName  "Right"}}
+     {:sys
+      {:space     {:sys {:type "Link" :linkType "Space" :id "76m8os65degn"}}
+       :id        "7kFmCirU3uO2w6ykgAQ4gY"
+       :type      "Entry"
+       :createdAt "2018-04-03T21:49:47.237Z"
+       :updatedAt "2018-04-03T21:49:47.237Z"
+       :revision  1
+       :contentType
+       {:sys {:type "Link" :linkType "ContentType" :id "homepage"}}
+       :locale    "en-US"}
+      :fields
+      {:heroImageDesktopUuid       "8cb671b1-33b8-496b-a77b-7281ac72c571"
+       :heroImageMobileUuid        "666b02ba-26f2-4349-aa98-1d251edc701c"
+       :heroImageFileName          "Hair-Always-On-Beat.jpg"
+       :heroImageAltText           "Hair always on beat! 15% off everything! Shop looks!"
+       :leftFeatureBlockFileName   "Left"
+       :middleFeatureBlockFileName "Middle"
+       :rightFeatureBlockFileName  "Right"}}]}
+   :status 200})
+
+
+(def storeback-stylist-response
+  (-> (generate-string {:store_slug "bob"
+                        :store_name "Bob's Hair Emporium"
+                        :instagram_account nil
+                        :stylist_id 3})
+      (response)
+      (status 200)
+      (content-type "application/json")))
+
+(def default-storeback-handler
+  (routes
+   (GET "/store" req storeback-stylist-response)))
+
+(def default-contentful-handler
+  (routes
+   (GET "/spaces/fake-space-id/entries" req
+        {:status 200
+         :body   (generate-string (:body contentful-response))})))
 
 (defn set-cookies [req cookies]
   (update req :headers assoc "cookie" (string/join "; " (map (fn [[k v]] (str k "=" v)) cookies))))
@@ -40,15 +107,6 @@
                         :store_name "Mayvenn Hair"
                         :instagram_account nil
                         :stylist_id 1})
-      (response)
-      (status 200)
-      (content-type "application/json")))
-
-(def storeback-stylist-response
-  (-> (generate-string {:store_slug "bob"
-                        :store_name "Bob's Hair Emporium"
-                        :instagram_account nil
-                        :stylist_id 3})
       (response)
       (status 200)
       (content-type "application/json")))
@@ -75,6 +133,15 @@
 (defn parsed-url [url]
   (let [[base query] (.split (str url) "\\?")]
     [base (codec/form-decode query)]))
+
+(defmacro with-services
+  [handlers & body]
+  `(let [h# ~handlers]
+     (with-standalone-server
+       [fake-storeback# (standalone-server (:storeback-handler h# default-storeback-handler))
+        fake-contentful# (standalone-server (:contentful-handler h# default-contentful-handler)
+                                            {:port contentful-port})]
+       ~@body)))
 
 (defmacro with-resource
   [bindings close-fn & body]
@@ -789,50 +856,7 @@
       (is (.contains body "Disallow: /stylists/thank-you") body)
       (is (.contains body "Disallow: /stylists/flows/") body))))
 
-(def contentful-response
-  {:body
-   {:sys   {:type "Array"}
-    :total 2
-    :skip  0
-    :limit 100
-    :items
-    [{:sys
-      {:space     {:sys {:type "Link" :linkType "Space" :id "76m8os65degn"}}
-       :id        "6VN7YwJeAoQagIaEyOqk4S"
-       :type      "Entry"
-       :createdAt "2018-04-03T00:24:17.795Z"
-       :updatedAt "2018-04-03T21:47:26.208Z"
-       :revision  2
-       :contentType
-       {:sys {:type "Link" :linkType "ContentType" :id "homepage"}}
-       :locale    "en-US"}
-      :fields
-      {:heroImageDesktopUuid       "8cb671b1-33b8-496b-a77b-7281ac72c571"
-       :heroImageMobileUuid        "666b02ba-26f2-4349-aa98-1d251edc701c"
-       :heroImageFileName          "Hair-Always-On-Beat.jpg"
-       :heroImageAltText           "Hair always on beat! 15% off everything! Shop looks!"
-       :leftFeatureBlockFileName   "Left"
-       :middleFeatureBlockFileName "Middle"
-       :rightFeatureBlockFileName  "Right"}}
-     {:sys
-      {:space     {:sys {:type "Link" :linkType "Space" :id "76m8os65degn"}}
-       :id        "7kFmCirU3uO2w6ykgAQ4gY"
-       :type      "Entry"
-       :createdAt "2018-04-03T21:49:47.237Z"
-       :updatedAt "2018-04-03T21:49:47.237Z"
-       :revision  1
-       :contentType
-       {:sys {:type "Link" :linkType "ContentType" :id "homepage"}}
-       :locale    "en-US"}
-      :fields
-      {:heroImageDesktopUuid       "8cb671b1-33b8-496b-a77b-7281ac72c571"
-       :heroImageMobileUuid        "666b02ba-26f2-4349-aa98-1d251edc701c"
-       :heroImageFileName          "Hair-Always-On-Beat.jpg"
-       :heroImageAltText           "Hair always on beat! 15% off everything! Shop looks!"
-       :leftFeatureBlockFileName   "Left"
-       :middleFeatureBlockFileName "Middle"
-       :rightFeatureBlockFileName  "Right"}}]}
-   :status 200})
+
 
 (deftest fetches-data-from-contentful
   (testing "caching content"
@@ -840,8 +864,8 @@
           [contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
                                                                             {:status 200
                                                                              :body   (generate-string (:body contentful-response))}))]
-      (with-standalone-server [storeback (standalone-server storeback-handler)
-                               contentful (standalone-server contentful-handler {:port 4335})]
+      (with-services {:storeback-handler  storeback-handler
+                      :contentful-handler contentful-handler}
         (with-handler handler
           (let [responses (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
                 requests  (txfm-requests contentful-requests identity)]
@@ -852,7 +876,7 @@
     (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
                                                                             {:status 200
                                                                              :body   (generate-string (:body contentful-response))}))]
-      (with-standalone-server [contentful (standalone-server contentful-handler {:port 4335})]
+      (with-services {:contentful-handler contentful-handler}
         (with-handler handler
           (is (= 2 (count (txfm-requests contentful-requests identity))))))))
 
@@ -861,8 +885,8 @@
           [contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
                                                                             {:status 500
                                                                              :body   "{}"}))]
-      (with-standalone-server [storeback (standalone-server storeback-handler)
-                               contentful (standalone-server contentful-handler {:port 4335})]
+      (with-services {:storeback-handler  storeback-handler
+                      :contentful-handler contentful-handler}
         (with-handler handler
           (let [responses (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
                 requests  (txfm-requests contentful-requests identity)]
