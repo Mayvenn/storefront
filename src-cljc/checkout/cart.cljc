@@ -118,7 +118,10 @@
 (defn ^:private non-adjustable-line-item
   [{:keys [removing? id title detail price remove-event thumbnail-image-fn]}]
   [:div.pt1.pb2.clearfix
-   [:div.left.pr3 (thumbnail-image-fn 79)]
+   [:div.left.ml1.pr2
+    [:div.flex.justify-center {:style {:height "79px"
+                                       :width  "79px"}}
+     (thumbnail-image-fn 75)]]
    [:div
     [:a.medium.titleize.h5
      {:data-test (str "line-item-title" id)}
