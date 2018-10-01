@@ -32,10 +32,11 @@
    :use-store-credits false})
 
 (def initial-cart-state
-  {:coupon-code         ""
-   :recently-added-skus #{}
-   :source              nil
-   :paypal-redirect     false})
+  {:coupon-code             ""
+   :recently-added-skus     #{}
+   :freeinstall-just-added? false
+   :source                  nil
+   :paypal-redirect         false})
 
 (def empty-referral {:fullname ""
                      :phone ""

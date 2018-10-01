@@ -113,6 +113,11 @@
     (assoc-in app-state keypaths/cart-recently-added-skus #{})
     app-state))
 
+(defn clear-freeinstall-just-added [app-state nav-event]
+  (if (not= nav-event events/navigate-cart)
+    (assoc-in app-state keypaths/cart-freeinstall-just-added? false)
+    app-state))
+
 (defmethod transition-state events/navigate [_ event args app-state]
   (let [args (dissoc args :nav-stack-item)
         uri  (url/url js/window.location)]
@@ -123,6 +128,7 @@
         clear-flash
         clear-completed-order
         (clear-recently-added-skus event)
+        (clear-freeinstall-just-added event)
         (assoc-in keypaths/flash-now-success (get-in app-state keypaths/flash-later-success))
         (assoc-in keypaths/flash-now-failure (get-in app-state keypaths/flash-later-failure))
         (assoc-in keypaths/flash-later-success nil)
@@ -369,15 +375,28 @@
       (assoc-in keypaths/stylist-referrals [state/empty-referral])
       (assoc-in keypaths/popup :refer-stylist-thanks)))
 
+(defn contains-freeinstall? [order]
+  (->> (:adjustments order)
+       (map :coupon-code)
+       (some #(= "freeinstall" %))) )
+
+(defn freeinstall-new-to-order? [previous-order order]
+  (and (not (contains-freeinstall? previous-order))
+       (contains-freeinstall? order)))
+
 (defmethod transition-state events/save-order [_ event {:keys [order]} app-state]
   (if (orders/incomplete? order)
-    (let [previous-order (get-in app-state keypaths/order)
-          newly-added-sku-ids (if (= order previous-order)
-                                (get-in app-state keypaths/cart-recently-added-skus)
-                                (orders/newly-added-sku-ids previous-order order))]
+    (let [previous-order          (get-in app-state keypaths/order)
+          newly-added-sku-ids     (if (= order previous-order)
+                                    (get-in app-state keypaths/cart-recently-added-skus)
+                                    (orders/newly-added-sku-ids previous-order order))
+          freeinstall-just-added? (if (= order previous-order)
+                                    (get-in app-state keypaths/cart-freeinstall-just-added?)
+                                    (freeinstall-new-to-order? previous-order order))]
       (-> app-state
           (assoc-in keypaths/order order)
           (assoc-in keypaths/cart-recently-added-skus newly-added-sku-ids)
+          (assoc-in keypaths/cart-freeinstall-just-added? freeinstall-just-added?)
           (update-in keypaths/checkout-billing-address merge (:billing-address order))
           (update-in keypaths/checkout-shipping-address merge (:shipping-address order))
           (assoc-in keypaths/checkout-selected-shipping-method

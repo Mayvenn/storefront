@@ -43,47 +43,38 @@
    [storefront.request-keys :as request-keys]
    [storefront.transitions :as transitions]))
 
-(defn transition-background-color [run-transition? & content]
-  (if run-transition?
-    (css-transitions/transition-element
-     {:transitionName          "line-item-fade"
-      :transitionAppearTimeout 1300
-      :transitionAppear        true
-      :transitionEnter         true
-      :transitionEnterTimeout  1300}
-     content)
-    content))
-
 (defn display-adjustable-line-items
   [recently-added-skus line-items skus update-line-item-requests delete-line-item-requests]
   (for [{sku-id :sku variant-id :id :as line-item} line-items
-        :let                                       [sku                  (get skus sku-id)
-                                                    legacy-variant-id    (or (:legacy/variant-id line-item) (:id line-item))
-                                                    price                (or (:sku/price line-item)         (:unit-price line-item))
-                                                    thumbnail            (merge
-                                                                          (images/cart-image sku)
-                                                                          {:data-test (str "line-item-img-" (:catalog/sku-id sku))})
-                                                    removing?            (get delete-line-item-requests variant-id)
-                                                    updating?            (get update-line-item-requests sku-id)
-                                                    just-added-to-order? (contains? recently-added-skus sku-id)]]
+        :let [sku                  (get skus sku-id)
+              legacy-variant-id    (or (:legacy/variant-id line-item) (:id line-item))
+              price                (or (:sku/price line-item)         (:unit-price line-item))
+              thumbnail            (merge
+                                    (images/cart-image sku)
+                                    {:data-test (str "line-item-img-" (:catalog/sku-id sku))})
+              removing?            (get delete-line-item-requests variant-id)
+              updating?            (get update-line-item-requests sku-id)
+              just-added-to-order? (contains? recently-added-skus sku-id)]]
     [:div.pt1.pb2 {:key (str (:catalog/sku-id sku) (:quantity line-item))}
 
      [:div.left.pr1
       (when-let [length (-> sku :hair/length first)]
-        (transition-background-color just-added-to-order?
-                                     [:div.right.z1.circle.stacking-context.border.border-light-gray.flex.items-center.justify-center.medium.h5.bg-too-light-teal
-                                      {:key       (str "length-circle-" sku-id)
-                                       :data-test (str "line-item-length-" sku-id)
-                                       :style     {:margin-left "-21px"
-                                                   :margin-top  "-10px"
-                                                   :width       "32px"
-                                                   :height      "32px"}} (str length "”")]))
+        (css-transitions/transition-background-color
+         just-added-to-order?
+         [:div.right.z1.circle.stacking-context.border.border-light-gray.flex.items-center.justify-center.medium.h5.bg-too-light-teal
+          {:key       (str "length-circle-" sku-id)
+           :data-test (str "line-item-length-" sku-id)
+           :style     {:margin-left "-21px"
+                       :margin-top  "-10px"
+                       :width       "32px"
+                       :height      "32px"}} (str length "”")]))
 
-      (transition-background-color just-added-to-order?
-                                   [:div.flex.items-center.justify-center.ml1 {:key   (str "thumbnail-" sku-id)
-                                                                               :style {:width "79px" :height "79px"}}
-                                    [:img.block.border.border-light-gray
-                                     (assoc thumbnail :style {:width "75px" :height "75px"})]])]
+      (css-transitions/transition-background-color
+       just-added-to-order?
+       [:div.flex.items-center.justify-center.ml1 {:key   (str "thumbnail-" sku-id)
+                                                   :style {:width "79px" :height "79px"}}
+        [:img.block.border.border-light-gray
+         (assoc thumbnail :style {:width "75px" :height "75px"})]])]
 
      [:div {:style {:margin-top "-14px"}}
       [:a.medium.titleize.h5
@@ -116,12 +107,15 @@
         [:div.h5 {:data-test (str "line-item-price-ea-" sku-id)} (mf/as-money-without-cents price) " ea"]]]]]))
 
 (defn ^:private non-adjustable-line-item
-  [{:keys [removing? id title detail price remove-event thumbnail-image-fn]}]
+  [freeinstall-just-added? {:keys [removing? id title detail price remove-event thumbnail-image-fn]}]
   [:div.pt1.pb2.clearfix
    [:div.left.ml1.pr3
-    [:div.flex.justify-center {:style {:height "79px"
-                                       :width  "79px"}}
-     (thumbnail-image-fn 75)]]
+    (css-transitions/transition-background-color
+     freeinstall-just-added?
+     [:div.flex.justify-center.items-center
+      {:style {:height "79px"
+               :width  "79px"}}
+      (thumbnail-image-fn 75)])]
    [:div
     [:a.medium.titleize.h5
      {:data-test (str "line-item-title-" id)}
@@ -157,6 +151,7 @@
                               recently-added-skus
                               delete-line-item-requests
                               freeinstall-line-item-data
+                              freeinstall-just-added?
                               cart-summary]} owner _]
   (component/create
    [:div.container.p2
@@ -173,7 +168,7 @@
                                      update-line-item-requests
                                      delete-line-item-requests)
       (when freeinstall-line-item-data
-        (non-adjustable-line-item freeinstall-line-item-data))
+        (non-adjustable-line-item freeinstall-just-added? freeinstall-line-item-data))
 
       (component/build suggestions/component suggestions nil)]
 
@@ -393,6 +388,7 @@
      :cart-summary               (cart-summary/query data)
      :delete-line-item-requests  (variants-requests data request-keys/delete-line-item variant-ids)
      :recently-added-skus        (get-in data keypaths/cart-recently-added-skus)
+     :freeinstall-just-added?    (get-in data keypaths/cart-freeinstall-just-added?)
      :stylist-service-menu       (get-in data keypaths/stylist-service-menu)
      :freeinstall-line-item-data (cart-items/freeinstall-line-item-query data)}))
 
