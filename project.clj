@@ -25,7 +25,7 @@
                  [org.omcljs/om "1.0.0-beta1" :exclusions [cljsjs/react com.cognitect/transit-cljs]]
                  [org.clojure/core.async "0.3.443"]
                  [cljs-ajax "0.7.3" :exclusions [org.apache.httpcomponents/httpclient]]
-                 [comb "0.1.0"]
+                 [comb "0.1.1"]
                  [sablono "0.8.0"]
                  [bidi "2.0.16"]
                  [lambdaisland/uri "1.1.0"]

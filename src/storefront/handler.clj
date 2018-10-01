@@ -54,18 +54,8 @@
     (catch NumberFormatException _
       nil)))
 
-(defn render-template
-  "Evaluate a template using the supplied bindings. The template source may
-  be a string, or an I/O source such as a File, Reader or InputStream."
-  ([source]
-   (render-template source {}))
-  ([source bindings]
-   (let [keys (mapv (comp symbol name) (keys bindings))
-         func (template/compile-fn [{:keys keys}] source)]
-     (func bindings))))
-
 (defn render-static-page [template]
-  (render-template template {:url assets/path}))
+  (template/eval template {:url assets/path}))
 
 (defn static-page [[navigate-kw content-kw & static-content-id]]
   (when (= [navigate-kw content-kw] events/navigate-content)
@@ -77,7 +67,6 @@
                    io/resource
                    slurp
                    render-static-page)}))
-
 
 (defn storefront-site-defaults
   [environment]
