@@ -92,7 +92,7 @@
       string/lower-case
       (string/replace #"[^a-z]+" "-")))
 
-(defn ^:private display-freeinstall-line-item [{:keys [price title thumbnail-image-fn] :as freeinstall-line-item-data}]
+(defn ^:private display-freeinstall-line-item [{:keys [id price title thumbnail-image-fn] :as freeinstall-line-item-data}]
   [:div.clearfix.border-bottom.border-gray.py3
    [:a.left.mr1
     [:div.block.border.border-gray.rounded.hide-on-mb
@@ -101,10 +101,10 @@
      (thumbnail-image-fn 132)]]
    [:div.overflow-hidden
     [:div.ml1
-     [:a.medium.titleize.h5     ; TODO data-test
+     [:a.medium.titleize.h5 {:data-test (str "line-item-title-" id)}
       title]
      [:div.h6.mt1.line-height-1
-      [:div.pyp2                ; TODO data-test
+      [:div.pyp2 {:data-test (str "line-item-price-ea-" id)}
        "Price Each: " (mf/as-money-without-cents price)]]]]])
 
 (defn component

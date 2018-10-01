@@ -51,7 +51,8 @@
       [:div.flex.justify-end
        [:div.h6.light.dark-gray.px1.nowrap.italic
         "You've saved "
-        [:span.bold (mf/as-money (:total-savings freeinstall-line-item-data))]]]])])
+        [:span.bold {:data-test "total-savings"}
+         (mf/as-money (:total-savings freeinstall-line-item-data))]]]])])
 
 (defn ^:private text->data-test-name [name]
   (-> name
@@ -69,18 +70,19 @@
            subtotal] :as props} owner _]
 
   (component/create
-   [:div {:data-test "cart-order-summary"}
+   [:div {:data-test "confirmation-order-summary"}
     [:div.hide-on-dt.border-top.border-light-gray]
     [:div.py1.border-bottom.border-light-gray
      [:table.col-12
       [:tbody
-       (summary-row "Subtotal" subtotal)
+       (summary-row {:data-test "subtotal"} "Subtotal" subtotal)
 
        (for [{:keys [name price coupon-code] :as adjustment} adjustments-including-tax]
          (when (non-zero-adjustment? adjustment)
            (summary-row
-            {:key name}
-            [:div.flex.items-center.align-middle {:data-test (text->data-test-name name)}
+            {:key       name
+             :data-test (text->data-test-name name)}
+            [:div.flex.items-center.align-middle
              (when (= "Bundle Discount" name)
                (svg/discount-tag {:class  "mxnp6"
                                   :height "2em" :width "2em"}))
