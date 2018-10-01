@@ -124,7 +124,7 @@
      (thumbnail-image-fn 75)]]
    [:div
     [:a.medium.titleize.h5
-     {:data-test (str "line-item-title" id)}
+     {:data-test (str "line-item-title-" id)}
      title]
     [:div.h6
      [:div.flex.justify-between.mt1

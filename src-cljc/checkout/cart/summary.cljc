@@ -22,9 +22,11 @@
   ([content amount] (summary-row {} content amount))
   ([row-attrs content amount]
    [:tr.h5
-    (merge (when-not (pos? amount)
+    (merge
+     (when-not (pos? amount)
              {:class "teal"})
-           row-attrs) [:td.pyp1 content]
+     row-attrs)
+    [:td.pyp1 content]
     [:td.pyp1.right-align.medium
      (mf/as-money-or-free amount)]]))
 
@@ -75,7 +77,8 @@
       [:div.flex.justify-end
        [:div.h6.light.dark-gray.px1.nowrap.italic
         "You've saved "
-        [:span.bold (mf/as-money (:total-savings freeinstall-line-item-data))]]]])])
+        [:span.bold {:data-test "total-savings"}
+         (mf/as-money (:total-savings freeinstall-line-item-data))]]]])])
 
 (defn component
   [{:keys [freeinstall-line-item-data
@@ -91,7 +94,7 @@
     [:div.py1.border-bottom.border-light-gray
      [:table.col-12
       [:tbody
-       (summary-row "Subtotal" subtotal)
+       (summary-row {:data-test "subtotal"} "Subtotal" subtotal)
        (when shipping-cost
          (summary-row {:class "black"} "Shipping" shipping-cost))
 
@@ -104,8 +107,9 @@
        (for [{:keys [name price coupon-code] :as adjustment} adjustments-including-tax]
          (when (non-zero-adjustment? adjustment)
            (summary-row
-            {:key name}
-            [:div.flex.items-center.align-middle {:data-test (text->data-test-name name)}
+            {:key       name
+             :data-test (text->data-test-name name)}
+            [:div.flex.items-center.align-middle
              (when (= "Bundle Discount" name)
                (svg/discount-tag {:class  "mxnp6"
                                   :height "2em" :width "2em"}))
