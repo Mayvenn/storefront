@@ -1,22 +1,20 @@
 (ns storefront.handler-test
   (:require [cheshire.core :refer [generate-string parse-string]]
-            [clojure
-             [string :as string]
-             [test :refer :all]]
-            [compojure.core :refer :all]
+            [clojure.string :as string]
+            [clojure.test :refer [deftest is testing are]]
             [com.stuartsierra.component :as component]
-            [ring.mock.request :as mock]
-            [ring.util
-             [codec :as codec]
-             [response :refer [content-type response status]]]
-            [standalone-test-server.core :refer :all]
+            [compojure.core :refer [routes GET POST]]
             [lambdaisland.uri :as uri]
-            [storefront
-             [handler :refer :all]
-             [system :refer [create-system]]]
+            [ring.mock.request :as mock]
+            [ring.util.codec :as codec]
+            [ring.util.response :refer [content-type response status]]
+            [spice.core :as spice]
+            [standalone-test-server.core :refer [txfm-request txfm-requests
+                                                 with-standalone-server standalone-server
+                                                 with-requests-chan]]
             [storefront.backend-api :as api]
             [storefront.config :as config]
-            [spice.core :as spice]))
+            [storefront.system :refer [create-system]]))
 
 (def contentful-port 4335)
 
