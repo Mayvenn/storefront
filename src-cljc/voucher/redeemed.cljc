@@ -26,7 +26,8 @@
         (svg/check {:class  "stroke-black"
                     :height "3em"
                     :width  "3em"})
-        "Voucher Redeemed"]
+        "Voucher Redeemed:"
+        [:span.pl1.bold (-> voucher :discount :unit_type)]]
        [:div.h00.teal.bold {:data-test "redemption-amount"}
         (service-menu/display-voucher-amount service-menu voucher)]
        [:div.h4 "has been added to your earnings"]
