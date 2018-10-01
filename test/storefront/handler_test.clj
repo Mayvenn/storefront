@@ -2,121 +2,16 @@
   (:require [cheshire.core :refer [generate-string parse-string]]
             [clojure.string :as string]
             [clojure.test :refer [deftest is testing are]]
-            [com.stuartsierra.component :as component]
             [compojure.core :refer [routes GET POST]]
             [lambdaisland.uri :as uri]
             [ring.mock.request :as mock]
             [ring.util.codec :as codec]
             [ring.util.response :refer [content-type response status]]
-            [spice.core :as spice]
-            [standalone-test-server.core :refer [txfm-request txfm-requests
-                                                 with-standalone-server standalone-server
-                                                 with-requests-chan]]
-            [storefront.backend-api :as api]
-            [storefront.config :as config]
-            [storefront.system :refer [create-system]]))
-
-(def contentful-port 4335)
-
-(def test-overrides {:environment       "test"
-                     :server-opts       {:port 2390}
-                     :logging           {:system-name "storefront.tests"}
-                     :contentful-config {:endpoint (str "http://localhost:" contentful-port)
-                                         :space-id "fake-space-id"
-                                         :api-key  "fake-api-key"}
-                     :storeback-config  {:endpoint          "http://localhost:4334/"
-                                         :internal-endpoint "http://localhost:4334/"}})
-
-(def contentful-response
-  {:body
-   {:sys   {:type "Array"}
-    :total 2
-    :skip  0
-    :limit 100
-    :items
-    [{:sys
-      {:space     {:sys {:type "Link" :linkType "Space" :id "76m8os65degn"}}
-       :id        "6VN7YwJeAoQagIaEyOqk4S"
-       :type      "Entry"
-       :createdAt "2018-04-03T00:24:17.795Z"
-       :updatedAt "2018-04-03T21:47:26.208Z"
-       :revision  2
-       :contentType
-       {:sys {:type "Link" :linkType "ContentType" :id "homepage"}}
-       :locale    "en-US"}
-      :fields
-      {:heroImageDesktopUuid       "8cb671b1-33b8-496b-a77b-7281ac72c571"
-       :heroImageMobileUuid        "666b02ba-26f2-4349-aa98-1d251edc701c"
-       :heroImageFileName          "Hair-Always-On-Beat.jpg"
-       :heroImageAltText           "Hair always on beat! 15% off everything! Shop looks!"
-       :leftFeatureBlockFileName   "Left"
-       :middleFeatureBlockFileName "Middle"
-       :rightFeatureBlockFileName  "Right"}}
-     {:sys
-      {:space     {:sys {:type "Link" :linkType "Space" :id "76m8os65degn"}}
-       :id        "7kFmCirU3uO2w6ykgAQ4gY"
-       :type      "Entry"
-       :createdAt "2018-04-03T21:49:47.237Z"
-       :updatedAt "2018-04-03T21:49:47.237Z"
-       :revision  1
-       :contentType
-       {:sys {:type "Link" :linkType "ContentType" :id "homepage"}}
-       :locale    "en-US"}
-      :fields
-      {:heroImageDesktopUuid       "8cb671b1-33b8-496b-a77b-7281ac72c571"
-       :heroImageMobileUuid        "666b02ba-26f2-4349-aa98-1d251edc701c"
-       :heroImageFileName          "Hair-Always-On-Beat.jpg"
-       :heroImageAltText           "Hair always on beat! 15% off everything! Shop looks!"
-       :leftFeatureBlockFileName   "Left"
-       :middleFeatureBlockFileName "Middle"
-       :rightFeatureBlockFileName  "Right"}}]}
-   :status 200})
-
-
-(def storeback-stylist-response
-  (-> (generate-string {:store_slug "bob"
-                        :store_name "Bob's Hair Emporium"
-                        :instagram_account nil
-                        :stylist_id 3})
-      (response)
-      (status 200)
-      (content-type "application/json")))
-
-(def default-storeback-handler
-  (routes
-   (GET "/store" req storeback-stylist-response)))
-
-(def default-contentful-handler
-  (routes
-   (GET "/spaces/fake-space-id/entries" req
-        {:status 200
-         :body   (generate-string (:body contentful-response))})))
+            [standalone-test-server.core :refer [txfm-request txfm-requests with-requests-chan]]
+            [storefront.handler-test.common :as common :refer [with-services with-handler]]))
 
 (defn set-cookies [req cookies]
   (update req :headers assoc "cookie" (string/join "; " (map (fn [[k v]] (str k "=" v)) cookies))))
-
-(def storeback-no-stylist-response
-  (-> (response "{}")
-      (status 404)
-      (content-type "application/json")))
-
-(def storeback-shop-response
-  (-> (generate-string {:store_slug "shop"
-                        :store_name "Mayvenn Hair"
-                        :instagram_account nil
-                        :stylist_id 1})
-      (response)
-      (status 200)
-      (content-type "application/json")))
-
-(def realistic-order-token "2OkDy7X95jblOjaTEZHNDPQm+qkz4ucv3ukjfohQLiI=")
-
-(def storeback-partially-fake-order-handler-response
-  (-> (generate-string {:number "W123456"
-                        :token realistic-order-token})
-      (response)
-      (status 200)
-      (content-type "application/json")))
 
 (def storeback-one-time-login-response
   (-> (generate-string {:user  {:email "acceptance+bob@mayvenn.com"
@@ -132,31 +27,6 @@
   (let [[base query] (.split (str url) "\\?")]
     [base (codec/form-decode query)]))
 
-(defmacro with-services
-  [handlers & body]
-  `(let [h# ~handlers]
-     (with-standalone-server
-       [fake-storeback# (standalone-server (:storeback-handler h# default-storeback-handler))
-        fake-contentful# (standalone-server (:contentful-handler h# default-contentful-handler)
-                                            {:port contentful-port})]
-       ~@body)))
-
-(defmacro with-resource
-  [bindings close-fn & body]
-  `(let ~bindings
-     (try
-       ~@body
-       (finally
-         (~close-fn ~(bindings 0))))))
-
-(defmacro with-handler
-  [handler & body]
-  `(let [unstarted-system# (create-system test-overrides)]
-     (with-resource [sys# (component/start unstarted-system#)
-                     ~handler (-> sys# :app-handler :handler)]
-       component/stop
-       ~@body)))
-
 (defn parse-json-body [req]
   (update req :body #(parse-string % true)))
 
@@ -166,194 +36,6 @@
    (txfm-request requests
                  (comp (map parse-json-body) xf)
                  {:timeout 1000})))
-
-(def default-req-params {:server-port 8080
-                         :uri "/"
-                         :scheme :http
-                         :request-method :get})
-
-(defn assert-request [req storeback-resp asserter]
-  (with-services {:storeback-handler (constantly storeback-resp)}
-    (with-handler handler
-      (asserter (handler (merge default-req-params req))))))
-
-(deftest redirects-to-https-preserving-query-params
-  (testing "bob.mayvenn.com"
-    (assert-request (mock/request :get "http://bob.mayvenn.com")
-                    storeback-stylist-response
-                    (fn [resp]
-                      (is (= 301 (:status resp)) (pr-str resp))
-                      (is (= "https://bob.mayvenn.com/"
-                             (get-in resp [:headers "Location"]))))))
-
-  (testing "no www-prefix stylist"
-    (with-services {}
-      (with-handler handler
-        (let [resp (handler (mock/request :get "http://no-stylist.mayvenn.com/?yo=lo&mo=fo"))]
-          (is (= 301 (:status resp)))
-          (is (= "https://no-stylist.mayvenn.com/?yo=lo&mo=fo"
-                 (get-in resp [:headers "Location"])))))))
-
-  (testing "www-prefix stylist doesn't redirect to https://www.bob.mayvenn.com - because we don't have a wildcard ssl cert for multiple subdomains"
-    (assert-request (mock/request :get "http://www.bob.mayvenn.com/?yo=lo&mo=fo")
-                    storeback-stylist-response
-                    (fn [resp]
-                      (is (= 302 (:status resp)))
-                      (is (not= "https://www.bob.mayvenn.com/?yo=lo&mo=fo"
-                                (get-in resp [:headers "Location"])))
-                      (is (= "https://bob.mayvenn.com/?yo=lo&mo=fo"
-                             (get-in resp [:headers "Location"])))))))
-
-(deftest redirects-missing-stylists-to-store-while-preserving-query-params
-  (assert-request (mock/request :get "https://no-stylist.mayvenn.com/?yo=lo&mo=fo")
-                  storeback-no-stylist-response
-                  (fn [resp]
-                    (is (= 302 (:status resp)))
-                    (is (= "https://store.mayvenn.com/?yo=lo&mo=fo"
-                           (get-in resp [:headers "Location"]))))))
-
-(deftest redirects-www-prefixed-stylists-to-stylist-without-prefix
-  (assert-request (mock/request :get "https://www.bob.mayvenn.com")
-                  storeback-stylist-response
-                  (fn [resp]
-                    (is (= 302 (:status resp)) (pr-str resp))
-                    (is (= "https://bob.mayvenn.com/"
-                           (get-in resp [:headers "Location"]))))))
-
-(deftest redirects-www-to-shop-preserving-query-params
-  (with-services {}
-    (with-handler handler
-      (let [resp (handler (mock/request :get "https://www.mayvenn.com/?world=true"))]
-        (is (= 301 (:status resp)))
-        (is (= "https://shop.mayvenn.com/?world=true"
-               (get-in resp [:headers "Location"])))))))
-
-(deftest redirects-no-subdomain-to-shop-preserving-query-params
-  (with-services {}
-    (with-handler handler
-      (let [resp (handler (mock/request :get "https://mayvenn.com/?world=true"))]
-        (is (= 301 (:status resp)))
-        (is (= "https://shop.mayvenn.com/?world=true"
-               (get-in resp [:headers "Location"])))))))
-
-(deftest redirects-legacy-products-to-new-products
-  (let [[storeback-requests storeback-handler]
-        (with-requests-chan (routes
-                             (GET "/v2/orders/:number" req {:status 404
-                                                            :body   "{}"})
-                             (GET "/v2/products" req
-                                  {:status 200
-                                   :body   (generate-string {:products [{:catalog/product-id "33"
-                                                                         :page/slug          "brazilian-loose-wave-lace-closures"}]})})
-                             (GET "/store" req storeback-stylist-response)))]
-    (with-services {:storeback-handler storeback-handler}
-      (with-handler handler
-        (let [resp (handler (mock/request :get "https://shop.mayvenn.com/products/brazilian-loose-wave-lace-closure"))]
-          (is (= 301 (:status resp)) (pr-str resp))
-          (is (= "https://shop.mayvenn.com/products/33-brazilian-loose-wave-lace-closures"
-                 (get-in resp [:headers "Location"]))))))))
-
-(deftest redirects-old-categories-to-new-categories
-  (assert-request (mock/request :get "https://shop.mayvenn.com/categories/hair/straight")
-                  storeback-shop-response
-                  (fn [resp]
-                    (is (= 301 (:status resp)) (pr-str resp))
-                    (is (= "https://shop.mayvenn.com/categories/2-virgin-straight"
-                           (get-in resp [:headers "Location"]))))))
-
-(deftest redirects-categories-to-home
-  (assert-request (mock/request :get "https://shop.mayvenn.com/categories?utm_source=cats")
-                  storeback-shop-response
-                  (fn [resp]
-                    (is (= 301 (:status resp)) (pr-str resp))
-                    (is (= "https://shop.mayvenn.com/?utm_source=cats"
-                           (get-in resp [:headers "Location"])))))
-
-  (assert-request (mock/request :get "https://shop.mayvenn.com/categories/?utm_source=cats")
-                  storeback-shop-response
-                  (fn [resp]
-                    (is (= 301 (:status resp)) (pr-str resp))
-                    (is (= "https://shop.mayvenn.com/?utm_source=cats"
-                           (get-in resp [:headers "Location"]))))))
-
-(deftest redirects-products-to-home
-  (assert-request (mock/request :get "https://shop.mayvenn.com/products?utm_source=cats")
-                  storeback-shop-response
-                  (fn [resp]
-                    (is (= 301 (:status resp)) (pr-str resp))
-                    (is (= "https://shop.mayvenn.com/?utm_source=cats"
-                           (get-in resp [:headers "Location"])))))
-  (assert-request (mock/request :get "https://shop.mayvenn.com/products/?utm_source=cats")
-                  storeback-shop-response
-                  (fn [resp]
-                    (is (= 301 (:status resp)) (pr-str resp))
-                    (is (= "https://shop.mayvenn.com/?utm_source=cats"
-                           (get-in resp [:headers "Location"]))))))
-
-(deftest redirects-shop-to-preferred-subdomain-preserving-path-and-query-strings
-  (assert-request (-> (mock/request :get "https://shop.mayvenn.com/categories/hair/straight?utm_source=cats")
-                      (mock/header "cookie" "preferred-store-slug=bob"))
-                  storeback-shop-response
-                  (fn [resp]
-                    (is (= 302 (:status resp)))
-                    (is (= "https://bob.mayvenn.com/categories/hair/straight?utm_source=cats"
-                           (get-in resp [:headers "Location"]))))))
-
-(deftest redirects-shop-to-store-subdomain-if-preferred-subdomain-is-invalid
-  (assert-request (-> (mock/request :get "https://shop.mayvenn.com/categories/hair/straight?utm_source=cats")
-                      (mock/header "cookie" "preferred-store-slug=non-existent-stylist"))
-                  storeback-no-stylist-response
-                  (fn [resp]
-                    (is (= 302 (:status resp)))
-                    (is (= "https://store.mayvenn.com/categories/hair/straight?utm_source=cats"
-                           (get-in resp [:headers "Location"])))
-                    (let [cookie (first (get-in resp [:headers "Set-Cookie"]))]
-                      (is (.contains cookie "preferred-store-slug=;Max-Age=0;") (str cookie))))))
-
-(deftest redirects-classes
-  (with-services {}
-    (with-handler handler
-      (testing "http"
-        (let [resp (handler (mock/request :get "http://classes.mayvenn.com"))]
-          (is (= 302 (:status resp)))
-          (is (= "https://docs.google.com/a/mayvenn.com/forms/d/e/1FAIpQLSdpA5Kvl8hhI5TkPRGwWLyFcWLtUpRyQksrbA-cikQvTXekwQ/viewform"
-                 (get-in resp [:headers "Location"])))))
-
-      (testing "https"
-        (let [resp (handler (mock/request :get "https://classes.mayvenn.com"))]
-          (is (= 302 (:status resp)))
-          (is (= "https://docs.google.com/a/mayvenn.com/forms/d/e/1FAIpQLSdpA5Kvl8hhI5TkPRGwWLyFcWLtUpRyQksrbA-cikQvTXekwQ/viewform"
-                 (get-in resp [:headers "Location"]))))))))
-
-(deftest redirects-vistaprint
-  (with-services {}
-    (with-handler handler
-      (testing "http"
-        (let [resp (handler (mock/request :get "http://vistaprint.mayvenn.com"))]
-          (is (= 302 (:status resp)))
-          (is (= "http://www.vistaprint.com/vp/gateway.aspx?sr=no&s=6797900262"
-                 (get-in resp [:headers "Location"])))))
-
-      (testing "https"
-        (let [resp (handler (mock/request :get "https://vistaprint.mayvenn.com"))]
-          (is (= 302 (:status resp)))
-          (is (= "http://www.vistaprint.com/vp/gateway.aspx?sr=no&s=6797900262"
-                 (get-in resp [:headers "Location"]))))))))
-
-(deftest redirects-the-literal-stylist-subdomain-to-community
-  (with-services {}
-    (with-handler handler
-      (testing "http"
-        (let [resp (handler (mock/request :get "http://stylist.mayvenn.com"))]
-          (is (= 301 (:status resp)))
-          (is (= "https://community.mayvenn.com"
-                 (get-in resp [:headers "Location"])))))
-
-      (testing "https"
-        (let [resp (handler (mock/request :get "https://stylist.mayvenn.com"))]
-          (is (= 301 (:status resp)))
-          (is (= "https://community.mayvenn.com"
-                 (get-in resp [:headers "Location"]))))))))
 
 (deftest handles-welcome-subdomain
   (with-services {}
@@ -425,7 +107,7 @@
 
 (deftest one-time-login-sets-cookies
   (with-services {:storeback-handler (routes
-                                      (GET "/store" _ storeback-stylist-response)
+                                      (GET "/store" _ common/storeback-stylist-response)
                                       (POST "/v2/one-time-login" _ storeback-one-time-login-response))}
     (with-handler handler
       (let [resp (handler (mock/request :get "https://bob.mayvenn.com/one-time-login?token=USERTOKEN&user-id=1&sha=FIRST&target=%2F"))
@@ -438,20 +120,6 @@
           (is (some #{(format "email=%s;Max-Age=2592000;Secure;Path=/;Domain=bob.mayvenn.com"
                               (ring.util.codec/form-encode "acceptance+bob@mayvenn.com"))}
                     cookies)))))))
-
-(deftest create-shared-cart-from-url-redirects-to-cart-preserving-query-params
-  (with-services {:storeback-handler (routes
-                                      (GET "/store" _ storeback-stylist-response)
-                                      (POST "/create-order-from-shared-cart" _ storeback-partially-fake-order-handler-response))}
-    (with-handler handler
-      (let [resp     (handler (mock/request :get "https://bob.mayvenn.com/create-cart-from/my-shared-cart-id?utm_content=test"))
-            cookies  (get-in resp [:headers "Set-Cookie"])
-            location (get-in resp [:headers "Location"])]
-        (is (= "https://bob.mayvenn.com/cart?utm_content=test" location))
-        (testing "It assigns cookies to the client to automatically associate the created order"
-          (is (some #{"number=W123456;Max-Age=2419200;Secure;Path=/"} cookies))
-          (is (some #{(format "token=%s;Max-Age=2419200;Secure;Path=/"
-                              (ring.util.codec/form-encode realistic-order-token))} cookies)))))))
 
 (defn- get-leads-req [handler cookie path]
   (-> (mock/request :get (str "https://welcome.mayvenn.com/stylists" path))
@@ -583,83 +251,13 @@
           (testing "going to a1 registered-thank-you works"
             (is (= 200 (:status (get-leads-req handler lead-cookie "/flows/a1/registered-thank-you"))))))))))
 
-(deftest submits-paypal-redirect-to-waiter
-  (testing "when waiter knows the order"
-    (with-services {:storeback-handler (constantly {:status  200
-                                                    :headers {"Content-Type" "application/json"}
-                                                    :body    (generate-string {:number "W123456"
-                                                                               :token  "order-token"
-                                                                               :state  "cart"})})}
-      (with-handler handler
-        (let [resp (-> (mock/request :get "https://shop.mayvenn.com/orders/W123456/paypal/order-token")
-                       (set-cookies {"number"  "W123456"
-                                     "token"   "order-token"
-                                     "expires" "Sat, 03 May 2025 17:44:22 GMT"})
-                       handler)]
-          (is (= 302 (:status resp)))
-          (testing "it redirects to order processing page"
-            (is (= "/checkout/processing"
-                   (get-in resp [:headers "Location"]))))))))
-
-  (testing "when waiter does not recognize the order"
-    (with-services {:storeback-handler (constantly {:status  404
-                                                    :headers {"Content-Type" "application/json"}
-                                                    :body    (generate-string {})})}
-      (with-handler handler
-        (let [resp (-> (mock/request :get "https://shop.mayvenn.com/orders/W123456/paypal/order-token")
-                       (set-cookies {"number"  "W123456"
-                                     "token"   "order-token"
-                                     "expires" "Sat, 03 May 2025 17:44:22 GMT"})
-                       handler)]
-          (is (= 302 (:status resp)))
-          (is (= "/cart?error=bad-request"
-                 (get-in resp [:headers "Location"])))))))
-  (testing "when cookies and order token from paypal do not match"
-    (with-services {:storeback-handler (constantly {:status  200
-                                                    :headers {"Content-Type" "application/json"}
-                                                    :body    (generate-string {:number "W123456"
-                                                                               :token  "order-token"
-                                                                               :state  "cart"})})}
-      (with-handler handler
-        (let [resp (-> (mock/request :get "https://shop.mayvenn.com/orders/W123456/paypal/order-token-v2")
-                       (set-cookies {"number"  "W123456"
-                                     "token"   "order-token"
-                                     "expires" "Sat, 03 May 2025 17:44:22 GMT"})
-                       handler)]
-          (is (= 302 (:status resp)) (pr-str resp))
-          (is (= "/cart?error=bad-request"
-                 (get-in resp [:headers "Location"])))))))
-  (testing "when cookies and order number from paypal do not match"
-    (with-services {:storeback-handler (constantly {:status  200
-                                                    :headers {"Content-Type" "application/json"}
-                                                    :body    (generate-string {:number "W123456"
-                                                                               :token  "order-token"
-                                                                               :state  "cart"})})}
-      (with-handler handler
-        (let [resp (-> (mock/request :get "https://shop.mayvenn.com/orders/W234567/paypal/order-token")
-                       (set-cookies {"number"  "W123456"
-                                     "token"   "order-token"
-                                     "expires" "Sat, 03 May 2025 17:44:22 GMT"})
-                       handler)]
-          (is (= 302 (:status resp)) (pr-str resp))
-          (is (= "/cart?error=bad-request"
-                 (get-in resp [:headers "Location"]))))))))
-
 (deftest renders-page-when-matches-stylist-subdomain-and-sets-the-preferred-subdomain
-  (assert-request
+  (common/assert-request
    (mock/request :get "https://bob.mayvenn.com")
-   storeback-stylist-response
+   common/storeback-stylist-response
    (fn [resp]
      (is (= 200 (:status resp)))
      (is (.contains (first (get-in resp [:headers "Set-Cookie"])) "preferred-store-slug=bob;")))))
-
-(deftest redirects-product-details-sku-to-sku-in-query-params
-  (with-services {}
-    (with-handler handler
-      (let [resp (handler (mock/request :get "https://bob.mayvenn.com/products/12-indian-straight-bundles/INSDB14"))]
-        (is (= 301 (:status resp)))
-        (is (= "/products/12-indian-straight-bundles?SKU=INSDB14"
-               (get-in resp [:headers "Location"])))))))
 
 (defmacro has-canonized-link [handler url]
   `(let [handler#       ~handler
@@ -684,14 +282,14 @@
                                                                       (GET "/v2/products" req
                                                                            {:status 200
                                                                             :body   (generate-string {:products []})})
-                                                                      (GET "/store" req storeback-stylist-response)))]
+                                                                      (GET "/store" req common/storeback-stylist-response)))]
       (with-services {:storeback-handler storeback-handler}
         (with-handler handler
           (let [resp (handler (mock/request :get "https://bob.mayvenn.com/products/99-red-balloons"))]
             (is (= 404 (:status resp))))))))
   (testing "when whitelisted for discontinued"
     (let [[storeback-requests storeback-handler] (with-requests-chan (routes
-                                                                      (GET "/store" req storeback-stylist-response)
+                                                                      (GET "/store" req common/storeback-stylist-response)
                                                                       (GET "/v2/products" req
                                                                            {:status 200
                                                                             :body   (generate-string {:products []
@@ -773,7 +371,7 @@
                                                                            :legacy/variant-id            641
                                                                            :promo.triple-bundle/eligible true}]})})
                                (GET "/store" req
-                                    storeback-stylist-response)))]
+                                    common/storeback-stylist-response)))]
       (with-services {:storeback-handler storeback-handler}
         (with-handler handler
           (has-canonized-link handler "//bob.mayvenn.com/products/67-peruvian-water-wave-lace-closures?SKU=PWWLC10")
@@ -789,7 +387,7 @@
                                                                       (GET "/v2/orders/:number" req {:status 200
                                                                                                      ;; TODO: fixme
                                                                                                      :body   "{\"number\": \"W123456\"}"})
-                                                                      (GET "/store" req storeback-stylist-response)))]
+                                                                      (GET "/store" req common/storeback-stylist-response)))]
       (with-services {:storeback-handler storeback-handler}
         (with-handler handler
           (let [resp (handler (-> (mock/request :get "https://bob.mayvenn.com/")
@@ -863,10 +461,10 @@
 
 (deftest fetches-data-from-contentful
   (testing "caching content"
-    (let [[storeback-requests storeback-handler]   (with-requests-chan (GET "/store" req storeback-stylist-response))
+    (let [[storeback-requests storeback-handler]   (with-requests-chan (GET "/store" req common/storeback-stylist-response))
           [contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
                                                                             {:status 200
-                                                                             :body   (generate-string (:body contentful-response))}))]
+                                                                             :body   (generate-string (:body common/contentful-response))}))]
       (with-services {:storeback-handler  storeback-handler
                       :contentful-handler contentful-handler}
         (with-handler handler
@@ -878,13 +476,13 @@
   (testing "fetches data on system start"
     (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
                                                                             {:status 200
-                                                                             :body   (generate-string (:body contentful-response))}))]
+                                                                             :body   (generate-string (:body common/contentful-response))}))]
       (with-services {:contentful-handler contentful-handler}
         (with-handler handler
           (is (= 2 (count (txfm-requests contentful-requests identity))))))))
 
   (testing "attempts-to-retry-fetch-from-contentful"
-    (let [[storeback-requests storeback-handler]   (with-requests-chan (GET "/store" req storeback-stylist-response))
+    (let [[storeback-requests storeback-handler]   (with-requests-chan (GET "/store" req common/storeback-stylist-response))
           [contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
                                                                             {:status 500
                                                                              :body   "{}"}))]
@@ -904,7 +502,7 @@
                                            :body    (generate-string {:number "W123456"
                                                                       :token  "order-token"
                                                                       :state  "cart"})}))]
-      (with-services {:storeback-handler (routes (GET "/store" req storeback-stylist-response)
+      (with-services {:storeback-handler (routes (GET "/store" req common/storeback-stylist-response)
                                                  (GET "/v2/facets" req {:status 200
                                                                         :body   ""})
                                                  storeback-handler)}
@@ -917,26 +515,3 @@
             (is (= 200 (:status resp))
                 (get-in resp [:headers "Location"]))
             (is (= 1 (count (txfm-requests storeback-requests identity))))))))))
-
-
-(deftest mayvenn-made-without-store-slug-correctly-redirects
-  (let [[storeback-requests storeback-handler]
-        (with-requests-chan (constantly {:status  200
-                                         :headers {"Content-Type" "application/json"}
-                                         :body    (generate-string {:number "W123456"
-                                                                    :token  "order-token"
-                                                                    :state  "cart"})}))]
-    (with-services {:storeback-handler (routes (GET "/store" req storeback-stylist-response)
-                                               (GET "/v2/facets" req {:status 200
-                                                                      :body   ""})
-                                               storeback-handler)}
-      (with-handler handler
-        (let [resp     (-> (mock/request :get "https://mayvenn.com/mayvenn-made")
-                           (set-cookies {"number"  "W123456"
-                                         "token"   "order-token"
-                                         "expires" "Sat, 03 May 2025 17:44:22 GMT"})
-                           handler)
-              location (get-in resp [:headers "Location"])]
-          (is (= 301 (:status resp)) location)
-          (is (= "https://shop.mayvenn.com/mayvenn-made" location) location)
-          (is (= 1 (count (txfm-requests storeback-requests identity)))))))))
