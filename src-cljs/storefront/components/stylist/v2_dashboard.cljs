@@ -22,7 +22,8 @@
             [storefront.request-keys :as request-keys]
             [storefront.transitions :as transitions]
             [voucher.keypaths :as voucher-keypaths]
-            [storefront.components.stylist.pagination :as pagination]))
+            [storefront.components.stylist.pagination :as pagination]
+            [storefront.accessors.auth :as auth]))
 
 (def tabs
   [{:id :orders
@@ -91,6 +92,7 @@
                                                     (when-let [status (-> transfer :data :status)]
                                                       (not= "paid" status)))))
                                          balance-transfers)
+
      :fetching-balance-transfers?  (or (utils/requesting? data request-keys/get-stylist-dashboard-balance-transfers)
                                        (utils/requesting? data request-keys/fetch-stylist-service-menu))
      :balance-transfers-pagination (get-in data keypaths/v2-dashboard-balance-transfers-pagination)
@@ -103,8 +105,16 @@
   (component/build component (query data) opts))
 
 (defmethod effects/perform-effects events/navigate-v2-stylist-dashboard [_ event args _ app-state]
-  (if (experiments/v2-dashboard? app-state)
-    (messages/handle-message events/v2-stylist-dashboard-stats-fetch)
-    (effects/redirect events/navigate-stylist-dashboard-earnings)))
+  (let [signed-in (auth/signed-in app-state)]
+    (cond
+      (not (::auth/at-all signed-in))
+      (effects/redirect events/navigate-sign-in)
 
+      (not (= :stylist (::auth/as signed-in)))
+      (effects/redirect events/navigate-home)
 
+      (experiments/v2-dashboard? app-state)
+      (messages/handle-message events/v2-stylist-dashboard-stats-fetch)
+
+      :else
+      (effects/redirect events/navigate-stylist-dashboard-earnings))))

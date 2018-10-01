@@ -12,7 +12,8 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
-            [storefront.transitions :as transitions]))
+            [storefront.transitions :as transitions]
+            [storefront.accessors.auth :as auth]))
 
 (defn status-cell [[span classes] text]
   [:td.p2.h7.center.medium {:col-span span}
@@ -95,7 +96,8 @@
 
 (defmethod effects/perform-effects events/navigate-v2-stylist-dashboard-orders [_ event args _ app-state]
   (let [no-orders-loaded? (empty? (get-in app-state keypaths/v2-dashboard-sales-pagination))]
-    (when no-orders-loaded?
+    (when (and no-orders-loaded?
+               (->> app-state auth/signed-in auth/stylist?))
       (messages/handle-message events/v2-stylist-dashboard-sales-fetch))))
 
 (defmethod effects/perform-effects events/v2-stylist-dashboard-sales-fetch [_ event args _ app-state]

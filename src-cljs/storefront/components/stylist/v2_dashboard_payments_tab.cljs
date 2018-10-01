@@ -2,6 +2,7 @@
   (:require [spice.core :as spice]
             [spice.date :as date]
             [spice.maps :as maps]
+            [storefront.accessors.auth :as auth]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.service-menu :as service-menu]
             [storefront.api :as api]
@@ -134,7 +135,8 @@
 
 (defmethod effects/perform-effects events/navigate-v2-stylist-dashboard-payments [_ event args _ app-state]
   (let [no-balance-transfers-loaded? (empty? (get-in app-state keypaths/v2-dashboard-balance-transfers-pagination-ordering))]
-    (when no-balance-transfers-loaded?
+    (when (and no-balance-transfers-loaded?
+               (->> app-state auth/signed-in auth/stylist?))
       (messages/handle-message events/v2-stylist-dashboard-balance-transfers-fetch))))
 
 (defmethod effects/perform-effects events/v2-stylist-dashboard-balance-transfers-fetch [_ event args _ app-state]
