@@ -87,7 +87,7 @@
            shipping-cost
            adjustments-including-tax
            promo-data
-           subtotal] :as props} owner _]
+           subtotal] :as data} owner _]
   (component/create
    [:div {:data-test "cart-order-summary"}
     [:div.hide-on-dt.border-top.border-light-gray]
@@ -127,7 +127,7 @@
 
        (when (pos? store-credit)
          (summary-row "Store Credit" (- store-credit)))]]]
-    (summary-total-section props)]))
+    (summary-total-section data)]))
 
 (defn query [data]
   (let [order                      (get-in data keypaths/order)
