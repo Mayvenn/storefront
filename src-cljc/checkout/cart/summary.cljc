@@ -83,14 +83,15 @@
            store-credit
            shipping-cost
            adjustments-including-tax
-           promo-data] :as props} owner _]
+           promo-data
+           subtotal] :as props} owner _]
   (component/create
    [:div {:data-test "cart-order-summary"}
     [:div.hide-on-dt.border-top.border-light-gray]
     [:div.py1.border-bottom.border-light-gray
      [:table.col-12
       [:tbody
-       (summary-row "Subtotal" (orders/products-subtotal order))
+       (summary-row "Subtotal" subtotal)
        (when shipping-cost
          (summary-row {:class "black"} "Shipping" shipping-cost))
 
@@ -125,14 +126,18 @@
     (summary-total-section props)]))
 
 (defn query [data]
-  (let [order         (get-in data keypaths/order)
-        shipping-item (orders/shipping-item order)]
-    {:freeinstall-line-item-data (cart-items/freeinstall-line-item-query data)
-     :order                       order
-     :shipping-cost               (* (:quantity shipping-item) (:unit-price shipping-item))
-     :adjustments-including-tax   (orders/all-order-adjustments order)
-     :promo-data                  {:coupon-code   (get-in data keypaths/cart-coupon-code)
-                                   :applying?     (utils/requesting? data request-keys/add-promotion-code)
-                                   :focused       (get-in data keypaths/ui-focus)
-                                   :error-message (get-in data keypaths/error-message)
-                                   :field-errors  (get-in data keypaths/field-errors)}}))
+  (let [order                      (get-in data keypaths/order)
+        shipping-item              (orders/shipping-item order)
+        freeinstall-line-item-data (cart-items/freeinstall-line-item-query data)]
+    {:freeinstall-line-item-data freeinstall-line-item-data
+     :order                      order
+     :shipping-cost              (* (:quantity shipping-item) (:unit-price shipping-item))
+     :adjustments-including-tax  (orders/all-order-adjustments order)
+     :promo-data                 {:coupon-code   (get-in data keypaths/cart-coupon-code)
+                                  :applying?     (utils/requesting? data request-keys/add-promotion-code)
+                                  :focused       (get-in data keypaths/ui-focus)
+                                  :error-message (get-in data keypaths/error-message)
+                                  :field-errors  (get-in data keypaths/field-errors)}
+     :subtotal                   (cond-> (orders/products-subtotal order)
+                                   freeinstall-line-item-data
+                                   (+ (spice/parse-double (:price freeinstall-line-item-data))))}))

@@ -65,7 +65,8 @@
            store-credit
            shipping-cost
            adjustments-including-tax
-           use-store-credit?] :as props} owner _]
+           use-store-credit?
+           subtotal] :as props} owner _]
 
   (component/create
    [:div {:data-test "cart-order-summary"}
@@ -73,7 +74,7 @@
     [:div.py1.border-bottom.border-light-gray
      [:table.col-12
       [:tbody
-       (summary-row "Subtotal" (orders/products-subtotal order))
+       (summary-row "Subtotal" subtotal)
 
        (for [{:keys [name price coupon-code] :as adjustment} adjustments-including-tax]
          (when (non-zero-adjustment? adjustment)
@@ -97,19 +98,23 @@
     (summary-total-section props)]))
 
 (defn query [data]
-  (let [order         (get-in data keypaths/order)
-        shipping-item (orders/shipping-item order)]
+  (let [order                      (get-in data keypaths/order)
+        shipping-item              (orders/shipping-item order)
+        freeinstall-line-item-data (cart-items/freeinstall-line-item-query data)]
     (when (and (experiments/aladdin-experience? data)
                (orders/freeinstall-applied? order))
-      {:freeinstall-line-item-data (cart-items/freeinstall-line-item-query data)
-       :order                       order
-       :shipping-cost               (* (:quantity shipping-item) (:unit-price shipping-item))
-       :adjustments-including-tax   (orders/all-order-adjustments order)
-       :promo-data                  {:coupon-code   (get-in data keypaths/cart-coupon-code)
-                                     :applying?     (utils/requesting? data request-keys/add-promotion-code)
-                                     :focused       (get-in data keypaths/ui-focus)
-                                     :error-message (get-in data keypaths/error-message)
-                                     :field-errors  (get-in data keypaths/field-errors)}})))
+      {:freeinstall-line-item-data freeinstall-line-item-data
+       :order                      order
+       :shipping-cost              (* (:quantity shipping-item) (:unit-price shipping-item))
+       :adjustments-including-tax  (orders/all-order-adjustments order)
+       :promo-data                 {:coupon-code   (get-in data keypaths/cart-coupon-code)
+                                    :applying?     (utils/requesting? data request-keys/add-promotion-code)
+                                    :focused       (get-in data keypaths/ui-focus)
+                                    :error-message (get-in data keypaths/error-message)
+                                    :field-errors  (get-in data keypaths/field-errors)}
+       :subtotal                   (cond-> (orders/products-subtotal order)
+                                     freeinstall-line-item-data
+                                     (+ (spice/parse-double (:price freeinstall-line-item-data))))})))
 
 
 ;; TODO: keeping it for reference. Remove it soon!
