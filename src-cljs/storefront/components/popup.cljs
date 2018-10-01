@@ -30,8 +30,8 @@
   (let [popup-type (get-in data keypaths/popup)
         query      (or (some-> popup-type popup-type->popups :query)
                        (constantly nil))]
-    {:popup-type :email-capture             #_ popup-type
-     :popup-data (email-capture/query data) #_ (query data)}))
+    {:popup-type popup-type
+     :popup-data (query data)}))
 
 (defn built-component [{:keys [popup-type popup-data]} _]
   (let [opts {:opts {:close-attrs (utils/fake-href events/control-popup-hide)}}]
