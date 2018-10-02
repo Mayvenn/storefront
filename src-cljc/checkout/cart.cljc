@@ -8,6 +8,7 @@
               [storefront.browser.cookie-jar :as cookie-jar]
               [storefront.accessors.stylist-urls :as stylist-urls]
               [goog.labs.userAgent.device :as device]])
+   [catalog.images :as catalog-images]
    [cemerick.url :refer [url-encode]]
    [checkout.accessors.vouchers :as vouchers]
    [checkout.call-out :as call-out]
@@ -46,19 +47,21 @@
 (defn display-adjustable-line-items
   [recently-added-skus line-items skus update-line-item-requests delete-line-item-requests]
   (for [{sku-id :sku variant-id :id :as line-item} line-items
+
         :let [sku                  (get skus sku-id)
               legacy-variant-id    (or (:legacy/variant-id line-item) (:id line-item))
               price                (or (:sku/price line-item)         (:unit-price line-item))
-              thumbnail            (merge
-                                    (images/cart-image sku)
-                                    {:data-test (str "line-item-img-" (:catalog/sku-id sku))})
               removing?            (get delete-line-item-requests variant-id)
               updating?            (get update-line-item-requests sku-id)
-              just-added-to-order? (contains? recently-added-skus sku-id)]]
+              just-added-to-order? (contains? recently-added-skus sku-id)
+              length-circle-value (-> sku :hair/length first)]]
+
     [:div.pt1.pb2 {:key (str (:catalog/sku-id sku) (:quantity line-item))}
 
      [:div.left.pr1
-      (when-let [length (-> sku :hair/length first)]
+      (when-not length-circle-value
+        {:class "pr3"})
+      (when length-circle-value
         (css-transitions/transition-background-color
          just-added-to-order?
          [:div.right.z1.circle.stacking-context.border.border-light-gray.flex.items-center.justify-center.medium.h5.bg-too-light-teal
@@ -67,14 +70,17 @@
            :style     {:margin-left "-21px"
                        :margin-top  "-10px"
                        :width       "32px"
-                       :height      "32px"}} (str length "”")]))
+                       :height      "32px"}} (str length-circle-value "”")]))
 
       (css-transitions/transition-background-color
        just-added-to-order?
-       [:div.flex.items-center.justify-center.ml1 {:key   (str "thumbnail-" sku-id)
-                                                   :style {:width "79px" :height "79px"}}
-        [:img.block.border.border-light-gray
-         (assoc thumbnail :style {:width "75px" :height "75px"})]])]
+       [:div.flex.items-center.justify-center.ml1
+        {:key       (str "thumbnail-" sku-id)
+         :data-test (str "line-item-img-" (:catalog/sku-id sku))
+         :style     {:width "79px" :height "79px"}}
+        (ui/ucare-img
+         {:width 75}
+         (->> sku (catalog-images/image "cart") :ucare/id))])]
 
      [:div {:style {:margin-top "-14px"}}
       [:a.medium.titleize.h5
