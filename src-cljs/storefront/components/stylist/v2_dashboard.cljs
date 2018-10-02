@@ -53,8 +53,8 @@
 (defn component
   [{:keys [stats-cards activity-ledger-tab
            balance-transfers balance-transfers-pagination fetching-balance-transfers?
-           sales sales-pagination fetching-sales?
-           pending-voucher service-menu] :as data} owner opts]
+           pending-voucher service-menu
+           orders-data] :as data} owner opts]
   (let [{:keys [active-tab-name]} activity-ledger-tab]
     (component/create
      [:div.col-6-on-dt.col-9-on-tb.mx-auto
@@ -62,12 +62,11 @@
       (ledger-tabs active-tab-name)
 
       (case active-tab-name
-
         :payments
         (payments-tab/payments-table pending-voucher service-menu balance-transfers balance-transfers-pagination fetching-balance-transfers?)
 
         :orders
-        (orders-tab/sales-table sales sales-pagination fetching-sales?))])))
+        (component/build orders-tab/component orders-data nil))])))
 
 (def determine-active-tab
   {events/navigate-v2-stylist-dashboard-payments {:active-tab-name :payments
@@ -92,14 +91,10 @@
                                                     (when-let [status (-> transfer :data :status)]
                                                       (not= "paid" status)))))
                                          balance-transfers)
-
      :fetching-balance-transfers?  (or (utils/requesting? data request-keys/get-stylist-dashboard-balance-transfers)
                                        (utils/requesting? data request-keys/fetch-stylist-service-menu))
      :balance-transfers-pagination (get-in data keypaths/v2-dashboard-balance-transfers-pagination)
-
-     :sales            (get-in data keypaths/v2-dashboard-sales-elements)
-     :fetching-sales?  (utils/requesting? data request-keys/get-stylist-dashboard-sales)
-     :sales-pagination (get-in data keypaths/v2-dashboard-sales-pagination)}))
+     :orders-data (orders-tab/query data)}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
