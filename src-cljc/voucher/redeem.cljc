@@ -74,7 +74,13 @@
      "Vouchers are sent to Mayvenn customers via text and/or email when they buy 3 or more bundles and use a special promo code."]]])
 
 (def ^:private missing-service-menu
-  [:div.mt8.center [:a (utils/route-to events/navigate-home) "Back to Home"]])
+  [:div
+   [:div.col-8.mx-auto.red.bg-red.border.border-red.rounded.light.letter-spacing-1.mt8
+    [:div.px2.py1.bg-lighten-5.rounded.center
+     "We need a little more information from you before you can use this feature. "
+     "Please contact customer service at "
+     (ui/link :link/phone :a.medium.red {} "+1 (888) 562-7952")]]
+   [:div.mt8.center [:a (utils/route-to events/navigate-home) "Back to Home"]]])
 
 (def ^:private spinner
   [:div.mt8 (ui/large-spinner {:style {:height "6em"}})])
@@ -110,11 +116,6 @@
 
 (defmethod effects/perform-effects events/navigate-voucher-redeem
   [dispatch event args prev-app-state app-state]
-  (when (and (experiments/v2-experience? app-state)
-             (= (get-in app-state keypaths/stylist-service-menu ::missing) ::missing))
-        (messages/handle-message events/flash-show-failure
-                                 {:message (str "You have not yet setup your service menu. "
-                                                "Please contact customer service to use this feature.")}))
   #?(:cljs
      (when-not (and (auth/stylist? (auth/signed-in app-state))
                     (experiments/vouchers? app-state))
