@@ -56,6 +56,7 @@
   (let [{current-page :page
          total-pages  :total
          ordering     :ordering} sales-pagination]
+    {:data-test "orders-tab"}
     (cond
 
       (seq sales)

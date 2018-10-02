@@ -111,6 +111,7 @@
         sections (group-payments-by-month payments)
         {current-page :page total-pages :total} pagination]
     [:div
+     {:data-test "payments-tab"}
      (cond
        (and (nil? pending-voucher) (empty? payments)) empty-payments
 
