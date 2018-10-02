@@ -77,6 +77,11 @@
       (display-feature? data "force-aladdin-dashboard")
       (display-feature? data "force-phoenix-dashboard")))
 
+(defn dashboard-with-vouchers? [data]
+  (->> (get-in data keypaths/store-features)
+       (some #{"aladdin-dashboard" "phoenix-dashboard"})
+       boolean))
+
 (defn seventy-five-off-install?
   [data]
   (->> (get-in data keypaths/store-features)

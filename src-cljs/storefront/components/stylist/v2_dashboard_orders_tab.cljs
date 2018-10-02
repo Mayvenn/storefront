@@ -15,7 +15,8 @@
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
             [storefront.request-keys :as request-keys]
-            [storefront.transitions :as transitions]))
+            [storefront.transitions :as transitions]
+            [storefront.accessors.experiments :as experiments]))
 
 (defn status-cell [[span classes] text]
   [:td.p2.h7.center.medium {:col-span span}
@@ -55,23 +56,17 @@
    [:h6.dark-gray.col-5.mx-auto.line-height-2 "Orders from your store will appear here."]])
 
 (defn component
-  [{:keys [sales pagination fetching-data?]}]
+  [{:keys [sales-ui pagination-ui fetching-data? header-ui]}]
   (component/create
    (cond
-     (seq sales)
+     sales-ui
      [:div
       {:data-test "orders-tab"}
       [:table.col-12 {:style {:border-collapse "collapse"}}
-       [:thead.bg-silver.border-0
-        [:tr.h7.medium
-         [:th.px2.py1.left-align.medium.col-2.nowrap "Order Updated"]
-         [:th.px2.py1.left-align.medium.col-8 "Client"]
-         [:th.px2.py1.center.medium.col-1 "Delivery"]
-         [:th.px2.py1.center.medium.col-1 "Voucher"]]]
+       header-ui
        [:tbody
-        sales]]
-      pagination
-      ]
+        sales-ui]]
+      pagination-ui]
 
      fetching-data?
      [:div.my2.h2 ui/spinner]
@@ -85,19 +80,42 @@
            :data-test (str "sales-" order-number)})
    [:td.p2.left-align.dark-gray.h7 (some-> order-updated-at f/abbr-date)]
    [:td.p2.left-align.medium.h5.nowrap
-    {:style {:overflow-x :hidden :max-width 120 :text-overflow :ellipsis}}  ; For real long first names
+    {:style {:overflow-x :hidden :max-width 120 :text-overflow :ellipsis}}  ; For really long first names
+    (some-> order orders/first-name-plus-last-name-initial)]
+   (sale-status-cell sale)])
+
+(defn sale-row-with-voucher [{:keys [order order-number id order-updated-at] :as sale}]
+  [:tr.border-bottom.border-gray.py2.pointer.fate-white-hover
+   (merge (utils/route-to events/navigate-stylist-dashboard-order-details {:order-number order-number})
+          {:key       (str "sales-table-" id)
+           :data-test (str "sales-" order-number)})
+   [:td.p2.left-align.dark-gray.h7 (some-> order-updated-at f/abbr-date)]
+   [:td.p2.left-align.medium.h5.nowrap
+    {:style {:overflow-x :hidden :max-width 120 :text-overflow :ellipsis}}  ; For really long first names
     (some-> order orders/first-name-plus-last-name-initial)]
    (sale-status-cell sale)
    (voucher-status-cell sale)])
 
+(defn header-ui [show-voucher-elements?]
+  [:thead.bg-silver.border-0
+   [:tr.h7.medium
+    [:th.px2.py1.left-align.medium.col-2.nowrap "Order Updated"]
+    [:th.px2.py1.left-align.medium {:class (if show-voucher-elements? "col-8" "col-5")} "Client"]
+    [:th.px2.py1.center.medium {:class (if show-voucher-elements? "col-1" "col-4")} "Delivery"]
+    (when show-voucher-elements?
+      [:th.px2.py1.center.medium.col-1 "Voucher"])]])
+
 (defn query [data]
   (let [fetching-data?                (utils/requesting? data request-keys/get-stylist-dashboard-sales)
         {:keys [page total ordering]} (get-in data keypaths/v2-dashboard-sales-pagination)
-        sales-sorted                  (map (get-in data keypaths/v2-dashboard-sales-elements) ordering)]
-    {:sales          (mapv sale-row sales-sorted)
+        sales-sorted                  (map (get-in data keypaths/v2-dashboard-sales-elements) ordering)
+        show-voucher-elements?        (experiments/dashboard-with-vouchers? data)
+        sale-row-fn                   (if show-voucher-elements? sale-row-with-voucher sale-row)]
+    {:sales-ui       (mapv sale-row-fn sales-sorted)
      :fetching-data? fetching-data?
-     :pagination     (pagination/fetch-more events/control-v2-stylist-dashboard-sales-load-more
-                                            fetching-data? page total)}))
+     :pagination-ui  (pagination/fetch-more events/control-v2-stylist-dashboard-sales-load-more
+                                            fetching-data? page total)
+     :header-ui      (header-ui show-voucher-elements?)}))
 
 (defmethod effects/perform-effects events/navigate-v2-stylist-dashboard-orders [_ event args _ app-state]
   (let [no-orders-loaded? (empty? (get-in app-state keypaths/v2-dashboard-sales-pagination))]
