@@ -21,59 +21,88 @@
             :border-left 0
             :border-right 0}}])
 
+(def ^:private inactive-qr-section
+  [:div
+   [:h3.pt6 "Scan the QR code to redeem a certificate"]
+   [:h6 "Your camera will be used as the scanner."]
+   [:div.flex.justify-center.py4 (ui/ucare-img {:width "50"} "4bd0f715-fa5a-4d82-9cec-62dc993c5d23")]
+   [:div.mx-auto.col-10.col-3-on-tb-dt
+    (ui/teal-button {:on-click     (utils/send-event-callback events/control-voucher-scan)
+                     :height-class "py2"
+                     :data-test    "voucher-scan"} "Scan")]])
+
+(def ^:private qr-preview-section
+  [:div.col-10.mt3.mx-auto #?(:cljs (component/build qr-reader/component nil nil))])
+
+(defn ^:private primary-component
+  [{:keys [code redeeming-voucher? field-errors scanning?]}]
+  [:div
+   [:div.hide-on-dt.center
+
+    (if scanning?
+      qr-preview-section
+      inactive-qr-section)
+
+    [:div.mx-auto.col-10.pb2.flex.items-center.justify-between
+     divider
+     [:span.h6.px2 "or"]
+     divider]]
+   [:div.p4.col-4-on-tb-dt.center.mx-auto
+    [:div.hide-on-mb-tb.py4 ]
+    [:h3.pb4 "Enter the 8-digit code"]
+    [:form
+     {:on-submit (utils/send-event-callback events/control-voucher-redeem {:code code})}
+     (ui/input-group
+      {:keypath       voucher-keypaths/eight-digit-code
+       :wrapper-class "col-8 pl3 bg-white circled-item"
+       :data-test     "voucher-code"
+       :focused       true
+       :placeholder   "xxxxxxxx"
+       :value         code
+       :errors        (get field-errors ["voucher-code"])
+       :data-ref      "voucher-code"}
+      {:ui-element ui/teal-button
+       :content    "Redeem"
+       :args       {:class        "flex justify-center items-center circled-item"
+                    :on-click     (utils/send-event-callback events/control-voucher-redeem {:code code})
+                    :size-class   "col-4"
+                    :height-class "py2"
+                    :spinning?    redeeming-voucher?
+                    :data-test    "voucher-redeem"}})]
+
+    [:h6.pt6.line-height-2.dark-gray.center.my2
+     "Vouchers are sent to Mayvenn customers via text and/or email when they buy 3 or more bundles and use a special promo code."]]])
+
+(def ^:private missing-service-menu
+  [:div.mt8.center [:a (utils/route-to events/navigate-home) "Back to Home"]])
+
+(def ^:private spinner
+  [:div.mt8 (ui/large-spinner {:style {:height "6em"}})])
+
 (defn ^:private component
-  [{:keys [code spinning? field-errors scanning?]} owner opts]
+  [{:keys [service-menu-fetching? service-menu-missing?] :as data} owner opts]
   (component/create
    [:div.bg-light-silver
-    [:div.hide-on-dt.center
-     (if scanning?
-       [:div.col-10.mt3.mx-auto #?(:cljs (component/build qr-reader/component nil nil))]
+    (cond service-menu-fetching?
+          spinner
 
-       [:div
-        [:h3.pt6 "Scan the QR code to redeem a certificate"]
-        [:h6 "Your camera will be used as the scanner."]
-        [:div.flex.justify-center.py4 (ui/ucare-img {:width 50} "4bd0f715-fa5a-4d82-9cec-62dc993c5d23")]
-        [:div.mx-auto.col-10.col-3-on-tb-dt
-         (ui/teal-button {:on-click     (utils/send-event-callback events/control-voucher-scan)
-                          :height-class "py2"
-                          :data-test    "voucher-scan"} "Scan")]])
+          service-menu-missing?
+          missing-service-menu
 
-     [:div.mx-auto.col-10.pb2.flex.items-center.justify-between
-      divider
-      [:span.h6.px2 "or"]
-      divider]]
-
-    [:div.p4.col-4-on-tb-dt.center.mx-auto
-     [:div.hide-on-mb-tb.py4 ]
-     [:h3.pb4 "Enter the 8-digit code"]
-     [:form
-      {:on-submit (utils/send-event-callback events/control-voucher-redeem {:code code})}
-      (ui/input-group
-       {:keypath       voucher-keypaths/eight-digit-code
-        :wrapper-class "col-8 pl3 bg-white circled-item"
-        :data-test     "voucher-code"
-        :focused       true
-        :placeholder   "xxxxxxxx"
-        :value         code
-        :errors        (get field-errors ["voucher-code"])
-        :data-ref      "voucher-code"}
-       {:ui-element ui/teal-button
-        :content    "Redeem"
-        :args       {:class        "flex justify-center items-center circled-item"
-                     :on-click     (utils/send-event-callback events/control-voucher-redeem {:code code})
-                     :size-class   "col-4"
-                     :height-class "py2"
-                     :spinning?    spinning?
-                     :data-test    "voucher-redeem"}})]
-
-     [:h6.pt6.line-height-2.dark-gray.center.my2
-      "Vouchers are sent to Mayvenn customers via text and/or email when they buy 3 or more bundles and use a special promo code."]]]))
+          :default
+          (primary-component data))]))
 
 (defn ^:private query [data]
-  {:code         (get-in data voucher-keypaths/eight-digit-code)
-   :scanning?    (get-in data voucher-keypaths/scanning?)
-   :spinning?    (utils/requesting? data request-keys/voucher-redemption)
-   :field-errors (get-in data keypaths/field-errors)})
+  (let [service-menu-required? (experiments/v2-experience? data)
+        service-menu           (get-in data keypaths/stylist-service-menu ::missing)]
+    {:code                   (get-in data voucher-keypaths/eight-digit-code)
+     :scanning?              (get-in data voucher-keypaths/scanning?)
+     :service-menu-fetching? (and service-menu-required?
+                                  (or (utils/requesting? data request-keys/fetch-stylist-service-menu)
+                                      (nil? service-menu)))
+     :service-menu-missing?  (and service-menu-required? (= service-menu ::missing))
+     :redeeming-voucher?     (utils/requesting? data request-keys/voucher-redemption)
+     :field-errors           (get-in data keypaths/field-errors)}))
 
 (defn built-component
   [data opts]
@@ -81,6 +110,11 @@
 
 (defmethod effects/perform-effects events/navigate-voucher-redeem
   [dispatch event args prev-app-state app-state]
+  (when (and (experiments/v2-experience? app-state)
+             (= (get-in app-state keypaths/stylist-service-menu ::missing) ::missing))
+        (messages/handle-message events/flash-show-failure
+                                 {:message (str "You have not yet setup your service menu. "
+                                                "Please contact customer service to use this feature.")}))
   #?(:cljs
      (when-not (and (auth/stylist? (auth/signed-in app-state))
                     (experiments/vouchers? app-state))
