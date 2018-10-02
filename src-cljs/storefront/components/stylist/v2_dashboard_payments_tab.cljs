@@ -33,7 +33,7 @@
            (case type
              "commission" {:title (str "Commission Earned" (when-let [name (orders/first-name-plus-last-name-initial order)]
                                                              (str " - " name)))
-                           :data-test (str "commission-" id)
+                           :data-test (str "commission-" (:number order))
                            :date commission-date}
              "award"      {:title reason
                            :data-test (str "award-" id)}
