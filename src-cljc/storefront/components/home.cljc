@@ -128,6 +128,20 @@
                    :file-name   file-name
                    :alt         alt}))]])
 
+(def free-shipping-hero
+  [:h1.h2
+   [:a
+    (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
+           :data-test "home-banner")
+    (let [file-name "free-shipping-hero"
+          alt       "Free shipping"
+          mob-uuid  ""
+          dsk-uuid  ""]
+      (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
+                   :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
+                   :file-name   file-name
+                   :alt         alt}))]])
+
 (defn feature-image [{:keys [desktop-url mobile-url file-name alt]}]
   ;; Assumptions: 2 up, within a .container. Does not account for 1px border.
   ;;          Large End
@@ -331,21 +345,33 @@
                  :file-name   "talkable_banner_25.jpg"
                  :alt         "refer friends, earn rewards, get 25% off"})]))
 
-(defn component [{:keys [signed-in homepage-data store categories show-talkable-banner? seventy-five-off-install? the-ville?] :as data} owner opts]
+(defn component
+  [{:keys [signed-in
+           homepage-data
+           store
+           categories
+           show-talkable-banner?
+           seventy-five-off-install?
+           free-shipping-hero?
+           the-ville?] :as data}
+   owner
+   opts]
   (component/create
    [:div.m-auto
     [:section (cond
+                free-shipping-hero?       free-shipping-hero
                 seventy-five-off-install? seventy-five-off-installation-hero
                 the-ville?                free-installation-hero
                 :else                     (hero homepage-data))]
     [:section.hide-on-tb-dt (store-info signed-in store)]
-    [:section (when (seq homepage-data)
-                (let [{:keys [feature-1 feature-2 feature-3]} homepage-data]
-                  [:div.container.border-top.border-white
-                   [:div.col.col-12.my4 [:h1.center "Shop What's New"]]
-                   (feature-block feature-1)
-                   (feature-block feature-2)
-                   (feature-block feature-3)]))]
+    (when (seq homepage-data)
+      (let [{:keys [feature-1 feature-2 feature-3]} homepage-data]
+        [:section
+         [:div.container.border-top.border-white
+          [:div.col.col-12.my4 [:h1.center "Shop What's New"]]
+          (feature-block feature-1)
+          (feature-block feature-2)
+          (feature-block feature-3)]]))
     [:section (popular-grid categories)]
     [:section video-autoplay]
     [:section about-mayvenn]
@@ -363,6 +389,7 @@
      :seventy-five-off-install? seventy-five-off-install?
      :the-ville?                the-ville?
      :homepage-data             homepage-data
+     :free-shipping-hero?       (experiments/free-shipping-hero? data)
      :show-talkable-banner?     (not (and seventy-five-off-install? the-ville?))}))
 
 (defn built-component [data opts]

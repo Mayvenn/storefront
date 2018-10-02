@@ -110,3 +110,6 @@
 
 (defn second-checkout-button-total? [data]
   (display-feature? data "second-checkout-button-total"))
+
+(defn free-shipping-hero? [data]
+  (display-feature? data "free-shipping-hero"))
