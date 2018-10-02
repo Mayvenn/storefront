@@ -67,33 +67,33 @@
    :form/focused           (get-in app-state keypaths/ui-focus)})
 
 (defn component
-  [{:keys [capture/call-to-action capture/email
-           handler/close-dialog handler/submit
-           form/errors form/focused]} _ _]
+  [{:capture/keys [call-to-action email]
+    :handler/keys [close-dialog submit]
+    :form/keys    [errors focused]} _ _]
   (component/create
-    (ui/modal
-      {:close-attrs close-dialog
-       :col-class   "col-11 col-5-on-tb col-4-on-dt flex justify-center"
-       :bg-class    "bg-darken-4"}
-      [:div.flex.flex-column.bg-cover.bg-top.bg-email-capture
-       {:style {:max-width "400px"}}
-       [:div.flex.justify-end
-        (ui/big-x {:data-test "dismiss-email-capture"
-                   :attrs     close-dialog})]
-       [:div {:style {:height "110px"}}]
-       [:div.px4.pt1.py3.m4.bg-lighten-4
-        [:form.col-12.flex.flex-column.items-center {:on-submit submit}
-         call-to-action
-         [:div.col-12.mx-auto
-          (ui/text-field {:errors    (get errors ["email"])
-                          :keypath   keypaths/captured-email
-                          :focused   focused
-                          :label     "Your E-Mail Address"
-                          :name      "email"
-                          :required  true
-                          :type      "email"
-                          :value     email
-                          :class     "col-12 center"
-                          :data-test "email-input"})
-          (ui/submit-button "Sign Up Now"
-                            {:data-test "email-input-submit"})]]]])))
+   (ui/modal
+    {:close-attrs close-dialog
+     :col-class   "col-11 col-5-on-tb col-4-on-dt flex justify-center"
+     :bg-class    "bg-darken-4"}
+    [:div.flex.flex-column.bg-cover.bg-top.bg-email-capture
+     {:style {:max-width "400px"}}
+     [:div.flex.justify-end
+      (ui/big-x {:data-test "dismiss-email-capture"
+                 :attrs     close-dialog})]
+     [:div {:style {:height "110px"}}]
+     [:div.px4.pt1.py3.m4.bg-lighten-4
+      [:form.col-12.flex.flex-column.items-center {:on-submit submit}
+       call-to-action
+       [:div.col-12.mx-auto
+        (ui/text-field {:errors    (get errors ["email"])
+                        :keypath   keypaths/captured-email
+                        :focused   focused
+                        :label     "Your E-Mail Address"
+                        :name      "email"
+                        :required  true
+                        :type      "email"
+                        :value     email
+                        :class     "col-12 center"
+                        :data-test "email-input"})
+        (ui/submit-button "Sign Up Now"
+                          {:data-test "email-input-submit"})]]]])))
