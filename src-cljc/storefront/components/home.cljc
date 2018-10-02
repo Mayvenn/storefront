@@ -10,7 +10,8 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.routes :as routes]))
+            [storefront.routes :as routes]
+            [catalog.images :as catalog-images]))
 
 (defn product-image
   [{:keys [resizable_url resizable_filename alt]}]
@@ -98,49 +99,38 @@
                         :type    img-type})])
          [:img.block.col-12 {:src mobile-url :alt alt}]]]])))
 
-(def seventy-five-off-installation-hero
+(defn legacy-hero [{:keys [route-to-fn mobile-uuid desktop-uuid alt]}]
   [:h1.h2
    [:a
-    (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :look
-                                                         :query-params  {:sha "install"}})
-           :data-test "home-banner")
-    (let [file-name "100-off-installation-hero"
-          alt       "$100 off your install when you buy 3 bundles or more! Use code: INSTALL"
-          mob-uuid  "699e088d-aaf1-4b7a-b807-a5893573757f"
-          dsk-uuid  "6b872af5-b447-440d-b872-6c8a1b669969"]
-      (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
-                   :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
-                   :file-name   file-name
-                   :alt         alt}))]])
+    (assoc route-to-fn :data-test "home-banner")
+    (hero-image {:mobile-url  (str "//ucarecdn.com/" mobile-uuid "/")
+                 :desktop-url (str "//ucarecdn.com/" desktop-uuid "/")
+                 :alt         alt})]])
 
-(def free-installation-hero
-  [:h1.h2
-   [:a
-    (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :look
-                                                         :query-params  {:sha "freeinstall"}})
-           :data-test "home-banner")
-    (let [file-name "free-installation-hero"
-          alt       "Free install when you buy 3 bundles or more! Use code: FREEINSTALL"
-          mob-uuid  "990f17ce-c786-450b-9556-419858ae43df"
-          dsk-uuid  "e7cb3f57-e718-4964-be9f-1e2ec186dc1d"]
-      (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
-                   :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
-                   :file-name   file-name
-                   :alt         alt}))]])
+(def seventy-five-off-installation-hero-data
+  {:route-to-fn  (utils/route-to events/navigate-shop-by-look
+                                 {:album-keyword :look
+                                  :query-params  {:sha "install"}})
+   :file-name    "100-off-installation-hero"
+   :alt          "$100 off your install when you buy 3 bundles or more! Use code: INSTALL"
+   :mobile-uuid  "699e088d-aaf1-4b7a-b807-a5893573757f"
+   :desktop-uuid "6b872af5-b447-440d-b872-6c8a1b669969"})
 
-(def free-shipping-hero
-  [:h1.h2
-   [:a
-    (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
-           :data-test "home-banner")
-    (let [file-name "free-shipping-hero"
-          alt       "Free shipping"
-          mob-uuid  ""
-          dsk-uuid  ""]
-      (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
-                   :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
-                   :file-name   file-name
-                   :alt         alt}))]])
+(def free-installation-hero-data
+  {:route-to-fn  (utils/route-to events/navigate-shop-by-look
+                                 {:album-keyword :look
+                                  :query-params  {:sha "freeinstall"}})
+   :file-name    "free-installation-hero"
+   :alt          "Free install when you buy 3 bundles or more! Use code: FREEINSTALL"
+   :mobile-uuid  "990f17ce-c786-450b-9556-419858ae43df"
+   :desktop-uuid "e7cb3f57-e718-4964-be9f-1e2ec186dc1d"})
+
+(def free-shipping-hero-data
+  {:route-to-fn  (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
+   :file-name    ""
+   :alt          ""
+   :mobile-uuid  ""
+   :desktop-uuid ""})
 
 (defn feature-image [{:keys [desktop-url mobile-url file-name alt]}]
   ;; Assumptions: 2 up, within a .container. Does not account for 1px border.
@@ -349,20 +339,17 @@
   [{:keys [signed-in
            homepage-data
            store
-           categories
            show-talkable-banner?
-           seventy-five-off-install?
-           free-shipping-hero?
-           the-ville?] :as data}
+           categories
+           legacy-hero-data] :as data}
    owner
    opts]
   (component/create
    [:div.m-auto
-    [:section (cond
-                free-shipping-hero?       free-shipping-hero
-                seventy-five-off-install? seventy-five-off-installation-hero
-                the-ville?                free-installation-hero
-                :else                     (hero homepage-data))]
+    (if legacy-hero-data
+      [:section (legacy-hero legacy-hero-data)]
+      (when homepage-data
+        [:section (hero homepage-data)]))
     [:section.hide-on-tb-dt (store-info signed-in store)]
     (when (seq homepage-data)
       (let [{:keys [feature-1 feature-2 feature-3]} homepage-data]
@@ -377,20 +364,35 @@
     [:section about-mayvenn]
     (when show-talkable-banner? [:section talkable-banner])]))
 
-(defn query [data]
+(defn hero-data [data]
+  (cond
+    (experiments/free-shipping-hero? data)
+    free-shipping-hero-data
+
+    (experiments/seventy-five-off-install? data)
+    seventy-five-off-installation-hero-data
+
+    (experiments/the-ville? data)
+    free-installation-hero-data
+
+    :else
+    nil))
+
+(defn query
+  [data]
   (let [seventy-five-off-install? (experiments/seventy-five-off-install? data)
         the-ville?                (experiments/the-ville? data)
         homepage-data             (get-in data keypaths/cms-homepage)]
-    {:store                     (marquee/query data)
-     :signed-in                 (auth/signed-in data)
-     :categories                (->> (get-in data keypaths/categories)
-                                     (filter :home/order)
-                                     (sort-by :home/order))
-     :seventy-five-off-install? seventy-five-off-install?
-     :the-ville?                the-ville?
-     :homepage-data             homepage-data
-     :free-shipping-hero?       (experiments/free-shipping-hero? data)
-     :show-talkable-banner?     (not (and seventy-five-off-install? the-ville?))}))
+    {:store      (marquee/query data)
+     :signed-in  (auth/signed-in data)
+     :categories (->> (get-in data keypaths/categories)
+                      (filter :home/order)
+                      (sort-by :home/order))
+
+     :legacy-hero-data (hero-data data)
+     :homepage-data    homepage-data
+
+     :show-talkable-banner? (not (and seventy-five-off-install? the-ville?))}))
 
 (defn built-component [data opts]
   (if (experiments/v2-homepage? data)
