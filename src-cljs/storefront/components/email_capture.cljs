@@ -32,11 +32,11 @@
   [:div.center.line-height-3
    [:h1.bold.teal.mb2 {:style {:font-size "36px"}} "Get 35% Off!"]
    [:p.h5.m2
-    (str "Sign up now and we'll email you a promotion code for "
-         "35% off your first order of 3 bundles or more.")]])
+    "Sign up now and we'll email you a promotion code for "
+    "35% off your first order of 3 bundles or more."]])
 
 (def flawless-cta
-  [:span
+  [:div
    [:div [:h1.bold.teal.mb0.center {:style {:font-size "36px"}}
           "You're Flawless"]
     [:p.h5.mb1.center "Make sure your hair is too"]]
@@ -57,32 +57,32 @@
                               (not (experiments/the-ville? app-state)))]
     (if discount-cta? discount-cta flawless-cta)))
 
+(def close-dialog-href (utils/fake-href events/control-email-captured-dismiss))
+(def submit-callback (utils/send-event-callback events/control-email-captured-submit))
+
 (defn query
   [app-state]
   {:capture/call-to-action (call-to-action app-state)
    :capture/email          (get-in app-state keypaths/captured-email)
-   :handler/close-dialog   (utils/fake-href events/control-email-captured-dismiss)
-   :handler/submit         (utils/send-event-callback events/control-email-captured-submit)
    :form/errors            (get-in app-state keypaths/field-errors)
    :form/focused           (get-in app-state keypaths/ui-focus)})
 
 (defn component
   [{:capture/keys [call-to-action email]
-    :handler/keys [close-dialog submit]
     :form/keys    [errors focused]} _ _]
   (component/create
    (ui/modal
-    {:close-attrs close-dialog
+    {:close-attrs close-dialog-href
      :col-class   "col-11 col-5-on-tb col-4-on-dt flex justify-center"
      :bg-class    "bg-darken-4"}
     [:div.flex.flex-column.bg-cover.bg-top.bg-email-capture
      {:style {:max-width "400px"}}
      [:div.flex.justify-end
       (ui/big-x {:data-test "dismiss-email-capture"
-                 :attrs     close-dialog})]
+                 :attrs     close-dialog-href})]
      [:div {:style {:height "110px"}}]
      [:div.px4.pt1.py3.m4.bg-lighten-4
-      [:form.col-12.flex.flex-column.items-center {:on-submit submit}
+      [:form.col-12.flex.flex-column.items-center {:on-submit submit-callback}
        call-to-action
        [:div.col-12.mx-auto
         (ui/text-field {:errors    (get errors ["email"])
