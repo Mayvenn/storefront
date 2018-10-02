@@ -79,9 +79,10 @@
    [:img.block.col-12 {:src (str mobile-url "-/format/auto/" file-name)
                        :alt alt}]])
 
-(defn hero [{:keys [hero] :as homepage-data}]
-  (when (seq homepage-data)
-    (let [{:keys [mobile desktop alt path]} hero
+(defn hero
+  [hero-data]
+  (when hero-data
+    (let [{:keys [mobile desktop alt path]} hero-data
           mobile-url                        (-> mobile :file :url)
           desktop-url                       (-> desktop :file :url)]
       [:h1.h2
@@ -188,13 +189,15 @@
                            :alt alt}]]]]))
 
 (defn feature-blocks
-  [{:as homepage-data :keys [feature-1 feature-2 feature-3]}]
-  (when (seq homepage-data)
-    [:div.container.border-top.border-white
-     [:div.col.col-12.my4 [:h1.center "Shop What's New"]]
-     (feature-block feature-1)
-     (feature-block feature-2)
-     (feature-block feature-3)]))
+  [{:as features :keys [feature-1 feature-2 feature-3]}]
+  (when (seq features)
+    (let [{:keys [feature-1 feature-2 feature-3]} features]
+      [:section
+       [:div.container.border-top.border-white
+        [:div.col.col-12.my4 [:h1.center "Shop What's New"]]
+        (feature-block feature-1)
+        (feature-block feature-2)
+        (feature-block feature-3)]])))
 
 (defn drop-down-row [opts & content]
   (into [:a.inherit-color.block.center.h5.flex.items-center.justify-center
@@ -336,35 +339,24 @@
                  :alt         "refer friends, earn rewards, get 25% off"})]))
 
 (defn component
-  [{:keys [signed-in
-           homepage-data
-           store
-           show-talkable-banner?
-           categories
-           legacy-hero-data] :as data}
-   owner
-   opts]
+  [{:component/keys [hero-legacy-data hero-cms-data features]
+    :keys [signed-in store show-talkable-banner? categories] :as data}
+   _ _]
   (component/create
    [:div.m-auto
-    (if legacy-hero-data
-      [:section (legacy-hero legacy-hero-data)]
-      (when homepage-data
-        [:section (hero homepage-data)]))
+    (if hero-legacy-data
+      [:section (legacy-hero hero-legacy-data)]
+      (when hero-cms-data
+        [:section (hero hero-cms-data)]))
     [:section.hide-on-tb-dt (store-info signed-in store)]
-    (when (seq homepage-data)
-      (let [{:keys [feature-1 feature-2 feature-3]} homepage-data]
-        [:section
-         [:div.container.border-top.border-white
-          [:div.col.col-12.my4 [:h1.center "Shop What's New"]]
-          (feature-block feature-1)
-          (feature-block feature-2)
-          (feature-block feature-3)]]))
+    (feature-blocks features)
     [:section (popular-grid categories)]
     [:section video-autoplay]
     [:section about-mayvenn]
     (when show-talkable-banner? [:section talkable-banner])]))
 
-(defn hero-data [data]
+(defn hero-data
+  [data]
   (cond
     (experiments/free-shipping-hero? data)
     free-shipping-hero-data
@@ -378,21 +370,25 @@
     :else
     nil))
 
+(defn show-talkable-banner?
+  [data]
+  (not (and (experiments/seventy-five-off-install? data)
+            (experiments/the-ville? data))))
+
 (defn query
   [data]
-  (let [seventy-five-off-install? (experiments/seventy-five-off-install? data)
-        the-ville?                (experiments/the-ville? data)
-        homepage-data             (get-in data keypaths/cms-homepage)]
+  (let [cms-data (get-in data keypaths/cms-homepage)]
     {:store      (marquee/query data)
      :signed-in  (auth/signed-in data)
      :categories (->> (get-in data keypaths/categories)
                       (filter :home/order)
                       (sort-by :home/order))
 
-     :legacy-hero-data (hero-data data)
-     :homepage-data    homepage-data
+     :component/hero-legacy-data (hero-data data)
+     :component/hero-cms-data    (:hero cms-data)
+     :component/features         (select-keys cms-data [:feature-1 :feature-2 :feature-3])
 
-     :show-talkable-banner? (not (and seventy-five-off-install? the-ville?))}))
+     :show-talkable-banner? (show-talkable-banner? data)}))
 
 (defn built-component [data opts]
   (if (experiments/v2-homepage? data)
