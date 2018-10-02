@@ -54,10 +54,8 @@
               removing?            (get delete-line-item-requests variant-id)
               updating?            (get update-line-item-requests sku-id)
               just-added-to-order? (contains? recently-added-skus sku-id)
-              length-circle-value (-> sku :hair/length first)]]
-
+              length-circle-value  (-> sku :hair/length first)]]
     [:div.pt1.pb2 {:key (str (:catalog/sku-id sku) (:quantity line-item))}
-
      [:div.left.pr1
       (when-not length-circle-value
         {:class "pr3"})
