@@ -85,7 +85,8 @@
      [:div {:style {:margin-top "-14px"}}
       [:a.medium.titleize.h5
        {:data-test (str "line-item-title-" sku-id)}
-       (:product-title line-item)]
+       (or (:product-title line-item)
+           (:product-name line-item))]
       [:div.h6
        [:div.flex.justify-between.mt1
         [:div
