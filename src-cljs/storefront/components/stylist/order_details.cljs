@@ -36,7 +36,7 @@
    (ui/back-caret "Back")])
 
 (defn ^:private info-block [header content]
-  [:div.align-top.mb2
+  [:div.align-top.pt2.mb2.h6
    [:span.dark-gray.shout header]
    [:div.medium
     {:data-test (str "info-block-" (-> header string/lower-case (string/replace #" " "-")))}
@@ -141,12 +141,16 @@
           {:style {:grid-area "title"}}
           [:h4.medium (orders/first-name-plus-last-name-initial order)]]
          [:div {:style {:grid-area "fields"}}
-          (info-columns
-            ["order number" order-number]
-            ["voucher type" (get voucher :campaign-name "--")])
-          (info-columns
-            ["order date" (some-> placed-at f/long-date)]
-            ["voucher status" (voucher-status sale balance-transfer-id popup-visible?)])
+          (if (seq voucher)
+            (info-columns
+             ["order number" order-number]
+             ["voucher type" (get voucher :campaign-name "--")])
+            (info-block "order number" order-number))
+          (if (seq voucher)
+            (info-columns
+             ["order date" (some-> placed-at f/long-date)]
+             ["voucher status" (voucher-status sale balance-transfer-id popup-visible?)])
+            (info-block "order date" (some-> placed-at f/long-date)))
           [:div.col.col-12.pt4
            (for [shipment shipments]
              (let [nth-shipment (some-> shipment :number (subs 1) spice/parse-int fmt-with-leading-zero)]
@@ -202,12 +206,21 @@
                remaining-returns))
       shipments)))
 
+(def no-vouchers? (complement experiments/dashboard-with-vouchers?))
+
+(defn sale-by-order-number
+  [app-state order-number]
+  (->> (get-in app-state keypaths/v2-dashboard-sales-elements)
+       vals
+       (filter (fn [sale] (= order-number (:order-number sale))))
+       first
+       ))
+
 (defn query [app-state]
   (let [order-number           (:order-number (get-in app-state keypaths/navigation-args))
-        sale                   (->> (get-in app-state keypaths/v2-dashboard-sales-elements)
-                                    vals
-                                    (filter (fn [sale] (= order-number (:order-number sale))))
-                                    first)
+        sale                   (cond-> (sale-by-order-number app-state order-number)
+                                 (no-vouchers? app-state)
+                                 (dissoc :voucher))
         shipments-enriched     (for [shipment (-> sale :order :shipments)]
                                  (let [product-line-items          (remove (comp #{"waiter"} :source) (:line-items shipment))
                                        enriched-product-line-items (mapv (partial cart/add-product-title-and-color-to-line-item
