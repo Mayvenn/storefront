@@ -86,7 +86,7 @@
    [:a.inherit-color.h6
     "Signed in with: " [:span.teal email]
     " | Account settings" [:span.ml1 (ui/expand-icon expanded?)]]
-   [:div.bg-white.absolute.right-0
+   [:div.bg-white.absolute.right-0.top-lit
     [:div
      (drop-down-row (utils/route-to events/navigate-account-manage) "Account settings")]
     [:div.border-top.border-gray
