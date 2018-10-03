@@ -241,6 +241,6 @@
   [:header.stacking-context.z4
    (when (get-in data keypaths/hide-header?)
      {:class "hide-on-mb-tb"})
-   (if (nav/minimal-events (get-in data keypaths/navigation-event))
+   (if (nav/show-minimal-header? (get-in data keypaths/navigation-event))
      minimal-component
      (component/build component (query data) nil))])
