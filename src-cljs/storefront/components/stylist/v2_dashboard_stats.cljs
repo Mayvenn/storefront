@@ -12,7 +12,8 @@
             [storefront.platform.numbers :as numbers]
             [storefront.request-keys :as request-keys]
             [storefront.transitions :as transitions]
-            [storefront.component :as component]))
+            [storefront.component :as component]
+            [storefront.accessors.experiments :as experiments]))
 
 (defn earnings-count [title value]
   [:div.dark-gray.letter-spacing-0
@@ -45,7 +46,8 @@
                                          (when expanded? "rotate-180"))
                             :style  {:stroke-width "2"}
                             :height ".75em"
-                            :width  ".75em"})]]
+                            :width  ".75em"
+                            :data-test "toggle-cash-balance"})]]
 
      [:div.flex.mt1.items-center.justify-between
       [:a.col-5 toggle-expand
@@ -66,18 +68,23 @@
            "Cash Out"])
          [:div.h7
           "Cash out now with " [:a.teal (utils/fake-href events/navigate-stylist-account-commission) "Mayvenn InstaPay"]])]]
-   [:div
+     [:div
       (when-not expanded? {:class "hide"})
       [:div.flex.mt2
        [:div.col-7
+        {:data-test "monthly-earnings"}
         (earnings-count "Monthly Earnings" (mf/as-money monthly-earnings))]
        [:div.col-5
+        {:data-test "lifetime-earnings"}
         (earnings-count "Lifetime Earnings" (mf/as-money lifetime-earnings))]]
-      [:div.flex.pt2
-       [:div.col-7
-        (earnings-count "Monthly Services" monthly-services)]
-       [:div.col-5
-        (earnings-count "Lifetime Services" lifetime-services)]]]]))
+      (when (seq services)
+        [:div.flex.pt2
+         [:div.col-j7
+          {:data-test "monthly-services"}
+          (earnings-count "Monthly Services" monthly-services)]
+         [:div.col-5
+          {:data-test "lifetime-services"}
+          (earnings-count "Lifetime Services" lifetime-services)]])]]))
 
 (defn ^:private store-credit-balance-card [total-available-store-credit lifetime-earned expanded?]
   (let [toggle-expand (utils/fake-href events/control-v2-stylist-dashboard-section-toggle
@@ -131,9 +138,13 @@
         [:div.mt2 (store-credit-balance-card total-available-store-credit lifetime-earned store-credit-balance-section-expanded?)]
         (sales-bonus-progress bonuses)]))))
 
+(def not-reimbursed-for-services? (complement experiments/dashboard-with-vouchers?))
+
 (defn query [data]
   (let [stats (get-in data keypaths/v2-dashboard-stats)]
-    {:stats                                  stats
+    {:stats                                  (cond-> stats
+                                               (not-reimbursed-for-services? data)
+                                               (dissoc :services))
      :cashing-out?                           (utils/requesting? data request-keys/cash-out-commit)
      :payout-method                          (get-in data keypaths/stylist-manage-account-chosen-payout-method)
      :cash-balance-section-expanded?         (get-in data keypaths/v2-ui-dashboard-cash-balance-section-expanded?)
