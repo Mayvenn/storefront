@@ -55,6 +55,12 @@
    [:h4.gray.bold.p1 "No orders yet"]
    [:h6.dark-gray.col-5.mx-auto.line-height-2 "Orders from your store will appear here."]])
 
+(def show-program-terms
+  [:div.mx-auto
+   [:div.border-top.border-gray.mx-auto.my2 {:style {:width "100px"}}]
+   [:div.center.my2.h6
+    [:a.dark-gray (utils/route-to events/navigate-content-program-terms) "Mayvenn Program Terms"]]])
+
 (defn component
   [{:keys [sales-ui pagination-ui fetching-data? header-ui]}]
   (component/create
@@ -66,7 +72,8 @@
        header-ui
        [:tbody
         sales-ui]]
-      pagination-ui]
+      pagination-ui
+      show-program-terms]
 
      fetching-data?
      [:div.my2.h2 ui/spinner]
