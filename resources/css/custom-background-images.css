@@ -33,6 +33,9 @@ Move to uploadcare???
 .bg-first-sale {
     background-image: url("/images/leads/first-sale-bg.jpg");
 }
+.bg-star {
+    background-image: url("//ucarecdn.com/45e0a061-daf0-4448-aeda-7972ddf4b375/-/format/auto/star.png");
+}
 
 .bg-storefront-our-hair {
     background-image: url("//ucarecdn.com/a38deee0-add3-4588-90fb-923158c90dbe/-/format/auto/ourhairvirginhair.png");

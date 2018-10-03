@@ -153,35 +153,56 @@
       (style-carousel-component (:images ugc))]]]])
 
 (def an-amazing-deal
-  [:div]
-  #_
-  [:div.center.clearfix.py3.h6
-   [:h2.mt4.mb6 "An Amazing Deal"]
-   [:div.col.col-7
-    [:div.img-logo.bg-no-repeat.bg-center.bg-contain.teal
-     {:style {:height "45"}}]
-    [:div "3 bundles..............$189"]
-    [:div "Install................FREE"]
-    [:div
-     [:div.col.col-6.shout
-      [:div "Install"]
-      [:div "+ Hair"]]
-     [:div.col.col-6
-      [:div "$189"]
-      [:div "a $54 savings"]]]]
-   [:div.col.col-5
-    (ui/ucare-img {:width "90" :class "mx-auto"}
-                  "9f1657d1-c792-44fb-b8e7-20ce64c7dbf4")
-    [:div "3 bundles..............$93"]
-    [:div "Install................$$$$"]
-    [:div
-     [:div.col.col-6.shout
-      [:div "Install"]
-      [:div "+ Hair"]]
-     [:div.col.col-6
-      [:div "$243"]
-      ]]]
-   ])
+  [:div.bg-star.bg-no-repeat.col-12.col-8-on-tb.col-6-on-dt.mx-auto.pb6.pt4
+   {:style {:background-size "250px 250px"
+            :background-position "0px 45px"}}
+   [:div.center.clearfix.py3.h6.dark-gray
+    [:h2.mt4.black.z2 "An Amazing Deal"]
+    [:div.flex.justify-center
+     [:div.flex-auto
+      [:div.h6.mx-auto
+       {:style {:width "170px"}}
+       [:div.img-logo.bg-no-repeat.bg-center.bg-contain.mb2
+        {:style {:height "45"}}]
+       [:div.mb1 "3 bundles.............." [:span.medium "$189"]]
+       [:div     "Install....................." [:span.medium "FREE"]]
+       [:div.mt2.mx-auto.flex.items-center
+        [:div.col-6.shout.line-height-1.left-align.px2.pl3
+         [:div "Install"]
+         [:div "+ Hair"]]
+        [:div.col-6
+         [:div.h1.purple.bold "$189"]]]
+       [:div.mx-auto.flex.items-center
+        [:div.col-4]
+        [:div.col-8
+         [:div.italic.right-align "a $54 savings"]]]]]
+     [:div.flex-auto
+      [:div.h6.mx-auto
+       {:style {:width "170px"}}
+       [:div.mb2 {:style {:height "45px"}}
+        [:div.pt1
+         [:div.mt4
+          (ui/ucare-img {:width "90" :class "mx-auto"}
+                        "9f1657d1-c792-44fb-b8e7-20ce64c7dbf4")]]]
+       [:div.mb1. "3 bundles.............." [:span.medium "$93"]]
+       [:div      "Install..................." [:span.medium "$$$$"]]
+       [:div.mt2.mx-auto.flex.items-center
+        [:div.col-6.shout.line-height-1.left-align.pl4
+         [:div "Install"]
+         [:div "+ Hair"]]
+        [:div.col-6
+         [:div.h2.medium "$243"]]]]]]]
+
+   (let [row (fn [text]
+               [:div.flex.justify-center.items-center.center.mx-auto.pt2
+                (ui/ucare-img {:width "9"} "60b946bd-f276-46fc-9d13-3c8562b28d81")
+                [:span.col-6 text]
+                (ui/ucare-img {:width "9"} "f277849f-a27b-48b4-804b-7d523b6d2442")])]
+     [:div.clearfix.h6.dark-gray.px4.mx-auto.line-height-2
+      (row "High quality hair")
+      (row "FREE install")
+      (row "30 Day Guarantee")
+      (row "Black-owned company")])])
 
 (defn most-popular-looks [sleek-ugc wave-ugc]
   [:div.col-12.col-8-on-tb-dt.mt3.px2.py5.mx-auto
@@ -303,6 +324,7 @@
                                   :stylist-name          (:store-nickname store)
                              :stylist-gallery-open? stylist-gallery-open?})]
     [:section an-amazing-deal]
+    [:hr.border-top.border-dark-silver.col-9.mx-auto.my6]
     [:section (most-popular-looks sleek-and-straight-ugc waves-and-curly-ugc)]
     [:section [:div (v2/why-mayvenn-is-right-for-you)]]
     [:section (free-install-mayvenn-grid free-install-mayvenn-ugc)]
