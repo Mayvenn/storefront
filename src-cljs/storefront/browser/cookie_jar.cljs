@@ -13,9 +13,10 @@
            (string/join ".")
            (str "."))))
 
-(def week (* 60 60 24 7))
-(def four-weeks (* week 4))
-(def one-year (* week 52))
+(def one-day (* 60 60 24))
+(def week (* 7 one-day))
+(def four-weeks (* 4 week))
+(def one-year (* 52 week))
 
 (defn make-cookie []
   (Cookies. js/document))
@@ -64,7 +65,7 @@
 
 (def email-capture-session
   {:domain        nil
-   :max-age       1800
+   :max-age       nil ;; determined dynamically
    :optional-keys []
    :required-keys [:popup-session]})
 
@@ -151,7 +152,7 @@
   (let [max-age (condp = value
                   "signed-in" four-weeks
                   "opted-in"  (* 200 one-year)
-                  "dismissed" 1800)]
+                  "dismissed" one-day)]
     (.set cookie :popup-session value max-age "/" (:domain email-capture-session) config/secure?)))
 
 (defn save-dismissed-free-install [cookie value]

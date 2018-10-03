@@ -666,9 +666,7 @@
   (assoc-in app-state keypaths/pending-talkable-order nil))
 
 (defmethod transition-state events/control-email-captured-dismiss [_ event args app-state]
-  (-> app-state
-      (assoc-in keypaths/popup nil)
-      (assoc-in keypaths/email-capture-session "dismissed")))
+  (assoc-in app-state keypaths/popup nil))
 
 (defmethod transition-state events/control-email-captured-submit [_ event args app-state]
   (let [email (get-in app-state keypaths/captured-email)]
@@ -685,18 +683,14 @@
   (assoc-in app-state keypaths/popup :email-capture))
 
 (defmethod transition-state events/sign-out [_ event args app-state]
-  (let [signed-out-app-state (-> app-state
-                                 (assoc-in keypaths/user {})
-                                 (assoc-in keypaths/completed-order nil)
-                                 (assoc-in keypaths/stylist state/initial-stylist-state)
-                                 (assoc-in keypaths/checkout state/initial-checkout-state)
-                                 (assoc-in keypaths/billing-address {})
-                                 (assoc-in keypaths/shipping-address {})
-                                 (assoc-in keypaths/facebook-email-denied nil))
-        opted-in?            (= "opted-in" (get-in signed-out-app-state keypaths/email-capture-session))]
-    (cond-> signed-out-app-state
-      (not opted-in?)
-      (assoc-in keypaths/email-capture-session "dismissed"))))
+  (-> app-state
+      (assoc-in keypaths/user {})
+      (assoc-in keypaths/completed-order nil)
+      (assoc-in keypaths/stylist state/initial-stylist-state)
+      (assoc-in keypaths/checkout state/initial-checkout-state)
+      (assoc-in keypaths/billing-address {})
+      (assoc-in keypaths/shipping-address {})
+      (assoc-in keypaths/facebook-email-denied nil)))
 
 (defmethod transition-state events/stripe-failure-create-token [_ event stripe-response app-state]
   (let [{:keys [code message]} (:error stripe-response)]

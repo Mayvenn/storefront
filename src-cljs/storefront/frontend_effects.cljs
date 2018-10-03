@@ -42,6 +42,9 @@
             [storefront.routes :as routes]
             [storefront.accessors.nav :as nav]))
 
+(defn- email-capture-session [app-state]
+  (cookie-jar/retrieve-email-capture-session (get-in app-state keypaths/cookie)))
+
 (defn changed? [previous-app-state app-state keypath]
   (not= (get-in previous-app-state keypath)
         (get-in app-state keypath)))
@@ -68,8 +71,8 @@
       (and order-number order-token)
       (api/get-order order-number order-token))))
 
-(defn update-email-capture-session [app-state]
-  (when-let [value (get-in app-state keypaths/email-capture-session)]
+(defn touch-email-capture-session [app-state]
+  (when-let [value (email-capture-session app-state)]
     (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) value)))
 
 (defn scroll-promo-field-to-top []
@@ -119,7 +122,7 @@
 
         is-on-free-install-landing-page? (= navigation-event events/navigate-install-home)
 
-        seen-email-capture?                  (get-in app-state keypaths/email-capture-session)
+        seen-email-capture?                  (email-capture-session app-state)
         seen-fayetteville-offer?             (get-in app-state keypaths/dismissed-free-install)
         seen-seventy-five-off-install-offer? (get-in app-state keypaths/dismissed-seventy-five-off-install)
 
@@ -304,7 +307,7 @@
 
     (exception-handler/refresh)
 
-    (update-email-capture-session app-state)))
+    (touch-email-capture-session app-state)))
 
 (defmethod perform-effects events/navigate-home [_ _ {:keys [query-params]} _ app-state]
   (api/fetch-cms-data)
@@ -392,7 +395,7 @@
     (handle-later events/poll-gallery {} 5000)))
 
 (defmethod perform-effects events/control [_ _ args _ app-state]
-  (update-email-capture-session app-state))
+  (touch-email-capture-session app-state))
 
 (defmethod perform-effects events/control-email-captured-submit [_ _ args _ app-state]
   (when (empty? (get-in app-state keypaths/errors))
@@ -1025,7 +1028,7 @@
   (apple-pay/verify-eligible app-state))
 
 (defmethod perform-effects events/control-email-captured-dismiss [_ event args _ app-state]
-  (update-email-capture-session app-state))
+  (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) "dismissed"))
 
 (defmethod perform-effects events/control-stylist-community [_ event args _ app-state]
   (api/telligent-sign-in (get-in app-state keypaths/session-id)
@@ -1033,6 +1036,8 @@
                          (get-in app-state keypaths/user-token)))
 
 (defmethod perform-effects events/sign-out [_ event args app-state-before app-state]
+  (when (not= "opted-in" (email-capture-session app-state))
+    (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) "dismissed"))
   (handle-message events/clear-order)
   (cookie-jar/clear-account (get-in app-state keypaths/cookie))
   (handle-message events/control-menu-collapse-all)
