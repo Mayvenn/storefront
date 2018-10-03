@@ -112,6 +112,7 @@
          (~close-fn ~(bindings 0))))))
 
 (defmacro with-services
+  "Setup responses for outbound requests for various services"
   [handlers & body]
   `(let [h# ~handlers]
      (with-standalone-server
@@ -121,6 +122,7 @@
        ~@body)))
 
 (defmacro with-handler
+  "Override storefront handler"
   [handler & body]
   `(let [unstarted-system# (create-system test-overrides)]
      (with-resource [sys# (component/start unstarted-system#)
