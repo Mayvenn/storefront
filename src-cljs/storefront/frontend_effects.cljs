@@ -39,7 +39,8 @@
             [storefront.hooks.wistia :as wistia]
             [storefront.keypaths :as keypaths]
             [storefront.platform.messages :as messages :refer [handle-later handle-message]]
-            [storefront.routes :as routes]))
+            [storefront.routes :as routes]
+            [storefront.accessors.nav :as nav]))
 
 (defn changed? [previous-app-state app-state keypath]
   (not= (get-in previous-app-state keypath)
@@ -105,16 +106,18 @@
 
 (defmethod perform-effects events/determine-and-show-popup
   [_ event args previous-app-state app-state]
-  (let [install-control?                    (experiments/install-control? app-state)
+  (let [navigation-event (get-in app-state keypaths/navigation-event)
+
+        install-control?                    (experiments/install-control? app-state)
         the-ville-variation?                (experiments/the-ville? app-state)
         seventy-five-off-install-variation? (experiments/seventy-five-off-install? app-state)
         v2-experience?                 (experiments/v2-experience? app-state)
 
-        is-on-homepage? (= (get-in app-state keypaths/navigation-event)
-                           events/navigate-home)
+        on-non-minimal-footer-page? (not (nav/show-minimal-footer? navigation-event))
 
-        is-on-free-install-landing-page? (= (get-in app-state keypaths/navigation-event)
-                                            events/navigate-install-home)
+        is-on-homepage? (= navigation-event events/navigate-home)
+
+        is-on-free-install-landing-page? (= navigation-event events/navigate-install-home)
 
         seen-email-capture?                  (get-in app-state keypaths/email-capture-session)
         seen-fayetteville-offer?             (get-in app-state keypaths/dismissed-free-install)
@@ -133,12 +136,17 @@
                                                   (not seen-seventy-five-off-install-offer?)
                                                   (not v2-experience?))
 
+        classic-experience? (and (not v2-experience?) ;; phoenix + aladdin
+                                 (not the-ville-variation?) ;; fayetteville
+                                 (not seventy-five-off-install-variation?)) ;; $100-off
+
         show-email-capture? (and (not signed-in?)
                                  (not seen-email-capture?)
-                                 (or (and install-control? is-on-homepage?)
-                                     (and the-ville-variation? seen-fayetteville-offer?)
+                                 on-non-minimal-footer-page?
+                                 (or (and the-ville-variation? seen-fayetteville-offer?)
                                      (and seventy-five-off-install-variation?
                                           seen-seventy-five-off-install-offer?)
+                                     classic-experience?
                                      v2-experience?))]
     (cond
       is-on-free-install-landing-page? nil
