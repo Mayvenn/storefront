@@ -257,8 +257,10 @@
 (defn payout-methods [original-payout-method]
   (cond-> [["Venmo" "venmo"]
            ["PayPal" "paypal"]
-           ["Check" "check"]
            ["Mayvenn InstaPay" "green_dot"]]
+
+    (= original-payout-method "check")
+    (conj ["Check" "check"])
 
     (= original-payout-method "missing")
     (conj ["Select Payout Method" "missing"])
