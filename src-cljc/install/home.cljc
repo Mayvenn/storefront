@@ -13,6 +13,7 @@
             [storefront.components.accordion :as accordion]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
+            [storefront.platform.numbers :as numbers]
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -100,7 +101,7 @@
    album))
 
 (defn easy-step-block [img title copy]
-  [:div.py3.col-12.col-4-on-tb-dt
+  [:div.py2.col-12.col-4-on-tb-dt
    [:div.flex.justify-center img]
    [:div.h5.teal.medium.titlize.my1 title]
    [:div.col-9.mx-auto.h6.dark-gray copy]])
@@ -143,29 +144,39 @@
      (repeat empty-stars (star :empty))
      [:span.mlp2.h6 rating]]))
 
+(defn stylist-attribute
+  [icon-width ucare-id content]
+  [:div.flex.items-center
+   [:div.mr1 {:style {:width "10px"}}
+    (ui/ucare-img {:width icon-width} ucare-id)]
+   content])
+
 (defn stylist-card
   []
-  [:div.bg-white.p2.h6
+  [:div.bg-white.p2.h6.my3
    [:div.flex
-    [:div.mr2 (ui/ucare-img {:width "104"} "b06a282a-27a0-4a4c-aa85-77868556ac1d")]
+    [:div.mr2.mt1 (ui/circle-ucare-img {:width "104"} "63acc2ac-43cc-48cb-9db7-0361f01aaa25")]
     [:div.flex-grow-1
      [:div.h4 "Aundria Carter"]
-     [:div (star-rating 2.6)]
-     [:div "Giovanni Hair Salon"]
-     [:div "555-555-5555"]
-     [:div "Licensed Salon Stylist"]
-     [:div "10 yrs Experience"]]]
-   [:div.line-height-2.medium.dark-gray
+     [:div (star-rating 3.6)]
+     (stylist-attribute "8" "d1e19d12-edcb-4068-9fa4-f75c94d3b7e6" [:span.bold "Giovanni Hair Salon, Berkeley"])
+     (stylist-attribute "10" "2fa4458a-ce39-4a73-920e-c0e58ca7ffcd" "555-555-5555")
+     (stylist-attribute "10" "da021ef5-4190-4c19-b729-33fcf5b68d01" "Licensed Salon Stylist")
+     (stylist-attribute "10" "3987ebfd-8f8b-4883-ac1c-f9929e6ea6a3" "10 yrs Experience")]]
+   [:div.line-height-2.medium.dark-gray.mt1
     "Hello. I’m Aundria, head stylist at Giovanni Hair Salon in Oakland. "
     "Everyone that sits in my chair gets the royal treatment. "
     "A great look starts with tiny details so we’ll have a consultation either by phone or in person. "
     "We’ll create a plan together and then sit back and relax because you are in great hands."]
    [:div "Carousel"]
-   [:div "CTA"]])
+   (ui/teal-button {}
+                   [:div.flex.items-center.justify-center.mynp3
+                    [:span.mr1.pt1 (ui/ucare-img {:width "32"} "c220762a-87da-49ac-baa9-0c2479addab6")]
+                    "Text Aundria"])])
 
 (def stylist-cards
-  [:div.p3.bg-light-silver
-   (stylist-card)])
+  [:div.px3.p1.bg-light-silver
+   (repeat 3 (stylist-card))])
 
 (defn faq
   [faq-accordion]
@@ -225,6 +236,7 @@
     (component/build fixed-header header nil)
     (v2-home/hero)
     three-easy-steps
+    stylist-cards
     (faq faq-accordion)
     contact-us]))
 
