@@ -165,7 +165,7 @@
                           " I specialize in health for all hair types, namely hair extensions,"
                           " eyelash extensions, braids and natural hair care."]
     :location            "The Beauty Room"
-    :phone               "TBD"
+    :phone               "(910) 366-8039"
     :rating              5
     :years-of-experience 12}])
 
