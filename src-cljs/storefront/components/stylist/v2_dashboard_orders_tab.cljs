@@ -106,11 +106,21 @@
 (defn header-ui [show-voucher-elements?]
   [:thead.bg-silver.border-0
    [:tr.h7.medium
-    [:th.px2.py1.left-align.medium.col-2.nowrap "Order Updated"]
-    [:th.px2.py1.left-align.medium {:class (if show-voucher-elements? "col-8" "col-5")} "Client"]
-    [:th.px2.py1.center.medium {:class (if show-voucher-elements? "col-1" "col-4")} "Delivery"]
+    [:th.px2.py1.left-align.medium.col-2.nowrap
+     {:data-test "header-order-updated"}
+     "Order Updated"]
+    [:th.px2.py1.left-align.medium
+     {:data-test "header-client"
+      :class (if show-voucher-elements? "col-8" "col-5")}
+     "Client"]
+    [:th.px2.py1.center.medium
+     {:data-test "header-delivery"
+      :class (if show-voucher-elements? "col-1" "col-4")}
+     "Delivery"]
     (when show-voucher-elements?
-      [:th.px2.py1.center.medium.col-1 "Voucher"])]])
+      [:th.px2.py1.center.medium.col-1
+       {:data-test "header-voucher"}
+       "Voucher"])]])
 
 (defn query [data]
   (let [fetching-data?                (utils/requesting? data request-keys/get-stylist-dashboard-sales)
