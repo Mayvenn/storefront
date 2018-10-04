@@ -49,7 +49,7 @@
 (def ^:private account-events
   #{events/navigate-account-manage
     events/navigate-account-referrals
-    events/navigate-stylist-account-commission
+    events/navigate-stylist-account-payout
     events/navigate-stylist-account-password
     events/navigate-stylist-account-portrait
     events/navigate-stylist-account-profile

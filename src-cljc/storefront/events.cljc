@@ -77,7 +77,7 @@
 (defpath navigate-stylist-account-profile)
 (defpath navigate-stylist-account-portrait)
 (defpath navigate-stylist-account-password)
-(defpath navigate-stylist-account-commission)
+(defpath navigate-stylist-account-payout)
 (defpath navigate-stylist-account-social)
 
 (defpath navigate-voucher)

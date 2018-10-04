@@ -76,7 +76,7 @@
          events/navigate-stylist-account-profile                    stylist.account/built-component
          events/navigate-stylist-account-portrait                   stylist.portrait/built-component
          events/navigate-stylist-account-password                   stylist.account/built-component
-         events/navigate-stylist-account-commission                 stylist.account/built-component
+         events/navigate-stylist-account-payout                     stylist.account/built-component
          events/navigate-stylist-account-social                     stylist.account/built-component
          events/navigate-v2-stylist-dashboard-payments              v2.dashboard/built-component
          events/navigate-v2-stylist-dashboard-orders                v2.dashboard/built-component

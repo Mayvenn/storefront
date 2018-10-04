@@ -92,7 +92,7 @@
               "/stylist/account/profile"                          (edn->bidi events/navigate-stylist-account-profile)
               "/stylist/account/portrait"                         (edn->bidi events/navigate-stylist-account-portrait)
               "/stylist/account/password"                         (edn->bidi events/navigate-stylist-account-password)
-              "/stylist/account/commission"                       (edn->bidi events/navigate-stylist-account-commission)
+              "/stylist/account/payout"                           (edn->bidi events/navigate-stylist-account-payout)
               "/stylist/account/social"                           (edn->bidi events/navigate-stylist-account-social)
               "/stylist/redeem"                                   (edn->bidi events/navigate-voucher-redeem)
               "/stylist/redeemed"                                 (edn->bidi events/navigate-voucher-redeemed)

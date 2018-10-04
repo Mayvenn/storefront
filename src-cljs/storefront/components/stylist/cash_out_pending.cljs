@@ -66,5 +66,5 @@
                         "Mayvenn::GreenDotPayoutMethod" (str "Your cash out failed. "
                                                              "Please try another card with Mayvenn InstaPay "
                                                              "or switch to PayPal and try again."))]
-    (effects/redirect events/navigate-stylist-account-commission)
+    (effects/redirect events/navigate-stylist-account-payout)
     (messages/handle-later events/flash-show-failure {:message message})))

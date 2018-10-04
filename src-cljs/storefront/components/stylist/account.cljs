@@ -1,6 +1,6 @@
 (ns storefront.components.stylist.account
   (:require [storefront.component :as component]
-            [storefront.components.stylist.account.commission :as account.commission]
+            [storefront.components.stylist.account.payout :as account.payout]
             [storefront.components.stylist.account.password :as account.password]
             [storefront.components.stylist.account.profile :as account.profile]
             [storefront.components.stylist.account.social :as account.social]
@@ -61,11 +61,11 @@
 
      [:div.bg-light-gray.mt3.mxn2 ;; Oppose padding on page
       (component/build tabs/component {:selected-tab current-nav-event}
-                       {:opts {:tab-refs ["profile" "password" "commission" "social"]
-                               :labels   ["Profile" "Password" "Commission" "Social"]
+                       {:opts {:tab-refs ["profile" "password" "payout" "social"]
+                               :labels   ["Profile" "Password" "Payout" "Social"]
                                :tabs     [events/navigate-stylist-account-profile
                                           events/navigate-stylist-account-password
-                                          events/navigate-stylist-account-commission
+                                          events/navigate-stylist-account-payout
                                           events/navigate-stylist-account-social]}})]
 
      (if fetching?
@@ -78,8 +78,8 @@
           events/navigate-stylist-account-password
           (component/build account.password/component password opts)
 
-          events/navigate-stylist-account-commission
-          (component/build account.commission/component commission opts)
+          events/navigate-stylist-account-payout
+          (component/build account.payout/component commission opts)
 
           events/navigate-stylist-account-social
           (component/build account.social/component social opts)
@@ -94,7 +94,7 @@
    :available-credit    (get-in data keypaths/user-total-available-store-credit)
    :profile             (account.profile/query data)
    :password            (account.password/query data)
-   :commission          (account.commission/query data)
+   :commission          (account.payout/query data)
    :social              (account.social/query data)
    :loaded-uploadcare?  (get-in data keypaths/loaded-uploadcare)})
 

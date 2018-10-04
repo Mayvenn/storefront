@@ -1,4 +1,4 @@
-(ns storefront.components.stylist.account.commission
+(ns storefront.components.stylist.account.payout
   (:require [storefront.accessors.credit-cards :as cc]
             [storefront.accessors.experiments :as experiments]
             [react-transition-group]
@@ -126,7 +126,7 @@
      (utils/send-event-callback events/control-stylist-account-commission-submit)}
     [:div.clearfix
      [:div.col.col-12.col-6-on-tb-dt
-      [:h1.h3.light.my3.center.col-12 "Update Commission Info"]
+      [:h1.h3.light.my3.center.col-12 "Update Payout Info"]
       [:div.col-12.col-10-on-tb-dt.mx-auto
        (ui/select-field {:data-test "payout-method"
                          ;;TODO We should update field-error construction to be kebabed how we like it.
