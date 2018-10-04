@@ -303,16 +303,10 @@
 (def environment [:environment])
 
 (def carousel (conj ui :carousel))
-(def carousel-certified-stylist-index (conj carousel :certified-stylist-index))
-(def carousel-certified-stylist-sliding? (conj carousel :certified-stylist-sliding?))
 (def carousel-stylist-gallery (conj carousel :stylist-gallery))
 (def carousel-stylist-gallery-open? (conj carousel-stylist-gallery :open?))
 
 (def fvlanding (conj ui :fvlanding))
-(def fvlanding-video (conj fvlanding :video))
-(def fvlanding-carousel-ugc (conj fvlanding :carousel-ugc))
-(def fvlanding-carousel-ugc-open? (conj fvlanding-carousel-ugc :open?))
-(def fvlanding-carousel-ugc-index (conj fvlanding-carousel-ugc :index))
 
 (def v2-root [:v2])
 

@@ -13,7 +13,6 @@
             [storefront.components.accordion :as accordion]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
-            [storefront.platform.numbers :as numbers]
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -70,36 +69,6 @@
              (header text-or-call-number)]))))
      :clj [:span]))
 
-(defn ^:private embedded-carousel-slides [album]
-  (map-indexed
-   (fn [idx image]
-     [:div.p1
-      [:a (utils/fake-href events/control-install-landing-page-ugc-modal-open {:index idx})
-       (ui/aspect-ratio
-        1 1
-        {:class "flex items-center"}
-        [:img.col-12 (:large (:imgs image))])]])
-   album))
-
-(defn ^:private modal-carousel-slides [album]
-  (map-indexed
-   (fn [idx {:keys [imgs id user-handle social-service] :as image}]
-     [:div
-      (ui/aspect-ratio
-       1 1
-       {:class "flex items-center"}
-       [:img.col-12 (:large imgs)])
-      [:div.flex.items-center.justify-between.p2.h5
-       [:div.dark-gray.medium.pl4 {:style {:word-break "break-all"}} "@" user-handle]
-       [:div.mr4.mx1.line-height-1 {:style {:width "1em" :height "1em"}}
-        (svg/social-icon social-service)]]
-      [:a.col-11.btn.btn-primary.mx-auto.mb2
-       (utils/route-to-shop events/navigate-shop-by-look-details
-                            {:look-id       id
-                             :album-keyword :free-install-home})
-       "Shop This Look"]])
-   album))
-
 (defn easy-step-block [img title copy]
   [:div.py2.col-12.col-4-on-tb-dt
    [:div.flex.justify-center img]
@@ -121,62 +90,6 @@
     (easy-step-block (ui/ucare-img {:width "27"} "b06a282a-27a0-4a4c-aa85-77868556ac1d")
                      "Get Your Hair Installed For FREE"
                      "Visit your Mayvenn Stylist and get your hair installed absolutely free. ")]])
-
-(defn star [type]
-  [:span.mrp1
-   (ui/ucare-img
-    {:width "13"}
-    (case type
-      :whole "5a9df759-cf40-4599-8ce6-c61502635213"
-      :half  "d3ff89f5-533c-418f-80ef-27aa68e40eb1"
-      :empty "92d024c6-1e82-4561-925a-00d45862e358"
-      nil))])
-
-(defn star-rating
-  [rating]
-  (let [rounded-rating (-> rating (* 2) float numbers/round (/ 2) float)
-        whole-stars    (int rounded-rating)
-        half-stars     (if (== whole-stars rounded-rating) 0 1)
-        empty-stars    (- 5 whole-stars half-stars)]
-    [:div.flex.items-center
-     (repeat whole-stars (star :whole))
-     (repeat half-stars (star :half))
-     (repeat empty-stars (star :empty))
-     [:span.mlp2.h6 rating]]))
-
-(defn stylist-attribute
-  [icon-width ucare-id content]
-  [:div.flex.items-center
-   [:div.mr1 {:style {:width "10px"}}
-    (ui/ucare-img {:width icon-width} ucare-id)]
-   content])
-
-(defn stylist-card
-  []
-  [:div.bg-white.p2.h6.my3
-   [:div.flex
-    [:div.mr2.mt1 (ui/circle-ucare-img {:width "104"} "63acc2ac-43cc-48cb-9db7-0361f01aaa25")]
-    [:div.flex-grow-1
-     [:div.h4 "Aundria Carter"]
-     [:div (star-rating 3.6)]
-     (stylist-attribute "8" "d1e19d12-edcb-4068-9fa4-f75c94d3b7e6" [:span.bold "Giovanni Hair Salon, Berkeley"])
-     (stylist-attribute "10" "2fa4458a-ce39-4a73-920e-c0e58ca7ffcd" "555-555-5555")
-     (stylist-attribute "10" "da021ef5-4190-4c19-b729-33fcf5b68d01" "Licensed Salon Stylist")
-     (stylist-attribute "10" "3987ebfd-8f8b-4883-ac1c-f9929e6ea6a3" "10 yrs Experience")]]
-   [:div.line-height-2.medium.dark-gray.mt1
-    "Hello. I’m Aundria, head stylist at Giovanni Hair Salon in Oakland. "
-    "Everyone that sits in my chair gets the royal treatment. "
-    "A great look starts with tiny details so we’ll have a consultation either by phone or in person. "
-    "We’ll create a plan together and then sit back and relax because you are in great hands."]
-   [:div "Carousel"]
-   (ui/teal-button {}
-                   [:div.flex.items-center.justify-center.mynp3
-                    [:span.mr1.pt1 (ui/ucare-img {:width "32"} "c220762a-87da-49ac-baa9-0c2479addab6")]
-                    "Text Aundria"])])
-
-(def stylist-cards
-  [:div.px3.p1.bg-light-silver
-   (repeat 3 (stylist-card))])
 
 (defn faq
   [faq-accordion]
@@ -222,38 +135,21 @@
      "help@mayvenn.com")]])
 
 (defn ^:private component
-  [{:keys [header video carousel-certified-stylist ugc-carousel faq-accordion popup-data]} owner opts]
+  [{:keys [header carousel-certified-stylist faq-accordion popup-data]} owner opts]
   (component/create
    [:div
-    (when video
-      (component/build video/component
-                       video
-                       ;; NOTE(jeff): we use an invalid video slug to preserve back behavior. There probably should be
-                       ;;             an investigation to why history is replaced when doing A -> B -> A navigation
-                       ;;             (B is removed from history).
-                       {:opts {:close-attrs (utils/route-to events/navigate-install-home {:query-params {:video "0"}})}}))
     (component/build relative-header header nil)
     (component/build fixed-header header nil)
     (v2-home/hero)
     three-easy-steps
-    stylist-cards
+    (component/build certified-stylists/component {} {})
     (faq faq-accordion)
     contact-us]))
 
 (defn ^:private query [data]
-  {:header                     {:text-or-call-number "1-310-733-0284"}
-   :video                      (get-in data keypaths/fvlanding-video)
-   :carousel-certified-stylist {:index         (get-in data keypaths/carousel-certified-stylist-index)
-                                :sliding?      (get-in data keypaths/carousel-certified-stylist-sliding?)
-                                :gallery-open? (get-in data keypaths/carousel-stylist-gallery-open?)}
-
+  {:header        {:text-or-call-number "1-310-733-0284"}
    :popup-data    #?(:cljs (popup/query data)
                      :clj {})
-   :ugc-carousel  (when-let [ugc (get-in data keypaths/ugc)]
-                    (when-let [images (pixlee/images-in-album ugc :free-install-home)]
-                      {:carousel-data {:album images}
-                       :index         (get-in data keypaths/fvlanding-carousel-ugc-index)
-                       :open?         (get-in data keypaths/fvlanding-carousel-ugc-open?)}))
    :faq-accordion {:expanded-indices (get-in data keypaths/accordion-freeinstall-home-expanded-indices)}})
 
 (defn built-component
@@ -263,24 +159,6 @@
 ;; TODO Consider renaming file and event to something free install specific
 (defmethod effects/perform-effects events/navigate-install-home [_ _ _ _ app-state]
   #?(:cljs (pixlee-hook/fetch-album-by-keyword :free-install-home)))
-
-(def ^:private slug->video
-  (assoc certified-stylists/video-slug->video
-         "free-install" {:youtube-id "cWkSO_2nnD4"}))
-
-(defmethod transitions/transition-state events/navigate-install-home
-  [_ _ {:keys [query-params]} app-state]
-  (assoc-in app-state keypaths/fvlanding-video (slug->video (:video query-params))))
-
-(defmethod transitions/transition-state events/control-install-landing-page-ugc-modal-open
-  [_ _ {:keys [index]} app-state]
-  (-> app-state
-      (assoc-in keypaths/fvlanding-carousel-ugc-open? true)
-      (assoc-in keypaths/fvlanding-carousel-ugc-index index)))
-
-(defmethod transitions/transition-state events/control-install-landing-page-ugc-modal-dismiss
-  [_ _ _ app-state]
-  (assoc-in app-state keypaths/fvlanding-carousel-ugc-open? false))
 
 (defmethod transitions/transition-state events/control-install-landing-page-toggle-accordion
   [_ _ {index :index} app-state]

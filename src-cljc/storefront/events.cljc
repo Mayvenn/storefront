@@ -141,9 +141,6 @@
 
 (defpath ensure-sku-ids)
 
-(defpath carousel-certified-stylist-index)
-(defpath carousel-certified-stylist-slide)
-
 (defpath control-stylist-gallery-open)
 (defpath control-stylist-gallery-close)
 
@@ -164,8 +161,6 @@
 
 (defpath control-install-landing-page-look-back)
 (defpath control-install-landing-page-toggle-accordion)
-(defpath control-install-landing-page-ugc-modal-open)
-(defpath control-install-landing-page-ugc-modal-dismiss)
 
 (defpath control-seventy-five-off-install)
 (defpath control-seventy-five-off-install-shop-looks)
