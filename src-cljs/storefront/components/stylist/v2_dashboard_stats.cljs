@@ -79,7 +79,7 @@
         (earnings-count "Lifetime Earnings" (mf/as-money lifetime-earnings))]]
       (when (seq services)
         [:div.flex.pt2
-         [:div.col-j7
+         [:div.col-7
           {:data-test "monthly-services"}
           (earnings-count "Monthly Services" monthly-services)]
          [:div.col-5
