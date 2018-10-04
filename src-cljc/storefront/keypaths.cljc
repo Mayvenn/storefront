@@ -304,6 +304,8 @@
 
 (def carousel (conj ui :carousel))
 (def carousel-stylist-gallery (conj carousel :stylist-gallery))
+(def carousel-stylist-gallery-index (conj carousel-stylist-gallery :index))
+(def carousel-stylist-gallery-image-index (conj carousel-stylist-gallery :image-index))
 (def carousel-stylist-gallery-open? (conj carousel-stylist-gallery :open?))
 
 (def fvlanding (conj ui :fvlanding))

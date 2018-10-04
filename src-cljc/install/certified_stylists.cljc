@@ -169,9 +169,16 @@
     :rating              5
     :years-of-experience 12}])
 
+(defn ^:private gallery-slide [index ucare-id]
+  [:div {:key (str "gallery-slide" index)} (ui/aspect-ratio 1 1
+                         (ui/ucare-img {:class "col-12"} ucare-id))])
 
 (defn stylist-card
-  [{:keys [gallery-images
+  [{:keys [selected-stylist-index
+           selected-image-index
+           current-stylist-index
+           gallery-open?]}
+   {:keys [gallery-images
            portrait-image-id
            location
            phone
@@ -195,25 +202,62 @@
    [:div.my2
     (component/build carousel/component
                      {:slides   (map-indexed (fn [i x]
-                                               [:div {:key (str first-name "-gallery-" i)}
+                                               [:div
+                                                {:on-click #(messages/handle-message
+                                                             events/control-stylist-gallery-open {:stylist-gallery-index current-stylist-index
+                                                                                                  :image-index   i})
+                                                 :key      (str first-name "-gallery-" i)}
                                                 (ui/aspect-ratio
                                                  1 1
                                                  (ui/ucare-img {:width "102"} x))]) gallery-images)
-                      :settings {:swipe         true
-                                 :initialSlide  0
-                                 :arrows        true
-                                 :dots          false
-                                 :slidesToShow  3
-                                 :infinite      true}}
+                      :settings {:swipe        true
+                                 :initialSlide 0
+                                 :arrows       true
+                                 :dots         false
+                                 :slidesToShow 3
+                                 :infinite     true}}
                      {})]
    (ui/teal-button {}
                    [:div.flex.items-center.justify-center.mynp3
                     [:span.mr1.pt1 (ui/ucare-img {:width "32"} "c220762a-87da-49ac-baa9-0c2479addab6")]
-                    (str "Text " first-name)])])
+                    (str "Text " first-name)])
+   (when gallery-open?
+     (let [close-attrs (utils/fake-href events/control-stylist-gallery-close)]
+       (ui/modal
+        {:close-attrs close-attrs
+         :col-class   "col-12"}
+        [:div.relative.mx-auto
+         {:style {:max-width "750px"}}
+         (component/build carousel/component
+                          {:slides   (map-indexed gallery-slide gallery-images)
+                           :settings {:initialSlide (or selected-image-index 0)
+                                      :slidesToShow 1}}
+                          {})
+         [:div.absolute
+          {:style {:top "1.5rem" :right "1.5rem"}}
+          (ui/modal-close {:class       "stroke-dark-gray fill-gray"
+                           :close-attrs close-attrs})]])))])
 
 (defn component
-  [{:keys []} owner opts]
+  [{:keys [stylist-gallery-index gallery-image-index]} owner opts]
   (component/create
    [:div.px3.p1.bg-light-silver
-    (for [stylist stylists]
-      (stylist-card stylist))]))
+    (map-indexed
+     (fn [index stylist]
+       (stylist-card
+        {:selected-stylist-index stylist-gallery-index
+         :selected-image-index   gallery-image-index
+         :current-stylist-index  index
+         :gallery-open?          (= stylist-gallery-index index)}
+         stylist))
+     stylists)]))
+
+(defmethod transitions/transition-state events/control-stylist-gallery-open [_ _event {:keys [stylist-gallery-index image-index]} app-state]
+  (-> app-state
+      (assoc-in keypaths/carousel-stylist-gallery-index stylist-gallery-index)
+      (assoc-in keypaths/carousel-stylist-gallery-image-index image-index)))
+
+(defmethod transitions/transition-state events/control-stylist-gallery-close [_ _event _args app-state]
+  (-> app-state
+      (update-in keypaths/carousel-stylist-gallery dissoc :index)
+      (update-in keypaths/carousel-stylist-gallery dissoc :image-index)))

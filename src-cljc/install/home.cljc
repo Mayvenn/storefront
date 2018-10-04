@@ -142,15 +142,17 @@
     (component/build fixed-header header nil)
     (v2-home/hero)
     three-easy-steps
-    (component/build certified-stylists/component {} {})
+    (component/build certified-stylists/component carousel-certified-stylist {})
     (faq faq-accordion)
     contact-us]))
 
 (defn ^:private query [data]
-  {:header        {:text-or-call-number "1-310-733-0284"}
-   :popup-data    #?(:cljs (popup/query data)
-                     :clj {})
-   :faq-accordion {:expanded-indices (get-in data keypaths/accordion-freeinstall-home-expanded-indices)}})
+  {:header                     {:text-or-call-number "1-310-733-0284"}
+   :popup-data                 #?(:cljs (popup/query data)
+                                  :clj {})
+   :carousel-certified-stylist {:stylist-gallery-index (get-in data keypaths/carousel-stylist-gallery-index)
+                                :gallery-image-index   (get-in data keypaths/carousel-stylist-gallery-image-index)}
+   :faq-accordion              {:expanded-indices (get-in data keypaths/accordion-freeinstall-home-expanded-indices)}})
 
 (defn built-component
   [data opts]
