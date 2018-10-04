@@ -2,6 +2,7 @@
   (:require [clojure.string :as string]))
 
 (def cookie [:cookie])
+(def scheme [:scheme])
 
 (def cms [:cms])
 (def cms-homepage (conj cms :homepage))

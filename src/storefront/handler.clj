@@ -237,6 +237,7 @@
     (let [nav-message        (:nav-message req)
           [nav-event params] nav-message]
       (h (-> req
+             (assoc-in-req-state keypaths/scheme (name (:scheme req)))
              (assoc-in-req-state keypaths/navigation-message nav-message)
              (assoc-in-req-state keypaths/navigation-uri (:nav-uri req))
              (assoc-in-req-state keypaths/static (static-page nav-event))

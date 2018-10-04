@@ -56,6 +56,7 @@
   (when-not (contains? #{"shop" "welcome"} (:store-slug store))
     (some-> (get-in data keypaths/navigation-uri)
             (update :host string/replace #"^[^.]+" "shop")
+            (assoc :scheme (get-in data keypaths/scheme))
             str)))
 
 (defn canonical-link-tag [data]

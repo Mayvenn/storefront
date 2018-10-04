@@ -80,6 +80,7 @@
   (let [cookie (cookie-jar/make-cookie)]
     {:cookie cookie
      :features #{}
+     :scheme (apply str (drop-last (.-protocol js/location)))
 
      :session-id (cookie-jar/force-session-id cookie)
 
