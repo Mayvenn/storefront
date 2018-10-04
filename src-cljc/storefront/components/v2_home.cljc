@@ -325,9 +325,9 @@
      [:section what-our-customers-are-saying]]
     [:section.py10.bg-transparent-teal
      (v2/get-a-free-install {:store                 store
-                                  :gallery-ucare-ids     gallery-ucare-ids
-                                  :stylist-portrait      (:portrait store)
-                                  :stylist-name          (:store-nickname store)
+                             :gallery-ucare-ids     gallery-ucare-ids
+                             :stylist-portrait      (:portrait store)
+                             :stylist-name          (:store-nickname store)
                              :stylist-gallery-open? stylist-gallery-open?})]
     [:section an-amazing-deal]
     [:hr.border-top.border-dark-silver.col-9.mx-auto.my6]
