@@ -263,7 +263,8 @@
   `(let [handler#       ~handler
          url#           ~url
          canonized-url# (-> (uri/uri url#)
-                            (assoc :host "shop.mayvenn.com"))
+                            (assoc :host "shop.mayvenn.com"
+                                   :scheme "https"))
          link-url#      (some->> (mock/request :get (str "https:" url#))
                              handler#
                              :body
