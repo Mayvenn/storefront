@@ -100,8 +100,7 @@
     :bio                 ["My name is Angela and I’ve been a hairstylist for 19 years."
                           " My specialties include quick weaves, sew-ins, and cutting and styling."
                           " As a seasoned stylist, making people look good and"
-                          " feel glorious is my passion."
-                          [:div.pb3.mbnp2]]
+                          " feel glorious is my passion."]
     :location            "Parise Exquisite"
     :phone               "(910) 964-4976"
     :rating              4.75
@@ -201,8 +200,8 @@
      (stylist-attribute "10" "2fa4458a-ce39-4a73-920e-c0e58ca7ffcd" phone)
      (stylist-attribute "10" "da021ef5-4190-4c19-b729-33fcf5b68d01" "Licensed Salon Stylist")
      (stylist-attribute "10" "3987ebfd-8f8b-4883-ac1c-f9929e6ea6a3" (str years-of-experience " yrs Experience"))]]
-   [:div.line-height-2.medium.dark-gray.mt1 bio]
-   [:div.my2
+   [:div.line-height-2.medium.dark-gray.mt1 {:style {:min-height "75px"}} bio]
+   [:div.my2.m1-on-tb-dt
     (component/build carousel/component
                      {:slides   (map-indexed (fn [i x]
                                                [:div
