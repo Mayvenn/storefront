@@ -152,7 +152,7 @@
   (let [max-age (condp = value
                   "signed-in" four-weeks
                   "opted-in"  (* 200 one-year)
-                  "dismissed" one-day)]
+                  "dismissed" (* 60 30))]
     (.set cookie :popup-session value max-age "/" (:domain email-capture-session) config/secure?)))
 
 (defn save-dismissed-free-install [cookie value]
