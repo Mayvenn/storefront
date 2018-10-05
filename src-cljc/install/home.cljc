@@ -100,6 +100,16 @@
      "Write To Us"
      "help@mayvenn.com")]])
 
+(def shop-bar
+  [:div.bg-black.white.p4.h5.medium
+   [:div.max-580.mx-auto.flex.items-center.justify-around
+    [:div.px2 "Ready to shop now? Shop without a consultation!"]
+    [:div.col-6.col-2-on-tb-dt.ml3
+     (ui/teal-button (assoc (utils/route-to-shop events/navigate-home {:query-params {:utm_medium "fvlanding"}})
+                            :data-test "shop"
+                            :height-class "py1")
+                     "Shop")]]])
+
 (def hero
   [:a.bold.shadow.white.center.bg-light-gray
    {:href "#3-easy-steps"}
@@ -116,6 +126,7 @@
     hero
     three-easy-steps
     (component/build certified-stylists/component carousel-certified-stylist {})
+    shop-bar
     (faq faq-accordion)
     contact-us]))
 
