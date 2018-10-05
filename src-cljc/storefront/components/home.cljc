@@ -128,10 +128,10 @@
 
 (def free-shipping-hero-data
   {:route-to-fn  (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
-   :file-name    ""
-   :alt          ""
-   :mobile-uuid  ""
-   :desktop-uuid ""})
+   :file-name    "free-shipping"
+   :alt          "Free Shipping"
+   :mobile-uuid  "30eef0bc-186b-4f27-8fed-b9f98895f736"
+   :desktop-uuid "379e9d78-7d73-4965-9b77-2dc2a48eeeab"})
 
 (defn feature-image [{:keys [desktop-url mobile-url file-name alt]}]
   ;; Assumptions: 2 up, within a .container. Does not account for 1px border.
