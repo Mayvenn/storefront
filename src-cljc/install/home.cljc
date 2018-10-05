@@ -77,6 +77,7 @@
 
 (def three-easy-steps
   [:div.bg-transparent-teal.center.py8
+   [:a {:name "3-easy-steps"}]
    [:div.mt2.mb1
     [:h2.black "Get a FREE Install"]
     [:div.h6.dark-gray "In 3 easy steps"]]
@@ -134,13 +135,24 @@
      "Write To Us"
      "help@mayvenn.com")]])
 
+(defn hero []
+  (let [file-name "free-install-hero"
+        mob-uuid  "72853f68-1152-4dab-91d9-cee34ea81f74"
+        dsk-uuid  "786dae46-6b54-45c1-849f-5e1f9344aa69"]
+    [:a.bold.shadow.white.center.bg-light-gray
+     {:href "#3-easy-steps"}
+     (v2-home/hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
+                  :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
+                  :file-name   file-name
+                  :alt         "Beautiful Virgin Hair Installed for FREE"})]))
+
 (defn ^:private component
   [{:keys [header carousel-certified-stylist faq-accordion popup-data]} owner opts]
   (component/create
    [:div
     (component/build relative-header header nil)
     (component/build fixed-header header nil)
-    (v2-home/hero)
+    (hero)
     three-easy-steps
     (component/build certified-stylists/component carousel-certified-stylist {})
     (faq faq-accordion)
