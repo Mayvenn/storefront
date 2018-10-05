@@ -220,8 +220,8 @@
                                  :slidesToShow 3
                                  :infinite     true}}
                      {})]
-   (ui/teal-button {}
-                   [:div.flex.items-center.justify-center.mynp3
+   (ui/teal-button {:href (str "sms:" (numbers/digits-only phone))}
+                   [:div.flex.items-center.justify-center.mynp3.inherit-color
                     [:span.mr1.pt1 (ui/ucare-img {:width "32"} "c220762a-87da-49ac-baa9-0c2479addab6")]
                     (str "Text " first-name)])
    (when gallery-open?
