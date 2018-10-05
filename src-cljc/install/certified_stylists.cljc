@@ -201,7 +201,7 @@
      (stylist-attribute "10" "da021ef5-4190-4c19-b729-33fcf5b68d01" "Licensed Salon Stylist")
      (stylist-attribute "10" "3987ebfd-8f8b-4883-ac1c-f9929e6ea6a3" (str years-of-experience " yrs Experience"))]]
    [:div.line-height-2.medium.dark-gray.mt1 {:style {:min-height "75px"}} bio]
-   [:div.my2.m1-on-tb-dt
+   [:div.my2.m1-on-tb-dt.mb2-on-tb-dt
     (component/build carousel/component
                      {:slides   (map-indexed (fn [i x]
                                                [:div
@@ -220,10 +220,15 @@
                                  :slidesToShow 3
                                  :infinite     true}}
                      {})]
-   (ui/teal-button {:href (str "sms:" (numbers/digits-only phone))}
-                   [:div.flex.items-center.justify-center.mynp3.inherit-color
-                    [:span.mr1.pt1 (ui/ucare-img {:width "32"} "c220762a-87da-49ac-baa9-0c2479addab6")]
-                    (str "Text " first-name)])
+   [:div.hide-on-mb
+    [:div.black.center.h4.flex.items-center.justify-center.mynp3.bold.pb2
+     [:span.mr2.pt1 (ui/ucare-img {:width "32"} "bb7c9399-fc68-4bad-9b33-bf19741d58bf")]
+     (str "Text " first-name " " phone)]]
+   [:div.hide-on-tb-dt
+    (ui/teal-button {:href (str "sms:" (numbers/digits-only phone))}
+                    [:div.flex.items-center.justify-center.mynp3.inherit-color
+                     [:span.mr1.pt1 (ui/ucare-img {:width "32"} "c220762a-87da-49ac-baa9-0c2479addab6")]
+                     (str "Text " first-name)])]
    (when gallery-open?
      (let [close-attrs (utils/fake-href events/control-stylist-gallery-close)]
        (ui/modal
