@@ -15,7 +15,8 @@
             [storefront.platform.component-utils :as utils]
             [storefront.transitions :as transitions]
             [clojure.string :as string]
-            [spice.maps :as maps]))
+            [spice.maps :as maps]
+            [cemerick.url :as url]))
 
 (defn star [type]
   [:span.mrp1
@@ -170,8 +171,9 @@
     :years-of-experience 12}])
 
 (defn ^:private gallery-slide [index ucare-id]
-  [:div {:key (str "gallery-slide" index)} (ui/aspect-ratio 1 1
-                         (ui/ucare-img {:class "col-12"} ucare-id))])
+  [:div {:key (str "gallery-slide" index)}
+   (ui/aspect-ratio 1 1
+                    (ui/ucare-img {:class "col-12"} ucare-id))])
 
 (defn stylist-card
   [{:keys [selected-stylist-index
@@ -188,7 +190,7 @@
            first-name
            last-name
            bio]}]
-  [:div.bg-white.p2.pb3.h6.my3 {:key first-name}
+  [:div.bg-white.p2.pb2.h6.my2.mx2-on-tb-dt.col-12.col-5-on-tb-dt {:key first-name}
    [:div.flex
     [:div.mr2.mt1 (ui/circle-ucare-img {:width "104"} portrait-image-id)]
     [:div.flex-grow-1
@@ -204,8 +206,9 @@
                      {:slides   (map-indexed (fn [i x]
                                                [:div
                                                 {:on-click #(messages/handle-message
-                                                             events/control-stylist-gallery-open {:stylist-gallery-index current-stylist-index
-                                                                                                  :image-index   i})
+                                                             events/control-stylist-gallery-open
+                                                             {:stylist-gallery-index current-stylist-index
+                                                              :image-index           i})
                                                  :key      (str first-name "-gallery-" i)}
                                                 (ui/aspect-ratio
                                                  1 1
@@ -241,16 +244,17 @@
 (defn component
   [{:keys [stylist-gallery-index gallery-image-index]} owner opts]
   (component/create
-   [:div.px3.p1.bg-light-silver
-    (map-indexed
-     (fn [index stylist]
-       (stylist-card
-        {:selected-stylist-index stylist-gallery-index
-         :selected-image-index   gallery-image-index
-         :current-stylist-index  index
-         :gallery-open?          (= stylist-gallery-index index)}
+   [:div.px3.p1.bg-light-silver.flex-wrap.flex.justify-center
+    [:div.col-12.col-8-on-dt.py2.flex-wrap.flex.justify-center
+     (map-indexed
+      (fn [index stylist]
+        (stylist-card
+         {:selected-stylist-index stylist-gallery-index
+          :selected-image-index   gallery-image-index
+          :current-stylist-index  index
+          :gallery-open?          (= stylist-gallery-index index)}
          stylist))
-     stylists)]))
+      stylists)]]))
 
 (defmethod transitions/transition-state events/control-stylist-gallery-open [_ _event {:keys [stylist-gallery-index image-index]} app-state]
   (-> app-state
