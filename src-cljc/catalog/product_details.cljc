@@ -199,37 +199,38 @@
     "Free shipping & 30 day guarantee"]))
 
 (defn product-description
-  [{:keys [copy/description copy/colors copy/weights copy/materials copy/summary hair/family] :as product}]
-  (when (seq description)
-    [:div.border.border-dark-gray.mt2.p2.rounded
-     [:h2.h3.medium.navy.shout "Description"]
-     [:div {:item-prop "description"}
-      (when (or colors weights materials)
-        (let [attrs (->> [["Color" colors]
-                          ["Weight" weights]
-                          ["Material" materials]]
-                         (filter second))
-              ;;This won't work if we have 5 possible attrs
-              size (str "col-" (/ 12 (count attrs)))]
-          (into [:div.clearfix.mxn1.my2]
-                (for [[title value] attrs]
-                  [:dl.col.m0.inline-block {:class size}
-                   [:dt.mx1.dark-gray.shout.h6 title]
-                   [:dd.mx1.ml0.h5.navy.medium value]]))))
-      (when (seq summary)
-        [:div.my2
-         [:h3.mbp3.h5 "Includes:"]
-         [:ul.list-reset.navy.h5.medium
-          (for [[idx item] (map-indexed vector summary)]
-            [:li.mbp3 {:key (str "item-" idx)} item])]])
-      [:div.h5.dark-gray
-       (for [[idx item] (map-indexed vector description)]
-         [:p.mt2 {:key (str "product-description-" idx)} item])
-       (when (not (or (contains? family "seamless-clip-ins")
-                      (contains? family "tape-ins")
-                      (contains? (:stylist-exclusives/family product) "kits")))
-         [:p [:a.teal.underline (utils/route-to events/navigate-content-our-hair)
-              "Learn more about our hair."]])]]]))
+  [{:keys [product]}]
+  (let [{:keys [copy/description copy/colors copy/weights copy/materials copy/summary hair/family]} product]
+    (when (seq description)
+      [:div.border.border-dark-gray.mt2.p2.rounded
+       [:h2.h3.medium.navy.shout "Description"]
+       [:div {:item-prop "description"}
+        (when (or colors weights materials)
+          (let [attrs (->> [["Color" colors]
+                            ["Weight" weights]
+                            ["Material" materials]]
+                           (filter second))
+                ;;This won't work if we have 5 possible attrs
+                size (str "col-" (/ 12 (count attrs)))]
+            (into [:div.clearfix.mxn1.my2]
+                  (for [[title value] attrs]
+                    [:dl.col.m0.inline-block {:class size}
+                     [:dt.mx1.dark-gray.shout.h6 title]
+                     [:dd.mx1.ml0.h5.navy.medium value]]))))
+        (when (seq summary)
+          [:div.my2
+           [:h3.mbp3.h5 "Includes:"]
+           [:ul.list-reset.navy.h5.medium
+            (for [[idx item] (map-indexed vector summary)]
+              [:li.mbp3 {:key (str "item-" idx)} item])]])
+        [:div.h5.dark-gray
+         (for [[idx item] (map-indexed vector description)]
+           [:p.mt2 {:key (str "product-description-" idx)} item])
+         (when (not (or (contains? family "seamless-clip-ins")
+                        (contains? family "tape-ins")
+                        (contains? (:stylist-exclusives/family product) "kits")))
+           [:p [:a.teal.underline (utils/route-to events/navigate-content-our-hair)
+                "Learn more about our hair."]])]]])))
 
 (defn image-body [{:keys [filename url alt]}]
   (ui/aspect-ratio
@@ -254,65 +255,97 @@
    {:style {:min-height "18px"}}
    (component/build review-component/reviews-summary-component reviews opts)])
 
-(defn component
-  [{:keys [adding-to-bag?
-           cheapest-price
-           bagged-skus
-           carousel-images
-           options
-           product
-           reviews
-           selected-sku
-           sku-quantity
-           ugc]}
+(def page-spinner
+  [:div.flex.h2.p1.m1.items-center.justify-center
+   {:style {:height "25em"}}
+   (ui/large-spinner {:style {:height "4em"}})])
+
+(defn ugc-overlay [{:keys [ugc]}]
+  ["div.absolute.overlay.z4.overflow-auto"
+   (component/build ugc/popup-component ugc {})])
+
+(defn image-section [{:keys [carousel-images product ugc]}]
+  [:div
+   (carousel carousel-images product)
+   ;; UGC Carousel
+   [:div.hide-on-mb (component/build ugc/component ugc {})]])
+
+;TODO rename to product desc
+(defn sku-description-section [{:keys [carousel-images reviews cheapest-price product]}]
+  [:div.center
+   (title (:copy/title product))
+   (when (:review? reviews)
+     (reviews-summary reviews {}))
+   [:meta {:item-prop "image"
+           :content   (:url (first carousel-images))}]
+   (full-bleed-narrow (carousel carousel-images product))
+   (starting-at cheapest-price)])
+
+(defn sku-picker [{:keys [options product]}]
+  [:div
+   (when (contains? (:catalog/department product) "hair")
+     (for [facet (:selector/electives product)]
+       (selector-html {:selector facet
+                       :options  (get options facet)})))])
+
+(defn product-selection-section [{:keys [options bagged-skus product selected-sku sku-quantity adding-to-bag?]}]
+  [:div schema-org-offer-props
+   [:div.my2
+    (sku-picker {:options options
+                 :product product})
+    (sku-summary {:sku          selected-sku
+                  :sku-quantity sku-quantity})]
+   (when (products/eligible-for-triple-bundle-discount? product)
+     (triple-bundle-upsell))
+   (affirm/as-low-as-box {:amount      (:sku/price selected-sku)
+                          :middle-copy "Just select Affirm at check out."})
+   (add-to-bag-button adding-to-bag?
+                      selected-sku
+                      sku-quantity)
+   (bagged-skus-and-checkout bagged-skus)
+   (when (products/stylist-only? product)
+     shipping-and-guarantee)])
+
+(defn mobile-ugc-carousel [{:keys [ugc]}]
+  [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc {})])
+
+(defn layout
+  [{:keys [show-ugc?
+           show-reviews?
+           ugc-overlay-data
+           image-section-data
+           sku-description-section-data
+           product-selection-section-data
+           product-description-section-data
+           mobile-ugc-carousel-data
+           reviews-section-data]}
    owner
    opts]
-  (let [review? (:review? reviews)]
-    (component/create
-     (if-not product
-       [:div.flex.h2.p1.m1.items-center.justify-center
-        {:style {:height "25em"}}
-        (ui/large-spinner {:style {:height "4em"}})]
-       [:div
-        (when (:offset ugc)
-          [:div.absolute.overlay.z4.overflow-auto
-           (component/build ugc/popup-component ugc opts)])
-        [:div.container.p2
-         (page
-          [:div
-           (carousel carousel-images product)
-           [:div.hide-on-mb (component/build ugc/component ugc opts)]]
-          [:div
-           [:div.center
-            (title (:copy/title product))
-            (when review? (reviews-summary reviews opts))
-            [:meta {:item-prop "image"
-                    :content   (:url (first carousel-images))}]
-            (full-bleed-narrow (carousel carousel-images product))
-            (starting-at cheapest-price)]
-           [:div
-            [:div schema-org-offer-props
-             [:div.my2
-              [:div
-               (when (contains? (:catalog/department product) "hair")
-                 (for [facet (:selector/electives product)]
-                   (selector-html {:selector facet
-                                   :options  (get options facet)})))]
-              (sku-summary {:sku          selected-sku
-                            :sku-quantity sku-quantity})]
-             (when (products/eligible-for-triple-bundle-discount? product)
-               (triple-bundle-upsell))
-             (affirm/as-low-as-box {:amount      (:sku/price selected-sku)
-                                    :middle-copy "Just select Affirm at check out."})
-             (add-to-bag-button adding-to-bag?
-                                selected-sku
-                                sku-quantity)
-             (bagged-skus-and-checkout bagged-skus)
-             (when (products/stylist-only? product) shipping-and-guarantee)]]
-           (product-description product)
-           [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])
-         (when review?
-           (component/build review-component/reviews-component reviews opts))]]))))
+  (component/create
+   [:div.container.p2
+    (when show-ugc?
+      (ugc-overlay ugc-overlay-data))
+    [:div.clearfix.mxn2 {:item-scope :itemscope
+                         :item-type "http://schema.org/Product"}
+     [:div.col-on-tb-dt.col-7-on-tb-dt.px2
+      [:div.hide-on-mb
+       (image-section image-section-data)]]
+     [:div.col-on-tb-dt.col-5-on-tb-dt.px2
+      (sku-description-section sku-description-section-data)
+      (product-selection-section product-selection-section-data)
+      (product-description product-description-section-data)
+      (mobile-ugc-carousel mobile-ugc-carousel-data)]]
+    (when show-reviews?
+      (component/build review-component/reviews-component reviews-section-data opts))]))
+
+(defn component
+  [{:keys [spinning? page-data] :as data}
+   owner
+   opts]
+  (component/create
+   (if spinning?
+     page-spinner
+     (component/build layout page-data opts))))
 
 (defn min-of-maps
   ([k] {})
@@ -401,9 +434,6 @@
           {}
           (:selector/electives product)))
 
-(defn add-review-eligibility [review-data product]
-  (assoc review-data :review? (products/eligible-for-reviews? product)))
-
 (defn find-carousel-images [product product-skus selected-sku]
   (->> (selector/match-all {}
                            (or selected-sku (first product-skus))
@@ -423,23 +453,38 @@
   (let [selected-sku    (get-in data catalog.keypaths/detailed-product-selected-sku)
         product         (products/current-product data)
         product-skus    (extract-product-skus data product)
+        sku-quantity    (get-in data keypaths/browse-sku-quantity 1)
+        adding-to-bag?  (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
+        cheapest-price  (lowest-sku-price product-skus)
+        bagged-skus     (get-in data keypaths/browse-recently-added-skus)
         facets          (->> (get-in data keypaths/v2-facets)
                              (map #(update % :facet/options (partial maps/index-by :option/slug)))
                              (maps/index-by :facet/slug))
         carousel-images (find-carousel-images product product-skus selected-sku)
-        ugc             (ugc-query product selected-sku data)]
-    {:reviews           (add-review-eligibility (review-component/query data) product)
-     :ugc               ugc
-     :fetching-product? (utils/requesting? data (conj request-keys/search-v2-products
-                                                      (:catalog/product-id product)))
-     :adding-to-bag?    (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
-     :bagged-skus       (get-in data keypaths/browse-recently-added-skus)
-     :sku-quantity      (get-in data keypaths/browse-sku-quantity 1)
-     :options           (generate-options facets product product-skus selected-sku)
-     :product           product
-     :selected-sku      selected-sku
-     :cheapest-price    (lowest-sku-price product-skus)
-     :carousel-images   carousel-images}))
+        ugc             (ugc-query product selected-sku data)
+        reviews         (review-component/query data)
+        options         (generate-options facets product product-skus selected-sku)]
+    {:spining?  product
+     :page-data {:ugc-overlay-data                 {:ugc ugc}
+                 :image-section-data               {:carousel-images carousel-images
+                                                    :product         product
+                                                    :ugc             ugc}
+                 :sku-description-section-data     {:carousel-images carousel-images
+                                                    :reviews         reviews
+                                                    :cheapest-price  cheapest-price
+                                                    :product         product}
+                 :product-selection-section-data   {:options        options
+                                                    :bagged-skus    bagged-skus
+                                                    :product        product
+                                                    :selected-sku   selected-sku
+                                                    :sku-quantity   sku-quantity
+                                                    :adding-to-bag? adding-to-bag?}
+                 :product-description-section-data {:product product}
+                 :mobile-ugc-carousel-data         {:ugc ugc}
+                 :reviews-section-data             {:reviews reviews}
+
+                 :show-ugc?     (:offset ugc)
+                 :show-reviews? (products/eligible-for-reviews? product)}}))
 
 (defn built-component [data opts]
   (if (experiments/pdp-dropdown? data)
