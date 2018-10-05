@@ -11,7 +11,7 @@
       str))
 
 (defn sms-link
-  ([body] (sms-link body))
+  ([body] (sms-link body nil))
   ([body number]
    ;; NOTE: the ?& is to get this to work on iOS8 and Android at the same time
    ;; NOTE: Android Messenger crashes if %25 is included in body, so we're using Full-Width Percent Sign
