@@ -100,7 +100,8 @@
     :bio                 ["My name is Angela and I’ve been a hairstylist for 19 years."
                           " My specialties include quick weaves, sew-ins, and cutting and styling."
                           " As a seasoned stylist, making people look good and"
-                          " feel glorious is my passion."]
+                          " feel glorious is my passion."
+                          [:div.pb3.mbnp2]]
     :location            "Parise Exquisite"
     :phone               "(910) 964-4976"
     :rating              4.75
