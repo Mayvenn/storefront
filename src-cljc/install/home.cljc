@@ -142,9 +142,9 @@
     [:a.bold.shadow.white.center.bg-light-gray
      {:href "#3-easy-steps"}
      (v2-home/hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
-                  :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
-                  :file-name   file-name
-                  :alt         "Beautiful Virgin Hair Installed for FREE"})]))
+                          :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
+                          :file-name   file-name
+                          :alt         "Beautiful Virgin Hair Installed for FREE"})]))
 
 (defn ^:private component
   [{:keys [header carousel-certified-stylist faq-accordion popup-data]} owner opts]
