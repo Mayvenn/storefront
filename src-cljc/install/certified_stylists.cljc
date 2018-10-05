@@ -16,7 +16,8 @@
             [storefront.transitions :as transitions]
             [clojure.string :as string]
             [spice.maps :as maps]
-            [cemerick.url :as url]))
+            [cemerick.url :as url]
+            [storefront.components.share-links :as share-links]))
 
 (defn star [type]
   [:span.mrp1
@@ -175,6 +176,9 @@
    (ui/aspect-ratio 1 1
                     (ui/ucare-img {:class "col-12"} ucare-id))])
 
+(defn stylist-message [first-name]
+  (str "Hi " first-name ". I found you on Mayvenn (http://freehairinstall.com) and would love to consult with you on how to get a free install using Mayvenn hair."))
+
 (defn stylist-card
   [{:keys [selected-stylist-index
            selected-image-index
@@ -225,7 +229,7 @@
      [:span.mr2.pt1 (ui/ucare-img {:width "32"} "bb7c9399-fc68-4bad-9b33-bf19741d58bf")]
      (str "Text " first-name " " phone)]]
    [:div.hide-on-tb-dt
-    (ui/teal-button {:href (str "sms:" (numbers/digits-only phone))}
+    (ui/teal-button {:href (share-links/sms-link (stylist-message first-name) (numbers/digits-only phone))}
                     [:div.flex.items-center.justify-center.mynp3.inherit-color
                      [:span.mr1.pt1 (ui/ucare-img {:width "32"} "c220762a-87da-49ac-baa9-0c2479addab6")]
                      (str "Text " first-name)])]
