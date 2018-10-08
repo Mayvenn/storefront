@@ -153,8 +153,6 @@
           (cookie-jar/retrieve-email-capture-session cookie)
           :dismissed-free-install
           (cookie-jar/get-dismissed-free-install cookie)
-          :dismissed-seventy-five-off-install
-          (cookie-jar/get-dismissed-seventy-five-off-install cookie)
           :sign-in {:email ""
                     :password ""}
           :sign-up {:email ""

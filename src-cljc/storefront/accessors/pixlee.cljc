@@ -94,10 +94,8 @@
 
 (defn determine-look-album
   [data target-album-keyword]
-  (let [the-ville?                (experiments/the-ville? data)
-        install-control?          (experiments/install-control? data)
-        seventy-five-off-install? (experiments/seventy-five-off-install? data)
-        v2-experience?            (experiments/v2-experience? data)
+  (let [the-ville?       (experiments/the-ville? data)
+        v2-experience?   (experiments/v2-experience? data)
 
         actual-album (cond
 
@@ -106,9 +104,6 @@
 
                        v2-experience?
                        :aladdin-free-install
-
-                       seventy-five-off-install?
-                       :install
 
                        the-ville?
                        :free-install

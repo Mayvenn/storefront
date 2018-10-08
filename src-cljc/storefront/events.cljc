@@ -164,10 +164,6 @@
 (defpath control-install-landing-page-toggle-accordion)
 (defpath control-install-consult-stylist-sms)
 
-(defpath control-seventy-five-off-install)
-(defpath control-seventy-five-off-install-shop-looks)
-(defpath control-seventy-five-off-install-dismiss)
-
 (defpath control-stylist-earnings-fetch)
 (defpath control-stylist-balance-transfers-load-more)
 (defpath control-stylist-referrals-fetch)
@@ -435,7 +431,6 @@
 
 (defpath popup-show-email-capture)
 (defpath popup-show-free-install)
-(defpath popup-show-seventy-five-off-install)
 
 (defpath image-picker-component-mounted)
 (defpath image-picker-component-will-unmount)

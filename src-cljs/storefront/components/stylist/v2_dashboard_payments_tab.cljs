@@ -79,7 +79,6 @@
               :icon               "68e6bcb0-a236-46fe-a8e7-f846fff0f464"
               :title              "Service Payment"
               :date               date
-              ;; TODO: Future Us: Strictly v2 services (not $100-off)
               :subtitle           (service-menu/discount->campaign-name discount)
               :amount             (service-menu/display-voucher-amount
                                    service-menu

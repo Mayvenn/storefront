@@ -22,26 +22,6 @@
   [_ _ _]
   (component/create [:div]))
 
-(defmethod component :install-discount/eligible
-  [_ _ _]
-  (component/create
-   [:a {:on-click  (utils/send-event-callback events/popup-show-seventy-five-off-install)
-        :data-test "seventy-five-off-install-promo-banner"}
-    [:div.white.center.pp5.bg-teal.h5.bold.pointer
-     "Get $100 off your install! " [:span.underline "Learn more"]]]))
-
-(defmethod component :install-discount/applied
-  [_ _ _]
-  (component/create
-   [:a.white.center.p2.bg-teal.mbnp5.h6.bold.flex.items-center.justify-center
-    {:on-click  (utils/send-event-callback events/popup-show-seventy-five-off-install)
-     :data-test "seventy-five-off-install-promo-banner"}
-    (svg/celebration-horn {:height "1.6em"
-                           :width  "1.6em"
-                           :class  "mr1 fill-white stroke-white"})
-    [:div.pointer
-     "CONGRATS — Enjoy $100 off your next install "
-     [:span.underline "More info"]]]))
 
 (defmethod component :freeinstall/eligible
   [_ _ _]
@@ -132,14 +112,6 @@
 
     (experiments/v2-experience? data)
     :v2-freeinstall/eligible
-
-    (and
-     (orders/install-applied? (get-in data keypaths/order))
-     (experiments/seventy-five-off-install? data))
-    :install-discount/applied
-
-    (experiments/seventy-five-off-install? data)
-    :install-discount/eligible
 
     (and
      (orders/freeinstall-applied? (get-in data keypaths/order))

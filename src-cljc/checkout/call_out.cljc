@@ -5,24 +5,6 @@
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]))
 
-(defn seventy-five-off-install-cart-promo
-  [qualified?]
-  [:div.mb3
-   (if qualified?
-     [:div.bg-teal.bg-celebrate.p2.white.center {:data-test "seventy-five-off-install-cart-promo"}
-      [:div.flex.justify-center.mb1 (ui/ucare-img {:width 46} "014c70a0-0d57-495d-add0-f2f46248d224")]
-      [:h3 "This order qualifies for"]
-      [:h1.shout.bold "$100 off your install"]
-      [:h4.pb6 "You’ll receive a voucher via email after purchase"]]
-
-     [:div.p2.bg-orange.white.center {:data-test "ineligible-seventy-five-off-install-cart-promo"}
-      [:h4 "You're almost there..."]
-      [:h4 "Buy 3 bundles or more and get"]
-      [:h1.shout.bold "$100 off"]
-      [:h6
-       [:div "your install from your Mayvenn stylist."]
-       [:div "Use code " [:span.bold "INSTALL"] " to get your discounted install."]]])])
-
 (defn free-install-cart-promo
   [qualified?]
   [:div.mb3
@@ -63,15 +45,12 @@
        [:div "Use code " [:span.bold "FREEINSTALL"] " to get your free install."]]])])
 
 (defn component
-  [{:keys [the-ville? v2-experience? seventy-five-off-install? show-green-banner?]}]
+  [{:keys [the-ville? v2-experience? show-green-banner?]}]
   (component/create
    [:div
     (cond
       v2-experience?
       (v2-cart-promo show-green-banner?)
-
-      seventy-five-off-install?
-      (seventy-five-off-install-cart-promo show-green-banner?)
 
       the-ville?
       (free-install-cart-promo show-green-banner?)
@@ -81,11 +60,9 @@
 (defn query
   [data]
   (let [ order (get-in data keypaths/order)]
-       {:the-ville?                (experiments/the-ville? data)
-        :v2-experience?            (experiments/v2-experience? data)
-        :seventy-five-off-install? (experiments/seventy-five-off-install? data)
-        :show-green-banner?        (or (orders/install-applied? order)
-                                       (orders/freeinstall-applied? order))}))
+    {:the-ville?         (experiments/the-ville? data)
+     :v2-experience?     (experiments/v2-experience? data)
+     :show-green-banner? (orders/freeinstall-applied? order)}))
 
 (defn built-component
   [data opts]

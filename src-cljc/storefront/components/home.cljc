@@ -108,15 +108,6 @@
                  :desktop-url (str "//ucarecdn.com/" desktop-uuid "/")
                  :alt         alt})]])
 
-(def seventy-five-off-installation-hero-data
-  {:route-to-fn  (utils/route-to events/navigate-shop-by-look
-                                 {:album-keyword :look
-                                  :query-params  {:sha "install"}})
-   :file-name    "100-off-installation-hero"
-   :alt          "$100 off your install when you buy 3 bundles or more! Use code: INSTALL"
-   :mobile-uuid  "699e088d-aaf1-4b7a-b807-a5893573757f"
-   :desktop-uuid "6b872af5-b447-440d-b872-6c8a1b669969"})
-
 (def free-installation-hero-data
   {:route-to-fn  (utils/route-to events/navigate-shop-by-look
                                  {:album-keyword :look
@@ -361,9 +352,6 @@
     (experiments/free-shipping-hero? data)
     free-shipping-hero-data
 
-    (experiments/seventy-five-off-install? data)
-    seventy-five-off-installation-hero-data
-
     (experiments/the-ville? data)
     free-installation-hero-data
 
@@ -372,8 +360,7 @@
 
 (defn show-talkable-banner?
   [data]
-  (not (and (experiments/seventy-five-off-install? data)
-            (experiments/the-ville? data))))
+  (not (experiments/the-ville? data)))
 
 (defn query
   [data]

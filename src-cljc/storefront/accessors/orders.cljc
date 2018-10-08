@@ -79,11 +79,11 @@
 (defn form-payment-methods [order-total store-credit promotions]
   (let [store-credit-used (min order-total store-credit)]
     (cond-> {}
-      (or (some #{"install" "freeinstall"} promotions)
+      (or (some #{"freeinstall"} promotions)
           (> order-total store-credit-used))
       (assoc :stripe {})
       (and (pos? store-credit-used)
-           (not (some #{"install" "freeinstall"} promotions)))
+           (not (some #{"freeinstall"} promotions)))
       (assoc :store-credit {}))))
 
 (defn line-item-subtotal [{:keys [quantity unit-price]}]
@@ -128,11 +128,6 @@
   (or (empty? (all-applied-promo-codes order))
       (= 0 (product-quantity order))))
 
-(defn install-applied?
-  [{:as order :keys [promotion-codes]}]
-  (and (bundle-discount? order)
-       (contains? (all-applied-promo-codes order) "install")))
-
 (defn freeinstall-applied?
   [{:as order :keys [promotion-codes]}]
   (and (bundle-discount? order)
@@ -155,7 +150,6 @@
               (and order user))
      (>= (:total-available-store-credit user)
          (:total order)))))
-
 
 (defn display-adjustment-name [name]
   (if (= name "Bundle Discount")

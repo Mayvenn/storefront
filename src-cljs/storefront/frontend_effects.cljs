@@ -112,10 +112,8 @@
   [_ event args previous-app-state app-state]
   (let [navigation-event (get-in app-state keypaths/navigation-event)
 
-        install-control?                    (experiments/install-control? app-state)
-        the-ville-variation?                (experiments/the-ville? app-state)
-        seventy-five-off-install-variation? (experiments/seventy-five-off-install? app-state)
-        v2-experience?                 (experiments/v2-experience? app-state)
+        the-ville-variation? (experiments/the-ville? app-state)
+        v2-experience?       (experiments/v2-experience? app-state)
 
         on-non-minimal-footer-page? (not (nav/show-minimal-footer? navigation-event))
 
@@ -123,33 +121,24 @@
 
         is-on-free-install-landing-page? (= navigation-event events/navigate-install-home)
 
-        seen-email-capture?                  (email-capture-session app-state)
-        seen-fayetteville-offer?             (get-in app-state keypaths/dismissed-free-install)
-        seen-seventy-five-off-install-offer? (get-in app-state keypaths/dismissed-seventy-five-off-install)
+        seen-email-capture?      (email-capture-session app-state)
+        seen-fayetteville-offer? (get-in app-state keypaths/dismissed-free-install)
 
         signed-in? (get-in app-state keypaths/user-id)
 
-        show-financing? (and (-> app-state (get-in keypaths/navigation-args) :query-params :show (= "financing"))
-                             install-control?)
+        show-financing? (-> app-state (get-in keypaths/navigation-args) :query-params :show (= "financing"))
 
         show-free-install-modal? (and the-ville-variation?
                                       (not seen-fayetteville-offer?)
                                       (not v2-experience?))
 
-        show-seventy-five-off-install-modal? (and (experiments/seventy-five-off-install? app-state)
-                                                  (not seen-seventy-five-off-install-offer?)
-                                                  (not v2-experience?))
-
-        classic-experience? (and (not v2-experience?) ;; phoenix + aladdin
-                                 (not the-ville-variation?) ;; fayetteville
-                                 (not seventy-five-off-install-variation?)) ;; $100-off
+        classic-experience? (and (not v2-experience?)
+                                 (not the-ville-variation?))
 
         show-email-capture? (and (not signed-in?)
                                  (not seen-email-capture?)
                                  on-non-minimal-footer-page?
                                  (or (and the-ville-variation? seen-fayetteville-offer?)
-                                     (and seventy-five-off-install-variation?
-                                          seen-seventy-five-off-install-offer?)
                                      classic-experience?
                                      v2-experience?))]
     (cond
@@ -157,9 +146,6 @@
 
       show-free-install-modal?
       (handle-message events/popup-show-free-install)
-
-      show-seventy-five-off-install-modal?
-      (handle-message events/popup-show-seventy-five-off-install)
 
       show-financing?
       (affirm/show-modal)
@@ -172,8 +158,6 @@
 
 (defmethod perform-effects events/enable-feature [_ event {:keys [feature]} _ app-state]
   (handle-message events/determine-and-show-popup)
-  (when (experiments/seventy-five-off-install? app-state)
-    (pixlee/fetch-album-by-keyword :install))
   (when (= "the-ville" feature)
     (pixlee/fetch-album-by-keyword :free-install)))
 

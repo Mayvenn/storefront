@@ -5,7 +5,6 @@
             [storefront.components.email-capture :as email-capture]
             [storefront.components.free-install :as free-install]
             [storefront.components.v2-homepage-popup :as v2-homepage-popup]
-            [storefront.components.seventy-five-off-install :as seventy-five-off-install]
             [storefront.components.stylist.referrals :as stylist.referrals]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))
@@ -15,8 +14,6 @@
                               :component free-install/component}
    :v2-homepage              {:query     v2-homepage-popup/query
                               :component v2-homepage-popup/component}
-   :seventy-five-off-install {:query     seventy-five-off-install/query
-                              :component seventy-five-off-install/component}
    :email-capture            {:query     email-capture/query
                               :component email-capture/component}
    :share-cart               {:query     share-your-cart/query
