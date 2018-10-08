@@ -232,24 +232,11 @@
 (def stylist-payout-stats-initiated-payout (conj stylist-payout-stats :initiated-payout))
 
 (def stylist-earnings (conj stylist :earnings))
-(def stylist-earnings-pagination (conj stylist-earnings :pagination))
-(def stylist-earnings-pagination-page (conj stylist-earnings-pagination :page))
 (def stylist-earnings-balance-transfers (conj stylist-earnings :balance-transfers))
-(def stylist-earnings-balance-transfers-index (conj stylist-earnings :balance-transfers-index))
-(def stylist-earnings-orders (conj stylist-earnings :orders))
 (def stylist-earnings-balance-transfer-details-id (conj stylist-earnings :balance-transfer-details-id))
 
 (def stylist-cash-out-status-id (conj stylist :cash-out-stylist-id))
 (def stylist-cash-out-balance-transfer-id (conj stylist :cash-out-balance-transfer-id))
-
-(def stylist-bonuses (conj stylist :bonus-credits))
-(def stylist-bonuses-award-amount (conj stylist-bonuses :bonus-amount))
-(def stylist-bonuses-milestone-amount (conj stylist-bonuses :earning-amount))
-(def stylist-bonuses-progress-to-next-bonus (conj stylist-bonuses :progress-to-next-bonus))
-(def stylist-bonuses-lifetime-total (conj stylist-bonuses :lifetime-total))
-(def stylist-bonuses-history (conj stylist-bonuses :bonuses))
-(def stylist-bonuses-page (conj stylist-bonuses :page))
-(def stylist-bonuses-pages (conj stylist-bonuses :pages))
 
 (def stylist-referral-program (conj stylist :referral-program))
 (def stylist-referral-program-bonus-amount (conj stylist-referral-program :bonus-amount))

@@ -70,14 +70,6 @@
        (some #{"aladdin-homepage" "phoenix-homepage"})
        boolean))
 
-(defn v2-dashboard? [data]
-  (or (->> (get-in data keypaths/store-features)
-           (some #{"aladdin-dashboard" "phoenix-dashboard" "dashboard-with-vouchers"})
-           boolean)
-      (display-feature? data "dashboard-with-vouchers")
-      (display-feature? data "force-aladdin-dashboard")
-      (display-feature? data "force-phoenix-dashboard")))
-
 (defn dashboard-with-vouchers? [data]
   (->> (get-in data keypaths/store-features)
        (some #{"aladdin-dashboard" "phoenix-dashboard" "dashboard-with-vouchers"})

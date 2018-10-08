@@ -63,10 +63,7 @@
 
 (defpath navigate-stylist)
 (defpath navigate-stylist-dashboard)
-(defpath navigate-stylist-dashboard-earnings)
 (defpath navigate-stylist-dashboard-order-details)
-(defpath navigate-stylist-dashboard-referrals)
-(defpath navigate-stylist-dashboard-bonus-credit)
 (defpath navigate-stylist-dashboard-cash-out-begin)
 (defpath navigate-stylist-dashboard-cash-out-pending)
 (defpath navigate-stylist-dashboard-cash-out-success)
@@ -138,8 +135,6 @@
 (defpath stripe-component-mounted)
 (defpath stripe-component-will-unmount)
 
-(defpath stylist-balance-transfers-fetch)
-
 (defpath ensure-sku-ids)
 
 (defpath control-stylist-gallery-open)
@@ -164,10 +159,7 @@
 (defpath control-install-landing-page-toggle-accordion)
 (defpath control-install-consult-stylist-sms)
 
-(defpath control-stylist-earnings-fetch)
-(defpath control-stylist-balance-transfers-load-more)
 (defpath control-stylist-referrals-fetch)
-(defpath control-stylist-bonuses-fetch)
 (defpath control-stylist-community)
 (defpath poll-stylist-portrait)
 (defpath poll-gallery)
@@ -300,7 +292,6 @@
 (defpath api-success-stylist-account-password)
 (defpath api-success-stylist-account-commission)
 (defpath api-success-stylist-account-social)
-(defpath api-success-stylist-balance-transfers)
 (defpath api-success-stylist-balance-transfer-details)
 (defpath api-success-stylist-next-payout)
 (defpath api-success-stylist-payout-stats)
@@ -309,7 +300,6 @@
 (defpath api-success-cash-out-status)
 (defpath api-success-cash-out-failed)
 (defpath api-success-cash-out-complete)
-(defpath api-success-stylist-bonus-credits)
 (defpath api-success-stylist-referral-program)
 (defpath api-success-stylist-service-menu-fetch)
 (defpath api-success-send-stylist-referrals)

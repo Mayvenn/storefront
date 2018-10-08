@@ -108,8 +108,5 @@
       (not (= :stylist (::auth/as signed-in)))
       (effects/redirect events/navigate-home)
 
-      (experiments/v2-dashboard? app-state)
-      (messages/handle-message events/v2-stylist-dashboard-stats-fetch)
-
       :else
-      (effects/redirect events/navigate-stylist-dashboard-earnings))))
+      (messages/handle-message events/v2-stylist-dashboard-stats-fetch))))

@@ -92,7 +92,7 @@
         [:div.h7.medium "Store credit:"]
         [:div.teal.h5.bold (as-money store-credit)]])]))
 
-(defn ^:private stylist-actions [vouchers? v2-dashboard?]
+(defn ^:private stylist-actions [vouchers?]
   (component/html
    [:div
     (when vouchers?
@@ -109,9 +109,7 @@
                               :data-test "share-your-store")
                        "Share your store"))
      (marquee-row
-      (ui/underline-button (assoc (if v2-dashboard?
-                                    (utils/route-to events/navigate-v2-stylist-dashboard-orders)
-                                    (utils/route-to events/navigate-stylist-dashboard-earnings))
+      (ui/underline-button (assoc (utils/route-to events/navigate-v2-stylist-dashboard-orders)
                                   :data-test "dashboard")
                            "Dashboard")
       (ui/underline-button stylists/community-url
@@ -141,9 +139,9 @@
              :data-test "sign-up")
       "Sign up now, get offers!"]])))
 
-(defn ^:private actions-marquee [signed-in the-ville? vouchers? v2-dashboard?]
+(defn ^:private actions-marquee [signed-in the-ville? vouchers?]
   (case (-> signed-in ::auth/as)
-    :stylist (stylist-actions vouchers? v2-dashboard?)
+    :stylist (stylist-actions vouchers?)
     :user    (user-actions the-ville?)
     :guest   guest-actions))
 
@@ -242,14 +240,14 @@
                      "Sign out")
     [:div])))
 
-(defn ^:private root-menu [{:keys [user signed-in store the-ville? vouchers? v2-dashboard?] :as data} owner opts]
+(defn ^:private root-menu [{:keys [user signed-in store the-ville? vouchers?] :as data} owner opts]
   (component/create
    [:div
     [:div.px6.border-bottom.border-gray.bg-light-gray.pt3
      (store-info-marquee signed-in store)
      (account-info-marquee signed-in user)
      [:div.my3.dark-gray
-      (actions-marquee signed-in the-ville? vouchers? v2-dashboard?)]]
+      (actions-marquee signed-in the-ville? vouchers?)]]
     [:div.px6
      (menu-area data)]
     (when (-> signed-in ::auth/at-all)
@@ -275,7 +273,6 @@
    :store         (marquee/query data)
    :the-ville?    (experiments/the-ville? data)
    :vouchers?     (experiments/vouchers? data)
-   :v2-dashboard? (experiments/v2-dashboard? data)
    :shopping      {:categories (get-in data keypaths/categories)}})
 
 (defn query [data]

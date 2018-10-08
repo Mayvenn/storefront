@@ -11,7 +11,6 @@
                        [storefront.components.account :as account]
                        [storefront.components.reset-password :as reset-password]
                        [storefront.components.force-set-password :as force-set-password]
-                       [storefront.components.stylist.dashboard :as stylist.dashboard]
                        [storefront.components.stylist.v2-dashboard :as v2.dashboard]
                        [storefront.components.stylist.balance-transfer-details :as balance-transfer-details]
                        [storefront.components.stylist.order-details :as stylist.order-details]
@@ -65,10 +64,7 @@
          events/navigate-shop-by-look                               shop-by-look/built-component
          events/navigate-shop-by-look-details                       shop-by-look-details/built-component
          events/navigate-stylist-dashboard-balance-transfer-details balance-transfer-details/built-component
-         events/navigate-stylist-dashboard-earnings                 stylist.dashboard/built-component
          events/navigate-stylist-dashboard-order-details            stylist.order-details/built-component
-         events/navigate-stylist-dashboard-bonus-credit             stylist.dashboard/built-component
-         events/navigate-stylist-dashboard-referrals                stylist.dashboard/built-component
          events/navigate-stylist-dashboard-cash-out-begin           stylist.cash-out/built-component
          events/navigate-stylist-dashboard-cash-out-pending         stylist.cash-out-pending/built-component
          events/navigate-stylist-dashboard-cash-out-success         stylist.cash-out-success/built-component

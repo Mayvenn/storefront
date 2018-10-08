@@ -659,25 +659,6 @@
     :handler #(messages/handle-message events/api-success-cash-out-status
                                        (select-keys % [:status :status-id :balance-transfer-id :amount :payout-method]))}))
 
-(defn get-stylist-bonus-credits [user-id user-token {:keys [page]}]
-  (storeback-api-req
-   GET
-   "/stylist/bonus-credits"
-   request-keys/get-stylist-bonus-credits
-   {:params
-    {:user-id    user-id
-     :user-token user-token
-     :page       page}
-    :handler
-    #(messages/handle-message events/api-success-stylist-bonus-credits
-                              (select-keys % [:bonus-amount
-                                              :earning-amount
-                                              :progress-to-next-bonus
-                                              :lifetime-total
-                                              :bonuses
-                                              :current-page
-                                              :pages]))}))
-
 (defn get-stylist-referral-program [user-id user-token {:keys [page]}]
   (storeback-api-req
    GET

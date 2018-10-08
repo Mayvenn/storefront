@@ -21,13 +21,11 @@
 
 ;; TODO Remove handling of underscored keys after storeback has been deployed.
 
-(defn ^:private back-to-earnings [v2-dashboard?]
+(def ^:private back-to-earnings
   [:a.col-12.dark-gray.flex.items-center.py3
    (merge
     {:data-test "back-link"}
-    (if v2-dashboard?
-      (utils/route-to events/navigate-v2-stylist-dashboard-payments)
-      (utils/route-to events/navigate-stylist-dashboard-earnings)))
+    (utils/route-to events/navigate-v2-stylist-dashboard-payments))
    (ui/back-caret "Back")])
 
 (defn ^:private info-block [header content]
@@ -85,7 +83,7 @@
 
      (summary-row "Total" commissionable-amount)]))
 
-(defn ^:private commission-component [{:keys [balance-transfer fetching? line-items v2-dashboard?]}]
+(defn ^:private commission-component [{:keys [balance-transfer fetching? line-items]}]
   (let [{:keys [id number amount data]} balance-transfer
         {:keys [order commission-date commissionable-amount]} data
         shipment                        (orders/first-commissioned-shipment order)
@@ -95,7 +93,7 @@
       [:div.my2.h2 ui/spinner]
 
       [:div.container.mb4.px3
-       (back-to-earnings v2-dashboard?)
+       back-to-earnings
        [:div.col.col-1 (svg/coin-in-slot {:height 14
                                           :width  20})]
        [:div.col.col-11.pl1
@@ -175,7 +173,7 @@
       "Check"            (check-payout-details date-string payout-method)
       "Venmo"            (venmo-payout-details date-string payout-method))))
 
-(defn ^:private payout-component [{:keys [balance-transfer v2-dashboard?]}]
+(defn ^:private payout-component [{:keys [balance-transfer]}]
   (let [{:keys [id
                 number
                 amount
@@ -185,7 +183,7 @@
                 payout-method-name
                 by-self]} data]
     [:div.container.mb4.px3
-     (back-to-earnings v2-dashboard?)
+     back-to-earnings
      [:div
       [:div.col.col-1 (svg/stack-o-cash {:height 14
                                              :width  20})]
@@ -199,11 +197,11 @@
         (f/long-date (or created-at (:transfered_at data)))
         (or payout-method (:payout_method data)))]]]))
 
-(defn ^:private award-component [{:keys [balance-transfer v2-dashboard?]}]
+(defn ^:private award-component [{:keys [balance-transfer]}]
   (let [{:keys [id transfered-at amount data]} balance-transfer
         {:keys [reason]}                       data]
     [:div.container.mb4.px3
-     (back-to-earnings v2-dashboard?)
+     back-to-earnings
      [:div
       [:div.col.col-1.px2 (svg/coin-in-slot {:height 14
                                              :width  20})]
@@ -215,12 +213,12 @@
        [:div.h5.medium.green (mf/as-money amount)]
        [:div.h7.dark-gray "Cash"]]]]))
 
-(defn ^:private voucher-award-component [{:keys [balance-transfer v2-dashboard?]}]
+(defn ^:private voucher-award-component [{:keys [balance-transfer]}]
   (let [{:keys [id transfered-at amount data]}     balance-transfer
         {:keys [order campaign-name order-number]} data
         client-name                                (orders/first-name-plus-last-name-initial order)]
     [:div.container.mb4.px3
-     (back-to-earnings v2-dashboard?)
+     back-to-earnings
      [:div
       [:div.col.col-1.px2 (svg/coin-in-slot {:height 14
                                              :width  20})]
@@ -234,16 +232,14 @@
 
         (when order-number
           (info-block "order number"
-                      (if v2-dashboard?
-                        [:a.inherit-color
-                         (merge
-                          {:data-test "view-order"}
-                          (utils/route-to
-                           events/navigate-stylist-dashboard-order-details
-                           {:order-number order-number}))
-                         order-number
-                         [:span.teal " View" ]]
-                        order-number)))]]
+                      [:a.inherit-color
+                       (merge
+                        {:data-test "view-order"}
+                        (utils/route-to
+                         events/navigate-stylist-dashboard-order-details
+                         {:order-number order-number}))
+                       order-number
+                       [:span.teal " View" ]]))]]
       [:div.col.col-2.mtp1.right-align
        [:div.h5.medium.green (mf/as-money amount)]]]]))
 
@@ -254,8 +250,7 @@
         type                (:type balance-transfer)]
     (merge
      {:balance-transfer balance-transfer
-      :fetching?        (utils/requesting? data request-keys/get-stylist-balance-transfer)
-      :v2-dashboard?    (experiments/v2-dashboard? data)}
+      :fetching?        (utils/requesting? data request-keys/get-stylist-balance-transfer)}
      (when (= type "commission")
        (let [line-items (->> (:order (:data balance-transfer))
                              orders/first-commissioned-shipment

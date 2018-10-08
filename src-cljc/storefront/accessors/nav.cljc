@@ -35,13 +35,10 @@
 
 (def ^:private stylist-dashboard-events
   #{events/navigate-stylist-dashboard-balance-transfer-details
-    events/navigate-stylist-dashboard-bonus-credit
     events/navigate-stylist-dashboard-cash-out-begin
     events/navigate-stylist-dashboard-cash-out-pending
     events/navigate-stylist-dashboard-cash-out-success
-    events/navigate-stylist-dashboard-earnings
     events/navigate-stylist-dashboard-order-details
-    events/navigate-stylist-dashboard-referrals
     events/navigate-v2-stylist-dashboard
     events/navigate-v2-stylist-dashboard-orders
     events/navigate-v2-stylist-dashboard-payments})

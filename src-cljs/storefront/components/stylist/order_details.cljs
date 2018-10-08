@@ -25,14 +25,11 @@
 
 ;; TODO Remove handling of underscored keys after storeback has been deployed.
 
-(defn ^:private back-button [back v2-dashboard?]
+(defn ^:private back-button [back]
   [:a.col-12.dark-gray.flex.items-center.py3
    (merge
      {:data-test "back-link"}
-     (utils/route-back-or-to back
-                             (if v2-dashboard?
-                               events/navigate-v2-stylist-dashboard-orders
-                               events/navigate-stylist-dashboard-earnings)))
+     (utils/route-back-or-to back events/navigate-v2-stylist-dashboard-orders))
    (ui/back-caret "Back")])
 
 (defn ^:private info-block [header content]
@@ -115,7 +112,7 @@
          (when popup-visible?
            (popup tooltip-text))]])]))
 
-(defn component [{:keys [sale v2-dashboard? loading? popup-visible? back]} owner opts]
+(defn component [{:keys [sale loading? popup-visible? back]} owner opts]
   (let [{:keys [order-number
                 placed-at
                 order
@@ -133,7 +130,7 @@
                                               "'type-icon title'"
                                               "'spacer fields'")}}
          [:div {:style {:grid-area "back-btn"}}
-          (back-button back v2-dashboard?)]
+          (back-button back)]
          [:div {:style {:grid-area "type-icon"}}
           (svg/box-package {:height 18
                             :width  25})]
@@ -234,7 +231,6 @@
         shipments-with-returns (add-returns (vec shipments-enriched) returned-quantities)]
     {:sale           (assoc-in sale [:order :shipments] shipments-with-returns)
      :loading?       (utils/requesting? app-state request-keys/get-stylist-dashboard-sale)
-     :v2-dashboard?  (experiments/v2-dashboard? app-state)
      :popup-visible? (get-in app-state keypaths/v2-dashboard-balance-transfers-voucher-popup-visible?)
      :back           (first (get-in app-state keypaths/navigation-undo-stack))}))
 

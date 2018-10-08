@@ -171,7 +171,7 @@
          [:p.ml1.mb3.h6 "Checks will mail to the address entered here"])]
 
       [:div.col.col-12.pt3.pb4.underline.center
-       [:a.teal (utils/route-to events/navigate-stylist-dashboard-earnings) "View your earnings"]]]
+       [:a.teal (utils/route-to events/navigate-v2-stylist-dashboard-payments) "View your earnings"]]]
 
      [:div.col.col-12.col-6-on-tb-dt
       [:div.mx-auto.col-12.col-10-on-tb-dt

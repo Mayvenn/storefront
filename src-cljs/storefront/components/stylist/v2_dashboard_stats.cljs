@@ -1,19 +1,19 @@
 (ns storefront.components.stylist.v2-dashboard-stats
-  (:require [storefront.accessors.payouts :as payouts]
+  (:require [storefront.accessors.experiments :as experiments]
+            [storefront.accessors.payouts :as payouts]
             [storefront.api :as api]
+            [storefront.component :as component]
             [storefront.components.money-formatters :as mf]
-            [storefront.components.stylist.stats :as stats]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
             [storefront.events :as events]
+            [storefront.history :as history]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.numbers :as numbers]
             [storefront.request-keys :as request-keys]
-            [storefront.transitions :as transitions]
-            [storefront.component :as component]
-            [storefront.accessors.experiments :as experiments]))
+            [storefront.transitions :as transitions]))
 
 (defn earnings-count [title value]
   [:div.dark-gray.letter-spacing-0
@@ -155,6 +155,10 @@
      :total-available-store-credit           (get-in data keypaths/user-total-available-store-credit)
      :fetching-stats?                        (or (utils/requesting? data request-keys/get-stylist-dashboard-stats)
                                                  (not stats))}))
+
+(defmethod effects/perform-effects events/control-stylist-dashboard-cash-out-begin
+  [_ _ _ _ app-state]
+  (history/enqueue-navigate events/navigate-stylist-dashboard-cash-out-begin))
 
 (defmethod effects/perform-effects events/v2-stylist-dashboard-stats-fetch [_ event args _ app-state]
   (let [stylist-id (get-in app-state keypaths/store-stylist-id)
