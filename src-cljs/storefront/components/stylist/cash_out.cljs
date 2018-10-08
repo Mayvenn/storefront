@@ -59,7 +59,7 @@
 
 (defmethod effects/perform-effects events/navigate-stylist-dashboard-cash-out-begin [_ _ _ _ app-state]
   (if (should-redirect? (get-in app-state keypaths/stylist-payout-stats-next-payout))
-    (effects/redirect events/navigate-stylist-dashboard-payments)
+    (effects/redirect events/navigate-v2-stylist-dashboard-payments)
     (api/get-stylist-payout-stats events/api-success-stylist-payout-stats-cash-out
                                   (get-in app-state keypaths/store-stylist-id)
                                   (get-in app-state keypaths/user-id)
@@ -86,4 +86,4 @@
 (defmethod effects/perform-effects events/api-success-stylist-payout-stats-cash-out
   [_ _ {next-payout :next-payout} _ app-state]
   (when (should-redirect? next-payout)
-    (effects/redirect events/navigate-stylist-dashboard-payments)))
+    (effects/redirect events/navigate-v2-stylist-dashboard-payments)))
