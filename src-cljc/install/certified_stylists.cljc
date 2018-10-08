@@ -280,7 +280,7 @@
    (defmethod trackings/perform-track events/control-install-consult-stylist-sms
      [_ event {:keys [stylist index]} app-state]
      (let [{:keys [years-of-experience rating store-slug first-name phone]} stylist]
-       (stringer/track-event "text-stylist-button-pressed" {:store-slug       store-slug
+       (stringer/track-event "text_stylist_button_pressed" {:store-slug       store-slug
                                                             :index            (inc index)
                                                             :stylist-rating   rating
                                                             :years-experience years-of-experience}
