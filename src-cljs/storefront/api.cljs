@@ -549,19 +549,6 @@
     :handler
     #(messages/handle-message events/api-success-gallery %)}))
 
-(defn get-stylist-balance-transfers
-  [stylist-id user-id user-token {:keys [page per]} handler]
-  (storeback-api-req
-   GET
-   "/v1/stylist/balance-transfers"
-   request-keys/get-stylist-balance-transfers
-   {:params  {:stylist-id stylist-id
-              :user-id    user-id
-              :user-token user-token
-              :page       page
-              :per        per}
-    :handler handler}))
-
 (defn get-stylist-balance-transfer [user-id user-token balance-transfer-id]
   (storeback-api-req
    GET
