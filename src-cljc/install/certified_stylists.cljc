@@ -21,8 +21,9 @@
             [cemerick.url :as url]
             [storefront.components.share-links :as share-links]))
 
-(defn star [type]
+(defn star [type index]
   [:span.mrp1
+   {:key (str (name type) "-" index)}
    (ui/ucare-img
     {:width "13"}
     (case type
@@ -35,23 +36,25 @@
 (defn star-rating
   [rating]
   (let [remainder-rating (mod 5 rating)
-        whole-stars      (repeat (int rating) (star :whole))
+        whole-stars      (map (partial star :whole) (range (int rating)))
         partial-star     (cond
                            (== 0 remainder-rating)
                            nil
 
                            (== 0.5 remainder-rating)
-                           (star :half)
+                           (star :half "half")
 
                            (> 0.5 remainder-rating)
-                           (star :three-quarter)
+                           (star :three-quarter "three-quarter")
 
                            :else
                            nil)
-        empty-stars (repeat (- 5
-                               (count whole-stars)
-                               (if partial-star 1 0))
-                            (star :empty))]
+        empty-stars (map
+                     (partial star :empty)
+                     (range
+                      (- 5
+                         (count whole-stars)
+                         (if partial-star 1 0))))]
     [:div.flex.items-center
      whole-stars
      partial-star
