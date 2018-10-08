@@ -227,7 +227,7 @@
                                              :height "24px"})
                            "Share your bag"])])]]]))
 
-(defn empty-component [{:keys [promotions]} owner _]
+(defn empty-component [{:keys [promotions aladdin-or-phoenix?]} owner _]
   (component/create
    (ui/narrow-container
     [:div.p2
@@ -238,9 +238,10 @@
       [:p.m2.h2.light "Your bag is empty."]
 
       [:div.m2
-       (if-let [promo (promos/default-advertised-promotion promotions)]
-         (:description promo)
-         promos/bundle-discount-description)]]
+       (let [promo (promos/default-advertised-promotion promotions)]
+         (cond aladdin-or-phoenix? promos/freeinstall-description
+               promo               (:description promo)
+               :else               promos/bundle-discount-description))]]
 
      (ui/teal-button (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
                      "Shop Our Looks")])))
@@ -398,7 +399,8 @@
      :freeinstall-line-item-data (cart-items/freeinstall-line-item-query data)}))
 
 (defn empty-cart-query [data]
-  {:promotions (get-in data keypaths/promotions)})
+  {:promotions          (get-in data keypaths/promotions)
+   :aladdin-or-phoenix? (experiments/v2-experience? data)})
 
 (defn component
   [{:keys [fetching-order?

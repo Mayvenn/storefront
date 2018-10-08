@@ -1,6 +1,7 @@
 (ns storefront.accessors.promos)
 
 (def bundle-discount-description "Save 10% - Purchase 3 or more bundles")
+(def freeinstall-description "GET A FREE INSTALL - USE CODE: FREEINSTALL")
 
 (defn promotion-lookup-map [promotions]
   (->> promotions
