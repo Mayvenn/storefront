@@ -63,7 +63,10 @@
 
 (defpath navigate-stylist)
 (defpath navigate-stylist-dashboard)
+(defpath navigate-stylist-dashboard-earnings)
 (defpath navigate-stylist-dashboard-order-details)
+(defpath navigate-stylist-dashboard-referrals)
+(defpath navigate-stylist-dashboard-bonus-credit)
 (defpath navigate-stylist-dashboard-cash-out-begin)
 (defpath navigate-stylist-dashboard-cash-out-pending)
 (defpath navigate-stylist-dashboard-cash-out-success)

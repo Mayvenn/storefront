@@ -110,3 +110,15 @@
 
       :else
       (messages/handle-message events/v2-stylist-dashboard-stats-fetch))))
+
+(defmethod effects/perform-effects events/navigate-stylist-dashboard-earnings
+  [_ event args _ app-state]
+  (effects/redirect events/navigate-v2-stylist-dashboard-orders))
+
+(defmethod effects/perform-effects events/navigate-stylist-dashboard-bonus-credit
+  [_ event args _ app-state]
+  (effects/redirect events/navigate-v2-stylist-dashboard-orders))
+
+(defmethod effects/perform-effects events/navigate-stylist-dashboard-referrals
+  [_ event args _ app-state]
+  (effects/redirect events/navigate-v2-stylist-dashboard-orders))
