@@ -186,8 +186,7 @@
 
 (defmethod perform-effects events/external-redirect-telligent [_ event args _ app-state]
   (set! (.-location js/window) (or (get-in app-state keypaths/telligent-community-url)
-                                   (if (and (experiments/install? app-state)
-                                            (not (experiments/v2-experience? app-state)))
+                                   (if (not (experiments/v2-experience? app-state))
                                      "https://www.facebook.com/groups/1798170053598507/"
                                      config/telligent-community-url))))
 
