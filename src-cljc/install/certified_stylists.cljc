@@ -2,7 +2,9 @@
   (:require #?@(:cljs [[om.core :as om]
                        [goog.events]
                        [goog.dom]
-                       [goog.events.EventType :as EventType]])
+                       [goog.events.EventType :as EventType]
+                       [storefront.hooks.stringer :as stringer]
+                       [storefront.trackings :as trackings]])
             [spice.core :as spice]
             [storefront.component :as component]
             [storefront.events :as events]
@@ -66,6 +68,7 @@
 (def stylists
   [{:first-name          "Aundria"
     :last-name           "Carter"
+    :store-slug          "mskeshcreations"
     :gallery-images      ["91566919-324f-4714-9043-f4c24ae2fe98"
                           "caae31b7-36f3-439c-9c14-af0dd83f31e7"
                           "84ecceb8-443a-40fa-936a-6c639bf8280a"
@@ -90,6 +93,7 @@
 
    {:first-name          "Angela"
     :last-name           "White"
+    :store-slug          "touchedbyhairdivadaplug"
     :gallery-images      ["2e6076b8-dcbe-44ba-98b5-3402592d5858"
                           "7c59eea0-952b-4775-a50c-d8b638d6cb48"
                           "b356c268-7624-4ef9-89e3-3f5e065f6511"
@@ -109,6 +113,7 @@
 
    {:first-name          "Tamara"
     :last-name           "Johnson"
+    :store-slug          "styledtothetee"
     :gallery-images      ["def0352c-0d85-49cc-904c-f6ced1482cc5"
                           "c6710751-ea7d-4e75-b301-096292550326"
                           "1be01c11-10ee-4b78-8252-0c345c5cf45e"
@@ -130,6 +135,7 @@
 
    {:first-name          "Valerie"
     :last-name           "Selby"
+    :store-slug          "illstylz"
     :gallery-images      ["055147ca-5cd9-41c6-8038-18125454c478"
                           "981e5b31-3dc8-4f3e-814a-8899ff78f395"
                           "66e9dd27-5367-4d6b-90f2-a08670f9164b"
@@ -152,6 +158,7 @@
 
    {:first-name          "Simone"
     :last-name           "Ambrose"
+    :store-slug          "thebeautyroom103"
     :gallery-images      ["5914100a-78b8-416b-9803-57061cb6d63f"
                           "11306923-06d8-4d60-9135-e9334026477b"
                           "e41b9297-f437-4bb9-9256-1e4052e6265a"
@@ -193,7 +200,8 @@
            rating
            first-name
            last-name
-           bio]}]
+           bio]
+    :as   stylist}]
   [:div.bg-white.p2.pb2.h6.my2.mx2-on-tb-dt.col-12.col-5-on-tb-dt {:key first-name}
    [:div.flex
     [:div.mr2.mt1 (ui/circle-ucare-img {:width "104"} portrait-image-id)]
@@ -229,7 +237,7 @@
      [:span.mr2.pt1 (ui/ucare-img {:width "32"} "bb7c9399-fc68-4bad-9b33-bf19741d58bf")]
      (str "Text " first-name " " phone)]]
    [:div.hide-on-tb-dt
-    (ui/teal-button {:href (share-links/sms-link (stylist-message first-name) (numbers/digits-only phone))}
+    (ui/teal-button (utils/fake-href events/control-install-consult-stylist-sms {:stylist stylist :index current-stylist-index})
                     [:div.flex.items-center.justify-center.mynp3.inherit-color
                      [:span.mr1.pt1 (ui/ucare-img {:width "32"} "c220762a-87da-49ac-baa9-0c2479addab6")]
                      (str "Text " first-name)])]
@@ -264,6 +272,18 @@
           :gallery-open?          (= stylist-gallery-index index)}
          stylist))
       stylists)]]))
+
+#?(:cljs
+   (defmethod trackings/perform-track events/control-install-consult-stylist-sms
+     [_ event {:keys [stylist index]} app-state]
+     (let [{:keys [years-of-experience rating store-slug first-name phone]} stylist]
+       (stringer/track-event "text-stylist-button-pressed" {:store-slug       store-slug
+                                                            :index            (inc index)
+                                                            :stylist-rating   rating
+                                                            :years-experience years-of-experience}
+                             events/external-redirect-sms
+                             {:sms-message (stylist-message first-name)
+                              :number      (numbers/digits-only phone)}))))
 
 (defmethod transitions/transition-state events/control-stylist-gallery-open [_ _event {:keys [stylist-gallery-index image-index]} app-state]
   (-> app-state

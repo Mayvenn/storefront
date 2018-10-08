@@ -40,7 +40,8 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.messages :as messages :refer [handle-later handle-message]]
             [storefront.routes :as routes]
-            [storefront.accessors.nav :as nav]))
+            [storefront.accessors.nav :as nav]
+            [storefront.components.share-links :as share-links]))
 
 (defn- email-capture-session [app-state]
   (cookie-jar/retrieve-email-capture-session (get-in app-state keypaths/cookie)))
@@ -192,6 +193,9 @@
 
 (defmethod perform-effects events/external-redirect-welcome [_ event args _ app-state]
   (set! (.-location js/window) (get-in app-state keypaths/welcome-url)))
+
+(defmethod perform-effects events/external-redirect-sms [_ event {:keys [sms-message number]} _ app-state]
+  (set! (.-location js/window) (share-links/sms-link sms-message number)))
 
 (defmethod perform-effects events/external-redirect-paypal-setup [_ event args _ app-state]
   (set! (.-location js/window) (get-in app-state keypaths/order-cart-payments-paypal-redirect-url)))

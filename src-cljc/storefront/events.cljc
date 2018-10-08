@@ -11,6 +11,7 @@
 (defpath order-remove-promotion)
 
 (defpath external-redirect-welcome)
+(defpath external-redirect-sms)
 (defpath external-redirect-paypal-setup)
 (defpath external-redirect-telligent)
 
@@ -161,6 +162,7 @@
 
 (defpath control-install-landing-page-look-back)
 (defpath control-install-landing-page-toggle-accordion)
+(defpath control-install-consult-stylist-sms)
 
 (defpath control-seventy-five-off-install)
 (defpath control-seventy-five-off-install-shop-looks)

@@ -20,11 +20,12 @@
 (defn track-event
   ([event-name] (track-event event-name {} nil))
   ([event-name payload] (track-event event-name payload nil))
-  ([event-name payload callback-event]
+  ([event-name payload callback-event] (track-event event-name payload callback-event nil))
+  ([event-name payload callback-event callback-args]
    (when (.hasOwnProperty js/window "stringer")
      (.track js/stringer event-name (clj->js payload)
              (when callback-event
-               (fn [] (handle-message callback-event {:tracking-event event-name :payload payload})))))))
+               (fn [] (handle-message callback-event (merge {:tracking-event event-name :payload payload} callback-args))))))))
 
 (defn track-page [store-experience]
   (track-event "pageview" {:store-experience store-experience}))
