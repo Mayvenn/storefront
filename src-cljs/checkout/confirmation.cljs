@@ -356,8 +356,7 @@
      :order                            order
      :payment                          (checkout-credit-card/query data)
      :delivery                         (checkout-delivery/query data)
-     :install-or-free-install-applied? (or (orders/freeinstall-applied? order)
-                                           (orders/install-applied? order))
+     :install-or-free-install-applied? (orders/freeinstall-applied? order)
      :available-store-credit           (get-in data keypaths/user-total-available-store-credit)
      :checkout-button-data             (checkout-button-query data)
      :confirmation-summary             (confirmation-summary/query data)
