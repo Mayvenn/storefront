@@ -35,7 +35,9 @@
                        [storefront.history :as history]])
             [storefront.components.affirm :as affirm]
             [spice.date :as date]
-            [storefront.components.svg :as svg]))
+            [storefront.components.svg :as svg]
+            [storefront.components.v2 :as v2]
+            [storefront.components.marquee :as marquee]))
 
 (defn item-price [price]
   (when price
@@ -317,26 +319,29 @@
            sku-description-section-data
            product-selection-section-data
            product-description-section-data
+           get-a-free-install-section-data
            mobile-ugc-carousel-data
            reviews-section-data]}
    owner
    opts]
   (component/create
-   [:div.container.p2
-    (when show-ugc?
-      (ugc-overlay ugc-overlay-data))
-    [:div.clearfix.mxn2 {:item-scope :itemscope
-                         :item-type "http://schema.org/Product"}
-     [:div.col-on-tb-dt.col-7-on-tb-dt.px2
-      [:div.hide-on-mb
-       (image-section image-section-data)]]
-     [:div.col-on-tb-dt.col-5-on-tb-dt.px2
-      (sku-description-section sku-description-section-data)
-      (product-selection-section product-selection-section-data)
-      (product-description product-description-section-data)
-      (mobile-ugc-carousel mobile-ugc-carousel-data)]]
+   [:div
+    [:div.container.p2
+     (when show-ugc?
+       (ugc-overlay ugc-overlay-data))
+     [:div.clearfix.mxn2 {:item-scope :itemscope
+                          :item-type "http://schema.org/Product"}
+      [:div.col-on-tb-dt.col-7-on-tb-dt.px2
+       [:div.hide-on-mb
+        (image-section image-section-data)]]
+      [:div.col-on-tb-dt.col-5-on-tb-dt.px2
+       (sku-description-section sku-description-section-data)
+       (product-selection-section product-selection-section-data)
+       (product-description product-description-section-data)
+       (mobile-ugc-carousel mobile-ugc-carousel-data)]]]
+    [:div.py10.bg-transparent-teal.col-on-tb-dt.mt4 (v2/get-a-free-install get-a-free-install-section-data)]
     (when show-reviews?
-      (component/build review-component/reviews-component (:reviews reviews-section-data) opts))]))
+      [:div.container.col-7-on-tb-dt.px2 (component/build review-component/reviews-component (:reviews reviews-section-data) opts)])]))
 
 (defn component
   [{:keys [spinning? page-data] :as data}
@@ -450,20 +455,25 @@
        (sort-by :sku/price)))
 
 (defn query [data]
-  (let [selected-sku    (get-in data catalog.keypaths/detailed-product-selected-sku)
-        product         (products/current-product data)
-        product-skus    (extract-product-skus data product)
-        sku-quantity    (get-in data keypaths/browse-sku-quantity 1)
-        adding-to-bag?  (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
-        cheapest-price  (lowest-sku-price product-skus)
-        bagged-skus     (get-in data keypaths/browse-recently-added-skus)
-        facets          (->> (get-in data keypaths/v2-facets)
-                             (map #(update % :facet/options (partial maps/index-by :option/slug)))
-                             (maps/index-by :facet/slug))
-        carousel-images (find-carousel-images product product-skus selected-sku)
-        ugc             (ugc-query product selected-sku data)
-        reviews         (review-component/query data)
-        options         (generate-options facets product product-skus selected-sku)]
+  (let [selected-sku      (get-in data catalog.keypaths/detailed-product-selected-sku)
+        product           (products/current-product data)
+        product-skus      (extract-product-skus data product)
+        sku-quantity      (get-in data keypaths/browse-sku-quantity 1)
+        adding-to-bag?    (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
+        cheapest-price    (lowest-sku-price product-skus)
+        bagged-skus       (get-in data keypaths/browse-recently-added-skus)
+        facets            (->> (get-in data keypaths/v2-facets)
+                               (map #(update % :facet/options (partial maps/index-by :option/slug)))
+                               (maps/index-by :facet/slug))
+        carousel-images   (find-carousel-images product product-skus selected-sku)
+        ugc               (ugc-query product selected-sku data)
+        reviews           (review-component/query data)
+        options           (generate-options facets product product-skus selected-sku)
+        store             (marquee/query data)
+        gallery-ucare-ids (->> store
+                               :gallery
+                               :images
+                               (map (comp v2/get-ucare-id-from-url :resizable-url)))]
     {:spinning? (empty? product)
      :page-data {:ugc-overlay-data                 {:ugc ugc}
                  :image-section-data               {:carousel-images carousel-images
@@ -479,12 +489,17 @@
                                                     :selected-sku   selected-sku
                                                     :sku-quantity   sku-quantity
                                                     :adding-to-bag? adding-to-bag?}
+                 :get-a-free-install-section-data  {:store                 store
+                                                    :gallery-ucare-ids     gallery-ucare-ids
+                                                    :stylist-portrait      (:portrait store)
+                                                    :stylist-name          (:store-nickname store)
+                                                    :stylist-gallery-open? (get-in data keypaths/carousel-stylist-gallery-open?)}
                  :product-description-section-data {:product product}
                  :mobile-ugc-carousel-data         {:ugc ugc}
                  :reviews-section-data             {:reviews reviews}
-
-                 :show-ugc?     (:offset ugc)
-                 :show-reviews? (products/eligible-for-reviews? product)}}))
+                 :aladdin-or-phoenix?              (experiments/v2-experience? data)
+                 :show-ugc?                        (:offset ugc)
+                 :show-reviews?                    (products/eligible-for-reviews? product)}}))
 
 (defn built-component [data opts]
   (if (experiments/pdp-dropdown? data)
