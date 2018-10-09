@@ -83,9 +83,16 @@
 (defn pdp-dropdown? [data]
   (display-feature? data "pdp-dropdown"))
 
+(defn install?
+  [data]
+  (->> (get-in data keypaths/store-features)
+       (some #{"install"})
+       boolean))
+
 (defn vouchers?
   [data]
-  (display-feature? data "vouchers"))
+  (or (display-feature? data "vouchers")
+      (install? data)))
 
 (defn second-checkout-button? [data]
   (display-feature? data "second-checkout-button"))
