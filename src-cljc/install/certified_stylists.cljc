@@ -290,10 +290,12 @@
 
 (defmethod transitions/transition-state events/control-stylist-gallery-open [_ _event {:keys [stylist-gallery-index image-index]} app-state]
   (-> app-state
-      (assoc-in keypaths/carousel-stylist-gallery-index stylist-gallery-index)
-      (assoc-in keypaths/carousel-stylist-gallery-image-index image-index)))
+      (assoc-in keypaths/carousel-stylist-gallery-open? true)
+      (assoc-in keypaths/carousel-stylist-gallery-index (or stylist-gallery-index 0))
+      (assoc-in keypaths/carousel-stylist-gallery-image-index (or image-index 0))))
 
 (defmethod transitions/transition-state events/control-stylist-gallery-close [_ _event _args app-state]
   (-> app-state
+      (assoc-in keypaths/carousel-stylist-gallery-open? false)
       (update-in keypaths/carousel-stylist-gallery dissoc :index)
       (update-in keypaths/carousel-stylist-gallery dissoc :image-index)))
