@@ -47,7 +47,7 @@
 (defn discount-for?
   "These are the experiences that the discount should be called-to-action"
   [experience]
-  (contains? experience #{"mayvenn-classic" "influencer"}))
+  (contains? #{"mayvenn-classic" "influencer"} experience))
 
 (defn call-to-action
   "Determine the call-to-action for the current experience"
