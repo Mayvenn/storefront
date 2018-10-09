@@ -336,7 +336,7 @@
       (product-description product-description-section-data)
       (mobile-ugc-carousel mobile-ugc-carousel-data)]]
     (when show-reviews?
-      (component/build review-component/reviews-component reviews-section-data opts))]))
+      (component/build review-component/reviews-component (:reviews reviews-section-data) opts))]))
 
 (defn component
   [{:keys [spinning? page-data] :as data}
