@@ -321,6 +321,7 @@
            product-description-section-data
            get-a-free-install-section-data
            mobile-ugc-carousel-data
+           aladdin-or-phoenix?
            reviews-section-data]}
    owner
    opts]
@@ -339,7 +340,9 @@
        (product-selection-section product-selection-section-data)
        (product-description product-description-section-data)
        (mobile-ugc-carousel mobile-ugc-carousel-data)]]]
-    [:div.py10.bg-transparent-teal.col-on-tb-dt.mt4 (v2/get-a-free-install get-a-free-install-section-data)]
+    (when aladdin-or-phoenix?
+        [:div.py10.bg-transparent-teal.col-on-tb-dt.mt4
+         (v2/get-a-free-install get-a-free-install-section-data)])
     (when show-reviews?
       [:div.container.col-7-on-tb-dt.px2 (component/build review-component/reviews-component (:reviews reviews-section-data) opts)])]))
 
