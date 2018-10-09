@@ -464,7 +464,7 @@
         ugc             (ugc-query product selected-sku data)
         reviews         (review-component/query data)
         options         (generate-options facets product product-skus selected-sku)]
-    {:spining?  product
+    {:spinning? (empty? product)
      :page-data {:ugc-overlay-data                 {:ugc ugc}
                  :image-section-data               {:carousel-images carousel-images
                                                     :product         product
