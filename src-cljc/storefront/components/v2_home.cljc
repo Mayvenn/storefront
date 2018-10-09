@@ -350,6 +350,7 @@
      :gallery-ucare-ids         (->> store
                                      :gallery
                                      :images
+                                     (filter (comp (partial = "approved") :status))
                                      (map (comp v2/get-ucare-id-from-url :resizable-url)))
      :faq-data                  {:expanded-index (get-in data keypaths/faq-expanded-section)}
      :signed-in                 (auth/signed-in data)

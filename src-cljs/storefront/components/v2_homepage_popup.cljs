@@ -93,6 +93,7 @@
      :gallery-ucare-ids     (->> store
                                  :gallery
                                  :images
+                                 (filter (comp (partial = "approved") :status))
                                  (map (comp v2/get-ucare-id-from-url :resizable-url)))
      :stylist-gallery-open? (get-in data keypaths/carousel-stylist-gallery-open?)
      :faq-data              (faq-query data)

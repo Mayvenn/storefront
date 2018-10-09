@@ -473,6 +473,7 @@
         gallery-ucare-ids (->> store
                                :gallery
                                :images
+                               (filter (comp (partial = "approved") :status))
                                (map (comp v2/get-ucare-id-from-url :resizable-url)))]
     {:spinning? (empty? product)
      :page-data {:ugc-overlay-data                 {:ugc ugc}
