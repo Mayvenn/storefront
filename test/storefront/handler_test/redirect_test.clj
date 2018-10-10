@@ -116,6 +116,14 @@
                     (is (= "https://bob.mayvenn.com/"
                            (get-in resp [:headers "Location"]))))))
 
+(deftest redirects-www-prefixed-unreal-stylists-to-stylist-without-prefix
+  (assert-request (mock/request :get "https://www.not-a-real-store-slug.mayvenn.com")
+                  common/storeback-stylist-response
+                  (fn [resp]
+                    (is (= 302 (:status resp)) (pr-str resp))
+                    (is (= "https://not-a-real-store-slug.mayvenn.com/"
+                           (get-in resp [:headers "Location"]))))))
+
 (deftest redirects-missing-stylists-to-store-while-preserving-query-params
   (assert-request (mock/request :get "https://no-stylist.mayvenn.com/?yo=lo&mo=fo")
                   common/storeback-no-stylist-response

@@ -150,11 +150,9 @@
     (h (merge req {:subdomains (parse-subdomains (:server-name req))}))))
 
 (defn wrap-remove-superfluous-www-redirect [h environment]
-  (fn [{subdomains :subdomains
-        {store-slug :store-slug} :store
-        :as req}]
+  (fn [{:as req :keys [subdomains]}]
     (if (= "www" (first subdomains))
-      (util.response/redirect (store-url store-slug environment req))
+      (util.response/redirect (store-url (second subdomains) environment req))
       (h req))))
 
 (defn wrap-stylist-not-found-redirect [h environment]
