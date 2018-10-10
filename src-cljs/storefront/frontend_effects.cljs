@@ -350,10 +350,13 @@
     :else nil))
 
 (defmethod perform-effects events/navigate-stylist-account [_ event args _ app-state]
-  (when-let [user-token (get-in app-state keypaths/user-token)]
-    (uploadcare/insert)
-    (api/get-states (get-in app-state keypaths/api-cache))
-    (api/get-stylist-account (get-in app-state keypaths/user-id) user-token)))
+  (let [user-token (get-in app-state keypaths/user-token)
+        user-id    (get-in app-state keypaths/user-id)
+        stylist-id (get-in app-state keypaths/store-stylist-id)]
+    (when (and user-token stylist-id)
+      (uploadcare/insert)
+      (api/get-states (get-in app-state keypaths/api-cache))
+      (api/get-stylist-account user-id user-token stylist-id))))
 
 (defmethod perform-effects events/navigate-gallery [_ event args _ app-state]
   (api/get-gallery (if (stylists/own-store? app-state)
@@ -405,12 +408,14 @@
   (handle-message events/external-redirect-telligent))
 
 (defmethod perform-effects events/navigate-stylist-dashboard [_ event args _ app-state]
-  (when-let [user-token (get-in app-state keypaths/user-token)]
-    (api/get-stylist-account (get-in app-state keypaths/user-id) user-token)
-    (api/get-stylist-payout-stats events/api-success-stylist-payout-stats
-                                  (get-in app-state keypaths/store-stylist-id)
-                                  (get-in app-state keypaths/user-id)
-                                  (get-in app-state keypaths/user-token))))
+  (let [user-token (get-in app-state keypaths/user-token)
+        user-id    (get-in app-state keypaths/user-id)
+        stylist-id (get-in app-state keypaths/store-stylist-id)]
+    (when (and user-token stylist-id)
+      (api/get-stylist-account user-id user-token stylist-id)
+      (api/get-stylist-payout-stats
+        events/api-success-stylist-payout-stats
+        stylist-id user-id user-token))))
 
 (defmethod perform-effects events/control-stylist-referrals-fetch [_ event args _ app-state]
   (let [user-id    (get-in app-state keypaths/user-id)
@@ -826,7 +831,8 @@
 
 (defmethod perform-effects events/poll-stylist-portrait [_ event args _ app-state]
   (api/refresh-stylist-portrait (get-in app-state keypaths/user-id)
-                                (get-in app-state keypaths/user-token)))
+                                (get-in app-state keypaths/user-token)
+                                (get-in app-state keypaths/store-stylist-id)))
 
 (defmethod perform-effects events/poll-gallery [_ event args _ app-state]
   (when (stylists/own-store? app-state)

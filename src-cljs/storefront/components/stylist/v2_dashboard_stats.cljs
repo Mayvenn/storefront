@@ -169,7 +169,7 @@
                                       {:user-id    user-id
                                        :user-token user-token
                                        :stylist-id stylist-id})
-      (api/get-stylist-account user-id user-token)
+      (api/get-stylist-account user-id user-token stylist-id)
       (api/get-stylist-dashboard-stats events/api-success-v2-stylist-dashboard-stats
                                        stylist-id
                                        user-id

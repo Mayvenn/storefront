@@ -419,13 +419,14 @@
                     :address])
       (assoc :original-payout-method (:chosen-payout-method args))))
 
-(defn get-stylist-account [user-id user-token]
+(defn get-stylist-account [user-id user-token stylist-id]
   (storeback-api-req
    GET
-   "/stylist"
+   "/v2/stylist"
    request-keys/get-stylist-account
    {:params {:user-id    user-id
-             :user-token user-token}
+             :user-token user-token
+             :stylist-id stylist-id}
     :handler
     #(messages/handle-message events/api-success-stylist-account
                               {:stylist (select-stylist-account-keys %)})}))
@@ -490,14 +491,15 @@
     #(messages/handle-message events/api-success-stylist-account-social
                               {:stylist (select-stylist-account-keys %)})}))
 
-(defn refresh-stylist-portrait [user-id user-token]
+(defn refresh-stylist-portrait [user-id user-token stylist-id]
   (storeback-api-req
    GET
-   "/stylist"
+   "/v2/stylist"
    request-keys/refresh-stylist-portrait
    {:params
     {:user-id    user-id
-     :user-token user-token}
+     :user-token user-token
+     :stylist-id stylist-id}
     :handler
     #(messages/handle-message events/api-success-stylist-account-portrait
                               {:stylist (select-keys % [:portrait])})}))
