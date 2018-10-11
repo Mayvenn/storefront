@@ -186,9 +186,7 @@
 
 (defmethod perform-effects events/external-redirect-telligent [_ event args _ app-state]
   (set! (.-location js/window) (or (get-in app-state keypaths/telligent-community-url)
-                                   (if (not (experiments/v2-experience? app-state))
-                                     "https://www.facebook.com/groups/1798170053598507/"
-                                     config/telligent-community-url))))
+                                   config/telligent-community-url)))
 
 (defmethod perform-effects events/control-navigate [_ event {:keys [navigation-message]} _ app-state]
   ;; A user has clicked a link
