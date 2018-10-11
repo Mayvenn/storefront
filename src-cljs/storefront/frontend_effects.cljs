@@ -751,9 +751,10 @@
      (get-in app-state keypaths/session-id)
      {:order        (-> order
                         (select-keys [:token :number])
-                        (assoc :cart-payments (merge {:stripe {:source (:id token)
-                                                               :save?  (boolean (and (get-in app-state keypaths/user-id)
-                                                                                     (get-in app-state keypaths/checkout-credit-card-save)))}}
+                        (assoc :cart-payments (merge {:stripe {:source         (:id token)
+                                                               :idempotent-key (str (random-uuid))
+                                                               :save?          (boolean (and (get-in app-state keypaths/user-id)
+                                                                                             (get-in app-state keypaths/checkout-credit-card-save)))}}
                                                      (when (and (pos? available-store-credit)
                                                                 (not (orders/applied-install-promotion order)))
                                                        {:store-credit {}}))))
