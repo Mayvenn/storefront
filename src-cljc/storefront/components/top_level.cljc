@@ -121,6 +121,10 @@
     events/navigate-leads-a1-registered-thank-you leads.a1.registered-thank-you/built-component
     home/built-component))
 
+(defn sticky-promo-bar [data]
+  (when (experiments/sticky-promo-bar? data)
+    (component/build promotion-banner/sticky-component (promotion-banner/query data) nil)))
+
 (defn main-layout [data nav-event]
   (let [silver-background? (#{events/navigate-voucher-redeem events/navigate-voucher-redeemed} nav-event)
         v2-home?           (and (experiments/v2-homepage? data)
@@ -129,7 +133,9 @@
                                     :margin-bottom "-1px"}}
      (stylist-banner/built-component data nil)
      (when-not v2-home?
-       (promotion-banner/built-component data nil))
+       [:div
+        (promotion-banner/built-component data nil)
+        (sticky-promo-bar data)])
 
      #?(:cljs (popup/built-component (popup/query data) nil))
 

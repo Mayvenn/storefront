@@ -70,6 +70,9 @@
        (some #{"aladdin-homepage" "phoenix-homepage"})
        boolean))
 
+(defn sticky-promo-bar? [data]
+  (display-feature? data "sticky-promo-bar"))
+
 (defn dashboard-with-vouchers? [data]
   (->> (get-in data keypaths/store-features)
        (some #{"aladdin-dashboard" "phoenix-dashboard" "dashboard-with-vouchers"})
