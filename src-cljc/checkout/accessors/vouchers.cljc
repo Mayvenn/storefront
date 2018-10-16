@@ -37,7 +37,7 @@
                    :voucherify/campaign-name     "Free Install - Frontal"}
                   {:service/type                 :three-sixty
                    :service/diva-install-type    :install-sew-in-360-frontal
-                   :service/diva-advertised-type :advertised-sew-360-frontal
+                   :service/diva-advertised-type :advertised-sew-in-360-frontal
                    :voucherify/campaign-name     "Free Install - 360"}]
     [{:service/type                 :leave-out
       :service/diva-install-type    :install-sew-in-leave-out
@@ -53,5 +53,5 @@
       :voucherify/campaign-name     "Free Install - Frontal"}
      {:service/type                 :three-sixty
       :service/diva-install-type    :install-sew-in-360-frontal
-      :service/diva-advertised-type :advertised-sew-360-frontal
+      :service/diva-advertised-type :advertised-sew-in-360-frontal
       :voucherify/campaign-name     "Free Install - 360"}]))
