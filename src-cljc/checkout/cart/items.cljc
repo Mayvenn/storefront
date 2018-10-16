@@ -9,10 +9,9 @@
    [storefront.platform.component-utils :as utils]
    [storefront.request-keys :as request-keys]))
 
-(defn maybe-advertised-price [menu type]
-  (let [advertised-service-key (some->> type name (drop-while #(not= \- %)) (apply str "advertised") keyword)]
-    (or (advertised-service-key menu)
-        (type menu))))
+(defn determine-service-price [menu install-type advertised-type]
+  (or (advertised-type menu)
+      (install-type menu)))
 
 (defn freeinstall-line-item-query [data]
   (let [order (get-in data keypaths/order)]
@@ -25,14 +24,15 @@
 
             {:as   campaign
              :keys [:voucherify/campaign-name
-                    :service/diva-type]} (->> (get-in data keypaths/environment)
-                                              vouchers/campaign-configuration
-                                              (filter #(= (:service/type %) highest-value-service))
-                                              first)
+                    :service/diva-install-type
+                    :service/diva-advertised-type]} (->> (get-in data keypaths/environment)
+                                                         vouchers/campaign-configuration
+                                                         (filter #(= (:service/type %) highest-value-service))
+                                                         first)
 
             service-price (some-> data
                                   (get-in keypaths/store-service-menu)
-                                  (maybe-advertised-price diva-type))]
+                                  (determine-service-price diva-install-type diva-advertised-type))]
         {:removing?          (utils/requesting? data request-keys/remove-promotion-code)
          :id                 "freeinstall"
          :title              campaign-name

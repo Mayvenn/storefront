@@ -23,28 +23,35 @@
   [environment]
   ;; WARN: sync this with vaqum, diva, voucherify, and el-jefe
   (case environment
-    "production" [{:service/type             :leave-out
-                   :service/diva-type        :install-sew-in-leave-out
-                   :voucherify/campaign-name "Free Install - Leave Out"}
-                  {:service/type             :closure
-                   :service/diva-type        :install-sew-in-closure
-                   :voucherify/campaign-name "Free Install - Closure"}
-                  {:service/type             :frontal
-                   :service/diva-type        :install-sew-in-frontal
-                   :voucherify/campaign-name "Free Install - Frontal"}
-                  {:service/type             :three-sixty
-                   :service/diva-type        :install-sew-in-360-frontal
-                   :voucherify/campaign-name "Free Install - 360"}]
-    [{:service/type             :leave-out
-      :service/diva-type        :install-sew-in-leave-out
-      :voucherify/campaign-name "Free Install - Leave Out"}
-     {:service/type             :closure
-      :service/diva-type        :install-sew-in-closure
-      :voucherify/campaign-name "Free Install - Closure"}
-     {:service/type             :frontal
-      :service/diva-type        :install-sew-in-frontal
-      :voucherify/campaign-name "Free Install - Frontal"}
-     {:service/type             :three-sixty
-      :service/diva-type        :install-sew-in-360-frontal
-      :voucherify/campaign-name "Free Install - 360"}]))
-
+    "production" [{:service/type                 :leave-out
+                   :service/diva-install-type    :install-sew-in-leave-out
+                   :service/diva-advertised-type :advertised-sew-in-leave-out
+                   :voucherify/campaign-name     "Free Install - Leave Out"}
+                  {:service/type                 :closure
+                   :service/diva-install-type    :install-sew-in-closure
+                   :service/diva-advertised-type :advertised-sew-in-closure
+                   :voucherify/campaign-name     "Free Install - Closure"}
+                  {:service/type                 :frontal
+                   :service/diva-install-type    :install-sew-in-frontal
+                   :service/diva-advertised-type :advertised-sew-in-frontal
+                   :voucherify/campaign-name     "Free Install - Frontal"}
+                  {:service/type                 :three-sixty
+                   :service/diva-install-type    :install-sew-in-360-frontal
+                   :service/diva-advertised-type :advertised-sew-360-frontal
+                   :voucherify/campaign-name     "Free Install - 360"}]
+    [{:service/type                 :leave-out
+      :service/diva-install-type    :install-sew-in-leave-out
+      :service/diva-advertised-type :advertised-sew-in-leave-out
+      :voucherify/campaign-name     "Free Install - Leave Out"}
+     {:service/type                 :closure
+      :service/diva-advertised-type :advertised-sew-in-closure
+      :service/diva-install-type    :install-sew-in-closure
+      :voucherify/campaign-name     "Free Install - Closure"}
+     {:service/type                 :frontal
+      :service/diva-install-type    :install-sew-in-frontal
+      :service/diva-advertised-type :advertised-sew-in-frontal
+      :voucherify/campaign-name     "Free Install - Frontal"}
+     {:service/type                 :three-sixty
+      :service/diva-install-type    :install-sew-in-360-frontal
+      :service/diva-advertised-type :advertised-sew-360-frontal
+      :voucherify/campaign-name     "Free Install - 360"}]))
