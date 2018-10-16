@@ -9,6 +9,11 @@
    [storefront.platform.component-utils :as utils]
    [storefront.request-keys :as request-keys]))
 
+(defn maybe-advertised-price [type menu]
+  (let [advertised-service-key (some->> type name (drop-while #(not= \- %)) (apply str "advertised") keyword)]
+    (or (advertised-service-key menu)
+        (type menu))))
+
 (defn freeinstall-line-item-query [data]
   (let [order (get-in data keypaths/order)]
     (when (and (experiments/aladdin-experience? data)
@@ -27,7 +32,7 @@
 
             service-price (some-> data
                                   (get-in keypaths/store-service-menu)
-                                  (get diva-type))]
+                                  (maybe-advertised-price diva-type))]
         {:removing?          (utils/requesting? data request-keys/remove-promotion-code)
          :id                 "freeinstall"
          :title              campaign-name
