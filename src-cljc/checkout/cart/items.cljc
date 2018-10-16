@@ -9,7 +9,7 @@
    [storefront.platform.component-utils :as utils]
    [storefront.request-keys :as request-keys]))
 
-(defn maybe-advertised-price [type menu]
+(defn maybe-advertised-price [menu type]
   (let [advertised-service-key (some->> type name (drop-while #(not= \- %)) (apply str "advertised") keyword)]
     (or (advertised-service-key menu)
         (type menu))))
