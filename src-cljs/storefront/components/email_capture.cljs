@@ -28,6 +28,14 @@
   :args (s/cat :query-data ::data :owner any? :props any?)
   :ret vector?)
 
+(def got-35-percent-bundles
+  [:div.center.line-height-3
+   [:h1.bold.teal.mb2 {:style {:font-size "36px"}} "Get 35% Off!"]
+   [:p.h5.m2
+    "#GotBundles? We’ll email you a promo "
+    "code for free shipping AND 35% off any "
+    "3 bundles, just for signing up!"]])
+
 (def discount-cta
   [:div.center.line-height-3
    [:h1.bold.teal.mb2 {:style {:font-size "36px"}} "Get 35% Off!"]
@@ -52,10 +60,14 @@
 (defn call-to-action
   "Determine the call-to-action for the current experience"
   [app-state]
-  (let [store-experience (get-in app-state keypaths/store-experience)
-        discount-cta?    (and (discount-for? store-experience)
-                              (not (experiments/the-ville? app-state)))]
-    (if discount-cta? discount-cta flawless-cta)))
+  (let [store-experience        (get-in app-state keypaths/store-experience)
+        discount-cta?           (and (discount-for? store-experience)
+                                     (not (experiments/the-ville? app-state)))
+        got-35-percent-bundles? (experiments/email-capture-35-percent-got-bundles? app-state)]
+    (cond
+      got-35-percent-bundles? got-35-percent-bundles
+      discount-cta?           discount-cta
+      :else                   flawless-cta)))
 
 (def close-dialog-href (utils/fake-href events/control-email-captured-dismiss))
 (def submit-callback (utils/send-event-callback events/control-email-captured-submit))
