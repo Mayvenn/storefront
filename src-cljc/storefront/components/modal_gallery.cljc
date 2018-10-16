@@ -12,7 +12,9 @@
 (defn simple
   [{:keys [slides open? close-event]}]
   (when open?
-    (let [close-attrs (utils/fake-href close-event)]
+    (let [close-attrs (merge (utils/fake-href close-event)
+                             {:style {:margin-top "-60px"
+                                      :margin-right "-15px"}})]
       (ui/modal
        {:close-attrs close-attrs
         :col-class   "col-12"}
