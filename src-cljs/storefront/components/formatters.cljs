@@ -7,6 +7,10 @@
   (when-let [date (date/to-datetime date-like)]
     (goog.string/format "%d/%d/%d" (inc (.getMonth date)) (.getDate date) (.getFullYear date))))
 
+(defn month+day [date-like]
+  (when-let [date (date/to-datetime date-like)]
+    (goog.string/format "%d/%d" (inc (.getMonth date)) (.getDate date))))
+
 (defn less-year-more-day-date [date-like]
   (when-let [date (date/to-datetime date-like)]
     (goog.string/format "%02d/%02d/%d" (inc (.getMonth date)) (.getDate date) (mod (.getFullYear date) 100))))
@@ -36,6 +40,20 @@
                  "Oct"
                  "Nov"
                  "Dec"])
+
+(def day-abbr ["Sun"
+               "Mon"
+               "Tue"
+               "Wed"
+               "Thu"
+               "Fri"
+               "Sat"])
+
+(defn day->day-abbr [date]
+  ;; This is actually the recommended way to do this in JavaScript.
+  ;; The other option is to use a time library, but goog.i18n adds 500K to the
+  ;; page size.
+  (get day-abbr (.getDay date)))
 
 (defn date->month-name [date]
   ;; This is actually the recommended way to do this in JavaScript.
