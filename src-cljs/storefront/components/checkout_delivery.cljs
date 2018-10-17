@@ -80,10 +80,10 @@
   (let [now              (spice.date/now)
         shipping-methods (into []
                                (comp
-                                 (map shipping/enrich-shipping-method)
-                                 (map (partial determine-ship-date now))
-                                 (map (partial add-date-ranges now))
-                                 (map add-title))
+                                (map shipping/enrich-shipping-method)
+                                (map (partial determine-ship-date now))
+                                (map (partial add-date-ranges now))
+                                (map add-title))
                                (get-in data keypaths/shipping-methods))
         selected-sku     (get-in data keypaths/checkout-selected-shipping-method-sku)]
     {:shipping-methods         shipping-methods
@@ -91,10 +91,9 @@
      :guaranteed-delivery-date (when (experiments/guaranteed-delivery? data)
                                  (f/long-date (last (:date-ranges (get (spice.maps/index-by :sku shipping-methods) selected-sku)))))}))
 
-
-  (defn component [{:keys [guaranteed-delivery-date] :as data} owner]
+(defn component [{:keys [guaranteed-delivery-date] :as data} owner]
   (om/component
-    (html
-      (if guaranteed-delivery-date
-        (om/build guaranteed-by-component data)
-        (om/build original-component data)))))
+   (html
+    (if guaranteed-delivery-date
+      (om/build guaranteed-by-component data)
+      (om/build original-component data)))))
