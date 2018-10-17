@@ -7,7 +7,7 @@
                  [environ "1.1.0"]
                  [tocsin "0.1.4"]
                  [tugboat "0.1.6"]
-                 [mayvenn/spice "0.1.48"]
+                 [mayvenn/spice "0.1.57"]
                  [compojure "1.6.1"]
                  [noir-exception "0.2.3"]
                  [ring/ring-json "0.3.1"]

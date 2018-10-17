@@ -2,7 +2,7 @@
   (:require [clojure.string :as string]
             [om.core :as om]
             [sablono.core :refer [html]]
-            [spice.date]
+            [spice.date :as date]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.shipping :as shipping]
             [storefront.components.formatters :as f]
@@ -10,8 +10,7 @@
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.platform.component-utils :as utils]
-            [storefront.platform.date :as date]))
+            [storefront.platform.component-utils :as utils]))
 
 (defn ^:private select-shipping-method
   [shipping-method]
@@ -78,7 +77,7 @@
     (update :business-days (partial map inc))))
 
 (defn query [data]
-  (let [now (date/current-date)
+  (let [now              (spice.date/now)
         shipping-methods (into []
                                (comp
                                  (map shipping/enrich-shipping-method)

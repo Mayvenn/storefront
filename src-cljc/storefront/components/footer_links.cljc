@@ -4,8 +4,8 @@
             [storefront.component :as component]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
+            [spice.date :as date]
             [storefront.platform.component-utils :as utils]
-            [storefront.platform.date :as date]
             [storefront.routes :as routes]))
 
 (defn component [{:keys [minimal?]} owner opts]
@@ -44,7 +44,7 @@
              [:span
               {:item-prop "name"
                :content "Mayvenn Hair"}
-              " ©" (date/full-year (date/current-date)) " " "Mayvenn"])]))) )
+              " ©" (date/year (date/now)) " " "Mayvenn"])]))) )
 
 (defn query
   [data]
