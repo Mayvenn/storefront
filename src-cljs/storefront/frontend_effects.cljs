@@ -255,6 +255,7 @@
       (redirect event (update-in args [:query-params] dissoc :sha)))
 
     (when (:redirect query-params)
+      (handle-message events/redirected-to-preferred-store {:query-params query-params})
       (redirect event (update-in args [:query-params] dissoc :redirect)))
 
     (handle-message events/determine-and-show-popup)

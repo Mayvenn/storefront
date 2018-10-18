@@ -80,9 +80,8 @@
         (stringer/track-page (get-in app-state keypaths/store-experience))
         (facebook-analytics/track-page path)))))
 
-(defmethod perform-track events/navigate-home [_ event args app-state]
-  (when args
-    (stringer/track-event event (:query-params args))))
+(defmethod perform-track events/redirected-to-preferred-store [_ event {:keys [query-params]} app-state]
+  (stringer/track-event "redirected_to_preferred_store" query-params))
 
 (defmethod perform-track events/control-category-panel-open
   [_ event {:keys [selected]} app-state]
