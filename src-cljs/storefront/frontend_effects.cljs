@@ -255,8 +255,7 @@
       (redirect event (update-in args [:query-params] dissoc :sha)))
 
     (when (not= event events/navigate-home)
-      (let [original-store (:redirect query-params)]
-        (redirect event (update-in args [:query-params] dissoc :redirect))))
+      (redirect event (update-in args [:query-params] dissoc :redirect)))
 
     (handle-message events/determine-and-show-popup)
 
