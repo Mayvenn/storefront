@@ -32,6 +32,15 @@
    [:svg opts
     (svg-xlink "question-circle")]))
 
+(defn radio-circle [opts]
+  (component/html
+   [:svg (assoc-in opts
+                   [:style :fill]
+                   (if (:selected? opts)
+                     "black"
+                     "white"))
+    (svg-xlink "radio-circle")]))
+
 (defn dropdown-arrow [opts]
   [:svg (maps/deep-merge {:style {:stroke-width "3"}} opts)
    (svg-xlink "dropdown-arrow")])

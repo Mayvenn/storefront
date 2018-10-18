@@ -29,6 +29,12 @@
       <circle r="6" cx="7" cy="7"></circle>
     </g>
   </symbol>
+  <symbol id="radio-circle" viewBox="0 0 36 36">
+    <g fill="white" stroke-width="2" stroke-linecap="round" stroke="#979797">
+      <circle r="17" cx="18" cy="18"></circle>
+    </g>
+   <circle r="11" cx="18" cy="18"></circle>
+  </symbol>
   <symbol id="check" viewBox="0 0 14 14">
     <g fill="none" stroke-width=".5" stroke-linecap="round">
       <path d="M9.61 5.17L5.7 8.83 4.39 7.52"></path>
