@@ -452,7 +452,6 @@
 (defpath browser-fullscreen-enter)
 (defpath browser-fullscreen-exit)
 
-(defpath redirected-to-preferred-store)
 ;;SECTION v2
 (defpath v2-show-home)
 

@@ -80,9 +80,6 @@
         (stringer/track-page (get-in app-state keypaths/store-experience))
         (facebook-analytics/track-page path)))))
 
-(defmethod perform-track events/redirected-to-preferred-store [_ event {:keys [query-params]} app-state]
-  (stringer/track-event "redirected_to_preferred_store" query-params))
-
 (defmethod perform-track events/control-category-panel-open
   [_ event {:keys [selected]} app-state]
   (stringer/track-event "category_page_filter-select"
