@@ -668,10 +668,15 @@
           (when event (utils/route-to event))
           (dissoc attrs :height :event))])
 
+(defn pluralize-with-amount
+  ([cnt singular] (pluralize-with-amount cnt singular (str singular "s")))
+  ([cnt singular plural]
+   (str cnt " " (if (= 1 (max cnt (- cnt))) singular plural))))
+
 (defn pluralize
   ([cnt singular] (pluralize cnt singular (str singular "s")))
   ([cnt singular plural]
-   (str cnt " " (if (= 1 (max cnt (- cnt))) singular plural))))
+   (if (= 1 (max cnt (- cnt))) singular plural)))
 
 (defn phone-href [tel-num]
   (str "tel://+" (numbers/digits-only tel-num)))

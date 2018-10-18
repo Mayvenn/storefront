@@ -70,7 +70,7 @@
                               :order-total            (mf/as-money (:total order))
                               :total-quantity         (google-string/format
                                                        "Total (%s): "
-                                                       (ui/pluralize (orders/product-quantity order) "item" "items"))}
+                                                       (ui/pluralize-with-amount (orders/product-quantity order) "item" "items"))}
      :disabled?              (utils/requesting? data request-keys/update-shipping-method)
      :spinning?              (or saving-card? placing-order?)}))
 
