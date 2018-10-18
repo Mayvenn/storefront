@@ -216,7 +216,7 @@
             have-a-preferred-store?      (not (contains? #{nil "" "store" "shop" "internal"} preferred-store-slug))
             query-params                 {:redirect last-subdomain}]
         (if (and loading-mayvenn-owned-store? have-a-preferred-store?)
-          (util.response/redirect (store-url preferred-store-slug environment (assoc req :query-params query-params)))
+          (util.response/redirect (store-url preferred-store-slug environment (update req :query-params merge query-params)))
           (handler req)))
       (handler req))))
 

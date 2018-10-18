@@ -18,6 +18,15 @@
       (status 200)
       (content-type "application/json")))
 
+(deftest redirect-from-shop-to-preferred-store-adds-redirect-query-param
+  (assert-request (-> (mock/request :get "https://shop.mayvenn.com")
+                      (mock/header "cookie" "preferred-store-slug=bob"))
+                  common/storeback-stylist-response
+                  (fn [resp]
+                    (is (= 302 (:status resp)))
+                    (is (= "https://bob.mayvenn.com/?redirect=shop"
+                           (get-in resp [:headers "Location"]))))))
+
 (deftest redirects-shop-to-store-subdomain-if-preferred-subdomain-is-invalid
   (assert-request (-> (mock/request :get "https://shop.mayvenn.com/categories/hair/straight?utm_source=cats")
                       (mock/header "cookie" "preferred-store-slug=non-existent-stylist"))
@@ -35,7 +44,7 @@
                   storeback-shop-response
                   (fn [resp]
                     (is (= 302 (:status resp)))
-                    (is (= "https://bob.mayvenn.com/categories/hair/straight?utm_source=cats"
+                    (is (= "https://bob.mayvenn.com/categories/hair/straight?utm_source=cats&redirect=shop"
                            (get-in resp [:headers "Location"]))))))
 
 (deftest redirects-products-to-home
