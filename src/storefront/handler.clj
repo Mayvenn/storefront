@@ -158,6 +158,8 @@
 (defn wrap-stylist-not-found-redirect [h environment]
   (fn [{server-name                        :server-name
         {store-slug :store-slug :as store} :store
+        subdomains                         :subdomains
+        cookies                            :cookies
         :as                                req}]
     (cond
       (= store :storefront.backend-api/storeback-unavailable)
@@ -169,7 +171,8 @@
       (h req)
 
       :else
-      (-> (util.response/redirect (store-url "store" environment req))
+      (-> (util.response/redirect
+           (store-url "store" environment (assoc-in req [:query-params :redirect] (last subdomains))))
           (cookies/expire environment
                           "preferred-store-slug"
                           {:http-only true
