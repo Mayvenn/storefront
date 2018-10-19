@@ -172,7 +172,7 @@
 
       :else
       (-> (util.response/redirect
-           (store-url "store" environment (assoc-in req [:query-params :redirect] (last subdomains))))
+           (store-url "store" environment (assoc-in req [:query-params "redirect"] (last subdomains))))
           (cookies/expire environment
                           "preferred-store-slug"
                           {:http-only true

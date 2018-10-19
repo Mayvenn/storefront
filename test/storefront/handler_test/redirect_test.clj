@@ -161,6 +161,15 @@
                     (is (= "https://store.mayvenn.com/?redirect=no-stylist"
                            (get-in resp [:headers "Location"]))))))
 
+(deftest redirects-missing-stylists-to-store-and-overwrites-previous-redirect-param-if
+  (assert-request (-> (mock/request :get "https://no-stylist.mayvenn.com/?redirect=shop")
+                      (mock/header "cookie" "preferred-store-slug=bob"))
+                  common/storeback-no-stylist-response
+                  (fn [resp]
+                    (is (= 302 (:status resp)))
+                    (is (= "https://store.mayvenn.com/?redirect=no-stylist"
+                           (get-in resp [:headers "Location"]))))))
+
 (deftest redirects-to-https-preserving-query-params
   (testing "bob.mayvenn.com"
     (assert-request (mock/request :get "http://bob.mayvenn.com")
