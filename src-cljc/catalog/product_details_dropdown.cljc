@@ -347,121 +347,131 @@
                sold-out? (sold-out-color-swatch-layer)
                :else     nil)))
 
+(defn picker-rows
+  "individual elements as in: https://app.zeplin.io/project/5a9f159069d48a4c15497a49/screen/5b21aa0352b1d5e31a32ac53"
+  [{:keys [facets selected-sku]}]
+  (let [color  (get-in facets [:hair/color :facet/options
+                               (first (:hair/color selected-sku))])
+        length (get-in facets [:hair/length :facet/options
+                               (first (:hair/length selected-sku))])]
+    [:div.mxn2
+     (field
+       (utils/fake-href events/control-product-detail-picker-open {:facet-slug :hair/color})
+       (mobile-dropdown
+         [:img.border.border-gray.rounded-0
+          {:height "33px"
+           :width  "65px"
+           :src    (:option/rectangle-swatch color)}]
+         (:option/name color)))
+     [:div.flex
+      (field
+        (merge
+          {:class "border-right flex-grow-5"}
+          (utils/fake-href events/control-product-detail-picker-open {:facet-slug :hair/length}))
+        (mobile-dropdown
+          [:div.h7 "Length:"]
+          [:span.medium (:option/name length)]))
+      [:div.flex-auto
+       (field
+         (utils/fake-href events/control-product-detail-picker-open {:facet-slug :item/quantity})
+         (mobile-dropdown
+           [:div.h7 "Qty:"]
+           [:span.medium "1"]))]]]))
+
+(defn picker-dialog
+  "picker dialog as in https://app.zeplin.io/project/5a9f159069d48a4c15497a49/screen/5b15c08f4819592903cb1348"
+  [{:keys [facets product selected-picker options]}]
+  (when (contains? (:catalog/department product) "hair")
+    (list
+      (when selected-picker
+        (let [options (get options selected-picker)]
+          [:div.hide-on-tb-dt.z4.fixed.overlay.overflow-auto.bg-light-silver
+
+           [:div.p3.h5.bg-white.relative.border-bottom.border-gray
+            {:style {:min-height "3em"}}
+            [:div.absolute.overlay.flex.items-center.justify-center
+             [:div.dark-gray
+              (get-in facets [selected-picker :facet/name])]]
+
+            [:div.absolute.overlay.flex.items-center.justify-end
+             [:a.teal.medium.p3
+              (utils/fake-href events/control-product-detail-picker-close)
+              "Done"]]]
+
+           [:div.py3.px1 ;; body
+            (for [option options]
+              (simple-option
+                {:primary-label   (:option/name option)
+                 :secondary-label (item-price (:price option))
+                 :selected?       (:checked? option)
+                 :sold-out?       (not (:stocked? option))
+                 :on-click        #(messages/handle-message
+                                     events/control-product-detail-picker-option-select
+                                     {:selection selected-picker
+                                      :value     (:option/slug option)})}))]])))))
+
+(defn pickers [{:keys [product selected-picker] :as data}]
+  (when (contains? (:catalog/department product) "hair")
+    (if selected-picker
+      (picker-dialog data)
+      (picker-rows data))))
+
 (defn component
   [{:keys [adding-to-bag?
-           cheapest-price
            bagged-skus
-           facets
            carousel-images
-           options
            product
            reviews
            selected-sku
            sku-quantity
-           selected-picker
-           ugc]}
+           ugc] :as data}
    owner
    opts]
   (let [review? (:review? reviews)]
     (component/create
-     (if-not product
-       [:div.flex.h2.p1.m1.items-center.justify-center
-        {:style {:height "25em"}}
-        (ui/large-spinner {:style {:height "4em"}})]
-       [:div
-        (when (:offset ugc)
-          [:div.absolute.overlay.z4.overflow-auto
-           (component/build ugc/popup-component ugc opts)])
-        [:div.container.p2
-         (page
-          [:div
-           (carousel carousel-images product)
-           [:div.hide-on-mb (component/build ugc/component ugc opts)]]
+      (if-not product
+        [:div.flex.h2.p1.m1.items-center.justify-center
+         {:style {:height "25em"}}
+         (ui/large-spinner {:style {:height "4em"}})]
+        [:div
+         (when (:offset ugc)
+           [:div.absolute.overlay.z4.overflow-auto
+            (component/build ugc/popup-component ugc opts)])
+         [:div.container.p2
+          (page
+            [:div
+             (carousel carousel-images product)
+             [:div.hide-on-mb (component/build ugc/component ugc opts)]]
 
-          [:div
-           [:div
-            [:div.mx2
-             (title (:copy/title product))
-             (when review? (reviews-summary reviews opts))]
-            [:meta {:item-prop "image"
-                    :content   (:url (first carousel-images))}]
-            (full-bleed-narrow (carousel carousel-images product))]
-           [:div
-            [:div schema-org-offer-props
-             (when (contains? (:catalog/department product) "hair")
-               (list
-                (when selected-picker
-                  (let [options (get options selected-picker)]
-                    [:div.hide-on-tb-dt.z4.fixed.overlay.overflow-auto.bg-light-silver
-
-                     [:div.p3.h5.bg-white.relative.border-bottom.border-gray
-                      {:style {:min-height "3em"}}
-                      [:div.absolute.overlay.flex.items-center.justify-center
-                       [:div.dark-gray
-                        (get-in facets [selected-picker :facet/name])]]
-
-                      [:div.absolute.overlay.flex.items-center.justify-end
-                       [:a.teal.medium.p3
-                        (utils/fake-href events/control-product-detail-picker-close)
-                        "Done"]]]
-
-                     [:div.py3.px1 ;; body
-                      (for [option options]
-                        (simple-option
-                         {:primary-label   (:option/name option)
-                          :secondary-label (item-price (:price option))
-                          :selected?       (:checked? option)
-                          :sold-out?       (not (:stocked? option))
-                          :on-click        #(messages/handle-message
-                                             events/control-product-detail-picker-option-select
-                                             {:selection selected-picker
-                                              :value     (:option/slug option)})}))]]))
-
-                (let [color  (get-in facets [:hair/color :facet/options
-                                             (first (:hair/color selected-sku))])
-                      length (get-in facets [:hair/length :facet/options
-                                             (first (:hair/length selected-sku))])]
-                  [:div.mxn2
-                   (field
-                    (utils/fake-href events/control-product-detail-picker-open {:facet-slug :hair/color})
-                    (mobile-dropdown
-                     [:img.border.border-gray.rounded-0
-                      {:height "33px"
-                       :width  "65px"
-                       :src    (:option/rectangle-swatch color)}]
-                     (:option/name color)))
-                   [:div.flex
-                    (field
-                     (merge
-                      {:class "border-right flex-grow-5"}
-                      (utils/fake-href events/control-product-detail-picker-open {:facet-slug :hair/length}))
-                     (mobile-dropdown
-                      [:div.h7 "Length:"]
-                      [:span.medium (:option/name length)]))
-                    [:div.flex-auto
-                     (field
-                      (utils/fake-href events/control-product-detail-picker-open {:facet-slug :item/quantity})
-                      (mobile-dropdown
-                       [:div.h7 "Qty:"]
-                       [:span.medium "1"]))]]])))
-             (when (products/eligible-for-triple-bundle-discount? product)
-               [:div.pt2.pb4 (triple-bundle-upsell)])
-             [:div.center.mb6
-              [:div.h6.navy "Price Per Bundle"]
-              [:div.medium (item-price (:sku/price selected-sku))]]
-             (affirm/pdp-dropdown-experiment-as-low-as-box
-              {:amount      (:sku/price selected-sku)
-               :middle-copy "Just select Affirm at check out."})
-             [:div.mt1.mx3
-              (add-to-bag-button adding-to-bag?
-                                 selected-sku
-                                 sku-quantity)]
-             (bagged-skus-and-checkout bagged-skus)
-             (when (products/stylist-only? product) shipping-and-guarantee)]]
-           (product-description product)
-           [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])
-         (when review?
-           (component/build review-component/reviews-component reviews opts))]]))))
+            [:div
+             [:div
+              [:div.mx2
+               (title (:copy/title product))
+               (when review? (reviews-summary reviews opts))]
+              [:meta {:item-prop "image"
+                      :content   (:url (first carousel-images))}]
+              (full-bleed-narrow (carousel carousel-images product))]
+             [:div
+              [:div schema-org-offer-props
+               (pickers data)
+               (when (products/eligible-for-triple-bundle-discount? product)
+                 [:div.pt2.pb4 (triple-bundle-upsell)])
+               [:div.center.mb6
+                [:div.h6.navy "Price Per Bundle"]
+                [:div.medium (item-price (:sku/price selected-sku))]]
+               (affirm/pdp-dropdown-experiment-as-low-as-box
+                 {:amount      (:sku/price selected-sku)
+                  :middle-copy "Just select Affirm at check out."})
+               [:div.mt1.mx3
+                (add-to-bag-button adding-to-bag?
+                                   selected-sku
+                                   sku-quantity)]
+               (bagged-skus-and-checkout bagged-skus)
+               (when (products/stylist-only? product) shipping-and-guarantee)]]
+             (product-description product)
+             [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])
+          (when review?
+            (component/build review-component/reviews-component reviews opts))]]))))
 
 (defn min-of-maps
   ([k] {})
