@@ -1,4 +1,4 @@
-(ns catalog.product-details-dropdown-experiment
+(ns catalog.product-details-dropdown
   (:require [clojure.set :as set]
             [clojure.string :as string]
             [catalog.products :as products]

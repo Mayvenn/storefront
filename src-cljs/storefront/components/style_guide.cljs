@@ -8,7 +8,7 @@
             [storefront.events :as events]
             [clojure.string :as string]
             [storefront.components.svg :as svg]
-            [catalog.product-details-dropdown-experiment :as product-details-dropdown-experiment]))
+            [catalog.product-details-dropdown :as product-details-dropdown]))
 
 (defn- header [name]
   [:h2.h3.py1.my3.shout.medium.border-bottom [:a {:name (string/lower-case name)} name]])
@@ -460,39 +460,39 @@
 (def simple-custom-options
   [:section.flex.flex-column
    [:div.col-5
-    (product-details-dropdown-experiment/simple-option
+    (product-details-dropdown/simple-option
      {:primary-label  "10″"
       :secondary-labe "$100"
       :selected?      true
       :sold-out?      false})]
 
    [:div.col-5
-    (product-details-dropdown-experiment/simple-option
+    (product-details-dropdown/simple-option
      {:primary-label  "10″"
       :secondary-labe "$100"
       :selected?      false
       :sold-out?      false})]
 
    [:div.col-5
-    (product-details-dropdown-experiment/simple-option
+    (product-details-dropdown/simple-option
      {:primary-label  "10″"
       :secondary-labe "$100"
       :selected?      false
       :sold-out?      true})]
    [:div.col-5
-    (product-details-dropdown-experiment/simple-option
+    (product-details-dropdown/simple-option
      {:primary-label "1"
       :selected?     false})]
 
    [:div.col-5
-    (product-details-dropdown-experiment/simple-option
+    (product-details-dropdown/simple-option
      {:primary-label "2"
       :selected?     true})]])
 
 (def swatch-custom-options
   [:section.flex.flex-column
    [:div.col-5
-    (product-details-dropdown-experiment/color-option
+    (product-details-dropdown/color-option
      {:color     {:option/name             "Natural Black"
                   :option/rectangle-swatch swatch-img}
       :model-img model-img
@@ -500,7 +500,7 @@
       :sold-out? false})]
 
    [:div.col-5
-    (product-details-dropdown-experiment/color-option
+    (product-details-dropdown/color-option
      {:color     {:option/name             "Natural Black"
                   :option/rectangle-swatch swatch-img}
       :model-img model-img
@@ -508,7 +508,7 @@
       :sold-out? false})]
 
    [:div.col-5
-    (product-details-dropdown-experiment/color-option
+    (product-details-dropdown/color-option
      {:color
       {:option/name             "Natural Black"
        :option/rectangle-swatch swatch-img}

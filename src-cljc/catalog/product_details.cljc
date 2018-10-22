@@ -4,7 +4,7 @@
             [catalog.products :as products]
             [catalog.skuers :as skuers]
             [catalog.keypaths]
-            [catalog.product-details-dropdown-experiment :as product-details-dropdown-experiment]
+            [catalog.product-details-dropdown :as product-details-dropdown]
             [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.pixlee :as pixlee]
@@ -507,7 +507,7 @@
 
 (defn built-component [data opts]
   (if (experiments/pdp-dropdown? data)
-    (product-details-dropdown-experiment/built-component data opts)
+    (product-details-dropdown/built-component data opts)
     (component/build component (query data) opts)))
 
 (defn fetch-product-album
