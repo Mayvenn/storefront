@@ -1,40 +1,40 @@
 (ns catalog.product-details-dropdown
-  (:require [clojure.set :as set]
-            [clojure.string :as string]
+  (:require #?@(:cljs [[storefront.hooks.pixlee :as pixlee-hooks]
+                       [storefront.hooks.reviews :as review-hooks]
+                       [storefront.api :as api]
+                       [storefront.history :as history]])
+            [catalog.keypaths]
+            [catalog.product-details-ugc :as ugc]
             [catalog.products :as products]
             [catalog.skuers :as skuers]
-            [catalog.keypaths]
+            [clojure.set :as set]
+            [clojure.string :as string]
+            [spice.core :as spice]
+            [spice.date :as date]
+            [spice.maps :as maps]
+            [spice.selector :as selector]
             [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
+            [storefront.accessors.facets :as facets]
+            [storefront.accessors.orders :as orders]
             [storefront.accessors.pixlee :as pixlee]
             [storefront.accessors.promos :as promos]
             [storefront.accessors.skus :as skus]
-            [storefront.accessors.facets :as facets]
-            [storefront.accessors.orders :as orders]
+            [storefront.component :as component]
+            [storefront.components.affirm :as affirm]
             [storefront.components.money-formatters :refer [as-money-without-cents as-money]]
+            [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
-            [spice.maps :as maps]
-            [spice.core :as spice]
-            [spice.selector :as selector]
             [storefront.config :as config]
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.carousel :as carousel]
+            [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
             [storefront.platform.reviews :as review-component]
-            [catalog.product-details-ugc :as ugc]
             [storefront.request-keys :as request-keys]
-            [storefront.transitions :as transitions]
-            [storefront.platform.component-utils :as utils]
-            [storefront.component :as component]
-            #?@(:cljs [[storefront.hooks.pixlee :as pixlee-hooks]
-                       [storefront.hooks.reviews :as review-hooks]
-                       [storefront.api :as api]
-                       [storefront.history :as history]])
-            [storefront.components.affirm :as affirm]
-            [spice.date :as date]
-            [storefront.components.svg :as svg]))
+            [storefront.transitions :as transitions]))
 
 (defn item-price [price]
   (when price
@@ -106,10 +106,10 @@
 
 (def checkout-button
   (component/html
-   [:div
-    {:data-test "cart-button"
-     :data-ref "cart-button"}
-    (ui/teal-button (utils/route-to events/navigate-cart) "Check out")]))
+    [:div
+     {:data-test "cart-button"
+      :data-ref "cart-button"}
+     (ui/teal-button (utils/route-to events/navigate-cart) "Check out")]))
 
 (defn bagged-skus-and-checkout [bagged-skus]
   (when (seq bagged-skus)
@@ -180,10 +180,10 @@
 (defn sku-summary [{:keys [sku sku-quantity]}]
   (let [{:keys [inventory/in-stock? sku/price]} sku]
     (summary-structure
-     (some-> sku :sku/title string/upper-case)
-     (quantity-and-price-structure
-      (counter-or-out-of-stock in-stock? sku-quantity)
-      (item-price price)))))
+      (some-> sku :sku/title string/upper-case)
+      (quantity-and-price-structure
+        (counter-or-out-of-stock in-stock? sku-quantity)
+        (item-price price)))))
 
 (defn triple-bundle-upsell []
   [:p.center.h6.flex.items-center.justify-center
@@ -195,8 +195,8 @@
 
 (def shipping-and-guarantee
   (component/html
-   [:div.border-top.border-bottom.border-gray.p2.my2.center.navy.shout.medium.h6
-    "Free shipping & 30 day guarantee"]))
+    [:div.border-top.border-bottom.border-gray.p2.my2.center.navy.shout.medium.h6
+     "Free shipping & 30 day guarantee"]))
 
 (defn product-description
   [{:keys [copy/description copy/colors copy/weights copy/materials copy/summary hair/family] :as product}]
@@ -233,10 +233,10 @@
 
 (defn image-body [{:keys [filename url alt]}]
   (ui/aspect-ratio
-   640 580
-   [:img.col-12
-    {:src (str url "-/format/auto/-/resize/640x/" filename)
-     :alt alt}]))
+    640 580
+    [:img.col-12
+     {:src (str url "-/format/auto/-/resize/640x/" filename)
+      :alt alt}]))
 
 (defn carousel [images {:keys [slug]}]
   (let [items (mapv (fn [image]
@@ -271,7 +271,6 @@
                                           :width  ".575em"
                                           :class  "stroke-teal"})]])
 
-
 (defn simple-sold-out-layer []
   [:div.bg-darken-1.absolute.border.border-silver.rounded-0.overlay.flex.justify-end
    [:div.self-center.flex.items-center.mr2.dark-gray
@@ -301,12 +300,12 @@
                 :height   "4em"
                 :on-click on-click}
                (simple-content-layer
-                (list
-                 [:div.col-2
-                  (when label-style
-                    {:class label-style})
-                  primary-label]
-                 [:div.gray.flex-auto secondary-label]))
+                 (list
+                   [:div.col-2
+                    (when label-style
+                      {:class label-style})
+                    primary-label]
+                   [:div.gray.flex-auto secondary-label]))
                (cond
                  sold-out? (simple-sold-out-layer)
                  selected? (simple-selected-layer)
