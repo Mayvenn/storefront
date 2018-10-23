@@ -433,6 +433,7 @@
 ;; - Fix sold out state, because it sucks
 ;; - Refactor everything here
 ;; - Make check circle have a drop-shadow (use svg?)
+;; - The image used right now for color swatch is hardcoded
 ;; Questions for Nina:
 ;; - Width-resizing behavior for color swatches
 ;; - What does selected & sold out look like?
