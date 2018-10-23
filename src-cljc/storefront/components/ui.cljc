@@ -465,8 +465,14 @@
 (defn square-image [{:keys [resizable-url]} size]
   (some-> resizable-url (str "-/scale_crop/" size "x" size "/center/")))
 
+(defn- ucare-img-id [url-or-image-id]
+  (if (string/includes? (str url-or-image-id) "ucarecdn.com")
+    (last (butlast (string/split url-or-image-id #"/" 5)))
+    url-or-image-id))
+
 (defn ucare-img [{:as img-attrs :keys [width]} image-id]
-  (let [retina-url  (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/lightest/")
+  (let [image-id    (ucare-img-id image-id)
+        retina-url  (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/lightest/")
                       width (str "-/resize/" (* 2 (spice/parse-int width)) "x/"))
         default-url (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/")
                       width (str "-/resize/" width "x/"))]

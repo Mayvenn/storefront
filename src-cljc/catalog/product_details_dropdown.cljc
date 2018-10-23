@@ -271,10 +271,10 @@
                                           :width  ".575em"
                                           :class  "stroke-teal"})]])
 
-(defn simple-sold-out-layer []
+(defn simple-sold-out-layer [text]
   [:div.bg-darken-1.absolute.border.border-silver.rounded-0.overlay.flex.justify-end
-   [:div.self-center.flex.items-center.mr2.dark-gray
-    "Sold Out"]])
+   [:div.self-center.flex.items-center.mr4.dark-gray
+    text]])
 
 (defn simple-content-layer [content]
   [:div.flex.p4.rounded-0.absolute.overlay.bg-white.border.border-gray
@@ -283,13 +283,14 @@
     [:div {:style {:width "1em"}}]]
    content])
 
+(def selection-icon
+  (ui/ucare-img {:width "30"} "ae0e9566-f688-4a6d-a0a9-378138308e48"))
+
 (defn simple-selected-layer []
   [:div.absolute.border.border-width-3.rounded-0.border-light-teal.overlay.flex
    [:div.self-center.flex.items-center
     [:div {:style {:width "1em"}}]
-    (svg/circled-check {:class  "stroke-teal"
-                        :height "2em"
-                        :width  "2em"})]])
+    selection-icon]])
 
 (defn simple-option [{:keys [on-click primary-label secondary-label selected? sold-out?]}]
   (let [label-style (cond
@@ -307,7 +308,7 @@
                     primary-label]
                    [:div.gray.flex-auto secondary-label]))
                (cond
-                 sold-out? (simple-sold-out-layer)
+                 sold-out? (simple-sold-out-layer "Sold Out")
                  selected? (simple-selected-layer)
                  :else     nil))))
 
@@ -316,9 +317,7 @@
    [:div.self-center.flex.items-center
     {:style {:margin-left "-2em"}}
     [:div {:style {:width "1em"}}]
-    (svg/circled-check {:class  "stroke-teal"
-                        :height "2em"
-                        :width  "2em"})]])
+    selection-icon]])
 
 (defn sold-out-color-swatch-layer []
   [:div.absolute.overlay.bg-lighten-3.flex.items-center.justify-center
@@ -326,29 +325,37 @@
     {:style {:margin-top "-30px"}}
     "Sold Out"]])
 
-(defn swatch-content-layer [{:keys [option/name option/rectangle-swatch]} model-img]
+(defn swatch-content-layer [{:option/keys [name rectangular-swatch]} product-img checked?]
   [:div.flex.flex-column.bg-white
    [:div.flex
-    [:img.flex-auto.rounded-top-left
-     {:height "100px"
-      :width  "225px"
-      :src    rectangle-swatch}]
-    [:img.rounded-top-right
-     {:src model-img}]]
+    [:div.rounded-top-left.bg-repeat-x
+     {:style
+      {:width "100%"
+       :height "100px"
+       :background-size "contain"
+       :background-image (str "url(" rectangular-swatch ")")}}]
+    (ui/ucare-img {:class "rounded-top-right" :height "100px"} product-img)]
+
    [:div.py1.h6.ml3.self-start
+    (when checked?
+      {:class "bold"})
     name]])
 
-(defn color-option [{:keys [color model-img selected? sold-out?]}]
-  (ui/option {:key (:option/name color)}
-             (swatch-content-layer color model-img)
+(defn color-option [{:keys [key color product-img checked? disabled? selected-picker]}]
+  (ui/option {:key      key
+              :on-click (utils/send-event-callback
+                          events/control-product-detail-picker-option-select
+                          {:selection selected-picker
+                           :value     (:option/slug color)})}
+             (swatch-content-layer color product-img checked?)
              (cond
-               selected? (swatch-selected-layer)
-               sold-out? (sold-out-color-swatch-layer)
+               checked?  (swatch-selected-layer)
+               disabled? (sold-out-color-swatch-layer)
                :else     nil)))
 
 (defn picker-rows
   "individual elements as in: https://app.zeplin.io/project/5a9f159069d48a4c15497a49/screen/5b21aa0352b1d5e31a32ac53"
-  [{:keys [facets selected-sku]}]
+  [{:keys [facets selected-sku sku-quantity]}]
   (let [color  (get-in facets [:hair/color :facet/options
                                (first (:hair/color selected-sku))])
         length (get-in facets [:hair/length :facet/options
@@ -375,44 +382,166 @@
          (utils/fake-href events/control-product-detail-picker-open {:facet-slug :item/quantity})
          (mobile-dropdown
            [:div.h7 "Qty:"]
-           [:span.medium "1"]))]]]))
+           [:span.medium sku-quantity]))]]]))
+
+(defn new-option [{:keys [on-click primary-label secondary-label selected? sold-out?]}]
+  (let [label-style (cond
+                      sold-out? "dark-gray"
+                      selected? "medium"
+                      :else     nil)]
+    (ui/option {:key      primary-label
+                :height   "4em"
+                :on-click on-click}
+               (simple-content-layer
+                 (list
+                   [:div.col-2
+                    (when label-style
+                      {:class label-style})
+                    primary-label]
+                   [:div.gray.flex-auto secondary-label]))
+               (cond
+                 sold-out? (simple-sold-out-layer "Sold Out")
+                 selected? (simple-selected-layer)
+                 :else     nil))))
+
+
+(defn new-picker-dialog
+  "picker dialog as in https://app.zeplin.io/project/5a9f159069d48a4c15497a49/screen/5b15c08f4819592903cb1348"
+  [{:keys [title items cell-component-fn]}]
+  [:div.hide-on-tb-dt.z4.fixed.overlay.overflow-auto.bg-light-silver
+
+   [:div.p3.h5.bg-white.relative.border-bottom.border-gray
+    {:style {:min-height "3em"}}
+    [:div.absolute.overlay.flex.items-center.justify-center
+     [:div.dark-gray title]]
+
+    [:div.absolute.overlay.flex.items-center.justify-end
+     [:a.teal.medium.p3
+      (utils/fake-href events/control-product-detail-picker-close)
+      "Done"]]]
+
+   [:div.py3.px1 ;; body
+    (map cell-component-fn items)]])
+
+;; TODO:
+;; ✓ Fix spacing for color dropdown dialog
+;; ✓ Make quantity dropdown dialog work
+;; ✓ Make quantity dropdown dialog display a custom sold out style
+;; ✓ Make color dropdown dialog display use a custom style
+;; - Make color dropdown dialog display use a custom style for sold out
+;; - Preserve lengths when switch colors
+;; - Fix sold out state, because it sucks
+;; Questions for Nina:
+;; - Width-resizing behavior for color swatches
+;; - What does selected & sold out look like?
 
 (defn picker-dialog
   "picker dialog as in https://app.zeplin.io/project/5a9f159069d48a4c15497a49/screen/5b15c08f4819592903cb1348"
   [{:keys [facets product selected-picker options]}]
   (when (contains? (:catalog/department product) "hair")
-    (list
-      (when selected-picker
-        (let [options (get options selected-picker)]
-          [:div.hide-on-tb-dt.z4.fixed.overlay.overflow-auto.bg-light-silver
+    (when selected-picker
+      (let [options (get options selected-picker)]
+        [:div.hide-on-tb-dt.z4.fixed.overlay.overflow-auto.bg-light-silver
 
-           [:div.p3.h5.bg-white.relative.border-bottom.border-gray
-            {:style {:min-height "3em"}}
-            [:div.absolute.overlay.flex.items-center.justify-center
-             [:div.dark-gray
-              (get-in facets [selected-picker :facet/name])]]
+         [:div.p3.h5.bg-white.relative.border-bottom.border-gray
+          {:style {:min-height "3em"}}
+          [:div.absolute.overlay.flex.items-center.justify-center
+           [:div.dark-gray
+            (get-in facets [selected-picker :facet/name])]]
 
-            [:div.absolute.overlay.flex.items-center.justify-end
-             [:a.teal.medium.p3
-              (utils/fake-href events/control-product-detail-picker-close)
-              "Done"]]]
+          [:div.absolute.overlay.flex.items-center.justify-end
+           [:a.teal.medium.p3
+            (utils/fake-href events/control-product-detail-picker-close)
+            "Done"]]]
 
-           [:div.py3.px1 ;; body
-            (for [option options]
-              (simple-option
-                {:primary-label   (:option/name option)
-                 :secondary-label (item-price (:price option))
-                 :selected?       (:checked? option)
-                 :sold-out?       (not (:stocked? option))
-                 :on-click        #(messages/handle-message
-                                     events/control-product-detail-picker-option-select
-                                     {:selection selected-picker
-                                      :value     (:option/slug option)})}))]])))))
+         [:div.py3.px1 ;; body
+          (for [option options]
+            (simple-option
+              {:primary-label   (:option/name option)
+               :secondary-label (item-price (:price option))
+               :selected?       (:checked? option)
+               :sold-out?       (not (:stocked? option))
+               :on-click        (utils/send-event-callback
+                                  events/control-product-detail-picker-option-select
+                                  {:selection selected-picker
+                                   :value     (:option/slug option)})}))]]))))
 
-(defn pickers [{:keys [product selected-picker] :as data}]
+(defn length-option [{:keys [item key primary-label secondary-label checked? disabled? selected-picker]}]
+  (let [label-style (cond
+                      disabled? "dark-gray"
+                      checked? "medium"
+                      :else     nil)]
+    (ui/option {:key      key
+                :height   "4em"
+                :on-click (utils/send-event-callback
+                            events/control-product-detail-picker-option-select
+                            {:selection selected-picker
+                             :value (:option/slug item)})}
+               (simple-content-layer
+                 (list
+                   [:div.col-2
+                    (when label-style
+                      {:class label-style})
+                    primary-label]
+                   [:div.gray.flex-auto secondary-label]))
+               (cond
+                 disabled? (simple-sold-out-layer "Sold Out")
+                 checked? (simple-selected-layer)
+                 :else     nil))))
+
+(defn quantity-option [{:keys [key quantity primary-label checked? disabled?]}]
+  (let [label-style (cond
+                      disabled? "dark-gray"
+                      checked?  "medium"
+                      :else     nil)]
+    (ui/option {:key      key
+                :height   "4em"
+                :on-click (utils/send-event-callback
+                            events/control-product-detail-picker-option-quantity-select
+                            {:value quantity})}
+               (simple-content-layer
+                 [:div.col-2
+                  (when label-style
+                    {:class label-style})
+                  primary-label])
+               (cond
+                 disabled? (simple-sold-out-layer "")
+                 checked?  (simple-selected-layer)
+                 :else     nil))))
+
+(defn pickers [{:keys [product selected-picker facets options sku-quantity selected-sku] :as data}]
   (when (contains? (:catalog/department product) "hair")
-    (if selected-picker
-      (picker-dialog data)
+    (condp = selected-picker
+      :hair/color    (new-picker-dialog {:title             (get-in facets [selected-picker :facet/name])
+                                         :items             (sort-by :option/order (get options selected-picker))
+                                         :cell-component-fn (fn [item]
+                                                              (color-option
+                                                                {:key             (str "color-" (:option/name item))
+                                                                 :selected-picker selected-picker
+                                                                 :color           item
+                                                                 :product-img     (:option/product-swatch item)
+                                                                 :checked?        (:checked? item)
+                                                                 :disabled? true #_(not (:stocked? item))}))})
+      :hair/length   (new-picker-dialog {:title             (get-in facets [selected-picker :facet/name])
+                                         :items             (sort-by :option/order (get options selected-picker))
+                                         :cell-component-fn (fn [item]
+                                                              (length-option
+                                                                {:key             (:option/name item)
+                                                                 :primary-label   (:option/name item)
+                                                                 :secondary-label (item-price (:price item))
+                                                                 :checked?        (:checked? item)
+                                                                 :disabled?       (not (:stocked? item))
+                                                                 :selected-picker selected-picker
+                                                                 :item            item}))})
+      :item/quantity (new-picker-dialog {:title             "Quantity"
+                                         :items             (range 1 11)
+                                         :cell-component-fn (fn [quantity]
+                                                              (quantity-option
+                                                                {:key           (str "quantity-" quantity)
+                                                                 :primary-label (str quantity)
+                                                                 :checked?      (= quantity sku-quantity)
+                                                                 :disabled?     (not (:inventory/in-stock? selected-sku))
+                                                                 :quantity      quantity}))})
       (picker-rows data))))
 
 (defn component
@@ -494,20 +623,21 @@
 (defn ^:private construct-option
   [option-kw facets sku-skuer cheapest-for-option-kw cheapest-price options-for-option-kw sku]
   (let [option-name  (first (option-kw sku))
-        facet-option (get-in facets [option-kw :facet/options option-name])
-        image        (:option/image facet-option)]
+        facet-option (get-in facets [option-kw :facet/options option-name])]
     (update options-for-option-kw option-name
             (fn [existing]
-              {:option/name  (:option/name facet-option)
-               :option/slug  (:option/slug facet-option)
-               :option/order (:filter/order facet-option)
-               :stocked?     (or (:inventory/in-stock? sku)
-                                 (:stocked? existing false))
-               :image        image
-               :price        (:sku/price sku)
-               :price-delta  (- (get cheapest-for-option-kw option-name) cheapest-price)
-               :checked?     (= (option-kw sku-skuer)
-                                (option-kw sku))}))))
+              {:option/name               (:option/name facet-option)
+               :option/slug               (:option/slug facet-option)
+               :option/order              (:filter/order facet-option)
+               :stocked?                  (or (:inventory/in-stock? sku)
+                                              (:stocked? existing false))
+               :option/product-swatch     "//ucarecdn.com/0c7d94c3-c00e-4812-9526-7bd669ac679c/" #_(:option/product-swatch facet-option)
+               :option/rectangular-swatch (:option/rectangle-swatch facet-option)
+               :image                     (:option/image facet-option)
+               :price                     (:sku/price sku)
+               :price-delta               (- (get cheapest-for-option-kw option-name) cheapest-price)
+               :checked?                  (= (option-kw sku-skuer)
+                                             (option-kw sku))}))))
 
 (defn skuer->selectors [{:keys [selector/essentials selector/electives]}]
   (set/union (set essentials) (set electives)))
@@ -701,6 +831,12 @@
   [_ event {:keys [facet-slug]} app-state]
   (assoc-in app-state catalog.keypaths/detailed-product-selected-picker
             facet-slug))
+
+(defmethod transitions/transition-state events/control-product-detail-picker-option-quantity-select
+  [_ event {:keys [value]} app-state]
+  (-> app-state
+      (assoc-in keypaths/browse-sku-quantity value)
+      (assoc-in catalog.keypaths/detailed-product-selected-picker nil)))
 
 (defmethod transitions/transition-state events/control-product-detail-picker-close
   [_ event _ app-state]

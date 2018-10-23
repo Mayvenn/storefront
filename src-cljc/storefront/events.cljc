@@ -256,6 +256,7 @@
 (defpath control-product-detail-picker-open)
 (defpath control-product-detail-picker-close)
 (defpath control-product-detail-picker-option-select)
+(defpath control-product-detail-picker-option-quantity-select)
 
 (defpath video-played)
 
