@@ -470,17 +470,22 @@
     (last (butlast (string/split url-or-image-id #"/" 5)))
     url-or-image-id))
 
-(defn ucare-img [{:as img-attrs :keys [width]} image-id]
+(defn ucare-img
+  [{:as img-attrs
+    :keys [width retina-quality default-quality]
+    :or {retina-quality "lightest"
+         default-quality "normal"}}
+   image-id]
   (let [image-id    (ucare-img-id image-id)
-        retina-url  (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/lightest/")
+        retina-url  (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/" retina-quality "/")
                       width (str "-/resize/" (* 2 (spice/parse-int width)) "x/"))
-        default-url (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/")
+        default-url (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/" default-quality "/")
                       width (str "-/resize/" width "x/"))]
     [:picture
      [:source {:src-set (str retina-url " 2x,"
                              default-url " 1x")}]
      [:img.block (-> img-attrs
-                     (dissoc :width)
+                     (dissoc :width :retina-quality :default-quality)
                      (assoc :src default-url))]]))
 
 (defn circle-ucare-img
