@@ -371,19 +371,6 @@
    [:div.py3.px1 ;; body
     (map cell-component-fn items)]])
 
-;; TODO:
-;; ✓ Fix spacing for color dropdown dialog
-;; ✓ Make quantity dropdown dialog work
-;; ✓ Make quantity dropdown dialog display a custom sold out style
-;; ✓ Make color dropdown dialog display use a custom style
-;; ✓ Make color dropdown dialog display use a custom style for sold out
-;; ✓ Fix sold out state, because it sucks when viewing a completely sold out product
-;; - Make check circle have a drop-shadow (use svg?)
-;; - The image used right now for color swatch is hardcoded
-;; Questions for Nina:
-;; - Width-resizing behavior for color swatches
-;; - What does selected & sold out look like?
-
 (defn length-option [{:keys [item key primary-label secondary-label checked? disabled? selected-picker]}]
   (let [label-style (cond
                       disabled? "dark-gray"
@@ -543,6 +530,11 @@
                 (lowest-sku-price skus)})
              (group-by option-kw skus))))
 
+(defn find-swatch-product-image [sku]
+  (first (selector/match-all {:selector/strict? true}
+                           {:use-case #{"cart"}}
+                           (:selector/images sku))))
+
 (defn ^:private construct-option
   [option-kw facets sku-skuer cheapest-for-option-kw cheapest-price options-for-option-kw sku]
   (let [option-name  (first (option-kw sku))
@@ -554,7 +546,7 @@
                :option/order              (:filter/order facet-option)
                :stocked?                  (or (:inventory/in-stock? sku)
                                               (:stocked? existing false))
-               :option/product-swatch     "//ucarecdn.com/0c7d94c3-c00e-4812-9526-7bd669ac679c/" #_(:option/product-swatch facet-option)
+               :option/product-swatch     (:url (find-swatch-product-image sku))
                :option/rectangular-swatch (:option/rectangle-swatch facet-option)
                :image                     (:option/image facet-option)
                :price                     (:sku/price sku)
