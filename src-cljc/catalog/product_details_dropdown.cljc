@@ -2,7 +2,12 @@
   (:require #?@(:cljs [[storefront.hooks.pixlee :as pixlee-hooks]
                        [storefront.hooks.reviews :as review-hooks]
                        [storefront.api :as api]
-                       [storefront.history :as history]])
+                       [storefront.history :as history]
+                       [goog.dom]
+                       [goog.events.EventType :as EventType]
+                       [goog.events]
+                       [goog.style]
+                       [om.core :as om]])
             [catalog.keypaths]
             [catalog.product-details-ugc :as ugc]
             [catalog.products :as products]
@@ -72,7 +77,8 @@
                                             {:path keypaths/browse-sku-quantity}))]
     [:span.h4 "Currently out of stock"]))
 
-(defn add-to-bag-button [adding-to-bag? sku quantity]
+(defn add-to-bag-button
+  [adding-to-bag? sku quantity]
   (ui/teal-button {:on-click
                    (utils/send-event-callback events/control-add-sku-to-bag
                                               {:sku sku
@@ -81,6 +87,57 @@
                    :disabled? (not (:inventory/in-stock? sku))
                    :spinning? adding-to-bag?}
                   "Add to bag"))
+
+(defn sticky-add-component
+  [{:keys [adding-to-bag? sku quantity image]} owner opts]
+  #?(:clj (component/create [:div])
+     :cljs
+     (letfn [(handle-scroll [e] (om/set-state! owner :show? (< 866 (.-y (goog.dom/getDocumentScroll)))))
+             (set-height [] (om/set-state! owner :add-button-height (some-> owner
+                                                                            (om/get-node "add-button")
+                                                                            goog.style/getSize
+                                                                            .-height)))]
+       (reify
+         om/IInitState
+         (init-state [this]
+           {:show? false})
+         om/IDidMount
+         (did-mount [this]
+           (set-height)
+           (handle-scroll nil) ;; manually fire once on load incase the page already scrolled
+           (goog.events/listen js/window EventType/SCROLL handle-scroll))
+         om/IWillUnmount
+         (will-unmount [this]
+           (goog.events/unlisten js/window EventType/SCROLL handle-scroll))
+         om/IWillReceiveProps
+         (will-receive-props [this next-props]
+           (set-height))
+         om/IRenderState
+         (render-state [this {:keys [show? add-button-height]}]
+           (component/html
+            [:div.fixed.z4.bottom-0.left-0.right-0.transition-2
+             (if show?
+               {:style {:margin-bottom "0"}}
+               {:style {:margin-bottom (str "-" add-button-height "px")}})
+             [:div {:ref "add-button"}
+              [:div.p3.flex.justify-center.items-center.bg-white.border-top.border-light-gray
+               [:div.col-8
+                [:div.flex.items-center
+                 [:img.border.border-gray.rounded-0
+                  {:height "33px"
+                   :width  "65px"
+                   :src    image}]
+                 [:span.ml2 "Length: " quantity "″"]
+                 [:span.ml2 "Qty: " quantity]]]
+               [:div.col-4
+                (ui/teal-button {:on-click
+                                 (utils/send-event-callback events/control-add-sku-to-bag
+                                                            {:sku      sku
+                                                             :quantity quantity})
+                                 :data-test "add-to-bag"
+                                 :disabled? (not (:inventory/in-stock? sku))
+                                 :spinning? adding-to-bag?}
+                                "Add")]]]]))))))
 
 (def checkout-button
   (component/html
@@ -460,6 +517,7 @@
            reviews
            selected-sku
            sku-quantity
+           options
            ugc] :as data}
    owner
    opts]
@@ -473,7 +531,7 @@
          (when (:offset ugc)
            [:div.absolute.overlay.z4.overflow-auto
             (component/build ugc/popup-component ugc opts)])
-         [:div.container.p2
+         [:div.p2
           (page
             [:div
              (carousel carousel-images product)
@@ -489,9 +547,9 @@
                       :content   (:url (first carousel-images))}]
               (full-bleed-narrow (carousel carousel-images product))]
              [:div
-              [:div {:item-prop "offers"
+              [:div {:item-prop  "offers"
                      :item-scope ""
-                     :item-type "http://schema.org/Offer"}
+                     :item-type  "http://schema.org/Offer"}
                (pickers data)
                (when (products/eligible-for-triple-bundle-discount? product)
                  [:div.pt2.pb4 (triple-bundle-upsell)])
@@ -499,17 +557,24 @@
                 [:div.h6.navy "Price Per Bundle"]
                 [:div.medium (item-price (:sku/price selected-sku))]]
                (affirm/pdp-dropdown-experiment-as-low-as-box
-                 {:amount      (:sku/price selected-sku)
-                  :middle-copy "Just select Affirm at check out."})
-               [:div.mt1.mx3
-                (add-to-bag-button adding-to-bag?
-                                   selected-sku
-                                   sku-quantity)]
+                {:amount      (:sku/price selected-sku)
+                 :middle-copy "Just select Affirm at check out."})
+               [:div
+                [:div.mt1.mx3
+                 (add-to-bag-button adding-to-bag?
+                                    selected-sku
+                                    sku-quantity)]]
                (when (products/stylist-only? product) shipping-and-guarantee)]]
              (product-description product)
              [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])
           (when review?
-            (component/build review-component/reviews-component reviews opts))]]))))
+            (component/build review-component/reviews-component reviews opts))
+          [:div.hide-on-tb-dt
+           (component/build sticky-add-component
+                            {:image          (:option/rectangular-swatch (first (:hair/color options)))
+                             :adding-to-bag? adding-to-bag?
+                             :sku            selected-sku
+                             :quantity       sku-quantity} {})]]]))))
 
 (defn min-of-maps
   ([k] {})
