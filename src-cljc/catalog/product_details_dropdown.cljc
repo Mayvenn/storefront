@@ -8,6 +8,7 @@
                        [goog.events]
                        [goog.style]
                        [om.core :as om]])
+            [catalog.facets :as facets]
             [catalog.keypaths]
             [catalog.product-details-ugc :as ugc]
             [catalog.products :as products]
@@ -20,7 +21,6 @@
             [spice.selector :as selector]
             [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
-            [storefront.accessors.facets :as facets]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.pixlee :as pixlee]
             [storefront.accessors.promos :as promos]
@@ -699,9 +699,7 @@
   (let [selected-sku    (get-in data catalog.keypaths/detailed-product-selected-sku)
         product         (products/current-product data)
         product-skus    (extract-product-skus data product)
-        facets          (->> (get-in data keypaths/v2-facets)
-                             (map #(update % :facet/options (partial maps/index-by :option/slug)))
-                             (maps/index-by :facet/slug))
+        facets          (facets/by-slug data)
         carousel-images (find-carousel-images product product-skus selected-sku)
         ugc             (ugc-query product selected-sku data)]
     {:reviews           (add-review-eligibility (review-component/query data) product)

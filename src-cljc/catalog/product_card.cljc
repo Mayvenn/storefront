@@ -1,7 +1,7 @@
 (ns catalog.product-card
   (:require catalog.keypaths
             [catalog.selector :as selector]
-            [storefront.accessors.facets :as facets]
+            [catalog.facets :as facets]
             [storefront.accessors.skus :as skus]
             [storefront.component :as component]
             [storefront.components.affirm :as affirm]

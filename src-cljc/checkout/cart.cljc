@@ -19,7 +19,7 @@
    [spice.core :as spice]
    [spice.selector :as selector]
    [storefront.accessors.experiments :as experiments]
-   [storefront.accessors.facets :as facets]
+   [catalog.facets :as facets]
    [storefront.accessors.images :as images]
    [storefront.accessors.orders :as orders]
    [storefront.accessors.products :as products]

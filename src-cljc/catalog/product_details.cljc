@@ -10,7 +10,7 @@
             [storefront.accessors.pixlee :as pixlee]
             [storefront.accessors.promos :as promos]
             [storefront.accessors.skus :as skus]
-            [storefront.accessors.facets :as facets]
+            [catalog.facets :as facets]
             [storefront.accessors.orders :as orders]
             [storefront.components.money-formatters :refer [as-money-without-cents as-money]]
             [storefront.components.ui :as ui]
@@ -465,9 +465,7 @@
         adding-to-bag?    (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
         cheapest-price    (lowest-sku-price product-skus)
         bagged-skus       (get-in data keypaths/browse-recently-added-skus)
-        facets            (->> (get-in data keypaths/v2-facets)
-                               (map #(update % :facet/options (partial maps/index-by :option/slug)))
-                               (maps/index-by :facet/slug))
+        facets            (facets/by-slug data)
         carousel-images   (find-carousel-images product product-skus selected-sku)
         ugc               (ugc-query product selected-sku data)
         reviews           (review-component/query data)
