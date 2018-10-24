@@ -137,7 +137,8 @@
         (promotion-banner/built-component data nil)
         (sticky-promo-bar data)])
 
-     #?(:cljs (popup/built-component (popup/query data) nil))
+     [:div {:key "popup"}
+      #?(:cljs (popup/built-component (popup/query data) nil))]
 
      (header/built-component data nil)
      [:div.relative.flex.flex-column.flex-auto
