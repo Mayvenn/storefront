@@ -77,8 +77,7 @@
 (def minimal-header-events
   (set/union cart-events
              checkout-events
-             payout-events
-             voucher-events))
+             payout-events))
 
 (defn show-minimal-footer? [event]
   (contains? minimal-footer-events event))
