@@ -52,7 +52,6 @@
            (set-height))
          om/IRenderState
          (render-state [this {:keys [show? content-height]}]
-           (prn show?)
            (component/html
             [:div.fixed.z4.bottom-0.left-0.right-0
              {:style {:margin-bottom (str "-" content-height "px")}}
