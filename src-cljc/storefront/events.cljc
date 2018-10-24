@@ -425,6 +425,7 @@
 
 (defpath popup-show-email-capture)
 (defpath popup-show-free-install)
+(defpath popup-show-install-phone-capture)
 
 (defpath image-picker-component-mounted)
 (defpath image-picker-component-will-unmount)
