@@ -665,18 +665,20 @@
 
 (defmethod perform-effects events/control-stylist-account-profile-submit [_ _ args _ app-state]
   (let [session-id      (get-in app-state keypaths/session-id)
+        stylist-id      (get-in app-state keypaths/store-stylist-id)
         user-id         (get-in app-state keypaths/user-id)
         user-token      (get-in app-state keypaths/user-token)
         stylist-account (get-in app-state keypaths/stylist-manage-account)]
-    (api/update-stylist-account-profile session-id user-id user-token stylist-account)))
+    (api/update-stylist-account-profile session-id user-id user-token stylist-id stylist-account)))
 
 (defmethod perform-effects events/control-stylist-account-password-submit [_ _ args _ app-state]
   (let [session-id      (get-in app-state keypaths/session-id)
+        stylist-id      (get-in app-state keypaths/store-stylist-id)
         user-id         (get-in app-state keypaths/user-id)
         user-token      (get-in app-state keypaths/user-token)
         stylist-account (get-in app-state keypaths/stylist-manage-account)]
     (when (empty? (get-in app-state keypaths/errors))
-      (api/update-stylist-account-password session-id user-id user-token stylist-account))))
+      (api/update-stylist-account-password session-id user-id user-token stylist-id stylist-account))))
 
 (defn reformat-green-dot [{:keys [expiration-date] :as attributes}]
   (when (seq attributes)
@@ -689,19 +691,21 @@
 
 (defmethod perform-effects events/control-stylist-account-commission-submit [_ _ args _ app-state]
   (let [session-id      (get-in app-state keypaths/session-id)
+        stylist-id      (get-in app-state keypaths/store-stylist-id)
         user-id         (get-in app-state keypaths/user-id)
         user-token      (get-in app-state keypaths/user-token)
         stylist-account (-> app-state
                             (get-in keypaths/stylist-manage-account)
                             (update :green-dot-payout-attributes reformat-green-dot))]
-    (api/update-stylist-account-commission session-id user-id user-token stylist-account)))
+    (api/update-stylist-account-commission session-id user-id user-token stylist-id stylist-account)))
 
 (defmethod perform-effects events/control-stylist-account-social-submit [_ _ _ _ app-state]
   (let [session-id      (get-in app-state keypaths/session-id)
+        stylist-id      (get-in app-state keypaths/store-stylist-id)
         user-id         (get-in app-state keypaths/user-id)
         user-token      (get-in app-state keypaths/user-token)
         stylist-account (get-in app-state keypaths/stylist-manage-account)]
-    (api/update-stylist-account-social session-id user-id user-token stylist-account)))
+    (api/update-stylist-account-social session-id user-id user-token stylist-id stylist-account)))
 
 (defmethod perform-effects events/uploadcare-api-failure [_ _ {:keys [error error-data]} _ app-state]
   (exception-handler/report error error-data))
@@ -712,8 +716,9 @@
 (defmethod perform-effects events/uploadcare-api-success-upload-portrait [_ _ {:keys [cdnUrl]} _ app-state]
   (let [user-id    (get-in app-state keypaths/user-id)
         user-token (get-in app-state keypaths/user-token)
+        stylist-id      (get-in app-state keypaths/store-stylist-id)
         session-id (get-in app-state keypaths/session-id)]
-    (api/update-stylist-account-portrait session-id user-id user-token {:portrait-url cdnUrl})
+    (api/update-stylist-account-portrait session-id user-id user-token stylist-id {:portrait-url cdnUrl})
     (history/enqueue-navigate events/navigate-stylist-account-profile)))
 
 (defmethod perform-effects events/uploadcare-api-success-upload-gallery [_ event {:keys [cdnUrl]} _ app-state]

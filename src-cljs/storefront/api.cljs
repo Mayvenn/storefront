@@ -439,12 +439,13 @@
    {:handler #(messages/handle-message events/api-success-shipping-methods
                                        (update-in % [:shipping-methods] reverse))}))
 
-(defn update-stylist-account-profile [session-id user-id user-token stylist-account]
+(defn update-stylist-account-profile [session-id user-id user-token stylist-id stylist-account]
   (storeback-api-req
    PUT
    "/stylist"
    request-keys/update-stylist-account-profile
    {:params {:session-id session-id
+             :stylist-id stylist-id
              :user-id    user-id
              :user-token user-token
              :stylist    stylist-account}
@@ -452,12 +453,13 @@
     #(messages/handle-message events/api-success-stylist-account-profile
                               {:stylist (select-stylist-account-keys %)})}))
 
-(defn update-stylist-account-password [session-id user-id user-token stylist-account]
+(defn update-stylist-account-password [session-id user-id user-token stylist-id stylist-account]
   (storeback-api-req
    PUT
    "/stylist"
    request-keys/update-stylist-account-password
    {:params {:session-id session-id
+             :stylist-id stylist-id
              :user-id    user-id
              :user-token user-token
              :stylist    stylist-account}
@@ -465,12 +467,13 @@
     #(messages/handle-message events/api-success-stylist-account-password
                               {:stylist (select-stylist-account-keys %)})}))
 
-(defn update-stylist-account-commission [session-id user-id user-token stylist-account]
+(defn update-stylist-account-commission [session-id user-id user-token stylist-id stylist-account]
   (storeback-api-req
    PUT
    "/stylist"
    request-keys/update-stylist-account-commission
    {:params {:session-id session-id
+             :stylist-id stylist-id
              :user-id    user-id
              :user-token user-token
              :stylist    stylist-account}
@@ -478,18 +481,34 @@
     #(messages/handle-message events/api-success-stylist-account-commission
                               {:stylist (select-stylist-account-keys %)})}))
 
-(defn update-stylist-account-social [session-id user-id user-token stylist-account]
+(defn update-stylist-account-social [session-id user-id user-token stylist-id stylist-account]
   (storeback-api-req
    PUT
    "/stylist"
    request-keys/update-stylist-account-social
    {:params {:session-id session-id
+             :stylist-id stylist-id
              :user-id    user-id
              :user-token user-token
              :stylist    stylist-account}
     :handler
     #(messages/handle-message events/api-success-stylist-account-social
                               {:stylist (select-stylist-account-keys %)})}))
+
+(defn update-stylist-account-portrait [session-id user-id user-token stylist-id stylist-account]
+  (storeback-api-req
+   PUT
+   "/stylist"
+   request-keys/update-stylist-account-portrait
+   {:params {:session-id session-id
+             :stylist-id stylist-id
+             :user-id    user-id
+             :user-token user-token
+             :stylist    stylist-account}
+    :handler
+    #(messages/handle-message events/api-success-stylist-account-portrait
+                              {:stylist  (select-keys % [:portrait])
+                               :updated? true})}))
 
 (defn refresh-stylist-portrait [user-id user-token stylist-id]
   (storeback-api-req
@@ -503,20 +522,6 @@
     :handler
     #(messages/handle-message events/api-success-stylist-account-portrait
                               {:stylist (select-keys % [:portrait])})}))
-
-(defn update-stylist-account-portrait [session-id user-id user-token stylist-account]
-  (storeback-api-req
-   PUT
-   "/stylist"
-   request-keys/update-stylist-account-portrait
-   {:params {:session-id session-id
-             :user-id    user-id
-             :user-token user-token
-             :stylist    stylist-account}
-    :handler
-    #(messages/handle-message events/api-success-stylist-account-portrait
-                              {:stylist  (select-keys % [:portrait])
-                               :updated? true})}))
 
 (defn append-stylist-gallery [user-id user-token {:keys [gallery-urls]}]
   (storeback-api-req
