@@ -2,6 +2,7 @@
   (:require #?@(:cljs [[om.core :as om]
                        [goog.events]
                        [goog.dom]
+                       [goog.style]
                        [storefront.hooks.pixlee :as pixlee-hook]
                        [storefront.components.popup :as popup]
                        [goog.events.EventType :as EventType]])
@@ -20,7 +21,55 @@
             [storefront.platform.component-utils :as utils]
             [storefront.transitions :as transitions]
             [storefront.components.video :as video]
-            [storefront.components.v2-home :as v2-home]))
+            [storefront.components.v2-home :as v2-home]
+            [storefront.accessors.experiments :as experiments]))
+
+(defn sticky-component
+  [data owner opts]
+  #?(:clj (component/create [:div])
+     :cljs
+     (letfn [(handle-scroll [e] (om/set-state! owner :show? (< 3493 (+ (.-y (goog.dom/getDocumentScroll))
+                                                                       (.-height (goog.dom/getViewportSize))))))
+             (set-height [] (om/set-state! owner :content-height (some-> owner
+                                                                         (om/get-node "content-height")
+                                                                         goog.style/getSize
+                                                                         .-height)))]
+       (reify
+         om/IInitState
+         (init-state [this]
+           {:show? false
+            :content-height 0})
+         om/IDidMount
+         (did-mount [this]
+           (handle-scroll nil) ;; manually fire once on load incase the page already scrolled
+           (set-height)
+           (goog.events/listen js/window EventType/SCROLL handle-scroll))
+         om/IWillUnmount
+         (will-unmount [this]
+           (goog.events/unlisten js/window EventType/SCROLL handle-scroll))
+         om/IWillReceiveProps
+         (will-receive-props [this next-props]
+           (set-height))
+         om/IRenderState
+         (render-state [this {:keys [show? content-height]}]
+           (prn show?)
+           (component/html
+            [:div.fixed.z4.bottom-0.left-0.right-0
+             {:style {:margin-bottom (str "-" content-height "px")}}
+             ;; Using a separate element with reverse margin to prevent the
+             ;; sticky component from initially appearing on the page and then
+             ;; animate hiding.
+             [:div.transition-2
+              (if show?
+                {:style {:margin-bottom (str content-height "px")}}
+                {:style {:margin-bottom "0"}})
+              [:div {:ref "content-height"}
+               [:div.border-top.border-dark-gray.border-width-2
+                [:a.h2.bold.white.bg-purple.px3.py2.flex.items-center.justify-center
+                 {:href "#"}
+                 "Get $25 – Share Your Opinion"
+                 [:div.rotate-180.stroke-white.ml2
+                  (svg/dropdown-arrow {:height "16" :width "16"})]]]]]]))))))
 
 (def visual-divider
   [:div.py2.mx-auto.teal.border-bottom.border-width-2.mb2-on-tb-dt
@@ -119,7 +168,7 @@
                         :alt         "Beautiful Virgin Hair Installed for FREE"})])
 
 (defn ^:private component
-  [{:keys [carousel-certified-stylist faq-accordion popup-data]} owner opts]
+  [{:keys [carousel-certified-stylist faq-accordion popup-data phone-capture?]} owner opts]
   (component/create
    [:div
     header
@@ -128,14 +177,17 @@
     (component/build certified-stylists/component carousel-certified-stylist {})
     shop-bar
     (faq faq-accordion)
-    contact-us]))
+    contact-us
+    (when phone-capture?
+      (component/build sticky-component {} nil))]))
 
 (defn ^:private query [data]
   {:popup-data                 #?(:cljs (popup/query data)
                                   :clj {})
    :carousel-certified-stylist {:stylist-gallery-index (get-in data keypaths/carousel-stylist-gallery-index)
                                 :gallery-image-index   (get-in data keypaths/carousel-stylist-gallery-image-index)}
-   :faq-accordion              {:expanded-indices (get-in data keypaths/accordion-freeinstall-home-expanded-indices)}})
+   :faq-accordion              {:expanded-indices (get-in data keypaths/accordion-freeinstall-home-expanded-indices)}
+   :phone-capture?             (experiments/phone-capture? data)})
 
 (defn built-component
   [data opts]
