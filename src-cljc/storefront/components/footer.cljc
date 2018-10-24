@@ -107,7 +107,7 @@
     [:div.mt3.bg-dark-gray.white.py1.px3.clearfix.h7
      [:div
       (when expanded-footer?
-        {:style {:margin-bottom "100px"}})
+        {:style {:margin-bottom "90px"}})
       (component/build footer-links/component {:minimal? false} nil)]]]))
 
 (defn contacts-query
