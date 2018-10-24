@@ -77,6 +77,12 @@
                                             {:path keypaths/browse-sku-quantity}))]
     [:span.h4 "Currently out of stock"]))
 
+(defn sold-out-button []
+  (ui/navy-button {:on-click  utils/noop-callback
+                   :data-test "sold-out"
+                   :class     "bg-gray"}
+                  "Sold Out"))
+
 (defn add-to-bag-button
   [adding-to-bag? sku quantity]
   (ui/teal-button {:on-click
@@ -149,7 +155,7 @@
 (defn- hacky-fix-of-bad-slugs-on-facets [slug]
   (string/replace (str slug) #"#" ""))
 
-(defn option-html
+#_(defn option-html
   [selector {:keys [option/name option/slug image price-delta checked? stocked?] :as thing}]
   [:label.btn.p1.flex.flex-column.justify-center.items-center.container-size.letter-spacing-0
    {:data-test (str "option-" (hacky-fix-of-bad-slugs-on-facets slug))
@@ -561,9 +567,11 @@
                  :middle-copy "Just select Affirm at check out."})
                [:div
                 [:div.mt1.mx3
-                 (add-to-bag-button adding-to-bag?
-                                    selected-sku
-                                    sku-quantity)]]
+                 (if (seq selected-sku)
+                   (add-to-bag-button adding-to-bag?
+                                        selected-sku
+                                        sku-quantity)
+                   (sold-out-button))]]
                (when (products/stylist-only? product) shipping-and-guarantee)]]
              (product-description product)
              [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])
