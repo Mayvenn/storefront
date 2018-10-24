@@ -28,8 +28,10 @@
   [data owner opts]
   #?(:clj (component/create [:div])
      :cljs
-     (letfn [(handle-scroll [e] (om/set-state! owner :show? (< 3493 (+ (.-y (goog.dom/getDocumentScroll))
-                                                                       (.-height (goog.dom/getViewportSize))))))
+     (letfn [(handle-scroll [e] (om/set-state! owner :show? (or
+                                                             (om/get-state owner :show?)
+                                                             (< 3493 (+ (.-y (goog.dom/getDocumentScroll))
+                                                                        (.-height (goog.dom/getViewportSize)))))))
              (set-height [] (om/set-state! owner :content-height (some-> owner
                                                                          (om/get-node "content-height")
                                                                          goog.style/getSize
