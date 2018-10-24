@@ -155,33 +155,6 @@
 (defn- hacky-fix-of-bad-slugs-on-facets [slug]
   (string/replace (str slug) #"#" ""))
 
-#_(defn option-html
-  [selector {:keys [option/name option/slug image price-delta checked? stocked?] :as thing}]
-  [:label.btn.p1.flex.flex-column.justify-center.items-center.container-size.letter-spacing-0
-   {:data-test (str "option-" (hacky-fix-of-bad-slugs-on-facets slug))
-    :class     (cond
-                 checked? "border-gray bg-teal  white     medium"
-                 stocked? "border-gray bg-white dark-gray light"
-                 :else    "border-gray bg-gray  dark-gray light")
-    :style     {:font-size "14px" :line-height "18px" :border-radius "5px"}}
-   (ui/hidden-field {:type      "radio"
-                     :keypath   events/control-bundle-option-select
-                     :disabled? (not stocked?)
-                     :checked?  checked?
-                     :selection selector
-                     :value     slug})
-   (if image
-     [:img.mbp4.content-box.circle.border-light-gray
-      {:src   image :alt    name
-       :width 30    :height 30
-       :class (cond checked? "border" (not stocked?) "muted")}]
-     [:span.block.titleize name])
-   [:span.block
-    (if stocked?
-      [:span (when-not checked? {:class "navy"})
-       "+" (as-money-without-cents price-delta)]
-      "Sold Out")]])
-
 (defn summary-structure [desc quantity-and-price]
   [:div
    (when (seq desc)
@@ -517,7 +490,6 @@
 
 (defn component
   [{:keys [adding-to-bag?
-           bagged-skus
            carousel-images
            product
            reviews
@@ -707,7 +679,6 @@
      :fetching-product? (utils/requesting? data (conj request-keys/search-v2-products
                                                       (:catalog/product-id product)))
      :adding-to-bag?    (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
-     :bagged-skus       (get-in data keypaths/browse-recently-added-skus)
      :sku-quantity      (get-in data keypaths/browse-sku-quantity 1)
      :options           (generate-options facets product product-skus selected-sku)
      :product           product
