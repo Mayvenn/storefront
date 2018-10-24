@@ -91,10 +91,8 @@
                 :href "http://www.pinterest.com/mayvennhair/"}
       [:div {:style {:width "22px" :height "22px"}} svg/mayvenn-on-pinterest]]]]))
 
-
-
 (defn full-component
-  [{:keys [contacts own-store? categories]} owner opts]
+  [{:keys [contacts own-store? categories expanded-footer?]} owner opts]
   (component/create
    [:div.h5.border-top.border-gray.bg-light-gray
     [:div.container
@@ -107,7 +105,10 @@
        social-section]]]
 
     [:div.mt3.bg-dark-gray.white.py1.px3.clearfix.h7
-     (component/build footer-links/component {:minimal? false} nil)]]))
+     [:div
+      (when expanded-footer?
+        {:style {:margin-bottom "100px"}})
+      (component/build footer-links/component {:minimal? false} nil)]]]))
 
 (defn contacts-query
   [data]
@@ -117,12 +118,13 @@
 
 (defn query
   [data]
-  {:contacts   (contacts-query data)
-   :own-store? (own-store? data)
-   :categories (->> (get-in data keypaths/categories)
-                    (filter :footer/order)
-                    (filter (partial auth/permitted-category? data))
-                    (sort-by :footer/order))})
+  {:contacts         (contacts-query data)
+   :own-store?       (own-store? data)
+   :categories       (->> (get-in data keypaths/categories)
+                          (filter :footer/order)
+                          (filter (partial auth/permitted-category? data))
+                          (sort-by :footer/order))
+   :expanded-footer? (experiments/pdp-dropdown? data)})
 
 (defn built-component
   [data opts]
