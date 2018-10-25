@@ -14,12 +14,12 @@
 
 (def phone-utils (phone/getInstance))
 
-(defn- ->e164-phone [value]
+(defn ->e164-phone [^String phone]
   (try
-    (let [num (.parse phone-utils (str value) "US")]
-      (when (= 1 (.getCountryCode num))
-        (.format phone-utils num phone-format/E164)))
-    (catch :default e
+    (let [parsed (.parse phone-utils phone "US")]
+      (when (.isValidNumber phone-utils parsed)
+        (.format phone-utils parsed phone-format/E164)))
+    (catch :default _
       nil)))
 
 (defn component [{:keys [captured-install-phone field-errors]} owner {:keys [close-attrs]}]
