@@ -44,7 +44,7 @@
   :main storefront.core
   :repl-options {:init-ns user}
   :jvm-opts ~(concat
-              ["-Xmx512m" "-XX:-OmitStackTraceInFastThrow"]
+              ["-Xmx1024m" "-XX:-OmitStackTraceInFastThrow"]
               (let [version (System/getProperty "java.version")
                     [major _ _] (clojure.string/split version #"\.")]
                 (if (>= (Integer. major) 9)
