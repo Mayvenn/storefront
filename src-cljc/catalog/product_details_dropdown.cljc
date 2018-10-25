@@ -9,11 +9,13 @@
                        [goog.style]
                        [om.core :as om]])
             [catalog.facets :as facets]
+            [lambdaisland.uri :as uri]
             [catalog.keypaths]
             [catalog.product-details-ugc :as ugc]
             [catalog.products :as products]
             [catalog.skuers :as skuers]
             [clojure.set :as set]
+            [clojure.spec.alpha :as s]
             [clojure.string :as string]
             [spice.core :as spice]
             [spice.date :as date]
@@ -580,52 +582,6 @@
                            {:use-case #{"cart"}}
                            (:selector/images sku))))
 
-(defn ^:private construct-option
-  [option-kw facets sku-skuer cheapest-for-option-kw cheapest-price options-for-option-kw sku]
-  (let [option-name  (first (option-kw sku))
-        facet-option (get-in facets [option-kw :facet/options option-name])]
-    (update options-for-option-kw option-name
-            (fn [existing]
-              {:option/name               (:option/name facet-option)
-               :option/slug               (:option/slug facet-option)
-               :option/order              (:filter/order facet-option)
-               :stocked?                  (or (:inventory/in-stock? sku)
-                                              (:stocked? existing false))
-               :option/product-swatch     (:url (find-swatch-product-image sku))
-               :option/rectangular-swatch (:option/rectangle-swatch facet-option)
-               :image                     (:option/image facet-option)
-               :price                     (:sku/price sku)
-               :price-delta               (- (get cheapest-for-option-kw option-name) cheapest-price)
-               :checked?                  (= (option-kw sku-skuer)
-                                             (option-kw sku))}))))
-
-(defn skuer->selectors [{:keys [selector/essentials selector/electives]}]
-  (set/union (set essentials) (set electives)))
-
-(defn determine-relevant-skus
-  [skus selected-sku product product-options]
-  (let [electives      (skuers/electives product selected-sku)
-        step-choosable (set/difference (set (:selector/electives product))
-                                       (set (keys product-options)))]
-    (selector/match-all {}
-                        (apply dissoc
-                               electives
-                               step-choosable)
-                        skus)))
-
-(defn skus->options
-  "Reduces this product's skus down to options for selection
-   for a certain selector. e.g. options for :hair/color."
-  [product selected-sku facets skus product-options option-kw]
-  (let [relevant-skus          (determine-relevant-skus skus selected-sku product product-options)
-        cheapest-for-option-kw (lowest-sku-price-for-option-kw relevant-skus option-kw)
-        cheapest-price         (lowest-sku-price relevant-skus)
-        sku->option            (partial construct-option option-kw facets selected-sku cheapest-for-option-kw cheapest-price)]
-    (merge product-options
-           {option-kw (->> (reduce sku->option {} relevant-skus)
-                           vals
-                           (sort-by :sku/price))})))
-
 (defn ugc-query [product sku data]
   (when-let [ugc (get-in data keypaths/ugc)]
     (when-let [images (pixlee/images-in-album ugc (keyword (:legacy/named-search-slug product)))]
@@ -644,10 +600,94 @@
        ;; The correct solution is to get rid of/fix slick
        :now           (date/now)})))
 
-(defn generate-options [facets product product-skus selected-sku]
-  (reduce (partial skus->options product selected-sku facets product-skus)
+(s/def ::keyword
+  (s/conformer
+   (fn [value]
+     (cond (string? value)  (keyword value)
+           (keyword? value) value
+           :otherwise       ::s/invalid))))
+
+(s/def ::ucare-url
+  (s/conformer
+   (s/nilable
+    (fn [value]
+      (or
+       (and value
+            (= "ucarecdn.com"
+               (:host (uri/parse value))))
+       ::s/invalid)))))
+
+(s/def :option/name string?)
+(s/def :option/slug string?)
+(s/def :option/order int?)
+(s/def :option/product-swatch ::ucare-url)
+(s/def :option/rectangular-swatch ::ucare-url)
+
+(s/def ::stocked? boolean?)
+(s/def ::image ::ucare-url)
+(s/def ::price number?)
+(s/def ::price-delta double?)
+(s/def ::checked? boolean?)
+
+#_{:option/name               (:option/name facet-option)
+ :option/slug               (:option/slug facet-option)
+ :option/order              (:filter/order facet-option)
+ :option/product-swatch     (:url (find-swatch-product-image sku))
+ :option/rectangular-swatch (:option/rectangle-swatch facet-option)
+ :stocked?                  (or (:inventory/in-stock? sku)
+                                (:stocked? existing false))
+ :image                     (:option/image facet-option)
+ :price                     (:sku/price sku)
+ :price-delta               (- (get cheapest-for-option-kw option-name) cheapest-price)
+ :checked?                  (= (option-kw sku-skuer)
+                               (option-kw sku))}
+
+
+
+(s/def ::selector-option
+  (s/keys
+   :req [:option/slug
+         :option/name]
+   :opt [:option/rectangular-swatch
+         :option/product-swatch
+         :option/order]
+   :req-un [::image
+            ::price
+            ::checked?]))
+
+(defn conform! [spec value]
+  (let [result (s/conform spec value)]
+    (if (= ::s/invalid result)
+      (do
+        #?(:cljs (js/console.log (s/explain-str spec value)))
+        (throw (ex-info "Failing spec!" {:explaination (s/explain-str spec value)
+                                         :value value
+                                         :spec spec})))
+      result)))
+
+(defn generate-options
+  "given these args we need to generate a map of the form:
+
+  {:facet-slug  [[#{option-slug}] #{option-slug} #{option-slug}]
+   :attr2 [{... option .. }]}"
+  [facets {:as product :keys [selector/electives]} product-skus selections]
+  (reduce (fn [acc-options [facet-slug {:as   facet
+                                        :keys [facet/options]}]]
+            (->> product-skus
+                 (group-by facet-slug)
+                 (map (fn [[option-slug oskus]]
+                        (conform! ::selector-option
+                                  (do
+                                    (merge (dissoc (get options (first option-slug)) :sku/name)
+                                           {:price    (:sku/price (apply min-key :sku/price oskus))
+                                            :checked? false
+                                            :stocked? (when (seq oskus)
+                                                        (some :inventory/in-stock? oskus))
+                                            :image    (get-in options [option-slug :option/image])})))))
+                 (sort-by :filter/order)
+                 (assoc acc-options facet-slug)))
           {}
-          (:selector/electives product)))
+          (select-keys facets electives)))
 
 (defn add-review-eligibility [review-data product]
   (assoc review-data :review? (products/eligible-for-reviews? product)))
