@@ -66,6 +66,10 @@
                 :output-to "resources/public/js/out/main.js"
                 :output-dir "resources/public/js/out"
                 :pretty-print true
+                :libs ["src-cljs/libphone/phonenumberutil.js"
+                       "src-cljs/libphone/metadata.js"
+                       "src-cljs/libphone/phonemetadata.pb.js"
+                       "src-cljs/libphone/phonenumber.pb.js"]
                 :foreign-libs [{:file "src-cljs/storefront/react-slick.js"
                                 :provides ["react-slick"]}
                                {:file "src-cljs/storefront/bugsnag-2.5.0.js"

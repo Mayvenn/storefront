@@ -154,6 +154,8 @@
 (defpath control-email-captured-dismiss)
 (defpath control-email-captured-submit)
 
+(defpath control-install-phone-captured-submit)
+
 (defpath control-free-install)
 (defpath control-free-install-shop-looks)
 (defpath control-free-install-dismiss)

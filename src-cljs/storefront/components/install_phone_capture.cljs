@@ -1,13 +1,27 @@
 (ns storefront.components.install-phone-capture
-  (:require [om.core :as om]
+  (:require [i18n.phonenumbers.PhoneNumberFormat :as phone-format]
+            [i18n.phonenumbers.PhoneNumberUtil :as phone]
+            [om.core :as om]
             [sablono.core :refer [html]]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
-            [storefront.platform.component-utils :as utils]
+            [storefront.effects :as effects]
             [storefront.events :as events]
-            [storefront.keypaths :as keypaths]))
+            [storefront.keypaths :as keypaths]
+            [storefront.platform.component-utils :as utils]
+            [storefront.transitions :as transitions]))
 
-(defn component [data owner {:keys [close-attrs]}]
+(def phone-utils (phone/getInstance))
+
+(defn- ->e164-phone [value]
+  (try
+    (let [num (.parse phone-utils (str value) "US")]
+      (when (= 1 (.getCountryCode num))
+        (.format phone-utils num phone-format/E164)))
+    (catch :default e
+      nil)))
+
+(defn component [{:keys [captured-install-phone field-errors]} owner {:keys [close-attrs]}]
   (om/component
    (html
     (ui/modal {:col-class   "col-12 col-6-on-tb col-6-on-dt my8-on-tb-dt"
@@ -25,30 +39,43 @@
                  [:div.h6.mb3.mx1.line-height-3
                   "Enter your phone number to apply. Selected participants will be "
                   "interviewed by phone and sent $25."]
-                 (ui/input-group
-                  {:keypath       nil ;;voucher-keypaths/eight-digit-code
-                   :wrapper-class "col-8 flex bg-white pl3 items-center circled-item"
-                   :class         ""
-                   :data-test     ""
-                   :focused       true
-                   :placeholder   "(xxx) xxx - xxxx"
-                   ;; :value      code
-                   ;; :errors     (get field-errors ["voucher-code"])
-                   :data-ref      "voucher-code"}
-                  {:ui-element ui/teal-button
-                   :content    "Get Survey"
-                   :args       {:on-click     (utils/send-event-callback events/control-cart-update-coupon)
-                                :class        "flex justify-center medium items-center circled-item"
-                                :size-class   "col-4"
-                                :height-class "py2"
-                                :data-test    ""
-                                ;; :disabled?  updating?
-                                ;; :spinning?  applying?
-                                }})
+                 (let [valid-phone? (boolean (->e164-phone captured-install-phone))]
+                   (ui/input-group
+                    {:keypath       keypaths/captured-install-phone
+                     :wrapper-class "col-8 flex bg-white pl3 items-center circled-item"
+                     :class         ""
+                     :data-test     ""
+                     :name          "phone"
+                     :focused       true
+                     :placeholder   "(xxx) xxx - xxxx"
+                     :type          "tel"
+                     :value         captured-install-phone
+                     :errors        (when (and (seq captured-install-phone) (not valid-phone?))
+                                      [{:long-message "Please enter a valid US phone number"}])}
+                    {:ui-element ui/teal-button
+                     :content    "Get Survey"
+                     :args       {:on-click       (utils/send-event-callback events/control-install-phone-captured-submit)
+                                  :class          "flex justify-center medium items-center circled-item"
+                                  :size-class     "col-4"
+                                  :height-class   "py2"
+                                  :data-test      ""
+                                  :disabled-class "disabled bg-teal"
+                                  :disabled?      (not valid-phone?)
+                                  :spinning?      false #_applying?}}))
                  [:a.h6.dark-gray.mx2
                   {:href "#"}
                   "No thanks."]]]]))))
 
 (defn query
   [data]
-  {})
+  {:field-errors           (get-in data keypaths/field-errors)
+   :captured-install-phone (get-in data keypaths/captured-install-phone)})
+
+(defmethod effects/perform-effects events/control-install-phone-captured-submit
+  [_ _ _ _ app-state]
+  (prn "submitted"))
+
+(defmethod transitions/transition-state events/control-install-phone-captured-submit
+  [_ _ _ app-state]
+  (prn "submitted")
+  app-state)
