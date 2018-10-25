@@ -61,12 +61,7 @@
                                      :height-class   "py2"
                                      :data-test      ""
                                      :disabled-class "disabled bg-teal"
-                                     :disabled?      (not valid-phone?)
-                                     :spinning?      false #_applying?
-                                     }}))
-                   [:a.h6.dark-gray.mx2
-                    {:href "#"}
-                    "No thanks."]]]]))))
+                                     :disabled?      (not valid-phone?)}}))]]]))))
 
 (defn query
   [data]
