@@ -151,6 +151,8 @@
           :expanded-commission-order-id #{nil}
           :email-capture-session
           (cookie-jar/retrieve-email-capture-session cookie)
+          :phone-capture-session
+          (cookie-jar/get-phone-capture-session cookie)
           :dismissed-free-install
           (cookie-jar/get-dismissed-free-install cookie)
           :sign-in {:email ""

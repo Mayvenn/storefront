@@ -155,6 +155,12 @@
                   "dismissed" (* 60 30))]
     (.set cookie :popup-session value max-age "/" (:domain email-capture-session) config/secure?)))
 
+(defn save-phone-capture-session [cookie]
+  (.set cookie "phone-popup-session" "opted-in" (* 200 one-year) "/" nil config/secure?))
+
+(defn get-phone-capture-session [cookie]
+  (.get cookie "phone-popup-session"))
+
 (defn save-dismissed-free-install [cookie value]
   (.set cookie "dismissed-free-install" value four-weeks "/" nil config/secure?))
 

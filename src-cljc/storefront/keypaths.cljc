@@ -119,6 +119,7 @@
 
 (def captured-email (conj ui :captured-email))
 (def captured-install-phone (conj ui :captured-install-phone))
+(def phone-capture-session (conj ui :phone-capture-session))
 
 (def account (conj ui :account))
 (def account-show-password? (conj account :show-password?))

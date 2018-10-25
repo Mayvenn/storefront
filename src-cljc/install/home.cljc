@@ -26,7 +26,7 @@
             [storefront.accessors.experiments :as experiments]))
 
 (defn sticky-component
-  [{:keys [popup-data]} owner opts]
+  [{:keys [phone-capture-session popup-data]} owner opts]
   #?(:clj (component/create [:div])
      :cljs
      (letfn [(handle-scroll [e] (om/set-state! owner :show? (or
@@ -59,22 +59,23 @@
             [:div
              [:div {:key "popup"}
               #?(:cljs (popup/built-component popup-data nil))]
-             [:div.fixed.z4.bottom-0.left-0.right-0
-              {:style {:margin-bottom (str "-" content-height "px")}}
-              ;; Using a separate element with reverse margin to prevent the
-              ;; sticky component from initially appearing on the page and then
-              ;; animate hiding.
-              [:div.transition-2
-               (if show?
-                 {:style {:margin-bottom (str content-height "px")}}
-                 {:style {:margin-bottom "0"}})
-               [:div {:ref "content-height"}
-                [:div.border-top.border-dark-gray.border-width-2
-                 [:a.h2.bold.white.bg-purple.px3.py2.flex.items-center
-                  (utils/fake-href events/popup-show-install-phone-capture)
-                  [:div.flex-auto.center "Get $25 – Share Your Opinion"]
-                  [:div.rotate-180.stroke-white.ml1
-                   (svg/dropdown-arrow {:height "16" :width "16"})]]]]]]]))))))
+             (when-not phone-capture-session
+               [:div.fixed.z4.bottom-0.left-0.right-0
+                {:style {:margin-bottom (str "-" content-height "px")}}
+                ;; Using a separate element with reverse margin to prevent the
+                ;; sticky component from initially appearing on the page and then
+                ;; animate hiding.
+                [:div.transition-2
+                 (if show?
+                   {:style {:margin-bottom (str content-height "px")}}
+                   {:style {:margin-bottom "0"}})
+                 [:div {:ref "content-height"}
+                  [:div.border-top.border-dark-gray.border-width-2
+                   [:a.h2.bold.white.bg-purple.px3.py2.flex.items-center
+                    (utils/fake-href events/popup-show-install-phone-capture)
+                    [:div.flex-auto.center "Get $25 – Share Your Opinion"]
+                    [:div.rotate-180.stroke-white.ml1
+                     (svg/dropdown-arrow {:height "16" :width "16"})]]]]]])]))))))
 
 (def visual-divider
   [:div.py2.mx-auto.teal.border-bottom.border-width-2.mb2-on-tb-dt
@@ -173,7 +174,7 @@
                         :alt         "Beautiful Virgin Hair Installed for FREE"})])
 
 (defn ^:private component
-  [{:keys [carousel-certified-stylist faq-accordion popup-data phone-capture?]} owner opts]
+  [{:keys [carousel-certified-stylist faq-accordion popup-data phone-capture-session phone-capture?]} owner opts]
   (component/create
    [:div
     header
@@ -184,7 +185,8 @@
     (faq faq-accordion)
     contact-us
     (when phone-capture?
-      (component/build sticky-component {:popup-data popup-data} nil))]))
+      (component/build sticky-component {:phone-capture-session phone-capture-session
+                                         :popup-data            popup-data} nil))]))
 
 (defn ^:private query [data]
   {:popup-data                 #?(:cljs (popup/query data)
@@ -192,6 +194,7 @@
    :carousel-certified-stylist {:stylist-gallery-index (get-in data keypaths/carousel-stylist-gallery-index)
                                 :gallery-image-index   (get-in data keypaths/carousel-stylist-gallery-image-index)}
    :faq-accordion              {:expanded-indices (get-in data keypaths/accordion-freeinstall-home-expanded-indices)}
+   :phone-capture-session      (get-in data keypaths/phone-capture-session)
    :phone-capture?             (experiments/phone-capture? data)})
 
 (defn built-component
