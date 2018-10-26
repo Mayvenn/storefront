@@ -546,6 +546,7 @@
     (-> app-state
         (assoc-in keypaths/ui-ugc-category-popup-offset (:offset query-params))
         (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
+        (assoc-in catalog.keypaths/detailed-product-selections (skuers/electives product))
         (assoc-in catalog.keypaths/detailed-product-id product-id)
         (assoc-in keypaths/browse-recently-added-skus [])
         (assoc-in keypaths/browse-sku-quantity 1))))

@@ -43,6 +43,56 @@
             [storefront.request-keys :as request-keys]
             [storefront.transitions :as transitions]))
 
+(s/def ::keyword
+  (s/conformer
+   (fn [value]
+     (cond (string? value)  (keyword value)
+           (keyword? value) value
+           :otherwise       ::s/invalid))))
+
+(s/def ::ucare-url
+  (s/conformer
+   (s/nilable
+    (fn [value]
+      (or
+       (and value
+            (= "ucarecdn.com"
+               (:host (uri/parse value))))
+       ::s/invalid)))))
+
+(s/def :option/name string?)
+(s/def :option/slug string?)
+(s/def :option/order int?)
+(s/def :option/product-swatch ::ucare-url)
+(s/def :option/rectangular-swatch ::ucare-url)
+
+(s/def ::stocked? boolean?)
+(s/def ::image ::ucare-url)
+(s/def ::price number?)
+(s/def ::price-delta double?)
+(s/def ::checked? boolean?)
+
+(s/def ::selector-option
+  (s/keys
+   :req [:option/slug
+         :option/name]
+   :opt [:option/rectangular-swatch
+         :option/product-swatch
+         :option/order]
+   :req-un [::image
+            ::price
+            ::checked?]))
+
+(defn conform! [spec value]
+  (let [result (s/conform spec value)]
+    (if (= ::s/invalid result)
+      (do
+        #?(:cljs (js/console.log (s/explain-str spec value)))
+        (throw (ex-info "Failing spec!" {:explaination (s/explain-str spec value)
+                                         :value value
+                                         :spec spec})))
+      result)))
+
 (defn item-price [price]
   (when price
     [:span {:item-prop "price"} (as-money-without-cents price)]))
@@ -600,71 +650,6 @@
        ;; The correct solution is to get rid of/fix slick
        :now           (date/now)})))
 
-(s/def ::keyword
-  (s/conformer
-   (fn [value]
-     (cond (string? value)  (keyword value)
-           (keyword? value) value
-           :otherwise       ::s/invalid))))
-
-(s/def ::ucare-url
-  (s/conformer
-   (s/nilable
-    (fn [value]
-      (or
-       (and value
-            (= "ucarecdn.com"
-               (:host (uri/parse value))))
-       ::s/invalid)))))
-
-(s/def :option/name string?)
-(s/def :option/slug string?)
-(s/def :option/order int?)
-(s/def :option/product-swatch ::ucare-url)
-(s/def :option/rectangular-swatch ::ucare-url)
-
-(s/def ::stocked? boolean?)
-(s/def ::image ::ucare-url)
-(s/def ::price number?)
-(s/def ::price-delta double?)
-(s/def ::checked? boolean?)
-
-#_{:option/name               (:option/name facet-option)
- :option/slug               (:option/slug facet-option)
- :option/order              (:filter/order facet-option)
- :option/product-swatch     (:url (find-swatch-product-image sku))
- :option/rectangular-swatch (:option/rectangle-swatch facet-option)
- :stocked?                  (or (:inventory/in-stock? sku)
-                                (:stocked? existing false))
- :image                     (:option/image facet-option)
- :price                     (:sku/price sku)
- :price-delta               (- (get cheapest-for-option-kw option-name) cheapest-price)
- :checked?                  (= (option-kw sku-skuer)
-                               (option-kw sku))}
-
-
-
-(s/def ::selector-option
-  (s/keys
-   :req [:option/slug
-         :option/name]
-   :opt [:option/rectangular-swatch
-         :option/product-swatch
-         :option/order]
-   :req-un [::image
-            ::price
-            ::checked?]))
-
-(defn conform! [spec value]
-  (let [result (s/conform spec value)]
-    (if (= ::s/invalid result)
-      (do
-        #?(:cljs (js/console.log (s/explain-str spec value)))
-        (throw (ex-info "Failing spec!" {:explaination (s/explain-str spec value)
-                                         :value value
-                                         :spec spec})))
-      result)))
-
 (defn generate-options
   "given these args we need to generate a map of the form:
 
@@ -680,7 +665,8 @@
                                   (do
                                     (merge (dissoc (get options (first option-slug)) :sku/name)
                                            {:price    (:sku/price (apply min-key :sku/price oskus))
-                                            :checked? false
+                                            :checked? (= (get selections facet-slug ::missing-selection)
+                                                         (first option-slug))
                                             :stocked? (when (seq oskus)
                                                         (some :inventory/in-stock? oskus))
                                             :image    (get-in options [option-slug :option/image])})))))
@@ -709,6 +695,7 @@
 
 (defn query [data]
   (let [selected-sku    (get-in data catalog.keypaths/detailed-product-selected-sku)
+        selections      (get-in data catalog.keypaths/detailed-product-selections)
         product         (products/current-product data)
         product-skus    (extract-product-skus data product)
         facets          (facets/by-slug data)
@@ -720,7 +707,7 @@
                                                       (:catalog/product-id product)))
      :adding-to-bag?    (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
      :sku-quantity      (get-in data keypaths/browse-sku-quantity 1)
-     :options           (generate-options facets product product-skus selected-sku)
+     :options           (generate-options facets product product-skus selections)
      :product           product
      :selected-sku      selected-sku
      :facets            facets
@@ -788,7 +775,7 @@
 (defn determine-sku-from-selections [app-state]
   (let [product      (products/current-product app-state)
         skus         (get-in app-state catalog.keypaths/detailed-product-product-skus)
-        selections   (skuers/electives product (get-in app-state catalog.keypaths/detailed-product-selected-sku))
+        selections   (get-in app-state catalog.keypaths/detailed-product-selections)
         selected-sku (selector/match-all {} selections skus)]
     (first-when-only selected-sku)))
 
@@ -819,6 +806,7 @@
 (defmethod transitions/transition-state events/control-product-detail-picker-option-select
   [_ event {:keys [selection value]} app-state]
   (-> app-state
+      (update-in catalog.keypaths/detailed-product-selections merge {selection value})
       (assoc-in (conj catalog.keypaths/detailed-product-selected-sku selection) value)
       (assoc-in catalog.keypaths/detailed-product-selected-picker nil)
       (assoc-default-length selection)
