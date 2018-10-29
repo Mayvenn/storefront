@@ -63,7 +63,7 @@
 (s/def :option/name string?)
 (s/def :option/slug string?)
 (s/def :option/order int?)
-(s/def :option/product-swatch ::ucare-url)
+(s/def :option/sku-swatch ::ucare-url)
 (s/def :option/rectangular-swatch ::ucare-url)
 
 (s/def ::stocked? boolean?)
@@ -77,7 +77,7 @@
    :req [:option/slug
          :option/name]
    :opt [:option/rectangular-swatch
-         :option/product-swatch
+         :option/sku-swatch
          :option/order]
    :req-un [::image
             ::price
@@ -350,7 +350,7 @@
                  selected? (simple-selected-layer)
                  :else     nil))))
 
-(defn swatch-content-layer [{:option/keys [name rectangular-swatch]} product-img checked?]
+(defn swatch-content-layer [{:option/keys [name rectangle-swatch]} sku-img checked?]
   [:div.flex.flex-column.bg-white
    [:div.flex
     [:div.rounded-top-left.bg-repeat-x
@@ -358,21 +358,21 @@
       {:width "100%"
        :height "100px"
        :background-size "contain"
-       :background-image (str "url(" rectangular-swatch ")")}}]
-    (ui/ucare-img {:class "rounded-top-right" :height "100px"} product-img)]
+       :background-image (str "url(" rectangle-swatch ")")}}]
+    (ui/ucare-img {:class "rounded-top-right" :height "100px"} sku-img)]
 
    [:div.py1.h6.ml3.self-start
     (when checked?
       {:class "bold"})
     name]])
 
-(defn color-option [{:keys [key color product-img checked? disabled? selected-picker]}]
+(defn color-option [{:as stuff :keys [key color sku-image checked? disabled? selected-picker]}]
   (ui/option {:key      key
               :on-click (utils/send-event-callback
                          events/control-product-detail-picker-option-select
                          {:selection selected-picker
                           :value     (:option/slug color)})}
-             (swatch-content-layer color product-img checked?)
+             (swatch-content-layer color sku-image checked?)
              [:div
               (when disabled?
                 [:div.absolute.overlay.bg-lighten-3.flex.items-center.justify-center
@@ -384,19 +384,17 @@
                  [:div.self-center.flex.items-center
                   {:style {:margin-left "-2em"}}
                   [:div {:style {:width "1em"}}]
-                  [:div.circle
-                   (ui/ucare-img {:width "30"
-                                  :retina-quality "better"
+                  [:div.circle  ; checkmark circle
+                   (ui/ucare-img {:width           "30"
+                                  :retina-quality  "better"
                                   :default-quality "better"}
                                  "9e2a48b3-9811-46d2-840b-31c9f85670ad")]]])]))
 
 (defn picker-rows
   "individual elements as in: https://app.zeplin.io/project/5a9f159069d48a4c15497a49/screen/5b21aa0352b1d5e31a32ac53"
-  [{:keys [facets selected-sku sku-quantity]}]
-  (let [color  (get-in facets [:hair/color :facet/options
-                               (first (:hair/color selected-sku))])
-        length (get-in facets [:hair/length :facet/options
-                               (first (:hair/length selected-sku))])]
+  [{:keys [facets selections sku-quantity]}]
+  (let [color  (get-in facets [:hair/color :facet/options (:hair/color selections)])
+        length (get-in facets [:hair/length :facet/options (:hair/length selections)])]
     [:div.mxn2
      (field
       (utils/fake-href events/control-product-detail-picker-open {:facet-slug :hair/color})
@@ -505,7 +503,7 @@
                   (simple-selected-layer))])))
 
 (defn pickers
-  [{:keys [product selected-picker facets options sku-quantity selected-sku] :as data}]
+  [{:keys [product selected-picker facets options sku-quantity] :as data}]
   (when (contains? (:catalog/department product) "hair")
     (condp = selected-picker
       :hair/color    (picker-dialog {:title             (get-in facets [selected-picker :facet/name])
@@ -515,9 +513,8 @@
                                                            {:key             (str "color-" (:option/name item))
                                                             :selected-picker selected-picker
                                                             :color           item
-                                                            :product-img     (:option/product-swatch item)
-                                                            :checked?        (:checked? item)
-                                                            :disabled?       (not (:stocked? item))}))})
+                                                            :sku-image       (:option/sku-swatch item)
+                                                            :checked?        (:checked? item)}))})
       :hair/length   (picker-dialog {:title             (get-in facets [selected-picker :facet/name])
                                      :items             (sort-by :option/order (get options selected-picker))
                                      :cell-component-fn (fn [item]
@@ -526,7 +523,6 @@
                                                             :primary-label   (:option/name item)
                                                             :secondary-label (item-price (:price item))
                                                             :checked?        (:checked? item)
-                                                            :disabled?       (not (:stocked? item))
                                                             :selected-picker selected-picker
                                                             :item            item}))})
       :item/quantity (picker-dialog {:title             "Quantity"
@@ -536,7 +532,6 @@
                                                            {:key           (str "quantity-" quantity)
                                                             :primary-label (str quantity)
                                                             :checked?      (= quantity sku-quantity)
-                                                            :disabled?     (not (:inventory/in-stock? selected-sku))
                                                             :quantity      quantity}))})
       (picker-rows data))))
 
@@ -551,7 +546,8 @@
            ugc] :as data}
    owner
    opts]
-  (let [review? (:review? reviews)]
+  (let [review?   (:review? reviews)
+        sold-out? (not (:inventory/in-stock? selected-sku))]
     (component/create
       (if-not product
         [:div.flex.h2.p1.m1.items-center.justify-center
@@ -563,42 +559,39 @@
             (component/build ugc/popup-component ugc opts)])
          [:div.p2
           (page
+           [:div
+            (carousel carousel-images product)
+            [:div.hide-on-mb (component/build ugc/component ugc opts)]]
+           [:div
             [:div
-             (carousel carousel-images product)
-             [:div.hide-on-mb (component/build ugc/component ugc opts)]]
-
+             [:div.mx2
+              [:h1.h2.medium.titleize {:item-prop "name"}
+               (:copy/title product)]
+              (when review? (reviews-summary reviews opts))]
+             [:meta {:item-prop "image"
+                     :content   (:url (first carousel-images))}]
+             (full-bleed-narrow (carousel carousel-images product))]
             [:div
-             [:div
-              [:div.mx2
-               [:h1.h2.medium.titleize {:item-prop "name"}
-                (:copy/title product)]
-               (when review? (reviews-summary reviews opts))]
-              [:meta {:item-prop "image"
-                      :content   (:url (first carousel-images))}]
-              (full-bleed-narrow (carousel carousel-images product))]
-             [:div
-              [:div {:item-prop  "offers"
-                     :item-scope ""
-                     :item-type  "http://schema.org/Offer"}
-               (pickers data)
-               (when (products/eligible-for-triple-bundle-discount? product)
-                 [:div.pt2.pb4 (triple-bundle-upsell)])
-               [:div.center.mb6
-                [:div.h6.navy "Price Per Bundle"]
-                [:div.medium (item-price (:sku/price selected-sku))]]
-               (affirm/pdp-dropdown-experiment-as-low-as-box
-                {:amount      (:sku/price selected-sku)
-                 :middle-copy "Just select Affirm at check out."})
-               [:div
-                [:div.mt1.mx3
-                 (if (seq selected-sku)
-                   (add-to-bag-button adding-to-bag?
-                                        selected-sku
-                                        sku-quantity)
-                   (sold-out-button))]]
-               (when (products/stylist-only? product) shipping-and-guarantee)]]
-             (product-description product)
-             [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])
+             [:div {:item-prop  "offers"
+                    :item-scope ""
+                    :item-type  "http://schema.org/Offer"}
+              (pickers data)
+              (when (products/eligible-for-triple-bundle-discount? product)
+                [:div.pt2.pb4 (triple-bundle-upsell)])
+              [:div.center.mb6
+               [:div.h6.navy "Price Per Bundle"]
+               [:div.medium (item-price (:sku/price selected-sku))]]
+              (affirm/pdp-dropdown-experiment-as-low-as-box
+               {:amount      (:sku/price selected-sku)
+                :middle-copy "Just select Affirm at check out."})
+              [:div
+               [:div.mt1.mx3
+                (if sold-out?
+                  (sold-out-button)
+                  (add-to-bag-button adding-to-bag? selected-sku sku-quantity))]]
+              (when (products/stylist-only? product) shipping-and-guarantee)]]
+            (product-description product)
+            [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])
           (when review?
             (component/build review-component/reviews-component reviews opts))
           [:div.hide-on-tb-dt
@@ -627,7 +620,7 @@
                 (lowest-sku-price skus)})
              (group-by option-kw skus))))
 
-(defn find-swatch-product-image [sku]
+(defn find-swatch-sku-image [sku]
   (first (selector/match-all {:selector/strict? true}
                            {:use-case #{"cart"}}
                            (:selector/images sku))))
@@ -660,16 +653,17 @@
                                         :keys [facet/options]}]]
             (->> product-skus
                  (group-by facet-slug)
-                 (map (fn [[option-slug oskus]]
-                        (conform! ::selector-option
-                                  (do
-                                    (merge (dissoc (get options (first option-slug)) :sku/name)
-                                           {:price    (:sku/price (apply min-key :sku/price oskus))
-                                            :checked? (= (get selections facet-slug ::missing-selection)
-                                                         (first option-slug))
-                                            :stocked? (when (seq oskus)
-                                                        (some :inventory/in-stock? oskus))
-                                            :image    (get-in options [option-slug :option/image])})))))
+                 (map (fn [[option-slug option-skus]]
+                        (let [cheapest-sku (apply min-key :sku/price option-skus)
+                              option       (merge (dissoc (get options (first option-slug)) :sku/name)
+                                                  {:price             (:sku/price cheapest-sku)
+                                                   :checked?          (= (get selections facet-slug ::missing-selection)
+                                                                         (first option-slug))
+                                                   :stocked?          (when (seq option-skus)
+                                                                        (some :inventory/in-stock? option-skus))
+                                                   :option/sku-swatch (:url (find-swatch-sku-image cheapest-sku))
+                                                   :image             (get-in options [option-slug :option/image])})]
+                          (conform! ::selector-option option))))
                  (sort-by :filter/order)
                  (assoc acc-options facet-slug)))
           {}
@@ -693,6 +687,20 @@
        vals
        (sort-by :sku/price)))
 
+(defn default-selections
+  "Using map of current selections (which can be empty)
+  for un-selected values picks first option from the available options.
+  e.g.: if there's no `hair/color` in `selections` map - it sets it to whatever the first in the list, e.g.: \"black\""
+  [selections facets product product-skus]
+  (let [options (generate-options facets product product-skus {})]
+    (reduce
+     (fn [a k]
+       (if (get a k)
+         a
+         (assoc a k (-> options k first :option/slug))))
+     selections
+     (keys options))))
+
 (defn query [data]
   (let [selected-sku    (get-in data catalog.keypaths/detailed-product-selected-sku)
         selections      (get-in data catalog.keypaths/detailed-product-selections)
@@ -709,6 +717,7 @@
      :sku-quantity      (get-in data keypaths/browse-sku-quantity 1)
      :options           (generate-options facets product product-skus selections)
      :product           product
+     :selections        selections
      :selected-sku      selected-sku
      :facets            facets
      :cheapest-price    (lowest-sku-price product-skus)

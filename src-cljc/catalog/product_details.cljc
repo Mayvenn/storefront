@@ -538,6 +538,16 @@
          (valid-sku-ids prev-sku-id)
          (:catalog/sku-id epitome)))))
 
+(defn assoc-detailed-product-selections
+  "sets default product selections `:hair/color`, `:hair/length` (based on enabled experiment) and persists them in the app-state"
+  [app-state product]
+  (let [data (if-not (experiments/pdp-dropdown? app-state)
+               (skuers/electives product)
+               (let [facets (facets/by-slug app-state)
+                     product-skus (product-details-dropdown/extract-product-skus app-state product)]
+                 (product-details-dropdown/default-selections {} facets product product-skus)))]
+    (assoc-in app-state catalog.keypaths/detailed-product-selections data)))
+
 (defmethod transitions/transition-state events/navigate-product-details
   [_ event {:keys [catalog/product-id query-params]} app-state]
   (let [product (products/product-by-id app-state product-id)
@@ -546,7 +556,7 @@
     (-> app-state
         (assoc-in keypaths/ui-ugc-category-popup-offset (:offset query-params))
         (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
-        (assoc-in catalog.keypaths/detailed-product-selections (skuers/electives product))
+        (assoc-detailed-product-selections product)
         (assoc-in catalog.keypaths/detailed-product-id product-id)
         (assoc-in keypaths/browse-recently-added-skus [])
         (assoc-in keypaths/browse-sku-quantity 1))))
