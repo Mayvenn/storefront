@@ -230,7 +230,7 @@
         (counter-or-out-of-stock in-stock? sku-quantity)
         (item-price price)))))
 
-(defn triple-bundle-upsell []
+(def triple-bundle-upsell
   [:p.center.h6.flex.items-center.justify-center
    (svg/discount-tag {:class  "mxnp6"
                       :height "4em"
@@ -585,7 +585,7 @@
                     :item-type  "http://schema.org/Offer"}
               (pickers data)
               (when (products/eligible-for-triple-bundle-discount? product)
-                [:div.pt2.pb4 (triple-bundle-upsell)])
+                [:div.pt2.pb4 triple-bundle-upsell])
               [:div.center.mb6
                [:div.h6.navy "Price Per Bundle"]
                [:div.medium (item-price (:sku/price selected-sku))]]
