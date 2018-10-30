@@ -185,7 +185,7 @@
     (map cell-component-fn items)]])
 
 (defn component
-  [{:keys [product selected-picker facets options sku-quantity] :as data} owner _]
+  [{:keys [product selected-picker facets selections options sku-quantity] :as data} owner _]
   (component/create
    [:div
     (when (contains? (:catalog/department product) "hair")
@@ -197,6 +197,8 @@
                                                              {:key             (str "color-" (:option/name item))
                                                               :selected-picker selected-picker
                                                               :color           item
+                                                              :checked?        (= (:hair/color selections)
+                                                                                  (:option/slug item))
                                                               :sku-image       (:option/sku-swatch item)}))})
         :hair/length   (picker-dialog {:title             (get-in facets [selected-picker :facet/name])
                                        :items             (sort-by :option/order (get options selected-picker))
@@ -205,7 +207,8 @@
                                                              {:key             (:option/name item)
                                                               :primary-label   (:option/name item)
                                                               :secondary-label (item-price (:price item))
-                                                              :checked?        (:checked? item)
+                                                              :checked?        (= (:hair/length selections)
+                                                                                  (:option/slug item))
                                                               :selected-picker selected-picker
                                                               :item            item}))})
         :item/quantity (picker-dialog {:title             "Quantity"

@@ -71,7 +71,6 @@
 (s/def ::image ::ucare-url)
 (s/def ::price number?)
 (s/def ::price-delta double?)
-(s/def ::checked? boolean?)
 
 (s/def ::selector-option
   (s/keys
@@ -80,9 +79,7 @@
    :opt [:option/rectangular-swatch
          :option/sku-swatch
          :option/order]
-   :req-un [::image
-            ::price
-            ::checked?]))
+   :req-un [::image ::price]))
 
 (defn conform! [spec value]
   (let [result (s/conform spec value)]
@@ -423,7 +420,7 @@
 
   {:facet-slug  [[#{option-slug}] #{option-slug} #{option-slug}]
    :attr2 [{... option .. }]}"
-  [facets {:as product :keys [selector/electives]} product-skus selections]
+  [facets {:as product :keys [selector/electives]} product-skus]
   (reduce (fn [acc-options [facet-slug {:as   facet
                                         :keys [facet/options]}]]
             (->> product-skus
@@ -432,8 +429,6 @@
                         (let [cheapest-sku (apply min-key :sku/price option-skus)
                               option       (merge (dissoc (get options (first option-slug)) :sku/name)
                                                   {:price             (:sku/price cheapest-sku)
-                                                   :checked?          (= (get selections facet-slug ::missing-selection)
-                                                                         (first option-slug))
                                                    :stocked?          (when (seq option-skus)
                                                                         (some :inventory/in-stock? option-skus))
                                                    :option/sku-swatch (:url (find-swatch-sku-image cheapest-sku))
@@ -467,7 +462,7 @@
   for un-selected values picks first option from the available options.
   e.g.: if there's no `hair/color` in `selections` map - it sets it to whatever the first in the list, e.g.: \"black\""
   [selections facets product product-skus]
-  (let [options (generate-options facets product product-skus {})]
+  (let [options (generate-options facets product product-skus)]
     (reduce
      (fn [a k]
        (if (get a k)
@@ -569,11 +564,10 @@
   (let [product-id   (get-in app-state catalog.keypaths/detailed-product-id)
         product      (products/product-by-id app-state product-id)
         facets       (facets/by-slug app-state)
-        product-skus (extract-product-skus app-state product)
-        selections   (get-in app-state catalog.keypaths/detailed-product-selections)]
+        product-skus (extract-product-skus app-state product)]
     (cond-> app-state
       (experiments/pdp-dropdown? app-state)
-      (assoc-in catalog.keypaths/detailed-product-options (generate-options facets product product-skus selections)))))
+      (assoc-in catalog.keypaths/detailed-product-options (generate-options facets product product-skus)))))
 
 (defmethod transitions/transition-state events/control-product-detail-picker-option-select
   [_ event {:keys [selection value]} app-state]
