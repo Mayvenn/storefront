@@ -129,11 +129,17 @@
                                             {:path keypaths/browse-sku-quantity}))]
     [:span.h4 "Currently out of stock"]))
 
-(defn sold-out-button []
+(def sold-out-button
   (ui/navy-button {:on-click  utils/noop-callback
                    :data-test "sold-out"
                    :class     "bg-gray"}
                   "Sold Out"))
+
+(def unavailable-button
+  (ui/navy-button {:on-click  utils/noop-callback
+                   :data-test "unavailable"
+                   :class     "bg-gray"}
+                  "Unavailable"))
 
 (defn add-to-bag-button
   [adding-to-bag? sku quantity]
@@ -147,10 +153,11 @@
                   "Add to bag"))
 
 (defn sticky-add-component
-  [{:keys [adding-to-bag? sku quantity image]} owner opts]
+  [{:keys [purchasable? adding-to-bag? sku quantity image]} owner opts]
   #?(:clj (component/create [:div])
      :cljs
-     (letfn [(handle-scroll [e] (om/set-state! owner :show? (< 866 (.-y (goog.dom/getDocumentScroll)))))
+     (letfn [(handle-scroll [e] (om/set-state! owner :show? (and purchasable?
+                                                                 (< 866 (.-y (goog.dom/getDocumentScroll))))))
              (set-height [] (om/set-state! owner :add-button-height (some-> owner
                                                                             (om/get-node "add-button")
                                                                             goog.style/getSize
@@ -546,8 +553,9 @@
            ugc] :as data}
    owner
    opts]
-  (let [review?   (:review? reviews)
-        sold-out? (not (:inventory/in-stock? selected-sku))]
+  (let [review?      (:review? reviews)
+        unavailable? (not (seq selected-sku))
+        sold-out?    (not (:inventory/in-stock? selected-sku))]
     (component/create
       (if-not product
         [:div.flex.h2.p1.m1.items-center.justify-center
@@ -586,9 +594,10 @@
                 :middle-copy "Just select Affirm at check out."})
               [:div
                [:div.mt1.mx3
-                (if sold-out?
-                  (sold-out-button)
-                  (add-to-bag-button adding-to-bag? selected-sku sku-quantity))]]
+                (cond
+                  unavailable? unavailable-button
+                  sold-out?    sold-out-button
+                  :else        (add-to-bag-button adding-to-bag? selected-sku sku-quantity))]]
               (when (products/stylist-only? product) shipping-and-guarantee)]]
             (product-description product)
             [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])
@@ -603,6 +612,9 @@
                                                   :option/rectangle-swatch)
                              :adding-to-bag? adding-to-bag?
                              :sku            selected-sku
+                             :purchasable?   (and
+                                              (seq selected-sku)
+                                              (not sold-out?))
                              :quantity       sku-quantity} {})]]]))))
 
 (defn min-of-maps
