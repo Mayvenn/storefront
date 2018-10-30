@@ -185,7 +185,7 @@
                   {:height "33px"
                    :width  "65px"
                    :src    image}]
-                 [:span.ml2 "Length: " quantity "″"]
+                 [:span.ml2 "Length: " (:hair/length sku) "″"]
                  [:span.ml2 "Qty: " quantity]]]
                [:div.col-4
                 (ui/teal-button {:on-click
@@ -596,7 +596,11 @@
             (component/build review-component/reviews-component reviews opts))
           [:div.hide-on-tb-dt
            (component/build sticky-add-component
-                            {:image          (:option/rectangular-swatch (first (:hair/color options)))
+                            {:image          (->> options
+                                                  :hair/color
+                                                  (filter :checked?)
+                                                  first
+                                                  :option/rectangle-swatch)
                              :adding-to-bag? adding-to-bag?
                              :sku            selected-sku
                              :quantity       sku-quantity} {})]]]))))
