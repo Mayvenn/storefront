@@ -761,11 +761,6 @@
          (valid-sku-ids prev-sku-id)
          (:catalog/sku-id epitome)))))
 
-(defn url-points-to-invalid-sku? [selected-sku query-params]
-  (and (:catalog/sku-id selected-sku)
-       (not= (:catalog/sku-id selected-sku)
-             (:SKU query-params))))
-
 #?(:cljs
    (defn fetch-product-details [app-state product-id]
      (api/search-v2-products (get-in app-state keypaths/api-cache)
@@ -796,33 +791,12 @@
   (assoc-in app-state catalog.keypaths/detailed-product-selected-sku
             (determine-sku-from-selections app-state)))
 
-(defn determine-cheapest-length [skus]
-  (-> (sort-by :sku/price skus)
-      first
-      :hair/length))
-
-(defn determine-selected-length [app-state selected-option]
-  (let [product    (products/current-product app-state)
-        skus       (get-in app-state catalog.keypaths/detailed-product-product-skus)
-        selections (skuers/electives product
-                                     (cond-> (get-in app-state catalog.keypaths/detailed-product-selected-sku)
-                                       (= selected-option :hair/color)
-                                       (dissoc :hair/length)))]
-    (or
-     (determine-cheapest-length (selector/match-all {} (merge selections {:inventory/in-stock? #{true}}) skus))
-     (determine-cheapest-length (selector/match-all {} selections skus)))))
-
-(defn assoc-default-length [app-state selected-option]
-  (assoc-in app-state (conj catalog.keypaths/detailed-product-selected-sku :hair/length)
-            (determine-selected-length app-state selected-option)))
-
 (defmethod transitions/transition-state events/control-product-detail-picker-option-select
   [_ event {:keys [selection value]} app-state]
   (-> app-state
       (update-in catalog.keypaths/detailed-product-selections merge {selection value})
-      (assoc-in (conj catalog.keypaths/detailed-product-selected-sku selection) value)
+
       (assoc-in catalog.keypaths/detailed-product-selected-picker nil)
-      (assoc-default-length selection)
       assoc-sku-from-selections))
 
 (defmethod transitions/transition-state events/control-product-detail-picker-open
