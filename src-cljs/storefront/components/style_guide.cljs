@@ -8,7 +8,7 @@
             [storefront.events :as events]
             [clojure.string :as string]
             [storefront.components.svg :as svg]
-            [catalog.product-details-dropdown :as product-details-dropdown]))
+            [storefront.components.picker.picker :as picker]))
 
 (defn- header [name]
   [:h2.h3.py1.my3.shout.medium.border-bottom [:a {:name (string/lower-case name)} name]])
@@ -457,42 +457,63 @@
 (def swatch-img
   "http://ucarecdn.com/cf2e6d44-4e93-4792-801b-1e2aacdac408/-/format/auto/swatchnatural.png")
 
+(defn simple-option
+  [{:keys [on-click primary-label secondary-label selected? sold-out?]}]
+  (let [label-style (cond
+                      sold-out? "dark-gray"
+                      selected? "medium"
+                      :else     nil)]
+    (ui/option {:key      primary-label
+                :height   "4em"
+                :on-click on-click}
+               (picker/simple-content-layer
+                (list
+                 [:div.col-2
+                  (when label-style
+                    {:class label-style})
+                  primary-label]
+                 [:div.gray.flex-auto secondary-label]))
+               (cond
+                 sold-out? (picker/simple-sold-out-layer "Sold Out")
+                 selected? (picker/simple-selected-layer)
+                 :else     nil))))
+
 (def simple-custom-options
   [:section.flex.flex-column
    [:div.col-5
-    (product-details-dropdown/simple-option
+    (simple-option
      {:primary-label  "10″"
       :secondary-labe "$100"
       :selected?      true
       :sold-out?      false})]
 
    [:div.col-5
-    (product-details-dropdown/simple-option
+    (simple-option
      {:primary-label  "10″"
       :secondary-labe "$100"
       :selected?      false
       :sold-out?      false})]
 
    [:div.col-5
-    (product-details-dropdown/simple-option
+    (simple-option
      {:primary-label  "10″"
       :secondary-labe "$100"
       :selected?      false
       :sold-out?      true})]
    [:div.col-5
-    (product-details-dropdown/simple-option
+    (simple-option
      {:primary-label "1"
       :selected?     false})]
 
    [:div.col-5
-    (product-details-dropdown/simple-option
+    (simple-option
      {:primary-label "2"
       :selected?     true})]])
 
 (def swatch-custom-options
   [:section.flex.flex-column
    [:div.col-5
-    (product-details-dropdown/color-option
+    (picker/color-option
      {:color     {:option/name             "Natural Black"
                   :option/rectangle-swatch swatch-img}
       :model-img model-img
@@ -500,7 +521,7 @@
       :sold-out? false})]
 
    [:div.col-5
-    (product-details-dropdown/color-option
+    (picker/color-option
      {:color     {:option/name             "Natural Black"
                   :option/rectangle-swatch swatch-img}
       :model-img model-img
@@ -508,7 +529,7 @@
       :sold-out? false})]
 
    [:div.col-5
-    (product-details-dropdown/color-option
+    (picker/color-option
      {:color
       {:option/name             "Natural Black"
        :option/rectangle-swatch swatch-img}
@@ -535,8 +556,8 @@
       (form-fields data)
       buttons
 
-      simple-custom-options
-      swatch-custom-options
+      #_simple-custom-options
+      #_swatch-custom-options
 
       #_(condp = (get-in data keypaths/navigation-event)
           events/navigate-style-guide                 typography

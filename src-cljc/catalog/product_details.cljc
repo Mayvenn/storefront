@@ -539,14 +539,14 @@
          (:catalog/sku-id epitome)))))
 
 (defn assoc-detailed-product-selections
-  "sets default product selections `:hair/color`, `:hair/length` (based on enabled experiment) and persists them in the app-state"
+  "Sets default selections for product electives `:hair/color`, `:hair/length`"
   [app-state product]
-  (let [data (if-not (experiments/pdp-dropdown? app-state)
-               (skuers/electives product)
-               (let [facets (facets/by-slug app-state)
-                     product-skus (product-details-dropdown/extract-product-skus app-state product)]
-                 (product-details-dropdown/default-selections {} facets product product-skus)))]
-    (assoc-in app-state catalog.keypaths/detailed-product-selections data)))
+  (let [facets       (facets/by-slug app-state)
+        product-skus (product-details-dropdown/extract-product-skus app-state product)]
+    (cond-> app-state
+      (experiments/pdp-dropdown? app-state)
+      (assoc-in catalog.keypaths/detailed-product-selections
+                (product-details-dropdown/default-selections {} facets product product-skus)))))
 
 (defmethod transitions/transition-state events/navigate-product-details
   [_ event {:keys [catalog/product-id query-params]} app-state]
@@ -554,10 +554,11 @@
         sku-id  (determine-sku-id app-state product (:SKU query-params))
         sku     (get-in app-state (conj keypaths/v2-skus sku-id))]
     (-> app-state
+        (assoc-in catalog.keypaths/detailed-product-id product-id)
         (assoc-in keypaths/ui-ugc-category-popup-offset (:offset query-params))
         (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
         (assoc-detailed-product-selections product)
-        (assoc-in catalog.keypaths/detailed-product-id product-id)
+        product-details-dropdown/assoc-detailed-product-options
         (assoc-in keypaths/browse-recently-added-skus [])
         (assoc-in keypaths/browse-sku-quantity 1))))
 
