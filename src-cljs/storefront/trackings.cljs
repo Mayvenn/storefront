@@ -129,9 +129,15 @@
     (facebook-analytics/track-event "ViewContent" {:content_type "product"
                                                    :content_ids [(:catalog/sku-id sku)]})))
 
-(defmethod perform-track events/control-bundle-option-select [_ event {:keys [selection value]} app-state]
+(defn track-select-bundle-option [selection value]
   (stringer/track-event "select_bundle_option" {:option_name  (name selection)
-                                                :option_value value}))
+                                                :option_value value}) )
+
+(defmethod perform-track events/control-product-detail-picker-option-select [_ event {:keys [selection value]} app-state]
+  (track-select-bundle-option selection value))
+
+(defmethod perform-track events/control-bundle-option-select [_ event {:keys [selection value]} app-state]
+  (track-select-bundle-option selection value))
 
 (defmethod perform-track events/api-success-suggested-add-to-bag [_ event {:keys [order sku-id->quantity initial-sku]} app-state]
   (let [line-item-skuers (sku-id->quantity-to-line-item-skuer (get-in app-state keypaths/v2-skus) sku-id->quantity)
