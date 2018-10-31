@@ -90,8 +90,7 @@
   (display-feature? data "the-ville"))
 
 (defn pdp-dropdown? [data]
-  true
-  #_(display-feature? data "pdp-dropdown"))
+  (display-feature? data "pdp-dropdown"))
 
 (defn install?
   [data]

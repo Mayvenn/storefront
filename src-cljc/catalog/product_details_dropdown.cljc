@@ -421,23 +421,24 @@
   {:facet-slug  [[#{option-slug}] #{option-slug} #{option-slug}]
    :attr2 [{... option .. }]}"
   [facets {:as product :keys [selector/electives]} product-skus]
-  (reduce (fn [acc-options [facet-slug {:as   facet
-                                        :keys [facet/options]}]]
-            (->> product-skus
-                 (group-by facet-slug)
-                 (map (fn [[option-slug option-skus]]
-                        (let [cheapest-sku (apply min-key :sku/price option-skus)
-                              option       (merge (dissoc (get options (first option-slug)) :sku/name)
-                                                  {:price             (:sku/price cheapest-sku)
-                                                   :stocked?          (when (seq option-skus)
-                                                                        (some :inventory/in-stock? option-skus))
-                                                   :option/sku-swatch (:url (find-swatch-sku-image cheapest-sku))
-                                                   :image             (get-in options [option-slug :option/image])})]
-                          (conform! ::selector-option option))))
-                 (sort-by :filter/order)
-                 (assoc acc-options facet-slug)))
-          {}
-          (select-keys facets electives)))
+  (not-empty
+   (reduce (fn [acc-options [facet-slug {:as   facet
+                                         :keys [facet/options]}]]
+             (->> product-skus
+                  (group-by facet-slug)
+                  (map (fn [[option-slug option-skus]]
+                         (let [cheapest-sku (apply min-key :sku/price option-skus)
+                               option       (merge (dissoc (get options (first option-slug)) :sku/name)
+                                                   {:price             (:sku/price cheapest-sku)
+                                                    :stocked?          (when (seq option-skus)
+                                                                         (some :inventory/in-stock? option-skus))
+                                                    :option/sku-swatch (:url (find-swatch-sku-image cheapest-sku))
+                                                    :image             (get-in options [option-slug :option/image])})]
+                           (conform! ::selector-option option))))
+                  (sort-by :filter/order)
+                  (assoc acc-options facet-slug)))
+           {}
+           (select-keys facets electives))))
 
 (defn add-review-eligibility [review-data product]
   (assoc review-data :review? (products/eligible-for-reviews? product)))
@@ -461,14 +462,14 @@
   "Using map of current selections (which can be empty)
   for un-selected values picks first option from the available options.
   e.g.: if there's no `hair/color` in `selections` map - it sets it to whatever the first in the list, e.g.: \"black\""
-  [selections facets product product-skus]
+  [facets product product-skus]
   (let [options (generate-options facets product product-skus)]
     (reduce
      (fn [a k]
        (if (get a k)
          a
          (assoc a k (-> options k first :option/slug))))
-     selections
+     {}
      (keys options))))
 
 (defn query [data]
@@ -566,8 +567,10 @@
         facets       (facets/by-slug app-state)
         product-skus (extract-product-skus app-state product)]
     (cond-> app-state
-      (experiments/pdp-dropdown? app-state)
-      (assoc-in catalog.keypaths/detailed-product-options (generate-options facets product product-skus)))))
+      (and (experiments/pdp-dropdown? app-state)
+           (contains? (:catalog/department product) "hair"))
+      (assoc-in catalog.keypaths/detailed-product-options
+                (generate-options facets product product-skus)))))
 
 (defmethod transitions/transition-state events/control-product-detail-picker-option-select
   [_ event {:keys [selection value]} app-state]

@@ -546,7 +546,7 @@
     (cond-> app-state
       (experiments/pdp-dropdown? app-state)
       (assoc-in catalog.keypaths/detailed-product-selections
-                (product-details-dropdown/default-selections {} facets product product-skus)))))
+                (product-details-dropdown/default-selections facets product product-skus)))))
 
 (defmethod transitions/transition-state events/navigate-product-details
   [_ event {:keys [catalog/product-id query-params]} app-state]

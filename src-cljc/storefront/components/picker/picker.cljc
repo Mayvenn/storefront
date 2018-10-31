@@ -185,10 +185,10 @@
     (map cell-component-fn items)]])
 
 (defn component
-  [{:keys [product selected-picker facets selections options sku-quantity] :as data} owner _]
+  [{:keys [selected-picker facets selections options sku-quantity] :as data} owner _]
   (component/create
    [:div
-    (when (contains? (:catalog/department product) "hair")
+    (when (seq options)
       (condp = selected-picker
         :hair/color    (picker-dialog {:title             (get-in facets [selected-picker :facet/name])
                                        :items             (sort-by :option/order (get options selected-picker))
@@ -221,10 +221,9 @@
                                                               :quantity      quantity}))})
         (picker-rows data)))]))
 
-
-(defn query [data]
-  {:product         (products/current-product data)
-   :selected-picker (get-in data catalog.keypaths/detailed-product-selected-picker)
+(defn query
+  [data]
+  {:selected-picker (get-in data catalog.keypaths/detailed-product-selected-picker)
    :facets          (facets/by-slug data)
    :selections      (get-in data catalog.keypaths/detailed-product-selections)
    :options         (get-in data catalog.keypaths/detailed-product-options)
