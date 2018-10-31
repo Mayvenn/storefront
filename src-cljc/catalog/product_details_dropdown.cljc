@@ -363,7 +363,8 @@
            (component/build sticky-add-component
                             {:image          (->> options
                                                   :hair/color
-                                                  (filter :checked?)
+                                                  (filter #(= (first (:hair/color selected-sku))
+                                                              (:option/slug %)))
                                                   first
                                                   :option/rectangle-swatch)
                              :adding-to-bag? adding-to-bag?
