@@ -1,14 +1,15 @@
 (ns storefront.components.picker.picker
-  (:require [catalog.products :as products]
+  (:require [catalog.facets :as facets]
             [catalog.keypaths :as catalog.keypaths]
+            [catalog.products :as products]
             [storefront.component :as component]
-            [storefront.keypaths :as keypaths]
             [storefront.components.money-formatters :as mf]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
-            [catalog.facets :as facets]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.keypaths :as keypaths]
+            [storefront.platform.component-utils :as utils]
+            [storefront.platform.messages :as messages]))
 
 (defn simple-selected-layer []
   [:div.absolute.border.border-width-3.rounded-0.border-light-teal.overlay.flex
@@ -32,7 +33,7 @@
    content])
 
 (defn mobile-dropdown [label-html selected-value-html]
-  [:div.flex.items-center.medium.h5
+  [:div.flex.items-center.medium.h5.flex-auto
    {:style {:height "100%"}}
    label-html
    [:div.ml2.flex-auto selected-value-html]
@@ -40,42 +41,112 @@
                                           :width  ".575em"
                                           :class  "stroke-teal"})]])
 
+(defn desktop-dropdown [label-html selected-value-html select-html]
+  [:div.flex.flex-column.relative.flex-auto {:style {:height "100%"}}
+   [:div.flex.items-center.medium.h5
+    {:style {:height "100%"}}
+    label-html
+    [:div.ml2.flex-auto selected-value-html]
+    [:div.self-center (svg/dropdown-arrow {:height ".575em"
+                                           :width  ".575em"
+                                           :class  "stroke-teal"})]]
+   select-html])
+
 (defn field
   ([html-widget] (field nil html-widget))
   ([attrs html-widget]
-   [:div.border-bottom.border-light-silver.border-width-2.px4
+   [:div.border-bottom.border-light-silver.border-width-2.px4.flex.items-center
     (merge {:style {:height "75px"}}
            attrs)
     html-widget]))
 
+(defn invisible-select [{:keys [on-change options value]}]
+  [:select.absolute.invisible-select.overlay
+   {:on-change on-change
+    :value     value
+    :style     {:opacity 0
+                :border  "none"
+                :outline "none"
+                :width   "100%"
+                :height  "100%"}}
+   options])
+
 (defn picker-rows
   "individual elements as in: https://app.zeplin.io/project/5a9f159069d48a4c15497a49/screen/5b21aa0352b1d5e31a32ac53"
-  [{:keys [facets selections sku-quantity]}]
+  [{:as data :keys [options facets selections sku-quantity]}]
   (let [color  (get-in facets [:hair/color :facet/options (:hair/color selections)])
         length (get-in facets [:hair/length :facet/options (:hair/length selections)])]
     [:div.mxn2
-     (field
-      (utils/fake-href events/control-product-detail-picker-open {:facet-slug :hair/color})
-       (mobile-dropdown
+     [:div
+      [:div.hide-on-dt
+       (field
+        (utils/fake-href events/control-product-detail-picker-open {:facet-slug :hair/color})
+        (mobile-dropdown
          [:img.border.border-gray.rounded-0
           {:height "33px"
            :width  "65px"
            :src    (:option/rectangle-swatch color)}]
-         (:option/name color)))
-     [:div.flex
-      (field
-        (merge
-         {:class "border-right flex-grow-5"}
-         (utils/fake-href events/control-product-detail-picker-open {:facet-slug :hair/length}))
-        (mobile-dropdown
-          [:div.h7 "Length:"]
-          [:span.medium (:option/name length)]))
-      [:div.flex-auto
+         (:option/name color)))]
+      [:div.hide-on-mb-tb
        (field
-        (utils/fake-href events/control-product-detail-picker-open {:facet-slug :item/quantity})
-         (mobile-dropdown
-           [:div.h7 "Qty:"]
-           [:span.medium sku-quantity]))]]]))
+        (desktop-dropdown
+         [:img.border.border-gray.rounded-0
+          {:height "33px"
+           :width  "65px"
+           :src    (:option/rectangle-swatch color)}]
+         (:option/name color)
+         (invisible-select
+          {:value     (:hair/color selections)
+           :on-change #(messages/handle-message events/control-product-detail-picker-option-select
+                                                {:selection :hair/color
+                                                 :value     (.-value (.-target %))})
+           :options   (map (fn [option]
+                             [:option {:value (:option/slug option)}
+                              (:option/name option)])
+                           (:hair/color options))})))]]
+     [:div
+      [:div.flex.hide-on-mb-tb
+       (field
+        {:class "border-right flex-grow-5"}
+        (desktop-dropdown
+         [:div.h7 "Length:"]
+         [:span.medium (:option/name length)]
+         (invisible-select
+          {:on-change #(messages/handle-message events/control-product-detail-picker-option-select
+                                                {:selection :hair/length
+                                                 :value     (.-value (.-target %))})
+           :value     (:hair/length selections)
+           :options   (map (fn [option]
+                             [:option {:value (:option/slug option)}
+                              (str (:option/name option) " - " (mf/as-money-without-cents (:price option)))])
+                           (:hair/length options))})))
+       [:div.flex-auto
+        (field
+         (desktop-dropdown
+          [:div.h7 "Qty:"]
+          [:span.medium sku-quantity]
+          (invisible-select
+           {:on-change #(messages/handle-message events/control-product-detail-picker-option-quantity-select
+                                                 {:value (spice.core/parse-int (.-value (.-target %)))})
+            :value     sku-quantity
+            :options   (map (fn [quantity]
+                              [:option {:value quantity}
+                               quantity])
+                            (range 1 11))})))]]
+      [:div.flex.hide-on-dt
+         (field
+          (merge
+           {:class "border-right flex-grow-5"}
+           (utils/fake-href events/control-product-detail-picker-open {:facet-slug :hair/length}))
+          (mobile-dropdown
+           [:div.h7 "Length:"]
+           [:span.medium (:option/name length)]))
+         [:div.flex-auto
+          (field
+           (utils/fake-href events/control-product-detail-picker-open {:facet-slug :item/quantity})
+           (mobile-dropdown
+            [:div.h7 "Qty:"]
+            [:span.medium sku-quantity]))]]]]))
 
 (defn quantity-option [{:keys [key quantity primary-label checked? disabled?]}]
   (let [label-style (cond
@@ -105,21 +176,21 @@
 (defn length-option [{:keys [item key primary-label secondary-label checked? disabled? selected-picker]}]
   (let [label-style (cond
                       disabled? "dark-gray"
-                      checked? "medium"
+                      checked?  "medium"
                       :else     nil)]
     (ui/option {:key      key
                 :height   "4em"
                 :on-click (utils/send-event-callback
-                            events/control-product-detail-picker-option-select
-                            {:selection selected-picker
-                             :value (:option/slug item)})}
+                           events/control-product-detail-picker-option-select
+                           {:selection selected-picker
+                            :value     (:option/slug item)})}
                (simple-content-layer
-                 (list
-                   [:div.col-2
-                    (when label-style
-                      {:class label-style})
-                    primary-label]
-                   [:div.gray.flex-auto secondary-label]))
+                (list
+                 [:div.col-2
+                  (when label-style
+                    {:class label-style})
+                  primary-label]
+                 [:div.gray.flex-auto secondary-label]))
                [:div
                 (when disabled?
                   (simple-sold-out-layer "Sold Out"))
