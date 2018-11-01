@@ -265,7 +265,7 @@
                                        :items             (sort-by :option/order (get options selected-picker))
                                        :cell-component-fn (fn [item]
                                                             (color-option
-                                                             {:key             (str "color-" (:option/name item))
+                                                             {:key             (str "color-" (:option/slug item))
                                                               :selected-picker selected-picker
                                                               :color           item
                                                               :checked?        (= (:hair/color selections)
@@ -275,7 +275,7 @@
                                        :items             (sort-by :option/order (get options selected-picker))
                                        :cell-component-fn (fn [item]
                                                             (length-option
-                                                             {:key             (:option/name item)
+                                                             {:key             (:option/slug item)
                                                               :primary-label   (:option/name item)
                                                               :secondary-label (item-price (:price item))
                                                               :checked?        (= (:hair/length selections)
