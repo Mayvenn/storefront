@@ -151,56 +151,61 @@
                   "Add to bag"))
 
 (defn sticky-add-component
-  [{:keys [purchasable? adding-to-bag? sku quantity image]} owner opts]
-  #?(:clj (component/create [:div])
-     :cljs
-     (letfn [(handle-scroll [e] (om/set-state! owner :show? (and purchasable?
-                                                                 (< 866 (.-y (goog.dom/getDocumentScroll))))))
-             (set-height [] (om/set-state! owner :add-button-height (some-> owner
-                                                                            (om/get-node "add-button")
-                                                                            goog.style/getSize
-                                                                            .-height)))]
-       (reify
-         om/IInitState
-         (init-state [this]
-           {:show? false})
-         om/IDidMount
-         (did-mount [this]
-           (set-height)
-           (handle-scroll nil) ;; manually fire once on load incase the page already scrolled
-           (goog.events/listen js/window EventType/SCROLL handle-scroll))
-         om/IWillUnmount
-         (will-unmount [this]
-           (goog.events/unlisten js/window EventType/SCROLL handle-scroll))
-         om/IWillReceiveProps
-         (will-receive-props [this next-props]
-           (set-height))
-         om/IRenderState
-         (render-state [this {:keys [show? add-button-height]}]
-           (component/html
-            [:div.fixed.z4.bottom-0.left-0.right-0.transition-2
-             (if show?
-               {:style {:margin-bottom "0"}}
-               {:style {:margin-bottom (str "-" add-button-height "px")}})
-             [:div {:ref "add-button"}
-              [:div.p3.flex.justify-center.items-center.bg-white.border-top.border-light-gray
-               [:div.col-8
-                [:div.flex.items-center
-                 [:img.border.border-gray.rounded-0
-                  {:height "33px"
-                   :width  "65px"
-                   :src    image}]
-                 [:span.ml2 "Length: " (:hair/length sku) "″"]
-                 [:span.ml2 "Qty: " quantity]]]
-               [:div.col-4
-                (ui/teal-button {:on-click
-                                 (utils/send-event-callback events/control-add-sku-to-bag
-                                                            {:sku      sku
-                                                             :quantity quantity})
-                                 :data-test "add-to-bag"
-                                 :disabled? (not (:inventory/in-stock? sku))
-                                 :spinning? adding-to-bag?}
-                                "Add")]]]]))))))
+  [{:keys [sold-out? unavailable? adding-to-bag? sku quantity image]} owner opts]
+  (let [unpurchasable? (or sold-out? unavailable?)
+        text-style     (if unpurchasable? {:class "gray"} {})]
+    #?(:clj (component/create [:div])
+       :cljs
+       (letfn [(handle-scroll [e] (om/set-state! owner :show? (< 866 (.-y (goog.dom/getDocumentScroll)))))
+               (set-height [] (om/set-state! owner :add-button-height (some-> owner
+                                                                              (om/get-node "add-button")
+                                                                              goog.style/getSize
+                                                                              .-height)))]
+         (reify
+           om/IInitState
+           (init-state [this]
+             {:show? false})
+           om/IDidMount
+           (did-mount [this]
+             (set-height)
+             (handle-scroll nil) ;; manually fire once on load incase the page already scrolled
+             (goog.events/listen js/window EventType/SCROLL handle-scroll))
+           om/IWillUnmount
+           (will-unmount [this]
+             (goog.events/unlisten js/window EventType/SCROLL handle-scroll))
+           om/IWillReceiveProps
+           (will-receive-props [this next-props]
+             (set-height))
+           om/IRenderState
+           (render-state [this {:keys [show? add-button-height]}]
+             (component/html
+              [:div.fixed.z4.bottom-0.left-0.right-0.transition-2
+               (if show?
+                 {:style {:margin-bottom "0"}}
+                 {:style {:margin-bottom (str "-" add-button-height "px")}})
+               [:div {:ref "add-button"}
+                [:div.p3.flex.justify-center.items-center.bg-white.border-top.border-light-gray
+                 [:div.col-8
+                  [:div.flex.items-center
+                   [:img.border.border-gray.rounded-0
+                    {:height "33px"
+                     :width  "65px"
+                     :src    image}]
+                   [:span.ml2 "Length: " [:span text-style (:hair/length sku) "″"]]
+                   [:span.ml2 "Qty: " [:span text-style quantity]]]]
+                 [:div.col-4
+                  (ui/teal-button {:on-click
+                                   (utils/send-event-callback events/control-add-sku-to-bag
+                                                              {:sku      sku
+                                                               :quantity quantity})
+                                   :data-test      "add-to-bag"
+                                   :disabled?      unpurchasable?
+                                   :disabled-class "bg-gray"
+                                   :spinning?      adding-to-bag?}
+                                  (cond
+                                    unavailable? "Unavailable"
+                                    sold-out?    "Sold Out"
+                                    :default     "Add"))]]]])))))))
 
 (def checkout-button
   (component/html
@@ -298,15 +303,15 @@
    (component/build review-component/reviews-summary-dropdown-experiment-component reviews opts)])
 
 (defn component
-  [{:keys [adding-to-bag?
-           carousel-images
-           product
-           reviews
-           selected-sku
-           sku-quantity
-           options
-           picker-data
-           ugc] :as data}
+  [{:keys       [adding-to-bag?
+                 carousel-images
+                 product
+                 reviews
+                 selected-sku
+                 sku-quantity
+                 options
+                 picker-data
+                 ugc] :as data}
    owner
    opts]
   (let [review?      (:review? reviews)
@@ -369,9 +374,8 @@
                                                   :option/rectangle-swatch)
                              :adding-to-bag? adding-to-bag?
                              :sku            selected-sku
-                             :purchasable?   (and
-                                              (seq selected-sku)
-                                              (not sold-out?))
+                             :sold-out?      sold-out?
+                             :unavailable?   (empty? selected-sku)
                              :quantity       sku-quantity} {})]]]))))
 
 (defn min-of-maps
