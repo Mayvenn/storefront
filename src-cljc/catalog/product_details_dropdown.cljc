@@ -305,17 +305,15 @@
    (component/build review-component/reviews-summary-dropdown-experiment-component reviews opts)])
 
 (defn component
-  [{:keys       [adding-to-bag?
-                 carousel-images
-                 product
-                 reviews
-                 selected-sku
-                 sku-quantity
-                 options
-                 picker-data
-                 ugc] :as data}
-   owner
-   opts]
+  [{:keys [adding-to-bag?
+           carousel-images
+           product
+           reviews
+           selected-sku
+           sku-quantity
+           options
+           picker-data
+           ugc] :as data} owner opts]
   (let [review?      (:review? reviews)
         unavailable? (not (seq selected-sku))
         sold-out?    (not (:inventory/in-stock? selected-sku))]
