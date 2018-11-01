@@ -151,7 +151,7 @@
                   "Add to bag"))
 
 (defn sticky-add-component
-  [{:keys [sold-out? unavailable? adding-to-bag? sku quantity image]} owner opts]
+  [{:keys [selected-options sold-out? unavailable? adding-to-bag? sku quantity image]} owner opts]
   (let [unpurchasable? (or sold-out? unavailable?)
         text-style     (if unpurchasable? {:class "gray"} {})]
     #?(:clj (component/create [:div])
@@ -192,8 +192,8 @@
                     [:img.border.border-gray.rounded-0
                      {:height "33px"
                       :width  "65px"
-                      :src    image}]
-                    [:span.ml2 "Length: " [:span text-style (:hair/length sku) "″"]]
+                      :src    (:option/rectangle-swatch (:hair/color selected-options))}]
+                    [:span.ml2 "Length: " [:span text-style (:option/name (:hair/length selected-options))]]
                     [:span.ml2 "Qty: " [:span text-style quantity]]]]]
                  [:div.col-4
                   (ui/teal-button {:on-click
@@ -304,16 +304,27 @@
    {:style {:min-height "18px"}}
    (component/build review-component/reviews-summary-dropdown-experiment-component reviews opts)])
 
+(defn get-selected-options [selections options]
+  (reduce
+   (fn [acc selection]
+     (assoc acc selection
+            (first (filter #(= (selection selections) (:option/slug %))
+                    (selection options)))))
+   {}
+   (keys selections)))
+
 (defn component
-  [{:keys [adding-to-bag?
-           carousel-images
-           product
-           reviews
-           selected-sku
-           sku-quantity
-           options
-           picker-data
-           ugc] :as data} owner opts]
+  [{:keys                         [adding-to-bag?
+                                   carousel-images
+                                   product
+                                   reviews
+                                   selected-sku
+                                   sku-quantity
+                                   selected-options
+                                   selections
+                                   options
+                                   picker-data
+                                   ugc] :as data} owner opts]
   (let [review?      (:review? reviews)
         unavailable? (not (seq selected-sku))
         sold-out?    (not (:inventory/in-stock? selected-sku))]
@@ -367,17 +378,18 @@
             (component/build review-component/reviews-component reviews opts))
           [:div.hide-on-tb-dt
            (component/build sticky-add-component
-                            {:image          (->> options
-                                                  :hair/color
-                                                  (filter #(= (first (:hair/color selected-sku))
-                                                              (:option/slug %)))
-                                                  first
-                                                  :option/rectangle-swatch)
-                             :adding-to-bag? adding-to-bag?
-                             :sku            selected-sku
-                             :sold-out?      sold-out?
-                             :unavailable?   (empty? selected-sku)
-                             :quantity       sku-quantity} {})]]]))))
+                            {:image            (->> options
+                                                    :hair/color
+                                                    (filter #(= (first (:hair/color selected-sku))
+                                                                (:option/slug %)))
+                                                    first
+                                                    :option/rectangle-swatch)
+                             :adding-to-bag?   adding-to-bag?
+                             :sku              selected-sku
+                             :sold-out?        sold-out?
+                             :unavailable?     (empty? selected-sku)
+                             :selected-options selected-options
+                             :quantity         sku-quantity} {})]]]))))
 
 (defn min-of-maps
   ([k] {})
@@ -485,6 +497,7 @@
         product-skus    (extract-product-skus data product)
         facets          (facets/by-slug data)
         carousel-images (find-carousel-images product product-skus selected-sku)
+        options         (get-in data catalog.keypaths/detailed-product-options)
         ugc             (ugc-query product selected-sku data)]
     {:reviews           (add-review-eligibility (review-component/query data) product)
      :ugc               ugc
@@ -492,9 +505,10 @@
                                                       (:catalog/product-id product)))
      :adding-to-bag?    (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
      :sku-quantity      (get-in data keypaths/browse-sku-quantity 1)
-     :options           (get-in data catalog.keypaths/detailed-product-options)
+     :options           options
      :product           product
      :selections        selections
+     :selected-options  (get-selected-options selections options)
      :selected-sku      selected-sku
      :facets            facets
      :selected-picker   (get-in data catalog.keypaths/detailed-product-selected-picker)
