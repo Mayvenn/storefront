@@ -186,13 +186,15 @@
                [:div {:ref "add-button"}
                 [:div.p3.flex.justify-center.items-center.bg-white.border-top.border-light-gray
                  [:div.col-8
-                  [:div.flex.items-center
-                   [:img.border.border-gray.rounded-0
-                    {:height "33px"
-                     :width  "65px"
-                     :src    image}]
-                   [:span.ml2 "Length: " [:span text-style (:hair/length sku) "″"]]
-                   [:span.ml2 "Qty: " [:span text-style quantity]]]]
+                  [:a.inherit-color
+                   {:href "#product-attributes"}
+                   [:div.flex.items-center
+                    [:img.border.border-gray.rounded-0
+                     {:height "33px"
+                      :width  "65px"
+                      :src    image}]
+                    [:span.ml2 "Length: " [:span text-style (:hair/length sku) "″"]]
+                    [:span.ml2 "Qty: " [:span text-style quantity]]]]]
                  [:div.col-4
                   (ui/teal-button {:on-click
                                    (utils/send-event-callback events/control-add-sku-to-bag
@@ -327,6 +329,7 @@
            [:div.absolute.overlay.z4.overflow-auto
             (component/build ugc/popup-component ugc opts)])
          [:div.p2
+          [:a {:name "product-attributes"}]
           (page
            [:div
             (carousel carousel-images product)
