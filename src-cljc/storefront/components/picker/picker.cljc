@@ -194,12 +194,12 @@
                            {:selection selected-picker
                             :value     (:option/slug item)})}
                (simple-content-layer
-                [:div
+                (list
                  [:div.col-2
                   (when label-style
                     {:class label-style})
                   primary-label]
-                 [:div.gray.flex-auto secondary-label]])
+                 [:div.gray.flex-auto secondary-label]))
                [:div
                 (when disabled?
                   (simple-sold-out-layer "Sold Out"))
