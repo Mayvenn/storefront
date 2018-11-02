@@ -101,7 +101,8 @@
                                                 {:selection :hair/color
                                                  :value     (.-value (.-target %))})
            :options   (map (fn [option]
-                             [:option {:value (:option/slug option)}
+                             [:option {:value (:option/slug option)
+                                       :key (str "color-" (:option/slug option))}
                               (:option/name option)])
                            (:hair/color options))})))]]
      [:div
@@ -117,7 +118,8 @@
                                                  :value     (.-value (.-target %))})
            :value     (:hair/length selections)
            :options   (map (fn [option]
-                             [:option {:value (:option/slug option)}
+                             [:option {:value (:option/slug option)
+                                       :key   (str "length-" (:option/slug option))}
                               (str (:option/name option) " - " (mf/as-money-without-cents (:price option)))])
                            (:hair/length options))})))
        [:div.flex-auto
@@ -130,7 +132,8 @@
                                                  {:value (spice.core/parse-int (.-value (.-target %)))})
             :value     sku-quantity
             :options   (map (fn [quantity]
-                              [:option {:value quantity}
+                              [:option {:value quantity
+                                        :key   (str "quantity-" quantity)}
                                quantity])
                             (range 1 11))})))]]
       [:div.flex.hide-on-dt
@@ -185,12 +188,12 @@
                            {:selection selected-picker
                             :value     (:option/slug item)})}
                (simple-content-layer
-                (list
+                [:div
                  [:div.col-2
                   (when label-style
                     {:class label-style})
                   primary-label]
-                 [:div.gray.flex-auto secondary-label]))
+                 [:div.gray.flex-auto secondary-label]])
                [:div
                 (when disabled?
                   (simple-sold-out-layer "Sold Out"))
@@ -213,7 +216,7 @@
       {:class "bold"})
     name]])
 
-(defn color-option [{:as stuff :keys [key color sku-image checked? disabled? selected-picker]}]
+(defn color-option [{:keys [key color sku-image checked? disabled? selected-picker]}]
   (ui/option {:key      key
               :on-click (utils/send-event-callback
                          events/control-product-detail-picker-option-select
@@ -265,7 +268,7 @@
                                        :items             (sort-by :option/order (get options selected-picker))
                                        :cell-component-fn (fn [item]
                                                             (color-option
-                                                             {:key             (str "color-" (:option/slug item))
+                                                             {:key             (str "color-" (:option/name item))
                                                               :selected-picker selected-picker
                                                               :color           item
                                                               :checked?        (= (:hair/color selections)
@@ -275,7 +278,7 @@
                                        :items             (sort-by :option/order (get options selected-picker))
                                        :cell-component-fn (fn [item]
                                                             (length-option
-                                                             {:key             (:option/slug item)
+                                                             {:key             (str "length-" (:option/name item))
                                                               :primary-label   (:option/name item)
                                                               :secondary-label (item-price (:price item))
                                                               :checked?        (= (:hair/length selections)
