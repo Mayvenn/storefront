@@ -670,7 +670,8 @@
         user-token      (get-in app-state keypaths/user-token)
         stylist-account (dissoc (get-in app-state keypaths/stylist-manage-account)
                                 :green-dot-payout-attributes)]
-    (api/update-stylist-account-profile session-id user-id user-token stylist-id stylist-account)))
+    (api/update-stylist-account session-id user-id user-token stylist-id stylist-account
+                                events/api-success-stylist-account-profile)))
 
 (defmethod perform-effects events/control-stylist-account-password-submit [_ _ args _ app-state]
   (let [session-id      (get-in app-state keypaths/session-id)
@@ -680,7 +681,8 @@
         stylist-account (dissoc (get-in app-state keypaths/stylist-manage-account)
                                 :green-dot-payout-attributes)]
     (when (empty? (get-in app-state keypaths/errors))
-      (api/update-stylist-account-password session-id user-id user-token stylist-id stylist-account))))
+      (api/update-stylist-account session-id user-id user-token stylist-id stylist-account
+                                  events/api-success-stylist-account-password))))
 
 (defn reformat-green-dot [greendot-attributes]
   (let [{:keys [expiration-date card-number] :as attributes}
@@ -705,7 +707,8 @@
         stylist-account  (-> (get-in app-state keypaths/stylist-manage-account)
                              (update :green-dot-payout-attributes reformat-green-dot)
                              maps/deep-remove-nils)]
-    (api/update-stylist-account-commission session-id user-id user-token stylist-id stylist-account)))
+    (api/update-stylist-account session-id user-id user-token stylist-id stylist-account
+                                events/api-success-stylist-account-commission)))
 
 (defmethod perform-effects events/control-stylist-account-social-submit [_ _ _ _ app-state]
   (let [session-id      (get-in app-state keypaths/session-id)
@@ -714,7 +717,8 @@
         user-token      (get-in app-state keypaths/user-token)
         stylist-account (dissoc (get-in app-state keypaths/stylist-manage-account)
                                 :green-dot-payout-attributes)]
-    (api/update-stylist-account-social session-id user-id user-token stylist-id stylist-account)))
+    (api/update-stylist-account session-id user-id user-token stylist-id stylist-account
+                                events/api-success-stylist-account-social)))
 
 (defmethod perform-effects events/uploadcare-api-failure [_ _ {:keys [error error-data]} _ app-state]
   (exception-handler/report error error-data))

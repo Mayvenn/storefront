@@ -442,61 +442,18 @@
    {:handler #(messages/handle-message events/api-success-shipping-methods
                                        (update-in % [:shipping-methods] reverse))}))
 
-(defn update-stylist-account-profile [session-id user-id user-token stylist-id stylist-account]
+(defn update-stylist-account [session-id user-id user-token stylist-id stylist-account success-event]
   (storeback-api-req
    PUT
    "/stylist"
-   request-keys/update-stylist-account-profile
+   request-keys/update-stylist-account
    {:params {:session-id session-id
              :stylist-id stylist-id
              :user-id    user-id
              :user-token user-token
              :stylist    stylist-account}
     :handler
-    #(messages/handle-message events/api-success-stylist-account-profile
-                              {:stylist (select-stylist-account-keys %)})}))
-
-(defn update-stylist-account-password [session-id user-id user-token stylist-id stylist-account]
-  (storeback-api-req
-   PUT
-   "/stylist"
-   request-keys/update-stylist-account-password
-   {:params {:session-id session-id
-             :stylist-id stylist-id
-             :user-id    user-id
-             :user-token user-token
-             :stylist    stylist-account}
-    :handler
-    #(messages/handle-message events/api-success-stylist-account-password
-                              {:stylist (select-stylist-account-keys %)})}))
-
-(defn update-stylist-account-commission [session-id user-id user-token stylist-id stylist-account]
-  (storeback-api-req
-   PUT
-   "/stylist"
-   request-keys/update-stylist-account-commission
-   {:params {:session-id session-id
-             :stylist-id stylist-id
-             :user-id    user-id
-             :user-token user-token
-             :stylist    stylist-account}
-    :handler
-    #(messages/handle-message events/api-success-stylist-account-commission
-                              {:stylist (select-stylist-account-keys %)})}))
-
-(defn update-stylist-account-social [session-id user-id user-token stylist-id stylist-account]
-  (storeback-api-req
-   PUT
-   "/stylist"
-   request-keys/update-stylist-account-social
-   {:params {:session-id session-id
-             :stylist-id stylist-id
-             :user-id    user-id
-             :user-token user-token
-             :stylist    stylist-account}
-    :handler
-    #(messages/handle-message events/api-success-stylist-account-social
-                              {:stylist (select-stylist-account-keys %)})}))
+    #(messages/handle-message success-event {:stylist (select-stylist-account-keys %)})}))
 
 (defn update-stylist-account-portrait [session-id user-id user-token stylist-id stylist-account]
   (storeback-api-req

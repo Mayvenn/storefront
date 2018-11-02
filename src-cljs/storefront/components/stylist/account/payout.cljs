@@ -267,7 +267,7 @@
     (conj ["Mayvenn Debit" "mayvenn_debit"])))
 
 (defn query [data]
-  {:saving?        (utils/requesting? data request-keys/update-stylist-account-commission)
+  {:saving?        (utils/requesting? data request-keys/update-stylist-account)
    :payout-method  (get-in data (conj keypaths/stylist-manage-account :chosen-payout-method))
    :payout-methods (payout-methods (get-in data (conj keypaths/stylist-manage-account :original-payout-method)))
    :paypal-email   (get-in data (conj keypaths/stylist-manage-account :paypal-payout-attributes :email))

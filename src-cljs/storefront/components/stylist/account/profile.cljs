@@ -86,7 +86,7 @@
                                    :data-test "account-form-submit"})]]]]))
 
 (defn query [data]
-  {:saving?      (utils/requesting? data request-keys/update-stylist-account-profile)
+  {:saving?      (utils/requesting? data request-keys/update-stylist-account)
    :address      (get-in data (conj keypaths/stylist-manage-account :address))
    :birth-date   (get-in data (conj keypaths/stylist-manage-account :birth-date))
    :user         (get-in data (conj keypaths/stylist-manage-account :user))

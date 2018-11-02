@@ -59,7 +59,7 @@
                                   :data-test "account-form-submit"})]]]))
 
 (defn query [data]
-  {:saving?           (utils/requesting? data request-keys/update-stylist-account-social)
+  {:saving?           (utils/requesting? data request-keys/update-stylist-account)
    :instagram-account (get-in data (conj keypaths/stylist-manage-account :instagram-account))
    :styleseat-account (get-in data (conj keypaths/stylist-manage-account :styleseat-account))
    :field-errors      (get-in data keypaths/field-errors)

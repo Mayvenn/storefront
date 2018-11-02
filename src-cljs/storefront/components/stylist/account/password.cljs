@@ -41,7 +41,7 @@
                                   :data-test "account-form-submit"})]]]))
 
 (defn query [data]
-  {:saving?        (utils/requesting? data request-keys/update-stylist-account-password)
+  {:saving?        (utils/requesting? data request-keys/update-stylist-account)
    :password       (get-in data (conj keypaths/stylist-manage-account :user :password))
    :show-password? (get-in data keypaths/account-show-password? true)
    :field-errors   (get-in data keypaths/field-errors)
