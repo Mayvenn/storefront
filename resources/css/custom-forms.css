@@ -52,6 +52,10 @@ select:focus,
   position: relative;
 }
 
+select:focus.invisible-select {
+  position: absolute;
+}
+
 .StripeElement--focus,
 .glow {
   outline-offset: -3px;
