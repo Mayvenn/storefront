@@ -290,7 +290,9 @@
                                                               :primary-label (str quantity)
                                                               :checked?      (= quantity sku-quantity)
                                                               :quantity      quantity}))})
-        (picker-rows data)))]))
+        nil))
+    (when (seq options)
+      (picker-rows data))]))
 
 (defn query
   [data]
