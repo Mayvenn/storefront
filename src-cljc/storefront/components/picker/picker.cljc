@@ -80,21 +80,23 @@
      [:div
       [:div.hide-on-dt
        (field
-        (utils/fake-href events/control-product-detail-picker-open {:facet-slug :hair/color})
+        (merge {:data-test "picker-color"}
+               (utils/fake-href events/control-product-detail-picker-open {:facet-slug :hair/color}))
         (mobile-dropdown
          [:img.border.border-gray.rounded-0
           {:height "33px"
            :width  "65px"
            :src    (:option/rectangle-swatch color)}]
-         (:option/name color)))]
+         [:span {:data-test (str "picker-selected-color-" (:option/slug color))} (:option/name color)]))]
       [:div.hide-on-mb-tb
        (field
+        {:data-test "picker-color"}
         (desktop-dropdown
          [:img.border.border-gray.rounded-0
           {:height "33px"
            :width  "65px"
            :src    (:option/rectangle-swatch color)}]
-         (:option/name color)
+         [:span {:data-test (str "picker-selected-color-" (:option/slug color))} (:option/name color)]
          (invisible-select
           {:value     (:hair/color selections)
            :on-change #(messages/handle-message events/control-product-detail-picker-option-select
@@ -108,10 +110,11 @@
      [:div
       [:div.flex.hide-on-mb-tb
        (field
-        {:class "border-right flex-grow-5"}
+        {:class     "border-right flex-grow-5"
+         :data-test "picker-length"}
         (desktop-dropdown
          [:div.h7 "Length:"]
-         [:span.medium (:option/name length)]
+         [:span.medium {:data-test (str "picker-selected-length-" (:option/slug length))} (:option/name length)]
          (invisible-select
           {:on-change #(messages/handle-message events/control-product-detail-picker-option-select
                                                 {:selection :hair/length
@@ -124,9 +127,10 @@
                            (:hair/length options))})))
        [:div.flex-auto
         (field
+         {:data-test "picker-quantity"}
          (desktop-dropdown
           [:div.h7 "Qty:"]
-          [:span.medium sku-quantity]
+          [:span.medium {:data-test (str "picker-selected-quantity-" sku-quantity)} sku-quantity]
           (invisible-select
            {:on-change #(messages/handle-message events/control-product-detail-picker-option-quantity-select
                                                  {:value (spice.core/parse-int (.-value (.-target %)))})
@@ -139,17 +143,19 @@
       [:div.flex.hide-on-dt
          (field
           (merge
-           {:class "border-right flex-grow-5"}
+           {:class     "border-right flex-grow-5"
+            :data-test "picker-length"}
            (utils/fake-href events/control-product-detail-picker-open {:facet-slug :hair/length}))
           (mobile-dropdown
            [:div.h7 "Length:"]
-           [:span.medium (:option/name length)]))
+           [:span.medium {:data-test (str "picker-selected-length-" (:option/slug length))} (:option/name length)]))
          [:div.flex-auto
           (field
-           (utils/fake-href events/control-product-detail-picker-open {:facet-slug :item/quantity})
+           (merge {:data-test "picker-quantity"}
+                  (utils/fake-href events/control-product-detail-picker-open {:facet-slug :item/quantity}))
            (mobile-dropdown
             [:div.h7 "Qty:"]
-            [:span.medium sku-quantity]))]]]]))
+            [:span.medium {:data-test (str "picker-selected-quantity-" sku-quantity)} sku-quantity]))]]]]))
 
 (defn quantity-option [{:keys [key quantity primary-label checked? disabled?]}]
   (let [label-style (cond
@@ -216,14 +222,15 @@
       {:class "bold"})
     name]])
 
-(defn color-option [{:keys [key color sku-image checked? disabled? selected-picker]}]
+(defn color-option
+  [{:keys [key color sku-image checked? disabled? selected-picker]}]
   (ui/option {:key      key
               :on-click (utils/send-event-callback
                          events/control-product-detail-picker-option-select
                          {:selection selected-picker
                           :value     (:option/slug color)})}
              (swatch-content-layer color sku-image checked?)
-             [:div
+             [:div {:data-test (str "picker-color-" (:option/slug color))}
               (when disabled?
                 [:div.absolute.overlay.bg-lighten-3.flex.items-center.justify-center
                  [:div.dark-gray.self-center.flex.items-center.mr2
@@ -252,7 +259,8 @@
 
     [:div.absolute.overlay.flex.items-center.justify-end
      [:a.teal.medium.p3
-      (utils/fake-href events/control-product-detail-picker-close)
+      (merge {:data-test "picker-close"}
+             (utils/fake-href events/control-product-detail-picker-close))
       "Done"]]]
 
    [:div.py3.px1 ;; body
