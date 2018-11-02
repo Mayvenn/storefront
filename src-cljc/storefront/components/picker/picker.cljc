@@ -90,13 +90,12 @@
          [:span {:data-test (str "picker-selected-color-" (:option/slug color))} (:option/name color)]))]
       [:div.hide-on-mb-tb
        (field
-        {:data-test "picker-color"}
         (desktop-dropdown
          [:img.border.border-gray.rounded-0
           {:height "33px"
            :width  "65px"
            :src    (:option/rectangle-swatch color)}]
-         [:span {:data-test (str "picker-selected-color-" (:option/slug color))} (:option/name color)]
+         [:span (:option/name color)]
          (invisible-select
           {:value     (:hair/color selections)
            :on-change #(messages/handle-message events/control-product-detail-picker-option-select
@@ -110,11 +109,10 @@
      [:div
       [:div.flex.hide-on-mb-tb
        (field
-        {:class     "border-right flex-grow-5"
-         :data-test "picker-length"}
+        {:class     "border-right flex-grow-5"}
         (desktop-dropdown
          [:div.h7 "Length:"]
-         [:span.medium {:data-test (str "picker-selected-length-" (:option/slug length))} (:option/name length)]
+         [:span.medium (:option/name length)]
          (invisible-select
           {:on-change #(messages/handle-message events/control-product-detail-picker-option-select
                                                 {:selection :hair/length
@@ -127,10 +125,9 @@
                            (:hair/length options))})))
        [:div.flex-auto
         (field
-         {:data-test "picker-quantity"}
          (desktop-dropdown
           [:div.h7 "Qty:"]
-          [:span.medium {:data-test (str "picker-selected-quantity-" sku-quantity)} sku-quantity]
+          [:span.medium sku-quantity]
           (invisible-select
            {:on-change #(messages/handle-message events/control-product-detail-picker-option-quantity-select
                                                  {:value (spice.core/parse-int (.-value (.-target %)))})
@@ -162,21 +159,22 @@
                       disabled? "dark-gray"
                       checked?  "medium"
                       :else     nil)]
-    (ui/option {:key      key
-                :height   "4em"
-                :on-click (utils/send-event-callback
-                           events/control-product-detail-picker-option-quantity-select
-                           {:value quantity})}
-               (simple-content-layer
-                [:div.col-2
-                 (when label-style
-                   {:class label-style})
-                 primary-label])
-               [:div
-                (when disabled?
-                  (simple-sold-out-layer ""))
-                (when checked?
-                  (simple-selected-layer))])))
+    [:div {:data-test (str "picker-quantity-" quantity)}
+     (ui/option {:key      key
+                 :height   "4em"
+                 :on-click (utils/send-event-callback
+                            events/control-product-detail-picker-option-quantity-select
+                            {:value quantity})}
+                (simple-content-layer
+                 [:div.col-2
+                  (when label-style
+                    {:class label-style})
+                  primary-label])
+                [:div
+                 (when disabled?
+                   (simple-sold-out-layer ""))
+                 (when checked?
+                   (simple-selected-layer))])]))
 
 (defn item-price [price]
   (when price
@@ -187,24 +185,25 @@
                       disabled? "dark-gray"
                       checked?  "medium"
                       :else     nil)]
-    (ui/option {:key      key
-                :height   "4em"
-                :on-click (utils/send-event-callback
-                           events/control-product-detail-picker-option-select
-                           {:selection selected-picker
-                            :value     (:option/slug item)})}
-               (simple-content-layer
-                (list
-                 [:div.col-2
-                  (when label-style
-                    {:class label-style})
-                  primary-label]
-                 [:div.gray.flex-auto secondary-label]))
-               [:div
-                (when disabled?
-                  (simple-sold-out-layer "Sold Out"))
-                (when checked?
-                  (simple-selected-layer))])))
+    [:div {:data-test (str "picker-length-" (:option/slug item))}
+     (ui/option {:key      key
+                 :height   "4em"
+                 :on-click (utils/send-event-callback
+                            events/control-product-detail-picker-option-select
+                            {:selection selected-picker
+                             :value     (:option/slug item)})}
+                (simple-content-layer
+                 (list
+                  [:div.col-2
+                   (when label-style
+                     {:class label-style})
+                   primary-label]
+                  [:div.gray.flex-auto secondary-label]))
+                [:div
+                 (when disabled?
+                   (simple-sold-out-layer "Sold Out"))
+                 (when checked?
+                   (simple-selected-layer))])]))
 
 (defn swatch-content-layer [{:option/keys [name rectangle-swatch]} sku-img checked?]
   [:div.flex.flex-column.bg-white
@@ -224,28 +223,29 @@
 
 (defn color-option
   [{:keys [key color sku-image checked? disabled? selected-picker]}]
-  (ui/option {:key      key
-              :on-click (utils/send-event-callback
-                         events/control-product-detail-picker-option-select
-                         {:selection selected-picker
-                          :value     (:option/slug color)})}
-             (swatch-content-layer color sku-image checked?)
-             [:div {:data-test (str "picker-color-" (:option/slug color))}
-              (when disabled?
-                [:div.absolute.overlay.bg-lighten-3.flex.items-center.justify-center
-                 [:div.dark-gray.self-center.flex.items-center.mr2
-                  {:style {:margin-top "-30px"}}
-                  "Sold Out"]])
-              (when checked?
-                [:div.absolute.border.border-width-3.rounded-0.border-light-teal.overlay.flex
-                 [:div.self-center.flex.items-center
-                  {:style {:margin-left "-2em"}}
-                  [:div {:style {:width "1em"}}]
-                  [:div.circle  ; checkmark circle
-                   (ui/ucare-img {:width           "30"
-                                  :retina-quality  "better"
-                                  :default-quality "better"}
-                                 "9e2a48b3-9811-46d2-840b-31c9f85670ad")]]])]))
+  [:div {:data-test (str "picker-color-" (:option/slug color))}
+   (ui/option {:key      key
+               :on-click (utils/send-event-callback
+                          events/control-product-detail-picker-option-select
+                          {:selection selected-picker
+                           :value     (:option/slug color)})}
+              (swatch-content-layer color sku-image checked?)
+              [:div
+               (when disabled?
+                 [:div.absolute.overlay.bg-lighten-3.flex.items-center.justify-center
+                  [:div.dark-gray.self-center.flex.items-center.mr2
+                   {:style {:margin-top "-30px"}}
+                   "Sold Out"]])
+               (when checked?
+                 [:div.absolute.border.border-width-3.rounded-0.border-light-teal.overlay.flex
+                  [:div.self-center.flex.items-center
+                   {:style {:margin-left "-2em"}}
+                   [:div {:style {:width "1em"}}]
+                   [:div.circle  ; checkmark circle
+                    (ui/ucare-img {:width           "30"
+                                   :retina-quality  "better"
+                                   :default-quality "better"}
+                                  "9e2a48b3-9811-46d2-840b-31c9f85670ad")]]])])])
 
 (defn picker-dialog
   "picker dialog as in https://app.zeplin.io/project/5a9f159069d48a4c15497a49/screen/5b15c08f4819592903cb1348"
