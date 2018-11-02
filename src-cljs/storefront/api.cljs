@@ -405,19 +405,22 @@
    {:params params :handler handler}))
 
 (defn select-stylist-account-keys [args]
-  (-> args
-      (select-keys [:birth-date-1i :birth-date-2i :birth-date-3i
-                    :birth-date
-                    :portrait
-                    :chosen-payout-method
-                    :venmo-payout-attributes
-                    :paypal-payout-attributes
-                    :green-dot-payout-attributes
-                    :instagram-account
-                    :styleseat-account
-                    :user
-                    :address])
-      (assoc :original-payout-method (:chosen-payout-method args))))
+  (cond-> args
+    ;; TODO: why do we need this?
+    (:stylist args) :stylist
+
+    :always (select-keys [:birth-date-1i :birth-date-2i :birth-date-3i
+                          :birth-date
+                          :portrait
+                          :chosen-payout-method
+                          :venmo-payout-attributes
+                          :paypal-payout-attributes
+                          :green-dot-payout-attributes
+                          :instagram-account
+                          :styleseat-account
+                          :user
+                          :address])
+    :always (assoc :original-payout-method (:chosen-payout-method args))))
 
 (defn get-stylist-account [user-id user-token stylist-id]
   (storeback-api-req
