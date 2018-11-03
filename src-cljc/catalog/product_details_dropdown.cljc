@@ -567,17 +567,23 @@
   (when (= 1 (count coll))
     (first coll)))
 
-(defn determine-sku-from-selections [app-state]
-  (let [product      (products/current-product app-state)
-        skus         (get-in app-state catalog.keypaths/detailed-product-product-skus)
-        selections   (get-in app-state catalog.keypaths/detailed-product-selections)
-        selected-sku (selector/match-all {} selections skus)]
+(defn determine-sku-from-selections [app-state selections]
+  (let [product        (products/current-product app-state)
+        skus           (get-in app-state catalog.keypaths/detailed-product-product-skus)
+        old-selections (merge (skuers/electives product (get-in app-state catalog.keypaths/detailed-product-selected-sku)))
+        new-selections (merge old-selections selections)
+        selected-sku   (selector/match-all {} new-selections skus)]
     (first-when-only selected-sku)))
 
-(defn assoc-sku-from-selections [app-state]
-  (assoc-in app-state
-            catalog.keypaths/detailed-product-selected-sku
-            (determine-sku-from-selections app-state)))
+(defn assoc-detailed-product-selections
+  "Sets default selections for product electives `:hair/color`, `:hair/length`"
+  [app-state product]
+  (let [facets       (facets/by-slug app-state)
+        product-skus (extract-product-skus app-state product)]
+    (cond-> app-state
+      (experiments/pdp-dropdown? app-state)
+      (assoc-in catalog.keypaths/detailed-product-selections
+                (default-selections facets product product-skus)))))
 
 (defn assoc-detailed-product-options
   "Sets default selections for product electives `:hair/color`, `:hair/length`"
@@ -595,9 +601,7 @@
 (defmethod transitions/transition-state events/control-product-detail-picker-option-select
   [_ event {:keys [selection value]} app-state]
   (-> app-state
-      (update-in catalog.keypaths/detailed-product-selections merge {selection value})
       (assoc-in catalog.keypaths/detailed-product-selected-picker nil)
-      assoc-sku-from-selections
       assoc-detailed-product-options))
 
 (defmethod transitions/transition-state events/control-product-detail-picker-open
@@ -613,3 +617,14 @@
 (defmethod transitions/transition-state events/control-product-detail-picker-close
   [_ event _ app-state]
   (assoc-in app-state catalog.keypaths/detailed-product-selected-picker nil))
+
+#?(:cljs
+   (defmethod effects/perform-effects events/control-product-detail-picker-option-select
+     [_ event {:keys [selection value]} _ app-state]
+     (let [sku (determine-sku-from-selections app-state {selection #{value}})
+           sku-id                                 (:catalog/sku-id sku)
+           {:keys [catalog/product-id page/slug]} (products/current-product app-state)]
+       (history/enqueue-redirect events/navigate-product-details
+                                 {:catalog/product-id product-id
+                                  :page/slug          slug
+                                  :query-params       {:SKU sku-id}}))))
