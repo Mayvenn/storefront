@@ -9,14 +9,13 @@
                        [goog.style]
                        [om.core :as om]])
             [catalog.facets :as facets]
-            [lambdaisland.uri :as uri]
             [catalog.keypaths]
             [catalog.product-details-ugc :as ugc]
             [storefront.components.picker.picker :as picker]
             [catalog.products :as products]
             [catalog.skuers :as skuers]
+            [catalog.selector.sku :as sku-selector]
             [clojure.set :as set]
-            [clojure.spec.alpha :as s]
             [clojure.string :as string]
             [spice.core :as spice]
             [spice.date :as date]
@@ -43,53 +42,6 @@
             [storefront.platform.reviews :as review-component]
             [storefront.request-keys :as request-keys]
             [storefront.transitions :as transitions]))
-
-(s/def ::keyword
-  (s/conformer
-   (fn [value]
-     (cond (string? value)  (keyword value)
-           (keyword? value) value
-           :otherwise       ::s/invalid))))
-
-(s/def ::ucare-url
-  (s/conformer
-   (s/nilable
-    (fn [value]
-      (or
-       (and value
-            (= "ucarecdn.com"
-               (:host (uri/parse value))))
-       ::s/invalid)))))
-
-(s/def :option/name string?)
-(s/def :option/slug string?)
-(s/def :option/order int?)
-(s/def :option/sku-swatch ::ucare-url)
-(s/def :option/rectangular-swatch ::ucare-url)
-
-(s/def ::stocked? boolean?)
-(s/def ::image ::ucare-url)
-(s/def ::price number?)
-(s/def ::price-delta double?)
-
-(s/def ::selector-option
-  (s/keys
-   :req [:option/slug
-         :option/name]
-   :opt [:option/rectangular-swatch
-         :option/sku-swatch
-         :option/order]
-   :req-un [::image ::price]))
-
-(defn conform! [spec value]
-  (let [result (s/conform spec value)]
-    (if (= ::s/invalid result)
-      (do
-        #?(:cljs (js/console.log (s/explain-str spec value)))
-        (throw (ex-info "Failing spec!" {:explaination (s/explain-str spec value)
-                                         :value value
-                                         :spec spec})))
-      result)))
 
 (defn item-price [price]
   (when price
@@ -433,31 +385,6 @@
        ;; The correct solution is to get rid of/fix slick
        :now           (date/now)})))
 
-(defn generate-options
-  "given these args we need to generate a map of the form:
-
-  {:facet-slug  [[#{option-slug}] #{option-slug} #{option-slug}]
-   :attr2 [{... option .. }]}"
-  [facets {:as product :keys [selector/electives]} product-skus]
-  (not-empty
-   (reduce (fn [acc-options [facet-slug {:as   facet
-                                         :keys [facet/options]}]]
-             (->> product-skus
-                  (group-by facet-slug)
-                  (map (fn [[option-slug option-skus]]
-                         (let [cheapest-sku (apply min-key :sku/price option-skus)
-                               option       (merge (dissoc (get options (first option-slug)) :sku/name)
-                                                   {:price             (:sku/price cheapest-sku)
-                                                    :stocked?          (when (seq option-skus)
-                                                                         (some :inventory/in-stock? option-skus))
-                                                    :option/sku-swatch (:url (find-swatch-sku-image cheapest-sku))
-                                                    :image             (get-in options [option-slug :option/image])})]
-                           (conform! ::selector-option option))))
-                  (sort-by :filter/order)
-                  (assoc acc-options facet-slug)))
-           {}
-           (select-keys facets electives))))
-
 (defn add-review-eligibility [review-data product]
   (assoc review-data :review? (products/eligible-for-reviews? product)))
 
@@ -481,7 +408,7 @@
   for un-selected values picks first option from the available options.
   e.g.: if there's no `hair/color` in `selections` map - it sets it to whatever the first in the list, e.g.: \"black\""
   [facets product product-skus]
-  (let [options (generate-options facets product product-skus)]
+  (let [options (sku-selector/product-options facets product product-skus)]
     (reduce
      (fn [a k]
        (if (get a k)
@@ -596,7 +523,9 @@
       (and (experiments/pdp-dropdown? app-state)
            (contains? (:catalog/department product) "hair"))
       (assoc-in catalog.keypaths/detailed-product-options
-                (generate-options facets product product-skus)))))
+                (sku-selector/product-options facets
+                                              product
+                                              product-skus)))))
 
 (defmethod transitions/transition-state events/control-product-detail-picker-option-select
   [_ event {:keys [selection value]} app-state]
