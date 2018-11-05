@@ -51,7 +51,9 @@
                  :contentful-config {:api-key  (env :contentful-content-delivery-api-key)
                                      :space-id (env :contentful-space-id)}
                  :storeback-config  {:endpoint          (env :storeback-endpoint)
-                                     :internal-endpoint (env :storeback-internal-endpoint)}})
+                                     :internal-endpoint (or
+                                                         (env :storeback-v2-internal-endpoint)
+                                                         (env :storeback-internal-endpoint))}})
 
 (defn deep-merge
   [& maps]
