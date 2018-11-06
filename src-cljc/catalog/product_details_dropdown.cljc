@@ -502,36 +502,46 @@
          (selector/match-all {} (merge old-selections new-selections))
          first-when-only)))
 
-(defn assoc-detailed-product-selections
-  "Sets default selections for product electives `:hair/color`, `:hair/length`"
-  [app-state product]
-  (let [facets       (facets/by-slug app-state)
-        product-skus (extract-product-skus app-state product)]
-    (cond-> app-state
-      (experiments/pdp-dropdown? app-state)
-      (assoc-in catalog.keypaths/detailed-product-selections
-                (default-selections facets product product-skus)))))
-
-(defn assoc-detailed-product-options
-  "Sets default selections for product electives `:hair/color`, `:hair/length`"
+(defn ^:private assoc-sku-selector-options-and-selections
   [app-state]
   (let [product-id   (get-in app-state catalog.keypaths/detailed-product-id)
         product      (products/product-by-id app-state product-id)
         facets       (facets/by-slug app-state)
         product-skus (extract-product-skus app-state product)]
-    (cond-> app-state
-      (and (experiments/pdp-dropdown? app-state)
-           (contains? (:catalog/department product) "hair"))
-      (assoc-in catalog.keypaths/detailed-product-options
-                (sku-selector/product-options facets
-                                              product
-                                              product-skus)))))
+    (-> app-state
+        (assoc-in catalog.keypaths/detailed-product-selections
+                  (default-selections facets
+                                      product
+                                      product-skus))
+        (assoc-in catalog.keypaths/detailed-product-options
+                  (sku-selector/product-options facets
+                                                product
+                                                product-skus)))))
+
+(defn navigate-handler
+  ;; redirect to cheapest in effects
+  [_ event {:keys [catalog/product-id query-params]} app-state]
+  (let [{:selector/keys [skus]}  (products/product-by-id app-state
+                                                         product-id)
+        {ugc-offset   :offset
+         sku-id-param :SKU}      query-params
+        {:as   sku
+         :keys [catalog/sku-id]} (->> sku-id-param
+                                      (conj keypaths/v2-skus)
+                                      (get-in app-state))]
+    (cond-> (-> app-state
+                (assoc-in catalog.keypaths/detailed-product-id product-id)
+                (assoc-in keypaths/ui-ugc-category-popup-offset ugc-offset)
+                (assoc-in keypaths/browse-recently-added-skus [])
+                (assoc-in keypaths/browse-sku-quantity 1))
+      (and sku-id (contains? (set skus) sku-id))
+      assoc-sku-selector-options-and-selections)))
 
 (defmethod transitions/transition-state events/control-product-detail-picker-option-select
   [_ event {:keys [selection value]} app-state]
   (-> app-state
       (assoc-in catalog.keypaths/detailed-product-selected-picker nil)
-      assoc-detailed-product-options))
+      assoc-sku-selector-options-and-selections))
 
 (defmethod transitions/transition-state events/control-product-detail-picker-open
   [_ event {:keys [facet-slug]} app-state]
@@ -546,20 +556,6 @@
 (defmethod transitions/transition-state events/control-product-detail-picker-close
   [_ event _ app-state]
   (assoc-in app-state catalog.keypaths/detailed-product-selected-picker nil))
-
-(defn navigate-handler
-  [_ event {:keys [catalog/product-id query-params]} app-state]
-  (let [product (products/product-by-id app-state product-id)
-        sku-id  (determine-sku-id app-state product (:SKU query-params))
-        sku     (get-in app-state (conj keypaths/v2-skus sku-id))]
-    (-> app-state
-        (assoc-in catalog.keypaths/detailed-product-id product-id)
-        (assoc-in keypaths/ui-ugc-category-popup-offset (:offset query-params))
-        (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
-        (assoc-detailed-product-selections product)
-        (assoc-detailed-product-options)
-        (assoc-in keypaths/browse-recently-added-skus [])
-        (assoc-in keypaths/browse-sku-quantity 1))))
 
 #?(:cljs
    (defmethod effects/perform-effects events/control-product-detail-picker-option-select
