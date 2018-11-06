@@ -547,6 +547,20 @@
   [_ event _ app-state]
   (assoc-in app-state catalog.keypaths/detailed-product-selected-picker nil))
 
+(defn navigate-handler
+  [_ event {:keys [catalog/product-id query-params]} app-state]
+  (let [product (products/product-by-id app-state product-id)
+        sku-id  (determine-sku-id app-state product (:SKU query-params))
+        sku     (get-in app-state (conj keypaths/v2-skus sku-id))]
+    (-> app-state
+        (assoc-in catalog.keypaths/detailed-product-id product-id)
+        (assoc-in keypaths/ui-ugc-category-popup-offset (:offset query-params))
+        (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
+        (assoc-detailed-product-selections product)
+        (assoc-detailed-product-options)
+        (assoc-in keypaths/browse-recently-added-skus [])
+        (assoc-in keypaths/browse-sku-quantity 1))))
+
 #?(:cljs
    (defmethod effects/perform-effects events/control-product-detail-picker-option-select
      [_ event {:keys [selection value]} _ app-state]

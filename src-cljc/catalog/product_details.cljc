@@ -539,18 +539,18 @@
          (:catalog/sku-id epitome)))))
 
 (defmethod transitions/transition-state events/navigate-product-details
-  [_ event {:keys [catalog/product-id query-params]} app-state]
-  (let [product (products/product-by-id app-state product-id)
-        sku-id  (determine-sku-id app-state product (:SKU query-params))
-        sku     (get-in app-state (conj keypaths/v2-skus sku-id))]
-    (-> app-state
-        (assoc-in catalog.keypaths/detailed-product-id product-id)
-        (assoc-in keypaths/ui-ugc-category-popup-offset (:offset query-params))
-        (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
-        (product-details-dropdown/assoc-detailed-product-selections product)
-        (product-details-dropdown/assoc-detailed-product-options)
-        (assoc-in keypaths/browse-recently-added-skus [])
-        (assoc-in keypaths/browse-sku-quantity 1))))
+  [_ event {:as args :keys [catalog/product-id query-params]} app-state]
+  (if (experiments/pdp-dropdown? app-state)
+    (product-details-dropdown/navigate-handler _ event args app-state)
+    (let [product (products/product-by-id app-state product-id)
+          sku-id  (determine-sku-id app-state product (:SKU query-params))
+          sku     (get-in app-state (conj keypaths/v2-skus sku-id))]
+      (-> app-state
+          (assoc-in catalog.keypaths/detailed-product-id product-id)
+          (assoc-in keypaths/ui-ugc-category-popup-offset (:offset query-params))
+          (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
+          (assoc-in keypaths/browse-recently-added-skus [])
+          (assoc-in keypaths/browse-sku-quantity 1)))))
 
 (defn url-points-to-invalid-sku? [selected-sku query-params]
   (and (:catalog/sku-id selected-sku)
