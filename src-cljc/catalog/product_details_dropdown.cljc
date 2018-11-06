@@ -494,13 +494,13 @@
   (when (= 1 (count coll))
     (first coll)))
 
-(defn determine-sku-from-selections [app-state selections]
-  (let [product        (products/current-product app-state)
-        skus           (get-in app-state catalog.keypaths/detailed-product-product-skus)
-        old-selections (merge (skuers/electives product (get-in app-state catalog.keypaths/detailed-product-selected-sku)))
-        new-selections (merge old-selections selections)
-        selected-sku   (selector/match-all {} new-selections skus)]
-    (first-when-only selected-sku)))
+(defn determine-sku-from-selections
+  [app-state new-selections]
+  (let [product-skus   (get-in app-state catalog.keypaths/detailed-product-product-skus)
+        old-selections (get-in app-state catalog.keypaths/detailed-product-selections)]
+    (->> product-skus
+         (selector/match-all {} (merge old-selections new-selections))
+         first-when-only)))
 
 (defn assoc-detailed-product-selections
   "Sets default selections for product electives `:hair/color`, `:hair/length`"
@@ -550,10 +550,12 @@
 #?(:cljs
    (defmethod effects/perform-effects events/control-product-detail-picker-option-select
      [_ event {:keys [selection value]} _ app-state]
-     (let [sku (determine-sku-from-selections app-state {selection #{value}})
-           sku-id                                 (:catalog/sku-id sku)
-           {:keys [catalog/product-id page/slug]} (products/current-product app-state)]
+     (let [sku-id-for-selection (->> {selection #{value}}
+                                     (determine-sku-from-selections app-state)
+                                     :catalog/sku-id)
+           params-with-sku-id   (-> app-state
+                                    products/current-product
+                                    (select-keys [:catalog/product-id :page/slug])
+                                    (assoc :query-params {:SKU sku-id-for-selection}))]
        (history/enqueue-redirect events/navigate-product-details
-                                 {:catalog/product-id product-id
-                                  :page/slug          slug
-                                  :query-params       {:SKU sku-id}}))))
+                                 params-with-sku-id))))
