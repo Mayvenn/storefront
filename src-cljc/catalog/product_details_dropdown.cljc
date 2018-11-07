@@ -41,7 +41,8 @@
             [storefront.platform.messages :as messages]
             [storefront.platform.reviews :as review-component]
             [storefront.request-keys :as request-keys]
-            [storefront.transitions :as transitions]))
+            [storefront.transitions :as transitions]
+            [catalog.keypaths :as catalog.keypaths]))
 
 (defn item-price [price]
   (when price
@@ -502,21 +503,41 @@
          (selector/match-all {} (merge old-selections new-selections))
          first-when-only)))
 
-(defn ^:private assoc-sku-selector-options-and-selections
+(defn ^:private assoc-options
   [app-state]
   (let [product-id   (get-in app-state catalog.keypaths/detailed-product-id)
         product      (products/product-by-id app-state product-id)
         facets       (facets/by-slug app-state)
         product-skus (extract-product-skus app-state product)]
     (-> app-state
-        (assoc-in catalog.keypaths/detailed-product-selections
-                  (default-selections facets
-                                      product
-                                      product-skus))
         (assoc-in catalog.keypaths/detailed-product-options
                   (sku-selector/product-options facets
                                                 product
                                                 product-skus)))))
+
+(defn ^:private assoc-selections
+  "Selections are ultimately a function of three inputs:
+   1. options of the cheapest sku
+   2. prior selections on another product, but validated for this product
+   3. options of the sku from the URI
+
+   They are merged together each (possibly partially) overriding the
+   previous selection map of options.
+
+   NB: User clicks for selections are indirectly used by changing the URI."
+  [app-state sku]
+  (let [product-id   (get-in app-state catalog.keypaths/detailed-product-id)
+        product      (products/product-by-id app-state product-id)
+        facets       (facets/by-slug app-state)
+        product-skus (extract-product-skus app-state product)]
+    (-> app-state
+        (assoc-in catalog.keypaths/detailed-product-selections
+                  (merge
+                   (default-selections facets product product-skus)
+                   (get-in app-state catalog.keypaths/detailed-product-selections)
+                   (reduce-kv #(assoc %1 %2 (first %3))
+                              {}
+                              (select-keys sku (:selector/electives product))))))))
 
 (defn navigate-handler
   ;; redirect to cheapest in effects
@@ -535,13 +556,33 @@
                 (assoc-in keypaths/browse-recently-added-skus [])
                 (assoc-in keypaths/browse-sku-quantity 1))
       (and sku-id (contains? (set skus) sku-id))
-      assoc-sku-selector-options-and-selections)))
+      (-> (assoc-selections sku)
+          assoc-options))))
 
 (defmethod transitions/transition-state events/control-product-detail-picker-option-select
   [_ event {:keys [selection value]} app-state]
-  (-> app-state
-      (assoc-in catalog.keypaths/detailed-product-selected-picker nil)
-      assoc-sku-selector-options-and-selections))
+  (let [selected-sku (->> {selection #{value}}
+                          (determine-sku-from-selections app-state))]
+    (-> app-state
+        (assoc-in catalog.keypaths/detailed-product-selected-picker
+                  nil)
+        (assoc-in catalog.keypaths/detailed-product-selected-sku
+                  selected-sku)
+        (update-in catalog.keypaths/detailed-product-selections
+                   merge {selection value})
+        assoc-options)))
+
+(defmethod effects/perform-effects events/control-product-detail-picker-option-select
+  [_ event {:keys [selection value]} _ app-state]
+  (let [sku-id-for-selection (-> app-state
+                                 (get-in catalog.keypaths/detailed-product-selected-sku)
+                                  :catalog/sku-id)
+        params-with-sku-id   (-> app-state
+                                 products/current-product
+                                 (select-keys [:catalog/product-id :page/slug])
+                                 (assoc :query-params {:SKU sku-id-for-selection}))]
+    (effects/redirect events/navigate-product-details
+                      params-with-sku-id)))
 
 (defmethod transitions/transition-state events/control-product-detail-picker-open
   [_ event {:keys [facet-slug]} app-state]
@@ -556,16 +597,3 @@
 (defmethod transitions/transition-state events/control-product-detail-picker-close
   [_ event _ app-state]
   (assoc-in app-state catalog.keypaths/detailed-product-selected-picker nil))
-
-#?(:cljs
-   (defmethod effects/perform-effects events/control-product-detail-picker-option-select
-     [_ event {:keys [selection value]} _ app-state]
-     (let [sku-id-for-selection (->> {selection #{value}}
-                                     (determine-sku-from-selections app-state)
-                                     :catalog/sku-id)
-           params-with-sku-id   (-> app-state
-                                    products/current-product
-                                    (select-keys [:catalog/product-id :page/slug])
-                                    (assoc :query-params {:SKU sku-id-for-selection}))]
-       (history/enqueue-redirect events/navigate-product-details
-                                 params-with-sku-id))))
