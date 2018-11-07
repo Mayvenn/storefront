@@ -1,49 +1,43 @@
 (ns storefront.handler
   (:require [bidi.bidi :as bidi]
+            [catalog.categories :as categories]
+            [catalog.product-details :as product-details]
+            [catalog.products :as products]
+            [catalog.skuers :as skuers]
+            [clj-time.core :as clj-time.core]
             [clojure.java.io :as io]
+            [clojure.set :as set]
             [clojure.string :as string]
-            [compojure
-             [core :refer :all]
-             [route :as route]]
+            [clojure.xml :as xml]
+            [comb.template :as template]
+            [compojure.core :refer :all]
+            [compojure.route :as route]
+            [lambdaisland.uri :as uri]
+            leads.keypaths
             [noir-exception.core :refer [wrap-exceptions wrap-internal-error]]
             [ring-logging.core :as ring-logging]
-            [ring.middleware
-             [content-type :refer [wrap-content-type]]
-             [cookies :refer [wrap-cookies]]
-             [defaults :refer :all]
-             [params :refer [wrap-params]]
-             [resource :refer [wrap-resource]]]
-            [ring.util
-             [codec :as codec]
-             [response :as util.response]]
-            [storefront
-             [backend-api :as api]
-             [routes :as routes]
-             [config :as config]
-             [cookies :as cookies]
-             [events :as events]
-             [keypaths :as keypaths]
-             [assets :as assets]
-             [views :as views]]
-            [leads.keypaths]
-            [storefront.accessors
-             [experiments :as experiments]]
-            [catalog.product-details :as product-details]
-            [comb.template :as template]
-            [spice.maps :refer [index-by auto-map]]
-            [clojure.xml :as xml]
-            [catalog.categories :as categories]
-            [clj-time.core :as clj-time.core]
-            [catalog.products :as products]
-            [storefront.accessors.auth :as auth]
-            [clojure.set :as set]
+            [ring.middleware.content-type :refer [wrap-content-type]]
+            [ring.middleware.cookies :refer [wrap-cookies]]
+            [ring.middleware.defaults :refer :all]
+            [ring.middleware.params :refer [wrap-params]]
+            [ring.middleware.resource :refer [wrap-resource]]
+            [ring.util.codec :as codec]
+            [ring.util.response :as util.response]
             [spice.core :as spice]
-            [catalog.skuers :as skuers]
+            [spice.maps :as maps :refer [auto-map index-by]]
+            [storefront.accessors.auth :as auth]
+            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
-            [lambdaisland.uri :as uri]
-            [spice.maps :as maps]
+            [storefront.assets :as assets]
+            [storefront.backend-api :as api]
+            [storefront.config :as config]
+            [storefront.cookies :as cookies]
+            [storefront.events :as events]
+            [storefront.keypaths :as keypaths]
+            [storefront.routes :as routes]
+            [storefront.system.contentful :as contentful]
             [storefront.transitions :as transitions]
-            [storefront.system.contentful :as contentful]))
+            [storefront.views :as views]))
 
 (def root-domain-pages-to-preserve-paths-in-redirects
   #{"/mayvenn-made"})
@@ -807,6 +801,14 @@
       (wrap-defaults (storefront-site-defaults environment))
       (wrap-welcome-is-for-leads)))
 
+(defn wrap-filter-params
+  "Technically an invalid value, but query-params could generate this value
+  which doesn't serialize to EDN correctly.
+  "
+  [h]
+  (fn [req]
+    (h (update req :query-params dissoc ""))))
+
 (defn wrap-add-nav-message [h]
   (fn [{:keys [server-name uri query-params query-string] :as req}]
     (h (assoc req
@@ -888,6 +890,7 @@
        (wrap-add-nav-message)
        (wrap-add-domains)
        (wrap-logging logger)
+       (wrap-filter-params)
        (wrap-params)
        (#(if (#{"development" "test"} environment)
            (wrap-exceptions %)

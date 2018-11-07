@@ -1,14 +1,22 @@
 (ns storefront.handler-test
   (:require [cheshire.core :refer [generate-string parse-string]]
+            [clojure.edn :as edn]
             [clojure.string :as string]
-            [clojure.test :refer [deftest is testing are]]
-            [compojure.core :refer [routes GET POST]]
+            [clojure.test :refer [are deftest is testing]]
+            [compojure.core :refer [GET POST routes]]
             [lambdaisland.uri :as uri]
             [ring.mock.request :as mock]
             [ring.util.codec :as codec]
             [ring.util.response :refer [content-type response status]]
-            [standalone-test-server.core :refer [txfm-request txfm-requests with-requests-chan]]
-            [storefront.handler-test.common :as common :refer [with-services with-handler]]))
+            [standalone-test-server.core
+             :refer
+             [txfm-request txfm-requests with-requests-chan]]
+            [storefront.handler-test.common
+             :as
+             common
+             :refer
+             [with-handler with-services]]
+            [ajax.json :as json]))
 
 (defn set-cookies [req cookies]
   (update req :headers assoc "cookie" (string/join "; " (map (fn [[k v]] (str k "=" v)) cookies))))
@@ -274,6 +282,17 @@
                              (re-find #"[^\"]+")
                              uri/uri)]
      (is (= canonized-url# link-url#))))
+
+(deftest server-properly-encodes-data
+  (testing "properly encoding query-params as edn without error"
+    (with-services {}
+      (with-handler handler
+        ;; Note: double && is important
+        (let [resp (handler (mock/request :get "https://bob.mayvenn.com/?utm_source=blog&utm_medium=social&&utm_campaign=HomePage&utm_term=Button"))
+              data-edn (->> resp :body (re-find #"var data = (.*);") last)]
+          (is (edn/read-string (parse-string data-edn))
+              (format "Invalid EDN read-string: " (pr-str data-edn)))
+          (is (= 200 (:status resp))))))))
 
 (deftest server-side-renders-product-details-page
   (testing "when the product does not exist storefront returns 404"
