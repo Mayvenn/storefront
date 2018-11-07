@@ -305,26 +305,27 @@
              [:meta {:item-prop "image"
                      :content   (:url (first carousel-images))}]
              (full-bleed-narrow (carousel carousel-images product))]
-            [:div
-             [:div {:item-prop  "offers"
-                    :item-scope ""
-                    :item-type  "http://schema.org/Offer"}
-              (component/build picker/component picker-data opts)
-              (when (products/eligible-for-triple-bundle-discount? product)
-                [:div.pt2.pb4 triple-bundle-upsell])
-              [:div.center.mb6
-               [:div.h6.navy "Price Per Bundle"]
-               [:div.medium (item-price (:sku/price selected-sku))]]
-              (affirm/pdp-dropdown-experiment-as-low-as-box
-               {:amount      (:sku/price selected-sku)
-                :middle-copy "Just select Affirm at check out."})
+            (when (seq options)
               [:div
-               [:div.mt1.mx3
-                (cond
-                  unavailable? unavailable-button
-                  sold-out?    sold-out-button
-                  :else        (add-to-bag-button adding-to-bag? selected-sku sku-quantity))]]
-              (when (products/stylist-only? product) shipping-and-guarantee)]]
+               [:div {:item-prop  "offers"
+                      :item-scope ""
+                      :item-type  "http://schema.org/Offer"}
+                (component/build picker/component picker-data opts)
+                (when (products/eligible-for-triple-bundle-discount? product)
+                  [:div.pt2.pb4 triple-bundle-upsell])
+                [:div.center.mb6
+                 [:div.h6.navy "Price Per Bundle"]
+                 [:div.medium (item-price (:sku/price selected-sku))]]
+                (affirm/pdp-dropdown-experiment-as-low-as-box
+                 {:amount      (:sku/price selected-sku)
+                  :middle-copy "Just select Affirm at check out."})
+                [:div
+                 [:div.mt1.mx3
+                  (cond
+                    unavailable? unavailable-button
+                    sold-out?    sold-out-button
+                    :else        (add-to-bag-button adding-to-bag? selected-sku sku-quantity))]]
+                (when (products/stylist-only? product) shipping-and-guarantee)]])
             (product-description product)
             [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])
           (when review?
@@ -539,25 +540,22 @@
                               {}
                               (select-keys sku (:selector/electives product))))))))
 
-(defn navigate-handler
-  ;; redirect to cheapest in effects
-  [_ event {:keys [catalog/product-id query-params]} app-state]
-  (let [{:selector/keys [skus]}  (products/product-by-id app-state
-                                                         product-id)
-        {ugc-offset   :offset
-         sku-id-param :SKU}      query-params
-        {:as   sku
-         :keys [catalog/sku-id]} (->> sku-id-param
-                                      (conj keypaths/v2-skus)
-                                      (get-in app-state))]
-    (cond-> (-> app-state
-                (assoc-in catalog.keypaths/detailed-product-id product-id)
-                (assoc-in keypaths/ui-ugc-category-popup-offset ugc-offset)
-                (assoc-in keypaths/browse-recently-added-skus [])
-                (assoc-in keypaths/browse-sku-quantity 1))
-      (and sku-id (contains? (set skus) sku-id))
-      (-> (assoc-selections sku)
-          assoc-options))))
+;; TODO change effect handler to check for this:
+;; (and sku-id (contains? (set skus) sku-id))
+(defmethod transitions/transition-state events/navigate-product-details
+  [_ event {:as args :keys [catalog/product-id query-params]} app-state]
+  (let [ugc-offset (:offset query-params)
+        sku        (->> (:SKU query-params)
+                        (conj keypaths/v2-skus)
+                        (get-in app-state))]
+    (-> app-state
+        (assoc-in catalog.keypaths/detailed-product-id product-id)
+        (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
+        (assoc-in keypaths/ui-ugc-category-popup-offset ugc-offset)
+        (assoc-in keypaths/browse-recently-added-skus [])
+        (assoc-in keypaths/browse-sku-quantity 1)
+        (assoc-selections sku)
+        assoc-options)))
 
 (defmethod transitions/transition-state events/control-product-detail-picker-option-select
   [_ event {:keys [selection value]} app-state]

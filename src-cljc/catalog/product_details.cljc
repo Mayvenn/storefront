@@ -538,10 +538,12 @@
          (valid-sku-ids prev-sku-id)
          (:catalog/sku-id epitome)))))
 
-(defmethod transitions/transition-state events/navigate-product-details
-  [_ event {:as args :keys [catalog/product-id query-params]} app-state]
-  (if (experiments/pdp-dropdown? app-state)
-    (product-details-dropdown/navigate-handler _ event args app-state)
+(comment
+  ;; TODO FIXME GROT("pdp-dropdown experiment")
+  ;; this is the original handler for navigate-product-details,
+  ;; during the experiment this is living in the other namespace
+  (defmethod transitions/transition-state events/navigate-product-details
+    [_ event {:as args :keys [catalog/product-id query-params]} app-state]
     (let [product (products/product-by-id app-state product-id)
           sku-id  (determine-sku-id app-state product (:SKU query-params))
           sku     (get-in app-state (conj keypaths/v2-skus sku-id))]
@@ -557,31 +559,33 @@
        (not= (:catalog/sku-id selected-sku)
              (:SKU query-params))))
 
-#?(:cljs
-   (defn fetch-product-details [app-state product-id]
-     (api/search-v2-products (get-in app-state keypaths/api-cache)
-                             {:catalog/product-id product-id}
-                             (fn [response]
-                               (messages/handle-message events/api-success-v2-products-for-details response)
-                               (messages/handle-message events/viewed-sku {:sku (get-in app-state catalog.keypaths/detailed-product-selected-sku)})))
+(defn fetch-product-details
+  [app-state product-id]
+  (let [selected-sku (get-in app-state catalog.keypaths/detailed-product-selected-sku)
+        success-handler
+        (fn [response]
+          (messages/handle-message events/api-success-v2-products-for-details response)
+          (messages/handle-message events/viewed-sku {:sku selected-sku}))]
+    #?(:cljs
+       (api/search-v2-products (get-in app-state keypaths/api-cache)
+                               {:catalog/product-id product-id}
+                               success-handler))
+    (if-let [current-product (products/current-product app-state)]
+      (if (auth/permitted-product? app-state current-product)
+        (do
+          (fetch-product-album current-product)
+          #?(:cljs (review-hooks/insert-reviews)))
+        (effects/redirect events/navigate-home)))))
 
-     (if-let [current-product (products/current-product app-state)]
-       (if (auth/permitted-product? app-state current-product)
-         (do
-           (fetch-product-album current-product)
-           (review-hooks/insert-reviews))
-         (effects/redirect events/navigate-home)))))
-
-#?(:cljs
-   (defmethod effects/perform-effects events/navigate-product-details
-     [_ _ {:keys [catalog/product-id page/slug query-params]} _ app-state]
-     (let [selected-sku (get-in app-state catalog.keypaths/detailed-product-selected-sku)]
-       (if (url-points-to-invalid-sku? selected-sku query-params)
-         (effects/redirect events/navigate-product-details
-                           {:catalog/product-id product-id
-                            :page/slug          slug
-                            :query-params       {:SKU (:catalog/sku-id selected-sku)}})
-         (fetch-product-details app-state product-id)))))
+(defmethod effects/perform-effects events/navigate-product-details
+  [_ _ {:keys [catalog/product-id page/slug query-params]} _ app-state]
+  (let [selected-sku (get-in app-state catalog.keypaths/detailed-product-selected-sku)]
+    (if (url-points-to-invalid-sku? selected-sku query-params)
+      (effects/redirect events/navigate-product-details
+                        {:catalog/product-id product-id
+                         :page/slug          slug
+                         :query-params       {:SKU (:catalog/sku-id selected-sku)}})
+      (fetch-product-details app-state product-id))))
 
 (defmethod effects/perform-effects events/api-success-v2-products-for-details
   [_ _ _ _ app-state]
