@@ -58,7 +58,7 @@
   (let [attrs    (cond-> opts
                   :always                  (dissoc :spinning? :disabled?)
                   (or disabled? spinning?) (assoc :on-click utils/noop-callback)
-                  disabled?                (update :class str (or disabled-class " is-disabled ")))
+                  disabled?                (update :class str (str " " (or disabled-class "is-disabled"))))
         content (if spinning? spinner content)]
     [:a (merge {:href "#"} attrs)
      content]))
@@ -196,7 +196,7 @@
                           :value?   (seq value)}]
     [:div (merge (field-wrapper-class wrapper-class status)
                  {:style wrapper-style})
-     [:div.pp1
+     [:div.pp1.col-12
       (floating-label label id status)
       [:label
        [:input.col-12.h4.line-height-1

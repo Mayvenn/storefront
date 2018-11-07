@@ -306,6 +306,7 @@
 
 (defn ^:private form [data]
   [:div
+   [:p.h6.mb2 "Type " [:pre.inline "wrong"] " in input field to show it's failed validation state."]
    (ui/text-field-group
     {:type    "text"
      :label   "First Name"
@@ -374,7 +375,46 @@
                      :options     [["Corey" "corey"] ["Jacob" "jacob"]]
                      :placeholder "Wrong Choices"
                      :required    true
-                     :value       (get-in data [:style-guide :form :wrong-choices])})])
+                     :value       (get-in data [:style-guide :form :wrong-choices])})
+
+   (ui/input-group
+    {:keypath       [:style-guide :form :pill-phone]
+     :wrapper-class "col-8 flex bg-white pl3 items-center circled-item"
+     :class         ""
+     :name          "phone"
+     :focused       (get-in data keypaths/ui-focus)
+     :placeholder   "(xxx) xxx - xxxx"
+     :type          "tel"
+     :value         (get-in data [:style-guide :form :pill-phone])
+     :errors        (if (= (get-in data [:style-guide :form :pill-phone]) "wrong")
+                      [{:long-message "wrong"}]
+                      [])} 
+    {:ui-element ui/teal-button
+     :content    "Get Survey"
+     :args       {:class          "flex justify-center medium items-center circled-item"
+                  :size-class     "col-4"
+                  :height-class   "py2"
+                  :data-test      ""
+                  :disabled-class "disabled bg-teal"}})
+   (ui/input-group
+    {:keypath       [:style-guide :form :pill-phone-2]
+     :wrapper-class "col-8 flex bg-white pl3 items-center circled-item"
+     :class         ""
+     :name          "phone"
+     :focused       (get-in data keypaths/ui-focus)
+     :placeholder   "With disabled button"
+     :type          "tel"
+     :value         (get-in data [:style-guide :form :pill-phone-2])
+     :errors        (if (= (get-in data [:style-guide :form :pill-phone-2]) "wrong")
+                      [{:long-message "wrong"}]
+                      [])} 
+    {:ui-element ui/teal-button
+     :content    "Get Survey"
+     :args       {:class          "flex justify-center medium items-center circled-item"
+                  :size-class     "col-4"
+                  :height-class   "py2"
+                  :data-test      ""
+                  :disabled?      true}})])
 
 (defn ^:private form-fields [data]
   [:section
