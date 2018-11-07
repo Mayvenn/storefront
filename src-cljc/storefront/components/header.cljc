@@ -134,12 +134,16 @@
    (merge opts {:style {:padding-left "24px" :padding-right "24px"}})
    text])
 
-(def menu
+(defn menu [black-friday-deals?]
   (component/html
    [:div.center
-    (header-menu-link (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :deals})
-                             :on-mouse-enter close-shopping)
-                      "Deals")
+    (if black-friday-deals?
+      (header-menu-link {:href "https://looks.mayvenn.com/blackfriday-preview"
+                         :on-mouse-enter close-shopping}
+                        "Black Friday Deals")
+      (header-menu-link (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :deals})
+                               :on-mouse-enter close-shopping)
+                        "Deals"))
     (header-menu-link (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
                              :on-mouse-enter close-shopping)
                       "Shop looks")
@@ -193,7 +197,7 @@
         (for [items columns]
           (shopping-column items (count columns)))]])))
 
-(defn component [{:keys [store user cart shopping signed-in the-ville? vouchers?]} _ _]
+(defn component [{:keys [store user cart shopping signed-in the-ville? vouchers? black-friday-deals?]} _ _]
   (component/create
    [:div
     [:div.hide-on-mb.relative
@@ -211,7 +215,7 @@
         [:div.mb4 (ui/clickable-logo {:event events/navigate-home
                                       :data-test "desktop-header-logo"
                                       :height "60px"})]
-        [:div.mb1 menu]]]]
+        [:div.mb1 (menu black-friday-deals?)]]]]
      (shopping-flyout signed-in shopping)]
     [:div.hide-on-tb-dt.border-bottom.border-gray.flex.items-center
      hamburger

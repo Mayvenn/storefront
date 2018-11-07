@@ -114,3 +114,8 @@
 
 (defn phone-capture? [data]
   (display-feature? data "phone-capture"))
+
+(defn black-friday-deals? [data]
+  (and (display-feature? data "black-friday-deals")
+       (contains? #{"mayvenn-classic" "influencer"} (get-in data keypaths/store-experience))))
+
