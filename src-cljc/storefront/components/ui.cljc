@@ -274,9 +274,10 @@
   areas expects a vector of the field ids for their positions:
   [''field-id1'' ''field-id2'']"
   [& fields]
-  {:pre [(zero? (rem 12 (count fields)))]}
+  {:pre [(zero? (rem 12 (count fields)))
+         (every? (comp string? :id) fields)]}
   (let [areas        (map :id fields)
-        columns        (map (fn [field] (get field :column-size "1fr")) fields)
+        columns      (map (fn [field] (get field :column-size "1fr")) fields)
         some-errors? (some (comp seq :errors) fields)]
     [:div.mb2
      (into [:div.clearfix.stacking-context

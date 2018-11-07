@@ -309,7 +309,7 @@
    (ui/text-field-group
     {:type    "text"
      :label   "First Name"
-     :id      (str key "-" :first-name)
+     :id      "first-name"
      :keypath [:style-guide :form :first-name]
      :focused (get-in data keypaths/ui-focus)
      :value   (get-in data [:style-guide :form :first-name])
