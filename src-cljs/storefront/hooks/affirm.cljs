@@ -35,7 +35,8 @@
     (js/affirm.ui.ready #(js/affirm.ui.refresh))))
 
 (defn has-openModal? []
-  (.hasOwnProperty js/affirm.ui "openModal"))
+  (and (affirm-loaded?)
+       (.hasOwnProperty js/affirm.ui "openModal")))
 
 (defn show-site-modal []
   (if (has-openModal?)
