@@ -40,6 +40,7 @@
      (scroll-target)
      "transitionend"
      #(do
+        (set! (.. (scroll-target) -style -transition) "none")
         (set! (.. (scroll-target) -style -marginTop) (str dy "px"))
         (scroll-to-y (scroll-target) dest)
         (set! (.. (scroll-target) -style -transition) "margin-top 1s ease")
