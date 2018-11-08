@@ -3,6 +3,7 @@
                        [storefront.hooks.reviews :as review-hooks]
                        [storefront.api :as api]
                        [storefront.history :as history]
+                       [storefront.browser.scroll :as scroll]
                        [goog.dom]
                        [goog.events.EventType :as EventType]
                        [goog.events]
@@ -140,7 +141,7 @@
                 [:div.p3.flex.justify-center.items-center.bg-white.border-top.border-light-gray
                  [:div.col-8
                   [:a.inherit-color
-                   {:href "#product-attributes"}
+                   {:on-click #(scroll/scroll-selector-to-top "body")}
                    [:div.flex.items-center
                     [:img.border.border-gray.rounded-0
                      {:height "33px"
@@ -291,7 +292,6 @@
            [:div.absolute.overlay.z4.overflow-auto
             (component/build ugc/popup-component ugc opts)])
          [:div.p2
-          [:a {:name "product-attributes"}]
           (page
            [:div
             (carousel carousel-images product)
