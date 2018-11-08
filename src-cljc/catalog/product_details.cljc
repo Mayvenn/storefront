@@ -542,7 +542,7 @@
   ;; TODO FIXME GROT("pdp-dropdown experiment")
   ;; this is the original handler for navigate-product-details,
   ;; during the experiment this is living in the other namespace
-  (defmethod transitions/transition-state events/ navigate-product-details
+  (defmethod transitions/transition-state events/REMOVE-ME-navigate-product-details
     [_ event {:as args :keys [catalog/product-id query-params]} app-state]
     (let [product (products/product-by-id app-state product-id)
           sku-id  (determine-sku-id app-state product (:SKU query-params))
