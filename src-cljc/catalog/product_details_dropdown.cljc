@@ -268,17 +268,17 @@
    (keys selections)))
 
 (defn component
-  [{:keys                         [adding-to-bag?
-                                   carousel-images
-                                   product
-                                   reviews
-                                   selected-sku
-                                   sku-quantity
-                                   selected-options
-                                   selections
-                                   options
-                                   picker-data
-                                   ugc] :as data} owner opts]
+  [{:keys [adding-to-bag?
+           carousel-images
+           product
+           reviews
+           selected-sku
+           sku-quantity
+           selected-options
+           selections
+           options
+           picker-data
+           ugc] :as data} owner opts]
   (let [review?      (:review? reviews)
         unavailable? (not (seq selected-sku))
         sold-out?    (not (:inventory/in-stock? selected-sku))]
@@ -363,11 +363,6 @@
                {(first option-kw)
                 (lowest-sku-price skus)})
              (group-by option-kw skus))))
-
-(defn find-swatch-sku-image [sku]
-  (first (selector/match-all {:selector/strict? true}
-                           {:use-case #{"cart"}}
-                           (:selector/images sku))))
 
 (defn ugc-query [product sku data]
   (when-let [ugc (get-in data keypaths/ugc)]

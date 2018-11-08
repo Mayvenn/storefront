@@ -1,5 +1,6 @@
 (ns catalog.selector.sku
   (:require [clojure.spec.alpha :as s]
+            [spice.selector :as selector]
             [lambdaisland.uri :as uri]))
 
 ;; Options for selection of skus for a particular product
@@ -52,6 +53,11 @@
                                          :spec spec})))
       result)))
 
+(defn find-swatch-sku-image [sku]
+  (first (selector/match-all {:selector/strict? true}
+                             {:use-case #{"cart"}}
+                             (:selector/images sku))))
+
 (defn product-options
   [facets {:as product :keys [selector/electives]} product-skus]
   (not-empty
@@ -64,7 +70,7 @@
                                                    {:price    (:sku/price cheapest-sku)
                                                     :stocked? (when (seq option-skus)
                                                                 (some :inventory/in-stock? option-skus))
-                                                    ;; TODO :option/sku-swatch (:url (find-swatch-sku-image cheapest-sku))
+                                                    :option/sku-swatch (:url (find-swatch-sku-image cheapest-sku))
                                                     :image    (get-in options [option-slug :option/image])})]
                            (conform! ::selector-option option))))
                   (sort-by :filter/order)
