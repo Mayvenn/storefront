@@ -71,6 +71,9 @@
                 :height  "100%"}}
    options])
 
+(defn- hacky-fix-of-bad-slugs-on-facets [slug]
+  (clojure.string/replace (str slug) #"#" ""))
+
 (defn picker-rows
   "individual elements as in: https://app.zeplin.io/project/5a9f159069d48a4c15497a49/screen/5b21aa0352b1d5e31a32ac53"
   [{:as data :keys [options facets selections sku-quantity]}]
@@ -87,7 +90,7 @@
           {:height "33px"
            :width  "65px"
            :src    (:option/rectangle-swatch color)}]
-         [:span {:data-test (str "picker-selected-color-" (:option/slug color))} (:option/name color)]))]
+         [:span {:data-test (str "picker-selected-color-" (hacky-fix-of-bad-slugs-on-facets (:option/slug color)))} (:option/name color)]))]
       [:div.hide-on-mb-tb
        (field
         (desktop-dropdown

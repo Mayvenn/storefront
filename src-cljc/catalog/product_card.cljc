@@ -2,7 +2,9 @@
   (:require catalog.keypaths
             [catalog.selector :as selector]
             [catalog.facets :as facets]
+            [spice.selector :as spice-selector]
             [storefront.accessors.skus :as skus]
+            [storefront.accessors.experiments :as experiments]
             [storefront.component :as component]
             [storefront.components.affirm :as affirm]
             [storefront.components.money-formatters :as mf]
@@ -67,50 +69,60 @@
             :height 10
             :src    (first color-url)}])])]))
 
+(defn sku-best-matching-selections [selections skus]
+  (some (fn [criteria]
+         (first (spice-selector/match-all {:selector/complete? true} criteria skus)))
+        [selections
+         {:hair/color (:hair/color selections)}
+         {:hair/length (:hair/length selections)}]))
+
 (defn query [data product]
-  (let [selections      (get-in data catalog.keypaths/category-selections)
-        skus            (vals (select-keys (get-in data keypaths/v2-skus)
-                                           (:selector/skus product)))
-        facets          (get-in data keypaths/v2-facets)
-        color-order-map (facets/color-order-map facets)
-        in-stock-skus   (selector/query skus selections {:inventory/in-stock? #{true}})
+  (let [selections                (get-in data catalog.keypaths/category-selections)
+        skus                      (vals (select-keys (get-in data keypaths/v2-skus)
+                                                     (:selector/skus product)))
+        facets                    (get-in data keypaths/v2-facets)
+        color-order-map           (facets/color-order-map facets)
+        in-stock-skus             (selector/query skus selections {:inventory/in-stock? #{true}})
         ;; in order to fill the product card, we should always have a sku to use for
         ;; the cheapest-sku and epitome
-        skus-to-search  (or (not-empty in-stock-skus) skus)
+        skus-to-search            (or (not-empty in-stock-skus) skus)
         ;; It is technically possible for the cheapest sku to not be the epitome
-        cheapest-sku    (->> skus-to-search
-                             (sort-by :sku/price)
-                             first)
+        cheapest-sku              (->> skus-to-search
+                                       (sort-by :sku/price)
+                                       first)
         ;; Product definition of epitome is the "first" SKU on the product details page where
         ;; first is when the first of every facet is selected.
         ;;
         ;; We're being lazy and sort by color facet + sku price (which implies sort by hair/length)
-        epitome         (skus/determine-epitome color-order-map skus-to-search)]
-    {:product         product
-     :skus            skus
-     :epitome         epitome
-     :cheapest-sku    cheapest-sku
-     :color-order-map color-order-map
-     :sold-out?       (empty? in-stock-skus)
-     :title           (:copy/title product)
-     :slug            (:page/slug product)
-     :image           (->> epitome
-                           :selector/images
-                           (filter (comp #{"catalog"} :use-case))
-                           (sort-by (comp color-order-map first :hair/color))
-                           first)
-     :facets          facets
-     :selections      (get-in data catalog.keypaths/category-selections)}))
+        epitome                   (skus/determine-epitome color-order-map skus-to-search)
+        product-detail-selections (get-in data catalog.keypaths/detailed-product-selections)]
+    {:product                          product
+     :skus                             skus
+     :epitome                          epitome
+     :sku-matching-previous-selections (when (experiments/pdp-dropdown? data)
+                                         (sku-best-matching-selections product-detail-selections skus))
+     :cheapest-sku                     cheapest-sku
+     :color-order-map                  color-order-map
+     :sold-out?                        (empty? in-stock-skus)
+     :title                            (:copy/title product)
+     :slug                             (:page/slug product)
+     :image                            (->> epitome
+                                            :selector/images
+                                            (filter (comp #{"catalog"} :use-case))
+                                            (sort-by (comp color-order-map first :hair/color))
+                                            first)
+     :facets                           facets
+     :selections                       (get-in data catalog.keypaths/category-selections)}))
 
 (defn component
-  [{:keys [product skus cheapest-sku epitome sold-out? title slug image facets color-order-map]}]
+  [{:keys [product skus cheapest-sku epitome sku-matching-previous-selections sold-out? title slug image facets color-order-map]}]
   [:div.col.col-6.col-4-on-tb-dt.px1
    {:key slug}
    [:a.inherit-color
     (assoc (utils/route-to events/navigate-product-details
                            {:catalog/product-id (:catalog/product-id product)
                             :page/slug          slug
-                            :query-params       {:SKU (:catalog/sku-id epitome)}})
+                            :query-params       {:SKU (:catalog/sku-id (or sku-matching-previous-selections epitome))}})
            :data-test (str "product-" slug))
     [:div.center.relative
      ;; TODO: when adding aspect ratio, also use srcset/sizes to scale these images.
