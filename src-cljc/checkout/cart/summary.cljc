@@ -24,7 +24,7 @@
    [:tr.h5
     (merge
      (when-not (pos? amount)
-             {:class "teal"})
+       {:class "teal"})
      row-attrs)
     [:td.pyp1 content]
     [:td.pyp1.right-align.medium
