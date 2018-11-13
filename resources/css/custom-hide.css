@@ -6,11 +6,16 @@
   clip: rect(1px, 1px, 1px, 1px);
 }
 
-@media (--on-mobile)             { .hide-on-mb    { display: none !important } }
-@media (--on-tablet)             { .hide-on-tb    { display: none !important } }
-@media (--on-desktop)            { .hide-on-dt    { display: none !important } }
-@media (--on-mobile-and-tablet)  { .hide-on-mb-tb { display: none !important } }
-@media (--on-tablet-and-desktop) { .hide-on-tb-dt { display: none !important } }
+@media (--on-mobile)             { .hide-on-mb         { display: none !important } }
+@media (--on-tablet)             { .hide-on-tb         { display: none !important } }
+@media (--on-desktop)            { .hide-on-dt         { display: none !important } }
+@media (--on-mobile-and-tablet)  { .hide-on-mb-tb      { display: none !important } }
+@media (--on-tablet-and-desktop) { .hide-on-tb-dt      { display: none !important } }
+@media (--on-mobile)             { .invisible-on-mb    { visibility: hidden !important } }
+@media (--on-tablet)             { .invisible-on-tb    { visibility: hidden !important } }
+@media (--on-desktop)            { .invisible-on-dt    { visibility: hidden !important } }
+@media (--on-mobile-and-tablet)  { .invisible-on-mb-tb { visibility: hidden !important } }
+@media (--on-tablet-and-desktop) { .invisible-on-tb-dt { visibility: hidden !important } }
 
 .display-none { display: none !important }
 .invisible { visibility: hidden; }

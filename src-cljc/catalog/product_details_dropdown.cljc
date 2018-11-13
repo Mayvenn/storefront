@@ -330,7 +330,9 @@
             [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])
           (when review?
             (component/build review-component/reviews-component reviews opts))
-          [:div.hide-on-tb-dt
+          ;; We use visibility:hidden rather than display:none so that this component has a height.
+          ;; We use the height on mobile view to slide it on/off the bottom of the page.
+          [:div.invisible-on-tb-dt
            (component/build sticky-add-component
                             {:image            (->> options
                                                     :hair/color
