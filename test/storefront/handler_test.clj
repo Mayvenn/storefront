@@ -480,39 +480,40 @@
         (is (.contains body "Disallow: /stylists/flows/") body)))))
 
 (deftest fetches-data-from-contentful
-  (testing "caching content"
-    (let [[storeback-requests storeback-handler]   (with-requests-chan (GET "/store" req common/storeback-stylist-response))
-          [contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
-                                                                            {:status 200
-                                                                             :body   (generate-string (:body common/contentful-response))}))]
-      (with-services {:storeback-handler  storeback-handler
-                      :contentful-handler contentful-handler}
-        (with-handler handler
-          (let [responses (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
-                requests  (txfm-requests contentful-requests identity)]
-            (is (every? #(= 200 (:status %)) responses))
-            (is (= 2 (count requests))))))))
+  (let [number-of-contentful-entities-to-fetch 3]
+    (testing "caching content"
+      (let [[storeback-requests storeback-handler]   (with-requests-chan (GET "/store" req common/storeback-stylist-response))
+            [contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
+                                                                              {:status 200
+                                                                               :body   (generate-string (:body common/contentful-response))}))]
+        (with-services {:storeback-handler  storeback-handler
+                        :contentful-handler contentful-handler}
+          (with-handler handler
+            (let [responses (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
+                  requests  (txfm-requests contentful-requests identity)]
+              (is (every? #(= 200 (:status %)) responses))
+              (is (= number-of-contentful-entities-to-fetch (count requests))))))))
 
-  (testing "fetches data on system start"
-    (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
-                                                                            {:status 200
-                                                                             :body   (generate-string (:body common/contentful-response))}))]
-      (with-services {:contentful-handler contentful-handler}
-        (with-handler handler
-          (is (= 2 (count (txfm-requests contentful-requests identity))))))))
+    (testing "fetches data on system start"
+      (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
+                                                                              {:status 200
+                                                                               :body   (generate-string (:body common/contentful-response))}))]
+        (with-services {:contentful-handler contentful-handler}
+          (with-handler handler
+            (is (= number-of-contentful-entities-to-fetch (count (txfm-requests contentful-requests identity))))))))
 
-  (testing "attempts-to-retry-fetch-from-contentful"
-    (let [[storeback-requests storeback-handler]   (with-requests-chan (GET "/store" req common/storeback-stylist-response))
-          [contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
-                                                                            {:status 500
-                                                                             :body   "{}"}))]
-      (with-services {:storeback-handler  storeback-handler
-                      :contentful-handler contentful-handler}
-        (with-handler handler
-          (let [responses (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
-                requests  (txfm-requests contentful-requests identity)]
-            (is (every? #(= 200 (:status %)) responses))
-            (is (= 4 (count requests)))))))))
+    (testing "attempts-to-retry-fetch-from-contentful"
+      (let [[storeback-requests storeback-handler]   (with-requests-chan (GET "/store" req common/storeback-stylist-response))
+            [contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
+                                                                              {:status 500
+                                                                               :body   "{}"}))]
+        (with-services {:storeback-handler  storeback-handler
+                        :contentful-handler contentful-handler}
+          (with-handler handler
+            (let [responses (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
+                  requests  (txfm-requests contentful-requests identity)]
+              (is (every? #(= 200 (:status %)) responses))
+              (is (= (* 2 number-of-contentful-entities-to-fetch) (count requests))))))))))
 
 (deftest we-do-not-ask-waiter-more-than-once-for-the-order
   (testing "Fetching normal pages fetches order once"
