@@ -24,7 +24,7 @@
    [:tr.h5
     (merge
      (when-not (pos? amount)
-             {:class "teal"})
+       {:class "teal"})
      row-attrs)
     [:td.pyp1 content]
     [:td.pyp1.right-align.medium
@@ -104,10 +104,10 @@
            {:col-span "2"}
            (promo-entry promo-data)]])
 
-       (for [{:keys [name price coupon-code] :as adjustment} adjustments-including-tax]
+       (for [[i {:keys [name price coupon-code] :as adjustment}] (map-indexed vector adjustments-including-tax)]
          (when (non-zero-adjustment? adjustment)
            (summary-row
-            {:key       name
+            {:key       (str i "-" name)
              :data-test (text->data-test-name name)}
             [:div.flex.items-center.align-middle
              (when (= "Bundle Discount" name)

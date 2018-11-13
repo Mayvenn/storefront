@@ -9,6 +9,8 @@
 (def cms-homepage-hero (conj cms-homepage :hero))
 (def cms-mayvenn-made (conj cms :mayvennMadePage))
 (def cms-mayvenn-made-hero (conj cms-mayvenn-made :hero))
+(def cms-advertised-promo (conj cms :advertisedPromo))
+(def cms-advertised-promo-text (conj cms-advertised-promo :advertised-text))
 
 (def features [:features])
 (def welcome-url [:welcome-url])

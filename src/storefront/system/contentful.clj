@@ -114,7 +114,7 @@
                                       "acceptance")
                          :cache     cache
                          :api-key   api-key}]
-      (doseq [content-type [:homepage :mayvennMadePage]]
+      (doseq [content-type [:homepage :mayvennMadePage :advertisedPromo]]
         (at-at/every cache-timeout
                      #(do-fetch-entries config content-type)
                      pool))

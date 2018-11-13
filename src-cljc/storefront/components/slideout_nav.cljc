@@ -150,56 +150,58 @@
    [:div.h4.border-bottom.border-gray.py3
     (into [:a.block.inherit-color.flex.items-center (assoc link-attrs :data-test data-test)] content)]])
 
-(defn shopping-rows [black-friday-deals?]
+(defn shopping-rows [{:keys [v2-experience? black-friday-deals?]}]
   (let [caret (ui/forward-caret {:width  "23px"
                                  :height "20px"})]
-    [(if black-friday-deals?
-       {:link-attrs {:href "https://looks.mayvenn.com/blackfriday-preview"}
-        :data-test  "menu-shop-by-deals"
-        :content    [[:span.medium "Black Friday Deals"]]}
-       {:link-attrs (utils/route-to events/navigate-shop-by-look {:album-keyword :deals})
-        :data-test  "menu-shop-by-deals"
-        :content    [[:span.medium "Deals"]]})
+    (concat
+     (when-not v2-experience?
+       [(if black-friday-deals?
+          {:link-attrs {:href "https://looks.mayvenn.com/blackfriday-preview"}
+           :data-test  "menu-shop-by-deals"
+           :content    [[:span.medium "Black Friday Deals"]]}
+          {:link-attrs (utils/route-to events/navigate-shop-by-look {:album-keyword :deals})
+           :data-test  "menu-shop-by-deals"
+           :content    [[:span.medium "Deals"]]})])
 
-     {:link-attrs (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
-      :data-test "menu-shop-by-look"
-      :content [[:span.medium "Shop Looks"]]}
+     [{:link-attrs (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
+       :data-test "menu-shop-by-look"
+       :content [[:span.medium "Shop Looks"]]}
 
-     {:link-attrs (utils/fake-href events/menu-list
-                                   {:page/slug           "virgin-hair"
-                                    :catalog/category-id "15"})
-      :data-test  "menu-shop-virgin-hair"
-      :content    [[:span.medium.flex-auto "Virgin Hair"]
-                   caret]}
+      {:link-attrs (utils/fake-href events/menu-list
+                                    {:page/slug           "virgin-hair"
+                                     :catalog/category-id "15"})
+       :data-test  "menu-shop-virgin-hair"
+       :content    [[:span.medium.flex-auto "Virgin Hair"]
+                    caret]}
 
-     {:link-attrs (utils/route-to events/navigate-category
-                                  {:page/slug           "dyed-virgin-hair"
-                                   :catalog/category-id "16"})
-      :data-test  "menu-shop-dyed-virgin-hair"
-      :content    [[:span.medium.flex-auto "Dyed Virgin Hair"]]}
-     {:link-attrs (utils/fake-href events/menu-list
-                                   {:page/slug           "closures-and-frontals"
-                                    :catalog/category-id "12"})
-      :data-test "menu-shop-closures"
-      :content [[:span.medium.flex-auto "Closures & Frontals"]
-                caret]}
-     {:link-attrs (utils/route-to events/navigate-category
-                                  {:page/slug           "wigs"
-                                   :catalog/category-id "13"})
-      :data-test "menu-shop-wigs"
-      :content [[:span.medium.flex-auto "Wigs"]]}
-     {:link-attrs (utils/route-to events/navigate-category
-                                  {:page/slug           "seamless-clip-ins"
-                                   :catalog/category-id "21"})
-      :data-test "menu-shop-seamless-clip-ins"
-      :content [[:span.teal.pr1 "NEW"]
-                [:span.medium.flex-auto "Clip-Ins"]]}
-     {:link-attrs (utils/route-to events/navigate-product-details
-                                  {:page/slug          "50g-straight-tape-ins"
-                                   :catalog/product-id "111"})
-      :data-test "menu-shop-tape-ins"
-      :content [[:span.teal.pr1 "NEW"]
-                [:span.medium.flex-auto "Tape-Ins"]]}]))
+      {:link-attrs (utils/route-to events/navigate-category
+                                   {:page/slug           "dyed-virgin-hair"
+                                    :catalog/category-id "16"})
+       :data-test  "menu-shop-dyed-virgin-hair"
+       :content    [[:span.medium.flex-auto "Dyed Virgin Hair"]]}
+      {:link-attrs (utils/fake-href events/menu-list
+                                    {:page/slug           "closures-and-frontals"
+                                     :catalog/category-id "12"})
+       :data-test "menu-shop-closures"
+       :content [[:span.medium.flex-auto "Closures & Frontals"]
+                 caret]}
+      {:link-attrs (utils/route-to events/navigate-category
+                                   {:page/slug           "wigs"
+                                    :catalog/category-id "13"})
+       :data-test "menu-shop-wigs"
+       :content [[:span.medium.flex-auto "Wigs"]]}
+      {:link-attrs (utils/route-to events/navigate-category
+                                   {:page/slug           "seamless-clip-ins"
+                                    :catalog/category-id "21"})
+       :data-test "menu-shop-seamless-clip-ins"
+       :content [[:span.teal.pr1 "NEW"]
+                 [:span.medium.flex-auto "Clip-Ins"]]}
+      {:link-attrs (utils/route-to events/navigate-product-details
+                                   {:page/slug          "50g-straight-tape-ins"
+                                    :catalog/product-id "111"})
+       :data-test "menu-shop-tape-ins"
+       :content [[:span.teal.pr1 "NEW"]
+                 [:span.medium.flex-auto "Tape-Ins"]]}])))
 
 (def stylist-exclusive-row
   {:link-attrs (utils/route-to events/navigate-product-details
@@ -228,9 +230,9 @@
     :data-test  "content-help"
     :content    ["Contact Us"]}])
 
-(defn ^:private menu-area [{:keys [signed-in black-friday-deals?]}]
+(defn ^:private menu-area [{:keys [signed-in] :as data}]
   [:ul.list-reset.mb3
-   (for [row (shopping-rows black-friday-deals?)]
+   (for [row (shopping-rows data)]
      (menu-row row))
    (when (-> signed-in ::auth/as (= :stylist))
      (menu-row stylist-exclusive-row))
@@ -279,6 +281,7 @@
    :the-ville?          (experiments/the-ville? data)
    :vouchers?           (experiments/vouchers? data)
    :black-friday-deals? (experiments/black-friday-deals? data)
+   :v2-experience?      (experiments/v2-experience? data)
    :shopping            {:categories (get-in data keypaths/categories)}})
 
 (defn query [data]
