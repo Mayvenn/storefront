@@ -15,8 +15,8 @@
   [:div.absolute.border.border-width-3.rounded-0.border-light-teal.overlay.flex
    [:div.self-center.flex.items-center
     [:div {:style {:width "1em"}}]
-    (ui/ucare-img {:width "30"
-                   :retina-quality "better"
+    (ui/ucare-img {:width           "30"
+                   :retina-quality  "better"
                    :default-quality "better"}
                   "ae0e9566-f688-4a6d-a0a9-378138308e48")]])
 
@@ -106,13 +106,13 @@
                                                  :value     (.-value (.-target %))})
            :options   (map (fn [option]
                              [:option {:value (:option/slug option)
-                                       :key (str "color-" (:option/slug option))}
+                                       :key   (str "color-" (:option/slug option))}
                               (:option/name option)])
                            (:hair/color options))})))]]
      [:div
       [:div.flex.hide-on-mb-tb
        (field
-        {:class     "border-right flex-grow-5"}
+        {:class "border-right flex-grow-5"}
         (desktop-dropdown
          [:div.h7 "Length:"]
          [:span.medium (:option/name length)]
@@ -213,9 +213,9 @@
    [:div.flex
     [:div.rounded-top-left.bg-repeat-x
      {:style
-      {:width "100%"
-       :height "100px"
-       :background-size "contain"
+      {:width            "100%"
+       :height           "100px"
+       :background-size  "contain"
        :background-image (str "url(" rectangle-swatch ")")}}]
     (ui/ucare-img {:class "rounded-top-right" :height "100px"} sku-img)]
 
@@ -252,7 +252,7 @@
 
 (defn picker-dialog
   "picker dialog as in https://app.zeplin.io/project/5a9f159069d48a4c15497a49/screen/5b15c08f4819592903cb1348"
-  [{:keys [title items cell-component-fn detour]}]
+  [{:keys [title items cell-component-fn product-alternative]}]
   [:div.hide-on-tb-dt.z4.fixed.overlay.overflow-auto.bg-light-silver
 
    [:div.p3.h5.bg-white.relative.border-bottom.border-gray
@@ -267,49 +267,49 @@
       "Done"]]]
    [:div.py3.px1 ;; body
     (map cell-component-fn items)]
-   (when detour
+   (when product-alternative
      [:div.center.mt6
-      [:div.h6 (:lead-in detour)]
-      [:div.h4.medium.mt2 [:a.teal.underline (:link-attrs detour) (:link-text detour)]]])])
+      [:div.h6 (:lead-in product-alternative)]
+      [:div.h4.medium.mt2 [:a.teal.underline (:link-attrs product-alternative) (:link-text product-alternative)]]])])
 
 (defn component
-  [{:keys [selected-picker facets selections options sku-quantity detour] :as data} owner _]
+  [{:keys [selected-picker facets selections options sku-quantity product-alternative] :as data} owner _]
   (component/create
    [:div
     (when (seq options)
       (condp = selected-picker
-        :hair/color    (picker-dialog {:title             (get-in facets [selected-picker :facet/name])
-                                       :items             (sort-by :option/order (get options selected-picker))
-                                       :cell-component-fn (fn [item]
-                                                            (color-option
-                                                             {:key             (str "color-" (:option/name item))
-                                                              :selected-picker selected-picker
-                                                              :color           item
-                                                              :checked?        (= (:hair/color selections)
-                                                                                  (:option/slug item))
-                                                              :sku-image       (:option/sku-swatch item)}))
-                                       :detour            detour})
-        :hair/length   (picker-dialog {:title             (get-in facets [selected-picker :facet/name])
-                                       :items             (sort-by :option/order (get options selected-picker))
-                                       :cell-component-fn (fn [item]
-                                                            (length-option
-                                                             {:key             (str "length-" (:option/name item))
-                                                              :primary-label   (:option/name item)
-                                                              :secondary-label (item-price (:price item))
-                                                              :checked?        (= (:hair/length selections)
-                                                                                  (:option/slug item))
-                                                              :selected-picker selected-picker
-                                                              :item            item}))
-                                       :detour            detour})
-        :item/quantity (picker-dialog {:title             "Quantity"
-                                       :items             (range 1 11)
-                                       :cell-component-fn (fn [quantity]
-                                                            (quantity-option
-                                                             {:key           (str "quantity-" quantity)
-                                                              :primary-label (str quantity)
-                                                              :checked?      (= quantity sku-quantity)
-                                                              :quantity      quantity}))
-                                       :detour            detour})
+        :hair/color    (picker-dialog {:title               (get-in facets [selected-picker :facet/name])
+                                       :items               (sort-by :option/order (get options selected-picker))
+                                       :cell-component-fn   (fn [item]
+                                                              (color-option
+                                                               {:key             (str "color-" (:option/name item))
+                                                                :selected-picker selected-picker
+                                                                :color           item
+                                                                :checked?        (= (:hair/color selections)
+                                                                                    (:option/slug item))
+                                                                :sku-image       (:option/sku-swatch item)}))
+                                       :product-alternative product-alternative})
+        :hair/length   (picker-dialog {:title               (get-in facets [selected-picker :facet/name])
+                                       :items               (sort-by :option/order (get options selected-picker))
+                                       :cell-component-fn   (fn [item]
+                                                              (length-option
+                                                               {:key             (str "length-" (:option/name item))
+                                                                :primary-label   (:option/name item)
+                                                                :secondary-label (item-price (:price item))
+                                                                :checked?        (= (:hair/length selections)
+                                                                                    (:option/slug item))
+                                                                :selected-picker selected-picker
+                                                                :item            item}))
+                                       :product-alternative product-alternative})
+        :item/quantity (picker-dialog {:title               "Quantity"
+                                       :items               (range 1 11)
+                                       :cell-component-fn   (fn [quantity]
+                                                              (quantity-option
+                                                               {:key           (str "quantity-" quantity)
+                                                                :primary-label (str quantity)
+                                                                :checked?      (= quantity sku-quantity)
+                                                                :quantity      quantity}))
+                                       :product-alternative product-alternative})
         nil))
     (when (seq options)
       (picker-rows data))]))
@@ -318,15 +318,15 @@
   [data]
   (let [options         (get-in data catalog.keypaths/detailed-product-options)
         selected-picker (get-in data catalog.keypaths/detailed-product-selected-picker)]
-    {:selected-picker selected-picker
-     :facets          (facets/by-slug data)
-     :selections      (get-in data catalog.keypaths/detailed-product-selections)
-     :options         options
-     :sku-quantity    (get-in data keypaths/browse-sku-quantity 1)
-     :detour          (when (and (= 1 (count (:hair/color options)))
-                                 (= selected-picker :hair/color))
-                        {:lead-in    "Want more color?"
-                         :link-text  "Browse Dyed Virgin"
-                         :link-attrs (utils/route-to events/navigate-category
-                                                     {:page/slug           "dyed-virgin-hair"
-                                                      :catalog/category-id "16"})})}))
+    {:selected-picker     selected-picker
+     :facets              (facets/by-slug data)
+     :selections          (get-in data catalog.keypaths/detailed-product-selections)
+     :options             options
+     :sku-quantity        (get-in data keypaths/browse-sku-quantity 1)
+     :product-alternative (when (and (= 1 (count (:hair/color options)))
+                                     (= selected-picker :hair/color))
+                            {:lead-in    "Want more color?"
+                             :link-text  "Browse Dyed Virgin"
+                             :link-attrs (utils/route-to events/navigate-category
+                                                         {:page/slug           "dyed-virgin-hair"
+                                                          :catalog/category-id "16"})})}))
