@@ -267,10 +267,10 @@
       "Done"]]]
    [:div.py3.px1 ;; body
     (map cell-component-fn items)]
-   (when product-alternative
+   (when-let [{:keys [link-attrs link-text lead-in]} product-alternative]
      [:div.center.mt6
-      [:div.h6 (:lead-in product-alternative)]
-      [:div.h4.medium.mt2 [:a.teal.underline (:link-attrs product-alternative) (:link-text product-alternative)]]])])
+      [:div.h6 lead-in]
+      [:div.h4.medium.mt2 [:a.teal.underline link-attrs link-text]]])])
 
 (defn component
   [{:keys [selected-picker facets selections options sku-quantity product-alternative] :as data} owner _]
