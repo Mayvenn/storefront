@@ -269,6 +269,7 @@
     (map cell-component-fn items)]
    (when-let [{:keys [link-attrs link-text lead-in]} product-alternative]
      [:div.center.mt6
+      {:data-test "picker-product-alternative"}
       [:div.h6 lead-in]
       [:div.h4.medium.mt2 [:a.teal.underline link-attrs link-text]]])])
 
