@@ -310,10 +310,10 @@
                [:div {:item-prop  "offers"
                       :item-scope ""
                       :item-type  "http://schema.org/Offer"}
-                [:div.pb2 (component/build picker/component picker-data opts)]
+                (component/build picker/component picker-data opts)
                 (when (products/eligible-for-triple-bundle-discount? product)
-                  [:div triple-bundle-upsell])
-                [:div.center.mb6.pt4
+                  [:div.pt2.pb4 triple-bundle-upsell])
+                [:div.center.mb6
                  [:div.h6.navy "Price Per Bundle"]
                  [:div.medium (item-price (:sku/price selected-sku))]]
                 (affirm/pdp-dropdown-experiment-as-low-as-box
