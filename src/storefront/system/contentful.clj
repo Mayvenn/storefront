@@ -99,25 +99,55 @@
        (exception-handler t)
        (logger :error t)))))
 
+(defn- give-or-take [dt {:keys [minutes]}]
+  (let [start (date/add-delta dt {:minutes (- minutes)})
+        end   (date/add-delta dt {:minutes minutes})]
+    [start end]))
+
+(defn- date-time-for-every [[start end] {:keys [seconds]}]
+  (range (date/to-millis start) (date/to-millis end) (* 1000 seconds)))
+
+(def black-friday (date/date-time 2018 11 23 5 0 0))
+
+(def increased-polling-intervals
+  [(-> black-friday
+       (give-or-take {:minutes 5})
+       (date-time-for-every {:seconds 10}))])
+
+(defn after-black-friday?
+  []
+  (date/after? (date/add-delta black-friday {:minutes 10})
+               (date/now)))
+
 (defprotocol CMSCache
   (read-cache [_] "Returns a map representing the CMS cache"))
 
 (defrecord ContentfulContext [logger exception-handler environment cache-timeout api-key space-id endpoint]
   component/Lifecycle
   (start [c]
-    (let [pool          (at-at/mk-pool)
-          cache         (atom {})
-          config        {:space-id  space-id
-                         :endpoint  endpoint
-                         :env-param (if (= environment "production")
-                                      "production"
-                                      "acceptance")
-                         :cache     cache
-                         :api-key   api-key}]
+    (let [pool   (at-at/mk-pool)
+          cache  (atom {})
+          config {:space-id  space-id
+                  :endpoint  endpoint
+                  :env-param (if (= environment "production")
+                               "production"
+                               "acceptance")
+                  :cache     cache
+                  :api-key   api-key}]
+      (when after-black-friday?
+        (doseq [content-type  [:homepage :advertisedPromo]
+                timestamps    increased-polling-intervals
+                :let          [num-checks (count timestamps)]
+                [i ts-millis] (map-indexed vector timestamps)]
+          (at-at/at ts-millis #(do-fetch-entries config content-type)
+                    pool
+                    :desc (str "scheduled poll for " content-type " " i " of " num-checks))))
       (doseq [content-type [:homepage :mayvennMadePage :advertisedPromo]]
-        (at-at/every cache-timeout
-                     #(do-fetch-entries config content-type)
-                     pool))
+        (at-at/interspaced cache-timeout
+                           #(do-fetch-entries config content-type)
+                           pool
+                           :desc (str "poller for " content-type)))
+      (println "Pool polling status at start: " (at-at/show-schedule pool))
       (assoc c
              :pool  pool
              :cache cache)))
