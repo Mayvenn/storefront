@@ -317,7 +317,8 @@
 
 (defn query
   [data]
-  (let [options         (get-in data catalog.keypaths/detailed-product-options)
+  (let [family          (:hair/family (get-in data catalog.keypaths/detailed-product-selected-sku))
+        options         (get-in data catalog.keypaths/detailed-product-options)
         selected-picker (get-in data catalog.keypaths/detailed-product-selected-picker)]
     {:selected-picker     selected-picker
      :facets              (facets/by-slug data)
@@ -325,7 +326,8 @@
      :options             options
      :sku-quantity        (get-in data keypaths/browse-sku-quantity 1)
      :product-alternative (when (and (= 1 (count (:hair/color options)))
-                                     (= selected-picker :hair/color))
+                                     (= selected-picker :hair/color)
+                                     (some family ["frontals" "bundles" "closures" "360-frontals"]))
                             {:lead-in    "Want more color?"
                              :link-text  "Browse Dyed Virgin"
                              :link-attrs (utils/route-to events/navigate-category
