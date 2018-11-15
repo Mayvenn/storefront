@@ -598,10 +598,12 @@
         skus         (products/index-skus skus)
         sku-id       (determine-sku-id app-state product)
         sku          (get skus sku-id)
-        product-skus (extract-product-skus app-state product)]
+        product-skus (extract-product-skus app-state product)
+        options      (product-details-dropdown/generate-product-options app-state)]
     (-> app-state
         (assoc-in catalog.keypaths/detailed-product-product-skus product-skus)
-        (assoc-in catalog.keypaths/detailed-product-selected-sku sku))))
+        (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
+        (assoc-in catalog.keypaths/detailed-product-options options))))
 
 (defn first-when-only [coll]
   (when (= 1 (count coll))

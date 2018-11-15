@@ -501,17 +501,15 @@
          (selector/match-all {} (merge old-selections new-selections))
          first-when-only)))
 
-(defn ^:private assoc-options
+(defn generate-product-options
   [app-state]
   (let [product-id   (get-in app-state catalog.keypaths/detailed-product-id)
         product      (products/product-by-id app-state product-id)
         facets       (facets/by-slug app-state)
         product-skus (extract-product-skus app-state product)]
-    (-> app-state
-        (assoc-in catalog.keypaths/detailed-product-options
-                  (sku-selector/product-options facets
-                                                product
-                                                product-skus)))))
+    (sku-selector/product-options facets
+                                  product
+                                  product-skus)))
 
 (defn ^:private assoc-selections
   "Selections are ultimately a function of three inputs:
@@ -544,7 +542,8 @@
   (let [ugc-offset (:offset query-params)
         sku        (->> (:SKU query-params)
                         (conj keypaths/v2-skus)
-                        (get-in app-state))]
+                        (get-in app-state))
+        options    (generate-product-options app-state)]
     (-> app-state
         (assoc-in catalog.keypaths/detailed-product-id product-id)
         (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
@@ -552,12 +551,13 @@
         (assoc-in keypaths/browse-recently-added-skus [])
         (assoc-in keypaths/browse-sku-quantity 1)
         (assoc-selections sku)
-        assoc-options)))
+        (assoc-in catalog.keypaths/detailed-product-options options))))
 
 (defmethod transitions/transition-state events/control-product-detail-picker-option-select
   [_ event {:keys [selection value]} app-state]
   (let [selected-sku (->> {selection #{value}}
-                          (determine-sku-from-selections app-state))]
+                          (determine-sku-from-selections app-state))
+        options      (generate-product-options app-state)]
     (-> app-state
         (assoc-in catalog.keypaths/detailed-product-selected-picker
                   nil)
@@ -565,7 +565,7 @@
                   selected-sku)
         (update-in catalog.keypaths/detailed-product-selections
                    merge {selection value})
-        assoc-options)))
+        (assoc-in catalog.keypaths/detailed-product-options options))))
 
 (defmethod effects/perform-effects events/control-product-detail-picker-option-select
   [_ event {:keys [selection value]} _ app-state]
