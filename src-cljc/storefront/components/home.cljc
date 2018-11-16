@@ -84,9 +84,12 @@
   (when hero-data
     (let [{:keys [mobile desktop alt path]} hero-data
           mobile-url                        (-> mobile :file :url)
-          desktop-url                       (-> desktop :file :url)]
+          desktop-url                       (-> desktop :file :url)
+          [event args :as routed-path]      (routes/navigation-message-for path) ]
       [:h1.h2
-       [:a (assoc (apply utils/route-to (routes/navigation-message-for path))
+       [:a (assoc (if-not (= events/navigate-not-found event)
+                    (apply utils/route-to routed-path)
+                    {:href path})
                   :data-test "home-banner")
         [:picture
          ;; Tablet/Desktop
