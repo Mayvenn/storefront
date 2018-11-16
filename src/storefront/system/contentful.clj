@@ -3,7 +3,9 @@
             [camel-snake-kebab.extras :as cske]
             [clojure.set :as set]
             [com.stuartsierra.component :as component]
+            [lambdaisland.uri :as uri]
             [overtone.at-at :as at-at]
+            [ring.util.response :as util.response]
             [spice.core :as spice]
             [spice.date :as date]
             [spice.maps :as maps]
@@ -107,6 +109,7 @@
 (defn- date-time-for-every [[start end] {:keys [seconds]}]
   (range (date/to-millis start) (date/to-millis end) (* 1000 seconds)))
 
+;; GROT after black friday
 (def black-friday (date/date-time 2018 11 23 5 0 0))
 
 (def increased-polling-intervals
@@ -156,3 +159,11 @@
     (dissoc c :cache :pool))
   CMSCache
   (read-cache [c] (deref (:cache c))))
+
+(defn marketing-site-redirect [req]
+  (let [prefix (partial str "https://")
+        url    (-> req :query-params (get "to") prefix)
+        host   (-> url uri/uri :host)
+        to     (if (contains? #{"looks.mayvenn.com"} host)
+                 url "https://shop.mayvenn.com")]
+    (util.response/redirect to)))

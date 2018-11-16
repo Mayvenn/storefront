@@ -865,7 +865,7 @@
 
 (defn create-handler
   ([] (create-handler {}))
-  ([{:keys [logger exception-handler environment storeback-config] :as ctx}]
+  ([{:keys [logger exception-handler environment storeback-config contentful] :as ctx}]
    (-> (routes (GET "/healthcheck" [] "cool beans")
                (GET "/robots.txt" req (-> (robots req) util.response/response (util.response/content-type "text/plain")))
                (GET "/sitemap.xml" req (sitemap ctx req))
@@ -877,7 +877,13 @@
                (GET "/products" req (redirect-to-home environment req))
                (GET "/products/" req (redirect-to-home environment req))
                (GET "/products/:id-and-slug/:sku" req (redirect-to-product-details environment req))
-               (GET "/cms" req (-> ctx :contentful contentful/read-cache cheshire.core/generate-string util.response/response))
+               (GET "/cms" req
+                 (-> contentful
+                     contentful/read-cache
+                     cheshire.core/generate-string
+                     util.response/response))
+               (GET "/marketing-site" req
+                 (contentful/marketing-site-redirect req))
                (-> (routes (static-routes ctx)
                            (wrap-leads-routes (leads-routes ctx) ctx)
                            (-> (install-routes ctx)

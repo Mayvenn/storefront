@@ -347,3 +347,24 @@
         (is (= 301 (:status resp)))
         (is (= "/products/12-indian-straight-bundles?SKU=INSDB14"
                (get-in resp [:headers "Location"])))))))
+
+(deftest marketing-site-redirect
+  (testing "should redirect to a whitelisted domain"
+    (assert-request
+     (->
+      (mock/request :get "https://shop.mayvenn.com/marketing-site?to=looks.mayvenn.com/abc"))
+     common/storeback-stylist-response
+     (fn [resp]
+       (is (= 302 (:status resp)))
+       (is (= "https://looks.mayvenn.com/abc"
+              (get-in resp [:headers "Location"]))))))
+  (testing "should *not* redirect to a domain which is not whitelisted"
+    (assert-request
+     (->
+      (mock/request :get "https://shop.mayvenn.com/marketing-site?to=https://reddit.com/r/emacs"))
+     common/storeback-stylist-response
+     (fn [resp]
+       (is (= 302 (:status resp)))
+       (is (= "https://shop.mayvenn.com"
+              (get-in resp [:headers "Location"])))))))
+
