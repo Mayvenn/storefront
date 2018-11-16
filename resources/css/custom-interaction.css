@@ -59,3 +59,19 @@
     --too-light-teal: #f5fcfb;
     --color-transition: all 1000ms 300ms ease-in-out;
 }
+
+.picker-enter, .picker-leave.picker-leave-active {
+    top: 100%;
+}
+
+.picker-leave, .picker-enter.picker-enter-active {
+    top: 0;
+}
+
+.picker-enter.picker-enter-active {
+    transition: top 0.25s ease-out;
+}
+
+.picker-leave.picker-leave-active {
+    transition: top 0.25s ease-out;
+}

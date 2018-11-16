@@ -559,8 +559,6 @@
                           (determine-sku-from-selections app-state))
         options      (generate-product-options app-state)]
     (-> app-state
-        (assoc-in catalog.keypaths/detailed-product-selected-picker
-                  nil)
         (assoc-in catalog.keypaths/detailed-product-selected-sku
                   selected-sku)
         (update-in catalog.keypaths/detailed-product-selections
