@@ -114,7 +114,7 @@
        (give-or-take {:minutes 5})
        (date-time-for-every {:seconds 10}))])
 
-(defn after-black-friday?
+(defn before-black-friday-launch?
   []
   (date/after? (date/add-delta black-friday {:minutes 10})
                (date/now)))
@@ -134,7 +134,7 @@
                                "acceptance")
                   :cache     cache
                   :api-key   api-key}]
-      (when after-black-friday?
+      (when before-black-friday-launch?
         (doseq [content-type  [:homepage :advertisedPromo]
                 timestamps    increased-polling-intervals
                 :let          [num-checks (count timestamps)]
