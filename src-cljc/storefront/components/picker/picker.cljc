@@ -2,15 +2,17 @@
   (:require [catalog.facets :as facets]
             [catalog.keypaths :as catalog.keypaths]
             [catalog.products :as products]
+            [clojure.string :as string]
+            [spice.core :as spice]
             [storefront.component :as component]
             [storefront.components.money-formatters :as mf]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
+            [storefront.css-transitions :as css-transitions]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.platform.messages :as messages]
-            [storefront.css-transitions :as css-transitions]))
+            [storefront.platform.messages :as messages]))
 
 (defn simple-selected-layer []
   [:div.absolute.border.border-width-3.rounded-0.border-light-teal.overlay.flex
@@ -73,101 +75,116 @@
    options])
 
 (defn- hacky-fix-of-bad-slugs-on-facets [slug]
-  (clojure.string/replace (str slug) #"#" ""))
+  (string/replace (str slug) #"#" ""))
+
+(defn desktop-length-and-quantity-picker-rows
+  [{:keys [product-sold-out-style selected-length selections options sku-quantity]}]
+  [:div.flex.hide-on-mb-tb
+   (field
+    {:class "border-right flex-grow-5"}
+    (desktop-dropdown
+     [:div.h7 "Length:"]
+     [:span.medium
+      product-sold-out-style
+      (:option/name selected-length)]
+     (invisible-select
+      {:on-change #(messages/handle-message events/control-product-detail-picker-option-select
+                                            {:selection :hair/length
+                                             :value     (.-value (.-target %))})
+       :value     (:hair/length selections)
+       :options   (map (fn [option]
+                         [:option {:value (:option/slug option)
+                                   :key   (str "length-" (:option/slug option))}
+                          (str (:option/name option) " - " (mf/as-money-without-cents (:price option)))])
+                       (:hair/length options))})))
+   [:div.flex-auto
+    (field
+     (desktop-dropdown
+      [:div.h7 "Qty:"]
+      [:span.medium product-sold-out-style sku-quantity]
+      (invisible-select
+       {:on-change #(messages/handle-message events/control-product-detail-picker-option-quantity-select
+                                             {:value (spice/parse-int (.-value (.-target %)))})
+        :value     sku-quantity
+        :options   (map (fn [quantity]
+                          [:option {:value quantity
+                                    :key   (str "quantity-" quantity)}
+                           quantity])
+                        (range 1 11))})))]])
+
+(defn mobile-length-and-quantity-picker-rows
+  [{:keys [selected-length product-sold-out-style sku-quantity]}]
+  [:div.flex.hide-on-dt
+   (field
+    (merge
+     {:class     "border-right flex-grow-5"
+      :data-test "picker-length"}
+     (utils/fake-href events/control-product-detail-picker-open {:facet-slug :hair/length}))
+    (mobile-dropdown
+     [:div.h7 "Length:"]
+     [:span.medium
+      (merge
+       {:data-test (str "picker-selected-length-" (:option/slug selected-length))}
+       product-sold-out-style)
+      (:option/name selected-length)]))
+   [:div.flex-auto
+    (field
+     (merge {:data-test "picker-quantity"}
+            (utils/fake-href events/control-product-detail-picker-open {:facet-slug :item/quantity}))
+     (mobile-dropdown
+      [:div.h7 "Qty:"]
+      [:span.medium
+       (merge
+        {:data-test (str "picker-selected-quantity-" sku-quantity)}
+        product-sold-out-style)
+       sku-quantity]))]])
+
+(defn desktop-color-picker-row
+  [{:keys [selected-color selections options product-sold-out-style]}]
+  [:div.hide-on-mb-tb
+   (field
+    (desktop-dropdown
+     [:img.border.border-gray.rounded-0
+      {:height "33px"
+       :width  "65px"
+       :src    (:option/rectangle-swatch selected-color)}]
+     [:span product-sold-out-style (:option/name selected-color)]
+     (invisible-select
+      {:value     (:hair/color selections)
+       :on-change #(messages/handle-message events/control-product-detail-picker-option-select
+                                            {:selection :hair/color
+                                             :value     (.-value (.-target %))})
+       :options   (map (fn [option]
+                         [:option {:value (:option/slug option)
+                                   :key   (str "color-" (:option/slug option))}
+                          (:option/name option)])
+                       (:hair/color options))})))])
+
+(defn mobile-color-picker-row [{:keys [selected-color product-sold-out-style]}]
+  [:div.hide-on-dt
+   (field
+    (merge {:data-test "picker-color"}
+           (utils/fake-href events/control-product-detail-picker-open {:facet-slug :hair/color}))
+    (mobile-dropdown
+     [:img.border.border-gray.rounded-0
+      {:height "33px"
+       :width  "65px"
+       :src    (:option/rectangle-swatch selected-color)}]
+     [:span (merge
+             {:data-test (str "picker-selected-color-" (hacky-fix-of-bad-slugs-on-facets (:option/slug selected-color)))}
+             product-sold-out-style)
+      (:option/name selected-color)]))] )
 
 (defn picker-rows
   "individual elements as in: https://app.zeplin.io/project/5a9f159069d48a4c15497a49/screen/5b21aa0352b1d5e31a32ac53"
-  [{:as data :keys [product-sold-out? options facets selections sku-quantity]}]
-  (let [color                  (get-in facets [:hair/color :facet/options (:hair/color selections)])
-        length                 (get-in facets [:hair/length :facet/options (:hair/length selections)])
-        product-sold-out-style (when product-sold-out? {:class "gray"})]
-    [:div.mxn2
-     [:div
-      [:div.hide-on-dt
-       (field
-        (merge {:data-test "picker-color"}
-               (utils/fake-href events/control-product-detail-picker-open {:facet-slug :hair/color}))
-        (mobile-dropdown
-         [:img.border.border-gray.rounded-0
-          {:height "33px"
-           :width  "65px"
-           :src    (:option/rectangle-swatch color)}]
-         [:span (merge
-                 {:data-test (str "picker-selected-color-" (hacky-fix-of-bad-slugs-on-facets (:option/slug color)))}
-                 product-sold-out-style)
-          (:option/name color)]))]
-      [:div.hide-on-mb-tb
-       (field
-        (desktop-dropdown
-         [:img.border.border-gray.rounded-0
-          {:height "33px"
-           :width  "65px"
-           :src    (:option/rectangle-swatch color)}]
-         [:span product-sold-out-style (:option/name color)]
-         (invisible-select
-          {:value     (:hair/color selections)
-           :on-change #(messages/handle-message events/control-product-detail-picker-option-select
-                                                {:selection :hair/color
-                                                 :value     (.-value (.-target %))})
-           :options   (map (fn [option]
-                             [:option {:value (:option/slug option)
-                                       :key   (str "color-" (:option/slug option))}
-                              (:option/name option)])
-                           (:hair/color options))})))]]
-     [:div
-      [:div.flex.hide-on-mb-tb
-       (field
-        {:class "border-right flex-grow-5"}
-        (desktop-dropdown
-         [:div.h7 "Length:"]
-         [:span.medium product-sold-out-style (:option/name length)]
-         (invisible-select
-          {:on-change #(messages/handle-message events/control-product-detail-picker-option-select
-                                                {:selection :hair/length
-                                                 :value     (.-value (.-target %))})
-           :value     (:hair/length selections)
-           :options   (map (fn [option]
-                             [:option {:value (:option/slug option)
-                                       :key   (str "length-" (:option/slug option))}
-                              (str (:option/name option) " - " (mf/as-money-without-cents (:price option)))])
-                           (:hair/length options))})))
-       [:div.flex-auto
-        (field
-         (desktop-dropdown
-          [:div.h7 "Qty:"]
-          [:span.medium product-sold-out-style sku-quantity]
-          (invisible-select
-           {:on-change #(messages/handle-message events/control-product-detail-picker-option-quantity-select
-                                                 {:value (spice.core/parse-int (.-value (.-target %)))})
-            :value     sku-quantity
-            :options   (map (fn [quantity]
-                              [:option {:value quantity
-                                        :key   (str "quantity-" quantity)}
-                               quantity])
-                            (range 1 11))})))]]
-      [:div.flex.hide-on-dt
-         (field
-          (merge
-           {:class     "border-right flex-grow-5"
-            :data-test "picker-length"}
-           (utils/fake-href events/control-product-detail-picker-open {:facet-slug :hair/length}))
-          (mobile-dropdown
-           [:div.h7 "Length:"]
-           [:span.medium
-            (merge
-             {:data-test (str "picker-selected-length-" (:option/slug length))}
-             product-sold-out-style)
-            (:option/name length)]))
-         [:div.flex-auto
-          (field
-           (merge {:data-test "picker-quantity"}
-                  (utils/fake-href events/control-product-detail-picker-open {:facet-slug :item/quantity}))
-           (mobile-dropdown
-            [:div.h7 "Qty:"]
-            [:span.medium (merge
-                           {:data-test (str "picker-selected-quantity-" sku-quantity)}
-                           product-sold-out-style)
-             sku-quantity]))]]]]))
+  [data]
+  [:div.mxn2
+   [:div
+    (mobile-color-picker-row data)
+    (desktop-color-picker-row data)]
+   [:div
+    (desktop-length-and-quantity-picker-rows data)
+    (mobile-length-and-quantity-picker-rows data)]])
 
 (defn select-and-close [event-key options]
   (messages/handle-message event-key options)
@@ -338,21 +355,26 @@
 
 (defn query
   [data]
-  (let [family          (:hair/family (get-in data catalog.keypaths/detailed-product-selected-sku))
-        options         (get-in data catalog.keypaths/detailed-product-options)
-        selected-picker (get-in data catalog.keypaths/detailed-product-selected-picker)
-        product-skus    (products/extract-product-skus data (products/current-product data))]
-    {:selected-picker     selected-picker
-     :facets              (facets/by-slug data)
-     :selections          (get-in data catalog.keypaths/detailed-product-selections)
-     :options             options
-     :sku-quantity        (get-in data keypaths/browse-sku-quantity 1)
-     :product-sold-out?   (every? (comp not :inventory/in-stock?) product-skus)
-     :product-alternative (when (and (= 1 (count (:hair/color options)))
-                                     (= selected-picker :hair/color)
-                                     (some family ["frontals" "bundles" "closures" "360-frontals"]))
-                            {:lead-in    "Want more color?"
-                             :link-text  "Browse Dyed Virgin"
-                             :link-attrs (utils/route-to events/navigate-category
-                                                         {:page/slug           "dyed-virgin-hair"
-                                                          :catalog/category-id "16"})})}))
+  (let [family            (:hair/family (get-in data catalog.keypaths/detailed-product-selected-sku))
+        options           (get-in data catalog.keypaths/detailed-product-options)
+        selected-picker   (get-in data catalog.keypaths/detailed-product-selected-picker)
+        product-skus      (products/extract-product-skus data (products/current-product data))
+        product-sold-out? (every? (comp not :inventory/in-stock?) product-skus)
+        facets            (facets/by-slug data)
+        selections        (get-in data catalog.keypaths/detailed-product-selections)]
+    {:selected-picker        selected-picker
+     :facets                 facets
+     :selections             (get-in data catalog.keypaths/detailed-product-selections)
+     :options                options
+     :selected-color         (get-in facets [:hair/color :facet/options (:hair/color selections)])
+     :selected-length        (get-in facets [:hair/length :facet/options (:hair/length selections)])
+     :product-sold-out-style (when product-sold-out? {:class "gray"})
+     :sku-quantity           (get-in data keypaths/browse-sku-quantity 1)
+     :product-alternative    (when (and (= 1 (count (:hair/color options)))
+                                        (= selected-picker :hair/color)
+                                        (some family ["frontals" "bundles" "closures" "360-frontals"]))
+                               {:lead-in    "Want more color?"
+                                :link-text  "Browse Dyed Virgin"
+                                :link-attrs (utils/route-to events/navigate-category
+                                                            {:page/slug           "dyed-virgin-hair"
+                                                             :catalog/category-id "16"})})}))
