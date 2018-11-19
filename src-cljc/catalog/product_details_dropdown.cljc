@@ -11,11 +11,11 @@
                        [om.core :as om]])
             [catalog.facets :as facets]
             [catalog.keypaths]
+            [catalog.keypaths :as catalog.keypaths]
             [catalog.product-details-ugc :as ugc]
-            [storefront.components.picker.picker :as picker]
             [catalog.products :as products]
-            [catalog.skuers :as skuers]
             [catalog.selector.sku :as sku-selector]
+            [catalog.skuers :as skuers]
             [clojure.set :as set]
             [clojure.string :as string]
             [spice.core :as spice]
@@ -31,6 +31,7 @@
             [storefront.component :as component]
             [storefront.components.affirm :as affirm]
             [storefront.components.money-formatters :refer [as-money-without-cents as-money]]
+            [storefront.components.picker.picker :as picker]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.config :as config]
@@ -42,8 +43,7 @@
             [storefront.platform.messages :as messages]
             [storefront.platform.reviews :as review-component]
             [storefront.request-keys :as request-keys]
-            [storefront.transitions :as transitions]
-            [catalog.keypaths :as catalog.keypaths]))
+            [storefront.transitions :as transitions]))
 
 (defn item-price [price]
   (when price
@@ -569,7 +569,8 @@
                                  (select-keys [:catalog/product-id :page/slug])
                                  (assoc :query-params {:SKU sku-id-for-selection}))]
     (effects/redirect events/navigate-product-details
-                      params-with-sku-id)))
+                      params-with-sku-id)
+    #?(:cljs (scroll/enable-body-scrolling))))
 
 (defmethod transitions/transition-state events/control-product-detail-picker-open
   [_ event {:keys [facet-slug]} app-state]
@@ -584,3 +585,13 @@
 (defmethod transitions/transition-state events/control-product-detail-picker-close
   [_ event _ app-state]
   (assoc-in app-state catalog.keypaths/detailed-product-selected-picker nil))
+
+#?(:cljs
+   (defmethod effects/perform-effects events/control-product-detail-picker-open
+     [_ _ _ _ _]
+     (scroll/disable-body-scrolling)))
+
+#?(:cljs
+   (defmethod effects/perform-effects events/control-product-detail-picker-close
+     [_ _ _ _ _]
+     (scroll/enable-body-scrolling)))
