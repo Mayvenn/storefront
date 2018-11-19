@@ -396,12 +396,6 @@
                             :image/of #{"model" "product"}})
        (sort-by :order)))
 
-(defn extract-product-skus [app-state product]
-  (->> (select-keys (get-in app-state keypaths/v2-skus)
-                    (:selector/skus product))
-       vals
-       (sort-by :sku/price)))
-
 (defn default-selections
   "Using map of current selections (which can be empty)
   for un-selected values picks first option from the available options.
@@ -420,7 +414,7 @@
   (let [selected-sku    (get-in data catalog.keypaths/detailed-product-selected-sku)
         selections      (get-in data catalog.keypaths/detailed-product-selections)
         product         (products/current-product data)
-        product-skus    (extract-product-skus data product)
+        product-skus    (products/extract-product-skus data product)
         facets          (facets/by-slug data)
         carousel-images (find-carousel-images product product-skus selected-sku)
         options         (get-in data catalog.keypaths/detailed-product-options)
@@ -506,7 +500,7 @@
   (let [product-id   (get-in app-state catalog.keypaths/detailed-product-id)
         product      (products/product-by-id app-state product-id)
         facets       (facets/by-slug app-state)
-        product-skus (extract-product-skus app-state product)]
+        product-skus (products/extract-product-skus app-state product)]
     (sku-selector/product-options facets
                                   product
                                   product-skus)))
@@ -525,7 +519,7 @@
   (let [product-id   (get-in app-state catalog.keypaths/detailed-product-id)
         product      (products/product-by-id app-state product-id)
         facets       (facets/by-slug app-state)
-        product-skus (extract-product-skus app-state product)]
+        product-skus (products/extract-product-skus app-state product)]
     (-> app-state
         (assoc-in catalog.keypaths/detailed-product-selections
                   (merge

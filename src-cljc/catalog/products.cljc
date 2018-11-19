@@ -77,3 +77,9 @@
                            :page/slug          slug}
                           (when sku
                             {:query-params {:SKU sku}}))))
+
+(defn extract-product-skus [app-state product]
+  (->> (select-keys (get-in app-state keypaths/v2-skus)
+                    (:selector/skus product))
+       vals
+       (sort-by :sku/price)))
