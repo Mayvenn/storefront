@@ -77,9 +77,10 @@
 
 (defn picker-rows
   "individual elements as in: https://app.zeplin.io/project/5a9f159069d48a4c15497a49/screen/5b21aa0352b1d5e31a32ac53"
-  [{:as data :keys [options facets selections sku-quantity]}]
-  (let [color  (get-in facets [:hair/color :facet/options (:hair/color selections)])
-        length (get-in facets [:hair/length :facet/options (:hair/length selections)])]
+  [{:as data :keys [product-sold-out? options facets selections sku-quantity]}]
+  (let [color                  (get-in facets [:hair/color :facet/options (:hair/color selections)])
+        length                 (get-in facets [:hair/length :facet/options (:hair/length selections)])
+        product-sold-out-style (when product-sold-out? {:class "gray"})]
     [:div.mxn2
      [:div
       [:div.hide-on-dt
@@ -91,7 +92,10 @@
           {:height "33px"
            :width  "65px"
            :src    (:option/rectangle-swatch color)}]
-         [:span {:data-test (str "picker-selected-color-" (hacky-fix-of-bad-slugs-on-facets (:option/slug color)))} (:option/name color)]))]
+         [:span (merge
+                 {:data-test (str "picker-selected-color-" (hacky-fix-of-bad-slugs-on-facets (:option/slug color)))}
+                 product-sold-out-style)
+          (:option/name color)]))]
       [:div.hide-on-mb-tb
        (field
         (desktop-dropdown
@@ -99,7 +103,7 @@
           {:height "33px"
            :width  "65px"
            :src    (:option/rectangle-swatch color)}]
-         [:span (:option/name color)]
+         [:span product-sold-out-style (:option/name color)]
          (invisible-select
           {:value     (:hair/color selections)
            :on-change #(messages/handle-message events/control-product-detail-picker-option-select
@@ -116,7 +120,7 @@
         {:class "border-right flex-grow-5"}
         (desktop-dropdown
          [:div.h7 "Length:"]
-         [:span.medium (:option/name length)]
+         [:span.medium product-sold-out-style (:option/name length)]
          (invisible-select
           {:on-change #(messages/handle-message events/control-product-detail-picker-option-select
                                                 {:selection :hair/length
@@ -131,7 +135,7 @@
         (field
          (desktop-dropdown
           [:div.h7 "Qty:"]
-          [:span.medium sku-quantity]
+          [:span.medium product-sold-out-style sku-quantity]
           (invisible-select
            {:on-change #(messages/handle-message events/control-product-detail-picker-option-quantity-select
                                                  {:value (spice.core/parse-int (.-value (.-target %)))})
@@ -149,14 +153,21 @@
            (utils/fake-href events/control-product-detail-picker-open {:facet-slug :hair/length}))
           (mobile-dropdown
            [:div.h7 "Length:"]
-           [:span.medium {:data-test (str "picker-selected-length-" (:option/slug length))} (:option/name length)]))
+           [:span.medium
+            (merge
+             {:data-test (str "picker-selected-length-" (:option/slug length))}
+             product-sold-out-style)
+            (:option/name length)]))
          [:div.flex-auto
           (field
            (merge {:data-test "picker-quantity"}
                   (utils/fake-href events/control-product-detail-picker-open {:facet-slug :item/quantity}))
            (mobile-dropdown
             [:div.h7 "Qty:"]
-            [:span.medium {:data-test (str "picker-selected-quantity-" sku-quantity)} sku-quantity]))]]]]))
+            [:span.medium (merge
+                           {:data-test (str "picker-selected-quantity-" sku-quantity)}
+                           product-sold-out-style)
+             sku-quantity]))]]]]))
 
 (defn select-and-close [event-key options]
   (messages/handle-message event-key options)
@@ -329,12 +340,14 @@
   [data]
   (let [family          (:hair/family (get-in data catalog.keypaths/detailed-product-selected-sku))
         options         (get-in data catalog.keypaths/detailed-product-options)
-        selected-picker (get-in data catalog.keypaths/detailed-product-selected-picker)]
+        selected-picker (get-in data catalog.keypaths/detailed-product-selected-picker)
+        product-skus    (products/extract-product-skus data (products/current-product data))]
     {:selected-picker     selected-picker
      :facets              (facets/by-slug data)
      :selections          (get-in data catalog.keypaths/detailed-product-selections)
      :options             options
      :sku-quantity        (get-in data keypaths/browse-sku-quantity 1)
+     :product-sold-out?   (every? (comp not :inventory/in-stock?) product-skus)
      :product-alternative (when (and (= 1 (count (:hair/color options)))
                                      (= selected-picker :hair/color)
                                      (some family ["frontals" "bundles" "closures" "360-frontals"]))
