@@ -242,6 +242,9 @@
      (let [category   (categories/current-category app-state)
            success-fn #(messages/handle-message events/api-success-v2-products-for-browse
                                                 (assoc % :category-id category-id))]
+       ;; Some pages may disable scrolling on the body, e.g.: product detail page
+       ;; and it must be re-enabled for this page
+       (scroll/enable-body-scrolling)
        (if (auth/permitted-category? app-state category)
          (do
            (storefront.api/search-v2-products (get-in app-state keypaths/api-cache)
