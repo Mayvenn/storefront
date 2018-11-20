@@ -195,9 +195,10 @@
                       disabled? "dark-gray"
                       checked?  "medium"
                       :else     nil)]
-    [:div {:data-test (str "picker-quantity-" quantity)}
-     (ui/option {:key      key
-                 :height   "4em"
+    [:div {:key       key
+           :data-test (str "picker-quantity-" quantity)}
+     (ui/option {:height   "4em"
+                 :key      (str key "-option")
                  :on-click #(select-and-close
                              events/control-product-detail-picker-option-quantity-select
                              {:value quantity})}
@@ -221,9 +222,10 @@
                       disabled? "dark-gray"
                       checked?  "medium"
                       :else     nil)]
-    [:div {:data-test (str "picker-length-" (:option/slug item))}
-     (ui/option {:key      key
-                 :height   "4em"
+    [:div {:key       key
+           :data-test (str "picker-length-" (:option/slug item))}
+     (ui/option {:height   "4em"
+                 :key      (str key "-option")
                  :on-click #(select-and-close
                              events/control-product-detail-picker-option-select
                              {:selection selected-picker
@@ -259,8 +261,9 @@
 
 (defn color-option
   [{:keys [key color sku-image checked? disabled? selected-picker]}]
-  [:div {:data-test (str "picker-color-" (:option/slug color))}
-   (ui/option {:key      key
+  [:div {:key       key
+         :data-test (str "picker-color-" (:option/slug color))}
+   (ui/option {:key      (str key "-option")
                :on-click #(select-and-close
                            events/control-product-detail-picker-option-select
                            {:selection selected-picker
@@ -283,8 +286,11 @@
                                    :default-quality "better"}
                                   "9e2a48b3-9811-46d2-840b-31c9f85670ad")]]])])])
 (defn- slide-animate [& content]
-  (css-transitions/transition-group
-   {:transitionName          "picker"}
+  (css-transitions/transition-element
+   {:transitionName         "picker"
+    :key                    "picker"
+    :transitionEnterTimeout 0
+    :transitionLeaveTimeout 0}
    content))
 
 (defn picker-dialog
