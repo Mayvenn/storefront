@@ -332,8 +332,7 @@
 
 (defmethod perform-track events/api-success-auth-sign-in [_ event {:keys [flow user] :as args} app-state]
   (stringer/track-event "sign_in" {:type flow})
-  (facebook-analytics/track-custom-event "user_logged_in" {:email     (:email user)
-                                                           :store_url stylist-urls/store-url}))
+  (facebook-analytics/track-custom-event "user_logged_in" {:store_url stylist-urls/store-url}))
 
 (defmethod perform-track events/api-success-auth-sign-up [_ event {:keys [flow] :as args} app-state]
   (stringer/track-event "sign_up" {:type flow}))
