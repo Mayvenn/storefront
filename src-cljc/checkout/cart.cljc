@@ -75,7 +75,7 @@
        [:div.flex.items-center.justify-center.ml1
         {:key       (str "thumbnail-" sku-id)
          :data-test (str "line-item-img-" (:catalog/sku-id sku))
-         :style     {:width "79px" :height "79px"}}
+         :style     {:width "79px" :height "74px"}}
         (ui/ucare-img
          {:width 75}
          (->> sku (catalog-images/image "cart") :ucare/id))])]
