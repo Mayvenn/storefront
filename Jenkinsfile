@@ -42,14 +42,17 @@ pipeline {
                 stage('Test') {
                     steps {
                         runInTest {
+                            sh "docker rm -f \"${appName}-tests\" || true"
                             withLein {
-                                sh "docker run --rm -v `pwd`/target/test-reports:/app/target/test-reports ${appName}-tests"
+                                sh "docker run --name \"${appName}-tests\" ${dockerTestArgs} \"${appName}-tests\""
                             }
                         }
                     }
                     post {
                         always {
-                            junit 'test/target/test-reports/**/*.xml'
+                            sh "mkdir -p \"`pwd`/reports/${currentBuild.number}\" || true"
+                            sh "docker cp \"${appName}-tests:/app/target/test-reports\" \"`pwd`/reports/${currentBuild.number}\" || true"
+                            junit "reports/${currentBuild.number}/**/*.xml"
                         }
                     }
                 }
