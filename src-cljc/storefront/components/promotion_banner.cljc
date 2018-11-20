@@ -11,6 +11,7 @@
             [storefront.components.svg :as svg]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
+            [storefront.accessors.experiments :as experiments]
             [storefront.platform.component-utils :as utils]))
 
 (defmulti component
@@ -91,7 +92,7 @@
   "Promo code banner should only show on these nav-events
 
    Depending on experiments, this whitelist may be modified"
-  [no-promotions? promo-type]
+  [category-pdp-promo-bar? no-promotions? promo-type]
   (cond-> #{events/navigate-home
             events/navigate-cart
             events/navigate-shop-by-look
@@ -105,7 +106,11 @@
           events/navigate-checkout-confirmation)
 
     (not no-promotions?)
-    (disj events/navigate-cart)))
+    (disj events/navigate-cart)
+
+    category-pdp-promo-bar?
+    (conj events/navigate-category
+          events/navigate-product-details)))
 
 (defn ^:private promo-type*
   "Determine what type of promotion behavior we are under
@@ -135,6 +140,7 @@
   [data]
   (let [nav-whitelist-for
         (partial nav-whitelist-for*
+                 (experiments/category-pdp-promo-bar? data)
                  (orders/no-applied-promo? (get-in data
                                                    keypaths/order)))
 

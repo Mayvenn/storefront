@@ -73,6 +73,9 @@
 (defn sticky-promo-bar? [data]
   (display-feature? data "sticky-promo-bar"))
 
+(defn category-pdp-promo-bar? [data]
+  (display-feature? data "category-pdp-promo-bar"))
+
 (defn email-capture-35-percent-got-bundles? [data]
   (display-feature? data "email-capture-35-percent-got-bundles"))
 
