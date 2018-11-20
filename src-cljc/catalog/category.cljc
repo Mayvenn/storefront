@@ -1,6 +1,7 @@
 (ns catalog.category
   (:require
-   #?@(:cljs [[storefront.history :as history]])
+   #?@(:cljs [[storefront.browser.scroll :as scroll]
+              [storefront.history :as history]])
    [storefront.component :as component]
    [catalog.categories :as categories]
    [catalog.product-card :as product-card]
