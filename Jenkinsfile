@@ -44,7 +44,7 @@ pipeline {
                         runInTest {
                             sh "docker rm -f \"${appName}-tests\" || true"
                             withLein {
-                                sh "docker run --name \"${appName}-tests\" ${dockerTestArgs} \"${appName}-tests\""
+                                sh "docker run --name \"${appName}-tests\" \"${appName}-tests\""
                             }
                         }
                     }
