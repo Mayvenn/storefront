@@ -544,6 +544,7 @@
         (assoc-in keypaths/ui-ugc-category-popup-offset ugc-offset)
         (assoc-in keypaths/browse-recently-added-skus [])
         (assoc-in keypaths/browse-sku-quantity 1)
+        (assoc-in catalog.keypaths/detailed-product-selected-picker nil)
         (assoc-selections sku)
         (assoc-in catalog.keypaths/detailed-product-options options))))
 
