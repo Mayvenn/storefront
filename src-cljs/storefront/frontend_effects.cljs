@@ -1050,3 +1050,6 @@
                                   {:user-id    (get-in app-state keypaths/user-id)
                                    :user-token (get-in app-state keypaths/user-token)
                                    :stylist-id (get-in app-state keypaths/store-stylist-id)}))
+
+(defmethod perform-effects events/navigate-category [_ event args app-state-before app-state]
+  (scroll/enable-body-scrolling))
