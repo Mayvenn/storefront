@@ -3,15 +3,16 @@
             [om.core :as om]
             [sablono.core :refer [html]]
             [spice.date :as date]
+            [spice.maps :as maps]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.shipping :as shipping]
             [storefront.components.formatters :as f]
             [storefront.components.money-formatters :as mf]
+            [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.platform.component-utils :as utils]
-            [storefront.components.svg :as svg]))
+            [storefront.platform.component-utils :as utils]))
 
 (defn ^:private select-shipping-method
   [shipping-method]
@@ -98,6 +99,13 @@
            :copy/title (string/join "—" (map day-with-month date-ranges))
            :date-ranges date-ranges)))
 
+(defn guaranteed-delivery-date [enabled? shipping-methods selected-sku]
+  (when (and enabled? shipping-methods selected-sku)
+    (f/long-date (-> (spice.maps/index-by :sku shipping-methods)
+                     (get selected-sku)
+                     :date-ranges
+                     last))))
+
 (defn query [data]
   (let [now              (date/now)
         shipping-methods (map (partial enrich-shipping-method now)
@@ -105,8 +113,10 @@
         selected-sku     (get-in data keypaths/checkout-selected-shipping-method-sku)]
     {:shipping-methods         shipping-methods
      :selected-sku             selected-sku
-     :guaranteed-delivery-date (when (experiments/guaranteed-delivery? data)
-                                 (f/long-date (last (:date-ranges (get (spice.maps/index-by :sku shipping-methods) selected-sku)))))}))
+     :guaranteed-delivery-date (guaranteed-delivery-date
+                                (experiments/guaranteed-delivery? data)
+                                shipping-methods
+                                selected-sku)}))
 
 (defn component [{:keys [guaranteed-delivery-date] :as data} owner]
   (om/component
