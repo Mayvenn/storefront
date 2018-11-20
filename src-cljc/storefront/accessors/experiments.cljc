@@ -70,11 +70,26 @@
        (some #{"aladdin-homepage" "phoenix-homepage"})
        boolean))
 
+;; Promo bar experiments
+;; +------------------------------+--------------+----------------+--------+
+;; | experiment                   | control page | pdp & category | sticky |
+;; |------------------------------+--------------+----------------+--------|
+;; | default                      | ✓            | -              | -      |
+;; | category-pdp-promo-bar?      | ✓            | ✓              | -      |
+;; | sticky-promo-bar?            | ✓            | -              | ✓      |
+;; | sticky-promo-bar-everywhere? | ✓            | ✓              | ✓      |
+
+;; Control set of pages that have the promo-bar + category & pdp page
+(defn category-pdp-promo-bar? [data]
+  (display-feature? data "category-pdp-promo-bar"))
+
+;; Control set of pages that have the promo-bar + sticky bar
 (defn sticky-promo-bar? [data]
   (display-feature? data "sticky-promo-bar"))
 
-(defn category-pdp-promo-bar? [data]
-  (display-feature? data "category-pdp-promo-bar"))
+;; Control set of pages that have the promo-bar + category & pdp page + sticky bar
+(defn sticky-promo-bar-everywhere? [data]
+  (display-feature? data "sticky-promo-bar-everywhere"))
 
 (defn email-capture-35-percent-got-bundles? [data]
   (display-feature? data "email-capture-35-percent-got-bundles"))

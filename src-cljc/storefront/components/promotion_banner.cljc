@@ -140,7 +140,8 @@
   [data]
   (let [nav-whitelist-for
         (partial nav-whitelist-for*
-                 (experiments/category-pdp-promo-bar? data)
+                 (or (experiments/category-pdp-promo-bar? data)
+                     (experiments/sticky-promo-bar-everywhere? data))
                  (orders/no-applied-promo? (get-in data
                                                    keypaths/order)))
 

@@ -122,7 +122,8 @@
     home/built-component))
 
 (defn sticky-promo-bar [data]
-  (when (experiments/sticky-promo-bar? data)
+  (when (or (experiments/sticky-promo-bar? data)
+            (experiments/sticky-promo-bar-everywhere? data))
     (component/build promotion-banner/sticky-component (promotion-banner/query data) nil)))
 
 (defn main-layout [data nav-event]
