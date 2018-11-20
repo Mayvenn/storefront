@@ -314,12 +314,15 @@
 (defmethod perform-effects events/navigate-shop-by-look
   [dispatch event {:keys [album-keyword]} _ app-state]
   (let [actual-album-keyword (accessors.pixlee/determine-look-album app-state album-keyword)]
-    (cond (= :pixlee/unknown-album actual-album-keyword)
-          (page-not-found)
+    (if (and (experiments/v2-experience? app-state)
+             (= album-keyword :deals))
+      (redirect events/navigate-home) ; redirect to home page from /shop/deals for v2-experience
+      (cond (= :pixlee/unknown-album actual-album-keyword)
+            (page-not-found)
 
-          ;; Only fetch this album if you are viewing it (not it's look-details/specific photo)
-          (= dispatch event)
-          (pixlee/fetch-album-by-keyword actual-album-keyword))))
+            ;; Only fetch this album if you are viewing it (not it's look-details/specific photo)
+            (= dispatch event)
+            (pixlee/fetch-album-by-keyword actual-album-keyword)))))
 
 (defmethod perform-effects events/navigate-shop-by-look-details [_ event {:keys [album-keyword look-id]} _ app-state]
   (if-let [shared-cart-id (:shared-cart-id (accessors.pixlee/selected-look app-state))]
