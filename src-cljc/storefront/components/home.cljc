@@ -120,13 +120,6 @@
    :mobile-uuid  "990f17ce-c786-450b-9556-419858ae43df"
    :desktop-uuid "e7cb3f57-e718-4964-be9f-1e2ec186dc1d"})
 
-(def free-shipping-hero-data
-  {:route-to-fn  (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
-   :file-name    "free-shipping"
-   :alt          "Free Shipping"
-   :mobile-uuid  "30eef0bc-186b-4f27-8fed-b9f98895f736"
-   :desktop-uuid "379e9d78-7d73-4965-9b77-2dc2a48eeeab"})
-
 (defn feature-image [{:keys [desktop-url mobile-url file-name alt]}]
   ;; Assumptions: 2 up, within a .container. Does not account for 1px border.
   ;;          Large End
@@ -352,9 +345,6 @@
 (defn hero-data
   [data]
   (cond
-    (experiments/free-shipping-hero? data)
-    free-shipping-hero-data
-
     (experiments/the-ville? data)
     free-installation-hero-data
 

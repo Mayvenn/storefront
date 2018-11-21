@@ -122,9 +122,6 @@
   (or (display-feature? data "vouchers")
       (install? data)))
 
-(defn free-shipping-hero? [data]
-  (display-feature? data "free-shipping-hero"))
-
 (defn phone-capture? [data]
   (display-feature? data "phone-capture"))
 
