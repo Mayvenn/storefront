@@ -65,26 +65,8 @@
         placing-order? (or (utils/requesting? data request-keys/place-order)
                            (utils/requesting? data request-keys/affirm-place-order))]
     {:affirm-order?          (and selected-affirm? order-valid-for-affirm?)
-     :second-checkout-button {:show?       (experiments/second-checkout-button? data)
-                              :show-total? (experiments/second-checkout-button-total? data)
-                              :order-total            (mf/as-money (:total order))
-                              :total-quantity         (google-string/format
-                                                       "Total (%s): "
-                                                       (ui/pluralize-with-amount (orders/product-quantity order) "item" "items"))}
      :disabled?              (utils/requesting? data request-keys/update-shipping-method)
      :spinning?              (or saving-card? placing-order?)}))
-
-(defn second-checkout-button-component [{:keys [second-checkout-button affirm-order? disabled? spinning?]}]
-  (let [{:keys [show? show-total? order-total total-quantity]} second-checkout-button]
-    (when show?
-     [:div.border-bottom.border-gray.pt2.pb5.mb4.hide-on-tb-dt
-      (when show-total?
-        [:div.h3.light.pb2
-         total-quantity
-         [:span.h2.medium order-total]])
-      (checkout-button {:spinning?     spinning?
-                        :disabled?     disabled?
-                        :affirm-order? affirm-order?})])))
 
 (defn ^:private text->data-test-name [name]
   (-> name
@@ -139,8 +121,6 @@
 
         [:.clearfix.mxn3
          [:.col-on-tb-dt.col-6-on-tb-dt.px3
-          (second-checkout-button-component checkout-button-data)
-
           [:.h3.left-align "Order Summary"]
 
           [:div.my2
