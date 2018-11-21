@@ -78,6 +78,7 @@
 ;; | category-pdp-promo-bar?      | ✓            | ✓              | -      |
 ;; | sticky-promo-bar?            | ✓            | -              | ✓      |
 ;; | sticky-promo-bar-everywhere? | ✓            | ✓              | ✓      |
+;; +------------------------------+--------------+----------------+--------+
 
 ;; Control set of pages that have the promo-bar + category & pdp page
 (defn category-pdp-promo-bar? [data]
