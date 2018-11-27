@@ -9,6 +9,7 @@
                        [storefront.components.shop-by-look :as shop-by-look]
                        [storefront.components.shop-by-look-details :as shop-by-look-details]
                        [storefront.components.account :as account]
+                       [storefront.components.customer.orders :as customer-orders]
                        [storefront.components.reset-password :as reset-password]
                        [storefront.components.force-set-password :as force-set-password]
                        [storefront.components.stylist.v2-dashboard :as v2.dashboard]
@@ -63,6 +64,7 @@
          events/navigate-force-set-password                         force-set-password/built-component
          events/navigate-shop-by-look                               shop-by-look/built-component
          events/navigate-shop-by-look-details                       shop-by-look-details/built-component
+         events/navigate-customer-orders                            customer-orders/built-component
          events/navigate-stylist-dashboard-balance-transfer-details balance-transfer-details/built-component
          events/navigate-stylist-dashboard-order-details            stylist.order-details/built-component
          events/navigate-stylist-dashboard-cash-out-begin           stylist.cash-out/built-component

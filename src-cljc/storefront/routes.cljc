@@ -113,7 +113,8 @@
               "/checkout/payment"                (edn->bidi events/navigate-checkout-payment)
               "/checkout/confirm"                (edn->bidi events/navigate-checkout-confirmation)
               "/checkout/processing"             (edn->bidi events/navigate-checkout-processing)
-              ["/orders/" :number "/complete"]   (edn->bidi events/navigate-order-complete)})])
+              ["/orders/" :number "/complete"]   (edn->bidi events/navigate-order-complete)
+              "/my-orders"                       (edn->bidi events/navigate-customer-orders)})])
 
 (defn path-for [navigation-event & [args]]
   (let [query-params (:query-params args)

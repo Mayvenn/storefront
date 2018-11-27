@@ -487,3 +487,6 @@
 (defpath navigate-v2-stylist-dashboard)
 (defpath navigate-v2-stylist-dashboard-payments)
 (defpath navigate-v2-stylist-dashboard-orders)
+
+;; CUSTOMER
+(defpath navigate-customer-orders)
