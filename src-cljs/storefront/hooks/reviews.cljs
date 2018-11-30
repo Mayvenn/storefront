@@ -15,5 +15,3 @@
 (defn start []
   (when (and (.hasOwnProperty js/window "yotpo") js/yotpo)
     (.refreshWidgets js/yotpo)))
-
-(defn stop [])

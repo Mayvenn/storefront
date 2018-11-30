@@ -984,10 +984,6 @@
     (when (= expected-reviews-count actual-reviews-count)
       (reviews/start))))
 
-(defmethod perform-effects events/reviews-component-will-unmount [_ event args _ app-state]
-  (when (= 0 (get-in app-state keypaths/review-components-count))
-    (reviews/stop)))
-
 (defmethod perform-effects events/checkout-address-component-mounted
   [_ event {:keys [address-elem address-keypath]} _ app-state]
   (places-autocomplete/attach address-elem address-keypath))

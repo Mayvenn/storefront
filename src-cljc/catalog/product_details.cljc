@@ -276,7 +276,8 @@
 (defn sku-description-section [{:keys [carousel-images reviews cheapest-price product]}]
   [:div.center
    (title (:copy/title product))
-   (reviews-summary reviews {})
+   (when (seq reviews)
+     (reviews-summary reviews {}))
    [:meta {:item-prop "image"
            :content   (:url (first carousel-images))}]
    (full-bleed-narrow (carousel carousel-images product))

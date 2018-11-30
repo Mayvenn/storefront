@@ -398,7 +398,6 @@
 (defpath inserted-facebook)
 (defpath inserted-pixlee)
 (defpath inserted-places)
-(defpath inserted-reviews)
 (defpath inserted-stripe)
 (defpath inserted-talkable)
 (defpath inserted-uploadcare)

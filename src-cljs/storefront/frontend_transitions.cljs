@@ -612,9 +612,6 @@
 (defmethod transition-state events/inserted-places [_ event args app-state]
   (assoc-in app-state keypaths/loaded-places true))
 
-(defmethod transition-state events/inserted-reviews [_ event args app-state]
-  (assoc-in app-state keypaths/loaded-reviews true))
-
 (defmethod transition-state events/inserted-stripe [_ event {:keys [version]} app-state]
   (assoc-in app-state (conj keypaths/loaded-stripe version) true))
 

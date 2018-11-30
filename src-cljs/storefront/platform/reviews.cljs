@@ -90,5 +90,4 @@
   (when-let [product (products/current-product data)]
     (when (products/eligible-for-reviews? product)
       (let [all-skus (get-in data keypaths/v2-skus)]
-        {:yotpo-data-attributes (yotpo-data-attributes product all-skus)
-         :loaded?               (get-in data keypaths/loaded-reviews)}))))
+        {:yotpo-data-attributes (yotpo-data-attributes product all-skus)}))))
