@@ -1,5 +1,6 @@
 (ns storefront.components.customer.orders
   (:require [storefront.effects :as effects]
+            [storefront.events :as events]
             [storefront.component :as component]))
 
 (defn component
