@@ -18,9 +18,8 @@
     (render [_]
       (html
        [:div
-        (when loaded?
-          [:.mx-auto.mb3
-           [:.yotpo.yotpo-main-widget yotpo-data-attributes]])]))))
+        [:.mx-auto.mb3
+         [:.yotpo.yotpo-main-widget yotpo-data-attributes]]]))))
 
 (defn reviews-component
   "The fully expanded reviews component using yotpo"
@@ -41,10 +40,9 @@
     (render [_]
       (html
        [:div
-        (when loaded?
-          [:.clearfix.flex.justify-center.flex-wrap.my1
-           [:.yotpo.bottomLine.mr2 yotpo-data-attributes]
-           [:.yotpo.QABottomLine yotpo-data-attributes]])]))))
+        [:.clearfix.flex.justify-center.flex-wrap.my1
+         [:.yotpo.bottomLine.mr2 yotpo-data-attributes]
+         [:.yotpo.QABottomLine yotpo-data-attributes]]]))))
 
 (defn reviews-summary-component
   "Yotpo summary reviews component"
