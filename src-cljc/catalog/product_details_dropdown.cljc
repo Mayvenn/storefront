@@ -34,6 +34,8 @@
             [storefront.components.picker.picker :as picker]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
+            [storefront.components.v2 :as v2]
+            [storefront.components.marquee :as marquee]
             [storefront.config :as config]
             [storefront.effects :as effects]
             [storefront.events :as events]
@@ -275,9 +277,11 @@
            selected-sku
            sku-quantity
            selected-options
+           get-a-free-install-section-data
            selections
            options
            picker-data
+           aladdin-or-phoenix?
            ugc] :as data} owner opts]
   (let [review?      (seq reviews)
         unavailable? (not (seq selected-sku))
@@ -328,6 +332,9 @@
                 (when (products/stylist-only? product) shipping-and-guarantee)]])
             (product-description product)
             [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])
+          (when aladdin-or-phoenix?
+            [:div.py10.bg-transparent-teal.col-on-tb-dt.mt4
+             (v2/get-a-free-install get-a-free-install-section-data)])
           (when review?
             (component/build review-component/reviews-component reviews opts))
           ;; We use visibility:hidden rather than display:none so that this component has a height.
@@ -408,29 +415,41 @@
      (keys options))))
 
 (defn query [data]
-  (let [selected-sku    (get-in data catalog.keypaths/detailed-product-selected-sku)
-        selections      (get-in data catalog.keypaths/detailed-product-selections)
-        product         (products/current-product data)
-        product-skus    (products/extract-product-skus data product)
-        facets          (facets/by-slug data)
-        carousel-images (find-carousel-images product product-skus selected-sku)
-        options         (get-in data catalog.keypaths/detailed-product-options)
-        ugc             (ugc-query product selected-sku data)]
-    {:reviews           (review-component/query data)
-     :ugc               ugc
-     :fetching-product? (utils/requesting? data (conj request-keys/search-v2-products
-                                                      (:catalog/product-id product)))
-     :adding-to-bag?    (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
-     :sku-quantity      (get-in data keypaths/browse-sku-quantity 1)
-     :options           options
-     :product           product
-     :selections        selections
-     :selected-options  (get-selected-options selections options)
-     :selected-sku      selected-sku
-     :facets            facets
-     :selected-picker   (get-in data catalog.keypaths/detailed-product-selected-picker)
-     :picker-data       (picker/query data)
-     :carousel-images   carousel-images}))
+  (let [selected-sku      (get-in data catalog.keypaths/detailed-product-selected-sku)
+        selections        (get-in data catalog.keypaths/detailed-product-selections)
+        product           (products/current-product data)
+        product-skus      (products/extract-product-skus data product)
+        facets            (facets/by-slug data)
+        carousel-images   (find-carousel-images product product-skus selected-sku)
+        options           (get-in data catalog.keypaths/detailed-product-options)
+        ugc               (ugc-query product selected-sku data)
+        store             (marquee/query data)
+        gallery-ucare-ids (->> store
+                               :gallery
+                               :images
+                               (filter (comp (partial = "approved") :status))
+                               (map (comp v2/get-ucare-id-from-url :resizable-url)))]
+    {:reviews                         (review-component/query data)
+     :ugc                             ugc
+     :aladdin-or-phoenix?             (experiments/v2-experience? data)
+     :fetching-product?               (utils/requesting? data (conj request-keys/search-v2-products
+                                                                    (:catalog/product-id product)))
+     :adding-to-bag?                  (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
+     :sku-quantity                    (get-in data keypaths/browse-sku-quantity 1)
+     :options                         options
+     :product                         product
+     :selections                      selections
+     :selected-options                (get-selected-options selections options)
+     :selected-sku                    selected-sku
+     :facets                          facets
+     :selected-picker                 (get-in data catalog.keypaths/detailed-product-selected-picker)
+     :picker-data                     (picker/query data)
+     :carousel-images                 carousel-images
+     :get-a-free-install-section-data {:store                 store
+                                       :gallery-ucare-ids     gallery-ucare-ids
+                                       :stylist-portrait      (:portrait store)
+                                       :stylist-name          (:store-nickname store)
+                                       :stylist-gallery-open? (get-in data keypaths/carousel-stylist-gallery-open?)}}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
