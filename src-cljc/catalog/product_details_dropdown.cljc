@@ -279,7 +279,7 @@
            options
            picker-data
            ugc] :as data} owner opts]
-  (let [review?      (:review? reviews)
+  (let [review?      (seq reviews)
         unavailable? (not (seq selected-sku))
         sold-out?    (not (:inventory/in-stock? selected-sku))]
     (component/create
@@ -384,9 +384,6 @@
        ;; The correct solution is to get rid of/fix slick
        :now           (date/now)})))
 
-(defn add-review-eligibility [review-data product]
-  (assoc review-data :review? (products/eligible-for-reviews? product)))
-
 (defn find-carousel-images [product product-skus selected-sku]
   (->> (selector/match-all {}
                            (or selected-sku (first product-skus))
@@ -419,7 +416,7 @@
         carousel-images (find-carousel-images product product-skus selected-sku)
         options         (get-in data catalog.keypaths/detailed-product-options)
         ugc             (ugc-query product selected-sku data)]
-    {:reviews           (add-review-eligibility (review-component/query data) product)
+    {:reviews           (review-component/query data)
      :ugc               ugc
      :fetching-product? (utils/requesting? data (conj request-keys/search-v2-products
                                                       (:catalog/product-id product)))

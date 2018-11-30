@@ -64,10 +64,9 @@
     (render [_]
       (html
        [:div
-        (when loaded?
-          [:div.clearfix.flex.justify-start.flex-wrap.my1
-           [:.yotpo.bottomLine.mr2 yotpo-data-attributes]
-           [:.yotpo.QABottomLine yotpo-data-attributes]])]))))
+        [:div.clearfix.flex.justify-start.flex-wrap.my1
+         [:.yotpo.bottomLine.mr2 yotpo-data-attributes]
+         [:.yotpo.QABottomLine yotpo-data-attributes]]]))))
 
 (defn reviews-summary-dropdown-experiment-component
   "Yotpo summary reviews component"
