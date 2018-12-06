@@ -488,9 +488,7 @@
   (when (empty? (get-in app-state keypaths/order-shipping-address))
     (redirect events/navigate-checkout-address))
   (fetch-saved-cards app-state)
-  (stripe/insert)
-  (when-let [error-msg (-> args :query-params :error payment-error-codes)]
-    (handle-message events/flash-show-failure {:message error-msg})))
+  (stripe/insert))
 
 (defmethod perform-effects events/navigate-checkout-confirmation [_ event args _ app-state]
   ;; TODO: get the credit card component to function correctly on direct page load
