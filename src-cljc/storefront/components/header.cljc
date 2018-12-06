@@ -134,17 +134,13 @@
    (merge opts {:style {:padding-left "24px" :padding-right "24px"}})
    text])
 
-(defn menu [{:keys [v2-experience? black-friday-deals?]}]
+(defn menu [{:keys [v2-experience?]}]
   (component/html
    [:div.center
     (when-not v2-experience?
-      (if black-friday-deals?
-        (header-menu-link {:href "https://looks.mayvenn.com/blackfriday-preview"
-                           :on-mouse-enter close-shopping}
-                          "Black Friday Deals")
-        (header-menu-link (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :deals})
-                                 :on-mouse-enter close-shopping)
-                          "Deals")))
+      (header-menu-link (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :deals})
+                               :on-mouse-enter close-shopping)
+                        "Deals"))
     (header-menu-link (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
                              :on-mouse-enter close-shopping)
                       "Shop looks")

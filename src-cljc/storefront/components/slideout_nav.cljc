@@ -150,18 +150,14 @@
    [:div.h4.border-bottom.border-gray.py3
     (into [:a.block.inherit-color.flex.items-center (assoc link-attrs :data-test data-test)] content)]])
 
-(defn shopping-rows [{:keys [v2-experience? black-friday-deals?]}]
+(defn shopping-rows [{:keys [v2-experience?]}]
   (let [caret (ui/forward-caret {:width  "23px"
                                  :height "20px"})]
     (concat
      (when-not v2-experience?
-       [(if black-friday-deals?
-          {:link-attrs {:href "https://looks.mayvenn.com/blackfriday-preview"}
-           :data-test  "menu-shop-by-deals"
-           :content    [[:span.medium "Black Friday Deals"]]}
-          {:link-attrs (utils/route-to events/navigate-shop-by-look {:album-keyword :deals})
-           :data-test  "menu-shop-by-deals"
-           :content    [[:span.medium "Deals"]]})])
+       [{:link-attrs (utils/route-to events/navigate-shop-by-look {:album-keyword :deals})
+         :data-test  "menu-shop-by-deals"
+         :content    [[:span.medium "Deals"]]}])
 
      [{:link-attrs (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
        :data-test "menu-shop-by-look"
@@ -280,7 +276,6 @@
    :store               (marquee/query data)
    :the-ville?          (experiments/the-ville? data)
    :vouchers?           (experiments/vouchers? data)
-   :black-friday-deals? (experiments/black-friday-deals? data)
    :v2-experience?      (experiments/v2-experience? data)
    :shopping            {:categories (get-in data keypaths/categories)}})
 
