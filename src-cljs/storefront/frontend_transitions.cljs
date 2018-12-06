@@ -191,13 +191,21 @@
   (ensure-direct-load-of-checkout-auth-advances-to-checkout-flow app-state))
 
 (defmethod transition-state events/navigate-checkout-payment [_ event args app-state]
-  (let [order (get-in app-state keypaths/order)]
-    (cond-> (default-credit-card-name app-state (get-in app-state (conj keypaths/order :billing-address)))
-      (and (orders/fully-covered-by-store-credit?
-            order
-            (get-in app-state keypaths/user))
-           (not (orders/applied-install-promotion order)))
-      (assoc-in keypaths/checkout-selected-payment-methods {:store-credit {}}))))
+  (let [order                    (get-in app-state keypaths/order)
+        order-total              (get-in app-state keypaths/order-total)
+        billing-address          (get-in app-state (conj keypaths/order :billing-address))
+        covered-by-store-credit? (and (orders/fully-covered-by-store-credit?
+                                       order
+                                       (get-in app-state keypaths/user))
+                                      (not (orders/applied-install-promotion order)))
+        available-store-credit   (get-in app-state keypaths/user-total-available-store-credit)]
+    (assoc-in (default-credit-card-name app-state  billing-address)
+              keypaths/checkout-selected-payment-methods
+              (if covered-by-store-credit?
+                {:store-credit {}}
+                (orders/form-payment-methods order-total
+                                             available-store-credit
+                                             (orders/all-applied-promo-codes order))))))
 
 (defmethod transition-state events/pixlee-api-success-fetch-album [_ event {:keys [album-data album-keyword]} app-state]
   (let [images (pixlee/parse-ugc-album album-keyword album-data)]

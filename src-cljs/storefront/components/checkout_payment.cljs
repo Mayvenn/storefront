@@ -21,14 +21,6 @@
             [clojure.set :as set]
             [storefront.components.svg :as svg]))
 
-(defmethod transitions/transition-state events/control-checkout-payment-select
-  [_ _ {:keys [payment-method]} app-state]
-  (assoc-in app-state keypaths/checkout-selected-payment-methods
-            (when (= payment-method :stripe)
-              (orders/form-payment-methods (get-in app-state keypaths/order-total)
-                                           (get-in app-state keypaths/user-total-available-store-credit)
-                                           (orders/all-applied-promo-codes (get-in app-state keypaths/order))))))
-
 (defmethod effects/perform-effects events/control-checkout-choose-payment-method-submit [_ event _ _ app-state]
   (handle-message events/flash-dismiss)
   (let [order                    (get-in app-state keypaths/order)
