@@ -6,7 +6,6 @@
             [storefront.accessors.skus :as skus]
             [storefront.accessors.experiments :as experiments]
             [storefront.component :as component]
-            [storefront.components.affirm :as affirm]
             [storefront.components.money-formatters :as mf]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -135,8 +134,4 @@
         (for [selector (reverse (:selector/electives product))]
           [:div {:key selector}
            (unconstrained-facet color-order-map product skus facets selector)])
-        [:p.h6 "Starting at " (mf/as-money-without-cents (:sku/price cheapest-sku 0))]])]]
-   [:div.mb10.center
-    [:div.h6.dark-gray
-     (component/build affirm/as-low-as-component {:amount (:sku/price epitome)
-                                                  :type   :text-only} {})]]])
+        [:p.h6 "Starting at " (mf/as-money-without-cents (:sku/price cheapest-sku 0))]])]]])

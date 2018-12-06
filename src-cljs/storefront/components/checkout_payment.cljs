@@ -18,18 +18,16 @@
             [storefront.api :as api]
             [storefront.frontend-effects :refer [create-stripe-token]]
             [storefront.request-keys :as request-keys]
-            [storefront.components.affirm :as affirm]
             [clojure.set :as set]
             [storefront.components.svg :as svg]))
 
 (defmethod transitions/transition-state events/control-checkout-payment-select
   [_ _ {:keys [payment-method]} app-state]
   (assoc-in app-state keypaths/checkout-selected-payment-methods
-            (condp = payment-method
-              :stripe (orders/form-payment-methods (get-in app-state keypaths/order-total)
-                                                   (get-in app-state keypaths/user-total-available-store-credit)
-                                                   (orders/all-applied-promo-codes (get-in app-state keypaths/order)))
-              :affirm {:affirm {}})))
+            (when (= payment-method :stripe)
+              (orders/form-payment-methods (get-in app-state keypaths/order-total)
+                                           (get-in app-state keypaths/user-total-available-store-credit)
+                                           (orders/all-applied-promo-codes (get-in app-state keypaths/order))))))
 
 (defmethod effects/perform-effects events/control-checkout-choose-payment-method-submit [_ event _ _ app-state]
   (handle-message events/flash-dismiss)
@@ -38,13 +36,11 @@
                                   order
                                   (get-in app-state keypaths/user))
         selected-payment-methods (get-in app-state keypaths/checkout-selected-payment-methods)
-        selected-saved-card-id   (when (and (or (not covered-by-store-credit)
-                                                (orders/applied-install-promotion order))
-                                            (not (contains? selected-payment-methods :affirm)))
+        selected-saved-card-id   (when (or (not covered-by-store-credit)
+                                           (orders/applied-install-promotion order))
                                    (get-in app-state keypaths/checkout-credit-card-selected-id))
         needs-stripe-token?      (and (contains? #{"add-new-card" nil} selected-saved-card-id)
-                                      (not covered-by-store-credit)
-                                      (not (contains? selected-payment-methods :affirm)))]
+                                      (not covered-by-store-credit))]
     (if needs-stripe-token?
       (create-stripe-token app-state {:place-order? false})
       (api/update-cart-payments
@@ -81,10 +77,7 @@
         {:on-submit (utils/send-event-callback events/control-checkout-choose-payment-method-submit)
          :data-test "payment-form"}
 
-        (let [{:keys [credit-applicable fully-covered?]} store-credit
-              selected-stripe-or-store-credit? (and (seq selected-payment-methods)
-                                                    (set/subset? selected-payment-methods #{:stripe :store-credit}))
-              selected-affirm? (contains? selected-payment-methods :affirm)]
+        (let [{:keys [credit-available credit-applicable fully-covered?]} store-credit]
           (if (and fully-covered?
                    (not applied-install-promotion))
             (ui/note-box
@@ -93,67 +86,36 @@
              [:.p2.navy
               [:div [:span.medium (as-money credit-applicable)] " in store credit will be applied to this order."]])
 
-            [:div
-             (ui/radio-section
-              (merge {:name         "payment-method"
-                      :id           "payment-method-credit-card"
-                      :data-test    "payment-method"
-                      :data-test-id "credit-card"
-                      :on-click     (utils/send-event-callback events/control-checkout-payment-select {:payment-method :stripe})}
-                     (when selected-stripe-or-store-credit? {:checked "checked"}))
-              [:div.overflow-hidden
-               [:div "Pay with Credit/Debit Card"]
-               [:p.h6 "All transactions are secure and encrypted."]])
+            [:div.p2
+             [:div "Pay with Credit/Debit Card"]
+             [:p.h6 "All transactions are secure and encrypted."]
+             (when (pos? credit-available)
+               (if applied-install-promotion
+                 (ui/note-box
+                  {:color     "orange"
+                   :data-test "store-credit-note"}
+                  [:div.p2.black
+                   [:div "Your "
+                    [:span.medium (as-money credit-applicable)]
+                    " in store credit "
+                    [:span.medium "cannot"]
+                    " be used with " [:span.shout applied-install-promotion] " orders."]
+                   [:div.h6.mt1
+                    "To use store credit, please remove promo code " [:span.shout applied-install-promotion] " from your bag."]])
+                 (ui/note-box
+                  {:color     "teal"
+                   :data-test "store-credit-note"}
+                  [:.p2.navy
+                   [:div [:span.medium (as-money credit-applicable)] " in store credit will be applied to this order."]
+                   [:.h6.mt1
+                    "Please enter an additional payment method below for the remaining total on your order."]])))
 
-             (when selected-stripe-or-store-credit?
-               (let [{:keys [credit-available credit-applicable]} store-credit]
-                 [:div.p2
-                  (when (pos? credit-available)
-                    (if applied-install-promotion
-                      (ui/note-box
-                       {:color     "orange"
-                        :data-test "store-credit-note"}
-                       [:div.p2.black
-                        [:div "Your "
-                         [:span.medium (as-money credit-applicable)]
-                         " in store credit "
-                         [:span.medium "cannot"]
-                         " be used with " [:span.shout applied-install-promotion] " orders."]
-                        [:div.h6.mt1
-                         "To use store credit, please remove promo code " [:span.shout applied-install-promotion] " from your bag."]])
-                      (ui/note-box
-                       {:color     "teal"
-                        :data-test "store-credit-note"}
-                       [:.p2.navy
-                        [:div [:span.medium (as-money credit-applicable)] " in store credit will be applied to this order."]
-                        [:.h6.mt1
-                         "Please enter an additional payment method below for the remaining total on your order."]])))
-
-                  [:div
-                   (om/build cc/component
-                             {:credit-card  credit-card
-                              :field-errors field-errors})
-                   [:div.h5
-                    "You can review your order on the next page before we charge your card."]]]))
-             (ui/radio-section
-              (merge {:name         "payment-method"
-                      :id           "payment-method-affirm"
-                      :data-test    "payment-method"
-                      :data-test-id "affirm"
-                      :on-click     (utils/send-event-callback events/control-checkout-payment-select {:payment-method :affirm})}
-                     (when selected-affirm? {:checked "checked"}))
-              [:div.overflow-hidden
-               [:div "Pay with " (svg/affirm {:alt "Affirm"})]
-               ;; NOTE(jeff): We will add promo messaging in the future.
-               [:p.h6 (str "Make easy monthly payments over 3, 6, or 12 months. "
-                           #_"Promo codes are excluded when you pay with Affirm. ")
-                (om/build affirm/modal-component {})
-                #_(when promo-code
-                  [:p.h6.ml2.dark-gray "* " [:span.shout promo-code] " promo code excluded with Affirm"])]])
-
-             (when selected-affirm?
-               [:div.h6.px2.ml4.dark-gray
-                "Before completing your purchase, you will be redirected to Affirm to securely set up your payment plan."])]))
+             [:div
+              (om/build cc/component
+                        {:credit-card  credit-card
+                         :field-errors field-errors})
+              [:div.h5
+               "You can review your order on the next page before we charge your card."]]]))
 
         (when loaded-stripe?
           [:div.my4.col-6-on-tb-dt.mx-auto

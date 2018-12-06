@@ -612,34 +612,6 @@
            (= "submitted" (:state order))
            (util.response/redirect (str "/orders/" (:number order) "/complete"))))))
 
-(defn wrap-set-affirm-checkout-token [h]
-  (fn [{:as req :keys [params]}]
-    (h (-> req
-           (assoc-in-req-state keypaths/affirm-checkout-token (get params "checkout_token"))))))
-
-(defn affirm-routes [{:keys [logger storeback-config environment]}]
-  (POST "/orders/:order-number/affirm/:order-token" [order-number order-token :as request]
-        (let [order          (get-in-req-state request keypaths/order)
-              checkout-token (get-in-req-state request keypaths/affirm-checkout-token)]
-          (cond
-            (or (nil? order)
-                (nil? checkout-token)
-                (not= (:number order) order-number)
-                (not= (:token order) order-token)
-                (not (#{"cart" "submitted"} (:state order))))
-            (util.response/redirect "/checkout/payment?error=affirm-invalid-state")
-
-            (= "cart" (:state order))
-            (-> (util.response/redirect "/checkout/processing")
-                (cookies/set environment
-                             "affirm-token"
-                             checkout-token
-                             {:http-only false
-                              :max-age   (cookies/minutes 5)}))
-
-            (= "submitted" (:state order))
-            (util.response/redirect (str "/orders/" (:number order) "/complete"))))))
-
 (defn static-routes [_]
   (fn [{:keys [uri] :as req}]
     ;; can't use (:nav-message req) because routes/static-api-routes are not
@@ -853,9 +825,7 @@
              (cookies/set (:environment ctx) :token (:token order) cookie-options)))))
 
 (defn routes-with-orders [ctx]
-  (-> (routes (-> (affirm-routes ctx)
-                  wrap-set-affirm-checkout-token)
-              (paypal-routes ctx)
+  (-> (routes (paypal-routes ctx)
               (-> (routes (site-routes ctx)
                           (shared-cart-routes ctx))
                   (wrap-state ctx)

@@ -33,7 +33,6 @@
                        [storefront.hooks.reviews :as review-hooks]
                        [storefront.api :as api]
                        [storefront.history :as history]])
-            [storefront.components.affirm :as affirm]
             [spice.date :as date]
             [storefront.components.svg :as svg]
             [storefront.components.v2 :as v2]
@@ -299,8 +298,6 @@
                   :sku-quantity sku-quantity})]
    (when (products/eligible-for-triple-bundle-discount? product)
      (triple-bundle-upsell))
-   (affirm/as-low-as-box {:amount      (:sku/price selected-sku)
-                          :middle-copy "Just select Affirm at check out."})
    (add-to-bag-button adding-to-bag?
                       selected-sku
                       sku-quantity)

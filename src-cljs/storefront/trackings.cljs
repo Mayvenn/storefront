@@ -240,14 +240,14 @@
   (google-analytics/set-dimension "dimension2" (count (get-in app-state keypaths/checkout-credit-card-existing-cards))))
 
 (defn payment-flow [{:keys [payments]}]
-  (or (some #{"apple-pay" "paypal" "affirm"} (map :payment-type payments))
+  (or (some #{"apple-pay" "paypal"} (map :payment-type payments))
       "mayvenn"))
 
 (defn tracked-payment-method [payments]
-  (let [interesting-payment-methods #{"apple-pay" "affirm" "paypal"}
+  (let [interesting-payment-methods #{"apple-pay" "paypal"}
         first-payment-method (->> payments (map :payment-type) first)]
     ;; we can just use the first payment method because the specified options are
-    ;; apple-pay, paypal, affirm or other.  Store credit and stripe
+    ;; apple-pay, paypal, or other.  Store credit and stripe
     ;; are the only ones we allow to coexist.  Must be changed if that changes.
     (or (interesting-payment-methods first-payment-method)
         "other")))
@@ -393,9 +393,9 @@
 
 (defmethod perform-track events/api-success-update-order-update-cart-payments [_ events {:keys [order]} app-state]
   (stringer/track-event "checkout-payment_enter" {:order_number (:number order)
-                                                  :method (cond (contains? (:cart-payments order) :affirm) "affirm"
-                                                                (contains? (:cart-payments order) :paypal) "paypal"
-                                                                :else "other")}))
+                                                  :method (if (contains? (:cart-payments order) :paypal)
+                                                            "paypal"
+                                                            "other")}))
 
 (defmethod perform-track events/api-success-update-order-update-shipping-method [_ events {:keys [order]} app-state]
   (stringer/track-event "checkout-shipping_method_change"

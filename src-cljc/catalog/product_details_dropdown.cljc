@@ -29,7 +29,6 @@
             [storefront.accessors.promos :as promos]
             [storefront.accessors.skus :as skus]
             [storefront.component :as component]
-            [storefront.components.affirm :as affirm]
             [storefront.components.money-formatters :refer [as-money-without-cents as-money]]
             [storefront.components.picker.picker :as picker]
             [storefront.components.svg :as svg]
@@ -320,9 +319,6 @@
                 [:div.center.mb6.pt4
                  [:div.h6.navy "Price Per Bundle"]
                  [:div.medium (item-price (:sku/price selected-sku))]]
-                (affirm/pdp-dropdown-experiment-as-low-as-box
-                 {:amount      (:sku/price selected-sku)
-                  :middle-copy "Just select Affirm at check out."})
                 [:div
                  [:div.mt1.mx3
                   (cond

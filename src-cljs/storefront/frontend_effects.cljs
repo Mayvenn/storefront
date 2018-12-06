@@ -17,7 +17,6 @@
             [storefront.effects :as effects :refer [page-not-found perform-effects redirect]]
             [storefront.events :as events]
             [storefront.history :as history]
-            [storefront.hooks.affirm :as affirm]
             [storefront.hooks.apple-pay :as apple-pay]
             [storefront.hooks.convert :as convert]
             [storefront.hooks.exception-handler :as exception-handler]
@@ -84,7 +83,6 @@
   (svg/insert-sprite)
   (stringer/insert-tracking (get-in app-state keypaths/store-slug))
   (google-analytics/insert-tracking)
-  (affirm/insert)
   (convert/insert-tracking)
   (riskified/insert-tracking (get-in app-state keypaths/session-id))
   (facebook-analytics/insert-tracking)
@@ -126,8 +124,6 @@
 
         signed-in? (get-in app-state keypaths/user-id)
 
-        show-financing? (-> app-state (get-in keypaths/navigation-args) :query-params :show (= "financing"))
-
         show-free-install-modal? (and the-ville-variation?
                                       (not seen-fayetteville-offer?)
                                       (not v2-experience?))
@@ -146,9 +142,6 @@
 
       show-free-install-modal?
       (handle-message events/popup-show-free-install)
-
-      show-financing?
-      (affirm/show-modal)
 
       signed-in?
       (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) "signed-in")
@@ -491,14 +484,6 @@
   (api/get-states (get-in app-state keypaths/api-cache))
   (fetch-saved-cards app-state))
 
-(def ^:private payment-error-codes
-  (let [standard-affirm-error "There was an issue authorizing your Affirm loan. Please check out again or use a different payment method."]
-    {"affirm-total-too-low"       "Affirm financing is not available for orders less than $50. Please use a different payment method."
-     "affirm-incomplete"          standard-affirm-error
-     "affirm-invalid-state"       standard-affirm-error
-     "affirm-failed-to-authorize" standard-affirm-error
-     "affirm-failed-to-charge"    standard-affirm-error}))
-
 (defmethod perform-effects events/navigate-checkout-payment [dispatch event args _ app-state]
   (when (empty? (get-in app-state keypaths/order-shipping-address))
     (redirect events/navigate-checkout-address))
@@ -514,12 +499,12 @@
   (stripe/insert)
   (api/get-shipping-methods))
 
-(defmethod perform-effects events/navigate-order-complete [_ event {{:keys [paypal affirm order-token]} :query-params number :number} _ app-state]
+(defmethod perform-effects events/navigate-order-complete [_ event {{:keys [paypal order-token]} :query-params number :number} _ app-state]
   (when (not (get-in app-state keypaths/user-id))
     (facebook/insert))
   (when (and number order-token)
     (api/get-completed-order number order-token))
-  (when (or paypal affirm)
+  (when paypal
     (redirect events/navigate-order-complete {:number number})))
 
 (defmethod perform-effects events/navigate-friend-referrals [_ event args _ app-state]
