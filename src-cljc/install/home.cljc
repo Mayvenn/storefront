@@ -1,4 +1,4 @@
-(ns install.home
+(ns install.home  ;; freeinstall subdomain
   (:require #?@(:cljs [[om.core :as om]
                        [goog.events]
                        [goog.dom]
