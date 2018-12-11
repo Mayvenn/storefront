@@ -134,4 +134,4 @@
         (for [selector (reverse (:selector/electives product))]
           [:div {:key selector}
            (unconstrained-facet color-order-map product skus facets selector)])
-        [:p.h6 "Starting at " (mf/as-money-without-cents (:sku/price cheapest-sku 0))]])]]])
+        [:p.h6.mb4 "Starting at " (mf/as-money-without-cents (:sku/price cheapest-sku 0))]])]]])
