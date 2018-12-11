@@ -291,64 +291,65 @@
          {:style {:height "25em"}}
          (ui/large-spinner {:style {:height "4em"}})]
         [:div
-         (when (:offset ugc)
-           [:div.absolute.overlay.z4.overflow-auto
-            (component/build ugc/popup-component ugc opts)])
-         [:div.p2
-          (page
-           [:div
-            (carousel carousel-images product)
-            [:div.hide-on-mb (component/build ugc/component ugc opts)]]
-           [:div
+         [:div.container
+          (when (:offset ugc)
+            [:div.absolute.overlay.z4.overflow-auto
+             (component/build ugc/popup-component ugc opts)])
+          [:div.p2
+           (page
             [:div
-             [:div.mx2
-              [:h1.h2.medium.titleize {:item-prop "name"}
-               (:copy/title product)]
-              (when review? (reviews-summary reviews opts))]
-             [:meta {:item-prop "image"
-                     :content   (:url (first carousel-images))}]
-             (full-bleed-narrow (carousel carousel-images product))]
-            (when (seq options)
-              [:div
-               [:div {:item-prop  "offers"
-                      :item-scope ""
-                      :item-type  "http://schema.org/Offer"}
-                [:div.pb2 (component/build picker/component picker-data opts)]
-                (when (products/eligible-for-triple-bundle-discount? product)
-                  [:div triple-bundle-upsell])
-                [:div.center.mb6.pt4
-                 [:div.h6.navy "Price Per Bundle"]
-                 [:div.medium (item-price (:sku/price selected-sku))]]
-                [:div
-                 [:div.mt1.mx3
-                  (cond
-                    unavailable? unavailable-button
-                    sold-out?    sold-out-button
-                    :else        (add-to-bag-button adding-to-bag? selected-sku sku-quantity))]]
-                (when (products/stylist-only? product) shipping-and-guarantee)]])
-            (product-description product)
-            [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])
-          (when aladdin-or-phoenix?
-            [:div.py10.bg-transparent-teal.col-on-tb-dt.mt4
-             (v2/get-a-free-install get-a-free-install-section-data)])
-          (when review?
-            (component/build review-component/reviews-component reviews opts))
-          ;; We use visibility:hidden rather than display:none so that this component has a height.
-          ;; We use the height on mobile view to slide it on/off the bottom of the page.
-          [:div.invisible-on-tb-dt
-           (component/build sticky-add-component
-                            {:image            (->> options
-                                                    :hair/color
-                                                    (filter #(= (first (:hair/color selected-sku))
-                                                                (:option/slug %)))
-                                                    first
-                                                    :option/rectangle-swatch)
-                             :adding-to-bag?   adding-to-bag?
-                             :sku              selected-sku
-                             :sold-out?        sold-out?
-                             :unavailable?     (empty? selected-sku)
-                             :selected-options selected-options
-                             :quantity         sku-quantity} {})]]]))))
+             (carousel carousel-images product)
+             [:div.hide-on-mb (component/build ugc/component ugc opts)]]
+            [:div
+             [:div
+              [:div.mx2
+               [:h1.h2.medium.titleize {:item-prop "name"}
+                (:copy/title product)]
+               (when review? (reviews-summary reviews opts))]
+              [:meta {:item-prop "image"
+                      :content   (:url (first carousel-images))}]
+              (full-bleed-narrow (carousel carousel-images product))]
+             (when (seq options)
+               [:div
+                [:div {:item-prop  "offers"
+                       :item-scope ""
+                       :item-type  "http://schema.org/Offer"}
+                 [:div.pb2 (component/build picker/component picker-data opts)]
+                 (when (products/eligible-for-triple-bundle-discount? product)
+                   [:div triple-bundle-upsell])
+                 [:div.center.mb6.pt4
+                  [:div.h6.navy "Price Per Bundle"]
+                  [:div.medium (item-price (:sku/price selected-sku))]]
+                 [:div
+                  [:div.mt1.mx3
+                   (cond
+                     unavailable? unavailable-button
+                     sold-out?    sold-out-button
+                     :else        (add-to-bag-button adding-to-bag? selected-sku sku-quantity))]]
+                 (when (products/stylist-only? product) shipping-and-guarantee)]])
+             (product-description product)
+             [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])
+           (when aladdin-or-phoenix?
+             [:div.py10.bg-transparent-teal.col-on-tb-dt.mt4
+              (v2/get-a-free-install get-a-free-install-section-data)])
+           (when review?
+             (component/build review-component/reviews-component reviews opts))
+           ;; We use visibility:hidden rather than display:none so that this component has a height.
+           ;; We use the height on mobile view to slide it on/off the bottom of the page.
+           [:div.invisible-on-tb-dt
+            (component/build sticky-add-component
+                             {:image            (->> options
+                                                     :hair/color
+                                                     (filter #(= (first (:hair/color selected-sku))
+                                                                 (:option/slug %)))
+                                                     first
+                                                     :option/rectangle-swatch)
+                              :adding-to-bag?   adding-to-bag?
+                              :sku              selected-sku
+                              :sold-out?        sold-out?
+                              :unavailable?     (empty? selected-sku)
+                              :selected-options selected-options
+                              :quantity         sku-quantity} {})]]]]))))
 
 (defn min-of-maps
   ([k] {})
