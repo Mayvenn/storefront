@@ -328,28 +328,29 @@
                      :else        (add-to-bag-button adding-to-bag? selected-sku sku-quantity))]]
                  (when (products/stylist-only? product) shipping-and-guarantee)]])
              (product-description product)
-             [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])
-           (when aladdin-or-phoenix?
-             [:div.py10.bg-transparent-teal.col-on-tb-dt.mt4
-              (v2/get-a-free-install get-a-free-install-section-data)])
-           (when review?
-             (component/build review-component/reviews-component reviews opts))
-           ;; We use visibility:hidden rather than display:none so that this component has a height.
-           ;; We use the height on mobile view to slide it on/off the bottom of the page.
-           [:div.invisible-on-tb-dt
-            (component/build sticky-add-component
-                             {:image            (->> options
-                                                     :hair/color
-                                                     (filter #(= (first (:hair/color selected-sku))
-                                                                 (:option/slug %)))
-                                                     first
-                                                     :option/rectangle-swatch)
-                              :adding-to-bag?   adding-to-bag?
-                              :sku              selected-sku
-                              :sold-out?        sold-out?
-                              :unavailable?     (empty? selected-sku)
-                              :selected-options selected-options
-                              :quantity         sku-quantity} {})]]]]))))
+             [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])]]
+         (when aladdin-or-phoenix?
+           [:div.py10.bg-transparent-teal.col-on-tb-dt.mt4
+            (v2/get-a-free-install get-a-free-install-section-data)])
+         (when review?
+           [:div.container.col-7-on-tb-dt.px2
+            (component/build review-component/reviews-component reviews opts)])
+         ;; We use visibility:hidden rather than display:none so that this component has a height.
+         ;; We use the height on mobile view to slide it on/off the bottom of the page.
+         [:div.invisible-on-tb-dt
+          (component/build sticky-add-component
+                           {:image            (->> options
+                                                   :hair/color
+                                                   (filter #(= (first (:hair/color selected-sku))
+                                                               (:option/slug %)))
+                                                   first
+                                                   :option/rectangle-swatch)
+                            :adding-to-bag?   adding-to-bag?
+                            :sku              selected-sku
+                            :sold-out?        sold-out?
+                            :unavailable?     (empty? selected-sku)
+                            :selected-options selected-options
+                            :quantity         sku-quantity} {})]]))))
 
 (defn min-of-maps
   ([k] {})
