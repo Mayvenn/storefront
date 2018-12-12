@@ -1,24 +1,25 @@
 (ns storefront.components.shop-by-look-details
   (:require [om.core :as om]
-            [sablono.core :refer [html]]
-            [storefront.platform.component-utils :as utils]
-            [storefront.platform.carousel :as carousel]
-            [storefront.components.ugc :as ugc]
-            [storefront.assets :as assets]
-            [storefront.events :as events]
-            [storefront.components.ui :as ui]
-            [storefront.keypaths :as keypaths]
-            [storefront.request-keys :as request-keys]
-            [storefront.accessors.experiments :as experiments]
-            [storefront.accessors.pixlee :as pixlee]
-            [storefront.components.order-summary :as order-summary]
-            [clojure.string :as str]
-            [storefront.accessors.products :as products]
             [clojure.set :as set]
-            [spice.maps :as maps]
-            [storefront.accessors.images :as images]
+            [clojure.string :as str]
+            [sablono.core :refer [html]]
             [spice.core :as spice]
-            [storefront.config :as config]))
+            [spice.maps :as maps]
+            [storefront.accessors.experiments :as experiments]
+            [storefront.accessors.images :as images]
+            [storefront.accessors.pixlee :as pixlee]
+            [storefront.accessors.products :as products]
+            [storefront.assets :as assets]
+            [storefront.components.money-formatters :as mf]
+            [storefront.components.order-summary :as order-summary]
+            [storefront.components.ugc :as ugc]
+            [storefront.components.ui :as ui]
+            [storefront.config :as config]
+            [storefront.events :as events]
+            [storefront.keypaths :as keypaths]
+            [storefront.platform.carousel :as carousel]
+            [storefront.platform.component-utils :as utils]
+            [storefront.request-keys :as request-keys]))
 
 (defn add-to-cart-button [sold-out? creating-order? look {:keys [number]}]
   (if sold-out?
@@ -56,7 +57,8 @@
       title)))
 
 (defn component [{:keys [creating-order? sold-out? look shared-cart skus back fetching-shared-cart? discount-warning?
-                         shared-cart-type-copy back-copy back-event above-button-copy album-keyword look-detail-price?]} owner opts]
+                         shared-cart-type-copy back-copy back-event above-button-copy album-keyword look-detail-price?
+                         base-price discounted-price]} owner opts]
   (om/component
    (html
     [:div.container.mb4
@@ -87,8 +89,8 @@
              (when look-detail-price?
                [:div.center.mt4.mb3
                 [:div.h6.dark-gray "15% Off + 10% Bundle Discount"]
-                [:div.h2.medium "$163.80"]
-                [:div.strike.dark-gray "$252.00"]])
+                [:div.h2.medium (mf/as-money discounted-price)]
+                [:div.strike.dark-gray (mf/as-money base-price)]])
              (when above-button-copy
                [:div.center.teal.medium.mt2 above-button-copy])
              [:div.mt2
@@ -114,7 +116,11 @@
 
         look          (pixlee/selected-look data)
         album-keyword (get-in data keypaths/selected-album-keyword)
-        album-copy    (-> config/pixlee :copy album-keyword)]
+        album-copy    (-> config/pixlee :copy album-keyword)
+        base-price    (apply + (map (fn [line-item]
+                                      (* (:item/quantity line-item)
+                                         (:sku/price line-item)))
+                                    (:line-items shared-cart-with-skus)))]
     {:shared-cart           shared-cart-with-skus
      :album-keyword         album-keyword
      :look                  look
@@ -127,7 +133,9 @@
      :back-copy             (:back-copy album-copy)
      :above-button-copy     (:above-button-copy album-copy)
      :shared-cart-type-copy (:short-name album-copy)
-     :look-detail-price?    (experiments/look-detail-price? data)}))
+     :look-detail-price?    (experiments/look-detail-price? data)
+     :base-price            base-price
+     :discounted-price      (* 0.75 base-price)}))
 
 (defn built-component [data opts]
   (om/build component (query data) opts))
