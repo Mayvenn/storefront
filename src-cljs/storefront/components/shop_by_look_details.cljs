@@ -56,7 +56,7 @@
       title)))
 
 (defn component [{:keys [creating-order? sold-out? look shared-cart skus back fetching-shared-cart? discount-warning?
-                         shared-cart-type-copy back-copy back-event above-button-copy album-keyword]} owner opts]
+                         shared-cart-type-copy back-copy back-event above-button-copy album-keyword look-detail-price?]} owner opts]
   (om/component
    (html
     [:div.container.mb4
@@ -84,6 +84,11 @@
             [:div.col-on-tb-dt.col-6-on-tb-dt.px2.px3-on-tb-dt
              [:div.p2.center.h3.medium.border-bottom.border-gray (str item-count " items in this " shared-cart-type-copy)]
              (order-summary/display-line-items line-items skus)
+             (when look-detail-price?
+               [:div.center.mt4.mb3
+                [:div.h6.dark-gray "15% Off + 10% Bundle Discount"]
+                [:div.h2.medium "$163.80"]
+                [:div.strike.dark-gray "$252.00"]])
              (when above-button-copy
                [:div.center.teal.medium.mt2 above-button-copy])
              [:div.mt2
@@ -121,7 +126,8 @@
      :back-event            (:default-back-event album-copy)
      :back-copy             (:back-copy album-copy)
      :above-button-copy     (:above-button-copy album-copy)
-     :shared-cart-type-copy (:short-name album-copy)}))
+     :shared-cart-type-copy (:short-name album-copy)
+     :look-detail-price?    (experiments/look-detail-price? data)}))
 
 (defn built-component [data opts]
   (om/build component (query data) opts))

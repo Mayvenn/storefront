@@ -108,6 +108,10 @@
   [data]
   (display-feature? data "the-ville"))
 
+(defn look-detail-price?
+  [data]
+  (display-feature? data "look-detail-price"))
+
 (defn pdp-dropdown? [data]
   (display-feature? data "pdp-dropdown"))
 
