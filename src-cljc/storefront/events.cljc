@@ -158,7 +158,6 @@
 (defpath control-install-landing-page-toggle-accordion)
 (defpath control-install-consult-stylist-sms)
 
-(defpath control-stylist-referrals-fetch)
 (defpath control-stylist-community)
 (defpath poll-stylist-portrait)
 (defpath poll-gallery)
@@ -218,10 +217,6 @@
 (defpath control-checkout-payment-select)
 (defpath control-checkout-remove-promotion)
 (defpath control-checkout-confirmation-submit)
-
-(defpath control-stylist-referral-submit)
-(defpath control-stylist-referral-remove)
-(defpath control-stylist-referral-add-another)
 
 (defpath control-stylist-banner-close)
 

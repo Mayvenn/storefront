@@ -395,23 +395,8 @@
         events/api-success-stylist-payout-stats
         stylist-id user-id user-token))))
 
-(defmethod perform-effects events/control-stylist-referrals-fetch [_ event args _ app-state]
-  (let [user-id    (get-in app-state keypaths/user-id)
-        user-token (get-in app-state keypaths/user-token)
-        page       (inc (get-in app-state keypaths/stylist-referral-program-page 0))]
-    (when user-token
-      (api/get-stylist-referral-program user-id
-                                        user-token
-                                        {:page page}))))
-
 (defmethod perform-effects events/control-install-landing-page-look-back [_ event args _ app-state]
   (js/history.back))
-
-(defmethod perform-effects events/control-stylist-referral-submit [_ event args _ app-state]
-  (api/send-referrals
-   (get-in app-state keypaths/session-id)
-   {:referring-stylist-id (get-in app-state keypaths/store-stylist-id)
-    :referrals (map #(select-keys % [:fullname :email :phone]) (get-in app-state keypaths/stylist-referrals))}))
 
 (def cart-error-codes
   {"paypal-incomplete"           "We were unable to complete your order with PayPal. Please try again."
