@@ -12,7 +12,6 @@
             [storefront.transitions :refer [transition-state]]
             [storefront.frontend-transitions]
             [storefront.trackings :refer [perform-track]]
-            [leads.keypaths :as leads.keypaths]
             [cljs.reader :refer [read-string]]
             [om.core :as om]
             [clojure.data :refer [diff]]))
@@ -71,8 +70,6 @@
            (exception-handler/report e {:ex-data                    (ex-data e)
                                         :api-version                (get-in state keypaths/app-version "unknown")
                                         :handling-message           message
-                                        :current-lead-id            (get-in state leads.keypaths/lead-id)
-                                        :current-flow-id            (get-in state leads.keypaths/lead-flow-id)
                                         :current-features           (get-in state keypaths/features)
                                         :current-navigation-message (get-in state keypaths/navigation-message)
                                         :current-order-number       (get-in state keypaths/order-number)

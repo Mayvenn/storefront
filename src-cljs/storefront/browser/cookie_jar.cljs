@@ -45,18 +45,6 @@
    :optional-keys [:storefront/utm-source :storefront/utm-medium :storefront/utm-campaign :storefront/utm-content :storefront/utm-term]
    :required-keys []})
 
-(def leads-utm-params
-  {:domain        (root-domain)
-   :max-age       four-weeks
-   :optional-keys ["leads.utm-source" "leads.utm-medium" "leads.utm-campaign" "leads.utm-content" "leads.utm-term"]
-   :required-keys []})
-
-(def lead
-  {:domain        (root-domain)
-   :max-age       four-weeks
-   :optional-keys []
-   :required-keys ["lead-id"]})
-
 (def email-capture-session
   {:domain        nil
    :max-age       nil ;; determined dynamically
@@ -109,13 +97,10 @@
   (doseq [spec account-specs]
     (clear-cookie spec cookie)))
 (def clear-email-capture-session (partial clear-cookie email-capture-session))
-(def clear-lead (partial clear-cookie lead))
 (def retrieve-login (partial retrieve user))
 (def retrieve-current-order (partial retrieve order))
 (def retrieve-pending-promo-code (partial retrieve pending-promo))
 (def retrieve-utm-params (partial retrieve utm-params))
-(def retrieve-leads-utm-params (partial retrieve leads-utm-params))
-(def retrieve-lead (partial retrieve lead))
 
 (def retrieve-email-capture-session (comp :popup-session (partial retrieve email-capture-session)))
 
@@ -163,8 +148,6 @@
   (save-cookie pending-promo cookie {:pending-promo-code promo-code}))
 
 (def save-utm-params (partial save-cookie utm-params))
-(def save-leads-utm-params (partial save-cookie leads-utm-params))
-(def save-lead (partial save-cookie lead))
 
 (defn save-telligent-cookie [cookie contents max-age]
   (save-cookie (assoc telligent-session :max-age max-age) cookie {"AuthenticatedUser" contents}))

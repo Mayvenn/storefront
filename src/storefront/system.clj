@@ -9,7 +9,7 @@
             [spice.logger.core :as logger]
             [tocsin.core :as tocsin]))
 
-(defrecord AppHandler [logger exception-handler storeback-config leads-config environment client-version]
+(defrecord AppHandler [logger exception-handler storeback-config welcome-config environment client-version]
   component/Lifecycle
   (start [c]
     (assoc c :handler (create-handler (dissoc c :handler))))
@@ -27,7 +27,7 @@
    :contentful  (contentful/map->ContentfulContext (merge (:contentful-config config)
                                                           (select-keys config [:environment])))
    :app-handler (map->AppHandler (select-keys config [:storeback-config
-                                                      :leads-config
+                                                      :welcome-config
                                                       :environment
                                                       :client-version]))
    :embedded-server (jetty-server (merge (:server-opts config)

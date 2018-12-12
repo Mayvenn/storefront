@@ -37,13 +37,6 @@
    "/_style/progress"        (edn->bidi events/navigate-style-guide-progress)
    "/_style/carousel"        (edn->bidi events/navigate-style-guide-carousel)})
 
-(def leads-routes
-  {"/stylists/welcome"                       (edn->bidi events/navigate-leads-home)
-   "/stylists/thank-you"                     (edn->bidi events/navigate-leads-resolve)
-   "/stylists/flows/a1/applied-thank-you"    (edn->bidi events/navigate-leads-a1-applied-thank-you)
-   "/stylists/flows/a1/applied-self-reg"     (edn->bidi events/navigate-leads-a1-applied-self-reg)
-   "/stylists/flows/a1/registered-thank-you" (edn->bidi events/navigate-leads-a1-registered-thank-you)})
-
 (def install-routes
   {"/install" (edn->bidi events/navigate-install-home)})
 
@@ -65,7 +58,6 @@
 (def app-routes
   ["" (merge static-page-routes
              style-guide-routes
-             leads-routes
              install-routes
              catalog-routes
              {"/"                                                 (edn->bidi events/navigate-home)

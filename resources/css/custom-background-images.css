@@ -1,8 +1,5 @@
 .bg-full { background-size: 100%; }
 
-.img-receipt-icon      { background-image: url('/images/icons/receipt.png'); }
-.img-no-chat-icon      { background-image: url('/images/icons/no-chat.png'); }
-.img-coins-icon        { background-image: url('/images/icons/coins.png'); }
 .img-share-icon        { background-image: url('/images/icons/share.png'); }
 .img-shop-by-look-icon { background-image: url('/images/icons/shop-by-look@2x.png') }
 .img-shop-by-bundle-deal-icon { background-image: url('/images/icons/icon-bundle-deals@2x.png') }
@@ -16,74 +13,11 @@
 /*
 Move to uploadcare???
 */
-
-.leads-bg-hero-hair {
-    background-image: url("/images/leads/hero-hair-texture-bg.jpg");
-}
-.bg-our-hair {
-    background-image: url("/images/leads/our-hair.jpg");
-    height: 315px;
-}
-.bg-30-off {
-    background-image: url("/images/leads/30-off-bg.jpg");
-}
-.bg-stylist-kit {
-    background-image: url("/images/leads/stylist-kit-bg.jpg");
-}
-.bg-first-sale {
-    background-image: url("/images/leads/first-sale-bg.jpg");
-}
-.bg-star {
-    background-image: url("//ucarecdn.com/0db72798-6c51-48f2-8206-9fd6d91a3ada/-/resize/250x/-/format/auto/star.png");
-}
-
-.bg-storefront-our-hair {
-    background-image: url("//ucarecdn.com/a38deee0-add3-4588-90fb-923158c90dbe/-/format/auto/ourhairvirginhair.png");
-    height: 240px;
-}
-
 .bg-email-capture {
     background-image: url('//ucarecdn.com/173e14ac-e55b-49f2-89e6-793051979629/-/format/auto/emailmodalheroIMG.png');
 }
 
-.bg-free-install {
-    background-image: url('//ucarecdn.com/bb407140-2aa3-4cc8-96d3-6183296bc759/-/format/auto/fayettevillegeomodalhero.png');
-}
-
-.bg-free-install-landing {
-    background-image: url('//ucarecdn.com/b1e09caf-6783-4593-95b6-f1502a628b63/-/format/auto/freeinstallheromobile2x.png');
-    height: 455px;
-}
-
-
 .bg-celebrate {
     background-image:  url('//ucarecdn.com/7cc2e3fc-f06a-4673-bc3a-ad3ea2cc4219/-/format/auto/-/resize/120x/patterncelebrate.png');
     background-repeat: "repeat";
-}
-
-@media (min-width: 750px) {
-    .leads-bg-hero-hair {
-        background-image: url("/images/leads/hero-hair-texture-bg-dsk.jpg");
-    }
-    .bg-our-hair {
-        background-image: url("/images/leads/our-hair-dsk.jpg");
-        height: 630px;
-    }
-    .bg-30-off {
-        background-image: url("/images/leads/30-off-bg-dsk.jpg");
-    }
-    .bg-stylist-kit {
-        background-image: url("/images/leads/stylist-kit-bg-dsk.jpg");
-    }
-    .bg-first-sale {
-        background-image: url("/images/leads/first-sale-bg-dsk.jpg");
-    }
-    .bg-storefront-our-hair {
-        background-image: url("//ucarecdn.com/70c53806-7dae-4537-a6b3-ef35dc7ea4f7/-/format/auto/ourhairvirginhair.png");
-        height: 300px;
-    }
-    .bg-free-install-landing {
-        background-image: url('//ucarecdn.com/b016b985-affb-4c97-af0a-a1f1334c0c51/-/format/auto/freeinstallherodesktop2x.png');
-        height: 560px;
-    }
 }

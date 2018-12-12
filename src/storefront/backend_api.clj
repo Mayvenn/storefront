@@ -76,12 +76,6 @@
     (when (not-404 response)
       (:body response))))
 
-(defn lookup-lead [storeback-config lead-id]
-  (when lead-id
-    (let [response (storeback-fetch storeback-config (str "/leads/" lead-id) {})]
-      (when (not-404 response)
-        (:lead (:body response))))))
-
 (defn get-order [storeback-config order-number order-token]
   (when (and order-number order-token)
     (let [response (storeback-fetch storeback-config (str "/v2/orders/" order-number)

@@ -882,19 +882,10 @@
                                               :look-id        look-id
                                               :shared-cart-id shared-cart-id
                                               :navigate       events/navigate-cart})
-    :error-handler #(do
+    "error-handler" #(do
                       ;; Order is important here, for correct display of errors
                       (default-error-handler %)
                       (messages/handle-message events/api-failure-order-not-created-from-shared-cart))}))
-
-(defn send-referrals [session-id referral]
-  (storeback-api-req
-   POST
-   "/leads/referrals"
-   request-keys/send-referrals
-   {:params  (assoc referral :session-id session-id)
-    :handler #(messages/handle-message events/api-success-send-stylist-referrals
-                                       {:referrals %})}))
 
 (defn- static-content-req [method path req-key {:keys [handler] :as request-opts}]
   (let [req-id       (str (random-uuid))
@@ -924,30 +915,6 @@
              :token token
              :user-id user-id}
     :handler #(messages/handle-message events/api-success-telligent-login (set/rename-keys % {:max_age :max-age}))}))
-
-(defn create-lead [params callback]
-  (storeback-api-req
-   POST
-   "/leads"
-   request-keys/create-lead
-   {:params        params
-    :handler       callback
-    :error-handler (fn [resp]
-                     (if (<= 400 (:status resp) 499)
-                       (messages/handle-message events/api-failure-errors
-                                                (-> resp
-                                                    :response
-                                                    :body
-                                                    schema-3-style->std-error
-                                                    (assoc :scroll-selector "[data-ref=leads-sign-up-form]") ))
-                       (messages/handle-message events/api-failure-bad-server-response resp)))}))
-
-(defn advance-lead-registration [params handler]
-  (storeback-api-req POST
-             "/leads/advance-in-flow"
-             request-keys/advance-lead
-             {:params  params
-              :handler handler}))
 
 (defn voucher-redemption [voucher-code stylist-id]
   (let [{:keys [client-app-id client-app-token base-url]} config/voucherify]

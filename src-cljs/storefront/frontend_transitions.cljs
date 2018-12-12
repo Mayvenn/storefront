@@ -449,11 +449,6 @@
 (defmethod transition-state events/control-stylist-banner-close [_ event args app-state]
   (assoc-in app-state keypaths/stylist-banner-hidden true))
 
-(defmethod transition-state events/control-popup-show-refer-stylists [_ event args app-state]
-  (-> app-state
-      (assoc-in keypaths/popup :refer-stylist)
-      clear-flash))
-
 (defmethod transition-state events/control-account-profile-submit [_ event args app-state]
   (let [password              (get-in app-state keypaths/manage-account-password)
         field-errors          (cond-> {}

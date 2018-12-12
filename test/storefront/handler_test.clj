@@ -45,63 +45,6 @@
                  (comp (map parse-json-body) xf)
                  {:timeout 1000})))
 
-(deftest handles-welcome-subdomain
-  (with-services {}
-    (with-handler handler
-      (testing "will not render leads pages on stylist site"
-        (let [resp (handler (mock/request :get "https://bob.mayvenn.com/stylists/welcome"))]
-          (is (= 404 (:status resp)))))
-      (testing "welcome.mayvenn.com/ redirects to welcome.mayvenn.com/stylists/welcome, preserving query params"
-        (let [resp (handler (mock/request :get "https://welcome.mayvenn.com?a=b"))]
-          (is (= 301 (:status resp)))
-          (is (= "/stylists/welcome?a=b"
-                 (get-in resp [:headers "Location"])))))
-      (testing "preserves leads.tracking-id cookie"
-        (let [resp (handler (-> (mock/request :get "https://welcome.mayvenn.com/stylists/welcome")
-                                (mock/header "Cookie" "leads.tracking-id=present-id")))
-              cookies (get-in resp [:headers "Set-Cookie"])]
-          (is (= 200 (:status resp)))
-          (is (some #{"leads.tracking-id=present-id;Max-Age=31536000;Secure;Path=/;Domain=.mayvenn.com"} cookies))))
-      (testing "migrates tracking_id cookie from old leads site"
-        (let [resp (handler (-> (mock/request :get "https://welcome.mayvenn.com/stylists/welcome")
-                                (mock/header "Cookie" "tracking_id=old-id")))
-              cookies (get-in resp [:headers "Set-Cookie"])]
-          (is (= 200 (:status resp)))
-          (is (some #{"leads.tracking-id=old-id;Max-Age=31536000;Secure;Path=/;Domain=.mayvenn.com"} cookies))
-          (is (some #{"tracking_id=;Max-Age=0;Secure;Path=/"} cookies))))
-      (testing "the utm_params is passed to cljs application"
-        (let [resp (handler (mock/request :get "https://welcome.mayvenn.com/stylists/welcome?utm_content=stylistsfb%40"))
-              cookies (get-in resp [:headers "Set-Cookie"])]
-          (is (= 200 (:status resp)))
-          (is (.contains (:body resp) ":utm-content \\\"stylistsfb@\\\"")
-              (pr-str (:body resp)))))
-      (testing "migrates utm cookies from old leads site"
-        (let [resp (handler (-> (mock/request :get "https://welcome.mayvenn.com/stylists/welcome")
-                                (mock/header "Cookie" (string/join "; "
-                                                                   ["utm_source=utm_source"
-                                                                    "utm_medium=utm_medium"
-                                                                    "utm_campaign=utm_campaign"
-                                                                    "utm_content=utm_content"
-                                                                    "utm_term=utm_term"]))))
-              cookies (get-in resp [:headers "Set-Cookie"])]
-          (is (= 200 (:status resp)))
-          (is (some #{"leads.utm-source=utm_source;Max-Age=2592000;Secure;Path=/;Domain=.mayvenn.com"} cookies))
-          (is (some #{"leads.utm-medium=utm_medium;Max-Age=2592000;Secure;Path=/;Domain=.mayvenn.com"} cookies))
-          (is (some #{"leads.utm-campaign=utm_campaign;Max-Age=2592000;Secure;Path=/;Domain=.mayvenn.com"} cookies))
-          (is (some #{"leads.utm-content=utm_content;Max-Age=2592000;Secure;Path=/;Domain=.mayvenn.com"} cookies))
-          (is (some #{"leads.utm-term=utm_term;Max-Age=2592000;Secure;Path=/;Domain=.mayvenn.com"} cookies))
-          (is (some #{"utm_source=;Max-Age=0;Secure;Path=/"} cookies))
-          (is (some #{"utm_medium=;Max-Age=0;Secure;Path=/"} cookies))
-          (is (some #{"utm_campaign=;Max-Age=0;Secure;Path=/"} cookies))
-          (is (some #{"utm_content=;Max-Age=0;Secure;Path=/"} cookies))
-          (is (some #{"utm_term=;Max-Age=0;Secure;Path=/"} cookies))))
-      (testing "has no canonical url"
-        (let [resp (handler (-> (mock/request :get "https://welcome.mayvenn.com/stylists/welcome")))]
-          (is (= 200 (:status resp)))
-          (is (-> resp
-                  :body
-                  (.contains "rel=\"canonical\"")
-                  not)))))))
 
 (defmacro is-redirected-to [resp domain path]
   `(let [resp# ~resp
@@ -110,8 +53,6 @@
      (is (= 302 (:status resp#)))
      (is (= (format "https://%s.mayvenn.com%s" domain# path#)
             (-> resp# :headers (get "Location"))))))
-
-(def lead-cookie "lead-id=MOCK-LEAD-ID;")
 
 (deftest one-time-login-sets-cookies
   (with-services {:storeback-handler (routes
@@ -128,136 +69,6 @@
           (is (some #{(format "email=%s;Max-Age=2592000;Secure;Path=/;Domain=bob.mayvenn.com"
                               (ring.util.codec/form-encode "acceptance+bob@mayvenn.com"))}
                     cookies)))))))
-
-(defn- get-leads-req [handler cookie path]
-  (-> (mock/request :get (str "https://welcome.mayvenn.com/stylists" path))
-      (mock/header "Cookie" cookie)
-      handler))
-
-(deftest welcome-subdomain-remembers-leads-last-step
-  (testing "When you are unknown"
-    (with-services {}
-      (with-handler handler
-        (testing "in the original flow"
-          (testing "you can go home"
-            (is (= 200 (:status (get-leads-req handler "" "/welcome")))))
-          (testing "going to thank-you takes you back to welcome"
-            (is-redirected-to (get-leads-req handler "" "/thank-you")
-                              "welcome" "/stylists/welcome"))
-          (testing "going to a1-applied-thank-you takes you back to welcome"
-            (is-redirected-to (get-leads-req handler "" "/flows/a1/applied-thank-you")
-                              "welcome" "/stylists/welcome"))
-          (testing "going to a1-applied-self-reg takes you back to welcome"
-            (is-redirected-to (get-leads-req handler "" "/flows/a1/applied-self-reg")
-                              "welcome" "/stylists/welcome"))
-          (testing "going to a1-registered-thank-you takes you back to welcome"
-            (is-redirected-to (get-leads-req handler "" "/flows/a1/registered-thank-you")
-                              "welcome" "/stylists/welcome")))
-        (testing "in the a1 flow"
-          (testing "you can go home"
-            (is (= 200 (:status (get-leads-req handler "" "/welcome?flow=a1")))))
-          (testing "going to thank-you takes you back to welcome"
-            (is-redirected-to (get-leads-req handler "" "/thank-you?flow=a1")
-                              "welcome" "/stylists/welcome"))
-          (testing "going to a1-applied-thank-you takes you back to welcome"
-            (is-redirected-to (get-leads-req handler "" "/flows/a1/applied-thank-you?flow=a1")
-                              "welcome" "/stylists/welcome"))
-          (testing "going to a1-applied-self-reg takes you back to welcome"
-            (is-redirected-to (get-leads-req handler "" "/flows/a1/applied-self-reg?flow=a1")
-                              "welcome" "/stylists/welcome"))
-          (testing "going to a1-registered-thank-you takes you back to welcome"
-            (is-redirected-to (get-leads-req handler "" "/flows/a1/registered-thank-you?flow=a1")
-                              "welcome" "/stylists/welcome"))))))
-  (testing "When you are a known lead and don't have a flow"
-    (let [fake-lead {:id "MOCK-LEAD-ID"}]
-      (with-services {:storeback-handler (constantly {:status 200
-                                                      :body   (generate-string {:lead fake-lead})})}
-        (with-handler handler
-          (testing "you can go home"
-            (is (= 200 (:status (get-leads-req handler "" "/welcome")))))
-          (testing "going to thank-you works"
-            (is (= 200 (:status (get-leads-req handler lead-cookie "/thank-you")))))
-          (testing "going to a1 applied-thank-you redirects to thank-you"
-            (is-redirected-to (get-leads-req handler lead-cookie "/flows/a1/applied-thank-you")
-                              "welcome" "/stylists/thank-you"))
-          (testing "going to a1 applied-self-reg redirects to thank-you"
-            (is-redirected-to (get-leads-req handler lead-cookie "/flows/a1/applied-self-reg")
-                              "welcome" "/stylists/thank-you"))
-          (testing "going to a1 applied-self-reg redirects to thank-you (lead-id from query params)"
-            (is-redirected-to (get-leads-req handler "" "/flows/a1/applied-self-reg?lead_id=MOCK-LEAD-ID")
-                              "welcome" "/stylists/thank-you"))
-          (testing "going to a1 registered-thank-you redirects to thank-you"
-            (is-redirected-to (get-leads-req handler lead-cookie "/flows/a1/registered-thank-you")
-                              "welcome" "/stylists/thank-you"))))))
-  (testing "When you are a known lead and in [original initial]"
-    (let [fake-lead {:id "MOCK-LEAD-ID"
-                     :flow-id "original"
-                     :step-id "initial"}]
-      (with-services {:storeback-handler (constantly {:status 200
-                                                      :body   (generate-string {:lead fake-lead})})}
-        (with-handler handler
-          (testing "you can go home"
-            (is (= 200 (:status (get-leads-req handler "" "/welcome")))))
-          (testing "going to thank-you works"
-            (is (= 200 (:status (get-leads-req handler lead-cookie "/thank-you")))))
-          (testing "going to a1 applied-thank-you redirects to thank-you"
-            (is-redirected-to (get-leads-req handler lead-cookie "/flows/a1/applied-thank-you")
-                              "welcome" "/stylists/thank-you"))
-          (testing "going to a1 applied-self-reg redirects to thank-you"
-            (is-redirected-to (get-leads-req handler lead-cookie "/flows/a1/applied-self-reg")
-                              "welcome" "/stylists/thank-you"))
-          (testing "going to a1 applied-self-reg redirects to thank-you (lead-id from query params)"
-            (is-redirected-to (get-leads-req handler "" "/flows/a1/applied-self-reg?lead_id=MOCK-LEAD-ID")
-                              "welcome" "/stylists/thank-you"))
-          (testing "going to a1 registered-thank-you redirects to thank-you"
-            (is-redirected-to (get-leads-req handler lead-cookie "/flows/a1/registered-thank-you")
-                              "welcome" "/stylists/thank-you"))))))
-  (testing "When you are a known lead and in [a1 applied]"
-    (let [fake-lead {:id "MOCK-LEAD-ID"
-                     :flow-id "a1"
-                     :step-id "applied"}]
-      (with-services {:storeback-handler (constantly {:status 200
-                                                      :body   (generate-string {:lead fake-lead})})}
-        (with-handler handler
-          (testing "going home takes you to applied-thank-you"
-            (is-redirected-to (get-leads-req handler lead-cookie "/welcome")
-                              "welcome" "/stylists/flows/a1/applied-thank-you"))
-          (testing "going to thank-you redirects to applied-thank-you"
-            (is-redirected-to (get-leads-req handler lead-cookie "/thank-you")
-                              "welcome" "/stylists/flows/a1/applied-thank-you"))
-          (testing "going to a1 applied-thank-you works"
-            (is (= 200 (:status (get-leads-req handler lead-cookie "/flows/a1/applied-thank-you")))))
-          (testing "going to a1 applied-self-reg works (lead-id from cookie)"
-            (is (= 200 (:status (get-leads-req handler lead-cookie "/flows/a1/applied-self-reg")))))
-          (testing "going to a1 applied-self-reg works (lead-id from query params)"
-            (is (= 200 (:status (get-leads-req handler "" "/flows/a1/applied-self-reg?lead_id=MOCK-LEAD-ID")))))
-          (testing "going to a1 registered-thank-you redirects to applied-thank-you"
-            (is-redirected-to (get-leads-req handler lead-cookie "/flows/a1/registered-thank-you")
-                              "welcome" "/stylists/flows/a1/applied-thank-you"))))))
-  (testing "When you are a known lead and in [a1 registered]"
-    (let [fake-lead {:id "MOCK-LEAD-ID"
-                     :flow-id "a1"
-                     :step-id "registered"}]
-      (with-services {:storeback-handler (constantly {:status 200
-                                                      :body   (generate-string {:lead fake-lead})})}
-        (with-handler handler
-          (testing "going home redirects to thank you"
-            (is-redirected-to (get-leads-req handler lead-cookie "/welcome")
-                              "welcome" "/stylists/flows/a1/registered-thank-you"))
-          (testing "going to thank-you redirects to registered-thank-you"
-            (is-redirected-to (get-leads-req handler lead-cookie "/thank-you")
-                              "welcome" "/stylists/flows/a1/registered-thank-you"))
-          (testing "going to a1 applied-thank-you redirects to registered-thank-you"
-            (is-redirected-to (get-leads-req handler lead-cookie "/flows/a1/applied-thank-you")
-                              "welcome" "/stylists/flows/a1/registered-thank-you"))
-          (testing "going to a1 applied-self-reg redirects to registered-thank-you"
-            (is-redirected-to (get-leads-req handler lead-cookie "/flows/a1/applied-self-reg")
-                              "welcome" "/stylists/flows/a1/registered-thank-you"))
-          (testing "going to a1 applied-self-reg redirects to registered-thank-you (with query params)"
-            (is-redirected-to (get-leads-req handler "" "/flows/a1/applied-self-reg?lead_id=MOCK-LEAD-ID")
-                              "welcome" "/stylists/flows/a1/registered-thank-you"))
-          (testing "going to a1 registered-thank-you works"
-            (is (= 200 (:status (get-leads-req handler lead-cookie "/flows/a1/registered-thank-you"))))))))))
 
 (deftest renders-page-when-matches-stylist-subdomain-and-sets-the-preferred-subdomain
   (common/assert-request
@@ -439,15 +250,6 @@
         (let [resp (handler (mock/request :get "https://mayvenn.com/sitemap.xml"))]
           (is (= 404 (:status resp))))))))
 
-(deftest sitemap-does-not-exist-on-welcome-subdomain
-  (let [[requests handler] (with-requests-chan (constantly {:status 200
-                                                            :body   (generate-string {:skus []
-                                                                                      :products []})}))]
-    (with-services {:storeback-handler handler}
-      (with-handler handler
-        (let [resp (handler (mock/request :get "https://welcome.mayvenn.com/sitemap.xml"))]
-          (is (= 404 (:status resp))))))))
-
 (deftest robots-disallows-content-storefront-pages-on-shop
   (with-services {}
     (with-handler handler
@@ -470,14 +272,6 @@
       (let [{:keys [status body]} (handler (mock/request :get "https://bob.mayvenn.com/robots.txt"))]
         (is (= 200 status))
         (is (not-any? #{"Disallow: /"} (string/split-lines body)) body)))))
-
-(deftest robots-disallows-leads-pages-on-welcome-subdomain
-  (with-services {}
-    (with-handler handler
-      (let [{:keys [status body]} (handler (mock/request :get "https://welcome.mayvenn.com/robots.txt"))]
-        (is (= 200 status))
-        (is (.contains body "Disallow: /stylists/thank-you") body)
-        (is (.contains body "Disallow: /stylists/flows/") body)))))
 
 (deftest fetches-data-from-contentful
   (let [number-of-contentful-entities-to-fetch 3]

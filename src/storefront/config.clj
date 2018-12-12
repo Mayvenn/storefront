@@ -2,11 +2,6 @@
   (:require [environ.core :refer [env]]
             [clojure.java.io :as io]))
 
-;; TODO: These numbers also exist in config.cljs - consider creating cljc
-(def mayvenn-leads-call-number "1-866-424-7201")
-(def mayvenn-leads-a1-call-number "1-510-867-3439")
-(def mayvenn-leads-sms-number  "34649")
-
 (def welcome-subdomain "welcome")
 
 (def install-subdomain "freeinstall")
@@ -47,7 +42,8 @@
 
 (def env-config {:environment       (env :environment)
                  :bugsnag-token     (env :bugsnag-token)
-                 :leads-config      {:endpoint (env :leads-endpoint)}
+                 ;;TODO Update env-vars
+                 :welcome-config    {:url (env :welcome-url)}
                  :contentful-config {:api-key  (env :contentful-content-delivery-api-key)
                                      :space-id (env :contentful-space-id)}
                  :storeback-config  {:endpoint          (env :storeback-endpoint)

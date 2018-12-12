@@ -249,32 +249,18 @@
 
     (handle-message events/determine-and-show-popup)
 
-    (if (routes/sub-page? [event args] [events/navigate-leads])
-      (let [utm-params (some-> query-params
-                               (select-keys [:utm_source :utm_medium :utm_campaign :utm_content :utm_term])
-                               (set/rename-keys {:utm_source   "leads.utm-source"
-                                                 :utm_medium   "leads.utm-medium"
-                                                 :utm_campaign "leads.utm-campaign"
-                                                 :utm_content  "leads.utm-content"
-                                                 :utm_term     "leads.utm-term"})
-                               (maps/remove-nils))]
-        (when (seq utm-params)
-          (cookie-jar/save-leads-utm-params
-           (get-in app-state keypaths/cookie)
-           utm-params)))
-
-      (let [utm-params (some-> query-params
-                               (select-keys [:utm_source :utm_medium :utm_campaign :utm_content :utm_term])
-                               (set/rename-keys {:utm_source   :storefront/utm-source
-                                                 :utm_medium   :storefront/utm-medium
-                                                 :utm_campaign :storefront/utm-campaign
-                                                 :utm_content  :storefront/utm-content
-                                                 :utm_term     :storefront/utm-term})
-                               (maps/remove-nils))]
-        (when (seq utm-params)
-          (cookie-jar/save-utm-params
-           (get-in app-state keypaths/cookie)
-           utm-params))))
+    (let [utm-params (some-> query-params
+                             (select-keys [:utm_source :utm_medium :utm_campaign :utm_content :utm_term])
+                             (set/rename-keys {:utm_source   :storefront/utm-source
+                                               :utm_medium   :storefront/utm-medium
+                                               :utm_campaign :storefront/utm-campaign
+                                               :utm_content  :storefront/utm-content
+                                               :utm_term     :storefront/utm-term})
+                             (maps/remove-nils))]
+      (when (seq utm-params)
+        (cookie-jar/save-utm-params
+         (get-in app-state keypaths/cookie)
+         utm-params)))
 
     (when (get-in app-state keypaths/popup)
       (handle-message events/control-popup-hide))
@@ -291,8 +277,6 @@
   (api/fetch-cms-data)
   (when (experiments/v2-homepage? app-state)
     (handle-message events/v2-show-home))
-  (when (= config/welcome-subdomain (get-in app-state keypaths/store-slug))
-    (redirect events/navigate-leads-home))
   (when (= config/install-subdomain (get-in app-state keypaths/store-slug))
     (redirect events/navigate-install-home)))
 

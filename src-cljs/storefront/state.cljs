@@ -120,20 +120,6 @@
      :experiments {:bucketed #{}
                    :manual config/manual-experiments}
 
-     :leads {:stylist {:password ""
-                       :referred false
-                       :referrers-phone ""
-                       :address1 ""
-                       :address2 ""
-                       :city ""
-                       :zip ""
-                       :state ""
-                       :licensed false
-                       :payout-method "venmo"
-                       :venmo-phone ""
-                       :paypal-email ""
-                       :slug ""}}
-
      :ui {:api-requests []
           :carousel {:certified-stylist-index 0}
           :navigation-message [events/navigate-home {}]

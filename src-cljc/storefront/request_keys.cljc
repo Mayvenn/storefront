@@ -64,9 +64,6 @@
 
 (def login-telligent [:login-telligent])
 
-(def create-lead [:create-lead])
-(def advance-lead [:advance-lead])
-
 (def fetch-cms-data [:fetch-cms-data])
 (def voucher-redemption [:voucher-redemption])
 (def fetch-stylist-service-menu [:fetch-stylist-service-menu])

@@ -29,13 +29,8 @@
             [catalog.product-details :as product-details]
             [checkout.cart :as cart]
             [checkout.processing :as checkout-processing]
-            [leads.a1.applied-self-reg]
-            [leads.a1.applied-thank-you]
-            [leads.a1.registered-thank-you]
-            [leads.home :as leads.home]
             [voucher.redeem :as voucher-redeem]
             [voucher.redeemed :as voucher-redeemed]
-            [leads.resolve :as leads.resolve]
             [install.home :as install.home]
             [mayvenn-made.home :as mayvenn-made.home]
             [storefront.accessors.experiments :as experiments]
@@ -111,16 +106,6 @@
     events/navigate-gallery                 gallery/built-component
     home/built-component))
 
-(defn leads-component [nav-event]
-  (condp = nav-event
-    #?@(:cljs [])
-    events/navigate-leads-home                    leads.home/built-component
-    events/navigate-leads-resolve                 leads.resolve/built-component
-    events/navigate-leads-a1-applied-thank-you    leads.a1.applied-thank-you/built-component
-    events/navigate-leads-a1-applied-self-reg     leads.a1.applied-self-reg/built-component
-    events/navigate-leads-a1-registered-thank-you leads.a1.registered-thank-you/built-component
-    home/built-component))
-
 (defn sticky-promo-bar [data]
   (when (or (experiments/sticky-promo-bar? data)
             (experiments/sticky-promo-bar-everywhere? data))
@@ -172,10 +157,6 @@
 
        (get-in data keypaths/menu-expanded)
        (slideout-nav/built-component data nil)
-
-       (routes/sub-page? [nav-event] [events/navigate-leads])
-       [:div {:data-test (keypaths/->component-str nav-event)}
-        ((leads-component nav-event) data nil)]
 
        (routes/sub-page? [nav-event] [events/navigate-install-home])
        [:div {:data-test (keypaths/->component-str nav-event)}

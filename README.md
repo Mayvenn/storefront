@@ -25,7 +25,7 @@ and a core file (which simply imports all of the components for that module to m
 
 
 ## Modules
-There are 9 modules: core, account, catalog, checkout, dashboard, gallery, home, leads, login.
+There are 9 modules: core, account, catalog, checkout, dashboard, gallery, home, login.
 
 ### Core
 This is the frame of storefront.
@@ -49,9 +49,6 @@ This module contains the code involved in stylist gallery
 
 ### Home
 This module contains the code involved in home page and static content
-
-### Leads
-This module contains the code involved in the welcome page and leads page
 
 ### Login
 This module contains the code involved in logging in.

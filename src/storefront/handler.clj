@@ -13,7 +13,6 @@
             [compojure.core :refer :all]
             [compojure.route :as route]
             [lambdaisland.uri :as uri]
-            leads.keypaths
             [noir-exception.core :refer [wrap-exceptions wrap-internal-error]]
             [ring-logging.core :as ring-logging]
             [ring.middleware.content-type :refer [wrap-content-type]]
@@ -229,7 +228,7 @@
   ([req keypath default-value]
    (get-in req (concat [:state] keypath) default-value)))
 
-(defn wrap-set-initial-state [h environment leads-config]
+(defn wrap-set-initial-state [h environment]
   (fn [req]
     (let [nav-message        (:nav-message req)
           [nav-event params] nav-message]
@@ -245,10 +244,10 @@
   (fn [req]
     (h (assoc-in-req-state req keypaths/cms @(:cache contentful)))))
 
-(defn wrap-set-welcome-url [h leads-config]
+(defn wrap-set-welcome-url [h welcome-config]
   (fn [req]
     (h (assoc-in-req-state req keypaths/welcome-url
-                           (str (:endpoint leads-config) "?utm_source=shop&utm_medium=referral&utm_campaign=ShoptoWelcome")))))
+                           (str (:url welcome-config) "?utm_source=shop&utm_medium=referral&utm_campaign=ShoptoWelcome")))))
 
 
 (defn wrap-fetch-store [h storeback-config]
@@ -293,16 +292,16 @@
            (assoc-in-req-state keypaths/user-email (cookies/get-and-attempt-parsing-poorly-encoded req "email"))))))
 
 ;;TODO Have all of these middleswarez perform event transitions, just like the frontend
-(defn wrap-state [routes {:keys [storeback-config leads-config contentful environment]}]
+(defn wrap-state [routes {:keys [storeback-config welcome-config contentful environment]}]
   (-> routes
       (wrap-fetch-catalog storeback-config)
       (wrap-set-user)
-      (wrap-set-welcome-url leads-config)
+      (wrap-set-welcome-url welcome-config)
       (wrap-set-cms-cache contentful)
-      (wrap-set-initial-state environment leads-config)))
+      (wrap-set-initial-state environment)))
 
 (defn wrap-site-routes
-  [routes {:keys [storeback-config leads-config contentful environment]}]
+  [routes {:keys [storeback-config contentful environment]}]
   (-> routes
       (wrap-set-preferred-store environment)
       (wrap-preferred-store-redirect environment)
@@ -423,33 +422,6 @@
     (util.response/redirect (routes/path-for event))
     (html-response render-ctx data)))
 
-(defn render-leads-page
-  [render-ctx data req params]
-  (let [lead                    (get-in data leads.keypaths/lead)
-        nav-event               (get-in data keypaths/navigation-event)
-        home                    events/navigate-leads-home
-        thank-you               events/navigate-leads-resolve
-        a1-applied-thank-you    events/navigate-leads-a1-applied-thank-you
-        a1-applied-self-reg     events/navigate-leads-a1-applied-self-reg
-        a1-registered-thank-you events/navigate-leads-a1-registered-thank-you
-        in-flow?                (partial (fnil = "original")
-                                         (:flow-id lead))
-        on-step?                (partial (fnil = "initial")
-                                         (:step-id lead))
-        nav-event?              (partial = nav-event)
-        flow-step?              (fn [flow step]
-                                  (and (in-flow? flow)
-                                       (on-step? step)))]
-    (redirect-if-necessary render-ctx data
-                           (cond
-                             (-> lead :id empty?)              home
-                             (flow-step? "a1" "registered")    a1-registered-thank-you
-                             (and (nav-event? a1-applied-self-reg)
-                                  (flow-step? "a1" "applied")) nav-event
-                             (flow-step? "a1" "applied")       a1-applied-thank-you
-                             (flow-step? "original" "initial") thank-you
-                             :else                             nav-event))))
-
 ;;TODO Move to wrap set catalog
 ;;TODO join queries!!!
 (defn- assoc-category-route-data [data storeback-config params]
@@ -480,7 +452,7 @@
           app-state
           (reductions conj [] event)))
 
-(defn frontend-routes [{:keys [contentful storeback-config leads-config environment client-version] :as ctx}]
+(defn frontend-routes [{:keys [contentful storeback-config environment client-version] :as ctx}]
   (fn [{:keys [state] :as req}]
     (let [nav-message        (get-in-req-state req keypaths/navigation-message)
           [nav-event params] nav-message]
@@ -503,10 +475,6 @@
                            (assoc-in keypaths/stylist-cash-out-status-id (:status-id params)))
               render (server-render-pages nav-event generic-server-render)]
           (render render-ctx data req params))))))
-
-(def leads-disalloweds ["User-agent: *"
-                        "Disallow: /stylists/thank-you"
-                        "Disallow: /stylists/flows/"])
 
 (def user-specific-disalloweds ["User-agent: *"
                                 "Disallow: /account"
@@ -536,23 +504,15 @@
    events/navigate-content-ugc-usage-terms       generic-server-render
    events/navigate-content-program-terms         generic-server-render
    events/navigate-gallery                       generic-server-render
-   events/navigate-leads-home                    render-leads-page
-   events/navigate-leads-a1-applied-self-reg     render-leads-page
-   events/navigate-leads-a1-applied-thank-you    render-leads-page
-   events/navigate-leads-a1-registered-thank-you render-leads-page
-   events/navigate-leads-resolve                 render-leads-page
    events/navigate-install-home                  generic-server-render
    events/navigate-checkout-processing           generic-server-render
    events/navigate-mayvenn-made                  generic-server-render})
 
 (defn robots [{:keys [subdomains]}]
-  (cond
-    (= [config/welcome-subdomain] subdomains) (string/join "\n" leads-disalloweds)
-    :else (string/join "\n" user-specific-disalloweds)))
+  (string/join "\n" user-specific-disalloweds))
 
 (defn sitemap [{:keys [storeback-config]} {:keys [subdomains] :as req}]
-  (if (and (seq subdomains)
-           (not= config/welcome-subdomain (first subdomains)))
+  (if (seq subdomains)
     (if-let [launched-products (->> (api/fetch-v2-products storeback-config {})
                                     :products
                                     (filter :catalog/launched-at))]
@@ -654,125 +614,6 @@
                                                                                        :moved-permanently)
         :else                                                  (not-found)))))
 
-(defn leads-routes [{:keys [storeback-config environment client-version] :as ctx}]
-  (fn [{:keys [nav-message] :as request}]
-    (when (not= (get nav-message 0) events/navigate-not-found)
-      (let [render-ctx           (auto-map storeback-config environment client-version)
-            [nav-event nav-args] nav-message
-            data                 (-> {}
-                                     (assoc-in leads.keypaths/lead-tracking-id (cookies/get request "leads.tracking-id"))
-                                     (assoc-in leads.keypaths/lead-utm-source (cookies/get request "leads.utm-source"))
-                                     (assoc-in leads.keypaths/lead-utm-content (cookies/get request "leads.utm-content"))
-                                     (assoc-in leads.keypaths/lead-utm-campaign (cookies/get request "leads.utm-campaign"))
-                                     (assoc-in leads.keypaths/lead-utm-medium (cookies/get request "leads.utm-medium"))
-                                     (assoc-in leads.keypaths/lead-utm-term (cookies/get request "leads.utm-term"))
-                                     (assoc-in keypaths/store-slug config/welcome-subdomain)
-                                     (assoc-in keypaths/environment environment)
-                                     (assoc-in keypaths/navigation-message nav-message)
-                                     (assoc-in leads.keypaths/lead-flow-id (-> nav-args :query-params :flow))
-                                     ((fn [data]
-                                        (let [lead-id     (cookies/get request "lead-id")
-                                              remote-lead (when (seq lead-id)
-                                                            (api/lookup-lead storeback-config lead-id))]
-                                          (-> data
-                                              (assoc-in leads.keypaths/remote-lead remote-lead)
-                                              (update-in leads.keypaths/lead merge remote-lead))))))]
-        ((server-render-pages nav-event generic-server-render) render-ctx data request nav-args)))))
-
-(defn wrap-welcome-is-for-leads
-  [h]
-  (fn [{:keys [subdomains nav-message query-params] :as req}]
-    (let [on-leads-page?        (routes/sub-page? nav-message [events/navigate-leads])
-          on-home-page?         (= events/navigate-home (get nav-message 0))
-          on-welcome-subdomain? (= config/welcome-subdomain (first subdomains))
-          not-found             #(-> views/not-found
-                                     ->html-resp
-                                     (util.response/status 404))]
-      (if on-welcome-subdomain?
-        (cond
-          on-leads-page? (h req)
-          on-home-page?  (util.response/redirect (routes/path-for events/navigate-leads-home
-                                                                  {:query-params query-params})
-                                                 :moved-permanently)
-          :else          (not-found))
-        (when on-leads-page? (not-found))))))
-
-(defn wrap-migrate-lead-tracking-id-cookie [h {:keys [environment]}]
-  (fn [{:keys [server-name] :as req}]
-    (let [tracking-id     (str (or (cookies/get req "leads.tracking-id")
-                                   (cookies/get req "tracking_id") ;; from old leads site
-                                   (java.util.UUID/randomUUID)))
-          set-tracking-id (fn [req-or-resp]
-                            (cookies/set req-or-resp
-                                         environment
-                                         "leads.tracking-id"
-                                         tracking-id
-                                         {:http-only false
-                                          :max-age   (cookies/days 365)
-                                          :domain    (cookie-root-domain server-name)}))]
-      (-> req
-          set-tracking-id ; set it on the request, so it's available to leads-routes as (cookies/get req "leads.tracking-id")
-          h
-          set-tracking-id ; set it on the response, so it's saved in the client
-          (cookies/expire environment "tracking_id")))))
-
-(defn wrap-lead-id-from-query-params [h {:keys [environment]}]
-  (fn [{:keys [server-name] :as req}]
-    (let [lead-id         (str (or (-> req :query-params (get "lead_id"))
-                                   (cookies/get req "lead-id")))
-          set-lead-id (fn [req-or-resp]
-                            (cookies/set req-or-resp
-                                         environment
-                                         "lead-id"
-                                         lead-id
-                                         {:http-only false
-                                          :max-age   (cookies/days 365)
-                                          :domain    (cookie-root-domain server-name)}))]
-      (-> req
-          set-lead-id ; set it on the request, so it's available to leads-routes as (cookies/get req "lead-id")
-          h
-          set-lead-id)))) ; set it on the response, so it's saved in the client
-
-(defn wrap-migrate-lead-utm-params-cookies [h {:keys [environment]}]
-  (fn [{:keys [server-name] :as req}]
-    (let [leads-utm-params        {"utm_source"   "leads.utm-source"
-                                   "utm_medium"   "leads.utm-medium"
-                                   "utm_campaign" "leads.utm-campaign"
-                                   "utm_content"  "leads.utm-content"
-                                   "utm_term"     "leads.utm-term"}
-          value-from-original-req (fn [old-leads-key new-leads-key]
-                                    (or (-> req :query-params (get old-leads-key))
-                                        (cookies/get-and-attempt-parsing-poorly-encoded req new-leads-key)
-                                        (cookies/get-and-attempt-parsing-poorly-encoded req old-leads-key)))
-          migrate-utm             (fn [req-or-resp [old-leads-key new-leads-key]]
-                                    (let [utm-value (value-from-original-req old-leads-key new-leads-key)]
-                                      (cond-> req-or-resp
-                                        utm-value             (cookies/set environment
-                                                                           new-leads-key
-                                                                           utm-value
-                                                                           {:http-only false
-                                                                            :max-age   (cookies/days 30)
-                                                                            :domain    (cookie-root-domain server-name)})
-                                        utm-value
-                                        (cookies/expire environment old-leads-key))))
-          migrate-utms            (fn [req]
-                                    (reduce migrate-utm req leads-utm-params))]
-      (-> req
-          migrate-utms
-          h
-          migrate-utms))))
-
-(defn wrap-leads-routes [h {:keys [environment] :as ctx}]
-  (-> h
-      ;; TODO: leads' version of utm param cookies stick around for 1 year, and are server-side only.
-      ;; It would be nice to use storefront's server- and client-side copy of the UTM cookies, but they only stick for 1 month.
-      ;; If we need to keep both, the leads' version must be converted to :http-only false
-      (wrap-lead-id-from-query-params ctx)
-      (wrap-migrate-lead-utm-params-cookies ctx)
-      (wrap-migrate-lead-tracking-id-cookie ctx)
-      (wrap-defaults (storefront-site-defaults environment))
-      (wrap-welcome-is-for-leads)))
-
 (defn wrap-filter-params
   "Technically an invalid value, but query-params could generate this value
   which doesn't serialize to EDN correctly.
@@ -855,7 +696,6 @@
                (GET "/marketing-site" req
                  (contentful/marketing-site-redirect req))
                (-> (routes (static-routes ctx)
-                           (wrap-leads-routes (leads-routes ctx) ctx)
                            (-> (install-routes ctx)
                                (wrap-defaults (storefront-site-defaults environment))
                                (wrap-freeinstall-is-for-install environment))

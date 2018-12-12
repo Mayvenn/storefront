@@ -99,31 +99,6 @@
   [_ event {:keys [facet option]} app-state]
   (stringer/track-event "free_install-accept" {}))
 
-(defmethod perform-track events/api-success-leads-lead-created
-  [_ _ {{:keys [first-name last-name email phone id flow-id]} :lead} _]
-  (stringer/track-event "lead_identified" {:lead_id    id
-                                           :email      email
-                                           :phone      phone
-                                           :first_name first-name
-                                           :last_name  last-name})
-  (pinterest/track-event "lead" {:lead_type "sales_rep"})
-  (facebook-analytics/track-event "Lead"))
-
-(defmethod perform-track events/api-success-leads-a1-lead-created
-  [_ _ {{:keys [first-name last-name email phone id flow-id]} :lead} _]
-  (stringer/track-event "lead_identified" {:lead_id    id
-                                           :email      email
-                                           :phone      phone
-                                           :first_name first-name
-                                           :last_name  last-name})
-  (pinterest/track-event "lead" {:lead_type "sales_rep"})
-  (facebook-analytics/track-event "Lead"))
-
-(defmethod perform-track events/api-success-leads-a1-lead-registered
-  [_ _ _ _]
-  (pinterest/track-event "signup")
-  (facebook-analytics/track-custom-event "Lead_Self_Reg_Complete"))
-
 (defmethod perform-track events/viewed-sku [_ event {:keys [sku]} app-state]
   (when sku
     (facebook-analytics/track-event "ViewContent" {:content_type "product"

@@ -100,13 +100,6 @@
 (defpath navigate-checkout-confirmation)
 (defpath navigate-checkout-processing)
 
-(defpath navigate-leads)
-(defpath navigate-leads-home)
-(defpath navigate-leads-resolve)
-(defpath navigate-leads-a1-applied-thank-you)
-(defpath navigate-leads-a1-applied-self-reg)
-(defpath navigate-leads-a1-registered-thank-you)
-
 (defpath navigate-install)
 (defpath navigate-install-home)
 (defpath navigate-install-home-video-modal-open)
@@ -211,7 +204,6 @@
 (defpath control-cart-share-show)
 
 (defpath control-popup-hide)
-(defpath control-popup-show-refer-stylists)
 
 (defpath control-counter-inc)
 (defpath control-counter-dec)
@@ -339,11 +331,6 @@
 
 (defpath api-success-telligent-login)
 
-(defpath api-success-leads-lead-created)
-
-(defpath api-success-leads-a1-lead-created)
-(defpath api-success-leads-a1-lead-registered)
-
 (defpath api-success-voucher-redemption)
 
 (defpath api-failure)
@@ -427,10 +414,6 @@
 (defpath image-picker-component-will-unmount)
 
 (defpath sign-out)
-
-(defpath leads-control-sign-up-submit)
-(defpath leads-a1-control-sign-up-submit)
-(defpath leads-a1-control-self-registration-submit)
 
 (defpath viewed-sku)
 
