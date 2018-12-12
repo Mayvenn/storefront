@@ -133,7 +133,8 @@
      :back-copy             (:back-copy album-copy)
      :above-button-copy     (:above-button-copy album-copy)
      :shared-cart-type-copy (:short-name album-copy)
-     :look-detail-price?    (experiments/look-detail-price? data)
+     :look-detail-price?    (and (experiments/look-detail-price? data)
+                                 (not= album-keyword :deals))
      :base-price            base-price
      :discounted-price      (* 0.75 base-price)}))
 
