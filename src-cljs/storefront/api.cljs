@@ -882,7 +882,7 @@
                                               :look-id        look-id
                                               :shared-cart-id shared-cart-id
                                               :navigate       events/navigate-cart})
-    "error-handler" #(do
+    :error-handler #(do
                       ;; Order is important here, for correct display of errors
                       (default-error-handler %)
                       (messages/handle-message events/api-failure-order-not-created-from-shared-cart))}))
