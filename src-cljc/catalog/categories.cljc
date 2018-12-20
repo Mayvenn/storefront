@@ -405,7 +405,7 @@
                                           :mobile-url  "//ucarecdn.com/27fac423-2571-4dee-90fa-e98071051fea/"
                                           :alt         "Wigs"}}
            :catalog/department    #{"hair"}
-           :hair/family           #{"360-wigs" "lace-front-wigs"}
+           :hair/family           #{"360-wigs" "lace-front-wigs" "ready-wigs"}
            :selector/essentials   [:hair/family :catalog/department]
            :selector/electives    [:hair/family :hair/texture :hair/origin :hair/color]
            :page/title            "Human Hair Wigs | Mayvenn"
