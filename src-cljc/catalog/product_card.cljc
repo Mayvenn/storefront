@@ -28,21 +28,18 @@
   (let [lengths  (->> skus
                       (mapcat #(get % :hair/length))
                       sort)
-        shortest (first lengths)
-        longest  (last lengths)]
+        length-facet-options (->> facets (slug->facet :hair/length) :facet/options)
+        shortest (->> length-facet-options
+                      (slug->option (first lengths))
+                      :option/name)
+        longest  (->> length-facet-options
+                      (slug->option (last lengths))
+                      :option/name)]
     [:p.h6.dark-gray
      "in "
-     (->> facets
-          (slug->facet :hair/length)
-          :facet/options
-          (slug->option shortest)
-          :option/name)
-     " - "
-     (->> facets
-          (slug->facet :hair/length)
-          :facet/options
-          (slug->option longest)
-          :option/name)]))
+     (if (= shortest longest)
+       shortest
+       [:span shortest " - " longest])]))
 
 (defn facet-image
   [facets facet option]
