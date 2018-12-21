@@ -318,7 +318,7 @@
                  (when (products/eligible-for-triple-bundle-discount? product)
                    [:div triple-bundle-upsell])
                  [:div.center.mb6.pt4
-                  [:div.h6.navy "Price Per Bundle"]
+                  [:div.h6.navy "Price Per Item"]
                   [:div.medium (item-price (:sku/price selected-sku))]]
                  [:div
                   [:div.mt1.mx3
