@@ -41,14 +41,14 @@
 
 (defn filter-tabs [{:keys [selector/essentials selector/electives]}
                    facets
-                   product-cards
+                   all-product-cards
                    selections
                    open-panel]
-  (let [product-count    (count product-cards)
+  (let [product-count    (count all-product-cards)
         selections-count (->> (apply dissoc selections essentials)
                               (map (comp count val))
                               (apply +))]
-    [:div.py4
+    [:div.py4.mxn2.px2.bg-white
      (when (seq electives)
        [:div
         [:div.pb1.flex.justify-between
@@ -130,7 +130,6 @@
 (defn copy-section [category]
   [:div.mt6.mb2 [:p.py6.max-580.mx-auto.center (:copy/description category)]])
 
-
 (defn product-cards-empty-state [loading?]
   [:div.col-12.my8.py4.center
    (if loading?
@@ -142,11 +141,17 @@
        [:a.teal (utils/fake-href events/control-category-option-clear) "Clear all filters"]
        " to see more hair."]])])
 
-(defn render-product-cards [loading? product-cards]
-  [:div.flex.flex-wrap.mxn1
-   (if (empty? product-cards)
-     (product-cards-empty-state loading?)
-     (map product-card/component product-cards))])
+(defn render-subsection [loading? {:keys [product-cards image/mob-url image/dsk-url copy]}]
+  [:div
+   (when (and mob-url dsk-url copy)
+     [:div.pb6.flex.flex-column
+      [:div.hide-on-mb.mx1
+       [:img.col.col-12 {:src dsk-url}]]
+      [:div.mxn2.hide-on-tb-dt
+       [:img.col.col-12 {:src mob-url}]]
+      [:div.mx-auto.col.col-11.h5.dark-gray.center.pt2 copy]])
+   [:div.flex.flex-wrap
+    (map product-card/component product-cards)]])
 
 (defn ^:private component
   [{:keys [category
@@ -155,7 +160,8 @@
            selections
            represented-options
            open-panel
-           product-cards]} owner opts]
+           all-product-cards
+           subsections]} owner opts]
   (component/create
    [:div
     (hero-section category)
@@ -168,14 +174,17 @@
       (if open-panel
         [:div
          [:div.hide-on-tb-dt.px2.z4.fixed.overlay.overflow-auto.bg-white
-          (filter-tabs category facets product-cards selections open-panel)
+          (filter-tabs category facets all-product-cards selections open-panel)
           (filter-panel facets represented-options selections open-panel)]
          [:div.hide-on-mb
-          (filter-tabs category facets product-cards selections open-panel)
+          (filter-tabs category facets all-product-cards selections open-panel)
           (filter-panel facets represented-options selections open-panel)]]
         [:div
-         (filter-tabs category facets product-cards selections open-panel)])]
-     (render-product-cards loading-products? product-cards)]]))
+         (filter-tabs category facets all-product-cards selections open-panel)])]
+     [:div.flex.flex-wrap
+      (if (empty? all-product-cards)
+        (product-cards-empty-state loading-products?)
+        (map (partial render-subsection loading-products?) subsections))]]]))
 
 (defn- product-meets-selections?
   [selections product]
@@ -194,23 +203,35 @@
               first)))
 
 (defn ^:private query [data]
-  (let [category        (categories/current-category data)
-        all-skus        (get-in data keypaths/v2-skus)
-        category-skus   (selector/strict-query (vals all-skus)
-                                               (skuers/essentials category))
-        selections      (get-in data catalog.keypaths/category-selections)
-        products        (->> (selector/strict-query (vals (get-in data keypaths/v2-products))
-                                                    (skuers/essentials category)
-                                                    selections
-                                                    {:hair/color #{:query/missing}})
+  (let [category      (categories/current-category data)
+        all-skus      (get-in data keypaths/v2-skus)
+        category-skus (selector/strict-query (vals all-skus)
+                                             (skuers/essentials category))
+        selections    (get-in data catalog.keypaths/category-selections)
+        products      (->> (selector/strict-query (vals (get-in data keypaths/v2-products))
+                                                  (skuers/essentials category)
+                                                  selections
+                                                  {:hair/color #{:query/missing}})
 
-                             (into [] (comp
-                                       (map (partial cache-complete-skus all-skus))
-                                       ;; This is an optimization, do not use elsewhere (900msec -> 50msec)
-                                       (filter (partial product-meets-selections? selections))
-                                       (map cache-lowest-price)))
+                           (into [] (comp
+                                     (map (partial cache-complete-skus all-skus))
+                                     ;; This is an optimization, do not use elsewhere (900msec -> 50msec)
+                                     (filter (partial product-meets-selections? selections))
+                                     (map cache-lowest-price)))
 
-                             (sort-by ::cached-lowest-price))]
+                           (sort-by ::cached-lowest-price))
+        subsections       (->> products
+                               (group-by (or (categories/category-id->subsection-fn (:catalog/category-id category))
+                                             (constantly :no-subsections)))
+                               (spice.maps/map-values (partial map (partial product-card/query data)))
+                               (map (fn [[k cards]]
+                                      (-> category
+                                          :subsections
+                                          (get k)
+                                          (assoc :product-cards cards))))
+                               (sort-by :order))
+        all-product-cards (mapcat :product-cards subsections)]
+
     {:category            category
      :represented-options (->> category-skus
                                (map (fn [sku]
@@ -221,7 +242,8 @@
                                (reduce (partial merge-with set/union) {}))
      :facets              (maps/index-by :facet/slug (get-in data keypaths/v2-facets))
      :selections          selections
-     :product-cards       (map (partial product-card/query data) products)
+     :all-product-cards   all-product-cards
+     :subsections         subsections
      :open-panel          (get-in data catalog.keypaths/category-panel)
      :loading-products?   (utils/requesting? data (conj request-keys/search-v2-products
                                                         (skuers/essentials category)))}))

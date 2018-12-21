@@ -385,6 +385,9 @@
                                "Perfect for creating voluminous coily styles.")
                          "//ucarecdn.com/128b68e2-bf3a-4d72-8e39-0c71662f9c86/"))])
 
+(def category-id->subsection-fn
+  {"13" (comp first :hair/family)})
+
 (def wigs
   [(merge {:catalog/category-id "13"
            :footer/order        20
@@ -416,7 +419,19 @@
            :opengraph/description (copy "100% virgin human hair, machine-wefted and backed by our"
                                         "30 Day Quality Guarantee, our Wigs can be customized to fit"
                                         "your unique look using the built-in combs and adjustable strap.")
-           :image-url             "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/"})])
+           :image-url             "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/"
+           :subsections           {"360-wigs"        {:image/mob-url "//ucarecdn.com/08d4158d-633d-4ddd-ab90-7e7f03655998/"
+                                                      :image/dsk-url "//ucarecdn.com/4f310c6c-b8a8-46cb-9940-290f57920922/"
+                                                      :order         2
+                                                      :copy          "Wear it up or down in any style you'd like. Your stylist will customize it for you."}
+                                   "lace-front-wigs" {:image/mob-url "//ucarecdn.com/3d906164-8a1e-413e-9e10-dd5b35d6532e/"
+                                                      :image/dsk-url "//ucarecdn.com/203051d7-0138-4276-8e1b-310d4ee84254/"
+                                                      :order         1
+                                                      :copy          "Wanting something custom? Our lace front wigs are a great blank canvas for your stylist."}
+                                   "ready-wigs"      {:image/mob-url "//ucarecdn.com/56063a5e-7b29-43c8-9a2c-5d9d97682f11/"
+                                                      :image/dsk-url "//ucarecdn.com/00b52b51-897d-4aa9-a35f-07cf59e919fc/"
+                                                      :order         0
+                                                      :copy          "The best of both worlds, 100% virgin hair that's ready to wear."}}})])
 
 (def stylist-exclusives
   [(merge {:catalog/category-id       "14"
