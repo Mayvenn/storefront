@@ -112,10 +112,6 @@
   [_ event {:keys [selection value]} app-state]
   (track-select-bundle-option selection value))
 
-(defmethod perform-track events/control-bundle-option-select
-  [_ event {:keys [selection value]} app-state]
-  (track-select-bundle-option selection value))
-
 (defmethod perform-track events/api-success-suggested-add-to-bag [_ event {:keys [order sku-id->quantity initial-sku]} app-state]
   (let [line-item-skuers (sku-id->quantity-to-line-item-skuer (get-in app-state keypaths/v2-skus) sku-id->quantity)
         added-skus       (mapv line-item-skuer->stringer-cart-item line-item-skuers)]

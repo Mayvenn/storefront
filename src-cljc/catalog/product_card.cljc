@@ -95,8 +95,7 @@
     {:product                          product
      :skus                             skus
      :epitome                          epitome
-     :sku-matching-previous-selections (when (experiments/pdp-dropdown? data)
-                                         (sku-best-matching-selections product-detail-selections skus))
+     :sku-matching-previous-selections (sku-best-matching-selections product-detail-selections skus)
      :cheapest-sku                     cheapest-sku
      :color-order-map                  color-order-map
      :sold-out?                        (empty? in-stock-skus)

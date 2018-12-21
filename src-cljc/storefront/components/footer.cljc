@@ -106,8 +106,7 @@
 
     [:div.mt3.bg-dark-gray.white.py1.px3.clearfix.h7
      [:div
-      (when expanded-footer?
-        {:style {:margin-bottom "90px"}})
+      {:style {:margin-bottom "90px"}}
       (component/build footer-links/component {:minimal? false} nil)]]]))
 
 (defn contacts-query
@@ -123,8 +122,7 @@
    :categories       (->> (get-in data keypaths/categories)
                           (filter :footer/order)
                           (filter (partial auth/permitted-category? data))
-                          (sort-by :footer/order))
-   :expanded-footer? (experiments/pdp-dropdown? data)})
+                          (sort-by :footer/order))})
 
 (defn built-component
   [data opts]

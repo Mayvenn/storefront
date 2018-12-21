@@ -112,9 +112,6 @@
   [data]
   (display-feature? data "look-detail-price"))
 
-(defn pdp-dropdown? [data]
-  (display-feature? data "pdp-dropdown"))
-
 (defn install?
   [data]
   (->> (get-in data keypaths/store-features)
