@@ -8,9 +8,7 @@
 
 (def new-facet?
   ;; [<facet-slug> <option-slug>]
-  #{[:hair/family "360-frontals"]
-    [:hair/family "360-wigs"]
-    [:hair/family "lace-front-wigs"]})
+  #{})
 
 (def new-category?
   #{"360-frontals" "wigs"})
