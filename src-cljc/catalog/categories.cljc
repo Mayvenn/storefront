@@ -523,7 +523,7 @@
 (def seamless-clip-ins-category
   [{:catalog/category-id "21"
     :catalog/department  #{"hair"}
-    :category/new?       true
+    :category/new?       false
 
     :hair/family         #{"seamless-clip-ins"}
     :selector/electives  [:hair/weight :hair/texture :hair/color]
@@ -556,7 +556,7 @@
 (def tape-ins-category
   [{:catalog/category-id "22"
     :catalog/department  #{"hair"}
-    :category/new?       true
+    :category/new?       false
 
     :hair/family         #{"tape-ins"}
     :selector/electives  [:hair/color :hair/weight :hair/length]

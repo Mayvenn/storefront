@@ -190,14 +190,12 @@
                                    {:page/slug           "seamless-clip-ins"
                                     :catalog/category-id "21"})
        :data-test "menu-shop-seamless-clip-ins"
-       :content [[:span.teal.pr1 "NEW"]
-                 [:span.medium.flex-auto "Clip-Ins"]]}
+       :content [[:span.medium.flex-auto "Clip-Ins"]]}
       {:link-attrs (utils/route-to events/navigate-product-details
                                    {:page/slug          "50g-straight-tape-ins"
                                     :catalog/product-id "111"})
        :data-test "menu-shop-tape-ins"
-       :content [[:span.teal.pr1 "NEW"]
-                 [:span.medium.flex-auto "Tape-Ins"]]}])))
+       :content [[:span.medium.flex-auto "Tape-Ins"]]}])))
 
 (def stylist-exclusive-row
   {:link-attrs (utils/route-to events/navigate-product-details
