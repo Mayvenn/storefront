@@ -396,11 +396,11 @@
 
            :copy/title            "Wigs"
            :page/slug             "wigs"
-           :copy/description      (copy "When getting a bundle install isn’t an option,"
-                                        "these units will be your go-to protective style"
-                                        "for achieving a brand new look at home. Made"
-                                        "from 100% virgin human hair, and customizable"
-                                        "to fit your unique look.")
+           :copy/description      (copy "These units will be your go-to protective style"
+                                        "for achieving a brand new look."
+                                        "With options ranging from 360 to Ready to Wear,"
+                                        "there’s a wig available for each of your alter egos.")
+
            :images                {:hero {:filename    "Wigs.jpg"
                                           :desktop-url "//ucarecdn.com/c17d9942-4cec-4f32-814c-ed5141efef59/"
                                           :mobile-url  "//ucarecdn.com/27fac423-2571-4dee-90fa-e98071051fea/"
@@ -421,15 +421,21 @@
            :subsections           {"360-wigs"        {:image/mob-url "//ucarecdn.com/08d4158d-633d-4ddd-ab90-7e7f03655998/"
                                                       :image/dsk-url "//ucarecdn.com/4f310c6c-b8a8-46cb-9940-290f57920922/"
                                                       :order         2
-                                                      :copy          "Wear it up or down in any style you'd like. Your stylist will customize it for you."}
+                                                      :copy          (copy "Complete with a lace perimeter and made from 100% virgin hair,"
+                                                                           "our 360 wigs are fully customizable to fit your unique look.")}
                                    "lace-front-wigs" {:image/mob-url "//ucarecdn.com/3d906164-8a1e-413e-9e10-dd5b35d6532e/"
                                                       :image/dsk-url "//ucarecdn.com/203051d7-0138-4276-8e1b-310d4ee84254/"
                                                       :order         1
-                                                      :copy          "Wanting something custom? Our lace front wigs are a great blank canvas for your stylist."}
+                                                      :copy          (copy "Crafted with 13x4 inches of frontal parting space,"
+                                                                           "these 100% virgin hair units offer the perfect balance"
+                                                                           "between natural density and style versatility.")}
                                    "ready-wigs"      {:image/mob-url "//ucarecdn.com/56063a5e-7b29-43c8-9a2c-5d9d97682f11/"
                                                       :image/dsk-url "//ucarecdn.com/00b52b51-897d-4aa9-a35f-07cf59e919fc/"
                                                       :order         0
-                                                      :copy          "The best of both worlds, 100% virgin hair that's ready to wear."}}})])
+                                                      :copy          (copy "Available in a variety of styles,"
+                                                                           "these 100% human hair units will be"
+                                                                           "your favorite option for a quick,"
+                                                                           "convenient switch-up on the go.")}}})])
 
 (def stylist-exclusives
   [(merge {:catalog/category-id       "14"
