@@ -185,7 +185,8 @@
                                    {:page/slug           "wigs"
                                     :catalog/category-id "13"})
        :data-test "menu-shop-wigs"
-       :content [[:span.medium.flex-auto "Wigs"]]}
+       :content [[:span.teal.pr1 "NEW"]
+                 [:span.medium.flex-auto "Wigs"]]}
       {:link-attrs (utils/route-to events/navigate-category
                                    {:page/slug           "seamless-clip-ins"
                                     :catalog/category-id "21"})

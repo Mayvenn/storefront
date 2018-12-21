@@ -394,7 +394,7 @@
            :header/order        0
            :header/group        2
 
-           :category/new? false
+           :category/new? true
 
            :copy/title            "Wigs"
            :page/slug             "wigs"
