@@ -262,7 +262,7 @@
 (defn color-option
   [{:keys [key color sku-image checked? disabled? selected-picker]}]
   [:div {:key       key
-         :data-test (str "picker-color-" (:option/slug color))}
+         :data-test (str "picker-color-" (hacky-fix-of-bad-slugs-on-facets (:option/slug color)))}
    (ui/option {:key      (str key "-option")
                :on-click #(select-and-close
                            events/control-product-detail-picker-option-select
