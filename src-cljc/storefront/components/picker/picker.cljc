@@ -79,7 +79,7 @@
 
 (defn desktop-length-and-quantity-picker-rows
   [{:keys [product-sold-out-style selected-length selections options sku-quantity]}]
-  [:div.flex.hide-on-mb-tb
+  [:div.flex.hide-on-mb
    (field
     {:class "border-right flex-grow-5"}
     (desktop-dropdown
@@ -114,7 +114,7 @@
 
 (defn mobile-length-and-quantity-picker-rows
   [{:keys [selected-length product-sold-out-style sku-quantity]}]
-  [:div.flex.hide-on-dt
+  [:div.flex.hide-on-tb-dt
    (field
     (merge
      {:class     "border-right flex-grow-5"
@@ -141,7 +141,7 @@
 
 (defn desktop-color-picker-row
   [{:keys [selected-color selections options product-sold-out-style]}]
-  [:div.hide-on-mb-tb
+  [:div.hide-on-mb
    (field
     (desktop-dropdown
      [:img.border.border-gray.rounded-0
@@ -161,7 +161,7 @@
                        (:hair/color options))})))])
 
 (defn mobile-color-picker-row [{:keys [selected-color product-sold-out-style]}]
-  [:div.hide-on-dt
+  [:div.hide-on-tb-dt
    (field
     (merge {:data-test "picker-color"}
            (utils/fake-href events/control-product-detail-picker-open {:facet-slug :hair/color}))
@@ -319,7 +319,7 @@
 (defn component
   [{:keys [selected-picker facets selections options sku-quantity product-alternative] :as data} owner _]
   (component/create
-   [:div
+   [:div {:key "picker-body"}
     (slide-animate
      (when (seq options)
        (condp = selected-picker
