@@ -168,7 +168,7 @@
            (ui/ucare-img {:width "250"} "0db72798-6c51-48f2-8206-9fd6d91a3ada")]]
          [:div.relative.z2
           [:div.img-logo.bg-no-repeat.bg-center.bg-contain.mb2
-           {:style {:height "45"}}]
+           {:style {:height "45px"}}]
           [:div.mb1 "3 bundles.............." [:span.medium "$189"]]
           [:div     "Install....................." [:span.medium "FREE"]]
           [:div.mt2.mx-auto.flex.items-center
