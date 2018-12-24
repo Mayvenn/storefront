@@ -82,15 +82,17 @@
     [:span.h4 "Currently out of stock"]))
 
 (def sold-out-button
-  (ui/navy-button {:on-click  utils/noop-callback
-                   :data-test "sold-out"
-                   :class     "bg-gray"}
+  (ui/navy-button {:on-click       utils/noop-callback
+                   :data-test      "sold-out"
+                   :disabled?      true
+                   :disabled-class "bg-gray"}
                   "Sold Out"))
 
 (def unavailable-button
-  (ui/navy-button {:on-click  utils/noop-callback
-                   :data-test "unavailable"
-                   :class     "bg-gray"}
+  (ui/navy-button {:on-click       utils/noop-callback
+                   :data-test      "unavailable"
+                   :disabled?      true
+                   :disabled-class "bg-gray"}
                   "Unavailable"))
 
 (defn add-to-bag-button

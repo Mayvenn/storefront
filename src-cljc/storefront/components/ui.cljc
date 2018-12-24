@@ -56,9 +56,9 @@
     :as opts}
    & content]
   (let [attrs    (cond-> opts
-                  :always                  (dissoc :spinning? :disabled?)
+                  :always                  (dissoc :spinning? :disabled? :disabled-class)
                   (or disabled? spinning?) (assoc :on-click utils/noop-callback)
-                  disabled?                (update :class str (str " " (or disabled-class "is-disabled"))))
+                  disabled?                (update :class str (str " btn-disabled " (or disabled-class "is-disabled"))))
         content (if spinning? spinner content)]
     [:a (merge {:href "#"} attrs)
      content]))
