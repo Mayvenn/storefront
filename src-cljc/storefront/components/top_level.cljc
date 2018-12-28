@@ -25,6 +25,7 @@
                        [storefront.components.style-guide :as style-guide]
                        [storefront.components.popup :as popup]
                        [storefront.config :as config]])
+            [adventure.home :as adventure.home]
             [catalog.category :as category]
             [catalog.product-details :as product-details]
             [checkout.cart :as cart]
@@ -160,7 +161,9 @@
 
        (routes/sub-page? [nav-event] [events/navigate-install-home])
        [:div {:data-test (keypaths/->component-str nav-event)}
-        (install.home/built-component data nil)]
+        (if (experiments/adventure? data)
+          (adventure.home/built-component data nil)
+          (install.home/built-component data nil))]
 
        (routes/sub-page? [nav-event] [events/navigate-cart])
        (cart/layout data nav-event)

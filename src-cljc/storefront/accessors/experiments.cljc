@@ -126,4 +126,7 @@
 (defn phone-capture? [data]
   (display-feature? data "phone-capture"))
 
-
+(defn adventure?
+  [data]
+  (display-feature? data "adventure")
+  true)
