@@ -18,4 +18,5 @@
                                            :background-repeat "no-repeat"
                                            :background-size "100% auto"}}
      [:div.bold header]]
-    [:div.absolute.bottom-0.col.col-12.p5 (ui/aqua-button {} button-text)]]))
+    (doseq [button buttons]
+      [:div.absolute.bottom-0.col.col-12.p5 (ui/aqua-button {} (:text button))])]))

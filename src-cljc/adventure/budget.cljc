@@ -10,7 +10,7 @@
 (defn ^:private query [data]
   {:header "How much do you usually spend on 3 bundles?"
    :header-image "https://via.placeholder.com/150x100"
-   :buttons [{:text "asdf" :target }]})
+   :buttons [{:text "asdf" :target nil}]})
 
 (defn built-component
   [data opts]
