@@ -128,5 +128,4 @@
 
 (defn adventure?
   [data]
-  (display-feature? data "adventure")
-  true)
+  (display-feature? data "adventure"))
