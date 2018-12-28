@@ -26,6 +26,7 @@
                        [storefront.components.popup :as popup]
                        [storefront.config :as config]])
             [adventure.home :as adventure.home]
+            [adventure.budget :as adventure.budget]
             [catalog.category :as category]
             [catalog.product-details :as product-details]
             [checkout.cart :as cart]
@@ -105,6 +106,8 @@
     events/navigate-sign-up                 sign-up/built-component
     events/navigate-forgot-password         forgot-password/built-component
     events/navigate-gallery                 gallery/built-component
+    events/navigate-adventure-home          adventure.home/built-component
+    events/navigate-adventure-budget        adventure.budget/built-component
     home/built-component))
 
 (defn sticky-promo-bar [data]
@@ -161,12 +164,14 @@
 
        (routes/sub-page? [nav-event] [events/navigate-install-home])
        [:div {:data-test (keypaths/->component-str nav-event)}
-        (if (experiments/adventure? data)
-          (adventure.home/built-component data nil)
-          (install.home/built-component data nil))]
+        (install.home/built-component data nil)]
 
        (routes/sub-page? [nav-event] [events/navigate-cart])
        (cart/layout data nav-event)
+
+       (routes/sub-page? [nav-event] [events/navigate-adventure])
+       [:div {:data-test (keypaths/->component-str nav-event)}
+        ((main-component nav-event) data nil)]
 
        :else
        (main-layout data nav-event)))))

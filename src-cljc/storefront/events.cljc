@@ -454,3 +454,8 @@
 
 ;; CUSTOMER
 (defpath navigate-customer-orders)
+
+;; ADVENTURE
+(defpath navigate-adventure)
+(defpath navigate-adventure-home)
+(defpath navigate-adventure-budget)

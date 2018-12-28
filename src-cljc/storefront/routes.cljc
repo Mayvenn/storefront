@@ -38,7 +38,9 @@
    "/_style/carousel"        (edn->bidi events/navigate-style-guide-carousel)})
 
 (def install-routes
-  {"/install" (edn->bidi events/navigate-install-home)})
+  {"/install"          (edn->bidi events/navigate-install-home)
+   "/adventure/home"   (edn->bidi events/navigate-adventure-home)
+   "/adventure/budget" (edn->bidi events/navigate-adventure-budget)})
 
 (def catalog-routes
   {["/categories/" [#"\d+" :catalog/category-id] "-" :page/slug]
