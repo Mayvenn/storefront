@@ -4,16 +4,17 @@
             [storefront.keypaths :as keypaths]
 
             [storefront.component :as component]
-            [adventure.components.basic-prompt :as basic-prompt]
+            [adventure.components.multi-prompt :as multi-prompt]
             [storefront.accessors.experiments :as experiments]))
 
 (defn ^:private query [data]
   {:header "How much do you usually spend on 3 bundles?"
    :header-image "https://via.placeholder.com/150x100"
-   :buttons [{:text "asdf" :target nil}]})
+   :buttons [{:text "asdf" :target nil}
+             {:text "other one" :target nil}]})
 
 (defn built-component
   [data opts]
-  (component/build basic-prompt/component (query data) opts))
+  (component/build multi-prompt/component (query data) opts))
 
 
