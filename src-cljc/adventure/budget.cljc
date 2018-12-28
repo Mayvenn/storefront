@@ -1,4 +1,4 @@
-(ns adventure.home
+(ns adventure.budget
   (:require [storefront.events :as events]
             [storefront.transitions :as transitions]
             [storefront.keypaths :as keypaths]
@@ -8,14 +8,12 @@
             [storefront.accessors.experiments :as experiments]))
 
 (defn ^:private query [data]
-  {:header              "Welcome"
-   :subheader           "Ready to be matched with great hair & a great stylist?"
-   :background-image    "https://via.placeholder.com/100x100"
-   :background-position "center bottom"
-   :button              {:text "Get Started"
-                         :target nil}})
+  {:header "How much do you usually spend on 3 bundles?"
+   :header-image "https://via.placeholder.com/150x100"
+   :buttons [{:text "asdf" :target }]})
 
 (defn built-component
   [data opts]
   (component/build basic-prompt/component (query data) opts))
+
 
