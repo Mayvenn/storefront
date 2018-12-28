@@ -13,7 +13,7 @@
    :background-image    "https://via.placeholder.com/100x100"
    :background-position "center bottom"
    :button              {:text "Get Started"
-                         :target nil}})
+                         :target events/navigate-adventure-budget}})
 
 (defn built-component
   [data opts]

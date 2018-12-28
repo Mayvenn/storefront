@@ -20,4 +20,4 @@
     [:div.px2.absolute.col.col-12 {:style {:top "15%"}}
      [:div.bold header]
      [:div subheader]]
-    [:div.absolute.bottom-0.col.col-12.p5 (ui/aqua-button {} (:text button))]]))
+    [:div.absolute.bottom-0.col.col-12.p5 (ui/aqua-button (utils/route-to (:target button)) (:text button))]]))
