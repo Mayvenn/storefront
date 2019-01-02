@@ -24,7 +24,8 @@
                        [storefront.components.friend-referrals :as friend-referrals]
                        [storefront.components.style-guide :as style-guide]
                        [storefront.components.popup :as popup]
-                       [storefront.config :as config]])
+                       [storefront.config :as config]
+                       [storefront.history :as history]])
             [adventure.home :as adventure.home]
             [adventure.budget :as adventure.budget]
             [catalog.category :as category]
@@ -164,7 +165,10 @@
 
        (routes/sub-page? [nav-event] [events/navigate-install-home])
        [:div {:data-test (keypaths/->component-str nav-event)}
-        (install.home/built-component data nil)]
+        #?(:cljs (if (experiments/adventure? data)
+                   (history/enqueue-redirect events/navigate-adventure-home)
+                   (install.home/built-component data nil))
+           :clj (install.home/built-component data nil))]
 
        (routes/sub-page? [nav-event] [events/navigate-cart])
        (cart/layout data nav-event)
