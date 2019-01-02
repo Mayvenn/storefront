@@ -603,12 +603,13 @@
                                        (map (comp string/lower-case str) subdomains))
           not-found                 #(-> views/not-found
                                          ->html-resp
-                                         (util.response/status 404))]
+                                         (util.response/status 404))
+          is-adventure?             (routes/sub-page? nav-message [events/navigate-adventure])]
       (cond
         (and (not on-freeinstall-subdomain?) on-install-page?) (not-found)
         (not on-freeinstall-subdomain?)                        nil ;; defer handling elsewhere for non-freeinstall domains
         is-www-prefixed?                                       (util.response/redirect (store-url "freeinstall" environment req))
-        on-install-page?                                       (h req)
+        (or on-install-page? is-adventure?)                    (h req)
         on-root-path?                                          (util.response/redirect (routes/path-for events/navigate-install-home
                                                                                                         {:query-params query-params})
                                                                                        :moved-permanently)
