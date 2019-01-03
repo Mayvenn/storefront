@@ -1,4 +1,4 @@
-(ns adventure.components.multi-prompt
+(ns adventure.components.progress-bar
   (:require #?@(:cljs [[om.core :as om]])
             [storefront.assets :as assets]
             [storefront.component :as component]
@@ -12,13 +12,14 @@
 (defn component
   [{:keys [header header-image data-test buttons]} _ _]
   (component/create
-   [:div.bg-aqua.white.center.bold.flex-auto.self-stretch
-    [:div.flex.items-center
-     {:style {:height           "246px"
-              :background-size  "cover"
-              :background-image (str "url('"header-image "')")}}
-     [:div.col-12.p5
-      header]]
-    [:div.p5 {:data-test data-test}
-     (for [button buttons]
-       [:div (ui/aqua-button {:data-test (str data-test "-" (:value button))} (:text button))])]]))
+   [:div.col-12.col.bg-white
+    {:style {:height "6px"}}
+    "HELLO"]))
+
+(defn query [data]
+  {:this "that"})
+
+(defn built-component
+  [data opts]
+  (component/build component (query data) opts))
+

@@ -12,14 +12,14 @@
 (defn component
   [{:keys [header subheader background-image background-position button]} _ _]
   (component/create
-   [:div.bg-aqua.white.absolute.top-0.right-0.bottom-0.left-0.center
-    {:style {:background-image (str "url(" background-image ")")
-             :background-position background-position
-             :background-repeat "no-repeat"
-             :background-size "100% auto"}}
-    [:div.px2.absolute.col.col-12 {:style {:top "15%"}}
+   [:div.bg-aqua.white.center.flex.flex-column.self-stretch
+    [:div.px2.flex.flex-column.items-center.justify-center
+     {:style {:height "246px"}}
      [:div.bold header]
      [:div subheader]]
-    [:div.absolute.bottom-0.col.col-12.p5 (ui/aqua-button (merge {:data-test (:data-test button)}
-                                                                 (utils/route-to (:target button)))
-                                                          (:text button))]]))
+    [:div.flex.flex-auto.items-end.p5
+     {:style {:background-image  (str "url(" background-image ")")
+              :background-size   "cover"}}
+     (ui/aqua-button (merge {:data-test (:data-test button)}
+                            (utils/route-to (:target button)))
+                     (:text button))]]))
