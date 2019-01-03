@@ -13,7 +13,7 @@
 (defn component
   [{:keys [prompt mini-prompt header-data background-image background-position button]} _ _]
   (component/create
-   [:div.bg-aqua.white.center.flex.flex-column
+   [:div.bg-aqua.white.center.flex.flex-auto.flex-column
     (when header-data
       (header/built-component header-data nil))
     [:div.px2.flex.flex-column.items-center.justify-center
