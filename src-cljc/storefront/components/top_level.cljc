@@ -29,7 +29,6 @@
             [adventure.home :as adventure.home]
             [adventure.budget :as adventure.budget]
             [adventure.when-info :as adventure.when-info]
-            [adventure.components.progress-bar :as adventure.progress-bar]
             [catalog.category :as category]
             [catalog.product-details :as product-details]
             [checkout.cart :as cart]
@@ -178,12 +177,10 @@
 
        (routes/sub-page? [nav-event] [events/navigate-adventure])
        [:div {:data-test (keypaths/->component-str nav-event)}
-        [:div.flex.flex-column.flex-auto
+        [:div.flex.content-stretch
          {:style {:min-height    "100vh"
                   :margin-bottom "-1px"}}
-         (adventure.progress-bar/built-component data nil)
-         [:div.flex.flex-auto
-          ((main-component nav-event) data nil)]]]
+         ((main-component nav-event) data nil)]]
 
        :else
        (main-layout data nav-event)))))
