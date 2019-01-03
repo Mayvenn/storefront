@@ -28,6 +28,7 @@
                        [storefront.history :as history]])
             [adventure.home :as adventure.home]
             [adventure.budget :as adventure.budget]
+            [adventure.when-info :as adventure.when-info]
             [catalog.category :as category]
             [catalog.product-details :as product-details]
             [checkout.cart :as cart]
@@ -109,6 +110,7 @@
     events/navigate-gallery                 gallery/built-component
     events/navigate-adventure-home          adventure.home/built-component
     events/navigate-adventure-budget        adventure.budget/built-component
+    events/navigate-adventure-when-info     adventure.when-info/built-component
     home/built-component))
 
 (defn sticky-promo-bar [data]

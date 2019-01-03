@@ -38,9 +38,10 @@
    "/_style/carousel"        (edn->bidi events/navigate-style-guide-carousel)})
 
 (def install-routes
-  {"/install"          (edn->bidi events/navigate-install-home)
-   "/adventure/home"   (edn->bidi events/navigate-adventure-home)
-   "/adventure/budget" (edn->bidi events/navigate-adventure-budget)})
+  {"/install"             (edn->bidi events/navigate-install-home)
+   "/adventure/home"      (edn->bidi events/navigate-adventure-home)
+   "/adventure/budget"    (edn->bidi events/navigate-adventure-budget)
+   "/adventure/when-info" (edn->bidi events/navigate-adventure-when-info)})
 
 (def catalog-routes
   {["/categories/" [#"\d+" :catalog/category-id] "-" :page/slug]

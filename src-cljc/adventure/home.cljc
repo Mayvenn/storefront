@@ -1,8 +1,5 @@
 (ns adventure.home
   (:require [storefront.events :as events]
-            [storefront.transitions :as transitions]
-            [storefront.keypaths :as keypaths]
-
             [storefront.component :as component]
             [adventure.components.basic-prompt :as basic-prompt]
             [storefront.accessors.experiments :as experiments]))
@@ -10,9 +7,10 @@
 (defn ^:private query [data]
   {:header              "Welcome"
    :subheader           "Ready to be matched with great hair & a great stylist?"
-   :background-image    "https://via.placeholder.com/100x100"
+   :background-image    "http://placekitten.com/100/100"
    :background-position "center bottom"
    :button              {:text "Get Started"
+                         :data-test "adventure-home-get-started"
                          :target events/navigate-adventure-budget}})
 
 (defn built-component

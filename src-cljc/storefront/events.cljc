@@ -459,3 +459,4 @@
 (defpath navigate-adventure)
 (defpath navigate-adventure-home)
 (defpath navigate-adventure-budget)
+(defpath navigate-adventure-when-info)
