@@ -36,7 +36,7 @@
 
      [:div.flex.items-center
       [:a.col-1.pl3.inherit-color
-       (utils/fake-href back-link)
+       (utils/route-to back-link)
        (svg/left-caret {:class  "stroke-white"
                         :style  {:stroke-width "3"}
                         :height "1em"
