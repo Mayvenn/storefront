@@ -23,9 +23,9 @@
      [:div.col-12.p5 prompt]]
     [:div.p5
      {:data-test data-test}
-     (for [{:as button :keys [text value target]} buttons]
+     (for [{:as button :keys [text value target data-test-suffix]} buttons]
        [:div (ui/aqua-button
               (merge
-               {:data-test (str data-test "-" value)}
-               (utils/route-to target))
+               {:data-test (str data-test "-" data-test-suffix)}
+               (utils/fake-href target value))
               text)])]]))
