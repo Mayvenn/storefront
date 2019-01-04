@@ -15,4 +15,3 @@
 (defn built-component
   [data opts]
   (component/build basic-prompt/component (query data) opts))
-

@@ -10,12 +10,10 @@
             [storefront.components.svg :as svg]
             [storefront.platform.component-utils :as utils]))
 
-(def steps-completed 20)
-
 (defn calculate-width [number-of-steps]
   (reduce
    (fn [acc _]
-     (let [new-fill  (* (- 100 acc) (/ 1 16.0))]
+     (let [new-fill (* (- 100 acc) (/ 1 16.0))]
        (+ acc new-fill)))
           1
           (range 1 (inc number-of-steps))))
