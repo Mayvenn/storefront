@@ -28,7 +28,7 @@
                        [storefront.history :as history]])
             [adventure.home :as adventure.home]
             [adventure.budget :as adventure.budget]
-            [adventure.when-info :as adventure.when-info]
+            [adventure.get-in-contact :as adventure.get-in-contact]
             [catalog.category :as category]
             [catalog.product-details :as product-details]
             [checkout.cart :as cart]
@@ -87,30 +87,30 @@
          events/navigate-checkout-confirmation                      (partial checkout-returning-or-guest/requires-sign-in-or-initiated-guest-checkout checkout-confirmation/built-component)
          events/navigate-order-complete                             checkout-complete/built-component])
 
-    events/navigate-home                    home/built-component
-    events/navigate-category                category/built-component
-    events/navigate-product-details         product-details/built-component
-    events/navigate-shared-cart             shared-cart/built-component
-    events/navigate-checkout-processing     checkout-processing/built-component
-    events/navigate-cart                    cart/built-component
-    events/navigate-voucher-redeem          voucher-redeem/built-component
-    events/navigate-voucher-redeemed        voucher-redeemed/built-component
-    events/navigate-mayvenn-made            mayvenn-made.home/built-component
-    events/navigate-content-guarantee       content/built-component
-    events/navigate-content-help            content/built-component
-    events/navigate-content-privacy         content/built-component
-    events/navigate-content-tos             content/built-component
-    events/navigate-content-about-us        content/built-component
-    events/navigate-content-ugc-usage-terms content/built-component
-    events/navigate-content-program-terms   content/built-component
-    events/navigate-content-our-hair        content/built-component
-    events/navigate-sign-in                 sign-in/built-component
-    events/navigate-sign-up                 sign-up/built-component
-    events/navigate-forgot-password         forgot-password/built-component
-    events/navigate-gallery                 gallery/built-component
-    events/navigate-adventure-home          adventure.home/built-component
-    events/navigate-adventure-budget        adventure.budget/built-component
-    events/navigate-adventure-when-info     adventure.when-info/built-component
+    events/navigate-home                     home/built-component
+    events/navigate-category                 category/built-component
+    events/navigate-product-details          product-details/built-component
+    events/navigate-shared-cart              shared-cart/built-component
+    events/navigate-checkout-processing      checkout-processing/built-component
+    events/navigate-cart                     cart/built-component
+    events/navigate-voucher-redeem           voucher-redeem/built-component
+    events/navigate-voucher-redeemed         voucher-redeemed/built-component
+    events/navigate-mayvenn-made             mayvenn-made.home/built-component
+    events/navigate-content-guarantee        content/built-component
+    events/navigate-content-help             content/built-component
+    events/navigate-content-privacy          content/built-component
+    events/navigate-content-tos              content/built-component
+    events/navigate-content-about-us         content/built-component
+    events/navigate-content-ugc-usage-terms  content/built-component
+    events/navigate-content-program-terms    content/built-component
+    events/navigate-content-our-hair         content/built-component
+    events/navigate-sign-in                  sign-in/built-component
+    events/navigate-sign-up                  sign-up/built-component
+    events/navigate-forgot-password          forgot-password/built-component
+    events/navigate-gallery                  gallery/built-component
+    events/navigate-adventure-home           adventure.home/built-component
+    events/navigate-adventure-budget         adventure.budget/built-component
+    events/navigate-adventure-get-in-contact adventure.get-in-contact/built-component
     home/built-component))
 
 (defn sticky-promo-bar [data]
@@ -179,7 +179,7 @@
        [:div {:data-test (keypaths/->component-str nav-event)}
         [:div.flex.content-stretch
          {:style {:min-height    "100vh"
-                  :margin-bottom "-1px"}}
+                  :margin-bottom "-30px"}}
          ((main-component nav-event) data nil)]]
 
        :else
