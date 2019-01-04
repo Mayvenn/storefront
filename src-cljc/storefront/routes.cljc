@@ -41,7 +41,10 @@
   {"/install"                  (edn->bidi events/navigate-install-home)
    "/adventure/home"           (edn->bidi events/navigate-adventure-home)
    "/adventure/budget"         (edn->bidi events/navigate-adventure-budget)
-   "/adventure/get-in-contact" (edn->bidi events/navigate-adventure-get-in-contact)})
+   "/adventure/get-in-contact" (edn->bidi events/navigate-adventure-get-in-contact)
+   "/adventure/what-next"      (edn->bidi events/navigate-adventure-what-next)
+   "/adventure/match-stylist"  (edn->bidi events/navigate-adventure-match-stylist)
+   "/adventure/shop-hair"      (edn->bidi events/navigate-adventure-shop-hair)})
 
 (def catalog-routes
   {["/categories/" [#"\d+" :catalog/category-id] "-" :page/slug]

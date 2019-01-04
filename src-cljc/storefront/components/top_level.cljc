@@ -29,6 +29,9 @@
             [adventure.home :as adventure.home]
             [adventure.budget :as adventure.budget]
             [adventure.get-in-contact :as adventure.get-in-contact]
+            [adventure.what-next :as adventure.what-next]
+            [adventure.match-stylist :as adventure.match-stylist]
+            [adventure.shop-hair :as adventure.shop-hair]
             [catalog.category :as category]
             [catalog.product-details :as product-details]
             [checkout.cart :as cart]
@@ -111,6 +114,9 @@
     events/navigate-adventure-home           adventure.home/built-component
     events/navigate-adventure-budget         adventure.budget/built-component
     events/navigate-adventure-get-in-contact adventure.get-in-contact/built-component
+    events/navigate-adventure-what-next      adventure.what-next/built-component
+    events/navigate-adventure-match-stylist  adventure.match-stylist/built-component
+    events/navigate-adventure-shop-hair      adventure.shop-hair/built-component
     home/built-component))
 
 (defn sticky-promo-bar [data]

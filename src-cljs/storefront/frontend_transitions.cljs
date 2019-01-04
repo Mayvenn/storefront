@@ -9,6 +9,7 @@
             [storefront.events :as events]
             [storefront.hooks.talkable :as talkable]
             [storefront.keypaths :as keypaths]
+            [adventure.keypaths :as adventure.keypaths]
             [storefront.routes :as routes]
             [storefront.state :as state]
             [storefront.transitions :refer [transition-state
@@ -675,3 +676,6 @@
 (defmethod transition-state events/api-success-stylist-service-menu-fetch [_ event {:keys [menu]} app-state]
   (cond-> app-state
     menu (assoc-in keypaths/stylist-service-menu menu)))
+
+(defmethod transition-state events/navigate-adventure [_ event args app-state]
+  (update-in app-state adventure.keypaths/adventure-choices merge args))

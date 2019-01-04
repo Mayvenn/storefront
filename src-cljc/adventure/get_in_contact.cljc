@@ -10,7 +10,7 @@
                       :current-step 2}
    :background-image "http://placekitten.com/315/420"
    :button           {:text   "Next"
-                      :target nil}})
+                      :target events/navigate-adventure-what-next}})
 
 (defn built-component
   [data opts]
