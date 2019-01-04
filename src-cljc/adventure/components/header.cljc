@@ -35,6 +35,7 @@
      (progress-bar (dec current-step))
 
      [:div.flex.items-center
+      {:style {:height "46px"}}
       [:a.col-1.pl3.inherit-color
        (utils/route-to back-link)
        (svg/left-caret {:class  "stroke-white"
