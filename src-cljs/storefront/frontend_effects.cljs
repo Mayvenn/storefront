@@ -1001,3 +1001,6 @@
                                   {:user-id    (get-in app-state keypaths/user-id)
                                    :user-token (get-in app-state keypaths/user-token)
                                    :stylist-id (get-in app-state keypaths/store-stylist-id)}))
+
+(defmethod perform-effects events/control-adventure [_ event {:keys [destination]} app-state-before app-state]
+  (history/enqueue-navigate destination nil))

@@ -677,5 +677,5 @@
   (cond-> app-state
     menu (assoc-in keypaths/stylist-service-menu menu)))
 
-(defmethod transition-state events/navigate-adventure [_ event args app-state]
-  (update-in app-state adventure.keypaths/adventure-choices merge args))
+(defmethod transition-state events/control-adventure [_ event {:keys [choice]} app-state]
+  (update-in app-state adventure.keypaths/adventure-choices merge choice))

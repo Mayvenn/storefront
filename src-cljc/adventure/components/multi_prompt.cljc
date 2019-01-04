@@ -1,13 +1,8 @@
 (ns adventure.components.multi-prompt
-  (:require #?@(:cljs [[om.core :as om]])
-            [storefront.assets :as assets]
-            [adventure.components.header :as header]
+  (:require [adventure.components.header :as header]
             [storefront.component :as component]
-            [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
-            [storefront.effects :as effects]
             [storefront.events :as events]
-            [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]))
 
 (defn component
@@ -27,5 +22,6 @@
        [:div (ui/aqua-button
               (merge
                {:data-test (str data-test "-" data-test-suffix)}
-               (utils/fake-href target value))
+               (utils/fake-href events/control-adventure {:destination target
+                                                          :choice      value}))
               text)])]]))
