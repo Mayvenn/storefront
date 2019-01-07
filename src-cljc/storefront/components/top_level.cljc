@@ -27,6 +27,7 @@
                        [storefront.config :as config]
                        [storefront.history :as history]])
             [adventure.home :as adventure.home]
+            [adventure.time-frame :as adventure.time-frame]
             [adventure.budget :as adventure.budget]
             [adventure.get-in-contact :as adventure.get-in-contact]
             [adventure.what-next :as adventure.what-next]
@@ -112,6 +113,7 @@
     events/navigate-forgot-password          forgot-password/built-component
     events/navigate-gallery                  gallery/built-component
     events/navigate-adventure-home           adventure.home/built-component
+    events/navigate-adventure-time-frame     adventure.time-frame/built-component
     events/navigate-adventure-budget         adventure.budget/built-component
     events/navigate-adventure-get-in-contact adventure.get-in-contact/built-component
     events/navigate-adventure-what-next      adventure.what-next/built-component

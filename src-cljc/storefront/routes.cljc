@@ -40,6 +40,7 @@
 (def install-routes
   {"/install"                  (edn->bidi events/navigate-install-home)
    "/adventure/home"           (edn->bidi events/navigate-adventure-home)
+   "/adventure/time-frame"     (edn->bidi events/navigate-adventure-time-frame)
    "/adventure/budget"         (edn->bidi events/navigate-adventure-budget)
    "/adventure/get-in-contact" (edn->bidi events/navigate-adventure-get-in-contact)
    "/adventure/what-next"      (edn->bidi events/navigate-adventure-what-next)

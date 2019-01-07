@@ -10,7 +10,7 @@
    :background-image    "http://placekitten.com/200/150"
    :button              {:text      "Get Started"
                          :data-test "adventure-home-get-started"
-                         :target    events/navigate-adventure-budget}})
+                         :target    events/navigate-adventure-time-frame}})
 
 (defn built-component
   [data opts]

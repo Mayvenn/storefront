@@ -7,9 +7,8 @@
   {:prompt       "How much do you usually spend on 3 bundles?"
    :prompt-image "http://placekitten.com/300/200"
    :data-test    "adventure-budget-choice"
-   :header-data  {:current-step 1
-                  :title        "Basic Info"
-                  :back-link    events/navigate-adventure-home
+   :header-data  {:title        "Basic Info"
+                  :back-link    events/navigate-adventure-time-frame
                   :subtitle     "Step 1 of 3"}
    :buttons      [{:text             "$"
                    :data-test-suffix "1"
