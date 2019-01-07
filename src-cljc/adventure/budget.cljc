@@ -8,6 +8,7 @@
    :prompt-image "http://placekitten.com/300/200"
    :data-test    "adventure-budget-choice"
    :header-data  {:title        "Basic Info"
+                  :current-step 2
                   :back-link    events/navigate-adventure-time-frame
                   :subtitle     "Step 1 of 3"}
    :buttons      [{:text             "$"

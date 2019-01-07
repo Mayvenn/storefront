@@ -7,7 +7,7 @@
   {:prompt       "Shop for hair"
    :background-image "http://placekitten.com/300/200"
    :data-test    "adventure-match-shop-hair"
-   :header-data  {:current-step 3 ;; Position in flow   ;;Derive from state
+   :header-data  {:current-step 5 ;; Position in flow
                   :title        "Basic Info"
                   :back-link    events/navigate-adventure-what-next
                   :subtitle     "Step 1 of 3"} ;; TODO: Derive from state

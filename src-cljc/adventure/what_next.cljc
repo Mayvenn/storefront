@@ -7,7 +7,7 @@
   {:prompt       "What would you like to do next?"
    :prompt-image "http://placekitten.com/300/200"
    :data-test    "adventure-what-next-choice"
-   :header-data  {:current-step 3 ;; Position in flow
+   :header-data  {:current-step 4 ;; Position in flow
                   :title        "Basic Info"
                   :back-link    events/navigate-adventure-get-in-contact
                   :subtitle     "Step 1 of 3"}

@@ -7,7 +7,7 @@
   {:prompt           [:div.mx-auto.col-8.center "Let’s get you in contact with a stylist ASAP"]
    :mini-prompt      "Subheader"
    :header-data      {:back-link    events/navigate-adventure-budget
-                      :current-step 2}
+                      :current-step 3}
    :background-image "http://placekitten.com/315/420"
    :button           {:text   "Next"
                       :target events/navigate-adventure-what-next}})
