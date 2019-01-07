@@ -1,0 +1,8 @@
+-/target
+-/node_modules
+-/.git
+-/.cpcache
+-/resources/public/js/out
+-/resources/public/css
+-/resources/public/cdn
+-/resources/public/sourcemaps
