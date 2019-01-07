@@ -9,7 +9,7 @@
    :data-test    "adventure-match-with-stylist"
    :header-data  {:current-step 3 ;; Position in flow   ;;Derive from state
                   :title        "Basic Info"
-                  :back-link    events/navigate-adventure-get-in-contact
+                  :back-link    events/navigate-adventure-what-next
                   :subtitle     "Step 1 of 3"} ;; TODO: Derive from state
    :button       {:text   "Complete your match" ;; Goes somewhere based on previous choices
                   :value  nil
