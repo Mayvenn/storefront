@@ -2,6 +2,7 @@
   (:require [storefront.events :as events]
             [storefront.component :as component]
             [adventure.components.basic-prompt :as basic-prompt]
+            [adventure.handlers :as handlers]
             [storefront.accessors.experiments :as experiments]))
 
 (defn ^:private query [data]

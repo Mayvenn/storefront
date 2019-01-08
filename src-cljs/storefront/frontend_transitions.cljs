@@ -676,6 +676,3 @@
 (defmethod transition-state events/api-success-stylist-service-menu-fetch [_ event {:keys [menu]} app-state]
   (cond-> app-state
     menu (assoc-in keypaths/stylist-service-menu menu)))
-
-(defmethod transition-state events/control-adventure [_ event {:keys [choice]} app-state]
-  (update-in app-state adventure.keypaths/adventure-choices merge choice))
