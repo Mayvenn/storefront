@@ -23,6 +23,9 @@
       (update-in keypaths/adventure-choices
                  merge choice)))
 
+;; Perhaps there is a better way to "start" the flow in the app-state
+;;   e.g. {:flow/version 1}
+;; Perhaps the basic_prompt and multi_prompt could both do control-adventure
 (defmethod transitions/transition-state events/navigate-adventure-home
   [_ event args app-state]
   (-> app-state
