@@ -151,8 +151,12 @@
 
 (defmethod perform-effects events/enable-feature [_ event {:keys [feature]} _ app-state]
   (handle-message events/determine-and-show-popup)
-  (when (= "the-ville" feature)
-    (pixlee/fetch-album-by-keyword :free-install)))
+  (let [nav-event (get-in app-state keypaths/navigation-event)]
+    (when (and (routes/sub-page? [nav-event] [events/navigate-install-home])
+               (= "adventure" feature))
+      (history/enqueue-redirect events/navigate-adventure-home))
+    (when (= "the-ville" feature)
+      (pixlee/fetch-album-by-keyword :free-install))))
 
 (defmethod perform-effects events/ensure-sku-ids
   [_ _ {:keys [sku-ids]} _ app-state]

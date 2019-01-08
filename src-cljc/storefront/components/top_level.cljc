@@ -175,10 +175,7 @@
 
        (routes/sub-page? [nav-event] [events/navigate-install-home])
        [:div {:data-test (keypaths/->component-str nav-event)}
-        #?(:cljs (if (experiments/adventure? data)
-                   (history/enqueue-redirect events/navigate-adventure-home)
-                   (install.home/built-component data nil))
-           :clj (install.home/built-component data nil))]
+        (install.home/built-component data nil)]
 
        (routes/sub-page? [nav-event] [events/navigate-cart])
        (cart/layout data nav-event)

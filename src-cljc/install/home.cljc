@@ -205,7 +205,9 @@
 ;; TODO Consider renaming file and event to something free install specific
 (defmethod effects/perform-effects events/navigate-install-home [_ _ _ _ app-state]
   #?(:cljs
-     (pixlee-hook/fetch-album-by-keyword :free-install-home)))
+     (if (experiments/adventure? app-state)
+       (history/enqueue-redirect events/navigate-adventure-home)
+       (pixlee-hook/fetch-album-by-keyword :free-install-home))))
 
 (defmethod transitions/transition-state events/control-install-landing-page-toggle-accordion
   [_ _ {index :index} app-state]
