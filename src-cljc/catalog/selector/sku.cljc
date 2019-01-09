@@ -30,7 +30,6 @@
 
 (s/def ::stocked? boolean?)
 (s/def ::image ::ucare-url)
-(s/def ::price number?)
 (s/def ::price-delta double?)
 
 (s/def ::selector-option
@@ -65,13 +64,14 @@
              (->> product-skus
                   (group-by facet-slug)
                   (map (fn [[option-slug option-skus]]
-                         (let [cheapest-sku (apply min-key :sku/price option-skus)
-                               option       (merge (dissoc (get options (first option-slug)) :sku/name)
-                                                   {:price    (:sku/price cheapest-sku)
-                                                    :stocked? (when (seq option-skus)
-                                                                (some :inventory/in-stock? option-skus))
-                                                    :option/sku-swatch (:url (find-swatch-sku-image cheapest-sku))
-                                                    :image    (get-in options [option-slug :option/image])})]
+                         (let [cheapest-sku     (apply min-key :sku/price option-skus)
+                               no-price-family? (not (empty? (clojure.set/intersection #{"closures" "360-frontals" "frontals"} (:hair/family product))))
+                               option           (merge (dissoc (get options (first option-slug)) :sku/name)
+                                                       {:price             (if no-price-family? nil (:sku/price cheapest-sku))
+                                                        :stocked?          (when (seq option-skus)
+                                                                             (some :inventory/in-stock? option-skus))
+                                                        :option/sku-swatch (:url (find-swatch-sku-image cheapest-sku))
+                                                        :image             (get-in options [option-slug :option/image])})]
                            (conform! ::selector-option option))))
                   (sort-by :filter/order)
                   (assoc acc-options facet-slug)))

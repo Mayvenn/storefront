@@ -93,9 +93,10 @@
                                              :value     (.-value (.-target %))})
        :value     (:hair/length selections)
        :options   (map (fn [option]
-                         [:option {:value (:option/slug option)
-                                   :key   (str "length-" (:option/slug option))}
-                          (str (:option/name option) " - " (mf/as-money-without-cents (:price option)))])
+                         (let [price (when (:price option) (str " - " (mf/as-money-without-cents (:price option))))]
+                           [:option {:value (:option/slug option)
+                                     :key   (str "length-" (:option/slug option))}
+                            (str (:option/name option) price )]))
                        (:hair/length options))})))
    [:div.flex-auto
     (field
@@ -215,7 +216,7 @@
 
 (defn item-price [price]
   (when price
-    [:span {:item-prop "price"} (mf/as-money-without-cents price)]))
+    (when price [:span {:item-prop "price"} (mf/as-money-without-cents price)])))
 
 (defn length-option [{:keys [item key primary-label secondary-label checked? disabled? selected-picker]}]
   (let [label-style (cond
