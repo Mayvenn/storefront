@@ -1,14 +1,27 @@
 (ns adventure.handlers
   (:require [storefront.effects :as effects]
             [storefront.events :as events]
-            #?(:cljs [storefront.history :as history])
+            [storefront.keypaths :as storefront.keypaths]
+            #?@(:cljs
+                [[storefront.history :as history]
+                 [storefront.browser.cookie-jar :as cookie]])
             [adventure.keypaths :as keypaths]
             [storefront.transitions :as transitions]))
 
+(defmethod transitions/transition-state events/control-adventure
+  [_ event {:keys [choice]} app-state]
+  (-> app-state
+      (update-in keypaths/adventure-choices
+                 merge choice)))
+
 (defmethod effects/perform-effects events/control-adventure
-  [_ event {:keys [destination]} app-state-before app-state]
+  [_ _ {:keys [destination]} _ app-state]
   #?(:cljs
-     (history/enqueue-navigate destination nil)))
+     (do
+       (history/enqueue-navigate destination nil)
+       (let [cookie    (get-in app-state storefront.keypaths/cookie)
+             adventure (get-in app-state keypaths/adventure)]
+         (cookie/save-adventure cookie adventure)))))
 
 (defmethod effects/perform-effects events/navigate-adventure
   [_ event args app-state-before app-state]
@@ -16,12 +29,6 @@
              (empty? (get-in app-state keypaths/adventure-choices)))
     #?(:cljs
        (history/enqueue-navigate events/navigate-adventure-home nil))))
-
-(defmethod transitions/transition-state events/control-adventure
-  [_ event {:keys [choice]} app-state]
-  (-> app-state
-      (update-in keypaths/adventure-choices
-                 merge choice)))
 
 ;; Perhaps there is a better way to "start" the flow in the app-state
 ;;   e.g. {:flow/version 1}

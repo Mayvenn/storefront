@@ -21,6 +21,11 @@
 (defn make-cookie []
   (Cookies. js/document))
 
+(def adventure
+  {:domain        nil
+   :max-age       four-weeks
+   :required-keys [:choices]})
+
 (def user
   {:domain        nil
    :max-age       four-weeks
@@ -101,6 +106,7 @@
 (def retrieve-current-order (partial retrieve order))
 (def retrieve-pending-promo-code (partial retrieve pending-promo))
 (def retrieve-utm-params (partial retrieve utm-params))
+(def retrieve-adventure (partial retrieve adventure))
 
 (def retrieve-email-capture-session (comp :popup-session (partial retrieve email-capture-session)))
 
@@ -151,3 +157,11 @@
 
 (defn save-telligent-cookie [cookie contents max-age]
   (save-cookie (assoc telligent-session :max-age max-age) cookie {"AuthenticatedUser" contents}))
+
+(defn save-adventure
+  [cookie adventure-attrs]
+  (let [json-serialize (comp js/JSON.stringify #(clj->js %))]
+    (save-cookie adventure
+                 cookie
+                 (update adventure-attrs
+                         :choices json-serialize))))

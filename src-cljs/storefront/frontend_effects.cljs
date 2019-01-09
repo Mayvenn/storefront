@@ -80,6 +80,14 @@
   (js/setTimeout #(scroll/scroll-selector-to-top "[data-ref=promo-code]") 0))
 
 (defmethod perform-effects events/app-start [dispatch event args _ app-state]
+  (let [choices (-> (get-in app-state keypaths/cookie)
+                    cookie-jar/retrieve-adventure
+                    :choices
+                    js/decodeURIComponent
+                    js/JSON.parse
+                    (js->clj :keywordize-keys true))]
+    (handle-message events/control-adventure
+                    {:choice choices}))
   (svg/insert-sprite)
   (stringer/insert-tracking (get-in app-state keypaths/store-slug))
   (google-analytics/insert-tracking)
