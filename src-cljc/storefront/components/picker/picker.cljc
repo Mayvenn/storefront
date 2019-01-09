@@ -12,7 +12,8 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.platform.messages :as messages]))
+            [storefront.platform.messages :as messages]
+            [storefront.accessors.experiments :as experiments]))
 
 (defn simple-selected-layer []
   [:div.absolute.border.border-width-3.rounded-0.border-light-teal.overlay.flex
@@ -78,7 +79,7 @@
   (string/replace (str slug) #"#" ""))
 
 (defn desktop-length-and-quantity-picker-rows
-  [{:keys [product-sold-out-style selected-length selections options sku-quantity]}]
+  [{:keys [product-sold-out-style selected-length selections options sku-quantity no-price-on-lengths]}]
   [:div.flex.hide-on-mb
    (field
     {:class "border-right flex-grow-5"}
@@ -93,7 +94,8 @@
                                              :value     (.-value (.-target %))})
        :value     (:hair/length selections)
        :options   (map (fn [option]
-                         (let [price (when (:price option) (str " - " (mf/as-money-without-cents (:price option))))]
+                         (let [price (when (and (not no-price-on-lengths) (:price option))
+                                       (str " - " (mf/as-money-without-cents (:price option))))]
                            [:option {:value (:option/slug option)
                                      :key   (str "length-" (:option/slug option))}
                             (str (:option/name option) price )]))
@@ -114,7 +116,7 @@
                         (range 1 11))})))]])
 
 (defn mobile-length-and-quantity-picker-rows
-  [{:keys [selected-length product-sold-out-style sku-quantity]}]
+  [{:keys [selected-length product-sold-out-style sku-quantity no-price-on-lengths]}]
   [:div.flex.hide-on-tb-dt
    (field
     (merge
@@ -296,7 +298,7 @@
 
 (defn picker-dialog
   "picker dialog as in https://app.zeplin.io/project/5a9f159069d48a4c15497a49/screen/5b15c08f4819592903cb1348"
-  [{:keys [title items cell-component-fn product-alternative]}]
+  [{:keys [title items cell-component-fn product-alternative no-prices]}]
   [:div.hide-on-tb-dt.z4.fixed.overlay.overflow-auto.bg-light-silver
    {:key "picker-dialog" :data-test "picker-dialog"}
    [:div.p3.h5.bg-white.relative.border-bottom.border-gray
@@ -318,7 +320,7 @@
       [:div.h4.medium.mt2 [:a.teal.underline link-attrs link-text]]])])
 
 (defn component
-  [{:keys [selected-picker facets selections options sku-quantity product-alternative] :as data} owner _]
+  [{:keys [selected-picker facets selections options sku-quantity product-alternative no-price-on-lengths] :as data} owner _]
   (component/create
    [:div {:key "picker-body"}
     (slide-animate
@@ -341,7 +343,7 @@
                                                                (length-option
                                                                 {:key             (str "length-" (:option/name item))
                                                                  :primary-label   (:option/name item)
-                                                                 :secondary-label (item-price (:price item))
+                                                                 :secondary-label (when-not no-price-on-lengths (item-price (:price item)))
                                                                  :checked?        (= (:hair/length selections)
                                                                                      (:option/slug item))
                                                                  :selected-picker selected-picker
@@ -384,4 +386,5 @@
                                 :link-text  "Browse Dyed Virgin"
                                 :link-attrs (utils/route-to events/navigate-category
                                                             {:page/slug           "dyed-virgin-hair"
-                                                             :catalog/category-id "16"})})}))
+                                                             :catalog/category-id "16"})})
+     :no-price-on-lengths    (experiments/no-prices-on-picker? data)}))
