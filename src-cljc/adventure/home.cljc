@@ -6,10 +6,11 @@
             [storefront.accessors.experiments :as experiments]))
 
 (defn ^:private query [data]
-  {:prompt           "Welcome"
-   :mini-prompt      "Ready to be matched with great hair & a great stylist?"
-   :background-image "http://placekitten.com/200/150"
-   :button           {:text      "Get Started"
+  {:prompt           "Welcome! We can't wait for you to get a free install."
+   :mini-prompt      "Ready? Let's get started."
+   :show-logo?       true
+   :background-image "//ucarecdn.com/27601192-f64b-46c1-98ba-1323769180b0/aladdinMatchingHeroImageAR103Lm3x.png"
+   :button           {:text      "Get started"
                       :data-test "adventure-home-get-started"
                       :target    events/navigate-adventure-time-frame}})
 
