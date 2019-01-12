@@ -363,6 +363,7 @@
      :share-carts?               (stylists/own-store? data)
      :requesting-shared-cart?    (utils/requesting? data request-keys/create-shared-cart)
      :show-browser-pay?          (and (get-in data keypaths/loaded-stripe)
+                                      (experiments/browser-pay? data)
                                       (seq (get-in data keypaths/shipping-methods))
                                       (seq (get-in data keypaths/states)))
      :update-line-item-requests  (merge-with
