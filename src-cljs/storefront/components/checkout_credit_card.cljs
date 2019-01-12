@@ -104,8 +104,7 @@
                    :fetching-saved-cards?  (and (utils/requesting? data request-keys/get-saved-cards)
                                                 (empty? saved-cards))
                    :focused                (get-in data keypaths/ui-focus)
-                   :loaded-stripe?           (and (get-in data keypaths/loaded-stripe-v2)
-                                                  (get-in data keypaths/loaded-stripe-v3))}}))
+                   :loaded-stripe?         (get-in data keypaths/loaded-stripe)}}))
 
 (defn built-component [data opts]
   (om/build component (query data) opts))

@@ -265,7 +265,7 @@
    (fn [acc selection]
      (assoc acc selection
             (first (filter #(= (selection selections) (:option/slug %))
-                    (selection options)))))
+                           (selection options)))))
    {}
    (keys selections)))
 

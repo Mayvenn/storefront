@@ -144,7 +144,6 @@
     [:div.col.col-6.p1 (ui/aqua-button {} "ui/aqua-button")]
     [:div.col.col-6.p1 (ui/dark-gray-button {} "ui/dark-gray-button")]
     [:div.col.col-6.p1 (ui/facebook-button {} "ui/facebook-button")]
-    [:div.col.col-6.p1 (ui/apple-pay-button {} "ui/apple-pay-button")]
 
     [:div.col.col-6.p1 (ui/ghost-button {} "ui/ghost-button")]
     [:div.col.col-6.p1 (ui/navy-ghost-button {} "ui/navy-ghost-button")]

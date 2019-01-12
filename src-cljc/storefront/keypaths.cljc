@@ -155,9 +155,6 @@
 (def selected-album-keyword (conj ui :selected-album-keyword))
 (def selected-look-id (conj ui :selected-look-id))
 
-(def show-apple-pay? (conj ui :show-apple-pay?))
-(def disable-apple-pay-button? (conj ui :disable-apple-pay-button?))
-
 (def cart (conj ui :cart))
 (def cart-coupon-code (conj cart :coupon-code))
 
@@ -271,8 +268,6 @@
 (def loaded-pixlee (conj loaded :pixlee))
 (def loaded-places (conj loaded :places))
 (def loaded-stripe (conj loaded :stripe))
-(def loaded-stripe-v2 (conj loaded-stripe :v2))
-(def loaded-stripe-v3 (conj loaded-stripe :v3))
 (def loaded-talkable (conj loaded :talkable))
 (def loaded-uploadcare (conj loaded :uploadcare))
 

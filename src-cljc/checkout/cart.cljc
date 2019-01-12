@@ -2,9 +2,10 @@
   (:require
    #?@(:cljs [[storefront.components.popup :as popup]
               [storefront.components.order-summary :as summary]
+              [storefront.components.payment-request-button :as payment-request-button]
               [storefront.api :as api]
               [storefront.history :as history]
-              [storefront.hooks.apple-pay :as apple-pay]
+              [storefront.hooks.browser-pay :as browser-pay]
               [storefront.browser.cookie-jar :as cookie-jar]
               [storefront.accessors.stylist-urls :as stylist-urls]
               [goog.labs.userAgent.device :as device]])
@@ -140,7 +141,6 @@
      [:div.h5.right {:data-test (str "line-item-price-ea-" id)} (some-> price mf/as-money)]]]])
 
 (defn full-component [{:keys [order
-                              disable-apple-pay-button?
                               skus
                               promotion-banner
                               call-out
@@ -151,7 +151,7 @@
                               suggestions
                               line-items
                               update-line-item-requests
-                              show-apple-pay?
+                              show-browser-pay?
                               recently-added-skus
                               delete-line-item-requests
                               freeinstall-line-item-data
@@ -200,16 +200,7 @@
                         "Check out with "
                         [:span.medium.italic "PayPal™"]])]
 
-      (when show-apple-pay?
-        [:div.pb2
-         (ui/apple-pay-button
-          {:on-click  (utils/send-event-callback events/control-checkout-cart-apple-pay)
-           :data-test "apple-pay-checkout"
-           :disabled? disable-apple-pay-button?}
-          [:div.flex.items-center.justify-center
-           "Check out with "
-           [:span.img-apple-pay.bg-fill.bg-no-repeat.inline-block.ml1.mynp6 {:style {:width  "4rem"
-                                                                                     :height "2rem"}}]])])
+      #?@(:cljs [(when show-browser-pay? (payment-request-button/built-component nil {}))])
 
       (when share-carts?
         [:div.py2
@@ -325,15 +316,6 @@
      ;; page, then signs-in, they end up on the address page. Convoluted.
      (history/enqueue-navigate events/navigate-checkout-address)))
 
-(defmethod effects/perform-effects events/control-checkout-cart-apple-pay
-  [dispatch event args _ app-state]
-  #?(:cljs
-     (apple-pay/begin (get-in app-state keypaths/order)
-                      (get-in app-state keypaths/session-id)
-                      (cookie-jar/retrieve-utm-params (get-in app-state keypaths/cookie))
-                      (get-in app-state keypaths/shipping-methods)
-                      (get-in app-state keypaths/states))))
-
 (defmethod effects/perform-effects events/control-checkout-cart-paypal-setup
   [dispatch event args _ app-state]
   #?(:cljs
@@ -380,10 +362,9 @@
      :redirecting-to-paypal?     (get-in data keypaths/cart-paypal-redirect)
      :share-carts?               (stylists/own-store? data)
      :requesting-shared-cart?    (utils/requesting? data request-keys/create-shared-cart)
-     :show-apple-pay?            (and (get-in data keypaths/show-apple-pay?)
+     :show-browser-pay?          (and (get-in data keypaths/loaded-stripe)
                                       (seq (get-in data keypaths/shipping-methods))
                                       (seq (get-in data keypaths/states)))
-     :disable-apple-pay-button?  (get-in data keypaths/disable-apple-pay-button?)
      :update-line-item-requests  (merge-with
                                   #(or %1 %2)
                                   (variants-requests data request-keys/add-to-bag (map :sku line-items))

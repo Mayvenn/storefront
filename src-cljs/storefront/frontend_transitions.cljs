@@ -293,16 +293,6 @@
       (update-in keypaths/app-version #(or % app-version))
       (update-in keypaths/api-requests (partial remove (comp #{request-id} :request-id)))))
 
-(defmethod transition-state events/apple-pay-availability
-  [_ event {:keys [available?]} app-state]
-  (assoc-in app-state keypaths/show-apple-pay? available?))
-
-(defmethod transition-state events/apple-pay-begin [_ _ _ app-state]
-  (assoc-in app-state keypaths/disable-apple-pay-button? true))
-
-(defmethod transition-state events/apple-pay-end [_ _ _ app-state]
-  (assoc-in app-state keypaths/disable-apple-pay-button? false) )
-
 (defmethod transition-state events/api-success-get-saved-cards [_ event {:keys [cards default-card]} app-state]
   (let [valid-id? (set (conj (map :id cards) "add-new-card"))]
     (cond-> app-state
@@ -595,8 +585,8 @@
 (defmethod transition-state events/inserted-places [_ event args app-state]
   (assoc-in app-state keypaths/loaded-places true))
 
-(defmethod transition-state events/inserted-stripe [_ event {:keys [version]} app-state]
-  (assoc-in app-state (conj keypaths/loaded-stripe version) true))
+(defmethod transition-state events/inserted-stripe [_ event _ app-state]
+  (assoc-in app-state keypaths/loaded-stripe true))
 
 (defmethod transition-state events/inserted-uploadcare [_ _ _ app-state]
   (assoc-in app-state keypaths/loaded-uploadcare true))

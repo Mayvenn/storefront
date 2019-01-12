@@ -73,7 +73,6 @@
                          :color/teal-ghost  "btn-outline border-teal teal"
                          :color/navy-ghost  "btn-outline border-navy navy"
                          :color/facebook    "btn-primary bg-fb-blue white"
-                         :color/apple-pay   "btn-primary bg-black white"
                          :color/dark-gray   "btn-primary bg-dark-gray white"})]
     (assert color (str "Button color " color-kw " has not been defined."))
     color))
@@ -112,9 +111,6 @@
 
 (defn facebook-button [attrs & content]
   (color-button :color/facebook attrs content))
-
-(defn apple-pay-button [attrs & content]
-  (color-button :color/apple-pay attrs content))
 
 (defn ghost-button [attrs & content]
   (color-button :color/ghost attrs content))

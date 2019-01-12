@@ -332,10 +332,6 @@
 (defmethod perform-track events/control-email-captured-dismiss [_ events args app-state]
   (stringer/track-event "email_capture-dismiss" {}))
 
-(defmethod perform-track events/apple-pay-availability [_ event {:keys [available?]} app-state]
-  (when available?
-    (convert/track-conversion "apple-pay-available")))
-
 (defn- checkout-initiate [app-state flow]
   (stringer/track-event "checkout-initiate" {:flow flow
                                              :order_number (get-in app-state keypaths/order-number)})
@@ -345,10 +341,6 @@
 (defmethod perform-track events/control-checkout-cart-submit [_ event args app-state]
   (checkout-initiate app-state "mayvenn")
   (convert/track-conversion "checkout"))
-
-(defmethod perform-track events/control-checkout-cart-apple-pay [_ event args app-state]
-  (checkout-initiate app-state "apple-pay")
-  (convert/track-conversion "apple-pay-checkout"))
 
 (defmethod perform-track events/control-checkout-cart-paypal-setup [_ event args app-state]
   (checkout-initiate app-state "paypal")

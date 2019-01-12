@@ -17,7 +17,7 @@
             [storefront.effects :as effects :refer [page-not-found perform-effects redirect]]
             [storefront.events :as events]
             [storefront.history :as history]
-            [storefront.hooks.apple-pay :as apple-pay]
+            [storefront.hooks.browser-pay :as browser-pay]
             [storefront.hooks.convert :as convert]
             [storefront.hooks.exception-handler :as exception-handler]
             [storefront.hooks.facebook :as facebook]
@@ -975,9 +975,6 @@
 
       (#{events/navigate-friend-referrals events/navigate-account-referrals} nav-event)
       (talkable/show-referrals app-state))))
-
-(defmethod perform-effects events/inserted-stripe [_ event args _ app-state]
-  (apple-pay/verify-eligible app-state))
 
 (defmethod perform-effects events/control-email-captured-dismiss [_ event args _ app-state]
   (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) "dismissed"))

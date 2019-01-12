@@ -132,7 +132,6 @@
           :store-info-expanded false
           :popup nil
           :stylist-banner-hidden? false
-          :show-apple-pay? false
 
           :expanded-commission-order-id #{nil}
           :email-capture-session
@@ -159,8 +158,7 @@
           :review-components-count 0
           :static nil
           :loaded {:reviews false
-                   :stripe {:v2 false
-                            :v3 false}
+                   :stripe false
                    :facebook false
                    :places false
                    :talkable false}}

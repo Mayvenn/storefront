@@ -708,7 +708,7 @@
                                        {:order %
                                         :navigate events/navigate-checkout-payment})}))
 
-(defn apple-pay-estimate [params successful-estimate failed-to-estimate]
+(defn browser-pay-estimate [params successful-estimate failed-to-estimate]
   (POST
    (str api-base-url "/apple-pay-estimate")
    (merge default-req-opts

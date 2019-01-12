@@ -121,10 +121,6 @@
 (defpath control-navigate)
 (defpath browser-navigate)
 
-(defpath apple-pay-availability)
-(defpath apple-pay-begin)
-(defpath apple-pay-end)
-
 (defpath stripe)
 (defpath stripe-success-create-token)
 (defpath stripe-failure-create-token)
@@ -207,7 +203,6 @@
 
 (defpath control-checkout-cart-submit)
 (defpath control-checkout-cart-paypal-setup)
-(defpath control-checkout-cart-apple-pay)
 (defpath control-checkout-update-addresses-submit)
 (defpath control-checkout-shipping-method-select)
 (defpath control-checkout-payment-method-submit)
@@ -465,3 +460,7 @@
 (defpath navigate-adventure-what-next)
 (defpath navigate-adventure-match-stylist)
 (defpath navigate-adventure-shop-hair)
+
+;; Stripe Payment Button
+(defpath stripe-payment-request-button-inserted)
+(defpath stripe-payment-request-button-removed)
