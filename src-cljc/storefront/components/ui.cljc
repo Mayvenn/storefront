@@ -96,6 +96,9 @@
 (defn teal-button [attrs & content]
   (color-button :color/teal attrs content))
 
+(defn white-button [attrs & content]
+  (color-button :color/white attrs content))
+
 (defn underline-button [attrs & content]
   (color-button :color/white attrs
                 [:span.pxp3.border-bottom.border-teal.border-width-2 content]))
