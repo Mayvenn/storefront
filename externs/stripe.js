@@ -31,6 +31,12 @@ _StripePaymentRequest.canMakePayment = function() {};
 _StripePaymentRequest.then = function(callback) {};
 /** @return {!_StripePaymentRequest} */
 _StripePaymentRequest.on = function(name, callback) {};
+/** @return {!_StripePaymentRequest} */
+_StripePaymentRequest.update = function(obj) {};
 
 var _StripePaymentRequestEvent = {};
 _StripePaymentRequestEvent.updateWith = function(options) {};
+_StripePaymentRequestEvent.complete = function(errorStr) {};
+_StripePaymentRequestEvent.shippingAddress = {};
+_StripePaymentRequestEvent.shippingOption = {};
+_StripePaymentRequestEvent.payerEmail = "";
