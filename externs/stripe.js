@@ -31,3 +31,6 @@ _StripePaymentRequest.canMakePayment = function() {};
 _StripePaymentRequest.then = function(callback) {};
 /** @return {!_StripePaymentRequest} */
 _StripePaymentRequest.on = function(name, callback) {};
+
+var _StripePaymentRequestEvent = {};
+_StripePaymentRequestEvent.updateWith = function(options) {};
