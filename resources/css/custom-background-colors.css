@@ -3,6 +3,7 @@
 .bg-sms-green              { background-color: var(--sms-green); }
 .bg-light-orange           { background-color: var(--light-orange); }
 .bg-lavender               { background-color: var(--lavender); }
+.bg-aubergine              { background-color: var(--aubergine); }
 
 .bg-white                  { background-color: var(--white); }
 .bg-fate-white             { background-color: var(--fate-white); }
@@ -42,6 +43,7 @@
     --sms-green:              #1fcc23;
     --light-orange:           rgb(255, 248, 229);
     --lavender:               rgb(175, 159, 196);
+    --aubergine:              rgb(147, 18, 128);
 
     --lighten-5: rgba(255, 255, 255, .925);
     --clear: rgba(0, 0, 0, 0);
