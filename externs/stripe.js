@@ -40,3 +40,5 @@ _StripePaymentRequestEvent.complete = function(errorStr) {};
 _StripePaymentRequestEvent.shippingAddress = {};
 _StripePaymentRequestEvent.shippingOption = {};
 _StripePaymentRequestEvent.payerEmail = "";
+_StripePaymentRequestEvent.token = {};
+_StripePaymentRequestEvent.token.card = {};
