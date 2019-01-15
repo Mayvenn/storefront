@@ -130,6 +130,10 @@
   [data]
   (display-feature? data "adventure"))
 
+(defn adventure-control?
+  [data]
+  (display-feature? data "adventure-control"))
+
 (defn no-prices-on-picker?
   [data]
   (display-feature? data "no-prices-on-picker"))

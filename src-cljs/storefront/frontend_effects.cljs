@@ -160,6 +160,9 @@
 (defmethod perform-effects events/enable-feature [_ event {:keys [feature]} _ app-state]
   (handle-message events/determine-and-show-popup)
   (let [nav-event (get-in app-state keypaths/navigation-event)]
+    (when (and (routes/sub-page? [nav-event] [events/navigate-adventure])
+               (= "adventure-control" feature))
+      (page-not-found))
     (when (and (routes/sub-page? [nav-event] [events/navigate-install-home])
                (= "adventure" feature))
       (history/enqueue-redirect events/navigate-adventure-home))
