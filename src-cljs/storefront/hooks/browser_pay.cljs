@@ -149,8 +149,8 @@
          (conj (orders/product-items-for-shipment shipment)
                (merge (->> shipment :line-items (filter orders/shipping-item?) first)
                       {:product-name (:name selected-shipping-method)
-                       :sku (:sku selected-shipping-method)
-                       :unit-price (:price selected-shipping-method)
+                       :sku          (:sku selected-shipping-method)
+                       :unit-price   (:price selected-shipping-method)
                        :variant-name (:name selected-shipping-method)}))))
 
 (defn locally-update-shipping-methods [order shipping-methods selected-shipping-option]
@@ -214,30 +214,31 @@
            (clj->js {:paymentRequest payment-request})))
 
 (defn payment-request [order session-id utm-params states shipping-methods]
-  (let [modified-order (atom order)
-        request (js/stripe.paymentRequest
-                 (clj->js {:country           "US"
-                           :currency          "usd"
-                           :displayItems      (order->browser-pay-line-items order)
-                           :requestPayerName  true
-                           :requestPayerEmail true
-                           :requestPayerPhone true
-                           :requestShipping   true
-                           :shippingOptions   (waiter->browser-pay-shipping-methods shipping-methods)
-                           :total             {:label  "Order Total"
-                                               :amount (int (* 100 (:total order)))}}))]
+  (let [order-with-default-shipping (locally-update-shipping-methods order shipping-methods {:id (:sku (first shipping-methods))})
+        modified-order              (atom order-with-default-shipping)
+        request                     (js/stripe.paymentRequest
+                                     (clj->js {:country           "US"
+                                               :currency          "usd"
+                                               :displayItems      (order->browser-pay-line-items order-with-default-shipping)
+                                               :requestPayerName  true
+                                               :requestPayerEmail true
+                                               :requestPayerPhone true
+                                               :requestShipping   true
+                                               :shippingOptions   (waiter->browser-pay-shipping-methods shipping-methods)
+                                               :total             {:label  "Order Total"
+                                                                   :amount (int (* 100 (:total order-with-default-shipping)))}}))]
     (-> request
         (.canMakePayment)
         (.then (fn [ev]
                  (when ev
-                   (.mount (payment-request-button order shipping-methods request)
+                   (.mount (payment-request-button order-with-default-shipping shipping-methods request)
                            "#request-payment-button-container")))))
     (.on request "cancel" (fn [ev]
-                            (.update request (clj->js {:displayItems      (order->browser-pay-line-items order)
-                                                       :shippingOptions   (waiter->browser-pay-shipping-methods shipping-methods)
-                                                       :total             {:label  "Order Total"
-                                                                           :amount (int (* 100 (:total order)))}}))
-                            (reset! modified-order order)))
+                            (.update request (clj->js {:displayItems    (order->browser-pay-line-items order-with-default-shipping)
+                                                       :shippingOptions (waiter->browser-pay-shipping-methods shipping-methods)
+                                                       :total           {:label  "Order Total"
+                                                                         :amount (int (* 100 (:total order-with-default-shipping)))}}))
+                            (reset! modified-order order-with-default-shipping)))
     (.on request "shippingaddresschange" (fn [ev] (on-shipping-address-updated ev modified-order shipping-methods states)))
     (.on request "shippingoptionchange" (fn [ev] (on-shipping-option-updated ev modified-order shipping-methods states)))
-    (.on request "token" (fn [ev] (charge order session-id utm-params ev states)))))
+    (.on request "token" (fn [ev] (charge order-with-default-shipping session-id utm-params ev states)))))
