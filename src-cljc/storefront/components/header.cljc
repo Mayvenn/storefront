@@ -77,9 +77,9 @@
             [:div.border-gray {:key   idx
                                :class (when-not (zero? idx) "border-top")} row])])))))
 
-(defmulti account-info (fn [signed-in _ _ _] (::auth/as signed-in)))
+(defmulti account-info (fn [signed-in _ _ _ _] (::auth/as signed-in)))
 
-(defmethod account-info :user [_ {:keys [email expanded?]} the-ville? _]
+(defmethod account-info :user [_ {:keys [email expanded?]} the-ville? _ _]
   (ui/drop-down
    expanded?
    keypaths/account-menu-expanded
@@ -96,7 +96,7 @@
     [:div.border-top.border-gray
      (drop-down-row (utils/fake-href events/control-sign-out) "Sign out")]]))
 
-(defmethod account-info :stylist [_ {:keys [email expanded?]} _ vouchers?]
+(defmethod account-info :stylist [_ {:keys [email expanded?]} _ vouchers? store]
   (ui/drop-down
    expanded?
    keypaths/account-menu-expanded
@@ -113,14 +113,15 @@
 
     [:div.border-top.border-gray
      (drop-down-row (utils/route-to events/navigate-stylist-share-your-store) "Share Your store")]
-    [:div.border-top.border-gray
-     (drop-down-row stylists/community-url "Community")]
+    (when-not (:match-eligible store)
+      [:div.border-top.border-gray
+       (drop-down-row stylists/community-url "Community")])
     [:div.border-top.border-gray
      (drop-down-row (utils/route-to events/navigate-stylist-account-profile) "Account Settings")]
     [:div.border-top.border-gray
      (drop-down-row (utils/fake-href events/control-sign-out) "Sign out")]]))
 
-(defmethod account-info :guest [_ _ _ _]
+(defmethod account-info :guest [_ _ _ _ _]
   [:div.h6
    [:a.inherit-color (utils/route-to events/navigate-sign-in) "Sign in"]
    " | "
@@ -204,7 +205,7 @@
        [:div.left (store-info signed-in store)]
        [:div.right
         [:div.h6.my2.flex.items-center
-         (account-info signed-in user the-ville? vouchers?)
+         (account-info signed-in user the-ville? vouchers? store)
          [:div.pl2 (ui/shopping-bag {:style {:height (str ui/header-image-size "px") :width "28px"}
                                   :data-test "desktop-cart"}
                                  cart)]]]

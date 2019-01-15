@@ -92,7 +92,7 @@
         [:div.h7.medium "Store credit:"]
         [:div.teal.h5.bold (as-money store-credit)]])]))
 
-(defn ^:private stylist-actions [vouchers?]
+(defn ^:private stylist-actions [vouchers? store]
   (component/html
    [:div
     (when vouchers?
@@ -112,8 +112,9 @@
       (ui/underline-button (assoc (utils/route-to events/navigate-v2-stylist-dashboard-orders)
                                   :data-test "dashboard")
                            "Dashboard")
-      (ui/underline-button stylists/community-url
-                       "Community"))]]))
+      (when-not (:match-eligible store)
+        (ui/underline-button stylists/community-url
+                             "Community")))]]))
 
 (defn ^:private user-actions [the-ville?]
   (component/html
@@ -139,9 +140,9 @@
              :data-test "sign-up")
       "Sign up now, get offers!"]])))
 
-(defn ^:private actions-marquee [signed-in the-ville? vouchers?]
+(defn ^:private actions-marquee [signed-in the-ville? vouchers? store]
   (case (-> signed-in ::auth/as)
-    :stylist (stylist-actions vouchers?)
+    :stylist (stylist-actions vouchers? store)
     :user    (user-actions the-ville?)
     :guest   guest-actions))
 
@@ -249,7 +250,7 @@
      (store-info-marquee signed-in store)
      (account-info-marquee signed-in user)
      [:div.my3.dark-gray
-      (actions-marquee signed-in the-ville? vouchers?)]]
+      (actions-marquee signed-in the-ville? vouchers? store)]]
     [:div.px6
      (menu-area data)]
     (when (-> signed-in ::auth/at-all)
