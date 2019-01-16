@@ -1,25 +1,28 @@
 (ns adventure.time-frame
   (:require [storefront.events :as events]
             [storefront.component :as component]
-            [adventure.components.multi-prompt :as multi-prompt]))
+            [adventure.components.multi-prompt :as multi-prompt]
+            [storefront.components.ui :as ui]))
 
 (defn ^:private query [data]
-  {:prompt       "Question - When are you looking to get your hair done?"
-   :prompt-image "http://placekitten.com/300/200"
+  {:prompt       ["When are you looking to get"
+                  [:br]
+                  "your hair done?"]
+   :prompt-image "//ucarecdn.com/1b443614-0897-4549-8d54-33d798072f04/-/format/auto/-/quality/normal/aladdinMatchingOverlayImagePurpleAR203Lm3x.png"
    :data-test    "adventure-time-frame-choice"
    :header-data  {:current-step 1
                   :title        "Basic Info"
                   :back-link    events/navigate-adventure-home
                   :subtitle     "Step 1 of 3"}
-   :buttons      [{:text             "ASAP"
+   :buttons      [{:text             "As soon as possible"
                    :data-test-suffix "asap"
                    :value            {:time-frame "asap"}
                    :target           events/navigate-adventure-budget}
-                  {:text             "Within Weeks"
+                  {:text             "In the next few weeks"
                    :data-test-suffix "weeks"
                    :value            {:time-frame "weeks"}
                    :target           events/navigate-adventure-budget}
-                  {:text             "Within Months"
+                  {:text             "Months from now"
                    :data-test-suffix "months"
                    :value            {:time-frame "months"}
                    :target           events/navigate-adventure-budget}]})
