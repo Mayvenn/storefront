@@ -9,6 +9,7 @@
    "route"                       :street
    "locality"                    :city
    "administrative_area_level_1" :state
+   "sublocality_level_1"         :sublocality
    "postal_code"                 :zipcode})
 
 (defn short-names [component]
@@ -25,9 +26,11 @@
 
 (defn address [autocomplete]
   (when-let [place (js->clj (.getPlace autocomplete) :keywordize-keys true)]
-    (-> (extract-address place)
-        (#(assoc % :address1 (str (:street-number %) " " (:street %))))
-        (dissoc :street :street-number))))
+    (let [{:as extracted-address :keys [city sublocality state street street-number]} (extract-address place)]
+      (-> extracted-address
+          (assoc :address1 (str street-number " " street)
+                 :city     (or city sublocality))
+          (dissoc :street :street-number :sublocality)))))
 
 (defn insert []
   (when-not (.hasOwnProperty js/window "google")
