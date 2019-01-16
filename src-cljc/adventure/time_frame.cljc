@@ -5,9 +5,9 @@
             [storefront.components.ui :as ui]))
 
 (defn ^:private query [data]
-  {:prompt       ["When are you looking to get"
+  {:prompt       ["When would you like to get "
                   [:br]
-                  "your hair done?"]
+                  "your hair installed?"]
    :prompt-image "//ucarecdn.com/1b443614-0897-4549-8d54-33d798072f04/-/format/auto/-/quality/normal/aladdinMatchingOverlayImagePurpleAR203Lm3x.png"
    :data-test    "adventure-time-frame-choice"
    :header-data  {:current-step 1
