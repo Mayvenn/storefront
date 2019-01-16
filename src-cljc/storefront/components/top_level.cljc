@@ -33,6 +33,7 @@
             [adventure.what-next :as adventure.what-next]
             [adventure.match-stylist :as adventure.match-stylist]
             [adventure.shop-hair :as adventure.shop-hair]
+            [adventure.how-shop-hair :as adventure.how-shop-hair]
             [catalog.category :as category]
             [catalog.product-details :as product-details]
             [checkout.cart :as cart]
@@ -119,6 +120,7 @@
     events/navigate-adventure-what-next      adventure.what-next/built-component
     events/navigate-adventure-match-stylist  adventure.match-stylist/built-component
     events/navigate-adventure-shop-hair      adventure.shop-hair/built-component
+    events/navigate-adventure-how-shop-hair  adventure.how-shop-hair/built-component
     home/built-component))
 
 (defn sticky-promo-bar [data]

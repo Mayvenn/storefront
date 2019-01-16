@@ -29,7 +29,7 @@
                             :back-link    events/navigate-adventure-what-next}
      :button               {:text   "Next"
                             :data-test "shop-hair-button"
-                            :target events/navigate-adventure-match-stylist}}))
+                            :target events/navigate-adventure-how-shop-hair}}))
 
 (defn built-component
   [data opts]

@@ -45,7 +45,8 @@
    "/adventure/get-in-contact" (edn->bidi events/navigate-adventure-get-in-contact)
    "/adventure/what-next"      (edn->bidi events/navigate-adventure-what-next)
    "/adventure/match-stylist"  (edn->bidi events/navigate-adventure-match-stylist)
-   "/adventure/shop-hair"      (edn->bidi events/navigate-adventure-shop-hair)})
+   "/adventure/shop-hair"      (edn->bidi events/navigate-adventure-shop-hair)
+   "/adventure/how-shop-hair"  (edn->bidi events/navigate-adventure-how-shop-hair)})
 
 (def catalog-routes
   {["/categories/" [#"\d+" :catalog/category-id] "-" :page/slug]

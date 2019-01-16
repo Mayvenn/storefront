@@ -38,8 +38,8 @@
        (utils/route-to back-link)
        "←"]
       [:div.flex-auto.center
-       [:div.h6 subtitle]
-       [:div.h5.bold title]]
+       [:div.h5.bold title]
+       [:div.h6 subtitle]]
       [:div.col-1]]]]))
 
 (defn built-component

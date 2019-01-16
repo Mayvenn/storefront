@@ -460,6 +460,7 @@
 (defpath navigate-adventure-what-next)
 (defpath navigate-adventure-match-stylist)
 (defpath navigate-adventure-shop-hair)
+(defpath navigate-adventure-how-shop-hair)
 
 ;; Stripe Payment Button
 (defpath stripe-payment-request-button-inserted)
