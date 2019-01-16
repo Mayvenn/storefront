@@ -4,18 +4,18 @@
             [adventure.components.multi-prompt :as multi-prompt]))
 
 (defn ^:private query [data]
-  {:prompt       "What would you like to do next?"
-   :prompt-image "http://placekitten.com/300/200"
+  {:prompt       [:div.h3 "Choose your next step."]
+   :prompt-image "//ucarecdn.com/232d0b42-e889-4b2b-823f-86f9be0e2a0d/-/format/auto/-/quality/normal/"
    :data-test    "adventure-what-next-choice"
    :header-data  {:current-step 4 ;; Position in flow
                   :title        "Basic Info"
                   :back-link    events/navigate-adventure-get-in-contact
                   :subtitle     "Step 1 of 3"}
-   :buttons      [{:text             "Match with stylist"
+   :buttons      [{:text             "Match me with a certified stylist"
                    :data-test-suffix "match-stylist"
                    :value            {:flow "match-stylist"}
                    :target           events/navigate-adventure-match-stylist}
-                  {:text             "Shop hair"
+                  {:text             "Show me high quality hair"
                    :data-test-suffix "shop-hair"
                    :value            {:flow "shop-hair"}
                    :target           events/navigate-adventure-shop-hair}]})
