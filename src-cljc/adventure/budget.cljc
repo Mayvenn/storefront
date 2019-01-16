@@ -11,15 +11,15 @@
                   :current-step 2
                   :back-link    events/navigate-adventure-time-frame
                   :subtitle     "Step 1 of 3"}
-   :buttons      [{:text             "$"
+   :buttons      [{:text             "Less than $150"
                    :data-test-suffix "1"
                    :value            {:budget 1}
                    :target           events/navigate-adventure-get-in-contact}
-                  {:text             "$$"
+                  {:text             "$150 - $250"
                    :data-test-suffix "2"
                    :value            {:budget 2}
                    :target           events/navigate-adventure-get-in-contact}
-                  {:text             "$$$"
+                  {:text             "$250 and up"
                    :data-test-suffix "3"
                    :value            {:budget 3}
                    :target           events/navigate-adventure-get-in-contact}]})
