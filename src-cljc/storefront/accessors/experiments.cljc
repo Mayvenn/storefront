@@ -141,3 +141,7 @@
 (defn browser-pay?
   [data]
   (display-feature? data "browser-pay"))
+
+(defn spreedly?
+  [data]
+  (display-feature? data "spreedly"))

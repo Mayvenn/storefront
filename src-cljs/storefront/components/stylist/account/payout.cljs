@@ -1,11 +1,46 @@
 (ns storefront.components.stylist.account.payout
-  (:require [storefront.accessors.credit-cards :as cc]
+  (:require [om.core :as om]
+            [sablono.core :refer-macros [html]]
+            [storefront.accessors.credit-cards :as cc]
             [storefront.component :as component]
             [storefront.components.ui :as ui]
+            [storefront.hooks.spreedly :as spreedly]
+            [storefront.accessors.experiments :as experiments]
             [storefront.events :as events]
+            [storefront.effects :as effects]
+            [storefront.transitions :as transitions]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
+            [storefront.platform.messages :refer [handle-message]]
             [storefront.request-keys :as request-keys]))
+
+(defmethod effects/perform-effects events/spreedly-did-mount
+  [_ event _ _ app-state]
+  (spreedly/create-frame {:number-id "green-dot-card-number"
+                          :cvv-id    "green-dot-cvv"}
+                         events/spreedly-frame-initialized))
+
+(defmethod transitions/transition-state events/spreedly-frame-initialized
+  [_ event {:keys [frame]} app-state]
+  (assoc-in app-state keypaths/spreedly-frame frame))
+
+(defn credit-card-fields [data owner opts]
+  (reify
+    om/IDidMount
+    (did-mount [_]
+      (handle-message events/spreedly-did-mount))
+    om/IWillUnmount
+    (will-unmount [_]
+      (handle-message events/spreedly-did-unmount))
+    om/IRender
+    (render [_]
+      (html
+       [:div.mb2.clearfix
+        [:div#green-dot-card-number.col.col-8.h4.line-height-1.rounded-left.rounded.border.x-group-item.border-gray.p2.mb2
+         {:style {:height "42px"}}]
+        [:div#green-dot-cvv.col.col-4.h4.line-height-1.rounded.rounded-right.border.x-group-item.border-gray.p2.mb2
+         {:style {:height "42px"}}]]))))
+
 
 (def green-dot-keypath (partial conj keypaths/stylist-manage-account-green-dot-payout-attributes))
 
@@ -21,7 +56,7 @@
      :payout-timeframe (green-dot :payout-timeframe)}))
 
 (defn green-dot-component
-  [{:keys [green-dot focused field-errors]} owner opts]
+  [{:keys [green-dot focused field-errors spreedly?]} owner opts]
   (let [{:keys [first-name last-name card-number card-last-4 expiration-date card-selected-id payout-timeframe postalcode]} green-dot]
     (component/create
      [:div
@@ -56,18 +91,20 @@
                                :name      "green-dot-last-name"
                                :required  true
                                :value     last-name})
-         (ui/text-field {:data-test     "green-dot-card-number"
-                         :errors        (get field-errors ["payout-method" "card-number"])
-                         :id            "green-dot-card-number"
-                         :keypath       (green-dot-keypath :card-number)
-                         :focused       focused
-                         :label         "Card Number"
-                         :name          "green-dot-card-number"
-                         :required      true
-                         :max-length    19
-                         :auto-complete "off"
-                         :type          "tel"
-                         :value         (cc/format-cc-number card-number)})
+         (if spreedly?
+           (om/build credit-card-fields nil nil)
+           (ui/text-field {:data-test     "green-dot-card-number"
+                           :errors        (get field-errors ["payout-method" "card-number"])
+                           :id            "green-dot-card-number"
+                           :keypath       (green-dot-keypath :card-number)
+                           :focused       focused
+                           :label         "Card Number"
+                           :name          "green-dot-card-number"
+                           :required      true
+                           :max-length    19
+                           :auto-complete "off"
+                           :type          "tel"
+                           :value         (cc/format-cc-number card-number)}))
          (ui/text-field-group
           {:data-test     "green-dot-expiration-date"
            :errors        (get field-errors ["payout-method" "expiration-date"])
@@ -109,6 +146,7 @@
                          payout-methods
                          venmo-phone
                          paypal-email
+                         spreedly?
                          green-dot
                          address-1
                          address-2
@@ -160,7 +198,8 @@
          "green_dot" (component/build green-dot-component
                                       {:green-dot    green-dot
                                        :focused      focused
-                                       :field-errors field-errors}
+                                       :field-errors field-errors
+                                       :spreedly?    spreedly?}
                                       opts)
          "missing"   [:div]
 
@@ -281,4 +320,5 @@
    :phone          (get-in data (conj keypaths/stylist-manage-account :address :phone))
    :states         (map (juxt :name :id) (get-in data keypaths/states))
    :field-errors   (get-in data keypaths/field-errors)
-   :focused        (get-in data keypaths/ui-focus)})
+   :focused        (get-in data keypaths/ui-focus)
+   :spreedly?      (experiments/spreedly? data)})

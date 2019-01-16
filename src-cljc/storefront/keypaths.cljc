@@ -325,6 +325,8 @@
 (def faq (conj ui :faq))
 (def faq-expanded-section (conj faq :expanded-section))
 
+(def spreedly-frame [:spreedly-frame])
+
 (defn ->str [keypath]
   (string/join "-" (map name keypath)))
 

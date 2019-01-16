@@ -35,6 +35,7 @@
             [storefront.hooks.svg :as svg]
             [storefront.hooks.talkable :as talkable]
             [storefront.hooks.uploadcare :as uploadcare]
+            [storefront.hooks.spreedly :as spreedly]
             [storefront.hooks.wistia :as wistia]
             [storefront.keypaths :as keypaths]
             [storefront.platform.messages :as messages :refer [handle-later handle-message]]
@@ -348,6 +349,7 @@
         stylist-id (get-in app-state keypaths/store-stylist-id)]
     (when (and user-token stylist-id)
       (uploadcare/insert)
+      (spreedly/insert)
       (api/get-states (get-in app-state keypaths/api-cache))
       (api/get-stylist-account user-id user-token stylist-id))))
 
@@ -669,16 +671,42 @@
             (assoc :expiration-year year)
             (update :card-number (comp string/join filter-cc-number-format str)))))))
 
-(defmethod perform-effects events/control-stylist-account-commission-submit [_ _ args _ app-state]
-  (let [session-id       (get-in app-state keypaths/session-id)
-        stylist-id       (get-in app-state keypaths/store-stylist-id)
-        user-id          (get-in app-state keypaths/user-id)
-        user-token       (get-in app-state keypaths/user-token)
-        stylist-account  (-> (get-in app-state keypaths/stylist-manage-account)
-                             (update :green-dot-payout-attributes reformat-green-dot)
-                             maps/deep-remove-nils)]
+(defmethod perform-effects events/spreedly-frame-tokenized [_ _ {:keys [token payment]} _ app-state]
+  (let [session-id      (get-in app-state keypaths/session-id)
+        stylist-id      (get-in app-state keypaths/store-stylist-id)
+        user-id         (get-in app-state keypaths/user-id)
+        user-token      (get-in app-state keypaths/user-token)
+        stylist-account (-> (get-in app-state keypaths/stylist-manage-account)
+                            (assoc :green-dot-payout-attributes {:expiration-month (:month payment)
+                                                                 :expiration-year  (:year payment)
+                                                                 :card-token       token
+                                                                 :card-first-name  (:first_name payment)
+                                                                 :card-last-name   (:last_name payment)
+                                                                 :postalcode       (:zip payment)})
+                            maps/deep-remove-nils)]
     (api/update-stylist-account session-id user-id user-token stylist-id stylist-account
                                 events/api-success-stylist-account-commission)))
+
+(defmethod perform-effects events/control-stylist-account-commission-submit [_ _ args _ app-state]
+  (let [spreedly?       (experiments/spreedly? app-state)
+        session-id      (get-in app-state keypaths/session-id)
+        stylist-id      (get-in app-state keypaths/store-stylist-id)
+        user-id         (get-in app-state keypaths/user-id)
+        user-token      (get-in app-state keypaths/user-token)
+        stylist-account (-> (get-in app-state keypaths/stylist-manage-account)
+                            (update :green-dot-payout-attributes reformat-green-dot)
+                            maps/deep-remove-nils)]
+    (if spreedly?
+      (let [payout-attributes (get-in app-state (conj keypaths/stylist-manage-account :green-dot-payout-attributes))
+            [month year]      (parse-expiration (str (:expiration-date payout-attributes)))]
+        (spreedly/tokenize (get-in app-state keypaths/spreedly-frame)
+                           {:first-name (:card-first-name payout-attributes)
+                            :last-name  (:card-last-name payout-attributes)
+                            :exp-month  month
+                            :exp-year   year
+                            :zip        (:postalcode payout-attributes)}))
+      (api/update-stylist-account session-id user-id user-token stylist-id stylist-account
+                                  events/api-success-stylist-account-commission))))
 
 (defmethod perform-effects events/control-stylist-account-social-submit [_ _ _ _ app-state]
   (let [session-id      (get-in app-state keypaths/session-id)

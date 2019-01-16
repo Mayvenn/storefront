@@ -53,6 +53,11 @@
                           "production" "10003995-10005092"
                           "10003995-10005089"))
 
+(def spreedly-key
+  (case js/environment
+    "production" "4wcpGjpNjX7C3tEYUN9LJHZSdU2"
+    "cGBXs4oevFmesd7gWv0DY95KRE"))
+
 (def convert-goals
   (case js/environment
     "production"

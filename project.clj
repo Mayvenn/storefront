@@ -85,6 +85,7 @@
                           "externs/riskified.js"
                           "externs/stringer.js"
                           "externs/stripe.js"
+                          "externs/spreedly.js"
                           "externs/talkable.js"
                           "externs/uploadcare.js"
                           "externs/wistia.js"

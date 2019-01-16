@@ -468,3 +468,11 @@
 ;; Stripe Payment Button
 (defpath stripe-payment-request-button-inserted)
 (defpath stripe-payment-request-button-removed)
+
+
+;; Spreedly
+(defpath loaded-spreedly)
+(defpath spreedly-did-mount)
+(defpath spreedly-did-unmount)
+(defpath spreedly-frame-initialized)
+(defpath spreedly-frame-tokenized)
