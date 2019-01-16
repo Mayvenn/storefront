@@ -32,6 +32,11 @@
       (empty? year) (str month)
       :else (str month " / " year))))
 
+(defn pad-year [y]
+  (if (= 2 (count y))
+    (str "20" y)
+    y))
+
 (def credit-card-brand->abbrev
   {"Discover"         "DISC "
    "Visa"             "VISA "

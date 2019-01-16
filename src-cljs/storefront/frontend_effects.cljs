@@ -4,7 +4,7 @@
             [clojure.string :as string]
             [spice.maps :as maps]
             [storefront.accessors.auth :as auth]
-            [storefront.accessors.credit-cards :refer [filter-cc-number-format parse-expiration]]
+            [storefront.accessors.credit-cards :refer [filter-cc-number-format parse-expiration pad-year]]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.pixlee :as accessors.pixlee]
@@ -703,7 +703,7 @@
                            {:first-name (:card-first-name payout-attributes)
                             :last-name  (:card-last-name payout-attributes)
                             :exp-month  month
-                            :exp-year   year
+                            :exp-year   (pad-year year)
                             :zip        (:postalcode payout-attributes)}))
       (api/update-stylist-account session-id user-id user-token stylist-id stylist-account
                                   events/api-success-stylist-account-commission))))
