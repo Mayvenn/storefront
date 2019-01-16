@@ -24,9 +24,10 @@
     (when header-data
       (header/built-component header-data nil))
     [:div.flex.items-center.bold
-     {:style {:height           "246px"
-              :background-size  "cover"
-              :background-image (str "url('"prompt-image "')")}}
+     {:style {:height              "246px"
+              :background-size     "cover"
+              :background-position "center"
+              :background-image    (str "url('"prompt-image "')")}}
      [:div.col-12.p5 prompt]]
     [:div.px5.py1
      {:data-test data-test}
