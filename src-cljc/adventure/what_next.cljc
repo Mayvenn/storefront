@@ -9,7 +9,7 @@
    :data-test    "adventure-what-next-choice"
    :header-data  {:current-step 4 ;; Position in flow
                   :title        "Basic Info"
-                  :back-link    events/navigate-adventure-get-in-contact
+                  :back-link    events/navigate-adventure-budget
                   :subtitle     "Step 1 of 3"}
    :buttons      [{:text             "Match me with a certified stylist"
                    :data-test-suffix "match-stylist"
