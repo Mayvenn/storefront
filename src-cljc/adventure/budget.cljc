@@ -4,8 +4,10 @@
             [adventure.components.multi-prompt :as multi-prompt]))
 
 (defn ^:private query [data]
-  {:prompt       "How much do you usually spend on 3 bundles?"
-   :prompt-image "http://placekitten.com/300/200"
+  {:prompt      ["How much do you usually"
+                 [:br]
+                 " spend on 3 bundles of hair?"]
+   :prompt-image "//ucarecdn.com/454b7522-de21-4f7c-a6cd-0288574ae672/-/format/auto/-/quality/normal/aladdinMatchingOverlayImagePurpleBR203Lm3x.png"
    :data-test    "adventure-budget-choice"
    :header-data  {:title        "Basic Info"
                   :current-step 2
