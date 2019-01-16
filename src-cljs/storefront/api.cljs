@@ -691,6 +691,8 @@
    request-keys/update-addresses
    {:params (-> order
                 (select-keys [:number :token :billing-address :shipping-address])
+                (update :shipping-address dissoc :latitude :longitude)
+                (update :billing-address dissoc :latitude :longitude)
                 (assoc :session-id session-id))
     :handler #(messages/handle-message events/api-success-update-order-update-address
                                        {:order %
@@ -703,6 +705,8 @@
    request-keys/update-addresses
    {:params (-> order
                 (select-keys [:number :token :email :billing-address :shipping-address])
+                (update :shipping-address dissoc :latitude :longitude)
+                (update :billing-address dissoc :latitude :longitude)
                 (assoc :session-id session-id))
     :handler #(messages/handle-message events/api-success-update-order-update-guest-address
                                        {:order %
