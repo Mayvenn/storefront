@@ -157,7 +157,7 @@
                                          (.-selectedIndex elem))]
        (.-value subelem))))
 
-(defn ^:private field-error-message [error data-test]
+(defn field-error-message [error data-test]
   (when error
     [:div.red.my1.h6.center.medium
      {:data-test (str data-test "-error")}
@@ -184,7 +184,7 @@
     error?                   (add-classes "red")
     (and value? label) (add-classes "has-value")))
 
-(defn ^:private plain-text-field
+(defn plain-text-field
   [label keypath value error? {:keys [wrapper-class wrapper-style id hint focused] :as input-attributes}]
   (let [input-attributes (dissoc input-attributes :wrapper-class :hint :focused)
         hint?            (seq hint)

@@ -459,8 +459,11 @@
 (defpath navigate-adventure-get-in-contact)
 (defpath navigate-adventure-what-next)
 (defpath navigate-adventure-match-stylist)
+(defpath navigate-adventure-find-your-stylist)
 (defpath navigate-adventure-shop-hair)
 (defpath navigate-adventure-how-shop-hair)
+
+(defpath adventure-zipcode-component-mounted)
 
 ;; Stripe Payment Button
 (defpath stripe-payment-request-button-inserted)

@@ -38,15 +38,16 @@
    "/_style/carousel"        (edn->bidi events/navigate-style-guide-carousel)})
 
 (def install-routes
-  {"/install"                  (edn->bidi events/navigate-install-home)
-   "/adventure/home"           (edn->bidi events/navigate-adventure-home)
-   "/adventure/time-frame"     (edn->bidi events/navigate-adventure-time-frame)
-   "/adventure/budget"         (edn->bidi events/navigate-adventure-budget)
-   "/adventure/get-in-contact" (edn->bidi events/navigate-adventure-get-in-contact)
-   "/adventure/what-next"      (edn->bidi events/navigate-adventure-what-next)
-   "/adventure/match-stylist"  (edn->bidi events/navigate-adventure-match-stylist)
-   "/adventure/shop-hair"      (edn->bidi events/navigate-adventure-shop-hair)
-   "/adventure/how-shop-hair"  (edn->bidi events/navigate-adventure-how-shop-hair)})
+  {"/install"                     (edn->bidi events/navigate-install-home)
+   "/adventure/home"              (edn->bidi events/navigate-adventure-home)
+   "/adventure/time-frame"        (edn->bidi events/navigate-adventure-time-frame)
+   "/adventure/budget"            (edn->bidi events/navigate-adventure-budget)
+   "/adventure/get-in-contact"    (edn->bidi events/navigate-adventure-get-in-contact)
+   "/adventure/what-next"         (edn->bidi events/navigate-adventure-what-next)
+   "/adventure/match-stylist"     (edn->bidi events/navigate-adventure-match-stylist)
+   "/adventure/find-your-stylist" (edn->bidi events/navigate-adventure-find-your-stylist)
+   "/adventure/how-shop-hair"     (edn->bidi events/navigate-adventure-how-shop-hair)
+   "/adventure/shop-hair"         (edn->bidi events/navigate-adventure-shop-hair)})
 
 (def catalog-routes
   {["/categories/" [#"\d+" :catalog/category-id] "-" :page/slug]

@@ -18,7 +18,7 @@
                             :back-link    events/navigate-adventure-what-next}
      :button               {:text   "Next"
                             :value  nil
-                            :target nil}}))
+                            :target events/navigate-adventure-find-your-stylist}}))
 
 
 (defn built-component
