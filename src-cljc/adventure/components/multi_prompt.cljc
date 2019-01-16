@@ -32,12 +32,13 @@
     [:div.px5.py1
      {:data-test data-test}
      (for [{:as button :keys [text value target data-test-suffix]} buttons]
-       (let [button-component (if (= :teal (:color button))
-                                teal-rect-button
-                                white-rect-button)]
-         [:div.p1 (button-component
-                (merge
-                 {:data-test (str data-test "-" data-test-suffix)}
-                 (utils/fake-href events/control-adventure {:destination target
-                                                            :choice      value}))
-                text)]))]]))
+       (let [button-component (if (= :teal (:color button)) teal-rect-button
+                                  white-rect-button)
+             button-data-test (str data-test "-" data-test-suffix)]
+         [:div.p1 {:key button-data-test}
+          (button-component
+           (merge
+            {:data-test button-data-test}
+            (utils/fake-href events/control-adventure {:destination target
+                                                       :choice      value}))
+           text)]))]]))
