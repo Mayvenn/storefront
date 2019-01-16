@@ -44,9 +44,9 @@
                       {:address (address autocomplete)
                        :address-keypath address-keypath})))
 
-(defn attach [address-elem address-keypath]
+(defn attach [completion-type address-elem address-keypath]
   (when (.hasOwnProperty js/window "google")
-    (let [options      (clj->js {"types" ["address"] "componentRestrictions" {"country" "us"}})
+    (let [options      (clj->js {"types" [completion-type] "componentRestrictions" {"country" "us"}})
           elem         (.getElementById js/document (name address-elem))
           autocomplete (google.maps.places.Autocomplete. elem options)]
       (.addListener autocomplete
