@@ -590,34 +590,7 @@
                                      (assoc-in keypaths/navigation-message nav-message))]
         ((server-render-pages nav-event generic-server-render) render-ctx data request nav-args)))))
 
-(defn wrap-freeinstall-is-for-install
-  "Handle only requests for freeinstall
 
-   Verify that the routed pages exist, and redirect root to a subpage."
-  [h environment]
-  (fn [{:keys [subdomains nav-message query-params] :as req}]
-    (let [on-install-page?          (routes/sub-page? nav-message [events/navigate-install])
-          on-root-path?             (= events/navigate-home (get nav-message 0))
-          on-freeinstall-subdomain? (= config/install-subdomain (last subdomains))
-          is-www-prefixed?          (= ["www" config/install-subdomain]
-                                       (map (comp string/lower-case str) subdomains))
-          not-found                 #(-> views/not-found
-                                         ->html-resp
-                                         (util.response/status 404))
-          is-adventure?             (routes/sub-page? nav-message [events/navigate-adventure])
-          is-cart?                  (routes/sub-page? nav-message [events/navigate-cart])]
-      (cond
-        (and on-install-page?
-             (not on-freeinstall-subdomain?)) (not-found)
-        (not on-freeinstall-subdomain?)       nil ;; defer handling elsewhere for non-freeinstall domains
-        is-www-prefixed?                      (util.response/redirect (store-url "freeinstall" environment req))
-        (or on-install-page?
-            is-adventure?
-            is-cart?)                         (h req)
-        on-root-path?                         (util.response/redirect (routes/path-for events/navigate-install-home
-                                                                                       {:query-params query-params})
-                                                                      :moved-permanently)
-        :else                                 (not-found)))))
 
 (defn wrap-filter-params
   "Technically an invalid value, but query-params could generate this value
@@ -679,6 +652,41 @@
       (wrap-fetch-order (:storeback-config ctx))
       (wrap-cookies (storefront-site-defaults (:environment ctx)))))
 
+(defn wrap-freeinstall-is-for-install
+  "Handle only requests for freeinstall
+
+   Verify that the routed pages exist, and redirect root to a subpage."
+  [h ctx environment]
+  (fn [{:keys [subdomains nav-message query-params] :as req}]
+    (let [on-install-page?          (routes/sub-page? nav-message [events/navigate-install])
+          on-root-path?             (= events/navigate-home (get nav-message 0))
+          on-freeinstall-subdomain? (= config/install-subdomain (last subdomains))
+          is-www-prefixed?          (= ["www" config/install-subdomain]
+                                       (map (comp string/lower-case str) subdomains))
+          not-found                 #(-> views/not-found
+                                         ->html-resp
+                                         (util.response/status 404))
+          is-adventure?             (routes/sub-page? nav-message [events/navigate-adventure])
+          is-cart?                  (= (first nav-message) events/navigate-cart)]
+      (cond
+        (and on-install-page?
+             (not on-freeinstall-subdomain?)) (not-found)
+        (not on-freeinstall-subdomain?)       nil ;; defer handling elsewhere for non-freeinstall domains
+        is-www-prefixed?                      (util.response/redirect (store-url "freeinstall" environment req))
+        (or on-install-page?
+            is-adventure?)                    (h req)
+
+        is-cart?                              ((-> h
+                                                   (wrap-fetch-store (:storeback-config ctx))
+                                                   (wrap-fetch-order (:storeback-config ctx))
+                                                   (wrap-cookies (storefront-site-defaults (:environment ctx))))
+                                               req)
+
+        on-root-path? (util.response/redirect (routes/path-for events/navigate-install-home
+                                                               {:query-params query-params})
+                                              :moved-permanently)
+        :else         (not-found)))))
+
 (defn create-handler
   ([] (create-handler {}))
   ([{:keys [logger exception-handler environment storeback-config contentful] :as ctx}]
@@ -704,7 +712,7 @@
                            (-> (install-routes ctx)
                                (wrap-defaults (storefront-site-defaults environment))
                                (wrap-state ctx)
-                               (wrap-freeinstall-is-for-install environment))
+                               (wrap-freeinstall-is-for-install ctx environment))
                            (routes-with-orders ctx)
                            (route/not-found views/not-found))
                    (wrap-resource "public")
