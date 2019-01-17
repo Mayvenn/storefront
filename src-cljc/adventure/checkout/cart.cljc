@@ -42,7 +42,8 @@
    [storefront.platform.component-utils :as utils]
    [storefront.platform.messages :as messages]
    [storefront.request-keys :as request-keys]
-   [storefront.transitions :as transitions]))
+   [storefront.transitions :as transitions]
+   [storefront.components.ui :as ui]))
 
 (defn display-adjustable-line-items
   [recently-added-skus line-items skus update-line-item-requests delete-line-item-requests]
@@ -111,10 +112,10 @@
                                                               {:variant line-item}))]
         [:div.h5 {:data-test (str "line-item-price-ea-" sku-id)} (mf/as-money-without-cents price) " ea"]]]]]))
 
-(defn ^:private non-adjustable-line-item
+(defn ^:private freeinstall-line-item
   [freeinstall-just-added? {:keys [removing? id title detail price remove-event thumbnail-image-fn]}]
   [:div.pt1.pb2.clearfix
-   [:div.left.ml1.pr3
+   [:div.left.ml1.pr3.mtp4
     (css-transitions/transition-background-color
      freeinstall-just-added?
      [:div.flex.justify-center.items-center
@@ -122,24 +123,17 @@
                :width  "79px"}}
       (thumbnail-image-fn 75)])]
    [:div
-    [:a.medium.titleize.h5
+    [:div.medium.titleize.h5
      {:data-test (str "line-item-title-" id)}
      title]
-    [:div.h6
+    [:div.h6.flex.items-center.justify-between
      [:div.flex.justify-between.mt1
       [:div {:data-test (str "line-item-detail-" id)}
-       detail]
-      [:div.flex.items-center.justify-between
-       (if removing?
-         [:div.h3 {:style {:width "1.2em"}} ui/spinner]
-         [:a.gray.medium
-          (merge {:data-test (str "line-item-remove-" id)}
-                 (apply utils/fake-href remove-event))
-          (svg/trash-can {:height "1.1em"
-                          :width  "1.1em"
-                          :class  "stroke-dark-gray"})])]]
+       detail]]
      [:div.h5.right {:data-test (str "line-item-price-ea-" id)} (some-> price mf/as-money)]]]])
 
+
+;; https:
 (defn full-component [{:keys [order
                               skus
                               promotion-banner
@@ -158,62 +152,69 @@
                               freeinstall-just-added?
                               cart-summary]} owner _]
   (component/create
-   [:div.container.p2
-    (component/build promotion-banner/sticky-component promotion-banner nil)
+   [:div.container
+    [:div.flex.items-center.bold
+     {:style {:height              "246px"
+              :padding-top         "43px"
+              :background-size     "cover"
+              :background-position "center"
+              :background-image    "url('//ucarecdn.com/588d726c-1a23-43bf-b3fb-88c93dc8d2b2/-/format/auto/-/quality/normal/aladdinMatchingCelebratoryOverlayImagePurpleR203Lm3x.png')"}}
+     [:div.col.col-12.center.white
+      [:div.h5.light "This order qualifies for a"]
+      [:div.h1.shout "free install"]
+      [:div.h5.light "from a Mayvenn Stylist near you"]]]
 
-    (component/build call-out/component call-out nil)
+    [:div.p2
+     [:div.clearfix.mxn3
+      [:div.col-on-tb-dt.col-6-on-tb-dt.px3
+       {:data-test "cart-line-items"}
+       (display-adjustable-line-items recently-added-skus
+                                      line-items
+                                      skus
+                                      update-line-item-requests
+                                      delete-line-item-requests)
+       (freeinstall-line-item freeinstall-just-added? freeinstall-line-item-data)
 
-    [:div.clearfix.mxn3
-     [:div.col-on-tb-dt.col-6-on-tb-dt.px3
-      {:data-test "cart-line-items"}
-      (display-adjustable-line-items recently-added-skus
-                                     line-items
-                                     skus
-                                     update-line-item-requests
-                                     delete-line-item-requests)
-      (when freeinstall-line-item-data
-        (non-adjustable-line-item freeinstall-just-added? freeinstall-line-item-data))
+       (component/build suggestions/component suggestions nil)]
 
-      (component/build suggestions/component suggestions nil)]
+      [:div.col-on-tb-dt.col-6-on-tb-dt.px3
 
-     [:div.col-on-tb-dt.col-6-on-tb-dt.px3
+       (component/build adventure-cart-summary/component cart-summary nil)
 
-      (component/build adventure-cart-summary/component cart-summary nil)
-
-      (ui/teal-button {:spinning? false
-                       :disabled? updating?
-                       :on-click  (utils/send-event-callback events/control-checkout-cart-submit)
-                       :data-test "start-checkout-button"}
-                      [:div "Check out"])
-
-      [:div.h5.black.center.py1.flex.justify-around.items-center
-       [:div.flex-grow-1.border-bottom.border-light-gray]
-       [:div.mx2 "or"]
-       [:div.flex-grow-1.border-bottom.border-light-gray]]
-
-      [:div.pb2
-       (ui/aqua-button {:on-click  (utils/send-event-callback events/control-checkout-cart-paypal-setup)
-                        :spinning? redirecting-to-paypal?
+       (ui/teal-button {:spinning? false
                         :disabled? updating?
-                        :data-test "paypal-checkout"}
-                       [:div
-                        "Check out with "
-                        [:span.medium.italic "PayPal™"]])]
+                        :on-click  (utils/send-event-callback events/control-checkout-cart-submit)
+                        :data-test "start-checkout-button"}
+                       [:div "Check out"])
 
-      #?@(:cljs [(when show-browser-pay? (payment-request-button/built-component nil {}))])
+       [:div.h5.black.center.py1.flex.justify-around.items-center
+        [:div.flex-grow-1.border-bottom.border-light-gray]
+        [:div.mx2 "or"]
+        [:div.flex-grow-1.border-bottom.border-light-gray]]
 
-      (when share-carts?
-        [:div.py2
-         [:div.h6.center.pt2.black.bold "Is this bag for a customer?"]
-         (ui/navy-ghost-button {:on-click  (utils/send-event-callback events/control-cart-share-show)
-                                :class     "border-width-2 border-navy"
-                                :spinning? requesting-shared-cart?
-                                :data-test "share-cart"}
-                          [:div.flex.items-center.justify-center.bold
-                           (svg/share-arrow {:class  "stroke-navy mr1 fill-navy"
-                                             :width  "24px"
-                                             :height "24px"})
-                           "Share your bag"])])]]]))
+       [:div.pb2
+        (ui/aqua-button {:on-click  (utils/send-event-callback events/control-checkout-cart-paypal-setup)
+                         :spinning? redirecting-to-paypal?
+                         :disabled? updating?
+                         :data-test "paypal-checkout"}
+                        [:div
+                         "Check out with "
+                         [:span.medium.italic "PayPal™"]])]
+
+       #?@(:cljs [(when show-browser-pay? (payment-request-button/built-component nil {}))])
+
+       (when share-carts?
+         [:div.py2
+          [:div.h6.center.pt2.black.bold "Is this bag for a customer?"]
+          (ui/navy-ghost-button {:on-click  (utils/send-event-callback events/control-cart-share-show)
+                                 :class     "border-width-2 border-navy"
+                                 :spinning? requesting-shared-cart?
+                                 :data-test "share-cart"}
+                                [:div.flex.items-center.justify-center.bold
+                                 (svg/share-arrow {:class  "stroke-navy mr1 fill-navy"
+                                                   :width  "24px"
+                                                   :height "24px"})
+                                 "Share your bag"])])]]]]))
 
 (defn empty-component [{:keys [promotions aladdin-or-phoenix?]} owner _]
   (component/create
@@ -318,14 +319,32 @@
 (defn built-component [data opts]
   (component/build component (query data) opts))
 
+;; TODO: Adjust positioning of X?
+(defn header [{:keys [item-count]} owner opts]
+  (component/create
+   [:div.flex.flex-column.center.bg-light-lavender.white
+    [:div.flex.items-center
+     {:style {:height "75px"}}
+     [:div.col-1]
+     [:div.flex-auto.center
+      [:div.h5.medium "Your Bag"]
+      [:div.h6 (ui/pluralize-with-amount item-count "item")]]
+     [:div.col-1.flex.justify-start.items-start
+      {:style {:height "46px"}}
+      [:div.mr2
+       (svg/simple-x {:width        "20px"
+                      :height       "20px"
+                      :class        "stroke-white"
+                      :stroke-width "6"})]]]]))
+
+;; TODO, Make increment button work
+(defn header-query [data]
+  {:item-count (orders/product-quantity (get-in data keypaths/order))} )
+
 (defn layout [data nav-event]
   [:div.flex.flex-column {:style {:min-height    "100vh"
                                   :margin-bottom "-1px"}}
-   (stylist-banner/built-component data nil)
-   (promotion-banner/built-component data nil)
-   #?(:cljs (popup/built-component (popup/query data) nil))
-
-   (header/built-component data nil)
+   (component/build header (header-query data) nil)
    [:div.relative.flex.flex-column.flex-auto
     (flash/built-component data nil)
 

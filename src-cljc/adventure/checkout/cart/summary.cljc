@@ -30,30 +30,6 @@
     [:td.pyp1.right-align.medium
      (mf/as-money-or-free amount)]]))
 
-(defn promo-entry
-  [{:keys [focused coupon-code field-errors updating? applying? error-message] :as promo-data}]
-  [:form.mt2
-   {:on-submit (utils/send-event-callback events/control-cart-update-coupon)}
-   (ui/input-group
-    {:keypath       keypaths/cart-coupon-code
-     :wrapper-class "flex-grow-5 clearfix"
-     :class         "h6"
-     :data-test     "promo-code"
-     :focused       focused
-     :label         "Promo code"
-     :value         coupon-code
-     :errors        (when (get field-errors ["promo-code"])
-                      [{:long-message error-message
-                        :path         ["promo-code"]}])
-     :data-ref      "promo-code"}
-    {:ui-element ui/teal-button
-     :content    "Apply"
-     :args       {:on-click   (utils/send-event-callback events/control-cart-update-coupon)
-                  :class      "flex justify-center items-center"
-                  :size-class "flex-grow-3"
-                  :data-test  "cart-apply-promo"
-                  :disabled?  updating? :spinning?  applying?}})])
-
 (defn non-zero-adjustment? [{:keys [price coupon-code]}]
   (or (not (= price 0))
       (#{"amazon" "freeinstall" "install"} coupon-code)))
@@ -98,12 +74,6 @@
        (when shipping-cost
          (summary-row {:class "black"} "Shipping" shipping-cost))
 
-       (when (orders/no-applied-promo? order)
-         [:tr.h5
-          [:td
-           {:col-span "2"}
-           (promo-entry promo-data)]])
-
        (for [[i {:keys [name price coupon-code] :as adjustment}] (map-indexed vector adjustments-including-tax)]
          (when (non-zero-adjustment? adjustment)
            (summary-row
@@ -113,13 +83,7 @@
              (when (= "Bundle Discount" name)
                (svg/discount-tag {:class  "mxnp6"
                                   :height "2em" :width "2em"}))
-             (orders/display-adjustment-name name)
-             (when coupon-code
-               [:a.ml1.h6.gray.flex.items-center
-                (merge {:data-test "cart-remove-promo"}
-                       (utils/fake-href events/control-checkout-remove-promotion
-                                        {:code coupon-code}))
-                (svg/close-x {:class "stroke-white fill-gray"})])]
+             (orders/display-adjustment-name name)]
             (if (and freeinstall-line-item-data
                      (= "freeinstall" coupon-code))
               (- 0 (:price freeinstall-line-item-data))
