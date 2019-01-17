@@ -17,12 +17,14 @@
     [new-key (({:city :long_name} new-key :short_name) component)]))
 
 (defn extract-address [place]
-  (let [{:keys [lat lng]} (-> place :geometry :location .toJSON (js->clj :keywordize-keys true))]
-    (->> place
-         :address_components
-         (map short-names)
-         (into {:latitude  lat
-                :longitude lng}))))
+  (when-let [location (some-> place :geometry :location)]
+    (let [{:keys [lat lng]} (js->clj (.toJSON location)
+                                     :keywordize-keys true)]
+      (->> place
+           :address_components
+           (map short-names)
+           (into {:latitude  lat
+                  :longitude lng})))))
 
 (defn address [autocomplete]
   (when-let [place (js->clj (.getPlace autocomplete) :keywordize-keys true)]
