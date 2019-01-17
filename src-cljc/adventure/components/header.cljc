@@ -26,7 +26,7 @@
              :height "6px"}}]])
 
 (defn component
-  [{:keys [current-step back-link title subtitle]} _ _]
+  [{:keys [current-step back-link title subtitle shopping-bag?]} _ _]
   (component/create
    [:div.absolute.top-0.left-0.right-0
     [:div.flex.flex-column
@@ -40,7 +40,10 @@
       [:div.flex-auto.center
        [:div.h5.bold title]
        [:div.h6 subtitle]]
-      [:div.col-1]]]]))
+      [:div.col-1
+       (when shopping-bag? (ui/ucare-img
+                            {:width "20px"}
+                            "02f9e7fb-510f-458e-8be7-090399aad4de"))]]]]))
 
 (defn built-component
   [data opts]

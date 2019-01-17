@@ -23,10 +23,11 @@
                      "to choose from."]
      :prompt-image  "//ucarecdn.com/ffe3011a-1cae-494a-a806-eac94f618374/-/format/auto/bg.png"
      :data-test     "select-new-look-choice"
-     :header-data   {:title        "The New You"
-                     :current-step 3
-                     :back-link    events/navigate-adventure-how-shop-hair
-                     :subtitle     (str "Step " (if-not hair-flow? 2 3) " of 3")}
+     :header-data   {:title         "The New You"
+                     :current-step  3
+                     :shopping-bag? true
+                     :back-link     events/navigate-adventure-how-shop-hair
+                     :subtitle      (str "Step " (if-not hair-flow? 2 3) " of 3")}
      :copy          #?(:cljs (-> config/pixlee :copy :adventure)
                        :clj nil)
      :deals?        false
