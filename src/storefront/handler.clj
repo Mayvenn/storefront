@@ -604,16 +604,20 @@
           not-found                 #(-> views/not-found
                                          ->html-resp
                                          (util.response/status 404))
-          is-adventure?             (routes/sub-page? nav-message [events/navigate-adventure])]
+          is-adventure?             (routes/sub-page? nav-message [events/navigate-adventure])
+          is-cart?                  (routes/sub-page? nav-message [events/navigate-cart])]
       (cond
-        (and (not on-freeinstall-subdomain?) on-install-page?) (not-found)
-        (not on-freeinstall-subdomain?)                        nil ;; defer handling elsewhere for non-freeinstall domains
-        is-www-prefixed?                                       (util.response/redirect (store-url "freeinstall" environment req))
-        (or on-install-page? is-adventure?)                    (h req)
-        on-root-path?                                          (util.response/redirect (routes/path-for events/navigate-install-home
-                                                                                                        {:query-params query-params})
-                                                                                       :moved-permanently)
-        :else                                                  (not-found)))))
+        (and on-install-page?
+             (not on-freeinstall-subdomain?)) (not-found)
+        (not on-freeinstall-subdomain?)       nil ;; defer handling elsewhere for non-freeinstall domains
+        is-www-prefixed?                      (util.response/redirect (store-url "freeinstall" environment req))
+        (or on-install-page?
+            is-adventure?
+            is-cart?)                         (h req)
+        on-root-path?                         (util.response/redirect (routes/path-for events/navigate-install-home
+                                                                                       {:query-params query-params})
+                                                                      :moved-permanently)
+        :else                                 (not-found)))))
 
 (defn wrap-filter-params
   "Technically an invalid value, but query-params could generate this value

@@ -165,7 +165,7 @@
       [:footer (footer/built-component data nil)]]]))
 
 (defn top-level-component [data owner opts]
-  (let [nav-event      (get-in data keypaths/navigation-event)]
+  (let [nav-event (get-in data keypaths/navigation-event)]
     (component/create
      (cond
        #?@(:cljs

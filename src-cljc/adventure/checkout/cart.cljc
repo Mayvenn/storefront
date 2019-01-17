@@ -1,4 +1,4 @@
-(ns checkout.cart
+(ns adventure.checkout.cart
   (:require
    #?@(:cljs [[storefront.components.popup :as popup]
               [storefront.components.order-summary :as summary]
@@ -13,8 +13,8 @@
    [cemerick.url :refer [url-encode]]
    [checkout.accessors.vouchers :as vouchers]
    [checkout.call-out :as call-out]
-   [checkout.cart.items :as cart-items]
-   [checkout.cart.summary :as cart-summary]
+   [adventure.checkout.cart.items :as adventure-cart-items]
+   [adventure.checkout.cart.summary :as adventure-cart-summary]
    [checkout.header :as header]
    [checkout.suggestions :as suggestions]
    [spice.core :as spice]
@@ -42,8 +42,7 @@
    [storefront.platform.component-utils :as utils]
    [storefront.platform.messages :as messages]
    [storefront.request-keys :as request-keys]
-   [storefront.transitions :as transitions]
-   [adventure.checkout.cart :as adventure-cart]))
+   [storefront.transitions :as transitions]))
 
 (defn display-adjustable-line-items
   [recently-added-skus line-items skus update-line-item-requests delete-line-item-requests]
@@ -179,7 +178,7 @@
 
      [:div.col-on-tb-dt.col-6-on-tb-dt.px3
 
-      (component/build cart-summary/component cart-summary nil)
+      (component/build adventure-cart-summary/component cart-summary nil)
 
       (ui/teal-button {:spinning? false
                        :disabled? updating?
@@ -259,91 +258,6 @@
                                        (facets/get-color facets)
                                        :option/name)}))
 
-(defmethod effects/perform-effects events/control-cart-update-coupon
-  [_ _ _ _ app-state]
-  #?(:cljs
-     (let [coupon-code (get-in app-state keypaths/cart-coupon-code)]
-       (when-not (empty? coupon-code)
-         (api/add-promotion-code (get-in app-state keypaths/session-id)
-                                 (get-in app-state keypaths/order-number)
-                                 (get-in app-state keypaths/order-token)
-                                 coupon-code
-                                 false)))))
-
-(defmethod effects/perform-effects events/control-cart-share-show
-  [_ _ _ _ app-state]
-  #?(:cljs
-     (api/create-shared-cart (get-in app-state keypaths/session-id)
-                             (get-in app-state keypaths/order-number)
-                             (get-in app-state keypaths/order-token))))
-
-(defmethod effects/perform-effects events/control-cart-remove
-  [_ event variant-id _ app-state]
-  #?(:cljs
-     (api/delete-line-item (get-in app-state keypaths/session-id) (get-in app-state keypaths/order) variant-id)))
-
-(defmethod effects/perform-effects events/control-cart-line-item-inc
-  [_ event {:keys [variant]} _ app-state]
-  #?(:cljs
-     (let [sku      (get (get-in app-state keypaths/v2-skus) (:sku variant))
-           order    (get-in app-state keypaths/order)
-           quantity 1]
-       (api/add-sku-to-bag (get-in app-state keypaths/session-id)
-                           {:sku      sku
-                            :token    (:token order)
-                            :number   (:number order)
-                            :quantity quantity}
-                           #(messages/handle-message events/api-success-add-sku-to-bag
-                                            {:order    %
-                                             :quantity quantity
-                                             :sku      sku})))))
-
-(defmethod effects/perform-effects events/control-cart-line-item-dec
-  [_ event {:keys [variant]} _ app-state]
-  #?(:cljs
-     (let [order (get-in app-state keypaths/order)]
-       (api/remove-line-item (get-in app-state keypaths/session-id)
-                             {:number     (:number order)
-                              :token      (:token order)
-                              :variant-id (:id variant)
-                              :sku-code   (:sku variant)}
-                             #(messages/handle-message events/api-success-add-to-bag {:order %})))))
-
-(defmethod effects/perform-effects events/control-checkout-cart-submit
-  [dispatch event args _ app-state]
-  #?(:cljs
-     ;; If logged in, this will send user to checkout-address. If not, this sets
-     ;; things up so that if the user chooses sign-in from the returning-or-guest
-     ;; page, then signs-in, they end up on the address page. Convoluted.
-     (history/enqueue-navigate events/navigate-checkout-address)))
-
-(defmethod effects/perform-effects events/control-checkout-cart-paypal-setup
-  [dispatch event args _ app-state]
-  #?(:cljs
-     (let [order (get-in app-state keypaths/order)]
-       (api/update-cart-payments
-        (get-in app-state keypaths/session-id)
-        {:order (-> app-state
-                    (get-in keypaths/order)
-                    (select-keys [:token :number])
-                 ;;; Get ready for some nonsense!
-                    ;;
-                    ;; Paypal requires that urls are *double* url-encoded, such as
-                    ;; the token part of the return url, but that *query
-                    ;; parameters* are only singley encoded.
-                    ;;
-                    ;; Thanks for the /totally sane/ API, PayPal.
-                    (assoc-in [:cart-payments]
-                              {:paypal {:amount (get-in app-state keypaths/order-total)
-                                        :mobile-checkout? (not (device/isDesktop))
-                                        :return-url (str stylist-urls/store-url "/orders/" (:number order) "/paypal/"
-                                                         (url-encode (url-encode (:token order)))
-                                                         "?sid="
-                                                         (url-encode (get-in app-state keypaths/session-id)))
-                                        :callback-url (str config/api-base-url "/v2/paypal-callback?number=" (:number order)
-                                                           "&order-token=" (url-encode (:token order)))
-                                        :cancel-url (str stylist-urls/store-url "/cart?error=paypal-cancel")}}))
-         :event events/external-redirect-paypal-setup}))))
 
 (defn full-cart-query [data]
   (let [order       (get-in data keypaths/order)
@@ -371,12 +285,12 @@
                                   #(or %1 %2)
                                   (variants-requests data request-keys/add-to-bag (map :sku line-items))
                                   (variants-requests data request-keys/update-line-item (map :sku line-items)))
-     :cart-summary               (cart-summary/query data)
+     :cart-summary               (adventure-cart-summary/query data)
      :delete-line-item-requests  (variants-requests data request-keys/delete-line-item variant-ids)
      :recently-added-skus        (get-in data keypaths/cart-recently-added-skus)
      :freeinstall-just-added?    (get-in data keypaths/cart-freeinstall-just-added?)
      :stylist-service-menu       (get-in data keypaths/stylist-service-menu)
-     :freeinstall-line-item-data (cart-items/freeinstall-line-item-query data)}))
+     :freeinstall-line-item-data (adventure-cart-items/freeinstall-line-item-query data)}))
 
 (defn empty-cart-query [data]
   {:promotions          (get-in data keypaths/promotions)
@@ -405,22 +319,18 @@
   (component/build component (query data) opts))
 
 (defn layout [data nav-event]
-  (let [adventure? (experiments/adventure? data)]
-    (if adventure?
-      (adventure-cart/layout data nav-event)
+  [:div.flex.flex-column {:style {:min-height    "100vh"
+                                  :margin-bottom "-1px"}}
+   (stylist-banner/built-component data nil)
+   (promotion-banner/built-component data nil)
+   #?(:cljs (popup/built-component (popup/query data) nil))
 
-      [:div.flex.flex-column {:style {:min-height    "100vh"
-                                      :margin-bottom "-1px"}}
-       (stylist-banner/built-component data nil)
-       (promotion-banner/built-component data nil)
-       #?(:cljs (popup/built-component (popup/query data) nil))
+   (header/built-component data nil)
+   [:div.relative.flex.flex-column.flex-auto
+    (flash/built-component data nil)
 
-       (header/built-component data nil)
-       [:div.relative.flex.flex-column.flex-auto
-        (flash/built-component data nil)
+    [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
+     (built-component data nil)]
 
-        [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
-         (built-component data nil)]
-
-        [:footer
-         (storefront.footer/built-component data nil)]]])))
+    [:footer
+     (storefront.footer/built-component data nil)]]])
