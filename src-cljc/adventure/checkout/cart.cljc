@@ -164,7 +164,7 @@
 
     [:div.p2
      [:div.clearfix.mxn3
-      [:div.col-on-tb-dt.col-6-on-tb-dt.px3
+      [:div.col-on-tb-dt.col-6-on-tb-dt.px3.pt2
        {:data-test "cart-line-items"}
        (display-adjustable-line-items recently-added-skus
                                       line-items
