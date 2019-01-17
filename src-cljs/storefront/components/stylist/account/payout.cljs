@@ -35,11 +35,11 @@
     om/IRender
     (render [_]
       (html
-       [:div.mb2.clearfix
+       [:div.clearfix
         [:div#green-dot-card-number.col.col-8.h4.line-height-1.rounded-left.rounded.border.x-group-item.border-gray.p2.mb2
-         {:style {:height "42px"}}]
+         {:style {:height "43px"}}]
         [:div#green-dot-cvv.col.col-4.h4.line-height-1.rounded.rounded-right.border.x-group-item.border-gray.p2.mb2
-         {:style {:height "42px"}}]]))))
+         {:style {:height "43px"}}]]))))
 
 
 (def green-dot-keypath (partial conj keypaths/stylist-manage-account-green-dot-payout-attributes))

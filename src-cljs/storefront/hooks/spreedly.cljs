@@ -15,7 +15,7 @@
     (let [frame (js/SpreedlyPaymentFrame.)]
       (.on frame "ready"
            (fn []
-             (let [css-style "font-size: 18px; font-family: Roboto, -apple-system, system-ui, helvetica, Ubuntu, arial, sans-serif;"]
+             (let [css-style "font-size: 18px; font-family: Roboto, -apple-system, system-ui, helvetica, Ubuntu, arial, sans-serif; font-weight: 300;"]
                (.setPlaceholder frame "number" "Card Number")
                (.setPlaceholder frame "cvv" "CVV")
                (.setStyle frame "number" css-style)
