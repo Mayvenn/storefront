@@ -36,7 +36,7 @@
       {:style {:height "46px"}}
       [:a.col-1.pl3.inherit-color
        (utils/route-to back-link)
-       "←"]
+       ui/back-arrow]
       [:div.flex-auto.center
        [:div.h5.bold title]
        [:div.h6 subtitle]]
