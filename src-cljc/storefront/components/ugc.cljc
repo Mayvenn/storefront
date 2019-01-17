@@ -11,6 +11,14 @@
    [:div.ml1.line-height-1 {:style {:width "1em" :height "1em"}}
     (svg/social-icon social-service)]])
 
+(defn adventure-user-attribution [{:keys [user-handle social-service]}]
+  [:div.flex.items-center
+   [:div.flex-auto.dark-gray.medium
+    {:style {:word-break "break-all"}}
+    [:div.left "@" user-handle]]
+   [:div.ml1.line-height-1 {:style {:width "1.5em" :height "1.5em"}}
+    (svg/social-icon social-service)]])
+
 (defn view-look-button [{{:keys [view-look view-other]} :links} button-copy nav-stack-item]
   (let [[nav-event nav-args] (or view-look view-other)]
     (ui/teal-button

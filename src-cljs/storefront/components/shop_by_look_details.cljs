@@ -96,6 +96,39 @@
              [:div.mt2
               (add-to-cart-button sold-out? creating-order? look shared-cart)]])))]])))
 
+[:div {:style 5} {}]
+
+(defn adventure-component [{:keys [creating-order? sold-out? look shared-cart skus back fetching-shared-cart? discount-warning?
+                                   shared-cart-type-copy back-copy back-event above-button-copy album-keyword look-detail-price?
+                                   base-price discounted-price]} owner opts]
+  (om/component
+   (html
+    [:div.container.mb4
+     [:div.clearfix
+      (when look
+        [:div.col-on-tb-dt.col-6-on-tb-dt.px3-on-tb-dt
+         (carousel (imgs look shared-cart))
+         [:div.px3.py2.mbp1.bg-light-gray (ugc/adventure-user-attribution look)]
+         (when-not (str/blank? (:title look))
+           [:p.h5.px3.py1.dark-gray.bg-light-gray (decode-title (:title look))])])
+      (if fetching-shared-cart?
+        [:div.flex.justify-center.items-center (ui/large-spinner {:style {:height "4em"}})]
+        (when shared-cart
+          (let [line-items (:line-items shared-cart)
+                item-count (->> line-items (map :item/quantity) (reduce + 0))]
+            [:div.col-on-tb-dt.col-6-on-tb-dt.px2.px3-on-tb-dt
+             [:div.p2.center.h3.medium.border-bottom.border-gray (str item-count " items in this " shared-cart-type-copy)]
+             (order-summary/display-line-items line-items skus)
+             (when look-detail-price?
+               [:div.center.mt4.mb3
+                [:div.h6.dark-gray "15% Off + 10% Bundle Discount"]
+                [:div.h2.medium (mf/as-money discounted-price)]
+                [:div.strike.dark-gray (mf/as-money base-price)]])
+             (when above-button-copy
+               [:div.center.teal.medium.mt2 above-button-copy])
+             [:div.mt2
+              (add-to-cart-button sold-out? creating-order? look shared-cart)]])))]])))
+
 (defn put-skus-on-shared-cart [shared-cart skus]
   (let [shared-cart-variant-ids (into #{}
                                       (map :legacy/variant-id)

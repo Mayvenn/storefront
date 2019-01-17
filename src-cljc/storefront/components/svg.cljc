@@ -172,6 +172,7 @@
 
 (def social-icon
   {"instagram" instagram
+   "desktop"   instagram
    "facebook"  facebook-f
    "pinterest" pinterest
    "twitter"   twitter

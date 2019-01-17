@@ -670,8 +670,10 @@
                   (assets/path "/images/icons/collapse.png")
                   (assets/path "/images/icons/expand.png"))}])
 
-(def back-arrow
-  (ucare-img {:width "24"} "2dba0ec5-f62b-4aad-b122-68fdf3eba9dc"))
+(defn back-arrow [attrs]
+  (ucare-img (merge {:width "24"}
+                    attrs)
+             "2dba0ec5-f62b-4aad-b122-68fdf3eba9dc"))
 
 (defn clickable-logo [{:as attrs :keys [height event]}]
   [:a.block.img-logo.bg-no-repeat.bg-center.bg-contain.teal

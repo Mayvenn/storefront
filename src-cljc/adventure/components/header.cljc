@@ -26,21 +26,24 @@
              :height "6px"}}]])
 
 (defn component
-  [{:keys [current-step back-link title subtitle shopping-bag?]} _ _]
+  [{:keys [height current-step back-link title subtitle shopping-bag?]} _ _]
   (component/create
    [:div.absolute.top-0.left-0.right-0
     [:div.flex.flex-column
      (progress-bar (dec current-step))
 
      [:div.flex.items-center
-      {:style {:height "46px"}}
+      {:style {:height "65px"}}
       [:a.col-1.pl3.inherit-color
-       (utils/route-to back-link)
-       ui/back-arrow]
+       (merge {:style {:height "30px"}}
+              (utils/route-to back-link))
+       (ui/back-arrow {:width "14"})]
       [:div.flex-auto.center
-       [:div.h5.bold title]
-       [:div.h6 subtitle]]
+       [:div.h6.bold title]
+       [:div.h7 subtitle]]
       [:div.col-1
+       {:style {:height "46px"}}
+
        (when shopping-bag?
          (ui/ucare-img
           {:width "20px"}

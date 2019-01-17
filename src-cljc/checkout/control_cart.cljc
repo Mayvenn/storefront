@@ -6,7 +6,7 @@
             [storefront.events :as events]
             [storefront.platform.component-utils :as utils]))
 
-(defn ^:private display-line-item
+(defn display-line-item
   "Storeback now returns shared-cart line-items as a v2 Sku + item/quantity, aka
   'line-item-skuer' This component is also used to display line items that are
   coming off of a waiter order which is a 'variant' with a :quantity
