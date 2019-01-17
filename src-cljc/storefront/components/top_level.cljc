@@ -35,6 +35,7 @@
             [adventure.find-your-stylist :as adventure.find-your-stylist]
             [adventure.shop-hair :as adventure.shop-hair]
             [adventure.how-shop-hair :as adventure.how-shop-hair]
+            [adventure.select-new-look :as adventure.select-new-look]
             [catalog.category :as category]
             [catalog.product-details :as product-details]
             [checkout.cart :as cart]
@@ -92,6 +93,7 @@
          events/navigate-checkout-payment                           (partial checkout-returning-or-guest/requires-sign-in-or-initiated-guest-checkout checkout-payment/built-component)
          events/navigate-checkout-confirmation                      (partial checkout-returning-or-guest/requires-sign-in-or-initiated-guest-checkout checkout-confirmation/built-component)
          events/navigate-order-complete                             checkout-complete/built-component])
+
     events/navigate-home                        home/built-component
     events/navigate-category                    category/built-component
     events/navigate-product-details             product-details/built-component
@@ -121,7 +123,8 @@
     events/navigate-adventure-match-stylist     adventure.match-stylist/built-component
     events/navigate-adventure-find-your-stylist adventure.find-your-stylist/built-component
     events/navigate-adventure-shop-hair         adventure.shop-hair/built-component
-    events/navigate-adventure-how-shop-hair  adventure.how-shop-hair/built-component
+    events/navigate-adventure-how-shop-hair     adventure.how-shop-hair/built-component
+    events/navigate-adventure-select-new-look   adventure.select-new-look/built-component
     home/built-component))
 
 (defn sticky-promo-bar [data]

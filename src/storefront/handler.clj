@@ -584,7 +584,7 @@
     (when (not= (get nav-message 0) events/navigate-not-found)
       (let [render-ctx           (auto-map storeback-config environment client-version)
             [nav-event nav-args] nav-message
-            data                 (-> {}
+            data                 (-> (:state request)
                                      (assoc-in keypaths/store-slug config/install-subdomain)
                                      (assoc-in keypaths/environment environment)
                                      (assoc-in keypaths/navigation-message nav-message))]
@@ -699,6 +699,7 @@
                (-> (routes (static-routes ctx)
                            (-> (install-routes ctx)
                                (wrap-defaults (storefront-site-defaults environment))
+                               (wrap-state ctx)
                                (wrap-freeinstall-is-for-install environment))
                            (routes-with-orders ctx)
                            (route/not-found views/not-found))

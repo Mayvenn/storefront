@@ -99,7 +99,17 @@
                  :above-button-copy nil
                  :short-name        "look"
                  :seo-title         "Shop by Look | Mayvenn"
-                 :og-title          "Shop by Look - Find and Buy your favorite Mayvenn bundles!"}})
+                 :og-title          "Shop by Look - Find and Buy your favorite Mayvenn bundles!"}
+
+   :adventure {:title             "shop by look"
+               :description       (str "Grab the latest bundle deal! "
+                                       "Below you can shop every bundle deal of the week.")
+               :button-copy       "Shop Look"
+               :back-copy         "back to shop by look"
+               :above-button-copy nil
+               :short-name        "look"
+               :seo-title         "Shop by Look | Mayvenn"
+               :og-title          "Shop by Look - Find and Buy your favorite Mayvenn bundles!"}})
 
 (defn pixlee-config [environment]
   (case environment
@@ -128,30 +138,32 @@
                            :water-wave           1814288
                            :yaki-straight        1814286
                            :dyed                 2750237
-                           :wigs                 1880465}}
+                           :wigs                 1880465
+                           :adventure            4323429}}
 
     {:api-key                "iiQ27jLOrmKgTfIcRIk"
      :copy                   pixlee-copy
      :mayvenn-made-widget-id 1057225
-     :albums {:sleek-and-straight   3892340
-              :waves-and-curly      3892341
-              :free-install-mayvenn 3896655
-              :deals                3091419
-              :email-deals          3130242
-              :free-install         3082796
-              :free-install-home    3751546
-              :aladdin-free-install 3923023
-              :install              3681928
-              :look                 965034
-              :straight             1327330
-              :loose-wave           1327331
-              :body-wave            1327332
-              :deep-wave            1327333
-              :curly                1331955
-              :closures             1331956
-              :frontals             1331957
-              :kinky-straight       1801984
-              :water-wave           1912641
-              :yaki-straight        1912642
-              :dyed                 2918644
-              :wigs                 2918645}}))
+     :albums                 {:sleek-and-straight   3892340
+                              :waves-and-curly      3892341
+                              :free-install-mayvenn 3896655
+                              :deals                3091419
+                              :email-deals          3130242
+                              :free-install         3082796
+                              :free-install-home    3751546
+                              :aladdin-free-install 3923023
+                              :install              3681928
+                              :look                 965034
+                              :straight             1327330
+                              :loose-wave           1327331
+                              :body-wave            1327332
+                              :deep-wave            1327333
+                              :curly                1331955
+                              :closures             1331956
+                              :frontals             1331957
+                              :kinky-straight       1801984
+                              :water-wave           1912641
+                              :yaki-straight        1912642
+                              :dyed                 2918644
+                              :wigs                 2918645
+                              :adventure            4018488}}))

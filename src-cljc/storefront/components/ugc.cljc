@@ -30,6 +30,46 @@
      [:div.container-size.bg-cover.bg-no-repeat.bg-center
       {:style {:background-image (str "url(" (-> imgs :large :src) ")")}}])))
 
+(defn adventure-component [{:keys [looks color-details]} owner {:keys [copy]}]
+  (component/create
+   [:div.flex.flex-wrap.mtn2.py4.px2.justify-center.justify-start-on-tb-dt
+    (for [{:keys [id imgs] :as look} looks
+          :let                       [{:keys [look-attributes social-service links]} look
+                                      {:keys [view-look view-other]} links
+                                      [nav-event nav-args]           (or view-look view-other)]]
+      [:div.p2.col-12.col-6-on-tb.col-4-on-dt {:key (str "small-" id)}
+       [:div.relative
+        (ui/aspect-ratio
+         1 1
+         {}
+         [:img.col-12.block (:medium imgs)])
+        (when-let [texture (:texture look-attributes)]
+          [:div.absolute.flex.justify-end.bottom-0.right-0.mb8.black
+           [:div {:style {:width       "0"
+                          :height      "0"
+                          :border-top  "28px solid rgba(159, 229, 213, 0.8)"
+                          :border-left "21px solid transparent"}}]
+           [:div.flex.items-center.px3.medium.h6.bg-transparent-light-teal
+            texture]])]
+       (let [color-detail (get color-details (:color look-attributes))]
+         [:div.bg-white.p1.px2.pb2
+          [:div.h5.medium.mt1.mb2.black
+           [:div.flex.items-center.mb2
+            [:div.flex-auto
+             (if color-detail
+               [:div.flex.items-center
+                [:img.mr2.lit.rounded-0
+                 {:height "30px"
+                  :width  "50px"
+                  :src    (:option/rectangle-swatch color-detail)}]
+                (:option/name color-detail)]
+               [:div.black.pyp1 "Check this out!"])]
+            [:div.m1.self-end {:style {:width "20px" :height "20px"}}
+             (svg/social-icon social-service)]]
+           (cond (:lengths look-attributes) (:lengths look-attributes)
+                 color-detail               [:span.black "Get this look!"]
+                 :else                      nil)]])])]))
+
 (defn component [{:keys [looks color-details]} owner {:keys [copy]}]
   (component/create
    [:div.flex.flex-wrap.mtn2.py4.px2.justify-center.justify-start-on-tb-dt
