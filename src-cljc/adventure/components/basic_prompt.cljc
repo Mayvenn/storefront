@@ -55,4 +55,4 @@
                                  (utils/route-to (:target button)))
                           (:text button))]]])))
 
-;; Pages that use this component: Welcome/Home
+;; Pages that use this component: Welcome/Home, find your stylist, shop-hair, match-stylist

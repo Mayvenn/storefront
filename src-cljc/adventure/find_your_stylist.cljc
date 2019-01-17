@@ -2,7 +2,9 @@
   (:require
    #?@(:cljs [[om.core :as om]
               [storefront.platform.messages :as messages]
+              [storefront.effects :as effects]
               [storefront.platform.component-utils :as utils]
+              [storefront.hooks.places-autocomplete :as places-autocomplete]
               [sablono.core :as sablono]])
    [adventure.components.basic-prompt :as basic-prompt]
    [adventure.components.header :as header]
@@ -12,9 +14,27 @@
    [storefront.accessors.experiments :as experiments]
    [storefront.component :as component]
    [storefront.events :as events]
-   [storefront.components.ui :as ui]))
+   [storefront.components.ui :as ui]
+   [storefront.transitions :as transitions]))
 
+(defn ^:private location->prefill-string
+  [{:keys [:zipcode :city :state]}]
+  (str city ", " state " " zipcode ", USA"))
 
+(defmethod transitions/transition-state events/navigate-adventure-find-your-stylist [_ event args app-state]
+  (let [preselected-location (get-in app-state keypaths/adventure-stylist-match-location)
+        location-prefill     (location->prefill-string preselected-location)]
+    (-> app-state
+        (assoc-in keypaths/adventure-stylist-match-zipcode location-prefill))))
+
+(defmethod transitions/transition-state events/clear-selected-location [_ event {:keys [keypath value]} app-state]
+  (prn "$#%&^#$%^&  "keypaths/adventure-stylist-match-location)
+  (-> app-state
+      (assoc-in keypaths/adventure-stylist-match-location nil)))
+
+#?(:cljs (defmethod effects/perform-effects events/adventure-zipcode-component-mounted
+           [_ event {:keys [address-elem address-keypath]} _ app-state]
+           (places-autocomplete/attach "(regions)" address-elem address-keypath)))
 
 (defn ^:private query [data]
   (let [adventure-choices (get-in data keypaths/adventure-choices)
@@ -25,50 +45,47 @@
      :header-data           {:current-step 6
                              :title        [:div.medium "Find Your Stylist"]
                              :subtitle     (str "Step " (if hair-flow? 2 3) " of 3")
-                             :back-link    events/navigate-adventure-what-next}}))
+                             :back-link    events/navigate-adventure-match-stylist}
+     :selected-location (get-in data keypaths/adventure-stylist-match-location)}))
 
-(defn special-group [{:keys [label keypath value errors data-test class] :as input-attributes :or {class "col-12"}}
-                     {:keys [ui-element args content]}]
-  (let [error (first errors)]
-    [:div.mb2.stacking-context
-     [:div.flex.justify-center
-      (ui/plain-text-field label keypath value (not (nil? error))
-                        (-> input-attributes
-                            (dissoc :label :keypath :value :errors)
-                            (update :wrapper-class str " not-rounded x-group-item")))
-      (ui-element (update args :class str " not-rounded x-group-item") content)]
-     (ui/field-error-message error data-test)]))
-
+(defn ^:private places-component-guts
+  [value selected-location]
+  [:div.flex.justify-center
+   [:div.pl3.bg-white.border-none.flex-auto.not-rounded.x-group-item
+    [:label
+     [:input.col-12.h4.line-height-1
+      (merge {:value       (or value "")
+              :id          "stylist-match-zipcode"
+              :data-test   "stylist-match-zip"
+              :focused     true
+              :placeholder "zipcode"
+              :pattern     "[0-9]*"  ; ios/safari numpad
+              :inputmode   "numeric" ; android/chrome numpad
+              :data-ref    "stylist-match-zip"}
+             #?(:cljs
+                {:on-change (fn [^js/Event e]
+                              (messages/handle-message events/control-change-state
+                                                       {:keypath keypaths/adventure-stylist-match-zipcode
+                                                        :value   (.. e -target -value)})
+                              (messages/handle-message events/clear-selected-location))}))]]]
+   (ui/teal-button {:style          {:width  "45px"
+                                     :height "45px"}
+                    :disabled?      (not selected-location)
+                    :disabled-class "bg-light-gray gray"
+                    :class          " flex items-center justify-center medium not-rounded x-group-item"} "→")])
 #?(:cljs
-   (defn ^:private places-component [{:keys [id address-keypath keypath value errors]} owner]
+   (defn ^:private places-component [{:keys [value selected-location]} owner]
      (reify
        om/IDidMount
        (did-mount [this]
-         (messages/handle-message events/adventure-zipcode-component-mounted {:address-elem    id
-                                                                              :address-keypath address-keypath}))
+         (messages/handle-message events/adventure-zipcode-component-mounted {:address-elem    "stylist-match-zipcode"
+                                                                              :address-keypath keypaths/adventure-stylist-match-location}))
        om/IRender
        (render [_]
-         (sablono/html
-          [:div
-           (special-group {:keypath       keypaths/adventure-stylist-match-zipcode
-                           :id id
-                           :wrapper-class "pl3 bg-white border-none flex-auto"
-                           :data-test     "stylist-match-zip"
-                           :focused       true
-                           :placeholder   "zipcode"
-                           :value         value
-                           :errors        nil
-                           :data-ref      "stylist-match-zip"}
-                          {:ui-element ui/teal-button
-                           :content    "→"
-                           :args       {:style          {:width  "45px"
-                                                         :height "45px"}
-                                        :disabled?      true
-                                        :disabled-class "bg-light-gray gray"
-                                        :class          " flex items-center justify-center medium"}})])))))
+         (sablono/html (places-component-guts value selected-location))))))
 
 (defn component
-  [{:keys [header-data places-loaded? background-image stylist-match-zipcode]} owner _]
+  [{:keys [header-data places-loaded? background-image stylist-match-zipcode selected-location]} owner _]
   (component/create
    [:div.bg-lavender.white.center.flex.flex-auto.flex-column
     (when header-data
@@ -85,8 +102,8 @@
       [:div.col-10.mx-auto
        #?(:cljs
           (when places-loaded?
-            (om/build places-component {:id "stylist-match-zipcode"
-                                        :value stylist-match-zipcode})))]]]]))
+            (om/build places-component {:value             stylist-match-zipcode
+                                        :selected-location selected-location})))]]]]))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

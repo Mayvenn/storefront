@@ -983,10 +983,6 @@
   [_ event {:keys [address-elem address-keypath]} _ app-state]
   (places-autocomplete/attach "address" address-elem address-keypath))
 
-(defmethod perform-effects events/adventure-zipcode-component-mounted
-  [_ event {:keys [address-elem address-keypath]} _ app-state]
-  (places-autocomplete/attach "(regions)" address-elem address-keypath))
-
 (defmethod perform-effects events/api-success-update-order-remove-promotion-code
   [_ _ {:keys [hide-success]} _ app-state]
   (when-not hide-success

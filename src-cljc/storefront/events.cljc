@@ -465,6 +465,7 @@
 (defpath navigate-adventure-select-new-look)
 
 (defpath adventure-zipcode-component-mounted)
+(defpath clear-selected-location)
 
 ;; Stripe Payment Button
 (defpath stripe-payment-request-button-inserted)
