@@ -29,10 +29,10 @@
 (defn address [autocomplete]
   (when-let [place (js->clj (.getPlace autocomplete) :keywordize-keys true)]
     (let [{:as extracted-address :keys [city sublocality state street street-number]} (extract-address place)]
-      (-> extracted-address
-          (assoc :address1 (str street-number " " street)
-                 :city     (or city sublocality))
-          (dissoc :street :street-number :sublocality)))))
+      (some-> extracted-address
+              (assoc :address1 (str street-number " " street)
+                     :city     (or city sublocality))
+              (dissoc :street :street-number :sublocality)))))
 
 (defn insert []
   (when-not (.hasOwnProperty js/window "google")
