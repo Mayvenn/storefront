@@ -132,8 +132,6 @@
        detail]]
      [:div.h5.right {:data-test (str "line-item-price-ea-" id)} (some-> price mf/as-money)]]]])
 
-
-;; https:
 (defn full-component [{:keys [order
                               skus
                               promotion-banner
