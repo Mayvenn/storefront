@@ -39,7 +39,7 @@
                                                             (get diva-advertised-type))]
         (when service-price
           {:id                 "freeinstall"
-           :title              "Install "#_campaign-name
+           :title              "Install"
            :detail             line-item-detail
            :price              service-price
            :total-savings      (orders/total-savings order service-price)
