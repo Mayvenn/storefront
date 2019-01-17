@@ -49,30 +49,34 @@
                              :back-link    events/navigate-adventure-match-stylist}
      :selected-location     (get-in data keypaths/adventure-stylist-match-location)}))
 
-(defn ^:private places-component-guts
+#?(:cljs
+   (defn ^:private handle-on-change [selected-location ^js/Event e]
+     (messages/handle-message events/control-change-state
+                              {:keypath keypaths/adventure-stylist-match-zipcode
+                               :value   (.. e -target -value)})
+     (when selected-location
+       (messages/handle-message events/clear-selected-location))))
+
+(defn ^:private places-component-guts ;; TODO:rename
   [value selected-location]
   [:div.flex.justify-center
-   [:div.bg-white.flex.col-10
-    [:input.col-12.h4.border-none.px3
-     (merge {:value       (or value "")
-             :id          "stylist-match-zipcode"
-             :data-test   "stylist-match-zip"
-             :focused     true
-             :placeholder "zipcode"
-             :pattern     "[0-9]*"  ; ios/safari numpad
-             :inputmode   "numeric" ; android/chrome numpad
-             :data-ref    "stylist-match-zip"}
-            #?(:cljs
-               {:on-change (fn [^js/Event e]
-                             (messages/handle-message events/control-change-state
-                                                      {:keypath keypaths/adventure-stylist-match-zipcode
-                                                       :value   (.. e -target -value)})
-                             (messages/handle-message events/clear-selected-location))}))]]
+   [:input.h4.border-none.px3.bg-white.col-10
+    (merge {:value       (or value "")
+            :id          "stylist-match-zipcode"
+            :data-test   "stylist-match-zip"
+            :focused     true
+            :placeholder "zipcode"
+            :pattern     "[0-9]*"  ; ios/safari numpad
+            :inputmode   "numeric" ; android/chrome numpad
+            :data-ref    "stylist-match-zip"}
+           #?(:cljs
+              {:on-submit (partial handle-on-change selected-location)
+               :on-change (partial handle-on-change selected-location)}))]
    (ui/teal-button {:style          {:width  "45px"
                                      :height "45px"}
-                    :disabled?      (not selected-location)
+                    :disabled?      (not (:zipcode selected-location))
                     :disabled-class "bg-light-gray gray"
-                    :class          " flex items-center justify-center medium not-rounded x-group-item"} "→")])
+                    :class          "flex items-center justify-center medium not-rounded x-group-item"} "→")])
 #?(:cljs
    (defn ^:private places-component [{:keys [value selected-location]} owner]
      (reify
