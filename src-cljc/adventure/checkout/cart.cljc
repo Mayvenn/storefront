@@ -173,19 +173,23 @@
                                       skus
                                       update-line-item-requests
                                       delete-line-item-requests)
-       (freeinstall-line-item freeinstall-just-added? freeinstall-line-item-data)
+       [:div.px2
+        (component/build suggestions/component suggestions nil)]
 
-       (component/build suggestions/component suggestions nil)]
+       (freeinstall-line-item freeinstall-just-added? freeinstall-line-item-data)]
 
       [:div.col-on-tb-dt.col-6-on-tb-dt.px3
 
        (component/build adventure-cart-summary/component cart-summary nil)
 
-       (ui/teal-button {:spinning? false
-                        :disabled? updating?
-                        :on-click  (utils/send-event-callback events/control-checkout-cart-submit)
-                        :data-test "start-checkout-button"}
-                       [:div "Check out"])
+       [:div.bg-too-light-teal.py4.px2
+        [:div.h5.medium.center "You’ll be connected with your Certified Mayvenn Stylist after checkout."]
+        [:div.mt2
+         (ui/teal-button {:spinning? false
+                          :disabled? updating?
+                          :on-click  (utils/send-event-callback events/control-checkout-cart-submit)
+                          :data-test "start-checkout-button"}
+                         [:div "Check out"])]]
 
        [:div.h5.black.center.py1.flex.justify-around.items-center
         [:div.flex-grow-1.border-bottom.border-light-gray]
