@@ -113,7 +113,7 @@
         [:div.h5 {:data-test (str "line-item-price-ea-" sku-id)} (mf/as-money-without-cents price) " ea"]]]]]))
 
 (defn ^:private freeinstall-line-item
-  [freeinstall-just-added? {:keys [removing? id title detail price remove-event thumbnail-image-fn]}]
+  [freeinstall-just-added? {:keys [removing? id title detail price thumbnail-image-fn]}]
   [:div.pt1.pb2.clearfix
    [:div.left.ml1.pr3.mtp4
     (css-transitions/transition-background-color
