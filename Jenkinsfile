@@ -12,6 +12,7 @@ pipeline {
             steps {
                 runInTest {
                     gitCheckoutWithSubmodules(repoUrl)
+                    sh "git rev-parse HEAD > ../SHA"
                     withLein {
                         sh "docker build -t ${appName}-tests -f Dockerfile.test ."
                     }
@@ -82,7 +83,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 retry(3) {
-                    deploy(appName, 'acceptance')
+                    deploy(appName, 'acceptance', sh(returnStdout: true, script: "cat SHA").trim())
                 }
             }
         }
