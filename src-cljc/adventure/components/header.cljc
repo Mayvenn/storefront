@@ -21,7 +21,7 @@
 (defn progress-bar [steps-completed]
   [:div.col-12.col
    {:style {:height "6px"}}
-   [:div.bg-aubergine
+   [:div.bg-purple
     {:style {:width (str (calculate-width steps-completed)"%")
              :height "6px"}}]])
 
