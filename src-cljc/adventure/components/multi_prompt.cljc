@@ -18,7 +18,7 @@
   (ui/white-button (maps/deep-merge rect-button-attrs attrs) content))
 
 (defn component
-  [{:keys [prompt prompt-image header-data data-test buttons]} _ _]
+  [{:keys [prompt prompt-image header-data data-test buttons footer]} _ _]
   (component/create
    [:div.bg-too-light-teal.white.center.flex-auto.self-stretch
     (when header-data
@@ -41,4 +41,5 @@
             {:data-test button-data-test}
             (utils/fake-href events/control-adventure {:destination target
                                                        :choice      value}))
-           text)]))]]))
+           text)]))]
+    footer]))

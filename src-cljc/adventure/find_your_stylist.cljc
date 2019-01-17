@@ -3,9 +3,9 @@
    #?@(:cljs [[om.core :as om]
               [storefront.platform.messages :as messages]
               [storefront.effects :as effects]
-              [storefront.platform.component-utils :as utils]
               [storefront.hooks.places-autocomplete :as places-autocomplete]
               [sablono.core :as sablono]])
+   [storefront.platform.component-utils :as utils]
    [adventure.components.basic-prompt :as basic-prompt]
    [adventure.components.header :as header]
    [adventure.handlers :as handlers]
@@ -72,11 +72,12 @@
            #?(:cljs
               {:on-submit (partial handle-on-change selected-location)
                :on-change (partial handle-on-change selected-location)}))]
-   (ui/teal-button {:style          {:width  "45px"
-                                     :height "45px"}
-                    :disabled?      (not (:zipcode selected-location))
-                    :disabled-class "bg-light-gray gray"
-                    :class          "flex items-center justify-center medium not-rounded x-group-item"} "→")])
+   (ui/teal-button (merge {:style          {:width  "45px"
+                                            :height "45px"}
+                           :disabled?      (not (:zipcode selected-location))
+                           :disabled-class "bg-light-gray gray"
+                           :class          "flex items-center justify-center medium not-rounded x-group-item"}
+                          (utils/route-to events/navigate-adventure-how-far)) "→")])
 #?(:cljs
    (defn ^:private places-component [{:keys [value selected-location]} owner]
      (reify

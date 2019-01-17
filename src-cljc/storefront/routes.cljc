@@ -46,6 +46,7 @@
    "/adventure/what-next"         (edn->bidi events/navigate-adventure-what-next)
    "/adventure/match-stylist"     (edn->bidi events/navigate-adventure-match-stylist)
    "/adventure/find-your-stylist" (edn->bidi events/navigate-adventure-find-your-stylist)
+   "/adventure/how-far"           (edn->bidi events/navigate-adventure-how-far)
    "/adventure/shop-hair"         (edn->bidi events/navigate-adventure-shop-hair)
    "/adventure/how-shop-hair"     (edn->bidi events/navigate-adventure-how-shop-hair)
    "/adventure/select-new-look"   (edn->bidi events/navigate-adventure-select-new-look)})

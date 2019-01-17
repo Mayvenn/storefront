@@ -462,6 +462,7 @@
 (defpath navigate-adventure-find-your-stylist)
 (defpath navigate-adventure-shop-hair)
 (defpath navigate-adventure-how-shop-hair)
+(defpath navigate-adventure-how-far)
 (defpath navigate-adventure-select-new-look)
 
 (defpath adventure-zipcode-component-mounted)
