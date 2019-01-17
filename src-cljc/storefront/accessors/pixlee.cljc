@@ -64,11 +64,20 @@
      :social-service  source
      :shared-cart-id  (:shared-cart-id nav-args)
      :look-attributes (notes->look-attributes notes)
-     :links           (merge {:view-other nav-message}
-                             (when (= nav-event events/navigate-shared-cart)
-                               {:view-look [events/navigate-shop-by-look-details {:album-keyword (or (#{:deals} album-keyword) :look)
-                                                                                  :look-id       album_photo_id}]}))
-     :title           title}))
+     :links           (merge
+                       {:view-other nav-message}
+                       (cond
+                         (and (= nav-event events/navigate-shared-cart)
+                              (= album-keyword :adventure))
+                         {:view-look [events/navigate-adventure-look-detail {:album-keyword (or (#{:deals} album-keyword) :look)
+                                                                             :look-id       album_photo_id}]}
+
+                         (= nav-event events/navigate-shared-cart)
+                         {:view-look [events/navigate-shop-by-look-details {:album-keyword (or (#{:deals} album-keyword) :look)
+                                                                            :look-id       album_photo_id}]}
+
+                         :else nil))
+     :title title}))
 
 (defn parse-ugc-album [album-keyword album]
   (map (partial parse-ugc-image album-keyword) album))

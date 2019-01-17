@@ -49,7 +49,8 @@
    "/adventure/how-far"           (edn->bidi events/navigate-adventure-how-far)
    "/adventure/shop-hair"         (edn->bidi events/navigate-adventure-shop-hair)
    "/adventure/how-shop-hair"     (edn->bidi events/navigate-adventure-how-shop-hair)
-   "/adventure/select-new-look"   (edn->bidi events/navigate-adventure-select-new-look)})
+   "/adventure/select-new-look"   (edn->bidi events/navigate-adventure-select-new-look)
+   "/adventure/look-detail"       (edn->bidi events/navigate-adventure-look-detail)})
 
 (def catalog-routes
   {["/categories/" [#"\d+" :catalog/category-id] "-" :page/slug]

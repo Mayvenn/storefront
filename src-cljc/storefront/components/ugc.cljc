@@ -34,10 +34,15 @@
   (component/create
    [:div.flex.flex-wrap.mtn2.py4.px2.justify-center.justify-start-on-tb-dt
     (for [{:keys [id imgs] :as look} looks
-          :let                       [{:keys [look-attributes social-service links]} look
-                                      {:keys [view-look view-other]} links
-                                      [nav-event nav-args]           (or view-look view-other)]]
-      [:div.p2.col-12.col-6-on-tb.col-4-on-dt {:key (str "small-" id)}
+          :let
+          [{:keys [look-attributes social-service links]} look
+           {:keys [view-look view-other]}                 links
+           [nav-event nav-args]                           (or view-look
+                                                              view-other)]]
+      [:div.p2.col-12.col-6-on-tb.col-4-on-dt
+       (merge {:key (str "small-" id)}
+              (util/route-to nav-event nav-args {:back-copy  (:back-copy copy)
+                                                 :short-name (:short-name copy)}))
        [:div.relative
         (ui/aspect-ratio
          1 1
