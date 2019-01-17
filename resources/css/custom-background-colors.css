@@ -2,6 +2,7 @@
 .bg-twitter-blue           { background-color: var(--twitter-blue); }
 .bg-sms-green              { background-color: var(--sms-green); }
 .bg-light-orange           { background-color: var(--light-orange); }
+.bg-light-lavender         { background-color: var(--light-lavender); }
 .bg-lavender               { background-color: var(--lavender); }
 
 .bg-white                  { background-color: var(--white); }
@@ -41,6 +42,7 @@
     --twitter-blue:           #00aced;
     --sms-green:              #1fcc23;
     --light-orange:           rgb(255, 248, 229);
+    --light-lavender:         rgb(202, 182, 215);
     --lavender:               rgb(175, 159, 196);
 
     --lighten-5: rgba(255, 255, 255, .925);
