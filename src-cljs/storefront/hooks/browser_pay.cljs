@@ -239,6 +239,6 @@
                                                        :total           {:label  "Order Total"
                                                                          :amount (int (* 100 (:total order-with-default-shipping)))}}))
                             (reset! modified-order order-with-default-shipping)))
-    (.on request "shippingaddresschange" (fn [ev] (on-shipping-address-updated ev modified-order shipping-methods states)))
-    (.on request "shippingoptionchange" (fn [ev] (on-shipping-option-updated ev modified-order shipping-methods states)))
+    (.on request "shippingaddresschange" (fn [ev] (js/console.log ev) (on-shipping-address-updated ev modified-order shipping-methods states)))
+    (.on request "shippingoptionchange" (fn [ev] (js/console.log ev) (on-shipping-option-updated ev modified-order shipping-methods states)))
     (.on request "token" (fn [ev] (charge order-with-default-shipping session-id utm-params ev states)))))
