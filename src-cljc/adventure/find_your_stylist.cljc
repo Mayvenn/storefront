@@ -20,7 +20,8 @@
 (defn ^:private location->prefill-string
   [{:as location :keys [:zipcode :city :state]}]
   (when (seq location)
-    (str city ", " state " " zipcode ", USA")))
+    ;; City not guaranteed (c.f 12309)
+    (str (when city (str city ", ")) state " " zipcode ", USA")))
 
 (defmethod transitions/transition-state events/navigate-adventure-find-your-stylist [_ event args app-state]
   (let [preselected-location (get-in app-state keypaths/adventure-stylist-match-location)
@@ -57,7 +58,7 @@
      (when selected-location
        (messages/handle-message events/clear-selected-location))))
 
-(defn ^:private places-component-guts ;; TODO:rename
+(defn ^:private places-component-inner
   [value selected-location]
   [:div.flex.justify-center
    [:input.h4.border-none.px3.bg-white.col-10
@@ -79,7 +80,7 @@
                            :class          "flex items-center justify-center medium not-rounded x-group-item"}
                           (utils/route-to events/navigate-adventure-how-far)) "→")])
 #?(:cljs
-   (defn ^:private places-component [{:keys [value selected-location]} owner]
+   (defn ^:private places-component-outer [{:keys [value selected-location]} owner]
      (reify
        om/IDidMount
        (did-mount [this]
@@ -87,7 +88,7 @@
                                                                               :address-keypath keypaths/adventure-stylist-match-location}))
        om/IRender
        (render [_]
-         (sablono/html (places-component-guts value selected-location))))))
+         (sablono/html (places-component-inner value selected-location))))))
 
 (defn component
   [{:keys [header-data places-loaded? background-image stylist-match-zipcode selected-location]} owner _]
@@ -107,8 +108,8 @@
       [:div.col-12.mx-auto
        #?(:cljs
           (when places-loaded?
-            (om/build places-component {:value             stylist-match-zipcode
-                                        :selected-location selected-location})))]]]]))
+            (om/build places-component-outer {:value       stylist-match-zipcode
+                                              :selected-location selected-location})))]]]]))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
