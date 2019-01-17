@@ -18,8 +18,9 @@
    [storefront.transitions :as transitions]))
 
 (defn ^:private location->prefill-string
-  [{:keys [:zipcode :city :state]}]
-  (str city ", " state " " zipcode ", USA"))
+  [{:as location :keys [:zipcode :city :state]}]
+  (when (seq location)
+    (str city ", " state " " zipcode ", USA")))
 
 (defmethod transitions/transition-state events/navigate-adventure-find-your-stylist [_ event args app-state]
   (let [preselected-location (get-in app-state keypaths/adventure-stylist-match-location)
@@ -27,8 +28,8 @@
     (-> app-state
         (assoc-in keypaths/adventure-stylist-match-zipcode location-prefill))))
 
-(defmethod transitions/transition-state events/clear-selected-location [_ event {:keys [keypath value]} app-state]
-  (prn "$#%&^#$%^&  "keypaths/adventure-stylist-match-location)
+(defmethod transitions/transition-state events/clear-selected-location
+  [_ event {:keys [keypath value]} app-state]
   (-> app-state
       (assoc-in keypaths/adventure-stylist-match-location nil)))
 
@@ -41,33 +42,32 @@
         hair-flow?        (-> adventure-choices :flow #{"match-stylist"})]
     {:background-image      "https://ucarecdn.com/54f294be-7d57-49ba-87ce-c73394231f3c/aladdinMatchingOverlayImagePurpleGR203Lm3x.png"
      :stylist-match-zipcode (get-in data keypaths/adventure-stylist-match-zipcode)
-     :places-loaded? (get-in data storefront.keypaths/loaded-places)
+     :places-loaded?        (get-in data storefront.keypaths/loaded-places)
      :header-data           {:current-step 6
                              :title        [:div.medium "Find Your Stylist"]
                              :subtitle     (str "Step " (if hair-flow? 2 3) " of 3")
                              :back-link    events/navigate-adventure-match-stylist}
-     :selected-location (get-in data keypaths/adventure-stylist-match-location)}))
+     :selected-location     (get-in data keypaths/adventure-stylist-match-location)}))
 
 (defn ^:private places-component-guts
   [value selected-location]
   [:div.flex.justify-center
-   [:div.pl3.bg-white.border-none.flex-auto.not-rounded.x-group-item
-    [:label
-     [:input.col-12.h4.line-height-1
-      (merge {:value       (or value "")
-              :id          "stylist-match-zipcode"
-              :data-test   "stylist-match-zip"
-              :focused     true
-              :placeholder "zipcode"
-              :pattern     "[0-9]*"  ; ios/safari numpad
-              :inputmode   "numeric" ; android/chrome numpad
-              :data-ref    "stylist-match-zip"}
-             #?(:cljs
-                {:on-change (fn [^js/Event e]
-                              (messages/handle-message events/control-change-state
-                                                       {:keypath keypaths/adventure-stylist-match-zipcode
-                                                        :value   (.. e -target -value)})
-                              (messages/handle-message events/clear-selected-location))}))]]]
+   [:div.bg-white.flex.col-10
+    [:input.col-12.h4.border-none.px3
+     (merge {:value       (or value "")
+             :id          "stylist-match-zipcode"
+             :data-test   "stylist-match-zip"
+             :focused     true
+             :placeholder "zipcode"
+             :pattern     "[0-9]*"  ; ios/safari numpad
+             :inputmode   "numeric" ; android/chrome numpad
+             :data-ref    "stylist-match-zip"}
+            #?(:cljs
+               {:on-change (fn [^js/Event e]
+                             (messages/handle-message events/control-change-state
+                                                      {:keypath keypaths/adventure-stylist-match-zipcode
+                                                       :value   (.. e -target -value)})
+                             (messages/handle-message events/clear-selected-location))}))]]
    (ui/teal-button {:style          {:width  "45px"
                                      :height "45px"}
                     :disabled?      (not selected-location)
@@ -99,7 +99,7 @@
      [:div.pt8
       [:div.h3.medium.mb2.col-8.mx-auto "Where do you want to get your hair done?"]
 
-      [:div.col-10.mx-auto
+      [:div.col-12.mx-auto
        #?(:cljs
           (when places-loaded?
             (om/build places-component {:value             stylist-match-zipcode
