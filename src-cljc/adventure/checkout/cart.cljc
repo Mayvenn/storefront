@@ -134,7 +134,8 @@
 
 (def qualified-banner
   [:div.flex.items-center.bold
-   {:style {:height              "246px"
+   {:data-test "adventure-qualified-banner"
+    :style {:height              "246px"
             :padding-top         "43px"
             :background-size     "cover"
             :background-position "center"
@@ -150,7 +151,7 @@
    "Add more hair"))
 
 (defn add-more-hair-banner [number-of-items-needed]
-  [:div.bg-too-light-teal.py4.px2.my2
+  [:div.bg-too-light-teal.py4.px2.my2 {:data-test "adventure-add-more-hair-banner"}
    [:div.h5.medium.center.px2
     "Add " [:span.pyp1.px1.bold.white.bg-purple.center
             number-of-items-needed]

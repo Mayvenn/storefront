@@ -35,7 +35,8 @@
      [:div.flex.items-center
       {:style {:height "65px"}}
       [:a.col-1.pl3.inherit-color
-       (merge {:style {:height "30px"}}
+       (merge {:style {:height "30px"}
+               :data-test "adventure-back"}
               (utils/route-to back-link))
        (ui/back-arrow {:width "14"})]
       [:div.flex-auto.center
