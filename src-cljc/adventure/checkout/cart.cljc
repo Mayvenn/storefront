@@ -132,6 +132,33 @@
        detail]]
      [:div.h5.right {:data-test (str "line-item-price-ea-" id)} (some-> price mf/as-money)]]]])
 
+(def qualified-banner
+  [:div.flex.items-center.bold
+   {:style {:height              "246px"
+            :padding-top         "43px"
+            :background-size     "cover"
+            :background-position "center"
+            :background-image    "url('//ucarecdn.com/588d726c-1a23-43bf-b3fb-88c93dc8d2b2/-/format/auto/-/quality/normal/aladdinMatchingCelebratoryOverlayImagePurpleR203Lm3x.png')"}}
+   [:div.col.col-12.center.white
+    [:div.h5.light "This order qualifies for a"]
+    [:div.h1.shout "free install"]
+    [:div.h5.light "from a Mayvenn Stylist near you"]]])
+
+(def add-more-hair-button
+  (ui/teal-button
+   (utils/fake-href events/navigate-adventure-select-new-look)
+   "Add more hair"))
+
+(defn add-more-hair-banner [number-of-items-needed]
+  [:div.bg-too-light-teal.py4.px2.my2
+   [:div.h5.medium.center.px2
+    "Add " [:span.pyp1.px1.bold.white.bg-purple.center
+            number-of-items-needed]
+    " more " (ui/pluralize number-of-items-needed "item")
+    " to get a free install from a Mayvenn Certified Stylist"]
+
+   [:div.mt2 add-more-hair-button]])
+
 (defn full-component [{:keys [order
                               skus
                               promotion-banner
@@ -150,92 +177,40 @@
                               freeinstall-just-added?
                               cart-summary]} owner _]
   (component/create
-   [:div.container
-    [:div.flex.items-center.bold
-     {:style {:height              "246px"
-              :padding-top         "43px"
-              :background-size     "cover"
-              :background-position "center"
-              :background-image    "url('//ucarecdn.com/588d726c-1a23-43bf-b3fb-88c93dc8d2b2/-/format/auto/-/quality/normal/aladdinMatchingCelebratoryOverlayImagePurpleR203Lm3x.png')"}}
-     [:div.col.col-12.center.white
-      [:div.h5.light "This order qualifies for a"]
-      [:div.h1.shout "free install"]
-      [:div.h5.light "from a Mayvenn Stylist near you"]]]
+   (let [{:keys [number-of-items-needed add-more-hair?]} freeinstall-line-item-data]
+     [:div.container
+      (if add-more-hair?
+        (add-more-hair-banner number-of-items-needed)
+        qualified-banner)
+      [:div.p2
+       [:div.clearfix.mxn3
+        [:div.col-on-tb-dt.col-6-on-tb-dt.px3.pt2
+         {:data-test "cart-line-items"}
+         (display-adjustable-line-items recently-added-skus
+                                        line-items
+                                        skus
+                                        update-line-item-requests
+                                        delete-line-item-requests)
+         [:div.px2
+          (component/build suggestions/component suggestions nil)]
 
-    [:div.p2
-     [:div.clearfix.mxn3
-      [:div.col-on-tb-dt.col-6-on-tb-dt.px3.pt2
-       {:data-test "cart-line-items"}
-       (display-adjustable-line-items recently-added-skus
-                                      line-items
-                                      skus
-                                      update-line-item-requests
-                                      delete-line-item-requests)
-       [:div.px2
-        (component/build suggestions/component suggestions nil)]
+         (freeinstall-line-item freeinstall-just-added? freeinstall-line-item-data)]
 
-       (freeinstall-line-item freeinstall-just-added? freeinstall-line-item-data)]
+        [:div.col-on-tb-dt.col-6-on-tb-dt.px3
+         (component/build adventure-cart-summary/component cart-summary nil)
 
-      [:div.col-on-tb-dt.col-6-on-tb-dt.px3
-
-       (component/build adventure-cart-summary/component cart-summary nil)
-
-       [:div.bg-too-light-teal.py4.px2
-        [:div.h5.medium.center "You’ll be connected with your Certified Mayvenn Stylist after checkout."]
-        [:div.mt2
-         (ui/teal-button {:spinning? false
-                          :disabled? updating?
-                          :on-click  (utils/send-event-callback events/control-checkout-cart-submit)
-                          :data-test "start-checkout-button"}
-                         [:div "Check out"])]]
-
-       [:div.h5.black.center.py1.flex.justify-around.items-center
-        [:div.flex-grow-1.border-bottom.border-light-gray]
-        [:div.mx2 "or"]
-        [:div.flex-grow-1.border-bottom.border-light-gray]]
-
-       [:div.pb2
-        (ui/aqua-button {:on-click  (utils/send-event-callback events/control-checkout-cart-paypal-setup)
-                         :spinning? redirecting-to-paypal?
-                         :disabled? updating?
-                         :data-test "paypal-checkout"}
-                        [:div
-                         "Check out with "
-                         [:span.medium.italic "PayPal™"]])]
-
-       #?@(:cljs [(when show-browser-pay? (payment-request-button/built-component nil {}))])
-
-       (when share-carts?
-         [:div.py2
-          [:div.h6.center.pt2.black.bold "Is this bag for a customer?"]
-          (ui/navy-ghost-button {:on-click  (utils/send-event-callback events/control-cart-share-show)
-                                 :class     "border-width-2 border-navy"
-                                 :spinning? requesting-shared-cart?
-                                 :data-test "share-cart"}
-                                [:div.flex.items-center.justify-center.bold
-                                 (svg/share-arrow {:class  "stroke-navy mr1 fill-navy"
-                                                   :width  "24px"
-                                                   :height "24px"})
-                                 "Share your bag"])])]]]]))
-
-(defn empty-component [{:keys [promotions aladdin-or-phoenix?]} owner _]
-  (component/create
-   (ui/narrow-container
-    [:div.p2
-     [:.center {:data-test "empty-bag"}
-      [:div.m2 (svg/bag {:style {:height "70px" :width "70px"}
-                         :class "fill-black"})]
-
-      [:p.m2.h2.light "Your bag is empty."]
-
-      [:div.m2
-       (let [promo (promos/default-advertised-promotion promotions)]
-         (cond aladdin-or-phoenix? promos/freeinstall-description
-               promo               (:description promo)
-               :else               promos/bundle-discount-description))]]
-
-     (ui/teal-button (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
-                     "Shop Our Looks")])))
+         (if add-more-hair?
+           [:div
+            add-more-hair-button]
+           [:div.bg-too-light-teal.py4.px2
+            [:div.h5.medium.center
+             "You’ll be connected with your Certified Mayvenn Stylist after checkout."]
+            [:div.mt2
+             (ui/teal-button {:spinning? false
+                              :disabled? updating?
+                              :on-click  (utils/send-event-callback events/control-checkout-cart-submit)
+                              :data-test "start-checkout-button"}
+                             [:div "Check out"])]])]]]])))
 
 (defn ^:private variants-requests [data request-key variant-ids]
   (->> variant-ids
@@ -300,21 +275,15 @@
    :aladdin-or-phoenix? (experiments/v2-experience? data)})
 
 (defn component
-  [{:keys [fetching-order?
-           item-count
-           empty-cart
-           full-cart]} owner opts]
+  [{:keys [fetching-order? empty-cart full-cart]} owner opts]
   (component/create
    (if fetching-order?
      [:div.py3.h2 ui/spinner]
      [:div.col-7-on-dt.mx-auto
-      (if (zero? item-count)
-        (component/build empty-component empty-cart opts)
-        (component/build full-component full-cart opts))])))
+      (component/build full-component full-cart opts)])))
 
 (defn query [data]
   {:fetching-order? (utils/requesting? data request-keys/get-order)
-   :item-count      (orders/product-quantity (get-in data keypaths/order))
    :empty-cart      (empty-cart-query data)
    :full-cart       (full-cart-query data)})
 

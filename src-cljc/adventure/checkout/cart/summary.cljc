@@ -34,27 +34,27 @@
   (or (not (= price 0))
       (#{"amazon" "freeinstall" "install"} coupon-code)))
 
-(defn order-total-title [freeinstall-line-item-data]
-  (if freeinstall-line-item-data
-    "Hair + Install Total"
-    "Total"))
-
 (defn summary-total-section [{:keys [freeinstall-line-item-data order]}]
   [:div.py2.h2
    [:div.flex
-    [:div.flex-auto.light (order-total-title freeinstall-line-item-data)]
+    [:div.flex-auto.light "Hair + Install Total"]
     [:div.right-align.medium
      (some-> order :total mf/as-money)]]
-   (when freeinstall-line-item-data
-     [:div
-      [:div.flex.justify-end
-       [:div.h6.bg-purple.white.px1.nowrap.medium.mb1
-        "Includes Free Install"]]
-      [:div.flex.justify-end
-       [:div.h6.light.dark-gray.px1.nowrap.italic
-        "You've saved "
-        [:span.bold {:data-test "total-savings"}
-         (mf/as-money (:total-savings freeinstall-line-item-data))]]]])])
+   [:div
+    [:div.flex.justify-end
+     [:div.h6.bg-purple.white.px1.nowrap.medium.mb1
+      "Includes Free Install"]]
+    [:div.flex.justify-end
+     [:div.h6.light.dark-gray.px1.nowrap.italic
+      "You've saved "
+      [:span.bold {:data-test "total-savings"}
+       (mf/as-money (:total-savings freeinstall-line-item-data))]]]]])
+
+(def add-more-items-section
+  [:div.p2.flex.flex-wrap
+   [:div.col-5.h5 "Hair + Install Total"]
+   [:div.col-7.h6.dark-gray.right-align
+    "Add 3 hair items to calculate total price"]])
 
 (defn component
   [{:keys [freeinstall-line-item-data
@@ -111,11 +111,6 @@
      :order                      order
      :shipping-cost              (* (:quantity shipping-item) (:unit-price shipping-item))
      :adjustments-including-tax  (orders/all-order-adjustments order)
-     :promo-data                 {:coupon-code   (get-in data keypaths/cart-coupon-code)
-                                  :applying?     (utils/requesting? data request-keys/add-promotion-code)
-                                  :focused       (get-in data keypaths/ui-focus)
-                                  :error-message (get-in data keypaths/error-message)
-                                  :field-errors  (get-in data keypaths/field-errors)}
      :subtotal                   (cond-> (orders/products-subtotal order)
                                    freeinstall-line-item-data
                                    (+ (spice/parse-double (:price freeinstall-line-item-data))))}))
