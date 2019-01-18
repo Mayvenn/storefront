@@ -117,36 +117,6 @@
 (defn ^:export debug-app-state []
   (clj->js @app-state))
 
-(when (not= js/environment "production")
-  (defn ^:export add-to-bag [sku-id quantity]
-    (let [data             @app-state
-          session-id       (get-in data storefront.keypaths/session-id)
-          store-stylist-id (get-in data storefront.keypaths/store-stylist-id)
-          sku              {:catalog/sku-id sku-id}]
-      (api/add-sku-to-bag session-id
-                          {:sku        sku
-                           :stylist-id store-stylist-id
-                           :quantity   quantity}
-                          #(handle-message app-state events/api-success-add-sku-to-bag
-                                           {:order    %
-                                            :quantity quantity
-                                            :sku      sku})))
-    (js/console.log "Added")))
-
-(when (not= js/environment "production")
-  (defn ^:export add-freeinstall-promo []
-    (let [data         @app-state
-          session-id   (get-in data storefront.keypaths/session-id)
-          order-number (get-in data storefront.keypaths/order-number)
-          token        (get-in data storefront.keypaths/order-token)]
-      (storefront.api/add-promotion-code
-       session-id
-       order-number
-       token
-       "freeinstall"
-       true)
-      (js/console.log "Promo"))))
-
 (defn on-jsload []
   (handle-message app-state events/app-stop)
   (reload-app app-state))
