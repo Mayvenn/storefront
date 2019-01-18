@@ -667,7 +667,8 @@
                                          ->html-resp
                                          (util.response/status 404))
           is-adventure?             (routes/sub-page? nav-message [events/navigate-adventure])
-          is-cart?                  (= (first nav-message) events/navigate-cart)]
+          is-cart?                  (= (first nav-message) events/navigate-cart)
+          is-checkout?              (routes/sub-page? nav-message [events/navigate-checkout])]
       (cond
         (and on-install-page?
              (not on-freeinstall-subdomain?)) (not-found)
@@ -675,7 +676,8 @@
         is-www-prefixed?                      (util.response/redirect (store-url "freeinstall" environment req))
         (or on-install-page?
             is-adventure?
-            is-cart?)                         ((-> h
+            is-cart?
+            is-checkout?)                     ((-> h
                                                    (wrap-fetch-store (:storeback-config ctx))
                                                    (wrap-fetch-order (:storeback-config ctx))
                                                    (wrap-cookies (storefront-site-defaults (:environment ctx))))

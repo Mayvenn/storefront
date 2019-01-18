@@ -224,12 +224,13 @@
                        :data-test "mobile-cart"}
                       cart)]]))
 
-(def minimal-component
+(defn minimal-component [adventure?]
   (component/html
    [:div.border-bottom.border-gray.flex.items-center
-    [:div.flex-auto.py3 (ui/clickable-logo {:event events/navigate-home
-                                            :data-test "header-logo"
-                                            :height "40px"})]]))
+    [:div.flex-auto.py3 (ui/clickable-logo
+                         (merge (when-not adventure? {:event events/navigate-home})
+                                {:data-test "header-logo"
+                                 :height    "40px"}))]]))
 
 (defn query [data]
   (-> (slideout-nav/basic-query data)
@@ -242,5 +243,5 @@
    (when (get-in data keypaths/hide-header?)
      {:class "hide-on-mb-tb"})
    (if (nav/show-minimal-header? (get-in data keypaths/navigation-event))
-     minimal-component
+     (minimal-component (= "freeinstall" (get-in data keypaths/store-slug)))
      (component/build component (query data) nil))])
