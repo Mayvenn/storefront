@@ -17,7 +17,7 @@
    :buttons      (mapv (fn [%] {:text             (str % " miles")
                                 :data-test-suffix (str %)
                                 :value            {:how-far %}
-                                :target           events/navigate-adventure-home})
+                                :target           events/navigate-adventure-matching-stylist-wait})
                        [10 25 50 100])
    :footer       [:div.h6.black.mt3
                   [:div "Not ready to find a stylist?"]

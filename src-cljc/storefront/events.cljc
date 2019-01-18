@@ -465,6 +465,7 @@
 (defpath navigate-adventure-how-far)
 (defpath navigate-adventure-select-new-look)
 (defpath navigate-adventure-look-detail)
+(defpath navigate-adventure-matching-stylist-wait)
 
 (defpath adventure-zipcode-component-mounted)
 (defpath clear-selected-location)
