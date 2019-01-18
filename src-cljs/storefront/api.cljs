@@ -941,3 +941,15 @@
               :user-id    user-id
               :user-token user-token}
     :handler #(messages/handle-message events/api-success-stylist-service-menu-fetch %)}))
+
+(defn fetch-stylists-within-radius [cache {:as location :keys [latitude longitude]} radius limit]
+  (cache-req
+   cache
+   GET
+   "/v1/stylist/within-radius"
+   request-keys/fetch-stylists-within-radius
+   {:params  {:latitude  latitude
+              :longitude longitude
+              :radius    radius
+              :limit     limit}
+    :handler #(messages/handle-message events/api-success-fetch-stylists-within-radius %)}))

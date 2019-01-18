@@ -287,6 +287,9 @@
 (defpath api-success-send-stylist-referrals)
 (defpath api-partial-success-send-stylist-referrals)
 
+(defpath api-fetch-stylists-within-radius)
+(defpath api-success-fetch-stylists-within-radius)
+
 (defpath api-success-fetch-cms-data)
 
 (defpath api-success-add-to-bag)
