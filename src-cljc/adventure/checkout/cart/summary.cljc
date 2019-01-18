@@ -50,11 +50,13 @@
       [:span.bold {:data-test "total-savings"}
        (mf/as-money (:total-savings freeinstall-line-item-data))]]]]])
 
-(def add-more-items-section
+(defn add-more-items-section [number-of-items-needed]
   [:div.p2.flex.flex-wrap
    [:div.col-5.h5 "Hair + Install Total"]
    [:div.col-7.h6.dark-gray.right-align
-    "Add 3 hair items to calculate total price"]])
+    "Add " number-of-items-needed
+    " more " (ui/pluralize number-of-items-needed "hair item")
+    " to calculate total price"]])
 
 (defn component
   [{:keys [freeinstall-line-item-data
@@ -99,9 +101,10 @@
 
        (when (pos? store-credit)
          (summary-row "Store Credit" (- store-credit)))]]]
-    (if (pos? (:number-of-items-needed freeinstall-line-item-data))
-      add-more-items-section
-      (summary-total-section data))]))
+    (let [number-of-items-needed (:number-of-items-needed freeinstall-line-item-data)]
+      (if (pos? number-of-items-needed)
+        (add-more-items-section number-of-items-needed)
+        (summary-total-section data)))]))
 
 (defn query [data]
   (let [order                      (get-in data keypaths/order)
