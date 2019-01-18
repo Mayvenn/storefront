@@ -89,9 +89,19 @@
               (- 0 (:price freeinstall-line-item-data))
               price))))
 
+       (when (empty? (orders/product-items order))
+         (summary-row
+          {:key       (str -1 "-" name)
+           :data-test "freeinstall"}
+          [:div.flex.items-center.align-middle
+           "Free Install"]
+          (- 0 (:price freeinstall-line-item-data))))
+
        (when (pos? store-credit)
          (summary-row "Store Credit" (- store-credit)))]]]
-    (summary-total-section data)]))
+    (if (pos? (:number-of-items-needed freeinstall-line-item-data))
+      add-more-items-section
+      (summary-total-section data))]))
 
 (defn query [data]
   (let [order                      (get-in data keypaths/order)
