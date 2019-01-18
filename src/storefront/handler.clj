@@ -674,9 +674,8 @@
         (not on-freeinstall-subdomain?)       nil ;; defer handling elsewhere for non-freeinstall domains
         is-www-prefixed?                      (util.response/redirect (store-url "freeinstall" environment req))
         (or on-install-page?
-            is-adventure?)                    (h req)
-
-        is-cart?                              ((-> h
+            is-adventure?
+            is-cart)                          ((-> h
                                                    (wrap-fetch-store (:storeback-config ctx))
                                                    (wrap-fetch-order (:storeback-config ctx))
                                                    (wrap-cookies (storefront-site-defaults (:environment ctx))))
