@@ -49,7 +49,8 @@
    [:div.white.flex.flex-auto.flex-column.items-center.pt4
     {:style {:background "linear-gradient(#cdb8d9,#9a8fb4)"}}
     [:div.mt10.mb2
-     [:img {:src "https://ucarecdn.com/4e41237c-fd87-48ac-89dd-8bbde45ee569/matching-stylist-wait.gif"}]]
+     [:img {:src "https://ucarecdn.com/9b6a76cc-7c8e-4715-8973-af2daa15a5da/matching-stylist-wait.gif"
+            :width "90px"}]]
     [:div.col-8.h3.my2.medium.center "Matching you with a" [:br] " Mayvenn Certified Stylist..."]
     [:ul.col-7.h6 {:style {:list-style-image "url(https://ucarecdn.com/2560cee9-9ac7-4706-ade4-2f92d127b565/-/resize/12x/checkmark.png)"}}
      (mapv (fn [%] [:li.mb1 %])
