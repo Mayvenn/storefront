@@ -23,8 +23,8 @@
       (->> place
            :address_components
            (map short-names)
-           (into {:lat lat
-                  :lng lng})))))
+           (into {:latitude  lat
+                  :longitude lng})))))
 
 (defn address [autocomplete]
   (when-let [place (js->clj (.getPlace autocomplete) :keywordize-keys true)]
