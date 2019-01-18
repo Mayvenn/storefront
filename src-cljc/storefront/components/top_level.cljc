@@ -34,6 +34,7 @@
             [adventure.match-stylist :as adventure.match-stylist]
             [adventure.find-your-stylist :as adventure.find-your-stylist]
             [adventure.how-far :as adventure.how-far]
+            [adventure.matching-stylist-wait :as adventure.matching-stylist-wait]
             [adventure.shop-hair :as adventure.shop-hair]
             [adventure.how-shop-hair :as adventure.how-shop-hair]
             [adventure.select-new-look :as adventure.select-new-look]
@@ -96,39 +97,40 @@
          events/navigate-checkout-confirmation                      (partial checkout-returning-or-guest/requires-sign-in-or-initiated-guest-checkout checkout-confirmation/built-component)
          events/navigate-order-complete                             checkout-complete/built-component])
 
-    events/navigate-home                        home/built-component
-    events/navigate-category                    category/built-component
-    events/navigate-product-details             product-details/built-component
-    events/navigate-shared-cart                 shared-cart/built-component
-    events/navigate-checkout-processing         checkout-processing/built-component
-    events/navigate-cart                        cart/built-component
-    events/navigate-voucher-redeem              voucher-redeem/built-component
-    events/navigate-voucher-redeemed            voucher-redeemed/built-component
-    events/navigate-mayvenn-made                mayvenn-made.home/built-component
-    events/navigate-content-guarantee           content/built-component
-    events/navigate-content-help                content/built-component
-    events/navigate-content-privacy             content/built-component
-    events/navigate-content-tos                 content/built-component
-    events/navigate-content-about-us            content/built-component
-    events/navigate-content-ugc-usage-terms     content/built-component
-    events/navigate-content-program-terms       content/built-component
-    events/navigate-content-our-hair            content/built-component
-    events/navigate-sign-in                     sign-in/built-component
-    events/navigate-sign-up                     sign-up/built-component
-    events/navigate-forgot-password             forgot-password/built-component
-    events/navigate-gallery                     gallery/built-component
-    events/navigate-adventure-home              adventure.home/built-component
-    events/navigate-adventure-time-frame        adventure.time-frame/built-component
-    events/navigate-adventure-budget            adventure.budget/built-component
-    events/navigate-adventure-get-in-contact    adventure.get-in-contact/built-component
-    events/navigate-adventure-what-next         adventure.what-next/built-component
-    events/navigate-adventure-match-stylist     adventure.match-stylist/built-component
-    events/navigate-adventure-find-your-stylist adventure.find-your-stylist/built-component
-    events/navigate-adventure-how-far           adventure.how-far/built-component
-    events/navigate-adventure-shop-hair         adventure.shop-hair/built-component
-    events/navigate-adventure-how-shop-hair     adventure.how-shop-hair/built-component
-    events/navigate-adventure-select-new-look   adventure.select-new-look/built-component
-    events/navigate-adventure-look-detail       adventure.look-detail/built-component
+    events/navigate-home                            home/built-component
+    events/navigate-category                        category/built-component
+    events/navigate-product-details                 product-details/built-component
+    events/navigate-shared-cart                     shared-cart/built-component
+    events/navigate-checkout-processing             checkout-processing/built-component
+    events/navigate-cart                            cart/built-component
+    events/navigate-voucher-redeem                  voucher-redeem/built-component
+    events/navigate-voucher-redeemed                voucher-redeemed/built-component
+    events/navigate-mayvenn-made                    mayvenn-made.home/built-component
+    events/navigate-content-guarantee               content/built-component
+    events/navigate-content-help                    content/built-component
+    events/navigate-content-privacy                 content/built-component
+    events/navigate-content-tos                     content/built-component
+    events/navigate-content-about-us                content/built-component
+    events/navigate-content-ugc-usage-terms         content/built-component
+    events/navigate-content-program-terms           content/built-component
+    events/navigate-content-our-hair                content/built-component
+    events/navigate-sign-in                         sign-in/built-component
+    events/navigate-sign-up                         sign-up/built-component
+    events/navigate-forgot-password                 forgot-password/built-component
+    events/navigate-gallery                         gallery/built-component
+    events/navigate-adventure-home                  adventure.home/built-component
+    events/navigate-adventure-time-frame            adventure.time-frame/built-component
+    events/navigate-adventure-budget                adventure.budget/built-component
+    events/navigate-adventure-get-in-contact        adventure.get-in-contact/built-component
+    events/navigate-adventure-what-next             adventure.what-next/built-component
+    events/navigate-adventure-match-stylist         adventure.match-stylist/built-component
+    events/navigate-adventure-find-your-stylist     adventure.find-your-stylist/built-component
+    events/navigate-adventure-how-far               adventure.how-far/built-component
+    events/navigate-adventure-matching-stylist-wait adventure.matching-stylist-wait/built-component
+    events/navigate-adventure-shop-hair             adventure.shop-hair/built-component
+    events/navigate-adventure-how-shop-hair         adventure.how-shop-hair/built-component
+    events/navigate-adventure-select-new-look       adventure.select-new-look/built-component
+    events/navigate-adventure-look-detail           adventure.look-detail/built-component
     home/built-component))
 
 (defn sticky-promo-bar [data]
