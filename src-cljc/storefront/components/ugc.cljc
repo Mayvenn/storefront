@@ -47,7 +47,7 @@
            {:keys [view-look view-other]}                 links
            [nav-event nav-args]                           (or view-look
                                                               view-other)]]
-      [:div.p2.col-12.col-6-on-tb.col-4-on-dt
+      [:div.p2.col-12.col-6-on-tb.col-4-on-dt.left-align
        (merge {:key (str "small-" id)}
               (util/route-to nav-event nav-args {:back-copy  (:back-copy copy)
                                                  :short-name (:short-name copy)}))
@@ -66,7 +66,7 @@
             texture]])]
        (let [color-detail (get color-details (:color look-attributes))]
          [:div.bg-white.p1.px2.pb2
-          [:div.h5.medium.mt1.mb2.black
+          [:div.h5.medium.mt1.black
            [:div.flex.items-center.mb2
             [:div.flex-auto
              (if color-detail
