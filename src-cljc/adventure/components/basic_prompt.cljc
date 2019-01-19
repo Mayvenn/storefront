@@ -21,8 +21,6 @@
            prompt
            mini-prompt
            header-data
-           background-image
-           background-position
            button]} _ _]
   (let [button-component (if (= :teal (:color button))
                            teal-rect-button
@@ -30,10 +28,7 @@
     (component/create
      [:div.bg-lavender.white.center.flex.flex-auto.flex-column
       (maps/deep-merge
-       {:style {:background-image    (str "url(" background-image ")")
-                :background-position "left 1em bottom"
-                :background-repeat   "no-repeat"
-                :background-size     "contain"}}
+       {:class "bg-adventure-basic-prompt"}  ;; By not using .notation this allows override
        background-overrides)
       (when header-data
         (header/built-component header-data nil))

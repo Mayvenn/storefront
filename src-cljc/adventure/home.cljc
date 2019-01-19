@@ -6,14 +6,16 @@
             [storefront.accessors.experiments :as experiments]))
 
 (defn ^:private query [data]
-  {:prompt           "Welcome! We can't wait for you to get a free install."
-   :mini-prompt      "Ready? Let's get started."
-   :show-logo?       true
-   :background-image "//ucarecdn.com/27601192-f64b-46c1-98ba-1323769180b0/-/format/auto/-/quality/normal/aladdinMatchingHeroImageAR103Lm3x.png"
-   :button           {:text      "Get started"
-                      :data-test "adventure-home-choice-get-started"
-                      :color     :teal
-                      :target    events/navigate-adventure-time-frame}})
+  {:prompt               "Welcome! We can't wait for you to get a free install."
+   :mini-prompt          "Ready? Let's get started."
+   :show-logo?           true
+   :background-overrides {:style
+                          {:background-image
+                           "//ucarecdn.com/27601192-f64b-46c1-98ba-1323769180b0/-/format/auto/-/quality/normal/aladdinMatchingHeroImageAR103Lm3x.png"}}
+   :button               {:text      "Get started"
+                          :data-test "adventure-home-choice-get-started"
+                          :color     :teal
+                          :target    events/navigate-adventure-time-frame}})
 
 (defn built-component
   [data opts]
