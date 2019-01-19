@@ -7,16 +7,10 @@
             [storefront.transitions :as transitions]
             [storefront.events :as events]
             [storefront.effects :as effects]
-            [storefront.accessors.pixlee :as pixlee]
             [storefront.platform.messages :as messages]
             [storefront.component :as component]
-            [storefront.keypaths :as keypaths]
-            [storefront.components.ui :as ui]
-            [storefront.platform.component-utils :as utils]
             [adventure.keypaths :as adventure-keypaths]
-            [spice.maps :as maps]
-            [spice.date :as date]
-            [adventure.components.header :as header]))
+            [spice.date :as date]))
 
 (defmethod transitions/transition-state events/navigate-adventure-matching-stylist-wait [_ _ _ app-state]
   (assoc-in app-state adventure-keypaths/adventure-matching-stylists-timer (date/add-delta (date/now) {:seconds 3})))
@@ -44,7 +38,7 @@
     (messages/handle-later events/navigate-adventure-home {} ms-to-wait)))
 
 (defn ^:private component
-  [{:keys [] :as data} _ _]
+  [_ _ _]
   (component/create
    [:div.white.flex.flex-auto.flex-column.items-center.pt4
     {:style {:background "linear-gradient(#cdb8d9,#9a8fb4)"}}

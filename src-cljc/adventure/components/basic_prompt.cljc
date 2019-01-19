@@ -39,8 +39,7 @@
           {:class "justify-end"}))
        (when show-logo?
          [:div.flex.items-center.justify-center.center.mt4.mb6.pb3
-          [:div.mr4
-           (ui/ucare-img {:width "140"} "1970d88b-3798-4914-8a91-74288b09cc77")]])
+          [:div.mr4 (ui/ucare-img {:width "140"} "1970d88b-3798-4914-8a91-74288b09cc77")]])
        [:div
         [:div.h3.medium prompt]
         [:div.mt1.h5 mini-prompt]]]
@@ -49,5 +48,3 @@
         (button-component (merge {:data-test (:data-test button)}
                                  (utils/route-to (:target button)))
                           (:text button))]]])))
-
-;; Pages that use this component: Welcome/Home, find your stylist, shop-hair, match-stylist

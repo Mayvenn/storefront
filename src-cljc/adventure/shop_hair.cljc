@@ -14,9 +14,9 @@
      :header-data          {:current-step 1
                             :subtitle     (str "Welcome to Step " (if hair-flow? 2 3))
                             :back-link    events/navigate-adventure-what-next}
-     :button               {:text   "Next"
+     :button               {:text      "Next"
                             :data-test "shop-hair-button"
-                            :target events/navigate-adventure-how-shop-hair}}))
+                            :target    events/navigate-adventure-how-shop-hair}}))
 
 (defn built-component
   [data opts]
