@@ -1,9 +1,11 @@
-.bg-fb-blue                { background-color: var(--facebook-blue); }
-.bg-twitter-blue           { background-color: var(--twitter-blue); }
-.bg-sms-green              { background-color: var(--sms-green); }
-.bg-light-orange           { background-color: var(--light-orange); }
-.bg-light-lavender         { background-color: var(--light-lavender); }
-.bg-lavender               { background-color: var(--lavender); }
+.bg-fb-blue                 { background-color: var(--facebook-blue); }
+.bg-twitter-blue            { background-color: var(--twitter-blue); }
+.bg-sms-green               { background-color: var(--sms-green); }
+.bg-light-orange            { background-color: var(--light-orange); }
+.bg-light-lavender          { background-color: var(--light-lavender); }
+.bg-lavender                { background-color: var(--lavender); }
+.bg-lavender-gradient-light { background-color: var(--lavender-gradient-light); }
+.bg-lavender-gradient-dark  { background-color: var(--lavender-gradient-dark); }
 
 .bg-white                  { background-color: var(--white); }
 .bg-fate-white             { background-color: var(--fate-white); }
@@ -44,6 +46,9 @@
     --light-orange:           rgb(255, 248, 229);
     --light-lavender:         rgb(202, 182, 215);
     --lavender:               rgb(175, 159, 196);
+
+    --lavender-gradient-light: rgb(205, 184, 217);
+    --lavender-gradient-dark: rgb(154, 143, 180);
 
     --lighten-5: rgba(255, 255, 255, .925);
     --clear: rgba(0, 0, 0, 0);

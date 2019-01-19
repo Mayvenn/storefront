@@ -268,6 +268,18 @@
       [:div color-class]
       [:div "#" hex]]]]])
 
+(defn color-gradient-swatch [color-class light-hex dark-hex]
+  [:div.col-6.col-4-on-tb.col-2-on-dt
+   [:div.p1
+    [:div.p4
+     {
+      :style {:background (str "linear-gradient(#" light-hex ", #" dark-hex ")")
+              :height "8em"}}
+     [:div.mt4
+      [:div color-class]
+      [:div "#" light-hex]
+      [:div "#" dark-hex]]]]])
+
 (def ^:private colors
  [:section
   (header "Palette")
@@ -297,7 +309,16 @@
    (color-swatch "light-orange" "fff8e5")
    (color-swatch "orange" "ffc520")
    (color-swatch "transparent-light-teal" "9fe5d5cc")
-   (color-swatch "hover-only-teal-gray" "e5eeec")]
+   (color-swatch "hover-only-teal-gray" "e5eeec")
+   (color-swatch "purple" "7e006d")]
+
+  (subheader "Adventure Flow")
+  [:div.flex.flex-wrap.mxn1.mb4
+   (color-swatch "lavender" "af9fc4")
+   (color-swatch "light-lavender" "cab6d7")
+   (color-gradient-swatch "Lavender-gradient" "cdB8d9" "9a8fb4")
+   (color-swatch "lavender-gradient-light" "cdB8d9")
+   (color-swatch "lavender-gradient-dark" "9a8fb4")]
 
   (subheader "Third party")
   [:div.flex.flex-wrap.mxn1.mb4
