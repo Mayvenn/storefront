@@ -73,8 +73,10 @@
      [:a.medium.titleize.h5 {:data-test (str "line-item-title-" id)}
       title]
      [:div.h6.mt1.line-height-1
-      [:div.pyp2 {:data-test (str "line-item-price-ea-" id)}
-       "Price Each: " (mf/as-money-without-cents price)]]]]])
+      [:div.mb1.mt0 (str "w/ " "a Certified Mayvenn Stylist")
+       [:ul.h6.purple-checkmark.pl4.mt1
+        (mapv (fn [%] [:li %])
+              ["Licenced Salon Stylist" "Near you" "Experienced"])]]]]]])
 
 (defn component
   [{:keys [available-store-credit
@@ -125,6 +127,7 @@
                                          {:read-only?             true
                                           :use-store-credit?      (not install-or-free-install-applied?)
                                           :available-store-credit available-store-credit}))
+        [:p.h6.my4.center.col-10.mx-auto.line-height-3 "A text message will be sent to connect you and your stylist after your order is placed."]
         [:div.col-12.col-6-on-tb-dt.mx-auto
          (checkout-button checkout-button-data)]]]]])))
 
