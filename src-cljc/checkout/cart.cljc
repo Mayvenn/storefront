@@ -405,22 +405,21 @@
   (component/build component (query data) opts))
 
 (defn layout [data nav-event]
-  (let [adventure? (experiments/adventure? data)]
-    (if adventure?
-      (adventure-cart/layout data nav-event)
+  (if (= (get-in data keypaths/store-slug) "freeinstall")
+    (adventure-cart/layout data nav-event)
 
-      [:div.flex.flex-column {:style {:min-height    "100vh"
-                                      :margin-bottom "-1px"}}
-       (stylist-banner/built-component data nil)
-       (promotion-banner/built-component data nil)
-       #?(:cljs (popup/built-component (popup/query data) nil))
+    [:div.flex.flex-column {:style {:min-height    "100vh"
+                                    :margin-bottom "-1px"}}
+     (stylist-banner/built-component data nil)
+     (promotion-banner/built-component data nil)
+     #?(:cljs (popup/built-component (popup/query data) nil))
 
-       (header/built-component data nil)
-       [:div.relative.flex.flex-column.flex-auto
-        (flash/built-component data nil)
+     (header/built-component data nil)
+     [:div.relative.flex.flex-column.flex-auto
+      (flash/built-component data nil)
 
-        [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
-         (built-component data nil)]
+      [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
+       (built-component data nil)]
 
-        [:footer
-         (storefront.footer/built-component data nil)]]])))
+      [:footer
+       (storefront.footer/built-component data nil)]]]))
