@@ -10,16 +10,11 @@
    [storefront.request-keys :as request-keys]
    [storefront.components.svg :as svg]))
 
-(defn checked-item [text]
-  [:div.flex.items-center
-   [:div.mr2 (ui/ucare-img {:width "12"} "2560cee9-9ac7-4706-ade4-2f92d127b565")]
-   text])
-
 (def line-item-detail
-  [:div (str "w/ " "a Certified Mayvenn Stylist")
-   (checked-item "Licensed Salon Stylist")
-   (checked-item "Near you")
-   (checked-item "Experienced")])
+  [:div.mb1.mt0 (str "w/ " "a Certified Mayvenn Stylist")
+   [:ul.h6.purple-checkmark.pl4
+    (mapv (fn [%] [:li %])
+          ["Licenced Salon Stylist" "Near you" "experienced"])]])
 
 (defn freeinstall-line-item-query [data]
   (let [order                 (get-in data keypaths/order)

@@ -35,6 +35,10 @@ dl, ol, ul {
   margin-bottom: var(--list-margin-bottom);
 }
 
+ul.purple-checkmark {
+    list-style-image: url('https://ucarecdn.com/2560cee9-9ac7-4706-ade4-2f92d127b565/-/resize/12x/checkmark.png');
+}
+
 a {
   text-decoration: none;
 }

@@ -52,7 +52,7 @@
      [:img {:src "https://ucarecdn.com/9b6a76cc-7c8e-4715-8973-af2daa15a5da/matching-stylist-wait.gif"
             :width "90px"}]]
     [:div.col-8.h3.my2.medium.center "Matching you with a" [:br] " Mayvenn Certified Stylist..."]
-    [:ul.col-7.h6 {:style {:list-style-image "url(https://ucarecdn.com/2560cee9-9ac7-4706-ade4-2f92d127b565/-/resize/12x/checkmark.png)"}}
+    [:ul.col-7.h6.purple-checkmark
      (mapv (fn [%] [:li.mb1 %])
            ["Licenced Salon Stylist" "Mayvenn Certified" "In your area"])]]))
 
