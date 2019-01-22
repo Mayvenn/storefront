@@ -14,6 +14,7 @@
             [storefront.platform.component-utils :as utils]
             [adventure.keypaths :as adventure-keypaths]
             [spice.maps :as maps]
+            [spice.core :as spice]
             [adventure.components.header :as header]))
 
 (defn ^:private query [data]
@@ -65,4 +66,4 @@
 (defmethod transitions/transition-state events/navigate-adventure-look-detail [_ _ event-args app-state]
   (-> app-state
       (assoc-in keypaths/selected-album-keyword :adventure)
-      (assoc-in keypaths/selected-look-id (spice.core/parse-int (:look-id event-args)))))
+      (assoc-in keypaths/selected-look-id (spice/parse-int (:look-id event-args)))))

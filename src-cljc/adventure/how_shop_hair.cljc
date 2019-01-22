@@ -21,7 +21,7 @@
                     {:text             "Give me pre-made bundle sets"
                      :data-test-suffix "bundle-sets"
                      :value            {:how-shop :bundle-sets}
-                     :target           nil}
+                     :target           events/navigate-adventure-select-bundle-set}
                     {:text             "Let me shop individual bundles"
                      :data-test-suffix "individual-bundles"
                      :value            {:how-shop :individual-bundles}

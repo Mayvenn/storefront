@@ -469,6 +469,7 @@
 (defpath navigate-adventure-select-new-look)
 (defpath navigate-adventure-look-detail)
 (defpath navigate-adventure-matching-stylist-wait)
+(defpath navigate-adventure-select-bundle-set)
 
 (defpath adventure-zipcode-component-mounted)
 (defpath clear-selected-location)

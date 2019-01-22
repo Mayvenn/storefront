@@ -139,7 +139,8 @@
                            :yaki-straight        1814286
                            :dyed                 2750237
                            :wigs                 1880465
-                           :adventure            4323429}}
+                           :adventure            4323429
+                           :adventure-bundle-set 4331694}}
 
     {:api-key                "iiQ27jLOrmKgTfIcRIk"
      :copy                   pixlee-copy
@@ -166,4 +167,5 @@
                               :yaki-straight        1912642
                               :dyed                 2918644
                               :wigs                 2918645
-                              :adventure            4018488}}))
+                              :adventure            4018488
+                              :adventure-bundle-set 4336271}}))
