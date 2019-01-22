@@ -5,6 +5,7 @@
                        [storefront.config :as config]])
             [storefront.events :as events]
             [storefront.effects :as effects]
+            [storefront.transitions :as transitions]
             [storefront.accessors.pixlee :as pixlee]
             [storefront.platform.messages :as messages]
             [storefront.component :as component]
@@ -37,7 +38,7 @@
                          first
                          :facet/options
                          (maps/index-by :option/slug))
-     :looks         (pixlee/images-in-album (get-in data keypaths/ugc) :adventure)}))
+     :looks         (pixlee/images-in-album (get-in data keypaths/ugc) (get-in data keypaths/selected-album-keyword))}))
 
 (defn ^:private component
   [{:keys [prompt mini-prompt prompt-image header-data data-test looks] :as data} _ _]
@@ -67,3 +68,12 @@
 
 (defmethod effects/perform-effects events/navigate-adventure-select-new-look [_ _ _ _ _]
   #?(:cljs (pixlee-hook/fetch-album-by-keyword :adventure)))
+
+(defmethod transitions/transition-state events/navigate-adventure-select-new-look [_ _ _ app-state]
+  (assoc-in app-state keypaths/selected-album-keyword :adventure))
+
+(defmethod effects/perform-effects events/navigate-adventure-select-bundle-set [_ _ _ _ _]
+  #?(:cljs (pixlee-hook/fetch-album-by-keyword :adventure-bundle-set)))
+
+(defmethod transitions/transition-state events/navigate-adventure-select-bundle-set [_ _ _ app-state]
+  (assoc-in app-state keypaths/selected-album-keyword :adventure-bundle-set))

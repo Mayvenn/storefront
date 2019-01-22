@@ -131,6 +131,7 @@
     events/navigate-adventure-how-shop-hair         adventure.how-shop-hair/built-component
     events/navigate-adventure-select-new-look       adventure.select-new-look/built-component
     events/navigate-adventure-look-detail           adventure.look-detail/built-component
+    events/navigate-adventure-select-bundle-set     adventure.select-new-look/built-component
     home/built-component))
 
 (defn sticky-promo-bar [data]
