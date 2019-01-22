@@ -88,7 +88,8 @@
            install-or-free-install-applied?
            freeinstall-line-item-data
            confirmation-summary
-           checkout-button-data]}
+           checkout-button-data
+           store-slug]}
    owner]
   (om/component
    (html
@@ -127,7 +128,8 @@
                                          {:read-only?             true
                                           :use-store-credit?      (not install-or-free-install-applied?)
                                           :available-store-credit available-store-credit}))
-        [:p.h6.my4.center.col-10.mx-auto.line-height-3 "A text message will be sent to connect you and your stylist after your order is placed."]
+        (when (= store-slug "freeinstall")
+          [:p.h6.my4.center.col-10.mx-auto.line-height-3 "A text message will be sent to connect you and your stylist after your order is placed."])
         [:div.col-12.col-6-on-tb-dt.mx-auto
          (checkout-button checkout-button-data)]]]]])))
 
@@ -148,7 +150,8 @@
      :available-store-credit           (get-in data keypaths/user-total-available-store-credit)
      :checkout-button-data             (checkout-button-query data)
      :confirmation-summary             (confirmation-summary/query data)
-     :freeinstall-line-item-data       (cart-items/freeinstall-line-item-query data)}))
+     :freeinstall-line-item-data       (cart-items/freeinstall-line-item-query data)
+     :store-slug                       (get-in data keypaths/store-slug)}))
 
 (defn built-component [data opts]
   (let [query-data (query data)]
