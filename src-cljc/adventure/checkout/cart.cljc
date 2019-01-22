@@ -304,10 +304,12 @@
      [:div.col-1.flex.justify-start.items-start
       {:style {:height "46px"}}
       [:div.mr2
-       (svg/simple-x {:width        "20px"
-                      :height       "20px"
-                      :class        "stroke-white"
-                      :stroke-width "6"})]]]]))
+       [:a (merge {:data-test "adventure-cart-x"}
+                  (utils/route-to events/navigate-adventure-how-shop-hair))
+        (svg/simple-x {:width        "20px"
+                       :height       "20px"
+                       :class        "stroke-white"
+                       :stroke-width "6"})]]]]]))
 
 ;; TODO, Make increment button work
 (defn header-query [data]
