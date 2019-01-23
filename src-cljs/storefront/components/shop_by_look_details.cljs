@@ -117,7 +117,9 @@
           (let [line-items (:line-items shared-cart)
                 item-count (->> line-items (map :item/quantity) (reduce + 0))]
             [:div.col-on-tb-dt.col-6-on-tb-dt.px2.px3-on-tb-dt
-             [:div.p2.center.h3.medium.border-bottom.border-gray (str item-count " items in this " shared-cart-type-copy)]
+             [:div.p2.center.h3.medium.border-bottom.border-gray
+              {:data-test "item-quantity-in-look"}
+              (str item-count " items in this " shared-cart-type-copy)]
              (order-summary/display-line-items line-items skus)
              (when look-detail-price?
                [:div.center.mt4.mb3
