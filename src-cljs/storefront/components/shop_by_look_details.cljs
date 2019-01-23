@@ -96,8 +96,6 @@
              [:div.mt2
               (add-to-cart-button sold-out? creating-order? look shared-cart)]])))]])))
 
-[:div {:style 5} {}]
-
 (defn adventure-component [{:keys [creating-order? sold-out? look shared-cart skus back fetching-shared-cart? discount-warning?
                                    shared-cart-type-copy back-copy back-event above-button-copy album-keyword look-detail-price?
                                    base-price discounted-price]} owner opts]
