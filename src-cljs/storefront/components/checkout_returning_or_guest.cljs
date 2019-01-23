@@ -43,7 +43,7 @@
 (defn query [data]
   {:facebook-loaded? (get-in data keypaths/loaded-facebook)
    :promotion-banner (promotion-banner/query data)
-   :adventure?       true
+   :adventure?       (= "freeinstall" (get-in data keypaths/store-slug))
    :address          (-> (checkout-address/query data)
                          (assoc-in [:shipping-address-data :become-guest?] true))})
 
