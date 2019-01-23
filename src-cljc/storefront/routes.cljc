@@ -53,9 +53,6 @@
    ["/adventure/shop/" :album-keyword] (edn->bidi events/navigate-adventure-select-new-look)
    ["/adventure/shop/" :album-keyword "/" :look-id] (edn->bidi events/navigate-adventure-look-detail)})
 
-'keypaths/cookie
-(resolve )
-
 (def catalog-routes
   {["/categories/" [#"\d+" :catalog/category-id] "-" :page/slug]
    (edn->bidi events/navigate-category)
