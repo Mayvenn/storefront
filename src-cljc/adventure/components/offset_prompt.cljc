@@ -27,5 +27,8 @@
               :background-repeat   "no-repeat"}}
      (ui/aqua-button
       (merge {:data-test (:data-test button)}
-             (utils/route-to (:target button)))
+             (if (map? (:target button))
+               (utils/route-to (-> button :target :event)
+                               (-> button :target :args))
+               (utils/route-to (:target button))))
                      (:text button))]]))

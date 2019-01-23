@@ -18,7 +18,9 @@
   [_ _ {:keys [destination]} _ app-state]
   #?(:cljs
      (do
-       (history/enqueue-navigate destination nil)
+       (if (map? destination)
+         (history/enqueue-navigate (:event destination) (:args destination))
+         (history/enqueue-navigate destination nil))
        (let [cookie    (get-in app-state storefront.keypaths/cookie)
              adventure (get-in app-state keypaths/adventure)]
          (cookie/save-adventure cookie adventure)))))

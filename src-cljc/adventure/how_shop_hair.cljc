@@ -17,11 +17,13 @@
      :buttons      [{:text             "Show me looks for inspiration"
                      :data-test-suffix "looks"
                      :value            {:how-shop :looks}
-                     :target           events/navigate-adventure-select-new-look}
+                     :target           {:event events/navigate-adventure-select-new-look
+                                        :args  {:album-keyword :adventure}}}
                     {:text             "Give me pre-made bundle sets"
                      :data-test-suffix "bundle-sets"
                      :value            {:how-shop :bundle-sets}
-                     :target           events/navigate-adventure-select-bundle-set}
+                     :target           {:event events/navigate-adventure-select-new-look
+                                        :args  {:album-keyword :adventure-bundle-set}}}
                     {:text             "Let me shop individual bundles"
                      :data-test-suffix "individual-bundles"
                      :value            {:how-shop :individual-bundles}

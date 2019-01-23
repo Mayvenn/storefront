@@ -66,14 +66,9 @@
   [data opts]
   (component/build component (query data) opts))
 
-(defmethod effects/perform-effects events/navigate-adventure-select-new-look [_ _ _ _ _]
-  #?(:cljs (pixlee-hook/fetch-album-by-keyword :adventure)))
+(defmethod effects/perform-effects events/navigate-adventure-select-new-look [_ _ {:keys [album-keyword]} _ _]
+  #?(:cljs (pixlee-hook/fetch-album-by-keyword (keyword album-keyword))))
 
-(defmethod transitions/transition-state events/navigate-adventure-select-new-look [_ _ _ app-state]
-  (assoc-in app-state keypaths/selected-album-keyword :adventure))
+(defmethod transitions/transition-state events/navigate-adventure-select-new-look [_ _ {:keys [album-keyword]} app-state]
+  (assoc-in app-state keypaths/selected-album-keyword (keyword album-keyword)))
 
-(defmethod effects/perform-effects events/navigate-adventure-select-bundle-set [_ _ _ _ _]
-  #?(:cljs (pixlee-hook/fetch-album-by-keyword :adventure-bundle-set)))
-
-(defmethod transitions/transition-state events/navigate-adventure-select-bundle-set [_ _ _ app-state]
-  (assoc-in app-state keypaths/selected-album-keyword :adventure-bundle-set))

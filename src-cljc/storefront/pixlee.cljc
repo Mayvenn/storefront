@@ -109,7 +109,17 @@
                :above-button-copy nil
                :short-name        "look"
                :seo-title         "Shop by Look | Mayvenn"
-               :og-title          "Shop by Look - Find and Buy your favorite Mayvenn bundles!"}})
+               :og-title          "Shop by Look - Find and Buy your favorite Mayvenn bundles!"}
+
+   :adventure-bundle-set {:title             "shop by look"
+                          :description       (str "Grab the latest bundle deal! "
+                                                  "Below you can shop every bundle deal of the week.")
+                          :button-copy       "Shop Look"
+                          :back-copy         "back to shop by look"
+                          :above-button-copy nil
+                          :short-name        "look"
+                          :seo-title         "Shop by Look | Mayvenn"
+                          :og-title          "Shop by Look - Find and Buy your favorite Mayvenn bundles!"}})
 
 (defn pixlee-config [environment]
   (case environment

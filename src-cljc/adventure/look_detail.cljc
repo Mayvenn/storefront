@@ -19,7 +19,8 @@
 
 (defn ^:private query [data]
   (let [adventure-choices (get-in data adventure-keypaths/adventure-choices)
-        hair-flow?        (-> adventure-choices :flow #{"match-stylist"})]
+        hair-flow?        (-> adventure-choices :flow #{"match-stylist"})
+        album-keyword     (get-in data keypaths/selected-album-keyword)]
     {:look-detail-data #?(:cljs (shop-look-details/query data)
                           :clj nil)
      :data-test        "look-detail"
@@ -27,9 +28,10 @@
                         :height        "65px"
                         :current-step  3
                         :shopping-bag? true
-                        :back-link     events/navigate-adventure-select-new-look
+                        :back-link     {:event events/navigate-adventure-select-new-look
+                                        :args {:album-keyword album-keyword}}
                         :subtitle      (str "Step " (if-not hair-flow? 2 3) " of 3")}
-     :copy             #?(:cljs (-> config/pixlee :copy :adventure) :clj nil)
+     :copy             #?(:cljs (-> config/pixlee :copy album-keyword) :clj nil)
      :deals?           false
      :spinning?        false
      :color-details    (->> (get-in data keypaths/v2-facets)
@@ -37,7 +39,7 @@
                             first
                             :facet/options
                             (maps/index-by :option/slug))
-     :looks            (pixlee/images-in-album (get-in data keypaths/ugc) :adventure)}))
+     :looks            (pixlee/images-in-album (get-in data keypaths/ugc) album-keyword)}))
 
 (defn ^:private component
   [{:keys [header-data data-test looks copy deals? spinning? color-details look-detail-data] :as data} _ _]
@@ -63,7 +65,7 @@
 (defmethod effects/perform-effects events/navigate-adventure-look-detail [dispatch event event-args prev-app-state app-state]
   #?(:cljs (pixlee-hook/fetch-image :adventure (:look-id event-args))))
 
-(defmethod transitions/transition-state events/navigate-adventure-look-detail [_ _ event-args app-state]
+(defmethod transitions/transition-state events/navigate-adventure-look-detail [_ _ {:keys [album-keyword look-id]} app-state]
   (-> app-state
-      (assoc-in keypaths/selected-album-keyword :adventure)
-      (assoc-in keypaths/selected-look-id (spice/parse-int (:look-id event-args)))))
+      (assoc-in keypaths/selected-album-keyword (keyword album-keyword))
+      (assoc-in keypaths/selected-look-id (spice/parse-int look-id))))

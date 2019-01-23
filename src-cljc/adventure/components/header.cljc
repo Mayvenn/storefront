@@ -37,7 +37,9 @@
       [:a.col-1.pl3.inherit-color
        (merge {:style {:height "30px"}
                :data-test "adventure-back"}
-              (utils/route-to back-link))
+              (if (map? back-link)
+                (utils/route-to (:event back-link) (:args back-link))
+                (utils/route-to back-link)))
        (ui/back-arrow {:width "14"})]
       [:div.flex-auto.center
        [:div.h6.bold title]

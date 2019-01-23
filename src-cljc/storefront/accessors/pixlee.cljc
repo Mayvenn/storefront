@@ -68,9 +68,9 @@
                        {:view-other nav-message}
                        (cond
                          (and (= nav-event events/navigate-shared-cart)
-                              (= album-keyword :adventure))
-                         {:view-look [events/navigate-adventure-look-detail {:album-keyword (or (#{:deals} album-keyword) :look)
-                                                                             :look-id       album_photo_id}]}
+                              (#{:adventure :adventure-bundle-set} album-keyword))
+                         {:view-look (spice.core/spy [events/navigate-adventure-look-detail {:album-keyword album-keyword
+                                                                                             :look-id       album_photo_id}])}
 
                          (= nav-event events/navigate-shared-cart)
                          {:view-look [events/navigate-shop-by-look-details {:album-keyword (or (#{:deals} album-keyword) :look)
