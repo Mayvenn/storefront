@@ -51,7 +51,7 @@
          [:a (merge {:data-test "adventure-cart"}
                     (utils/route-to events/navigate-cart))
           (ui/ucare-img
-           {:width "20px"}
+           {:width "20"}
            "02f9e7fb-510f-458e-8be7-090399aad4de")])]]]]))
 
 (defn built-component
