@@ -39,6 +39,7 @@
             [adventure.how-shop-hair :as adventure.how-shop-hair]
             [adventure.select-new-look :as adventure.select-new-look]
             [adventure.look-detail :as adventure.look-detail]
+            [adventure.checkout.cart :as adventure-cart]
             [catalog.category :as category]
             [catalog.product-details :as product-details]
             [checkout.cart :as cart]
@@ -207,7 +208,9 @@
         (install.home/built-component data nil)]
 
        (routes/sub-page? [nav-event] [events/navigate-cart])
-       (cart/layout data nav-event)
+       (if (= "freeinstall" (get-in data keypaths/store-slug))
+         (adventure-cart/layout data nav-event)
+         (cart/layout data nav-event))
 
        (and (routes/sub-page? [nav-event] [events/navigate-checkout])
             (= "freeinstall" (get-in data keypaths/store-slug)))
