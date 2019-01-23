@@ -147,7 +147,7 @@
 
 (def add-more-hair-button
   (ui/teal-button
-   (utils/fake-href events/navigate-adventure-select-new-look)
+   (utils/fake-href events/navigate-adventure-how-shop-hair)
    "Add more hair"))
 
 (defn add-more-hair-banner [number-of-items-needed]
