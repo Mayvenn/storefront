@@ -113,9 +113,8 @@
       (utils/fake-href events/control-install-consult-stylist-sms {:stylist stylist :index current-stylist-index})
       [:div.flex.items-center.justify-center.mynp3.inherit-color
        "Select"])
-     (when true gallery-open?
+     (when gallery-open?
        (let [close-attrs (utils/fake-href events/control-stylist-gallery-close)]
-         (prn gallery-images)
          (ui/modal
           {:close-attrs close-attrs
            :col-class   "col-12"}
