@@ -6,6 +6,7 @@
               [storefront.hooks.places-autocomplete :as places-autocomplete]
               [sablono.core :as sablono]])
    [storefront.platform.component-utils :as utils]
+   [adventure.components.basic-prompt :as basic-prompt]
    [adventure.components.header :as header]
    [adventure.handlers :as handlers]
    [adventure.keypaths :as keypaths]
