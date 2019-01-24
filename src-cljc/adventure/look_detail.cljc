@@ -21,7 +21,7 @@
   (let [adventure-choices (get-in data adventure-keypaths/adventure-choices)
         hair-flow?        (-> adventure-choices :flow #{"match-stylist"})
         album-keyword     (get-in data keypaths/selected-album-keyword)]
-    {:look-detail-data #?(:cljs (shop-look-details/query data)
+    {:look-detail-data #?(:cljs (shop-look-details/adventure-query data)
                           :clj nil)
      :data-test        "look-detail"
      :header-data      {:title         "The New You"

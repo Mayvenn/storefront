@@ -171,5 +171,36 @@
      :base-price            base-price
      :discounted-price      (* 0.75 base-price)}))
 
+(defn adventure-query [data]
+  (let [skus (get-in data keypaths/v2-skus)
+
+        shared-cart-with-skus (put-skus-on-shared-cart
+                               (get-in data keypaths/shared-cart-current)
+                               skus)
+
+        look          (pixlee/selected-look data)
+        album-keyword (get-in data keypaths/selected-album-keyword)
+        album-copy    (-> config/pixlee :copy album-keyword)
+        base-price    (apply + (map (fn [line-item]
+                                      (* (:item/quantity line-item)
+                                         (:sku/price line-item)))
+                                    (:line-items shared-cart-with-skus)))]
+    {:shared-cart           shared-cart-with-skus
+     :album-keyword         album-keyword
+     :look                  look
+     :creating-order?       (utils/requesting? data request-keys/create-order-from-shared-cart)
+     :skus                  skus
+     :sold-out?             (not-every? :inventory/in-stock? (:line-items shared-cart-with-skus))
+     :fetching-shared-cart? (utils/requesting? data request-keys/fetch-shared-cart)
+     :back                  (first (get-in data keypaths/navigation-undo-stack))
+     :back-event            (:default-back-event album-copy)
+     :back-copy             (:back-copy album-copy)
+     :above-button-copy     (:above-button-copy album-copy)
+     :shared-cart-type-copy (:short-name album-copy)
+     :look-detail-price?    (and (experiments/look-detail-price? data)
+                                 (not= album-keyword :deals))
+     :base-price            base-price
+     :discounted-price      (* 0.90 base-price)}))
+
 (defn built-component [data opts]
   (om/build component (query data) opts))
