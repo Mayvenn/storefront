@@ -45,11 +45,12 @@
 (defn enqueue-navigate [navigation-event & [args]]
   (when-let [path (routes/path-for navigation-event args)]
     (js/setTimeout (fn []
-                     ;; NOTE (GW) If the current token is equal to what is already there (ie navigating to where you already were),
+                     ;; NOTE (EW) If the current token is equal to what is already there (ie navigating to where you already were),
                      ;; setToken will not trigger navigation behavior.
                      ;; If you use replaceToken, the history stack doesn't record history
                      ;; but the navigation events still trigger.
                      ;; I am unsure if this is the best way to achieve this goal.
                      (if (= (.getToken app-history) path)
                        (.replaceToken app-history path)
-                       (.setToken app-history path))))))
+                       (.setToken app-history path)))
+                   (:timeout args 0))))
