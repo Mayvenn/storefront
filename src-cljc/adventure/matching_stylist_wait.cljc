@@ -3,6 +3,7 @@
                        [storefront.api :as api]
                        [storefront.components.ugc :as ugc]
                        [storefront.hooks.pixlee :as pixlee-hook]
+                       [storefront.history :as history]
                        [storefront.config :as config]])
             [storefront.transitions :as transitions]
             [storefront.events :as events]
@@ -41,7 +42,8 @@
         ms-to-wait (max 0
                         (- (date/to-millis timer)
                            (date/to-millis (date/now))))]
-    (messages/handle-later events/navigate-adventure-home {} ms-to-wait)))
+    #?(:cljs
+       (history/enqueue-navigate events/navigate-adventure-stylist-results {:timeout ms-to-wait}))))
 
 (defn ^:private component
   [{:keys [] :as data} _ _]

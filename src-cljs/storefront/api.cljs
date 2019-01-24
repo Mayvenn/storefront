@@ -942,9 +942,9 @@
               :user-token user-token}
     :handler #(messages/handle-message events/api-success-stylist-service-menu-fetch %)}))
 
+;; TODO: Perhaps cache
 (defn fetch-stylists-within-radius [cache {:as location :keys [latitude longitude]} radius limit]
-  (cache-req
-   cache
+  (storeback-api-req
    GET
    "/v1/stylist/within-radius"
    request-keys/fetch-stylists-within-radius
