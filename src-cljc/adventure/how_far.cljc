@@ -16,7 +16,7 @@
                   :subtitle     "Step 2 of 3"}
    :buttons      (mapv (fn [%] {:text             (str % " miles")
                                 :data-test-suffix (str %)
-                                :value            {:how-far %}
+                                :value            {:how-far (str % "mi")}
                                 :target           events/navigate-adventure-matching-stylist-wait})
                        [10 25 50 100])
    :footer       [:div.h6.black.mt3
