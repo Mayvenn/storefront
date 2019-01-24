@@ -101,25 +101,27 @@
                  :seo-title         "Shop by Look | Mayvenn"
                  :og-title          "Shop by Look - Find and Buy your favorite Mayvenn bundles!"}
 
-   :adventure {:title             "shop by look"
-               :description       (str "Grab the latest bundle deal! "
-                                       "Below you can shop every bundle deal of the week.")
-               :button-copy       "Shop Look"
-               :back-copy         "back to shop by look"
-               :above-button-copy nil
-               :short-name        "look"
-               :seo-title         "Shop by Look | Mayvenn"
-               :og-title          "Shop by Look - Find and Buy your favorite Mayvenn bundles!"}
+   :adventure {:title                  "shop by look"
+               :description            (str "Grab the latest bundle deal! "
+                                            "Below you can shop every bundle deal of the week.")
+               :button-copy            "Shop Look"
+               :back-copy              "back to shop by look"
+               :above-button-copy      nil
+               :short-name             "look"
+               :seo-title              "Shop by Look | Mayvenn"
+               :og-title               "Shop by Look - Find and Buy your favorite Mayvenn bundles!"
+               :adventure/prompt-image "//ucarecdn.com/ffe3011a-1cae-494a-a806-eac94f618374/-/format/auto/bg.png"}
 
-   :adventure-bundle-set {:title             "shop by look"
-                          :description       (str "Grab the latest bundle deal! "
-                                                  "Below you can shop every bundle deal of the week.")
-                          :button-copy       "Shop Look"
-                          :back-copy         "back to shop by look"
-                          :above-button-copy nil
-                          :short-name        "look"
-                          :seo-title         "Shop by Look | Mayvenn"
-                          :og-title          "Shop by Look - Find and Buy your favorite Mayvenn bundles!"}})
+   :adventure-bundle-set {:title                  "shop by look"
+                          :description            (str "Grab the latest bundle deal! "
+                                                       "Below you can shop every bundle deal of the week.")
+                          :button-copy            "Shop Look"
+                          :back-copy              "back to shop by look"
+                          :above-button-copy      nil
+                          :short-name             "look"
+                          :seo-title              "Shop by Look | Mayvenn"
+                          :og-title               "Shop by Look - Find and Buy your favorite Mayvenn bundles!"
+                          :adventure/prompt-image "//ucarecdn.com/9806a920-9c5b-4a98-a9dc-21b02c381593/-/format/auto/bg.png"}})
 
 (defn pixlee-config [environment]
   (case environment

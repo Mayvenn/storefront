@@ -17,20 +17,22 @@
 
 (defn ^:private query [data]
   (let [adventure-choices (get-in data adventure-keypaths/adventure-choices)
+        album-keyword     (get-in data keypaths/selected-album-keyword)
+        album-copy        #?(:cljs (-> config/pixlee :copy album-keyword)
+                             :clj nil)
         hair-flow?        (-> adventure-choices :flow #{"match-stylist"})]
     {:prompt        "Select your new look"
      :mini-prompt   ["We have an amazing selection for you"
                      [:br]
                      "to choose from."]
-     :prompt-image  "//ucarecdn.com/ffe3011a-1cae-494a-a806-eac94f618374/-/format/auto/bg.png"
+     :prompt-image  (:adventure/prompt-image album-copy)
      :data-test     "select-new-look-choice"
      :header-data   {:title         "The New You"
                      :current-step  3
                      :shopping-bag? true
                      :back-link     events/navigate-adventure-how-shop-hair
                      :subtitle      (str "Step " (if-not hair-flow? 2 3) " of 3")}
-     :copy          #?(:cljs (-> config/pixlee :copy :adventure)
-                       :clj nil)
+     :copy          album-copy
      :deals?        false
      :spinning?     false
      :color-details (->> (get-in data keypaths/v2-facets)
