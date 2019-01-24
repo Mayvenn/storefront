@@ -16,7 +16,7 @@
   (let [legacy-variant-id (or (:legacy/variant-id line-item) (:id line-item))
         price             (or (:sku/price line-item)         (:unit-price line-item))
         title             (or (:sku/title line-item)         (products/product-title line-item))]
-    [:div.clearfix.border-bottom.border-gray.py3 {:key legacy-variant-id}
+    [:div.clearfix.border-top.border-gray.py3 {:key legacy-variant-id}
      [:a.left.mr1
       [:img.block.border.border-gray.rounded.hide-on-mb
        (assoc thumbnail :style {:width  "117px"

@@ -84,8 +84,9 @@
           (let [line-items (:line-items shared-cart)
                 item-count (->> line-items (map :item/quantity) (reduce + 0))]
             [:div.col-on-tb-dt.col-6-on-tb-dt.px2.px3-on-tb-dt
-             [:div.p2.center.h3.medium.border-bottom.border-gray (str item-count " items in this " shared-cart-type-copy)]
+             [:div.p2.center.h3.medium (str item-count " items in this " shared-cart-type-copy)]
              (order-summary/display-line-items line-items skus)
+             [:div.px2.border-top.border-gray]
              (when look-detail-price?
                [:div.center.mt4.mb3
                 [:div.h6.dark-gray "15% Off + 10% Bundle Discount"]
@@ -115,15 +116,14 @@
           (let [line-items (:line-items shared-cart)
                 item-count (->> line-items (map :item/quantity) (reduce + 0))]
             [:div.col-on-tb-dt.col-6-on-tb-dt.px2.px3-on-tb-dt
-             [:div.p2.center.h3.medium.border-bottom.border-gray
+             [:div.p2.center.h3.medium
               {:data-test "item-quantity-in-look"}
               (str item-count " items in this " shared-cart-type-copy)]
              (order-summary/display-line-items line-items skus)
-             (when look-detail-price?
-               [:div.center.mt4.mb3
-                [:div.h6.dark-gray "15% Off + 10% Bundle Discount"]
-                [:div.h2.medium (mf/as-money discounted-price)]
-                [:div.strike.dark-gray (mf/as-money base-price)]])
+             [:div.center.mb3
+              [:div.h6.dark-gray "10% Bundle Discount + Free Install"]
+              [:div.h2.medium (mf/as-money discounted-price)]
+              [:div.strike.dark-gray (mf/as-money base-price)]]
              (when above-button-copy
                [:div.center.teal.medium.mt2 above-button-copy])
              [:div.mt2
