@@ -8,8 +8,8 @@
 
 (def rect-button-attrs
   {:height-class "py6"
-   :style        {:border-width  0
-                  :border-radius "3px"}})
+   :class        "border-light-gray"
+   :style        {:border-radius "3px"}})
 
 (defn teal-rect-button [attrs & content]
   (ui/teal-button (maps/deep-merge rect-button-attrs attrs) content))
