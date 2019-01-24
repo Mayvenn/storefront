@@ -267,6 +267,15 @@
                 (not (get-in-req-state req keypaths/order)))
            (assoc-in-req-state keypaths/order (api/get-order storeback-config order-number order-token)))))))
 
+(defn wrap-adventure-route-params [h]
+  (fn [{:as req :keys [nav-message]}]
+    (let [params        (second nav-message)
+          album-keyword (keyword (:album-keyword params))
+          look-id       (spice/parse-int (:look-id params))]
+      (h (cond-> req
+           album-keyword (assoc-in-req-state keypaths/selected-album-keyword album-keyword)
+           look-id       (assoc-in-req-state keypaths/selected-look-id look-id))))))
+
 (defn wrap-fetch-catalog [h storeback-config]
   (fn [req]
     (let [order                   (get-in-req-state req keypaths/order)
@@ -680,6 +689,7 @@
             is-checkout?)                     ((-> h
                                                    (wrap-fetch-store (:storeback-config ctx))
                                                    (wrap-fetch-order (:storeback-config ctx))
+                                                   (wrap-adventure-route-params)
                                                    (wrap-cookies (storefront-site-defaults (:environment ctx))))
                                                req)
 
