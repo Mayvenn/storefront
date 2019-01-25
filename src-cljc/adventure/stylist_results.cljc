@@ -15,46 +15,6 @@
    (ui/aspect-ratio 1 1
                     (ui/ucare-img {:class "col-12"} (:resizable-url gallery-image)))])
 
-(defn star [type index]
-  [:span.mrp1
-   {:key (str (name type) "-" index)}
-   (ui/ucare-img
-    {:width "13"}
-    (case type
-      :whole         "5a9df759-cf40-4599-8ce6-c61502635213"
-      :three-quarter "a34fada5-aad8-44a7-8113-ddba7910947d"
-      :half          "d3ff89f5-533c-418f-80ef-27aa68e40eb1"
-      :empty         "92d024c6-1e82-4561-925a-00d45862e358"
-      nil))])
-
-(defn star-rating
-  [rating]
-  (let [remainder-rating (mod 5 rating)
-        whole-stars      (map (partial star :whole) (range (int rating)))
-        partial-star     (cond
-                           (== 0 remainder-rating)
-                           nil
-
-                           (== 0.5 remainder-rating)
-                           (star :half "half")
-
-                           (> 0.5 remainder-rating)
-                           (star :three-quarter "three-quarter")
-
-                           :else
-                           nil)
-        empty-stars (map
-                     (partial star :empty)
-                     (range
-                      (- 5
-                         (count whole-stars)
-                         (if partial-star 1 0))))]
-    [:div.flex.items-center
-     whole-stars
-     partial-star
-     empty-stars
-     [:span.mlp2.h6 rating]]))
-
 (defn stylist-card
   [{:keys [selected-stylist-index
            selected-image-index
@@ -74,12 +34,12 @@
     [:div.bg-white.p2.pb2.h6.my2.mx2-on-tb-dt.col-12.col-5-on-tb-dt {:key firstname}
      [:div.flex
       [:div.mr2.mt1 (ui/circle-ucare-img {:width "104"} (:resizable-url portrait))]
-      [:div.flex-grow-1.left-align.dark-gray
-       [:div.h3.black (clojure.string/join  " " [firstname lastname])]
-       [:div (star-rating rating)]
-       [:div.bold.h6 (str city ", " state)]
+      [:div.flex-grow-1.left-align.dark-gray.h7.line-height-4
+       [:div.h3.black.line-height-1 (clojure.string/join  " " [firstname lastname])]
+       [:div (ui/star-rating rating)]
+       [:div.bold (str city ", " state)]
        [:div name]
-       (into [:div.flex {:style {:font-size "12px"}}]
+       (into [:div.flex.flex-wrap]
              (comp
               (remove nil?)
               (interpose [:div.mxp3 "·"]))

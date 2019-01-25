@@ -21,46 +21,6 @@
             [cemerick.url :as url]
             [storefront.components.share-links :as share-links]))
 
-(defn star [type index]
-  [:span.mrp1
-   {:key (str (name type) "-" index)}
-   (ui/ucare-img
-    {:width "13"}
-    (case type
-      :whole         "5a9df759-cf40-4599-8ce6-c61502635213"
-      :three-quarter "a34fada5-aad8-44a7-8113-ddba7910947d"
-      :half          "d3ff89f5-533c-418f-80ef-27aa68e40eb1"
-      :empty         "92d024c6-1e82-4561-925a-00d45862e358"
-      nil))])
-
-(defn star-rating
-  [rating]
-  (let [remainder-rating (mod 5 rating)
-        whole-stars      (map (partial star :whole) (range (int rating)))
-        partial-star     (cond
-                           (== 0 remainder-rating)
-                           nil
-
-                           (== 0.5 remainder-rating)
-                           (star :half "half")
-
-                           (> 0.5 remainder-rating)
-                           (star :three-quarter "three-quarter")
-
-                           :else
-                           nil)
-        empty-stars (map
-                     (partial star :empty)
-                     (range
-                      (- 5
-                         (count whole-stars)
-                         (if partial-star 1 0))))]
-    [:div.flex.items-center
-     whole-stars
-     partial-star
-     empty-stars
-     [:span.mlp2.h6 rating]]))
-
 (defn stylist-attribute
   [icon-width ucare-id content]
   [:div.flex.items-center
@@ -210,7 +170,7 @@
     [:div.mr2.mt1 (ui/circle-ucare-img {:width "104"} portrait-image-id)]
     [:div.flex-grow-1
      [:div.h4 (clojure.string/join  " " [first-name last-name])]
-     [:div (star-rating rating)]
+     [:div.h6 (ui/star-rating rating)]
      (stylist-attribute "8" "d1e19d12-edcb-4068-9fa4-f75c94d3b7e6" [:span.bold location])
      (stylist-attribute "10" "2fa4458a-ce39-4a73-920e-c0e58ca7ffcd" phone)
      (stylist-attribute "10" "da021ef5-4190-4c19-b729-33fcf5b68d01" "Licensed Salon Stylist")
