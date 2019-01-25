@@ -75,8 +75,8 @@
                                    :infinite     true}}
                        {})]
      (ui/teal-button
-      (utils/fake-href events/control-install-consult-stylist-sms {:stylist stylist :index current-stylist-index})
-      [:div.flex.items-center.justify-center.mynp3.inherit-color
+      {}
+      [:div.flex.items-center.justify-center.inherit-color
        "Select"])
      (when gallery-open?
        (let [close-attrs (utils/fake-href events/control-adventure-stylist-gallery-close)]
