@@ -894,7 +894,8 @@
 
 (defmethod perform-effects events/order-completed [dispatch event order _ app-state]
   (handle-message events/clear-order)
-  (talkable/show-pending-offer app-state))
+  (when-not (experiments/adventure? app-state)
+    (talkable/show-pending-offer app-state)))
 
 (defmethod perform-effects events/api-success-update-order-update-cart-payments [_ event {:keys [order place-order?]} _ app-state]
   (when place-order?
