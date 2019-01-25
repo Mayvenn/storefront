@@ -43,7 +43,7 @@
        (ui/back-arrow {:width "14"})]
       [:div.flex-auto.center
        [:div.h6.bold title]
-       [:div.h7 subtitle]]
+       [:div.h8 subtitle]]
       [:div.col-1
        {:style {:height "46px"}}
 

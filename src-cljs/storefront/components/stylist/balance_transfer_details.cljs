@@ -192,7 +192,7 @@
         [:h4.col-12.left.medium "Money Transfer"]]
        [:div.col.col-3.mtp1.right-align
         [:div.h5.medium.green (mf/as-money amount)]]
-       [:div.h7.dark-gray.col.col-12.pb4.right-align payout-method-name]
+       [:div.h8.dark-gray.col.col-12.pb4.right-align payout-method-name]
        (payout-method-details
         (f/long-date (or created-at (:transfered_at data)))
         (or payout-method (:payout_method data)))]]]))
@@ -211,7 +211,7 @@
         (info-block "Deposit Date" (f/long-date (or transfered-at (:transfered_at data))))]]
       [:div.col.col-2.mtp1.right-align
        [:div.h5.medium.green (mf/as-money amount)]
-       [:div.h7.dark-gray "Cash"]]]]))
+       [:div.h8.dark-gray "Cash"]]]]))
 
 (defn ^:private voucher-award-component [{:keys [balance-transfer]}]
   (let [{:keys [id transfered-at amount data]}     balance-transfer

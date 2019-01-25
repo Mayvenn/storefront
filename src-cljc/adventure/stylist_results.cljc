@@ -75,14 +75,14 @@
      [:div.flex
       [:div.mr2.mt1 (ui/circle-ucare-img {:width "104"} (:resizable-url portrait))]
       [:div.flex-grow-1.left-align.dark-gray
-       [:div.h4.black (clojure.string/join  " " [firstname lastname])]
+       [:div.h3.black (clojure.string/join  " " [firstname lastname])]
        [:div (star-rating rating)]
        [:div.bold.h6 (str city ", " state)]
        [:div name]
        (into [:div.flex {:style {:font-size "12px"}}]
              (comp
-              (keep identity)
-              (interpose [:div.mxp2 "·"]))
+              (remove nil?)
+              (interpose [:div.mxp3 "·"]))
              [(when licensed [:div "Licensed"])
               [:div (if (= "salon" salon-type)
                       "In-Salon"
@@ -90,6 +90,9 @@
               (when stylist-since
                 [:div (str (- (date/year (date/now)) stylist-since)
                            " yrs Experience")])])]]
+     [:div.dark-gray.bold.left-align
+      {:style {:font-size "12px"}}
+      "Recent Work"]
      [:div.my2.m1-on-tb-dt.mb2-on-tb-dt
       (component/build carousel/component
                        {:slides   (map-indexed (fn [i x]
@@ -101,7 +104,8 @@
                                                    :key      (str firstname "-gallery-" i)}
                                                   (ui/aspect-ratio
                                                    1 1
-                                                   (ui/ucare-img {:width "102"} (:resizable-url x)))])
+                                                   (ui/ucare-img {:class "rounded"
+                                                                  :width "102"} (:resizable-url x)))])
                                                gallery-images)
                         :settings {:swipe        true
                                    :initialSlide 0

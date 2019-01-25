@@ -66,12 +66,12 @@
      (ui/ucare-img {:width 20} icon)
      [:div.flex-auto.mx3
       [:h5.medium {:class (:title-color styles)} title]
-      [:div.flex.h7.dark-gray
+      [:div.flex.h8.dark-gray
        [:div.mr4 (f/long-date date)]
        subtitle]]
      [:div.right-align
       [:div.bold {:class (:amount-color styles)} amount]
-      [:div.h7.dark-gray (or amount-description
+      [:div.h8.dark-gray (or amount-description
                              ui/nbsp)]]]))
 
 (defn pending-voucher-row [{:as pending-voucher :keys [discount date]} service-menu]
@@ -124,7 +124,7 @@
            (pending-voucher-row pending-voucher service-menu))
          (for [{:keys [title items] :as section} sections]
            [:div {:key (str "payments-table-" title)}
-            [:div.h7.bg-silver.px2.py1.medium title]
+            [:div.h8.bg-silver.px2.py1.medium title]
             ;; ASK: Sales Bonus row
             (for [item (reverse (sort-by :date items))]
               (payment-row item))])]

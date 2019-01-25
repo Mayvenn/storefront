@@ -91,7 +91,7 @@
       [:a.block.ml2.dark-gray
        video-link
        [:h6.bold.mbnp6 "#MayvennFreeInstall"]
-       [:p.pt2.h7
+       [:p.pt2.h8
         [:span {:style {:white-space "nowrap"}} "See why customers love their"]
         " "
         [:span {:style {:white-space "nowrap"}} "FREE Install"]]

@@ -19,7 +19,7 @@
             [storefront.accessors.experiments :as experiments]))
 
 (defn status-cell [[span classes] text]
-  [:td.p2.h7.center.medium {:col-span span}
+  [:td.p2.h8.center.medium {:col-span span}
    [:span {:class classes} text]])
 
 (defn status->appearance [status]
@@ -85,7 +85,7 @@
    (merge (utils/route-to events/navigate-stylist-dashboard-order-details {:order-number order-number})
           {:key       (str "sales-table-" id)
            :data-test (str "sales-" order-number)})
-   [:td.p2.left-align.dark-gray.h7 (some-> order-updated-at f/abbr-date)]
+   [:td.p2.left-align.dark-gray.h8 (some-> order-updated-at f/abbr-date)]
    [:td.p2.left-align.medium.h5.nowrap
     {:style {:overflow-x :hidden :max-width 120 :text-overflow :ellipsis}}  ; For really long first names
     (some-> order orders/first-name-plus-last-name-initial)]
@@ -96,7 +96,7 @@
    (merge (utils/route-to events/navigate-stylist-dashboard-order-details {:order-number order-number})
           {:key       (str "sales-table-" id)
            :data-test (str "sales-" order-number)})
-   [:td.p2.left-align.dark-gray.h7 (some-> order-updated-at f/abbr-date)]
+   [:td.p2.left-align.dark-gray.h8 (some-> order-updated-at f/abbr-date)]
    [:td.p2.left-align.medium.h5.nowrap
     {:style {:overflow-x :hidden :max-width 120 :text-overflow :ellipsis}}  ; For really long first names
     (some-> order orders/first-name-plus-last-name-initial)]
@@ -105,7 +105,7 @@
 
 (defn header-ui [show-voucher-elements?]
   [:thead.bg-silver.border-0
-   [:tr.h7.medium
+   [:tr.h8.medium
     [:th.px2.py1.left-align.medium.col-2.nowrap
      {:data-test "header-order-updated"}
      "Order Updated"]

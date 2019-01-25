@@ -66,7 +66,7 @@
           [:div.flex.items-center.justify-center.regular.h5
            (ui/ucare-img {:width "28" :class "mr2 flex items-center"} "3d651ddf-b37d-441b-a162-b83728f2a2eb")
            "Cash Out"])
-         [:div.h7
+         [:div.h8
           "Cash out now with " [:a.teal (utils/fake-href events/navigate-stylist-account-payout) "Mayvenn InstaPay"]])]]
      [:div
       (when-not expanded? {:class "hide"})
@@ -116,7 +116,7 @@
 (defn ^:private sales-bonus-progress [{:keys [previous-level next-level award-for-next-level total-eligible-sales]} v2-experience?]
   [:div.p2
    [:div.h6.letter-spacing-1.shout.dark-gray "Sales Bonus Progress"]
-   [:div.h7
+   [:div.h8
     "Sell "
     (mf/as-money (- next-level total-eligible-sales))
     " more in"

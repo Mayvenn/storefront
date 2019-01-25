@@ -87,7 +87,7 @@
    [:div.px5.px0-on-mb
     [:img {:src (assets/path "/images/header_logo.svg")
            :style {:height "40px"}}]
-    [:div.h7 "Questions? Text or call: "
+    [:div.h8 "Questions? Text or call: "
      (ui/link :link/phone :a.inherit-color {} "1-310-733-0284")]]])
 
 (defn easy-step-block [img title copy]

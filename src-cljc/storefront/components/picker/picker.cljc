@@ -84,7 +84,7 @@
    (field
     {:class "border-right flex-grow-5"}
     (desktop-dropdown
-     [:div.h7 "Length:"]
+     [:div.h8 "Length:"]
      [:span.medium
       product-sold-out-style
       (:option/name selected-length)]
@@ -103,7 +103,7 @@
    [:div.flex-auto
     (field
      (desktop-dropdown
-      [:div.h7 "Qty:"]
+      [:div.h8 "Qty:"]
       [:span.medium product-sold-out-style sku-quantity]
       (invisible-select
        {:on-change #(messages/handle-message events/control-product-detail-picker-option-quantity-select
@@ -124,7 +124,7 @@
       :data-test "picker-length"}
      (utils/fake-href events/control-product-detail-picker-open {:facet-slug :hair/length}))
     (mobile-dropdown
-     [:div.h7 "Length:"]
+     [:div.h8 "Length:"]
      [:span.medium
       (merge
        {:data-test (str "picker-selected-length-" (:option/slug selected-length))}
@@ -135,7 +135,7 @@
      (merge {:data-test "picker-quantity"}
             (utils/fake-href events/control-product-detail-picker-open {:facet-slug :item/quantity}))
      (mobile-dropdown
-      [:div.h7 "Qty:"]
+      [:div.h8 "Qty:"]
       [:span.medium
        (merge
         {:data-test (str "picker-selected-quantity-" sku-quantity)}

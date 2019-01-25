@@ -145,7 +145,7 @@
 (def new-flag
   (component/html
    [:div.right
-    [:div.border.border-navy.navy.pp2.h7.line-height-1.medium "NEW"]]))
+    [:div.border.border-navy.navy.pp2.h8.line-height-1.medium "NEW"]]))
 
 (defn- add-classes [attributes classes]
   (update attributes :class #(str %1 " " %2) classes))
@@ -165,7 +165,7 @@
 
 (defn ^:private floating-label [label id {:keys [value?]}]
   [:div.absolute
-   [:label.floating-label--label.col-12.h7.relative.gray.medium
+   [:label.floating-label--label.col-12.h8.relative.gray.medium
     (cond-> {:for id}
       value? (add-classes "has-value"))
     label]])

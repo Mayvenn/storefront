@@ -26,7 +26,7 @@
            [:div.h6 email])]
         [:h2.teal (mf/as-money amount)]]
        [:div
-        [:div.navy.center.h7
+        [:div.navy.center.h8
          (case payout-timeframe
            "immediate"                 "Instant: Funds typically arrive in minutes"
            "next_business_day"         "Funds paid out to this card will become available the next business day."

@@ -92,12 +92,11 @@
 
 (def lorem "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam euismod justo ut metus blandit commodo. Quisque iaculis odio non sem suscipit porta. Donec id bibendum tellus. Proin eu malesuada massa, mattis vestibulum orci.")
 
-(defn font-size [font-class mb-sizes tb-dt-sizes]
+(defn font-size [font-class sizes]
   [:div
    [:div.mb2
     (subheader
-     [:div.hide-on-tb-dt (str mb-sizes "px")]
-     [:div.hide-on-mb (str tb-dt-sizes "px")])]
+     [:div (str sizes "px")])]
 
    [:div.mb4 {:class font-class} lorem]])
 
@@ -118,13 +117,14 @@
    [:div.col-8-on-tb-dt.my3
     [:div.mb2 (subheader "font-size/line-height")]
 
-    (font-size :h1 "28/36" "24/30")
-    (font-size :h2 "24/32" "21/29")
-    (font-size :h3 "20/28" "18/24")
-    (font-size :h4 "18/26" "16/24")
-    (font-size :h5 "16/24" "14/22")
-    (font-size :h6 "14/22" "12/20")
-    (font-size :h7 "10/18" "10/18")
+    (font-size :h1 "28/36")
+    (font-size :h2 "24/32")
+    (font-size :h3 "20/28")
+    (font-size :h4 "18/26")
+    (font-size :h5 "16/24")
+    (font-size :h6 "14/22")
+    (font-size :h7 "12/20")
+    (font-size :h8 "10/18")
 
     [:div.mb2 (subheader "font-weight")]
 

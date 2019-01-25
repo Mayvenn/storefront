@@ -59,7 +59,7 @@
 
 (defn ^:private store-actions [{:keys [store-nickname] :as store}]
   [:div
-   [:div.h7.medium "Welcome to " store-nickname "'s store"]
+   [:div.h8.medium "Welcome to " store-nickname "'s store"]
    [:div.dark-gray
     (interpose " | "
                (marquee/actions store gallery-link instagram-link styleseat-link))]])
@@ -79,7 +79,7 @@
 (defn ^:private account-info-marquee [signed-in {:keys [email store-credit]}]
   (when (-> signed-in ::auth/at-all)
     [:div.my3
-     [:div.h7.medium "Signed in with:"]
+     [:div.h8.medium "Signed in with:"]
      [:a.teal.h5.bold
       (merge
        {:data-test "signed-in-as"}
@@ -89,7 +89,7 @@
       email]
      (when (pos? store-credit)
        [:div
-        [:div.h7.medium "Store credit:"]
+        [:div.h8.medium "Store credit:"]
         [:div.teal.h5.bold (as-money store-credit)]])]))
 
 (defn ^:private stylist-actions [vouchers? store]

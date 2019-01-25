@@ -104,7 +104,7 @@
       [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
        social-section]]]
 
-    [:div.mt3.bg-dark-gray.white.py1.px3.clearfix.h7
+    [:div.mt3.bg-dark-gray.white.py1.px3.clearfix.h8
      [:div
       {:style {:margin-bottom "90px"}}
       (component/build footer-links/component {:minimal? false} nil)]]]))
