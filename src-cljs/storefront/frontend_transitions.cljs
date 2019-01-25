@@ -531,7 +531,7 @@
       (assoc-in keypaths/cart state/initial-cart-state)
       (assoc-in keypaths/completed-order order)
       (assoc-in keypaths/pending-talkable-order
-                (when-not (experiements/adventure? app-state )
+                (when-not (experiments/adventure? app-state )
                   (talkable/completed-order order)))))
 
 (defmethod transition-state events/api-success-promotions [_ event {promotions :promotions} app-state]
