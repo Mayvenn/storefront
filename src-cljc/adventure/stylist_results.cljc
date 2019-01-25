@@ -149,7 +149,7 @@
 (defn ^:private query [data]
   {:header-data {:title        "Find Your Stylist"
                  :current-step 7
-                 :back-link    events/navigate-adventure-find-your-stylist
+                 :back-link    events/navigate-adventure-how-far
                  :subtitle     "Step 2 of 3"}
    :card-data   {:stylist-gallery-index (get-in data keypaths/adventure-stylist-gallery-index)
                  :gallery-image-index   (get-in data keypaths/adventure-stylist-gallery-image-index)
