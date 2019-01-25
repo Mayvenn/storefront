@@ -15,6 +15,26 @@
    (ui/aspect-ratio 1 1
                     (ui/ucare-img {:class "col-12"} (:resizable-url gallery-image)))])
 
+(defn stylist-detail-line [{:keys [salon licensed stylist-since] :as stylist}]
+  (let [{:keys [salon-type]} salon]
+    (into [:div.flex.flex-wrap]
+          (comp
+           (remove nil?)
+           (interpose [:div.mxp3 "·"]))
+          [(when licensed
+             [:div "Licensed"])
+           (when-let [salon-description (case salon-type
+                                          "salon"   "In-Salon"
+                                          "in-home" "In-Home"
+                                          nil)]
+             [:div salon-description])
+           (when stylist-since
+             [:div
+              (ui/pluralize-with-amount
+               (- (date/year (date/now)) stylist-since)
+               "yr")
+              " Experience"])])))
+
 (defn stylist-card
   [{:keys [selected-stylist-index
            selected-image-index
@@ -39,20 +59,7 @@
        [:div (ui/star-rating rating)]
        [:div.bold (str city ", " state)]
        [:div name]
-       (into [:div.flex.flex-wrap]
-             (comp
-              (remove nil?)
-              (interpose [:div.mxp3 "·"]))
-             [(when licensed [:div "Licensed"])
-              [:div (if (= "salon" salon-type)
-                      "In-Salon"
-                      "In-Home")]
-              (when stylist-since
-                [:div
-                 (ui/pluralize-with-amount
-                  (- (date/year (date/now)) stylist-since)
-                  "yr")
-                 " Experience"])])]]
+       (stylist-detail-line stylist)]]
      [:div.my2.m1-on-tb-dt.mb2-on-tb-dt
       [:div.h7.dark-gray.bold.left-align.mb1
        "Recent Work"]
