@@ -292,7 +292,7 @@
   (component/build component (query data) opts))
 
 ;; TODO: Adjust positioning of X?
-(defn header [{:keys [item-count]} owner opts]
+(defn header [{:keys [return-route item-count]} owner opts]
   (component/create
    [:div.flex.flex-column.center.bg-light-lavender.white
     [:div.flex.items-center
@@ -305,7 +305,7 @@
       {:style {:height "46px"}}
       [:div.mr2
        [:a (merge {:data-test "adventure-cart-x"}
-                  (utils/route-to events/navigate-adventure-how-shop-hair))
+                  return-route)
         (svg/simple-x {:width        "20px"
                        :height       "20px"
                        :class        "stroke-white"
@@ -313,7 +313,8 @@
 
 ;; TODO, Make increment button work
 (defn header-query [data]
-  {:item-count (orders/product-quantity (get-in data keypaths/order))} )
+  {:return-route (utils/route-back-or-to (first (get-in data keypaths/navigation-undo-stack)) events/navigate-home)
+   :item-count   (orders/product-quantity (get-in data keypaths/order))} )
 
 (defn layout [data nav-event]
   [:div.flex.flex-column {:style {:min-height    "100vh"
