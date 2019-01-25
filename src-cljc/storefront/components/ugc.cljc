@@ -52,37 +52,38 @@
                :data-test "adventure-look"}
               (util/route-to nav-event nav-args {:back-copy  (:back-copy copy)
                                                  :short-name (:short-name copy)}))
-       [:div.relative
-        (ui/aspect-ratio
-         1 1
-         {}
-         [:img.col-12.block (:medium imgs)])
-        (when-let [texture (:texture look-attributes)]
-          [:div.absolute.flex.justify-end.bottom-0.right-0.mb8.black
-           [:div {:style {:width       "0"
-                          :height      "0"
-                          :border-top  "28px solid rgba(159, 229, 213, 0.8)"
-                          :border-left "21px solid transparent"}}]
-           [:div.flex.items-center.px3.medium.h6.bg-transparent-light-teal
-            texture]])]
-       (let [color-detail (get color-details (:color look-attributes))]
-         [:div.bg-white.p1.px2.pb2
-          [:div.h5.medium.mt1.black
-           [:div.flex.items-center.mb2
-            [:div.flex-auto
-             (if color-detail
-               [:div.flex.items-center
-                [:img.mr2.lit.rounded-0
-                 {:height "30px"
-                  :width  "50px"
-                  :src    (:option/rectangle-swatch color-detail)}]
-                (:option/name color-detail)]
-               [:div.black.pyp1 "Check this out!"])]
-            [:div.m1.self-end {:style {:width "20px" :height "20px"}}
-             (svg/social-icon social-service)]]
-           (cond (:lengths look-attributes) (:lengths look-attributes)
-                 color-detail               [:span.black "Get this look!"]
-                 :else                      nil)]])])]))
+       [:div.border.border-light-gray
+        [:div.relative
+         (ui/aspect-ratio
+          1 1
+          {}
+          [:img.col-12.block (:medium imgs)])
+         (when-let [texture (:texture look-attributes)]
+           [:div.absolute.flex.justify-end.bottom-0.right-0.mb8.black
+            [:div {:style {:width       "0"
+                           :height      "0"
+                           :border-top  "28px solid rgba(159, 229, 213, 0.8)"
+                           :border-left "21px solid transparent"}}]
+            [:div.flex.items-center.px3.medium.h6.bg-transparent-light-teal
+             texture]])]
+        (let [color-detail (get color-details (:color look-attributes))]
+          [:div.bg-white.p1.px2.pb2
+           [:div.h5.medium.mt1.black
+            [:div.flex.items-center.mb2
+             [:div.flex-auto
+              (if color-detail
+                [:div.flex.items-center
+                 [:img.mr2.lit.rounded-0
+                  {:height "30px"
+                   :width  "50px"
+                   :src    (:option/rectangle-swatch color-detail)}]
+                 (:option/name color-detail)]
+                [:div.black.pyp1 "Check this out!"])]
+             [:div.m1.self-end {:style {:width "20px" :height "20px"}}
+              (svg/social-icon social-service)]]
+            (cond (:lengths look-attributes) (:lengths look-attributes)
+                  color-detail               [:span.black "Get this look!"]
+                  :else                      nil)]])]])]))
 
 (defn component [{:keys [looks color-details]} owner {:keys [copy]}]
   (component/create
