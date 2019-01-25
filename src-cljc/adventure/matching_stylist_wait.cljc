@@ -56,7 +56,7 @@
     [:div.col-8.h3.my2.medium.center "Matching you with a" [:br] " Mayvenn Certified Stylist..."]
     [:ul.col-7.h6.purple-checkmark
      (mapv (fn [%] [:li.mb1 %])
-           ["Licenced Salon Stylist" "Mayvenn Certified" "In your area"])]]))
+           ["Licensed Salon Stylist" "Mayvenn Certified" "In your area"])]]))
 
 (defn built-component
   [data opts]

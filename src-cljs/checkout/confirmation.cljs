@@ -76,7 +76,7 @@
       [:div.mb1.mt0 (str "w/ " "a Certified Mayvenn Stylist")
        [:ul.h6.purple-checkmark.pl4.mt1
         (mapv (fn [%] [:li %])
-              ["Licenced Salon Stylist" "Near you" "Experienced"])]]]]]])
+              ["Licensed Salon Stylist" "Near you" "Experienced"])]]]]]])
 
 (defn component
   [{:keys [available-store-credit
