@@ -48,8 +48,11 @@
                       "In-Salon"
                       "In-Home")]
               (when stylist-since
-                [:div (str (- (date/year (date/now)) stylist-since)
-                           " yrs Experience")])])]]
+                [:div
+                 (ui/pluralize-with-amount
+                  (- (date/year (date/now)) stylist-since)
+                  "yr")
+                 " Experience"])])]]
      [:div.my2.m1-on-tb-dt.mb2-on-tb-dt
       [:div.h7.dark-gray.bold.left-align.mb1
        "Recent Work"]
