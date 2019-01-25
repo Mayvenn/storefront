@@ -22,8 +22,7 @@
     events/navigate-checkout-address
     events/navigate-checkout-payment
     events/navigate-checkout-confirmation
-    events/navigate-checkout-processing
-    events/navigate-order-complete})
+    events/navigate-checkout-processing})
 
 (def ^:private payout-events
   #{events/navigate-stylist-dashboard-cash-out-pending})
@@ -70,6 +69,7 @@
              auth-events
              cart-events
              checkout-events
+             #{events/navigate-order-complete}
              payout-events
              sharing-events
              stylist-dashboard-events
