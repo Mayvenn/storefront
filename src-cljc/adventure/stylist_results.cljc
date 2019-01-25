@@ -1,13 +1,14 @@
 (ns adventure.stylist-results
   (:require [adventure.components.header :as header]
             [adventure.keypaths :as keypaths]
+            [spice.date :as date]
             [storefront.component :as component]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.platform.carousel :as carousel]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
-            [spice.date :as date]))
+            [storefront.transitions :as transitions]))
 
 (defn ^:private gallery-slide [index gallery-image]
   [:div {:key (str "gallery-slide" index)}
@@ -94,7 +95,7 @@
                        {:slides   (map-indexed (fn [i x]
                                                  [:div
                                                   {:on-click #(messages/handle-message
-                                                               events/control-stylist-gallery-open
+                                                               events/control-adventure-stylist-gallery-open
                                                                {:stylist-gallery-index current-stylist-index
                                                                 :image-index           i})
                                                    :key      (str firstname "-gallery-" i)}
@@ -114,7 +115,7 @@
       [:div.flex.items-center.justify-center.mynp3.inherit-color
        "Select"])
      (when gallery-open?
-       (let [close-attrs (utils/fake-href events/control-stylist-gallery-close)]
+       (let [close-attrs (utils/fake-href events/control-adventure-stylist-gallery-close)]
          (ui/modal
           {:close-attrs close-attrs
            :col-class   "col-12"}
@@ -150,7 +151,9 @@
                  :current-step 7
                  :back-link    events/navigate-adventure-find-your-stylist
                  :subtitle     "Step 2 of 3"}
-   :card-data   {:stylists (get-in data keypaths/adventure-matched-stylists)}})
+   :card-data   {:stylist-gallery-index (get-in data keypaths/adventure-stylist-gallery-index)
+                 :gallery-image-index   (get-in data keypaths/adventure-stylist-gallery-image-index)
+                 :stylists              (get-in data keypaths/adventure-matched-stylists)}})
 
 (defn ^:private component
   [{:keys [header-data card-data] :as data} _ _]
@@ -168,3 +171,15 @@
 (defn built-component
   [data opts]
   (component/build component (query data) opts))
+
+(defmethod transitions/transition-state events/control-adventure-stylist-gallery-open [_ _event {:keys [stylist-gallery-index image-index]} app-state]
+  (-> app-state
+      (assoc-in keypaths/adventure-stylist-gallery-open? true)
+      (assoc-in keypaths/adventure-stylist-gallery-index (or stylist-gallery-index 0))
+      (assoc-in keypaths/adventure-stylist-gallery-image-index (or image-index 0))))
+
+(defmethod transitions/transition-state events/control-adventure-stylist-gallery-close [_ _event _args app-state]
+  (-> app-state
+      (assoc-in keypaths/adventure-stylist-gallery-open? false)
+      (update-in keypaths/adventure-stylist-gallery dissoc :index)
+      (update-in keypaths/adventure-stylist-gallery dissoc :image-index)))

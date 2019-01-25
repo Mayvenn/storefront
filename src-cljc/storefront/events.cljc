@@ -473,6 +473,8 @@
 (defpath navigate-adventure-stylist-results)
 
 (defpath adventure-zipcode-component-mounted)
+(defpath control-adventure-stylist-gallery-open)
+(defpath control-adventure-stylist-gallery-close)
 (defpath clear-selected-location)
 
 ;; Stripe Payment Button
