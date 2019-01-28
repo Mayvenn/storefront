@@ -41,6 +41,7 @@
             [adventure.look-detail :as adventure.look-detail]
             [adventure.stylist-results :as adventure.stylist-results]
             [adventure.checkout.cart :as adventure-cart]
+            [adventure.out-of-area :as adventure.out-of-area]
             [catalog.category :as category]
             [catalog.product-details :as product-details]
             [checkout.cart :as cart]
@@ -135,6 +136,7 @@
     events/navigate-adventure-look-detail           adventure.look-detail/built-component
     events/navigate-adventure-select-bundle-set     adventure.select-new-look/built-component
     events/navigate-adventure-stylist-results       adventure.stylist-results/built-component
+    events/navigate-adventure-out-of-area           adventure.out-of-area/built-component
     home/built-component))
 
 (defn sticky-promo-bar [data]

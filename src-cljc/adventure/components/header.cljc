@@ -28,7 +28,7 @@
 (defn component
   [{:keys [height current-step back-link title subtitle shopping-bag?]} _ _]
   (component/create
-   [:div.absolute.top-0.left-0.right-0
+   [:div.absolute.top-0.left-0.right-0.bg-light-lavender
     [:div.flex.flex-column
      (progress-bar (dec current-step))
 

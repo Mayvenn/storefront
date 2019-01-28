@@ -37,13 +37,16 @@
   (assoc-in app-state adventure-keypaths/adventure-matched-stylists stylists))
 
 (defmethod effects/perform-effects events/api-success-fetch-stylists-within-radius
-  [_ _ _ _ app-state]
+  [_ _ {:keys [stylists]} _ app-state]
   (let [timer      (get-in app-state adventure-keypaths/adventure-matching-stylists-timer)
         ms-to-wait (max 0
                         (- (date/to-millis timer)
                            (date/to-millis (date/now))))]
     #?(:cljs
-       (history/enqueue-navigate events/navigate-adventure-stylist-results {:timeout ms-to-wait}))))
+       (history/enqueue-navigate
+        (if (seq stylists)
+          events/navigate-adventure-stylist-results
+          events/navigate-adventure-out-of-area) {:timeout ms-to-wait}))))
 
 (defn ^:private component
   [{:keys [] :as data} _ _]
