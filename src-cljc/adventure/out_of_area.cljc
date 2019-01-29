@@ -12,6 +12,7 @@
 
 (defn ^:private query [data]
   {:header-data {:title        "Your New Stylist"
+                 :header-attrs {:class "bg-light-lavender"}
                  :current-step 7 ;; TODO
                  :back-link    events/navigate-adventure-how-far
                  :subtitle     "Step 2 of 3"}})

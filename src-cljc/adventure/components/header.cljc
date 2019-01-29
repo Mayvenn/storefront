@@ -26,9 +26,10 @@
              :height "6px"}}]])
 
 (defn component
-  [{:keys [height current-step back-link title subtitle shopping-bag?]} _ _]
+  [{:keys [header-attrs height current-step back-link title subtitle shopping-bag?]} _ _]
   (component/create
-   [:div.absolute.top-0.left-0.right-0.bg-light-lavender
+   [:div.absolute.top-0.left-0.right-0
+    header-attrs
     [:div.flex.flex-column
      (progress-bar (dec current-step))
 
