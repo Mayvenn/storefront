@@ -7,7 +7,7 @@
 (defn ^:private query
   [data]
   {:header-data {:title        "Your New Stylist"
-                 :header-attrs {:class "bg-light-lavender"}
+                 :header-attrs {:class "bg-light-lavender white"}
                  :current-step 7 ;; TODO
                  :back-link    events/navigate-adventure-how-far
                  :subtitle     "Step 2 of 3"}})
@@ -19,8 +19,8 @@
     (header/built-component header-data nil)
     [:div.bg-white.flex.flex-column.justify-center
      {:style {:padding-top "75px"}}
-     [:div.col-10.mx-auto
-      [:div.h3.bold.purple.center
+     [:div.col-10.mx-auto.pt8
+      [:div.h3.bold.purple.center.mx-auto.col-8
        "You'll be matched with a stylist in 24 hours."]
       [:div.py2 "The stylist will meet the following criteria:"]
       [:div.col-7.mx-auto.py2
