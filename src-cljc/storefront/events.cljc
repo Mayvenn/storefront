@@ -478,6 +478,9 @@
 (defpath control-adventure-stylist-gallery-close)
 (defpath clear-selected-location)
 
+(defpath popup-show-adventure-free-install)
+(defpath control-adventure-free-install-dismiss)
+
 (defpath api-success-fetch-matched-stylist)
 
 ;; Stripe Payment Button
