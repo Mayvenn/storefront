@@ -2,7 +2,7 @@
   (:import (org.eclipse.jetty.server.handler.gzip GzipHandler)
            (org.eclipse.jetty.server.handler StatisticsHandler)))
 
-(def stale-reads-timeout 2000)
+(def stale-reads-timeout 6000)
 (def shutdown-timeout (- 29000 stale-reads-timeout))
 
 (defn configure-graceful-shutdown [server]
