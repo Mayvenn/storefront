@@ -142,7 +142,7 @@
 (defn query
   [data]
   {:guest?            (not (get-in data keypaths/user-id))
-   :adventure?        (experiments/adventure? data)
+   :freeinstall?        (= "freeinstall" (get-in data keypaths/store-slug))
    :sign-up-data      (sign-up/query data)
    :stylist-store     (get-in data keypaths/store)
    :servicing-stylist (get-in data adv-keypaths/adventure-servicing-stylist)
@@ -153,7 +153,7 @@
 
 (defn built-component
   [data opts]
-  (let [{:as queried-data :keys [adventure?]} (query data)]
-    (if adventure?
+  (let [{:as queried-data :keys [freeinstall?]} (query data)]
+    (if freeinstall?
       (component/build adventure-component queried-data opts)
       (component/build component queried-data opts))))

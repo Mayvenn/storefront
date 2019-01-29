@@ -83,5 +83,8 @@
 (defn show-minimal-footer? [event]
   (contains? minimal-footer-events event))
 
-(defn show-minimal-header? [event]
-  (contains? minimal-header-events event))
+(defn show-minimal-header? [event adventure?]
+  (contains? (if adventure?
+               (set/union minimal-header-events #{events/navigate-order-complete})
+               minimal-header-events)
+             event))

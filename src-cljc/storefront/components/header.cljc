@@ -242,6 +242,7 @@
   [:header.stacking-context.z4
    (when (get-in data keypaths/hide-header?)
      {:class "hide-on-mb-tb"})
-   (if (nav/show-minimal-header? (get-in data keypaths/navigation-event))
-     (minimal-component (= "freeinstall" (get-in data keypaths/store-slug)))
-     (component/build component (query data) nil))])
+   (let [adventure? (= "freeinstall" (get-in data keypaths/store-slug))]
+     (if (nav/show-minimal-header? (get-in data keypaths/navigation-event) adventure?)
+       (minimal-component adventure?)
+       (component/build component (query data) nil)))])

@@ -178,7 +178,7 @@
 
 (defn adventure-checkout-layout [data nav-event]
   [:div.flex.flex-column {:style {:min-height    "100vh"
-                                  :margin-bottom "-1px"}}
+                                  :margin-bottom "-60px"}}
    [:div
     (promotion-banner/built-component data nil)
     (sticky-promo-bar data)]
@@ -188,12 +188,11 @@
     (flash/built-component data nil)
 
     [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
-     ((main-component nav-event) data nil)]
-
-    [:footer (footer/built-component data nil)]]])
+     ((main-component nav-event) data nil)]]])
 
 (defn top-level-component [data owner opts]
-  (let [nav-event (get-in data keypaths/navigation-event)]
+  (let [nav-event   (get-in data keypaths/navigation-event)
+        freeinstall? (= "freeinstall" (get-in data keypaths/store-slug))]
     (component/create
      (cond
        #?@(:cljs
@@ -212,12 +211,13 @@
         (install.home/built-component data nil)]
 
        (routes/sub-page? [nav-event] [events/navigate-cart])
-       (if (= "freeinstall" (get-in data keypaths/store-slug))
+       (if freeinstall?
          (adventure-cart/layout data nav-event)
          (cart/layout data nav-event))
 
-       (and (routes/sub-page? [nav-event] [events/navigate-checkout])
-            (= "freeinstall" (get-in data keypaths/store-slug)))
+       (and freeinstall?
+            (or (routes/sub-page? [nav-event] [events/navigate-checkout])
+                (routes/sub-page? [nav-event] [events/navigate-order-complete])))
        (adventure-checkout-layout data nav-event)
 
        (routes/sub-page? [nav-event] [events/navigate-adventure])
