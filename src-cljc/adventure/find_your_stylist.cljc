@@ -65,10 +65,10 @@
     (merge {:value       (or value "")
             :id          "stylist-match-zipcode"
             :data-test   "stylist-match-zip"
-            :focused     true
+            :autoFocus   true
             :placeholder "zipcode"
             :pattern     "[0-9]*"  ; ios/safari numpad
-            :inputmode   "numeric" ; android/chrome numpad
+            :inputMode   "numeric" ; android/chrome numpad
             :data-ref    "stylist-match-zip"}
            #?(:cljs
               {:on-submit (partial handle-on-change selected-location)
