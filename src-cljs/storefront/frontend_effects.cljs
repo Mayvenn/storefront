@@ -894,10 +894,12 @@
 
 (defmethod perform-effects events/order-completed [dispatch event order _ app-state]
   (handle-message events/clear-order)
-  (if (experiments/adventure? app-state)
+  (when-not (experiments/adventure? app-state)
+    (talkable/show-pending-offer app-state))
+  (when (and (experiments/adventure? app-state)
+             (:servicing-stylist-id order))
     (api/fetch-matched-stylist (get-in app-state keypaths/api-cache)
-                               (:servicing-stylist-id order))
-    (talkable/show-pending-offer app-state)))
+                               (:servicing-stylist-id order))))
 
 (defmethod perform-effects events/api-success-update-order-update-cart-payments [_ event {:keys [order place-order?]} _ app-state]
   (when place-order?
