@@ -99,7 +99,7 @@
         {:style {:border-width "0.5px"}}]
 
        (if servicing-stylist
-         [:div
+         [:div {:data-test "matched-with-stylist"}
           [:div.py4.h3.bold
            "Chat with your Stylist"]
           [:div.h5.line-height-3.center
@@ -114,7 +114,7 @@
           [:div.bg-white.px1.my4.mxn2.rounded.py3
            (stylist-card servicing-stylist)]]
 
-         [:div
+         [:div {:data-test "to-be-matched"}
           [:div.py4.h3.bold
            "Let's match you with a Certified Mayvenn Stylist!"]
           [:div.h5.line-height-3
