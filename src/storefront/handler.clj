@@ -148,6 +148,11 @@
       (util.response/redirect (store-url (second subdomains) environment req))
       (h req))))
 
+(defn- storeback-offline-response [environment]
+  (do
+    (config/dev-print! environment "Could not connect to storeback")
+    (->html-resp (views/error-page (config/development? environment) "Could not connect to storeback"))))
+
 (defn wrap-stylist-not-found-redirect [h environment]
   (fn [{server-name                        :server-name
         {store-slug :store-slug :as store} :store
@@ -156,9 +161,7 @@
         :as                                req}]
     (cond
       (= store :storefront.backend-api/storeback-unavailable)
-      (do
-        (config/dev-print! environment "Could not connect to storeback")
-        (->html-resp (views/error-page (config/development? environment) "Could not connect to storeback")))
+      (storeback-offline-response environment)
 
       store-slug
       (h req)
@@ -590,14 +593,16 @@
 
 (defn install-routes [{:keys [storeback-config environment client-version] :as ctx}]
   (fn [{:keys [nav-message] :as request}]
-    (when (not= (get nav-message 0) events/navigate-not-found)
-      (let [render-ctx           (auto-map storeback-config environment client-version)
-            [nav-event nav-args] nav-message
-            data                 (-> (:state request)
-                                     (assoc-in keypaths/store-slug config/install-subdomain)
-                                     (assoc-in keypaths/environment environment)
-                                     (assoc-in keypaths/navigation-message nav-message))]
-        ((server-render-pages nav-event generic-server-render) render-ctx data request nav-args)))))
+    (if (= (-> request :state :store) :storefront.backend-api/storeback-unavailable)
+      (storeback-offline-response environment)
+      (when (not= (get nav-message 0) events/navigate-not-found)
+        (let [render-ctx           (auto-map storeback-config environment client-version)
+              [nav-event nav-args] nav-message
+              data                 (-> (:state request)
+                                       (assoc-in keypaths/store-slug config/install-subdomain)
+                                       (assoc-in keypaths/environment environment)
+                                       (assoc-in keypaths/navigation-message nav-message))]
+          ((server-render-pages nav-event generic-server-render) render-ctx data request nav-args))))))
 
 
 
