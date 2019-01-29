@@ -1,16 +1,11 @@
 (ns adventure.out-of-area
   (:require [adventure.components.header :as header]
-            [adventure.keypaths :as keypaths]
-            [spice.date :as date]
             [storefront.component :as component]
             [storefront.components.ui :as ui]
-            [storefront.events :as events]
-            [storefront.platform.carousel :as carousel]
-            [storefront.platform.component-utils :as utils]
-            [storefront.platform.messages :as messages]
-            [storefront.transitions :as transitions]))
+            [storefront.events :as events]))
 
-(defn ^:private query [data]
+(defn ^:private query
+  [data]
   {:header-data {:title        "Your New Stylist"
                  :header-attrs {:class "bg-light-lavender"}
                  :current-step 7 ;; TODO
