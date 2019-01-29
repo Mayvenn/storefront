@@ -1,7 +1,11 @@
 (ns storefront.components.checkout-complete
   (:require [adventure.stylist-results :as stylist-results]
+            [adventure.keypaths :as adv-keypaths]
             [storefront.assets :as assets]
+            [storefront.transitions :as transitions]
+            [storefront.events :as events]
             [storefront.component :as component]
+            [storefront.components.formatters :as formatters]
             [storefront.components.facebook :as facebook]
             [storefront.components.sign-up :as sign-up]
             [storefront.components.ui :as ui]
@@ -48,88 +52,108 @@
          (sign-up/form sign-up-data
                        {:sign-up-text "Create my account"})]])])))
 
-(defn stylist-card [salon]
-  (let [firstname "Julie Ann"
-        lastname  "Sample Stylist"
-        city      "Sampleton"
-        state     "Samplevania"
-        rating    4.5
-        portrait  "cdbb6411-7104-47f8-a845-6e3554f0e432"
-        name      "exGlample Salon"]
+(defn stylist-card [servicing-stylist]
+  (let [firstname (-> servicing-stylist
+                      :address
+                      :firstname)
+        lastname  (-> servicing-stylist
+                      :address
+                      :lastname)
+        city      (-> servicing-stylist
+                      :salon
+                      :city)
+        state     (-> servicing-stylist
+                      :salon
+                      :state)
+        rating    (:rating servicing-stylist)
+        portrait  (-> servicing-stylist
+                      :portrait
+                      :resizable-url)
+        name      (-> servicing-stylist
+                      :salon
+                      :name)]
     [:div.flex
-     [:div.mr2.mt1 (ui/circle-ucare-img {:width "104"} portrait)]
+     [:div.mr2 (ui/circle-ucare-img {:width "104"} portrait)]
      [:div.flex-grow-1.left-align.dark-gray.h7.line-height-4
       [:div.h3.black.line-height-1 (clojure.string/join  " " [firstname lastname])]
-      [:div (ui/star-rating rating)]
+      [:div.pyp2 (ui/star-rating rating)]
       [:div.bold (str city ", " state)]
       [:div name]
-      (stylist-results/stylist-detail-line {})]]))
+      (stylist-results/stylist-detail-line servicing-stylist)]]))
 
 (defn adventure-component
-  [{:keys [stylist-store salon phone-number]} _ _]
+  [{:keys [stylist-store servicing-stylist phone-number]} _ _]
   (component/create
    [:div.bg-lavender.white {:style {:min-height "95vh"}}
     (ui/narrow-container
      [:div.center
-      [:div.col-10.mx-auto.py4
+      [:div.col-11.mx-auto.py4
        [:div
-        [:h2.h2.bold.py2
+        [:div.h5.medium.py1
          "Thank you for your order!"]
-        [:div.h2.line-height-2
+        [:div.h5.line-height-3
          (copy "We've received your order and will be processing it right away."
                "Once your order ships we will send you an email confirmation.")]]
 
-       [:div.py2.mx-auto.white.border-bottom.border-width-1]
+       [:div.py2.mx-auto.white.border-bottom
+        {:style {:border-width "0.5px"}}]
 
-       (if (= "freeinstall" (:store-slug stylist-store))
+       (if servicing-stylist
          [:div
-          [:h1.py4.h1.bold
+          [:div.py4.h3.bold
+           "Chat with your Stylist"]
+          [:div.h5.line-height-3.center
+           "A group text message will be sent to "
+           [:span.bold.nowrap (formatters/phone-number phone-number)]
+           " and your stylist, "
+           [:span.nowrap
+            (-> servicing-stylist
+                :address
+                :firstname)]
+           "."]
+          [:div.bg-white.px1.my4.mxn2.rounded.py3
+           (stylist-card servicing-stylist)]]
+
+         [:div
+          [:div.py4.h3.bold
            "Let's match you with a Certified Mayvenn Stylist!"]
-          [:div.h2.line-height-2
+          [:div.h5.line-height-3
            (copy "A Mayvenn representative will contact you soon to help select a"
                  "Certified Mayvenn Stylist with the following criteria:")]
           [:div
-           [:ul.col-10.h3.purple-checkmark.py4.left-align.mx6
+           [:ul.col-10.h6.list-img-purple-checkmark.py4.left-align.mx6
             (mapv (fn [%] [:li.pl1.mb1 %])
                   ["Licensed Salon Stylist"
                    "Mayvenn Certified"
-                   "In your area"])]]]
+                   "In your area"])]]])
 
-         [:div
-          [:h1.py4.h1.bold
-           "Chat with your Stylist"]
-          [:div.h2.line-height-2
-           "A group text message will be sent to "
-           [:span.bold phone-number]
-           " and your stylist, "
-           (:store-nickname stylist-store)
-           "."
-           ]
-          [:div.bg-white.p1.my4 {:style {:border        "2px white"
-                                         :border-radius "5px"}}
-           (stylist-card salon)]])
-
-       [:div.pt6.pb2
-        [:h1.bold "In the meantime…"]
-        [:h2.py2 "Get inspired for your appointment"]
+       [:div.py2
+        [:h3.bold "In the meantime…"]
+        [:h4.py2 "Get inspired for your appointment"]
         [:div.py2
          (ui/teal-button {:href  "https://www.instagram.com/explore/tags/mayvennfreeinstall/"
                           :class "bold"}
                          "View #MayvennFreeInstall")]]]])]))
 
+(defmethod transitions/transition-state events/api-success-fetch-matched-stylist
+  [_ event {:keys [stylist]} app-state]
+  (assoc-in app-state adv-keypaths/adventure-servicing-stylist stylist))
+
 (defn query
   [data]
-  {:guest?        (not (get-in data keypaths/user-id))
-   :adventure?    (experiments/adventure? data)
-   :sign-up-data  (sign-up/query data)
-   :stylist-store (:store data)
-   ;; TODO: Get salon from state once stylist adventure track puts it there.
-   :salon         nil
-   :phone-number  "510-555-1234"})
+  {:guest?            (not (get-in data keypaths/user-id))
+   :adventure?        (experiments/adventure? data)
+   :sign-up-data      (sign-up/query data)
+   :stylist-store     (get-in data keypaths/store)
+   :servicing-stylist (get-in data adv-keypaths/adventure-servicing-stylist)
+   :phone-number      (-> data
+                          (get-in keypaths/completed-order)
+                          :shipping-address
+                          :phone)})
 
 (defn built-component
   [data opts]
   (let [{:as queried-data :keys [adventure?]} (query data)]
     (if adventure?
-      (component/build adventure-component (spice.core/spy queried-data) opts)
+      (component/build adventure-component queried-data opts)
       (component/build component queried-data opts))))

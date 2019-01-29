@@ -478,6 +478,8 @@
 (defpath control-adventure-stylist-gallery-close)
 (defpath clear-selected-location)
 
+(defpath api-success-fetch-matched-stylist)
+
 ;; Stripe Payment Button
 (defpath stripe-payment-request-button-inserted)
 (defpath stripe-payment-request-button-removed)

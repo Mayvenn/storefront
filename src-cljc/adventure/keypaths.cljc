@@ -11,3 +11,5 @@
 (def adventure-stylist-gallery-index (conj adventure-stylist-gallery :index))
 (def adventure-stylist-gallery-image-index (conj adventure-stylist-gallery :image-index))
 (def adventure-stylist-gallery-open? (conj adventure-stylist-gallery :open?))
+
+(def adventure-servicing-stylist (conj adventure :servicing-stylist))

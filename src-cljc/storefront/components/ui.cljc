@@ -753,7 +753,7 @@
 
 (defn star-rating
   [rating]
-  (let [remainder-rating (mod 5 rating)
+  (let [remainder-rating (mod rating 1)
         whole-stars      (map (partial star :whole) (range (int rating)))
         partial-star     (cond
                            (== 0 remainder-rating)

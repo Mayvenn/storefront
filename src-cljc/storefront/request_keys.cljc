@@ -67,3 +67,5 @@
 (def voucher-redemption [:voucher-redemption])
 (def fetch-stylist-service-menu [:fetch-stylist-service-menu])
 (def fetch-stylists-within-radius [:fetch-stylists-within-radius])
+
+(def fetch-matched-stylist [:fetch-matched-stylist])

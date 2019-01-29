@@ -1,5 +1,6 @@
 (ns storefront.components.formatters
   (:require [spice.date :as date]
+            [storefront.platform.numbers :as numbers]
             [goog.string.format]
             [goog.string]))
 
@@ -82,3 +83,14 @@
 (defn date-tuple [date-like]
   (when-let [date (date/to-datetime date-like)]
     [(.getFullYear date) (.getMonth date) (.getDate date)]))
+
+(defn phone-number [phone]
+  (let [num (numbers/digits-only (str phone))]
+    (str
+     (.substr num 0 1)
+     "-"
+     (.substr num 1 3)
+     "-"
+     (.substr num 4 3)
+     "-"
+     (.substr num 7 4))))
