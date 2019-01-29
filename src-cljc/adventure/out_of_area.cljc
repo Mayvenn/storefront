@@ -24,7 +24,7 @@
        "You'll be matched with a stylist in 24 hours."]
       [:div.py2 "The stylist will meet the following criteria:"]
       [:div.col-7.mx-auto.py2
-       [:ul.h6.purple-checkmark.pl4.left-align
+       [:ul.h6.list-img-purple-checkmark.pl4.left-align
         [:li "Licensed Salon Stylist"]
         [:li "Mayvenn Certified"]
         [:li "In your area"]]]

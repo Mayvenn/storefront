@@ -12,7 +12,7 @@
 
 (def line-item-detail
   [:div.mb1.mt0 (str "w/ " "a Certified Mayvenn Stylist")
-   [:ul.h6.purple-checkmark.pl4
+   [:ul.h6.list-img-purple-checkmark.pl4
     (mapv (fn [%] [:li %])
           ["Licensed Salon Stylist" "Near you" "Experienced"])]])
 

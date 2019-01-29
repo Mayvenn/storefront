@@ -74,7 +74,7 @@
       title]
      [:div.h6.mt1.line-height-1
       [:div.mb1.mt0 (str "w/ " "a Certified Mayvenn Stylist")
-       [:ul.h6.purple-checkmark.pl4.mt1
+       [:ul.h6.list-img-purple-checkmark.pl4.mt1
         (mapv (fn [%] [:li %])
               ["Licensed Salon Stylist" "Near you" "Experienced"])]]]]]])
 
