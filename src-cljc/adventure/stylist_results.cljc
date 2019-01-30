@@ -73,7 +73,7 @@
                                                    :key      (str firstname "-gallery-" i)}
                                                   (ui/aspect-ratio
                                                    1 1
-                                                   [:img {:src   (str (:resizable-url x) "-/resize/204x/")
+                                                   [:img {:src   (str (:resizable-url x) "-/scale_crop/204x204/")
                                                           :class "rounded"
                                                           :width "102"}])])
                                                gallery-images)
