@@ -8,7 +8,8 @@
             [adventure.keypaths :as keypaths]
             [storefront.accessors.experiments :as experiments]
             [storefront.effects :as effects]
-            [storefront.transitions :as transitions]))
+            [storefront.transitions :as transitions]
+            #?(:cljs [storefront.history :as history])))
 
 (defn ^:private query [data]
   (let [stylist-id (get-in data keypaths/adventure-selected-stylist-id)
@@ -41,6 +42,6 @@
       (assoc-in keypaths/adventure-selected-stylist-id
                 stylist-id)))
 
-(defmethod effects/perform-effects events/control-adventure-select-stylist
-  [_ _ _ _ _]
-  (handle-message events/navigate-adventure-match-success))
+#?(:cljs (defmethod effects/perform-effects events/control-adventure-select-stylist
+            [_ _ _ _ _]
+            (history/enqueue-navigate events/navigate-adventure-match-success)))
