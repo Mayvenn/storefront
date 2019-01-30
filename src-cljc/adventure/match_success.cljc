@@ -16,9 +16,7 @@
         stylist    (->> (get-in data keypaths/adventure-matched-stylists)
                         (filter #(= stylist-id (:stylist-id %)))
                         first)]
-    {:prompt               (str "Congrats on matching with " (-> stylist
-                                                                 :address
-                                                                 :firstname))
+    {:prompt               (str "Congrats on matching with " (-> stylist :address :firstname) "!")
      :mini-prompt          "We'll connect you with your stylist shortly. But first, pick out your hair!"
      :show-logo?           false
      :background-overrides {:style
