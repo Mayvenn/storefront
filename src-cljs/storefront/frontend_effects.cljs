@@ -898,6 +898,10 @@
         freeinstall? (= "freeinstall" store-slug)]
     (when-not freeinstall?
       (talkable/show-pending-offer app-state))
+
+    (when freeinstall?
+      (cookie-jar/clear-adventure (get-in app-state keypaths/cookie)))
+
     (when (and freeinstall?
                (:servicing-stylist-id order))
       (api/fetch-matched-stylist (get-in app-state keypaths/api-cache)

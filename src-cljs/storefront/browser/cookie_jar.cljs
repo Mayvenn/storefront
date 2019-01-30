@@ -158,6 +158,8 @@
 (defn save-telligent-cookie [cookie contents max-age]
   (save-cookie (assoc telligent-session :max-age max-age) cookie {"AuthenticatedUser" contents}))
 
+(def clear-adventure (partial clear-cookie adventure))
+
 (defn save-adventure
   [cookie adventure-attrs]
   (let [json-serialize (comp js/JSON.stringify #(clj->js %))]
