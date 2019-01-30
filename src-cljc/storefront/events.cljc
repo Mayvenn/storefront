@@ -474,6 +474,8 @@
 (defpath navigate-adventure-out-of-area)
 (defpath navigate-adventure-match-success)
 
+(defpath control-adventure-select-stylist)
+
 (defpath adventure-zipcode-component-mounted)
 (defpath control-adventure-stylist-gallery-open)
 (defpath control-adventure-stylist-gallery-close)

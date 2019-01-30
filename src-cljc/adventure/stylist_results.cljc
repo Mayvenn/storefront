@@ -51,7 +51,7 @@
     :as   stylist}]
   (let [{:keys [firstname lastname]}         address
         {:keys [city state name salon-type]} salon]
-    [:div.bg-white.p2.pb2.h6.my2.mx2-on-tb-dt.col-12.col-5-on-tb-dt {:key firstname}
+    [:div.bg-white.p2.pb2.h6.my2.mx2-on-tb-dt.col-12.col-5-on-tb-dt {:key stylist-id}
      [:div.flex
       [:div.mr2.mt1 (ui/circle-picture {:width "104px"} (:resizable-url portrait))]
       [:div.flex-grow-1.left-align.dark-gray.h7.line-height-4
@@ -85,7 +85,9 @@
                                    :infinite     true}}
                        {})]
      (ui/teal-button
-      (utils/route-to events/navigate-adventure-match-success)
+      {:on-click #(messages/handle-message events/control-adventure-select-stylist
+                                           {:stylist-id stylist-id} )
+       :href     nil}
       [:div.flex.items-center.justify-center.inherit-color
        "Select"])
      (when gallery-open?
