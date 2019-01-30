@@ -77,6 +77,7 @@
                                             :height "45px"}
                            :disabled?      (not (:zipcode selected-location))
                            :disabled-class "bg-light-gray gray"
+                           :data-test      "navigate-adventure-how-far"
                            :class          "flex items-center justify-center medium not-rounded x-group-item"}
                           (utils/route-to events/navigate-adventure-how-far)) "→")])
 #?(:cljs

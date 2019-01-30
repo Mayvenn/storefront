@@ -1,12 +1,8 @@
 (ns adventure.match-success
   (:require [storefront.events :as events]
             [storefront.component :as component]
-            [storefront.platform.messages :refer [handle-message]]
             [adventure.components.basic-prompt :as basic-prompt]
-            [adventure.handlers :as handlers]
-            [adventure.home :as home]
             [adventure.keypaths :as keypaths]
-            [storefront.accessors.experiments :as experiments]
             [storefront.effects :as effects]
             [storefront.transitions :as transitions]
             #?(:cljs [storefront.history :as history])))

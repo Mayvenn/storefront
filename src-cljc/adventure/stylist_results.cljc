@@ -45,9 +45,7 @@
            portrait
            rating
            salon
-           stylist-id
-           stylist-since
-           licensed]
+           stylist-id]
     :as   stylist}]
   (let [{:keys [firstname lastname]}         address
         {:keys [city state name salon-type]} salon]
