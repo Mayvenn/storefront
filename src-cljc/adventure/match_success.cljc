@@ -30,7 +30,7 @@
      :button               {:text      "Show me hair"
                             :data-test "adventure-match-success-choice-show-hair"
                             :color     :white
-                            :target    events/navigate-adventure-home}}))
+                            :target    events/navigate-adventure-shop-hair}}))
 
 (defn built-component
   [data opts]
@@ -42,6 +42,8 @@
       (assoc-in keypaths/adventure-selected-stylist-id
                 stylist-id)))
 
-#?(:cljs (defmethod effects/perform-effects events/control-adventure-select-stylist
-            [_ _ _ _ _]
-            (history/enqueue-navigate events/navigate-adventure-match-success)))
+
+(defmethod effects/perform-effects events/control-adventure-select-stylist
+  [_ _ _ _ _]
+  #?(:cljs
+     (history/enqueue-navigate events/navigate-adventure-match-success)))

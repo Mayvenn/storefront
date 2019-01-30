@@ -13,7 +13,9 @@
      :data-test            "adventure-match-with-stylist"
      :header-data          {:current-step 1
                             :subtitle     (str "Welcome to Step " (if hair-flow? 2 3))
-                            :back-link    events/navigate-adventure-what-next}
+                            :back-link    (if hair-flow?
+                                            events/navigate-adventure-what-next
+                                            events/navigate-adventure-match-success)}
      :button               {:text   "Next"
                             :data-test "shop-hair-button"
                             :target events/navigate-adventure-how-shop-hair}}))
