@@ -472,6 +472,7 @@
 (defpath navigate-adventure-select-bundle-set)
 (defpath navigate-adventure-stylist-results)
 (defpath navigate-adventure-out-of-area)
+(defpath navigate-adventure-match-success)
 
 (defpath adventure-zipcode-component-mounted)
 (defpath control-adventure-stylist-gallery-open)

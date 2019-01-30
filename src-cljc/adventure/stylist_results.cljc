@@ -53,7 +53,7 @@
         {:keys [city state name salon-type]} salon]
     [:div.bg-white.p2.pb2.h6.my2.mx2-on-tb-dt.col-12.col-5-on-tb-dt {:key firstname}
      [:div.flex
-      [:div.mr2.mt1 (ui/circle-picture {:width "104"} (:resizable-url portrait))]
+      [:div.mr2.mt1 (ui/circle-picture {:width "104px"} (:resizable-url portrait))]
       [:div.flex-grow-1.left-align.dark-gray.h7.line-height-4
        [:div.h3.black.line-height-1 (clojure.string/join  " " [firstname lastname])]
        [:div (ui/star-rating rating)]
@@ -85,7 +85,7 @@
                                    :infinite     true}}
                        {})]
      (ui/teal-button
-      {}
+      (utils/route-to events/navigate-adventure-match-success)
       [:div.flex.items-center.justify-center.inherit-color
        "Select"])
      (when gallery-open?
