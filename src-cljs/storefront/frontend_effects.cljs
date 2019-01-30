@@ -441,8 +441,12 @@
 
 (defmethod perform-effects events/navigate-checkout [_ event args _ app-state]
   (let [have-cart? (get-in app-state keypaths/order-number)]
-    (when-not have-cart?
-      (redirect events/navigate-cart))
+    (cond
+      (and (not have-cart?)
+           (= "freeinstall" (get-in app-state keypaths/store-slug))) (redirect events/navigate-adventure-home)
+
+      (not have-cart?)                                               (redirect events/navigate-cart))
+
     (when (and have-cart?
                (not (auth/signed-in-or-initiated-guest-checkout? app-state))
                (not (#{events/navigate-checkout-address
@@ -898,6 +902,10 @@
         freeinstall? (= "freeinstall" store-slug)]
     (when-not freeinstall?
       (talkable/show-pending-offer app-state))
+
+    (when freeinstall?
+      (cookie-jar/clear-adventure (get-in app-state keypaths/cookie)))
+
     (when (and freeinstall?
                (:servicing-stylist-id order))
       (api/fetch-matched-stylist (get-in app-state keypaths/api-cache)

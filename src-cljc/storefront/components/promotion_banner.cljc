@@ -32,6 +32,19 @@
     [:div.white.center.pp5.bg-teal.h5.bold.pointer
      "Mayvenn will pay for your install! " [:span.underline "Learn more"]]]))
 
+
+(defmethod component :adventure-freeinstall/applied
+  [_ _ _]
+  (component/create
+   [:a.white.center.p2.bg-teal.mbnp5.h6.bold.flex.items-center.justify-center
+    {:on-click  (utils/send-event-callback events/popup-show-adventure-free-install)
+     :data-test "adventure-promo-banner"}
+    (svg/celebration-horn {:height "1.6em"
+                           :width  "1.6em"
+                           :class  "mr1 fill-white stroke-white"})
+    [:div.pointer "CONGRATS — Your next install is FREE! "
+     [:span.underline "More info"]]]))
+
 (defmethod component :freeinstall/applied
   [_ _ _]
   (component/create
@@ -99,7 +112,7 @@
             events/navigate-shop-by-look-details}
 
     ;; Incentivize checkout by reminding them they are saving
-    (#{:install-discount/applied :freeinstall/applied :v2-freeinstall/applied} promo-type)
+    (#{:install-discount/applied :freeinstall/applied :v2-freeinstall/applied :adventure-freeinstall/applied} promo-type)
     (conj events/navigate-checkout-returning-or-guest
           events/navigate-checkout-address
           events/navigate-checkout-payment
@@ -117,6 +130,11 @@
    experiment for"
   [data]
   (cond
+
+    (and
+     (orders/freeinstall-applied? (get-in data keypaths/order))
+     (= "freeinstall" (get-in data keypaths/store-slug)))
+    :adventure-freeinstall/applied
 
     (and
      (orders/freeinstall-applied? (get-in data keypaths/order))
