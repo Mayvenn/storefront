@@ -14,7 +14,7 @@
   [:div.mb1.mt0 (str "w/ " "a Certified Mayvenn Stylist")
    [:ul.h6.list-img-purple-checkmark.pl4
     (mapv (fn [%] [:li %])
-          ["Licensed Salon Stylist" "Near you" "Experienced"])]])
+          ["Licensed Salon Stylist" "Mayvenn Certified" "In your area"])]])
 
 (defn freeinstall-line-item-query [data]
   (let [order                 (get-in data keypaths/order)
