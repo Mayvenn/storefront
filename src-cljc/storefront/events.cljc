@@ -465,6 +465,7 @@
 (defpath navigate-adventure-find-your-stylist)
 (defpath navigate-adventure-shop-hair)
 (defpath navigate-adventure-how-shop-hair)
+(defpath navigate-adventure-install-type)
 (defpath navigate-adventure-how-far)
 (defpath navigate-adventure-select-new-look)
 (defpath navigate-adventure-look-detail)

@@ -16,15 +16,15 @@
    :buttons      [{:text             "Less than $150"
                    :data-test-suffix "1"
                    :value            {:budget 1}
-                   :target           events/navigate-adventure-what-next}
+                   :target           events/navigate-adventure-install-type}
                   {:text             "$150 - $250"
                    :data-test-suffix "2"
                    :value            {:budget 2}
-                   :target           events/navigate-adventure-what-next}
+                   :target           events/navigate-adventure-install-type}
                   {:text             "$250 and up"
                    :data-test-suffix "3"
                    :value            {:budget 3}
-                   :target           events/navigate-adventure-what-next}]})
+                   :target           events/navigate-adventure-install-type}]})
 
 (defn built-component
   [data opts]

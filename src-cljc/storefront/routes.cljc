@@ -50,6 +50,7 @@
    "/adventure/matching-stylist-wait"               (edn->bidi events/navigate-adventure-matching-stylist-wait)
    "/adventure/shop-hair"                           (edn->bidi events/navigate-adventure-shop-hair)
    "/adventure/how-shop-hair"                       (edn->bidi events/navigate-adventure-how-shop-hair)
+   "/adventure/install-type"                        (edn->bidi events/navigate-adventure-install-type)
    "/adventure/stylist-results"                     (edn->bidi events/navigate-adventure-stylist-results)
    "/adventure/out-of-area"                         (edn->bidi events/navigate-adventure-out-of-area)
    ["/adventure/shop/" :album-keyword]              (edn->bidi events/navigate-adventure-select-new-look)
