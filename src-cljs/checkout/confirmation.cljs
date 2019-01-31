@@ -132,9 +132,6 @@
                                          {:read-only?             true
                                           :use-store-credit?      (not install-or-free-install-applied?)
                                           :available-store-credit available-store-credit}))
-        (when (= store-slug "freeinstall")
-          [:p.h6.my4.center.col-10.mx-auto.line-height-3
-           "A text message will be sent to connect you and your stylist after your order is placed."])
         [:div.col-12.col-6-on-tb-dt.mx-auto
          (checkout-button checkout-button-data)]]]]])))
 
@@ -149,7 +146,8 @@
            freeinstall-line-item-data
            confirmation-summary
            checkout-button-data
-           store-slug]}
+           store-slug
+           servicing-stylist]}
    owner]
   (om/component
    (html
@@ -188,9 +186,10 @@
                                          {:read-only?             true
                                           :use-store-credit?      (not install-or-free-install-applied?)
                                           :available-store-credit available-store-credit}))
-        (when (= store-slug "freeinstall")
-          [:p.h6.my4.center.col-10.mx-auto.line-height-3
-           "A text message will be sent to connect you and your stylist after your order is placed."])
+        [:p.h6.my4.center.col-10.mx-auto.line-height-3
+         (if-let [servicing-stylist-firstname (-> servicing-stylist :address :firstname)]
+           (str "You’ll be connected with " servicing-stylist-firstname " after checkout.")
+           "You’ll be able to select your Certified Mayvenn Stylist after checkout.")]
         [:div.col-12.col-6-on-tb-dt.mx-auto
          (checkout-button checkout-button-data)]]]]])))
 
@@ -232,6 +231,7 @@
      :confirmation-summary             (confirmation-summary/query data)
      :freeinstall-line-item-data       (adventure-cart-items/freeinstall-line-item-query data)
      :store-slug                       (get-in data keypaths/store-slug)
+     :servicing-stylist                (get-in data adventure.keypaths/adventure-servicing-stylist)
      :freeinstall?                     (= "freeinstall" (get-in data keypaths/store-slug))}))
 
 (defn built-component [data opts]
@@ -239,5 +239,5 @@
         query-adventure-data (adventure-query data)
         freeinstall?         (:freeinstall? query-data)]
     (if freeinstall?
-      (om/build component query-adventure-data opts)
+      (om/build adventure-component query-adventure-data opts)
       (om/build component query-data opts))))

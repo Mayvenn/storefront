@@ -39,6 +39,7 @@
    [storefront.effects :as effects]
    [storefront.events :as events]
    [storefront.keypaths :as keypaths]
+   [adventure.keypaths :as adventure.keypaths]
    [storefront.platform.component-utils :as utils]
    [storefront.platform.messages :as messages]
    [storefront.request-keys :as request-keys]
@@ -176,6 +177,7 @@
                               delete-line-item-requests
                               freeinstall-line-item-data
                               freeinstall-just-added?
+                              servicing-stylist
                               cart-summary]} owner _]
   (component/create
    (let [{:keys [number-of-items-needed add-more-hair?]} freeinstall-line-item-data]
@@ -204,8 +206,10 @@
            [:div
             add-more-hair-button]
            [:div.bg-too-light-teal.py4.px2
-            [:div.h5.medium.center
-             "You’ll be connected with your Certified Mayvenn Stylist after checkout."]
+            [:div.h4.medium.center
+             (if-let [servicing-stylist-firstname (-> servicing-stylist :address :firstname)]
+               (str "You’ll be connected with " servicing-stylist-firstname " after checkout.")
+               "You’ll be able to select your Certified Mayvenn Stylist after checkout.")]
             [:div.mt2
              (ui/teal-button {:spinning? false
                               :disabled? updating?
@@ -237,7 +241,6 @@
                                        (facets/get-color facets)
                                        :option/name)}))
 
-
 (defn full-cart-query [data]
   (let [order       (get-in data keypaths/order)
         products    (get-in data keypaths/v2-products)
@@ -246,6 +249,7 @@
                          (orders/product-items order))
         variant-ids (map :id line-items)]
     {:suggestions                (suggestions/query data)
+     :servicing-stylist          (get-in data adventure.keypaths/adventure-servicing-stylist)
      :order                      order
      :line-items                 line-items
      :skus                       (get-in data keypaths/v2-skus)
