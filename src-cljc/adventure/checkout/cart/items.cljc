@@ -6,12 +6,16 @@
    [storefront.components.ui :as ui]
    [storefront.events :as events]
    [storefront.keypaths :as keypaths]
+   [adventure.keypaths :as adv-keypaths]
    [storefront.platform.component-utils :as utils]
    [storefront.request-keys :as request-keys]
    [storefront.components.svg :as svg]))
 
-(def line-item-detail
-  [:div.mb1.mt0 (str "w/ " "a Certified Mayvenn Stylist")
+(defn line-item-detail [servicing-stylist-name]
+  [:div.mb1.mt0
+   (str "w/ " (if (empty? servicing-stylist-name)
+                "a Certified Mayvenn Stylist"
+                servicing-stylist-name))
    [:ul.h6.list-img-purple-checkmark.pl4
     (mapv (fn [%] [:li %])
           ["Licensed Salon Stylist" "Mayvenn Certified" "In your area"])]])
@@ -19,8 +23,8 @@
 (defn freeinstall-line-item-query [data]
   (let [order                 (get-in data keypaths/order)
         highest-value-service (or (some-> order
-                                      orders/product-items
-                                      vouchers/product-items->highest-value-service)
+                                          orders/product-items
+                                          vouchers/product-items->highest-value-service)
                                   :leave-out)
 
         {:as   campaign
@@ -32,10 +36,11 @@
         service-price                           (some-> data
                                                         (get-in keypaths/store-service-menu)
                                                         (get diva-advertised-type ))
-        number-of-items-needed (- 3 (orders/product-quantity order))]
+        number-of-items-needed                  (- 3 (orders/product-quantity order))
+        {:keys [address]}                       (get-in data adv-keypaths/adventure-servicing-stylist)]
     {:id                     "freeinstall"
      :title                  "Install"
-     :detail                 line-item-detail
+     :detail                 (line-item-detail (:firstname address))
      :price                  service-price
      :total-savings          (orders/total-savings order service-price)
      :number-of-items-needed number-of-items-needed

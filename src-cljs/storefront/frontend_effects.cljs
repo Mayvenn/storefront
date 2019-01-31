@@ -925,6 +925,9 @@
     (history/enqueue-navigate navigate {:number (:number order)})))
 
 (defmethod perform-effects events/api-success-get-order [_ event order _ app-state]
+  (when-let [servicing-stylist-id (:servicing-stylist-id order)]
+    (api/fetch-matched-stylist (get-in app-state keypaths/api-cache)
+                               servicing-stylist-id))
   (handle-message events/save-order {:order order}))
 
 (defmethod perform-effects events/api-failure-no-network-connectivity [_ event response _ app-state]
