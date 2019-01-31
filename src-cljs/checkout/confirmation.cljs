@@ -64,7 +64,7 @@
 
 (defn ^:private display-freeinstall-line-item
   [{:keys [id price title thumbnail-image-fn detail]}]
-  [:div.clearfix.border-bottom.border-gray.py3
+  [:div.clearfix.border-top.border-bottom.border-gray.py3
    [:a.left.mr1
     [:div.block.border.border-gray.rounded.hide-on-mb
      (thumbnail-image-fn 117)]
@@ -133,7 +133,8 @@
                                           :use-store-credit?      (not install-or-free-install-applied?)
                                           :available-store-credit available-store-credit}))
         (when (= store-slug "freeinstall")
-          [:p.h6.my4.center.col-10.mx-auto.line-height-3 "A text message will be sent to connect you and your stylist after your order is placed."])
+          [:p.h6.my4.center.col-10.mx-auto.line-height-3
+           "A text message will be sent to connect you and your stylist after your order is placed."])
         [:div.col-12.col-6-on-tb-dt.mx-auto
          (checkout-button checkout-button-data)]]]]])))
 
@@ -188,7 +189,8 @@
                                           :use-store-credit?      (not install-or-free-install-applied?)
                                           :available-store-credit available-store-credit}))
         (when (= store-slug "freeinstall")
-          [:p.h6.my4.center.col-10.mx-auto.line-height-3 "A text message will be sent to connect you and your stylist after your order is placed."])
+          [:p.h6.my4.center.col-10.mx-auto.line-height-3
+           "A text message will be sent to connect you and your stylist after your order is placed."])
         [:div.col-12.col-6-on-tb-dt.mx-auto
          (checkout-button checkout-button-data)]]]]])))
 
