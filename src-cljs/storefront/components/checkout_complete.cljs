@@ -137,7 +137,8 @@
 
 (defmethod transitions/transition-state events/api-success-fetch-matched-stylist
   [_ event {:keys [stylist]} app-state]
-  (assoc-in app-state adv-keypaths/adventure-servicing-stylist stylist))
+  (assoc-in app-state
+            adv-keypaths/adventure-servicing-stylist stylist))
 
 (defn query
   [data]
