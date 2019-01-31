@@ -206,7 +206,7 @@
            [:div
             add-more-hair-button]
            [:div.bg-too-light-teal.py4.px2
-            [:div.h4.medium.center
+            [:div.h5.medium.center
              (if-let [servicing-stylist-firstname (-> servicing-stylist :address :firstname)]
                (str "You’ll be connected with " servicing-stylist-firstname " after checkout.")
                "You’ll be able to select your Certified Mayvenn Stylist after checkout.")]
