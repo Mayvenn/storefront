@@ -26,4 +26,6 @@
 (defn reset
   []
   (stop)
-  (refresh :after 'user/go))
+  (refresh :after 'user/go)
+  ;; TODO: at-at/MutablePool seems to have an infinite recursive print
+  nil)
