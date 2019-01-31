@@ -37,7 +37,7 @@
             [adventure.matching-stylist-wait :as adventure.matching-stylist-wait]
             [adventure.shop-hair :as adventure.shop-hair]
             [adventure.how-shop-hair :as adventure.how-shop-hair]
-            [adventure.install_type :as adventure.install_type]
+            [adventure.install-type :as adventure.install-type]
             [adventure.select-new-look :as adventure.select-new-look]
             [adventure.look-detail :as adventure.look-detail]
             [adventure.stylist-results :as adventure.stylist-results]
