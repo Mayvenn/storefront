@@ -83,6 +83,14 @@
       (when (not-404 response)
         (:body response)))))
 
+(defn get-servicing-stylist [storeback-config servicing-stylist-id]
+  (when servicing-stylist-id
+    (let [response (storeback-fetch storeback-config
+                                    "/v1/stylist/matched-by-id"
+                                    {:query-params {:stylist-id servicing-stylist-id}})]
+      (when (not-404 response)
+        (-> response :body :stylist)))))
+
 ;; todo clean up
 (defn select-user-keys [user]
   (-> user

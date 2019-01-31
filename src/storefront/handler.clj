@@ -270,6 +270,16 @@
                 (not (get-in-req-state req keypaths/order)))
            (assoc-in-req-state keypaths/order (api/get-order storeback-config order-number order-token)))))))
 
+(defn wrap-fetch-servicing-stylist-for-order
+  [h storeback-config]
+  (fn [{:as req :keys [nav-message]}]
+    (let [{:as order :keys [servicing-stylist-id]} (get-in-req-state req keypaths/order)]
+      (h (cond-> req
+           servicing-stylist-id
+           (assoc-in-req-state adventure.keypaths/adventure-servicing-stylist
+                               (api/get-servicing-stylist storeback-config
+                                                          servicing-stylist-id)))))))
+
 (defn wrap-adventure-route-params [h]
   (fn [{:as req :keys [nav-message]}]
     (let [params        (second nav-message)
@@ -604,8 +614,6 @@
                                        (assoc-in keypaths/navigation-message nav-message))]
           ((server-render-pages nav-event generic-server-render) render-ctx data request nav-args))))))
 
-
-
 (defn wrap-filter-params
   "Technically an invalid value, but query-params could generate this value
   which doesn't serialize to EDN correctly.
@@ -681,8 +689,10 @@
                                          ->html-resp
                                          (util.response/status 404))
           is-adventure?             (routes/sub-page? nav-message [events/navigate-adventure])
-          is-cart?                  (= (first nav-message) events/navigate-cart)
-          is-checkout?              (routes/sub-page? nav-message [events/navigate-checkout])]
+          in-checkout-flow?         (or (contains? #{events/navigate-cart
+                                                     events/navigate-order-complete}
+                                                   (first nav-message))
+                                        (routes/sub-page? nav-message [events/navigate-checkout]))]
       (cond
         (and on-install-page?
              (not on-freeinstall-subdomain?)) (not-found)
@@ -690,9 +700,9 @@
         is-www-prefixed?                      (util.response/redirect (store-url "freeinstall" environment req))
         (or on-install-page?
             is-adventure?
-            is-cart?
-            is-checkout?)                     ((-> h
+            in-checkout-flow?)                ((-> h
                                                    (wrap-fetch-store (:storeback-config ctx))
+                                                   (wrap-fetch-servicing-stylist-for-order (:storeback-config ctx))
                                                    (wrap-fetch-order (:storeback-config ctx))
                                                    (wrap-adventure-route-params)
                                                    (wrap-cookies (storefront-site-defaults (:environment ctx))))
