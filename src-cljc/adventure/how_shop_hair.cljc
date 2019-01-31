@@ -27,10 +27,6 @@
                     {:text             "Let me shop individual bundles"
                      :data-test-suffix "individual-bundles"
                      :value            {:how-shop :individual-bundles}
-                     :target           nil}
-                    {:text             "Create a custom look for me"
-                     :data-test-suffix "custom-look"
-                     :value            {:how-shop "custom-look"}
                      :target           nil}]}))
 
 (defn built-component
