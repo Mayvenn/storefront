@@ -64,7 +64,7 @@
 
 (defn ^:private display-freeinstall-line-item
   [{:keys [id price title thumbnail-image-fn detail]}]
-  [:div.clearfix.border-bottom.border-gray.py3
+  [:div.clearfix.border-top.border-bottom.border-gray.py3
    [:a.left.mr1
     [:div.block.border.border-gray.rounded.hide-on-mb
      (thumbnail-image-fn 117)]
