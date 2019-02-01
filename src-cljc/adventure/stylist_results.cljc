@@ -36,8 +36,7 @@
               " Experience"])])))
 
 (defn stylist-card
-  [{:keys [selected-stylist-index
-           selected-image-index
+  [{:keys [selected-image-index
            current-stylist-index
            gallery-open?]}
    {:keys [gallery-images
@@ -48,7 +47,7 @@
            stylist-id]
     :as   stylist}]
   (let [{:keys [firstname lastname]}         address
-        {:keys [city state name salon-type]} salon]
+        {:keys [city state name]} salon]
     [:div.bg-white.p2.pb2.h6.my2.mx2-on-tb-dt.col-12.col-5-on-tb-dt {:key stylist-id}
      [:div.flex
       [:div.mr2.mt1 (ui/circle-picture {:width "104px"} (:resizable-url portrait))]
@@ -113,8 +112,7 @@
      (map-indexed
       (fn [index stylist]
         (stylist-card
-         {:selected-stylist-index stylist-gallery-index
-          :selected-image-index   gallery-image-index
+         {:selected-image-index   gallery-image-index
           :current-stylist-index  index
           :gallery-open?          (= stylist-gallery-index index)}
          stylist))
