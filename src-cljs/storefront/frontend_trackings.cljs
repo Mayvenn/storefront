@@ -1,4 +1,4 @@
-(ns storefront.trackings
+(ns storefront.frontend-trackings
   (:require [clojure.string :as string]
             [spice.maps :as maps]
             [storefront.accessors.orders :as orders]
@@ -54,10 +54,6 @@
      :variant_length   (-> line-item-skuer :hair/length first)
      :variant_material (-> line-item-skuer :hair/base-material first)
      :variant_image    (update image :src (partial str "https:"))}))
-
-(defmulti perform-track identity)
-
-(defmethod perform-track :default [dispatch event args app-state])
 
 (defmethod perform-track events/app-start [_ event args app-state]
   (when (get-in app-state keypaths/user-id)
