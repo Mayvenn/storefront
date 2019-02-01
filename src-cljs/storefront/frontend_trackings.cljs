@@ -14,6 +14,7 @@
             [storefront.hooks.stringer :as stringer]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
+            [storefront.trackings :refer [perform-track]]
             [storefront.utils.query :as query]
             [storefront.accessors.images :as images]))
 
