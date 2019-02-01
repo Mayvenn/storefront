@@ -5,12 +5,6 @@
   border-radius: var(--button-border-radius);
 }
 
-.btn-outline.is-hover,
-.btn-outline:hover {
-  border-color: var(--light-gray);
-  box-shadow: inset 0 0 0 20rem var(--darken-1);
-}
-
 .btn-outline.is-active,
 .btn-outline:active {
   /* override default from basscss: match :focus outline, instead of having an inset */

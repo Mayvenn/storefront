@@ -6,16 +6,6 @@
   border-radius: var(--button-border-radius);
 }
 
-.btn-primary.is-hover,
-.btn-primary:hover
-{
-    box-shadow: inset 0 0 0 20rem var(--darken-1);
-}
-
-.btn-primary-teal-hover.btn-primary.is-hover, .btn-primary-teal-hover.btn-primary:hover {
-    background-color: var(--hover-only-teal-gray);
-}
-
 .btn-primary.is-active,
 .btn-primary:active {
     /* override default from basscss: match :focus outline, instead of having an inset */
