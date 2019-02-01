@@ -33,7 +33,8 @@
     [:div.flex.flex-column
      (progress-bar (dec current-step))
 
-     [:div.relative
+     [:div.relative.mt1
+      {:style {:height "59px"}}
       [:div.absolute.left-0.right-0.top-0.flex.items-center.justify-between ;; Buttons (cart and back)
        [:a.block.p3.inherit-color
         (merge {:data-test "adventure-back"}
@@ -48,35 +49,9 @@
            {:width "20px"}
            "02f9e7fb-510f-458e-8be7-090399aad4de")]
          [:div])]
-      [:div.center.mt3
+      [:div.center.mt1
        [:div.h6.bold title]
-       [:div.h8 subtitle]]]
-
-     #_
-     [:div.flex.items-center
-      {:style {:height "65px"}}
-      [:div.inherit-color
-       {:style {:height "60px"
-                :width  "50px"}}
-       [:a.block.p3.inherit-color
-        (merge {:data-test "adventure-back"}
-               (if (map? back-link)
-                 (utils/route-to (:event back-link) (:args back-link))
-                 (utils/route-to back-link)))
-        (ui/back-arrow {:width "14"})]]
-      [:div.flex-auto.center
-       [:div.h6.bold title]
-       [:div.h8 subtitle]]
-      [:div
-       {:style {:height "70px"
-                :width  "50px"}}
-
-       (when shopping-bag?
-         [:a.block.p3 (merge {:data-test "adventure-cart"}
-                       (utils/route-to events/navigate-cart))
-          (ui/ucare-img
-           {:width "20px"}
-           "02f9e7fb-510f-458e-8be7-090399aad4de")])]]]]))
+       [:div.h8 subtitle]]]]]))
 
 (defn built-component
   [data opts]
