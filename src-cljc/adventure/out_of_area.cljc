@@ -20,9 +20,10 @@
     [:div.bg-white.flex.flex-column.justify-center
      {:style {:padding-top "75px"}}
      [:div.col-10.mx-auto.pt8
-      [:div.h3.bold.purple.center.mx-auto.col-8
-       "You'll be matched with a stylist in 24 hours."]
-      [:div.py2 "The stylist will meet the following criteria:"]
+      [:div.h3.bold.purple.center.mx-auto.col-10
+       "We need some time to find you the perfect stylist!"]
+      [:div.py3.h5
+       "A Mayvenn representative will contact you soon to help select a Certified Mayvenn Stylist with the following criteria:"]
       [:div.col-7.mx-auto.py2
        [:ul.h6.list-img-purple-checkmark.pl4.left-align
         [:li "Licensed Salon Stylist"]
