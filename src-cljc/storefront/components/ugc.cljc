@@ -79,11 +79,12 @@
                    :src    (:option/rectangle-swatch color-detail)}]
                  (:option/name color-detail)]
                 [:div.black.pyp1 "Check this out!"])]
-             [:div.m1.self-end {:style {:width "20px" :height "20px"}}
+             [:div.m1.self-end {:style {:width "30px" :height "30px"}}
               (svg/social-icon social-service)]]
             (cond (:lengths look-attributes) (:lengths look-attributes)
                   color-detail               [:span.black "Get this look!"]
-                  :else                      nil)]])]])]))
+                  :else                      nil)
+            [:div.mt2 (ui/teal-button nil "Shop look")]]])]])]))
 
 (defn component [{:keys [looks color-details]} owner {:keys [copy]}]
   (component/create
