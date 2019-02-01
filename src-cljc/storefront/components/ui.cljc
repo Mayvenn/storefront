@@ -476,7 +476,7 @@
     :or {retina-quality "lightest"
          default-quality "normal"}}
    image-id]
-  {:pre [(spice.core/parse-int width)]}
+  {:pre [(or (spice.core/parse-int width) (nil? width))]}
   (let [image-id    (ucare-img-id image-id)
         retina-url  (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/" retina-quality "/")
                       width (str "-/resize/" (* 2 (spice/parse-int width)) "x/"))
