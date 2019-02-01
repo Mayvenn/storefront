@@ -4,7 +4,9 @@
             [adventure.components.basic-prompt :as basic-prompt]
             [storefront.keypaths :as storefront-keypaths]
             [adventure.keypaths :as keypaths]
-            [storefront.transitions :as transitions]))
+            [storefront.effects :as effects]
+            [storefront.transitions :as transitions]
+            #?(:cljs [storefront.history :as history])))
 
 (defn ^:private query [data]
   (let [stylist-id (get-in data keypaths/adventure-selected-stylist-id)
@@ -32,3 +34,7 @@
 (defmethod transitions/transition-state events/api-success-create-order-with-servicing-stylist
   [_ _ {:keys [order]} app-state]
   (assoc-in app-state storefront-keypaths/order order))
+
+(defmethod effects/perform-effects events/api-success-create-order-with-servicing-stylist [_ _ _ _ app-state]
+  #?(:cljs
+     (history/enqueue-redirect events/navigate-adventure-match-success)))
