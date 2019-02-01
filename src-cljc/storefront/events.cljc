@@ -304,6 +304,8 @@
 (defpath api-success-shared-cart-create)
 (defpath api-success-shared-cart-fetch)
 
+(defpath api-success-create-order-with-servicing-stylist)
+
 (defpath api-success-update-order)
 (defpath api-success-update-order-from-shared-cart)
 (defpath api-success-update-order-update-address)

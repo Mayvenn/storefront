@@ -1,6 +1,7 @@
 (ns adventure.stylist-results
   (:require [adventure.components.header :as header]
             [adventure.keypaths :as keypaths]
+            [storefront.keypaths :as storefront-keypaths]
             [spice.date :as date]
             [storefront.component :as component]
             [storefront.components.ui :as ui]
@@ -8,7 +9,10 @@
             [storefront.platform.carousel :as carousel]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
-            [storefront.transitions :as transitions]))
+            [storefront.effects :as effects]
+            [storefront.transitions :as transitions]
+            #?@(:cljs [[storefront.history :as history]
+                       [storefront.api :as api]])))
 
 (defn ^:private gallery-slide [index gallery-image]
   [:div {:key (str "gallery-slide" index)}
@@ -155,3 +159,15 @@
       (assoc-in keypaths/adventure-stylist-gallery-open? false)
       (update-in keypaths/adventure-stylist-gallery dissoc :index)
       (update-in keypaths/adventure-stylist-gallery dissoc :image-index)))
+
+(defmethod transitions/transition-state events/control-adventure-select-stylist
+  [_ _ {:keys [stylist-id]} app-state]
+  (assoc-in app-state keypaths/adventure-selected-stylist-id stylist-id))
+
+(defmethod effects/perform-effects events/control-adventure-select-stylist
+  [_ _ args _ app-state]
+  #?(:cljs
+     (let [servicing-stylist-id (:stylist-id args)
+           stylist-id           (get-in app-state storefront-keypaths/store-stylist-id)]
+       (api/create-order-with-servicing-stylist servicing-stylist-id stylist-id)
+       (history/enqueue-navigate events/navigate-adventure-match-success))))

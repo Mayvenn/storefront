@@ -891,6 +891,17 @@
                       (default-error-handler %)
                       (messages/handle-message events/api-failure-order-not-created-from-shared-cart))}))
 
+(defn create-order-with-servicing-stylist
+  [servicing-stylist-id stylist-id]
+  (storeback-api-req
+   POST
+   "/v2/create-order-with-servicing-stylist"
+   request-keys/create-order-with-servicing-stylist
+   {:params        {:stylist-id           stylist-id
+                    :servicing-stylist-id servicing-stylist-id}
+    :handler       #(messages/handle-message events/api-success-create-order-with-servicing-stylist
+                                             {:order          %})}))
+
 (defn- static-content-req [method path req-key {:keys [handler] :as request-opts}]
   (let [req-id       (str (random-uuid))
         content-opts {:format          :raw
