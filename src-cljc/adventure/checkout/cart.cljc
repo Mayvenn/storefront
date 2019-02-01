@@ -298,22 +298,19 @@
 ;; TODO: Adjust positioning of X?
 (defn header [{:keys [return-route item-count]} owner opts]
   (component/create
-   [:div.flex.flex-column.center.bg-light-lavender.white
-    [:div.flex.items-center
-     {:style {:height "75px"}}
-     [:div.col-1]
-     [:div.flex-auto.center
-      [:div.h5.medium "Your Bag"]
-      [:div.h6 (ui/pluralize-with-amount item-count "item")]]
-     [:div.col-1.flex.justify-start.items-start
-      {:style {:height "46px"}}
-      [:div.mr2
-       [:a (merge {:data-test "adventure-cart-x"}
-                  return-route)
-        (svg/simple-x {:width        "20px"
-                       :height       "20px"
-                       :class        "stroke-white"
-                       :stroke-width "6"})]]]]]))
+   [:div.center.bg-light-lavender.white
+    {:style {:height "75px"}}
+    [:div.absolute.left-0.right-0.top-0.flex.justify-between.mt1 ;; Buttons (cart and back)
+     [:div]
+     [:a.block.p3 (merge {:data-test "adventure-cart-x"}
+                         return-route)
+      (svg/simple-x {:width        "20px"
+                     :height       "20px"
+                     :class        "stroke-white"
+                     :stroke-width "6"})]]
+    [:div.mt3
+     [:div.h5.medium "Your Bag"]
+     [:div.h6 (ui/pluralize-with-amount item-count "item")]]]))
 
 ;; TODO, Make increment button work
 (defn header-query [data]
