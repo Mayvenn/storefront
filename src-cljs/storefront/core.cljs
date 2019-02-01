@@ -12,6 +12,7 @@
             [storefront.transitions :refer [transition-state]]
             [storefront.frontend-transitions]
             [storefront.trackings :refer [perform-track]]
+            [storefront.frontend-trackings]
             [cljs.reader :refer [read-string]]
             [om.core :as om]
             [clojure.data :refer [diff]]
