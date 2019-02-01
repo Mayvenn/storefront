@@ -900,7 +900,8 @@
    {:params        {:stylist-id           stylist-id
                     :servicing-stylist-id servicing-stylist-id}
     :handler       #(messages/handle-message events/api-success-create-order-with-servicing-stylist
-                                             {:order          %})}))
+                                             {:order          %
+                                              :navigate       events/navigate-adventure-match-success})}))
 
 (defn- static-content-req [method path req-key {:keys [handler] :as request-opts}]
   (let [req-id       (str (random-uuid))
