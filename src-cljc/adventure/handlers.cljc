@@ -33,7 +33,7 @@
 (defmethod trackings/perform-track events/control-adventure-choice
   [_ event {:keys [prompt buttons current-step choice]} app-state]
   #?(:cljs
-     (stringer/track-event "adventure-question-answered"
+     (stringer/track-event "adventure_question_answered"
                            {:question-text   (if (string? prompt)
                                                prompt
                                                (string/join " " (filter string? prompt)))
