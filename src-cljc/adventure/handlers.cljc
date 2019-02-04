@@ -34,12 +34,12 @@
   [_ event {:keys [prompt buttons current-step choice]} app-state]
   #?(:cljs
      (stringer/track-event "adventure_question_answered"
-                           {:question-text   (if (string? prompt)
+                           {:question_text   (if (string? prompt)
                                                prompt
                                                (string/join " " (filter string? prompt)))
-                            :answer-options  (mapv #(select-keys % [:text :value]) buttons)
-                            :current-step    current-step
-                            :answer-selected (:value choice)})))
+                            :answer_options  (mapv #(select-keys % [:text :value]) buttons)
+                            :current_step    current-step
+                            :answer_selected (:value choice)})))
 
 (defmethod effects/perform-effects events/navigate-adventure
   [_ event args app-state-before app-state]
