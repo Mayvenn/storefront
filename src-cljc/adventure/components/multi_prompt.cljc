@@ -31,7 +31,7 @@
      [:div.col-12.p5 prompt]]
     [:div.px5.py1
      {:data-test data-test}
-     (for [{:as button :keys [text value target data-test-suffix]} buttons]
+     (for [{:as button :keys [text data-test-suffix]} buttons]
        (let [button-component (if (= :teal (:color button)) teal-rect-button
                                   white-rect-button)
              button-data-test (str data-test "-" data-test-suffix)]
@@ -39,7 +39,10 @@
           (button-component
            (merge
             {:data-test button-data-test}
-            (utils/fake-href events/control-adventure {:destination target
-                                                       :choice      value}))
-           text)]))]
+            (utils/fake-href events/control-adventure-choice
+                             {:prompt       prompt
+                              :buttons      buttons
+                              :choice       button
+                              :current-step (:current-step header-data)}))
+            text)]))]
     footer]))

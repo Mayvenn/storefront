@@ -4,26 +4,42 @@
             [storefront.keypaths :as storefront.keypaths]
             #?@(:cljs
                 [[storefront.history :as history]
+                 [storefront.hooks.stringer :as stringer]
                  [storefront.browser.cookie-jar :as cookie]])
             [adventure.keypaths :as keypaths]
-            [storefront.transitions :as transitions]))
+            [storefront.trackings :as trackings]
+            [storefront.transitions :as transitions]
+            [clojure.string :as string]))
 
 (defmethod transitions/transition-state events/control-adventure-choice
   [_ event {:keys [choice]} app-state]
   (-> app-state
       (update-in keypaths/adventure-choices
-                 merge choice)))
+                 merge (:value choice))))
 
 (defmethod effects/perform-effects events/control-adventure-choice
   [_ _ {:keys [choice]} _ app-state]
   #?(:cljs
      (do
-       (if (map? destination)
-         (history/enqueue-navigate (:event destination) (:args destination))
-         (history/enqueue-navigate destination nil))
-       (let [cookie    (get-in app-state storefront.keypaths/cookie)
-             adventure (get-in app-state keypaths/adventure)]
-         (cookie/save-adventure cookie adventure)))))
+       (let [destination (:target choice)]
+         (if (map? destination)
+           (history/enqueue-navigate (:event destination)
+                                     (:args destination))
+           (history/enqueue-navigate destination nil))
+         (let [cookie    (get-in app-state storefront.keypaths/cookie)
+               adventure (get-in app-state keypaths/adventure)]
+           (cookie/save-adventure cookie adventure))))))
+
+(defmethod trackings/perform-track events/control-adventure-choice
+  [_ event {:keys [prompt buttons current-step choice]} app-state]
+  #?(:cljs
+     (stringer/track-event "adventure-question-answered"
+                           {:question-text   (if (string? prompt)
+                                               prompt
+                                               (string/join " " (filter string? prompt)))
+                            :answer-options  (mapv #(select-keys % [:text :value]) buttons)
+                            :current-step    current-step
+                            :answer-selected (:value choice)})))
 
 (defmethod effects/perform-effects events/navigate-adventure
   [_ event args app-state-before app-state]
