@@ -456,7 +456,6 @@
 (defpath navigate-customer-orders)
 
 ;; ADVENTURE
-(defpath control-adventure)
 (defpath navigate-adventure)
 (defpath navigate-adventure-home)
 (defpath navigate-adventure-time-frame)
@@ -477,6 +476,8 @@
 (defpath navigate-adventure-out-of-area)
 (defpath navigate-adventure-match-success)
 
+(defpath control-adventure)
+(defpath control-adventure-choice)
 (defpath control-adventure-select-stylist)
 
 (defpath adventure-zipcode-component-mounted)

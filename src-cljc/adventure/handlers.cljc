@@ -8,14 +8,14 @@
             [adventure.keypaths :as keypaths]
             [storefront.transitions :as transitions]))
 
-(defmethod transitions/transition-state events/control-adventure
+(defmethod transitions/transition-state events/control-adventure-choice
   [_ event {:keys [choice]} app-state]
   (-> app-state
       (update-in keypaths/adventure-choices
                  merge choice)))
 
-(defmethod effects/perform-effects events/control-adventure
-  [_ _ {:keys [destination]} _ app-state]
+(defmethod effects/perform-effects events/control-adventure-choice
+  [_ _ {:keys [choice]} _ app-state]
   #?(:cljs
      (do
        (if (map? destination)
