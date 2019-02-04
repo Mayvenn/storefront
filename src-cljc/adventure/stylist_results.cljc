@@ -169,4 +169,4 @@
   #?(:cljs
      (let [servicing-stylist-id (:stylist-id args)
            stylist-id           (get-in app-state storefront-keypaths/store-stylist-id)]
-       (api/create-order-with-servicing-stylist servicing-stylist-id stylist-id))))
+       (api/assign-servicing-stylist servicing-stylist-id stylist-id))))

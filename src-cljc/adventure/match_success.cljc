@@ -31,10 +31,10 @@
   [data opts]
   (component/build basic-prompt/component (query data) opts))
 
-(defmethod transitions/transition-state events/api-success-create-order-with-servicing-stylist
+(defmethod transitions/transition-state events/api-success-assign-servicing-stylist
   [_ _ {:keys [order]} app-state]
   (assoc-in app-state storefront-keypaths/order order))
 
-(defmethod effects/perform-effects events/api-success-create-order-with-servicing-stylist [_ _ _ _ app-state]
+(defmethod effects/perform-effects events/api-success-assign-servicing-stylist [_ _ _ _ app-state]
   #?(:cljs
      (history/enqueue-redirect events/navigate-adventure-match-success)))
