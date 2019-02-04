@@ -82,9 +82,7 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                retry(3) {
-                    deploy(appName, 'acceptance', sh(returnStdout: true, script: "cat SHA").trim())
-                }
+                deploy(appName, 'acceptance', sh(returnStdout: true, script: "cat SHA").trim())
             }
         }
     }
