@@ -16,22 +16,23 @@
             [adventure.components.header :as header]))
 
 (defn ^:private query [data]
-  (let [adventure-choices (get-in data adventure-keypaths/adventure-choices)
-        album-keyword     (get-in data keypaths/selected-album-keyword)
-        album-copy        #?(:cljs (-> config/pixlee :copy album-keyword)
-                             :clj nil)
-        hair-flow?        (-> adventure-choices :flow #{"match-stylist"})]
+  (let [adventure-choices  (get-in data adventure-keypaths/adventure-choices)
+        album-keyword      (get-in data keypaths/selected-album-keyword)
+        album-copy         #?(:cljs (-> config/pixlee :copy album-keyword)
+                              :clj nil)
+        current-step (if (-> adventure-choices :flow #{"match-stylist"}) 3 2)]
     {:prompt        "Select your new look"
      :mini-prompt   ["We have an amazing selection for you"
                      [:br]
                      "to choose from."]
      :prompt-image  (:adventure/prompt-image album-copy)
      :data-test     "select-new-look-choice"
+     :current-step  current-step
      :header-data   {:title         "The New You"
-                     :current-step  3
+                     :progress      3
                      :shopping-bag? true
                      :back-link     events/navigate-adventure-how-shop-hair
-                     :subtitle      (str "Step " (if-not hair-flow? 2 3) " of 3")}
+                     :subtitle      (str "Step " current-step  " of 3")}
      :copy          album-copy
      :deals?        false
      :spinning?     false

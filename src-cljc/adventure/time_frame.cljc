@@ -10,10 +10,11 @@
                   "your hair installed?"]
    :prompt-image "//ucarecdn.com/1b443614-0897-4549-8d54-33d798072f04/-/format/auto/-/quality/normal/aladdinMatchingOverlayImagePurpleAR203Lm3x.png"
    :data-test    "adventure-time-frame-choice"
-   :header-data  {:current-step 1
-                  :title        "Basic Info"
-                  :back-link    events/navigate-adventure-home
-                  :subtitle     "Step 1 of 3"}
+   :current-step 1
+   :header-data  {:progress  1
+                  :title     "Basic Info"
+                  :back-link events/navigate-adventure-home
+                  :subtitle  "Step 1 of 3"}
    :buttons      [{:text             "As soon as possible"
                    :data-test-suffix "asap"
                    :value            {:time-frame "asap"}

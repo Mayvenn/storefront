@@ -19,18 +19,19 @@
 
 (defn ^:private query [data]
   (let [adventure-choices (get-in data adventure-keypaths/adventure-choices)
-        hair-flow?        (-> adventure-choices :flow #{"match-stylist"})
+        current-step      (if (-> adventure-choices :flow #{"match-stylist"}) 3 2)
         album-keyword     (get-in data keypaths/selected-album-keyword)]
     {:look-detail-data #?(:cljs (shop-look-details/adventure-query data)
                           :clj nil)
      :data-test        "look-detail"
+     :current-step     current-step
      :header-data      {:title         "The New You"
                         :height        "65px"
-                        :current-step  3
+                        :progress      3
                         :shopping-bag? true
                         :back-link     {:event events/navigate-adventure-select-new-look
-                                        :args {:album-keyword album-keyword}}
-                        :subtitle      (str "Step " (if-not hair-flow? 2 3) " of 3")}
+                                        :args  {:album-keyword album-keyword}}
+                        :subtitle      (str "Step " current-step " of 3")}
      :copy             #?(:cljs (-> config/pixlee :copy album-keyword) :clj nil)
      :deals?           false
      :spinning?        false

@@ -26,12 +26,12 @@
              :height "6px"}}]])
 
 (defn component
-  [{:keys [header-attrs height current-step back-link title subtitle shopping-bag?]} _ _]
+  [{:keys [header-attrs progress back-link title subtitle shopping-bag?]} _ _]
   (component/create
    [:div.absolute.top-0.left-0.right-0
     header-attrs
     [:div.flex.flex-column
-     (progress-bar (dec current-step))
+     (progress-bar (dec progress))
 
      [:div.relative.mt1
       {:style {:height "59px"}}

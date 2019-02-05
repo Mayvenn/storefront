@@ -10,10 +10,11 @@
                   " to travel to get your hair done?"]
    :prompt-image "//ucarecdn.com/3d071ed0-5d9c-4819-b117-84eb4cfc6ed7/-/format/auto/-/quality/normal/aladdinMatchingOverlayImagePurpleBR203Lm3x.png"
    :data-test    "adventure-how-far-choice"
-   :header-data  {:title        "Find Your Stylist"
-                  :current-step 7
-                  :back-link    events/navigate-adventure-find-your-stylist
-                  :subtitle     "Step 2 of 3"}
+   :current-step 2
+   :header-data  {:title     "Find Your Stylist"
+                  :progress  7
+                  :back-link events/navigate-adventure-find-your-stylist
+                  :subtitle  "Step 2 of 3"}
    :buttons      (mapv (fn [%] {:text             (str % " miles")
                                 :data-test-suffix (str %)
                                 :value            {:how-far (str % "mi")}

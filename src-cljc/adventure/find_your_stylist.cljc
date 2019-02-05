@@ -39,15 +39,17 @@
            (places-autocomplete/attach "(regions)" address-elem address-keypath)))
 
 (defn ^:private query [data]
+
   (let [adventure-choices (get-in data keypaths/adventure-choices)
-        hair-flow?        (-> adventure-choices :flow #{"match-stylist"})]
+        current-step      (if (-> adventure-choices :flow #{"match-stylist"}) 3 2)]
     {:background-image      "https://ucarecdn.com/54f294be-7d57-49ba-87ce-c73394231f3c/aladdinMatchingOverlayImagePurpleGR203Lm3x.png"
      :stylist-match-zipcode (get-in data keypaths/adventure-stylist-match-zipcode)
      :places-loaded?        (get-in data storefront.keypaths/loaded-places)
-     :header-data           {:current-step 6
-                             :title        [:div.medium "Find Your Stylist"]
-                             :subtitle     (str "Step " (if hair-flow? 2 3) " of 3")
-                             :back-link    events/navigate-adventure-match-stylist}
+     :current-step          current-step
+     :header-data           {:progress  6
+                             :title     [:div.medium "Find Your Stylist"]
+                             :subtitle  (str "Step " current-step " of 3")
+                             :back-link events/navigate-adventure-match-stylist}
      :selected-location     (get-in data keypaths/adventure-stylist-match-location)}))
 
 #?(:cljs

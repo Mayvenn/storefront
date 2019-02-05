@@ -18,10 +18,11 @@
     {:prompt       "Which type of install are you looking for?"
      :prompt-image "//ucarecdn.com/a159aafc-b096-46b9-88ae-901e96699795/-/format/auto/bg.png"
      :data-test    "install-type"
-     :header-data  {:title        "The New You"
-                    :current-step 1
-                    :back-link    events/navigate-adventure-budget
-                    :subtitle     "Step 1 of 3"}
+     :current-step 1
+     :header-data  {:title     "The New You"
+                    :progress  1
+                    :back-link events/navigate-adventure-budget
+                    :subtitle  "Step 1 of 3"}
      :buttons      (map (fn [o]
                           {:text             (:adventure/name o)
                            :data-test-suffix (:option/slug o)

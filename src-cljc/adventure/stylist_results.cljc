@@ -123,13 +123,14 @@
       stylists)]]))
 
 (defn ^:private query [data]
-  {:header-data {:title        "Find Your Stylist"
-                 :current-step 7
-                 :back-link    events/navigate-adventure-how-far
-                 :subtitle     "Step 2 of 3"}
-   :card-data   {:stylist-gallery-index (get-in data keypaths/adventure-stylist-gallery-index)
-                 :gallery-image-index   (get-in data keypaths/adventure-stylist-gallery-image-index)
-                 :stylists              (get-in data keypaths/adventure-matched-stylists)}})
+  {:current-step 2
+   :header-data  {:title     "Find Your Stylist"
+                  :progress  7
+                  :back-link events/navigate-adventure-how-far
+                  :subtitle  "Step 2 of 3"}
+   :card-data    {:stylist-gallery-index (get-in data keypaths/adventure-stylist-gallery-index)
+                  :gallery-image-index   (get-in data keypaths/adventure-stylist-gallery-image-index)
+                  :stylists              (get-in data keypaths/adventure-matched-stylists)}})
 
 (defn ^:private component
   [{:keys [header-data card-data] :as data} _ _]
