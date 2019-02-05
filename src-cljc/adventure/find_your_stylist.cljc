@@ -76,7 +76,7 @@
                                             (nil? (:latitude selected-location))
                                             (nil? (:longitude selected-location)))
                            :disabled-class "bg-light-gray gray"
-                           :data-test      "navigate-adventure-how-far"
+                           :data-test      "stylist-match-address-submit"
                            :class          "flex items-center justify-center medium not-rounded x-group-item"}
                           (utils/fake-href events/control-adventure-location-submit {:current-step current-step})) "→")])
 
