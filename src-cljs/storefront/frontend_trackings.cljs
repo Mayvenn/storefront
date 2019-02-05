@@ -2,7 +2,6 @@
   (:require [clojure.string :as string]
             [spice.maps :as maps]
             [storefront.accessors.orders :as orders]
-            [storefront.accessors.products :as products]
             [storefront.accessors.videos :as videos]
             [storefront.accessors.stylist-urls :as stylist-urls]
             [storefront.events :as events]
