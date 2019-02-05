@@ -955,15 +955,12 @@
     :handler #(messages/handle-message events/api-success-stylist-service-menu-fetch %)}))
 
 ;; TODO: Perhaps cache
-(defn fetch-stylists-within-radius [cache {:as location :keys [latitude longitude]} radius limit]
+(defn fetch-stylists-within-radius [cache params]
   (storeback-api-req
    GET
    "/v1/stylist/within-radius"
    request-keys/fetch-stylists-within-radius
-   {:params  {:latitude  latitude
-              :longitude longitude
-              :radius    radius
-              :limit     limit}
+   {:params  params
     :handler #(messages/handle-message events/api-success-fetch-stylists-within-radius %)}))
 
 (defn fetch-matched-stylist [cache stylist-id]

@@ -18,13 +18,14 @@
 
 (defmethod effects/perform-effects events/navigate-adventure-matching-stylist-wait [_ _ _ _ app-state]
   #?(:cljs
-     (let [{:keys [latitude longitude]} (get-in app-state adventure-keypaths/adventure-stylist-match-location)
-           {:keys [how-far]} (get-in app-state adventure-keypaths/adventure-choices)]
+     (let [{:keys [latitude longitude]}   (get-in app-state adventure-keypaths/adventure-stylist-match-location)
+           {:keys [how-far install-type]} (get-in app-state adventure-keypaths/adventure-choices)]
        (api/fetch-stylists-within-radius (get-in app-state keypaths/api-cache)
-                                         {:latitude latitude
-                                          :longitude longitude}
-                                         how-far
-                                         3))))
+                                         {:latitude     latitude
+                                          :longitude    longitude
+                                          :radius       how-far
+                                          :install-type install-type
+                                          :limit        3}))))
 
 (defmethod transitions/transition-state events/api-success-fetch-stylists-within-radius
   [_ _ {:keys [stylists]} app-state]
