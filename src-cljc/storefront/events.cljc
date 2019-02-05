@@ -484,6 +484,7 @@
 (defpath control-adventure-stylist-gallery-open)
 (defpath control-adventure-stylist-gallery-close)
 (defpath clear-selected-location)
+(defpath control-adventure-location-submit)
 
 (defpath popup-show-adventure-free-install)
 (defpath control-adventure-free-install-dismiss)

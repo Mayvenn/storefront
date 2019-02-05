@@ -4,18 +4,18 @@
               [storefront.platform.messages :as messages]
               [storefront.effects :as effects]
               [storefront.hooks.places-autocomplete :as places-autocomplete]
+              [storefront.history :as history]
+              [storefront.hooks.stringer :as stringer]
               [sablono.core :as sablono]])
    [storefront.platform.component-utils :as utils]
-   [adventure.components.basic-prompt :as basic-prompt]
    [adventure.components.header :as header]
-   [adventure.handlers :as handlers]
    [adventure.keypaths :as keypaths]
    [storefront.keypaths :as storefront.keypaths]
-   [storefront.accessors.experiments :as experiments]
    [storefront.component :as component]
    [storefront.events :as events]
    [storefront.components.ui :as ui]
-   [storefront.transitions :as transitions]))
+   [storefront.transitions :as transitions]
+   [storefront.trackings :as trackings]))
 
 (defn ^:private location->prefill-string
   [{:as location :keys [:zipcode :city :state]}]
@@ -30,7 +30,7 @@
         (assoc-in keypaths/adventure-stylist-match-zipcode location-prefill))))
 
 (defmethod transitions/transition-state events/clear-selected-location
-  [_ event {:keys [keypath value]} app-state]
+  [_ event _ app-state]
   (-> app-state
       (assoc-in keypaths/adventure-stylist-match-location nil)))
 
@@ -39,9 +39,7 @@
            (places-autocomplete/attach "(regions)" address-elem address-keypath)))
 
 (defn ^:private query [data]
-
-  (let [adventure-choices (get-in data keypaths/adventure-choices)
-        current-step      (if (-> adventure-choices :flow #{"match-stylist"}) 3 2)]
+  (let [current-step 2]
     {:background-image      "https://ucarecdn.com/54f294be-7d57-49ba-87ce-c73394231f3c/aladdinMatchingOverlayImagePurpleGR203Lm3x.png"
      :stylist-match-zipcode (get-in data keypaths/adventure-stylist-match-zipcode)
      :places-loaded?        (get-in data storefront.keypaths/loaded-places)
@@ -61,7 +59,7 @@
        (messages/handle-message events/clear-selected-location))))
 
 (defn ^:private places-component-inner
-  [value selected-location]
+  [{:keys [value selected-location current-step]}]
   [:div.flex.justify-center
    [:input.h4.border-none.px3.bg-white.col-10
     (merge {:value       (or value "")
@@ -81,9 +79,26 @@
                            :disabled-class "bg-light-gray gray"
                            :data-test      "navigate-adventure-how-far"
                            :class          "flex items-center justify-center medium not-rounded x-group-item"}
-                          (utils/route-to events/navigate-adventure-how-far)) "→")])
+                          (utils/fake-href events/control-adventure-location-submit {:current-step current-step})) "→")])
+
 #?(:cljs
-   (defn ^:private places-component-outer [{:keys [value selected-location]} owner]
+   (defmethod effects/perform-effects events/control-adventure-location-submit
+     [_ event args _ app-state]
+     (history/enqueue-navigate events/navigate-adventure-how-far)))
+
+(defmethod trackings/perform-track events/control-adventure-location-submit
+  [_ event {:keys [current-step]} app-state]
+  #?(:cljs
+     (let [{:keys [latitude longitude]} (get-in app-state keypaths/adventure-stylist-match-location)]
+       (stringer/track-event "adventure_location_submitted"
+                             {:location_submitted (.-value (.getElementById js/document "stylist-match-zipcode"))
+                              :service_type       (get-in app-state keypaths/adventure-choices-install-type)
+                              :current_step       current-step
+                              :latitude           latitude
+                              :longitude          longitude}))))
+
+#?(:cljs
+   (defn ^:private places-component-outer [data owner]
      (reify
        om/IDidMount
        (did-mount [this]
@@ -91,10 +106,10 @@
                                                                               :address-keypath keypaths/adventure-stylist-match-location}))
        om/IRender
        (render [_]
-         (sablono/html (places-component-inner value selected-location))))))
+         (sablono/html (places-component-inner data))))))
 
 (defn component
-  [{:keys [header-data places-loaded? background-image stylist-match-zipcode selected-location]} owner _]
+  [{:keys [header-data current-step places-loaded? background-image stylist-match-zipcode selected-location]} owner _]
   (component/create
    [:div.bg-lavender.white.center.flex.flex-auto.flex-column
     (when header-data
@@ -111,7 +126,8 @@
       [:div.col-12.mx-auto
        #?(:cljs
           (when places-loaded?
-            (om/build places-component-outer {:value       stylist-match-zipcode
+            (om/build places-component-outer {:value             stylist-match-zipcode
+                                              :current-step      current-step
                                               :selected-location selected-location})))]]]]))
 
 (defn built-component [data opts]
