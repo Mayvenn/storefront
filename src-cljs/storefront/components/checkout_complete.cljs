@@ -106,7 +106,7 @@
            "A group text message will be sent to "
            [:span.bold.nowrap (formatters/phone-number phone-number)]
            " and your stylist, "
-           [:span.nowrap
+           [:span.nowrap {:data-test "servicing-stylist-firstname"}
             (-> servicing-stylist
                 :address
                 :firstname)]

@@ -56,7 +56,10 @@
      [:div.flex
       [:div.mr2.mt1 (ui/circle-picture {:width "104px"} (:resizable-url portrait))]
       [:div.flex-grow-1.left-align.dark-gray.h7.line-height-4
-       [:div.h3.black.line-height-1 (clojure.string/join  " " [firstname lastname])]
+       [:div.h3.black.line-height-1
+        [:span {:data-test "stylist-firstname"}
+         firstname]
+        (str " " lastname)]
        [:div (ui/star-rating rating)]
        [:div.bold (str city ", " state)]
        [:div name]
@@ -86,9 +89,8 @@
                                    :infinite     true}}
                        {})]
      (ui/teal-button
-      {:on-click #(messages/handle-message events/control-adventure-select-stylist
-                                           {:stylist-id stylist-id} )
-       :href     nil}
+      (merge {:data-test "select-stylist"}
+             (utils/fake-href events/control-adventure-select-stylist {:stylist-id stylist-id}))
       [:div.flex.items-center.justify-center.inherit-color
        "Select"])
      (when gallery-open?
