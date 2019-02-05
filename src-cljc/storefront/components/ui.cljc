@@ -53,11 +53,13 @@
 
 (defn button
   [{:keys [disabled? disabled-class spinning?]
-    :as opts}
+    :as   opts}
    & content]
-  (let [attrs    (cond-> opts
+  (let [attrs   (cond-> opts
                   :always                  (dissoc :spinning? :disabled? :disabled-class)
                   (or disabled? spinning?) (assoc :on-click utils/noop-callback)
+                  disabled?                (assoc :data-test-disabled "yes")
+                  spinning?                (assoc :data-test-spinning "yes")
                   disabled?                (update :class str (str " btn-disabled " (or disabled-class "is-disabled"))))
         content (if spinning? spinner content)]
     [:a (merge {:href "#"} attrs)
