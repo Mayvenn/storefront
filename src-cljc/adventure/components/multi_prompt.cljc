@@ -32,8 +32,9 @@
     [:div.px5.py1
      {:data-test data-test}
      (for [{:as button :keys [text data-test-suffix]} buttons]
-       (let [button-component (if (= :teal (:color button)) teal-rect-button
-                                  white-rect-button)
+       (let [button-component (if (= :teal (:color button))
+                                teal-rect-button
+                                white-rect-button)
              button-data-test (str data-test "-" data-test-suffix)]
          [:div.p1 {:key button-data-test}
           (button-component
