@@ -18,7 +18,7 @@
   (ui/white-button (maps/deep-merge rect-button-attrs attrs) content))
 
 (defn component
-  [{:keys [prompt prompt-image header-data data-test buttons footer]} _ _]
+  [{:keys [prompt current-step prompt-image header-data data-test buttons footer]} _ _]
   (component/create
    [:div.bg-too-light-teal.white.center.flex-auto.self-stretch
     (when header-data
@@ -43,6 +43,6 @@
                              {:prompt       prompt
                               :buttons      buttons
                               :choice       button
-                              :current-step (:current-step header-data)}))
+                              :current-step current-step}))
             text)]))]
     footer]))
