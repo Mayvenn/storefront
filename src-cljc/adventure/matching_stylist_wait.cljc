@@ -24,8 +24,7 @@
                                          {:latitude     latitude
                                           :longitude    longitude
                                           :radius       how-far
-                                          :install-type install-type
-                                          :limit        3}))))
+                                          :install-type install-type}))))
 
 (defmethod transitions/transition-state events/api-success-fetch-stylists-within-radius
   [_ _ {:keys [stylists]} app-state]
