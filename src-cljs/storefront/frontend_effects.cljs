@@ -88,8 +88,7 @@
                     js/decodeURIComponent
                     js/JSON.parse
                     (js->clj :keywordize-keys true))]
-    (handle-message events/control-adventure
-                    {:choice choices}))
+    (handle-message events/control-adventure-choice {:choice {:value choices}}))
   (svg/insert-sprite)
   (stringer/insert-tracking (get-in app-state keypaths/store-slug))
   (google-analytics/insert-tracking)
