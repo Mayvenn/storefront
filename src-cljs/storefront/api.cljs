@@ -871,16 +871,17 @@
                                         :skus        (:skus %)
                                         :products    (:products %)})}))
 
-(defn create-order-from-cart [session-id shared-cart-id look-id user-id user-token stylist-id]
+(defn create-order-from-cart [session-id shared-cart-id look-id user-id user-token stylist-id servicing-stylist-id]
   (storeback-api-req
    POST
    "/create-order-from-shared-cart"
    request-keys/create-order-from-shared-cart
-   {:params        {:session-id     session-id
-                    :shared-cart-id shared-cart-id
-                    :user-id        user-id
-                    :user-token     user-token
-                    :stylist-id     stylist-id}
+   {:params        {:session-id           session-id
+                    :shared-cart-id       shared-cart-id
+                    :user-id              user-id
+                    :user-token           user-token
+                    :stylist-id           stylist-id
+                    :servicing-stylist-id servicing-stylist-id}
     :handler       #(messages/handle-message events/api-success-update-order-from-shared-cart
                                              {:order          %
                                               :look-id        look-id
