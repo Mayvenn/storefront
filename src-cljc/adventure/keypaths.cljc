@@ -4,7 +4,7 @@
 (def adventure-choices (conj adventure :choices))
 (def adventure-choices-install-type (conj adventure-choices :install-type))
 (def adventure-matched-stylists (conj adventure :matched-stylists))
-(def adventure-stylist-match-zipcode (conj adventure :stylist-match-zipcode))
+(def adventure-stylist-match-address (conj adventure :stylist-match-address))
 (def adventure-stylist-match-location (conj adventure-choices :location))
 (def adventure-matching-stylists-timer (conj adventure-choices :matching-stylists-timer))
 

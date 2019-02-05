@@ -480,7 +480,7 @@
 (defpath control-adventure-choice)
 (defpath control-adventure-select-stylist)
 
-(defpath adventure-zipcode-component-mounted)
+(defpath adventure-address-component-mounted)
 (defpath control-adventure-stylist-gallery-open)
 (defpath control-adventure-stylist-gallery-close)
 (defpath clear-selected-location)

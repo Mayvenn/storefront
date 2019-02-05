@@ -27,21 +27,21 @@
   (let [preselected-location (get-in app-state keypaths/adventure-stylist-match-location)
         location-prefill     (location->prefill-string preselected-location)]
     (-> app-state
-        (assoc-in keypaths/adventure-stylist-match-zipcode location-prefill))))
+        (assoc-in keypaths/adventure-stylist-match-address location-prefill))))
 
 (defmethod transitions/transition-state events/clear-selected-location
   [_ event _ app-state]
   (-> app-state
       (assoc-in keypaths/adventure-stylist-match-location nil)))
 
-#?(:cljs (defmethod effects/perform-effects events/adventure-zipcode-component-mounted
+#?(:cljs (defmethod effects/perform-effects events/adventure-address-component-mounted
            [_ event {:keys [address-elem address-keypath]} _ app-state]
-           (places-autocomplete/attach "(regions)" address-elem address-keypath)))
+           (places-autocomplete/attach "address" address-elem address-keypath)))
 
 (defn ^:private query [data]
   (let [current-step 2]
     {:background-image      "https://ucarecdn.com/54f294be-7d57-49ba-87ce-c73394231f3c/aladdinMatchingOverlayImagePurpleGR203Lm3x.png"
-     :stylist-match-zipcode (get-in data keypaths/adventure-stylist-match-zipcode)
+     :stylist-match-address (get-in data keypaths/adventure-stylist-match-address)
      :places-loaded?        (get-in data storefront.keypaths/loaded-places)
      :current-step          current-step
      :header-data           {:progress  6
@@ -53,7 +53,7 @@
 #?(:cljs
    (defn ^:private handle-on-change [selected-location ^js/Event e]
      (messages/handle-message events/control-change-state
-                              {:keypath keypaths/adventure-stylist-match-zipcode
+                              {:keypath keypaths/adventure-stylist-match-address
                                :value   (.. e -target -value)})
      (when selected-location
        (messages/handle-message events/clear-selected-location))))
@@ -63,19 +63,18 @@
   [:div.flex.justify-center
    [:input.h4.border-none.px3.bg-white.col-10
     (merge {:value       (or value "")
-            :id          "stylist-match-zipcode"
-            :data-test   "stylist-match-zip"
+            :id          "stylist-match-address"
+            :data-test   "stylist-match-address"
             :autoFocus   true
-            :placeholder "zipcode"
-            :pattern     "[0-9]*"  ; ios/safari numpad
-            :inputMode   "numeric" ; android/chrome numpad
-            :data-ref    "stylist-match-zip"}
+            :placeholder "search address or city"}
            #?(:cljs
               {:on-submit (partial handle-on-change selected-location)
                :on-change (partial handle-on-change selected-location)}))]
    (ui/teal-button (merge {:style          {:width  "45px"
                                             :height "45px"}
-                           :disabled?      (not (:zipcode selected-location))
+                           :disabled?      (or
+                                            (nil? (:latitude selected-location))
+                                            (nil? (:longitude selected-location)))
                            :disabled-class "bg-light-gray gray"
                            :data-test      "navigate-adventure-how-far"
                            :class          "flex items-center justify-center medium not-rounded x-group-item"}
@@ -91,7 +90,7 @@
   #?(:cljs
      (let [{:keys [latitude longitude]} (get-in app-state keypaths/adventure-stylist-match-location)]
        (stringer/track-event "adventure_location_submitted"
-                             {:location_submitted (.-value (.getElementById js/document "stylist-match-zipcode"))
+                             {:location_submitted (.-value (.getElementById js/document "stylist-match-address"))
                               :service_type       (get-in app-state keypaths/adventure-choices-install-type)
                               :current_step       current-step
                               :latitude           latitude
@@ -102,14 +101,14 @@
      (reify
        om/IDidMount
        (did-mount [this]
-         (messages/handle-message events/adventure-zipcode-component-mounted {:address-elem    "stylist-match-zipcode"
+         (messages/handle-message events/adventure-address-component-mounted {:address-elem    "stylist-match-address"
                                                                               :address-keypath keypaths/adventure-stylist-match-location}))
        om/IRender
        (render [_]
          (sablono/html (places-component-inner data))))))
 
 (defn component
-  [{:keys [header-data current-step places-loaded? background-image stylist-match-zipcode selected-location]} owner _]
+  [{:keys [header-data current-step places-loaded? background-image stylist-match-address selected-location]} owner _]
   (component/create
    [:div.bg-lavender.white.center.flex.flex-auto.flex-column
     (when header-data
@@ -126,7 +125,7 @@
       [:div.col-12.mx-auto
        #?(:cljs
           (when places-loaded?
-            (om/build places-component-outer {:value             stylist-match-zipcode
+            (om/build places-component-outer {:value             stylist-match-address
                                               :current-step      current-step
                                               :selected-location selected-location})))]]]]))
 
