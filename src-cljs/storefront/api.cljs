@@ -893,15 +893,14 @@
                       (messages/handle-message events/api-failure-order-not-created-from-shared-cart))}))
 
 (defn assign-servicing-stylist
-  [servicing-stylist-id stylist-id]
+  [servicing-stylist-id stylist-id handler]
   (storeback-api-req
    POST
    "/v2/assign-servicing-stylist"
    request-keys/assign-servicing-stylist
-   {:params        {:stylist-id           stylist-id
-                    :servicing-stylist-id servicing-stylist-id}
-    :handler       #(messages/handle-message events/api-success-assign-servicing-stylist
-                                             {:order          %})}))
+   {:params  {:stylist-id           stylist-id
+              :servicing-stylist-id servicing-stylist-id}
+    :handler handler}))
 
 (defn- static-content-req [method path req-key {:keys [handler] :as request-opts}]
   (let [req-id       (str (random-uuid))

@@ -92,7 +92,8 @@
                        {})]
      (ui/teal-button
       (merge {:data-test "select-stylist"}
-             (utils/fake-href events/control-adventure-select-stylist {:stylist-id stylist-id}))
+             (utils/fake-href events/control-adventure-select-stylist {:stylist-id stylist-id
+                                                                       :card-index current-stylist-index}))
       [:div.flex.items-center.justify-center.inherit-color
        "Select"])
      (when gallery-open?
@@ -179,11 +180,21 @@
          (messages/handle-message events/adventure-stylist-search-results-displayed)))))
 
 (defmethod effects/perform-effects events/control-adventure-select-stylist
-  [_ _ args _ app-state]
+  [_ _ {:keys [stylist-id card-index]} _ app-state]
   #?(:cljs
-     (let [servicing-stylist-id (:stylist-id args)
-           stylist-id           (get-in app-state storefront-keypaths/store-stylist-id)]
-       (api/assign-servicing-stylist servicing-stylist-id stylist-id))))
+     (let [servicing-stylist-id stylist-id
+           store-stylist-id     (get-in app-state storefront-keypaths/store-stylist-id)]
+       (api/assign-servicing-stylist servicing-stylist-id
+                                     store-stylist-id
+                                     (fn [order]
+                                       (messages/handle-message events/api-success-assign-servicing-stylist
+                                                                {:order order})
+                                       (stringer/track-event "stylist_selected"
+                                                             {:stylist_id   servicing-stylist-id
+                                                              :card_index   card-index
+                                                              :current_step 2
+                                                              :service_type (get-in app-state keypaths/adventure-choices-install-type)
+                                                              :order_number (:number order)}))))))
 
 (defmethod trackings/perform-track events/adventure-stylist-search-results-displayed
   [_ event args app-state]
