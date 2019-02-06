@@ -2,7 +2,8 @@
   (:require [storefront.events :as events]
             [storefront.component :as component]
             [adventure.keypaths :as adventure-keypaths]
-            [adventure.components.multi-prompt :as multi-prompt]))
+            [adventure.components.multi-prompt :as multi-prompt]
+            [storefront.accessors.experiments :as experiments]))
 
 (defn ^:private query [data]
   (let [adventure-choices (get-in data adventure-keypaths/adventure-choices)
@@ -15,20 +16,21 @@
                     :progress  2
                     :back-link events/navigate-adventure-shop-hair
                     :subtitle  (str "Step " current-step " of 3")}
-     :buttons      [{:text             "Show me looks for inspiration"
-                     :data-test-suffix "looks"
-                     :value            {:how-shop :looks}
-                     :target           {:event events/navigate-adventure-select-new-look
-                                        :args  {:album-keyword :adventure}}}
-                    {:text             "Give me pre-made bundle sets"
-                     :data-test-suffix "bundle-sets"
-                     :value            {:how-shop :bundle-sets}
-                     :target           {:event events/navigate-adventure-select-new-look
-                                        :args  {:album-keyword :adventure-bundle-set}}}
-                    {:text             "Let me shop individual bundles"
-                     :data-test-suffix "individual-bundles"
-                     :value            {:how-shop :individual-bundles}
-                     :target           nil}]}))
+     :buttons      (into [{:text             "Show me looks for inspiration"
+                           :data-test-suffix "looks"
+                           :value            {:how-shop :looks}
+                           :target           {:event events/navigate-adventure-select-new-look
+                                              :args  {:album-keyword :adventure}}}
+                          {:text             "Give me pre-made bundle sets"
+                           :data-test-suffix "bundle-sets"
+                           :value            {:how-shop :bundle-sets}
+                           :target           {:event events/navigate-adventure-select-new-look
+                                              :args  {:album-keyword :adventure-bundle-set}}}]
+                         (when (experiments/adventure-shop-individual-bundles? data)
+                           [{:text             "Let me shop individual bundles"
+                             :data-test-suffix "individual-bundles"
+                             :value            {:how-shop :individual-bundles}
+                             :target           nil}]))}))
 
 (defn built-component
   [data opts]

@@ -134,6 +134,11 @@
   [data]
   (display-feature? data "adventure-control"))
 
+(defn adventure-shop-individual-bundles?
+  [data]
+  (display-feature? data
+                    "adventure-shop-individual-bundles"))
+
 (defn no-prices-on-picker?
   [data]
   (display-feature? data "no-prices-on-picker"))
