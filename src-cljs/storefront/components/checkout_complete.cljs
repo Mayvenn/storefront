@@ -73,7 +73,7 @@
                       :salon
                       :name)]
     [:div.flex
-     [:div.mr2 (ui/circle-ucare-img {:width "104"} portrait)]
+     [:div.mr2 (ui/circle-picture {:width "104px"} portrait)]
      [:div.flex-grow-1.left-align.dark-gray.h7.line-height-4
       [:div.h3.black.line-height-1 (clojure.string/join  " " [firstname lastname])]
       [:div.pyp2 (ui/star-rating rating)]
