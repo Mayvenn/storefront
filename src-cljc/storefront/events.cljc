@@ -490,6 +490,7 @@
 (defpath control-adventure-free-install-dismiss)
 
 (defpath api-success-fetch-matched-stylist)
+(defpath adventure-stylist-search-results-displayed)
 
 ;; Stripe Payment Button
 (defpath stripe-payment-request-button-inserted)

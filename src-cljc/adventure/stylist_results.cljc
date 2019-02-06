@@ -11,7 +11,9 @@
             [storefront.platform.messages :as messages]
             [storefront.effects :as effects]
             [storefront.transitions :as transitions]
+            [storefront.trackings :as trackings]
             #?@(:cljs [[storefront.history :as history]
+                       [storefront.hooks.stringer :as stringer]
                        [storefront.api :as api]])))
 
 (defn ^:private gallery-slide [index gallery-image]
@@ -172,8 +174,9 @@
   [_ _ args _ app-state]
   #?(:cljs
      (let [matched-stylists (get-in app-state keypaths/adventure-matched-stylists)]
-       (when (empty? matched-stylists)
-         (history/enqueue-redirect events/navigate-adventure-matching-stylist-wait)))))
+       (if (empty? matched-stylists)
+         (history/enqueue-redirect events/navigate-adventure-matching-stylist-wait)
+         (messages/handle-message events/adventure-stylist-search-results-displayed)))))
 
 (defmethod effects/perform-effects events/control-adventure-select-stylist
   [_ _ args _ app-state]
@@ -181,3 +184,19 @@
      (let [servicing-stylist-id (:stylist-id args)
            stylist-id           (get-in app-state storefront-keypaths/store-stylist-id)]
        (api/assign-servicing-stylist servicing-stylist-id stylist-id))))
+
+(defmethod trackings/perform-track events/adventure-stylist-search-results-displayed
+  [_ event args app-state]
+  #?(:cljs
+     (let [{:keys [latitude longitude zipcode]} (get-in app-state keypaths/adventure-stylist-match-location)
+           {:keys [how-far]}                    (get-in app-state keypaths/adventure-choices)
+           service-type                         (get-in app-state keypaths/adventure-choices-install-type)
+           results                              (map :stylist-id (get-in app-state keypaths/adventure-matched-stylists))]
+       (stringer/track-event "stylist_search_results_displayed"
+                             {:results      results
+                              :latitude     latitude
+                              :longitude    longitude
+                              :zipcode      zipcode
+                              :radius       how-far
+                              :service_type service-type
+                              :current_step 2}))))
