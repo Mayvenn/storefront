@@ -17,18 +17,6 @@
    [storefront.transitions :as transitions]
    [storefront.trackings :as trackings]))
 
-(defn ^:private location->prefill-string
-  [{:as location :keys [:zipcode :city :state]}]
-  (when (seq location)
-    ;; City not guaranteed (c.f 12309)
-    (str (when city (str city ", ")) state " " zipcode ", USA")))
-
-(defmethod transitions/transition-state events/navigate-adventure-find-your-stylist [_ event args app-state]
-  (let [preselected-location (get-in app-state keypaths/adventure-stylist-match-location)
-        location-prefill     (location->prefill-string preselected-location)]
-    (-> app-state
-        (assoc-in keypaths/adventure-stylist-match-address location-prefill))))
-
 (defmethod transitions/transition-state events/clear-selected-location
   [_ event _ app-state]
   (-> app-state
@@ -81,6 +69,13 @@
                           (utils/fake-href events/control-adventure-location-submit {:current-step current-step})) "→")])
 
 #?(:cljs
+  (defmethod transitions/transition-state events/control-adventure-location-submit
+    [_ event _ app-state]
+    (assoc-in app-state
+              keypaths/adventure-stylist-match-zipcode
+              (.-value (.getElementById js/document "stylist-match-zipcode")))))
+
+#?(:cljs
    (defmethod effects/perform-effects events/control-adventure-location-submit
      [_ event args _ app-state]
      (history/enqueue-navigate events/navigate-adventure-how-far)))
@@ -90,7 +85,7 @@
   #?(:cljs
      (let [{:keys [latitude longitude]} (get-in app-state keypaths/adventure-stylist-match-location)]
        (stringer/track-event "adventure_location_submitted"
-                             {:location_submitted (.-value (.getElementById js/document "stylist-match-address"))
+                             {:location_submitted (get-in app-state keypaths/adventure-stylist-match-zipcode)
                               :service_type       (get-in app-state keypaths/adventure-choices-install-type)
                               :current_step       current-step
                               :latitude           latitude
