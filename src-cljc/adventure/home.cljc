@@ -336,7 +336,6 @@
                           :stylist-name          (:store-nickname store)
                           :stylist-gallery-open? stylist-gallery-open?})]
     [:section an-amazing-deal]
-    [:hr.border-top.border-dark-silver.col-9.mx-auto.my6]
     [:section [:div (v2/why-mayvenn-is-right-for-you)]]
     [:section (free-install-mayvenn-grid free-install-mayvenn-ugc)]
     [:hr.hide-on-mb-tb.border-top.border-dark-silver.col-9.mx-auto.mb6]
