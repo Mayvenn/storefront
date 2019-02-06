@@ -37,7 +37,7 @@
                         (- (date/to-millis timer)
                            (date/to-millis (date/now))))]
     #?(:cljs
-       (history/enqueue-navigate
+       (history/enqueue-redirect
         (if (seq stylists)
           events/navigate-adventure-stylist-results
           events/navigate-adventure-out-of-area) {:timeout ms-to-wait}))))
