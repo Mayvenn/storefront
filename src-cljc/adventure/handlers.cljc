@@ -1,11 +1,13 @@
 (ns adventure.handlers
-  (:require [storefront.effects :as effects]
-            [storefront.events :as events]
-            [storefront.keypaths :as storefront.keypaths]
-            #?@(:cljs
-                [[storefront.history :as history]
+  (:require #?@(:cljs
+                [[storefront.hooks.pixlee :as pixlee.hook]
+                 [storefront.history :as history]
                  [storefront.hooks.stringer :as stringer]
                  [storefront.browser.cookie-jar :as cookie]])
+            [storefront.effects :as effects]
+            [storefront.events :as events]
+            [storefront.keypaths :as storefront.keypaths]
+            [storefront.accessors.pixlee :as pixlee]
             [adventure.keypaths :as keypaths]
             [storefront.trackings :as trackings]
             [storefront.transitions :as transitions]
@@ -47,11 +49,23 @@
     #?(:cljs
        (history/enqueue-navigate events/navigate-adventure-home nil))))
 
+(def ^:private slug->video
+  {"we-are-mayvenn" {:youtube-id "hWJjyy5POTE"}
+   "free-install"   {:youtube-id "sM6dvM1Q45k"}})
+
 ;; Perhaps there is a better way to "start" the flow in the app-state
 ;;   e.g. {:flow/version 1}
 ;; Perhaps the basic_prompt and multi_prompt could both do control-adventure
 (defmethod transitions/transition-state events/navigate-adventure-home
-  [_ event args app-state]
+  [_ event {:keys [query-params]} app-state]
   (-> app-state
       (update-in keypaths/adventure-choices
-                 merge {:adventure :started})))
+                 merge {:adventure :started})
+      (assoc-in keypaths/adventure-home-video (slug->video (:video query-params)))))
+
+
+(defmethod effects/perform-effects events/navigate-adventure-home
+  [_ _ args prev-app-state app-state]
+  #?(:cljs (do (pixlee.hook/fetch-album-by-keyword :sleek-and-straight)
+               (pixlee.hook/fetch-album-by-keyword :waves-and-curly)
+               (pixlee.hook/fetch-album-by-keyword :free-install-mayvenn))))

@@ -5,7 +5,7 @@
             [storefront.components.install-phone-capture :as install-phone-capture]
             [storefront.components.share-your-cart :as share-your-cart]
             [storefront.components.v2-homepage-popup :as v2-homepage-popup]
-            [adventure.components.modal.free-install :as adventure-free-install]
+            [adventure.components.program-details-popup :as adventure-program-details]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]))
@@ -13,8 +13,8 @@
 (def popup-type->popups
   {:free-install           {:query     free-install/query
                             :component free-install/component}
-   :adventure-free-install {:query     adventure-free-install/query
-                            :component adventure-free-install/component}
+   :adventure-free-install {:query     adventure-program-details/query
+                            :component adventure-program-details/component}
    :v2-homepage            {:query     v2-homepage-popup/query
                             :component v2-homepage-popup/component}
    :email-capture          {:query     email-capture/query
