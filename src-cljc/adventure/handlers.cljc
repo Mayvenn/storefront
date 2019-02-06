@@ -20,15 +20,14 @@
 (defmethod effects/perform-effects events/control-adventure-choice
   [_ _ {:keys [choice]} _ app-state]
   #?(:cljs
-     (do
-       (let [destination (:target choice)]
-         (if (map? destination)
-           (history/enqueue-navigate (:event destination)
-                                     (:args destination))
-           (history/enqueue-navigate destination nil))
-         (let [cookie    (get-in app-state storefront.keypaths/cookie)
-               adventure (get-in app-state keypaths/adventure)]
-           (cookie/save-adventure cookie adventure))))))
+     (let [destination (:target choice)]
+       (if (map? destination)
+         (history/enqueue-navigate (:event destination)
+                                   (:args destination))
+         (history/enqueue-navigate destination nil))
+       (let [cookie    (get-in app-state storefront.keypaths/cookie)
+             adventure (get-in app-state keypaths/adventure)]
+         (cookie/save-adventure cookie adventure)))))
 
 (defmethod trackings/perform-track events/control-adventure-choice
   [_ event {:keys [prompt buttons current-step choice]} app-state]
