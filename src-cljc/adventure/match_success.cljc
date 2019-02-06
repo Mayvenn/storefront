@@ -21,7 +21,9 @@
                              :background-position "right 15px bottom 150px"
                              :background-image
                              "url(//ucarecdn.com/8a87f86f-948f-48da-b59d-3ca4d8c6d5a0/-/format/png/-/quality/normal/)"}}
-     :header-data          {:back-link events/navigate-adventure-stylist-results}
+     :current-step         2
+     :header-data          {:progress  9
+                            :back-link events/navigate-adventure-stylist-results}
      :button               {:text      "Show me hair"
                             :data-test "adventure-match-success-choice-show-hair"
                             :color     :white

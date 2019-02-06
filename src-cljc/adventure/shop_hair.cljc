@@ -12,7 +12,7 @@
      :background-overrides {:class "bg-adventure-shop-hair"}
      :data-test            "adventure-match-with-stylist"
      :current-step         current-step
-     :header-data          {:progress  1
+     :header-data          {:progress  10
                             :subtitle  (str "Welcome to Step " current-step )
                             :back-link (if (= 2 current-step)
                                          events/navigate-adventure-what-next

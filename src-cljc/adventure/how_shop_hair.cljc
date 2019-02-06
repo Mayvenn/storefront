@@ -13,7 +13,7 @@
      :data-test    "how-shop-hair-choice"
      :current-step current-step
      :header-data  {:title     "The New You"
-                    :progress  2
+                    :progress  11
                     :back-link events/navigate-adventure-shop-hair
                     :subtitle  (str "Step " current-step " of 3")}
      :buttons      (into [{:text             "Show me looks for inspiration"

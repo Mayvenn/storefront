@@ -20,7 +20,7 @@
      :data-test    "install-type"
      :current-step 1
      :header-data  {:title     "The New You"
-                    :progress  1
+                    :progress  3
                     :back-link events/navigate-adventure-budget
                     :subtitle  "Step 1 of 3"}
      :buttons      (map (fn [o]

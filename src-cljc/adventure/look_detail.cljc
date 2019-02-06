@@ -27,7 +27,7 @@
      :current-step     current-step
      :header-data      {:title         "The New You"
                         :height        "65px"
-                        :progress      3
+                        :progress      13
                         :shopping-bag? true
                         :back-link     {:event events/navigate-adventure-select-new-look
                                         :args  {:album-keyword album-keyword}}

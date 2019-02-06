@@ -9,7 +9,7 @@
   {:current-step 2
    :header-data  {:title        "Your New Stylist"
                   :header-attrs {:class "bg-light-lavender white"}
-                  :progress     7 ;; TODO
+                  :progress     8
                   :back-link    events/navigate-adventure-how-far
                   :subtitle     "Step 2 of 3"}})
 
