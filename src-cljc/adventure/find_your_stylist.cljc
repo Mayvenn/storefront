@@ -72,8 +72,8 @@
   (defmethod transitions/transition-state events/control-adventure-location-submit
     [_ event _ app-state]
     (assoc-in app-state
-              keypaths/adventure-stylist-match-zipcode
-              (.-value (.getElementById js/document "stylist-match-zipcode")))))
+              keypaths/adventure-stylist-match-address
+              (.-value (.getElementById js/document "stylist-match-address")))))
 
 #?(:cljs
    (defmethod effects/perform-effects events/control-adventure-location-submit
@@ -85,7 +85,7 @@
   #?(:cljs
      (let [{:keys [latitude longitude]} (get-in app-state keypaths/adventure-stylist-match-location)]
        (stringer/track-event "adventure_location_submitted"
-                             {:location_submitted (get-in app-state keypaths/adventure-stylist-match-zipcode)
+                             {:location_submitted (get-in app-state keypaths/adventure-stylist-match-address)
                               :service_type       (get-in app-state keypaths/adventure-choices-install-type)
                               :current_step       current-step
                               :latitude           latitude
