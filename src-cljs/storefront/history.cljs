@@ -40,7 +40,8 @@
 
 (defn enqueue-redirect [navigation-event & [args]]
   (when-let [path (routes/path-for navigation-event args)]
-    (js/setTimeout #(.replaceToken app-history path))))
+    (js/setTimeout #(.replaceToken app-history path)
+                   (:timeout args 0))))
 
 (defn enqueue-navigate [navigation-event & [args]]
   (when-let [path (routes/path-for navigation-event args)]
