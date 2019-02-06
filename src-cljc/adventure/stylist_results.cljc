@@ -199,15 +199,16 @@
 (defmethod trackings/perform-track events/adventure-stylist-search-results-displayed
   [_ event args app-state]
   #?(:cljs
-     (let [{:keys [latitude longitude zipcode]} (get-in app-state keypaths/adventure-stylist-match-location)
-           {:keys [how-far]}                    (get-in app-state keypaths/adventure-choices)
-           service-type                         (get-in app-state keypaths/adventure-choices-install-type)
-           results                              (map :stylist-id (get-in app-state keypaths/adventure-matched-stylists))]
+     (let [{:keys [latitude longitude]} (get-in app-state keypaths/adventure-stylist-match-location)
+           {:keys [how-far]}            (get-in app-state keypaths/adventure-choices)
+           service-type                 (get-in app-state keypaths/adventure-choices-install-type)
+           location-submitted           (get-in app-state keypaths/adventure-stylist-match-address)
+           results                      (map :stylist-id (get-in app-state keypaths/adventure-matched-stylists))]
        (stringer/track-event "stylist_search_results_displayed"
-                             {:results      results
-                              :latitude     latitude
-                              :longitude    longitude
-                              :zipcode      zipcode
-                              :radius       how-far
-                              :service_type service-type
-                              :current_step 2}))))
+                             {:results            results
+                              :latitude           latitude
+                              :longitude          longitude
+                              :location_submitted location-submitted
+                              :radius             how-far
+                              :service_type       service-type
+                              :current_step       2}))))
