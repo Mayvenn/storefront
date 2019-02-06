@@ -15,17 +15,17 @@
                   :title     "Basic Info"
                   :back-link events/navigate-adventure-home
                   :subtitle  "Step 1 of 3"}
-   :buttons      [{:text             "As soon as possible"
-                   :data-test-suffix "asap"
-                   :value            {:time-frame "asap"}
+   :buttons      [{:text             "In the next 30 days"
+                   :data-test-suffix "in-the-next-30-days"
+                   :value            {:time-frame "in-the-next-30-days"}
                    :target           events/navigate-adventure-budget}
-                  {:text             "In the next few weeks"
-                   :data-test-suffix "weeks"
-                   :value            {:time-frame "weeks"}
+                  {:text             "In 2 to 3 months"
+                   :data-test-suffix "in-2-to-3-months"
+                   :value            {:time-frame "in-2-to-3-months"}
                    :target           events/navigate-adventure-budget}
-                  {:text             "Months from now"
-                   :data-test-suffix "months"
-                   :value            {:time-frame "months"}
+                  {:text             "Sometime this year"
+                   :data-test-suffix "sometime-this-year"
+                   :value            {:time-frame "sometime-this-year"}
                    :target           events/navigate-adventure-budget}]})
 
 (defn built-component
