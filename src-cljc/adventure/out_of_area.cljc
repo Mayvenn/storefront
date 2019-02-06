@@ -2,7 +2,8 @@
   (:require [adventure.components.header :as header]
             [storefront.component :as component]
             [storefront.components.ui :as ui]
-            [storefront.events :as events]))
+            [storefront.events :as events]
+            [storefront.platform.component-utils :as utils]))
 
 (defn ^:private query
   [data]
@@ -34,7 +35,9 @@
        "In the meantime..."]
       [:div.py2
        "Let's pick out your Mayvenn hair."]
-      (ui/teal-button {} "Select hair")]]]))
+      (ui/teal-button
+       (utils/route-to events/navigate-adventure-shop-hair)
+       "Select hair")]]]))
 
 (defn built-component
   [data opts]
