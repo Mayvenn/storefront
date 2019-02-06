@@ -24,7 +24,7 @@
 
 #?(:cljs (defmethod effects/perform-effects events/adventure-address-component-mounted
            [_ event {:keys [address-elem address-keypath]} _ app-state]
-           (places-autocomplete/attach "address" address-elem address-keypath)))
+           (places-autocomplete/attach "geocode" address-elem address-keypath)))
 
 (defn ^:private query [data]
   (let [current-step 2]
