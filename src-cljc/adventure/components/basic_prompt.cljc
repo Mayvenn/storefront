@@ -46,7 +46,8 @@
         [:div.mt1.h5 mini-prompt]]]
       [:div.flex.flex-auto.items-end.pb2
        [:div.mx1.flex.flex-auto.px5.mb7.pb8
-        (button-component (merge {:data-test (:data-test button)}
+        (button-component (merge {:data-test (:data-test button)
+                                  :key       (:data-test button)}
                                  (utils/route-to (:target button)))
                           (:text button))]]])))
 
