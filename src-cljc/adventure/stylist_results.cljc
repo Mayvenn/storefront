@@ -137,15 +137,16 @@
 (defn ^:private component
   [{:keys [header-data card-data] :as data} _ _]
   (component/create
-   [:div.center.flex-auto.bg-light-lavender
-    [:div.white
-     (when header-data
-       (header/built-component header-data nil))]
-    [:div
-     [:div.flex.items-center.bold.bg-light-lavender {:style {:height "75px"}}]
-     [:div.bg-white.flex.flex-auto.justify-center.pt6
-      [:div.h3.bold.purple "Pick your stylist"]]
-     [:div (component/build stylist-cards-component card-data nil)]]]))
+   (when (-> card-data :stylists seq)
+     [:div.center.flex-auto.bg-light-lavender
+      [:div.white
+       (when header-data
+         (header/built-component header-data nil))]
+      [:div
+       [:div.flex.items-center.bold.bg-light-lavender {:style {:height "75px"}}]
+       [:div.bg-white.flex.flex-auto.justify-center.pt6
+        [:div.h3.bold.purple "Pick your stylist"]]
+       [:div (component/build stylist-cards-component card-data nil)]]])))
 
 (defn built-component
   [data opts]
@@ -166,6 +167,13 @@
 (defmethod transitions/transition-state events/control-adventure-select-stylist
   [_ _ {:keys [stylist-id]} app-state]
   (assoc-in app-state keypaths/adventure-selected-stylist-id stylist-id))
+
+(defmethod effects/perform-effects events/navigate-adventure-stylist-results
+  [_ _ args _ app-state]
+  #?(:cljs
+     (let [matched-stylists (get-in app-state keypaths/adventure-matched-stylists)]
+       (when (empty? matched-stylists)
+         (history/enqueue-redirect events/navigate-adventure-matching-stylist-wait)))))
 
 (defmethod effects/perform-effects events/control-adventure-select-stylist
   [_ _ args _ app-state]
