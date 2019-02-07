@@ -68,7 +68,7 @@
                        {:view-other nav-message}
                        (cond
                          (and (= nav-event events/navigate-shared-cart)
-                              (#{:adventure :adventure-bundle-set} album-keyword))
+                              (#{:shop-by-look :bundle-sets} album-keyword))
                          {:view-look [events/navigate-adventure-look-detail {:album-keyword album-keyword
                                                                              :look-id       album_photo_id}]}
 

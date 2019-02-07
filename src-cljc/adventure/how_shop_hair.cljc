@@ -20,12 +20,12 @@
                            :data-test-suffix "looks"
                            :value            {:how-shop :looks}
                            :target           {:event events/navigate-adventure-select-new-look
-                                              :args  {:album-keyword :adventure}}}
+                                              :args  {:album-keyword :shop-by-look}}}
                           {:text             "Give me pre-made bundle sets"
                            :data-test-suffix "bundle-sets"
                            :value            {:how-shop :bundle-sets}
                            :target           {:event events/navigate-adventure-select-new-look
-                                              :args  {:album-keyword :adventure-bundle-set}}}]
+                                              :args  {:album-keyword :bundle-sets}}}]
                          (when (experiments/adventure-shop-individual-bundles? data)
                            [{:text             "Let me shop individual bundles"
                              :data-test-suffix "individual-bundles"

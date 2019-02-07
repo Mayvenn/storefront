@@ -101,27 +101,27 @@
                  :seo-title         "Shop by Look | Mayvenn"
                  :og-title          "Shop by Look - Find and Buy your favorite Mayvenn bundles!"}
 
-   :adventure {:title                  "shop by look"
-               :description            (str "Grab the latest bundle deal! "
-                                            "Below you can shop every bundle deal of the week.")
-               :button-copy            "Shop Look"
-               :back-copy              "back to shop by look"
-               :above-button-copy      nil
-               :short-name             "look"
-               :seo-title              "Shop by Look | Mayvenn"
-               :og-title               "Shop by Look - Find and Buy your favorite Mayvenn bundles!"
-               :adventure/prompt-image "//ucarecdn.com/ffe3011a-1cae-494a-a806-eac94f618374/-/format/auto/bg.png"}
-
-   :adventure-bundle-set {:title                  "shop by look"
-                          :description            (str "Grab the latest bundle deal! "
-                                                       "Below you can shop every bundle deal of the week.")
-                          :button-copy            "Shop Look"
-                          :back-copy              "back to shop by look"
-                          :above-button-copy      nil
-                          :short-name             "look"
-                          :seo-title              "Shop by Look | Mayvenn"
-                          :og-title               "Shop by Look - Find and Buy your favorite Mayvenn bundles!"
-                          :adventure/prompt-image "//ucarecdn.com/9806a920-9c5b-4a98-a9dc-21b02c381593/-/format/auto/bg.png"}})
+   ;; ADVENTURE BELOW
+   :shop-by-look {:title                  "shop by look"
+                  :description            (str "Grab the latest bundle deal! "
+                                               "Below you can shop every bundle deal of the week.")
+                  :button-copy            "Shop Look"
+                  :back-copy              "back to shop by look"
+                  :above-button-copy      nil
+                  :short-name             "look"
+                  :seo-title              "Shop by Look | Mayvenn"
+                  :og-title               "Shop by Look - Find and Buy your favorite Mayvenn bundles!"
+                  :adventure/prompt-image "//ucarecdn.com/ffe3011a-1cae-494a-a806-eac94f618374/-/format/auto/bg.png"}
+   :bundle-sets  {:title                  "shop by look"
+                  :description            (str "Grab the latest bundle deal! "
+                                               "Below you can shop every bundle deal of the week.")
+                  :button-copy            "Shop Look"
+                  :back-copy              "back to shop by look"
+                  :above-button-copy      nil
+                  :short-name             "look"
+                  :seo-title              "Shop by Look | Mayvenn"
+                  :og-title               "Shop by Look - Find and Buy your favorite Mayvenn bundles!"
+                  :adventure/prompt-image "//ucarecdn.com/9806a920-9c5b-4a98-a9dc-21b02c381593/-/format/auto/bg.png"}})
 
 (defn pixlee-config [environment]
   (case environment
@@ -151,8 +151,8 @@
                            :yaki-straight        1814286
                            :dyed                 2750237
                            :wigs                 1880465
-                           :adventure            4323429
-                           :adventure-bundle-set 4331694}}
+                           :shop-by-look         4323429
+                           :bundle-sets          4331694}}
 
     {:api-key                "iiQ27jLOrmKgTfIcRIk"
      :copy                   pixlee-copy
@@ -179,5 +179,5 @@
                               :yaki-straight        1912642
                               :dyed                 2918644
                               :wigs                 2918645
-                              :adventure            4018488
-                              :adventure-bundle-set 4336271}}))
+                              :shop-by-look         4018488
+                              :bundle-sets          4336271}}))
