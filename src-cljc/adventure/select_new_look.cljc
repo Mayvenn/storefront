@@ -16,42 +16,45 @@
             [adventure.components.header :as header]))
 
 (defn ^:private query [data]
-  (let [adventure-choices  (get-in data adventure-keypaths/adventure-choices)
-        album-keyword      (get-in data keypaths/selected-album-keyword)
-        album-copy         #?(:cljs (-> config/pixlee :copy album-keyword)
-                              :clj nil)
-        current-step (if (-> adventure-choices :flow #{"match-stylist"}) 3 2)]
-    {:prompt        "Select your new look"
-     :mini-prompt   ["We have an amazing selection for you"
-                     [:br]
-                     "to choose from."]
-     :prompt-image  (:adventure/prompt-image album-copy)
-     :data-test     "select-new-look-choice"
-     :current-step  current-step
-     :header-data   {:title         "The New You"
-                     :progress      12
-                     :shopping-bag? true
-                     :back-link     events/navigate-adventure-how-shop-hair
-                     :subtitle      (str "Step " current-step  " of 3")}
-     :copy          album-copy
-     :deals?        false
-     :spinning?     false
-     :color-details (->> (get-in data keypaths/v2-facets)
-                         (filter #(= :hair/color (:facet/slug %)))
-                         first
-                         :facet/options
-                         (maps/index-by :option/slug))
-     :looks         (pixlee/images-in-album (get-in data keypaths/ugc) (get-in data keypaths/selected-album-keyword))}))
+  (let [adventure-choices (get-in data adventure-keypaths/adventure-choices)
+        album-keyword     (get-in data keypaths/selected-album-keyword)
+        album-copy        #?(:cljs (-> config/pixlee :copy album-keyword)
+                             :clj nil)
+        stylist-selected? (some-> adventure-choices :flow #{"match-stylist"})
+        current-step      (if stylist-selected? 3 2)]
+    {:prompt            "Select your new look"
+     :mini-prompt       ["We have an amazing selection for you"
+                         [:br]
+                         "to choose from."]
+     :prompt-image      (:adventure/prompt-image album-copy)
+     :data-test         "select-new-look-choice"
+     :current-step      current-step
+     :header-data       {:title         "The New You"
+                         :progress      12
+                         :shopping-bag? true
+                         :back-link     events/navigate-adventure-how-shop-hair
+                         :subtitle      (str "Step " current-step  " of 3")}
+     :copy              album-copy
+     :deals?            false
+     :spinning?         false
+     :color-details     (->> (get-in data keypaths/v2-facets)
+                             (filter #(= :hair/color (:facet/slug %)))
+                             first
+                             :facet/options
+                             (maps/index-by :option/slug))
+     :looks             (pixlee/images-in-album (get-in data keypaths/ugc) (get-in data keypaths/selected-album-keyword))
+     :stylist-selected? stylist-selected?}))
 
 (defn ^:private component
-  [{:keys [prompt mini-prompt prompt-image header-data data-test looks] :as data} _ _]
+  [{:as   data
+    :keys [prompt mini-prompt prompt-image header-data data-test looks stylist-selected?]} _ _]
   (component/create
    [:div.bg-too-light-teal.white.center.flex-auto.self-stretch
     (when header-data
       (header/built-component header-data nil))
     [:div.flex.items-center.bold.bg-light-lavender
      {:style {:height              "246px"
-              :padding-top "46px"
+              :padding-top         "46px"
               :background-size     "cover"
               :background-position "center"
               :background-image    (str "url('"prompt-image "')")}}
@@ -60,10 +63,11 @@
       [:div.mt1.h6.light mini-prompt]]]
     [:div {:data-test data-test}
      #?(:cljs (om/build ugc/adventure-component data {}))]
-    [:div.h6.center.pb8
-     [:div.dark-gray "Not ready to shop hair?"]
-     [:a.teal (utils/fake-href events/navigate-adventure-find-your-stylist)
-      "Find a stylist"]]]))
+    (when-not stylist-selected?
+      [:div.h6.center.pb8
+           [:div.dark-gray "Not ready to shop hair?"]
+           [:a.teal (utils/fake-href events/navigate-adventure-find-your-stylist)
+            "Find a stylist"]])]))
 
 (defn built-component
   [data opts]

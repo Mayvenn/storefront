@@ -19,31 +19,33 @@
 
 (defn ^:private query [data]
   (let [adventure-choices (get-in data adventure-keypaths/adventure-choices)
-        current-step      (if (-> adventure-choices :flow #{"match-stylist"}) 3 2)
+        stylist-selected? (some-> adventure-choices :flow #{"match-stylist"})
+        current-step      (if stylist-selected? 3 2)
         album-keyword     (get-in data keypaths/selected-album-keyword)]
-    {:look-detail-data #?(:cljs (shop-look-details/adventure-query data)
-                          :clj nil)
-     :data-test        "look-detail"
-     :current-step     current-step
-     :header-data      {:title         "The New You"
-                        :height        "65px"
-                        :progress      13
-                        :shopping-bag? true
-                        :back-link     {:event events/navigate-adventure-select-new-look
-                                        :args  {:album-keyword album-keyword}}
-                        :subtitle      (str "Step " current-step " of 3")}
-     :copy             #?(:cljs (-> config/pixlee :copy album-keyword) :clj nil)
-     :deals?           false
-     :spinning?        false
-     :color-details    (->> (get-in data keypaths/v2-facets)
-                            (filter #(= :hair/color (:facet/slug %)))
-                            first
-                            :facet/options
-                            (maps/index-by :option/slug))
-     :looks            (pixlee/images-in-album (get-in data keypaths/ugc) album-keyword)}))
+    {:look-detail-data  #?(:cljs (shop-look-details/adventure-query data)
+                           :clj nil)
+     :data-test         "look-detail"
+     :current-step      current-step
+     :header-data       {:title         "The New You"
+                         :height        "65px"
+                         :progress      13
+                         :shopping-bag? true
+                         :back-link     {:event events/navigate-adventure-select-new-look
+                                         :args  {:album-keyword album-keyword}}
+                         :subtitle      (str "Step " current-step " of 3")}
+     :copy              #?(:cljs (-> config/pixlee :copy album-keyword) :clj nil)
+     :deals?            false
+     :spinning?         false
+     :color-details     (->> (get-in data keypaths/v2-facets)
+                             (filter #(= :hair/color (:facet/slug %)))
+                             first
+                             :facet/options
+                             (maps/index-by :option/slug))
+     :looks             (pixlee/images-in-album (get-in data keypaths/ugc) album-keyword)
+     :stylist-selected? stylist-selected?}))
 
 (defn ^:private component
-  [{:keys [header-data data-test looks copy deals? spinning? color-details look-detail-data] :as data} _ _]
+  [{:keys [header-data data-test looks copy deals? spinning? color-details look-detail-data stylist-selected?]} _ _]
   (component/create
    [:div.bg-white.center.flex-auto.self-stretch
     [:div.white
@@ -54,10 +56,11 @@
      [:div.black
       #?(:cljs (om/build shop-look-details/adventure-component look-detail-data nil))]
 
-     [:div.h6.center.pb8
-      [:div.dark-gray "Not ready to shop hair?"]
-      [:a.teal (utils/fake-href events/navigate-adventure-find-your-stylist)
-       "Find a stylist"]]]]))
+     (when-not stylist-selected?
+       [:div.h6.center.pb8
+        [:div.dark-gray "Not ready to shop hair?"]
+        [:a.teal (utils/fake-href events/navigate-adventure-find-your-stylist)
+         "Find a stylist"]])]]))
 
 (defn built-component
   [data opts]
