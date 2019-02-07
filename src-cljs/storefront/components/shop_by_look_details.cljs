@@ -97,15 +97,16 @@
              [:div.mt2
               (add-to-cart-button sold-out? creating-order? look shared-cart)]])))]])))
 
-(defn adventure-component [{:keys [creating-order? sold-out? look shared-cart skus back fetching-shared-cart? discount-warning?
-                                   shared-cart-type-copy back-copy back-event above-button-copy album-keyword look-detail-price?
-                                   base-price discounted-price]} owner opts]
+(defn adventure-component
+  [{:keys [creating-order? sold-out? look shared-cart skus back fetching-shared-cart? discount-warning?
+           shared-cart-type-copy back-copy back-event above-button-copy album-keyword look-detail-price?
+           base-price discounted-price]} owner opts]
   (om/component
    (html
     [:div.container.mb4
      [:div.clearfix
       (when look
-        [:div.col-on-tb-dt.col-6-on-tb-dt.px3-on-tb-dt
+        [:div
          (carousel (imgs look shared-cart))
          [:div.px3.py2.mbp1.bg-light-gray (ugc/adventure-user-attribution look)]
          (when-not (str/blank? (:title look))
@@ -115,7 +116,7 @@
         (when shared-cart
           (let [line-items (:line-items shared-cart)
                 item-count (->> line-items (map :item/quantity) (reduce + 0))]
-            [:div.col-on-tb-dt.col-6-on-tb-dt.px2.px3-on-tb-dt
+            [:div.px2
              [:div.p2.center.h3.medium
               {:data-test "item-quantity-in-look"}
               (str item-count " items in this " shared-cart-type-copy)]

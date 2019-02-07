@@ -54,7 +54,7 @@
     :as   stylist}]
   (let [{:keys [firstname lastname]}         address
         {:keys [city state name]} salon]
-    [:div.bg-white.p2.pb2.h6.my2.mx2-on-tb-dt.col-12.col-5-on-tb-dt {:key stylist-id}
+    [:div.bg-white.p2.pb2.h6.my2.col-12.col-8-on-tb-dt {:key stylist-id}
      [:div.flex
       [:div.mr2.mt1 (ui/circle-picture {:width "104px"} (:resizable-url portrait))]
       [:div.flex-grow-1.left-align.dark-gray.h7.line-height-4
@@ -117,7 +117,7 @@
   [{:keys [stylist-gallery-index gallery-image-index stylists]} owner opts]
   (component/create
    [:div.px3.p1.bg-white.flex-wrap.flex.justify-center
-    [:div.col-12.col-8-on-dt.py2.flex-wrap.flex.justify-center
+    [:div.col-12.py2.flex-wrap.flex.justify-center
      (map-indexed
       (fn [index stylist]
         (stylist-card
@@ -146,7 +146,8 @@
        (when header-data
          (header/built-component header-data nil))]
       [:div
-       [:div.flex.items-center.bold.bg-light-lavender {:style {:height "75px"}}]
+       [:div.flex.items-center.bold.bg-light-lavender
+        {:style {:height "75px"}}]
        [:div.bg-white.flex.flex-auto.justify-center.pt6
         [:div.h3.bold.purple "Pick your stylist"]]
        [:div (component/build stylist-cards-component card-data nil)]]])))

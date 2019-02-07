@@ -47,7 +47,7 @@
            {:keys [view-look view-other]}                 links
            [nav-event nav-args]                           (or view-look
                                                               view-other)]]
-      [:div.p2.col-12.col-6-on-tb.col-4-on-dt.left-align
+      [:div.p2.col-12.col-6-on-tb-dt.left-align
        (merge {:key (str "small-" id)
                :data-test "adventure-look"}
               (util/route-to nav-event nav-args {:back-copy  (:back-copy copy)

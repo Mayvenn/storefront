@@ -187,7 +187,7 @@
         qualified-banner)
       [:div.p2
        [:div.clearfix.mxn3
-        [:div.col-on-tb-dt.col-6-on-tb-dt.px3.pt2
+        [:div.px3.pt2
          {:data-test "cart-line-items"}
          (display-adjustable-line-items recently-added-skus
                                         line-items
@@ -199,7 +199,7 @@
 
          (freeinstall-line-item freeinstall-just-added? freeinstall-line-item-data)]
 
-        [:div.col-on-tb-dt.col-6-on-tb-dt.px3
+        [:div.px3
          (component/build adventure-cart-summary/component cart-summary nil)
 
          (if add-more-hair?
@@ -284,8 +284,7 @@
   (component/create
    (if fetching-order?
      [:div.py3.h2 ui/spinner]
-     [:div.col-7-on-dt.mx-auto
-      (component/build full-component full-cart opts)])))
+     (component/build full-component full-cart opts))))
 
 (defn query [data]
   {:fetching-order? (utils/requesting? data request-keys/get-order)
@@ -295,15 +294,15 @@
 (defn built-component [data opts]
   (component/build component (query data) opts))
 
-;; TODO: Adjust positioning of X?
 (defn header [{:keys [return-route item-count]} owner opts]
   (component/create
-   [:div.center.bg-light-lavender.white
+   [:div.center.bg-light-lavender.white.relative
     {:style {:height "75px"}}
     [:div.absolute.left-0.right-0.top-0.flex.justify-between.mt1 ;; Buttons (cart and back)
      [:div]
-     [:a.block.p3 (merge {:data-test "adventure-cart-x"}
-                         return-route)
+     [:a.block.p3
+      (merge {:data-test "adventure-cart-x"}
+             return-route)
       (svg/simple-x {:width        "20px"
                      :height       "20px"
                      :class        "stroke-white"
@@ -312,19 +311,20 @@
      [:div.h5.medium "Your Bag"]
      [:div.h6 (ui/pluralize-with-amount item-count "item")]]]))
 
-;; TODO, Make increment button work
 (defn header-query [data]
   {:return-route (utils/route-back-or-to (first (get-in data keypaths/navigation-undo-stack)) events/navigate-home)
    :item-count   (orders/product-quantity (get-in data keypaths/order))} )
 
 (defn layout [data nav-event]
-  [:div.flex.flex-column {:style {:min-height    "100vh"
-                                  :margin-bottom "-1px"}}
+  [:div.flex.flex-column.max-580.mx-auto
+   {:style {:min-height    "100vh"
+            :margin-bottom "-1px"}}
    (component/build header (header-query data) nil)
    [:div.relative.flex.flex-column.flex-auto
     (flash/built-component data nil)
 
-    [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
+    [:main.bg-white.flex-auto
+     {:data-test (keypaths/->component-str nav-event)}
      (built-component data nil)]
 
     [:footer
