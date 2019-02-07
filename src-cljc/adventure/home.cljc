@@ -86,9 +86,9 @@
   [:picture
    ;; Tablet/Desktop
    [:source {:media   "(min-width: 750px)"
-             :src-set (str desktop-url "-/format/auto/-/quality/best/" file-name " 1x")}]
+             :src-set (str desktop-url "-/format/jpeg/-/quality/best/" file-name " 1x")}]
    ;; Mobile
-   [:img.block.col-12 {:src (str mobile-url "-/format/auto/" file-name)
+   [:img.block.col-12 {:src (str mobile-url "-/format/jpeg/" file-name)
                        :alt alt}]])
 
 (defn hero []
