@@ -73,7 +73,7 @@
                  {:style {:margin-bottom "0"}})
                [:div {:ref "content-height"}
                 [:div
-                 [:a.h6.white.bg-black.medium.px3.py2.flex.items-center
+                 [:div.h6.white.bg-black.medium.px3.py2.flex.items-center
                   (utils/fake-href events/popup-show-install-phone-capture)
                   [:div.col-7 "We can't wait for you to get a FREE install."]
                   [:div.col-1]
