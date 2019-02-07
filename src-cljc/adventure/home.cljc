@@ -6,7 +6,13 @@
             [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.pixlee :as pixlee]
-            #?(:cljs [storefront.hooks.pixlee :as pixlee.hook])
+            #?@(:cljs [[storefront.hooks.pixlee :as pixlee.hook]
+                       [storefront.components.popup :as popup]
+                       [om.core :as om]
+                       [goog.events.EventType :as EventType]
+                       goog.dom
+                       goog.style
+                       goog.events])
             [storefront.assets :as assets]
             [storefront.component :as component]
             [storefront.components.marquee :as marquee]
@@ -24,6 +30,54 @@
             [storefront.effects :as effects]
             [storefront.components.money-formatters :as mf]
             [storefront.components.v2 :as v2]))
+
+(defn sticky-component
+  [{:keys [popup-data]} owner opts]
+  #?(:clj (component/create [:div])
+     :cljs
+     (letfn [(handle-scroll [e] (om/set-state! owner :show? (< 530 (.-y (goog.dom/getDocumentScroll)))))
+             (set-height [] (om/set-state! owner :content-height (some-> owner
+                                                                         (om/get-node "content-height")
+                                                                         goog.style/getSize
+                                                                         .-height)))]
+       (reify
+         om/IInitState
+         (init-state [this]
+           {:show? false
+            :content-height 0})
+         om/IDidMount
+         (did-mount [this]
+           (handle-scroll nil) ;; manually fire once on load incase the page already scrolled
+           (set-height)
+           (goog.events/listen js/window EventType/SCROLL handle-scroll))
+         om/IWillUnmount
+         (will-unmount [this]
+           (goog.events/unlisten js/window EventType/SCROLL handle-scroll))
+         om/IWillReceiveProps
+         (will-receive-props [this next-props]
+           (set-height))
+         om/IRenderState
+         (render-state [this {:keys [show? content-height]}]
+           (component/html
+            [:div.fixed.z4.bottom-0.left-0.right-0
+             {:style {:margin-bottom (str "-" content-height "px")}}
+             ;; Using a separate element with reverse margin to prevent the
+             ;; sticky component from initially appearing on the page and then
+             ;; animate hiding.
+             [:div.transition-2
+              (if show?
+                {:style {:margin-bottom (str content-height "px")}}
+                {:style {:margin-bottom "0"}})
+              [:div {:ref "content-height"}
+               [:div
+                [:a.h6.white.bg-black.medium.px3.py2.flex.items-center
+                 (utils/fake-href events/popup-show-install-phone-capture)
+                 [:div.col-7 "We can't wait for you to get a FREE install."]
+                 [:div.col-1]
+                 [:div.col-4
+                  (ui/teal-button (merge {:height-class "py2"}
+                                         (utils/route-to events/navigate-adventure-time-frame))
+                                  [:div.h7 "Get started"])]]]]]]))))))
 
 (defn hero-image [{:keys [desktop-url mobile-url file-name alt]}]
   [:picture
@@ -345,7 +399,8 @@
     [:section (faq/component faq-data)]
     [:hr.border-top.border-dark-silver.col-9.mx-auto.my6]
     [:section our-story]
-    [:section contact-us]]))
+    [:section contact-us]
+    (component/build sticky-component {} nil)]))
 
 (defn query [data]
   (let [the-ville?                  (experiments/the-ville? data)
