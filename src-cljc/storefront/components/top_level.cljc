@@ -229,9 +229,12 @@
 
        (routes/sub-page? [nav-event] [events/navigate-adventure])
        [:div {:data-test (keypaths/->component-str nav-event)}
-        [:div.flex.content-stretch.max-580.mx-auto.relative
-         {:style {:min-height    "100vh"
-                  :margin-bottom "-30px"}}
+        [:div.flex.content-stretch
+         (merge
+          {:style {:min-height    "100vh"
+                   :margin-bottom "-30px"}}
+          (when-not (= nav-event events/navigate-adventure-home)
+            {:class "max-580 mx-auto relative"}))
          ((main-component nav-event) data nil)]]
 
        :else
