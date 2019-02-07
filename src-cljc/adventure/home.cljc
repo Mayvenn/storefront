@@ -59,25 +59,28 @@
          om/IRenderState
          (render-state [this {:keys [show? content-height]}]
            (component/html
-            [:div.fixed.z4.bottom-0.left-0.right-0
-             {:style {:margin-bottom (str "-" content-height "px")}}
-             ;; Using a separate element with reverse margin to prevent the
-             ;; sticky component from initially appearing on the page and then
-             ;; animate hiding.
-             [:div.transition-2
-              (if show?
-                {:style {:margin-bottom (str content-height "px")}}
-                {:style {:margin-bottom "0"}})
-              [:div {:ref "content-height"}
-               [:div
-                [:a.h6.white.bg-black.medium.px3.py2.flex.items-center
-                 (utils/fake-href events/popup-show-install-phone-capture)
-                 [:div.col-7 "We can't wait for you to get a FREE install."]
-                 [:div.col-1]
-                 [:div.col-4
-                  (ui/teal-button (merge {:height-class "py2"}
-                                         (utils/route-to events/navigate-adventure-time-frame))
-                                  [:div.h7 "Get started"])]]]]]]))))))
+            [:div
+             ;; padding div to allow content that's normally at the bottom to be visible
+             [:div {:style {:height (str content-height "px")}}]
+             [:div.fixed.z4.bottom-0.left-0.right-0
+              {:style {:margin-bottom (str "-" content-height "px")}}
+              ;; Using a separate element with reverse margin to prevent the
+              ;; sticky component from initially appearing on the page and then
+              ;; animate hiding.
+              [:div.transition-2
+               (if show?
+                 {:style {:margin-bottom (str content-height "px")}}
+                 {:style {:margin-bottom "0"}})
+               [:div {:ref "content-height"}
+                [:div
+                 [:a.h6.white.bg-black.medium.px3.py2.flex.items-center
+                  (utils/fake-href events/popup-show-install-phone-capture)
+                  [:div.col-7 "We can't wait for you to get a FREE install."]
+                  [:div.col-1]
+                  [:div.col-4
+                   (ui/teal-button (merge {:height-class "py2"}
+                                          (utils/route-to events/navigate-adventure-time-frame))
+                                   [:div.h7 "Get started"])]]]]]]]))))))
 
 (defn hero-image [{:keys [desktop-url mobile-url file-name alt]}]
   [:picture
@@ -177,7 +180,7 @@
            (ui/ucare-img {:width "250"} "0db72798-6c51-48f2-8206-9fd6d91a3ada")]]
          [:div.relative.z2
           [:div.img-logo.bg-no-repeat.bg-center.bg-contain.mb2
-           {:style {:height "45px"}}]
+           {:style {:width "110px"}}]
           [:div.mb1 "3 bundles.............." [:span.medium "$189"]]
           [:div     "Install....................." [:span.medium "FREE"]]
           [:div.mt2.mx-auto.flex.items-center
@@ -373,7 +376,8 @@
    [:div
     [:div.bg-white.flex.justify-center
      {:style {:height "63px"}}
-     [:div.block.img-logo.bg-no-repeat.bg-center.bg-contain.teal.col-4]]
+     [:div.block.img-logo.bg-no-repeat.bg-center.bg-contain.teal
+      {:style {:width "110px"}}]]
     [:section (hero)]
     [:section free-shipping-banner]
     [:a {:name "mayvenn-free-install-video"}]
