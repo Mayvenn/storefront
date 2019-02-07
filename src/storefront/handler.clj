@@ -533,7 +533,7 @@
 (defn robots [{:keys [subdomains]}]
   (string/join "\n" (if (= "freeinstall" (last subdomains))
                       ["User-agent: *"
-                       "Disallow: /adventure/"]
+                       "Disallow: /adv/"]
                       user-specific-disalloweds)))
 
 (defn sitemap [{:keys [storeback-config]} {:keys [subdomains] :as req}]
