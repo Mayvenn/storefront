@@ -114,7 +114,7 @@
      (ui/ucare-img {:alt "" :height "25"}
                    "38d0a770-2dcd-47a3-a035-fc3ccad11037")]
     [:div.h6.white.light
-     "FREE standard shipping"]]])
+     "FREE Standard Shipping, Always"]]])
 
 (def teal-play-video-mobile
   (svg/white-play-video {:class  "mr1 fill-teal"
@@ -139,7 +139,7 @@
       [:a.block.ml4.dark-gray
        video-link
        [:div.h4.bold "#MayvennFreeInstall"]
-       [:div.h4.my2 "Learn how you can get your FREE install"]
+       [:div.h4.my2 "Learn about how to get your own FREE install"]
        [:div.h5.teal.flex.items-center.medium.shout
         "Watch Now"]]]
 
@@ -169,7 +169,7 @@
    [:div
     [:div.col-12.col-8-on-tb.col-6-on-dt.mx-auto.pb6.pt4
      [:div.center.clearfix.py3.h6.dark-gray
-      [:h2.mt4.black.relative.z2 "An Amazing Deal"]
+      [:h2.mt4.black.relative.z2 "Dollar for Dollar, Mayvenn Wins"]
       [:div.flex.justify-center
        [:div
         [:div.h6.mx-auto
@@ -218,14 +218,14 @@
                   (ui/ucare-img {:width "9"} "f277849f-a27b-48b4-804b-7d523b6d2442")])]
        [:div.clearfix.h6.dark-gray.px4.mx-auto.line-height-2
         (row "High quality hair")
-        (row "FREE install")
+        (row "Free Sew-In and Style")
         (row "30 Day Guarantee")
-        (row "Black-owned company")])]]])
+        (row "Black-owned Company")])]]])
 
 (defn free-install-mayvenn-grid [free-install-mayvenn-ugc]
   [:div.py8.col-10.mx-auto
    [:h2.center "#MayvennFreeInstall"]
-   [:h6.center.dark-gray "Show off your look by tagging us with #MayvennFreeInstall"]
+   [:h6.center.dark-gray "Showcase your new look by tagging #MayvennFreeInstall"]
    [:div.flex.flex-wrap.pt2
     (for [{:keys [links imgs]} (:images free-install-mayvenn-ugc)]
       [:a.col-6.col-3-on-tb-dt.p1
@@ -241,8 +241,8 @@
         stylist-image       (ui/ucare-img {:class "col-12"} "6735b4d5-9b65-4fa9-96cd-871141b28672")
         diishan-image-2     (ui/ucare-img {:class "col-12"} "ec9e0533-9eee-41ae-a61b-8dc22f045cb5")]
     [:div.pt4.px4.pb8
-     [:div.h2.center "A Better Hair Experience Starts Here"]
-     [:h6.center.mb2.dark-gray "Founded in Oakland, CA • 2013"]
+     [:div.h2.center "Better Hair + Better Service Begins Here"]
+     [:h6.center.mb2.dark-gray "Founded in Oakland, CA 2013"]
 
      [:div.hide-on-tb-dt
       [:div.flex.flex-wrap
@@ -301,22 +301,22 @@
 
     [:div.col-12
      [:div.mt2.flex.flex-column.items-center
-      [:h2 "Get a FREE Install"]
+      [:h2 "Get a Free Install"]
       [:div.h6.dark-gray "In three easy steps"]]
 
      [:div.col-8-on-dt.mx-auto.flex.flex-wrap
       (step {:icon-uuid   "6b2b4eee-7063-46b6-8d9e-7f189d1c1add"
              :icon-width  "27"
-             :title       "Find A Stylist In Your Area"
-             :description "Mayvenn has certified stylists all over the country read to give you a free install!"})
+             :title       "Find a Stylist in Your Area"
+             :description "Mayvenn has Certified Stylists all over the country who are dedicated to providing your free install service."})
       (step {:icon-uuid   "e90526f9-546f-4a6d-a05a-3bea94aedc21"
              :icon-width  "28"
-             :title       "Buy ANY 3 Bundles or More"
-             :description "Including closures, frontals, and 360 frontals! Rest easy - your 100% virgin hair purchase is backed by our 30 day guarantee."})
+             :title       "Buy Any 3 Bundles or More"
+             :description "This includes closures, frontals, and 360 frontals. Rest easy - your 100% virgin hair purchase is backed by our 30 day guarantee."})
       (step {:icon-uuid   "7712537c-3805-4d92-90b5-a899748a21c5"
              :icon-width  "35"
-             :title       "Show Your Stylist The Voucher"
-             :description "We’ll send you a free install voucher via SMS to use at your appointment."})]]))
+             :title       "Show Your Stylist the Voucher"
+             :description "We’ll send you a free install voucher via SMS to use for payment at your appointment."})]]))
 
 (defn contact-us-block [url svg title copy]
   [:a.block.py3.col-12.col-4-on-tb-dt
@@ -333,7 +333,7 @@
   [:div.bg-transparent-teal.center.py8
    [:h5.mt6.teal.letter-spacing-3.shout.bold "Contact Us"]
    [:h1.black.titleize "Have Questions?"]
-   [:h5 "We are here to help you"]
+   [:h5 "We're here to help"]
    visual-divider
    [:div.flex.flex-wrap.items-baseline.justify-center.col-12.col-8-on-tb-dt.mx-auto
     (contact-us-block
@@ -347,13 +347,13 @@
      (svg/icon-call {:class  "bg-white fill-black stroke-black circle"
                      :height 57
                      :width  57})
-     "Speak With Us"
+     "Call Us"
      "1-310-733-0284")
     (contact-us-block
      (ui/email-url "help@mayvenn.com")
      (svg/icon-email {:height 39
                       :width  56})
-     "Write To Us"
+     "Email Us"
      "help@mayvenn.com")]])
 
 (defn component [{:keys [signed-in

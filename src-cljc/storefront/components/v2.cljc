@@ -93,21 +93,21 @@
       [:div.col-11-on-dt.justify-center.flex.flex-wrap.mx-auto.pb2
 
        [:div.my2.flex.flex-column.items-center.col-12
-        [:h2.titleize "Why mayvenn is right for you"]
+        [:h2.titleize "Why Mayvenn?"]
         [:div.h6.dark-gray.titleize "It's not just about hair"]]
 
        (entry {:icon-uuid   "ab1d2ed4-ff93-40e6-978a-721133ca88a7"
                :icon-width  "29"
                :title       "Top Notch Customer Service"
-               :description "Our team is made up of hair experts ready to help you by phone, text, and email."})
+               :description "Our team is made up of hair experts who are ready to help you by phone, text, and email."})
        (entry {:icon-uuid   "8787e30c-2879-4a43-8d01-9d6790575084"
                :icon-width  "52"
                :title       "30 Day Guarantee"
-               :description "Wear it, dye it, even cut it! If you're not satisfied we'll exchange it within 30 days."})
+               :description "Wear it, dye it, even cut it! If you're not in love with your hair, we'll exchange it within 30 days."})
        (entry {:icon-uuid   "e02561dd-c294-43b7-bb33-c40bfabea518"
                :icon-width  "35"
                :title       "100% Virgin Hair"
-               :description "Our hair is gently steam processed and can last up to a year. Available in 8 textures and 8 shades."})
+               :description "Our hair is gently steam-processed and lasts a year or more with proper care. Available in 8 textures, we also offer a range of color options."})
        (entry {:icon-uuid   "3f622e92-6d95-49e2-a0c1-51a535b22975"
                :icon-width  "35"
                :title       "Free Install"
