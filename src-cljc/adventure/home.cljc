@@ -59,7 +59,7 @@
          om/IRenderState
          (render-state [this {:keys [show? content-height]}]
            (component/html
-            [:div
+            [:div.hide-on-dt
              ;; padding div to allow content that's normally at the bottom to be visible
              [:div {:style {:height (str content-height "px")}}]
              [:div.fixed.z4.bottom-0.left-0.right-0
