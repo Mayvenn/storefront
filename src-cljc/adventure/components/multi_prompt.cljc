@@ -23,7 +23,7 @@
    [:div.bg-too-light-teal.white.center.flex-auto.self-stretch
     (when header-data
       (header/built-component header-data nil))
-    [:div.flex.items-center.bold
+    [:div.flex.items-center.bold.bg-light-lavender
      {:style {:height              "246px"
               :background-size     "cover"
               :background-position "center"
