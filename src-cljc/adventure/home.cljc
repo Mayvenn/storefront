@@ -317,6 +317,9 @@
                  opts]
   (component/create
    [:div
+    [:div.bg-white.flex.justify-center
+     {:style {:height "63px"}}
+     [:div.block.img-logo.bg-no-repeat.bg-center.bg-contain.teal.col-4]]
     [:section (hero)]
     [:section free-shipping-banner]
     [:a {:name "mayvenn-free-install-video"}]
