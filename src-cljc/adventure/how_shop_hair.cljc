@@ -9,12 +9,12 @@
 (defn enriched-buttons [shop-individual-buttons?]
   (into [{:text             "Show me looks for inspiration"
           :data-test-suffix "looks"
-          :value            {:how-shop :looks}
+          :value            {:how-shop "looks"}
           :target           {:event events/navigate-adventure-select-new-look
                              :args  {:album-keyword :shop-by-look}}}
          {:text             "Give me pre-made bundle sets"
           :data-test-suffix "bundle-sets"
-          :value            {:how-shop :bundle-sets}
+          :value            {:how-shop "bundle-sets"}
           :target           {:event events/navigate-adventure-select-new-look
 
                              :args  {:album-keyword :bundle-sets}}}]
