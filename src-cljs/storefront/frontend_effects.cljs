@@ -124,7 +124,7 @@
 
         on-non-minimal-footer-page? (not (nav/show-minimal-footer? navigation-event))
 
-        is-adventure? (routes/sub-page? navigation-event [events/navigate-adventure])
+        is-adventure? (routes/sub-page? (get-in app-state keypaths/navigation-message) [events/navigate-adventure])
 
         seen-email-capture?      (email-capture-session app-state)
         seen-fayetteville-offer? (get-in app-state keypaths/dismissed-free-install)
