@@ -2,12 +2,14 @@
   (:require [cemerick.url :as url]
             [clojure.string :as string]
             [catalog.categories :as categories]
+            [rng :as rng]
             [storefront.accessors.nav :as nav]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.pixlee :as pixlee]
             [storefront.config :as config]
             [storefront.events :as events]
             [storefront.hooks.talkable :as talkable]
+            [storefront.hooks.stringer :as stringer]
             [storefront.keypaths :as keypaths]
             [adventure.keypaths :as adventure.keypaths]
             [storefront.routes :as routes]
@@ -282,6 +284,17 @@
 
 (defmethod transition-state events/control-create-order-from-shared-cart [_ event {:keys [selected-look-id]} app-state]
   (assoc-in app-state keypaths/selected-look-id selected-look-id))
+
+(defn random-number-generator [seed]
+  (rng/mulberry32 (hash seed)))
+
+(defmethod transition-state events/inserted-stringer
+  [_ event request app-state]
+  (cond-> app-state
+    (= "freeinstall" (get-in app-state keypaths/store-slug))
+    (assoc-in adventure.keypaths/adventure-random-sequence
+              (map #(Math/floor (* 100000 %))
+                   (take 30 (repeatedly (random-number-generator (stringer/browser-id))))))))
 
 (defmethod transition-state events/api-start
   [_ event request app-state]

@@ -1,6 +1,7 @@
 (ns adventure.keypaths)
 
 (def adventure [:adventure])
+(def adventure-random-sequence (conj adventure :random-sequence))
 (def adventure-home-video (conj adventure [:home-video]))
 (def adventure-choices (conj adventure :choices))
 (def adventure-choices-install-type (conj adventure-choices :install-type))
