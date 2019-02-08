@@ -69,9 +69,9 @@
 }
 
 .picker-enter.picker-enter-active {
-    transition: top 0.25s ease-out;
+    transition: top 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .picker-leave.picker-leave-active {
-    transition: top 0.25s ease-out;
+    transition: top 0.25s cubic-bezier(0.55, 0.085, 0.68, 0.53);
 }
