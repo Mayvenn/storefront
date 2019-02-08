@@ -148,9 +148,13 @@
       [:div
        [:div.flex.items-center.bold.bg-light-lavender
         {:style {:height "75px"}}]
-       [:div.bg-white.flex.flex-auto.justify-center.pt6
-        [:div.h3.bold.purple "Pick your stylist"]]
-       [:div (component/build stylist-cards-component card-data nil)]]])))
+       [:div.bg-white
+        [:div.flex.flex-auto.justify-center.pt6
+         [:div.h3.bold.purple "Pick your stylist"]]
+        [:div (component/build stylist-cards-component card-data nil)]
+        [:div.h6.dark-gray.mt3.pb4
+         [:div.col-7-on-tb-dt.col-9.mx-auto.mb1 "Not ready to pick a stylist? Let a Mayvenn expert find one for you after you buy hair."]
+         [:a.teal.medium (utils/route-to events/navigate-adventure-shop-hair) "Shop hair"]]]]])))
 
 (defn built-component
   [data opts]
