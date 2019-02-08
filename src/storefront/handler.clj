@@ -611,7 +611,7 @@
         (let [render-ctx           (auto-map storeback-config environment client-version)
               [nav-event nav-args] nav-message
               data                 (-> (:state request)
-                                       (assoc-in keypaths/store-slug config/install-subdomain)
+                                       (assoc-in keypaths/store-slug config/freeinstall-subdomain)
                                        (assoc-in keypaths/environment environment)
                                        (assoc-in keypaths/navigation-message nav-message))]
           ((server-render-pages nav-event generic-server-render) render-ctx data request nav-args))))))
@@ -684,8 +684,8 @@
   (fn [{:keys [subdomains nav-message uri] :as req}]
     (let [on-install-page?          (= uri "/install")
           on-root-path?             (= events/navigate-home (get nav-message 0))
-          on-freeinstall-subdomain? (= config/install-subdomain (last subdomains))
-          is-www-prefixed?          (= ["www" config/install-subdomain]
+          on-freeinstall-subdomain? (= config/freeinstall-subdomain (last subdomains))
+          is-www-prefixed?          (= ["www" config/freeinstall-subdomain]
                                        (map (comp string/lower-case str) subdomains))
           not-found                 #(-> views/not-found
                                          ->html-resp

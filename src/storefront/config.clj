@@ -4,7 +4,7 @@
 
 (def welcome-subdomain "welcome")
 
-(def install-subdomain "freeinstall")
+(def freeinstall-subdomain "freeinstall")
 
 (defn development? [environment]
   {:pre [(#{"development" "test" "acceptance" "production"} environment)]}

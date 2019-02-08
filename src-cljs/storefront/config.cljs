@@ -5,7 +5,7 @@
 
 (def welcome-subdomain "welcome")
 
-(def install-subdomain "freeinstall")
+(def freeinstall-subdomain "freeinstall")
 
 (def feature-block-look-ids
   ;;NOTE edit the clj config too!
