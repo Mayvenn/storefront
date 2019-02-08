@@ -61,6 +61,7 @@
    (ui/teal-button (merge {:style          {:width  "45px"
                                             :height "45px"}
                            :disabled?      (or
+                                            (empty? value)
                                             (nil? (:latitude selected-location))
                                             (nil? (:longitude selected-location)))
                            :disabled-class "bg-light-gray gray"
@@ -79,6 +80,10 @@
    (defmethod effects/perform-effects events/control-adventure-location-submit
      [_ event args _ app-state]
      (history/enqueue-navigate events/navigate-adventure-how-far)))
+
+(defmethod transitions/transition-state events/navigate-adventure-find-your-stylist
+  [_ event _ app-state]
+  (assoc-in app-state keypaths/adventure-stylist-match-address nil))
 
 (defmethod trackings/perform-track events/control-adventure-location-submit
   [_ event {:keys [current-step]} app-state]
