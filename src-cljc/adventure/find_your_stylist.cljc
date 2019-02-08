@@ -32,10 +32,10 @@
      :stylist-match-address (get-in data keypaths/adventure-stylist-match-address)
      :places-loaded?        (get-in data storefront.keypaths/loaded-places)
      :current-step          current-step
-     :header-data           {:progress  6
-                             :title     [:div.medium "Find Your Stylist"]
-                             :subtitle  (str "Step " current-step " of 3")
-                             :back-link events/navigate-adventure-match-stylist}
+     :header-data           {:progress                6
+                             :title                   [:div.medium "Find Your Stylist"]
+                             :subtitle                (str "Step " current-step " of 3")
+                             :back-navigation-message [events/navigate-adventure-match-stylist]}
      :selected-location     (get-in data keypaths/adventure-stylist-match-location)}))
 
 #?(:cljs

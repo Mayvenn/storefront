@@ -12,14 +12,14 @@
      :background-overrides {:class "bg-adventure-shop-hair"}
      :data-test            "adventure-match-with-stylist"
      :current-step         current-step
-     :header-data          {:progress  10
-                            :subtitle  (str "Welcome to Step " current-step )
-                            :back-link (if (= 2 current-step)
-                                         events/navigate-adventure-what-next
-                                         events/navigate-adventure-match-success)}
-     :button               {:text      "Next"
-                            :data-test "shop-hair-button"
-                            :target    events/navigate-adventure-how-shop-hair}}))
+     :header-data          {:progress                10
+                            :subtitle                (str "Welcome to Step " current-step )
+                            :back-navigation-message [(if (= 2 current-step)
+                                                        events/navigate-adventure-what-next
+                                                        events/navigate-adventure-match-success)]}
+     :button               {:text           "Next"
+                            :data-test      "shop-hair-button"
+                            :target-message [events/navigate-adventure-how-shop-hair]}}))
 
 (defn built-component
   [data opts]

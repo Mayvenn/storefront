@@ -22,17 +22,17 @@
      :prompt-image "//ucarecdn.com/a159aafc-b096-46b9-88ae-901e96699795/-/format/auto/bg.png"
      :data-test    "install-type"
      :current-step 1
-     :header-data  {:title     "The New You"
-                    :progress  3
-                    :back-link events/navigate-adventure-budget
-                    :subtitle  "Step 1 of 3"}
+     :header-data  {:title                   "The New You"
+                    :progress                3
+                    :back-navigation-message [events/navigate-adventure-budget]
+                    :subtitle                "Step 1 of 3"}
      :buttons      (map (fn [{:keys [option/slug] :as o}]
                           {:text             [:div.mynp6
                                               [:div (:adventure/name o)]
                                               [:div.light.h6 (get subtexts slug)]]
                            :data-test-suffix slug
                            :value            {:install-type slug}
-                           :target           events/navigate-adventure-what-next})
+                           :target-message   [events/navigate-adventure-what-next]})
                         family-facet-options)}))
 
 (defn built-component

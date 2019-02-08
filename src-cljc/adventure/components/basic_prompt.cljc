@@ -48,7 +48,7 @@
        [:div.mx1.flex.flex-auto.px5.mb7.pb8
         (button-component (merge {:data-test (:data-test button)
                                   :key       (:data-test button)}
-                                 (utils/route-to (:target button)))
+                                 (apply utils/route-to (:target-message button)))
                           (:text button))]]])))
 
 ;; Pages that use this component: Welcome/Home, find your stylist, shop-hair, match-stylist

@@ -10,19 +10,17 @@
   (into [{:text             "Show me looks for inspiration"
           :data-test-suffix "looks"
           :value            {:how-shop "looks"}
-          :target           {:event events/navigate-adventure-select-new-look
-                             :args  {:album-keyword :shop-by-look}}}
+          :target-message   [events/navigate-adventure-select-new-look
+                             {:album-keyword :shop-by-look}]}
          {:text             "Give me pre-made bundle sets"
           :data-test-suffix "bundle-sets"
           :value            {:how-shop "bundle-sets"}
-          :target           {:event events/navigate-adventure-select-new-look
-
-                             :args  {:album-keyword :bundle-sets}}}]
+          :target-message   [events/navigate-adventure-select-new-look
+                             {:album-keyword :bundle-sets}]}]
         (when shop-individual-buttons?
           [{:text             "Let me shop individual bundles"
             :data-test-suffix "individual-bundles"
-            :value            {:how-shop :individual-bundles}
-            :target           nil}])))
+            :value            {:how-shop :individual-bundles}}])))
 
 (defn ^:private query [data]
   (let [adventure-choices (get-in data adventure-keypaths/adventure-choices)
@@ -33,10 +31,10 @@
      :prompt-image "//ucarecdn.com/3d071ed0-5d9c-4819-b117-84eb4cfc6ed7/-/format/auto/bg.png"
      :data-test    "how-shop-hair-choice"
      :current-step current-step
-     :header-data  {:title     "The New You"
-                    :progress  progress
-                    :back-link events/navigate-adventure-shop-hair
-                    :subtitle  (str "Step " current-step " of 3")}
+     :header-data  {:title                   "The New You"
+                    :progress                progress
+                    :back-navigation-message [events/navigate-adventure-shop-hair]
+                    :subtitle                (str "Step " current-step " of 3")}
      :buttons      (randomizer/randomize-ordering
                     random-sequence
                     progress

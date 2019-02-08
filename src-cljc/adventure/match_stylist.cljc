@@ -9,13 +9,13 @@
    :background-overrides {:class "bg-adventure-match-stylist"}
    :data-test            "adventure-match-stylist"
    :current-step         2
-   :header-data          {:progress  5
-                          :subtitle  "Welcome to step 2"
-                          :back-link events/navigate-adventure-what-next}
-   :button               {:text      "Next"
-                          :value     nil
-                          :target    events/navigate-adventure-find-your-stylist
-                          :data-test "adventure-find-your-stylist"}})
+   :header-data          {:progress                5
+                          :subtitle                "Welcome to step 2"
+                          :back-navigation-message [events/navigate-adventure-what-next]}
+   :button               {:text           "Next"
+                          :value          nil
+                          :target-message [events/navigate-adventure-find-your-stylist]
+                          :data-test      "adventure-find-your-stylist"}})
 
 
 (defn built-component

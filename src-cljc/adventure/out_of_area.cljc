@@ -8,11 +8,11 @@
 (defn ^:private query
   [data]
   {:current-step 2
-   :header-data  {:title        "Your New Stylist"
-                  :header-attrs {:class "bg-light-lavender white"}
-                  :progress     8
-                  :back-link    events/navigate-adventure-how-far
-                  :subtitle     "Step 2 of 3"}})
+   :header-data  {:title                   "Your New Stylist"
+                  :header-attrs            {:class "bg-light-lavender white"}
+                  :progress                8
+                  :back-navigation-message [events/navigate-adventure-how-far]
+                  :subtitle                "Step 2 of 3"}})
 
 (defn ^:private component
   [{:keys [header-data]} _ _]

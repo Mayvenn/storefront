@@ -26,13 +26,13 @@
                            :clj nil)
      :data-test         "look-detail"
      :current-step      current-step
-     :header-data       {:title         "The New You"
-                         :height        "65px"
-                         :progress      13
-                         :shopping-bag? true
-                         :back-link     {:event events/navigate-adventure-select-new-look
-                                         :args  {:album-keyword album-keyword}}
-                         :subtitle      (str "Step " current-step " of 3")}
+     :header-data       {:title                   "The New You"
+                         :height                  "65px"
+                         :progress                13
+                         :shopping-bag?           true
+                         :back-navigation-message [events/navigate-adventure-select-new-look
+                                                   {:album-keyword album-keyword}]}
+     :subtitle          (str "Step " current-step " of 3")
      :copy              #?(:cljs (-> config/pixlee :copy album-keyword) :clj nil)
      :deals?            false
      :spinning?         false

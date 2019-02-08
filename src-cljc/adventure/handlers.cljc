@@ -22,11 +22,8 @@
 (defmethod effects/perform-effects events/control-adventure-choice
   [_ _ {:keys [choice]} _ app-state]
   #?(:cljs
-     (let [destination (:target choice)]
-       (if (map? destination)
-         (history/enqueue-navigate (:event destination)
-                                   (:args destination))
-         (history/enqueue-navigate destination nil))
+     (when-let [destination-message (:target-message choice)]
+       (apply history/enqueue-navigate destination-message)
        (let [cookie    (get-in app-state storefront.keypaths/cookie)
              adventure (get-in app-state keypaths/adventure)]
          (cookie/save-adventure cookie adventure)))))

@@ -26,10 +26,8 @@
              :height "6px"}}]])
 
 (defn component
-  [{:keys [header-attrs progress back-link title subtitle shopping-bag?]} _ _]
-  (let [back-navigation (if (map? back-link)
-                          [(:event back-link) (:args back-link)]
-                          [back-link])]
+  [{:keys [header-attrs progress back-navigation-message title subtitle shopping-bag?]} _ _]
+  (let [back-navigation back-link]
         (component/create
          [:div.absolute.top-0.left-0.right-0
           header-attrs

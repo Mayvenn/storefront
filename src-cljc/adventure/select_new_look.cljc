@@ -29,11 +29,11 @@
      :prompt-image      (:adventure/prompt-image album-copy)
      :data-test         "select-new-look-choice"
      :current-step      current-step
-     :header-data       {:title         "The New You"
-                         :progress      12
-                         :shopping-bag? true
-                         :back-link     events/navigate-adventure-how-shop-hair
-                         :subtitle      (str "Step " current-step  " of 3")}
+     :header-data       {:title                   "The New You"
+                         :progress                12
+                         :shopping-bag?           true
+                         :back-navigation-message [events/navigate-adventure-how-shop-hair]
+                         :subtitle                (str "Step " current-step  " of 3")}
      :copy              album-copy
      :deals?            false
      :spinning?         false
