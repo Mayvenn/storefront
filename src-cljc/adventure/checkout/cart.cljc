@@ -146,12 +146,15 @@
     [:div.h1.shout "free install"]
     [:div.h5.light "from a Mayvenn Stylist near you"]]])
 
-(def add-more-hair-button
-  (ui/teal-button
-   (utils/fake-href events/navigate-adventure-how-shop-hair)
-   "Add more hair"))
+(defn add-more-hair-button [how-shop-choice]
+  (let [starting-point-args (if (= how-shop-choice "looks")
+                              :shop-by-look
+                              :bundle-sets)]
+    (ui/teal-button
+     (utils/route-to events/navigate-adventure-select-new-look {:album-keyword starting-point-args})
+     "Add more hair")))
 
-(defn add-more-hair-banner [number-of-items-needed]
+(defn add-more-hair-banner [how-shop-choice number-of-items-needed]
   [:div.bg-too-light-teal.py4.px2.my2 {:data-test "adventure-add-more-hair-banner"}
    [:div.h5.medium.center.px2
     "Add " [:span.pyp1.px1.bold.white.bg-purple.center
@@ -159,7 +162,7 @@
     " more " (ui/pluralize number-of-items-needed "item")
     " to get a free install from a Mayvenn Certified Stylist"]
 
-   [:div.mt2 add-more-hair-button]])
+   [:div.mt2 (add-more-hair-button how-shop-choice)]])
 
 (defn full-component [{:keys [order
                               skus
@@ -178,12 +181,13 @@
                               freeinstall-line-item-data
                               freeinstall-just-added?
                               servicing-stylist
+                              how-shop-choice
                               cart-summary]} owner _]
   (component/create
    (let [{:keys [number-of-items-needed add-more-hair?]} freeinstall-line-item-data]
      [:div.container
       (if add-more-hair?
-        (add-more-hair-banner number-of-items-needed)
+        (add-more-hair-banner how-shop-choice number-of-items-needed)
         qualified-banner)
       [:div.p2
        [:div.clearfix.mxn3
@@ -264,6 +268,7 @@
                                       (experiments/browser-pay? data)
                                       (seq (get-in data keypaths/shipping-methods))
                                       (seq (get-in data keypaths/states)))
+     :how-shop-choice            (get-in data adventure.keypaths/adventure-choices-how-shop)
      :update-line-item-requests  (merge-with
                                   #(or %1 %2)
                                   (variants-requests data request-keys/add-to-bag (map :sku line-items))

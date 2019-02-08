@@ -4,6 +4,7 @@
 (def adventure-random-sequence (conj adventure :random-sequence))
 (def adventure-home-video (conj adventure [:home-video]))
 (def adventure-choices (conj adventure :choices))
+(def adventure-choices-how-shop (conj adventure-choices :how-shop))
 (def adventure-choices-install-type (conj adventure-choices :install-type))
 (def adventure-matched-stylists (conj adventure :matched-stylists))
 (def adventure-stylist-match-address (conj adventure :stylist-match-address))
