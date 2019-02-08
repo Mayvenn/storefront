@@ -545,7 +545,7 @@
       (assoc-in keypaths/completed-order order)
       (assoc-in adventure.keypaths/adventure-choices nil)
       (assoc-in keypaths/pending-talkable-order
-                (when-not (experiments/adventure? app-state)
+                (when-not (= "freeinstall" (get-in app-state keypaths/store-slug))
                   (talkable/completed-order order)))))
 
 (defmethod transition-state events/api-success-promotions [_ event {promotions :promotions} app-state]
