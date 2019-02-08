@@ -168,7 +168,7 @@
    [:div
     [:div.col-12.col-8-on-tb.col-6-on-dt.mx-auto.pb6.pt4
      [:div.center.clearfix.py3.h6.dark-gray
-      [:h2.mt4.black.relative.z2 "Dollar for Dollar, Mayvenn Wins"]
+      [:h2.mt4.black.relative.z2.mb2 "Dollar for Dollar, Mayvenn Wins"]
       [:div.flex.justify-center
        [:div
         [:div.h6.mx-auto
@@ -178,8 +178,8 @@
            {:style {:top "-40px" :left "-40px"}}
            (ui/ucare-img {:width "250"} "0db72798-6c51-48f2-8206-9fd6d91a3ada")]]
          [:div.relative.z2
-          [:div.img-logo.bg-no-repeat.bg-center.bg-contain.mb1.mx-auto
-           {:style {:width "140px" :height "48px"}}]
+          [:div.img-logo.bg-no-repeat.bg-center.bg-contain.mb2.mx-auto
+           {:style {:height "45px"}}]
           [:div.mb1 "3 bundles.............." [:span.medium "$189"]]
           [:div     "Install....................." [:span.medium "FREE"]]
           [:div.mt2.mx-auto.flex.items-center
@@ -207,7 +207,7 @@
           [:div.col-6.shout.line-height-1.left-align.pl4
            [:div "Install"]
            [:div "+ Hair"]]
-          [:div.col-6
+          [:div.col-6.mtp2
            [:div.h2.medium "$243"]]]]]]]
 
      (let [row (fn [text]
