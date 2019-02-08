@@ -42,8 +42,9 @@
      (history/enqueue-navigate navigation-event navigation-args))})
 
 (defn route-to-shop [navigation-event & [args]]
-  {:href (str (uri/map->URI {:host (str/replace-first js/location.host #"^[^\.]*\." "shop.")
-                             :path (routes/path-for navigation-event args)}))})
+  {:href
+   (str (uri/map->URI {:host (str/replace-first js/location.host #"^[^\.]*\." "shop.")
+                       :path (routes/path-for navigation-event args)}))})
 
 (defn route-back [{:keys [navigation-message]}]
   {:href (apply routes/path-for navigation-message)

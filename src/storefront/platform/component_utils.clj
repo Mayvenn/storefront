@@ -8,6 +8,9 @@
   ;; TODO(jeff): make it work on acceptance
   {:href (str "https://shop.mayvenn.com" (routes/path-for navigation-event args))})
 
+(defn route-back [{:keys [navigation-message]}]
+  {:href (apply routes/path-for navigation-message)})
+
 (defn noop-callback [e])
 
 (defn fake-href [event & [args]]
