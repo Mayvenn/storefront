@@ -58,16 +58,18 @@
            #?(:cljs
               {:on-submit (partial handle-on-change selected-location)
                :on-change (partial handle-on-change selected-location)}))]
-   (ui/teal-button (merge {:style          {:width  "45px"
-                                            :height "45px"}
-                           :disabled?      (or
-                                            (empty? value)
-                                            (nil? (:latitude selected-location))
-                                            (nil? (:longitude selected-location)))
-                           :disabled-class "bg-light-gray gray"
-                           :data-test      "stylist-match-address-submit"
-                           :class          "flex items-center justify-center medium not-rounded x-group-item"}
-                          (utils/fake-href events/control-adventure-location-submit {:current-step current-step})) "→")])
+   (let [disabled? (or (empty? value)
+                       (nil? (:latitude selected-location))
+                       (nil? (:longitude selected-location)))]
+     (ui/teal-button (merge {:style          {:width  "45px"
+                                              :height "45px"}
+                             :disabled?      disabled?
+                             :disabled-class "bg-light-gray gray"
+                             :data-test      "stylist-match-address-submit"
+                             :class          "flex items-center justify-center medium not-rounded x-group-item"}
+                            (utils/fake-href events/control-adventure-location-submit {:current-step current-step}))
+                     (ui/forward-arrow {:disabled? disabled?
+                                        :width     "14"})))])
 
 #?(:cljs
   (defmethod transitions/transition-state events/control-adventure-location-submit
