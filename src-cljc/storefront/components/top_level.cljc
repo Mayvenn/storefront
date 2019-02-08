@@ -50,7 +50,6 @@
             [checkout.processing :as checkout-processing]
             [voucher.redeem :as voucher-redeem]
             [voucher.redeemed :as voucher-redeemed]
-            [install.home :as install.home]
             [mayvenn-made.home :as mayvenn-made.home]
             [storefront.accessors.experiments :as experiments]
             [storefront.components.content :as content]
