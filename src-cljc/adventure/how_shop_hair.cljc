@@ -3,19 +3,8 @@
             [storefront.component :as component]
             [adventure.keypaths :as adventure-keypaths]
             [adventure.components.multi-prompt :as multi-prompt]
+            [adventure.utils.randomizer :as randomizer]
             [storefront.accessors.experiments :as experiments]))
-
-(defn ^:private permutations [s]
-  (lazy-seq
-   (if (seq (rest s))
-     (apply concat (for [x s]
-                     (map #(cons x %) (permutations (remove #{x} s)))))
-     [s])))
-
-(defn ^:private randomize-buttons [progress random-sequence buttons]
-  (let [perms   (permutations buttons)
-        mod-val (nth random-sequence (dec progress))]
-    (nth perms (mod mod-val (count perms)))))
 
 (defn enriched-buttons [shop-individual-buttons?]
   (into [{:text             "Show me looks for inspiration"
@@ -47,9 +36,9 @@
                     :progress  progress
                     :back-link events/navigate-adventure-shop-hair
                     :subtitle  (str "Step " current-step " of 3")}
-     :buttons      (randomize-buttons
-                    progress
+     :buttons      (randomizer/randomize-ordering
                     random-sequence
+                    progress
                     (enriched-buttons (experiments/adventure-shop-individual-bundles? data)))}))
 
 (defn built-component
