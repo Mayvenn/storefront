@@ -47,4 +47,4 @@
      :add-more-hair?         (< 0 number-of-items-needed)
      :thumbnail-image-fn     (fn [height-width-int]
                                (ui/ucare-img {:width height-width-int}
-                                             "688ebf23-5e54-45ef-a8bb-7d7480317022"))}))
+                                             "f6e246a6-c07a-44ae-81e9-af8167403352"))}))

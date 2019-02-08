@@ -140,7 +140,7 @@
             :padding-top         "43px"
             :background-size     "cover"
             :background-position "center"
-            :background-image    "url('//ucarecdn.com/588d726c-1a23-43bf-b3fb-88c93dc8d2b2/-/format/auto/-/quality/normal/aladdinMatchingCelebratoryOverlayImagePurpleR203Lm3x.png')"}}
+            :background-image    "url('//ucarecdn.com/97d80a16-1f48-467a-b8e2-fb16b532b75e/-/format/auto/-/quality/normal/aladdinMatchingCelebratoryOverlayImagePurpleR203Lm3x.png')"}}
    [:div.col.col-12.center.white
     [:div.h5.light "This order qualifies for a"]
     [:div.h1.shout "free install"]
