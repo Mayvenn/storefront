@@ -44,9 +44,9 @@
 
 (defmethod effects/perform-effects events/navigate-adventure
   [_ event args app-state-before app-state]
-  (when (and (not= events/navigate-adventure-home event)
-             (empty? (get-in app-state keypaths/adventure-choices)))
-    #?(:cljs
+  #?(:cljs
+     (when (and (not= events/navigate-adventure-home event)
+                (empty? (get-in app-state keypaths/adventure-choices)))
        (history/enqueue-navigate events/navigate-adventure-home nil))))
 
 (def ^:private slug->video
