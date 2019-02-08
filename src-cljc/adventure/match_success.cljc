@@ -9,11 +9,9 @@
             #?(:cljs [storefront.history :as history])))
 
 (defn ^:private query [data]
-  (let [stylist-id (get-in data keypaths/adventure-selected-stylist-id)
-        stylist    (->> (get-in data keypaths/adventure-matched-stylists)
-                        (filter #(= stylist-id (:stylist-id %)))
-                        first)]
-    {:prompt               (str "Congrats on matching with " (-> stylist :address :firstname) "!")
+  (let [stylist-id        (get-in data keypaths/adventure-selected-stylist-id)
+        servicing-stylist (get-in data keypaths/adventure-servicing-stylist)]
+    {:prompt               (str "Congrats on matching with " (-> servicing-stylist :address :firstname) "!")
      :mini-prompt          "We'll connect you with your stylist shortly. But first, pick out your hair!"
      :show-logo?           false
      :background-overrides {:style
@@ -34,8 +32,10 @@
   (component/build basic-prompt/component (query data) opts))
 
 (defmethod transitions/transition-state events/api-success-assign-servicing-stylist
-  [_ _ {:keys [order]} app-state]
-  (assoc-in app-state storefront-keypaths/order order))
+  [_ _ {:keys [order servicing-stylist]} app-state]
+  (-> app-state
+      (assoc-in storefront-keypaths/order order)
+      (assoc-in adventure.keypaths/adventure-servicing-stylist servicing-stylist)))
 
 (defmethod effects/perform-effects events/api-success-assign-servicing-stylist [_ _ _ _ app-state]
   #?(:cljs

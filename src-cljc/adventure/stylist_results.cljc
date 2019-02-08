@@ -52,8 +52,8 @@
            salon
            stylist-id]
     :as   stylist}]
-  (let [{:keys [firstname lastname]}         address
-        {:keys [city state name]} salon]
+  (let [{:keys [firstname lastname]} address
+        {:keys [city state name]}    salon]
     [:div.bg-white.p2.pb2.h6.my2.col-12.col-8-on-tb-dt {:key stylist-id}
      [:div.flex
       [:div.mr2.mt1 (ui/circle-picture {:width "104px"} (:resizable-url portrait))]
@@ -92,8 +92,9 @@
                        {})]
      (ui/teal-button
       (merge {:data-test "select-stylist"}
-             (utils/fake-href events/control-adventure-select-stylist {:stylist-id stylist-id
-                                                                       :card-index current-stylist-index}))
+             (utils/fake-href events/control-adventure-select-stylist {:stylist-id        stylist-id
+                                                                       :servicing-stylist stylist
+                                                                       :card-index        current-stylist-index}))
       [:div.flex.items-center.justify-center.inherit-color
        "Select"])
      (when gallery-open?
@@ -185,7 +186,7 @@
          (messages/handle-message events/adventure-stylist-search-results-displayed)))))
 
 (defmethod effects/perform-effects events/control-adventure-select-stylist
-  [_ _ {:keys [stylist-id card-index]} _ app-state]
+  [_ _ {:keys [stylist-id card-index servicing-stylist]} _ app-state]
   #?(:cljs
      (let [servicing-stylist-id stylist-id
            store-stylist-id     (get-in app-state storefront-keypaths/store-stylist-id)]
@@ -193,7 +194,8 @@
                                      store-stylist-id
                                      (fn [order]
                                        (messages/handle-message events/api-success-assign-servicing-stylist
-                                                                {:order order})
+                                                                {:order             order
+                                                                 :servicing-stylist servicing-stylist})
                                        (stringer/track-event "stylist_selected"
                                                              {:stylist_id   servicing-stylist-id
                                                               :card_index   card-index
