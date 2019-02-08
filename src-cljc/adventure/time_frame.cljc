@@ -18,15 +18,15 @@
    :buttons      [{:text             "In the next 30 days"
                    :data-test-suffix "in-the-next-30-days"
                    :value            {:time-frame "in-the-next-30-days"}
-                   :target           [events/navigate-adventure-budget]}
+                   :target-message   [events/navigate-adventure-budget]}
                   {:text             "In 2 to 3 months"
                    :data-test-suffix "in-2-to-3-months"
                    :value            {:time-frame "in-2-to-3-months"}
-                   :target           [events/navigate-adventure-budget]}
+                   :target-message   [events/navigate-adventure-budget]}
                   {:text             "Sometime this year"
                    :data-test-suffix "sometime-this-year"
                    :value            {:time-frame "sometime-this-year"}
-                   :target           [events/navigate-adventure-budget]}]})
+                   :target-message   [events/navigate-adventure-budget]}]})
 
 (defn built-component
   [data opts]
