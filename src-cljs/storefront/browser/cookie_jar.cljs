@@ -150,6 +150,9 @@
 (defn get-dismissed-free-install [cookie]
   (.get cookie "dismissed-free-install"))
 
+(defn get-stringer-distinct-id [cookie]
+  (.get cookie "stringer.distinct_id"))
+
 (defn save-pending-promo-code [cookie promo-code]
   (save-cookie pending-promo cookie {:pending-promo-code promo-code}))
 

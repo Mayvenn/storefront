@@ -9,7 +9,6 @@
             [storefront.config :as config]
             [storefront.events :as events]
             [storefront.hooks.talkable :as talkable]
-            [storefront.hooks.stringer :as stringer]
             [storefront.keypaths :as keypaths]
             [adventure.keypaths :as adventure.keypaths]
             [storefront.routes :as routes]
@@ -19,7 +18,8 @@
                                             clear-fields]]
             [spice.maps :as maps]
             [storefront.accessors.experiments :as experiments]
-            [storefront.transitions :as transitions]))
+            [storefront.transitions :as transitions]
+            [storefront.browser.cookie-jar :as cookie-jar]))
 
 (defn clear-nav-traversal
   [app-state]
@@ -288,13 +288,14 @@
 (defn random-number-generator [seed]
   (rng/mulberry32 (hash seed)))
 
-(defmethod transition-state events/inserted-stringer
-  [_ event request app-state]
-  (cond-> app-state
-    (= "freeinstall" (get-in app-state keypaths/store-slug))
-    (assoc-in adventure.keypaths/adventure-random-sequence
+(defmethod transition-state events/stringer-distinct-id-available
+  [_ event {:keys [stringer-distinct-id]} app-state]
+  (if (and (= "freeinstall" (get-in app-state keypaths/store-slug))
+           (nil? (get-in app-state adventure.keypaths/adventure-random-sequence)))
+    (assoc-in app-state adventure.keypaths/adventure-random-sequence
               (map #(Math/floor (* 100000 %))
-                   (take 30 (repeatedly (random-number-generator (stringer/browser-id))))))))
+                   (take 30 (repeatedly (random-number-generator stringer-distinct-id)))))
+    app-state))
 
 (defmethod transition-state events/api-start
   [_ event request app-state]

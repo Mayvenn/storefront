@@ -42,7 +42,8 @@
             [storefront.platform.messages :as messages :refer [handle-later handle-message]]
             [storefront.routes :as routes]
             [storefront.accessors.nav :as nav]
-            [storefront.components.share-links :as share-links]))
+            [storefront.components.share-links :as share-links]
+            [storefront.browser.cookie-jar :as cookie]))
 
 (defn- email-capture-session [app-state]
   (cookie-jar/retrieve-email-capture-session (get-in app-state keypaths/cookie)))
@@ -101,6 +102,8 @@
   (refresh-account app-state)
   (browser-events/attach-global-listeners)
   (lucky-orange/track-store-experience (get-in app-state keypaths/store-experience))
+  (when-let [stringer-distinct-id (cookie/get-stringer-distinct-id (get-in app-state keypaths/cookie))]
+    (handle-message events/stringer-distinct-id-available {:stringer-distinct-id stringer-distinct-id}))
   (doseq [feature (get-in app-state keypaths/features)]
     ;; trigger GA analytics, even though feature is already enabled
     (handle-message events/enable-feature {:feature feature})))
@@ -1046,3 +1049,6 @@
                                    :user-token (get-in app-state keypaths/user-token)
                                    :stylist-id (get-in app-state keypaths/store-stylist-id)}))
 
+(defmethod perform-effects events/inserted-stringer
+  [_ event args app-state-before app-state]
+  (handle-message events/stringer-distinct-id-available {:stringer-distinct-id (stringer/browser-id)}))

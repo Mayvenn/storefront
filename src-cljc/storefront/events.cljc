@@ -370,6 +370,8 @@
 (defpath inserted-talkable)
 (defpath inserted-uploadcare)
 
+(defpath stringer-distinct-id-available)
+
 (defpath autocomplete-update-address)
 
 (defpath checkout-address)
