@@ -40,7 +40,8 @@
              [:a.block.p3.inherit-color
               (merge {:data-test "adventure-back"}
                      (utils/route-back {:navigation-message back-navigation}))
-              (ui/back-arrow {:width "14"})]
+              [:div.flex.items-center.justify-center {:style {:height "24px" :width "20px"}}
+               (ui/back-arrow {:width "14"})]]
               (if shopping-bag?
                 [:a.block.p3 (merge {:data-test "adventure-cart"}
                                     (utils/route-to events/navigate-cart))
