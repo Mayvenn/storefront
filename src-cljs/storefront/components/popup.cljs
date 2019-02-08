@@ -2,7 +2,6 @@
   (:require [storefront.component :as component]
             [storefront.components.email-capture :as email-capture]
             [storefront.components.free-install :as free-install]
-            [storefront.components.install-phone-capture :as install-phone-capture]
             [storefront.components.share-your-cart :as share-your-cart]
             [storefront.components.v2-homepage-popup :as v2-homepage-popup]
             [adventure.components.program-details-popup :as adventure-program-details]
@@ -20,9 +19,7 @@
    :email-capture          {:query     email-capture/query
                             :component email-capture/component}
    :share-cart             {:query     share-your-cart/query
-                            :component share-your-cart/component}
-   :install-phone-capture  {:query     install-phone-capture/query
-                            :component install-phone-capture/component}})
+                            :component share-your-cart/component}})
 
 (defn query [data]
   (let [popup-type (get-in data keypaths/popup)

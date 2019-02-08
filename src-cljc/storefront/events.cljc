@@ -139,9 +139,6 @@
 (defpath control-email-captured-dismiss)
 (defpath control-email-captured-submit)
 
-(defpath control-install-phone-captured-submit)
-(defpath phone-capture-tracked)
-
 (defpath control-free-install)
 (defpath control-free-install-shop-looks)
 (defpath control-free-install-dismiss)
@@ -398,7 +395,6 @@
 
 (defpath popup-show-email-capture)
 (defpath popup-show-free-install)
-(defpath popup-show-install-phone-capture)
 
 (defpath image-picker-component-mounted)
 (defpath image-picker-component-will-unmount)

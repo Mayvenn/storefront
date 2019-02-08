@@ -123,7 +123,6 @@
 (def product-details-url-sku-code (conj product-details :url-sku-code))
 
 (def captured-email (conj ui :captured-email))
-(def captured-install-phone (conj ui :captured-install-phone))
 (def phone-capture-session (conj ui :phone-capture-session))
 
 (def account (conj ui :account))
