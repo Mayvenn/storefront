@@ -701,20 +701,17 @@
              (not on-freeinstall-subdomain?)) (not-found)
         (not on-freeinstall-subdomain?)       nil ;; defer handling elsewhere for non-freeinstall domains
         is-www-prefixed?                      (util.response/redirect (store-url "freeinstall" environment req))
-        (or on-install-page?
-            is-adventure?
-            in-checkout-flow?)                ((-> h
+        on-install-page?                      (util.response/redirect (store-homepage "freeinstall" environment req))
+        on-root-path?                         (util.response/redirect
+                                               (routes/path-for events/navigate-adventure-home))
+        (or is-adventure? in-checkout-flow?)  ((-> h
                                                    (wrap-fetch-store (:storeback-config ctx))
                                                    (wrap-fetch-servicing-stylist-for-order (:storeback-config ctx))
                                                    (wrap-fetch-order (:storeback-config ctx))
                                                    (wrap-adventure-route-params)
                                                    (wrap-cookies (storefront-site-defaults (:environment ctx))))
                                                req)
-
-        on-root-path? (util.response/redirect (routes/path-for events/navigate-install-home
-                                                               {:query-params query-params})
-                                              :moved-permanently)
-        :else         (not-found)))))
+        :else                                 (not-found)))))
 
 (defn create-handler
   ([] (create-handler {}))

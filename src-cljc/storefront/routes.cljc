@@ -38,8 +38,7 @@
    "/_style/carousel"        (edn->bidi events/navigate-style-guide-carousel)})
 
 (def install-routes
-  {"/install"                                 (edn->bidi events/navigate-install-home)
-   "/adv/home"                                (edn->bidi events/navigate-adventure-home)
+  {"/adv/home"                                (edn->bidi events/navigate-adventure-home)
    "/adv/time-frame"                          (edn->bidi events/navigate-adventure-time-frame)
    "/adv/budget"                              (edn->bidi events/navigate-adventure-budget)
    "/adv/get-in-contact"                      (edn->bidi events/navigate-adventure-get-in-contact)
