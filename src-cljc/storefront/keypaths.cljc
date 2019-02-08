@@ -321,9 +321,6 @@
 (def v2-dashboard-balance-transfers-voucher-popup-visible? (conj v2-dashboard-balance-transfers :voucher-popup-visible?))
 
 (def accordion (conj ui :accordion))
-(def accordion-freeinstall-home (conj accordion :freeinstall))
-(def accordion-freeinstall-home-expanded-indices
-  (conj accordion-freeinstall-home :expanded-indices))
 
 (def faq (conj ui :faq))
 (def faq-expanded-section (conj faq :expanded-section))
