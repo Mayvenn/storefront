@@ -368,6 +368,7 @@
 (defpath talkable-offer-shown)
 
 (defpath inserted)
+(defpath inserted-stringer)
 (defpath inserted-convert)
 (defpath inserted-facebook)
 (defpath inserted-pixlee)
