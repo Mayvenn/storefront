@@ -20,9 +20,9 @@
                                 :value            {:how-far (str % "mi")}
                                 :target           events/navigate-adventure-matching-stylist-wait})
                        [10 25 50 100])
-   :footer       [:div.h6.black.mt3
-                  [:div "Not ready to find a stylist?"]
-                  [:a.teal (utils/route-to events/navigate-adventure-shop-hair) "Shop hair"]]})
+   :footer       [:div.h6.dark-gray.mt3
+                  [:div.col-7-on-tb-dt.col-9.mx-auto.mb1 "Not ready to pick a stylist? Let a Mayvenn expert find one  for you after you buy hair."]
+                  [:a.teal.medium (utils/route-to events/navigate-adventure-shop-hair) "Shop hair"]]})
 
 (defn built-component
   [data opts]
