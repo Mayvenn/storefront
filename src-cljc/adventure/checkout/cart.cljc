@@ -280,12 +280,8 @@
      :stylist-service-menu       (get-in data keypaths/stylist-service-menu)
      :freeinstall-line-item-data (adventure-cart-items/freeinstall-line-item-query data)}))
 
-(defn empty-cart-query [data]
-  {:promotions          (get-in data keypaths/promotions)
-   :aladdin-or-phoenix? (experiments/v2-experience? data)})
-
 (defn component
-  [{:keys [fetching-order? empty-cart full-cart]} owner opts]
+  [{:keys [fetching-order? full-cart]} owner opts]
   (component/create
    (if fetching-order?
      [:div.py3.h2 ui/spinner]
@@ -293,7 +289,6 @@
 
 (defn query [data]
   {:fetching-order? (utils/requesting? data request-keys/get-order)
-   :empty-cart      (empty-cart-query data)
    :full-cart       (full-cart-query data)})
 
 (defn built-component [data opts]
