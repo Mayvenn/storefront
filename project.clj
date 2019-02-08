@@ -69,7 +69,8 @@
                 :libs ["src-cljs/libphone/phonenumberutil.js"
                        "src-cljs/libphone/metadata.js"
                        "src-cljs/libphone/phonemetadata.pb.js"
-                       "src-cljs/libphone/phonenumber.pb.js"]
+                       "src-cljs/libphone/phonenumber.pb.js"
+                       "src-cljs/rng/rng.js"]
                 :foreign-libs [{:file "src-cljs/storefront/react-slick.js"
                                 :provides ["react-slick"]}
                                {:file "src-cljs/storefront/bugsnag-2.5.0.js"
@@ -112,7 +113,8 @@
                 :libs ["src-cljs/libphone/phonenumberutil.js"
                        "src-cljs/libphone/metadata.js"
                        "src-cljs/libphone/phonemetadata.pb.js"
-                       "src-cljs/libphone/phonenumber.pb.js"]
+                       "src-cljs/libphone/phonenumber.pb.js"
+                       "src-cljs/rng/rng.js"]
                 :foreign-libs [{:file "src-cljs/storefront/react-slick.js"
                                 :file-min "target/min-js/react-slick.js" ;; created by gulp
                                 :provides ["react-slick"]}
