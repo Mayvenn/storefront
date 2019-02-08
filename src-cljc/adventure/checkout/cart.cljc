@@ -207,8 +207,7 @@
          (component/build adventure-cart-summary/component cart-summary nil)
 
          (if add-more-hair?
-           [:div
-            add-more-hair-button]
+           (add-more-hair-button how-shop-choice)
            [:div.bg-too-light-teal.py4.px2
             [:div.h5.medium.center
              (if-let [servicing-stylist-firstname (-> servicing-stylist :address :firstname)]
