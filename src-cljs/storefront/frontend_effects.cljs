@@ -124,18 +124,12 @@
 
         on-non-minimal-footer-page? (not (nav/show-minimal-footer? navigation-event))
 
-        is-on-homepage? (= navigation-event events/navigate-home)
-
-        is-on-free-install-landing-page? (= navigation-event events/navigate-install-home)
+        is-adventure? (routes/sub-page? navigation-event [events/navigate-adventure])
 
         seen-email-capture?      (email-capture-session app-state)
         seen-fayetteville-offer? (get-in app-state keypaths/dismissed-free-install)
 
         signed-in? (get-in app-state keypaths/user-id)
-
-        show-free-install-modal? (and the-ville-variation?
-                                      (not seen-fayetteville-offer?)
-                                      (not v2-experience?))
 
         classic-experience? (and (not v2-experience?)
                                  (not the-ville-variation?))
@@ -147,10 +141,7 @@
                                      classic-experience?
                                      v2-experience?))]
     (cond
-      is-on-free-install-landing-page? nil
-
-      show-free-install-modal?
-      (handle-message events/popup-show-free-install)
+      is-adventure? nil
 
       signed-in?
       (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) "signed-in")
@@ -160,15 +151,8 @@
 
 (defmethod perform-effects events/enable-feature [_ event {:keys [feature]} _ app-state]
   (handle-message events/determine-and-show-popup)
-  (let [nav-event (get-in app-state keypaths/navigation-event)]
-    (when (and (routes/sub-page? [nav-event] [events/navigate-adventure])
-               (= "adventure-control" feature))
-      (page-not-found))
-    (when (and (routes/sub-page? [nav-event] [events/navigate-install-home])
-               (= "adventure" feature))
-      (history/enqueue-redirect events/navigate-adventure-home))
-    (when (= "the-ville" feature)
-      (pixlee/fetch-album-by-keyword :free-install))))
+  (when (= "the-ville" feature)
+    (pixlee/fetch-album-by-keyword :free-install)))
 
 (defmethod perform-effects events/ensure-sku-ids
   [_ _ {:keys [sku-ids]} _ app-state]
@@ -294,7 +278,7 @@
   (when (experiments/v2-homepage? app-state)
     (handle-message events/v2-show-home))
   (when (= config/install-subdomain (get-in app-state keypaths/store-slug))
-    (redirect events/navigate-install-home)))
+    (redirect events/navigate-adventure-home)))
 
 (defmethod perform-effects events/navigate-content [_ [_ _ & static-content-id :as event] _ _ app-state]
   (when-not (= static-content-id
@@ -1053,8 +1037,8 @@
                 (get-in app-state-before keypaths/user-token)))
 
 (defmethod perform-effects events/browser-fullscreen-exit [_ event args app-state-before app-state]
-  (when (= events/navigate-install-home (get-in app-state keypaths/navigation-event))
-    (history/enqueue-navigate events/navigate-install-home {:query-params {:video "0"}})))
+  (when (= events/navigate-adventure-home (get-in app-state keypaths/navigation-event))
+    (history/enqueue-navigate events/navigate-adventure-home {:query-params {:video "0"}})))
 
 (defmethod perform-effects events/navigate-voucher [_ event args app-state-before app-state]
   (api/fetch-stylist-service-menu (get-in app-state keypaths/api-cache)

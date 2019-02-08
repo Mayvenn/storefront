@@ -526,7 +526,6 @@
    events/navigate-content-ugc-usage-terms       generic-server-render
    events/navigate-content-program-terms         generic-server-render
    events/navigate-gallery                       generic-server-render
-   events/navigate-install-home                  generic-server-render
    events/navigate-checkout-processing           generic-server-render
    events/navigate-mayvenn-made                  generic-server-render})
 
@@ -682,8 +681,8 @@
 
    Verify that the routed pages exist, and redirect root to a subpage."
   [h ctx environment]
-  (fn [{:keys [subdomains nav-message query-params] :as req}]
-    (let [on-install-page?          (routes/sub-page? nav-message [events/navigate-install])
+  (fn [{:keys [subdomains nav-message uri] :as req}]
+    (let [on-install-page?          (= uri "/install")
           on-root-path?             (= events/navigate-home (get nav-message 0))
           on-freeinstall-subdomain? (= config/install-subdomain (last subdomains))
           is-www-prefixed?          (= ["www" config/install-subdomain]
@@ -697,7 +696,7 @@
                                                    (first nav-message))
                                         (routes/sub-page? nav-message [events/navigate-checkout]))]
       (cond
-        (and on-install-page?
+        (and (or on-install-page? is-adventure?)
              (not on-freeinstall-subdomain?)) (not-found)
         (not on-freeinstall-subdomain?)       nil ;; defer handling elsewhere for non-freeinstall domains
         is-www-prefixed?                      (util.response/redirect (store-url "freeinstall" environment req))

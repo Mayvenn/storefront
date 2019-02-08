@@ -100,10 +100,6 @@
 (defpath navigate-checkout-confirmation)
 (defpath navigate-checkout-processing)
 
-(defpath navigate-install)
-(defpath navigate-install-home)
-(defpath navigate-install-home-video-modal-open)
-
 (defpath navigate-mayvenn-made)
 
 (defpath menu-traverse-root)

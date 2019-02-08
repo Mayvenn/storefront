@@ -126,14 +126,6 @@
 (defn phone-capture? [data]
   (display-feature? data "phone-capture"))
 
-(defn adventure?
-  [data]
-  (display-feature? data "adventure"))
-
-(defn adventure-control?
-  [data]
-  (display-feature? data "adventure-control"))
-
 (defn adventure-shop-individual-bundles?
   [data]
   (display-feature? data

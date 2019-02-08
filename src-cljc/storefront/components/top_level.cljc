@@ -198,7 +198,7 @@
      ((main-component nav-event) data nil)]]])
 
 (defn top-level-component [data owner opts]
-  (let [nav-event   (get-in data keypaths/navigation-event)
+  (let [nav-event    (get-in data keypaths/navigation-event)
         freeinstall? (= "freeinstall" (get-in data keypaths/store-slug))]
     (component/create
      (cond
@@ -212,10 +212,6 @@
 
        (get-in data keypaths/menu-expanded)
        (slideout-nav/built-component data nil)
-
-       (routes/sub-page? [nav-event] [events/navigate-install-home])
-       [:div {:data-test (keypaths/->component-str nav-event)}
-        (install.home/built-component data nil)]
 
        (routes/sub-page? [nav-event] [events/navigate-cart])
        (if freeinstall?

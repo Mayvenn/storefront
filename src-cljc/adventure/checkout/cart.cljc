@@ -312,8 +312,10 @@
      [:div.h6 (ui/pluralize-with-amount item-count "item")]]]))
 
 (defn header-query [data]
-  {:return-route (utils/route-back-or-to (first (get-in data keypaths/navigation-undo-stack)) events/navigate-home)
-   :item-count   (orders/product-quantity (get-in data keypaths/order))} )
+  {:return-route    (utils/route-back-or-to (first (get-in data keypaths/navigation-undo-stack)) events/navigate-adventure-home)
+   :fetching-order? (utils/requesting? data request-keys/get-order)
+   :order           (get-in data keypaths/order)
+   :item-count      (orders/product-quantity (get-in data keypaths/order))} )
 
 (defn layout [data nav-event]
   [:div.flex.flex-column.max-580.mx-auto
@@ -325,7 +327,10 @@
 
     [:main.bg-white.flex-auto
      {:data-test (keypaths/->component-str nav-event)}
-     (built-component data nil)]
+     (if (and (not (:fetching-order? data))
+              (:order data))
+       (built-component data nil)
+       [:h1.p3 "Whoa, it seems like you don't have anything in your cart yet!"])]
 
     [:footer
      (storefront.footer/built-component data nil)]]])
