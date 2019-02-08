@@ -41,7 +41,6 @@
   {"/adv/home"                                (edn->bidi events/navigate-adventure-home)
    "/adv/time-frame"                          (edn->bidi events/navigate-adventure-time-frame)
    "/adv/budget"                              (edn->bidi events/navigate-adventure-budget)
-   "/adv/get-in-contact"                      (edn->bidi events/navigate-adventure-get-in-contact)
    "/adv/what-next"                           (edn->bidi events/navigate-adventure-what-next)
    "/adv/match-stylist"                       (edn->bidi events/navigate-adventure-match-stylist)
    "/adv/find-your-stylist"                   (edn->bidi events/navigate-adventure-find-your-stylist)

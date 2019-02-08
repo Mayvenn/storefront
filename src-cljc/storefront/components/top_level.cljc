@@ -29,7 +29,6 @@
             [adventure.home :as adventure.home]
             [adventure.time-frame :as adventure.time-frame]
             [adventure.budget :as adventure.budget]
-            [adventure.get-in-contact :as adventure.get-in-contact]
             [adventure.what-next :as adventure.what-next]
             [adventure.match-stylist :as adventure.match-stylist]
             [adventure.find-your-stylist :as adventure.find-your-stylist]
@@ -125,7 +124,6 @@
     events/navigate-adventure-home                  adventure.home/built-component
     events/navigate-adventure-time-frame            adventure.time-frame/built-component
     events/navigate-adventure-budget                adventure.budget/built-component
-    events/navigate-adventure-get-in-contact        adventure.get-in-contact/built-component
     events/navigate-adventure-what-next             adventure.what-next/built-component
     events/navigate-adventure-match-stylist         adventure.match-stylist/built-component
     events/navigate-adventure-find-your-stylist     adventure.find-your-stylist/built-component
