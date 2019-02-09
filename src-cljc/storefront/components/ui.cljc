@@ -775,7 +775,7 @@
                            (<= remainder-rating 0.2)
                            nil
 
-                           (<= 0.3 remainder-rating 0.6)
+                           (< 0.2 remainder-rating 0.7)
                            (star :half "half")
 
                            (<= 0.7 remainder-rating)
