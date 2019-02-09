@@ -772,13 +772,13 @@
   (let [remainder-rating (mod rating 1)
         whole-stars      (map (partial star :whole) (range (int rating)))
         partial-star     (cond
-                           (== 0 remainder-rating)
+                           (<= remainder-rating 0.2)
                            nil
 
-                           (== 0.5 remainder-rating)
+                           (<= 0.3 remainder-rating 0.6)
                            (star :half "half")
 
-                           (> 0.5 remainder-rating)
+                           (<= 0.7 remainder-rating)
                            (star :three-quarter "three-quarter")
 
                            :else
