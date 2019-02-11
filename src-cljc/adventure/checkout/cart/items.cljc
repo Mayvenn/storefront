@@ -33,8 +33,9 @@
                                                      vouchers/campaign-configuration
                                                      (filter #(= (:service/type %) highest-value-service))
                                                      first)
-        service-price                           (some-> data
-                                                        (get-in keypaths/store-service-menu)
+        service-price                           (some-> (or (get-in data adv-keypaths/adventure-servicing-stylist)
+                                                            (get-in data keypaths/store))
+                                                        :service-menu
                                                         (get diva-advertised-type ))
         number-of-items-needed                  (- 3 (orders/product-quantity order))
         {:keys [address]}                       (get-in data adv-keypaths/adventure-servicing-stylist)]

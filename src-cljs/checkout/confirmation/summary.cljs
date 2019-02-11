@@ -1,5 +1,6 @@
 (ns checkout.confirmation.summary
   (:require [checkout.cart.items :as cart-items]
+            [adventure.checkout.cart.items :as adv-cart-items]
             [clojure.string :as string]
             [spice.core :as spice]
             [storefront.accessors.orders :as orders]
@@ -102,7 +103,10 @@
 (defn query [data]
   (let [order                      (get-in data keypaths/order)
         shipping-item              (orders/shipping-item order)
-        freeinstall-line-item-data (cart-items/freeinstall-line-item-query data)]
+        adventure?                 (= "freeinstall" (get-in data keypaths/store-slug))
+        freeinstall-line-item-data (if adventure?
+                                     (adv-cart-items/freeinstall-line-item-query data)
+                                     (cart-items/freeinstall-line-item-query data))]
     (when (and (experiments/aladdin-experience? data)
                (orders/freeinstall-applied? order))
       {:freeinstall-line-item-data freeinstall-line-item-data
