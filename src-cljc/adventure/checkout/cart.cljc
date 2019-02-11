@@ -326,10 +326,7 @@
 
     [:main.bg-white.flex-auto
      {:data-test (keypaths/->component-str nav-event)}
-     (if (and (not (:fetching-order? data))
-              (:order data))
-       (built-component data nil)
-       [:h1.p3 "Whoa, it seems like you don't have anything in your cart yet!"])]
+     (built-component data nil)]
 
     [:footer
      (storefront.footer/built-component data nil)]]])
