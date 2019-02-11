@@ -17,7 +17,7 @@
                  [hiccup "1.0.5"]
                  [cheshire "5.8.0"]
                  [cljsjs/google-maps "3.18-1"]
-                 [org.clojure/clojurescript "1.10.516"]
+                 [org.clojure/clojurescript "1.9.946"]
                  [cljsjs/react "15.6.1-2"]
                  [cljsjs/react-dom "15.6.1-2"]
                  [cljsjs/react-dom-server "15.6.1-2"]
