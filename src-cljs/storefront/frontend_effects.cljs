@@ -413,7 +413,7 @@
 
 (defmethod perform-effects events/navigate-cart [_ event args _ app-state]
   (when (and (= "freeinstall" (get-in app-state keypaths/store-slug))
-             (empty? (get-in app-state adv-keypaths/adventure-choices)))
+             (empty? (get-in app-state keypaths/order)))
     (history/enqueue-navigate events/navigate-adventure-home nil))
   (api/get-shipping-methods)
   (api/get-states (get-in app-state keypaths/api-cache))
