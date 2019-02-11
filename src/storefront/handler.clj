@@ -138,6 +138,33 @@
   (util.response/redirect (str "/products/" (:id-and-slug params) "?SKU=" (:sku params))
                           :moved-permanently))
 
+(defn wrap-no-cache [f]
+  (fn no-cache-handler [req]
+    (when-let [res (f req)]
+      (let [headers (:headers res)
+            cc      (get headers "cache-control")
+            pragma  (get headers "pragma")]
+        (if (or cc pragma)
+          res
+          ;; The proper way to force no-caching for all browsers
+          ;; https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control#Preventing_caching
+          ;;
+          ;; Cache-Control: (http/1.1)
+          ;;  - no-store: means the request & response shouldn't be saved in the cache
+          ;;  - no-cache: means the proxies/clients must make the request to the origin server
+          ;;  - must-revalidate: means proxies & clients must validate expiration time period
+          ;;
+          ;; Pragma: (http/1.0)
+          ;;  - no-cache: behaves like 'cache-control: no-cache'
+          ;;
+          ;; Expires:
+          ;;  - a date for when this response is considered stale, an invalid
+          ;;    date (like 0) indicates already expired.
+          (update res :headers merge
+                  {"cache-control" "no-store, must-revalidate"
+                   "pragma"        "no-cache"
+                   "expires"       "0"}))))))
+
 (defn wrap-add-domains [h]
   (fn [req]
     (h (merge req {:subdomains (parse-subdomains (:server-name req))}))))
@@ -747,6 +774,7 @@
        (wrap-logging logger)
        (wrap-filter-params)
        (wrap-params)
+       (wrap-no-cache)
        (#(if (#{"development" "test"} environment)
            (wrap-exceptions %)
            (wrap-internal-error %
