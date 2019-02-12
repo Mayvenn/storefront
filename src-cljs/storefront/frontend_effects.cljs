@@ -412,9 +412,10 @@
                                       "please continue with your order below.")})
 
 (defmethod perform-effects events/navigate-cart [_ event args _ app-state]
-  (when (and (= "freeinstall" (get-in app-state keypaths/store-slug))
-             (empty? (get-in app-state keypaths/order)))
-    (history/enqueue-navigate events/navigate-adventure-home nil))
+  (let [answered-basic-info?  (boolean (get-in app-state adv-keypaths/adventure-choices-how-shop))]
+    (when (and (= "freeinstall" (get-in app-state keypaths/store-slug))
+               (not answered-basic-info?))
+      (history/enqueue-navigate events/navigate-adventure-home nil)))
   (api/get-shipping-methods)
   (api/get-states (get-in app-state keypaths/api-cache))
   (stripe/insert)
