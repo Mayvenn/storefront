@@ -700,44 +700,10 @@
                           (shared-cart-routes ctx))
                   (wrap-state ctx)
                   (wrap-site-routes ctx)))
+      (wrap-fetch-servicing-stylist-for-order (:storeback-config ctx))
       (wrap-fetch-order (:storeback-config ctx))
+      (wrap-adventure-route-params)
       (wrap-cookies (storefront-site-defaults (:environment ctx)))))
-
-(defn wrap-freeinstall-is-for-install
-  "Handle only requests for freeinstall
-
-   Verify that the routed pages exist, and redirect root to a subpage."
-  [h ctx environment]
-  (fn [{:keys [subdomains nav-message uri] :as req}]
-    (let [on-install-page?          (= uri "/install")
-          on-root-path?             (= events/navigate-home (get nav-message 0))
-          on-freeinstall-subdomain? (= config/freeinstall-subdomain (last subdomains))
-          is-www-prefixed?          (= ["www" config/freeinstall-subdomain]
-                                       (map (comp string/lower-case str) subdomains))
-          not-found                 #(-> views/not-found
-                                         ->html-resp
-                                         (util.response/status 404))
-          is-adventure?             (routes/sub-page? nav-message [events/navigate-adventure])
-          in-checkout-flow?         (or (contains? #{events/navigate-cart
-                                                     events/navigate-order-complete}
-                                                   (first nav-message))
-                                        (routes/sub-page? nav-message [events/navigate-checkout]))]
-      (cond
-        (and (or on-install-page? is-adventure?)
-             (not on-freeinstall-subdomain?)) (not-found)
-        (not on-freeinstall-subdomain?)       nil ;; defer handling elsewhere for non-freeinstall domains
-        is-www-prefixed?                      (util.response/redirect (store-url "freeinstall" environment req))
-        on-install-page?                      (util.response/redirect (store-homepage "freeinstall" environment req))
-        on-root-path?                         (util.response/redirect
-                                               (routes/path-for events/navigate-adventure-home))
-        (or is-adventure? in-checkout-flow?)  ((-> h
-                                                   (wrap-fetch-store (:storeback-config ctx))
-                                                   (wrap-fetch-servicing-stylist-for-order (:storeback-config ctx))
-                                                   (wrap-fetch-order (:storeback-config ctx))
-                                                   (wrap-adventure-route-params)
-                                                   (wrap-cookies (storefront-site-defaults (:environment ctx))))
-                                               req)
-        :else                                 (not-found)))))
 
 (defn create-handler
   ([] (create-handler {}))
@@ -761,10 +727,6 @@
                (GET "/marketing-site" req
                  (contentful/marketing-site-redirect req))
                (-> (routes (static-routes ctx)
-                           (-> (install-routes ctx)
-                               (wrap-defaults (storefront-site-defaults environment))
-                               (wrap-state ctx)
-                               (wrap-freeinstall-is-for-install ctx environment))
                            (routes-with-orders ctx)
                            (route/not-found views/not-found))
                    (wrap-resource "public")
