@@ -65,9 +65,10 @@
 (def store-experience (conj store :experience))
 (def store-service-menu (conj store :service-menu))
 
-(def v2-products [:catalog :products])
-(def v2-skus [:catalog :skus])
-(def v2-facets [:catalog :facets])
+(def catalog [:catalog])
+(def v2-products (conj catalog :products))
+(def v2-skus (conj catalog :skus))
+(def v2-facets (conj catalog :facets))
 
 (def db [:db])
 (def db-images (conj db :images))

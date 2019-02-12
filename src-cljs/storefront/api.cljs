@@ -170,13 +170,13 @@
     :handler #(messages/handle-message events/api-success-promotions %)}))
 
 (defn criteria->query-params [criteria]
-  (->> criteria
-       (map (fn [[k v]]
-              [(if-let [ns (namespace k)]
-                 (str ns "/" (name k))
-                 (name k))
-               v]))
-       (into {})))
+  (into {}
+        (map (fn [[k v]]
+               [(if-let [ns (namespace k)]
+                  (str ns "/" (name k))
+                  (name k))
+                v]))
+        criteria))
 
 (defn search-v2-products [cache criteria-or-id handler]
   (cache-req

@@ -460,6 +460,7 @@
 (defpath navigate-adventure-find-your-stylist)
 (defpath navigate-adventure-shop-hair)
 (defpath navigate-adventure-how-shop-hair)
+(defpath navigate-adventure-hair-texture)
 (defpath navigate-adventure-install-type)
 (defpath navigate-adventure-how-far)
 (defpath navigate-adventure-select-new-look)
@@ -485,6 +486,8 @@
 
 (defpath api-success-fetch-matched-stylist)
 (defpath adventure-stylist-search-results-displayed)
+
+(defpath api-success-adventure-fetch-products)
 
 ;; Stripe Payment Button
 (defpath stripe-payment-request-button-inserted)

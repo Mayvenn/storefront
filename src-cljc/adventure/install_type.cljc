@@ -2,6 +2,7 @@
   (:require [storefront.events :as events]
             [storefront.component :as component]
             [storefront.keypaths :as keypaths]
+            [adventure.utils.facets :as facets]
             [adventure.components.multi-prompt :as multi-prompt]))
 
 (def subtexts
@@ -11,13 +12,7 @@
    "360-frontals" "Versatile, but highest maintenance & price"})
 
 (defn ^:private query [data]
-  (let [facets               (get-in data keypaths/v2-facets)
-        family-facet-options (->> facets
-                                  (filter (comp #{:hair/family} :facet/slug))
-                                  first
-                                  :facet/options
-                                  (filter :adventure/name)
-                                  (sort-by :filter/order))]
+  (let [family-facet-options (facets/adventure-facet-options (get-in data keypaths/v2-facets) :hair/family)]
     {:prompt       "Which type of install are you looking for?"
      :prompt-image "//ucarecdn.com/a159aafc-b096-46b9-88ae-901e96699795/-/format/auto/bg.png"
      :data-test    "install-type"

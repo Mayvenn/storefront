@@ -48,7 +48,7 @@
            "02f9e7fb-510f-458e-8be7-090399aad4de")]
          [:div])]
       [:div.center.mt1
-       [:div.h6.bold title]
+       [:div.h6.medium title]
        [:div.h8 subtitle]]]]]))
 
 (defn built-component

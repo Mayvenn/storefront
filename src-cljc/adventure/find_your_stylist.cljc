@@ -28,7 +28,7 @@
 
 (defn ^:private query [data]
   (let [current-step 2]
-    {:background-image      "https://ucarecdn.com/54f294be-7d57-49ba-87ce-c73394231f3c/aladdinMatchingOverlayImagePurpleGR203Lm3x.png"
+    {:background-image      "https://ucarecdn.com/54f294be-7d57-49ba-87ce-c73394231f3c/-/format/auto/aladdinMatchingOverlayImagePurpleGR203Lm3x.png"
      :stylist-match-address (get-in data keypaths/adventure-stylist-match-address)
      :places-loaded?        (get-in data storefront.keypaths/loaded-places)
      :current-step          current-step

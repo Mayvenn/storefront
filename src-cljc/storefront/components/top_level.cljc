@@ -36,6 +36,7 @@
             [adventure.matching-stylist-wait :as adventure.matching-stylist-wait]
             [adventure.shop-hair :as adventure.shop-hair]
             [adventure.how-shop-hair :as adventure.how-shop-hair]
+            [adventure.hair-texture :as adventure.hair-texture]
             [adventure.install-type :as adventure.install-type]
             [adventure.select-new-look :as adventure.select-new-look]
             [adventure.look-detail :as adventure.look-detail]
@@ -131,6 +132,7 @@
     events/navigate-adventure-matching-stylist-wait adventure.matching-stylist-wait/built-component
     events/navigate-adventure-shop-hair             adventure.shop-hair/built-component
     events/navigate-adventure-how-shop-hair         adventure.how-shop-hair/built-component
+    events/navigate-adventure-hair-texture          adventure.hair-texture/built-component
     events/navigate-adventure-install-type          adventure.install-type/built-component
     events/navigate-adventure-select-new-look       adventure.select-new-look/built-component
     events/navigate-adventure-look-detail           adventure.look-detail/built-component

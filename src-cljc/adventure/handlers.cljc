@@ -1,9 +1,11 @@
 (ns adventure.handlers
   (:require #?@(:cljs
                 [[storefront.hooks.pixlee :as pixlee.hook]
+                 [storefront.platform.messages :refer [handle-message]]
                  [storefront.history :as history]
                  [storefront.hooks.stringer :as stringer]
-                 [storefront.browser.cookie-jar :as cookie]])
+                 [storefront.browser.cookie-jar :as cookie]
+                 [storefront.api :as api]])
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.keypaths :as storefront.keypaths]
@@ -66,3 +68,16 @@
   #?(:cljs (do (pixlee.hook/fetch-album-by-keyword :sleek-and-straight)
                (pixlee.hook/fetch-album-by-keyword :waves-and-curly)
                (pixlee.hook/fetch-album-by-keyword :free-install-mayvenn))))
+
+(defn ^:private adventure-choices->criteria [choices]
+  {:hair/family (:install-type choices)})
+
+(defmethod effects/perform-effects events/navigate-adventure-hair-texture
+  [_ _ args _ app-state]
+  #?(:cljs (api/search-v2-products (get-in app-state storefront.keypaths/api-cache)
+                                   (adventure-choices->criteria (get-in app-state keypaths/adventure-choices))
+                                   #(handle-message events/api-success-adventure-fetch-products %))))
+
+(defmethod transitions/transition-state events/api-success-adventure-fetch-products
+  [_ event {:keys [products skus]} app-state]
+  (assoc-in app-state keypaths/adventure-matching-products products))
