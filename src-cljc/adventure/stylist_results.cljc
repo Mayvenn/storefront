@@ -189,9 +189,13 @@
   [_ _ {:keys [stylist-id card-index servicing-stylist]} _ app-state]
   #?(:cljs
      (let [servicing-stylist-id stylist-id
-           store-stylist-id     (get-in app-state storefront-keypaths/store-stylist-id)]
+           store-stylist-id     (get-in app-state storefront-keypaths/store-stylist-id)
+           number               (get-in app-state storefront-keypaths/order-number)
+           token                (get-in app-state storefront-keypaths/order-token)]
        (api/assign-servicing-stylist servicing-stylist-id
                                      store-stylist-id
+                                     number
+                                     token
                                      (fn [order]
                                        (messages/handle-message events/api-success-assign-servicing-stylist
                                                                 {:order             order
