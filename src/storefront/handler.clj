@@ -539,22 +539,22 @@
                                 "Disallow: /policy/tos"])
 
 (def server-render-pages
-  {events/navigate-home                          generic-server-render
-   events/navigate-category                      render-category
-   events/navigate-legacy-named-search           redirect-named-search
-   events/navigate-legacy-ugc-named-search       redirect-named-search
-   events/navigate-legacy-product-page           redirect-legacy-product-page
-   events/navigate-product-details               render-product-details
-   events/navigate-content-help                  generic-server-render
-   events/navigate-content-about-us              generic-server-render
-   events/navigate-content-privacy               generic-server-render
-   events/navigate-content-tos                   generic-server-render
-   events/navigate-content-guarantee             generic-server-render
-   events/navigate-content-ugc-usage-terms       generic-server-render
-   events/navigate-content-program-terms         generic-server-render
-   events/navigate-gallery                       generic-server-render
-   events/navigate-checkout-processing           generic-server-render
-   events/navigate-mayvenn-made                  generic-server-render})
+  {events/navigate-home                    generic-server-render
+   events/navigate-category                render-category
+   events/navigate-legacy-named-search     redirect-named-search
+   events/navigate-legacy-ugc-named-search redirect-named-search
+   events/navigate-legacy-product-page     redirect-legacy-product-page
+   events/navigate-product-details         render-product-details
+   events/navigate-content-help            generic-server-render
+   events/navigate-content-about-us        generic-server-render
+   events/navigate-content-privacy         generic-server-render
+   events/navigate-content-tos             generic-server-render
+   events/navigate-content-guarantee       generic-server-render
+   events/navigate-content-ugc-usage-terms generic-server-render
+   events/navigate-content-program-terms   generic-server-render
+   events/navigate-gallery                 generic-server-render
+   events/navigate-checkout-processing     generic-server-render
+   events/navigate-mayvenn-made            generic-server-render})
 
 (defn robots [{:keys [subdomains]}]
   (string/join "\n" (if (= "freeinstall" (last subdomains))
