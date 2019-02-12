@@ -27,7 +27,7 @@
                  [cljs-ajax "0.7.3" :exclusions [org.apache.httpcomponents/httpclient]]
                  [comb "0.1.1"]
                  [sablono "0.8.0"]
-                 [bidi "2.0.16"]
+                 [bidi "2.1.5"]
                  [lambdaisland/uri "1.1.0"]
                  [com.cemerick/url "0.1.1"]
                  [overtone/at-at "1.2.0"]
