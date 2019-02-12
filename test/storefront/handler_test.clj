@@ -70,6 +70,13 @@
                               (ring.util.codec/form-encode "acceptance+bob@mayvenn.com"))}
                     cookies)))))))
 
+(deftest install-path-redirects-to-freeinstall
+  (with-services
+    (with-handler handler
+      (let [resp     (handler (mock/request :get "https://bob.mayvenn.com/install"))]
+        (testing "It redirects to the freeinstall subdomain"
+          (is-redirected-to resp "freeinstall" "/"))))))
+
 (deftest renders-page-when-matches-stylist-subdomain-and-sets-the-preferred-subdomain
   (common/assert-request
    (mock/request :get "https://bob.mayvenn.com")
