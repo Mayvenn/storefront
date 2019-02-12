@@ -540,6 +540,7 @@
 
 (def server-render-pages
   {events/navigate-home                    generic-server-render
+   events/navigate-adventure-home          generic-server-render
    events/navigate-category                render-category
    events/navigate-legacy-named-search     redirect-named-search
    events/navigate-legacy-ugc-named-search redirect-named-search
