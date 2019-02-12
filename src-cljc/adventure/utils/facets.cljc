@@ -1,7 +1,7 @@
 (ns adventure.utils.facets
   (:require [clojure.set :as set]))
 
-(defn ^:private adventure-facet-options
+(defn adventure-facet-options
   "Return all facet options available for adventure for a specific facet in the natural facet option ordering."
   [facet-slug facets]
   (->> facets
