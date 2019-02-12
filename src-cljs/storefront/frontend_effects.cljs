@@ -279,9 +279,7 @@
 (defmethod perform-effects events/navigate-home [_ _ {:keys [query-params]} _ app-state]
   (api/fetch-cms-data)
   (when (experiments/v2-homepage? app-state)
-    (handle-message events/v2-show-home))
-  (when (= config/freeinstall-subdomain (get-in app-state keypaths/store-slug))
-    (redirect events/navigate-adventure-home)))
+    (handle-message events/v2-show-home)))
 
 (defmethod perform-effects events/navigate-content [_ [_ _ & static-content-id :as event] _ _ app-state]
   (when-not (= static-content-id
