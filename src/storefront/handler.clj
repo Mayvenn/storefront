@@ -652,10 +652,11 @@
     (h (update req :query-params dissoc ""))))
 
 (defn wrap-add-nav-message [h]
-  (fn [{:keys [server-name uri query-params query-string] :as req}]
-    (h (assoc req
-              :nav-uri (uri/map->URI {:host server-name :path uri :query query-string})
-              :nav-message (routes/navigation-message-for uri query-params)))))
+  (fn [{:keys [server-name subdomains uri query-params query-string] :as req}]
+    (let [nav-message (routes/navigation-message-for uri query-params (first subdomains))]
+      (h (assoc req
+                :nav-uri (uri/map->URI {:host server-name :path uri :query query-string})
+                :nav-message nav-message)))))
 
 (defn login-and-redirect [{:keys [environment storeback-config] :as ctx}
                           {:keys [subdomains query-params server-name store] :as req}]
