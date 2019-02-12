@@ -188,7 +188,7 @@
 
 (defn plain-text-field
   [label keypath value error? {:keys [wrapper-class wrapper-style id hint focused] :as input-attributes}]
-  (let [input-attributes (dissoc input-attributes :wrapper-class :hint :focused)
+  (let [input-attributes (dissoc input-attributes :wrapper-class :hint :focused :wrapper-style)
         hint?            (seq hint)
         focused?         (= focused keypath)
         status           {:error?   error?
