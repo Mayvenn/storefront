@@ -9,20 +9,25 @@
             [storefront.accessors.experiments :as experiments]))
 
 (def option-metadata
-  {"straight"   {:subtitle "For silky, sleek looks"}
-   "body-wave"  {:subtitle "Soft, bouncy S-wave"}
-   "loose-wave" {:subtitle "Big, glamorous waves"}
-   "deep-wave"  {:subtitle "C-shaped ringlet curls"}})
+  {"straight"   {:subtitle   "For silky, sleek looks"
+                 :album-slug :shop-by-look-straight}
+   "body-wave"  {:subtitle   "Soft, bouncy S-wave"
+                 :album-slug :shop-by-look-body-wave}
+   "loose-wave" {:subtitle   "Big, glamorous waves"
+                 :album-slug :shop-by-look-loose-wave}
+   "deep-wave"  {:subtitle   "C-shaped ringlet curls"
+                 :album-slug :shop-by-look-deep-wave}})
 
 (defn enriched-buttons [facet-options]
-  (for [option facet-options]
+  (for [option facet-options
+        :let [{:keys [subtitle album-slug]} (get option-metadata (:option/slug option))]]
     {:text             [:div.mynp6
                         [:div (:adventure/name option)]
-                        [:div.light.h6 (-> option-metadata (get (:option/slug option)) :subtitle)]]
+                        [:div.light.h6 subtitle]]
      :data-test-suffix (:option/slug option)
      :value            {:texture (:option/slug option)}
      :target-message   [events/navigate-adventure-select-new-look
-                        {:album-keyword :shop-by-look}]}))
+                        {:album-keyword album-slug}]}))
 
 (defn ^:private query [data]
   (let [texture-facet-options       (facets/available-adventure-facet-options :hair/texture

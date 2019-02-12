@@ -129,55 +129,64 @@
                   :copy                   pixlee-copy
                   :mayvenn-made-widget-id 1048394
 
-                  :albums {:sleek-and-straight   3892338
-                           :waves-and-curly      3892339
-                           :free-install-mayvenn 3896653
-                           :deals                2585224
-                           :email-deals          3130480
-                           :free-install         3082797
-                           :free-install-home    3093356
-                           :aladdin-free-install 3923024
-                           :install              3681927
-                           :look                 952508
-                           :straight             1104027
-                           :loose-wave           1104028
-                           :body-wave            1104029
-                           :deep-wave            1104030
-                           :curly                1104031
-                           :closures             1104032
-                           :frontals             1104033
-                           :kinky-straight       1700440
-                           :water-wave           1814288
-                           :yaki-straight        1814286
-                           :dyed                 2750237
-                           :wigs                 1880465
-                           :shop-by-look         4323429
-                           :bundle-sets          4331694}}
+                  :albums {:sleek-and-straight      3892338
+                           :waves-and-curly         3892339
+                           :free-install-mayvenn    3896653
+                           :deals                   2585224
+                           :email-deals             3130480
+                           :free-install            3082797
+                           :free-install-home       3093356
+                           :aladdin-free-install    3923024
+                           :install                 3681927
+                           :look                    952508
+                           :straight                1104027
+                           :loose-wave              1104028
+                           :body-wave               1104029
+                           :deep-wave               1104030
+                           :curly                   1104031
+                           :closures                1104032
+                           :frontals                1104033
+                           :kinky-straight          1700440
+                           :water-wave              1814288
+                           :yaki-straight           1814286
+                           :dyed                    2750237
+                           :wigs                    1880465
+                           :shop-by-look            4323429
+                           :bundle-sets             4331694
+                           :shop-by-look-straight   4374434
+                           :shop-by-look-loose-wave 4374435
+                           :shop-by-look-body-wave  4374437
+                           :shop-by-look-deep-wave  4374436}}
 
     {:api-key                "iiQ27jLOrmKgTfIcRIk"
      :copy                   pixlee-copy
      :mayvenn-made-widget-id 1057225
-     :albums                 {:sleek-and-straight   3892340
-                              :waves-and-curly      3892341
-                              :free-install-mayvenn 3896655
-                              :deals                3091419
-                              :email-deals          3130242
-                              :free-install         3082796
-                              :free-install-home    3751546
-                              :aladdin-free-install 3923023
-                              :install              3681928
-                              :look                 965034
-                              :straight             1327330
-                              :loose-wave           1327331
-                              :body-wave            1327332
-                              :deep-wave            1327333
-                              :curly                1331955
-                              :closures             1331956
-                              :frontals             1331957
-                              :kinky-straight       1801984
-                              :water-wave           1912641
-                              :yaki-straight        1912642
-                              :dyed                 2918644
-                              :wigs                 2918645
-                              :shop-by-look         4018488
-                              :bundle-sets          4336271}}))
+     :albums                 {:sleek-and-straight      3892340
+                              :waves-and-curly         3892341
+                              :free-install-mayvenn    3896655
+                              :deals                   3091419
+                              :email-deals             3130242
+                              :free-install            3082796
+                              :free-install-home       3751546
+                              :aladdin-free-install    3923023
+                              :install                 3681928
+                              :look                    965034
+                              :straight                1327330
+                              :loose-wave              1327331
+                              :body-wave               1327332
+                              :deep-wave               1327333
+                              :curly                   1331955
+                              :closures                1331956
+                              :frontals                1331957
+                              :kinky-straight          1801984
+                              :water-wave              1912641
+                              :yaki-straight           1912642
+                              :dyed                    2918644
+                              :wigs                    2918645
+                              :shop-by-look            4018488
+                              :bundle-sets             4336271
+                              :shop-by-look-straight   4374415
+                              :shop-by-look-loose-wave 4374417
+                              :shop-by-look-body-wave  4374418
+                              :shop-by-look-deep-wave  4374422}}))
+
