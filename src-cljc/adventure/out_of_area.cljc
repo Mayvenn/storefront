@@ -36,7 +36,8 @@
       [:div.py2
        "Let's pick out your Mayvenn hair."]
       (ui/teal-button
-       (utils/route-to events/navigate-adventure-shop-hair)
+       (merge {:data-test "out-of-area-select-hair"}
+              (utils/route-to events/navigate-adventure-shop-hair))
        "Select hair")]]]))
 
 (defn built-component
