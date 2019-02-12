@@ -59,6 +59,7 @@
 (def fetch-shared-cart [:fetch-shared-cart])
 (def create-order-from-shared-cart [:create-order-from-shared-cart])
 (def assign-servicing-stylist [:assign-servicing-stylist])
+(def remove-servicing-stylist [:remove-servicing-stylist])
 
 (def stripe-create-token [:stripe-create-token])
 

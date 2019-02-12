@@ -4,7 +4,8 @@
                        [storefront.components.ugc :as ugc]
                        [storefront.hooks.pixlee :as pixlee-hook]
                        [storefront.history :as history]
-                       [storefront.config :as config]])
+                       [storefront.config :as config]
+                       [storefront.platform.messages :refer [handle-message]]])
             [storefront.transitions :as transitions]
             [storefront.events :as events]
             [storefront.effects :as effects]
@@ -14,12 +15,21 @@
             [spice.date :as date]))
 
 (defmethod transitions/transition-state events/navigate-adventure-matching-stylist-wait [_ _ _ app-state]
-  (assoc-in app-state adventure-keypaths/adventure-matching-stylists-timer (date/add-delta (date/now) {:seconds 3})))
+  (-> app-state
+      (assoc-in adventure-keypaths/adventure-matching-stylists-timer (date/add-delta (date/now) {:seconds 3}))
+      (assoc-in adventure-keypaths/adventure-selected-stylist-id nil)
+      (assoc-in adventure-keypaths/adventure-servicing-stylist nil)))
 
 (defmethod effects/perform-effects events/navigate-adventure-matching-stylist-wait [_ _ _ _ app-state]
   #?(:cljs
      (let [{:keys [latitude longitude]}   (get-in app-state adventure-keypaths/adventure-stylist-match-location)
-           {:keys [how-far install-type]} (get-in app-state adventure-keypaths/adventure-choices)]
+           {:keys [how-far install-type]} (get-in app-state adventure-keypaths/adventure-choices)
+           order (get-in app-state keypaths/order)]
+       (when-let [servicing-stylist-id (:servicing-stylist-id order)]
+         (api/remove-servicing-stylist servicing-stylist-id
+                                       (:number order)
+                                       (:token order)
+                                       #(handle-message events/save-order {:order %})))
        (api/fetch-stylists-within-radius (get-in app-state keypaths/api-cache)
                                          {:latitude     latitude
                                           :longitude    longitude

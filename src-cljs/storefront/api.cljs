@@ -904,6 +904,17 @@
               :token                token}
     :handler handler}))
 
+(defn remove-servicing-stylist
+  [servicing-stylist-id number token handler]
+  (storeback-api-req
+   POST
+   "/v2/remove-servicing-stylist"
+   request-keys/remove-servicing-stylist
+   {:params {:servicing-stylist-id servicing-stylist-id
+             :number               number
+             :token                token}
+    :handler handler}))
+
 (defn- static-content-req [method path req-key {:keys [handler] :as request-opts}]
   (let [req-id       (str (random-uuid))
         content-opts {:format          :raw

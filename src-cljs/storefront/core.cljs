@@ -45,11 +45,11 @@
 
 (defn- log-deltas [old-app-state new-app-state [event args]]
   (let [[deleted added _unchanged] (diff old-app-state new-app-state)]
-    (js/console.groupCollapsed (clojure.string/join "-" (map name event)) args)
-    (apply js/console.log (remove nil? [(when (seq deleted) "Δ-")
-                                        deleted
-                                        (when (seq added) "Δ+")
-                                        added]))
+    (js/console.groupCollapsed (clojure.string/join "-" (map name event)) (clj->js args))
+    (apply js/console.log (map clj->js (remove nil? [(when (seq deleted) "Δ-")
+                                                     deleted
+                                                     (when (seq added) "Δ+")
+                                                     added])))
     (js/console.trace "Stacktrace")
     (js/console.groupEnd))
   new-app-state)
