@@ -139,7 +139,12 @@
 (defn navigation-message-for
   ([uri] (navigation-message-for uri nil))
   ([uri query-params]
-   (let [{nav-event :handler params :route-params} (bidi/match-route app-routes uri)]
+   (navigation-message-for uri query-params nil))
+  ([uri query-params subdomain]
+   (let [{nav-event :handler
+          params    :route-params} (bidi/match-route app-routes
+                                                     uri
+                                                     :subdomain subdomain)]
      [(if nav-event (bidi->edn nav-event) events/navigate-not-found)
       (-> params
           (merge (when (seq query-params) {:query-params query-params}))

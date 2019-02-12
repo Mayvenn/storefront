@@ -19,21 +19,41 @@
                                    (.-pathname location)))
     opts))
 
-(defn make-history [callback]
+(defn ^:private make-history
+  [callback]
   (doto (Html5History. nil non-search-preserving-history-transformer)
     (.setUseFragment false)
     (.setPathPrefix "")
     (.setEnabled true)
-    (goog.events/listen EventType/NAVIGATE (fn [e] (callback (.-isNavigation e))))))
+    (goog.events/listen EventType/NAVIGATE
+                        (fn [e] (callback (.-isNavigation e))))))
 
 (def app-history)
 
-(defn set-current-page [browser-nav?]
-  (let [uri          (.getToken app-history)
-        query-params (:query (url/url (or js/window.location.href js/document.URL "")))
-        nav-message  (routes/navigation-message-for uri query-params)]
-    (messages/handle-message (if browser-nav? events/browser-navigate events/control-navigate)
-                             {:navigation-message nav-message})))
+(defn ->subdomain [host] (some-> host (.split ".") reverse (nth 2 nil)))
+
+(defn current-uri
+  "Get the path from the history token,
+   the rest from current location"
+  []
+  (let [uri (url/url (or js/window.location.href
+                         js/document.URL
+                         ""))]
+    {:path      (.getToken app-history)
+     :host      (:host uri)
+     :query     (:query uri)
+     :subdomain (->subdomain (:host uri))}))
+
+(defn set-current-page
+  [browser-nav?]
+  (let [{:keys [subdomain query path]} (current-uri)
+        event                          (if browser-nav?
+                                         events/browser-navigate
+                                         events/control-navigate)]
+    (->> {:navigation-message (routes/navigation-message-for path
+                                                             query
+                                                             subdomain)}
+         (messages/handle-message event))))
 
 (defn start-history []
   (set! app-history (make-history set-current-page)))
