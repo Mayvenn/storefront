@@ -12,7 +12,7 @@
    "360-frontals" "Versatile, but highest maintenance & price"})
 
 (defn ^:private query [data]
-  (let [family-facet-options (facets/adventure-facet-options (get-in data keypaths/v2-facets) :hair/family)]
+  (let [family-facet-options (facets/adventure-facet-options :hair/family (get-in data keypaths/v2-facets))]
     {:prompt       "Which type of install are you looking for?"
      :prompt-image "//ucarecdn.com/a159aafc-b096-46b9-88ae-901e96699795/-/format/auto/bg.png"
      :data-test    "install-type"
