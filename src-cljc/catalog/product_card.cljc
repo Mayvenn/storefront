@@ -67,7 +67,7 @@
 
 (defn sku-best-matching-selections [selections skus]
   (some (fn [criteria]
-         (first (spice-selector/match-all {:selector/complete? true} criteria skus)))
+          (first (spice-selector/match-all {:selector/complete? true} criteria skus)))
         [selections
          {:hair/color (:hair/color selections)}
          {:hair/length (:hair/length selections)}]))
