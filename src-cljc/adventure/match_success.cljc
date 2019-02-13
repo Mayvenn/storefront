@@ -6,7 +6,8 @@
             [adventure.keypaths :as keypaths]
             [storefront.effects :as effects]
             [storefront.transitions :as transitions]
-            #?(:cljs [storefront.history :as history])))
+            #?(:cljs [storefront.history :as history])
+            [adventure.progress :as progress]))
 
 (defn ^:private query [data]
   (let [stylist-id        (get-in data keypaths/adventure-selected-stylist-id)
@@ -20,7 +21,7 @@
                              :background-image
                              "url(//ucarecdn.com/8a87f86f-948f-48da-b59d-3ca4d8c6d5a0/-/format/png/-/quality/normal/)"}}
      :current-step         2
-     :header-data          {:progress                9
+     :header-data          {:progress                progress/match-success
                             :back-navigation-message [events/navigate-adventure-stylist-results]}
      :button               {:text           "Show me hair"
                             :data-test      "adventure-match-success-choice-show-hair"

@@ -3,14 +3,15 @@
             [storefront.component :as component]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            [adventure.progress :as progress]))
 
 (defn ^:private query
   [data]
   {:current-step 2
    :header-data  {:title                   "Your New Stylist"
                   :header-attrs            {:class "bg-light-lavender white"}
-                  :progress                8
+                  :progress                progress/out-of-area
                   :back-navigation-message [events/navigate-adventure-how-far]
                   :subtitle                "Step 2 of 3"}})
 

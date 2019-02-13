@@ -15,7 +15,8 @@
    [storefront.events :as events]
    [storefront.components.ui :as ui]
    [storefront.transitions :as transitions]
-   [storefront.trackings :as trackings]))
+   [storefront.trackings :as trackings]
+   [adventure.progress :as progress]))
 
 (defmethod transitions/transition-state events/clear-selected-location
   [_ event _ app-state]
@@ -32,7 +33,7 @@
      :stylist-match-address (get-in data keypaths/adventure-stylist-match-address)
      :places-loaded?        (get-in data storefront.keypaths/loaded-places)
      :current-step          current-step
-     :header-data           {:progress                6
+     :header-data           {:progress                progress/find-your-stylist
                              :title                   [:div.medium "Find Your Stylist"]
                              :subtitle                (str "Step " current-step " of 3")
                              :back-navigation-message [events/navigate-adventure-match-stylist]}

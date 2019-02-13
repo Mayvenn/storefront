@@ -13,7 +13,8 @@
             [storefront.platform.component-utils :as utils]
             [adventure.keypaths :as adventure-keypaths]
             [spice.maps :as maps]
-            [adventure.components.header :as header]))
+            [adventure.components.header :as header]
+            [adventure.progress :as progress]))
 
 (defn ^:private query [data]
   (let [adventure-choices (get-in data adventure-keypaths/adventure-choices)
@@ -30,7 +31,7 @@
      :data-test         "select-new-look-choice"
      :current-step      current-step
      :header-data       {:title                   "The New You"
-                         :progress                12
+                         :progress                progress/select-new-look
                          :shopping-bag?           true
                          :back-navigation-message [events/navigate-adventure-how-shop-hair]
                          :subtitle                (str "Step " current-step  " of 3")}

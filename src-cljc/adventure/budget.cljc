@@ -1,7 +1,8 @@
 (ns adventure.budget
   (:require [storefront.events :as events]
             [storefront.component :as component]
-            [adventure.components.multi-prompt :as multi-prompt]))
+            [adventure.components.multi-prompt :as multi-prompt]
+            [adventure.progress :as progress]))
 
 (defn ^:private query [data]
   {:prompt       ["How much do you usually"
@@ -11,7 +12,7 @@
    :data-test    "adventure-budget-choice"
    :current-step 1
    :header-data  {:title                   "Basic Info"
-                  :progress                2
+                  :progress                progress/budget
                   :back-navigation-message [events/navigate-adventure-time-frame]
                   :subtitle                "Step 1 of 3"}
    :buttons      [{:text             "Less than $150"

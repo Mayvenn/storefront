@@ -2,7 +2,8 @@
   (:require [storefront.events :as events]
             [storefront.component :as component]
             [storefront.platform.component-utils :as utils]
-            [adventure.components.multi-prompt :as multi-prompt]))
+            [adventure.components.multi-prompt :as multi-prompt]
+            [adventure.progress :as progress]))
 
 (defn ^:private query [data]
   {:prompt       ["How far are you willing"
@@ -12,7 +13,7 @@
    :data-test    "adventure-how-far-choice"
    :current-step 2
    :header-data  {:title     "Find Your Stylist"
-                  :progress  7
+                  :progress  progress/how-far
                   :back-navigation-message [events/navigate-adventure-find-your-stylist]
                   :subtitle  "Step 2 of 3"}
    :buttons      (mapv (fn [%] {:text             (str % " miles")

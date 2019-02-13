@@ -14,7 +14,8 @@
             [storefront.trackings :as trackings]
             #?@(:cljs [[storefront.history :as history]
                        [storefront.hooks.stringer :as stringer]
-                       [storefront.api :as api]])))
+                       [storefront.api :as api]])
+            [adventure.progress :as progress]))
 
 (defn ^:private gallery-slide [index gallery-image]
   [:div {:key (str "gallery-slide" index)}
@@ -131,7 +132,7 @@
 (defn ^:private query [data]
   {:current-step 2
    :header-data  {:title                   "Find Your Stylist"
-                  :progress                8
+                  :progress                progress/stylist-results
                   :back-navigation-message [events/navigate-adventure-how-far]
                   :subtitle                "Step 2 of 3"}
    :card-data    {:stylist-gallery-index (get-in data keypaths/adventure-stylist-gallery-index)

@@ -1,7 +1,8 @@
 (ns adventure.match-stylist
   (:require [adventure.components.basic-prompt :as basic-prompt]
             [storefront.component :as component]
-            [storefront.events :as events]))
+            [storefront.events :as events]
+            [adventure.progress :as progress]))
 
 (defn ^:private query [data]
   {:prompt               "We'll match you with a top stylist, guaranteed."
@@ -9,7 +10,7 @@
    :background-overrides {:class "bg-adventure-match-stylist"}
    :data-test            "adventure-match-stylist"
    :current-step         2
-   :header-data          {:progress                5
+   :header-data          {:progress                progress/match-stylist
                           :subtitle                "Welcome to step 2"
                           :back-navigation-message [events/navigate-adventure-what-next]}
    :button               {:text           "Next"

@@ -1,6 +1,7 @@
 (ns adventure.shop-hair
   (:require [adventure.components.basic-prompt :as basic-prompt]
             [adventure.keypaths :as keypaths]
+            [adventure.progress :as progress]
             [storefront.component :as component]
             [storefront.events :as events]))
 
@@ -12,7 +13,7 @@
      :background-overrides {:class "bg-adventure-shop-hair"}
      :data-test            "adventure-match-with-stylist"
      :current-step         current-step
-     :header-data          {:progress                10
+     :header-data          {:progress                progress/shop-hair
                             :subtitle                (str "Welcome to Step " current-step )
                             :back-navigation-message [(if (= 2 current-step)
                                                         events/navigate-adventure-what-next

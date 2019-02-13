@@ -15,7 +15,8 @@
             [adventure.keypaths :as adventure-keypaths]
             [spice.maps :as maps]
             [spice.core :as spice]
-            [adventure.components.header :as header]))
+            [adventure.components.header :as header]
+            [adventure.progress :as progress]))
 
 (defn ^:private query [data]
   (let [adventure-choices (get-in data adventure-keypaths/adventure-choices)
@@ -29,7 +30,7 @@
      :header-data       {:title                   "The New You"
                          :subtitle                (str "Step " current-step " of 3")
                          :height                  "65px"
-                         :progress                13
+                         :progress                progress/look-detail
                          :shopping-bag?           true
                          :back-navigation-message [events/navigate-adventure-select-new-look
                                                    {:album-keyword album-keyword}]}

@@ -3,7 +3,8 @@
             [storefront.component :as component]
             [storefront.keypaths :as keypaths]
             [adventure.utils.facets :as facets]
-            [adventure.components.multi-prompt :as multi-prompt]))
+            [adventure.components.multi-prompt :as multi-prompt]
+            [adventure.progress :as progress]))
 
 (def subtexts
   {"bundles"      "Classic look with some hair left out"
@@ -18,7 +19,7 @@
      :data-test    "install-type"
      :current-step 1
      :header-data  {:title                   "The New You"
-                    :progress                3
+                    :progress                progress/install-type
                     :back-navigation-message [events/navigate-adventure-budget]
                     :subtitle                "Step 1 of 3"}
      :buttons      (map (fn [{:keys [option/slug] :as o}]
