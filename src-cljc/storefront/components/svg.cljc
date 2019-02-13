@@ -88,6 +88,13 @@
     [:svg opts
      (svg-xlink "box-package")]))
 
+;; Vendor Logos
+
+(defn affirm [opts]
+  (component/html
+   [:svg (merge {:style {:width "51.8px" :height "15px"}} opts)
+    (svg-xlink "affirm")]))
+
 ;; Help
 
 (defn phone-ringing [opts]

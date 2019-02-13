@@ -39,7 +39,9 @@
                        [goog.events.EventType :as EventType]
                        [goog.events]
                        [goog.style]
-                       [om.core :as om]])
+                       [om.core :as om]
+                       [storefront.history :as history]])
+            [storefront.components.affirm :as affirm]
             [spice.date :as date]
             [storefront.components.svg :as svg]
             [storefront.components.v2 :as v2]
@@ -268,6 +270,16 @@
                            (selection options)))))
    {}
    (keys selections)))
+
+(defn image-section [{:keys [carousel-images product ugc]}]
+  [:div
+   (carousel carousel-images product)
+   ;; UGC Carousel
+   [:div.hide-on-mb (component/build ugc/component ugc {})]])
+
+(defn mobile-ugc-carousel [{:keys [ugc]}]
+  [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc {})])
+
 
 (defn component
   [{:keys [adding-to-bag?

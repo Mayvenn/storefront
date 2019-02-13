@@ -204,6 +204,11 @@
 (defpath control-checkout-remove-promotion)
 (defpath control-checkout-confirmation-submit)
 
+(defpath control-checkout-affirm-confirmation-submit)
+
+(defpath affirm-request-refresh)
+(defpath affirm-perform-refresh)
+
 (defpath control-stylist-banner-close)
 
 (defpath control-stylist-account-profile-submit)
@@ -304,6 +309,7 @@
 (defpath api-success-update-order-update-address)
 (defpath api-success-update-order-update-guest-address)
 (defpath api-success-update-order-update-cart-payments)
+(defpath api-success-update-order-update-cart-payments-affirm)
 (defpath api-success-update-order-update-shipping-method)
 (defpath api-success-update-order-add-promotion-code)
 (defpath api-success-update-order-remove-promotion-code)
@@ -402,6 +408,11 @@
 (defpath image-picker-component-will-unmount)
 
 (defpath sign-out)
+
+(defpath stringer-tracked-sent-to-affirm)
+
+(defpath affirm-checkout-error)
+(defpath affirm-ui-error-closed)
 
 (defpath viewed-sku)
 

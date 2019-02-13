@@ -6,6 +6,7 @@
             [storefront.accessors.skus :as skus]
             [storefront.accessors.experiments :as experiments]
             [storefront.component :as component]
+            [storefront.components.affirm :as affirm]
             [storefront.components.money-formatters :as mf]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]

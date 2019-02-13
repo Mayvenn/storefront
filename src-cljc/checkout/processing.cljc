@@ -35,12 +35,28 @@
                                          (history/enqueue-navigate events/navigate-cart
                                                                    {:query-params {:error error-code}}))})))
 
+(defn affirm-place-order [app-state affirm-token]
+  #?(:cljs
+     (api/update-cart-payments (get-in app-state keypaths/session-id)
+                               {:order (assoc-in (get-in app-state keypaths/order)
+                                                 [:cart-payments :affirm]
+                                                 {:checkout-token affirm-token})}
+                               #(messages/handle-message events/api-success-update-order-update-cart-payments-affirm
+                                                         {:order %}))))
+
+(defmethod effects/perform-effects events/api-success-update-order-update-cart-payments-affirm [_ event {:keys [order]} _ app-state]
+  #?(:cljs (cookie-jar/clear-affirm (get-in app-state keypaths/cookie)))
+  (place-order app-state))
+
 (defmethod effects/perform-effects events/navigate-checkout-processing [dispatch event args _ app-state]
   #?(:cljs
-     (let [order (get-in app-state keypaths/order)]
+     (let [order                  (get-in app-state keypaths/order)
+           {:keys [affirm-token]} (cookie-jar/retrieve-affirm (get-in app-state keypaths/cookie))]
        (cond
          (= (:state order) "cart")
-         (place-order app-state)
+         (if affirm-token
+           (affirm-place-order app-state affirm-token)
+           (place-order app-state))
 
          (= (:state order) "submitted")
          (history/enqueue-navigate events/navigate-order-complete
