@@ -17,16 +17,7 @@
             [adventure.progress :as progress]))
 
 (def ^:private album-keyword->presentation
-  {:shop-by-look            {:header-data  {:title                   "The New You"
-                                            :shopping-bag?           true
-                                            :progress                progress/select-new-look-shop-by-look
-                                            :back-navigation-message [events/navigate-adventure-how-shop-hair]}
-                             :prompt       "Select your new look"
-                             :mini-prompt  ["We have an amazing selection for you"
-                                            [:br]
-                                            "to choose from."]
-                             :prompt-image "//ucarecdn.com/ffe3011a-1cae-494a-a806-eac94f618374/-/format/auto/bg.png"}
-   :shop-by-look-straight   {:header-data  {:title                   "The New You"
+  {:shop-by-look-straight   {:header-data  {:title                   "The New You"
                                             :shopping-bag?           true
                                             :progress                progress/select-new-look-shop-by-look
                                             :back-navigation-message [events/navigate-adventure-how-shop-hair]}
