@@ -711,6 +711,7 @@
                (GET "/products/" req (redirect-to-home environment req))
                (GET "/products/:id-and-slug/:sku" req (redirect-to-product-details environment req))
                (GET "/install" req (util.response/redirect (store-homepage "freeinstall" environment req)))
+               (GET "/adv/home" req (util.response/redirect (store-homepage "freeinstall" environment req) :moved-permanently))
                (GET "/cms" req
                  (-> contentful
                      contentful/read-cache
