@@ -1,11 +1,11 @@
-(ns adventure.hair-texture
+(ns adventure.bundlesets.hair-texture
   (:require #?@(:cljs [[storefront.platform.messages :refer [handle-message]]])
             [clojure.set :as set]
             [storefront.events :as events]
             [storefront.component :as component]
             [storefront.keypaths :as keypaths]
-            [storefront.platform.component-utils :as utils]
             [storefront.effects :as effects]
+            [storefront.platform.component-utils :as utils]
             [adventure.progress :as progress]
             [adventure.keypaths :as adventure-keypaths]
             [adventure.components.multi-prompt :as multi-prompt]
@@ -13,14 +13,22 @@
             [storefront.accessors.experiments :as experiments]))
 
 (def option-metadata
-  {"straight"   {:subtitle   "For silky, sleek looks"
-                 :album-slug :shop-by-look-straight}
-   "body-wave"  {:subtitle   "Soft, bouncy S-wave"
-                 :album-slug :shop-by-look-body-wave}
-   "loose-wave" {:subtitle   "Big, glamorous waves"
-                 :album-slug :shop-by-look-loose-wave}
-   "deep-wave"  {:subtitle   "C-shaped ringlet curls"
-                 :album-slug :shop-by-look-deep-wave}})
+  {"straight"       {:subtitle   "For silky, sleek looks"
+                     :album-slug :bundle-sets-straight}
+   "yaki-straight"  {:subtitle   "A fresh pressed, relaxed style"
+                     :album-slug :bundle-sets-yaki-straight}
+   "kinky-straight" {:subtitle   "Mimics blown-out natural hair"
+                     :album-slug :bundle-sets-kinky-straight}
+   "body-wave"      {:subtitle   "Soft, bouncy S-wave"
+                     :album-slug :bundle-sets-body-wave}
+   "loose-wave"     {:subtitle   "Big, glamorous waves"
+                     :album-slug :bundle-sets-loose-wave}
+   "water-wave"     {:subtitle   "Carefree, free-flowing curls"
+                     :album-slug :bundle-sets-water-wave}
+   "deep-wave"      {:subtitle   "C-shaped ringlet curls"
+                     :album-slug :bundle-sets-deep-wave}
+   "curly"          {:subtitle   "Mimics natural 3C-4A textures"
+                     :album-slug :bundle-sets-curly}})
 
 (defn enriched-buttons [facet-options]
   (for [option facet-options
@@ -39,16 +47,17 @@
                                                                         (get-in data keypaths/v2-facets)
                                                                         (get-in data adventure-keypaths/adventure-matching-products))
         adventure-choices     (get-in data adventure-keypaths/adventure-choices)
-        current-step          (if (-> adventure-choices :flow #{"match-stylist"}) 3 2)]
+        stylist-selected?     (some-> adventure-choices :flow #{"match-stylist"})
+        current-step          (if stylist-selected? 3 2)]
     {:prompt       "Which texture are you looking for?"
      :prompt-image "//ucarecdn.com/3346657d-a039-487f-98fb-68b9b050e042/-/format/auto/aladdinMatchingOverlayImagePurpleER203Lm3x.png"
      :data-test    "hair-texture"
      :current-step current-step
-     :footer       [:div.dark-gray.col-6.mx-auto.h5
-                    [:div.my1.line-height-2 "Looking for Yaki Straight, Kinky Straight, Water Wave, or Curly?"]
-                    [:a.block.teal.medium
-                     (utils/route-to events/navigate-adventure-how-shop-hair)
-                     "Shop pre-made bundle sets"]]
+     :footer       (when-not stylist-selected?
+                     [:div.h6.center.pb8
+                      [:div.dark-gray "Not ready to shop hair?"]
+                      [:a.teal (utils/fake-href events/navigate-adventure-find-your-stylist)
+                       "Find a stylist"]])
      :header-data  {:title                   "The New You"
                     :progress                progress/hair-texture
                     :back-navigation-message [events/navigate-adventure-how-shop-hair]
@@ -59,6 +68,6 @@
   [data opts]
   (component/build multi-prompt/component (query data) opts))
 
-(defmethod effects/perform-effects events/navigate-adventure-hair-texture
+(defmethod effects/perform-effects events/navigate-adventure-bundlesets-hair-texture
   [_ _ args _ app-state]
   #?(:cljs (handle-message events/adventure-fetch-matched-products)))

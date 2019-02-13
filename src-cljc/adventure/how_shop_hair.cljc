@@ -16,8 +16,7 @@
          {:text             "Give me pre-made bundle sets"
           :data-test-suffix "bundle-sets"
           :value            {:how-shop "bundle-sets"}
-          :target-message   [events/navigate-adventure-select-new-look
-                             {:album-keyword :bundle-sets}]}]
+          :target-message   [events/navigate-adventure-bundlesets-hair-texture]}]
         (when shop-individual-buttons?
           [{:text             "Let me shop individual bundles"
             :data-test-suffix "individual-bundles"

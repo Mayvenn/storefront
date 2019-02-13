@@ -54,6 +54,7 @@
     "/adv/install-type"                        (edn->bidi events/navigate-adventure-install-type)
     "/adv/stylist-results"                     (edn->bidi events/navigate-adventure-stylist-results)
     "/adv/out-of-area"                         (edn->bidi events/navigate-adventure-out-of-area)
+    ["/adv/shop/bundle-sets-texture"]          (edn->bidi events/navigate-adventure-bundlesets-hair-texture)
     ["/adv/shop/" :album-keyword]              (edn->bidi events/navigate-adventure-select-new-look)
     ["/adv/shop/" :album-keyword "/texture"]   (edn->bidi events/navigate-adventure-hair-texture)
     ["/adv/shop/" :album-keyword "/" :look-id] (edn->bidi events/navigate-adventure-look-detail)

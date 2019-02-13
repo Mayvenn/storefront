@@ -72,7 +72,7 @@
 (defn ^:private adventure-choices->criteria [choices]
   {:hair/family (:install-type choices)})
 
-(defmethod effects/perform-effects events/navigate-adventure-hair-texture
+(defmethod effects/perform-effects events/adventure-fetch-matched-products
   [_ _ args _ app-state]
   #?(:cljs (api/search-v2-products (get-in app-state storefront.keypaths/api-cache)
                                    (adventure-choices->criteria (get-in app-state keypaths/adventure-choices))
