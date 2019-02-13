@@ -3,6 +3,7 @@
             [storefront.events :as events]
             [storefront.component :as component]
             [storefront.keypaths :as keypaths]
+            [storefront.platform.component-utils :as utils]
             [adventure.progress :as progress]
             [adventure.keypaths :as adventure-keypaths]
             [adventure.components.multi-prompt :as multi-prompt]
@@ -40,7 +41,11 @@
      :prompt-image "//ucarecdn.com/3346657d-a039-487f-98fb-68b9b050e042/-/format/auto/aladdinMatchingOverlayImagePurpleER203Lm3x.png"
      :data-test    "hair-texture"
      :current-step current-step
-     :footer       ""
+     :footer       [:div.dark-gray.col-6.mx-auto.h5
+                    [:div.my1.line-height-2 "Looking for Yaki Straight, Kinky Straight, Water Wave, or Curly?"]
+                    [:a.block.teal.medium
+                     (utils/route-to events/navigate-adventure-how-shop-hair)
+                     "Shop pre-made bundle sets"]]
      :header-data  {:title                   "The New You"
                     :progress                progress/hair-texture
                     :back-navigation-message [events/navigate-adventure-how-shop-hair]
