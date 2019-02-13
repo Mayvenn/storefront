@@ -1,6 +1,7 @@
 (ns storefront.pixlee
   (:require [storefront.events :as events]))
 
+;; Looking for adventure? See adventure.select-new-look/album-keyword->prompt-image
 (def ^:private pixlee-copy
   {:deals {:title             "shop deals"
            :description       (str "Save more when you bundle up! "
@@ -33,7 +34,7 @@
                   :seo-title         "Shop by Look | Mayvenn"
                   :og-title          "Shop by Look - Find and Buy your favorite Mayvenn bundles!"}
 
-   ;;TODO Get proper copy
+   ;;TODO: GROT
    :free-install-home {:title              "shop by look"
                        :description        (str "Get inspiration for your next hairstyle and "
                                                 "shop your favorite looks from the #MayvennMade community.")
@@ -99,29 +100,7 @@
                  :above-button-copy nil
                  :short-name        "look"
                  :seo-title         "Shop by Look | Mayvenn"
-                 :og-title          "Shop by Look - Find and Buy your favorite Mayvenn bundles!"}
-
-   ;; ADVENTURE BELOW
-   :shop-by-look {:title                  "shop by look"
-                  :description            (str "Grab the latest bundle deal! "
-                                               "Below you can shop every bundle deal of the week.")
-                  :button-copy            "Shop Look"
-                  :back-copy              "back to shop by look"
-                  :above-button-copy      nil
-                  :short-name             "look"
-                  :seo-title              "Shop by Look | Mayvenn"
-                  :og-title               "Shop by Look - Find and Buy your favorite Mayvenn bundles!"
-                  :adventure/prompt-image "//ucarecdn.com/ffe3011a-1cae-494a-a806-eac94f618374/-/format/auto/bg.png"}
-   :bundle-sets  {:title                  "shop by look"
-                  :description            (str "Grab the latest bundle deal! "
-                                               "Below you can shop every bundle deal of the week.")
-                  :button-copy            "Shop Look"
-                  :back-copy              "back to shop by look"
-                  :above-button-copy      nil
-                  :short-name             "look"
-                  :seo-title              "Shop by Look | Mayvenn"
-                  :og-title               "Shop by Look - Find and Buy your favorite Mayvenn bundles!"
-                  :adventure/prompt-image "//ucarecdn.com/9806a920-9c5b-4a98-a9dc-21b02c381593/-/format/auto/bg.png"}})
+                 :og-title          "Shop by Look - Find and Buy your favorite Mayvenn bundles!"}})
 
 (defn pixlee-config [environment]
   (case environment

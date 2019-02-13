@@ -18,6 +18,10 @@
 (def match-success 9)
 (def shop-hair 10)
 (def how-shop-hair 11)
+
 (def hair-texture 12)
-(def select-new-look 13)
+
+(def select-new-look-shop-by-look 13)
+(def select-new-look-shop-by-bundlesets 13)
+
 (def look-detail 14)
