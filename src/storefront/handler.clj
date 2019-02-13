@@ -631,19 +631,6 @@
     (let [{nav-event :handler} (bidi/match-route routes/static-api-routes uri)]
       (some-> nav-event routes/bidi->edn static-page :content ->html-resp))))
 
-(defn install-routes [{:keys [storeback-config environment client-version] :as ctx}]
-  (fn [{:keys [nav-message] :as request}]
-    (if (= (-> request :state :store) :storefront.backend-api/storeback-unavailable)
-      (storeback-offline-response environment)
-      (when (not= (get nav-message 0) events/navigate-not-found)
-        (let [render-ctx           (auto-map storeback-config environment client-version)
-              [nav-event nav-args] nav-message
-              data                 (-> (:state request)
-                                       (assoc-in keypaths/store-slug config/freeinstall-subdomain)
-                                       (assoc-in keypaths/environment environment)
-                                       (assoc-in keypaths/navigation-message nav-message))]
-          ((server-render-pages nav-event generic-server-render) render-ctx data request nav-args))))))
-
 (defn wrap-filter-params
   "Technically an invalid value, but query-params could generate this value
   which doesn't serialize to EDN correctly.
