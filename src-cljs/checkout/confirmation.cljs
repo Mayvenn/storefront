@@ -18,6 +18,7 @@
             [adventure.checkout.cart.items :as adventure-cart-items]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
+            [adventure.keypaths :as adventure-keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]
             [storefront.effects :as effects]
@@ -426,7 +427,7 @@
      :confirmation-summary             (confirmation-summary/query data)
      :freeinstall-line-item-data       (adventure-cart-items/freeinstall-line-item-query data)
      :store-slug                       (get-in data keypaths/store-slug)
-     :servicing-stylist                (get-in data adventure.keypaths/adventure-servicing-stylist)
+     :servicing-stylist                (get-in data adventure-keypaths/adventure-servicing-stylist)
      :freeinstall?                     (= "freeinstall" (get-in data keypaths/store-slug))}))
 
 (defn built-component [data opts]
