@@ -30,14 +30,14 @@ Move to uploadcare???
 }
 
 .bg-adventure-match-stylist {
-    background-image: url('//ucarecdn.com/fac7963f-499d-4d46-9d3e-29d548194a60/-/format/auto/-/quality/normal/aladdinMatchingHeroImageCR102Lm3x.png');
+    background-image: url('//ucarecdn.com/fac7963f-499d-4d46-9d3e-29d548194a60/-/format/auto/-/quality/lightest/bg.png');
     background-repeat:   no-repeat;
     background-position: bottom center;
     background-size: 80%;
 }
 
 .bg-adventure-shop-hair {
-    background: url(//ucarecdn.com/20636e0b-60ff-405a-88a4-94c9a3bb3e8a/-/format/auto/bg.png)
+    background: url(//ucarecdn.com/20636e0b-60ff-405a-88a4-94c9a3bb3e8a/-/format/auto/-/quality/lightest/bg.png)
                    center
                    bottom/90%
                    no-repeat,
