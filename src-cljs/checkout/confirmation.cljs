@@ -349,9 +349,9 @@
      :freeinstall-line-item-data       (cart-items/freeinstall-line-item-query data)
      :store-slug                       (get-in data keypaths/store-slug)
      :freeinstall?                     (= "freeinstall" (get-in data keypaths/store-slug))
-     :selected-affirm?        (get-in data keypaths/order-cart-payments-affirm)
-     :order-valid-for-affirm? (affirm-components/valid-order-total? (get-in data keypaths/order-total))
-     :servicing-stylist (get-in data adventure-keypaths/adventure-servicing-stylist)}))
+     :selected-affirm?                 (get-in data keypaths/order-cart-payments-affirm)
+     :order-valid-for-affirm?          (affirm-components/valid-order-total? (get-in data keypaths/order-total))
+     :servicing-stylist                (get-in data adventure-keypaths/adventure-servicing-stylist)}))
 
 (defn built-component [data opts]
   (om/build component (query data) opts))
