@@ -181,64 +181,6 @@
    :zipcode zipcode
    :country "USA"})
 
-(defn adventure-component
-  [{:keys [available-store-credit
-           checkout-steps
-           payment delivery order
-           skus
-           requires-additional-payment?
-           promotion-banner
-           install-or-free-install-applied?
-           freeinstall-line-item-data
-           confirmation-summary
-           checkout-button-data
-           store-slug
-           servicing-stylist]}
-   owner]
-  (om/component
-   (html
-    [:div.container.p2
-     (component/build promotion-banner/sticky-component promotion-banner nil)
-     (om/build checkout-steps/component checkout-steps)
-
-     [:form
-      {:on-submit
-       (utils/send-event-callback events/control-checkout-confirmation-submit
-                                  {:place-order? requires-additional-payment?})}
-
-      [:.clearfix.mxn3
-       [:.col-on-tb-dt.col-6-on-tb-dt.px3
-        [:.h3.left-align "Order Summary"]
-
-        [:div.my2
-         {:data-test "confirmation-line-items"}
-         (summary/display-line-items (orders/product-items order) skus)
-         (when freeinstall-line-item-data
-           (display-freeinstall-line-item freeinstall-line-item-data))]]
-
-       [:.col-on-tb-dt.col-6-on-tb-dt.px3
-        (om/build checkout-delivery/component delivery)
-        (when requires-additional-payment?
-          [:div
-           (ui/note-box
-            {:color     "teal"
-             :data-test "additional-payment-required-note"}
-            [:.p2.navy
-             "Please enter an additional payment method below for the remaining total on your order."])
-           (om/build checkout-credit-card/component payment)])
-        (if confirmation-summary
-          (component/build confirmation-summary/component confirmation-summary {})
-          (summary/display-order-summary order
-                                         {:read-only?             true
-                                          :use-store-credit?      (not install-or-free-install-applied?)
-                                          :available-store-credit available-store-credit}))
-        [:div.h5.my4.center.col-10.mx-auto.line-height-3
-         (if-let [servicing-stylist-firstname (-> servicing-stylist :address :firstname)]
-           (str "You’ll be connected with " servicing-stylist-firstname " after checkout.")
-           "You’ll be able to select your Certified Mayvenn Stylist after checkout.")]
-        [:div.col-12.col-6-on-tb-dt.mx-auto
-         (checkout-button checkout-button-data)]]]]])))
-
 (defn- absolute-url [& path]
   (apply str (.-protocol js/location) "//" (.-host js/location) path))
 
@@ -406,17 +348,10 @@
      :confirmation-summary             (confirmation-summary/query data)
      :freeinstall-line-item-data       (cart-items/freeinstall-line-item-query data)
      :store-slug                       (get-in data keypaths/store-slug)
-     :freeinstall?                     (= "freeinstall" (get-in data keypaths/store-slug))}))
-
-(defn non-adventure-query [data]
-  {:selected-affirm?        (get-in data keypaths/order-cart-payments-affirm)
-   :order-valid-for-affirm? (affirm-components/valid-order-total? (get-in data keypaths/order-total))})
-
-(defn adventure-query [data]
-  {:servicing-stylist (get-in data adventure-keypaths/adventure-servicing-stylist)})
+     :freeinstall?                     (= "freeinstall" (get-in data keypaths/store-slug))
+     :selected-affirm?        (get-in data keypaths/order-cart-payments-affirm)
+     :order-valid-for-affirm? (affirm-components/valid-order-total? (get-in data keypaths/order-total))
+     :servicing-stylist (get-in data adventure-keypaths/adventure-servicing-stylist)}))
 
 (defn built-component [data opts]
-  (let [query-data (query data)]
-    (if (:freeinstall? query-data)
-      (om/build adventure-component (merge query-data (adventure-query data)) opts)
-      (om/build component (merge query-data (non-adventure-query data)) opts))))
+  (om/build component (query data) opts))

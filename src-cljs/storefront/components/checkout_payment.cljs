@@ -1,7 +1,6 @@
 (ns storefront.components.checkout-payment
   (:require [om.core :as om]
             [sablono.core :refer [html]]
-            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.component :as component]
             [storefront.components.checkout-credit-card :as cc]
@@ -265,6 +264,4 @@
 
 (defn built-component [data opts]
   (let [query-data (query data)]
-    (if (:freeinstall? query-data)
-      (om/build no-affirm-component query-data opts)
-      (om/build component query-data opts))))
+    (om/build component query-data opts)))
