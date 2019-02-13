@@ -392,9 +392,7 @@
 
 (defn query [data]
   (let [order (get-in data keypaths/order)]
-    {:selected-affirm?                 (get-in data keypaths/order-cart-payments-affirm)
-     :order-valid-for-affirm?          (affirm-components/valid-order-total? (:total order))
-     :requires-additional-payment?     (requires-additional-payment? data)
+    {:requires-additional-payment?     (requires-additional-payment? data)
      :promotion-banner                 (promotion-banner/query data)
      :checkout-steps                   (checkout-steps/query data)
      :products                         (get-in data keypaths/v2-products)
@@ -410,30 +408,15 @@
      :store-slug                       (get-in data keypaths/store-slug)
      :freeinstall?                     (= "freeinstall" (get-in data keypaths/store-slug))}))
 
+(defn non-adventure-query [data]
+  {:selected-affirm?        (get-in data keypaths/order-cart-payments-affirm)
+   :order-valid-for-affirm? (affirm-components/valid-order-total? (get-in data keypaths/order-total))})
+
 (defn adventure-query [data]
-  (let [order (get-in data keypaths/order)]
-    (adventure-cart-items/freeinstall-line-item-query data)
-    {:requires-additional-payment?     (requires-additional-payment? data)
-     :promotion-banner                 (promotion-banner/query data)
-     :checkout-steps                   (checkout-steps/query data)
-     :products                         (get-in data keypaths/v2-products)
-     :skus                             (get-in data keypaths/v2-skus)
-     :order                            order
-     :payment                          (checkout-credit-card/query data)
-     :delivery                         (checkout-delivery/query data)
-     :install-or-free-install-applied? (orders/freeinstall-applied? order)
-     :available-store-credit           (get-in data keypaths/user-total-available-store-credit)
-     :checkout-button-data             (checkout-button-query data)
-     :confirmation-summary             (confirmation-summary/query data)
-     :freeinstall-line-item-data       (adventure-cart-items/freeinstall-line-item-query data)
-     :store-slug                       (get-in data keypaths/store-slug)
-     :servicing-stylist                (get-in data adventure-keypaths/adventure-servicing-stylist)
-     :freeinstall?                     (= "freeinstall" (get-in data keypaths/store-slug))}))
+  {:servicing-stylist (get-in data adventure-keypaths/adventure-servicing-stylist)})
 
 (defn built-component [data opts]
-  (let [query-data           (query data)
-        query-adventure-data (adventure-query data)
-        freeinstall?         (:freeinstall? query-data)]
-    (if freeinstall?
-      (om/build adventure-component query-adventure-data opts)
-      (om/build component query-data opts))))
+  (let [query-data (query data)]
+    (if (:freeinstall? query-data)
+      (om/build adventure-component (merge query-data (adventure-query data)) opts)
+      (om/build component (merge query-data (non-adventure-query data)) opts))))
