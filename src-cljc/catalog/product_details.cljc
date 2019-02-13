@@ -332,6 +332,8 @@
                [:div.h6.navy "Price Per Item"]
                [:div.medium (item-price (:sku/price selected-sku))]]
               [:div
+               (affirm/as-low-as-box {:amount      (:sku/price selected-sku)
+                                      :middle-copy "Just select Affirm at check out."})
                [:div.mt1.mx3
                 (cond
                   unavailable? unavailable-button
