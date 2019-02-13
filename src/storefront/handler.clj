@@ -227,12 +227,14 @@
 (defn wrap-set-preferred-store [handler environment]
   (fn [{:keys [server-name store] :as req}]
     (when-let [resp (handler req)]
-      (-> resp
+      (let [store-slug (:store-slug store)]
+        (cond-> resp
+          (not= config/freeinstall-subdomain store-slug)
           (cookies/set environment
-                       "preferred-store-slug" (:store-slug store)
+                       "preferred-store-slug" store-slug
                        {:http-only true
                         :max-age   (cookies/days 365)
-                        :domain    (cookie-root-domain server-name)})))))
+                        :domain    (cookie-root-domain server-name)}))))))
 
 (defn wrap-preferred-store-redirect [handler environment]
   (fn [{:keys [subdomains] :as req}]
