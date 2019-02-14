@@ -202,11 +202,12 @@
                                                                 {:order             order
                                                                  :servicing-stylist servicing-stylist})
                                        (stringer/track-event "stylist_selected"
-                                                             {:stylist_id   servicing-stylist-id
-                                                              :card_index   card-index
-                                                              :current_step 2
-                                                              :service_type (get-in app-state keypaths/adventure-choices-install-type)
-                                                              :order_number (:number order)}))))))
+                                                             {:stylist_id     servicing-stylist-id
+                                                              :card_index     card-index
+                                                              :current_step   2
+                                                              :service_type   (get-in app-state keypaths/adventure-choices-install-type)
+                                                              :order_number   (:number order)
+                                                              :stylist_rating (:rating servicing-stylist)}))))))
 
 (defmethod trackings/perform-track events/adventure-stylist-search-results-displayed
   [_ event args app-state]
