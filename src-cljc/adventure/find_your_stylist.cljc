@@ -91,11 +91,13 @@
 (defmethod trackings/perform-track events/control-adventure-location-submit
   [_ event {:keys [current-step]} app-state]
   #?(:cljs
-     (let [{:keys [latitude longitude]} (get-in app-state keypaths/adventure-stylist-match-location)]
+     (let [{:keys [latitude longitude city state]} (get-in app-state keypaths/adventure-stylist-match-location)]
        (stringer/track-event "adventure_location_submitted"
                              {:location_submitted (get-in app-state keypaths/adventure-stylist-match-address)
                               :service_type       (get-in app-state keypaths/adventure-choices-install-type)
                               :current_step       current-step
+                              :city               city
+                              :state              state
                               :latitude           latitude
                               :longitude          longitude}))))
 
