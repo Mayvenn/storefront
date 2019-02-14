@@ -28,8 +28,7 @@
                         [:div.light.h6 subtitle]]
      :data-test-suffix (:option/slug option)
      :value            {:texture (:option/slug option)}
-     ;; TODO: fix this navigation
-     :target-message   [events/navigate-adventure-how-shop-hair]}))
+     :target-message   [events/navigate-adventure-shopbybundles-hair-color]}))
 
 (defn ^:private query [data]
   (let [texture-facet-options (facets/available-adventure-facet-options :hair/texture

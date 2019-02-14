@@ -41,29 +41,27 @@
 
 (def freeinstall-routes
   {{:subdomain freeinstall?}
-   {"/"                                        (edn->bidi events/navigate-adventure-home)
-    "/adv/time-frame"                          (edn->bidi events/navigate-adventure-time-frame)
-    "/adv/budget"                              (edn->bidi events/navigate-adventure-budget)
-    "/adv/what-next"                           (edn->bidi events/navigate-adventure-what-next)
-    "/adv/match-stylist"                       (edn->bidi events/navigate-adventure-match-stylist)
-    "/adv/find-your-stylist"                   (edn->bidi events/navigate-adventure-find-your-stylist)
-    "/adv/how-far"                             (edn->bidi events/navigate-adventure-how-far)
-    "/adv/matching-stylist-wait"               (edn->bidi events/navigate-adventure-matching-stylist-wait)
-    "/adv/shop-hair"                           (edn->bidi events/navigate-adventure-shop-hair)
-    "/adv/how-shop-hair"                       (edn->bidi events/navigate-adventure-how-shop-hair)
-    "/adv/install-type"                        (edn->bidi events/navigate-adventure-install-type)
-    "/adv/stylist-results"                     (edn->bidi events/navigate-adventure-stylist-results)
-    "/adv/out-of-area"                         (edn->bidi events/navigate-adventure-out-of-area)
-
-    ["/products/" [#"\d+" :catalog/product-id] "-" :page/slug]
-    (edn->bidi events/navigate-adventure-product-details)
-
-    ["/adv/shop/shop-by-bundles-texture"]      (edn->bidi events/navigate-adventure-shopbybundles-hair-texture)
-    ["/adv/shop/bundle-sets-texture"]          (edn->bidi events/navigate-adventure-bundlesets-hair-texture)
-    ["/adv/shop/" :album-keyword]              (edn->bidi events/navigate-adventure-select-new-look)
-    ["/adv/shop/" :album-keyword "/texture"]   (edn->bidi events/navigate-adventure-hair-texture)
-    ["/adv/shop/" :album-keyword "/" :look-id] (edn->bidi events/navigate-adventure-look-detail)
-    "/adv/match-success"                       (edn->bidi events/navigate-adventure-match-success)}})
+   {"/"                                                        (edn->bidi events/navigate-adventure-home)
+    "/adv/time-frame"                                          (edn->bidi events/navigate-adventure-time-frame)
+    "/adv/budget"                                              (edn->bidi events/navigate-adventure-budget)
+    "/adv/what-next"                                           (edn->bidi events/navigate-adventure-what-next)
+    "/adv/match-stylist"                                       (edn->bidi events/navigate-adventure-match-stylist)
+    "/adv/find-your-stylist"                                   (edn->bidi events/navigate-adventure-find-your-stylist)
+    "/adv/how-far"                                             (edn->bidi events/navigate-adventure-how-far)
+    "/adv/matching-stylist-wait"                               (edn->bidi events/navigate-adventure-matching-stylist-wait)
+    "/adv/shop-hair"                                           (edn->bidi events/navigate-adventure-shop-hair)
+    "/adv/how-shop-hair"                                       (edn->bidi events/navigate-adventure-how-shop-hair)
+    "/adv/install-type"                                        (edn->bidi events/navigate-adventure-install-type)
+    "/adv/stylist-results"                                     (edn->bidi events/navigate-adventure-stylist-results)
+    "/adv/out-of-area"                                         (edn->bidi events/navigate-adventure-out-of-area)
+    ["/products/" [#"\d+" :catalog/product-id] "-" :page/slug] (edn->bidi events/navigate-adventure-product-details)
+    "/adv/shop/shop-by-bundles-color"                          (edn->bidi events/navigate-adventure-shopbybundles-hair-color)
+    ["/adv/shop/shop-by-bundles-texture"]                      (edn->bidi events/navigate-adventure-shopbybundles-hair-texture)
+    ["/adv/shop/bundle-sets-texture"]                          (edn->bidi events/navigate-adventure-bundlesets-hair-texture)
+    ["/adv/shop/" :album-keyword]                              (edn->bidi events/navigate-adventure-select-new-look)
+    ["/adv/shop/" :album-keyword "/texture"]                   (edn->bidi events/navigate-adventure-hair-texture)
+    ["/adv/shop/" :album-keyword "/" :look-id]                 (edn->bidi events/navigate-adventure-look-detail)
+    "/adv/match-success"                                       (edn->bidi events/navigate-adventure-match-success)}})
 
 (def catalog-routes
   {["/categories/" [#"\d+" :catalog/category-id] "-" :page/slug]

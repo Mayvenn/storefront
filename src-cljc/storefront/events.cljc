@@ -465,6 +465,7 @@
 (defpath navigate-adventure-hair-texture)
 (defpath navigate-adventure-bundlesets-hair-texture)
 (defpath navigate-adventure-shopbybundles-hair-texture)
+(defpath navigate-adventure-shopbybundles-hair-color)
 (defpath navigate-adventure-install-type)
 (defpath navigate-adventure-how-far)
 (defpath navigate-adventure-select-new-look)

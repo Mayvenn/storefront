@@ -26,7 +26,7 @@
    - is available for adventure
   "
   [facet-slug facets products-or-skus]
-  (let [texture-facet-options       (adventure-facet-options facet-slug facets)
-        texture-product-options     (available-facet-options facet-slug products-or-skus)
-        facet-options-has-products? (comp texture-product-options str :option/slug)]
-    (filter facet-options-has-products? texture-facet-options)))
+  (let [matching-facet-options      (adventure-facet-options facet-slug facets)
+        matching-product-options    (available-facet-options facet-slug products-or-skus)
+        facet-options-has-products? (comp matching-product-options str :option/slug)]
+    (filter facet-options-has-products? matching-facet-options)))
