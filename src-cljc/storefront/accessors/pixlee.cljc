@@ -3,6 +3,7 @@
             [clojure.set :as set]
             [storefront.accessors.experiments :as experiments]
             [clojure.string :as string]
+            adventure.albums
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
@@ -54,7 +55,8 @@
          :price   price}
       nil)))
 
-(defn parse-ugc-image [album-keyword {:keys [notes album_id album_photo_id user_name content_type source products title source_url] :as item}]
+(defn parse-ugc-image
+  [album-keyword {:keys [notes album_id album_photo_id user_name content_type source products title source_url] :as item}]
   (let [[nav-event nav-args :as nav-message] (product-link (first products))]
     {:id              album_photo_id
      :content-type    content_type
@@ -68,13 +70,15 @@
                        {:view-other nav-message}
                        (cond
                          (and (= nav-event events/navigate-shared-cart)
-                              (#{:shop-by-look :bundle-sets} album-keyword))
-                         {:view-look [events/navigate-adventure-look-detail {:album-keyword album-keyword
-                                                                             :look-id       album_photo_id}]}
+                              (adventure.albums/by-keyword album-keyword))
+                         {:view-look [events/navigate-adventure-look-detail
+                                      {:album-keyword album-keyword
+                                       :look-id       album_photo_id}]}
 
                          (= nav-event events/navigate-shared-cart)
-                         {:view-look [events/navigate-shop-by-look-details {:album-keyword (or (#{:deals} album-keyword) :look)
-                                                                            :look-id       album_photo_id}]}
+                         {:view-look [events/navigate-shop-by-look-details
+                                      {:album-keyword (or (#{:deals} album-keyword) :look)
+                                       :look-id       album_photo_id}]}
 
                          :else nil))
      :title title}))

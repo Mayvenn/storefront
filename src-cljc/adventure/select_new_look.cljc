@@ -12,75 +12,29 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [adventure.keypaths :as adventure-keypaths]
+            [adventure.albums :as albums]
             [spice.maps :as maps]
-            [adventure.components.header :as header]
-            [adventure.progress :as progress]))
+            [adventure.components.header :as header]))
 
-(def ^:private album-keyword->presentation
-  {:shop-by-look-straight   {:header-data  {:title                   "The New You"
-                                            :shopping-bag?           true
-                                            :progress                progress/select-new-look-shop-by-look
-                                            :back-navigation-message [events/navigate-adventure-how-shop-hair]}
-                             :prompt       "Select your new look"
-                             :mini-prompt  ["We have an amazing selection for you"
-                                            [:br]
-                                            "to choose from."]
-                             :prompt-image "//ucarecdn.com/ffe3011a-1cae-494a-a806-eac94f618374/-/format/auto/bg.png"}
-   :shop-by-look-loose-wave {:header-data  {:title                   "The New You"
-                                            :shopping-bag?           true
-                                            :progress                progress/select-new-look-shop-by-look
-                                            :back-navigation-message [events/navigate-adventure-how-shop-hair]}
-                             :prompt       "Select your new look"
-                             :mini-prompt  ["We have an amazing selection for you"
-                                            [:br]
-                                            "to choose from."]
-                             :prompt-image "//ucarecdn.com/ffe3011a-1cae-494a-a806-eac94f618374/-/format/auto/bg.png"}
-   :shop-by-look-body-wave  {:header-data  {:title                   "The New You"
-                                            :shopping-bag?           true
-                                            :progress                progress/select-new-look-shop-by-look
-                                            :back-navigation-message [events/navigate-adventure-how-shop-hair]}
-                             :prompt       "Select your new look"
-                             :mini-prompt  ["We have an amazing selection for you"
-                                            [:br]
-                                            "to choose from."]
-                             :prompt-image "//ucarecdn.com/ffe3011a-1cae-494a-a806-eac94f618374/-/format/auto/bg.png"}
-   :shop-by-look-deep-wave  {:header-data  {:title                   "The New You"
-                                            :shopping-bag?           true
-                                            :progress                progress/select-new-look-shop-by-look
-                                            :back-navigation-message [events/navigate-adventure-how-shop-hair]}
-                             :prompt       "Select your new look"
-                             :mini-prompt  ["We have an amazing selection for you"
-                                            [:br]
-                                            "to choose from."]
-                             :prompt-image "//ucarecdn.com/ffe3011a-1cae-494a-a806-eac94f618374/-/format/auto/bg.png"}
-   :bundle-sets             {:header-data  {:title                   "The New You"
-                                            :shopping-bag?           true
-                                            :progress                progress/select-new-look-shop-by-bundlesets
-                                            :back-navigation-message [events/navigate-adventure-how-shop-hair]}
-                             :prompt       "Select your new look"
-                             :mini-prompt  ["We have an amazing selection for you"
-                                            [:br]
-                                            "to choose from."]
-                             :prompt-image "//ucarecdn.com/9806a920-9c5b-4a98-a9dc-21b02c381593/-/format/auto/bg.png"}})
-
-(defn ^:private query [data]
+(defn ^:private query
+  [data]
   (let [adventure-choices (get-in data adventure-keypaths/adventure-choices)
         album-keyword     (get-in data keypaths/selected-album-keyword)
         stylist-selected? (some-> adventure-choices :flow #{"match-stylist"})
         current-step      (if stylist-selected? 3 2)]
-
-    (maps/deep-merge (album-keyword->presentation album-keyword)
-                     {:data-test         "select-new-look-choice"
-                      :current-step      current-step
-                      :header-data       {:subtitle (str "Step " current-step  " of 3")}
-                      :spinning?         false ;; TODO(jeff,corey): TO DO IT
-                      :color-details     (->> (get-in data keypaths/v2-facets)
-                                              (filter #(= :hair/color (:facet/slug %)))
-                                              first
-                                              :facet/options
-                                              (maps/index-by :option/slug))
-                      :looks             (pixlee/images-in-album (get-in data keypaths/ugc) album-keyword)
-                      :stylist-selected? stylist-selected?})))
+    (maps/deep-merge
+     (albums/by-keyword album-keyword)
+     {:data-test         "select-new-look-choice"
+      :current-step      current-step
+      :header-data       {:subtitle (str "Step " current-step  " of 3")}
+      :spinning?         false ;; TODO(jeff,corey): TO DO IT
+      :color-details     (->> (get-in data keypaths/v2-facets)
+                              (filter #(= :hair/color (:facet/slug %)))
+                              first
+                              :facet/options
+                              (maps/index-by :option/slug))
+      :looks             (pixlee/images-in-album (get-in data keypaths/ugc) album-keyword)
+      :stylist-selected? stylist-selected?})))
 
 ;; TODO(jeff,corey): Move this to a separate template
 (defn ^:private component
