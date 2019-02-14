@@ -40,12 +40,12 @@
             [lein-cljfmt "0.1.10"]
             [lein-figwheel "0.5.16"]]
   :figwheel {:nrepl-port 4000
-             :css-dirs ["resources/public/css"]}
+             :css-dirs   ["resources/public/css"]}
   :main storefront.core
   :repl-options {:init-ns user}
   :jvm-opts ~(concat
               ["-Xmx1024m" "-XX:-OmitStackTraceInFastThrow"]
-              (let [version (System/getProperty "java.version")
+              (let [version     (System/getProperty "java.version")
                     [major _ _] (clojure.string/split version #"\.")]
                 (if (>= (Integer. major) 9)
                   ["--add-modules" "java.xml.bind"]
@@ -60,36 +60,36 @@
   {:builds
    {:dev
     {:source-paths ["src-cljc" "src-cljs"]
-     :figwheel {:on-jsload "storefront.core/on-jsload"}
-     :compiler {:main "storefront.core"
-                :asset-path "/js/out"
-                :output-to "resources/public/js/out/main.js"
-                :output-dir "resources/public/js/out"
-                :pretty-print true
-                :libs ["src-cljs/rng/rng.js"]
-                :foreign-libs [{:file "src-cljs/storefront/react-slick.js"
-                                :provides ["react-slick"]}
-                               {:file "src-cljs/storefront/bugsnag-2.5.0.js"
-                                :provides ["bugsnag"]}
-                               {:file "src-cljs/storefront/jsQR.js"
-                                :provides ["jsQR"]}]
-                :externs ["externs/bugsnag.js"
-                          "externs/convert.js"
-                          "externs/facebook.js"
-                          "externs/jsQR.js"
-                          "externs/pixlee.js"
-                          "externs/react-slick.js"
-                          "externs/riskified.js"
-                          "externs/stringer.js"
-                          "externs/stripe.js"
-                          "externs/spreedly.js"
-                          "externs/talkable.js"
-                          "externs/uploadcare.js"
-                          "externs/wistia.js"
-                          "externs/yotpo.js"]
-                :preloads [devtools.preload]}}
+     :figwheel     {:on-jsload "storefront.core/on-jsload"}
+     :compiler     {:main         "storefront.core"
+                    :asset-path   "/js/out"
+                    :output-to    "resources/public/js/out/main.js"
+                    :output-dir   "resources/public/js/out"
+                    :pretty-print true
+                    :libs         ["src-cljs/rng/rng.js"]
+                    :foreign-libs [{:file     "src-cljs/storefront/react-slick.js"
+                                    :provides ["react-slick"]}
+                                   {:file     "src-cljs/storefront/bugsnag-2.5.0.js"
+                                    :provides ["bugsnag"]}
+                                   {:file     "src-cljs/storefront/jsQR.js"
+                                    :provides ["jsQR"]}]
+                    :externs      ["externs/bugsnag.js"
+                                   "externs/convert.js"
+                                   "externs/facebook.js"
+                                   "externs/jsQR.js"
+                                   "externs/pixlee.js"
+                                   "externs/react-slick.js"
+                                   "externs/riskified.js"
+                                   "externs/stringer.js"
+                                   "externs/stripe.js"
+                                   "externs/spreedly.js"
+                                   "externs/talkable.js"
+                                   "externs/uploadcare.js"
+                                   "externs/wistia.js"
+                                   "externs/yotpo.js"]
+                    :preloads     [devtools.preload]}}
     :release
-    {:source-paths ["src-cljc" "src-cljs"]
+    {:source-paths     ["src-cljc" "src-cljs"]
      :warning-handlers [cljs.analyzer/default-warning-handler
                         (fn [warning-type env extra]
                           (when (warning-type cljs.analyzer/*cljs-warnings*)
@@ -97,58 +97,58 @@
                               (binding [*out* *err*]
                                 (println (cljs.analyzer/message env s))
                                 (System/exit 1)))))]
-     :compiler {:main "storefront.core"
-                :output-to "target/release/js/out/main.js"
-                :output-dir "target/release/js/out"
-                :source-map "target/release/js/out/main.js.map"
-                :source-map-path "/js/out"
-                :pretty-print false
-                :infer-externs true
-                :static-fns true
-                :fn-invoke-direct true
-                :libs ["src-cljs/rng/rng.js"]
-                :foreign-libs [{:file "src-cljs/storefront/react-slick.js"
-                                :file-min "target/min-js/react-slick.js" ;; created by gulp
-                                :provides ["react-slick"]}
-                               {:file "src-cljs/storefront/bugsnag-2.5.0.js"
-                                :file-min "target/min-js/bugsnag-2.5.0.js"
-                                :provides ["bugsnag"]}
-                               {:file "src-cljs/storefront/jsQR.js"
-                                :file-min "target/min-js/jsQR.js"
-                                :provides ["jsQR"]}]
-                :externs ["externs/bugsnag.js"
-                          "externs/convert.js"
-                          "externs/facebook.js"
-                          "externs/jsQR.js"
-                          "externs/pixlee.js"
-                          "externs/react-slick.js"
-                          "externs/riskified.js"
-                          "externs/stringer.js"
-                          "externs/stripe.js"
-                          "externs/spreedly.js"
-                          "externs/talkable.js"
-                          "externs/uploadcare.js"
-                          "externs/wistia.js"
-                          "externs/yotpo.js"]
-                :optimizations :advanced}}}}
+     :compiler         {:main             "storefront.core"
+                        :output-to        "target/release/js/out/main.js"
+                        :output-dir       "target/release/js/out"
+                        :source-map       "target/release/js/out/main.js.map"
+                        :source-map-path  "/js/out"
+                        :pretty-print     false
+                        :infer-externs    true
+                        :static-fns       true
+                        :fn-invoke-direct true
+                        :libs             ["src-cljs/rng/rng.js"]
+                        :foreign-libs     [{:file     "src-cljs/storefront/react-slick.js"
+                                            :file-min "target/min-js/react-slick.js" ;; created by gulp
+                                            :provides ["react-slick"]}
+                                           {:file     "src-cljs/storefront/bugsnag-2.5.0.js"
+                                            :file-min "target/min-js/bugsnag-2.5.0.js"
+                                            :provides ["bugsnag"]}
+                                           {:file     "src-cljs/storefront/jsQR.js"
+                                            :file-min "target/min-js/jsQR.js"
+                                            :provides ["jsQR"]}]
+                        :externs          ["externs/bugsnag.js"
+                                           "externs/convert.js"
+                                           "externs/facebook.js"
+                                           "externs/jsQR.js"
+                                           "externs/pixlee.js"
+                                           "externs/react-slick.js"
+                                           "externs/riskified.js"
+                                           "externs/stringer.js"
+                                           "externs/stripe.js"
+                                           "externs/spreedly.js"
+                                           "externs/talkable.js"
+                                           "externs/uploadcare.js"
+                                           "externs/wistia.js"
+                                           "externs/yotpo.js"]
+                        :optimizations    :advanced}}}}
   :auto-clean false
   :profiles {:uberjar {:aot :all}
-             :test {:plugins [[lein-test-report-junit-xml "0.2.0"]]}
-             :repl {:dependencies
-                    [[cider/piggieback "0.3.6"]
-                     [org.clojure/tools.nrepl "0.2.13"]]}
-             :dev {:source-paths ["dev/clj"]
-                   :dependencies [[cider/piggieback "0.3.9"]
-                                  [figwheel-sidecar "0.5.16"]
-                                  [org.clojure/tools.nrepl "0.2.13"]
-                                  [binaryage/devtools "0.9.10"]
-                                  [org.clojure/tools.reader "1.3.0"]
-                                  [pjstadig/humane-test-output "0.8.1"]
-                                  [standalone-test-server "0.7.2"]
-                                  [ring/ring-mock "0.3.0"]
-                                  [org.clojure/tools.namespace "0.2.11"]]
-                   :injections [(require 'pjstadig.humane-test-output)
-                                (pjstadig.humane-test-output/activate!)]
-                   :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]}
-                   :cljsbuild
-                   {:builds {:dev {:source-paths ["dev/cljs"]}}}}})
+             :test    {:plugins [[lein-test-report-junit-xml "0.2.0"]]}
+             :repl    {:dependencies
+                       [[cider/piggieback "0.3.6"]
+                        [org.clojure/tools.nrepl "0.2.13"]]}
+             :dev     {:source-paths ["dev/clj"]
+                       :dependencies [[cider/piggieback "0.3.9"]
+                                      [figwheel-sidecar "0.5.16"]
+                                      [org.clojure/tools.nrepl "0.2.13"]
+                                      [binaryage/devtools "0.9.10"]
+                                      [org.clojure/tools.reader "1.3.0"]
+                                      [pjstadig/humane-test-output "0.8.1"]
+                                      [standalone-test-server "0.7.2"]
+                                      [ring/ring-mock "0.3.0"]
+                                      [org.clojure/tools.namespace "0.2.11"]]
+                       :injections   [(require 'pjstadig.humane-test-output)
+                                      (pjstadig.humane-test-output/activate!)]
+                       :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]}
+                       :cljsbuild
+                       {:builds {:dev {:source-paths ["dev/cljs"]}}}}})
