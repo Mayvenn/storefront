@@ -8,7 +8,6 @@
             [storefront.effects :as effects]
             [storefront.transitions :as transitions]
             [storefront.accessors.pixlee :as pixlee]
-            [storefront.platform.messages :as messages]
             [storefront.component :as component]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
@@ -25,8 +24,6 @@
         album-keyword     (get-in data keypaths/selected-album-keyword)]
     {:look-detail-data  #?(:cljs (shop-look-details/adventure-query data)
                            :clj nil)
-     :data-test         "look-detail"
-     :current-step      current-step
      :header-data       {:title                   "The New You"
                          :subtitle                (str "Step " current-step " of 3")
                          :height                  "65px"
@@ -34,19 +31,10 @@
                          :shopping-bag?           true
                          :back-navigation-message [events/navigate-adventure-select-new-look
                                                    {:album-keyword album-keyword}]}
-     :copy              #?(:cljs (-> config/pixlee :copy album-keyword) :clj nil)
-     :deals?            false
-     :spinning?         false
-     :color-details     (->> (get-in data keypaths/v2-facets)
-                             (filter #(= :hair/color (:facet/slug %)))
-                             first
-                             :facet/options
-                             (maps/index-by :option/slug))
-     :looks             (pixlee/images-in-album (get-in data keypaths/ugc) album-keyword)
      :stylist-selected? stylist-selected?}))
 
 (defn ^:private component
-  [{:keys [header-data data-test looks copy deals? spinning? color-details look-detail-data stylist-selected?]} _ _]
+  [{:keys [header-data look-detail-data stylist-selected?]} _ _]
   (component/create
    [:div.bg-white.center.flex-auto.self-stretch
     [:div.white

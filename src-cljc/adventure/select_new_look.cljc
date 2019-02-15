@@ -7,7 +7,6 @@
             [storefront.effects :as effects]
             [storefront.transitions :as transitions]
             [storefront.accessors.pixlee :as pixlee]
-            [storefront.platform.messages :as messages]
             [storefront.component :as component]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
