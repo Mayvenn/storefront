@@ -146,13 +146,10 @@
     [:div.h1.shout "free install"]
     [:div.h5.light "from a Mayvenn Stylist near you"]]])
 
-(defn add-more-hair-button [how-shop-choice]
-  (let [starting-point-args (if (= how-shop-choice "looks")
-                              :shop-by-look
-                              :bundle-sets)]
-    (ui/teal-button
-     (utils/route-to events/navigate-adventure-select-new-look {:album-keyword starting-point-args})
-     "Add more hair")))
+(def add-more-hair-button
+  (ui/teal-button
+   (utils/route-to events/navigate-adventure-how-shop-hair)
+   "Add more hair"))
 
 (defn add-more-hair-banner [how-shop-choice number-of-items-needed]
   [:div.bg-too-light-teal.py4.px2.my2 {:data-test "adventure-add-more-hair-banner"}
@@ -162,7 +159,7 @@
     " more " (ui/pluralize number-of-items-needed "item")
     " to get a free install from a Mayvenn Certified Stylist"]
 
-   [:div.mt2 (add-more-hair-button how-shop-choice)]])
+   [:div.mt2 add-more-hair-button]])
 
 (defn full-component [{:keys [order
                               skus
@@ -207,7 +204,7 @@
          (component/build adventure-cart-summary/component cart-summary nil)
 
          (if add-more-hair?
-           (add-more-hair-button how-shop-choice)
+           add-more-hair-button
            [:div.bg-too-light-teal.py4.px2
             [:div.h5.medium.center
              (if-let [servicing-stylist-firstname (-> servicing-stylist :address :firstname)]
