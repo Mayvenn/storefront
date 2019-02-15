@@ -39,9 +39,7 @@
                        [goog.events.EventType :as EventType]
                        [goog.events]
                        [goog.style]
-                       [om.core :as om]
-                       [storefront.history :as history]])
-            [storefront.components.affirm :as affirm]
+                       [om.core :as om]])
             [spice.date :as date]
             [storefront.components.svg :as svg]
             [storefront.components.v2 :as v2]
@@ -271,16 +269,6 @@
    {}
    (keys selections)))
 
-(defn image-section [{:keys [carousel-images product ugc]}]
-  [:div
-   (carousel carousel-images product)
-   ;; UGC Carousel
-   [:div.hide-on-mb (component/build ugc/component ugc {})]])
-
-(defn mobile-ugc-carousel [{:keys [ugc]}]
-  [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc {})])
-
-
 (defn component
   [{:keys [adding-to-bag?
            carousel-images
@@ -332,8 +320,6 @@
                [:div.h6.navy "Price Per Item"]
                [:div.medium (item-price (:sku/price selected-sku))]]
               [:div
-               (affirm/as-low-as-box {:amount      (:sku/price selected-sku)
-                                      :middle-copy "Just select Affirm at check out."})
                [:div.mt1.mx3
                 (cond
                   unavailable? unavailable-button

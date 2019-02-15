@@ -202,7 +202,7 @@
                                        (get-in app-state keypaths/user))
                                       (not (orders/applied-install-promotion order)))
         available-store-credit   (get-in app-state keypaths/user-total-available-store-credit)]
-    (assoc-in (default-credit-card-name app-state billing-address)
+    (assoc-in (default-credit-card-name app-state  billing-address)
               keypaths/checkout-selected-payment-methods
               (if covered-by-store-credit?
                 {:store-credit {}}

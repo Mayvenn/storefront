@@ -27,7 +27,6 @@
    [storefront.accessors.promos :as promos]
    [storefront.accessors.stylists :as stylists]
    [storefront.component :as component]
-   [storefront.components.affirm :as affirm]
    [storefront.components.flash :as flash]
    [storefront.components.footer :as storefront.footer]
    [storefront.components.money-formatters :as mf]
@@ -181,8 +180,6 @@
      [:div.col-on-tb-dt.col-6-on-tb-dt.px3
 
       (component/build cart-summary/component cart-summary nil)
-
-      (affirm/auto-complete-as-low-as-box {:amount (:total order)})
 
       (ui/teal-button {:spinning? false
                        :disabled? updating?

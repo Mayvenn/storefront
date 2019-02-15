@@ -38,12 +38,6 @@
    :optional-keys []
    :required-keys [:token :number]})
 
-(def affirm
-  {:domain        nil
-   :max-age       0
-   :optional-keys []
-   :required-keys [:affirm-token]})
-
 (def pending-promo
   {:domain        nil
    :max-age       four-weeks
@@ -108,13 +102,11 @@
   (doseq [spec account-specs]
     (clear-cookie spec cookie)))
 (def clear-email-capture-session (partial clear-cookie email-capture-session))
-(def clear-affirm (partial clear-cookie affirm))
 (def retrieve-login (partial retrieve user))
 (def retrieve-current-order (partial retrieve order))
 (def retrieve-pending-promo-code (partial retrieve pending-promo))
 (def retrieve-utm-params (partial retrieve utm-params))
 (def retrieve-adventure (partial retrieve adventure))
-(def retrieve-affirm (partial retrieve affirm))
 
 (def retrieve-email-capture-session (comp :popup-session (partial retrieve email-capture-session)))
 

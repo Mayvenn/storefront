@@ -37,7 +37,6 @@
 (def order-cart-payments-paypal (conj order-cart-payments :paypal))
 (def order-cart-payments-paypal-redirect-url (conj order-cart-payments-paypal :redirect-url))
 (def order-cart-payments-stripe (conj order-cart-payments :stripe))
-(def order-cart-payments-affirm (conj order-cart-payments :affirm))
 (def order-shipping-address (conj order :shipping-address))
 (def order-token (conj order :token))
 (def order-number (conj order :number))
@@ -266,9 +265,6 @@
 (def error-code (conj errors :error-code))
 
 (def review-components-count (conj ui :review-components-count))
-
-(def affirm-refresh-timeout (concat ui [:affirm :refresh :timeout] ))
-(def affirm-checkout-token (concat ui [:affirm :checkout :token] ))
 
 (def loaded (conj ui :loaded))
 (def loaded-convert (conj loaded :convert))
