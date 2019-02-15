@@ -48,7 +48,7 @@
               :padding-top         "46px"
               :background-size     "cover"
               :background-position "center"
-              :background-image    (str "url('"prompt-image "')")}}
+              :background-image    (str "url('" prompt-image "')")}}
      [:div.col.col-12
       [:div.h3 prompt]
       [:div.mt1.h6.light mini-prompt]]]

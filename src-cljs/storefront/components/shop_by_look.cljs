@@ -4,10 +4,8 @@
             [storefront.accessors.pixlee :as pixlee]
             [storefront.components.ugc :as ugc]
             [storefront.keypaths :as keypaths]
-            [storefront.accessors.experiments :as experiments]
             [storefront.components.ui :as ui]
             [storefront.config :as config]
-            [storefront.accessors.experiments :as experiments]
             [spice.maps :as maps]))
 
 (defn component [{:keys [looks deals? color-details copy spinning?]} owner opts]
