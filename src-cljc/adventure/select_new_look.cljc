@@ -66,9 +66,12 @@
   (component/build component (query data) opts))
 
 (defmethod effects/perform-effects events/navigate-adventure-select-new-look
-  [_ _ {:keys [album-keyword]} _ _]
-  #?(:cljs (pixlee-hook/fetch-album-by-keyword (keyword album-keyword))))
-;; hair-texture -> :shop-by-look
+  [_ _ args _ _]
+  #?(:cljs
+     (let [album-keyword (keyword (:album-keyword args))]
+       (if (seq (albums/by-keyword album-keyword))
+         (pixlee-hook/fetch-album-by-keyword (keyword album-keyword))
+         (effects/redirect events/navigate-adventure-how-shop-hair)))))
 
 (defmethod transitions/transition-state events/navigate-adventure-select-new-look
   [_ _ {:keys [album-keyword]} app-state]
