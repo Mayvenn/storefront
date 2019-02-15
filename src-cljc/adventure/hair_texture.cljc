@@ -44,7 +44,7 @@
      :prompt-image "//ucarecdn.com/3346657d-a039-487f-98fb-68b9b050e042/-/format/auto/aladdinMatchingOverlayImagePurpleER203Lm3x.png"
      :data-test    "hair-texture"
      :current-step current-step
-     :footer       [:div.dark-gray.col-6.mx-auto.h5
+     :footer       [:div.dark-gray.col-9.mx-auto.h5.pb2
                     [:div.my1.line-height-2 "Looking for Yaki Straight, Kinky Straight, Water Wave, or Curly?"]
                     [:a.block.teal.medium
                      (utils/route-to events/navigate-adventure-how-shop-hair)
