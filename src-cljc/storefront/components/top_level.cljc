@@ -40,6 +40,7 @@
             [adventure.bundlesets.hair-texture :as adventure.bundlesets.hair-texture]
             [adventure.shopbybundles.hair-texture :as adventure.shopbybundles.hair-texture]
             [adventure.shopbybundles.hair-color :as adventure.shopbybundles.hair-color]
+            [adventure.shopbybundles.product-list :as adventure.shopbybundles.product-list]
             [adventure.install-type :as adventure.install-type]
             [adventure.select-new-look :as adventure.select-new-look]
             [adventure.look-detail :as adventure.look-detail]
@@ -140,6 +141,7 @@
     events/navigate-adventure-bundlesets-hair-texture    adventure.bundlesets.hair-texture/built-component
     events/navigate-adventure-shopbybundles-hair-texture adventure.shopbybundles.hair-texture/built-component
     events/navigate-adventure-shopbybundles-hair-color   adventure.shopbybundles.hair-color/built-component
+    events/navigate-adventure-shopbybundles-product-list adventure.shopbybundles.product-list/built-component
     events/navigate-adventure-install-type               adventure.install-type/built-component
     events/navigate-adventure-select-new-look            adventure.select-new-look/built-component
     events/navigate-adventure-look-detail                adventure.look-detail/built-component

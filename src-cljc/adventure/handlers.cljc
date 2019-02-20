@@ -70,16 +70,17 @@
                (pixlee.hook/fetch-album-by-keyword :free-install-mayvenn))))
 
 (defn ^:private adventure-choices->criteria [choices]
-  {:hair/family  (:install-type choices)
-   :hair/texture (:texture choices)})
+  {:hair/family        (:install-type choices)
+   :hair/texture       (:texture choices)})
 
 (defmethod effects/perform-effects events/adventure-fetch-matched-skus
   [_ _ {:keys [criteria] :or {criteria [:hair/family]}} _ app-state]
   #?(:cljs (api/search-v2-skus (get-in app-state storefront.keypaths/api-cache)
-                                   (-> (get-in app-state keypaths/adventure-choices)
-                                       adventure-choices->criteria
-                                       (select-keys criteria))
-                                   #(handle-message events/api-success-adventure-fetch-skus %))))
+                               (-> (get-in app-state keypaths/adventure-choices)
+                                   adventure-choices->criteria
+                                   (select-keys criteria)
+                                   (assoc :catalog/department "hair"))
+                               #(handle-message events/api-success-adventure-fetch-skus %))))
 
 (defmethod transitions/transition-state events/api-success-adventure-fetch-skus
   [_ event {:keys [skus]} app-state]

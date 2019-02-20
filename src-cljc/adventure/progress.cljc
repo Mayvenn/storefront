@@ -23,5 +23,6 @@
 
 (def select-new-look-shop-by-look 13)
 (def select-new-look-shop-by-bundlesets 13)
+(def shopbybundles-product-list 13)
 
 (def look-detail 14)
