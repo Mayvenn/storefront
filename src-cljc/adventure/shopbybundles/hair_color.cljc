@@ -5,6 +5,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.effects :as effects]
+            [storefront.transitions :as transitions]
             [adventure.progress :as progress]
             [adventure.keypaths :as adventure-keypaths]
             [adventure.components.multi-prompt :as multi-prompt]
@@ -57,6 +58,9 @@
 (defn built-component
   [data opts]
   (component/build multi-prompt/component (query data) opts))
+
+(defmethod transitions/transition-state events/navigate-adventure-shopbybundles-hair-color [_ _ _ app-state]
+  (update-in app-state adventure-keypaths/adventure-choices dissoc :color))
 
 (defmethod effects/perform-effects events/navigate-adventure-shopbybundles-hair-color
   [_ _ args _ app-state]
