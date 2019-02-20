@@ -494,8 +494,8 @@
 (defpath api-success-fetch-matched-stylist)
 (defpath adventure-stylist-search-results-displayed)
 
-(defpath adventure-fetch-matched-products)
-(defpath api-success-adventure-fetch-products)
+(defpath adventure-fetch-matched-skus)
+(defpath api-success-adventure-fetch-skus)
 
 ;; Stripe Payment Button
 (defpath stripe-payment-request-button-inserted)

@@ -73,16 +73,15 @@
   {:hair/family  (:install-type choices)
    :hair/texture (:texture choices)})
 
-(defmethod effects/perform-effects events/adventure-fetch-matched-products
+(defmethod effects/perform-effects events/adventure-fetch-matched-skus
   [_ _ {:keys [criteria] :or {criteria [:hair/family]}} _ app-state]
-  #?(:cljs (api/search-v2-products (get-in app-state storefront.keypaths/api-cache)
+  #?(:cljs (api/search-v2-skus (get-in app-state storefront.keypaths/api-cache)
                                    (-> (get-in app-state keypaths/adventure-choices)
                                        adventure-choices->criteria
                                        (select-keys criteria))
-                                   #(handle-message events/api-success-adventure-fetch-products %))))
+                                   #(handle-message events/api-success-adventure-fetch-skus %))))
 
-(defmethod transitions/transition-state events/api-success-adventure-fetch-products
-  [_ event {:keys [products skus]} app-state]
+(defmethod transitions/transition-state events/api-success-adventure-fetch-skus
+  [_ event {:keys [skus]} app-state]
   (-> app-state
-      (assoc-in keypaths/adventure-matching-products products)
-      (assoc-in keypaths/adventure-matching-skus skus)))
+     (assoc-in keypaths/adventure-matching-skus skus)))
