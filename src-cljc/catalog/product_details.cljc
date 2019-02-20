@@ -380,6 +380,7 @@
                        :page-slug    (:page/slug product)
                        :sku-id       (:catalog/sku-id sku)
                        :album        images}
+       :show-cta?     true
        :offset        (get-in data keypaths/ui-ugc-category-popup-offset)
        :back          (first (get-in data keypaths/navigation-undo-stack))
        ;;TODO GROT:

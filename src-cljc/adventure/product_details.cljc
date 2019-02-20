@@ -385,6 +385,7 @@
                        :page-slug    (:page/slug product)
                        :sku-id       (:catalog/sku-id sku)
                        :album        images}
+       :show-cta?     (experiments/freeinstall-pdp-looks? data)
        :offset        (get-in data keypaths/ui-ugc-category-popup-offset)
        :back          (first (get-in data keypaths/navigation-undo-stack))
        ;;TODO GROT:

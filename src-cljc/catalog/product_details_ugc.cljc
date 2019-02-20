@@ -32,12 +32,12 @@
   #?(:clj (Integer/parseInt v)
      :cljs (js/parseInt v 10)))
 
-(defn ^:private popup-slide [long-name {:keys [links] :as item}]
+(defn ^:private popup-slide [show-cta? long-name {:keys [links] :as item}]
   [:div.m1.rounded-bottom
    (ugc/content-view item)
    [:div.bg-white.rounded-bottom.p2
     [:div.h5.px4 (ugc/user-attribution item)]
-    (when (-> links :view-look boolean)
+    (when (and show-cta? (-> links :view-look boolean))
       [:div.mt2 (ugc/view-look-button item "View this look" {:back-copy (str "back to " (->title-case long-name))})])]])
 
 (defn component [{{:keys [album product-id page-slug sku-id]} :carousel-data} owner opts]
@@ -63,8 +63,10 @@
        "Want to show up on our homepage? "
        "Tag your best pictures wearing Mayvenn with " [:span.bold "#MayvennMade"]]])))
 
-(defn popup-component [{:keys [now carousel-data offset]} owner opts]
+(defn popup-component [{:keys [now carousel-data offset show-cta?]} owner opts]
   (component/create
+   ;; NOTE(jeff,corey): events/navigate-product-details should be the current
+   ;; navigation event of the PDP page (freeinstall and classic have different events)
    (let [close-attrs (util/route-to events/navigate-product-details
                                     {:catalog/product-id (:product-id carousel-data)
                                      :page/slug          (:page-slug carousel-data)
@@ -73,7 +75,7 @@
       {:close-attrs close-attrs}
       [:div.relative
        (component/build carousel/component
-                        {:slides   (map (partial popup-slide (:product-name carousel-data))
+                        {:slides   (map (partial popup-slide show-cta? (:product-name carousel-data))
                                         (:album carousel-data))
                          :settings {:slidesToShow 1
                                     :initialSlide (parse-int offset)}
