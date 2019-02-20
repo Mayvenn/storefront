@@ -79,7 +79,7 @@
   (string/replace (str slug) #"#" ""))
 
 (defn desktop-length-and-quantity-picker-rows
-  [{:keys [product-sold-out-style selected-length selections options sku-quantity no-price-on-lengths]}]
+  [{:keys [product-sold-out-style selected-length selections options sku-quantity no-price-on-lengths navigation-event]}]
   [:div.flex.hide-on-mb
    (field
     {:class "border-right flex-grow-5"}
@@ -90,8 +90,9 @@
       (:option/name selected-length)]
      (invisible-select
       {:on-change #(messages/handle-message events/control-product-detail-picker-option-select
-                                            {:selection :hair/length
-                                             :value     (.-value (.-target %))})
+                                            {:selection        :hair/length
+                                             :navigation-event navigation-event
+                                             :value            (.-value (.-target %))})
        :value     (:hair/length selections)
        :options   (map (fn [option]
                          (let [price (when (and (not no-price-on-lengths) (:price option))
@@ -143,7 +144,7 @@
        sku-quantity]))]])
 
 (defn desktop-color-picker-row
-  [{:keys [selected-color selections options product-sold-out-style]}]
+  [{:keys [navigation-event selected-color selections options product-sold-out-style]}]
   [:div.hide-on-mb
    (field
     (desktop-dropdown
@@ -220,7 +221,8 @@
   (when price
     (when price [:span {:item-prop "price"} (mf/as-money-without-cents price)])))
 
-(defn length-option [{:keys [item key primary-label secondary-label checked? disabled? selected-picker]}]
+(defn length-option
+  [{:keys [item key primary-label secondary-label checked? disabled? selected-picker navigation-event]}]
   (let [label-style (cond
                       disabled? "dark-gray"
                       checked?  "medium"
@@ -231,8 +233,9 @@
                  :key      (str key "-option")
                  :on-click #(select-and-close
                              events/control-product-detail-picker-option-select
-                             {:selection selected-picker
-                              :value     (:option/slug item)})}
+                             {:selection        selected-picker
+                              :navigation-event navigation-event
+                              :value            (:option/slug item)})}
                 (simple-content-layer
                  (list
                   [:div.col-2
@@ -263,14 +266,15 @@
     name]])
 
 (defn color-option
-  [{:keys [key color sku-image checked? disabled? selected-picker]}]
+  [{:keys [key color sku-image checked? disabled? selected-picker navigation-event]}]
   [:div {:key       key
          :data-test (str "picker-color-" (hacky-fix-of-bad-slugs-on-facets (:option/slug color)))}
    (ui/option {:key      (str key "-option")
                :on-click #(select-and-close
                            events/control-product-detail-picker-option-select
-                           {:selection selected-picker
-                            :value     (:option/slug color)})}
+                           {:selection        selected-picker
+                            :navigation-event navigation-event
+                            :value            (:option/slug color)})}
               (swatch-content-layer color sku-image checked?)
               [:div
                (when disabled?
@@ -320,7 +324,15 @@
       [:div.h4.medium.mt2 [:a.teal.underline link-attrs link-text]]])])
 
 (defn component
-  [{:keys [selected-picker facets selections options sku-quantity product-alternative no-price-on-lengths] :as data} owner _]
+  [{:keys [navigation-event
+           selected-picker
+           facets
+           selections
+           options
+           sku-quantity
+           product-alternative
+           no-price-on-lengths]
+    :as   data} owner _]
   (component/create
    [:div {:key "picker-body"}
     (slide-animate
@@ -330,24 +342,26 @@
                                         :items               (sort-by :option/order (get options selected-picker))
                                         :cell-component-fn   (fn [item]
                                                                (color-option
-                                                                {:key             (str "color-" (:option/name item))
-                                                                 :selected-picker selected-picker
-                                                                 :color           item
-                                                                 :checked?        (= (:hair/color selections)
-                                                                                     (:option/slug item))
-                                                                 :sku-image       (:option/sku-swatch item)}))
+                                                                {:key              (str "color-" (:option/name item))
+                                                                 :selected-picker  selected-picker
+                                                                 :navigation-event navigation-event
+                                                                 :color            item
+                                                                 :checked?         (= (:hair/color selections)
+                                                                                      (:option/slug item))
+                                                                 :sku-image        (:option/sku-swatch item)}))
                                         :product-alternative product-alternative})
          :hair/length   (picker-dialog {:title               (get-in facets [selected-picker :facet/name])
                                         :items               (sort-by :option/order (get options selected-picker))
                                         :cell-component-fn   (fn [item]
                                                                (length-option
-                                                                {:key             (str "length-" (:option/name item))
-                                                                 :primary-label   (:option/name item)
-                                                                 :secondary-label (when-not no-price-on-lengths (item-price (:price item)))
-                                                                 :checked?        (= (:hair/length selections)
-                                                                                     (:option/slug item))
-                                                                 :selected-picker selected-picker
-                                                                 :item            item}))
+                                                                {:key              (str "length-" (:option/name item))
+                                                                 :primary-label    (:option/name item)
+                                                                 :navigation-event navigation-event
+                                                                 :secondary-label  (when-not no-price-on-lengths (item-price (:price item)))
+                                                                 :checked?         (= (:hair/length selections)
+                                                                                      (:option/slug item))
+                                                                 :selected-picker  selected-picker
+                                                                 :item             item}))
                                         :product-alternative product-alternative})
          :item/quantity (picker-dialog {:title               "Quantity"
                                         :items               (range 1 11)
@@ -370,7 +384,10 @@
         product-skus      (products/extract-product-skus data (products/current-product data))
         product-sold-out? (every? (comp not :inventory/in-stock?) product-skus)
         facets            (facets/by-slug data)
-        selections        (get-in data catalog.keypaths/detailed-product-selections)]
+        selections        (get-in data catalog.keypaths/detailed-product-selections)
+        navigation-event  (if (= "freeinstall" (get-in data keypaths/store-slug))
+                            events/navigate-adventure-product-details
+                            events/navigate-product-details)]
     {:selected-picker        selected-picker
      :facets                 facets
      :selections             (get-in data catalog.keypaths/detailed-product-selections)
@@ -387,4 +404,5 @@
                                 :link-attrs (utils/route-to events/navigate-category
                                                             {:page/slug           "dyed-virgin-hair"
                                                              :catalog/category-id "16"})})
-     :no-price-on-lengths    (experiments/no-prices-on-picker? data)}))
+     :no-price-on-lengths    (experiments/no-prices-on-picker? data)
+     :navigation-event       navigation-event}))

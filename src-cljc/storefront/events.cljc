@@ -450,6 +450,8 @@
 ;; CUSTOMER
 (defpath navigate-customer-orders)
 
+(defpath initialize-product-details)
+
 ;; ADVENTURE
 (defpath navigate-adventure)
 (defpath navigate-adventure-home)
@@ -472,6 +474,8 @@
 (defpath navigate-adventure-stylist-results)
 (defpath navigate-adventure-out-of-area)
 (defpath navigate-adventure-match-success)
+
+(defpath navigate-adventure-product-details)
 
 (defpath control-adventure)
 (defpath control-adventure-choice)

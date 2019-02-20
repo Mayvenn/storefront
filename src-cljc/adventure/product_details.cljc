@@ -1,9 +1,11 @@
-(ns catalog.product-details
+(ns adventure.product-details
   (:require [clojure.set :as set]
             [clojure.string :as string]
             [catalog.products :as products]
             [catalog.skuers :as skuers]
             [catalog.keypaths]
+            [adventure.components.header :as header]
+            [adventure.progress :as progress]
             [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.pixlee :as pixlee]
@@ -270,88 +272,91 @@
    (keys selections)))
 
 (defn component
-  [{:keys [adding-to-bag?
-           carousel-images
-           product
-           reviews
-           selected-sku
-           sku-quantity
-           selected-options
-           get-a-free-install-section-data
-           selections
-           options
-           picker-data
-           aladdin-or-phoenix?
-           ugc] :as data} owner opts]
+  [{:keys       [header-data
+                 adding-to-bag?
+                 carousel-images
+                 product
+                 reviews
+                 selected-sku
+                 sku-quantity
+                 selected-options
+                 get-a-free-install-section-data
+                 selections
+                 options
+                 picker-data
+                 aladdin-or-phoenix?
+                 ugc] :as data} owner opts]
   (let [review?      (seq reviews)
         unavailable? (not (seq selected-sku))
         sold-out?    (not (:inventory/in-stock? selected-sku))]
     (component/create
-      (if-not product
-        [:div.flex.h2.p1.m1.items-center.justify-center
-         {:style {:height "25em"}}
-         (ui/large-spinner {:style {:height "4em"}})]
-        [:div
-         [:div.container
-          (when (:offset ugc)
-            [:div.absolute.overlay.z4.overflow-auto
-             (component/build ugc/popup-component ugc opts)])
-          [:div.p2
-           (page
-            [:div
-             (carousel carousel-images product)
-             [:div.hide-on-mb (component/build ugc/component ugc opts)]]
-            [:div
+     [:div.bg-too-light-teal.white.flex-auto.self-stretch
+      (when header-data
+        (header/built-component header-data nil))
+      [:div.flex.items-center.medium.bg-light-lavender {:style {:height "75px"}}]
+      [:div.bg-white.black
+       (if-not product
+         [:div.flex.h2.p1.m1.items-center.justify-center
+          {:style {:height "25em"}}
+          (ui/large-spinner {:style {:height "4em"}})]
+         [:div
+          [:div.container
+           (when (:offset ugc)
+             [:div.absolute.overlay.z4.overflow-auto
+              (component/build ugc/popup-component ugc opts)])
+           [:div.p2
+            (page
              [:div
-              [:div.mx2
-               [:h1.h2.medium.titleize {:item-prop "name"}
-                (:copy/title product)]
-               (when review? (reviews-summary reviews opts))]
-              [:meta {:item-prop "image"
-                      :content   (:url (first carousel-images))}]
-              (full-bleed-narrow (carousel carousel-images product))]
-             [:div {:item-prop  "offers"
-                    :item-scope ""
-                    :item-type  "http://schema.org/Offer"}
-              [:div.pb2 (component/build picker/component picker-data opts)]
-              (when (products/eligible-for-triple-bundle-discount? product)
-                [:div triple-bundle-upsell])
-              [:div.center.mb6.pt4
-               [:div.h6.navy "Price Per Item"]
-               [:div.medium (item-price (:sku/price selected-sku))]]
+              (carousel carousel-images product)
+              [:div.hide-on-mb (component/build ugc/component ugc opts)]]
+             [:div
               [:div
-               [:div.mt1.mx3
-                (cond
-                  unavailable? unavailable-button
-                  sold-out?    sold-out-button
-                  :else        (add-to-bag-button adding-to-bag? selected-sku sku-quantity))]]
-              (when (products/stylist-only? product)
-                shipping-and-guarantee)]
-             (product-description product)
-             [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])]]
-         (when aladdin-or-phoenix?
-           [:div.py10.bg-transparent-teal.col-on-tb-dt.mt4
-            (v2/get-a-free-install get-a-free-install-section-data)])
-         (when review?
-           [:div.container.col-7-on-tb-dt.px2
-            (component/build review-component/reviews-component reviews opts)])
-         (when-not (products/stylist-only? product)
-           ;; We use visibility:hidden rather than display:none so that this component has a height.
-           ;; We use the height on mobile view to slide it on/off the bottom of the page.
-           [:div.invisible-on-tb-dt
-            (component/build sticky-add-component
-                             {:image            (->> options
-                                                     :hair/color
-                                                     (filter #(= (first (:hair/color selected-sku))
-                                                                 (:option/slug %)))
-                                                     first
-                                                     :option/rectangle-swatch)
-                              :adding-to-bag?   adding-to-bag?
-                              :sku              selected-sku
-                              :sold-out?        sold-out?
-                              :unavailable?     (empty? selected-sku)
-                              :selected-options selected-options
-                              :quantity         sku-quantity} {})])]))))
+               [:div.mx2
+                [:h1.h2.medium.titleize {:item-prop "name"}
+                 (:copy/title product)]
+                (when review? (reviews-summary reviews opts))]
+               [:meta {:item-prop "image"
+                       :content   (:url (first carousel-images))}]
+               (full-bleed-narrow (carousel carousel-images product))]
+              [:div {:item-prop  "offers"
+                     :item-scope ""
+                     :item-type  "http://schema.org/Offer"}
+               [:div.pb2 (component/build picker/component picker-data opts)]
+               (when (products/eligible-for-triple-bundle-discount? product)
+                 [:div triple-bundle-upsell])
+               [:div.center.mb6.pt4
+                [:div.h6.navy "Price Per Item"]
+                [:div.medium (item-price (:sku/price selected-sku))]]
+               [:div
+                [:div.mt1.mx3
+                 (cond
+                   unavailable? unavailable-button
+                   sold-out?    sold-out-button
+                   :else        (add-to-bag-button adding-to-bag? selected-sku sku-quantity))]]
+               (when (products/stylist-only? product)
+                 shipping-and-guarantee)]
+              (product-description product)
+              [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])]]
+          (when review?
+            [:div.container.col-7-on-tb-dt.px2
+             (component/build review-component/reviews-component reviews opts)])
+          (when-not (products/stylist-only? product)
+            ;; We use visibility:hidden rather than display:none so that this component has a height.
+            ;; We use the height on mobile view to slide it on/off the bottom of the page.
+            [:div.invisible-on-tb-dt
+             (component/build sticky-add-component
+                              {:image            (->> options
+                                                      :hair/color
+                                                      (filter #(= (first (:hair/color selected-sku))
+                                                                  (:option/slug %)))
+                                                      first
+                                                      :option/rectangle-swatch)
+                               :adding-to-bag?   adding-to-bag?
+                               :sku              selected-sku
+                               :sold-out?        sold-out?
+                               :unavailable?     (empty? selected-sku)
+                               :selected-options selected-options
+                               :quantity         sku-quantity} {})])])]])))
 
 (defn min-of-maps
   ([k] {})
@@ -428,7 +433,12 @@
                                :images
                                (filter (comp (partial = "approved") :status))
                                (map (comp v2/get-ucare-id-from-url :resizable-url)))]
-    {:reviews                         (review-component/query data)
+    {:header-data                     {:progress                progress/find-your-stylist
+                                       :title                   [:div.medium "Find Your Stylist"]
+                                       :subtitle                (str "Step " 2 " of 3")
+                                       :shopping-bag?           true
+                                       :back-navigation-message [events/navigate-adventure-match-stylist]}
+     :reviews                         (review-component/query data)
      :ugc                             ugc
      :aladdin-or-phoenix?             (experiments/v2-experience? data)
      :fetching-product?               (utils/requesting? data (conj request-keys/search-v2-products
@@ -452,14 +462,6 @@
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
-
-(defn fetch-product-album
-  [{:keys [legacy/named-search-slug]}]
-  (let [named-search-kw (keyword named-search-slug)
-        album-id        (get-in config/pixlee [:albums named-search-kw])]
-    (when album-id
-      #?(:cljs (pixlee-hooks/fetch-album album-id named-search-kw)
-         :clj nil))))
 
 (defn get-valid-product-skus [product all-skus]
   (let [skus (->> product
@@ -487,21 +489,6 @@
   (and (:catalog/sku-id selected-sku)
        (not= (:catalog/sku-id selected-sku)
              (:SKU query-params))))
-
-#?(:cljs
-   (defn fetch-product-details [app-state product-id]
-     (api/search-v2-products (get-in app-state keypaths/api-cache)
-                             {:catalog/product-id product-id}
-                             (fn [response]
-                               (messages/handle-message events/api-success-v2-products-for-details response)
-                               (messages/handle-message events/viewed-sku {:sku (get-in app-state catalog.keypaths/detailed-product-selected-sku)})))
-
-     (if-let [current-product (products/current-product app-state)]
-       (if (auth/permitted-product? app-state current-product)
-         (do
-           (fetch-product-album current-product)
-           (review-hooks/insert-reviews))
-         (effects/redirect events/navigate-home)))))
 
 (defn first-when-only [coll]
   (when (= 1 (count coll))
@@ -549,133 +536,8 @@
                               {}
                               (select-keys sku (:selector/electives product))))))))
 
-;; TODO change effect handler to check for this:
-;; (and sku-id (contains? (set skus) sku-id))
-(defmethod transitions/transition-state events/initialize-product-details
-  [_ event {:as args :keys [catalog/product-id query-params]} app-state]
-  (let [ugc-offset (:offset query-params)
-        sku        (->> (:SKU query-params)
-                        (conj keypaths/v2-skus)
-                        (get-in app-state))
-        options    (generate-product-options app-state)]
-    (-> app-state
-        (assoc-in catalog.keypaths/detailed-product-id product-id)
-        (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
-        (assoc-in keypaths/ui-ugc-category-popup-offset ugc-offset)
-        (assoc-in keypaths/browse-recently-added-skus [])
-        (assoc-in keypaths/browse-sku-quantity 1)
-        (assoc-in catalog.keypaths/detailed-product-selected-picker nil)
-        (assoc-selections sku)
-        (assoc-in catalog.keypaths/detailed-product-options options))))
-
-(defmethod transitions/transition-state events/control-product-detail-picker-option-select
-  [_ event {:keys [selection value]} app-state]
-  (let [selected-sku (->> {selection #{value}}
-                          (determine-sku-from-selections app-state))
-        options      (generate-product-options app-state)]
-    (-> app-state
-        (assoc-in catalog.keypaths/detailed-product-selected-sku
-                  selected-sku)
-        (update-in catalog.keypaths/detailed-product-selections
-                   merge {selection value})
-        (assoc-in catalog.keypaths/detailed-product-options options))))
-
-(defmethod effects/perform-effects events/control-product-detail-picker-option-select
-  [_ event {:keys [selection value navigation-event]} _ app-state]
-  (let [sku-id-for-selection (-> app-state
-                                 (get-in catalog.keypaths/detailed-product-selected-sku)
-                                  :catalog/sku-id)
-        params-with-sku-id   (-> app-state
-                                 products/current-product
-                                 (select-keys [:catalog/product-id :page/slug])
-                                 (assoc :query-params {:SKU sku-id-for-selection}))]
-    (effects/redirect navigation-event params-with-sku-id)
-    #?(:cljs (scroll/enable-body-scrolling))))
-
-(defmethod transitions/transition-state events/control-product-detail-picker-open
-  [_ event {:keys [facet-slug]} app-state]
-  (assoc-in app-state catalog.keypaths/detailed-product-selected-picker facet-slug))
-
-(defmethod transitions/transition-state events/control-product-detail-picker-option-quantity-select
-  [_ event {:keys [value]} app-state]
-  (-> app-state
-      (assoc-in keypaths/browse-sku-quantity value)
-      (assoc-in catalog.keypaths/detailed-product-selected-picker nil)))
-
-(defmethod transitions/transition-state events/control-product-detail-picker-close
-  [_ event _ app-state]
-  (assoc-in app-state catalog.keypaths/detailed-product-selected-picker nil))
-
 #?(:cljs
-   (defmethod effects/perform-effects events/control-product-detail-picker-open
-     [_ _ _ _ _]
-     (scroll/disable-body-scrolling)))
-
-#?(:cljs
-   (defmethod effects/perform-effects events/control-product-detail-picker-close
-     [_ _ _ _ _]
-     (scroll/enable-body-scrolling)))
-
-#?(:cljs
-   (defmethod effects/perform-effects events/initialize-product-details
-     [_ _ {:keys [catalog/product-id page/slug query-params]} _ app-state]
-     (let [selected-sku (get-in app-state catalog.keypaths/detailed-product-selected-sku)]
-       (if (url-points-to-invalid-sku? selected-sku query-params)
-         (effects/redirect events/navigate-product-details
-                           {:catalog/product-id product-id
-                            :page/slug          slug
-                            :query-params       {:SKU (:catalog/sku-id selected-sku)}})
-         (fetch-product-details app-state product-id)))))
-
-#?(:cljs
-   (defmethod effects/perform-effects events/navigate-product-details
-     [_ _ args _ app-state]
+   (defmethod effects/perform-effects
+     events/navigate-adventure-product-details
+     [_ _ {:as args :keys [catalog/product-id page/slug query-params]} _ app-state]
      (messages/handle-message events/initialize-product-details args)))
-
-(defmethod effects/perform-effects events/api-success-v2-products-for-details
-  [_ _ _ _ app-state]
-  (fetch-product-album (products/current-product app-state)))
-
-(defmethod transitions/transition-state events/api-success-v2-products-for-details
-  ;; for pre-selecting skus by url
-  [_ event {:keys [skus]} app-state]
-  (let [product      (products/current-product app-state)
-        skus         (products/index-skus skus)
-        sku-id       (determine-sku-id app-state product)
-        sku          (get skus sku-id)
-        product-skus (products/extract-product-skus app-state product)
-        options      (generate-product-options app-state)]
-    (-> app-state
-        (assoc-in catalog.keypaths/detailed-product-product-skus product-skus)
-        (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
-        (assoc-in catalog.keypaths/detailed-product-options options))))
-
-(defmethod effects/perform-effects events/control-add-sku-to-bag
-  [dispatch event {:keys [sku quantity] :as args} _ app-state]
-  #?(:cljs
-     (let [nav-event (get-in app-state keypaths/navigation-event)]
-       (api/add-sku-to-bag
-        (get-in app-state keypaths/session-id)
-        {:sku        sku
-         :quantity   quantity
-         :stylist-id (get-in app-state keypaths/store-stylist-id)
-         :token      (get-in app-state keypaths/order-token)
-         :number     (get-in app-state keypaths/order-number)
-         :user-id    (get-in app-state keypaths/user-id)
-         :user-token (get-in app-state keypaths/user-token)}
-        #(do
-           (when (not= events/navigate-cart nav-event)
-             (history/enqueue-navigate events/navigate-cart))
-           (messages/handle-later events/api-success-add-sku-to-bag
-                                  {:order    %
-                                   :quantity quantity
-                                   :sku      sku}))))))
-
-(defmethod transitions/transition-state events/api-success-add-sku-to-bag
-  [_ event {:keys [order quantity sku]} app-state]
-  (let [previous-order (get-in app-state keypaths/order)]
-    (-> app-state
-        (update-in keypaths/browse-recently-added-skus
-                   conj
-                   {:quantity quantity :sku sku})
-        (assoc-in keypaths/browse-sku-quantity 1))))

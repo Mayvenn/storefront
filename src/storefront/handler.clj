@@ -461,6 +461,15 @@
           (let [path (products/path-for-sku product-id canonical-slug sku-id)]
             (util.response/redirect path))
 
+          (= config/freeinstall-subdomain (some-> req :store :store-slug ))
+          (generic-server-render render-ctx
+                                 (-> data
+                                     (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
+                                     (assoc-in catalog.keypaths/detailed-product-selected-sku-id sku-id)
+                                     (assoc-in catalog.keypaths/detailed-product-id product-id))
+                                 req
+                                 params)
+
           :else
           (html-response render-ctx
                          (-> data

@@ -54,6 +54,10 @@
     "/adv/install-type"                        (edn->bidi events/navigate-adventure-install-type)
     "/adv/stylist-results"                     (edn->bidi events/navigate-adventure-stylist-results)
     "/adv/out-of-area"                         (edn->bidi events/navigate-adventure-out-of-area)
+
+    ["/products/" [#"\d+" :catalog/product-id] "-" :page/slug]
+    (edn->bidi events/navigate-adventure-product-details)
+
     ["/adv/shop/shop-by-bundles-texture"]      (edn->bidi events/navigate-adventure-shopbybundles-hair-texture)
     ["/adv/shop/bundle-sets-texture"]          (edn->bidi events/navigate-adventure-bundlesets-hair-texture)
     ["/adv/shop/" :album-keyword]              (edn->bidi events/navigate-adventure-select-new-look)
@@ -80,9 +84,10 @@
   ["" (merge static-page-routes
              style-guide-routes
              freeinstall-routes
-             catalog-routes
              {{:subdomain (complement freeinstall?)}
-              {"/"                                                 (edn->bidi events/navigate-home)}}
+              (merge
+               catalog-routes
+               {"/"                                                 (edn->bidi events/navigate-home)})}
 
              {"/login"                                            (edn->bidi events/navigate-sign-in)
               "/logout"                                           (edn->bidi events/navigate-sign-out)
