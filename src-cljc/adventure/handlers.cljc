@@ -86,3 +86,19 @@
   [_ event {:keys [skus]} app-state]
   (-> app-state
      (assoc-in keypaths/adventure-matching-skus skus)))
+
+(defmethod effects/perform-effects events/adventure-fetch-matched-products
+  [_ _ {:keys [criteria] :or {criteria [:hair/family]}} _ app-state]
+  #?(:cljs (api/search-v2-products (get-in app-state storefront.keypaths/api-cache)
+                               (-> (get-in app-state keypaths/adventure-choices)
+                                   adventure-choices->criteria
+                                   (select-keys criteria)
+                                   (assoc :catalog/department "hair"))
+                               #(handle-message events/api-success-adventure-fetch-products %))))
+
+(defmethod transitions/transition-state events/api-success-adventure-fetch-products
+  [_ event {:keys [products skus]} app-state]
+  (-> app-state
+      (assoc-in keypaths/adventure-matching-products products)
+      (assoc-in keypaths/adventure-matching-skus skus)))
+

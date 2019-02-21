@@ -497,6 +497,8 @@
 
 (defpath adventure-fetch-matched-skus)
 (defpath api-success-adventure-fetch-skus)
+(defpath adventure-fetch-matched-products)
+(defpath api-success-adventure-fetch-products)
 
 ;; Stripe Payment Button
 (defpath stripe-payment-request-button-inserted)
