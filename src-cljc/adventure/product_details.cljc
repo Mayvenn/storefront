@@ -198,8 +198,7 @@
    (svg/discount-tag {:class  "mxnp6"
                       :height "4em"
                       :width  "4em"})
-   [:span.medium.shout "10% off "] [:span.bold.h5.mx1 "·"]
-   "Buy 3 bundles or more"])
+   [:span.bold "10% OFF + FREE Install"]])
 
 (def shipping-and-guarantee
   (component/html
