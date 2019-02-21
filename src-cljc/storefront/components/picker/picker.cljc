@@ -396,9 +396,11 @@
      :selected-length        (get-in facets [:hair/length :facet/options (:hair/length selections)])
      :product-sold-out-style (when product-sold-out? {:class "gray"})
      :sku-quantity           (get-in data keypaths/browse-sku-quantity 1)
-     :product-alternative    (when (and (= 1 (count (:hair/color options)))
-                                        (= selected-picker :hair/color)
-                                        (some family ["frontals" "bundles" "closures" "360-frontals"]))
+     :product-alternative    (when (and
+                                    (not= "freeinstall" (get-in data keypaths/store-slug))
+                                    (= 1 (count (:hair/color options)))
+                                    (= selected-picker :hair/color)
+                                    (some family ["frontals" "bundles" "closures" "360-frontals"]))
                                {:lead-in    "Want more color?"
                                 :link-text  "Browse Dyed Virgin"
                                 :link-attrs (utils/route-to events/navigate-category
