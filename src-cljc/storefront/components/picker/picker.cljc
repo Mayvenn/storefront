@@ -406,5 +406,7 @@
                                 :link-attrs (utils/route-to events/navigate-category
                                                             {:page/slug           "dyed-virgin-hair"
                                                              :catalog/category-id "16"})})
-     :no-price-on-lengths    (experiments/no-prices-on-picker? data)
+     :no-price-on-lengths    (or
+                              (= "freeinstall" (get-in data keypaths/store-slug))
+                              (experiments/no-prices-on-picker? data))
      :navigation-event       navigation-event}))
