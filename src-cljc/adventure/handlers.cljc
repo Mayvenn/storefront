@@ -98,7 +98,13 @@
 
 (defmethod transitions/transition-state events/api-success-adventure-fetch-products
   [_ event {:keys [products skus]} app-state]
-  (-> app-state
-      (assoc-in keypaths/adventure-matching-products products)
-      (assoc-in keypaths/adventure-matching-skus skus)))
+  (let [selected-color      (:color (get-in app-state keypaths/adventure-choices))
+        skus-matching-color (filter #(contains? (set (:hair/color %)) selected-color) skus)
+        product-ids         (set (flatten (map :selector/from-products skus-matching-color)))
+        products-indexed    (spice.maps/index-by :catalog/product-id products)
+        correct-products    (map #(get products-indexed %) product-ids)]
+    (-> app-state
+        #_(assoc-in storefront.keypaths/v2-products (spice.maps/index-by :product-id products))
+        (assoc-in keypaths/adventure-matching-products correct-products)
+        (assoc-in keypaths/adventure-matching-skus skus))))
 
