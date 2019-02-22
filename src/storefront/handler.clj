@@ -214,6 +214,9 @@
       (= "stylist" (first subdomains))
       (util.response/redirect "https://community.mayvenn.com" 301)
 
+      (= "ambassador" (first subdomains))
+      (util.response/redirect (store-url "freeinstall" environment (update req :query-params merge {:redirect (last subdomains)})) 302)
+
       (and (#{[] ["www"] ["internal"]} subdomains)
            (root-domain-pages-to-preserve-paths-in-redirects (:uri req)))
       (util.response/redirect (store-url "shop" environment req) 301)
