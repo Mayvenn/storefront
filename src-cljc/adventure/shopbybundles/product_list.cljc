@@ -48,11 +48,6 @@
     [:div.h1.shout "free install"]
     [:div.h5.light "from a Mayvenn Stylist near you"]]])
 
-#_(def add-more-hair-button
-  (ui/teal-button
-   (utils/route-to events/navigate-adventure-how-shop-hair)
-   "Add more hair"))
-
 (defn add-more-hair-banner
   [number-of-items-needed]
   [:div.py4.px2.my2.mx4
@@ -72,7 +67,6 @@
            prompt-image
            stylist-selected?]}
    _ _]
-  (prn "hi")
   (component/create
    [:div.bg-too-light-teal.white.center.flex-auto.self-stretch
     (when header-data
