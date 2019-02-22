@@ -51,9 +51,10 @@
               :background-image    (str "url('" prompt-image "')")}}
      [:div.col.col-12
       [:div.h3 "Add 3 more items to get a free install from a Mayvenn Certified Stylist"]]]
-    (for [product-card product-cards]
-      [:div.my2.black.clearfix {:key (:slug product-card)}
-       (component/build product-card/component product-card nil)])
+    [:div.clearfix.px5
+     (for [product-card product-cards]
+       [:div.my2.black {:key (:slug product-card)}
+        (component/build product-card/component product-card nil)])]
     (when-not stylist-selected?
       [:div.h6.center.pb8
        [:div.dark-gray "Not ready to shop hair?"]

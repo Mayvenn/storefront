@@ -106,5 +106,6 @@
     (-> app-state
         #_(assoc-in storefront.keypaths/v2-products (spice.maps/index-by :product-id products))
         (assoc-in keypaths/adventure-matching-products correct-products)
-        (assoc-in keypaths/adventure-matching-skus skus))))
+        (assoc-in keypaths/adventure-matching-skus skus)
+        (assoc-in keypaths/adventure-matching-skus-color skus-matching-color))))
 
