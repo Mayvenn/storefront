@@ -50,7 +50,7 @@
 
 (def ^:private slug->video
   {"we-are-mayvenn" {:youtube-id "hWJjyy5POTE"}
-   "free-install"   {:youtube-id "sM6dvM1Q45k"}})
+   "free-install"   {:youtube-id "yDNgbKM2CrU"}})
 
 ;; Perhaps there is a better way to "start" the flow in the app-state
 ;;   e.g. {:flow/version 1}
