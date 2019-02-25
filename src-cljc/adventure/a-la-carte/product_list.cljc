@@ -34,7 +34,7 @@
                           [:a.teal (utils/fake-href events/navigate-adventure-find-your-stylist)
                            "Find a stylist"]]
       :header-data       {:title                   "The New You"
-                          :progress                adventure.progress/shopbybundles-product-list
+                          :progress                adventure.progress/a-la-carte-product-list
                           :back-navigation-message [events/navigate-adventure-shopbybundles-hair-color]
                           :subtitle                (str "Step " current-step " of 3")
                           :shopping-bag?           true}
