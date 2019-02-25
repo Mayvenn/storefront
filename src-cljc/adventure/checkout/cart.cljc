@@ -319,7 +319,8 @@
             :margin-bottom "-1px"}}
    (component/build header (header-query data) nil)
    [:div.relative.flex.flex-column.flex-auto
-    (flash/built-component data nil)
+    [:div.bg-light-lavender
+     (flash/built-component data nil)]
 
     [:main.bg-white.flex-auto
      {:data-test (keypaths/->component-str nav-event)}
