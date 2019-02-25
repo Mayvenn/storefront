@@ -41,6 +41,7 @@
             [adventure.shopbybundles.hair-texture :as adventure.shopbybundles.hair-texture]
             [adventure.shopbybundles.hair-color :as adventure.shopbybundles.hair-color]
             [adventure.shopbybundles.product-list :as adventure.shopbybundles.product-list]
+            adventure.shopbybundles.product-details
             [adventure.install-type :as adventure.install-type]
             [adventure.select-new-look :as adventure.select-new-look]
             [adventure.look-detail :as adventure.look-detail]
@@ -48,7 +49,6 @@
             [adventure.checkout.cart :as adventure-cart]
             [adventure.out-of-area :as adventure.out-of-area]
             [adventure.match-success :as adventure.match-success]
-            [adventure.product-details :as adventure.product-details]
             [catalog.category :as category]
             [catalog.product-details :as product-details]
             [checkout.cart :as cart]
@@ -142,6 +142,7 @@
     events/navigate-adventure-shopbybundles-hair-texture adventure.shopbybundles.hair-texture/built-component
     events/navigate-adventure-shopbybundles-hair-color   adventure.shopbybundles.hair-color/built-component
     events/navigate-adventure-shopbybundles-product-list adventure.shopbybundles.product-list/built-component
+    events/navigate-adventure-product-details            adventure.shopbybundles.product-details/built-component
     events/navigate-adventure-install-type               adventure.install-type/built-component
     events/navigate-adventure-select-new-look            adventure.select-new-look/built-component
     events/navigate-adventure-look-detail                adventure.look-detail/built-component
@@ -149,7 +150,6 @@
     events/navigate-adventure-stylist-results            adventure.stylist-results/built-component
     events/navigate-adventure-out-of-area                adventure.out-of-area/built-component
     events/navigate-adventure-match-success              adventure.match-success/built-component
-    events/navigate-adventure-product-details            adventure.product-details/built-component
     home/built-component))
 
 (defn sticky-promo-bar [data]

@@ -1,4 +1,4 @@
-(ns adventure.product-details
+(ns adventure.shopbybundles.product-details
   (:require [clojure.set :as set]
             [clojure.string :as string]
             [catalog.products :as products]
