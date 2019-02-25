@@ -46,7 +46,7 @@
   [:div.flex.items-center.bold
    [:div.col.col-12.center.white
     [:div.h5.light "This order qualifies for a"]
-    [:div.h1.shout "free install!"]
+    [:div.h1.shout "free install"]
     [:div.h5.light "from a Mayvenn Stylist near you"]]])
 
 (defn add-more-hair-banner
