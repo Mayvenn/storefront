@@ -231,12 +231,7 @@
             [:li.mbp3 {:key (str "item-" idx)} item])]])
       [:div.h5.dark-gray
        (for [[idx item] (map-indexed vector description)]
-         [:p.mt2 {:key (str "product-description-" idx)} item])
-       (when (not (or (contains? family "seamless-clip-ins")
-                      (contains? family "tape-ins")
-                      (contains? (:stylist-exclusives/family product) "kits")))
-         [:p [:a.teal.underline (utils/route-to events/navigate-content-our-hair)
-              "Learn more about our hair."]])]]]))
+         [:p.mt2 {:key (str "product-description-" idx)} item])]]]))
 
 (defn image-body [{:keys [filename url alt]}]
   (ui/aspect-ratio
