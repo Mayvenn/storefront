@@ -215,7 +215,21 @@
                               :disabled? updating?
                               :on-click  (utils/send-event-callback events/control-checkout-cart-submit)
                               :data-test "start-checkout-button"}
-                             [:div "Check out"])]])]]]])))
+                             [:div "Check out"])]
+
+            [:div.h5.black.center.py1.flex.justify-around.items-center
+             [:div.flex-grow-1.border-bottom.border-light-gray]
+             [:div.mx2 "or"]
+             [:div.flex-grow-1.border-bottom.border-light-gray]]
+
+            [:div.pb2
+             (ui/aqua-button {:on-click  (utils/send-event-callback events/control-checkout-cart-paypal-setup)
+                              :spinning? redirecting-to-paypal?
+                              :disabled? updating?
+                              :data-test "paypal-checkout"}
+                             [:div
+                              "Check out with "
+                              [:span.medium.italic "PayPal™"]])]])]]]])))
 
 (defn ^:private variants-requests [data request-key variant-ids]
   (->> variant-ids
