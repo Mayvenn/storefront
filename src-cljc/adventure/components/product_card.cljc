@@ -136,7 +136,7 @@
       [:img.block.col-12 {:src (str (:url image) "-/format/auto/" (:filename image))
                           :alt (:alt image)}]
       [:div.p1.m2
-       {:style {:min-height "150px"}}
+       {:style {:height "170px"}}
        [:h2.h4.mt3.mb1 title]
        (if sold-out?
          [:p.h6.dark-gray "Out of stock"]
