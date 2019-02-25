@@ -1,4 +1,4 @@
-(ns adventure.shopbybundles.product-list
+(ns adventure.a-la-carte.product-list
   (:require #?@(:cljs [[storefront.platform.messages :refer [handle-message]]])
             [storefront.components.ui :as ui]
             [storefront.events :as events]

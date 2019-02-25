@@ -1,4 +1,4 @@
-(ns adventure.shopbybundles.hair-texture
+(ns adventure.a-la-carte.hair-texture
   (:require #?@(:cljs [[storefront.platform.messages :refer [handle-message]]])
             [storefront.events :as events]
             [storefront.component :as component]
