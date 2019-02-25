@@ -10,35 +10,36 @@
             adventure.checkout.cart.items
             [storefront.effects :as effects]
             [storefront.transitions :as transitions]
-            [adventure.progress :as progress]
-            [adventure.keypaths :as adventure-keypaths]
+            [adventure.progress]
+            [adventure.keypaths]
             [adventure.components.multi-prompt :as multi-prompt]
             [adventure.utils.facets :as facets]
-            [storefront.accessors.skus :as skus]))
+            [storefront.accessors.skus :as skus]
+            [adventure.keypaths :as adventure.keypaths]))
 
 (defn ^:private query
   [data]
-  (let [skus              (get-in data adventure-keypaths/adventure-matching-skus)
-        products          (get-in data adventure-keypaths/adventure-matching-products)
-        adventure-choices (get-in data adventure-keypaths/adventure-choices)
+  (let [skus              (get-in data adventure.keypaths/adventure-matching-skus)
+        products          (get-in data adventure.keypaths/adventure-matching-products)
+        adventure-choices (get-in data adventure.keypaths/adventure-choices)
         stylist-selected? (some-> adventure-choices :flow #{"match-stylist"})
         current-step      (if stylist-selected? 3 2)
         facets            (get-in data keypaths/v2-facets)]
     (merge
-     {:prompt-image               "//ucarecdn.com/4d53dac6-a7ce-4c10-bd5d-644821c5af4b/-/format/auto/bg.png"
-      :data-test                  "product-list"
-      :current-step               current-step
-      :footer                     [:div.h6.center.pb8
-                                   [:div.dark-gray "Not ready to shop hair?"]
-                                   [:a.teal (utils/fake-href events/navigate-adventure-find-your-stylist)
-                                    "Find a stylist"]]
-      :header-data                {:title                   "The New You"
-                                   :progress                progress/shopbybundles-product-list
-                                   :back-navigation-message [events/navigate-adventure-shopbybundles-hair-color]
-                                   :subtitle                (str "Step " current-step " of 3")
-                                   :shopping-bag?           true}
-      :stylist-selected?          stylist-selected?
-      :product-cards              (map (partial product-card/query data) products)}
+     {:prompt-image      "//ucarecdn.com/4d53dac6-a7ce-4c10-bd5d-644821c5af4b/-/format/auto/bg.png"
+      :data-test         "product-list"
+      :current-step      current-step
+      :footer            [:div.h6.center.pb8
+                          [:div.dark-gray "Not ready to shop hair?"]
+                          [:a.teal (utils/fake-href events/navigate-adventure-find-your-stylist)
+                           "Find a stylist"]]
+      :header-data       {:title                   "The New You"
+                          :progress                adventure.progress/shopbybundles-product-list
+                          :back-navigation-message [events/navigate-adventure-shopbybundles-hair-color]
+                          :subtitle                (str "Step " current-step " of 3")
+                          :shopping-bag?           true}
+      :stylist-selected? stylist-selected?
+      :product-cards     (map (partial product-card/query data) products)}
      (adventure.checkout.cart.items/freeinstall-line-item-query data))))
 
 (def qualified-banner
