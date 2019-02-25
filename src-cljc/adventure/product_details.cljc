@@ -109,12 +109,13 @@
                   "Add to bag"))
 
 (defn sticky-add-component
-  [{:keys [selected-options sold-out? unavailable? adding-to-bag? sku quantity image]} owner opts]
+  [{:keys [selected-options sold-out? hide? unavailable? adding-to-bag? sku quantity image]} owner opts]
   (let [unpurchasable? (or sold-out? unavailable?)
         text-style     (if unpurchasable? {:class "gray"} {})]
     #?(:clj (component/create [:div])
        :cljs
-       (letfn [(handle-scroll [e] (om/set-state! owner :show? (< 866 (.-y (goog.dom/getDocumentScroll)))))
+       (letfn [(handle-scroll [e] (om/set-state! owner :show? (and (not hide?)
+                                                                   (< 866 (.-y (goog.dom/getDocumentScroll))))))
                (set-height [] (om/set-state! owner :add-button-height (some-> owner
                                                                               (om/get-node "add-button")
                                                                               goog.style/getSize
@@ -266,20 +267,20 @@
    (keys selections)))
 
 (defn component
-  [{:keys       [header-data
-                 adding-to-bag?
-                 carousel-images
-                 product
-                 reviews
-                 selected-sku
-                 sku-quantity
-                 selected-options
-                 get-a-free-install-section-data
-                 selections
-                 options
-                 picker-data
-                 aladdin-or-phoenix?
-                 ugc] :as data} owner opts]
+  [{:keys [header-data
+           adding-to-bag?
+           carousel-images
+           product
+           reviews
+           selected-sku
+           sku-quantity
+           selected-options
+           get-a-free-install-section-data
+           selections
+           options
+           picker-data
+           aladdin-or-phoenix?
+           ugc] :as data} owner opts]
   (let [review?      (seq reviews)
         unavailable? (not (seq selected-sku))
         sold-out?    (not (:inventory/in-stock? selected-sku))]
@@ -349,6 +350,7 @@
                                :sku              selected-sku
                                :sold-out?        sold-out?
                                :unavailable?     (empty? selected-sku)
+                               :hide?            (complement (:offset ugc))
                                :selected-options selected-options
                                :quantity         sku-quantity} {})])])]])))
 

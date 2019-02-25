@@ -107,12 +107,13 @@
                   "Add to bag"))
 
 (defn sticky-add-component
-  [{:keys [selected-options sold-out? unavailable? adding-to-bag? sku quantity image]} owner opts]
+  [{:keys [selected-options sold-out? unavailable? hide? adding-to-bag? sku quantity image]} owner opts]
   (let [unpurchasable? (or sold-out? unavailable?)
         text-style     (if unpurchasable? {:class "gray"} {})]
     #?(:clj (component/create [:div])
        :cljs
-       (letfn [(handle-scroll [e] (om/set-state! owner :show? (< 866 (.-y (goog.dom/getDocumentScroll)))))
+       (letfn [(handle-scroll [e] (om/set-state! owner :show? (and (not hide?)
+                                                                   (< 866 (.-y (goog.dom/getDocumentScroll))))))
                (set-height [] (om/set-state! owner :add-button-height (some-> owner
                                                                               (om/get-node "add-button")
                                                                               goog.style/getSize
@@ -348,6 +349,7 @@
                                                      :option/rectangle-swatch)
                               :adding-to-bag?   adding-to-bag?
                               :sku              selected-sku
+                              :hide?            (complement (:offset ugc))
                               :sold-out?        sold-out?
                               :unavailable?     (empty? selected-sku)
                               :selected-options selected-options
