@@ -28,7 +28,7 @@
                         [:div.light.h6 subtitle]]
      :data-test-suffix (:option/slug option)
      :value            {:texture (:option/slug option)}
-     :target-message   [events/navigate-adventure-shopbybundles-hair-color]}))
+     :target-message   [events/navigate-adventure-a-la-carte-hair-color]}))
 
 (defn ^:private query [data]
   (let [texture-facet-options (facets/available-adventure-facet-options :hair/texture
@@ -56,6 +56,6 @@
   [data opts]
   (component/build multi-prompt/component (query data) opts))
 
-(defmethod effects/perform-effects events/navigate-adventure-shopbybundles-hair-texture
+(defmethod effects/perform-effects events/navigate-adventure-a-la-carte-hair-texture
   [_ _ args _ app-state]
   #?(:cljs (handle-message events/adventure-fetch-matched-skus)))

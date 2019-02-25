@@ -29,7 +29,7 @@
                          #_[:div.light.h6 subtitle]]]
      :data-test-suffix (:option/slug option)
      :value            {:color (:option/slug option)}
-     :target-message   [events/navigate-adventure-shopbybundles-product-list]}))
+     :target-message   [events/navigate-adventure-a-la-carte-product-list]}))
 
 (defn ^:private query [data]
   (let [color-facet-options (facets/available-adventure-facet-options
@@ -58,9 +58,9 @@
   [data opts]
   (component/build multi-prompt/component (query data) opts))
 
-(defmethod transitions/transition-state events/navigate-adventure-shopbybundles-hair-color [_ _ _ app-state]
+(defmethod transitions/transition-state events/navigate-adventure-a-la-carte-hair-color [_ _ _ app-state]
   (update-in app-state adventure-keypaths/adventure-choices dissoc :color))
 
-(defmethod effects/perform-effects events/navigate-adventure-shopbybundles-hair-color
+(defmethod effects/perform-effects events/navigate-adventure-a-la-carte-hair-color
   [_ _ args _ app-state]
   #?(:cljs (handle-message events/adventure-fetch-matched-skus {:criteria [:hair/texture :hair/family]})))

@@ -139,9 +139,9 @@
     events/navigate-adventure-how-shop-hair              adventure.how-shop-hair/built-component
     events/navigate-adventure-hair-texture               adventure.hair-texture/built-component
     events/navigate-adventure-bundlesets-hair-texture    adventure.bundlesets.hair-texture/built-component
-    events/navigate-adventure-shopbybundles-hair-texture adventure.a-la-carte.hair-texture/built-component
-    events/navigate-adventure-shopbybundles-hair-color   adventure.a-la-carte.hair-color/built-component
-    events/navigate-adventure-shopbybundles-product-list adventure.a-la-carte.product-list/built-component
+    events/navigate-adventure-a-la-carte-hair-texture adventure.a-la-carte.hair-texture/built-component
+    events/navigate-adventure-a-la-carte-hair-color   adventure.a-la-carte.hair-color/built-component
+    events/navigate-adventure-a-la-carte-product-list adventure.a-la-carte.product-list/built-component
     events/navigate-adventure-product-details            adventure.a-la-carte.product-details/built-component
     events/navigate-adventure-install-type               adventure.install-type/built-component
     events/navigate-adventure-select-new-look            adventure.select-new-look/built-component

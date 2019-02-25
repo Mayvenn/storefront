@@ -21,7 +21,7 @@
           [{:text             "Let me shop individual bundles"
             :data-test-suffix "individual-bundles"
             :value            {:how-shop "individual-bundles"}
-            :target-message   [events/navigate-adventure-shopbybundles-hair-texture]}])))
+            :target-message   [events/navigate-adventure-a-la-carte-hair-texture]}])))
 
 (defn ^:private query [data]
   (let [adventure-choices (get-in data adventure-keypaths/adventure-choices)

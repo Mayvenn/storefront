@@ -35,7 +35,7 @@
                            "Find a stylist"]]
       :header-data       {:title                   "The New You"
                           :progress                adventure.progress/a-la-carte-product-list
-                          :back-navigation-message [events/navigate-adventure-shopbybundles-hair-color]
+                          :back-navigation-message [events/navigate-adventure-a-la-carte-hair-color]
                           :subtitle                (str "Step " current-step " of 3")
                           :shopping-bag?           true}
       :stylist-selected? stylist-selected?
@@ -96,6 +96,6 @@
   [data opts]
   (component/build component (query data) opts))
 
-(defmethod effects/perform-effects events/navigate-adventure-shopbybundles-product-list
+(defmethod effects/perform-effects events/navigate-adventure-a-la-carte-product-list
   [_ _ args _ app-state]
   #?(:cljs (handle-message events/adventure-fetch-matched-products {:criteria [:hair/texture :hair/family :hair/color]})))
