@@ -124,25 +124,23 @@
 (defn component
   [{:keys [product skus cheapest-sku epitome sku-matching-previous-selections sold-out? title slug image facets color-order-map]}]
   (component/create
-   [:div.col.col-6.col-4-on-tb-dt.p1
-    {:key slug}
-    [:a.inherit-color
-     (assoc (utils/route-to events/navigate-product-details
-                            {:catalog/product-id (:catalog/product-id product)
-                             :page/slug          slug
-                             :query-params       {:SKU (:catalog/sku-id (or sku-matching-previous-selections epitome))}})
-            :data-test (str "product-" slug))
-     [:div.center.relative.bg-white.border-light-gray.border
-      ;; TODO: when adding aspect ratio, also use srcset/sizes to scale these images.
-      [:img.block.col-12 {:src (str (:url image) "-/format/auto/" (:filename image))
-                          :alt (:alt image)}]
-      [:div.p1.m2
-       {:style {:height "170px"}}
-       [:h2.h4.mt3.mb1 title]
-       (if sold-out?
-         [:p.h6.dark-gray "Out of stock"]
-         [:div
-          (for [selector (reverse (:selector/electives product))]
-            [:div {:key selector}
-             (unconstrained-facet color-order-map product skus facets (keyword selector))])
-          [:p.h6.mb4 "Starting at " (mf/as-money-without-cents (:sku/price cheapest-sku 0))]])]]]]))
+   [:a.block.col-6.col-4-on-tb-dt.p1.my2.black.flex.flex-stretch
+    (assoc (utils/route-to events/navigate-product-details
+                           {:catalog/product-id (:catalog/product-id product)
+                            :page/slug          slug
+                            :query-params       {:SKU (:catalog/sku-id (or sku-matching-previous-selections epitome))}})
+           :data-test (str "product-" slug)
+           :key slug)
+    [:div.bg-white.border-light-gray.border
+     ;; TODO: when adding aspect ratio, also use srcset/sizes to scale these images.
+     [:img.block.col-12 {:src (str (:url image) "-/format/auto/" (:filename image))
+                         :alt (:alt image)}]
+     [:div.p1
+      [:h2.h4.mt3.mb1 title]
+      (if sold-out?
+        [:p.h6.dark-gray "Out of stock"]
+        [:div
+         (for [selector (reverse (:selector/electives product))]
+           [:div {:key selector}
+            (unconstrained-facet color-order-map product skus facets (keyword selector))])
+         [:p.h6.mb4 "Starting at " (mf/as-money-without-cents (:sku/price cheapest-sku 0))]])]]]))

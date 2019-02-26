@@ -82,10 +82,9 @@
       (if add-more-hair?
         (add-more-hair-banner number-of-items-needed)
         qualified-banner)]]
-    [:div.clearfix.px5
+    [:div.flex.flex-wrap.px5.col-12
      (for [product-card product-cards]
-       [:div.my2.black {:key (:slug product-card)}
-        (component/build product-card/component product-card nil)])]
+       (component/build product-card/component product-card nil))]
     (when-not stylist-selected?
       [:div.h6.center.pb8
        [:div.dark-gray "Not ready to shop hair?"]
