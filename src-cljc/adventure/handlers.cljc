@@ -69,8 +69,10 @@
                (pixlee.hook/fetch-album-by-keyword :waves-and-curly)
                (pixlee.hook/fetch-album-by-keyword :free-install-mayvenn))))
 
-(defn ^:private adventure-choices->criteria [choices]
-  {:hair/family        (:install-type choices)
+(defn ^:private adventure-choices->criteria
+  [choices]
+  ;; Always return bundles for a la carte
+  {:hair/family        (conj #{"bundles"} (:install-type choices))
    :hair/texture       (:texture choices)})
 
 (defmethod effects/perform-effects events/adventure-fetch-matched-skus

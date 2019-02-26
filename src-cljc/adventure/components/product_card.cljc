@@ -92,7 +92,8 @@
         in-stock-skus             (selector/query skus-matching-color selections {:inventory/in-stock? #{true}})
         ;; in order to fill the product card, we should always have a sku to use for
         ;; the cheapest-sku and epitome
-        skus-to-search            (or (not-empty in-stock-skus) skus)
+        skus-to-search            (->> (or (not-empty in-stock-skus) skus)
+                                       (filter #(= (:hair/family %) (:hair/family product))))
         ;; It is technically possible for the cheapest sku to not be the epitome
         cheapest-sku              (->> skus-to-search
                                        (sort-by :sku/price)
