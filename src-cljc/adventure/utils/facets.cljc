@@ -2,7 +2,8 @@
   (:require [clojure.set :as set]))
 
 (defn adventure-facet-options
-  "Return all facet options available for adventure for a specific facet in the natural facet option ordering."
+  "Return all facet options available for adventure for a specific facet in the
+   natural facet option ordering."
   [facet-slug facets]
   (->> facets
        (filter (comp #{facet-slug} :facet/slug))
@@ -17,14 +18,14 @@
   (apply set/union (map (comp set facet-slug) products-or-skus)))
 
 (defn available-adventure-facet-options
-  "Returns a coll of facet options available in the collection of products or skus sorted by natural ordering.
+  "Returns a coll of facet options available in the collection of products or
+   skus sorted by natural ordering.
 
-  Or more verbosely, returns all facet options from the facet where:
+   Or more verbosely, returns all facet options from the facet where:
 
    - There's at least one product or sku that has that option value
    - sorted by the facet option's :filter/order key
-   - is available for adventure
-  "
+   - is available for adventure"
   [facet-slug facets products-or-skus]
   (let [matching-facet-options      (adventure-facet-options facet-slug facets)
         matching-product-options    (available-facet-options facet-slug products-or-skus)
