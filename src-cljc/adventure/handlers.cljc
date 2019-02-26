@@ -79,7 +79,8 @@
                                (-> (get-in app-state keypaths/adventure-choices)
                                    adventure-choices->criteria
                                    (select-keys criteria)
-                                   (assoc :catalog/department "hair"))
+                                   (assoc :catalog/department    "hair"
+                                          :catalog/discontinued? "false"))
                                #(handle-message events/api-success-adventure-fetch-skus %))))
 
 (defmethod transitions/transition-state events/api-success-adventure-fetch-skus
