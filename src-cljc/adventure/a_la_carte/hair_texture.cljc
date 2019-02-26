@@ -20,9 +20,10 @@
    "deep-wave"      {:subtitle "C-shaped ringlet curls"}
    "curly"          {:subtitle "Mimics natural 3C-4A textures"}})
 
-(defn enriched-buttons [facet-options]
+(defn enriched-buttons
+  [facet-options]
   (for [option facet-options
-        :let [{:keys [subtitle]} (get option-metadata (:option/slug option))]]
+        :let   [{:keys [subtitle]} (get option-metadata (:option/slug option))]]
     {:text             [:div.mynp6
                         [:div (:adventure/name option)]
                         [:div.light.h6 subtitle]]
@@ -30,7 +31,8 @@
      :value            {:texture (:option/slug option)}
      :target-message   [events/navigate-adventure-a-la-carte-hair-color]}))
 
-(defn ^:private query [data]
+(defn ^:private query
+  [data]
   (let [texture-facet-options (facets/available-adventure-facet-options :hair/texture
                                                                         (get-in data keypaths/v2-facets)
                                                                         (get-in data adventure-keypaths/adventure-matching-skus))
