@@ -83,7 +83,7 @@
                       :facet/options
                       (sort-by :option/order)
                       (partition-all 4))]
-     [:div.flex-on-tb-dt.justify-around
+     [:div.flex-on-dt.justify-around
       (for [option options]
         (let [selected?    (contains? (open-panel selections)
                                       (:option/slug option))
@@ -105,7 +105,7 @@
                                         (messages/handle-message event-handler
                                                                  {:facet  open-panel
                                                                   :option slug}))})]))])
-   [:div.clearfix.mxn3.px1.py4.hide-on-tb-dt
+   [:div.clearfix.mxn3.px1.py4.hide-on-dt
     [:div.col.col-6.px3
      (ui/teal-ghost-button
       (merge (utils/fake-href events/control-category-option-clear)
@@ -145,9 +145,9 @@
   [:div
    (when (and mob-url dsk-url copy)
      [:div.pb6.flex.flex-column
-      [:div.hide-on-mb.mx1
+      [:div.hide-on-mb-tb.mx1
        [:img.col.col-12 {:src dsk-url}]]
-      [:div.mxn2.hide-on-tb-dt
+      [:div.mxn2.hide-on-dt
        [:img.col.col-12 {:src mob-url}]]
       [:div.mx-auto.col.col-11.h5.dark-gray.center.pt2 copy]])
    [:div.flex.flex-wrap
@@ -165,7 +165,7 @@
   (component/create
    [:div
     (hero-section category)
-    [:div.max-960.col-12.mx-auto.px2-on-mb
+    [:div.max-960.col-12.mx-auto.px2-on-mb.px2-on-tb
      (copy-section category)
      [:div.bg-white.sticky.z1
       ;; The -5px prevents a sliver of the background from being visible above the filters
@@ -173,10 +173,10 @@
       {:style {:top "-5px"}}
       (if open-panel
         [:div
-         [:div.hide-on-tb-dt.px2.z4.fixed.overlay.overflow-auto.bg-white
+         [:div.hide-on-dt.px2.z4.fixed.overlay.overflow-auto.bg-white
           (filter-tabs category facets all-product-cards selections open-panel)
           (filter-panel facets represented-options selections open-panel)]
-         [:div.hide-on-mb
+         [:div.hide-on-mb-tb
           (filter-tabs category facets all-product-cards selections open-panel)
           (filter-panel facets represented-options selections open-panel)]]
         [:div
