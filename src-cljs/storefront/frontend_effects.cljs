@@ -221,7 +221,8 @@
     (api/add-promotion-code (get-in app-state keypaths/session-id) number token pending-promo-code true)))
 
 (defmethod perform-effects events/navigate [_ event {:keys [query-params nav-stack-item] :as args} prev-app-state app-state]
-  (let [args               (dissoc args :nav-stack-item)]
+  (let [args         (dissoc args :nav-stack-item)
+        freeinstall? (= "freeinstall" (get-in app-state keypaths/store-slug))]
     (handle-message events/control-menu-collapse-all)
     (handle-message events/save-order {:order (get-in app-state keypaths/order)})
     (cookie-jar/save-user (get-in app-state keypaths/cookie)
@@ -244,11 +245,12 @@
           ;; Otherwise give the screen some time to render before trying to restore scroll
           (handle-later events/snap {:top restore-scroll-top} 100))))
 
-    (when-let [pending-promo-code (:sha query-params)]
-      (cookie-jar/save-pending-promo-code
-       (get-in app-state keypaths/cookie)
-       pending-promo-code)
-      (redirect event (update-in args [:query-params] dissoc :sha)))
+    (when-not freeinstall?
+      (when-let [pending-promo-code (:sha query-params)]
+        (cookie-jar/save-pending-promo-code
+         (get-in app-state keypaths/cookie)
+         pending-promo-code)
+        (redirect event (update-in args [:query-params] dissoc :sha))))
 
     (handle-message events/determine-and-show-popup)
 
