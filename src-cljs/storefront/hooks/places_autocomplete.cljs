@@ -55,7 +55,7 @@
                                  "componentRestrictions" {"country" "us"}})
           elem         (.getElementById js/document (name address-elem))
           autocomplete (google.maps.places.Autocomplete. elem options)]
-      (.setFields autocomplete (clj->js ["address_components"]))
+      (.setFields autocomplete #js ["address_components" "geometry"])
       (.addListener autocomplete
                     "place_changed"
                     (wrapped-callback autocomplete address-keypath)))))
