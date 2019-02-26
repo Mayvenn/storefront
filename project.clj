@@ -61,34 +61,37 @@
    {:dev
     {:source-paths ["src-cljc" "src-cljs"]
      :figwheel     {:on-jsload "storefront.core/on-jsload"}
-     :compiler     {:main         "storefront.core"
-                    :asset-path   "/js/out"
-                    :output-to    "resources/public/js/out/main.js"
-                    :output-dir   "resources/public/js/out"
-                    :pretty-print true
-                    :libs         ["src-cljs/rng/rng.js"]
-                    :foreign-libs [{:file     "src-cljs/storefront/react-slick.js"
-                                    :provides ["react-slick"]}
-                                   {:file     "src-cljs/storefront/bugsnag-2.5.0.js"
-                                    :provides ["bugsnag"]}
-                                   {:file     "src-cljs/storefront/jsQR.js"
-                                    :provides ["jsQR"]}]
-                    :externs      ["externs/bugsnag.js"
-                                   "externs/convert.js"
-                                   "externs/facebook.js"
-                                   "externs/google_autocomplete.js"
-                                   "externs/jsQR.js"
-                                   "externs/pixlee.js"
-                                   "externs/react-slick.js"
-                                   "externs/riskified.js"
-                                   "externs/spreedly.js"
-                                   "externs/stringer.js"
-                                   "externs/stripe.js"
-                                   "externs/talkable.js"
-                                   "externs/uploadcare.js"
-                                   "externs/wistia.js"
-                                   "externs/yotpo.js"]
-                    :preloads     [devtools.preload]}}
+     :compiler     {:main             "storefront.core"
+                    :asset-path       "/js/out"
+                    :output-to        "resources/public/js/out/main.js"
+                    :output-dir       "resources/public/js/out"
+                    :pretty-print     true
+                    :infer-externs    true
+                    :static-fns       true
+                    :fn-invoke-direct true
+                    :libs             ["src-cljs/rng/rng.js"]
+                    :foreign-libs     [{:file     "src-cljs/storefront/react-slick.js"
+                                        :provides ["react-slick"]}
+                                       {:file     "src-cljs/storefront/bugsnag-2.5.0.js"
+                                        :provides ["bugsnag"]}
+                                       {:file     "src-cljs/storefront/jsQR.js"
+                                        :provides ["jsQR"]}]
+                    :externs          ["externs/bugsnag.js"
+                                       "externs/convert.js"
+                                       "externs/facebook.js"
+                                       "externs/google_autocomplete.js"
+                                       "externs/jsQR.js"
+                                       "externs/pixlee.js"
+                                       "externs/react-slick.js"
+                                       "externs/riskified.js"
+                                       "externs/spreedly.js"
+                                       "externs/stringer.js"
+                                       "externs/stripe.js"
+                                       "externs/talkable.js"
+                                       "externs/uploadcare.js"
+                                       "externs/wistia.js"
+                                       "externs/yotpo.js"]
+                    :preloads         [devtools.preload]}}
     :release
     {:source-paths     ["src-cljc" "src-cljs"]
      :warning-handlers [cljs.analyzer/default-warning-handler
