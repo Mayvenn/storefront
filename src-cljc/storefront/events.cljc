@@ -476,12 +476,14 @@
 (defpath navigate-adventure-stylist-results)
 (defpath navigate-adventure-out-of-area)
 (defpath navigate-adventure-match-success)
+(defpath navigate-adventure-email-capture)
 
 (defpath navigate-adventure-product-details)
 
 (defpath control-adventure)
 (defpath control-adventure-choice)
 (defpath control-adventure-select-stylist)
+(defpath control-adventure-emailcapture-submit)
 
 (defpath adventure-address-component-mounted)
 (defpath control-adventure-stylist-gallery-open)
