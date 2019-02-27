@@ -48,7 +48,7 @@
              :background-size     "contain"}}
     [:div.flex.flex-column.items-center
      {:style {:height "246px"}}
-     [:div.flex.items-center.center.mt2.pb3
+     [:div.flex.items-center.center.mt3.pb3
       [:div.mr4
        (ui/ucare-img {:width "140"} "1970d88b-3798-4914-8a91-74288b09cc77")]]
      [:div.pt5
@@ -56,7 +56,7 @@
       [:div.h5.light.mb2.col-8.mx-auto "Enter your e-mail to get started!"]
       [:div.col-12.mx-auto
        [:form.block.flex.justify-center
-        [:input.h4.border-none.px3.bg-white.col-10
+        [:input.h5.border-none.px3.bg-white.col-9
          (merge {:label       "e-mail address"
                  :data-test   "email-input"
                  :name        "email"
