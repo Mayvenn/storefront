@@ -22,19 +22,25 @@
 
 (defmethod effects/perform-effects events/navigate-adventure-matching-stylist-wait [_ _ _ _ app-state]
   #?(:cljs
-     (let [{:keys [latitude longitude]}   (get-in app-state adventure-keypaths/adventure-stylist-match-location)
-           {:keys [how-far install-type]} (get-in app-state adventure-keypaths/adventure-choices)
-           order (get-in app-state keypaths/order)]
-       (when-let [servicing-stylist-id (:servicing-stylist-id order)]
-         (api/remove-servicing-stylist servicing-stylist-id
-                                       (:number order)
-                                       (:token order)
-                                       #(handle-message events/save-order {:order %})))
+     (let [{:keys [latitude longitude]}               (get-in app-state adventure-keypaths/adventure-stylist-match-location)
+           {:as choices :keys [how-far install-type]} (get-in app-state adventure-keypaths/adventure-choices)
+           order                                      (get-in app-state keypaths/order)]
+       ;; NOTE: we always try to find stylists regardless of the data that is available but send all choices
+       ;;       so we can analyze a buggy behavior if we arrive here without the necessary data
        (api/fetch-stylists-within-radius (get-in app-state keypaths/api-cache)
                                          {:latitude     latitude
                                           :longitude    longitude
                                           :radius       how-far
-                                          :install-type install-type}))))
+                                          :install-type install-type
+                                          :choices      choices})
+       ;; END NOTE
+       (if (and latitude longitude how-far install-type)
+         (when-let [servicing-stylist-id (:servicing-stylist-id order)]
+           (api/remove-servicing-stylist servicing-stylist-id
+                                         (:number order)
+                                         (:token order)
+                                         #(handle-message events/save-order {:order %})))
+         (history/enqueue-redirect events/navigate-adventure-home)))))
 
 (defmethod transitions/transition-state events/api-success-fetch-stylists-within-radius
   [_ _ {:keys [stylists]} app-state]
