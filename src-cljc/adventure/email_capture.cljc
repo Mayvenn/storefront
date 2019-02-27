@@ -99,4 +99,4 @@
     (when (empty? (get-in app-state storefront.keypaths/errors))
       (facebook-analytics/subscribe)
       (cookie-jar/save-email-capture-session (get-in app-state storefront.keypaths/cookie) "opted-in")
-      (messages/handle-message events/navigate-adventure-home))))
+      (messages/handle-message events/navigate-adventure-time-frame))))

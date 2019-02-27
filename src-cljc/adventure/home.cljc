@@ -90,14 +90,17 @@
    [:img.block.col-12 {:src (str mobile-url "-/format/jpeg/" file-name)
                        :alt alt}]])
 
-(defn hero []
-  (let [file-name "free-install-hero"
-        mob-uuid  "5164ba48-d968-466b-9d13-6f5fbc9dcc3d"
-        dsk-uuid  "85579511-f08d-4f77-a769-e31a3653e3f4"]
+(defn hero [adv-email-capture?]
+  (let [file-name            "free-install-hero"
+        mob-uuid             "5164ba48-d968-466b-9d13-6f5fbc9dcc3d"
+        dsk-uuid             "85579511-f08d-4f77-a769-e31a3653e3f4"
+        customer-identified? true] ;;TODO: actually check for identification
     [:a.bold.shadow.white.center.bg-light-gray
      (merge
       {:data-test "adventure-home-choice-get-started"}
-      (utils/route-to events/navigate-adventure-time-frame))
+      (if (and adv-email-capture? (not customer-identified?))
+        (utils/route-to events/navigate-adventure-email-capture)
+        (utils/route-to events/navigate-adventure-time-frame)))
      (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
                   :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
                   :file-name   file-name
@@ -367,7 +370,8 @@
                          sleek-and-straight-ugc
                          waves-and-curly-ugc
                          free-install-mayvenn-ugc
-                         gallery-ucare-ids]
+                         gallery-ucare-ids
+                         adv-email-capture?]
                   :as data}
                  owner
                  opts]
@@ -377,7 +381,7 @@
      {:style {:height "63px"}}
      [:div.block.img-logo.bg-no-repeat.bg-center.bg-contain.teal
       {:style {:width "110px"}}]]
-    [:section (hero)]
+    [:section (hero adv-email-capture?)]
     [:section free-shipping-banner]
     [:a {:name "mayvenn-free-install-video"}]
     [:div
@@ -412,29 +416,31 @@
         ugc                         (get-in data storefront.keypaths/ugc)
         free-install-mayvenn-images (pixlee/images-in-album ugc :free-install-mayvenn)
         sleek-and-straight-images   (pixlee/images-in-album ugc :sleek-and-straight)
-        waves-and-curly-images      (pixlee/images-in-album ugc :waves-and-curly)]
-    {:store                     store
-     :gallery-ucare-ids         (->> store
-                                     :gallery
-                                     :images
-                                     (filter (comp (partial = "approved") :status))
-                                     (map (comp v2/get-ucare-id-from-url :resizable-url)))
+        waves-and-curly-images      (pixlee/images-in-album ugc :waves-and-curly)
+        adv-email-capture?          (experiments/adv-email-capture? data)]
+    {:store                    store
+     :gallery-ucare-ids        (->> store
+                                    :gallery
+                                    :images
+                                    (filter (comp (partial = "approved") :status))
+                                    (map (comp v2/get-ucare-id-from-url :resizable-url)))
      ;; TODO: get this faq data from checkout popup?
-     :faq-data                  (faq/query data)
-     :signed-in                 (auth/signed-in data)
-     :categories                (->> (get-in data storefront.keypaths/categories)
-                                     (filter :home/order)
-                                     (sort-by :home/order))
-     :video                     (get-in data keypaths/adventure-home-video)
-     :sleek-and-straight-ugc    {:images        sleek-and-straight-images
-                                 :album-keyword :sleek-and-straight}
-     :waves-and-curly-ugc       {:images        waves-and-curly-images
-                                 :album-keyword :waves-and-curly}
-     :free-install-mayvenn-ugc  {:images        free-install-mayvenn-images
-                                 :album-keyword :free-install-mayvenn}
-     :the-ville?                the-ville?
-     :homepage-data             homepage-data
-     :show-talkable-banner?     (not the-ville?)}))
+     :faq-data                 (faq/query data)
+     :signed-in                (auth/signed-in data)
+     :categories               (->> (get-in data storefront.keypaths/categories)
+                                    (filter :home/order)
+                                    (sort-by :home/order))
+     :video                    (get-in data keypaths/adventure-home-video)
+     :sleek-and-straight-ugc   {:images        sleek-and-straight-images
+                                :album-keyword :sleek-and-straight}
+     :waves-and-curly-ugc      {:images        waves-and-curly-images
+                                :album-keyword :waves-and-curly}
+     :free-install-mayvenn-ugc {:images        free-install-mayvenn-images
+                                :album-keyword :free-install-mayvenn}
+     :the-ville?               the-ville?
+     :homepage-data            homepage-data
+     :show-talkable-banner?    (not the-ville?)
+     :adv-email-capture?       adv-email-capture?}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
