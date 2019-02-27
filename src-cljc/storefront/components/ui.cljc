@@ -79,8 +79,8 @@
     (assert color (str "Button color " color-kw " has not been defined."))
     color))
 
-(defn ^:private button-class [color-kw {:keys [height-class size-class class]
-                                        :or   {size-class "col-12" height-class "py3"}}]
+(defn button-class [color-kw {:keys [height-class size-class class]
+                              :or   {size-class "col-12" height-class "py3"}}]
   (string/join " "
                ["btn h5"
                 size-class

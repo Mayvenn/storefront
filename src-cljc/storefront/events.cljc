@@ -497,6 +497,8 @@
 (defpath api-success-fetch-matched-stylist)
 (defpath adventure-stylist-search-results-displayed)
 
+(defpath adventure-visitor-identified)
+
 (defpath adventure-fetch-matched-skus)
 (defpath api-success-adventure-fetch-skus)
 (defpath adventure-fetch-matched-products)

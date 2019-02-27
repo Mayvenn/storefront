@@ -8,6 +8,7 @@
             [storefront.accessors.pixlee :as pixlee]
             #?@(:cljs [[storefront.hooks.pixlee :as pixlee.hook]
                        [storefront.components.popup :as popup]
+                       [storefront.browser.cookie-jar :as cookie-jar]
                        [om.core :as om]
                        [goog.events.EventType :as EventType]
                        goog.dom
@@ -32,7 +33,7 @@
             [storefront.components.v2 :as v2]))
 
 (defn sticky-component
-  [{:keys [popup-data]} owner opts]
+  [{:keys [next-page]} owner opts]
   #?(:clj (component/create [:div])
      :cljs
      (letfn [(handle-scroll [e] (om/set-state! owner :show? (< 530 (.-y (goog.dom/getDocumentScroll)))))
@@ -78,7 +79,7 @@
                   [:div.col-1]
                   [:div.col-4
                    (ui/teal-button (merge {:height-class "py2"}
-                                          (utils/route-to events/navigate-adventure-time-frame))
+                                          (utils/route-to next-page))
                                    [:div.h7 "Get started"])]]]]]]]))))))
 
 (defn hero-image [{:keys [desktop-url mobile-url file-name alt]}]
@@ -90,17 +91,14 @@
    [:img.block.col-12 {:src (str mobile-url "-/format/jpeg/" file-name)
                        :alt alt}]])
 
-(defn hero [adv-email-capture?]
-  (let [file-name            "free-install-hero"
-        mob-uuid             "5164ba48-d968-466b-9d13-6f5fbc9dcc3d"
-        dsk-uuid             "85579511-f08d-4f77-a769-e31a3653e3f4"
-        customer-identified? true] ;;TODO: actually check for identification
+(defn hero [next-page]
+  (let [file-name "free-install-hero"
+        mob-uuid  "5164ba48-d968-466b-9d13-6f5fbc9dcc3d"
+        dsk-uuid  "85579511-f08d-4f77-a769-e31a3653e3f4"]
     [:a.bold.shadow.white.center.bg-light-gray
      (merge
       {:data-test "adventure-home-choice-get-started"}
-      (if (and adv-email-capture? (not customer-identified?))
-        (utils/route-to events/navigate-adventure-email-capture)
-        (utils/route-to events/navigate-adventure-time-frame)))
+      (utils/route-to next-page))
      (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
                   :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
                   :file-name   file-name
@@ -363,7 +361,6 @@
                          store
                          categories
                          stylist-gallery-open?
-                         show-talkable-banner?
                          the-ville?
                          faq-data
                          video
@@ -371,7 +368,8 @@
                          waves-and-curly-ugc
                          free-install-mayvenn-ugc
                          gallery-ucare-ids
-                         adv-email-capture?]
+                         adv-email-capture?
+                         next-page]
                   :as data}
                  owner
                  opts]
@@ -381,7 +379,7 @@
      {:style {:height "63px"}}
      [:div.block.img-logo.bg-no-repeat.bg-center.bg-contain.teal
       {:style {:width "110px"}}]]
-    [:section (hero adv-email-capture?)]
+    [:section (hero next-page)]
     [:section free-shipping-banner]
     [:a {:name "mayvenn-free-install-video"}]
     [:div
@@ -407,7 +405,7 @@
     [:hr.border-top.border-dark-silver.col-9.mx-auto.my6]
     [:section our-story]
     [:section contact-us]
-    (component/build sticky-component {} nil)]))
+    (component/build sticky-component {:next-page next-page} nil)]))
 
 (defn query [data]
   (let [the-ville?                  (experiments/the-ville? data)
@@ -417,7 +415,8 @@
         free-install-mayvenn-images (pixlee/images-in-album ugc :free-install-mayvenn)
         sleek-and-straight-images   (pixlee/images-in-album ugc :sleek-and-straight)
         waves-and-curly-images      (pixlee/images-in-album ugc :waves-and-curly)
-        adv-email-capture?          (experiments/adv-email-capture? data)]
+        adv-email-capture?          (experiments/adv-email-capture? data)
+        visitor-identified?         (#{"opted-in"} (get-in data storefront.keypaths/email-capture-session))]
     {:store                    store
      :gallery-ucare-ids        (->> store
                                     :gallery
@@ -439,8 +438,9 @@
                                 :album-keyword :free-install-mayvenn}
      :the-ville?               the-ville?
      :homepage-data            homepage-data
-     :show-talkable-banner?    (not the-ville?)
-     :adv-email-capture?       adv-email-capture?}))
+     :next-page                (if (and adv-email-capture? (not visitor-identified?))
+                                 events/navigate-adventure-email-capture
+                                 events/navigate-adventure-time-frame)}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

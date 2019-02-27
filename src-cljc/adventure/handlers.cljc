@@ -13,7 +13,8 @@
             [adventure.keypaths :as keypaths]
             [storefront.trackings :as trackings]
             [storefront.transitions :as transitions]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [storefront.platform.messages :as messages]))
 
 (defmethod transitions/transition-state events/control-adventure-choice
   [_ event {:keys [choice]} app-state]
@@ -42,11 +43,23 @@
                             :answer_selected (:value choice)})))
 
 (defmethod effects/perform-effects events/navigate-adventure
-  [_ event args app-state-before app-state]
+  [_ event {:keys [query-params]} app-state-before app-state]
   #?(:cljs
-     (when (and (not= events/navigate-adventure-home event)
-                (empty? (get-in app-state keypaths/adventure-choices)))
-       (history/enqueue-navigate events/navigate-adventure-home nil))))
+     (do
+       (when (and (not= events/navigate-adventure-home event)
+                  (empty? (get-in app-state keypaths/adventure-choices)))
+         (history/enqueue-navigate events/navigate-adventure-home nil))
+       (when-let [emHash? (boolean (:emHash query-params))]
+         (messages/handle-message events/adventure-visitor-identified)))))
+
+(defmethod effects/perform-effects events/adventure-visitor-identified
+  [_ _ _ _ app-state]
+  #?(:cljs
+     (cookie/save-email-capture-session (get-in app-state storefront.keypaths/cookie) "opted-in")))
+
+(defmethod transitions/transition-state events/adventure-visitor-identified
+  [_ event {:keys [query-params]} app-state]
+  (assoc-in app-state storefront.keypaths/email-capture-session "opted-in"))
 
 (def ^:private slug->video
   {"we-are-mayvenn" {:youtube-id "hWJjyy5POTE"}

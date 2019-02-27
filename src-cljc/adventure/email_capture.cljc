@@ -1,7 +1,6 @@
 (ns adventure.email-capture
   (:require
    #?@(:cljs [[om.core :as om]
-              [storefront.platform.messages :as messages]
               [storefront.effects :as effects]
               [storefront.hooks.places-autocomplete :as places-autocomplete]
               [storefront.hooks.facebook-analytics :as facebook-analytics]
@@ -11,6 +10,7 @@
               [sablono.core :as sablono]])
    [clojure.string :as string]
    [storefront.platform.component-utils :as utils]
+   [storefront.platform.messages :as messages]
    [adventure.components.header :as header]
    [adventure.keypaths :as keypaths]
    [storefront.keypaths :as storefront.keypaths]
@@ -35,8 +35,10 @@
                                :value   (.. e -target -value)})))
 
 (defn ^:private valid-email? [email]
-  (or (> 3 (count email))
-      (not (string/includes? email "@"))))
+  (and (seq email)
+       (< 3 (count email))
+       (string/includes? email "@")
+       (not (string/ends-with? email "@"))))
 
 (defn component
   [{:keys [email errors] :as thing-we-will-look-at} owner _]
@@ -55,48 +57,39 @@
       [:div.h3.medium.mb2.col-8.mx-auto "Welcome! We can't wait for you to get a free install."]
       [:div.h5.light.mb2.col-8.mx-auto "Enter your e-mail to get started!"]
       [:div.col-12.mx-auto
-       [:form.block.flex.justify-center
+       [:form.block.flex.justify-center {:on-submit
+                                         (utils/send-event-callback events/control-adventure-emailcapture-submit {:email email})}
         [:input.h5.border-none.px3.bg-white.col-9
          (merge {:label       "e-mail address"
                  :data-test   "email-input"
                  :name        "email"
                  :id          "email-input"
                  :type        "email"
+                 :value       (or email "")
                  :autoFocus   true
                  :required    true
                  :placeholder "e-mail address"}
                 #?(:cljs {:on-change (partial handle-on-change)}))]
-        (let [disabled? (valid-email? email)]
-          (ui/teal-button (merge {:style          {:width  "45px"
-                                                   :height "45px"}
-                                  :disabled?      disabled?
-                                  :disabled-class "bg-light-gray gray"
-                                  :data-test      "stylist-match-address-submit"
-                                  :class          "flex items-center justify-center medium not-rounded x-group-item"}
-                                 (utils/fake-href events/control-adventure-emailcapture-submit))
-                          (ui/forward-arrow {:disabled? disabled?
-                                             :width     "14"})))]]]]]))
+        (let [disabled? (not (valid-email? email))]
+          [:button
+           {:type      "submit"
+            :disabled  (boolean disabled?)
+            :style     {:width  "45px"
+                        :height "43px"}
+            :class     (ui/button-class :color/teal (merge {:class "flex items-center justify-center not-rounded x-group-item"}
+                                                           (when disabled?
+                                                             {:disabled? disabled?
+                                                              :disabled-class "bg-gray"})))
+            :data-test "email-capture-submit"}
+           (ui/forward-arrow {:width     "14"
+                              :disabled? disabled?})])]]]]]))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
 
-(defn clear-field-errors [app-state]
-  (assoc-in app-state storefront.keypaths/errors {}))
-
-(defmethod transitions/transition-state events/control-adventure-emailcapture-submit [_ event args app-state]
-  (let [email (get-in app-state storefront.keypaths/captured-email)]
-    (if (valid-email? email)
-      (assoc-in app-state storefront.keypaths/errors {:field-errors  {["email"] [{:path ["email"] :long-message "Email is invalid"}]}
-                                                      :error-code    "invalid-input"
-                                                      :error-message "Oops! Please fix the errors below."})
-      (-> app-state
-          clear-field-errors
-          (assoc-in storefront.keypaths/popup nil)
-          (assoc-in storefront.keypaths/email-capture-session "opted-in")))))
-
 #?(:cljs
-  (defmethod effects/perform-effects events/control-adventure-emailcapture-submit [_ _ args _ app-state]
-    (when (empty? (get-in app-state storefront.keypaths/errors))
-      (facebook-analytics/subscribe)
-      (cookie-jar/save-email-capture-session (get-in app-state storefront.keypaths/cookie) "opted-in")
-      (messages/handle-message events/navigate-adventure-time-frame))))
+   (defmethod effects/perform-effects events/control-adventure-emailcapture-submit [_ _ {:keys [email]} _ app-state]
+     (facebook-analytics/subscribe)
+     (messages/handle-message events/adventure-visitor-identified)
+     (stringer/identify {:email email})
+     (history/enqueue-redirect events/navigate-adventure-time-frame)))
