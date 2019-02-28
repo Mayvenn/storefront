@@ -297,8 +297,6 @@
                          store
                          categories
                          stylist-gallery-open?
-                         show-talkable-banner?
-                         the-ville?
                          faq-data
                          video
                          sleek-and-straight-ugc
@@ -339,8 +337,7 @@
     [:section our-story]]))
 
 (defn query [data]
-  (let [the-ville?                  (experiments/the-ville? data)
-        homepage-data               (get-in data keypaths/cms-homepage)
+  (let [homepage-data               (get-in data keypaths/cms-homepage)
         store                       (marquee/query data)
         ugc                         (get-in data keypaths/ugc)
         free-install-mayvenn-images (pixlee/images-in-album ugc :free-install-mayvenn)
@@ -365,9 +362,7 @@
      :free-install-mayvenn-ugc  {:images        free-install-mayvenn-images
                                  :album-keyword :free-install-mayvenn}
      :stylist-gallery-open?     (get-in data keypaths/carousel-stylist-gallery-open?)
-     :the-ville?                the-ville?
-     :homepage-data             homepage-data
-     :show-talkable-banner?     (not the-ville?)}))
+     :homepage-data             homepage-data}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

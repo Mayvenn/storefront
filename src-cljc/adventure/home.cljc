@@ -361,7 +361,6 @@
                          store
                          categories
                          stylist-gallery-open?
-                         the-ville?
                          faq-data
                          video
                          sleek-and-straight-ugc
@@ -408,8 +407,7 @@
     (component/build sticky-component {:next-page next-page} nil)]))
 
 (defn query [data]
-  (let [the-ville?                  (experiments/the-ville? data)
-        homepage-data               (get-in data storefront.keypaths/cms-homepage)
+  (let [homepage-data               (get-in data storefront.keypaths/cms-homepage)
         store                       (marquee/query data)
         ugc                         (get-in data storefront.keypaths/ugc)
         free-install-mayvenn-images (pixlee/images-in-album ugc :free-install-mayvenn)
@@ -436,7 +434,6 @@
                                 :album-keyword :waves-and-curly}
      :free-install-mayvenn-ugc {:images        free-install-mayvenn-images
                                 :album-keyword :free-install-mayvenn}
-     :the-ville?               the-ville?
      :homepage-data            homepage-data
      :next-page                (if (and adv-email-capture? (not visitor-identified?))
                                  events/navigate-adventure-email-capture
