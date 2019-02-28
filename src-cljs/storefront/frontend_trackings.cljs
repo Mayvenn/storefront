@@ -314,15 +314,18 @@
   (stringer/track-event "experiment-joined" {:name experiment
                                              :variation feature}))
 
+(defn track-email-capture-capture [app-state {:keys [email]}]
+  (stringer/identify {:email email})
+  (stringer/track-event "email_capture-capture"
+                        {:email            email
+                         :test-variations  (get-in app-state keypaths/features)
+                         :store-experience (get-in app-state keypaths/store-experience)})
+  (pinterest/track-event "EmailCapture"))
+
 (defmethod perform-track events/control-email-captured-submit [_ event _ app-state]
   (when (empty? (get-in app-state keypaths/errors))
     (let [captured-email (get-in app-state keypaths/captured-email)]
-      (stringer/identify {:email captured-email})
-      (stringer/track-event "email_capture-capture"
-                            {:email            captured-email
-                             :test-variations  (get-in app-state keypaths/features)
-                             :store-experience (get-in app-state keypaths/store-experience)})
-      (pinterest/track-event "EmailCapture"))))
+      (track-email-capture-capture app-state {:email captured-email}))))
 
 (defn track-email-capture-deploy []
   (stringer/track-event "email_capture-deploy" {}))

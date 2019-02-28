@@ -92,8 +92,12 @@
    (defmethod effects/perform-effects events/control-adventure-emailcapture-submit [_ _ {:keys [email]} _ app-state]
      (facebook-analytics/subscribe)
      (messages/handle-message events/adventure-visitor-identified)
-     (stringer/identify {:email email})
      (history/enqueue-redirect events/navigate-adventure-time-frame)))
+
+(defmethod trackings/perform-track events/control-adventure-emailcapture-submit
+  [_ event {:keys [email]} app-state]
+  #?(:cljs
+     (frontend-trackings/track-email-capture-capture app-state {:email email})))
 
 (defmethod trackings/perform-track events/navigate-adventure-email-capture
   [_ event args app-state]
