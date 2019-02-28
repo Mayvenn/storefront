@@ -324,8 +324,11 @@
                              :store-experience (get-in app-state keypaths/store-experience)})
       (pinterest/track-event "EmailCapture"))))
 
-(defmethod perform-track events/popup-show-email-capture [_ events args app-state]
+(defn track-email-capture-deploy []
   (stringer/track-event "email_capture-deploy" {}))
+
+(defmethod perform-track events/popup-show-email-capture [_ events args app-state]
+  (track-email-capture-deploy))
 
 (defmethod perform-track events/control-email-captured-dismiss [_ events args app-state]
   (stringer/track-event "email_capture-dismiss" {}))

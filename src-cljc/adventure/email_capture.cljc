@@ -6,6 +6,7 @@
               [storefront.hooks.facebook-analytics :as facebook-analytics]
               [storefront.browser.cookie-jar :as cookie-jar]
               [storefront.history :as history]
+              [storefront.frontend-trackings :as frontend-trackings]
               [storefront.hooks.stringer :as stringer]
               [sablono.core :as sablono]])
    [clojure.string :as string]
@@ -93,3 +94,8 @@
      (messages/handle-message events/adventure-visitor-identified)
      (stringer/identify {:email email})
      (history/enqueue-redirect events/navigate-adventure-time-frame)))
+
+(defmethod trackings/perform-track events/navigate-adventure-email-capture
+  [_ event args app-state]
+  #?(:cljs
+     (frontend-trackings/track-email-capture-deploy)))
