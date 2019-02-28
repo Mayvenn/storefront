@@ -77,9 +77,9 @@
             [:div.border-gray {:key   idx
                                :class (when-not (zero? idx) "border-top")} row])])))))
 
-(defmulti account-info (fn [signed-in _ _ _ _] (::auth/as signed-in)))
+(defmulti account-info (fn [signed-in _ _ _] (::auth/as signed-in)))
 
-(defmethod account-info :user [_ {:keys [email expanded?]} the-ville? _ _]
+(defmethod account-info :user [_ {:keys [email expanded?]} _ _]
   (ui/drop-down
    expanded?
    keypaths/account-menu-expanded
@@ -90,13 +90,11 @@
     [:div
      (drop-down-row (utils/route-to events/navigate-account-manage) "Account settings")]
     [:div.border-top.border-gray
-     (drop-down-row (if the-ville?
-                      (utils/route-to events/navigate-friend-referrals-freeinstall)
-                      (utils/route-to events/navigate-account-referrals)) "Refer a friend")]
+     (drop-down-row (utils/route-to events/navigate-account-referrals) "Refer a friend")]
     [:div.border-top.border-gray
      (drop-down-row (utils/fake-href events/control-sign-out) "Sign out")]]))
 
-(defmethod account-info :stylist [_ {:keys [email expanded?]} _ vouchers? store]
+(defmethod account-info :stylist [_ {:keys [email expanded?]} vouchers? store]
   (ui/drop-down
    expanded?
    keypaths/account-menu-expanded
@@ -121,7 +119,7 @@
     [:div.border-top.border-gray
      (drop-down-row (utils/fake-href events/control-sign-out) "Sign out")]]))
 
-(defmethod account-info :guest [_ _ _ _ _]
+(defmethod account-info :guest [_ _ _ _]
   [:div.h6
    [:a.inherit-color (utils/route-to events/navigate-sign-in) "Sign in"]
    " | "
@@ -195,7 +193,7 @@
         (for [items columns]
           (shopping-column items (count columns)))]])))
 
-(defn component [{:as data :keys [store user cart shopping signed-in the-ville? vouchers?]} _ _]
+(defn component [{:as data :keys [store user cart shopping signed-in vouchers?]} _ _]
   (component/create
    [:div
     [:div.hide-on-mb.relative
@@ -205,7 +203,7 @@
        [:div.left (store-info signed-in store)]
        [:div.right
         [:div.h6.my2.flex.items-center
-         (account-info signed-in user the-ville? vouchers? store)
+         (account-info signed-in user vouchers? store)
          [:div.pl2 (ui/shopping-bag {:style {:height (str ui/header-image-size "px") :width "28px"}
                                   :data-test "desktop-cart"}
                                  cart)]]]

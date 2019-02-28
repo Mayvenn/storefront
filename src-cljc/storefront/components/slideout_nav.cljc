@@ -116,16 +116,14 @@
         (ui/underline-button stylists/community-url
                              "Community")))]]))
 
-(defn ^:private user-actions [the-ville?]
+(def ^:private user-actions
   (component/html
    (marquee-row
     (ui/underline-button (assoc (utils/route-to events/navigate-account-manage)
-                            :data-test "account-settings")
-                     "Account settings")
-    (ui/underline-button (if the-ville?
-                       (utils/route-to events/navigate-friend-referrals-freeinstall)
-                       (utils/route-to events/navigate-account-referrals))
-                     "Refer a friend"))))
+                                :data-test "account-settings")
+                         "Account settings")
+    (ui/underline-button (utils/route-to events/navigate-account-referrals)
+                         "Refer a friend"))))
 
 (def ^:private guest-actions
   (component/html
@@ -140,10 +138,10 @@
              :data-test "sign-up")
       "Sign up now, get offers!"]])))
 
-(defn ^:private actions-marquee [signed-in the-ville? vouchers? store]
+(defn ^:private actions-marquee [signed-in vouchers? store]
   (case (-> signed-in ::auth/as)
     :stylist (stylist-actions vouchers? store)
-    :user    (user-actions the-ville?)
+    :user    user-actions
     :guest   guest-actions))
 
 (defn ^:private menu-row [{:keys [link-attrs data-test content]}]
@@ -243,14 +241,14 @@
                      "Sign out")
     [:div])))
 
-(defn ^:private root-menu [{:keys [user signed-in store the-ville? vouchers?] :as data} owner opts]
+(defn ^:private root-menu [{:keys [user signed-in store vouchers?] :as data} owner opts]
   (component/create
    [:div
     [:div.px6.border-bottom.border-gray.bg-light-gray.pt3
      (store-info-marquee signed-in store)
      (account-info-marquee signed-in user)
      [:div.my3.dark-gray
-      (actions-marquee signed-in the-ville? vouchers? store)]]
+      (actions-marquee signed-in vouchers? store)]]
     [:div.px6
      (menu-area data)]
     (when (-> signed-in ::auth/at-all)
@@ -270,14 +268,13 @@
       (component/build root-menu data nil))]))
 
 (defn basic-query [data]
-  {:signed-in           (auth/signed-in data)
-   :on-taxon?           (get-in data keypaths/current-traverse-nav-id)
-   :user                {:email (get-in data keypaths/user-email)}
-   :store               (marquee/query data)
-   :the-ville?          (experiments/the-ville? data)
-   :vouchers?           (experiments/vouchers? data)
-   :v2-experience?      (experiments/v2-experience? data)
-   :shopping            {:categories (get-in data keypaths/categories)}})
+  {:signed-in      (auth/signed-in data)
+   :on-taxon?      (get-in data keypaths/current-traverse-nav-id)
+   :user           {:email (get-in data keypaths/user-email)}
+   :store          (marquee/query data)
+   :vouchers?      (experiments/vouchers? data)
+   :v2-experience? (experiments/v2-experience? data)
+   :shopping       {:categories (get-in data keypaths/categories)}})
 
 (defn query [data]
   (-> (basic-query data)

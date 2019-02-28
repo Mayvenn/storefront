@@ -8,7 +8,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]))
 
-(defn desktop-header [{:keys [store user cart shopping signed-in the-ville? vouchers?]}]
+(defn desktop-header [{:keys [store user cart shopping signed-in vouchers?]}]
   [:div.hide-on-mb.relative
    [:div.relative.border-bottom.border-light-gray {:style {:height "125px"}}
     [:div.max-960.mx-auto
@@ -16,9 +16,8 @@
 
      [:div.right
       [:div.h6.my2.flex.items-center
-       (storefront-header/account-info signed-in user the-ville? vouchers?)
-       [:div.pl2 (ui/shopping-bag {:style {
-                                           :height (str ui/header-image-size "px") :width "28px"}
+       (storefront-header/account-info signed-in user vouchers?)
+       [:div.pl2 (ui/shopping-bag {:style {:height (str ui/header-image-size "px") :width "28px"}
                                    :data-test "desktop-cart"}
                                   cart)]]]
      [:div.absolute.bottom-0.left-0.right-0
