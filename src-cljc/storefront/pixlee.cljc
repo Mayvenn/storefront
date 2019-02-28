@@ -24,28 +24,6 @@
            :seo-title         "Shop by Look | Mayvenn"
            :og-title          "Shop by Look - Find and Buy your favorite Mayvenn bundles!"}
 
-   :free-install {:title             "shop by look"
-                  :description       (str "Get inspiration for your next hairstyle and "
-                                          "shop your favorite looks from the #MayvennMade community.")
-                  :button-copy       "Shop Look"
-                  :back-copy         "back to shop by look"
-                  :above-button-copy nil
-                  :short-name        "look"
-                  :seo-title         "Shop by Look | Mayvenn"
-                  :og-title          "Shop by Look - Find and Buy your favorite Mayvenn bundles!"}
-
-   ;;TODO: GROT
-   :free-install-home {:title              "shop by look"
-                       :description        (str "Get inspiration for your next hairstyle and "
-                                                "shop your favorite looks from the #MayvennMade community.")
-                       :button-copy        "Shop Look"
-                       :back-copy          "back"
-                       :default-back-event events/control-install-landing-page-look-back
-                       :above-button-copy  nil
-                       :short-name         "look"
-                       :seo-title          "Shop by Look | Mayvenn"
-                       :og-title           "Shop by Look - Find and Buy your favorite Mayvenn bundles!"}
-
    ;;TODO Rename aladdin-free-install album
    :aladdin-free-install {:title             "shop by look"
                           :description       (str "Get inspiration for your next hairstyle and "
@@ -82,16 +60,6 @@
                      :seo-title          "Shop by Look | Mayvenn"
                      :og-title           "Shop by Look - Find and Buy your favorite Mayvenn bundles!"}
 
-   :install {:title             "shop by look"
-             :description       (str "Get inspiration for your next hairstyle and "
-                                     "shop your favorite looks from the #MayvennMade community.")
-             :button-copy       "Shop Look"
-             :back-copy         "back to shop by look"
-             :above-button-copy nil
-             :short-name        "look"
-             :seo-title         "Shop by Look | Mayvenn"
-             :og-title          "Shop by Look - Find and Buy your favorite Mayvenn bundles!"}
-
    :email-deals {:title             "shop by look"
                  :description       (str "Grab the latest bundle deal! "
                                          "Below you can shop every bundle deal of the week.")
@@ -108,16 +76,15 @@
                   :copy                   pixlee-copy
                   :mayvenn-made-widget-id 1048394
 
-                  :albums {:sleek-and-straight         3892338
-                           :waves-and-curly            3892339
-                           :free-install-mayvenn       3896653
+                  :albums {:sleek-and-straight         3892338 ;; Aladdin Home - Straight
+                           :waves-and-curly            3892339 ;; Aladdin Home - Wavy
+                           :free-install-mayvenn       3896653 ;; Aladdin Home - #mayvennfreeinstall
                            :deals                      2585224
                            :email-deals                3130480
-                           :free-install               3082797
-                           :free-install-home          3093356
-                           :aladdin-free-install       3923024
-                           :install                    3681927
-                           :look                       952508
+                           :aladdin-free-install       3923024 ;; rename to free-install "Aladdin shop by look"
+                           :look                       952508  ;; Shop by Look on classic/non-aladdin
+
+                           ;; product detail page
                            :straight                   1104027
                            :loose-wave                 1104028
                            :body-wave                  1104029
@@ -130,8 +97,8 @@
                            :yaki-straight              1814286
                            :dyed                       2750237
                            :wigs                       1880465
-                           :shop-by-look               4323429
-                           :bundle-sets                4331694
+
+                           ;; adventure
                            :shop-by-look-straight      4374434
                            :shop-by-look-loose-wave    4374435
                            :shop-by-look-body-wave     4374437
@@ -153,10 +120,7 @@
                               :free-install-mayvenn       3896655
                               :deals                      3091419
                               :email-deals                3130242
-                              :free-install               3082796
-                              :free-install-home          3751546
                               :aladdin-free-install       3923023
-                              :install                    3681928
                               :look                       965034
                               :straight                   1327330
                               :loose-wave                 1327331
@@ -170,8 +134,6 @@
                               :yaki-straight              1912642
                               :dyed                       2918644
                               :wigs                       2918645
-                              :shop-by-look               4018488
-                              :bundle-sets                4336271
                               :shop-by-look-straight      4374415
                               :shop-by-look-loose-wave    4374417
                               :shop-by-look-body-wave     4374418
