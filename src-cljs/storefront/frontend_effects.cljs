@@ -153,9 +153,7 @@
       (handle-message events/popup-show-email-capture))))
 
 (defmethod perform-effects events/enable-feature [_ event {:keys [feature]} _ app-state]
-  (handle-message events/determine-and-show-popup)
-  (when (= "the-ville" feature)
-    (pixlee/fetch-album-by-keyword :free-install)))
+  (handle-message events/determine-and-show-popup))
 
 (defmethod perform-effects events/ensure-sku-ids
   [_ _ {:keys [sku-ids]} _ app-state]

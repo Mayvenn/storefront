@@ -107,19 +107,12 @@
 
 (defn determine-look-album
   [data target-album-keyword]
-  (let [the-ville?       (experiments/the-ville? data)
-        v2-experience?   (experiments/v2-experience? data)
-
-        actual-album (cond
-
+  (let [actual-album (cond
                        (not= target-album-keyword :look)
                        target-album-keyword
 
-                       v2-experience?
+                       (experiments/v2-experience? data)
                        :aladdin-free-install
-
-                       the-ville?
-                       :free-install
 
                        :elsewise target-album-keyword)]
     (if (-> config/pixlee :albums (contains? actual-album))
