@@ -5,26 +5,10 @@
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]))
 
-(defn free-install-cart-promo
-  [qualified?]
-  [:div.mb3
-   (if qualified?
-     [:div.bg-teal.bg-celebrate.p2.white.center {:data-test "free-install-cart-promo"}
-      [:img {:src    "//ucarecdn.com/db055165-7085-4af5-b265-8aba681e6275/successwhite.png"
-             :height "63px"
-             :width  "68px"}]
-      [:h4 "This order qualifies for a"]
-      [:h1.shout.bold "Free Install"]
-      [:h6
-       [:div "from a Mayvenn Certified Stylist in Fayetteville, NC."]]]
-
-     [:div.p2.bg-orange.white.center {:data-test "ineligible-free-install-cart-promo"}
-      [:h4 "You're almost there..."]
-      [:h4 "Buy 3 bundles or more and get a"]
-      [:h1.shout.bold "Free Install"]
-      [:h6
-       [:div "from a Mayvenn Certified Stylist in Fayetteville, NC."]
-       [:div "Use code " [:span.bold "FREEINSTALL"] " to get your free install."]]])])
+;; TODO this should be a generalized call-out for the cart
+;; The template should be made to be presentation focused
+;;   and just focused on the call out aspect of the cart (probably no ifs)
+;; The query should build data for consumption by the template
 
 (defn v2-cart-promo
   [qualified?]
@@ -45,23 +29,15 @@
        [:div "Use code " [:span.bold "FREEINSTALL"] " to get your free install."]]])])
 
 (defn component
-  [{:keys [the-ville? v2-experience? show-green-banner?]}]
+  [{:keys [v2-experience? show-green-banner?]}]
   (component/create
    [:div
-    (cond
-      v2-experience?
-      (v2-cart-promo show-green-banner?)
-
-      the-ville?
-      (free-install-cart-promo show-green-banner?)
-
-      :else nil)]))
+    (when v2-experience? (v2-cart-promo show-green-banner?))]))
 
 (defn query
   [data]
-  (let [ order (get-in data keypaths/order)]
-    {:the-ville?         (experiments/the-ville? data)
-     :v2-experience?     (experiments/v2-experience? data)
+  (let [order (get-in data keypaths/order)]
+    {:v2-experience?     (experiments/v2-experience? data)
      :show-green-banner? (orders/freeinstall-applied? order)}))
 
 (defn built-component
