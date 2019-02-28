@@ -142,6 +142,10 @@
   [data]
   (display-feature? data "browser-pay"))
 
+(defn spreedly?
+  [data]
+  (display-feature? data "spreedly"))
+
 (defn freeinstall-pdp-looks?
   "Used for UGC of PDP page to enable/disable 'view this look' button for freeinstall"
   [data]
