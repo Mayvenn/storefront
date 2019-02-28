@@ -683,7 +683,7 @@
                                 events/api-success-stylist-account-commission)))
 
 (defmethod perform-effects events/control-stylist-account-commission-submit [_ _ args _ app-state]
-  (let [spreedly?       (experiments/spreedly? app-state)
+  (let [payout-method   (get-in app-state keypaths/stylist-manage-account-chosen-payout-method)
         session-id      (get-in app-state keypaths/session-id)
         stylist-id      (get-in app-state keypaths/store-stylist-id)
         user-id         (get-in app-state keypaths/user-id)
@@ -691,7 +691,7 @@
         stylist-account (-> (get-in app-state keypaths/stylist-manage-account)
                             (update :green-dot-payout-attributes reformat-green-dot)
                             maps/deep-remove-nils)]
-    (if spreedly?
+    (if (= "green_dot" payout-method)
       (let [payout-attributes (get-in app-state (conj keypaths/stylist-manage-account :green-dot-payout-attributes))
             [month year]      (parse-expiration (str (:expiration-date payout-attributes)))]
         (spreedly/tokenize (get-in app-state keypaths/spreedly-frame)
