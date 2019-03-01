@@ -27,14 +27,14 @@
 
 (defn hero []
   (let [file-name "free-install-hero"
-        mob-uuid  "5007c420-dc92-4c97-b5f3-683ffe1035c2"
-        dsk-uuid  "5982b589-4587-4094-a29e-3ed8725f5285"]
+        mob-uuid  "b01bb621-55d1-4756-bc3b-790878144a39"
+        dsk-uuid  "ab6a9311-3e8b-4e5a-98f0-330523d58e31"]
     [:a.bold.shadow.white.center.bg-light-gray
      (utils/scroll-href "mayvenn-free-install-video")
      (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
                   :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
                   :file-name   file-name
-                  :alt         "Beautiful Virgin Hair Installed for FREE"})]))
+                  :alt         "Use code FREEINSTALL when you buy 3 bundles or more"})]))
 
 (def free-shipping-banner
   [:div {:style {:height "3em"}}
