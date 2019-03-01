@@ -1,25 +1,22 @@
 (ns storefront.components.v2-homepage-popup
-  (:require [install.faq-accordion :as faq-accordion]
-            [sablono.core :refer [html]]
+  (:require [sablono.core :refer [html]]
             [storefront.api :as api]
             [storefront.browser.cookie-jar :as cookie-jar]
             [storefront.browser.scroll :as scroll]
             [storefront.component :as component]
             [storefront.components.v2 :as v2]
-            [storefront.components.accordion :as accordion]
             [storefront.components.footer-modal :as footer-modal]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
             [storefront.events :as events]
-            [storefront.history :as history]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.components.marquee :as marquee]
             [storefront.transitions :as transitions]))
 
-
-(defn component [{:keys [footer-data faq-data store gallery-ucare-ids stylist-gallery-open?]} owner _]
+(defn component
+  [{:keys [footer-data faq-data store gallery-ucare-ids stylist-gallery-open?]} _ _]
   (component/create
    (html
     (ui/modal {:col-class "col-12 col-6-on-tb col-6-on-dt my8-on-tb-dt flex justify-center"
@@ -103,7 +100,8 @@
   [data opts]
   (component/build component data opts))
 
-(defmethod effects/perform-effects events/control-v2-homepage-popup [_ event args _ app-state]
+(defmethod effects/perform-effects events/control-v2-homepage-popup
+  [_ _ _ _ app-state]
   (scroll/enable-body-scrolling)
   (api/get-promotions (get-in app-state keypaths/api-cache)
                       (or (first (get-in app-state keypaths/order-promotion-codes))
@@ -112,14 +110,17 @@
   (when-let [value (get-in app-state keypaths/dismissed-free-install)]
     (cookie-jar/save-dismissed-free-install (get-in app-state keypaths/cookie) value)))
 
-(defmethod transitions/transition-state events/control-v2-homepage-popup [_ event args app-state]
+(defmethod transitions/transition-state events/control-v2-homepage-popup
+  [_ _ _ app-state]
   (-> app-state
       (assoc-in keypaths/pending-promo-code "freeinstall")
       (assoc-in keypaths/popup nil)
       (assoc-in keypaths/dismissed-free-install true)))
 
-(defmethod transitions/transition-state events/popup-show-v2-homepage [_ event args app-state]
+(defmethod transitions/transition-state events/popup-show-v2-homepage
+  [_ _ _ app-state]
   (assoc-in app-state keypaths/popup :v2-homepage))
 
-(defmethod effects/perform-effects events/popup-show-v2-homepage [_ event _ _ app-state]
+(defmethod effects/perform-effects events/popup-show-v2-homepage
+  [_ _ _ _ _]
   (scroll/disable-body-scrolling))
