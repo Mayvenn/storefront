@@ -404,10 +404,8 @@
   {"paypal-incomplete"           "We were unable to complete your order with PayPal. Please try again."
    "paypal-invalid-address"      (str "Unfortunately, Mayvenn products cannot be delivered to this address at this time. "
                                       "Please choose a new shipping destination. ")
-   "ineligible-for-free-install" (str "The 'FreeInstall' promotion code has been removed from your order. "
-                                      "This offer is only eligible for orders that ship to an address in Fayetteville, NC. "
-                                      "To complete your purchase without the 'FreeInstall' promotion, "
-                                      "please continue with your order below.")})
+   "ineligible-for-free-install" (str "The 'FreeInstall' promotion code has been removed from your order."
+                                      " Please visit freehairinstall.com to complete your order.")})
 
 (defmethod perform-effects events/navigate-cart [_ event args _ app-state]
   (let [answered-basic-info?  (boolean (get-in app-state adv-keypaths/adventure-choices-how-shop))]
