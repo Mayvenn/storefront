@@ -1,7 +1,6 @@
 (ns storefront.components.popup
   (:require [storefront.component :as component]
             [storefront.components.email-capture :as email-capture]
-            [storefront.components.free-install :as free-install]
             [storefront.components.share-your-cart :as share-your-cart]
             [storefront.components.v2-homepage-popup :as v2-homepage-popup]
             [adventure.components.program-details-popup :as adventure-program-details]
@@ -10,9 +9,7 @@
             [storefront.platform.component-utils :as utils]))
 
 (def popup-type->popups
-  {:free-install           {:query     free-install/query
-                            :component free-install/component}
-   :adventure-free-install {:query     adventure-program-details/query
+  {:adventure-free-install {:query     adventure-program-details/query
                             :component adventure-program-details/component}
    :v2-homepage            {:query     v2-homepage-popup/query
                             :component v2-homepage-popup/component}
