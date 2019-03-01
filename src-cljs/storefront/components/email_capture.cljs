@@ -61,8 +61,7 @@
   "Determine the call-to-action for the current experience"
   [app-state]
   (let [store-experience        (get-in app-state keypaths/store-experience)
-        discount-cta?           (and (discount-for? store-experience)
-                                     (not (experiments/the-ville? app-state)))
+        discount-cta?           (discount-for? store-experience)
         got-35-percent-bundles? (experiments/email-capture-35-percent-got-bundles? app-state)]
     (cond
       got-35-percent-bundles? got-35-percent-bundles
