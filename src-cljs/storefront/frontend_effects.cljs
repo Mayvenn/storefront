@@ -485,9 +485,7 @@
     (redirect events/navigate-order-complete {:number number})))
 
 (defmethod perform-effects events/navigate-friend-referrals [_ event args _ app-state]
-  (if (= event events/navigate-friend-referrals-freeinstall)
-    (talkable/show-referrals app-state "fayetteville-offer")
-    (talkable/show-referrals app-state)))
+  (talkable/show-referrals app-state))
 
 (defmethod perform-effects events/navigate-account-referrals [_ event args _ app-state]
   (talkable/show-referrals app-state))
@@ -1009,11 +1007,7 @@
 (defmethod perform-effects events/inserted-talkable [_ event args _ app-state]
   (talkable/show-pending-offer app-state)
   (let [nav-event (get-in app-state keypaths/navigation-event)]
-    (cond
-      (= events/navigate-friend-referrals-freeinstall nav-event)
-      (talkable/show-referrals app-state "fayetteville-offer")
-
-      (#{events/navigate-friend-referrals events/navigate-account-referrals} nav-event)
+    (when (#{events/navigate-friend-referrals events/navigate-account-referrals} nav-event)
       (talkable/show-referrals app-state))))
 
 (defmethod perform-effects events/control-email-captured-dismiss [_ event args _ app-state]
