@@ -1,26 +1,20 @@
 (ns storefront.components.v2-home
-  (:require [clojure.string :as string]
-            [storefront.accessors.auth :as auth]
+  (:require [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.pixlee :as pixlee]
-            #?(:cljs [storefront.hooks.pixlee :as pixlee.hook])
-            [storefront.assets :as assets]
             [storefront.component :as component]
             [storefront.components.marquee :as marquee]
-            [storefront.components.accordion :as accordion]
-            [storefront.components.ui :as ui]
             [storefront.components.svg :as svg]
-            [storefront.components.modal-gallery :as modal-gallery]
+            [storefront.components.ui :as ui]
+            [storefront.components.video :as video]
+            [storefront.components.v2 :as v2]
             [storefront.transitions :as transitions]
+            [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.carousel :as carousel]
-            [storefront.routes :as routes]
-            [storefront.components.video :as video]
-            [storefront.effects :as effects]
-            [storefront.components.money-formatters :as mf]
-            [storefront.components.v2 :as v2]))
+            #?(:cljs [storefront.hooks.pixlee :as pixlee.hook])))
 
 (defn hero-image [{:keys [desktop-url mobile-url file-name alt]}]
   [:picture
