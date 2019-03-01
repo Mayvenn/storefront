@@ -10,8 +10,7 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.routes :as routes]
-            [catalog.images :as catalog-images]))
+            [storefront.routes :as routes]))
 
 (defn product-image
   [{:keys [resizable_url resizable_filename alt]}]
@@ -326,49 +325,29 @@
                  :alt         "refer friends, earn rewards, get 25% off"})]))
 
 (defn component
-  [{:component/keys [hero-legacy-data hero-cms-data features]
-    :keys [signed-in store show-talkable-banner? categories] :as data}
-   _ _]
+  [{:component/keys [hero-cms-data features]
+    :keys [signed-in store categories] :as data} _ _]
   (component/create
    [:div.m-auto
-    (if hero-legacy-data
-      [:section (legacy-hero hero-legacy-data)]
-      (when hero-cms-data
-        [:section (hero hero-cms-data)]))
+    (when hero-cms-data
+      [:section (hero hero-cms-data)])
     [:section.hide-on-tb-dt (store-info signed-in store)]
     (feature-blocks features)
     [:section (popular-grid categories)]
     [:section video-autoplay]
     [:section about-mayvenn]
-    (when show-talkable-banner? [:section talkable-banner])]))
-
-(defn hero-data
-  [data]
-  (cond
-    (experiments/the-ville? data)
-    free-installation-hero-data
-
-    :else
-    nil))
-
-(defn show-talkable-banner?
-  [data]
-  (not (experiments/the-ville? data)))
+    [:section talkable-banner]]))
 
 (defn query
   [data]
   (let [cms-data (get-in data keypaths/cms-homepage)]
-    {:store      (marquee/query data)
-     :signed-in  (auth/signed-in data)
-     :categories (->> (get-in data keypaths/categories)
-                      (filter :home/order)
-                      (sort-by :home/order))
-
-     :component/hero-legacy-data (hero-data data)
-     :component/hero-cms-data    (:hero cms-data)
-     :component/features         (select-keys cms-data [:feature-1 :feature-2 :feature-3])
-
-     :show-talkable-banner? (show-talkable-banner? data)}))
+    {:store                   (marquee/query data)
+     :signed-in               (auth/signed-in data)
+     :categories              (->> (get-in data keypaths/categories)
+                                   (filter :home/order)
+                                   (sort-by :home/order))
+     :component/hero-cms-data (:hero cms-data)
+     :component/features      (select-keys cms-data [:feature-1 :feature-2 :feature-3])}))
 
 (defn built-component [data opts]
   (if (experiments/v2-homepage? data)
