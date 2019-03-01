@@ -1,6 +1,5 @@
 (ns storefront.components.stylist-banner
-  (:require [storefront.accessors.experiments :as experiments]
-            [storefront.component :as component]
+  (:require [storefront.component :as component]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -39,6 +38,5 @@
 (defn built-component [data opts]
   (when (and (= (get-in data keypaths/navigation-event) events/navigate-home)
              (= (get-in data keypaths/store-slug) "shop")
-             (not (get-in data keypaths/stylist-banner-hidden))
-             (not (experiments/the-ville? data)))
+             (not (get-in data keypaths/stylist-banner-hidden)))
     (component/build component (query data) opts)))
