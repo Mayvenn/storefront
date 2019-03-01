@@ -92,6 +92,7 @@
                                :required  true
                                :value     last-name})
          (om/build credit-card-fields nil nil)
+         (ui/field-error-message (first (get field-errors ["payout-method" "base"])) "payout-method-error")
          (ui/text-field-group
           {:data-test     "green-dot-expiration-date"
            :errors        (get field-errors ["payout-method" "expiration-date"])
