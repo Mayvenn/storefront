@@ -120,29 +120,21 @@
 
 (defmethod perform-effects events/determine-and-show-popup
   [_ event args previous-app-state app-state]
-  (let [navigation-event (get-in app-state keypaths/navigation-event)
-
-        the-ville-variation? (experiments/the-ville? app-state)
-        v2-experience?       (experiments/v2-experience? app-state)
-
+  (let [navigation-event            (get-in app-state keypaths/navigation-event)
+        v2-experience?              (experiments/v2-experience? app-state)
         on-non-minimal-footer-page? (not (nav/show-minimal-footer? navigation-event))
-
-        is-adventure? (routes/sub-page? (get-in app-state keypaths/navigation-message) [events/navigate-adventure])
-
-        seen-email-capture?      (email-capture-session app-state)
-        seen-fayetteville-offer? (get-in app-state keypaths/dismissed-free-install)
-
-        signed-in? (get-in app-state keypaths/user-id)
-
-        classic-experience? (and (not v2-experience?)
-                                 (not the-ville-variation?))
-
-        show-email-capture? (and (not signed-in?)
-                                 (not seen-email-capture?)
-                                 on-non-minimal-footer-page?
-                                 (or (and the-ville-variation? seen-fayetteville-offer?)
-                                     classic-experience?
-                                     v2-experience?))]
+        is-adventure?               (routes/sub-page? (get-in app-state keypaths/navigation-message)
+                                                      [events/navigate-adventure])
+        seen-email-capture?         (email-capture-session app-state)
+        seen-freeinstall-offer?     (get-in app-state keypaths/dismissed-free-install)
+        signed-in?                  (get-in app-state keypaths/user-id)
+        classic-experience?         (not v2-experience?)
+        show-email-capture?         (and (not signed-in?)
+                                         (not seen-email-capture?)
+                                         on-non-minimal-footer-page?
+                                         (or seen-freeinstall-offer?
+                                             classic-experience?
+                                             v2-experience?))]
     (cond
       is-adventure? nil
 
