@@ -103,11 +103,6 @@
        (some #{"aladdin-dashboard" "phoenix-dashboard" "dashboard-with-vouchers"})
        boolean))
 
-(defn the-ville?
-  "Fayetteville experiment; can't be used with $100 install experiment"
-  [data]
-  (display-feature? data "the-ville"))
-
 (defn look-detail-price?
   [data]
   (display-feature? data "look-detail-price"))
