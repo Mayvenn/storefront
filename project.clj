@@ -140,10 +140,10 @@
   :profiles {:uberjar {:aot :all}
              :test    {:plugins [[lein-test-report-junit-xml "0.2.0"]]}
              :repl    {:dependencies
-                       [[cider/piggieback "0.3.6"]
+                       [[cider/piggieback "0.4.0"]
                         [org.clojure/tools.nrepl "0.2.13"]]}
              :dev     {:source-paths ["dev/clj"]
-                       :dependencies [[cider/piggieback "0.3.9"]
+                       :dependencies [[cider/piggieback "0.4.0"]
                                       [figwheel-sidecar "0.5.16"]
                                       [org.clojure/tools.nrepl "0.2.13"]
                                       [binaryage/devtools "0.9.10"]
