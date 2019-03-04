@@ -59,9 +59,9 @@
     "/adv/shop-a-la-carte/color"                               (edn->bidi events/navigate-adventure-a-la-carte-hair-color)
     "/adv/shop-a-la-carte/product-list"                        (edn->bidi events/navigate-adventure-a-la-carte-product-list)
     ["/products/" [#"\d+" :catalog/product-id] "-" :page/slug] (edn->bidi events/navigate-adventure-product-details)
-    "/adv/shop/bundle-sets-texture"                            (edn->bidi events/navigate-adventure-bundlesets-hair-texture)
-    "/adv/shop/shop-by-look/texture"                           (edn->bidi events/navigate-adventure-hair-texture)
+    ["/adv/shop/bundle-sets-texture"]                          (edn->bidi events/navigate-adventure-bundlesets-hair-texture)
     ["/adv/shop/" :album-keyword]                              (edn->bidi events/navigate-adventure-select-new-look)
+    ["/adv/shop/" :album-keyword "/texture"]                   (edn->bidi events/navigate-adventure-hair-texture)
     ["/adv/shop/" :album-keyword "/" :look-id]                 (edn->bidi events/navigate-adventure-look-detail)
     "/adv/match-success"                                       (edn->bidi events/navigate-adventure-match-success)}})
 

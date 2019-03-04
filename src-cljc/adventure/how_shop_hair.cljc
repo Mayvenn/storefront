@@ -11,7 +11,8 @@
   (into [{:text             "Show me looks for inspiration"
           :data-test-suffix "looks"
           :value            {:how-shop "looks"}
-          :target-message   [events/navigate-adventure-hair-texture]}
+          :target-message   [events/navigate-adventure-hair-texture
+                             {:album-keyword :shop-by-look}]}
          {:text             "Give me pre-made bundle sets"
           :data-test-suffix "bundle-sets"
           :value            {:how-shop "bundle-sets"}
