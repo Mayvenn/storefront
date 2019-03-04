@@ -6,7 +6,7 @@
                  [com.stuartsierra/component "0.3.2"]
                  [environ "1.1.0"]
                  [tocsin "0.1.4"]
-                 [tugboat "0.1.21"]
+                 [tugboat "0.1.22-SNAPSHOT"]
                  [mayvenn/spice "0.1.57"]
                  [compojure "1.6.1"]
                  [noir-exception "0.2.3"]
