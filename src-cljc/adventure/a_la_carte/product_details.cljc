@@ -535,5 +535,5 @@
 #?(:cljs
    (defmethod effects/perform-effects
      events/navigate-adventure-product-details
-     [_ _ {:as args :keys [catalog/product-id page/slug query-params]} _ app-state]
-     (messages/handle-message events/initialize-product-details args)))
+     [_ event {:as args :keys [catalog/product-id page/slug query-params]} _ app-state]
+     (messages/handle-message events/initialize-product-details (assoc args :origin-nav-event event))))

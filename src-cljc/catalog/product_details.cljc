@@ -620,10 +620,10 @@
 
 #?(:cljs
    (defmethod effects/perform-effects events/initialize-product-details
-     [_ _ {:keys [catalog/product-id page/slug query-params]} _ app-state]
+     [_ _ {:keys [catalog/product-id page/slug query-params origin-nav-event]} _ app-state]
      (let [selected-sku (get-in app-state catalog.keypaths/detailed-product-selected-sku)]
        (if (url-points-to-invalid-sku? selected-sku query-params)
-         (effects/redirect events/navigate-product-details
+         (effects/redirect origin-nav-event
                            {:catalog/product-id product-id
                             :page/slug          slug
                             :query-params       {:SKU (:catalog/sku-id selected-sku)}})
@@ -631,8 +631,8 @@
 
 #?(:cljs
    (defmethod effects/perform-effects events/navigate-product-details
-     [_ _ args _ app-state]
-     (messages/handle-message events/initialize-product-details args)))
+     [_ event args _ app-state]
+     (messages/handle-message events/initialize-product-details (assoc args :origin-nav-event event))))
 
 (defmethod effects/perform-effects events/api-success-v2-products-for-details
   [_ _ _ _ app-state]
