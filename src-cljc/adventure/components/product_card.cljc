@@ -82,10 +82,8 @@
 
 (defn query [data product]
   (let [selections                (get-in data catalog.keypaths/category-selections)
-        skus                      (-> (->> (get-in data adventure.keypaths/adventure-matching-skus)
-                                           (spice.maps/index-by :catalog/sku-id))
-                                      (select-keys (:selector/skus product))
-                                      vals)
+        skus                      (-> (get-in data adventure.keypaths/adventure-matching-skus)
+                                      (select-keys (:selector/skus product)))
         skus-matching-color       (get-in data adventure.keypaths/adventure-matching-skus-color)
         facets                    (get-in data keypaths/v2-facets)
         color-order-map           (facets/color-order-map facets)

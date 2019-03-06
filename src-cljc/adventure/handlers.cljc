@@ -14,7 +14,8 @@
             [storefront.trackings :as trackings]
             [storefront.transitions :as transitions]
             [clojure.string :as string]
-            [storefront.platform.messages :as messages]))
+            [storefront.platform.messages :as messages]
+            [catalog.products :as products]))
 
 (defmethod transitions/transition-state events/control-adventure-choice
   [_ event {:keys [choice]} app-state]
@@ -101,7 +102,7 @@
 (defmethod transitions/transition-state events/api-success-adventure-fetch-skus
   [_ event {:keys [skus]} app-state]
   (-> app-state
-     (assoc-in keypaths/adventure-matching-skus skus)))
+      (assoc-in keypaths/adventure-matching-skus (products/index-skus skus))))
 
 (defmethod effects/perform-effects events/adventure-fetch-matched-products
   [_ _ {:keys [criteria] :or {criteria [:hair/family]}} _ app-state]

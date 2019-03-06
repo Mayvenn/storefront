@@ -35,7 +35,7 @@
   (let [color-facet-options (facets/available-adventure-facet-options
                              :hair/color
                              (get-in data keypaths/v2-facets)
-                             (get-in data adventure-keypaths/adventure-matching-skus))
+                             (vals (get-in data adventure-keypaths/adventure-matching-skus)))
         adventure-choices     (get-in data adventure-keypaths/adventure-choices)
         stylist-selected?     (some-> adventure-choices :flow #{"match-stylist"})
         current-step          (if stylist-selected? 3 2)]

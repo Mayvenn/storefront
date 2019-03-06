@@ -37,7 +37,7 @@
 (defn ^:private query [data]
   (let [texture-facet-options (facets/available-adventure-facet-options :hair/texture
                                                                         (get-in data keypaths/v2-facets)
-                                                                        (get-in data adventure-keypaths/adventure-matching-skus))
+                                                                        (vals (get-in data adventure-keypaths/adventure-matching-skus)))
         adventure-choices     (get-in data adventure-keypaths/adventure-choices)
         current-step          (if (-> adventure-choices :flow #{"match-stylist"}) 3 2)]
     {:prompt       "Which texture are you looking for?"
