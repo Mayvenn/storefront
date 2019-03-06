@@ -39,7 +39,9 @@
                           :subtitle                (str "Step " current-step " of 3")
                           :shopping-bag?           true}
       :stylist-selected? stylist-selected?
-      :product-cards     (map (partial product-card/query data) products)}
+      :product-cards     (->> products
+                              (map (partial product-card/query data))
+                              (sort-by (comp :sku/price :cheapest-sku)))}
      (adventure.checkout.cart.items/freeinstall-line-item-query data))))
 
 (def qualified-banner
