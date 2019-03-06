@@ -112,8 +112,7 @@
         text-style     (if unpurchasable? {:class "gray"} {})]
     #?(:clj (component/create [:div])
        :cljs
-       (letfn [(handle-scroll [e] (om/set-state! owner :show? (and (not hide?)
-                                                                   (< 866 (.-y (goog.dom/getDocumentScroll))))))
+       (letfn [(handle-scroll [e] (om/set-state! owner :show? (< 866 (.-y (goog.dom/getDocumentScroll)))))
                (set-height [] (om/set-state! owner :add-button-height (some-> owner
                                                                               (om/get-node "add-button")
                                                                               goog.style/getSize
@@ -137,7 +136,7 @@
            (render-state [this {:keys [show? add-button-height]}]
              (component/html
               [:div.fixed.z4.bottom-0.left-0.right-0.transition-2
-               (if show?
+               (if (and show? (not hide?))
                  {:style {:margin-bottom "0"}}
                  {:style {:margin-bottom (str "-" add-button-height "px")}})
                [:div {:ref "add-button"}
@@ -349,7 +348,7 @@
                                                      :option/rectangle-swatch)
                               :adding-to-bag?   adding-to-bag?
                               :sku              selected-sku
-                              :hide?            (complement (:offset ugc))
+                              :hide?            (:offset ugc)
                               :sold-out?        sold-out?
                               :unavailable?     (empty? selected-sku)
                               :selected-options selected-options
