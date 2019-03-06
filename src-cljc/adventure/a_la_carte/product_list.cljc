@@ -20,7 +20,7 @@
 (defn ^:private query
   [data]
   (let [skus              (vals (get-in data adventure.keypaths/adventure-matching-skus))
-        products          (get-in data adventure.keypaths/adventure-matching-products)
+        products          (vals (get-in data adventure.keypaths/adventure-matching-products))
         adventure-choices (get-in data adventure.keypaths/adventure-choices)
         stylist-selected? (some-> adventure-choices :flow #{"match-stylist"})
         current-step      (if stylist-selected? 3 2)
