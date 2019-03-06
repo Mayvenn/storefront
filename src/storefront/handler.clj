@@ -464,7 +464,7 @@
           (let [path (products/path-for-sku product-id canonical-slug sku-id)]
             (util.response/redirect path))
 
-          (= config/freeinstall-subdomain (some-> req :store :store-slug ))
+          (= config/freeinstall-subdomain (some-> req :store :store-slug))
           (generic-server-render render-ctx
                                  (-> data
                                      (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
@@ -525,7 +525,8 @@
                            (= events/navigate-category nav-event)
                            (assoc-category-route-data storeback-config params)
 
-                           (= events/navigate-product-details nav-event)
+                           (#{events/navigate-product-details
+                              events/navigate-adventure-product-details} nav-event)
                            (assoc-product-details-route-data storeback-config params)
 
                            (#{events/navigate-shop-by-look-details events/navigate-shop-by-look} nav-event)
@@ -553,23 +554,24 @@
                                 "Disallow: /policy/tos"])
 
 (def server-render-pages
-  {events/navigate-home                    generic-server-render
-   events/navigate-adventure-home          generic-server-render
-   events/navigate-category                render-category
-   events/navigate-legacy-named-search     redirect-named-search
-   events/navigate-legacy-ugc-named-search redirect-named-search
-   events/navigate-legacy-product-page     redirect-legacy-product-page
-   events/navigate-product-details         render-product-details
-   events/navigate-content-help            generic-server-render
-   events/navigate-content-about-us        generic-server-render
-   events/navigate-content-privacy         generic-server-render
-   events/navigate-content-tos             generic-server-render
-   events/navigate-content-guarantee       generic-server-render
-   events/navigate-content-ugc-usage-terms generic-server-render
-   events/navigate-content-program-terms   generic-server-render
-   events/navigate-gallery                 generic-server-render
-   events/navigate-checkout-processing     generic-server-render
-   events/navigate-mayvenn-made            generic-server-render})
+  {events/navigate-home                      generic-server-render
+   events/navigate-adventure-home            generic-server-render
+   events/navigate-category                  render-category
+   events/navigate-legacy-named-search       redirect-named-search
+   events/navigate-legacy-ugc-named-search   redirect-named-search
+   events/navigate-legacy-product-page       redirect-legacy-product-page
+   events/navigate-product-details           render-product-details
+   events/navigate-adventure-product-details render-product-details
+   events/navigate-content-help              generic-server-render
+   events/navigate-content-about-us          generic-server-render
+   events/navigate-content-privacy           generic-server-render
+   events/navigate-content-tos               generic-server-render
+   events/navigate-content-guarantee         generic-server-render
+   events/navigate-content-ugc-usage-terms   generic-server-render
+   events/navigate-content-program-terms     generic-server-render
+   events/navigate-gallery                   generic-server-render
+   events/navigate-checkout-processing       generic-server-render
+   events/navigate-mayvenn-made              generic-server-render})
 
 (defn robots [{:keys [subdomains]}]
   (string/join "\n" (if (= "freeinstall" (last subdomains))
