@@ -4,6 +4,8 @@
             [storefront.components.ui :as ui]
             [storefront.component :as component]
             [storefront.events :as events]
+            [storefront.keypaths :as keypaths]
+            [storefront.transitions :as transitions]
             [storefront.platform.component-utils :as utils]
             [storefront.components.accordion :as accordion]))
 
@@ -75,6 +77,12 @@
           {:slides      (map modal-gallery/ucare-img-slide gallery-ucare-ids)
            :open?       stylist-gallery-open?
            :close-event events/control-stylist-gallery-close})])]]))
+
+(defmethod transitions/transition-state events/control-stylist-gallery-open [_ _ _ app-state]
+  (assoc-in app-state keypaths/carousel-stylist-gallery-open? true))
+
+(defmethod transitions/transition-state events/control-stylist-gallery-close [_ _ _ app-state]
+  (assoc-in app-state keypaths/carousel-stylist-gallery-open? false))
 
 (defn why-mayvenn-is-right-for-you
   ([] (why-mayvenn-is-right-for-you false))
