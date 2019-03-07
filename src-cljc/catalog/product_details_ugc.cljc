@@ -63,25 +63,21 @@
        "Want to show up on our homepage? "
        "Tag your best pictures wearing Mayvenn with " [:span.bold "#MayvennMade"]]])))
 
-(defn popup-component [{:keys [now carousel-data offset show-cta?]} owner opts]
+(defn popup-component [{:keys [now carousel-data offset show-cta? close-event-msg]} owner opts]
   (component/create
    ;; NOTE(jeff,corey): events/navigate-product-details should be the current
    ;; navigation event of the PDP page (freeinstall and classic have different events)
-   (let [close-attrs (util/route-to events/navigate-product-details
-                                    {:catalog/product-id (:product-id carousel-data)
-                                     :page/slug          (:page-slug carousel-data)
-                                     :query-params       {:SKU (:sku-id carousel-data)}})]
-     (ui/modal
-      {:close-attrs close-attrs}
-      [:div.relative
-       (component/build carousel/component
-                        {:slides   (map (partial popup-slide show-cta? (:product-name carousel-data))
-                                        (:album carousel-data))
-                         :settings {:slidesToShow 1
-                                    :initialSlide (parse-int offset)}
-                         :now      now}
-                        {})
-       [:div.absolute
-        {:style {:top "1.5rem" :right "1.5rem"}}
-        (ui/modal-close {:class       "stroke-dark-gray fill-gray"
-                         :close-attrs close-attrs})]]))))
+   (ui/modal
+    {:close-attrs (apply util/route-to close-event-msg)}
+    [:div.relative
+     (component/build carousel/component
+                      {:slides   (map (partial popup-slide show-cta? (:product-name carousel-data))
+                                      (:album carousel-data))
+                       :settings {:slidesToShow 1
+                                  :initialSlide (parse-int offset)}
+                       :now      now}
+                      {})
+     [:div.absolute
+      {:style {:top "1.5rem" :right "1.5rem"}}
+      (ui/modal-close {:class       "stroke-dark-gray fill-gray"
+                       :close-attrs (apply util/route-to close-event-msg)})]])))

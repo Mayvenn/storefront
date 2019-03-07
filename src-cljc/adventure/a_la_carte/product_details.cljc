@@ -375,20 +375,24 @@
 (defn ugc-query [product sku data]
   (when-let [ugc (get-in data keypaths/ugc)]
     (when-let [images (pixlee/images-in-album ugc (keyword (:legacy/named-search-slug product)))]
-      {:carousel-data {:product-id   (:catalog/product-id product)
-                       :product-name (:copy/title product)
-                       :page-slug    (:page/slug product)
-                       :sku-id       (:catalog/sku-id sku)
-                       :album        images}
-       :show-cta?     (experiments/freeinstall-pdp-looks? data)
-       :offset        (get-in data keypaths/ui-ugc-category-popup-offset)
+      {:carousel-data   {:product-id   (:catalog/product-id product)
+                         :product-name (:copy/title product)
+                         :page-slug    (:page/slug product)
+                         :sku-id       (:catalog/sku-id sku)
+                         :album        images}
+       :show-cta?       (experiments/freeinstall-pdp-looks? data)
+       :offset          (get-in data keypaths/ui-ugc-category-popup-offset)
+       :close-event-msg [events/navigate-product-details
+                         {:catalog/product-id (:catalog/product-id product)
+                          :page/slug          (:page/slug product)
+                          :query-params       {:SKU (:catalog/sku-id sku)}}]
        ;;TODO GROT:
        ;; This is to force UGC to re-render after Slick's initial render
        ;; Slick has a bug when before 485px width where it shows a sliver
        ;; of the next image on the right.
        ;; This ugly terrible hack gets it to re-evaluate its width
        ;; The correct solution is to get rid of/fix slick
-       :now           (date/now)})))
+       :now             (date/now)})))
 
 (defn find-carousel-images [product product-skus selected-sku]
   (->> (selector/match-all {}
