@@ -46,7 +46,7 @@
         adventure-choices     (get-in data adventure-keypaths/adventure-choices)
         stylist-selected?     (some-> adventure-choices :flow #{"match-stylist"})
         current-step          (if stylist-selected? 3 2)]
-    {:prompt       "Choose the color of your hair."
+    {:prompt       "Which color are you looking for?"
      :prompt-image "//ucarecdn.com/47cd8de1-9bd0-4057-a050-c07749791d1a/-/format/auto/bg.png"
      :data-test    "hair-color"
      :current-step current-step
