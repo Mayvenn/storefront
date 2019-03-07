@@ -9,13 +9,16 @@
             [storefront.platform.carousel :as carousel]
             [clojure.string :as str]))
 
-(defn ^:private carousel-slide [product-id page-slug sku-id idx {:keys [imgs content-type]}]
+(defn ^:private carousel-slide
+  [destination-event product-id page-slug sku-id idx {:keys [imgs content-type]}]
   [:div.p1
-   [:a (util/route-to events/navigate-product-details
-                      {:catalog/product-id product-id
-                       :page/slug          page-slug
-                       :query-params       {:SKU    sku-id
-                                            :offset idx}})
+   [:a (if destination-event
+         (util/fake-href destination-event {:offset idx})
+         (util/route-to events/navigate-product-details
+                        {:catalog/product-id product-id
+                         :page/slug          page-slug
+                         :query-params       {:SKU    sku-id
+                                              :offset idx}}))
     (ui/aspect-ratio
      1 1
      {:class "flex items-center"}
@@ -40,13 +43,13 @@
     (when (and show-cta? (-> links :view-look boolean))
       [:div.mt2 (ugc/view-look-button item "View this look" {:back-copy (str "back to " (->title-case long-name))})])]])
 
-(defn component [{{:keys [album product-id page-slug sku-id]} :carousel-data} owner opts]
+(defn component [{{:keys [album product-id page-slug sku-id destination-event]} :carousel-data} owner opts]
   (component/create
    (when (seq album)
      [:div.center.mt4
       [:div.h2.medium.dark-gray.crush.m2 "#MayvennMade"]
       (component/build carousel/component
-                       {:slides   (map-indexed (partial carousel-slide product-id page-slug sku-id)
+                       {:slides   (map-indexed (partial carousel-slide destination-event product-id page-slug sku-id)
                                                album)
                         :settings {:centerMode    true
                             ;; must be in px, because it gets parseInt'd for
@@ -63,21 +66,27 @@
        "Want to show up on our homepage? "
        "Tag your best pictures wearing Mayvenn with " [:span.bold "#MayvennMade"]]])))
 
-(defn popup-component [{:keys [now carousel-data offset show-cta? close-event-msg]} owner opts]
-  (component/create
-   ;; NOTE(jeff,corey): events/navigate-product-details should be the current
-   ;; navigation event of the PDP page (freeinstall and classic have different events)
-   (ui/modal
-    {:close-attrs (apply util/route-to close-event-msg)}
-    [:div.relative
-     (component/build carousel/component
-                      {:slides   (map (partial popup-slide show-cta? (:product-name carousel-data))
-                                      (:album carousel-data))
-                       :settings {:slidesToShow 1
-                                  :initialSlide (parse-int offset)}
-                       :now      now}
-                      {})
-     [:div.absolute
-      {:style {:top "1.5rem" :right "1.5rem"}}
-      (ui/modal-close {:class       "stroke-dark-gray fill-gray"
-                       :close-attrs (apply util/route-to close-event-msg)})]])))
+(defn popup-component [{:keys [now carousel-data offset show-cta? close-event]} owner opts]
+  (let [close-attrs (if close-event
+                      (util/fake-href close-event)
+                      (util/route-to events/navigate-product-details
+                                     {:catalog/product-id (:product-id carousel-data)
+                                      :page/slug          (:page-slug carousel-data)
+                                      :query-params       {:SKU (:sku-id carousel-data)}}))]
+    (component/create
+     ;; NOTE(jeff,corey): events/navigate-product-details should be the current
+     ;; navigation event of the PDP page (freeinstall and classic have different events)
+     (ui/modal
+      {:close-attrs close-attrs}
+      [:div.relative
+       (component/build carousel/component
+                        {:slides   (map (partial popup-slide show-cta? (:product-name carousel-data))
+                                        (:album carousel-data))
+                         :settings {:slidesToShow 1
+                                    :initialSlide (parse-int offset)}
+                         :now      now}
+                        {})
+       [:div.absolute
+        {:style {:top "1.5rem" :right "1.5rem"}}
+        (ui/modal-close {:class       "stroke-dark-gray fill-gray"
+                         :close-attrs close-attrs})]]))))

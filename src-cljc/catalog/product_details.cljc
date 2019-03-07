@@ -383,10 +383,6 @@
                        :album        images}
        :show-cta?     true
        :offset        (get-in data keypaths/ui-ugc-category-popup-offset)
-       :close-event-msg [events/navigate-product-details
-                         {:catalog/product-id (:catalog/product-id product)
-                          :page/slug          (:page/slug product)
-                          :query-params       {:SKU (:catalog/sku-id sku)}}]
        ;;TODO GROT:
        ;; This is to force UGC to re-render after Slick's initial render
        ;; Slick has a bug when before 485px width where it shows a sliver
