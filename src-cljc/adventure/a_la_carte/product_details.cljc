@@ -382,7 +382,6 @@
                        :album        images}
        :show-cta?     (experiments/freeinstall-pdp-looks? data)
        :offset        (get-in data keypaths/ui-ugc-category-popup-offset)
-       :back          (first (get-in data keypaths/navigation-undo-stack))
        ;;TODO GROT:
        ;; This is to force UGC to re-render after Slick's initial render
        ;; Slick has a bug when before 485px width where it shows a sliver
