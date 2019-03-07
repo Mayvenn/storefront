@@ -8,7 +8,8 @@
             [adventure.progress :as progress]
             [adventure.keypaths :as adventure-keypaths]
             [adventure.components.multi-prompt :as multi-prompt]
-            [adventure.utils.facets :as facets]))
+            [adventure.utils.facets :as facets]
+            [catalog.selector :as selector]))
 
 (def option-metadata
   {"straight"       {:subtitle "For silky, sleek looks"}
@@ -33,10 +34,16 @@
 
 (defn ^:private query
   [data]
-  (let [texture-facet-options (facets/available-adventure-facet-options :hair/texture
+  (let [adventure-choices     (get-in data adventure-keypaths/adventure-choices)
+        selected-install-type (get-in data adventure-keypaths/adventure-choices-install-type)
+        texture-facet-options (facets/available-adventure-facet-options :hair/texture
                                                                         (get-in data keypaths/v2-facets)
-                                                                        (vals (get-in data adventure-keypaths/adventure-matching-skus)))
-        adventure-choices     (get-in data adventure-keypaths/adventure-choices)
+                                                                        (-> data
+                                                                            (get-in adventure-keypaths/adventure-matching-skus)
+                                                                            vals
+                                                                            (selector/query
+                                                                             {:hair/family         #{selected-install-type}
+                                                                              :inventory/in-stock? #{true}})))
         stylist-selected?     (some-> adventure-choices :flow #{"match-stylist"})
         current-step          (if stylist-selected? 3 2)]
     {:prompt       "Which texture are you looking for?"

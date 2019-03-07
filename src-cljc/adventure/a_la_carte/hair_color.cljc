@@ -9,7 +9,8 @@
             [adventure.progress :as progress]
             [adventure.keypaths :as adventure-keypaths]
             [adventure.components.multi-prompt :as multi-prompt]
-            [adventure.utils.facets :as facets]))
+            [adventure.utils.facets :as facets]
+            [catalog.selector :as selector]))
 
 (defn enriched-buttons [facet-options]
   (for [option facet-options
@@ -32,10 +33,16 @@
      :target-message   [events/navigate-adventure-a-la-carte-product-list]}))
 
 (defn ^:private query [data]
-  (let [color-facet-options (facets/available-adventure-facet-options
-                             :hair/color
-                             (get-in data keypaths/v2-facets)
-                             (vals (get-in data adventure-keypaths/adventure-matching-skus)))
+  (let [selected-install-type (get-in data adventure-keypaths/adventure-choices-install-type)
+        color-facet-options   (facets/available-adventure-facet-options
+                               :hair/color
+                               (get-in data keypaths/v2-facets)
+                               (-> data
+                                   (get-in adventure-keypaths/adventure-matching-skus)
+                                   vals
+                                   (selector/query
+                                    {:hair/family         #{selected-install-type}
+                                     :inventory/in-stock? #{true}})))
         adventure-choices     (get-in data adventure-keypaths/adventure-choices)
         stylist-selected?     (some-> adventure-choices :flow #{"match-stylist"})
         current-step          (if stylist-selected? 3 2)]
