@@ -375,15 +375,14 @@
 (defn ugc-query [product sku data]
   (when-let [ugc (get-in data keypaths/ugc)]
     (when-let [images (pixlee/images-in-album ugc (keyword (:legacy/named-search-slug product)))]
-      {:carousel-data {:product-id        (:catalog/product-id product)
-                       :product-name      (:copy/title product)
+      {:carousel-data {:product-name      (:copy/title product)
                        :page-slug         (:page/slug product)
                        :sku-id            (:catalog/sku-id sku)
                        :destination-event events/control-freeinstall-ugc-modal-open
                        :album             images}
        :show-cta?     (experiments/freeinstall-pdp-looks? data)
        :offset        (get-in data keypaths/ui-ugc-category-popup-offset)
-       :close-event   events/control-freeinstall-ugc-modal-close
+       :close-message [events/control-freeinstall-ugc-modal-close {}]
        ;;TODO GROT:
        ;; This is to force UGC to re-render after Slick's initial render
        ;; Slick has a bug when before 485px width where it shows a sliver

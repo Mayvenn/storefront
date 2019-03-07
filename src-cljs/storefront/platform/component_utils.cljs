@@ -31,15 +31,23 @@
 (defn collapse-menus-callback [menus]
   (send-event-callback events/control-menu-collapse-all {:menus menus}))
 
+(defn fake-href
+  ([event] (fake-href event nil))
+  ([event args]
+   {:href "#"
+    :on-click (send-event-callback event args)}))
+
 (defn route-to [navigation-event & [navigation-args nav-stack-item]]
-  {:href (routes/path-for navigation-event navigation-args)
-   :on-click
-   (fn [e]
-     (.preventDefault e)
-     ;; We're about to give control over to the browser; when we get control
-     ;; back, we'll need some info about where we've come from
-     (handle-message events/stash-nav-stack-item nav-stack-item)
-     (history/enqueue-navigate navigation-event navigation-args))})
+  (if-let [routable-path (routes/path-for navigation-event navigation-args)]
+    {:href routable-path
+     :on-click
+     (fn [e]
+       (.preventDefault e)
+       ;; We're about to give control over to the browser; when we get control
+       ;; back, we'll need some info about where we've come from
+       (handle-message events/stash-nav-stack-item nav-stack-item)
+       (history/enqueue-navigate navigation-event navigation-args))}
+    (fake-href navigation-event navigation-args)))
 
 (defn route-to-shop [navigation-event & [args]]
   {:href
@@ -74,12 +82,6 @@
 (defn stop-propagation [e]
   (.stopPropagation e)
   false)
-
-(defn fake-href
-  ([event] (fake-href event nil))
-  ([event args]
-   {:href "#"
-    :on-click (send-event-callback event args)}))
 
 (defn scroll-href [anchor-id]
   {:href (str "#" anchor-id)

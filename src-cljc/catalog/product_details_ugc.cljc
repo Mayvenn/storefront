@@ -66,13 +66,8 @@
        "Want to show up on our homepage? "
        "Tag your best pictures wearing Mayvenn with " [:span.bold "#MayvennMade"]]])))
 
-(defn popup-component [{:keys [now carousel-data offset show-cta? close-event]} owner opts]
-  (let [close-attrs (if close-event
-                      (util/fake-href close-event)
-                      (util/route-to events/navigate-product-details
-                                     {:catalog/product-id (:product-id carousel-data)
-                                      :page/slug          (:page-slug carousel-data)
-                                      :query-params       {:SKU (:sku-id carousel-data)}}))]
+(defn popup-component [{:keys [now carousel-data offset show-cta? close-message]} owner opts]
+  (let [close-attrs (apply util/route-to close-message)]
     (component/create
      ;; NOTE(jeff,corey): events/navigate-product-details should be the current
      ;; navigation event of the PDP page (freeinstall and classic have different events)
