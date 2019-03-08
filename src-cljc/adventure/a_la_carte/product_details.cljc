@@ -279,7 +279,7 @@
            options
            picker-data
            aladdin-or-phoenix?
-           ugc] :as data} owner opts]
+           ugc]} owner opts]
   (let [review?      (seq reviews)
         unavailable? (not (seq selected-sku))
         sold-out?    (not (:inventory/in-stock? selected-sku))]
@@ -437,8 +437,6 @@
      :reviews                         (review-component/query data)
      :ugc                             ugc
      :aladdin-or-phoenix?             (experiments/v2-experience? data)
-     :fetching-product?               (utils/requesting? data (conj request-keys/search-v2-products
-                                                                    (:catalog/product-id product)))
      :adding-to-bag?                  (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
      :sku-quantity                    (get-in data keypaths/browse-sku-quantity 1)
      :options                         options
@@ -506,30 +504,6 @@
     (sku-selector/product-options facets
                                   product
                                   product-skus)))
-
-(defn ^:private assoc-selections
-  "Selections are ultimately a function of three inputs:
-   1. options of the cheapest sku
-   2. prior selections on another product, but validated for this product
-   3. options of the sku from the URI
-
-   They are merged together each (possibly partially) overriding the
-   previous selection map of options.
-
-   NB: User clicks for selections are indirectly used by changing the URI."
-  [app-state sku]
-  (let [product-id   (get-in app-state catalog.keypaths/detailed-product-id)
-        product      (products/product-by-id app-state product-id)
-        facets       (facets/by-slug app-state)
-        product-skus (products/extract-product-skus app-state product)]
-    (-> app-state
-        (assoc-in catalog.keypaths/detailed-product-selections
-                  (merge
-                   (default-selections facets product product-skus)
-                   (get-in app-state catalog.keypaths/detailed-product-selections)
-                   (reduce-kv #(assoc %1 %2 (first %3))
-                              {}
-                              (select-keys sku (:selector/electives product))))))))
 
 #?(:cljs
    (defmethod effects/perform-effects
