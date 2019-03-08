@@ -102,7 +102,7 @@
 (defmethod transitions/transition-state events/api-success-adventure-fetch-skus
   [_ event {:keys [skus]} app-state]
   (-> app-state
-      (assoc-in keypaths/adventure-matching-skus (products/index-skus skus))))
+      (assoc-in storefront.keypaths/v2-skus (products/index-skus skus))))
 
 (defmethod effects/perform-effects events/adventure-fetch-matched-products
   [_ _ {:keys [criteria] :or {criteria [:hair/family]}} _ app-state]
@@ -123,7 +123,7 @@
         skus-indexed       (products/index-skus skus)]
     (-> app-state
         #_(assoc-in storefront.keypaths/v2-products (spice.maps/index-by :product-id products))
-        (assoc-in keypaths/adventure-matching-products correct-products)
-        (assoc-in keypaths/adventure-matching-skus skus-indexed)
+        (assoc-in storefront.keypaths/v2-products correct-products)
+        (assoc-in storefront.keypaths/v2-skus skus-indexed)
         (assoc-in keypaths/adventure-matching-skus-color skus-matching-color))))
 

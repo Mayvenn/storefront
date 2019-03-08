@@ -82,7 +82,7 @@
 
 (defn query [data product]
   (let [selections                (get-in data catalog.keypaths/category-selections)
-        skus                      (-> (get-in data adventure.keypaths/adventure-matching-skus)
+        skus                      (-> (get-in data keypaths/v2-skus)
                                       (select-keys (:selector/skus product)))
         skus-matching-color       (get-in data adventure.keypaths/adventure-matching-skus-color)
         facets                    (get-in data keypaths/v2-facets)

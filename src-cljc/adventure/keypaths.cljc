@@ -11,9 +11,7 @@
 (def adventure-stylist-match-location (conj adventure-choices :location))
 (def adventure-matching-stylists-timer (conj adventure-choices :matching-stylists-timer))
 
-(def adventure-matching-skus (conj adventure :matching-skus))
 (def adventure-matching-skus-color (conj adventure :matching-skus-color))
-(def adventure-matching-products (conj adventure :matching-products))
 
 (def adventure-selected-stylist-id (conj adventure :selected-stylist-id))
 

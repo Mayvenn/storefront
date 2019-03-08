@@ -39,7 +39,7 @@
         texture-facet-options (facets/available-adventure-facet-options :hair/texture
                                                                         (get-in data keypaths/v2-facets)
                                                                         (-> data
-                                                                            (get-in adventure-keypaths/adventure-matching-skus)
+                                                                            (get-in keypaths/v2-skus)
                                                                             vals
                                                                             (selector/query
                                                                              {:hair/family         #{selected-install-type}
