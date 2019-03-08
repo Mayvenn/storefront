@@ -437,7 +437,7 @@
      :homepage-data            homepage-data
      :next-page                (if (and adv-email-capture? (not visitor-identified?))
                                  events/navigate-adventure-email-capture
-                                 events/navigate-adventure-time-frame)}))
+                                 events/navigate-adventure-install-type)}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

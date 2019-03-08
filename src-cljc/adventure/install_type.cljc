@@ -20,7 +20,7 @@
      :current-step 1
      :header-data  {:title                   "The New You"
                     :progress                progress/install-type
-                    :back-navigation-message [events/navigate-adventure-budget]
+                    :back-navigation-message [events/navigate-adventure-home]
                     :subtitle                "Step 1 of 3"}
      :buttons      (map (fn [{:keys [option/slug] :as o}]
                           {:text             [:div.mynp6

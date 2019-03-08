@@ -14,7 +14,7 @@
      :current-step 1
      :header-data  {:progress                progress/what-next
                     :title                   "Basic Info"
-                    :back-navigation-message [events/navigate-adventure-budget]
+                    :back-navigation-message [events/navigate-adventure-home]
                     :subtitle                "Step 1 of 3"}
      :buttons      (randomizer/randomize-ordering
                     random-sequence

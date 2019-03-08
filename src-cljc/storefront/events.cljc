@@ -455,8 +455,6 @@
 ;; ADVENTURE
 (defpath navigate-adventure)
 (defpath navigate-adventure-home)
-(defpath navigate-adventure-time-frame)
-(defpath navigate-adventure-budget)
 (defpath navigate-adventure-what-next)
 (defpath navigate-adventure-match-stylist)
 (defpath navigate-adventure-find-your-stylist)
