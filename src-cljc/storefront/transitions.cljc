@@ -44,3 +44,14 @@
 
 (defn clear-fields [app-state & fields]
   (reduce #(assoc-in %1 %2 "") app-state fields))
+
+(defn clear-field-errors
+  [app-state]
+  (assoc-in app-state keypaths/errors {}))
+
+(defn clear-flash
+  [app-state]
+  (-> app-state
+      clear-field-errors
+      (assoc-in keypaths/flash-now-success nil)
+      (assoc-in keypaths/flash-now-failure nil)))

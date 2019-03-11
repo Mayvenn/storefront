@@ -476,11 +476,6 @@
 (defmethod transition-state events/control-edit-gallery [_ event args app-state]
   (assoc-in app-state keypaths/editing-gallery? true))
 
-(defmethod transition-state events/control-popup-hide [_ event args app-state]
-  (-> app-state
-      clear-flash
-      (assoc-in keypaths/popup nil)))
-
 (defmethod transition-state events/api-success-manage-account [_ event args app-state]
   (-> app-state
       (sign-in-user args)
