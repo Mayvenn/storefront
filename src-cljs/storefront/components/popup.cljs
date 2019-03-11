@@ -4,12 +4,15 @@
             [storefront.components.share-your-cart :as share-your-cart]
             [storefront.components.v2-homepage-popup :as v2-homepage-popup]
             [adventure.components.program-details-popup :as adventure-program-details]
+            [adventure.components.email-capture :as adv.email-capture]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]))
 
 (def popup-type->popups
-  {:adventure-free-install {:query     adventure-program-details/query
+  {:adv-email-capture      {:query     adv.email-capture/query
+                            :component adv.email-capture/component}
+   :adventure-free-install {:query     adventure-program-details/query
                             :component adventure-program-details/component}
    :v2-homepage            {:query     v2-homepage-popup/query
                             :component v2-homepage-popup/component}

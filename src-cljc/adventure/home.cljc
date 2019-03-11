@@ -367,7 +367,6 @@
                          waves-and-curly-ugc
                          free-install-mayvenn-ugc
                          gallery-ucare-ids
-                         adv-email-capture?
                          next-page]
                   :as data}
                  owner
@@ -412,9 +411,7 @@
         ugc                         (get-in data storefront.keypaths/ugc)
         free-install-mayvenn-images (pixlee/images-in-album ugc :free-install-mayvenn)
         sleek-and-straight-images   (pixlee/images-in-album ugc :sleek-and-straight)
-        waves-and-curly-images      (pixlee/images-in-album ugc :waves-and-curly)
-        adv-email-capture?          (experiments/adv-email-capture? data)
-        visitor-identified?         (#{"opted-in"} (get-in data storefront.keypaths/email-capture-session))]
+        waves-and-curly-images      (pixlee/images-in-album ugc :waves-and-curly)]
     {:store                    store
      :gallery-ucare-ids        (->> store
                                     :gallery
@@ -435,9 +432,7 @@
      :free-install-mayvenn-ugc {:images        free-install-mayvenn-images
                                 :album-keyword :free-install-mayvenn}
      :homepage-data            homepage-data
-     :next-page                (if (and adv-email-capture? (not visitor-identified?))
-                                 events/navigate-adventure-email-capture
-                                 events/navigate-adventure-install-type)}))
+     :next-page                events/navigate-adventure-install-type}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

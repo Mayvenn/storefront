@@ -1,4 +1,4 @@
-(ns adventure.email-capture
+(ns adventure.components.email-capture
   (:require
    #?@(:cljs [[om.core :as om]
               [storefront.effects :as effects]
@@ -24,10 +24,12 @@
    [adventure.progress :as progress]))
 
 (defn ^:private query [data]
-  (let [email  (get-in data storefront.keypaths/captured-email)
-        errors (get-in data storefront.keypaths/field-errors)]
-    {:email  email
-     :errors errors}))
+  (let [email               (get-in data storefront.keypaths/captured-email)
+        errors              (get-in data storefront.keypaths/field-errors)
+        session-identified? (= "opted-in" (get-in data storefront.keypaths/email-capture-session))]
+    {:email    email
+     :errors   errors
+     :display? (not session-identified?)}))
 
 #?(:cljs
    (defn ^:private handle-on-change [^js/Event e]
@@ -42,15 +44,16 @@
        (not (string/ends-with? email "@"))))
 
 (defn component
-  [{:keys [email errors] :as thing-we-will-look-at} owner _]
+  [{:keys [email errors display?] :as thing-we-will-look-at} owner _]
   (component/create
    [:div.bg-lavender.white.center.flex.flex-auto.flex-column
     {:style {:background-image    (str "url(https://ucarecdn.com/03957478-feac-4e0c-aedf-e8e4a7123d69/)")
              :background-position "bottom"
              :background-repeat   "no-repeat"
-             :background-size     "contain"}}
+             :background-size     "contain"
+             :display             (if display? "inherit" "none")}}
     [:div.flex.flex-column.items-center
-     {:style {:height "246px"}}
+     {:style {:min-height "100vh"}}
      [:div.flex.items-center.center.mt3.pb3
       [:div.mr4
        (ui/ucare-img {:width "140"} "1970d88b-3798-4914-8a91-74288b09cc77")]]
@@ -91,15 +94,17 @@
 #?(:cljs
    (defmethod effects/perform-effects events/control-adventure-emailcapture-submit [_ _ {:keys [email]} _ app-state]
      (facebook-analytics/subscribe)
-     (messages/handle-message events/adventure-visitor-identified)
-     (history/enqueue-redirect events/navigate-adventure-install-type)))
+     (messages/handle-message events/adventure-visitor-identified)))
+
+(defmethod transitions/transition-state events/popup-show-adventure-emailcapture [_ event args app-state]
+  (assoc-in app-state storefront.keypaths/popup :adv-email-capture))
 
 (defmethod trackings/perform-track events/control-adventure-emailcapture-submit
   [_ event {:keys [email]} app-state]
   #?(:cljs
      (frontend-trackings/track-email-capture-capture app-state {:email email})))
 
-(defmethod trackings/perform-track events/navigate-adventure-email-capture
+(defmethod trackings/perform-track events/popup-show-adventure-emailcapture
   [_ event args app-state]
   #?(:cljs
      (frontend-trackings/track-email-capture-deploy)))

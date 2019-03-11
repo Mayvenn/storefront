@@ -474,7 +474,6 @@
 (defpath navigate-adventure-stylist-results)
 (defpath navigate-adventure-out-of-area)
 (defpath navigate-adventure-match-success)
-(defpath navigate-adventure-email-capture)
 
 (defpath navigate-adventure-product-details)
 
@@ -490,6 +489,7 @@
 (defpath control-adventure-location-submit)
 
 (defpath popup-show-adventure-free-install)
+(defpath popup-show-adventure-emailcapture)
 (defpath control-adventure-free-install-dismiss)
 
 (defpath api-success-fetch-matched-stylist)

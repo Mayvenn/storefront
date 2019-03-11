@@ -129,19 +129,24 @@
         seen-freeinstall-offer?     (get-in app-state keypaths/dismissed-free-install)
         signed-in?                  (get-in app-state keypaths/user-id)
         classic-experience?         (not v2-experience?)
-        show-email-capture?         (and (not signed-in?)
+        email-capture-showable?     (and (not signed-in?)
                                          (not seen-email-capture?)
-                                         on-non-minimal-footer-page?
-                                         (or seen-freeinstall-offer?
-                                             classic-experience?
-                                             v2-experience?))]
+                                         on-non-minimal-footer-page?)]
     (cond
-      is-adventure? nil
+      (and is-adventure?
+           email-capture-showable?
+           (contains? #{events/navigate-adventure-what-next}
+                      navigation-event))
+      (handle-message events/popup-show-adventure-emailcapture)
 
       signed-in?
       (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) "signed-in")
 
-      show-email-capture?
+      (and email-capture-showable?
+           (not is-adventure?)
+           (or seen-freeinstall-offer?
+               classic-experience?
+               v2-experience?))
       (handle-message events/popup-show-email-capture))))
 
 (defmethod perform-effects events/enable-feature [_ event {:keys [feature]} _ app-state]

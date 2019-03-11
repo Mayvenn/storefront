@@ -27,7 +27,7 @@
                        [storefront.config :as config]
                        [storefront.history :as history]])
             [adventure.home :as adventure.home]
-            adventure.email-capture
+            adventure.components.email-capture
             [adventure.what-next :as adventure.what-next]
             [adventure.match-stylist :as adventure.match-stylist]
             [adventure.find-your-stylist :as adventure.find-your-stylist]
@@ -127,7 +127,6 @@
     events/navigate-forgot-password                   forgot-password/built-component
     events/navigate-gallery                           gallery/built-component
     events/navigate-adventure-home                    adventure.home/built-component
-    events/navigate-adventure-email-capture           adventure.email-capture/built-component
     events/navigate-adventure-what-next               adventure.what-next/built-component
     events/navigate-adventure-match-stylist           adventure.match-stylist/built-component
     events/navigate-adventure-find-your-stylist       adventure.find-your-stylist/built-component
@@ -232,6 +231,8 @@
 
        (routes/sub-page? [nav-event] [events/navigate-adventure])
        [:div {:data-test (keypaths/->component-str nav-event)}
+        [:div {:key "popup"}
+         #?(:cljs (popup/built-component (popup/query data) nil))]
         [:div.flex.content-stretch
          (merge
           {:style {:min-height    "100vh"
