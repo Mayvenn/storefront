@@ -141,3 +141,7 @@
   "Used for UGC of PDP page to enable/disable 'view this look' button for freeinstall"
   [data]
   (display-feature? data "freeinstall-pdp-looks?"))
+
+(defn shop-to-freeinstall?
+  [data]
+  (display-feature? data "shop-to-freeinstall"))

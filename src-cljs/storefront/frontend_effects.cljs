@@ -3,6 +3,7 @@
             [clojure.set :as set]
             [clojure.string :as string]
             [spice.maps :as maps]
+            [lambdaisland.uri :as uri]
             [storefront.accessors.auth :as auth]
             [storefront.accessors.credit-cards :refer [filter-cc-number-format parse-expiration pad-year]]
             [storefront.accessors.experiments :as experiments]
@@ -133,6 +134,19 @@
 
 (defmethod perform-effects events/external-redirect-welcome [_ event args _ app-state]
   (set! (.-location js/window) (get-in app-state keypaths/welcome-url)))
+
+(defmethod perform-effects events/external-redirect-freeinstall [_ event {:keys [utm-source]} _ app-state]
+  (let [hostname (case (get-in app-state keypaths/environment)
+                   "production" "mayvenn.com"
+                   "acceptance" "diva-acceptance.com"
+                   "storefront.localhost")]
+    (set! (.-location js/window)
+          (-> (.-location js/window)
+              uri/uri
+              (assoc :host (str "freeinstall." hostname))
+              (assoc :query
+                     (str "utm_source="utm-source"&utm_medium=referral&utm_campaign=ShoptoFreeInstall"))
+              str))))
 
 (defmethod perform-effects events/external-redirect-sms [_ event {:keys [sms-message number]} _ app-state]
   (set! (.-location js/window) (share-links/sms-link sms-message number)))
