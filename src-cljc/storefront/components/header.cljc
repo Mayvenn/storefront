@@ -133,9 +133,15 @@
    (merge opts {:style {:padding-left "24px" :padding-right "24px"}})
    text])
 
-(defn menu [{:keys [v2-experience?]}]
+(defn menu [{:keys [shop-to-freeinstall? v2-experience?]}]
   (component/html
    [:div.center
+    (when shop-to-freeinstall?
+      (header-menu-link
+       (assoc (utils/fake-href events/external-redirect-freeinstall {:utm-source "shopFlyout"})
+              :on-mouse-enter close-shopping)
+       [:span [:span.teal.pr1 "NEW"] "Get a free install"]))
+
     (when-not v2-experience?
       (header-menu-link (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :deals})
                                :on-mouse-enter close-shopping)
