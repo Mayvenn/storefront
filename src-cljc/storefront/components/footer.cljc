@@ -10,6 +10,7 @@
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
+            [catalog.categories :as categories]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.numbers :as numbers]))
 
@@ -28,9 +29,10 @@
                                                           {:query-params {:SKU sku-id}}))]
                       [events/navigate-category category])
         slug        (or product-slug slug)]
-    {:title       title
-     :slug        slug
-     :nav-message nav-message}))
+    {:title         title
+     :slug          slug
+     :new-category? (categories/new-category? slug)
+     :nav-message   nav-message}))
 
 (defn shop-section [own-store? categories]
   (let [links (mapv category->link categories)]
@@ -39,10 +41,12 @@
      [:nav.clearfix {:aria-label "Shop Products"}
       (for [link-column (partition-all 10 links)]
         [:div.col.col-6 {:key (str "footer-column-" (-> link-column first :slug))}
-         (for [{:keys [title nav-message slug]} link-column]
+         (for [{:keys [title new-category? nav-message slug]} link-column]
            [:a.block.py1.dark-gray.light.titleize
             (merge {:key (str "footer-link-" slug)}
                    (apply utils/route-to nav-message))
+            (when new-category?
+              [:span.teal "NEW "])
             title])])]]))
 
 (defn contacts-section [{:keys [call-number sms-number contact-email]}]
