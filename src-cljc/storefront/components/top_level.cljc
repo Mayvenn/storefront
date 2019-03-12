@@ -1,33 +1,37 @@
 (ns storefront.components.top-level
   (:require [storefront.component :as component]
-            #?@(:cljs [[storefront.components.checkout-sign-in :as checkout-sign-in]
-                       [storefront.components.checkout-returning-or-guest :as checkout-returning-or-guest]
+            #?@(:cljs [[checkout.confirmation :as checkout-confirmation]
+                       [storefront.components.account :as account]
                        [storefront.components.checkout-address :as checkout-address]
                        [storefront.components.checkout-complete :as checkout-complete]
-                       [checkout.confirmation :as checkout-confirmation]
                        [storefront.components.checkout-payment :as checkout-payment]
+                       [storefront.components.checkout-returning-or-guest :as checkout-returning-or-guest]
+                       [storefront.components.checkout-sign-in :as checkout-sign-in]
+                       [storefront.components.force-set-password :as force-set-password]
+                       [storefront.components.friend-referrals :as friend-referrals]
+                       [storefront.components.popup :as popup]
+                       [storefront.components.reset-password :as reset-password]
                        [storefront.components.shop-by-look :as shop-by-look]
                        [storefront.components.shop-by-look-details :as shop-by-look-details]
-                       [storefront.components.account :as account]
-                       [storefront.components.reset-password :as reset-password]
-                       [storefront.components.force-set-password :as force-set-password]
-                       [storefront.components.stylist.v2-dashboard :as v2.dashboard]
+                       [storefront.components.style-guide :as style-guide]
+                       [storefront.components.stylist.account :as stylist.account]
                        [storefront.components.stylist.balance-transfer-details :as balance-transfer-details]
-                       [storefront.components.stylist.order-details :as stylist.order-details]
                        [storefront.components.stylist.cash-out :as stylist.cash-out]
                        [storefront.components.stylist.cash-out-pending :as stylist.cash-out-pending]
                        [storefront.components.stylist.cash-out-success :as stylist.cash-out-success]
-                       [storefront.components.stylist.share-your-store :as stylist.share-your-store]
-                       [storefront.components.stylist.account :as stylist.account]
-                       [storefront.components.stylist.portrait :as stylist.portrait]
                        [storefront.components.stylist.gallery-image-picker :as gallery-image-picker]
-                       [storefront.components.friend-referrals :as friend-referrals]
-                       [storefront.components.style-guide :as style-guide]
-                       [storefront.components.popup :as popup]
+                       [storefront.components.stylist.order-details :as stylist.order-details]
+                       [storefront.components.stylist.portrait :as stylist.portrait]
+                       [storefront.components.stylist.share-your-store :as stylist.share-your-store]
+                       [storefront.components.stylist.v2-dashboard :as v2.dashboard]
                        [storefront.config :as config]
-                       [storefront.history :as history]])
+                       [storefront.history :as history]
+                       adventure.components.email-capture
+                       adventure.components.program-details-popup
+                       storefront.components.email-capture
+                       storefront.components.share-your-cart
+                       storefront.components.v2-homepage-popup])
             [adventure.home :as adventure.home]
-            adventure.components.email-capture
             [adventure.what-next :as adventure.what-next]
             [adventure.match-stylist :as adventure.match-stylist]
             [adventure.find-your-stylist :as adventure.find-your-stylist]
@@ -167,7 +171,7 @@
         (sticky-promo-bar data)])
 
      [:div {:key "popup"}
-      #?(:cljs (popup/built-component (popup/query data) nil))]
+      #?(:cljs (popup/built-component data nil))]
 
      (header/built-component data nil)
      [:div.relative.flex.flex-column.flex-auto
@@ -194,7 +198,7 @@
     (sticky-promo-bar data)]
 
    [:div {:key "popup"}
-    #?(:cljs (popup/built-component (popup/query data) nil))]
+    #?(:cljs (popup/built-component data nil))]
 
    (header/built-component data nil)
    [:div.relative.flex.flex-column.flex-auto
@@ -232,7 +236,7 @@
        (routes/sub-page? [nav-event] [events/navigate-adventure])
        [:div {:data-test (keypaths/->component-str nav-event)}
         [:div {:key "popup"}
-         #?(:cljs (popup/built-component (popup/query data) nil))]
+         #?(:cljs (popup/built-component data nil))]
         [:div.flex.content-stretch
          (merge
           {:style {:min-height    "100vh"

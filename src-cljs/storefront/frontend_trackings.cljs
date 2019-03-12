@@ -89,10 +89,6 @@
                         {:filter_name     (pr-str facet)
                          :selected_option option}))
 
-(defmethod perform-track events/control-free-install-dismiss
-  [_ event {:keys [facet option]} app-state]
-  (stringer/track-event "free_install-decline" {}))
-
 (defmethod perform-track events/control-free-install-shop-looks
   [_ event {:keys [facet option]} app-state]
   (stringer/track-event "free_install-accept" {}))

@@ -1,44 +1,45 @@
 (ns storefront.components.popup
-  (:require [adventure.components.email-capture :as adv.email-capture]
-            [adventure.components.program-details-popup :as adventure-program-details]
+  (:require [storefront.accessors.experiments :as experiments]
             [storefront.accessors.nav :as nav]
             [storefront.browser.cookie-jar :as cookie-jar]
             [storefront.component :as component]
-            [storefront.components.email-capture :as email-capture]
-            [storefront.components.share-your-cart :as share-your-cart]
-            [storefront.components.v2-homepage-popup :as v2-homepage-popup]
+            [storefront.platform.messages :as messages]
             [storefront.transitions :as transitions]
             [storefront.effects :as effects]
             [storefront.events :as events]
-            [storefront.experiments :as experiments]
             [storefront.keypaths :as keypaths]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            [storefront.routes :as routes]))
 
-(def popup-type->popups
-  {:adv-email-capture      {:query     adv.email-capture/query
-                            :component adv.email-capture/component}
-   :adventure-free-install {:query     adventure-program-details/query
-                            :component adventure-program-details/component}
-   :v2-homepage            {:query     v2-homepage-popup/query
-                            :component v2-homepage-popup/component}
-   :email-capture          {:query     email-capture/query
-                            :component email-capture/component}
-   :share-cart             {:query     share-your-cart/query
-                            :component share-your-cart/component}})
+(defn email-capture-session
+  [app-state]
+  (-> (get-in app-state keypaths/cookie)
+      cookie-jar/retrieve-email-capture-session))
 
-(defn query [data]
-  (let [popup-type (get-in data keypaths/popup)
-        query      (or (some-> popup-type popup-type->popups :query)
-                       (constantly nil))]
-    {:popup-type popup-type
-     :popup-data (query data)}))
+(defn touch-email-capture-session
+  [app-state]
+  (when-let [value (email-capture-session app-state)]
+    (-> (get-in app-state keypaths/cookie)
+        (cookie-jar/save-email-capture-session value))))
 
-(defn built-component [{:keys [popup-type popup-data]} _]
-  (let [opts {:opts {:close-attrs (utils/fake-href events/control-popup-hide)}}]
-    (some-> popup-type popup-type->popups :component (component/build popup-data opts))))
+(defmulti query (fn [data] (get-in data keypaths/popup :default)))
+(defmethod query :default [_] nil)
+
+(defmulti component (fn [query-data _ _] (:popup-type query-data)))
+(defmethod component :default [_ _ _] (component/create nil))
+
+(defn query-with-popup-type [data]
+  (assoc (query data)
+         :popup-type (get-in data keypaths/popup :default)))
+
+(defn built-component
+  [data _]
+  (component/build component
+                   (query-with-popup-type data)
+                   {:opts {:close-attrs (utils/fake-href events/control-popup-hide)}}))
 
 (defmethod effects/perform-effects events/determine-and-show-popup
-  [_ event args previous-app-state app-state]
+  [_ _ args _ app-state]
   (let [navigation-event            (get-in app-state keypaths/navigation-event)
         v2-experience?              (experiments/v2-experience? app-state)
         on-non-minimal-footer-page? (not (nav/show-minimal-footer? navigation-event))
@@ -48,15 +49,17 @@
         seen-freeinstall-offer?     (get-in app-state keypaths/dismissed-free-install)
         signed-in?                  (get-in app-state keypaths/user-id)
         classic-experience?         (not v2-experience?)
+        adv-email-capture-exp       (experiments/adv-email-capture? app-state)
         email-capture-showable?     (and (not signed-in?)
                                          (not seen-email-capture?)
                                          on-non-minimal-footer-page?)]
     (cond
       (and is-adventure?
            email-capture-showable?
+           adv-email-capture-exp
            (contains? #{events/navigate-adventure-what-next}
                       navigation-event))
-      (handle-message events/popup-show-adventure-emailcapture)
+      (messages/handle-message events/popup-show-adventure-emailcapture)
 
       signed-in?
       (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) "signed-in")
@@ -66,10 +69,11 @@
            (or seen-freeinstall-offer?
                classic-experience?
                v2-experience?))
-      (handle-message events/popup-show-email-capture))))
+      (messages/handle-message events/popup-show-email-capture))))
 
-(defmethod transition-state events/control-popup-hide
-  [_ event args app-state]
+(defmethod transitions/transition-state events/control-popup-hide
+  [_ _ args app-state]
   (-> app-state
-      clear-flash
+      transitions/clear-flash
       (assoc-in keypaths/popup nil)))
+

@@ -3,6 +3,7 @@
             [storefront.accessors.experiments :as experiments]
             [storefront.component :as component]
             [storefront.components.ui :as ui]
+            [storefront.components.popup :as popup]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]))
@@ -71,16 +72,15 @@
 (def close-dialog-href (utils/fake-href events/control-email-captured-dismiss))
 (def submit-callback (utils/send-event-callback events/control-email-captured-submit))
 
-(defn query
+(defmethod popup/query :email-capture
   [app-state]
   {:capture/call-to-action (call-to-action app-state)
    :capture/email          (get-in app-state keypaths/captured-email)
    :form/errors            (get-in app-state keypaths/field-errors)
    :form/focused           (get-in app-state keypaths/ui-focus)})
 
-(defn component
-  [{:capture/keys [call-to-action email]
-    :form/keys    [errors focused]} _ _]
+(defmethod popup/component :email-capture
+  [{:capture/keys [call-to-action email] :form/keys [errors focused]} _ _]
   (component/create
    (ui/modal
     {:close-attrs close-dialog-href

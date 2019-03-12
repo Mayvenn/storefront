@@ -3,8 +3,10 @@
             [storefront.api :as api]
             [storefront.component :as component]
             [adventure.faq :as faq]
+            [storefront.component :as component]
             [storefront.components.accordion :as accordion]
             [storefront.components.footer-modal :as footer-modal]
+            [storefront.components.popup :as popup]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
@@ -74,7 +76,8 @@
               :title       "Free Install"
               :description "Get your hair installed absolutely FREE!"})]]))
 
-(defn component [{:keys [footer-data faq-data]} owner _]
+(defmethod popup/component :adventure-free-install
+  [{:keys [footer-data faq-data]} owner _]
   (component/create
    (html
     (ui/modal {:col-class "col-12 col-6-on-tb col-6-on-dt my8-on-tb-dt flex justify-center"
@@ -112,14 +115,10 @@
                 [:div.hide-on-tb-dt.pt3 ;; Footer
                  (component/build footer-modal/component footer-data nil)]]]))))
 
-(defn query
+(defmethod popup/query :adventure-free-install
   [data]
   {:faq-data    (faq/query data)
    :footer-data (footer-modal/query data)})
-
-(defn built-component
-  [data opts]
-  (component/build component data opts))
 
 (defmethod transitions/transition-state events/control-adventure-free-install-dismiss [_ event args app-state]
   (assoc-in app-state keypaths/popup nil))

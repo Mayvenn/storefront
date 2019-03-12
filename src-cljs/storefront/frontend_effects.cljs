@@ -43,10 +43,10 @@
             [storefront.routes :as routes]
             [storefront.accessors.nav :as nav]
             [storefront.components.share-links :as share-links]
+            [storefront.components.popup :as popup]
             [storefront.browser.cookie-jar :as cookie]))
 
-(defn- email-capture-session [app-state]
-  (cookie-jar/retrieve-email-capture-session (get-in app-state keypaths/cookie)))
+
 
 (defn changed? [previous-app-state app-state keypath]
   (not= (get-in previous-app-state keypath)
@@ -73,10 +73,6 @@
 
       (and order-number order-token)
       (api/get-order order-number order-token))))
-
-(defn touch-email-capture-session [app-state]
-  (when-let [value (email-capture-session app-state)]
-    (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) value)))
 
 (defn scroll-promo-field-to-top []
   ;; In a timeout so that changes to the advertised promo aren't changing the scroll too.
@@ -225,7 +221,7 @@
                                                :utm_campaign :storefront/utm-campaign
                                                :utm_content  :storefront/utm-content
                                                :utm_term     :storefront/utm-term})
-                             (maps/remove-nils))]
+                             (maps/deep-remove-nils))]
       (when (seq utm-params)
         (cookie-jar/save-utm-params
          (get-in app-state keypaths/cookie)
@@ -240,7 +236,7 @@
 
     (exception-handler/refresh)
 
-    (touch-email-capture-session app-state)))
+    (popup/touch-email-capture-session app-state)))
 
 (defmethod perform-effects events/navigate-home [_ _ {:keys [query-params]} _ app-state]
   (api/fetch-cms-data)
@@ -331,7 +327,7 @@
     (handle-later events/poll-gallery {} 5000)))
 
 (defmethod perform-effects events/control [_ _ args _ app-state]
-  (touch-email-capture-session app-state))
+  (popup/touch-email-capture-session app-state))
 
 (defmethod perform-effects events/control-email-captured-submit [_ _ args _ app-state]
   (when (empty? (get-in app-state keypaths/errors))
@@ -983,7 +979,7 @@
                          (get-in app-state keypaths/user-token)))
 
 (defmethod perform-effects events/sign-out [_ event args app-state-before app-state]
-  (when (not= "opted-in" (email-capture-session app-state))
+  (when (not= "opted-in" (popup/email-capture-session app-state))
     (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) "dismissed"))
   (handle-message events/clear-order)
   (cookie-jar/clear-account (get-in app-state keypaths/cookie))

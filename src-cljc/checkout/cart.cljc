@@ -408,7 +408,7 @@
                                   :margin-bottom "-1px"}}
    (stylist-banner/built-component data nil)
    (promotion-banner/built-component data nil)
-   #?(:cljs (popup/built-component (popup/query data) nil))
+   #?(:cljs (popup/built-component data nil))
 
    (header/built-component data nil)
    [:div.relative.flex.flex-column.flex-auto

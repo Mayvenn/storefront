@@ -141,7 +141,6 @@
 
 (defpath control-free-install)
 (defpath control-free-install-shop-looks)
-(defpath control-free-install-dismiss)
 
 (defpath control-install-landing-page-look-back)
 (defpath control-install-landing-page-toggle-accordion)

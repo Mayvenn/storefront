@@ -3,6 +3,7 @@
             [storefront.assets :as assets]
             [storefront.component :as component]
             [storefront.components.share-links :as share-links]
+            [storefront.components.popup :as popup]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.keypaths :as keypaths]
@@ -37,7 +38,7 @@ Thanks,
 "
                                store-nickname)))
 
-(defn component
+(defmethod popup/component :share-cart
   [{:keys [share-url utm-url store-nickname]} _ {:keys [close-attrs]}]
   (component/create
    (ui/modal {:close-attrs close-attrs}
@@ -86,15 +87,10 @@ Thanks,
                   :on-click  utils/select-all-text}]]
                [:div.navy "(select and copy link to share)"]]])))
 
-(defn query
+(defmethod popup/query :share-cart
   [data]
   (let [share-url (get-in data keypaths/shared-cart-url)]
     {:share-url      share-url
      :utm-url        (-> (url/url share-url)
                          (assoc-in [:query :utm_campaign] "sharebuttons"))
      :store-nickname (get-in data keypaths/store-nickname)}))
-
-(defn built-component
-  [data opts]
-  (component/build component data opts))
-

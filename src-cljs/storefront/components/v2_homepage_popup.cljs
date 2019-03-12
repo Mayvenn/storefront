@@ -6,6 +6,7 @@
             [storefront.component :as component]
             [storefront.components.v2 :as v2]
             [storefront.components.footer-modal :as footer-modal]
+            [storefront.components.popup :as popup]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
@@ -15,7 +16,7 @@
             [storefront.components.marquee :as marquee]
             [storefront.transitions :as transitions]))
 
-(defn component
+(defmethod popup/component :v2-homepage
   [{:keys [footer-data faq-data store gallery-ucare-ids stylist-gallery-open?]} _ _]
   (component/create
    (html
@@ -26,7 +27,7 @@
                [:div.col-12.clearfix.pt1.pb2
                 [:div.right.pt2.pr2.pointer
                  (svg/simple-x
-                  (merge (utils/fake-href events/control-free-install-dismiss)
+                  (merge (utils/fake-href events/control-v2-homepage-popup)
                          {:data-test    "v2-homepage-popup-dismiss"
                           :height       "1.5rem"
                           :width        "1.5rem"
@@ -45,11 +46,11 @@
                    "buy 3 bundles or more"]]]
                 [:div.my10
                  (v2/get-a-free-install {:store                 store
-                                              :gallery-ucare-ids     gallery-ucare-ids
-                                              :stylist-portrait      (:portrait store)
-                                              :stylist-name          (:store-nickname store)
-                                              :modal?                true
-                                              :stylist-gallery-open? stylist-gallery-open?})]
+                                         :gallery-ucare-ids     gallery-ucare-ids
+                                         :stylist-portrait      (:portrait store)
+                                         :stylist-name          (:store-nickname store)
+                                         :modal?                true
+                                         :stylist-gallery-open? stylist-gallery-open?})]
                 [:div.mb3.px2
 
                  [:h6.bold.col-12.center.mb2 "Just check out with promo code: FREEINSTALL"]
@@ -83,7 +84,7 @@
   [data]
   {:expanded-index (get-in data keypaths/faq-expanded-section)})
 
-(defn query
+(defmethod popup/query :v2-homepage
   [data]
   (let [store (marquee/query data)]
     {:store                 store
@@ -95,10 +96,6 @@
      :stylist-gallery-open? (get-in data keypaths/carousel-stylist-gallery-open?)
      :faq-data              (faq-query data)
      :footer-data           (footer-modal/query data)}))
-
-(defn built-component
-  [data opts]
-  (component/build component data opts))
 
 (defmethod effects/perform-effects events/control-v2-homepage-popup
   [_ _ _ _ app-state]
