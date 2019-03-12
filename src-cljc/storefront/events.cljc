@@ -203,7 +203,7 @@
 (defpath control-checkout-remove-promotion)
 (defpath control-checkout-confirmation-submit)
 
-(defpath control-stylist-banner-close)
+(defpath control-dtc-banner-close)
 
 (defpath control-stylist-account-profile-submit)
 (defpath control-stylist-account-password-submit)

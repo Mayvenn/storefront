@@ -1,13 +1,12 @@
-(ns storefront.components.stylist-banner
+(ns storefront.components.dtc-banner
   (:require [storefront.component :as component]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]))
-
 (def close-button
   (component/html
-   (ui/modal-close {:close-attrs (utils/fake-href events/control-stylist-banner-close)})))
+   (ui/modal-close {:close-attrs (utils/fake-href events/control-dtc-banner-close)})))
 
 (def banner-copy
   (component/html
@@ -42,5 +41,5 @@
 (defn built-component [data opts]
   (when (and (= (get-in data keypaths/navigation-event) events/navigate-home)
              (= (get-in data keypaths/store-slug) "shop")
-             (not (get-in data keypaths/stylist-banner-hidden)))
+             (not (get-in data keypaths/dtc-banner-hidden?)))
     (component/build component (query data) opts)))

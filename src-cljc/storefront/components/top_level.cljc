@@ -72,7 +72,7 @@
             [storefront.components.sign-in :as sign-in]
             [storefront.components.sign-up :as sign-up]
             [storefront.components.slideout-nav :as slideout-nav]
-            [storefront.components.stylist-banner :as stylist-banner]
+            [storefront.components.dtc-banner :as dtc-banner]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]))
@@ -164,7 +164,7 @@
                                 (#{events/navigate-home} nav-event))]
     [:div.flex.flex-column {:style {:min-height    "100vh"
                                     :margin-bottom "-1px"}}
-     (stylist-banner/built-component data nil)
+     (dtc-banner/built-component data nil)
      (when-not v2-home?
        [:div
         (promotion-banner/built-component data nil)

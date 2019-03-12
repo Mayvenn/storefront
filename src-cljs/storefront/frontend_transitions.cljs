@@ -440,8 +440,8 @@
 (defmethod transition-state events/api-success-fetch-cms-data [_ event cms-data app-state]
   (assoc-in app-state keypaths/cms cms-data))
 
-(defmethod transition-state events/control-stylist-banner-close [_ event args app-state]
-  (assoc-in app-state keypaths/stylist-banner-hidden true))
+(defmethod transition-state events/control-dtc-banner-close [_ event args app-state]
+  (assoc-in app-state keypaths/dtc-banner-hidden? true))
 
 (defmethod transition-state events/control-account-profile-submit [_ event args app-state]
   (let [password              (get-in app-state keypaths/manage-account-password)
