@@ -120,7 +120,8 @@
 (defn add-more-hair-button
   [navigation-event]
   (ui/teal-button
-   (utils/route-to navigation-event)
+   (merge {:data-test "adventure-add-more-hair"}
+          (utils/route-to navigation-event))
    "Add more hair"))
 
 (defn add-more-hair-banner [how-shop-choice number-of-items-needed navigation-event]
