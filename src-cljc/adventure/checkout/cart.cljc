@@ -306,20 +306,17 @@
 
 (defn header [{:keys [return-route item-count]} owner opts]
   (component/create
-   [:div.center.bg-light-lavender.white.relative
+   [:div.center.bg-light-lavender.white.flex.flex-wrap.items-center
     {:style {:height "75px"}}
-    [:div.absolute.left-0.right-0.top-0.flex.justify-between.mt1 ;; Buttons (cart and back)
-     [:div]
-     [:a.block.p3
-      (merge {:data-test "adventure-cart-x"}
-             return-route)
-      (svg/simple-x {:width        "20px"
-                     :height       "20px"
-                     :class        "stroke-white"
-                     :stroke-width "6"})]]
-    [:div.mt3
+    [:a.block.p3.col-3
+     (merge {:data-test "adventure-back"} return-route)
+     [:div.flex.items-center.justify-center
+      {:style {:height "24px" :width "20px"}}
+      (ui/back-arrow {:width "14"})]]
+    [:div.col-6
      [:div.h5.medium "Your Bag"]
-     [:div.h6 (ui/pluralize-with-amount item-count "item")]]]))
+     [:div.h6 (ui/pluralize-with-amount item-count "item")]]
+    [:div.col-3]]))
 
 (defn header-query [data]
   {:return-route    (utils/route-back-or-to (first (get-in data keypaths/navigation-undo-stack)) events/navigate-adventure-home)
