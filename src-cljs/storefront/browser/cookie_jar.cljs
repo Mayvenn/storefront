@@ -63,6 +63,12 @@
    :optional-keys []
    :required-keys ["AuthenticatedUser"]})
 
+(def from-shop-to-freeinstall
+  {:domain        (root-domain)
+   :max-age       one-day
+   :optional-keys []
+   :required-keys [:from-shop-to-freeinstall]})
+
 (def account-specs [user order pending-promo telligent-session])
 
 (defn all-keys [spec]
@@ -109,6 +115,8 @@
 (def retrieve-adventure (partial retrieve adventure))
 
 (def retrieve-email-capture-session (comp :popup-session (partial retrieve email-capture-session)))
+
+(def retrieve-from-shop-to-freeinstall (partial retrieve from-shop-to-freeinstall))
 
 (def ^:private session-id-length 24)
 
@@ -157,6 +165,10 @@
   (save-cookie pending-promo cookie {:pending-promo-code promo-code}))
 
 (def save-utm-params (partial save-cookie utm-params))
+
+(defn save-from-shop-to-freeinstall
+  [cookie]
+  (save-cookie from-shop-to-freeinstall cookie {:from-shop-to-freeinstall 1}))
 
 (defn save-telligent-cookie [cookie contents max-age]
   (save-cookie (assoc telligent-session :max-age max-age) cookie {"AuthenticatedUser" contents}))

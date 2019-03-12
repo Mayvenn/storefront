@@ -79,6 +79,7 @@
 (defn initial-state []
   (let [cookie (cookie-jar/make-cookie)]
     {:cookie cookie
+     :adventure {:from-shop-to-freeinstall? (boolean (cookie-jar/retrieve-from-shop-to-freeinstall cookie))}
      :features #{}
      :scheme (apply str (drop-last (.-protocol js/location)))
 

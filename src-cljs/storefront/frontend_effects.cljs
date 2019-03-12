@@ -136,6 +136,7 @@
   (set! (.-location js/window) (get-in app-state keypaths/welcome-url)))
 
 (defmethod perform-effects events/external-redirect-freeinstall [_ event {:keys [utm-source]} _ app-state]
+  (cookie-jar/save-from-shop-to-freeinstall (get-in app-state keypaths/cookie))
   (let [hostname (case (get-in app-state keypaths/environment)
                    "production" "mayvenn.com"
                    "acceptance" "diva-acceptance.com"
