@@ -117,12 +117,13 @@
     [:div.h1.shout "free install"]
     [:div.h5.light "from a Mayvenn Stylist near you"]]])
 
-(def add-more-hair-button
+(defn add-more-hair-button
+  [navigation-event]
   (ui/teal-button
-   (utils/route-to events/navigate-adventure-how-shop-hair)
+   (utils/route-to navigation-event)
    "Add more hair"))
 
-(defn add-more-hair-banner [how-shop-choice number-of-items-needed]
+(defn add-more-hair-banner [how-shop-choice number-of-items-needed navigation-event]
   [:div.bg-too-light-teal.py4.px2.my2 {:data-test "adventure-add-more-hair-banner"}
    [:div.h5.medium.center.px2
     "Add " [:span.pyp1.px1.bold.white.bg-purple.center
@@ -130,7 +131,7 @@
     " more " (ui/pluralize number-of-items-needed "item")
     " to get a free install from a Mayvenn Certified Stylist"]
 
-   [:div.mt2 add-more-hair-button]])
+   [:div.mt2 (add-more-hair-button navigation-event)]])
 
 (defn full-component [{:keys [skus
                               updating?
@@ -144,12 +145,13 @@
                               freeinstall-just-added?
                               servicing-stylist
                               how-shop-choice
+                              add-more-hair-navigation-event
                               cart-summary]} owner _]
   (component/create
    (let [{:keys [number-of-items-needed add-more-hair?]} freeinstall-line-item-data]
      [:div.container
       (if add-more-hair?
-        (add-more-hair-banner how-shop-choice number-of-items-needed)
+        (add-more-hair-banner how-shop-choice number-of-items-needed add-more-hair-navigation-event)
         qualified-banner)
       [:div.p2
        [:div.clearfix.mxn3
@@ -221,28 +223,32 @@
                                        :option/name)}))
 
 (defn ^:private full-cart-query [data]
-  (let [order       (get-in data keypaths/order)
-        products    (get-in data keypaths/v2-products)
-        facets      (get-in data keypaths/v2-facets)
-        line-items  (map (partial add-product-title-and-color-to-line-item products facets)
-                         (orders/product-items order))
-        variant-ids (map :id line-items)]
-    {:suggestions                (suggestions/query data)
-     :servicing-stylist          (get-in data adventure.keypaths/adventure-servicing-stylist)
-     :line-items                 line-items
-     :skus                       (get-in data keypaths/v2-skus)
-     :updating?                  (update-pending? data)
-     :redirecting-to-paypal?     (get-in data keypaths/cart-paypal-redirect)
-     :how-shop-choice            (get-in data adventure.keypaths/adventure-choices-how-shop)
-     :update-line-item-requests  (merge-with
-                                  #(or %1 %2)
-                                  (variants-requests data request-keys/add-to-bag (map :sku line-items))
-                                  (variants-requests data request-keys/update-line-item (map :sku line-items)))
-     :cart-summary               (adventure-cart-summary/query data)
-     :delete-line-item-requests  (variants-requests data request-keys/delete-line-item variant-ids)
-     :recently-added-skus        (get-in data keypaths/cart-recently-added-skus)
-     :freeinstall-just-added?    (get-in data keypaths/cart-freeinstall-just-added?)
-     :freeinstall-line-item-data (adventure-cart-items/freeinstall-line-item-query data)}))
+  (let [order           (get-in data keypaths/order)
+        products        (get-in data keypaths/v2-products)
+        facets          (get-in data keypaths/v2-facets)
+        line-items      (map (partial add-product-title-and-color-to-line-item products facets)
+                             (orders/product-items order))
+        variant-ids     (map :id line-items)
+        how-shop-choice (get-in data adventure.keypaths/adventure-choices-how-shop)]
+    {:suggestions                    (suggestions/query data)
+     :servicing-stylist              (get-in data adventure.keypaths/adventure-servicing-stylist)
+     :line-items                     line-items
+     :skus                           (get-in data keypaths/v2-skus)
+     :updating?                      (update-pending? data)
+     :redirecting-to-paypal?         (get-in data keypaths/cart-paypal-redirect)
+     :how-shop-choice                how-shop-choice
+     :add-more-hair-navigation-event (if (= "individual-bundles" how-shop-choice)
+                                       events/navigate-adventure-a-la-carte-product-list
+                                       events/navigate-adventure-how-shop-hair)
+     :update-line-item-requests      (merge-with
+                                      #(or %1 %2)
+                                      (variants-requests data request-keys/add-to-bag (map :sku line-items))
+                                      (variants-requests data request-keys/update-line-item (map :sku line-items)))
+     :cart-summary                   (adventure-cart-summary/query data)
+     :delete-line-item-requests      (variants-requests data request-keys/delete-line-item variant-ids)
+     :recently-added-skus            (get-in data keypaths/cart-recently-added-skus)
+     :freeinstall-just-added?        (get-in data keypaths/cart-freeinstall-just-added?)
+     :freeinstall-line-item-data     (adventure-cart-items/freeinstall-line-item-query data)}))
 
 (defn component
   [{:keys [fetching-order? full-cart]} owner opts]
