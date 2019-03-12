@@ -120,9 +120,8 @@
         product-ids         (set (flatten (map :selector/from-products skus-matching-color)))
         products-indexed    (products/index-products products)
         correct-products    (select-keys products-indexed product-ids)
-        skus-indexed       (products/index-skus skus)]
+        skus-indexed        (products/index-skus skus)]
     (-> app-state
-        #_(assoc-in storefront.keypaths/v2-products (spice.maps/index-by :product-id products))
         (assoc-in storefront.keypaths/v2-products correct-products)
         (assoc-in storefront.keypaths/v2-skus skus-indexed)
         (assoc-in keypaths/adventure-matching-skus-color skus-matching-color))))
