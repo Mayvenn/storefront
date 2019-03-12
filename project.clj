@@ -38,7 +38,7 @@
   :plugins [[s3-wagon-private "1.3.1"]
             [lein-cljsbuild "1.1.7"]
             [lein-cljfmt "0.1.10"]
-            [lein-figwheel "0.5.16"]]
+            [lein-figwheel "0.5.18"]]
   :figwheel {:nrepl-port 4000
              :css-dirs   ["resources/public/css"]}
   :main storefront.core
@@ -141,11 +141,11 @@
              :test    {:plugins [[lein-test-report-junit-xml "0.2.0"]]}
              :repl    {:dependencies
                        [[cider/piggieback "0.4.0"]
-                        [org.clojure/tools.nrepl "0.2.13"]]}
+                        [nrepl "0.6.0"]]}
              :dev     {:source-paths ["dev/clj"]
                        :dependencies [[cider/piggieback "0.4.0"]
-                                      [figwheel-sidecar "0.5.16"]
-                                      [org.clojure/tools.nrepl "0.2.13"]
+                                      [figwheel-sidecar "0.5.18"]
+                                      [nrepl "0.6.0"]
                                       [binaryage/devtools "0.9.10"]
                                       [org.clojure/tools.reader "1.3.0"]
                                       [pjstadig/humane-test-output "0.8.1"]
