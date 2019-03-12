@@ -2,7 +2,6 @@
   (:require [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.nav :as nav]
-            [storefront.accessors.stylists :refer [own-store?]]
             [storefront.component :as component]
             [storefront.components.footer-links :as footer-links]
             [storefront.components.footer-minimal :as footer-minimal]
@@ -34,12 +33,12 @@
      :new-category? (categories/new-category? slug)
      :nav-message   nav-message}))
 
-(defn shop-section [own-store? categories]
+(defn shop-section [{:keys [partition-count categories]}]
   (let [links (mapv category->link categories)]
     [:div.col-12
      [:div.medium.border-bottom.border-gray.mb1 "Shop"]
      [:nav.clearfix {:aria-label "Shop Products"}
-      (for [link-column (partition-all 10 links)]
+      (for [link-column (partition-all partition-count links)]
         [:div.col.col-6 {:key (str "footer-column-" (-> link-column first :slug))}
          (for [{:keys [title new-category? nav-message slug]} link-column]
            [:a.block.py1.dark-gray.light.titleize
@@ -96,13 +95,13 @@
       [:div {:style {:width "22px" :height "22px"}} svg/mayvenn-on-pinterest]]]]))
 
 (defn full-component
-  [{:keys [contacts own-store? categories expanded-footer?]} owner opts]
+  [{:keys [contacts categories]} owner opts]
   (component/create
    [:div.h5.border-top.border-gray.bg-light-gray
     [:div.container
      [:div.col-12.clearfix
       [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
-       (shop-section own-store? categories)]
+       (shop-section {:partition-count 10 :categories categories})]
       [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
        (contacts-section contacts)]
       [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
@@ -121,12 +120,11 @@
 
 (defn query
   [data]
-  {:contacts         (contacts-query data)
-   :own-store?       (own-store? data)
-   :categories       (->> (get-in data keypaths/categories)
-                          (filter :footer/order)
-                          (filter (partial auth/permitted-category? data))
-                          (sort-by :footer/order))})
+  {:contacts   (contacts-query data)
+   :categories (->> (get-in data keypaths/categories)
+                    (filter :footer/order)
+                    (filter (partial auth/permitted-category? data))
+                    (sort-by :footer/order))})
 
 (defn built-component
   [data opts]
