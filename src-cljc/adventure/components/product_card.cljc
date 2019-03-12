@@ -74,26 +74,24 @@
             :src    (first color-url)}])])]))
 
 (defn sku-best-matching-selections [selections skus]
-  (some (fn [criteria]
-          (first (spice-selector/match-all {:selector/complete? true} criteria skus)))
-        [selections
-         {:hair/color (:hair/color selections)}
-         {:hair/length (:hair/length selections)}]))
+  (->> skus
+       (spice-selector/match-all {:selector/complete? true}
+                                 {:hair/length (:hair/length selections)})
+       first))
 
 (defn query [data product]
-  (let [selections                (get-in data catalog.keypaths/category-selections)
-        skus                      (-> (get-in data keypaths/v2-skus)
-                                      (select-keys (:selector/skus product)))
-        skus-matching-color       (get-in data adventure.keypaths/adventure-matching-skus-color)
+  (let [skus-matching-color       (get-in data adventure.keypaths/adventure-matching-skus-color)
         facets                    (get-in data keypaths/v2-facets)
         color-order-map           (facets/color-order-map facets)
-        in-stock-skus             (selector/query skus-matching-color selections {:inventory/in-stock? #{true}})
+        in-stock-skus             (selector/query skus-matching-color {} {:inventory/in-stock? #{true}})
         ;; in order to fill the product card, we should always have a sku to use for
         ;; the cheapest-sku and epitome
-        skus-to-search            (->> (or (not-empty in-stock-skus) (vals skus))
-                                           (filter #(= (set (:hair/family %)) (:hair/family product))))
+        skus-to-search            (->> (or (not-empty in-stock-skus)
+                                           skus-matching-color)
+                                       (filter #(= (set (:hair/family %))
+                                                   (:hair/family product))))
         ;; It is technically possible for the cheapest sku to not be the epitome
-        cheapest-sku              (->> skus-to-search
+        cheapest-sku              (->> skus-matching-color
                                        (sort-by :sku/price)
                                        first)
         ;; Product definition of epitome is the "first" SKU on the product details page where
@@ -103,7 +101,7 @@
         epitome                   (skus/determine-epitome color-order-map skus-to-search)
         product-detail-selections (get-in data catalog.keypaths/detailed-product-selections)]
     {:product                          product
-     :skus                             skus
+     :skus                             skus-matching-color
      :epitome                          epitome
      :sku-matching-previous-selections (sku-best-matching-selections product-detail-selections skus-matching-color)
      :cheapest-sku                     cheapest-sku
@@ -116,8 +114,7 @@
                                             (filter (comp #{"catalog"} :use-case))
                                             (sort-by (comp color-order-map first :hair/color))
                                             first)
-     :facets                           facets
-     :selections                       (get-in data catalog.keypaths/category-selections)}))
+     :facets                           facets}))
 
 (defn component
   [{:keys [product skus cheapest-sku epitome sku-matching-previous-selections sold-out? title slug image facets color-order-map]}]
