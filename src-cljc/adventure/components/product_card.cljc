@@ -98,12 +98,10 @@
         ;; first is when the first of every facet is selected.
         ;;
         ;; We're being lazy and sort by color facet + sku price (which implies sort by hair/length)
-        epitome                   (skus/determine-epitome color-order-map skus-to-search)
-        product-detail-selections (get-in data catalog.keypaths/detailed-product-selections)]
+        epitome                   (skus/determine-epitome color-order-map skus-to-search)]
     {:product                          product
      :skus                             skus-matching-color
      :epitome                          epitome
-     :sku-matching-previous-selections (sku-best-matching-selections product-detail-selections skus-matching-color)
      :cheapest-sku                     cheapest-sku
      :color-order-map                  color-order-map
      :sold-out?                        (empty? in-stock-skus)
@@ -123,7 +121,7 @@
     (assoc (utils/route-to events/navigate-product-details
                            {:catalog/product-id (:catalog/product-id product)
                             :page/slug          slug
-                            :query-params       {:SKU (:catalog/sku-id (or sku-matching-previous-selections epitome))}})
+                            :query-params       {:SKU (:catalog/sku-id epitome)}})
            :data-test (str "product-" slug)
            :key slug)
     [:div.bg-white.border-light-gray.border
