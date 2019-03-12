@@ -1,58 +1,29 @@
 (ns adventure.checkout.cart
-  (:require
-   #?@(:cljs [[storefront.components.popup :as popup]
-              [storefront.components.order-summary :as summary]
-              [storefront.components.payment-request-button :as payment-request-button]
-              [storefront.api :as api]
-              [storefront.history :as history]
-              [storefront.hooks.browser-pay :as browser-pay]
-              [storefront.browser.cookie-jar :as cookie-jar]
-              [storefront.accessors.stylist-urls :as stylist-urls]
-              [goog.labs.userAgent.device :as device]])
-   [catalog.images :as catalog-images]
-   [cemerick.url :refer [url-encode]]
-   [checkout.accessors.vouchers :as vouchers]
-   [checkout.call-out :as call-out]
-   [adventure.checkout.cart.items :as adventure-cart-items]
-   [adventure.checkout.cart.summary :as adventure-cart-summary]
-   [checkout.header :as header]
-   [checkout.suggestions :as suggestions]
-   [spice.core :as spice]
-   [spice.selector :as selector]
-   [storefront.accessors.experiments :as experiments]
-   [catalog.facets :as facets]
-   [storefront.accessors.images :as images]
-   [storefront.accessors.orders :as orders]
-   [storefront.accessors.products :as products]
-   [storefront.accessors.promos :as promos]
-   [storefront.accessors.stylists :as stylists]
-   [storefront.component :as component]
-   [storefront.components.flash :as flash]
-   [storefront.components.footer :as storefront.footer]
-   [storefront.components.money-formatters :as mf]
-   [storefront.components.promotion-banner :as promotion-banner]
-   [storefront.components.stylist-banner :as stylist-banner]
-   [storefront.components.svg :as svg]
-   [storefront.components.ui :as ui]
-   [storefront.config :as config]
-   [storefront.css-transitions :as css-transitions]
-   [storefront.effects :as effects]
-   [storefront.events :as events]
-   [storefront.keypaths :as keypaths]
-   [adventure.keypaths :as adventure.keypaths]
-   [storefront.platform.component-utils :as utils]
-   [storefront.platform.messages :as messages]
-   [storefront.request-keys :as request-keys]
-   [storefront.transitions :as transitions]
-   [storefront.components.ui :as ui]))
+  (:require [adventure.checkout.cart.items :as adventure-cart-items]
+            [adventure.checkout.cart.summary :as adventure-cart-summary]
+            [adventure.keypaths :as adventure.keypaths]
+            [catalog.facets :as facets]
+            [catalog.images :as catalog-images]
+            [checkout.suggestions :as suggestions]
+            [storefront.accessors.orders :as orders]
+            [storefront.accessors.products :as products]
+            [storefront.component :as component]
+            [storefront.components.flash :as flash]
+            [storefront.components.footer :as storefront.footer]
+            [storefront.components.money-formatters :as mf]
+            [storefront.components.svg :as svg]
+            [storefront.components.ui :as ui]
+            [storefront.css-transitions :as css-transitions]
+            [storefront.events :as events]
+            [storefront.keypaths :as keypaths]
+            [storefront.platform.component-utils :as utils]
+            [storefront.request-keys :as request-keys]))
 
 (defn display-adjustable-line-items
   [recently-added-skus line-items skus update-line-item-requests delete-line-item-requests]
   (for [{sku-id :sku variant-id :id :as line-item} line-items
-
         :let [sku                  (get skus sku-id)
-              legacy-variant-id    (or (:legacy/variant-id line-item) (:id line-item))
-              price                (or (:sku/price line-item)         (:unit-price line-item))
+              price                (or (:sku/price line-item) (:unit-price line-item))
               removing?            (get delete-line-item-requests variant-id)
               updating?            (get update-line-item-requests sku-id)
               just-added-to-order? (contains? recently-added-skus sku-id)
@@ -114,7 +85,7 @@
         [:div.h5 {:data-test (str "line-item-price-ea-" sku-id)} (mf/as-money-without-cents price) " ea"]]]]]))
 
 (defn ^:private freeinstall-line-item
-  [freeinstall-just-added? {:keys [removing? id title detail price thumbnail-image-fn]}]
+  [freeinstall-just-added? {:keys [id title detail price thumbnail-image-fn]}]
   [:div.pt1.pb2.clearfix
    [:div.left.ml1.pr3.mtp4
     (css-transitions/transition-background-color
@@ -161,18 +132,12 @@
 
    [:div.mt2 add-more-hair-button]])
 
-(defn full-component [{:keys [order
-                              skus
-                              promotion-banner
-                              call-out
+(defn full-component [{:keys [skus
                               updating?
                               redirecting-to-paypal?
-                              share-carts?
-                              requesting-shared-cart?
                               suggestions
                               line-items
                               update-line-item-requests
-                              show-browser-pay?
                               recently-added-skus
                               delete-line-item-requests
                               freeinstall-line-item-data
@@ -255,7 +220,7 @@
                                        (facets/get-color facets)
                                        :option/name)}))
 
-(defn full-cart-query [data]
+(defn ^:private full-cart-query [data]
   (let [order       (get-in data keypaths/order)
         products    (get-in data keypaths/v2-products)
         facets      (get-in data keypaths/v2-facets)
@@ -264,20 +229,10 @@
         variant-ids (map :id line-items)]
     {:suggestions                (suggestions/query data)
      :servicing-stylist          (get-in data adventure.keypaths/adventure-servicing-stylist)
-     :order                      order
      :line-items                 line-items
      :skus                       (get-in data keypaths/v2-skus)
-     :products                   products
-     :promotion-banner           (promotion-banner/query data)
-     :call-out                   (call-out/query data)
      :updating?                  (update-pending? data)
      :redirecting-to-paypal?     (get-in data keypaths/cart-paypal-redirect)
-     :share-carts?               (stylists/own-store? data)
-     :requesting-shared-cart?    (utils/requesting? data request-keys/create-shared-cart)
-     :show-browser-pay?          (and (get-in data keypaths/loaded-stripe)
-                                      (experiments/browser-pay? data)
-                                      (seq (get-in data keypaths/shipping-methods))
-                                      (seq (get-in data keypaths/states)))
      :how-shop-choice            (get-in data adventure.keypaths/adventure-choices-how-shop)
      :update-line-item-requests  (merge-with
                                   #(or %1 %2)
@@ -287,7 +242,6 @@
      :delete-line-item-requests  (variants-requests data request-keys/delete-line-item variant-ids)
      :recently-added-skus        (get-in data keypaths/cart-recently-added-skus)
      :freeinstall-just-added?    (get-in data keypaths/cart-freeinstall-just-added?)
-     :stylist-service-menu       (get-in data keypaths/stylist-service-menu)
      :freeinstall-line-item-data (adventure-cart-items/freeinstall-line-item-query data)}))
 
 (defn component
@@ -319,10 +273,8 @@
     [:div.col-3]]))
 
 (defn header-query [data]
-  {:return-route    (utils/route-back-or-to (first (get-in data keypaths/navigation-undo-stack)) events/navigate-adventure-home)
-   :fetching-order? (utils/requesting? data request-keys/get-order)
-   :order           (get-in data keypaths/order)
-   :item-count      (orders/product-quantity (get-in data keypaths/order))} )
+  {:return-route (utils/route-back-or-to (first (get-in data keypaths/navigation-undo-stack)) events/navigate-adventure-home)
+   :item-count   (orders/product-quantity (get-in data keypaths/order))} )
 
 (defn layout [data nav-event]
   [:div.flex.flex-column.max-580.mx-auto

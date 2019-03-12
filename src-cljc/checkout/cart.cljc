@@ -42,8 +42,7 @@
    [storefront.platform.component-utils :as utils]
    [storefront.platform.messages :as messages]
    [storefront.request-keys :as request-keys]
-   [storefront.transitions :as transitions]
-   [adventure.checkout.cart :as adventure-cart]))
+   [storefront.transitions :as transitions]))
 
 (defn display-adjustable-line-items
   [recently-added-skus line-items skus update-line-item-requests delete-line-item-requests]
