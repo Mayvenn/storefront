@@ -144,4 +144,6 @@
 
 (defn shop-to-freeinstall?
   [data]
-  (display-feature? data "shop-to-freeinstall"))
+  (and
+   (= (get-in data keypaths/store-slug) "shop")
+   (display-feature? data "shop-to-freeinstall")))
