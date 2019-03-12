@@ -31,7 +31,6 @@
    [storefront.components.footer :as storefront.footer]
    [storefront.components.money-formatters :as mf]
    [storefront.components.promotion-banner :as promotion-banner]
-   [storefront.components.stylist-banner :as stylist-banner]
    [storefront.components.svg :as svg]
    [storefront.components.ui :as ui]
    [storefront.config :as config]
@@ -406,7 +405,6 @@
 (defn layout [data nav-event]
   [:div.flex.flex-column {:style {:min-height    "100vh"
                                   :margin-bottom "-1px"}}
-   (stylist-banner/built-component data nil)
    (promotion-banner/built-component data nil)
    #?(:cljs (popup/built-component data nil))
 
