@@ -91,7 +91,7 @@
                                        (filter #(= (set (:hair/family %))
                                                    (:hair/family product))))
         ;; It is technically possible for the cheapest sku to not be the epitome
-        cheapest-sku              (->> skus-matching-color
+        cheapest-sku              (->> skus-to-search
                                        (sort-by :sku/price)
                                        first)
         ;; Product definition of epitome is the "first" SKU on the product details page where
