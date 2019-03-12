@@ -138,7 +138,7 @@
            (render-state [this {:keys [show? add-button-height]}]
              (component/html
               [:div.fixed.z4.bottom-0.left-0.right-0.transition-2
-               (if (and show? (spice.core/spy (not hide?)))
+               (if (and show? (not hide?))
                  {:style {:margin-bottom "0"}}
                  {:style {:margin-bottom (str "-" add-button-height "px")}})
                [:div {:ref "add-button"}
