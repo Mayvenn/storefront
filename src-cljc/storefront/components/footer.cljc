@@ -126,8 +126,62 @@
                     (filter (partial auth/permitted-category? data))
                     (sort-by :footer/order))})
 
+(defn dtc-link [{:keys [title new-category? nav-message slug]}]
+  [:a.block.py1.dark-gray.light.titleize
+   (merge {:key (str "footer-link-" slug)}
+          (apply utils/route-to nav-message))
+   (when new-category?
+     [:span.teal "NEW "])
+   title])
+
+(defn dtc-shop-section [{:keys [categories partition-count]}]
+  (let [links                          (mapv category->link categories)
+        [column-1-links rest-of-links] (split-at partition-count links)]
+    [:div.col-12
+     [:div.medium.border-bottom.border-gray.mb1 "Shop"]
+     [:nav.clearfix {:aria-label "Shop Products"}
+      [:div.col.col-6
+       [:a.block.py1.dark-gray.light.titleize
+        (utils/fake-href events/external-redirect-freeinstall {:utm-source "shopFooter"})
+        [:span.teal "NEW "]
+        "Get A Free Install"]
+       (for [link column-1-links]
+         (dtc-link link))]
+      (for [link-column (partition-all partition-count rest-of-links)]
+        [:div.col.col-6 {:key (str "footer-column-" (-> link-column first :slug))}
+         (for [link link-column]
+           (dtc-link link))])]]))
+
+(defn dtc-full-component
+  [{:keys [contacts categories]} owner opts]
+  (component/create
+   [:div.h5.border-top.border-gray.bg-light-gray
+    [:div.container
+     [:div.col-12.clearfix
+      [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
+       (dtc-shop-section {:partition-count 5 :categories categories})]
+      [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
+       (contacts-section contacts)]
+      [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
+       social-section]]]
+
+    [:div.mt3.bg-dark-gray.white.py1.px3.clearfix.h8
+     [:div
+      {:style {:margin-bottom "90px"}}
+      (component/build footer-links/component {:minimal? false} nil)]]]))
+
+(defn dtc-query
+  [data]
+  {:contacts   (contacts-query data)
+   :categories (->> (get-in data keypaths/categories)
+                    (filter :dtc-footer/order)
+                    (filter (partial auth/permitted-category? data))
+                    (sort-by :dtc-footer/order))})
+
 (defn built-component
   [data opts]
   (if (nav/show-minimal-footer? (get-in data keypaths/navigation-event))
     (footer-minimal/built-component data nil)
-    (component/build full-component (query data) nil)))
+    (if (experiments/shop-to-freeinstall? data)
+      (component/build dtc-full-component (dtc-query data) nil)
+      (component/build full-component (query data) nil))))

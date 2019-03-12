@@ -71,6 +71,7 @@
                                      :mobile-url  "//ucarecdn.com/2a4e32c9-91fe-4a1e-8a84-d10c62f52819/"
                                      :alt         "360 Frontals"}}
            :footer/order     11
+           :dtc-footer/order 5
            :header/order     1
            :header/group     1}
           (category->seo "360 Frontals"
@@ -89,6 +90,7 @@
            :header/order        2
            :header/group        1
            :footer/order        12
+           :dtc-footer/order    6
            :hair/source         #{"virgin"}
            :selector/essentials [:catalog/department :hair/family :hair/color.process :hair/source]
            :selector/electives  [:hair/origin :hair/texture :hair/base-material]
@@ -181,6 +183,7 @@
                                         :alt      "Straight Hair Extensions Mayvenn"}}
            :home/order          0
            :footer/order        0
+           :dtc-footer/order    0
            :header/order        0
            :header/group        0}
           (category->seo "Natural Straight Extensions"
@@ -263,6 +266,7 @@
                                              :alt      "Body Wave Hair Extensions Mayvenn"}}
            :home/order               1
            :footer/order             3
+           :dtc-footer/order         1
            :header/order             3
            :header/group             0}
           (category->seo "Body Wave Extensions"
@@ -292,6 +296,7 @@
                                              :alt      "Loose Wave Hair Extensions Mayvenn"}}
            :home/order               2
            :footer/order             4
+           :dtc-footer/order         2
            :header/order             4
            :header/group             0}
           (category->seo "Loose Wave Extensions"
@@ -347,6 +352,7 @@
                                              :alt      "Deep Wave Hair Extensions Mayvenn"}}
            :home/order               3
            :footer/order             6
+           :dtc-footer/order         3
            :header/order             6
            :header/group             0}
           (category->seo "Deep Wave Extensions"
@@ -388,6 +394,7 @@
 (def wigs
   [(merge {:catalog/category-id "13"
            :footer/order        20
+           :dtc-footer/order    7
            :header/order        0
            :header/group        2
 
@@ -491,6 +498,7 @@
            :header/order        8
            :header/group        0
            :footer/order        8
+           :dtc-footer/order    4
            :hair/source         #{"virgin"}
            :selector/essentials [:catalog/department :hair/family :hair/color.process :hair/source]
            :selector/electives  [:hair/origin :hair/texture :hair/color]
@@ -552,9 +560,10 @@
                     :mobile-url  "//ucarecdn.com/be8b83db-370f-45f9-bc37-4f674abbd718/"
                     :alt         "Clip-Ins"}}
 
-    :footer/order 40
-    :header/group 2
-    :header/order 4}])
+    :footer/order     40
+    :dtc-footer/order 8
+    :header/group     2
+    :header/order     4}])
 
 (def tape-ins-category
   [{:catalog/category-id "22"
@@ -572,9 +581,10 @@
     :direct-to-details/id   "111"
     :direct-to-details/slug "50g-straight-tape-ins"
 
-    :footer/order 50
-    :header/group 2
-    :header/order 5}])
+    :footer/order     50
+    :dtc-footer/order 9
+    :header/group     2
+    :header/order     5}])
 
 (def menu-categories
   (concat virgin-hair
