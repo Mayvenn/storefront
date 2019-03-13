@@ -1,35 +1,19 @@
 (ns adventure.home
-  (:require adventure.handlers
-            [adventure.keypaths :as keypaths]
+  (:require [adventure.keypaths :as keypaths]
             [adventure.faq :as faq]
-            [clojure.string :as string]
             [storefront.accessors.auth :as auth]
-            [storefront.accessors.experiments :as experiments]
-            [storefront.accessors.pixlee :as pixlee]
-            #?@(:cljs [[storefront.hooks.pixlee :as pixlee.hook]
-                       [storefront.components.popup :as popup]
-                       [storefront.browser.cookie-jar :as cookie-jar]
-                       [om.core :as om]
+            #?@(:cljs [[om.core :as om]
                        [goog.events.EventType :as EventType]
                        goog.dom
                        goog.style
                        goog.events])
-            [storefront.assets :as assets]
             [storefront.component :as component]
             [storefront.components.marquee :as marquee]
-            [storefront.components.accordion :as accordion]
             [storefront.components.ui :as ui]
             [storefront.components.svg :as svg]
-            [storefront.components.modal-gallery :as modal-gallery]
-            [storefront.transitions :as transitions]
-            [storefront.events :as events]
-            [storefront.keypaths :as storefront.keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.platform.carousel :as carousel]
-            [storefront.routes :as routes]
+            [storefront.events :as events]
             [storefront.components.video :as video]
-            [storefront.effects :as effects]
-            [storefront.components.money-formatters :as mf]
             [storefront.components.v2 :as v2]))
 
 (defn sticky-component
@@ -157,13 +141,6 @@
        [:h6.teal.flex.items-center.medium.shout
         "Watch Now"]]]]))
 
-(defn ^:private shop-button [album-keyword link-text]
-  (ui/teal-button (merge
-                   {:height-class "py2"}
-                   (utils/route-to events/navigate-shop-by-look {:album-keyword album-keyword}))
-                  [:span.bold
-                   (str "Shop " link-text " Looks")]))
-
 (def an-amazing-deal
   [:div
    [:div
@@ -227,7 +204,7 @@
    [:h2.center "#MayvennFreeInstall"]
    [:h6.center.dark-gray "Showcase your new look by tagging #MayvennFreeInstall"]
    [:div.flex.flex-wrap.pt2
-    (for [{:keys [links imgs]} (:images free-install-mayvenn-ugc)]
+    (for [{:keys [imgs]} (:images free-install-mayvenn-ugc)]
       [:a.col-6.col-3-on-tb-dt.p1
        (ui/aspect-ratio
         1 1
@@ -283,12 +260,7 @@
           teal-play-video-desktop]]]]]]))
 
 (defn get-a-free-install
-  [{:keys [store
-           gallery-ucare-ids
-           stylist-portrait
-           stylist-name
-           modal?
-           stylist-gallery-open?]}]
+  [{:keys [modal?]}]
   (let [step (fn [{:keys [icon-uuid icon-width title description]}]
                [:div.col-12.mt2.center
                 (when (not modal?)
@@ -356,19 +328,14 @@
      "Email Us"
      "help@mayvenn.com")]])
 
-(defn component [{:keys [signed-in
-                         homepage-data
-                         store
-                         categories
+(defn component [{:keys [store
                          stylist-gallery-open?
                          faq-data
                          video
-                         sleek-and-straight-ugc
-                         waves-and-curly-ugc
                          free-install-mayvenn-ugc
                          gallery-ucare-ids
                          next-page]
-                  :as data}
+                  :as   data}
                  owner
                  opts]
   (component/create
@@ -406,33 +373,19 @@
     (component/build sticky-component {:next-page next-page} nil)]))
 
 (defn query [data]
-  (let [homepage-data               (get-in data storefront.keypaths/cms-homepage)
-        store                       (marquee/query data)
-        ugc                         (get-in data storefront.keypaths/ugc)
-        free-install-mayvenn-images (pixlee/images-in-album ugc :free-install-mayvenn)
-        sleek-and-straight-images   (pixlee/images-in-album ugc :sleek-and-straight)
-        waves-and-curly-images      (pixlee/images-in-album ugc :waves-and-curly)]
-    {:store                    store
-     :gallery-ucare-ids        (->> store
-                                    :gallery
-                                    :images
-                                    (filter (comp (partial = "approved") :status))
-                                    (map (comp v2/get-ucare-id-from-url :resizable-url)))
+  (let [store (marquee/query data)]
+    {:store                     store
+     :gallery-ucare-ids         (->> store
+                                     :gallery
+                                     :images
+                                     (filter (comp (partial = "approved") :status))
+                                     (map (comp v2/get-ucare-id-from-url :resizable-url)))
      ;; TODO: get this faq data from checkout popup?
-     :faq-data                 (faq/query data)
-     :signed-in                (auth/signed-in data)
-     :categories               (->> (get-in data storefront.keypaths/categories)
-                                    (filter :home/order)
-                                    (sort-by :home/order))
-     :video                    (get-in data keypaths/adventure-home-video)
-     :sleek-and-straight-ugc   {:images        sleek-and-straight-images
-                                :album-keyword :sleek-and-straight}
-     :waves-and-curly-ugc      {:images        waves-and-curly-images
-                                :album-keyword :waves-and-curly}
-     :free-install-mayvenn-ugc {:images        free-install-mayvenn-images
-                                :album-keyword :free-install-mayvenn}
-     :homepage-data            homepage-data
-     :next-page                events/navigate-adventure-install-type}))
+     :faq-data                  (faq/query data)
+     :signed-in                 (auth/signed-in data)
+     :video                     (get-in data keypaths/adventure-home-video)
+     :from-shop-to-freeinstall? (get-in data keypaths/adventure-from-shop-to-freeinstall?)
+     :next-page                 events/navigate-adventure-install-type}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
