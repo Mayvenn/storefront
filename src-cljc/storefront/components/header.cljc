@@ -8,6 +8,7 @@
             [storefront.component :as component]
             [storefront.components.marquee :as marquee]
             [storefront.components.slideout-nav :as slideout-nav]
+            [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -255,11 +256,11 @@
   (component/html
    [:div.border-bottom.border-gray.flex.items-center.flex-wrap
     (if sign-in?
-      [:a.block.px3.inherit-color.col-3
-       (merge {:data-test "adventure-back-to-shop"}
+      [:a.block.inherit-color.col-3.flex.items.center
+       (merge {:data-test "adventure-back-to-checkout"}
               (utils/route-back {:navigation-message [events/navigate-checkout-returning-or-guest]}))
-       [:div.flex.items-center.justify-center {:style {:height "24px" :width "20px"}}
-        (ui/dark-back-arrow {:width "14"})]]
+       [:div.flex.items-center.justify-center {:style {:height "60px" :width "60px"}}
+        (svg/back-arrow {:width "24px" :height "24px"})]]
       [:div.col-3])
     [:div.flex-auto.py3.col-6 (ui/clickable-logo
                          {:data-test "header-logo"
