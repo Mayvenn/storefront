@@ -250,3 +250,28 @@
      (if (nav/show-minimal-header? (get-in data keypaths/navigation-event) adventure?)
        (minimal-component adventure?)
        (component/build component (query data) nil)))])
+
+(defn adventure-minimal-component [sign-in?]
+  (component/html
+   [:div.border-bottom.border-gray.flex.items-center.flex-wrap
+    (if sign-in?
+      [:a.block.px3.inherit-color.col-3
+       (merge {:data-test "adventure-back-to-shop"}
+              (utils/route-back {:navigation-message [events/navigate-checkout-returning-or-guest]}))
+       [:div.flex.items-center.justify-center {:style {:height "24px" :width "20px"}}
+        (ui/dark-back-arrow {:width "14"})]]
+      [:div.col-3])
+    [:div.flex-auto.py3.col-6 (ui/clickable-logo
+                         {:data-test "header-logo"
+                          :height    "40px"})]
+    [:div.col-3]]))
+
+(defn adventure-built-component [data opts]
+  [:header.stacking-context.z4
+   (when (get-in data keypaths/hide-header?)
+     {:class "hide-on-mb-tb"})
+   (let [navigation-event (get-in data keypaths/navigation-event)
+         sign-in? (#{events/navigate-checkout-sign-in} navigation-event)]
+     (if (nav/adventure-show-minimal-header? navigation-event)
+         (adventure-minimal-component sign-in?)
+         (component/build component (query data) nil)))])

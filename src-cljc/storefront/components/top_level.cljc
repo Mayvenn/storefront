@@ -200,7 +200,7 @@
    [:div {:key "popup"}
     #?(:cljs (popup/built-component data nil))]
 
-   (header/built-component data nil)
+   (header/adventure-built-component data nil)
    [:div.relative.flex.flex-column.flex-auto
     (flash/built-component data nil)
 

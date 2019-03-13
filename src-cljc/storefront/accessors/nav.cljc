@@ -88,3 +88,6 @@
                (set/union minimal-header-events #{events/navigate-order-complete})
                minimal-header-events)
              event))
+
+(defn adventure-show-minimal-header? [event]
+  (contains? (set/union minimal-header-events #{events/navigate-order-complete}) event))
