@@ -106,8 +106,9 @@
                    :spinning? adding-to-bag?}
                   "Add to bag"))
 
+;; TODO(jeff, heather): this should be refactored to a sticky-component to be shared with PDP
 (defn sticky-add-component
-  [{:keys [selected-options sold-out? unavailable? hide? adding-to-bag? sku quantity image]} owner opts]
+  [{:keys [selected-options sold-out? unavailable? adding-to-bag? sku quantity image]} owner opts]
   (let [unpurchasable? (or sold-out? unavailable?)
         text-style     (if unpurchasable? {:class "gray"} {})]
     #?(:clj (component/create [:div])
@@ -120,7 +121,11 @@
          (reify
            om/IInitState
            (init-state [this]
-             {:show? false})
+             ;; Treat show? as a trinary state:
+             ;; nil = we need to hide the element, but still be available for height calculations
+             ;; true = show the element (set margin-bottom to 0)
+             ;; false = hide the element (set margin-bottom to computed height calculations)
+             {:show? nil})
            om/IDidMount
            (did-mount [this]
              (set-height)
@@ -136,9 +141,10 @@
            (render-state [this {:keys [show? add-button-height]}]
              (component/html
               [:div.fixed.z4.bottom-0.left-0.right-0.transition-2
-               (if (and show? (not hide?))
-                 {:style {:margin-bottom "0"}}
-                 {:style {:margin-bottom (str "-" add-button-height "px")}})
+               (cond
+                 (nil? show?) {:style {:visibility "hidden"}}
+                 show?        {:style {:margin-bottom "0"}}
+                 :else        {:style {:margin-bottom (str "-" add-button-height "px")}})
                [:div {:ref "add-button"}
                 [:div.p3.flex.justify-center.items-center.bg-white.border-top.border-light-gray
                  [:div.col-8
@@ -335,7 +341,8 @@
          (when review?
            [:div.container.col-7-on-tb-dt.px2
             (component/build review-component/reviews-component reviews opts)])
-         (when-not (products/stylist-only? product)
+         (when (and (nil? (:offset ugc))
+                    (not (products/stylist-only? product)))
            ;; We use visibility:hidden rather than display:none so that this component has a height.
            ;; We use the height on mobile view to slide it on/off the bottom of the page.
            [:div.invisible-on-tb-dt
@@ -348,7 +355,6 @@
                                                      :option/rectangle-swatch)
                               :adding-to-bag?   adding-to-bag?
                               :sku              selected-sku
-                              :hide?            (:offset ugc)
                               :sold-out?        sold-out?
                               :unavailable?     (empty? selected-sku)
                               :selected-options selected-options
