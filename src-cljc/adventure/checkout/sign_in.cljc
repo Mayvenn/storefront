@@ -1,10 +1,9 @@
-(ns storefront.components.sign-in
+(ns adventure.checkout.sign-in
   (:require [storefront.component :as component]
             [storefront.components.facebook :as facebook]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [adventure.checkout.sign-in :as adventure-sign-in]
             [storefront.platform.component-utils :as utils]))
 
 (defn password-component [{:keys [email
@@ -80,9 +79,7 @@
    :field-errors            (get-in data keypaths/field-errors)})
 
 (defn built-component [data opts]
-  (if (= "freeinstall" (get-in data keypaths/store-slug))
-    (adventure-sign-in/built-component data opts)
-    (component/build component (query data) opts)))
+  (component/build component (query data) opts))
 
 (defn requires-sign-in [authorized-component data opts]
   (if (get-in data keypaths/user-id)
