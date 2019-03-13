@@ -45,6 +45,10 @@
   [:svg (maps/deep-merge {:style {:stroke-width "3"}} opts)
    (svg-xlink "dropdown-arrow")])
 
+(defn back-arrow [opts]
+  [:svg opts
+   (svg-xlink "back-arrow")])
+
 (defn left-caret [opts]
   [:svg opts
    (svg-xlink "left-caret")])

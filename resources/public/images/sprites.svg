@@ -299,4 +299,19 @@
   <symbol id="box-package" viewBox="0 0 32 38">
     <path fill="#000" fill-rule="nonzero" d="M16.03.298L.413 9.668v18.743l15.615 9.37 15.615-9.37V9.67L16.03.299zm0 3.07l4.382 2.63L8.368 12.86l-4.101-2.433 11.762-7.06zm-1.165 30.645L2.972 26.876V12.719l3.949 2.343v3.978l2.345 1.365v-3.95l5.6 3.322v14.236zm-4.057-19.705L22.716 7.38l5.12 3.073-11.677 7.031-5.351-3.176zm18.28 12.568l-11.666 7v-14.08l11.665-7.025v14.105z"/>
   </symbol>
+  <symbol id="back-arrow" viewBox="0 0 34 25">
+    <g id="Winter-2018-DZ" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+      <g id="Home-Page---Stylist-Store" transform="translate(-22.000000, -87.000000)" fill="#666666">
+        <g id="Header---INIT" transform="translate(0.000000, 64.000000)">
+          <g id="icon---back" transform="translate(22.000000, 23.000000)">
+            <g id="Group">
+              <polygon id="Path" transform="translate(8.422639, 17.333242) scale(1, -1) rotate(45.000000) translate(-8.422639, -17.333242) " points="6.80578084 8.60527226 10.3076965 8.55163242 10.0394973 26.061211 6.5375816 26.1148508"></polygon>
+              <polygon id="Path" transform="translate(8.422639, 7.576877) rotate(45.000000) translate(-8.422639, -7.576877) " points="6.80578084 -1.15109223 10.3076965 -1.20473208 10.0394973 16.3048465 6.5375816 16.3584863"></polygon>
+            </g>
+            <polygon id="Rectangle-14" transform="translate(18.500000, 12.500000) rotate(90.000000) translate(-18.500000, -12.500000) " points="17 -3 20 -3 20 28 17 28"></polygon>
+          </g>
+        </g>
+      </g>
+    </g>
+  </symbol>
 </svg>
