@@ -1,5 +1,6 @@
 (ns storefront.accessors.orders
   (:require [clojure.set :as set]
+            [spice.core :as spice]
             [storefront.platform.numbers :as numbers]))
 
 (defn incomplete? [order]
@@ -199,4 +200,4 @@
        :adjustments
        (map (comp numbers/abs :price))
        (reduce + 0)
-       ((fnil + 0) (numbers/abs (spice.core/parse-double service-price)))))
+       ((fnil + 0) (numbers/abs (spice/parse-double service-price)))))
