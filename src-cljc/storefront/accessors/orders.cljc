@@ -32,7 +32,7 @@
        (filter (comp #{variant-id} :id))
        first))
 
-(def ^:private shipping-item? (comp #{"waiter"} :source))
+(def shipping-item? (comp #{"waiter"} :source))
 
 (defn product-items-for-shipment [shipment]
   (->> shipment

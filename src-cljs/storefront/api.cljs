@@ -130,7 +130,7 @@
 
 (defn api-request [method url req-key request-opts]
   (let [request-opts (-> request-opts
-                         (update-in [:params] maps/remove-nils)
+                         (update-in [:params] @#'maps/remove-nils)
                          (update-in [:params] set->vec))
         req-id       (str (random-uuid))
         request      (method url (merge-req-opts req-key req-id request-opts))]

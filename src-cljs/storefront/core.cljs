@@ -13,12 +13,24 @@
             [storefront.frontend-transitions]
             [storefront.trackings :refer [perform-track]]
             [storefront.frontend-trackings]
-            [cljs.reader :refer [read-string]]
+            [clojure.edn :refer [read-string]]
             [om.core :as om]
             [clojure.data :refer [diff]]
             [storefront.api :as api]))
 
 (set! *warn-on-infer* true)
+
+;; There was an issue with Om's implementation of MapCursor: it is behind CLJS' protocol,
+;; so when we upgraded CLJS to 1.10, MapCursor couldn't be handled by any of the standard
+;; collection manipulation functions. Here, we've overridden the implementation of
+;; `MapCursor` so that it returns a collection of `MapEntry`s, rather than a collection of
+;; collections (as per CLJS requirement).
+;; TODO: GROT when Om updates their implementation of MapCursor.
+(extend-protocol ISeqable
+  om.core/MapCursor
+  (-seq [this]
+    (when (pos? (count (.-value this)))
+      (map (fn [[k v]] (MapEntry. k (om.core/-derive this v (.-state this) (conj (.-path this) k)) nil)) (.-value this)))))
 
 (when config/enable-console-print?
   (enable-console-print!))
