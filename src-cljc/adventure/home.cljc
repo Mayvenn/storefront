@@ -345,11 +345,11 @@
     [:div.bg-white.flex.items-center.flex-wrap
      {:style {:height "63px"}}
      (if from-shop-to-freeinstall?
-       [:a.block.px3.inherit-color.col-3
+       [:a.block.inherit-color.col-3.flex.items.center
         (merge {:data-test "adventure-back-to-shop"}
                (utils/route-to-shop events/navigate-home {}))
-        [:div.flex.items-center.justify-center {:style {:height "24px" :width "20px"}}
-         (ui/dark-back-arrow {:width "14"})]]
+        [:div.flex.items-center.justify-center {:style {:height "60px" :width "60px"}}
+         (svg/back-arrow {:width "24px" :height "24px"})]]
        [:div.col-3])
      [:div.col-6.img-logo.bg-no-repeat.bg-center.bg-contain.teal
       {:style {:height "38px"}}]
