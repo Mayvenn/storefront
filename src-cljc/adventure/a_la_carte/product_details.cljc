@@ -429,7 +429,7 @@
                                :images
                                (filter (comp (partial = "approved") :status))
                                (map (comp v2/get-ucare-id-from-url :resizable-url)))]
-    {:header-data                     {:progress                progress/find-your-stylist
+    {:header-data                     {:progress                progress/product-details
                                        :title                   [:div.medium "Find Your Stylist"]
                                        :subtitle                (str "Step " 2 " of 3")
                                        :shopping-bag?           true

@@ -31,7 +31,9 @@
    [:div.absolute.top-0.left-0.right-0
     header-attrs
     [:div.flex.flex-column
-     (progress-bar (dec progress))
+     (if progress
+       (progress-bar (dec progress))
+       [:div {:style {:height "6px"}}])
      [:div.relative.mt1
       {:style {:height "59px"}}
       [:div.absolute.left-0.right-0.top-0.flex.items-center.justify-between ;; Buttons (cart and back)

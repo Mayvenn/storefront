@@ -4,6 +4,7 @@
 ;; Please keep this in sorted order with empty lines to group progress pages
 ;; that have the same value.
 
+(def product-details nil)
 (def install-type 1)
 (def what-next 2)
 (def match-stylist 3)
