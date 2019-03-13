@@ -678,11 +678,18 @@
                     attrs)
              "2dba0ec5-f62b-4aad-b122-68fdf3eba9dc"))
 
+(def dark-forward-arrow-uuid
+  "e4a70b53-905f-449b-86f1-e8d5c327a6df")
+
+(defn dark-back-arrow [attrs]
+  [:div.rotate-180
+   (ucare-img (merge {:width "24"}
+                     attrs)
+              dark-forward-arrow-uuid)])
+
 (def light-forward-arrow-uuid
   "f6d9ea1b-5a27-4582-a422-f25a1e5ba22e")
 
-(def dark-forward-arrow-uuid
-  "e4a70b53-905f-449b-86f1-e8d5c327a6df")
 
 (defn forward-arrow [attrs]
   (ucare-img (merge {:width "24"}

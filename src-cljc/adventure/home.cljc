@@ -330,6 +330,7 @@
 
 (defn component [{:keys [store
                          stylist-gallery-open?
+                         from-shop-to-freeinstall?
                          faq-data
                          video
                          free-install-mayvenn-ugc
@@ -340,10 +341,18 @@
                  opts]
   (component/create
    [:div
-    [:div.bg-white.flex.justify-center
+    [:div.bg-white.flex.items-center.flex-wrap
      {:style {:height "63px"}}
-     [:div.block.img-logo.bg-no-repeat.bg-center.bg-contain.teal
-      {:style {:width "110px"}}]]
+     (if from-shop-to-freeinstall?
+       [:a.block.px3.inherit-color.col-3
+        (merge {:data-test "adventure-back-to-shop"}
+               (utils/route-to-shop events/navigate-home {}))
+        [:div.flex.items-center.justify-center {:style {:height "24px" :width "20px"}}
+         (ui/dark-back-arrow {:width "14"})]]
+       [:div.col-3])
+     [:div.col-6.img-logo.bg-no-repeat.bg-center.bg-contain.teal
+      {:style {:height "38px"}}]
+     [:div.col-3]]
     [:section (hero next-page)]
     [:section free-shipping-banner]
     [:a {:name "mayvenn-free-install-video"}]
