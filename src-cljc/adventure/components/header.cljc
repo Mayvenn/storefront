@@ -18,6 +18,7 @@
           1
           (range 1 (inc number-of-steps))))
 
+;; TODO: Deal with nil progress here instead of in component
 (defn progress-bar [steps-completed]
   [:div.col-12.col
    {:style {:height "6px"}}
