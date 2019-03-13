@@ -13,53 +13,50 @@
             [catalog.selector :as selector]))
 
 (defn enriched-buttons [facet-options]
-  (for [option facet-options
-        :let [subtitle (if (= (:option/slug option) "black")
-                         "Virgin"
-                         "Dyed Virgin")]]
+  (for [option facet-options]
     {:text             [:div.mynp6.flex.items-center.px1
                         {:style {:height "48px"}}
                         [:div.flex.flex-column.items-center
                          [:img.border.border-gray
                           {:src    (:option/rectangle-swatch option)
                            :height "40"
-                           :width  "60"}]
-                         #_[:div.light.h7 subtitle]]
+                           :width  "60"}]]
                         [:div.flex-grow-1
-                         [:div.px1 (:adventure/name option)]
-                         #_[:div.light.h6 subtitle]]]
+                         [:div.px1 (:adventure/name option)]]]
      :data-test-suffix (:option/slug option)
      :value            {:color (:option/slug option)}
      :target-message   [events/navigate-adventure-a-la-carte-product-list]}))
 
 (defn ^:private query [data]
-  (let [selected-install-type (get-in data adventure-keypaths/adventure-choices-install-type)
-        color-facet-options   (facets/available-adventure-facet-options
-                               :hair/color
-                               (get-in data keypaths/v2-facets)
-                               (-> data
-                                   (get-in keypaths/v2-skus)
-                                   vals
-                                   (selector/query
-                                    {:hair/family         #{selected-install-type}
-                                     :inventory/in-stock? #{true}})))
-        adventure-choices     (get-in data adventure-keypaths/adventure-choices)
-        stylist-selected?     (some-> adventure-choices :flow #{"match-stylist"})
-        current-step          (if stylist-selected? 3 2)]
-    {:prompt       "Which color are you looking for?"
-     :prompt-image "//ucarecdn.com/47cd8de1-9bd0-4057-a050-c07749791d1a/-/format/auto/bg.png"
-     :data-test    "hair-color"
-     :current-step current-step
-     :footer       (when-not stylist-selected?
-                     [:div.h6.center.pb8
-                      [:div.dark-gray "Not ready to shop hair?"]
-                      [:a.teal (utils/fake-href events/navigate-adventure-find-your-stylist)
-                       "Find a stylist"]])
-     :header-data  {:title                   "The New You"
-                    :progress                progress/hair-texture
-                    :back-navigation-message [events/navigate-adventure-how-shop-hair]
-                    :subtitle                (str "Step " current-step " of 3")}
-     :buttons      (enriched-buttons color-facet-options)}))
+  (let [;; TODO(cwr,jjh) these ought to be underneath the catalog api
+        facets (get-in data keypaths/v2-facets)
+        skus   (vals (get-in data keypaths/v2-skus))
+
+        ;; TODO(cwr,jjh) these ought to be stored in app-state ready-to-go
+        {:keys [install-type texture]} (get-in data adventure-keypaths/adventure-choices)
+        selections                     {:hair/family         #{install-type}
+                                        :hair/texture        #{texture}
+                                        :inventory/in-stock? #{true}}]
+    (let [selected-skus (selector/query skus selections)
+          color-choices (facets/available-options facets :hair/color selected-skus)
+
+          adventure-choices (get-in data adventure-keypaths/adventure-choices)
+          stylist-selected? (some-> adventure-choices :flow #{"match-stylist"})
+          current-step      (if stylist-selected? 3 2)]
+      {:prompt       "Which color are you looking for?"
+       :prompt-image "//ucarecdn.com/47cd8de1-9bd0-4057-a050-c07749791d1a/-/format/auto/bg.png"
+       :data-test    "hair-color"
+       :current-step current-step
+       :footer       (when-not stylist-selected?
+                       [:div.h6.center.pb8
+                        [:div.dark-gray "Not ready to shop hair?"]
+                        [:a.teal (utils/fake-href events/navigate-adventure-find-your-stylist)
+                         "Find a stylist"]])
+       :header-data  {:title                   "The New You"
+                      :progress                progress/hair-texture
+                      :back-navigation-message [events/navigate-adventure-how-shop-hair]
+                      :subtitle                (str "Step " current-step " of 3")}
+       :buttons      (enriched-buttons color-choices)})))
 
 (defn built-component
   [data opts]

@@ -13,21 +13,25 @@
        (sort-by :filter/order)))
 
 (defn ^:private available-facet-options
-  "Returns a set of all facet options that a collection of products or skus have"
-  [facet-slug products-or-skus]
-  (apply set/union (map (comp set facet-slug) products-or-skus)))
+  "Returns a set of all facet options that the coll of skuers have"
+  [facet-slug skuers]
+  (apply set/union (map (comp set facet-slug) skuers)))
 
 (defn available-adventure-facet-options
-  "Returns a coll of facet options available in the collection of products or
-   skus sorted by natural ordering.
+  "Returns a coll of facet options available in the collection of skuers
+   sorted by natural ordering.
 
    Or more verbosely, returns all facet options from the facet where:
 
-   - There's at least one product or sku that has that option value
+   - There's at least one skuer that has that option value
    - sorted by the facet option's :filter/order key
    - is available for adventure"
-  [facet-slug facets products-or-skus]
+  [facet-slug facets skuers]
   (let [matching-facet-options      (adventure-facet-options facet-slug facets)
-        matching-product-options    (available-facet-options facet-slug products-or-skus)
+        matching-product-options    (available-facet-options facet-slug skuers)
         facet-options-has-products? (comp matching-product-options str :option/slug)]
     (filter facet-options-has-products? matching-facet-options)))
+
+(defn available-options
+  [facets facet skuers]
+  (available-adventure-facet-options facet facets skuers))

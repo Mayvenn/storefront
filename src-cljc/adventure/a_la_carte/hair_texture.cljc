@@ -34,32 +34,34 @@
 
 (defn ^:private query
   [data]
-  (let [adventure-choices     (get-in data adventure-keypaths/adventure-choices)
-        selected-install-type (get-in data adventure-keypaths/adventure-choices-install-type)
-        texture-facet-options (facets/available-adventure-facet-options :hair/texture
-                                                                        (get-in data keypaths/v2-facets)
-                                                                        (-> data
-                                                                            (get-in keypaths/v2-skus)
-                                                                            vals
-                                                                            (selector/query
-                                                                             {:hair/family         #{selected-install-type}
-                                                                              :inventory/in-stock? #{true}})))
-        stylist-selected?     (some-> adventure-choices :flow #{"match-stylist"})
-        current-step          (if stylist-selected? 3 2)]
-    {:prompt       "Which texture are you looking for?"
-     :prompt-image "//ucarecdn.com/3346657d-a039-487f-98fb-68b9b050e042/-/format/auto/aladdinMatchingOverlayImagePurpleER203Lm3x.png"
-     :data-test    "hair-texture"
-     :current-step current-step
-     :footer       (when-not stylist-selected?
-                     [:div.h6.center.pb8
-                      [:div.dark-gray "Not ready to shop hair?"]
-                      [:a.teal (utils/fake-href events/navigate-adventure-find-your-stylist)
-                       "Find a stylist"]])
-     :header-data  {:title                   "The New You"
-                    :progress                progress/hair-texture
-                    :back-navigation-message [events/navigate-adventure-how-shop-hair]
-                    :subtitle                (str "Step " current-step " of 3")}
-     :buttons      (enriched-buttons texture-facet-options)}))
+  (let [;; TODO(cwr,jjh) these ought to be underneath the catalog api
+        facets (get-in data keypaths/v2-facets)
+        skus   (vals (get-in data keypaths/v2-skus))
+
+        ;; TODO(cwr,jjh) these ought to be stored in app-state ready-to-go
+        {:keys [install-type]} (get-in data adventure-keypaths/adventure-choices)
+        selections             {:hair/family         #{install-type}
+                                :inventory/in-stock? #{true}}]
+    (let [selected-skus   (selector/query skus selections)
+          texture-choices (facets/available-options facets :hair/texture selected-skus)
+
+          adventure-choices (get-in data adventure-keypaths/adventure-choices)
+          stylist-selected? (some-> adventure-choices :flow #{"match-stylist"})
+          current-step      (if stylist-selected? 3 2)]
+      {:prompt       "Which texture are you looking for?"
+       :prompt-image "//ucarecdn.com/3346657d-a039-487f-98fb-68b9b050e042/-/format/auto/"
+       :data-test    "hair-texture"
+       :current-step current-step
+       :footer       (when-not stylist-selected?
+                       [:div.h6.center.pb8
+                        [:div.dark-gray "Not ready to shop hair?"]
+                        [:a.teal (utils/fake-href events/navigate-adventure-find-your-stylist)
+                         "Find a stylist"]])
+       :header-data  {:title                   "The New You"
+                      :progress                progress/hair-texture
+                      :back-navigation-message [events/navigate-adventure-how-shop-hair]
+                      :subtitle                (str "Step " current-step " of 3")}
+       :buttons      (enriched-buttons texture-choices)})))
 
 (defn built-component
   [data opts]
