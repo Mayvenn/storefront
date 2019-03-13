@@ -1,5 +1,6 @@
 (ns adventure.home
-  (:require [adventure.keypaths :as keypaths]
+  (:require adventure.handlers
+            [adventure.keypaths :as keypaths]
             [adventure.faq :as faq]
             [storefront.accessors.auth :as auth]
             #?@(:cljs [[om.core :as om]
