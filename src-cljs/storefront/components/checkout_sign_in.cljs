@@ -1,9 +1,11 @@
 (ns storefront.components.checkout-sign-in
   (:require [om.core :as om]
             [sablono.core :refer [html]]
+            [adventure.checkout.sign-in :as adventure-sign-in]
             [storefront.components.sign-in :as sign-in]
             [storefront.components.ui :as ui]
-            [storefront.components.facebook :as facebook]))
+            [storefront.components.facebook :as facebook]
+            [storefront.keypaths :as keypaths]))
 
 (defn component [{:keys [facebook-loaded?] :as sign-in-form-data} owner]
   (om/component
@@ -17,4 +19,6 @@
        (facebook/sign-in-button facebook-loaded?)]]))))
 
 (defn built-component [data opts]
-  (om/build component (sign-in/query data) opts))
+  (if (= "freeinstall" (get-in data keypaths/store-slug))
+    (adventure-sign-in/built-component data opts)
+    (om/build component (sign-in/query data) opts)))
