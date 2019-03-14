@@ -1,17 +1,14 @@
 (ns adventure.components.product-card
-  (:require catalog.keypaths
-            [catalog.selector :as selector]
+  (:require [catalog.selector :as selector]
             [catalog.facets :as facets]
             [spice.selector :as spice-selector]
             [storefront.accessors.skus :as skus]
-            [storefront.accessors.experiments :as experiments]
             [storefront.component :as component]
             [storefront.components.money-formatters :as mf]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             adventure.keypaths
-            [storefront.platform.component-utils :as utils]
-            [adventure.keypaths :as adventure.keypaths]))
+            [storefront.platform.component-utils :as utils]))
 
 (defn slug->facet [facet facets]
   (->> facets
@@ -34,7 +31,9 @@
 (defmethod unconstrained-facet :hair/length
   [color-order-map product skus facets facet]
   (let [lengths              (->> skus
-                                  (mapcat #(get % :hair/length))
+                                  (filter #((-> % :selector/from-products set)
+                                            (:catalog/product-id product)))
+                                  (mapcat :hair/length)
                                   sort)
         length-facet-options (->> facets (slug->facet :hair/length) :facet/options)
         shortest             (->> length-facet-options
@@ -115,7 +114,7 @@
      :facets                           facets}))
 
 (defn component
-  [{:keys [product skus cheapest-sku epitome sku-matching-previous-selections sold-out? title slug image facets color-order-map]}]
+  [{:keys [product skus epitome cheapest-sku color-order-map sold-out? title slug image facets]}]
   (component/create
    [:a.block.col-6.col-4-on-tb-dt.p1.my2.black.flex.flex-stretch
     (assoc (utils/route-to events/navigate-product-details
