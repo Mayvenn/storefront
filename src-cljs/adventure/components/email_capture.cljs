@@ -45,50 +45,52 @@
        (not (string/ends-with? email "@"))))
 
 (defmethod popup/component :adv-email-capture
-  [{:keys [email errors display?] :as thing-we-will-look-at} owner _]
+  [{:keys [email errors display?]} owner _]
   (component/create
-   [:div.bg-lavender.white.center.flex.flex-auto.flex-column
-    {:style {:background-image    (str "url(https://ucarecdn.com/03957478-feac-4e0c-aedf-e8e4a7123d69/)")
-             :background-position "bottom"
-             :background-repeat   "no-repeat"
-             :background-size     "contain"
-             :display             (if display? "inherit" "none")}}
-    [:div.flex.flex-column.items-center
-     {:style {:min-height "100vh"}}
-     [:div.flex.items-center.center.mt3.pb3
-      [:div.mr4
-       (ui/ucare-img {:width "140"} "1970d88b-3798-4914-8a91-74288b09cc77")]]
-     [:div.pt5
-      [:div.h3.medium.mb2.col-8.mx-auto "Welcome! We can't wait for you to get a free install."]
-      [:div.h5.light.mb2.col-8.mx-auto "Enter your e-mail to get started!"]
-      [:div.col-12.mx-auto
-       [:form.block.flex.justify-center {:on-submit
-                                         (utils/send-event-callback events/control-adventure-emailcapture-submit {:email email})}
-        [:input.h5.border-none.px3.bg-white.col-9
-         {:key         "email"
-          :label       "e-mail address"
-          :data-test   "email-input"
-          :name        "email"
-          :id          "email-input"
-          :type        "email"
-          :value       (or email "")
-          :autoFocus   true
-          :required    true
-          :placeholder "e-mail address"
-          :on-change   handle-on-change}]
-        (let [disabled? (not (valid-email? email))]
-          [:button
-           {:type      "submit"
-            :disabled  (boolean disabled?)
-            :style     {:width  "45px"
-                        :height "43px"}
-            :class     (ui/button-class :color/teal (merge {:class "flex items-center justify-center not-rounded x-group-item"}
-                                                           (when disabled?
-                                                             {:disabled?      disabled?
-                                                              :disabled-class "bg-gray"})))
-            :data-test "email-capture-submit"}
-           (ui/forward-arrow {:width     "14"
-                              :disabled? disabled?})])]]]]]))
+   [:div
+    (when display?
+      [:div.z5.fixed.overlay
+       [:div.bg-lavender.white.center.flex.flex-auto.flex-column
+        {:style {:background-image    (str "url(https://ucarecdn.com/03957478-feac-4e0c-aedf-e8e4a7123d69/)")
+                 :background-position "bottom"
+                 :background-repeat   "no-repeat"
+                 :background-size     "contain"}}
+        [:div.flex.flex-column.items-center
+         {:style {:min-height "100vh"}}
+         [:div.flex.items-center.center.mt3.pb3
+          [:div.mr4
+           (ui/ucare-img {:width "140"} "1970d88b-3798-4914-8a91-74288b09cc77")]]
+         [:div.pt5
+          [:div.h3.medium.mb2.col-8.mx-auto "Welcome! We can't wait for you to get a free install."]
+          [:div.h5.light.mb2.col-8.mx-auto "Enter your e-mail to get started!"]
+          [:div.col-12.mx-auto
+           [:form.block.flex.justify-center {:on-submit
+                                             (utils/send-event-callback events/control-adventure-emailcapture-submit {:email email})}
+            [:input.h5.border-none.px3.bg-white.col-9
+             {:key         "email"
+              :label       "e-mail address"
+              :data-test   "email-input"
+              :name        "email"
+              :id          "email-input"
+              :type        "email"
+              :value       (or email "")
+              :autoFocus   true
+              :required    true
+              :placeholder "e-mail address"
+              :on-change   handle-on-change}]
+            (let [disabled? (not (valid-email? email))]
+              [:button
+               {:type      "submit"
+                :disabled  (boolean disabled?)
+                :style     {:width  "45px"
+                            :height "43px"}
+                :class     (ui/button-class :color/teal (merge {:class "flex items-center justify-center not-rounded x-group-item"}
+                                                               (when disabled?
+                                                                 {:disabled?      disabled?
+                                                                  :disabled-class "bg-gray"})))
+                :data-test "email-capture-submit"}
+               (ui/forward-arrow {:width     "14"
+                                  :disabled? disabled?})])]]]]]])]))
 
 (defmethod effects/perform-effects events/control-adventure-emailcapture-submit [_ _ {:keys [email]} _ app-state]
   (facebook-analytics/subscribe)
