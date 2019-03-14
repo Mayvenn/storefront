@@ -1,7 +1,6 @@
 (ns storefront.frontend-effects
   (:require [ajax.core :as ajax]
             [clojure.set :as set]
-            [clojure.walk :as walk]
             [clojure.string :as string]
             [spice.maps :as maps]
             [lambdaisland.uri :as uri]
@@ -237,7 +236,7 @@
                                                :utm_campaign :storefront/utm-campaign
                                                :utm_content  :storefront/utm-content
                                                :utm_term     :storefront/utm-term})
-                             (deep-remove-nils))]
+                             (maps/deep-remove-nils))]
       (when (seq utm-params)
         (cookie-jar/save-utm-params
          (get-in app-state keypaths/cookie)
@@ -652,7 +651,7 @@
                                                                  :card-first-name  (:first_name payment)
                                                                  :card-last-name   (:last_name payment)
                                                                  :postalcode       (:zip payment)})
-                            deep-remove-nils)]
+                            maps/deep-remove-nils)]
     (api/update-stylist-account session-id user-id user-token stylist-id stylist-account
                                 events/api-success-stylist-account-commission)))
 
@@ -664,7 +663,7 @@
         user-token      (get-in app-state keypaths/user-token)
         stylist-account (-> (get-in app-state keypaths/stylist-manage-account)
                             (update :green-dot-payout-attributes reformat-green-dot)
-                            deep-remove-nils)]
+                            maps/deep-remove-nils)]
     (if (= "green_dot" payout-method)
       (let [payout-attributes (get-in app-state (conj keypaths/stylist-manage-account :green-dot-payout-attributes))
             [month year]      (parse-expiration (str (:expiration-date payout-attributes)))]
