@@ -27,10 +27,10 @@
    - sorted by the facet option's :filter/order key
    - is available for adventure"
   [facet-slug facets skuers]
-  (let [matching-facet-options      (adventure-facet-options facet-slug facets)
-        matching-product-options    (available-facet-options facet-slug skuers)
-        facet-options-has-products? (comp matching-product-options str :option/slug)]
-    (filter facet-options-has-products? matching-facet-options)))
+  (let [facet-options               (adventure-facet-options facet-slug facets)
+        options-in-skuers?          (available-facet-options facet-slug skuers)
+        facet-options-has-products? (comp options-in-skuers? str :option/slug)]
+    (filter facet-options-has-products? facet-options)))
 
 (defn available-options
   [facets facet skuers]
