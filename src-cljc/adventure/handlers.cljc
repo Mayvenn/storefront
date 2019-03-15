@@ -123,6 +123,5 @@
         skus-indexed        (products/index-skus skus)]
     (-> app-state
         (assoc-in storefront.keypaths/v2-products correct-products)
-        (assoc-in storefront.keypaths/v2-skus skus-indexed)
-        (assoc-in keypaths/adventure-matching-skus-color skus-matching-color))))
+        (assoc-in storefront.keypaths/v2-skus skus-indexed))))
 

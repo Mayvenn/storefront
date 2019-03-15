@@ -99,4 +99,4 @@
 
 (defmethod effects/perform-effects events/navigate-adventure-a-la-carte-product-list
   [_ _ args _ app-state]
-  #?(:cljs (handle-message events/adventure-fetch-matched-products {:criteria [:hair/texture :hair/family :hair/color]})))
+  #?(:cljs (handle-message events/adventure-fetch-matched-products {:criteria [:hair/texture :hair/family]})))

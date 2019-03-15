@@ -79,39 +79,34 @@
        first))
 
 (defn query [data product]
-  (let [skus-matching-color       (get-in data adventure.keypaths/adventure-matching-skus-color)
-        facets                    (get-in data keypaths/v2-facets)
-        color-order-map           (facets/color-order-map facets)
-        in-stock-skus             (selector/query skus-matching-color {} {:inventory/in-stock? #{true}})
-        ;; in order to fill the product card, we should always have a sku to use for
-        ;; the cheapest-sku and epitome
-        skus-to-search            (->> (or (not-empty in-stock-skus)
-                                           skus-matching-color)
-                                       (filter #(= (set (:hair/family %))
-                                                   (:hair/family product))))
-        ;; It is technically possible for the cheapest sku to not be the epitome
-        cheapest-sku              (->> skus-to-search
-                                       (sort-by :sku/price)
-                                       first)
-        ;; Product definition of epitome is the "first" SKU on the product details page where
-        ;; first is when the first of every facet is selected.
-        ;;
-        ;; We're being lazy and sort by color facet + sku price (which implies sort by hair/length)
-        epitome                   (skus/determine-epitome color-order-map skus-to-search)]
-    {:product                          product
-     :skus                             skus-matching-color
-     :epitome                          epitome
-     :cheapest-sku                     cheapest-sku
-     :color-order-map                  color-order-map
-     :sold-out?                        (empty? in-stock-skus)
-     :title                            (:copy/title product)
-     :slug                             (:page/slug product)
-     :image                            (->> epitome
-                                            :selector/images
-                                            (filter (comp #{"catalog"} :use-case))
-                                            (sort-by (comp color-order-map first :hair/color))
-                                            first)
-     :facets                           facets}))
+  (let [facets                      (get-in data keypaths/v2-facets)
+        color-order-map             (facets/color-order-map facets)
+        all-skus                    (vals (get-in data keypaths/v2-skus))
+        in-stock-skus               (selector/query all-skus {} {:inventory/in-stock? #{true}})
+        product-skus                (->> (or (not-empty in-stock-skus)
+                                             all-skus)
+                                         (filter #((-> % :selector/from-products set) (:catalog/product-id product))))
+        selected-color              (get-in data adventure.keypaths/adventure-choices-color)
+        product-skus-matching-color (->> product-skus
+                                         (filter #(contains? (set (:hair/color %)) selected-color)))
+        cheapest-product-sku        (->> product-skus
+                                         (sort-by :sku/price)
+                                         first)
+        epitome                     (skus/determine-epitome color-order-map product-skus-matching-color)]
+    {:product             product
+     :skus                product-skus
+     :epitome             epitome
+     :cheapest-sku        cheapest-product-sku
+     :color-order-map     color-order-map
+     :sold-out?           (empty? in-stock-skus)
+     :title               (:copy/title product)
+     :slug                (:page/slug product)
+     :image               (->> epitome
+                               :selector/images
+                               (filter (comp #{"catalog"} :use-case))
+                               (sort-by (comp color-order-map first :hair/color))
+                               first)
+     :facets              facets}))
 
 (defn component
   [{:keys [product skus epitome cheapest-sku color-order-map sold-out? title slug image facets]}]
