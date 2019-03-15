@@ -50,7 +50,7 @@
         stylist-selected?     (some-> adventure-choices :flow #{"match-stylist"})
         current-step          (if stylist-selected? 3 2)]
     {:prompt       "Which texture are you looking for?"
-     :prompt-image "//ucarecdn.com/3346657d-a039-487f-98fb-68b9b050e042/-/format/auto/aladdinMatchingOverlayImagePurpleER203Lm3x.png"
+     :prompt-image "//ucarecdn.com/3346657d-a039-487f-98fb-68b9b050e042/-/format/auto/"
      :data-test    "hair-texture"
      :current-step current-step
      :footer       (when-not stylist-selected?

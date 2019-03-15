@@ -26,7 +26,7 @@
         current-step      (if stylist-selected? 3 2)
         facets            (get-in data keypaths/v2-facets)]
     (merge
-     {:prompt-image      "//ucarecdn.com/4d53dac6-a7ce-4c10-bd5d-644821c5af4b/-/format/auto/bg.png"
+     {:prompt-image      "//ucarecdn.com/4d53dac6-a7ce-4c10-bd5d-644821c5af4b/-/format/auto/"
       :data-test         "product-list"
       :current-step      current-step
       :footer            [:div.h6.center.pb8
