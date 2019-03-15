@@ -86,8 +86,8 @@
 (defn ^:private adventure-choices->criteria
   [choices]
   ;; Always return bundles for a la carte
-  {:hair/family        (conj #{"bundles"} (:install-type choices))
-   :hair/texture       (:texture choices)})
+  {:hair/family  (conj #{"bundles"} (:install-type choices))
+   :hair/texture (:texture choices)})
 
 (defmethod effects/perform-effects events/adventure-fetch-matched-skus
   [_ _ {:keys [criteria] :or {criteria [:hair/family]}} _ app-state]
