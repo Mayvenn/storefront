@@ -69,4 +69,4 @@
 
 (defmethod effects/perform-effects events/navigate-adventure-a-la-carte-hair-texture
   [_ _ args _ app-state]
-  #?(:cljs (handle-message events/adventure-fetch-matched-skus)))
+  #?(:cljs (handle-message events/adventure-fetch-matched-products)))

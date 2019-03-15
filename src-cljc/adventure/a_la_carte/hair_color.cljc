@@ -67,4 +67,4 @@
 
 (defmethod effects/perform-effects events/navigate-adventure-a-la-carte-hair-color
   [_ _ args _ app-state]
-  #?(:cljs (handle-message events/adventure-fetch-matched-skus {:criteria [:hair/texture :hair/family]})))
+  #?(:cljs (handle-message events/adventure-fetch-matched-products {:criteria [:hair/texture :hair/family]})))
