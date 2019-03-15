@@ -4,6 +4,7 @@
             [catalog.products :as products]
             [catalog.skuers :as skuers]
             [catalog.keypaths]
+            adventure.keypaths
             [adventure.components.header :as header]
             [adventure.progress :as progress]
             [storefront.accessors.auth :as auth]
@@ -434,10 +435,14 @@
                                :gallery
                                :images
                                (filter (comp (partial = "approved") :status))
-                               (map (comp v2/get-ucare-id-from-url :resizable-url)))]
+                               (map (comp v2/get-ucare-id-from-url :resizable-url)))
+
+        adventure-choices (get-in data adventure.keypaths/adventure-choices)
+        stylist-selected? (some-> adventure-choices :flow #{"match-stylist"})
+        current-step      (if stylist-selected? 3 2)]
     {:header-data                     {:progress                progress/product-details
-                                       :title                   [:div.medium "Find Your Stylist"]
-                                       :subtitle                (str "Step " 2 " of 3")
+                                       :title                   [:div.medium "The New You"]
+                                       :subtitle                (str "Step " current-step " of 3")
                                        :shopping-bag?           true
                                        :back-navigation-message [events/navigate-adventure-match-stylist]}
      :reviews                         (review-component/query data)
