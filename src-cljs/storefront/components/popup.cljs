@@ -57,7 +57,7 @@
       (and is-adventure?
            email-capture-showable?
            adv-email-capture-exp
-           (contains? #{events/navigate-adventure-what-next}
+           (contains? #{events/navigate-adventure-install-type}
                       navigation-event))
       (messages/handle-message events/popup-show-adventure-emailcapture)
 

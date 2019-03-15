@@ -4,6 +4,7 @@
 ;; Please keep this in sorted order with empty lines to group progress pages
 ;; that have the same value.
 
+;; NOTE: When changing the first step, make sure that the email capture pop up is connected to it.
 (def product-details nil)
 (def install-type 1)
 (def what-next 2)
