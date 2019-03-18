@@ -301,6 +301,7 @@
           {:style {:height "25em"}}
           (ui/large-spinner {:style {:height "4em"}})]
          [:div
+          {:style {:margin-bottom "90px"}}
           [:div.container
            (when (:offset ugc)
              [:div.absolute.overlay.z4.overflow-auto
