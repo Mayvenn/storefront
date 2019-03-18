@@ -7,21 +7,20 @@
             [storefront.accessors.experiments :as experiments]
             [adventure.progress :as progress]))
 
-(defn enriched-buttons [shop-individual-buttons?]
-  (into [{:text             "Show me looks for inspiration"
-          :data-test-suffix "looks"
-          :value            {:how-shop "looks"}
-          :target-message   [events/navigate-adventure-hair-texture
-                             {:album-keyword :shop-by-look}]}
-         {:text             "Give me pre-made bundle sets"
-          :data-test-suffix "bundle-sets"
-          :value            {:how-shop "bundle-sets"}
-          :target-message   [events/navigate-adventure-bundlesets-hair-texture]}]
-        (when shop-individual-buttons?
-          [{:text             "Let me shop individual bundles"
-            :data-test-suffix "individual-bundles"
-            :value            {:how-shop "individual-bundles"}
-            :target-message   [events/navigate-adventure-a-la-carte-hair-texture]}])))
+(def enriched-buttons
+  [{:text             "Show me looks for inspiration"
+    :data-test-suffix "looks"
+    :value            {:how-shop "looks"}
+    :target-message   [events/navigate-adventure-hair-texture
+                       {:album-keyword :shop-by-look}]}
+   {:text             "Give me pre-made bundle sets"
+    :data-test-suffix "bundle-sets"
+    :value            {:how-shop "bundle-sets"}
+    :target-message   [events/navigate-adventure-bundlesets-hair-texture]}
+   {:text             "Let me shop individual bundles"
+    :data-test-suffix "individual-bundles"
+    :value            {:how-shop "individual-bundles"}
+    :target-message   [events/navigate-adventure-a-la-carte-hair-texture]}])
 
 (defn ^:private query [data]
   (let [adventure-choices (get-in data adventure-keypaths/adventure-choices)
@@ -38,7 +37,7 @@
      :buttons      (randomizer/randomize-ordering
                     random-sequence
                     progress/how-shop-hair
-                    (enriched-buttons (experiments/adventure-shop-individual-bundles? data)))}))
+                    enriched-buttons)}))
 
 (defn built-component
   [data opts]

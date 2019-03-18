@@ -124,11 +124,6 @@
 (defn phone-capture? [data]
   (display-feature? data "phone-capture"))
 
-(defn adventure-shop-individual-bundles?
-  [data]
-  (display-feature? data
-                    "adventure-shop-individual-bundles"))
-
 (defn no-prices-on-picker?
   [data]
   (display-feature? data "no-prices-on-picker"))
