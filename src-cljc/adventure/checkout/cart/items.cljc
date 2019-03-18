@@ -1,15 +1,10 @@
 (ns adventure.checkout.cart.items
   (:require
    [checkout.accessors.vouchers :as vouchers]
-   [storefront.accessors.experiments :as experiments]
    [storefront.accessors.orders :as orders]
    [storefront.components.ui :as ui]
-   [storefront.events :as events]
    [storefront.keypaths :as keypaths]
-   [adventure.keypaths :as adv-keypaths]
-   [storefront.platform.component-utils :as utils]
-   [storefront.request-keys :as request-keys]
-   [storefront.components.svg :as svg]))
+   [adventure.keypaths :as adv-keypaths]))
 
 (defn line-item-detail [servicing-stylist-name]
   [:div.mb1.mt0

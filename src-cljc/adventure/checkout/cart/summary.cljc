@@ -7,10 +7,7 @@
             [storefront.components.money-formatters :as mf]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
-            [storefront.events :as events]
-            [storefront.keypaths :as keypaths]
-            [storefront.platform.component-utils :as utils]
-            [storefront.request-keys :as request-keys]))
+            [storefront.keypaths :as keypaths]))
 
 (defn ^:private text->data-test-name [name]
   (-> name
@@ -64,7 +61,6 @@
            store-credit
            shipping-cost
            adjustments-including-tax
-           promo-data
            subtotal] :as data} owner _]
   (component/create
    [:div {:data-test "cart-order-summary"}
