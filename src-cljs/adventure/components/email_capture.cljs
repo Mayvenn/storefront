@@ -50,7 +50,7 @@
    [:div
     (when display?
       [:div.z5.fixed.overlay
-       [:div.bg-lavender.white.center.flex.flex-auto.flex-column
+       [:div.bg-lavender.white.center.flex.flex-auto.flex-column.max-580.m-auto
         {:style {:background-image    (str "url(https://ucarecdn.com/03957478-feac-4e0c-aedf-e8e4a7123d69/-/format/auto/)")
                  :background-position "bottom"
                  :background-repeat   "no-repeat"
