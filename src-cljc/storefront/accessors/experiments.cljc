@@ -95,9 +95,6 @@
 (defn email-capture-35-percent-got-bundles? [data]
   (display-feature? data "email-capture-35-percent-got-bundles"))
 
-(defn guaranteed-delivery? [data]
-  (display-feature? data "guaranteed-delivery"))
-
 (defn dashboard-with-vouchers? [data]
   (->> (get-in data keypaths/store-features)
        (some #{"aladdin-dashboard" "phoenix-dashboard" "dashboard-with-vouchers"})
