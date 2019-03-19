@@ -37,6 +37,8 @@
   ([data request-key] false)
   ([data request-search request-key] false))
 
+(defn requesting-from-endpoint? [data request-key] false)
+
 (defn select-all-text [e]
   nil)
 

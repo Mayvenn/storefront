@@ -5,6 +5,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.effects :as effects]
+            [storefront.request-keys :as request-keys]
             [storefront.transitions :as transitions]
             [adventure.progress :as progress]
             [adventure.keypaths :as adventure-keypaths]
@@ -52,6 +53,7 @@
                         [:div.dark-gray "Not ready to shop hair?"]
                         [:a.teal (utils/fake-href events/navigate-adventure-find-your-stylist)
                          "Find a stylist"]])
+       :spinning?    (utils/requesting-from-endpoint? data request-keys/search-v2-products)
        :header-data  {:title                   "The New You"
                       :progress                progress/hair-texture
                       :back-navigation-message [events/navigate-adventure-how-shop-hair]

@@ -5,6 +5,7 @@
             [storefront.component :as component]
             [storefront.keypaths :as keypaths]
             [storefront.effects :as effects]
+            [storefront.request-keys :as request-keys]
             [storefront.platform.component-utils :as utils]
             [adventure.progress :as progress]
             [adventure.keypaths :as adventure-keypaths]
@@ -54,10 +55,11 @@
      :data-test    "hair-texture"
      :current-step current-step
      :footer       (when-not stylist-selected?
-                     [:div.h6.center.pb8
+                     [:div.h6.center.pb8.pt1
                       [:div.dark-gray "Not ready to shop hair?"]
                       [:a.teal (utils/fake-href events/navigate-adventure-find-your-stylist)
                        "Find a stylist"]])
+     :spinning?    (utils/requesting-from-endpoint? data request-keys/search-v2-skus)
      :header-data  {:title                   "The New You"
                     :progress                progress/hair-texture
                     :back-navigation-message [events/navigate-adventure-how-shop-hair]

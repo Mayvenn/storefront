@@ -15,6 +15,7 @@
             [adventure.components.multi-prompt :as multi-prompt]
             [adventure.utils.facets :as facets]
             [storefront.accessors.skus :as skus]
+            [storefront.request-keys :as request-keys]
             [adventure.keypaths :as adventure.keypaths]))
 
 (defn ^:private query
@@ -38,6 +39,7 @@
                           :back-navigation-message [events/navigate-adventure-a-la-carte-hair-color]
                           :subtitle                (str "Step " current-step " of 3")
                           :shopping-bag?           true}
+      :spinning?         (utils/requesting-from-endpoint? data request-keys/search-v2-products)
       :stylist-selected? stylist-selected?
       :product-cards     (->> products
                               (map (partial product-card/query data))
@@ -68,6 +70,7 @@
            number-of-items-needed
            product-cards
            prompt-image
+           spinning?
            stylist-selected?]}
    _ _]
   (component/create
@@ -84,14 +87,17 @@
       (if add-more-hair?
         (add-more-hair-banner number-of-items-needed)
         qualified-banner)]]
-    [:div.flex.flex-wrap.px5.col-12
-     (for [product-card product-cards]
-       (component/build product-card/component product-card nil))]
-    (when-not stylist-selected?
-      [:div.h6.center.pb8
-       [:div.dark-gray "Not ready to shop hair?"]
-       [:a.teal (utils/fake-href events/navigate-adventure-find-your-stylist)
-        "Find a stylist"]])]))
+    (if spinning?
+      [:div.flex.items-center.justify-center.h0.mt3
+       ui/spinner]
+      [:div.flex.flex-wrap.px5.col-12
+       (for [product-card product-cards]
+         (component/build product-card/component product-card nil))
+       (when-not stylist-selected?
+         [:div.h6.center.pb8.mx-auto
+          [:div.dark-gray "Not ready to shop hair?"]
+          [:a.teal (utils/fake-href events/navigate-adventure-find-your-stylist)
+           "Find a stylist"]])])]))
 
 (defn built-component
   [data opts]

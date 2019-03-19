@@ -129,10 +129,13 @@
 
       [:div.col-12.mx-auto
        #?(:cljs
-          (when places-loaded?
+          (if places-loaded?
             (om/build places-component-outer {:value             stylist-match-address
                                               :current-step      current-step
-                                              :selected-location selected-location})))]]]]))
+                                              :selected-location selected-location})
+
+            [:div.flex.items-center.justify-center.h1.mt3
+             ui/spinner]))]]]]))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

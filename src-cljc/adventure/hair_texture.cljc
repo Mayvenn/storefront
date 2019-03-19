@@ -6,6 +6,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.effects :as effects]
+            [storefront.request-keys :as request-keys]
             [adventure.progress :as progress]
             [adventure.keypaths :as adventure-keypaths]
             [adventure.components.multi-prompt :as multi-prompt]
@@ -44,6 +45,7 @@
      :prompt-image "//ucarecdn.com/3346657d-a039-487f-98fb-68b9b050e042/-/format/auto/aladdinMatchingOverlayImagePurpleER203Lm3x.png"
      :data-test    "hair-texture"
      :current-step current-step
+     :spinning?    (utils/requesting-from-endpoint? data request-keys/search-v2-skus)
      :footer       [:div.dark-gray.col-9.mx-auto.h5.pb2
                     [:div.my1.line-height-2 "Looking for Yaki Straight, Kinky Straight, Water Wave, or Curly?"]
                     [:a.block.teal.medium

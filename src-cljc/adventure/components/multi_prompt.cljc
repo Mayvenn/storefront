@@ -18,7 +18,7 @@
   (ui/white-button (maps/deep-merge rect-button-attrs attrs) content))
 
 (defn component
-  [{:keys [prompt current-step prompt-image header-data data-test buttons footer]} _ _]
+  [{:keys [prompt current-step prompt-image header-data data-test buttons footer spinning?]} _ _]
   (component/create
    [:div.bg-too-light-teal.white.center.flex-auto.self-stretch
     (when header-data
@@ -29,21 +29,26 @@
               :background-position "center"
               :background-image    (str "url('"prompt-image "')")}}
      [:div.col-12.p5 prompt]]
-    [:div.px5.py1
-     {:data-test data-test}
-     (for [{:as button :keys [text data-test-suffix]} buttons]
-       (let [button-component (if (= :teal (:color button))
-                                teal-rect-button
-                                white-rect-button)
-             button-data-test (str data-test "-" data-test-suffix)]
-         [:div.p1 {:key button-data-test}
-          (button-component
-           (merge
-            {:data-test button-data-test}
-            (utils/fake-href events/control-adventure-choice
-                             {:prompt       prompt
-                              :buttons      buttons
-                              :choice       button
-                              :current-step current-step}))
-           text)]))]
-    footer]))
+    (if spinning?
+      [:div.flex.items-center.justify-center.h0.mt3
+       ui/spinner]
+      [:div.px5.py1 ;; Body
+       {:data-test data-test}
+       (for [{:as button :keys [text data-test-suffix]} buttons]
+         (let [button-component (if (= :teal (:color button))
+                                  teal-rect-button
+                                  white-rect-button)
+               button-data-test (str data-test "-" data-test-suffix)]
+           [:div.p1 {:key button-data-test}
+            (button-component
+             (merge
+              {:data-test button-data-test}
+              (utils/fake-href events/control-adventure-choice
+                               {:prompt       prompt
+                                :buttons      buttons
+                                :choice       button
+                                :current-step current-step}))
+             text)
+
+            ]))
+       footer])]))

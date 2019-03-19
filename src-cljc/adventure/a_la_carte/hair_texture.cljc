@@ -9,6 +9,7 @@
             [adventure.keypaths :as adventure-keypaths]
             [adventure.components.multi-prompt :as multi-prompt]
             [adventure.utils.facets :as facets]
+            [storefront.request-keys :as request-keys]
             [catalog.selector :as selector]))
 
 (def option-metadata
@@ -53,10 +54,11 @@
        :data-test    "hair-texture"
        :current-step current-step
        :footer       (when-not stylist-selected?
-                       [:div.h6.center.pb8
+                       [:div.h6.center.pt1.pb8
                         [:div.dark-gray "Not ready to shop hair?"]
                         [:a.teal (utils/fake-href events/navigate-adventure-find-your-stylist)
                          "Find a stylist"]])
+       :spinning?    (utils/requesting-from-endpoint? data request-keys/search-v2-products)
        :header-data  {:title                   "The New You"
                       :progress                progress/hair-texture
                       :back-navigation-message [events/navigate-adventure-how-shop-hair]
