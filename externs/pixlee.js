@@ -5,4 +5,5 @@ Pixlee_Analytics.prototype.events.trigger = function() { };
 var Pixlee = {};
 Pixlee.init = function () {};
 Pixlee.addSimpleWidget = function () {};
+Pixlee.openUploader = function () {};
 Pixlee.AsyncInit = function () {};
