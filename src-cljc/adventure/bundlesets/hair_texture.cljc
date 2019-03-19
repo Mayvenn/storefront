@@ -1,6 +1,5 @@
 (ns adventure.bundlesets.hair-texture
-  (:require #?@(:cljs [[storefront.platform.messages :refer [handle-message]]])
-            [clojure.set :as set]
+  (:require #?@(:cljs [[storefront.platform.messages :as messages]])
             [storefront.events :as events]
             [storefront.component :as component]
             [storefront.keypaths :as keypaths]
@@ -10,8 +9,7 @@
             [adventure.progress :as progress]
             [adventure.keypaths :as adventure-keypaths]
             [adventure.components.multi-prompt :as multi-prompt]
-            [adventure.utils.facets :as facets]
-            [storefront.accessors.experiments :as experiments]))
+            [adventure.utils.facets :as facets]))
 
 (def option-metadata
   {"straight"       {:subtitle   "For silky, sleek looks"
@@ -72,4 +70,4 @@
 
 (defmethod effects/perform-effects events/navigate-adventure-bundlesets-hair-texture
   [_ _ args _ app-state]
-  #?(:cljs (handle-message events/adventure-fetch-matched-skus)))
+  #?(:cljs (messages/handle-message events/adventure-fetch-matched-skus)))

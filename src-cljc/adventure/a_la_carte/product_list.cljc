@@ -1,6 +1,6 @@
 (ns adventure.a-la-carte.product-list
-  (:require #?@(:cljs [[storefront.platform.messages :refer [handle-message]]])
-            [storefront.components.ui :as ui]
+  (:require [storefront.components.ui :as ui]
+            [storefront.platform.messages :as messages]
             [storefront.events :as events]
             [storefront.component :as component]
             [storefront.keypaths :as keypaths]
@@ -9,23 +9,17 @@
             [adventure.components.header :as header]
             adventure.checkout.cart.items
             [storefront.effects :as effects]
-            [storefront.transitions :as transitions]
             [adventure.progress]
             [adventure.keypaths]
-            [adventure.components.multi-prompt :as multi-prompt]
-            [adventure.utils.facets :as facets]
-            [storefront.accessors.skus :as skus]
             [storefront.request-keys :as request-keys]
             [adventure.keypaths :as adventure.keypaths]))
 
 (defn ^:private query
   [data]
-  (let [skus              (vals (get-in data keypaths/v2-skus))
-        products          (vals (get-in data keypaths/v2-products))
+  (let [products          (vals (get-in data keypaths/v2-products))
         adventure-choices (get-in data adventure.keypaths/adventure-choices)
         stylist-selected? (some-> adventure-choices :flow #{"match-stylist"})
-        current-step      (if stylist-selected? 3 2)
-        facets            (get-in data keypaths/v2-facets)]
+        current-step      (if stylist-selected? 3 2)]
     (merge
      {:prompt-image      "//ucarecdn.com/4d53dac6-a7ce-4c10-bd5d-644821c5af4b/-/format/auto/"
       :data-test         "product-list"
@@ -105,4 +99,4 @@
 
 (defmethod effects/perform-effects events/navigate-adventure-a-la-carte-product-list
   [_ _ args _ app-state]
-  #?(:cljs (handle-message events/adventure-fetch-matched-products {:criteria [:hair/texture :hair/family]})))
+  #?(:cljs (messages/handle-message events/adventure-fetch-matched-products {:criteria [:hair/texture :hair/family]})))

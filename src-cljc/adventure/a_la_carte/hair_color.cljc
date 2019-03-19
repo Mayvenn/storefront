@@ -1,10 +1,10 @@
 (ns adventure.a-la-carte.hair-color
-  (:require #?@(:cljs [[storefront.platform.messages :refer [handle-message]]])
-            [storefront.events :as events]
+  (:require #?@(:cljs [[storefront.platform.messages :as messages]])
             [storefront.component :as component]
+            [storefront.effects :as effects]
+            [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.effects :as effects]
             [storefront.request-keys :as request-keys]
             [storefront.transitions :as transitions]
             [adventure.progress :as progress]
@@ -69,4 +69,4 @@
 
 (defmethod effects/perform-effects events/navigate-adventure-a-la-carte-hair-color
   [_ _ args _ app-state]
-  #?(:cljs (handle-message events/adventure-fetch-matched-products {:criteria [:hair/texture :hair/family]})))
+  #?(:cljs (messages/handle-message events/adventure-fetch-matched-products {:criteria [:hair/texture :hair/family]})))
