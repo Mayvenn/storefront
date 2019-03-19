@@ -144,9 +144,9 @@
     (set! (.-location js/window)
           (-> (.-location js/window)
               uri/uri
-              (assoc :host (str "freeinstall." hostname))
-              (assoc :query
-                     (str "utm_source="utm-source"&utm_medium=referral&utm_campaign=ShoptoFreeInstall"))
+              (assoc :host (str "freeinstall." hostname)
+                     :path "/"
+                     :query (str "utm_source="utm-source"&utm_medium=referral&utm_campaign=ShoptoFreeInstall"))
               str))))
 
 (defmethod perform-effects events/external-redirect-sms [_ event {:keys [sms-message number]} _ app-state]
