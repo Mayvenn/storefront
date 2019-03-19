@@ -57,7 +57,8 @@
         {:keys [city state name]}    salon]
     [:div.bg-white.p2.pb2.h6.my2.col-12.col-8-on-tb-dt {:key stylist-id}
      [:div.flex
-      [:div.mr2.mt1 (ui/circle-picture {:width "104px"} (:resizable-url portrait))]
+      [:div.mr2.mt1 (ui/circle-picture {:width "104px"}
+                                       (str (:resizable-url portrait) "-/format/auto/"))]
       [:div.flex-grow-1.left-align.dark-gray.h7.line-height-4
        [:div.h3.black.line-height-1
         [:span {:data-test "stylist-firstname"}
@@ -80,7 +81,7 @@
                                                    :key      (str firstname "-gallery-" i)}
                                                   (ui/aspect-ratio
                                                    1 1
-                                                   [:img {:src   (str (:resizable-url x) "-/scale_crop/204x204/")
+                                                   [:img {:src   (str (:resizable-url x) "-/scale_crop/204x204/-/format/auto/")
                                                           :class "rounded"
                                                           :width "102"}])])
                                                gallery-images)
