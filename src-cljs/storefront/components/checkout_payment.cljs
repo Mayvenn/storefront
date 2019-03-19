@@ -115,6 +115,76 @@
                                              :disabled? disabled?
                                              :data-test "payment-form-submit"})])]])])))
 
+(defn adventure-component
+  [{:keys [step-bar
+           saving?
+           disabled?
+           loaded-stripe?
+           store-credit
+           field-errors
+           credit-card
+           promo-code
+           selected-payment-methods
+           applied-install-promotion
+           promotion-banner]}
+   owner]
+  (om/component
+   (html
+    [:div.container.p2
+     (component/build promotion-banner/sticky-component promotion-banner nil)
+     (om/build checkout-steps/component step-bar)
+
+     (ui/narrow-container
+      [:div.m2
+       [:h3.my2 "Payment Information"]
+       [:form
+        {:on-submit (utils/send-event-callback events/control-checkout-choose-payment-method-submit)
+         :data-test "payment-form"}
+
+        (let [{:keys [credit-available credit-applicable fully-covered?]} store-credit]
+          (if (and fully-covered?
+                   (not applied-install-promotion))
+            (ui/note-box
+             {:color     "teal"
+              :data-test "store-credit-note"}
+             [:.p2.navy
+              [:div [:span.medium (as-money credit-applicable)] " in store credit will be applied to this order."]])
+
+            [:div.p2
+             [:div "Pay with Credit/Debit Card"]
+             [:p.h6 "All transactions are secure and encrypted."]
+             (when (pos? credit-available)
+               (if applied-install-promotion
+                 (ui/note-box
+                  {:color     "orange"
+                   :data-test "store-credit-note"}
+                  [:div.p2.black
+                   [:div "Your "
+                    [:span.medium (as-money credit-applicable)]
+                    " in store credit "
+                    [:span.medium "cannot"]
+                    " be used with " [:span.shout applied-install-promotion] " orders."]])
+                 (ui/note-box
+                  {:color     "teal"
+                   :data-test "store-credit-note"}
+                  [:.p2.navy
+                   [:div [:span.medium (as-money credit-applicable)] " in store credit will be applied to this order."]
+                   [:.h6.mt1
+                    "Please enter an additional payment method below for the remaining total on your order."]])))
+
+             [:div
+              (om/build cc/component
+                        {:credit-card  credit-card
+                         :field-errors field-errors})
+              [:div.h5
+               "You can review your order on the next page before we charge your card."]]]))
+
+        (when loaded-stripe?
+          [:div.my4.col-6-on-tb-dt.mx-auto
+           (ui/submit-button "Review Order" {:spinning? saving?
+                                             :disabled? disabled?
+                                             :data-test "payment-form-submit"})])]])])))
+
 (defn query [data]
   (let [available-store-credit   (get-in data keypaths/user-total-available-store-credit)
         credit-to-use            (min available-store-credit (get-in data keypaths/order-total))
@@ -145,4 +215,6 @@
      (cc/query data))))
 
 (defn built-component [data opts]
-  (om/build component (query data) opts))
+  (if (= "freeinstall" (get-in data keypaths/store-slug))
+    (om/build adventure-component (query data) opts)
+    (om/build component (query data) opts)))
