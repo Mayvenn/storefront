@@ -121,10 +121,6 @@
 (defn phone-capture? [data]
   (display-feature? data "phone-capture"))
 
-(defn no-prices-on-picker?
-  [data]
-  (display-feature? data "no-prices-on-picker"))
-
 (defn browser-pay?
   [data]
   (display-feature? data "browser-pay"))

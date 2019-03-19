@@ -5,7 +5,6 @@
             [clojure.string :as string]
             [spice.core :as spice]
             [storefront.component :as component]
-            [storefront.components.money-formatters :as mf]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.css-transitions :as css-transitions]
@@ -79,7 +78,7 @@
   (string/replace (str slug) #"#" ""))
 
 (defn desktop-length-and-quantity-picker-rows
-  [{:keys [product-sold-out-style selected-length selections options sku-quantity no-price-on-lengths navigation-event]}]
+  [{:keys [product-sold-out-style selected-length selections options sku-quantity navigation-event]}]
   [:div.flex.hide-on-mb
    (field
     {:class "border-right flex-grow-5"}
@@ -95,11 +94,9 @@
                                              :value            (.-value (.-target %))})
        :value     (:hair/length selections)
        :options   (map (fn [option]
-                         (let [price (when (and (not no-price-on-lengths) (:price option))
-                                       (str " - " (mf/as-money-without-cents (:price option))))]
-                           [:option {:value (:option/slug option)
-                                     :key   (str "length-" (:option/slug option))}
-                            (str (:option/name option) price )]))
+                         [:option {:value (:option/slug option)
+                                   :key   (str "length-" (:option/slug option))}
+                          (:option/name option)])
                        (:hair/length options))})))
    [:div.flex-auto
     (field
@@ -117,7 +114,7 @@
                         (range 1 11))})))]])
 
 (defn mobile-length-and-quantity-picker-rows
-  [{:keys [selected-length product-sold-out-style sku-quantity no-price-on-lengths]}]
+  [{:keys [selected-length product-sold-out-style sku-quantity]}]
   [:div.flex.hide-on-tb-dt
    (field
     (merge
@@ -217,10 +214,6 @@
                  (when checked?
                    (simple-selected-layer))])]))
 
-(defn item-price [price]
-  (when price
-    (when price [:span {:item-prop "price"} (mf/as-money-without-cents price)])))
-
 (defn length-option
   [{:keys [item key primary-label secondary-label checked? disabled? selected-picker navigation-event]}]
   (let [label-style (cond
@@ -302,7 +295,7 @@
 
 (defn picker-dialog
   "picker dialog as in https://app.zeplin.io/project/5a9f159069d48a4c15497a49/screen/5b15c08f4819592903cb1348"
-  [{:keys [title items cell-component-fn product-alternative no-prices]}]
+  [{:keys [title items cell-component-fn product-alternative]}]
   [:div.hide-on-tb-dt.z4.fixed.overlay.overflow-auto.bg-light-silver
    {:key "picker-dialog" :data-test "picker-dialog"}
    [:div.p3.h5.bg-white.relative.border-bottom.border-gray
@@ -330,8 +323,7 @@
            selections
            options
            sku-quantity
-           product-alternative
-           no-price-on-lengths]
+           product-alternative]
     :as   data} owner _]
   (component/create
    [:div {:key "picker-body"}
@@ -357,7 +349,6 @@
                                                                 {:key              (str "length-" (:option/name item))
                                                                  :primary-label    (:option/name item)
                                                                  :navigation-event navigation-event
-                                                                 :secondary-label  (when-not no-price-on-lengths (item-price (:price item)))
                                                                  :checked?         (= (:hair/length selections)
                                                                                       (:option/slug item))
                                                                  :selected-picker  selected-picker
@@ -406,7 +397,4 @@
                                 :link-attrs (utils/route-to events/navigate-category
                                                             {:page/slug           "dyed-virgin-hair"
                                                              :catalog/category-id "16"})})
-     :no-price-on-lengths    (or
-                              (= "freeinstall" (get-in data keypaths/store-slug))
-                              (experiments/no-prices-on-picker? data))
      :navigation-event       navigation-event}))
