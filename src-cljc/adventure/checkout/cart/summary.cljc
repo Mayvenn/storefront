@@ -87,7 +87,7 @@
               (- 0 (:price freeinstall-line-item-data))
               price))))
 
-       (when (empty? (orders/product-items order))
+       (when (not-any? #(-> % :coupon-code #{"freeinstall"}) adjustments-including-tax)
          (summary-row
           {:key       (str -1 "-" name)
            :data-test "freeinstall"}
