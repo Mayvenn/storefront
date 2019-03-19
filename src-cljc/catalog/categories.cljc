@@ -179,7 +179,7 @@
                                         :mobile-url  "//ucarecdn.com/409a74b6-1f12-4a9d-b024-672a4d0e1694/",
                                         :alt         "Virgin Straight"}
                                  :home {:filename "StraightExtensionsMayvenn.jpg",
-                                        :url      "//ucarecdn.com/cf60bdc3-09df-4ee3-87a8-d3cbdcefdd87/",
+                                        :url      "//ucarecdn.com/f4addde0-3c0e-40f8-85b0-fe2e2e96a7b5/",
                                         :alt      "Straight Hair Extensions Mayvenn"}}
            :home/order          0
            :footer/order        0
@@ -211,7 +211,11 @@
            :images              {:hero {:filename    "VirginYakiStraight.jpg",
                                         :desktop-url "//ucarecdn.com/303850ef-a62a-49d9-bc38-e7e823133efa/",
                                         :mobile-url  "//ucarecdn.com/2ed05d29-6f8f-4378-8d24-cab16f1e8a0e/",
-                                        :alt         "Virgin Yaki Straight"}}
+                                        :alt         "Virgin Yaki Straight"}
+                                 :home {:filename "YakiStraightExtensionsMayvenn.jpg",
+                                        :url      "//ucarecdn.com/d4b4aa87-fd32-4ff3-b60a-fd1118beab05/",
+                                        :alt      "Yaki Straight Hair Extensions Mayvenn"}}
+           :home/order          4
            :footer/order        1
            :header/order        1
            :header/group        0}
@@ -262,7 +266,7 @@
                                              :mobile-url  "//ucarecdn.com/550b0231-1282-42a8-afcd-caed588e5a61/",
                                              :alt         "Virgin Body Wave"}
                                       :home {:filename "BodyWaveExtensionsMayvenn.jpg",
-                                             :url      "//ucarecdn.com/1a3ce0a2-d8a4-4c72-b20b-62b5ff445096/",
+                                             :url      "//ucarecdn.com/cbf5424f-3bab-4c6b-9fd1-328e9d94e564/",
                                              :alt      "Body Wave Hair Extensions Mayvenn"}}
            :home/order               1
            :footer/order             3
@@ -292,7 +296,7 @@
                                              :mobile-url  "//ucarecdn.com/56a81f02-ec0d-4b5d-8518-8cf6929fa502/",
                                              :alt         "Virgin Loose Wave"}
                                       :home {:filename "LooseWaveExtensionsMayvenn.jpg",
-                                             :url      "//ucarecdn.com/1cfc4f20-1917-4c2b-87c2-68aa2dc7c77e/",
+                                             :url      "//ucarecdn.com/c935b035-3b7d-4262-a750-a5fa3b559721/",
                                              :alt      "Loose Wave Hair Extensions Mayvenn"}}
            :home/order               2
            :footer/order             4
@@ -348,7 +352,7 @@
                                              :mobile-url  "//ucarecdn.com/69e2acad-0140-4b06-9e8f-ac48f6416076/",
                                              :alt         "Virgin Deep Wave"}
                                       :home {:filename "DeepWaveExtensionsMayvenn.jpg",
-                                             :url      "//ucarecdn.com/0432b04b-92fe-4e30-b18f-3747e4efef8c/",
+                                             :url      "//ucarecdn.com/2574ca60-0336-4c42-9087-159740bafdd2/",
                                              :alt      "Deep Wave Hair Extensions Mayvenn"}}
            :home/order               3
            :footer/order             6
@@ -374,11 +378,7 @@
            :images                   {:hero {:filename    "VirginCurly.jpg",
                                              :desktop-url "//ucarecdn.com/e6cdfaeb-b98b-4b98-878e-fc2b2936995d/",
                                              :mobile-url  "//ucarecdn.com/17c827ca-e4df-4427-bdf8-c3426ff8d750/",
-                                             :alt         "Virgin Curly"}
-                                      :home {:filename "CurlyExtensionsMayvenn.jpg",
-                                             :url      "//ucarecdn.com/9bcf9e1b-4a8a-4a40-a9f4-414c22c629b4/",
-                                             :alt      "Curly Hair Extensions Mayvenn"}}
-           :home/order               4
+                                             :alt         "Virgin Curly"}}
            :footer/order             7
            :header/order             7
            :header/group             0}
