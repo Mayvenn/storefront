@@ -59,16 +59,20 @@
 (def green-dot-keypath (partial conj keypaths/stylist-manage-account-green-dot-payout-attributes))
 
 (defn green-dot-query [data]
-  (let [green-dot #(get-in data (green-dot-keypath %))]
+  (let [green-dot        #(get-in data (green-dot-keypath %))
+        card-last-4      (green-dot :last-4)
+        card-selected-id (get-in data keypaths/stylist-manage-account-green-dot-card-selected-id)]
     {:first-name       (green-dot :card-first-name)
      :last-name        (green-dot :card-last-name)
      :card-number      (green-dot :card-number)
      :expiration-date  (green-dot :expiration-date)
      :postalcode       (green-dot :postalcode)
-     :card-selected-id (get-in data keypaths/stylist-manage-account-green-dot-card-selected-id)
-     :card-last-4      (green-dot :last-4)
+     :card-selected-id card-selected-id
+     :card-last-4      card-last-4
      :payout-timeframe (green-dot :payout-timeframe)
-     :spreedly-ready?  (boolean (get-in data keypaths/spreedly-frame))}))
+     :spreedly-ready?  (boolean (get-in data keypaths/spreedly-frame))
+     :new-card-entry?  (or (empty? card-last-4)
+                           (= "replace-card" card-selected-id))}))
 
 (defn green-dot-component
   [{:keys [green-dot focused field-errors]} owner opts]
@@ -86,7 +90,7 @@
                             :required  true
                             :value     card-selected-id})))
       (when (or (empty? card-last-4)
-                (= card-selected-id "replace-card"))
+                (= "replace-card" card-selected-id))
         [:div
          (ui/text-field-group {:data-test "green-dot-first-name"
                                :errors    (get field-errors ["payout-method" "card-first-name"])
@@ -312,14 +316,15 @@
 
 (defn query
   [data]
-  (let [payout-method   (->permitted-method (get-in data chosen-payout-method))
-        instapay?       (= "green_dot" payout-method)
-        spreedly-ready? (boolean (get-in data keypaths/spreedly-frame))]
+  (let [payout-method                           (->permitted-method (get-in data chosen-payout-method))
+        instapay?                               (= "green_dot" payout-method)
+        spreedly-ready?                         (boolean (get-in data keypaths/spreedly-frame))
+        {:keys [new-card-entry?] :as green-dot} (green-dot-query data)]
     {:payout-method  payout-method
      :payout-methods (payout-methods (get-in data (conj keypaths/stylist-manage-account :original-payout-method)))
      :paypal-email   (get-in data (conj keypaths/stylist-manage-account :paypal-payout-attributes :email))
      :venmo-phone    (get-in data (conj keypaths/stylist-manage-account :venmo-payout-attributes :phone))
-     :green-dot      (green-dot-query data)
+     :green-dot      green-dot
      :address-1      (get-in data (conj keypaths/stylist-manage-account :address :address-1))
      :address-2      (get-in data (conj keypaths/stylist-manage-account :address :address-2))
      :city           (get-in data (conj keypaths/stylist-manage-account :address :city))
@@ -331,6 +336,4 @@
      :focused        (get-in data keypaths/ui-focus)
      :spinning?      (or
                       (utils/requesting? data request-keys/update-stylist-account)
-                      (and instapay? (not spreedly-ready?)))}))
-
-
+                      (and instapay? new-card-entry? (not spreedly-ready?)))}))
