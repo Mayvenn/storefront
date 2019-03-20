@@ -310,11 +310,11 @@
    visual-divider
    [:div.flex.flex-wrap.items-baseline.justify-center.col-12.col-8-on-tb-dt.mx-auto
     (contact-us-block
-     (ui/sms-url "1-310-733-0284")
+     (ui/sms-url "346-49")
      (svg/icon-sms {:height 51
                     :width  56})
      "Live Chat"
-     "1-310-733-0284")
+     "Text: 346-49")
     (contact-us-block
      (ui/phone-url "1-310-733-0284")
      (svg/icon-call {:class  "bg-white fill-black stroke-black circle"
