@@ -233,7 +233,9 @@
                 (routes/sub-page? [nav-event] [events/navigate-order-complete])))
        (adventure-checkout-layout data nav-event)
 
-       (routes/sub-page? [nav-event] [events/navigate-adventure])
+       (or (routes/sub-page? [nav-event] [events/navigate-adventure])
+           (and freeinstall?
+                (routes/sub-page? [nav-event] [events/navigate-content])))
        [:div {:data-test (keypaths/->component-str nav-event)}
         [:div {:key "popup"}
          #?(:cljs (popup/built-component data nil))]
