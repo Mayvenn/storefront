@@ -502,6 +502,9 @@
 (defpath adventure-fetch-matched-products)
 (defpath api-success-adventure-fetch-products)
 
+(defpath adventure-clear-servicing-stylist)
+(defpath api-success-adventure-cleared-servicing-stylist)
+
 ;; Stripe Payment Button
 (defpath stripe-payment-request-button-inserted)
 (defpath stripe-payment-request-button-removed)

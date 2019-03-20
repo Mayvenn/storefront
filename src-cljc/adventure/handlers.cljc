@@ -126,3 +126,21 @@
         (assoc-in storefront.keypaths/v2-products correct-products)
         (assoc-in storefront.keypaths/v2-skus skus-indexed))))
 
+(defmethod effects/perform-effects events/adventure-clear-servicing-stylist [_ _ _ _ app-state]
+  #?(:cljs
+     (let [order (get-in app-state storefront.keypaths/order)]
+       (when-let [servicing-stylist-id (:servicing-stylist-id order)]
+         (api/remove-servicing-stylist servicing-stylist-id
+                                       (:number order)
+                                       (:token order)
+                                       #(handle-message events/api-success-adventure-cleared-servicing-stylist {:order %}))))))
+
+(defmethod transitions/transition-state events/api-success-adventure-cleared-servicing-stylist [_ _ {:keys [order]} app-state]
+  (-> app-state
+      (assoc-in keypaths/adventure-selected-stylist-id nil)
+      (assoc-in keypaths/adventure-servicing-stylist nil)))
+
+(defmethod effects/perform-effects events/api-success-adventure-cleared-servicing-stylist [_ _ {:keys [order]} _ app-state]
+  #?(:cljs
+     (handle-message events/save-order {:order order})))
+

@@ -34,12 +34,7 @@
                                           :install-type install-type
                                           :choices      choices})
        ;; END NOTE
-       (if (and latitude longitude how-far install-type)
-         (when-let [servicing-stylist-id (:servicing-stylist-id order)]
-           (api/remove-servicing-stylist servicing-stylist-id
-                                         (:number order)
-                                         (:token order)
-                                         #(handle-message events/save-order {:order %})))
+       (when-not (and latitude longitude how-far install-type)
          (history/enqueue-redirect events/navigate-adventure-home)))))
 
 (defmethod transitions/transition-state events/api-success-fetch-stylists-within-radius

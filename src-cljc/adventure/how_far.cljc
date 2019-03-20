@@ -1,7 +1,12 @@
 (ns adventure.how-far
-  (:require [storefront.events :as events]
+  (:require #?@(:cljs [[storefront.api :as api]
+                       [storefront.platform.messages :refer [handle-message]]])
+            [storefront.events :as events]
             [storefront.component :as component]
             [storefront.platform.component-utils :as utils]
+            [storefront.effects :as effects]
+            [storefront.events :as events]
+            [storefront.keypaths :as keypaths]
             [adventure.components.multi-prompt :as multi-prompt]
             [adventure.progress :as progress]))
 
@@ -28,3 +33,8 @@
 (defn built-component
   [data opts]
   (component/build multi-prompt/component (query data) opts))
+
+(defmethod effects/perform-effects events/navigate-adventure-how-far [_ _ _ _ app-state]
+  #?(:cljs
+     (handle-message events/adventure-clear-servicing-stylist)))
+
