@@ -27,8 +27,8 @@
 
 (defn hero []
   (let [file-name "free-install-hero"
-        mob-uuid  "b01bb621-55d1-4756-bc3b-790878144a39"
-        dsk-uuid  "ab6a9311-3e8b-4e5a-98f0-330523d58e31"]
+        mob-uuid  "deaf49df-3a28-4a68-8287-51e3a74c7678"
+        dsk-uuid  "6a5f417d-6414-431b-9a88-ad3b193bb9da"]
     [:a.bold.shadow.white.center.bg-light-gray
      (utils/scroll-href "mayvenn-free-install-video")
      (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
