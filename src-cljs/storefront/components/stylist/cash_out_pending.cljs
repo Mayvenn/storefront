@@ -62,7 +62,7 @@
   (let [payout-method (get-in app-state (conj keypaths/stylist-payout-stats-next-payout :payout-method))
         message       (case (:type payout-method)
                         "Mayvenn::PaypalPayoutMethod"   (str "Your cash out failed. "
-                                                             "Please confirm your PayPal account or switch to Mayvenn Debit.")
+                                                             "Please confirm your PayPal account or switch to Mayvenn InstaPay.")
                         "Mayvenn::GreenDotPayoutMethod" (str "Your cash out failed. "
                                                              "Please try another card with Mayvenn InstaPay "
                                                              "or switch to PayPal and try again."))]

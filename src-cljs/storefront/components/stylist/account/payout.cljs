@@ -188,10 +188,8 @@
                                        :field-errors field-errors}
                                       opts)
          "missing"   [:div]
-
-         "mayvenn_debit" [:p.ml1.mb3.h6 "A prepaid Visa debit card will be mailed to the address entered here"]
-         "check"         [:p.ml1.mb3.h6 "Checks will mail to the address entered here"]
-         [:p.ml1.mb3.h6 "Checks will mail to the address entered here"])]
+         "check"     [:p.ml1.mb3.h6 "Checks will mail to the address entered here"]
+         [:div])]
 
       [:div.col.col-12.pt3.pb4.underline.center
        [:a.teal (utils/route-to events/navigate-v2-stylist-dashboard-payments) "View your earnings"]]]
@@ -286,24 +284,24 @@
     (conj ["Check" "check"])
 
     (= original-payout-method "missing")
-    (conj ["Select Payout Method" "missing"])
-
-    (= original-payout-method "mayvenn_debit")
-    (conj ["Mayvenn Debit" "mayvenn_debit"])))
+    (conj ["Select Payout Method" "missing"])))
 
 (defn query [data]
-  {:saving?        (utils/requesting? data request-keys/update-stylist-account)
-   :payout-method  (get-in data (conj keypaths/stylist-manage-account :chosen-payout-method))
-   :payout-methods (payout-methods (get-in data (conj keypaths/stylist-manage-account :original-payout-method)))
-   :paypal-email   (get-in data (conj keypaths/stylist-manage-account :paypal-payout-attributes :email))
-   :venmo-phone    (get-in data (conj keypaths/stylist-manage-account :venmo-payout-attributes :phone))
-   :green-dot      (green-dot-query data)
-   :address-1      (get-in data (conj keypaths/stylist-manage-account :address :address-1))
-   :address-2      (get-in data (conj keypaths/stylist-manage-account :address :address-2))
-   :city           (get-in data (conj keypaths/stylist-manage-account :address :city))
-   :zipcode        (get-in data (conj keypaths/stylist-manage-account :address :zipcode))
-   :state-id       (get-in data (conj keypaths/stylist-manage-account :address :state-id))
-   :phone          (get-in data (conj keypaths/stylist-manage-account :address :phone))
-   :states         (map (juxt :name :id) (get-in data keypaths/states))
-   :field-errors   (get-in data keypaths/field-errors)
-   :focused        (get-in data keypaths/ui-focus)})
+  (let [allowed-payout-methods #{"venmo" "paypal" "green_dot" "check" "missing"}
+        original-payout-method (or (allowed-payout-methods (get-in data (conj keypaths/stylist-manage-account :chosen-payout-method)))
+                                   "missing")]
+    {:saving?        (utils/requesting? data request-keys/update-stylist-account)
+     :payout-method  original-payout-method
+     :payout-methods (payout-methods original-payout-method)
+     :paypal-email   (get-in data (conj keypaths/stylist-manage-account :paypal-payout-attributes :email))
+     :venmo-phone    (get-in data (conj keypaths/stylist-manage-account :venmo-payout-attributes :phone))
+     :green-dot      (green-dot-query data)
+     :address-1      (get-in data (conj keypaths/stylist-manage-account :address :address-1))
+     :address-2      (get-in data (conj keypaths/stylist-manage-account :address :address-2))
+     :city           (get-in data (conj keypaths/stylist-manage-account :address :city))
+     :zipcode        (get-in data (conj keypaths/stylist-manage-account :address :zipcode))
+     :state-id       (get-in data (conj keypaths/stylist-manage-account :address :state-id))
+     :phone          (get-in data (conj keypaths/stylist-manage-account :address :phone))
+     :states         (map (juxt :name :id) (get-in data keypaths/states))
+     :field-errors   (get-in data keypaths/field-errors)
+     :focused        (get-in data keypaths/ui-focus)}))
