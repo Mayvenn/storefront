@@ -14,6 +14,16 @@
             [storefront.platform.messages :refer [handle-message]]
             [storefront.request-keys :as request-keys]))
 
+(defmethod transitions/transition-state events/spreedly-did-mount
+  [_ _ _ app-state]
+  (assoc-in app-state
+            keypaths/spreedly-frame nil))
+
+(defmethod transitions/transition-state events/spreedly-did-unmount
+  [_ _ _ app-state]
+  (assoc-in app-state
+            keypaths/spreedly-frame nil))
+
 (defmethod effects/perform-effects events/spreedly-did-mount
   [_ event _ _ app-state]
   (spreedly/create-frame {:number-id "green-dot-card-number"
@@ -26,21 +36,25 @@
 
 (defn credit-card-fields [data owner opts]
   (reify
+    om/IInitState
+    (init-state [_] {:ready? false})
     om/IDidMount
-    (did-mount [_]
-      (handle-message events/spreedly-did-mount))
+    (did-mount [_] (handle-message events/spreedly-did-mount))
     om/IWillUnmount
-    (will-unmount [_]
-      (handle-message events/spreedly-did-unmount))
-    om/IRender
-    (render [_]
+    (will-unmount [_] (handle-message events/spreedly-did-unmount))
+    om/IWillReceiveProps
+    (will-receive-props [this {:keys [ready?]}]
+      (om/set-state! owner :ready? ready?))
+    om/IRenderState
+    (render-state [_ {:keys [ready?]}]
       (html
        [:div.clearfix
         [:div#green-dot-card-number.col.col-8.h4.line-height-1.rounded-left.rounded.border.x-group-item.border-gray.p2.mb2
-         {:style {:height "43px"}}]
+         {:style {:height "43px"}
+          :class (when-not ready? "bg-light-gray")}]
         [:div#green-dot-cvv.col.col-4.h4.line-height-1.rounded.rounded-right.border.x-group-item.border-gray.p2.mb2
-         {:style {:height "43px"}}]]))))
-
+         {:style {:height "43px"}
+          :class (when-not ready? "bg-light-gray")}]]))))
 
 (def green-dot-keypath (partial conj keypaths/stylist-manage-account-green-dot-payout-attributes))
 
@@ -53,11 +67,12 @@
      :postalcode       (green-dot :postalcode)
      :card-selected-id (get-in data keypaths/stylist-manage-account-green-dot-card-selected-id)
      :card-last-4      (green-dot :last-4)
-     :payout-timeframe (green-dot :payout-timeframe)}))
+     :payout-timeframe (green-dot :payout-timeframe)
+     :spreedly-ready?  (boolean (get-in data keypaths/spreedly-frame))}))
 
 (defn green-dot-component
   [{:keys [green-dot focused field-errors]} owner opts]
-  (let [{:keys [first-name last-name card-number card-last-4 expiration-date card-selected-id payout-timeframe postalcode]} green-dot]
+  (let [{:keys [first-name last-name card-number card-last-4 expiration-date card-selected-id payout-timeframe postalcode spreedly-ready?]} green-dot]
     (component/create
      [:div
       (when card-last-4
@@ -91,7 +106,7 @@
                                :name      "green-dot-last-name"
                                :required  true
                                :value     last-name})
-         (om/build credit-card-fields nil nil)
+         (om/build credit-card-fields {:ready? spreedly-ready?} nil)
          (ui/field-error-message (first (get field-errors ["payout-method" "base"])) "payout-method-error")
          (ui/text-field-group
           {:data-test     "green-dot-expiration-date"
@@ -129,7 +144,7 @@
           nil)]]])))
 
 (defn component [{:keys [focused
-                         saving?
+                         spinning?
                          payout-method
                          payout-methods
                          venmo-phone
@@ -142,7 +157,8 @@
                          state-id
                          states
                          phone
-                         field-errors]} owner opts]
+                         field-errors
+                         disabled?]} owner opts]
   (component/create
    [:form
     {:on-submit
@@ -272,7 +288,7 @@
      ui/nbsp
      [:div.border-light-gray.border-top.hide-on-mb.mb3]
      [:div.col-12.col-5-on-tb-dt.mx-auto
-      (ui/submit-button "Update" {:spinning? saving?
+      (ui/submit-button "Update" {:spinning? spinning?
                                   :data-test "account-form-submit"})]]]))
 
 (defn payout-methods [original-payout-method]
@@ -286,13 +302,21 @@
     (= original-payout-method "missing")
     (conj ["Select Payout Method" "missing"])))
 
-(defn query [data]
-  (let [allowed-payout-methods #{"venmo" "paypal" "green_dot" "check" "missing"}
-        original-payout-method (or (allowed-payout-methods (get-in data (conj keypaths/stylist-manage-account :chosen-payout-method)))
-                                   "missing")]
-    {:saving?        (utils/requesting? data request-keys/update-stylist-account)
-     :payout-method  original-payout-method
-     :payout-methods (payout-methods original-payout-method)
+(defn ^:private ->permitted-method
+  [method]
+  (let [allowed-methods #{"venmo" "paypal" "green_dot" "check" "missing"}]
+    (get allowed-methods method "missing")))
+
+(def ^:private chosen-payout-method
+  (conj keypaths/stylist-manage-account :chosen-payout-method))
+
+(defn query
+  [data]
+  (let [payout-method   (->permitted-method (get-in data chosen-payout-method))
+        instapay?       (= "green_dot" payout-method)
+        spreedly-ready? (boolean (get-in data keypaths/spreedly-frame))]
+    {:payout-method  payout-method
+     :payout-methods (payout-methods (get-in data (conj keypaths/stylist-manage-account :original-payout-method)))
      :paypal-email   (get-in data (conj keypaths/stylist-manage-account :paypal-payout-attributes :email))
      :venmo-phone    (get-in data (conj keypaths/stylist-manage-account :venmo-payout-attributes :phone))
      :green-dot      (green-dot-query data)
@@ -304,4 +328,9 @@
      :phone          (get-in data (conj keypaths/stylist-manage-account :address :phone))
      :states         (map (juxt :name :id) (get-in data keypaths/states))
      :field-errors   (get-in data keypaths/field-errors)
-     :focused        (get-in data keypaths/ui-focus)}))
+     :focused        (get-in data keypaths/ui-focus)
+     :spinning?      (or
+                      (utils/requesting? data request-keys/update-stylist-account)
+                      (and instapay? (not spreedly-ready?)))}))
+
+
