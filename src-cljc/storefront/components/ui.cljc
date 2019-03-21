@@ -803,16 +803,17 @@
      empty-stars
      [:span.mlp2 rating]]))
 
-(def adventure-chat-icon
-  [:div.bg-teal.fixed.bottom-0.right-0.m3.circle.top-lit.flex.justify-center.items-center.z2.hide-on-tb-dt
-   {:style {:width  "61px"
-            :height "61px"}}
+(defn- chat-icon [attrs]
+  [:a.block.bg-teal.m3.circle.top-lit.flex.justify-center.items-center.z2.hide-on-tb-dt
+   (merge {:href (sms-url "346-49")
+           :style {:width  "61px"
+                   :height "61px"}}
+          attrs)
    (ucare-img {:width "32"
                :class "mtp3"} "2eb8b709-3817-450d-82fa-fcd949ee0772")])
 
+(def adventure-chat-icon
+  (chat-icon {:class "fixed bottom-0 right-0"}))
+
 (def adventure-chat-icon-for-sticky-footer
-  [:div.bg-teal.m3.circle.top-lit.flex.justify-center.items-center.z2.ml-auto.hide-on-tb-dt
-   {:style {:width  "61px"
-            :height "61px"}}
-   (ucare-img {:width "32"
-               :class "mtp3"} "2eb8b709-3817-450d-82fa-fcd949ee0772")])
+  (chat-icon {:class "ml-auto"}))
