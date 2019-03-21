@@ -1,6 +1,7 @@
 (ns storefront.components.ui
   (:require [cemerick.url :as url]
             [clojure.string :as string]
+            [storefront.accessors.experiments :as experiments]
             [storefront.assets :as assets]
             [storefront.component :as component]
             [storefront.components.money-formatters :as mf]
@@ -801,3 +802,10 @@
      partial-star
      empty-stars
      [:span.mlp2 rating]]))
+
+(def adventure-chat-icon
+  [:div.bg-teal.fixed.bottom-0.right-0.m3.circle.top-lit.flex.justify-center.items-center.z2
+   {:style {:width  "61px"
+            :height "61px"}}
+   (ucare-img {:width "32"
+               :class "mtp3"} "2eb8b709-3817-450d-82fa-fcd949ee0772")])

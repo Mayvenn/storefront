@@ -139,3 +139,7 @@
 (defn adv-address-login?
   [data]
   (display-feature? data "adv-address-login"))
+
+(defn adv-chat?
+  [data]
+  (display-feature? data "adv-chat"))

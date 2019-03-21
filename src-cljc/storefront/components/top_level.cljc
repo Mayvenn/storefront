@@ -72,6 +72,7 @@
             [storefront.components.sign-in :as sign-in]
             [storefront.components.sign-up :as sign-up]
             [storefront.components.slideout-nav :as slideout-nav]
+            [storefront.components.ui :as ui]
             [storefront.components.dtc-banner :as dtc-banner]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -207,7 +208,8 @@
     [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
      ((main-component nav-event) data nil)]
     [:footer
-     (footer/built-component data nil)]]])
+     (footer/built-component data nil)]
+    (when (experiments/adv-chat? data) ui/adventure-chat-icon)]])
 
 (defn top-level-component [data owner opts]
   (let [nav-event    (get-in data keypaths/navigation-event)
@@ -247,7 +249,8 @@
                    :margin-bottom "-30px"}}
           (when-not (= nav-event events/navigate-adventure-home)
             {:class "max-580 mx-auto relative"}))
-         ((main-component nav-event) data nil)]]
+         ((main-component nav-event) data nil)
+         (when (experiments/adv-chat? data) ui/adventure-chat-icon)]]
 
        :else
        (main-layout data nav-event)))))

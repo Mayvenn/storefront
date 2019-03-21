@@ -5,6 +5,7 @@
             [catalog.facets :as facets]
             [catalog.images :as catalog-images]
             [checkout.suggestions :as suggestions]
+            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.products :as products]
             [storefront.component :as component]
@@ -297,4 +298,5 @@
      (built-component data nil)]
 
     [:footer
-     (storefront.footer/built-component data nil)]]])
+     (storefront.footer/built-component data nil)]
+    (when (experiments/adv-chat? data) ui/adventure-chat-icon)]])
