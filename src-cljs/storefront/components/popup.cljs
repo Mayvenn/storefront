@@ -43,8 +43,7 @@
   (let [navigation-event            (get-in app-state keypaths/navigation-event)
         v2-experience?              (experiments/v2-experience? app-state)
         on-non-minimal-footer-page? (not (nav/show-minimal-footer? navigation-event))
-        is-adventure?               (routes/sub-page? (get-in app-state keypaths/navigation-message)
-                                                      [events/navigate-adventure])
+        freeinstall-store?          (= "freeinstall" (get-in app-state keypaths/store-slug))
         seen-email-capture?         (email-capture-session app-state)
         seen-freeinstall-offer?     (get-in app-state keypaths/dismissed-free-install)
         signed-in?                  (get-in app-state keypaths/user-id)
@@ -54,7 +53,7 @@
                                          (not seen-email-capture?)
                                          on-non-minimal-footer-page?)]
     (cond
-      (and is-adventure?
+      (and freeinstall-store?
            email-capture-showable?
            adv-email-capture-exp
            (contains? #{events/navigate-adventure-install-type}
@@ -65,7 +64,7 @@
       (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) "signed-in")
 
       (and email-capture-showable?
-           (not is-adventure?)
+           (not freeinstall-store?)
            (or seen-freeinstall-offer?
                classic-experience?
                v2-experience?))
