@@ -35,6 +35,7 @@
            :price              service-price
            :total-savings      (orders/total-savings order service-price)
            :remove-event       [events/control-checkout-remove-promotion {:code "freeinstall"}]
+           :thumbnail-image    "688ebf23-5e54-45ef-a8bb-7d7480317022"
            :thumbnail-image-fn (fn [height-width-int]
                                  (ui/ucare-img {:width height-width-int}
                                                "688ebf23-5e54-45ef-a8bb-7d7480317022"))})))))

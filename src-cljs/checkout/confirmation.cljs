@@ -1,12 +1,7 @@
 (ns checkout.confirmation
   (:require [om.core :as om]
-            [cemerick.url :refer [url-encode]]
             [sablono.core :refer [html]]
-            [goog.string :as google-string]
             [storefront.components.money-formatters :as mf]
-            [storefront.hooks.stringer :as stringer]
-            [storefront.platform.messages :refer [handle-message handle-later]]
-            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.component :as component]
             [storefront.components.checkout-delivery :as checkout-delivery]
@@ -20,16 +15,11 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]
-            [storefront.effects :as effects]
-            [storefront.trackings :as trackings]
-            [storefront.accessors.products :as accessors.products]
-            [catalog.products :as products]
-            [storefront.transitions :as transitions]
-            [storefront.api :as api]
-            [storefront.accessors.images :as images]
             [spice.core :as spice]
+            [spice.maps :as maps]
             [clojure.string :as string]
-            [checkout.control-cart :as cart]
+            [catalog.images :as catalog-images]
+            [checkout.templates.item-card :as item-card]
             [checkout.cart.items :as cart-items]
             [checkout.confirmation.summary :as confirmation-summary]))
 
@@ -86,14 +76,12 @@
   [{:keys [available-store-credit
            checkout-steps
            payment delivery order
-           skus
+           items
            requires-additional-payment?
            promotion-banner
            install-or-free-install-applied?
-           freeinstall-line-item-data
            confirmation-summary
-           checkout-button-data
-           store-slug]}
+           checkout-button-data]}
    owner]
   (om/component
    (html
@@ -112,9 +100,7 @@
 
         [:div.my2
          {:data-test "confirmation-line-items"}
-         (summary/display-line-items (orders/product-items order) skus)
-         (when freeinstall-line-item-data
-           (display-freeinstall-line-item freeinstall-line-item-data))]]
+         (component/build item-card/component items nil)]]
 
        [:.col-on-tb-dt.col-6-on-tb-dt.px3
         (om/build checkout-delivery/component delivery)
@@ -135,18 +121,49 @@
         [:div.col-12.col-6-on-tb-dt.mx-auto
          (checkout-button checkout-button-data)]]]]])))
 
+(defn item-card-query
+  [data]
+  (let [order               (get-in data keypaths/order)
+        skus                (get-in data keypaths/v2-skus)
+        facets              (maps/index-by :facet/slug (get-in data keypaths/v2-facets))
+        color-options->name (->> facets
+                                 :hair/color
+                                 :facet/options
+                                 (maps/index-by :option/slug)
+                                 (maps/map-values :option/name))]
+    {:items (mapv (fn [{sku-id :sku :as line-item}]
+                    (let [sku   (get skus sku-id)
+                          price (:unit-price line-item)]
+                      {:react/key                 (str (:id line-item)
+                                                       "-"
+                                                       (:catalog/sku-id sku)
+                                                       "-"
+                                                       (:quantity line-item))
+                       :circle/id                 (str "line-item-length-" sku-id)
+                       :circle/value              (-> sku :hair/length first (str "”"))
+                       :image/id                  (str "line-item-img-" (:catalog/sku-id sku))
+                       :image/value               (->> sku (catalog-images/image "cart") :ucare/id)
+                       :title/id                  (str "line-item-title-" sku-id)
+                       :title/value               (or (:product-title line-item)
+                                                      (:product-name line-item))
+                       :detail-top-left/id        (str "line-item-color-" sku-id)
+                       :detail-top-left/value     (-> sku :hair/color first color-options->name str)
+                       :detail-bottom-right/id    (str "line-item-price-ea-" sku-id)
+                       :detail-bottom-right/value (str (mf/as-money-without-cents price) " ea")
+                       :detail-bottom-left/id     (str "line-item-quantity-" sku-id)
+                       :detail-bottom-left/value  (str "Qty " (:quantity line-item))}))
+                  (orders/product-items order))}))
+
 (defn adventure-component
   [{:keys [available-store-credit
+           items
            checkout-steps
            payment delivery order
-           skus
            requires-additional-payment?
            promotion-banner
            install-or-free-install-applied?
-           freeinstall-line-item-data
            confirmation-summary
            checkout-button-data
-           store-slug
            servicing-stylist]}
    owner]
   (om/component
@@ -166,9 +183,7 @@
 
         [:div.my2
          {:data-test "confirmation-line-items"}
-         (summary/display-line-items (orders/product-items order) skus)
-         (when freeinstall-line-item-data
-           (display-freeinstall-line-item freeinstall-line-item-data))]]
+         (component/build item-card/component items nil)]]
 
        [:.col-on-tb-dt.col-6-on-tb-dt.px3
         (om/build checkout-delivery/component delivery)
@@ -197,31 +212,50 @@
   (apply str (.-protocol js/location) "//" (.-host js/location) path))
 
 (defn query [data]
-  (let [order (get-in data keypaths/order)]
+  (let [order                      (get-in data keypaths/order)
+        freeinstall-line-item-data (cart-items/freeinstall-line-item-query data)
+        freeinstall-applied? (orders/freeinstall-applied? order)]
     {:requires-additional-payment?     (requires-additional-payment? data)
      :promotion-banner                 (promotion-banner/query data)
      :checkout-steps                   (checkout-steps/query data)
      :products                         (get-in data keypaths/v2-products)
-     :skus                             (get-in data keypaths/v2-skus)
+     :items                            (cond-> (item-card-query data)
+                                         freeinstall-applied?
+                                         (update
+                                          :items conj
+                                          {:react/key             (:id freeinstall-line-item-data)
+                                           :title/value           (:title freeinstall-line-item-data)
+                                           :title/id              (:id freeinstall-line-item-data)
+                                           :detail-top-left/id    "freeinstall-details"
+                                           :detail-top-left/value (:detail freeinstall-line-item-data)
+                                           :image/id              "freeinstall-needle-thread"
+                                           :image/value           (:thumbnail-image freeinstall-line-item-data)}))
      :order                            order
      :payment                          (checkout-credit-card/query data)
      :delivery                         (checkout-delivery/query data)
-     :install-or-free-install-applied? (orders/freeinstall-applied? order)
+     :install-or-free-install-applied? freeinstall-applied?
      :available-store-credit           (get-in data keypaths/user-total-available-store-credit)
      :checkout-button-data             (checkout-button-query data)
      :confirmation-summary             (confirmation-summary/query data)
-     :freeinstall-line-item-data       (cart-items/freeinstall-line-item-query data)
      :store-slug                       (get-in data keypaths/store-slug)
      :freeinstall?                     (= "freeinstall" (get-in data keypaths/store-slug))}))
 
 (defn adventure-query [data]
-  (let [order (get-in data keypaths/order)]
-    (adventure-cart-items/freeinstall-line-item-query data)
+  (let [order                      (get-in data keypaths/order)
+        freeinstall-line-item-data (adventure-cart-items/freeinstall-line-item-query data)]
     {:requires-additional-payment?     (requires-additional-payment? data)
      :promotion-banner                 (promotion-banner/query data)
      :checkout-steps                   (checkout-steps/query data)
      :products                         (get-in data keypaths/v2-products)
-     :skus                             (get-in data keypaths/v2-skus)
+     :items                            (update (item-card-query data)
+                                               :items conj
+                                               {:react/key             (:id freeinstall-line-item-data)
+                                                :title/value           (:title freeinstall-line-item-data)
+                                                :title/id              (:id freeinstall-line-item-data)
+                                                :detail-top-left/id    "freeinstall-details"
+                                                :detail-top-left/value (:detail freeinstall-line-item-data)
+                                                :image/id              "freeinstall-needle-thread"
+                                                :image/value           (:thumbnail-image freeinstall-line-item-data)})
      :order                            order
      :payment                          (checkout-credit-card/query data)
      :delivery                         (checkout-delivery/query data)
@@ -229,7 +263,6 @@
      :available-store-credit           (get-in data keypaths/user-total-available-store-credit)
      :checkout-button-data             (checkout-button-query data)
      :confirmation-summary             (confirmation-summary/query data)
-     :freeinstall-line-item-data       (adventure-cart-items/freeinstall-line-item-query data)
      :store-slug                       (get-in data keypaths/store-slug)
      :servicing-stylist                (get-in data adventure.keypaths/adventure-servicing-stylist)
      :freeinstall?                     (= "freeinstall" (get-in data keypaths/store-slug))}))

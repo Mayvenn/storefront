@@ -41,6 +41,7 @@
      :total-savings          (orders/total-savings order service-price)
      :number-of-items-needed number-of-items-needed
      :add-more-hair?         (< 0 number-of-items-needed)
+     :thumbnail-image        "f6e246a6-c07a-44ae-81e9-af8167403352"
      :thumbnail-image-fn     (fn [height-width-int]
                                (ui/ucare-img {:width height-width-int}
                                              "f6e246a6-c07a-44ae-81e9-af8167403352"))}))
