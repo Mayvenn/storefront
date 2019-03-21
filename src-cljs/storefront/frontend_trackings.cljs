@@ -436,3 +436,7 @@
                            :store_slug store-slug
                            :amount     (js/parseFloat amount)
                            :method     (:type payout-method)})))
+
+(defmethod perform-track events/control-chat-button-pressed
+  [_ _ _ app-state]
+  (stringer/track-event "chat_button_pressed"))
