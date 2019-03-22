@@ -86,12 +86,12 @@
        ui/spinner]
       [:div.flex.flex-wrap.px5.col-12
        (for [product-card product-cards]
-         (component/build product-card/component product-card nil))
-       (when-not stylist-selected?
-         [:div.h6.center.pb8.mx-auto
-          [:div.dark-gray "Not ready to shop hair?"]
-          [:a.teal (utils/fake-href events/navigate-adventure-find-your-stylist)
-           "Find a stylist"]])])]))
+         (component/build product-card/component product-card nil))])
+    (when-not stylist-selected?
+      [:div.h6.center.pb8.mx-auto
+       [:div.dark-gray "Not ready to shop hair?"]
+       [:a.teal (utils/fake-href events/navigate-adventure-find-your-stylist)
+        "Find a stylist"]])]))
 
 (defn built-component
   [data opts]
