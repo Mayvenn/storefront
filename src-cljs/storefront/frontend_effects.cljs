@@ -778,20 +778,12 @@
   (handle-message events/order-remove-promotion args))
 
 (defmethod perform-effects events/control-checkout-confirmation-submit [_ event {:keys [place-order?] :as args} _ app-state]
-  (let [order                (get-in app-state keypaths/order)
-        match-post-purchase? (and (= "freeinstall" (get-in app-state keypaths/store-slug))
-                                  (experiments/adv-match-post-purchase? app-state)
-                                  (not (:servicing-stylist-id order)))]
+  (let [order                (get-in app-state keypaths/order)]
     (if place-order?
       (create-stripe-token app-state args)
       (api/place-order (get-in app-state keypaths/session-id)
                        order
-                       (cookie-jar/retrieve-utm-params (get-in app-state keypaths/cookie))
-                       (when match-post-purchase?
-                         {:success-handler #(messages/handle-message
-                                             events/api-success-update-order-place-order
-                                             {:order    %
-                                              :navigate events/navigate-order-complete-need-match})})))))
+                       (cookie-jar/retrieve-utm-params (get-in app-state keypaths/cookie))))))
 
 (defmethod perform-effects events/save-order
   [_ _ {:keys [order]} _ app-state]
@@ -879,7 +871,14 @@
   (handle-later events/control-popup-hide {} 2000))
 
 (defmethod perform-effects events/api-success-update-order-place-order [_ event {:keys [order]} _ app-state]
-  (handle-message events/order-completed order))
+  (let [user-needs-servicing-stylist-match? (and (= "freeinstall" (get-in app-state keypaths/store-slug))
+                                                 (experiments/adv-match-post-purchase? app-state)
+                                                 (not (:servicing-stylist-id order)))
+        nav-event                           (if user-needs-servicing-stylist-match?
+                                              events/navigate-order-complete-need-match
+                                              events/navigate-order-complete)]
+    (history/enqueue-navigate nav-event order)
+    (handle-message events/order-completed order)))
 
 (defmethod perform-effects events/order-completed [dispatch event order _ app-state]
   (handle-message events/clear-order)

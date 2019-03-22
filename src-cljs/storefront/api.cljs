@@ -635,8 +635,7 @@
    (place-order session-id order utm-params nil))
   ([session-id order utm-params {:as handlers :keys [error-handler success-handler]}]
    (let [default-success-handler #(messages/handle-message events/api-success-update-order-place-order
-                                                           {:order    %
-                                                            :navigate events/navigate-order-complete})]
+                                                           {:order    %})]
      (storeback-api-req
       POST
       "/v2/place-order"
@@ -725,8 +724,7 @@
    request-keys/checkout
    {:params  params
     :handler (juxt successful-checkout #(messages/handle-message events/api-success-update-order-place-order
-                                                                 {:order %
-                                                                  :navigate events/navigate-order-complete}))
+                                                                 {:order %}))
     :error-handler (juxt failed-checkout default-error-handler)}))
 
 (defn update-shipping-method [session-id order]
