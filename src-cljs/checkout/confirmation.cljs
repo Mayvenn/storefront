@@ -182,7 +182,7 @@
   [data]
   (let [order                      (get-in data keypaths/order)
         freeinstall-line-item-data (cart-items/freeinstall-line-item-query data)
-        freeinstall-applied? (orders/freeinstall-applied? order)]
+        freeinstall-applied?       (orders/freeinstall-applied? order)]
     {:requires-additional-payment?     (requires-additional-payment? data)
      :promotion-banner                 (promotion-banner/query data)
      :checkout-steps                   (checkout-steps/query data)
@@ -193,7 +193,7 @@
                                           :items conj
                                           {:react/key             (:id freeinstall-line-item-data)
                                            :title/value           (:title freeinstall-line-item-data)
-                                           :title/id              (:id freeinstall-line-item-data)
+                                           :title/id              "line-item-title-freeinstall"
                                            :detail-top-left/id    "freeinstall-details"
                                            :detail-top-left/value (:detail freeinstall-line-item-data)
                                            :image/id              "freeinstall-needle-thread"
@@ -219,7 +219,7 @@
                                                :items conj
                                                {:react/key             (:id freeinstall-line-item-data)
                                                 :title/value           (:title freeinstall-line-item-data)
-                                                :title/id              (:id freeinstall-line-item-data)
+                                                :title/id              "line-item-title-freeinstall"
                                                 :detail-top-left/id    "freeinstall-details"
                                                 :detail-top-left/value (:detail freeinstall-line-item-data)
                                                 :image/id              "freeinstall-needle-thread"
