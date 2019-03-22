@@ -11,7 +11,6 @@
             [storefront.components.ui :as ui]
             [adventure.checkout.cart.items :as adventure-cart-items]
             [storefront.events :as events]
-            adventure.keypaths
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]
@@ -59,7 +58,7 @@
   (component/create
    [:div.container.p2
     (component/build promotion-banner/sticky-component promotion-banner nil)
-    (component/build checkout-steps/component checkout-steps)
+    (component/build checkout-steps/component checkout-steps nil)
 
     [:form
      {:on-submit
@@ -75,7 +74,7 @@
         (component/build item-card/component items nil)]]
 
       [:.col-on-tb-dt.col-6-on-tb-dt.px3
-       (component/build checkout-delivery/component delivery)
+       (component/build checkout-delivery/component delivery nil)
        (when requires-additional-payment?
          [:div
           (ui/note-box
@@ -83,7 +82,7 @@
             :data-test "additional-payment-required-note"}
            [:.p2.navy
             "Please enter an additional payment method below for the remaining total on your order."])
-          (component/build checkout-credit-card/component payment)])
+          (component/build checkout-credit-card/component payment nil)])
        (if confirmation-summary
          (component/build confirmation-summary/component confirmation-summary {})
          (summary/display-order-summary order
@@ -141,7 +140,7 @@
   (component/create
    [:div.container.p2
     (component/build promotion-banner/sticky-component promotion-banner nil)
-    (component/build checkout-steps/component checkout-steps)
+    (component/build checkout-steps/component checkout-steps nil)
 
     [:form
      {:on-submit
@@ -157,7 +156,7 @@
         (component/build item-card/component items nil)]]
 
       [:.col-on-tb-dt.col-6-on-tb-dt.px3
-       (component/build checkout-delivery/component delivery)
+       (component/build checkout-delivery/component delivery nil)
        (when requires-additional-payment?
          [:div
           (ui/note-box
@@ -165,7 +164,7 @@
             :data-test "additional-payment-required-note"}
            [:.p2.navy
             "Please enter an additional payment method below for the remaining total on your order."])
-          (component/build checkout-credit-card/component payment)])
+          (component/build checkout-credit-card/component payment nil)])
        (if confirmation-summary
          (component/build confirmation-summary/component confirmation-summary {})
          (summary/display-order-summary order
