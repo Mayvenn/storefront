@@ -252,10 +252,7 @@
           (when-not (= nav-event events/navigate-adventure-home)
             {:class "max-580 mx-auto relative"}))
          ((main-component nav-event) data nil)
-         (when (and (experiments/adv-chat? data)
-                    (not (#{events/navigate-adventure-home
-                            events/navigate-adventure-product-details} nav-event)))
-           ui/adventure-chat-icon)]]
+         (when (experiments/adv-chat? data) ui/adventure-chat-icon)]]
 
        :else
        (main-layout data nav-event)))))

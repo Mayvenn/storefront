@@ -15,11 +15,10 @@
             [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
             [storefront.components.video :as video]
-            [storefront.components.v2 :as v2]
-            [storefront.accessors.experiments :as experiments]))
+            [storefront.components.v2 :as v2]))
 
 (defn sticky-component
-  [{:keys [next-page show-chat-icon?]} owner opts]
+  [{:keys [next-page]} owner opts]
   #?(:clj (component/create [:div])
      :cljs
      (letfn [(handle-scroll [e] (om/set-state! owner :show? (< 530 (.-y (goog.dom/getDocumentScroll)))))
@@ -54,8 +53,6 @@
               ;; Using a separate element with reverse margin to prevent the
               ;; sticky component from initially appearing on the page and then
               ;; animate hiding.
-              (when show-chat-icon?
-                ui/adventure-chat-icon-for-sticky-footer)
               [:div.transition-2
                (if show?
                  {:style {:margin-bottom (str content-height "px")}}
@@ -339,8 +336,7 @@
                          video
                          free-install-mayvenn-ugc
                          gallery-ucare-ids
-                         next-page
-                         show-chat-icon?]
+                         next-page]
                   :as   data}
                  owner
                  opts]
@@ -384,8 +380,7 @@
     [:hr.border-top.border-dark-silver.col-9.mx-auto.my6]
     [:section our-story]
     [:section contact-us]
-    (component/build sticky-component {:next-page       next-page
-                                       :show-chat-icon? show-chat-icon?} nil)]))
+    (component/build sticky-component {:next-page next-page} nil)]))
 
 (defn query [data]
   (let [store (marquee/query data)]
@@ -400,8 +395,7 @@
      :signed-in                 (auth/signed-in data)
      :video                     (get-in data keypaths/adventure-home-video)
      :from-shop-to-freeinstall? (get-in data keypaths/adventure-from-shop-to-freeinstall?)
-     :next-page                 events/navigate-adventure-install-type
-     :show-chat-icon?           (experiments/adv-chat? data)}))
+     :next-page                 events/navigate-adventure-install-type}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

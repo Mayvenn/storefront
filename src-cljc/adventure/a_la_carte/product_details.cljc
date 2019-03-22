@@ -111,7 +111,7 @@
 
 ;; TODO(jeff, heather): this should be refactored to a sticky-component to be shared with PDP
 (defn sticky-add-component
-  [{:keys [selected-options sold-out? unavailable? adding-to-bag? sku quantity image show-chat-icon?]} owner opts]
+  [{:keys [selected-options sold-out? unavailable? adding-to-bag? sku quantity image]} owner opts]
   (let [unpurchasable? (or sold-out? unavailable?)
         text-style     (if unpurchasable? {:class "gray"} {})]
     #?(:clj (component/create [:div])
@@ -148,8 +148,6 @@
                  (nil? show?) {:style {:visibility "hidden"}}
                  show?        {:style {:margin-bottom "0"}}
                  :else        {:style {:margin-bottom (str "-" add-button-height "px")}})
-               (when show-chat-icon?
-                 ui/adventure-chat-icon-for-sticky-footer)
                [:div {:ref "add-button"}
                 [:div.p3.flex.justify-center.items-center.bg-white.border-top.border-light-gray
                  [:div.col-8
@@ -288,8 +286,7 @@
            options
            picker-data
            aladdin-or-phoenix?
-           ugc
-           show-chat-icon?]} owner opts]
+           ugc]} owner opts]
   (let [review?      (seq reviews)
         unavailable? (not (seq selected-sku))
         sold-out?    (not (:inventory/in-stock? selected-sku))]
@@ -362,8 +359,7 @@
                                :sold-out?        sold-out?
                                :unavailable?     (empty? selected-sku)
                                :selected-options selected-options
-                               :quantity         sku-quantity
-                               :show-chat-icon?  show-chat-icon?} {})])])]])))
+                               :quantity         sku-quantity} {})])])]])))
 
 (defn min-of-maps
   ([k] {})
@@ -468,8 +464,7 @@
                                        :gallery-ucare-ids     gallery-ucare-ids
                                        :stylist-portrait      (:portrait store)
                                        :stylist-name          (:store-nickname store)
-                                       :stylist-gallery-open? (get-in data keypaths/carousel-stylist-gallery-open?)}
-     :show-chat-icon?                 (experiments/adv-chat? data)}))
+                                       :stylist-gallery-open? (get-in data keypaths/carousel-stylist-gallery-open?)}}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
