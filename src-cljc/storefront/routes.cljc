@@ -84,7 +84,7 @@
              {{:subdomain (complement freeinstall?)}
               (merge
                catalog-routes
-               {"/"                                                 (edn->bidi events/navigate-home)})}
+               {"/" (edn->bidi events/navigate-home)})}
 
              {"/login"                                            (edn->bidi events/navigate-sign-in)
               "/logout"                                           (edn->bidi events/navigate-sign-out)
@@ -108,29 +108,31 @@
               "/stylist/store_credits"                    (edn->bidi events/navigate-stylist-dashboard-bonus-credit)
               "/stylist/referrals"                        (edn->bidi events/navigate-stylist-dashboard-referrals)
 
-              "/stylist/share-your-store"        (edn->bidi events/navigate-stylist-share-your-store)
-              "/stylist/account/profile"         (edn->bidi events/navigate-stylist-account-profile)
-              "/stylist/account/portrait"        (edn->bidi events/navigate-stylist-account-portrait)
-              "/stylist/account/password"        (edn->bidi events/navigate-stylist-account-password)
-              "/stylist/account/payout"          (edn->bidi events/navigate-stylist-account-payout)
-              "/stylist/account/social"          (edn->bidi events/navigate-stylist-account-social)
-              "/stylist/redeem"                  (edn->bidi events/navigate-voucher-redeem)
-              "/stylist/redeemed"                (edn->bidi events/navigate-voucher-redeemed)
-              "/stylist/payments"                (edn->bidi events/navigate-v2-stylist-dashboard-payments)
-              "/stylist/orders"                  (edn->bidi events/navigate-v2-stylist-dashboard-orders)
-              ["/stylist/orders/" :order-number] (edn->bidi events/navigate-stylist-dashboard-order-details)
-              "/share"                           (edn->bidi events/navigate-friend-referrals)
-              "/freeinstall-share"               (edn->bidi events/navigate-friend-referrals-freeinstall)
-              "/mayvenn-made"                    (edn->bidi events/navigate-mayvenn-made)
-              "/gallery"                         (edn->bidi events/navigate-gallery)
-              "/gallery/add"                     (edn->bidi events/navigate-gallery-image-picker)
-              "/checkout/returning_or_guest"     (edn->bidi events/navigate-checkout-returning-or-guest)
-              "/checkout/login"                  (edn->bidi events/navigate-checkout-sign-in)
-              "/checkout/address"                (edn->bidi events/navigate-checkout-address)
-              "/checkout/payment"                (edn->bidi events/navigate-checkout-payment)
-              "/checkout/confirm"                (edn->bidi events/navigate-checkout-confirmation)
-              "/checkout/processing"             (edn->bidi events/navigate-checkout-processing)
-              ["/orders/" :number "/complete"]   (edn->bidi events/navigate-order-complete)})])
+              "/stylist/share-your-store"                 (edn->bidi events/navigate-stylist-share-your-store)
+              "/stylist/account/profile"                  (edn->bidi events/navigate-stylist-account-profile)
+              "/stylist/account/portrait"                 (edn->bidi events/navigate-stylist-account-portrait)
+              "/stylist/account/password"                 (edn->bidi events/navigate-stylist-account-password)
+              "/stylist/account/payout"                   (edn->bidi events/navigate-stylist-account-payout)
+              "/stylist/account/social"                   (edn->bidi events/navigate-stylist-account-social)
+              "/stylist/redeem"                           (edn->bidi events/navigate-voucher-redeem)
+              "/stylist/redeemed"                         (edn->bidi events/navigate-voucher-redeemed)
+              "/stylist/payments"                         (edn->bidi events/navigate-v2-stylist-dashboard-payments)
+              "/stylist/orders"                           (edn->bidi events/navigate-v2-stylist-dashboard-orders)
+              ["/stylist/orders/" :order-number]          (edn->bidi events/navigate-stylist-dashboard-order-details)
+              "/share"                                    (edn->bidi events/navigate-friend-referrals)
+              "/freeinstall-share"                        (edn->bidi events/navigate-friend-referrals-freeinstall)
+              "/mayvenn-made"                             (edn->bidi events/navigate-mayvenn-made)
+              "/gallery"                                  (edn->bidi events/navigate-gallery)
+              "/gallery/add"                              (edn->bidi events/navigate-gallery-image-picker)
+              "/checkout/returning_or_guest"              (edn->bidi events/navigate-checkout-returning-or-guest)
+              "/checkout/login"                           (edn->bidi events/navigate-checkout-sign-in)
+              "/checkout/address"                         (edn->bidi events/navigate-checkout-address)
+              "/checkout/payment"                         (edn->bidi events/navigate-checkout-payment)
+              "/checkout/confirm"                         (edn->bidi events/navigate-checkout-confirmation)
+              "/checkout/processing"                      (edn->bidi events/navigate-checkout-processing)
+              ["/orders/" :number "/complete"]            (edn->bidi events/navigate-order-complete)
+              ["/orders/" :number "/complete-need-match"] (edn->bidi events/navigate-order-complete-need-match)
+              })])
 
 ;; TODO(jeff,corey): history/path-for should support domains like navigation-message-for
 (defn path-for [navigation-event & [args]]

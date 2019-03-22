@@ -61,6 +61,10 @@
 (def auth-events
   (set/union plain-auth-events checkout-auth-events))
 
+(def ^:private order-complete-events
+  #{events/navigate-order-complete
+    events/navigate-order-complete-need-match})
+
 (def return-blacklisted?
   (conj auth-events events/navigate-not-found))
 
@@ -69,7 +73,7 @@
              auth-events
              cart-events
              checkout-events
-             #{events/navigate-order-complete}
+             order-complete-events
              payout-events
              sharing-events
              stylist-dashboard-events
@@ -84,10 +88,6 @@
   (contains? minimal-footer-events event))
 
 (defn show-minimal-header? [event adventure?]
-  (contains? (if adventure?
-               (set/union minimal-header-events #{events/navigate-order-complete})
-               minimal-header-events)
-             event))
+  (contains? (set/union minimal-header-events (when adventure? order-complete-events)) event))
 
-(defn adventure-show-minimal-header? [event]
-  (contains? (set/union minimal-header-events #{events/navigate-order-complete}) event))
+

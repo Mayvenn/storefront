@@ -238,6 +238,11 @@
   (when-not (get-in app-state keypaths/user-id)
     (add-return-event app-state)))
 
+;; Duplicated from above
+(defmethod transition-state events/navigate-order-complete-need-match [_ event args app-state]
+  (when-not (get-in app-state keypaths/user-id)
+    (add-return-event app-state)))
+
 (defmethod transition-state events/navigate-gallery [_ event args app-state]
   (assoc-in app-state keypaths/editing-gallery? false))
 

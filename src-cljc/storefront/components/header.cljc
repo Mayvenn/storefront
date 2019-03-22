@@ -273,6 +273,6 @@
      {:class "hide-on-mb-tb"})
    (let [navigation-event (get-in data keypaths/navigation-event)
          sign-in? (#{events/navigate-checkout-sign-in} navigation-event)]
-     (if (nav/adventure-show-minimal-header? navigation-event)
+     (if (nav/show-minimal-header? navigation-event true)
          (adventure-minimal-component sign-in?)
          (component/build component (query data) nil)))])

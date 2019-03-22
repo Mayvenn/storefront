@@ -58,6 +58,7 @@
 (defpath navigate-style-guide-carousel)
 
 (defpath navigate-order-complete)
+(defpath navigate-order-complete-need-match)
 (defpath navigate-not-found)
 (defpath navigate-shop-by-look)
 (defpath navigate-shop-by-look-details)

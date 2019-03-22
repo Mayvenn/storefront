@@ -21,11 +21,11 @@
   #_(bucketing-example data)
   data)
 
-(defn str->int [s radix]
+(defn ^:private str->int [s radix]
   #?(:clj  (java.lang.Integer/parseInt s radix)
      :cljs (js/parseInt s radix)))
 
-(defn char->int [c]
+(defn ^:private char->int [c]
   #?(:clj  (int c)
      :cljs (.charCodeAt c 0)))
 
@@ -143,3 +143,7 @@
 (defn adv-chat?
   [data]
   (display-feature? data "adv-chat"))
+
+(defn adv-match-post-purchase?
+  [data]
+  (display-feature? data "adv-match-post-purchase"))

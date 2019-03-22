@@ -459,6 +459,18 @@
   (when paypal
     (redirect events/navigate-order-complete {:number number})))
 
+;; Forked from above; TODO add geolocation api/fetch-stylists-within-radius
+(defmethod perform-effects events/navigate-order-complete-need-match
+  [_ event {{:keys [paypal order-token shipping-address]} :query-params
+            number                                        :number
+            :as                                           order} _ app-state]
+  (when (not (get-in app-state keypaths/user-id))
+    (facebook/insert))
+  (when (and number order-token)
+    (api/get-completed-order number order-token))
+  (when paypal
+    (redirect events/navigate-order-complete-need-match {:number number})))
+
 (defmethod perform-effects events/navigate-friend-referrals [_ event args _ app-state]
   (talkable/show-referrals app-state))
 
@@ -766,11 +778,20 @@
   (handle-message events/order-remove-promotion args))
 
 (defmethod perform-effects events/control-checkout-confirmation-submit [_ event {:keys [place-order?] :as args} _ app-state]
-  (if place-order?
-    (create-stripe-token app-state args)
-    (api/place-order (get-in app-state keypaths/session-id)
-                     (get-in app-state keypaths/order)
-                     (cookie-jar/retrieve-utm-params (get-in app-state keypaths/cookie)))))
+  (let [order                (get-in app-state keypaths/order)
+        match-post-purchase? (and (= "freeinstall" (get-in app-state keypaths/store-slug))
+                                  (experiments/adv-match-post-purchase? app-state)
+                                  (not (:servicing-stylist-id order)))]
+    (if place-order?
+      (create-stripe-token app-state args)
+      (api/place-order (get-in app-state keypaths/session-id)
+                       order
+                       (cookie-jar/retrieve-utm-params (get-in app-state keypaths/cookie))
+                       (when match-post-purchase?
+                         {:success-handler #(messages/handle-message
+                                             events/api-success-update-order-place-order
+                                             {:order    %
+                                              :navigate events/navigate-order-complete-need-match})})))))
 
 (defmethod perform-effects events/save-order
   [_ _ {:keys [order]} _ app-state]
