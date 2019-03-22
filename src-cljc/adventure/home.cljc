@@ -59,7 +59,7 @@
                  {:style {:margin-bottom "0"}})
                [:div {:ref "content-height"}
                 [:div
-                 [:div.h6.white.bg-black.medium.px3.py2.flex.items-center
+                 [:div.h6.white.bg-black.medium.px3.py4.flex.items-center
                   [:div.col-7 "We can't wait for you to get a FREE install."]
                   [:div.col-1]
                   [:div.col-4
