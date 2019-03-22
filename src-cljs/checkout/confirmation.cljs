@@ -12,6 +12,7 @@
             [storefront.components.ui :as ui]
             [adventure.checkout.cart.items :as adventure-cart-items]
             [storefront.events :as events]
+            adventure.keypaths
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]
