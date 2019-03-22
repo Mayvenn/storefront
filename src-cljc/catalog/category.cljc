@@ -210,8 +210,7 @@
         selections    (get-in data catalog.keypaths/category-selections)
         products      (->> (selector/strict-query (vals (get-in data keypaths/v2-products))
                                                   (skuers/essentials category)
-                                                  selections
-                                                  {:hair/color #{:query/missing}})
+                                                  selections)
 
                            (into [] (comp
                                      (map (partial cache-complete-skus all-skus))
