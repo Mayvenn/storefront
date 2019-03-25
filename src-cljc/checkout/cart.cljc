@@ -11,14 +11,11 @@
               [goog.labs.userAgent.device :as device]])
    [catalog.images :as catalog-images]
    [cemerick.url :refer [url-encode]]
-   [checkout.accessors.vouchers :as vouchers]
    [checkout.call-out :as call-out]
    [checkout.cart.items :as cart-items]
    [checkout.cart.summary :as cart-summary]
    [checkout.header :as header]
    [checkout.suggestions :as suggestions]
-   [spice.core :as spice]
-   [spice.selector :as selector]
    [storefront.accessors.experiments :as experiments]
    [catalog.facets :as facets]
    [storefront.accessors.images :as images]
@@ -40,8 +37,7 @@
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
    [storefront.platform.messages :as messages]
-   [storefront.request-keys :as request-keys]
-   [storefront.transitions :as transitions]))
+   [storefront.request-keys :as request-keys]))
 
 (defn display-adjustable-line-items
   [recently-added-skus line-items skus update-line-item-requests delete-line-item-requests]
