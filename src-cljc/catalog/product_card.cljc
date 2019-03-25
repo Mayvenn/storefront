@@ -65,7 +65,9 @@
             :height 10
             :src    (first color-url)}])])]))
 
-(defn sku-best-matching-selections [selections skus]
+(defn sku-best-matching-selections
+  "Find the sku best matching selectors, falling back to trying one facet at a time"
+  [selections skus]
   (some (fn [criteria]
           (first (spice-selector/match-all {:selector/complete? true} criteria skus)))
         [selections
