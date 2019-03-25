@@ -679,3 +679,7 @@
 (defmethod transition-state events/api-success-stylist-service-menu-fetch [_ event {:keys [menu]} app-state]
   (cond-> app-state
     menu (assoc-in keypaths/stylist-service-menu menu)))
+
+(defmethod transition-state events/api-success-fetch-stylists-within-radius
+  [_ _ {:keys [stylists]} app-state]
+  (assoc-in app-state adventure.keypaths/adventure-matched-stylists stylists))

@@ -32,16 +32,13 @@
                                           :longitude    longitude
                                           :radius       how-far
                                           :install-type install-type
-                                          :choices      choices})
+                                          :choices      choices}
+                                         #(handle-message events/api-success-fetch-stylists-within-radius-pre-purchase %))
        ;; END NOTE
        (when-not (and latitude longitude how-far install-type)
          (history/enqueue-redirect events/navigate-adventure-home)))))
 
-(defmethod transitions/transition-state events/api-success-fetch-stylists-within-radius
-  [_ _ {:keys [stylists]} app-state]
-  (assoc-in app-state adventure-keypaths/adventure-matched-stylists stylists))
-
-(defmethod effects/perform-effects events/api-success-fetch-stylists-within-radius
+(defmethod effects/perform-effects events/api-success-fetch-stylists-within-radius-pre-purchase
   [_ _ {:keys [stylists]} _ app-state]
   #?(:cljs
      (let [timer      (get-in app-state adventure-keypaths/adventure-matching-stylists-timer)

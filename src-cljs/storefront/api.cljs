@@ -963,13 +963,13 @@
     :handler #(messages/handle-message events/api-success-stylist-service-menu-fetch %)}))
 
 ;; TODO: Perhaps cache
-(defn fetch-stylists-within-radius [cache params]
+(defn fetch-stylists-within-radius [cache params handler]
   (storeback-api-req
    GET
    "/v1/stylist/within-radius"
    request-keys/fetch-stylists-within-radius
    {:params  params
-    :handler #(messages/handle-message events/api-success-fetch-stylists-within-radius %)}))
+    :handler handler}))
 
 (defn fetch-matched-stylist [cache stylist-id]
   (cache-req
