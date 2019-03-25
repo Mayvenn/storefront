@@ -98,11 +98,25 @@
    [:div.bg-white.px1.my4.mxn2.rounded.py3
     (stylist-card servicing-stylist)]])
 
-(def need-match-component
+(def need-match-via-web-component
   [:div
    [:div "Let’s match you with a Certified Mayvenn Stylist!"]
    [:div "If you don’t love the install, we’ll pay for you to get it taken down and redone. It’s a win-win!"]
    [:div "Bullets..."]])
+
+(def need-match-via-phone-component
+  [:div {:data-test "to-be-matched"}
+   [:div.py4.h3.bold
+    "Let's match you with a Certified Mayvenn Stylist!"]
+   [:div.h5.line-height-3
+    (copy "A Mayvenn representative will contact you soon to help select a"
+          "Certified Mayvenn Stylist with the following criteria:")]
+   [:div
+    [:ul.col-10.h6.list-img-purple-checkmark.py4.left-align.mx6
+     (mapv (fn [txt] [:li.pl1.mb1 txt])
+           ["Licensed Salon Stylist"
+            "Mayvenn Certified"
+            "In your area"])]]])
 
 (def get-inspired-cta
   [:div.py2
@@ -114,7 +128,7 @@
                     "View #MayvennFreeInstall")]])
 
 (defn adventure-component
-  [{:keys [servicing-stylist phone-number need-match?]} _ _]
+  [{:keys [servicing-stylist phone-number match-post-purchase? need-match?]} _ _]
   (component/create
    [:div.bg-lavender.white {:style {:min-height "95vh"}}
     (ui/narrow-container
@@ -129,9 +143,10 @@
 
        [:div.py2.mx-auto.white.border-bottom
         {:style {:border-width "0.5px"}}]
-       (cond servicing-stylist (servicing-stylist-component phone-number servicing-stylist)
-             need-match?       need-match-component
-             :else             get-inspired-cta)]])]))
+       (cond servicing-stylist                      (servicing-stylist-component phone-number servicing-stylist)
+             (and need-match? match-post-purchase?) need-match-via-web-component
+             need-match?                            need-match-via-phone-component
+             :else                                  get-inspired-cta)]])]))
 
 (defmethod transitions/transition-state events/api-success-fetch-matched-stylist
   [_ event {:keys [stylist]} app-state]
@@ -142,17 +157,17 @@
   [data]
   (let [freeinstall?      (= "freeinstall" (get-in data keypaths/store-slug))
         servicing-stylist (get-in data adv-keypaths/adventure-servicing-stylist)]
-    {:guest?            (not (get-in data keypaths/user-id))
-     :freeinstall?      freeinstall?
-     :need-match?       (and freeinstall?
-                             (experiments/adv-match-post-purchase? data)
-                             (empty? servicing-stylist))
-     :sign-up-data      (sign-up/query data)
-     :servicing-stylist servicing-stylist
-     :phone-number      (-> data
-                            (get-in keypaths/completed-order)
-                            :shipping-address
-                            :phone)}))
+    {:guest?               (not (get-in data keypaths/user-id))
+     :freeinstall?         freeinstall?
+     :match-post-purchase? (experiments/adv-match-post-purchase? data)
+     :need-match?          (and freeinstall?
+                                (empty? servicing-stylist))
+     :sign-up-data         (sign-up/query data)
+     :servicing-stylist    servicing-stylist
+     :phone-number         (-> data
+                               (get-in keypaths/completed-order)
+                               :shipping-address
+                               :phone)}))
 
 (defn built-component
   [data opts]
