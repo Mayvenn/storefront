@@ -445,7 +445,10 @@
   (stripe/insert))
 
 (defmethod perform-effects events/navigate-checkout-confirmation [_ event args _ app-state]
-  (handle-message events/api-fetch-geocode)
+  (when (and
+         (= "freeinstall" (get-in app-state keypaths/store-slug))
+         (get-in app-state keypaths/order-servicing-stylist-id))
+    (handle-message events/api-fetch-geocode))
   ;; TODO: get the credit card component to function correctly on direct page load
   (when (empty? (get-in app-state keypaths/order-cart-payments))
     (redirect events/navigate-checkout-payment))
