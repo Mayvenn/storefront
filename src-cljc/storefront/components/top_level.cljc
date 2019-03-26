@@ -210,7 +210,7 @@
      ((main-component nav-event) data nil)]
     [:footer
      (footer/built-component data nil)]
-    (when (experiments/adv-chat? data) ui/adventure-chat-icon)]])
+    ui/adventure-chat-icon]])
 
 (defn top-level-component [data owner opts]
   (let [nav-event    (get-in data keypaths/navigation-event)
@@ -252,7 +252,7 @@
           (when-not (= nav-event events/navigate-adventure-home)
             {:class "max-580 mx-auto relative"}))
          ((main-component nav-event) data nil)
-         (when (experiments/adv-chat? data) ui/adventure-chat-icon)]]
+         ui/adventure-chat-icon]]
 
        :else
        (main-layout data nav-event)))))

@@ -140,10 +140,6 @@
   [data]
   (display-feature? data "adv-address-login"))
 
-(defn adv-chat?
-  [data]
-  (display-feature? data "adv-chat"))
-
 (defn adv-match-post-purchase?
   [data]
   (display-feature? data "adv-match-post-purchase"))

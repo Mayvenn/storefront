@@ -299,4 +299,4 @@
 
     [:footer
      (storefront.footer/built-component data nil)]
-    (when (experiments/adv-chat? data) ui/adventure-chat-icon)]])
+    ui/adventure-chat-icon]])
