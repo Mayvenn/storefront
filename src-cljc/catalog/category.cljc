@@ -19,7 +19,7 @@
    [catalog.keypaths]
    [catalog.skuers :as skuers]
    [spice.maps :as maps]
-   [spice.selector :as selector]
+   [catalog.selector :as selector]
    [clojure.set :as set]
    [clojure.string :as string]))
 
@@ -186,45 +186,68 @@
         (product-cards-empty-state loading-products?)
         (map (partial render-subsection loading-products?) subsections))]]]))
 
-(defn ^:private query
-  [data]
+(defn- product-meets-selections?
+  [selections product]
+  (seq (selector/query (::cached-skus product) selections)))
+
+(defn- cache-complete-skus [all-skus product]
+  (assoc product
+         ::cached-skus
+         (vals (select-keys all-skus (:selector/skus product)))))
+
+(defn- cache-lowest-price [product]
+  (assoc product ::cached-lowest-price
+         (->> (::cached-skus product)
+              (mapv :sku/price)
+              sort
+              first)))
+
+(defn ^:private query [data]
   (let [category      (categories/current-category data)
+        all-skus      (get-in data keypaths/v2-skus)
+        category-skus (selector/strict-query (vals all-skus)
+                                             (skuers/essentials category))
         selections    (get-in data catalog.keypaths/category-selections)
-        products      (selector/match-all {}
-                                          (merge
-                                           (skuers/essentials category)
-                                           selections)
-                                          (vals (get-in data keypaths/v2-products)))
-        subsections   (->> products
-                           (group-by (or (categories/category-id->subsection-fn (:catalog/category-id category))
-                                         (constantly :no-subsections)))
-                           (spice.maps/map-values (partial map (partial product-card/query data)))
-                           (spice.maps/map-values (partial sort-by (comp :sku/price :cheapest-sku)))
-                           (map (fn [[k cards]]
-                                  (-> category
-                                      :subsections
-                                      (get k)
-                                      (assoc :product-cards cards))))
-                           (sort-by :order))
-        product-cards (mapcat :product-cards subsections)]
+        products      (->> (selector/strict-query (vals (get-in data keypaths/v2-products))
+                                                  (skuers/essentials category)
+                                                  selections)
+
+                           (into [] (comp
+                                     (map (partial cache-complete-skus all-skus))
+                                     ;; This is an optimization, do not use elsewhere (900msec -> 50msec)
+                                     (filter (partial product-meets-selections? selections))
+                                     (map cache-lowest-price)))
+
+                           (sort-by ::cached-lowest-price))
+        subsections       (->> products
+                               (group-by (or (categories/category-id->subsection-fn (:catalog/category-id category))
+                                             (constantly :no-subsections)))
+                               (spice.maps/map-values (partial map (partial product-card/query data)))
+                               (map (fn [[k cards]]
+                                      (-> category
+                                          :subsections
+                                          (get k)
+                                          (assoc :product-cards cards))))
+                               (sort-by :order))
+        all-product-cards (mapcat :product-cards subsections)]
+
     {:category            category
-     :represented-options (->> products
-                               (map (fn [product]
-                                      (->> (select-keys product
+     :represented-options (->> category-skus
+                               (map (fn [sku]
+                                      (->> (select-keys sku
                                                         (concat (:selector/essentials category)
                                                                 (:selector/electives category)))
                                            (maps/map-values set))))
                                (reduce (partial merge-with set/union) {}))
      :facets              (maps/index-by :facet/slug (get-in data keypaths/v2-facets))
      :selections          selections
-     :all-product-cards   product-cards
+     :all-product-cards   all-product-cards
      :subsections         subsections
      :open-panel          (get-in data catalog.keypaths/category-panel)
      :loading-products?   (utils/requesting? data (conj request-keys/search-v2-products
                                                         (skuers/essentials category)))}))
 
-(defn built-component
-  [data opts]
+(defn built-component [data opts]
   (component/build component (query data) opts))
 
 (defmethod transitions/transition-state events/navigate-category
