@@ -131,8 +131,7 @@
               "/checkout/confirm"                         (edn->bidi events/navigate-checkout-confirmation)
               "/checkout/processing"                      (edn->bidi events/navigate-checkout-processing)
               ["/orders/" :number "/complete"]            (edn->bidi events/navigate-order-complete)
-              ["/orders/" :number "/complete-need-match"] (edn->bidi events/navigate-order-complete-need-match)
-              })])
+              ["/orders/" :number "/complete-need-match"] (edn->bidi events/navigate-need-match-order-complete)})])
 
 ;; TODO(jeff,corey): history/path-for should support domains like navigation-message-for
 (defn path-for [navigation-event & [args]]

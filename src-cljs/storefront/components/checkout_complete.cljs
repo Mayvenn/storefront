@@ -4,13 +4,18 @@
             [storefront.assets :as assets]
             [storefront.transitions :as transitions]
             [storefront.events :as events]
+            [storefront.effects :as effects]
+            [storefront.api :as api]
             [storefront.component :as component]
             [storefront.components.formatters :as formatters]
             [storefront.components.facebook :as facebook]
             [storefront.components.sign-up :as sign-up]
             [storefront.components.ui :as ui]
+            [storefront.platform.messages :refer [handle-message]]
             [storefront.accessors.experiments :as experiments]
             [storefront.keypaths :as keypaths]
+            [storefront.platform.component-utils :as utils]
+            [storefront.request-keys :as request-keys]
             [clojure.string :as string]))
 
 (defn copy [& sentences]
@@ -98,11 +103,20 @@
    [:div.bg-white.px1.my4.mxn2.rounded.py3
     (stylist-card servicing-stylist)]])
 
-(def need-match-via-web-component
-  [:div
-   [:div "Let’s match you with a Certified Mayvenn Stylist!"]
-   [:div "If you don’t love the install, we’ll pay for you to get it taken down and redone. It’s a win-win!"]
-   [:div "Bullets..."]])
+(defn need-match-via-web-component
+  [matched-stylists]
+  [:div {:data-test "to-be-matched"}
+   [:div.py4.h3.bold
+    "Let's match you with a Certified Mayvenn Stylist!"]
+   [:div.h5.line-height-3
+    "If you don’t love the install, we’ll pay for you to get it taken down and redone. It’s a win-win!"]
+   [:div
+    [:ul.col-10.h6.list-img-purple-checkmark.py4.left-align.mx6
+     (mapv (fn [txt] [:li.pl1.mb1 txt])
+           ["Licensed Salon Stylist"
+            "Mayvenn Certified"
+            "In your area"])]]
+   (ui/teal-button {} "Pick a stylist")])
 
 (def need-match-via-phone-component
   [:div {:data-test "to-be-matched"}
@@ -128,7 +142,7 @@
                     "View #MayvennFreeInstall")]])
 
 (defn adventure-component
-  [{:keys [servicing-stylist phone-number match-post-purchase? need-match?]} _ _]
+  [{:keys [servicing-stylist matched-stylists phone-number match-post-purchase? need-match?]} _ _]
   (component/create
    [:div.bg-lavender.white {:style {:min-height "95vh"}}
     (ui/narrow-container
@@ -143,10 +157,36 @@
 
        [:div.py2.mx-auto.white.border-bottom
         {:style {:border-width "0.5px"}}]
-       (cond servicing-stylist                      (servicing-stylist-component phone-number servicing-stylist)
-             (and need-match? match-post-purchase?) need-match-via-web-component
-             need-match?                            need-match-via-phone-component
-             :else                                  get-inspired-cta)]])]))
+       (cond servicing-stylist                                             (servicing-stylist-component phone-number servicing-stylist)
+             (and need-match? match-post-purchase? (seq matched-stylists)) (need-match-via-web-component matched-stylists)
+             need-match?                                                   need-match-via-phone-component
+             :else                                                         get-inspired-cta)]])]))
+
+(defmethod effects/perform-effects events/api-fetch-geocode
+  [_ event _ _ app-state]
+  (let [choices                                        (get-in app-state adventure.keypaths/adventure-choices)
+        {:keys [address1 address2 city state zipcode]} (:shipping-address (get-in app-state keypaths/completed-order))
+        params                                         (clj->js {"address" (string/join " " [address1 address2 (str city ",") state zipcode])
+                                                                 "region"  "US"})]
+    (. (js/google.maps.Geocoder.)
+       (geocode params
+                (fn [results status]
+                  (let [location (some-> results
+                                         (js->clj :keywordize-keys true)
+                                         first
+                                         :geometry
+                                         :location
+                                         .toJSON
+                                         (js->clj :keywordize-keys true))]
+                    (if location
+                      (api/fetch-stylists-within-radius (get-in app-state keypaths/api-cache)
+                                                        {:latitude     (:lat location)
+                                                         :longitude    (:lng location)
+                                                         :radius       "10mi"
+                                                         :install-type (:install-type choices)
+                                                         :choices      choices}
+                                                        #(handle-message events/api-success-fetch-stylists-within-radius-post-purchase %))
+                      events/api-failure-fetch-geocode)))))))
 
 (defmethod transitions/transition-state events/api-success-fetch-matched-stylist
   [_ event {:keys [stylist]} app-state]
@@ -162,6 +202,7 @@
      :match-post-purchase? (experiments/adv-match-post-purchase? data)
      :need-match?          (and freeinstall?
                                 (empty? servicing-stylist))
+     :matched-stylists     (get-in data adv-keypaths/adventure-matched-stylists)
      :sign-up-data         (sign-up/query data)
      :servicing-stylist    servicing-stylist
      :phone-number         (-> data

@@ -58,7 +58,7 @@
 (defpath navigate-style-guide-carousel)
 
 (defpath navigate-order-complete)
-(defpath navigate-order-complete-need-match)
+(defpath navigate-need-match-order-complete)
 (defpath navigate-not-found)
 (defpath navigate-shop-by-look)
 (defpath navigate-shop-by-look-details)
@@ -281,9 +281,13 @@
 (defpath api-success-send-stylist-referrals)
 (defpath api-partial-success-send-stylist-referrals)
 
+(defpath api-fetch-geocode)
+(defpath api-success-fetch-geocode)
+(defpath api-failure-fetch-geocode)
 (defpath api-fetch-stylists-within-radius)
 (defpath api-success-fetch-stylists-within-radius)
 (defpath api-success-fetch-stylists-within-radius-pre-purchase)
+(defpath api-success-fetch-stylists-within-radius-post-purchase)
 
 (defpath api-success-fetch-cms-data)
 

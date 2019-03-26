@@ -109,7 +109,7 @@
          events/navigate-checkout-payment                           (partial checkout-returning-or-guest/requires-sign-in-or-initiated-guest-checkout checkout-payment/built-component)
          events/navigate-checkout-confirmation                      (partial checkout-returning-or-guest/requires-sign-in-or-initiated-guest-checkout checkout-confirmation/built-component)
          events/navigate-order-complete                             checkout-complete/built-component
-         events/navigate-order-complete-need-match                  checkout-complete/built-component])
+         events/navigate-need-match-order-complete                  checkout-complete/built-component])
 
     events/navigate-home                              home/built-component
     events/navigate-category                          category/built-component
@@ -236,7 +236,7 @@
        (and freeinstall?
             (or (routes/sub-page? [nav-event] [events/navigate-checkout])
                 (routes/sub-page? [nav-event] [events/navigate-order-complete])
-                (routes/sub-page? [nav-event] [events/navigate-order-complete-need-match])))
+                (routes/sub-page? [nav-event] [events/navigate-need-match-order-complete])))
        (adventure-checkout-layout data nav-event)
 
        (or (routes/sub-page? [nav-event] [events/navigate-adventure])

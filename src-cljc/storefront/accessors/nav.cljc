@@ -63,7 +63,7 @@
 
 (def ^:private order-complete-events
   #{events/navigate-order-complete
-    events/navigate-order-complete-need-match})
+    events/navigate-need-match-order-complete})
 
 (def return-blacklisted?
   (conj auth-events events/navigate-not-found))

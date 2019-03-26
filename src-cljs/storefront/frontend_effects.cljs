@@ -459,17 +459,17 @@
   (when paypal
     (redirect events/navigate-order-complete {:number number})))
 
-;; Forked from above; TODO add geolocation api/fetch-stylists-within-radius
-(defmethod perform-effects events/navigate-order-complete-need-match
+(defmethod perform-effects events/navigate-need-match-order-complete
   [_ event {{:keys [paypal order-token shipping-address]} :query-params
             number                                        :number
             :as                                           order} _ app-state]
+  (handle-message events/api-fetch-geocode)
   (when (not (get-in app-state keypaths/user-id))
     (facebook/insert))
   (when (and number order-token)
     (api/get-completed-order number order-token))
   (when paypal
-    (redirect events/navigate-order-complete-need-match {:number number})))
+    (redirect events/navigate-need-match-order-complete {:number number})))
 
 (defmethod perform-effects events/navigate-friend-referrals [_ event args _ app-state]
   (talkable/show-referrals app-state))
@@ -873,11 +873,10 @@
 (defmethod perform-effects events/api-success-update-order-place-order [_ event {:keys [order]} _ app-state]
   (let [user-needs-servicing-stylist-match? (and (= "freeinstall" (get-in app-state keypaths/store-slug))
                                                  (experiments/adv-match-post-purchase? app-state)
-                                                 (not (:servicing-stylist-id order)))
-        nav-event                           (if user-needs-servicing-stylist-match?
-                                              events/navigate-order-complete-need-match
-                                              events/navigate-order-complete)]
-    (history/enqueue-navigate nav-event order)
+                                                 (not (:servicing-stylist-id order)))]
+    (if user-needs-servicing-stylist-match?
+      (history/enqueue-navigate events/navigate-need-match-order-complete order)
+      (history/enqueue-navigate events/navigate-order-complete order))
     (handle-message events/order-completed order)))
 
 (defmethod perform-effects events/order-completed [dispatch event order _ app-state]

@@ -24,3 +24,4 @@
 
 (def adventure-servicing-stylist (conj adventure :servicing-stylist))
 
+(def adventure-geocode-address (conj adventure :geocode-address))
