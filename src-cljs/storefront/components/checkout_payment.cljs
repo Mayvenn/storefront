@@ -46,6 +46,7 @@
 (defn component
   [{:keys [step-bar
            saving?
+           quadpay?
            disabled?
            loaded-stripe?
            store-credit
@@ -69,45 +70,119 @@
         {:on-submit (utils/send-event-callback events/control-checkout-choose-payment-method-submit)
          :data-test "payment-form"}
 
-        (let [{:keys [credit-available credit-applicable fully-covered?]} store-credit]
-          (if (and fully-covered?
-                   (not applied-install-promotion))
-            (ui/note-box
-             {:color     "teal"
-              :data-test "store-credit-note"}
-             [:.p2.navy
-              [:div [:span.medium (as-money credit-applicable)] " in store credit will be applied to this order."]])
+        (if quadpay?
+          (let [{:keys [credit-applicable fully-covered?]} store-credit
+                selected-stripe-or-store-credit? (and (seq selected-payment-methods)
+                                                      (set/subset? selected-payment-methods #{:stripe :store-credit}))
+                selected-quadpay? (contains? selected-payment-methods :affirm)]
+            (if (and fully-covered? (not applied-install-promotion))
+                  (ui/note-box
+                   {:color     "teal"
+                    :data-test "store-credit-note"}
+                   [:.p2.navy
+                    [:div [:span.medium (as-money credit-applicable)] " in store credit will be applied to this order."]])
+           [:div
+             (ui/radio-section
+              (merge {:name         "payment-method"
+                      :id           "payment-method-credit-card"
+                      :data-test    "payment-method"
+                      :data-test-id "credit-card"
+                      :on-click     (utils/send-event-callback events/control-checkout-payment-select {:payment-method :stripe})}
+                     (when selected-stripe-or-store-credit? {:checked "checked"}))
+              [:div.overflow-hidden
+               [:div "Pay with Credit/Debit Card"]
+               [:p.h6 "All transactions are secure and encrypted."]])
 
-            [:div.p2
-             [:div "Pay with Credit/Debit Card"]
-             [:p.h6 "All transactions are secure and encrypted."]
-             (when (pos? credit-available)
-               (if applied-install-promotion
-                 (ui/note-box
-                  {:color     "orange"
-                   :data-test "store-credit-note"}
-                  [:div.p2.black
-                   [:div "Your "
-                    [:span.medium (as-money credit-applicable)]
-                    " in store credit "
-                    [:span.medium "cannot"]
-                    " be used with " [:span.shout applied-install-promotion] " orders."]
-                   [:div.h6.mt1
-                    "To use store credit, please remove promo code " [:span.shout applied-install-promotion] " from your bag."]])
-                 (ui/note-box
-                  {:color     "teal"
-                   :data-test "store-credit-note"}
-                  [:.p2.navy
-                   [:div [:span.medium (as-money credit-applicable)] " in store credit will be applied to this order."]
-                   [:.h6.mt1
-                    "Please enter an additional payment method below for the remaining total on your order."]])))
+             (when selected-stripe-or-store-credit?
+               (let [{:keys [credit-available credit-applicable]} store-credit]
+                 [:div.p2
+                  (when (pos? credit-available)
+                    (if applied-install-promotion
+                      (ui/note-box
+                       {:color     "orange"
+                        :data-test "store-credit-note"}
+                       [:div.p2.black
+                        [:div "Your "
+                         [:span.medium (as-money credit-applicable)]
+                         " in store credit "
+                         [:span.medium "cannot"]
+                         " be used with " [:span.shout applied-install-promotion] " orders."]
+                        [:div.h6.mt1
+                         "To use store credit, please remove promo code " [:span.shout applied-install-promotion] " from your bag."]])
+                      (ui/note-box
+                       {:color     "teal"
+                        :data-test "store-credit-note"}
+                       [:.p2.navy
+                        [:div [:span.medium (as-money credit-applicable)] " in store credit will be applied to this order."]
+                        [:.h6.mt1
+                         "Please enter an additional payment method below for the remaining total on your order."]])))
 
-             [:div
-              (om/build cc/component
-                        {:credit-card  credit-card
-                         :field-errors field-errors})
-              [:div.h5
-               "You can review your order on the next page before we charge your card."]]]))
+                  [:div
+                   (om/build cc/component
+                             {:credit-card  credit-card
+                              :field-errors field-errors})
+                   [:div.h5
+                    "You can review your order on the next page before we charge your card."]]]))
+             (ui/radio-section
+              (merge {:name         "payment-method"
+                      :id           "payment-method-quadpay"
+                      :data-test    "payment-method"
+                      :data-test-id "quadpay"
+                      :on-click     (utils/send-event-callback events/control-checkout-payment-select {:payment-method :quadpay})}
+                     (when selected-quadpay? {:checked "checked"}))
+              [:div.overflow-hidden
+               [:div.flex
+                [:div.mr1 "Pay with "]
+                [:div.mt1 {:style {:width "85px" :height "17px"}}
+                 svg/quadpay-logo]]
+               [:p.h6 (str "4 interest-free payments with QuadPay. Learn More")
+                [:div "Quadpay modal"]
+                #_(om/build affirm/modal-component {})
+                ]])
+
+             (when selected-quadpay?
+               [:div.h6.px2.ml4.dark-gray
+                "Before completing your purchase, you will be redirected to Affirm to securely set up your payment plan."])]))
+
+          (let [{:keys [credit-available credit-applicable fully-covered?]} store-credit]
+            (if (and fully-covered?
+                     (not applied-install-promotion))
+              (ui/note-box
+               {:color     "teal"
+                :data-test "store-credit-note"}
+               [:.p2.navy
+                [:div [:span.medium (as-money credit-applicable)] " in store credit will be applied to this order."]])
+
+              [:div.p2
+               [:div "Pay with Credit/Debit Card"]
+               [:p.h6 "All transactions are secure and encrypted."]
+               (when (pos? credit-available)
+                 (if applied-install-promotion
+                   (ui/note-box
+                    {:color     "orange"
+                     :data-test "store-credit-note"}
+                    [:div.p2.black
+                     [:div "Your "
+                      [:span.medium (as-money credit-applicable)]
+                      " in store credit "
+                      [:span.medium "cannot"]
+                      " be used with " [:span.shout applied-install-promotion] " orders."]
+                     [:div.h6.mt1
+                      "To use store credit, please remove promo code " [:span.shout applied-install-promotion] " from your bag."]])
+                   (ui/note-box
+                    {:color     "teal"
+                     :data-test "store-credit-note"}
+                    [:.p2.navy
+                     [:div [:span.medium (as-money credit-applicable)] " in store credit will be applied to this order."]
+                     [:.h6.mt1
+                      "Please enter an additional payment method below for the remaining total on your order."]])))
+
+               [:div
+                (om/build cc/component
+                          {:credit-card  credit-card
+                           :field-errors field-errors})
+                [:div.h5
+                 "You can review your order on the next page before we charge your card."]]])))
 
         (when loaded-stripe?
           [:div.my4.col-6-on-tb-dt.mx-auto
@@ -198,6 +273,7 @@
                                          :credit-applicable credit-to-use
                                          :fully-covered?    fully-covered?}
       :promotion-banner                 (promotion-banner/query data)
+      :quadpay?                         (experiments/quadpay? data)
       :promo-code                       (first (get-in data keypaths/order-promotion-codes))
       :saving?                          (cc/saving-card? data)
       :disabled?                        (or (and (utils/requesting? data request-keys/get-saved-cards)

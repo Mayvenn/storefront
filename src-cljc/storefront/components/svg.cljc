@@ -148,6 +148,11 @@
    [:svg {:class "fill-dark-gray" :style {:width "30px" :height "30px"}}
     (svg-xlink "close-hamburger-menu")]))
 
+(def quadpay-logo
+  (component/html
+   [:svg.container-size
+    (svg-xlink "quadpay-logo")]))
+
 ;; Social
 (def instagram
   (component/html
