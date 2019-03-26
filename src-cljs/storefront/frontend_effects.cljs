@@ -446,6 +446,7 @@
 
 (defmethod perform-effects events/navigate-checkout-confirmation [_ event args _ app-state]
   (when (and
+         (experiments/adv-match-post-purchase? app-state)
          (= "freeinstall" (get-in app-state keypaths/store-slug))
          (get-in app-state keypaths/order-servicing-stylist-id))
     (handle-message events/api-fetch-geocode))
