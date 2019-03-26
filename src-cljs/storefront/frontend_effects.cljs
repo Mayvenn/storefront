@@ -871,6 +871,8 @@
   (handle-later events/control-popup-hide {} 2000))
 
 (defmethod perform-effects events/api-success-update-order-place-order [_ event {:keys [order]} _ app-state]
+  ;; TODO: rather than branching behavior within a single event handler, consider
+  ;;       firing seperate events (with and without matching stylists).
   (let [user-needs-servicing-stylist-match? (and (= "freeinstall" (get-in app-state keypaths/store-slug))
                                                  (experiments/adv-match-post-purchase? app-state)
                                                  (not (:servicing-stylist-id order))
