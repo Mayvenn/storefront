@@ -445,6 +445,7 @@
   (stripe/insert))
 
 (defmethod perform-effects events/navigate-checkout-confirmation [_ event args _ app-state]
+  (handle-message events/api-fetch-geocode)
   ;; TODO: get the credit card component to function correctly on direct page load
   (when (empty? (get-in app-state keypaths/order-cart-payments))
     (redirect events/navigate-checkout-payment))
@@ -463,7 +464,6 @@
   [_ event {{:keys [paypal order-token shipping-address]} :query-params
             number                                        :number
             :as                                           order} _ app-state]
-  (handle-message events/api-fetch-geocode)
   (when (not (get-in app-state keypaths/user-id))
     (facebook/insert))
   (when (and number order-token)
@@ -873,7 +873,8 @@
 (defmethod perform-effects events/api-success-update-order-place-order [_ event {:keys [order]} _ app-state]
   (let [user-needs-servicing-stylist-match? (and (= "freeinstall" (get-in app-state keypaths/store-slug))
                                                  (experiments/adv-match-post-purchase? app-state)
-                                                 (not (:servicing-stylist-id order)))]
+                                                 (not (:servicing-stylist-id order))
+                                                 (not-empty (get-in app-state adv-keypaths/adventure-matched-stylists)))]
     (if user-needs-servicing-stylist-match?
       (history/enqueue-navigate events/navigate-need-match-order-complete order)
       (history/enqueue-navigate events/navigate-order-complete order))

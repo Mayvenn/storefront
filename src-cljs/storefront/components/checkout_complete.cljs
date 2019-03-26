@@ -165,7 +165,7 @@
 (defmethod effects/perform-effects events/api-fetch-geocode
   [_ event _ _ app-state]
   (let [choices                                        (get-in app-state adventure.keypaths/adventure-choices)
-        {:keys [address1 address2 city state zipcode]} (:shipping-address (get-in app-state keypaths/completed-order))
+        {:keys [address1 address2 city state zipcode]} (get-in app-state keypaths/order-shipping-address)
         params                                         (clj->js {"address" (string/join " " [address1 address2 (str city ",") state zipcode])
                                                                  "region"  "US"})]
     (. (js/google.maps.Geocoder.)
