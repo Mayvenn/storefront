@@ -116,7 +116,7 @@
            ["Licensed Salon Stylist"
             "Mayvenn Certified"
             "In your area"])]]
-   (ui/teal-button {} "Pick a stylist")])
+   (ui/teal-button {:data-test "pick-a-stylist"} "Pick a stylist")])
 
 (def need-match-via-phone-component
   [:div {:data-test "to-be-matched"}
