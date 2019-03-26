@@ -1,13 +1,12 @@
 (ns adventure.components.product-card
-  (:require [catalog.selector :as selector]
+  (:require [adventure.keypaths]
             [catalog.facets :as facets]
-            [spice.selector :as spice-selector]
+            [spice.selector :as selector]
             [storefront.accessors.skus :as skus]
             [storefront.component :as component]
             [storefront.components.money-formatters :as mf]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            adventure.keypaths
             [storefront.platform.component-utils :as utils]))
 
 (defn slug->facet [facet facets]
@@ -72,20 +71,19 @@
             :height 10
             :src    (first color-url)}])])]))
 
-(defn sku-best-matching-selections [selections skus]
-  (->> skus
-       (spice-selector/match-all {:selector/complete? true}
-                                 {:hair/length (:hair/length selections)})
-       first))
 
-(defn query [data product]
+(defn query
+  [data product]
   (let [facets                      (get-in data keypaths/v2-facets)
         color-order-map             (facets/color-order-map facets)
         all-skus                    (vals (get-in data keypaths/v2-skus))
-        in-stock-skus               (selector/query all-skus {} {:inventory/in-stock? #{true}})
+        in-stock-skus               (selector/match-all {:selector/strict? true}
+                                                        {:inventory/in-stock? #{true}}
+                                                        all-skus)
         product-skus                (->> (or (not-empty in-stock-skus)
                                              all-skus)
-                                         (filter #((-> % :selector/from-products set) (:catalog/product-id product))))
+                                         (filter #((-> % :selector/from-products set)
+                                                   (:catalog/product-id product))))
         selected-color              (get-in data adventure.keypaths/adventure-choices-color)
         product-skus-matching-color (->> product-skus
                                          (filter #(contains? (set (:hair/color %)) selected-color)))
@@ -93,20 +91,20 @@
                                          (sort-by :sku/price)
                                          first)
         epitome                     (skus/determine-epitome color-order-map product-skus-matching-color)]
-    {:product             product
-     :skus                product-skus
-     :epitome             epitome
-     :cheapest-sku        cheapest-product-sku
-     :color-order-map     color-order-map
-     :sold-out?           (empty? in-stock-skus)
-     :title               (:copy/title product)
-     :slug                (:page/slug product)
-     :image               (->> epitome
-                               :selector/images
-                               (filter (comp #{"catalog"} :use-case))
-                               (sort-by (comp color-order-map first :hair/color))
-                               first)
-     :facets              facets}))
+    {:product         product
+     :skus            product-skus
+     :epitome         epitome
+     :cheapest-sku    cheapest-product-sku
+     :color-order-map color-order-map
+     :sold-out?       (empty? in-stock-skus)
+     :title           (:copy/title product)
+     :slug            (:page/slug product)
+     :image           (->> epitome
+                           :selector/images
+                           (filter (comp #{"catalog"} :use-case))
+                           (sort-by (comp color-order-map first :hair/color))
+                           first)
+     :facets          facets}))
 
 (defn component
   [{:keys [product skus epitome cheapest-sku color-order-map sold-out? title slug image facets]}]

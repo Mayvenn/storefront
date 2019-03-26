@@ -4,6 +4,8 @@
             [spice.maps :as maps]
             [spice.selector :as selector]))
 
+;; TODO(jjw, jjh): Decommission this namespace after cellar deploy
+
 (defn- contains-or-equal [key search-value item]
   (let [item-value (get item key :query/missing)]
     (cond

@@ -11,7 +11,7 @@
             [adventure.keypaths :as adventure-keypaths]
             [adventure.components.multi-prompt :as multi-prompt]
             [adventure.utils.facets :as facets]
-            [catalog.selector :as selector]))
+            [spice.selector :as selector]))
 
 (defn enriched-buttons [facet-options]
   (for [option facet-options]
@@ -38,7 +38,7 @@
         selections                     {:hair/family         #{install-type}
                                         :hair/texture        #{texture}
                                         :inventory/in-stock? #{true}}]
-    (let [selected-skus (selector/query skus selections)
+    (let [selected-skus (selector/match-all {} selections skus)
           color-choices (facets/available-options facets :hair/color selected-skus)
 
           adventure-choices (get-in data adventure-keypaths/adventure-choices)

@@ -1,6 +1,6 @@
 (ns catalog.menu
   (:require [catalog.categories :as categories]
-            [catalog.selector :as selector]
+            [spice.selector :as selector]
             [storefront.component :as component]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
@@ -41,9 +41,10 @@
 
 (defn query [data]
   (let [{:keys [selector/essentials] :as nav-root} (categories/current-traverse-nav data)]
-    {:nav-root    nav-root
-     :options     (selector/strict-query categories/menu-categories
-                                         (select-keys nav-root essentials))}))
+    {:nav-root nav-root
+     :options  (selector/match-all {:selector/strict? true}
+                                   (select-keys nav-root essentials)
+                                   categories/menu-categories)}))
 
 (defmethod transitions/transition-state events/menu-home
   [_ _ _ app-state]

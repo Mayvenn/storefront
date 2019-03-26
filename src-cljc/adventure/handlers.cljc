@@ -111,20 +111,7 @@
                                    adventure-choices->criteria
                                    (select-keys criteria)
                                    (assoc :catalog/department "hair"))
-                               #(handle-message events/api-success-adventure-fetch-products %))))
-
-(defmethod transitions/transition-state events/api-success-adventure-fetch-products
-  [_ event {:keys [products skus]} app-state]
-  (let [chosen-color           (:color (get-in app-state keypaths/adventure-choices))
-        selected-color-option? #(contains? (set (:hair/color %)) chosen-color)
-        selected-skus          (if chosen-color (filter selected-color-option? skus) skus)
-        product-ids            (set (flatten (map :selector/from-products selected-skus)))
-        products-indexed       (products/index-products products)
-        correct-products       (select-keys products-indexed product-ids)
-        skus-indexed           (products/index-skus skus)]
-    (-> app-state
-        (assoc-in storefront.keypaths/v2-products correct-products)
-        (assoc-in storefront.keypaths/v2-skus skus-indexed))))
+                               #(handle-message events/api-success-v2-products %))))
 
 (defmethod effects/perform-effects events/adventure-clear-servicing-stylist [_ _ _ _ app-state]
   #?(:cljs

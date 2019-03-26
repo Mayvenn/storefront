@@ -10,7 +10,7 @@
             [adventure.components.multi-prompt :as multi-prompt]
             [adventure.utils.facets :as facets]
             [storefront.request-keys :as request-keys]
-            [catalog.selector :as selector]))
+            [spice.selector :as selector]))
 
 (def option-metadata
   {"straight"       {:subtitle "For silky, sleek looks"}
@@ -43,7 +43,7 @@
         {:keys [install-type]} (get-in data adventure-keypaths/adventure-choices)
         selections             {:hair/family         #{install-type}
                                 :inventory/in-stock? #{true}}]
-    (let [selected-skus   (selector/query skus selections)
+    (let [selected-skus   (selector/match-all {} selections skus)
           texture-choices (facets/available-options facets :hair/texture selected-skus)
 
           adventure-choices (get-in data adventure-keypaths/adventure-choices)

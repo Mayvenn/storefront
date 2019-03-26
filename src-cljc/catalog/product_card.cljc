@@ -1,11 +1,8 @@
 (ns catalog.product-card
   (:require catalog.keypaths
-            [catalog.selector :as selector]
             [catalog.facets :as facets]
-            [spice.selector :as spice-selector]
+            [spice.selector :as selector]
             [storefront.accessors.skus :as skus]
-            [storefront.accessors.experiments :as experiments]
-            [storefront.component :as component]
             [storefront.components.money-formatters :as mf]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -69,18 +66,21 @@
   "Find the sku best matching selectors, falling back to trying one facet at a time"
   [selections skus]
   (some (fn [criteria]
-          (first (spice-selector/match-all {:selector/complete? true} criteria skus)))
+          (first (selector/match-all {:selector/complete? true} criteria skus)))
         [selections
          {:hair/color (:hair/color selections)}
          {:hair/length (:hair/length selections)}]))
 
 (defn query [data product]
-  (let [selections                (get-in data catalog.keypaths/category-selections)
-        skus                      (vals (select-keys (get-in data keypaths/v2-skus)
-                                                     (:selector/skus product)))
-        facets                    (get-in data keypaths/v2-facets)
-        color-order-map           (facets/color-order-map facets)
-        in-stock-skus             (selector/query skus selections {:inventory/in-stock? #{true}})
+  (let [selections       (get-in data catalog.keypaths/category-selections)
+        skus             (vals (select-keys (get-in data keypaths/v2-skus)
+                                            (:selector/skus product)))
+        facets           (get-in data keypaths/v2-facets)
+        color-order-map  (facets/color-order-map facets)
+        in-stock-skus    (selector/match-all {}
+                                             (assoc selections :inventory/in-stock? #{true})
+                                             skus)
+
         ;; in order to fill the product card, we should always have a sku to use for
         ;; the cheapest-sku and epitome
         skus-to-search            (or (not-empty in-stock-skus) skus)
