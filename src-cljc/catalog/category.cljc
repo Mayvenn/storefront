@@ -15,6 +15,7 @@
    [storefront.accessors.experiments :as experiments]
    [storefront.accessors.auth :as auth]
    [storefront.request-keys :as request-keys]
+   [storefront.api :as api]
    [catalog.products :as products]
    [catalog.keypaths]
    [catalog.skuers :as skuers]
@@ -249,10 +250,9 @@
        ;; and it must be re-enabled for this page
        (scroll/enable-body-scrolling)
        (if (auth/permitted-category? app-state category)
-         (do
-           (storefront.api/search-v2-products (get-in app-state keypaths/api-cache)
-                                              (skuers/essentials category)
-                                              success-fn))
+         (api/search-v2-products (get-in app-state keypaths/api-cache)
+                                 (skuers/essentials category)
+                                 success-fn)
          (effects/redirect events/navigate-home)))))
 
 ;; TODO: why?
