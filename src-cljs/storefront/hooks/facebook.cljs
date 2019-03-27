@@ -8,7 +8,7 @@
 
 (defn init []
   (js/FB.init (clj->js {:appId config/facebook-app-id
-                        :version "v2.5"})))
+                        :version "v3.2"})))
 
 (defn insert []
   (when (not (.hasOwnProperty js/window "FB"))
