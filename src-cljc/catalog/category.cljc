@@ -19,7 +19,6 @@
    [catalog.keypaths]
    [catalog.skuers :as skuers]
    [spice.maps :as maps]
-   [catalog.selector :as c.selector]
    [spice.selector :as selector]
    [clojure.set :as set]
    [clojure.string :as string]))
@@ -187,60 +186,19 @@
         (product-cards-empty-state loading-products?)
         (map (partial render-subsection loading-products?) subsections))]]]))
 
-;; TODO(jjw, jjh) GROT Post cellar deploy
-(defn- product-meets-selections?
-  [selections product]
-  (seq (c.selector/query (::cached-skus product) selections)))
-
-(defn- cache-complete-skus [all-skus product]
-  (assoc product
-         ::cached-skus
-         (vals (select-keys all-skus (:selector/skus product)))))
-
-(defn- cache-lowest-price [product]
-  (assoc product ::cached-lowest-price
-         (->> (::cached-skus product)
-              (mapv :sku/price)
-              sort
-              first)))
-;; TODO(jjw, jjh) END GROT Post cellar deploy
-
 (defn ^:private query
   [data]
   (let [category      (categories/current-category data)
         selections    (get-in data catalog.keypaths/category-selections)
         all-skus      (get-in data keypaths/v2-skus)
-        ;; TODO(jjw, jjh) Remove `new-selector?` (as true) post cellar deploy
-        new-selector? (some (fn [product]
-                              (= (-> product
-                                     (select-keys (:selector/electives product))
-                                     keys
-                                     set)
-                                 (set (:selector/electives product))))
-                            (vals (get-in data keypaths/v2-products)))
-
         products-matching-category (selector/match-all {:selector/strict? true}
                                                        (skuers/essentials category)
                                                        (vals (get-in data keypaths/v2-products)))
-        products-matching-criteria (if new-selector?
-                                     (selector/match-all {:selector/strict? true}
-                                                         (merge
-                                                          (skuers/essentials category)
-                                                          selections)
-                                                         products-matching-category)
-
-                                     (->> (c.selector/strict-query (vals (get-in data keypaths/v2-products))
-                                                                   (skuers/essentials category)
-                                                                   selections
-                                                                   {:hair/color #{:query/missing}})
-
-                                          (into [] (comp
-                                                    (map (partial cache-complete-skus all-skus))
-                                                    ;; This is an optimization, do not use elsewhere (900msec -> 50msec)
-                                                    (filter (partial product-meets-selections? selections))
-                                                    (map cache-lowest-price)))
-
-                                          (sort-by ::cached-lowest-price)))
+        products-matching-criteria (selector/match-all {:selector/strict? true}
+                                                       (merge
+                                                        (skuers/essentials category)
+                                                        selections)
+                                                       products-matching-category)
         subsections                    (->> products-matching-criteria
                                             (group-by (or (categories/category-id->subsection-fn (:catalog/category-id category))
                                                           (constantly :no-subsections)))
@@ -252,14 +210,9 @@
                                                        (get k)
                                                        (assoc :product-cards cards))))
                                             (sort-by :order))
-        product-cards                  (mapcat :product-cards subsections)
-        skuers-for-represented-options (if new-selector?
-                                         products-matching-category
-                                         (c.selector/strict-query ;; category-skus
-                                          (vals all-skus)
-                                          (skuers/essentials category)))]
+        product-cards                  (mapcat :product-cards subsections)]
     {:category            category
-     :represented-options (->> skuers-for-represented-options
+     :represented-options (->> products-matching-category
                                (map (fn [skuer]
                                       (->> (select-keys skuer
                                                         (concat (:selector/essentials category)

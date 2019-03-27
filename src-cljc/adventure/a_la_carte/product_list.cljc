@@ -14,36 +14,17 @@
             [storefront.request-keys :as request-keys]
             [adventure.keypaths :as adventure.keypaths]
             [spice.maps :as maps]
-            [spice.selector :as spice-selector]
-            [catalog.selector :as selector]))
+            [spice.selector :as selector]))
 
 (defn ^:private query
   [data]
   (let [{:as   adventure-choices
          :keys [install-type texture color]} (get-in data adventure.keypaths/adventure-choices)
-        ;; TODO(jjw, jjh) Remove `new-selector?` (as true) post cellar deploy
-        new-selector?                        (some (fn [product]
-                                                     (= (-> product
-                                                            (select-keys (:selector/electives product))
-                                                            keys
-                                                            set)
-                                                        (set (:selector/electives product))))
-                                                   (vals (get-in data keypaths/v2-products)))
-        all-skus                             (get-in data keypaths/v2-skus)
-        products                             (if new-selector?
-                                                 (spice-selector/match-all {}
-                                                                           {:hair/family  #{install-type "bundles"}
-                                                                            :hair/texture #{texture}
-                                                                            :hair/color   #{color}}
-                                                                           (vals (get-in data keypaths/v2-products)))
-                                                 (->> (vals (get-in data keypaths/v2-products))
-                                                      (spice-selector/match-all {}
-                                                                                {:hair/family  #{install-type "bundles"}
-                                                                                 :hair/texture #{texture}})
-                                                      (filter (fn [product]
-                                                                (some (fn [sku]
-                                                                        (= #{color} (:hair/color sku)))
-                                                                      (vals (select-keys all-skus (:selector/sku-ids product))))))))
+        products                             (selector/match-all {}
+                                                                 {:hair/family  #{install-type "bundles"}
+                                                                  :hair/texture #{texture}
+                                                                  :hair/color   #{color}}
+                                                                 (vals (get-in data keypaths/v2-products)))
         stylist-selected?                    (some-> adventure-choices :flow #{"match-stylist"})
         current-step                         (if stylist-selected? 3 2)]
     (merge

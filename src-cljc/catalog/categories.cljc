@@ -3,8 +3,7 @@
             [spice.maps :as maps]
             [spice.core :as spice]
             [storefront.keypaths :as keypaths]
-            [catalog.keypaths]
-            [catalog.selector :as selector]))
+            [catalog.keypaths]))
 
 (def new-facet?
   ;; [<facet-slug> <option-slug>]
