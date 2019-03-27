@@ -179,7 +179,7 @@
   [_ _ {:keys [stylist-id]} app-state]
   (assoc-in app-state keypaths/adventure-selected-stylist-id stylist-id))
 
-(defmethod effects/perform-effects events/navigate-adventure-stylist-results
+(defmethod effects/perform-effects events/navigate-adventure-stylist-results-pre-purchase
   [_ _ args _ app-state]
   #?(:cljs
      (let [matched-stylists (get-in app-state keypaths/adventure-matched-stylists)]

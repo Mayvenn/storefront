@@ -20,7 +20,9 @@
       (assoc-in adventure-keypaths/adventure-selected-stylist-id nil)
       (assoc-in adventure-keypaths/adventure-servicing-stylist nil)))
 
-(defmethod effects/perform-effects events/navigate-adventure-matching-stylist-wait [_ _ _ _ app-state]
+;; PRE-PURCHASE FLOW
+
+(defmethod effects/perform-effects events/navigate-adventure-matching-stylist-wait-pre-purchase [_ _ _ _ app-state]
   #?(:cljs
      (let [{:keys [latitude longitude]}               (get-in app-state adventure-keypaths/adventure-stylist-match-location)
            {:as choices :keys [how-far install-type]} (get-in app-state adventure-keypaths/adventure-choices)
@@ -33,21 +35,32 @@
                                           :radius       how-far
                                           :install-type install-type
                                           :choices      choices}
-                                         #(handle-message events/api-success-fetch-stylists-within-radius-pre-purchase %))
+                                         (fn [results]
+                                           (handle-message events/api-success-fetch-stylists-within-radius results)
+                                           (handle-message events/wait-to-navigate-to-stylist-results)))
        ;; END NOTE
        (when-not (and latitude longitude how-far install-type)
          (history/enqueue-redirect events/navigate-adventure-home)))))
 
-(defmethod effects/perform-effects events/api-success-fetch-stylists-within-radius-pre-purchase
+;; POST-PURCHASE FLOW
+
+(defmethod effects/perform-effects events/navigate-adventure-matching-stylist-wait-post-purchase [_ _ _ _ app-state]
+  #?(:cljs
+     (handle-message events/wait-to-navigate-to-stylist-results)))
+
+;; BOTH
+
+(defmethod effects/perform-effects events/wait-to-navigate-to-stylist-results
   [_ _ {:keys [stylists]} _ app-state]
   #?(:cljs
-     (let [timer      (get-in app-state adventure-keypaths/adventure-matching-stylists-timer)
+     (let [matched-stylists (get-in app-state adventure-keypaths/adventure-matched-stylists)
+           timer      (get-in app-state adventure-keypaths/adventure-matching-stylists-timer)
            ms-to-wait (max 0
                            (- (date/to-millis timer)
                               (date/to-millis (date/now))))]
        (history/enqueue-redirect
-        (if (seq stylists)
-          events/navigate-adventure-stylist-results
+        (if (seq matched-stylists)
+          events/navigate-adventure-stylist-results-pre-purchase
           events/navigate-adventure-out-of-area) {:timeout ms-to-wait}))))
 
 (defn ^:private component

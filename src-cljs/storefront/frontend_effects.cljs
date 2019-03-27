@@ -1052,7 +1052,7 @@
 (defmethod perform-effects events/attempt-shipping-address-geo-lookup [_ event _ _ app-state]
   (when (and
          (experiments/adv-match-post-purchase? app-state)
-         (= true (get-in app-state keypaths/loaded-places))
+         (get-in app-state keypaths/loaded-places)
          (nil? (get-in app-state adventure.keypaths/adventure-matched-stylists))
          (nil? (get-in app-state keypaths/order-servicing-stylist-id)))
     (let [choices                                        (get-in app-state adventure.keypaths/adventure-choices)
