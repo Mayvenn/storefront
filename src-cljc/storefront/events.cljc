@@ -281,7 +281,6 @@
 (defpath api-success-send-stylist-referrals)
 (defpath api-partial-success-send-stylist-referrals)
 
-(defpath api-fetch-geocode)
 (defpath api-success-fetch-geocode)
 (defpath api-failure-fetch-geocode)
 (defpath api-fetch-stylists-within-radius)
@@ -510,6 +509,8 @@
 
 (defpath adventure-clear-servicing-stylist)
 (defpath api-success-adventure-cleared-servicing-stylist)
+
+(defpath attempt-shipping-address-geo-lookup)
 
 (defpath control-chat-button-pressed)
 

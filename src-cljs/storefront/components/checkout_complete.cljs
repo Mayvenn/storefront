@@ -162,32 +162,6 @@
              need-match?                                                   need-match-via-phone-component
              :else                                                         get-inspired-cta)]])]))
 
-(defmethod effects/perform-effects events/api-fetch-geocode
-  [_ event _ _ app-state]
-  (let [choices                                        (get-in app-state adventure.keypaths/adventure-choices)
-        {:keys [address1 address2 city state zipcode]} (get-in app-state keypaths/order-shipping-address)
-        params                                         (clj->js {"address" (string/join " " [address1 address2 (str city ",") state zipcode])
-                                                                 "region"  "US"})]
-    (. (js/google.maps.Geocoder.)
-       (geocode params
-                (fn [results status]
-                  (let [location (some-> results
-                                         (js->clj :keywordize-keys true)
-                                         first
-                                         :geometry
-                                         :location
-                                         .toJSON
-                                         (js->clj :keywordize-keys true))]
-                    (if location
-                      (api/fetch-stylists-within-radius (get-in app-state keypaths/api-cache)
-                                                        {:latitude     (:lat location)
-                                                         :longitude    (:lng location)
-                                                         :radius       "10mi"
-                                                         :install-type (:install-type choices)
-                                                         :choices      choices}
-                                                        #(handle-message events/api-success-fetch-stylists-within-radius-post-purchase %))
-                      events/api-failure-fetch-geocode)))))))
-
 (defmethod transitions/transition-state events/api-success-fetch-matched-stylist
   [_ event {:keys [stylist]} app-state]
   (assoc-in app-state

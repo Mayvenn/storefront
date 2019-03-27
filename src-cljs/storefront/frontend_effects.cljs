@@ -87,6 +87,7 @@
                     js/JSON.parse
                     (js->clj :keywordize-keys true))]
     (handle-message events/control-adventure-choice {:choice {:value choices}}))
+  (places-autocomplete/insert)
   (svg/insert-sprite)
   (stringer/insert-tracking (get-in app-state keypaths/store-slug))
   (google-analytics/insert-tracking)
@@ -95,7 +96,6 @@
   (facebook-analytics/insert-tracking)
   (pinterest/insert-tracking)
   (talkable/insert)
-  (places-autocomplete/insert)
   (refresh-account app-state)
   (browser-events/attach-global-listeners)
   (lucky-orange/track-store-experience (get-in app-state keypaths/store-experience))
@@ -445,11 +445,7 @@
   (stripe/insert))
 
 (defmethod perform-effects events/navigate-checkout-confirmation [_ event args _ app-state]
-  (when (and
-         (experiments/adv-match-post-purchase? app-state)
-         (= "freeinstall" (get-in app-state keypaths/store-slug))
-         (get-in app-state keypaths/order-servicing-stylist-id))
-    (handle-message events/api-fetch-geocode))
+  (handle-message events/attempt-shipping-address-geo-lookup)
   ;; TODO: get the credit card component to function correctly on direct page load
   (when (empty? (get-in app-state keypaths/order-cart-payments))
     (redirect events/navigate-checkout-payment))
@@ -1011,6 +1007,9 @@
     (when (#{events/navigate-friend-referrals events/navigate-account-referrals} nav-event)
       (talkable/show-referrals app-state))))
 
+(defmethod perform-effects events/inserted-places [_ event args _ app-state]
+  (handle-message events/attempt-shipping-address-geo-lookup))
+
 (defmethod perform-effects events/control-email-captured-dismiss [_ event args _ app-state]
   (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) "dismissed"))
 
@@ -1049,3 +1048,33 @@
 (defmethod perform-effects events/inserted-stringer
   [_ event args app-state-before app-state]
   (handle-message events/stringer-distinct-id-available {:stringer-distinct-id (stringer/browser-id)}))
+
+(defmethod perform-effects events/attempt-shipping-address-geo-lookup [_ event _ _ app-state]
+  (when (and
+         (experiments/adv-match-post-purchase? app-state)
+         (= true (get-in app-state keypaths/loaded-places))
+         (nil? (get-in app-state adventure.keypaths/adventure-matched-stylists))
+         (nil? (get-in app-state keypaths/order-servicing-stylist-id)))
+    (let [choices                                        (get-in app-state adventure.keypaths/adventure-choices)
+          {:keys [address1 address2 city state zipcode]} (get-in app-state keypaths/order-shipping-address)
+          params                                         (clj->js {"address" (string/join " " [address1 address2 (str city ",") state zipcode])
+                                                                   "region"  "US"})]
+      (. (js/google.maps.Geocoder.)
+         (geocode params
+                  (fn [results status]
+                    (let [location (some-> results
+                                           (js->clj :keywordize-keys true)
+                                           first
+                                           :geometry
+                                           :location
+                                           .toJSON
+                                           (js->clj :keywordize-keys true))]
+                      (if location
+                        (api/fetch-stylists-within-radius (get-in app-state keypaths/api-cache)
+                                                          {:latitude     (:lat location)
+                                                           :longitude    (:lng location)
+                                                           :radius       "10mi"
+                                                           :install-type (:install-type choices)
+                                                           :choices      choices}
+                                                          #(handle-message events/api-success-fetch-stylists-within-radius-post-purchase %))
+                        events/api-failure-fetch-geocode))))))))
