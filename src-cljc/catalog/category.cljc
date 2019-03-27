@@ -1,6 +1,7 @@
 (ns catalog.category
   (:require
    #?@(:cljs [[storefront.browser.scroll :as scroll]
+              [storefront.api :as api]
               [storefront.history :as history]])
    [storefront.component :as component]
    [catalog.categories :as categories]
@@ -15,7 +16,6 @@
    [storefront.accessors.experiments :as experiments]
    [storefront.accessors.auth :as auth]
    [storefront.request-keys :as request-keys]
-   [storefront.api :as api]
    [catalog.products :as products]
    [catalog.keypaths]
    [catalog.skuers :as skuers]
