@@ -21,7 +21,8 @@
             [storefront.request-keys :as request-keys]
             [storefront.api :as api]
             [clojure.string :as string]
-            [spice.core :as spice]))
+            [spice.core :as spice]
+            cljs.pprint))
 
 ;; TODO Remove handling of underscored keys after storeback has been deployed.
 
