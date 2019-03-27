@@ -65,17 +65,6 @@
 (defn select [coll skuer & criteria]
   (apply query coll (select-keys skuer (:selector/essentials skuer)) criteria))
 
-(defn- use-case-then-order-key [img]
-  [(condp = (:use-case img)
-     "seo"      0
-     "carousel" 1
-     2)
-   (:order img)])
-
-(defn seo-image [skuer]
-  (->> (selector/match-essentials skuer (:selector/images skuer))
-       (sort-by use-case-then-order-key)))
-
 ;; Using a set finds equality or a subset
 (deftest selector
   (testing "querying with set"

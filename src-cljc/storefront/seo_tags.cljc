@@ -5,10 +5,20 @@
             [storefront.events :as events]
             [catalog.categories :as categories]
             [catalog.products :as products]
-            [catalog.selector :as selector]
+            [spice.selector :as selector]
             [storefront.pixlee :refer [pixlee-config]]
-            [clojure.string :as string]
-            [spice.core :as spice]))
+            [clojure.string :as string]))
+
+(defn- use-case-then-order-key [img]
+  [(condp = (:use-case img)
+     "seo"      0
+     "carousel" 1
+     2)
+   (:order img)])
+
+(defn ^:private seo-image [skuer]
+  (->> (selector/match-essentials skuer (:selector/images skuer))
+       (sort-by use-case-then-order-key)))
 
 (def tag-class "seo-tag")
 
@@ -43,7 +53,7 @@
 (defn product-details-tags [data]
   (let [product (products/current-product data)
         sku     (get-in data k/detailed-product-selected-sku)
-        image   (when sku (first (selector/seo-image sku)))] ;; This when-clause is because of direct-to-detail products.
+        image   (when sku (first (seo-image sku)))] ;; This when-clause is because of direct-to-detail products.
     [[:title {} (:page/title product)]
      [:meta {:name "description" :content (:page.meta/description product)}]
      [:meta {:property "og:title" :content (:opengraph/title product)}]
