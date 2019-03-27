@@ -535,13 +535,18 @@
     (-> app-state
         (assoc-in keypaths/cart-recently-added-skus (orders/newly-added-sku-ids previous-order order)))))
 
+(defn nullify-choices-if-flow-complete [app-state]
+  (cond-> app-state
+    (:servicing-stylist-id
+     (get-in app-state keypaths/completed-order)) (assoc-in adventure.keypaths/adventure-choices nil)))
+
 (defmethod transition-state events/order-completed [_ event order app-state]
   (-> app-state
       (assoc-in keypaths/sign-up-email (get-in app-state keypaths/checkout-guest-email))
       (assoc-in keypaths/checkout state/initial-checkout-state)
       (assoc-in keypaths/cart state/initial-cart-state)
       (assoc-in keypaths/completed-order order)
-      (assoc-in adventure.keypaths/adventure-choices nil)
+      nullify-choices-if-flow-complete
       (assoc-in keypaths/pending-talkable-order
                 (when-not (= "freeinstall" (get-in app-state keypaths/store-slug))
                   (talkable/completed-order order)))))
