@@ -503,10 +503,6 @@
 
 (def vals-empty? (comp (partial every? string/blank?) vals))
 
-(defn default-checkout-addresses [app-state billing-address shipping-address]
-  (assoc-in app-state keypaths/checkout-billing-address billing-address)
-  (assoc-in app-state keypaths/checkout-shipping-address shipping-address))
-
 (defmethod transition-state events/autocomplete-update-address [_ event {:keys [address address-keypath]} app-state]
   (update-in app-state address-keypath merge address))
 
@@ -514,7 +510,8 @@
   (-> app-state
       (sign-in-user args)
       (update-account-address args)
-      (default-checkout-addresses billing-address shipping-address)))
+      (assoc-in keypaths/checkout-billing-address billing-address)
+      (assoc-in keypaths/checkout-shipping-address shipping-address)))
 
 (defmethod transition-state events/api-success-update-order-add-promotion-code [_ event args app-state]
   (-> app-state
