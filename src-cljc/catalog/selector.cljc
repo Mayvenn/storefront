@@ -1,8 +1,6 @@
 (ns catalog.selector
   (:require [clojure.set :as set]
-            [clojure.test :refer [deftest is testing]]
-            [spice.maps :as maps]
-            [spice.selector :as selector]))
+            [clojure.test :refer [deftest is testing]]))
 
 ;; TODO(jjw, jjh): Decommission this namespace after cellar deploy
 
@@ -61,9 +59,6 @@
   (if-let [merged-criteria (reduce (partial merge-with set/union) {} criteria)]
     (sequence (criteria->strict-query merged-criteria) coll)
     coll))
-
-(defn select [coll skuer & criteria]
-  (apply query coll (select-keys skuer (:selector/essentials skuer)) criteria))
 
 ;; Using a set finds equality or a subset
 (deftest selector
