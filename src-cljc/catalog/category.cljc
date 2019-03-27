@@ -212,9 +212,11 @@
         all-skus      (get-in data keypaths/v2-skus)
         ;; TODO(jjw, jjh) Remove `new-selector?` (as true) post cellar deploy
         new-selector? (some (fn [product]
-                              (not-empty
-                               (select-keys
-                                product (:selector/electives product))))
+                              (= (-> product
+                                     (select-keys (:selector/electives product))
+                                     keys
+                                     set)
+                                 (set (:selector/electives product))))
                             (vals (get-in data keypaths/v2-products)))
 
         products-matching-category (selector/match-all {:selector/strict? true}

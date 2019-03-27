@@ -23,9 +23,11 @@
          :keys [install-type texture color]} (get-in data adventure.keypaths/adventure-choices)
         ;; TODO(jjw, jjh) Remove `new-selector?` (as true) post cellar deploy
         new-selector?                        (some (fn [product]
-                                                     (not-empty
-                                                      (select-keys
-                                                       product (:selector/electives product))))
+                                                     (= (-> product
+                                                            (select-keys (:selector/electives product))
+                                                            keys
+                                                            set)
+                                                        (set (:selector/electives product))))
                                                    (vals (get-in data keypaths/v2-products)))
         all-skus                             (get-in data keypaths/v2-skus)
         products                             (if new-selector?
