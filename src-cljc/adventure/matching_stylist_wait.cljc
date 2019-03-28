@@ -37,8 +37,7 @@
                                           :choices      choices}
                                          (fn [results]
                                            (handle-message events/api-success-fetch-stylists-within-radius results)
-                                           (handle-message events/wait-to-navigate-to-stylist-results
-                                                           {:post-purchase? false})))
+                                           (handle-message events/wait-to-navigate-to-stylist-results)))
        ;; END NOTE
        (when-not (and latitude longitude how-far install-type)
          (history/enqueue-redirect events/navigate-adventure-home)))))
@@ -47,14 +46,15 @@
 
 (defmethod effects/perform-effects events/navigate-adventure-matching-stylist-wait-post-purchase [_ _ _ _ app-state]
   #?(:cljs
-     (handle-message events/wait-to-navigate-to-stylist-results {:post-purchase? true})))
+     (handle-message events/wait-to-navigate-to-stylist-results)))
 
 ;; BOTH
 
 (defmethod effects/perform-effects events/wait-to-navigate-to-stylist-results
-  [_ _ {:keys [post-purchase?]} _ app-state]
+  [_ _ _ _ app-state]
   #?(:cljs
-     (let [matched-stylists (get-in app-state adventure-keypaths/adventure-matched-stylists)
+     (let [adventure-flow   (get-in app-state adventure-keypaths/adventure-choices-flow)
+           matched-stylists (get-in app-state adventure-keypaths/adventure-matched-stylists)
            timer      (get-in app-state adventure-keypaths/adventure-matching-stylists-timer)
            ms-to-wait (max 0
                            (- (date/to-millis timer)
@@ -63,7 +63,7 @@
         (cond (empty? matched-stylists)
               events/navigate-adventure-out-of-area
 
-              post-purchase?
+              (= adventure-flow "shop-hair")
               events/navigate-adventure-stylist-results-post-purchase
 
               :else

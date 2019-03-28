@@ -10,8 +10,7 @@
             [adventure.progress :as progress]))
 
 (defn ^:private query [data]
-  (let [stylist-id        (get-in data keypaths/adventure-selected-stylist-id)
-        servicing-stylist (get-in data keypaths/adventure-servicing-stylist)]
+  (let [servicing-stylist (get-in data keypaths/adventure-servicing-stylist)]
     {:prompt               (str "Congrats on matching with " (-> servicing-stylist :address :firstname) "!")
      :mini-prompt          "We'll connect you with your stylist shortly. But first, pick out your hair!"
      :show-logo?           false
