@@ -37,7 +37,8 @@
                                           :choices      choices}
                                          (fn [results]
                                            (handle-message events/api-success-fetch-stylists-within-radius results)
-                                           (handle-message events/wait-to-navigate-to-stylist-results)))
+                                           (handle-message events/wait-to-navigate-to-stylist-results
+                                                           {:post-purchase? false})))
        ;; END NOTE
        (when-not (and latitude longitude how-far install-type)
          (history/enqueue-redirect events/navigate-adventure-home)))))
@@ -46,12 +47,12 @@
 
 (defmethod effects/perform-effects events/navigate-adventure-matching-stylist-wait-post-purchase [_ _ _ _ app-state]
   #?(:cljs
-     (handle-message events/wait-to-navigate-to-stylist-results)))
+     (handle-message events/wait-to-navigate-to-stylist-results {:post-purchase? true})))
 
 ;; BOTH
 
 (defmethod effects/perform-effects events/wait-to-navigate-to-stylist-results
-  [_ _ {:keys [stylists]} _ app-state]
+  [_ _ {:keys [post-purchase?]} _ app-state]
   #?(:cljs
      (let [matched-stylists (get-in app-state adventure-keypaths/adventure-matched-stylists)
            timer      (get-in app-state adventure-keypaths/adventure-matching-stylists-timer)
@@ -59,9 +60,15 @@
                            (- (date/to-millis timer)
                               (date/to-millis (date/now))))]
        (history/enqueue-redirect
-        (if (seq matched-stylists)
-          events/navigate-adventure-stylist-results-pre-purchase
-          events/navigate-adventure-out-of-area) {:timeout ms-to-wait}))))
+        (cond (empty? matched-stylists)
+              events/navigate-adventure-out-of-area
+
+              post-purchase?
+              events/navigate-adventure-stylist-results-post-purchase
+
+              :else
+              events/navigate-adventure-stylist-results-pre-purchase)
+        {:timeout ms-to-wait}))))
 
 (defn ^:private component
   [{:keys [] :as data} _ _]
