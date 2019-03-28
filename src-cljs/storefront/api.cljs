@@ -889,6 +889,7 @@
                       (messages/handle-message events/api-failure-order-not-created-from-shared-cart))}))
 
 (defn assign-servicing-stylist
+  "Assigns a servicing stylist to an order, or creates such an order if no order number given"
   [servicing-stylist-id stylist-id number token handler]
   (storeback-api-req
    POST
