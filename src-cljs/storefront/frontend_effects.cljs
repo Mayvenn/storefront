@@ -30,6 +30,7 @@
             [storefront.hooks.places-autocomplete :as places-autocomplete]
             [storefront.hooks.reviews :as reviews]
             [storefront.hooks.riskified :as riskified]
+            [storefront.hooks.quadpay :as quadpay]
             [storefront.hooks.seo :as seo]
             [storefront.hooks.stringer :as stringer]
             [storefront.hooks.stripe :as stripe]
@@ -98,6 +99,7 @@
   (talkable/insert)
   (refresh-account app-state)
   (browser-events/attach-global-listeners)
+  (browser-events/attach-capture-late-readystatechange-callbacks)
   (lucky-orange/track-store-experience (get-in app-state keypaths/store-experience))
   (when-let [stringer-distinct-id (cookie/get-stringer-distinct-id (get-in app-state keypaths/cookie))]
     (handle-message events/stringer-distinct-id-available {:stringer-distinct-id stringer-distinct-id}))
@@ -113,10 +115,13 @@
   (facebook-analytics/remove-tracking)
   (pinterest/remove-tracking)
   (lucky-orange/remove-tracking)
-  (pixlee/remove-tracking))
+  (pixlee/remove-tracking)
+  (browser-events/unattach-capture-late-readystatechange-callbacks))
 
 (defmethod perform-effects events/enable-feature [_ event {:keys [feature]} _ app-state]
-  (handle-message events/determine-and-show-popup))
+  (handle-message events/determine-and-show-popup)
+  (when (experiments/quadpay? app-state)
+    (quadpay/insert)))
 
 (defmethod perform-effects events/ensure-sku-ids
   [_ _ {:keys [sku-ids]} _ app-state]
@@ -442,7 +447,9 @@
   (when (empty? (get-in app-state keypaths/order-shipping-address))
     (redirect events/navigate-checkout-address))
   (fetch-saved-cards app-state)
-  (stripe/insert))
+  (stripe/insert)
+  (when (experiments/quadpay? app-state)
+    (quadpay/insert)))
 
 (defmethod perform-effects events/navigate-checkout-confirmation [_ event args _ app-state]
   (handle-message events/attempt-shipping-address-geo-lookup)

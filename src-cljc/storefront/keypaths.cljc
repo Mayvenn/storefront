@@ -271,6 +271,7 @@
 (def loaded-facebook (conj loaded :facebook))
 (def loaded-pixlee (conj loaded :pixlee))
 (def loaded-places (conj loaded :places))
+(def loaded-quadpay (conj loaded :quadpay))
 (def loaded-stripe (conj loaded :stripe))
 (def loaded-talkable (conj loaded :talkable))
 (def loaded-uploadcare (conj loaded :uploadcare))

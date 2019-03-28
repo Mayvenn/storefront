@@ -1,3 +1,11 @@
+.m5  { margin:        var(--space-5) }
+.mt5 { margin-top:    var(--space-5) }
+.mr5 { margin-right:  var(--space-5) }
+.mb5 { margin-bottom: var(--space-5) }
+.ml5 { margin-left:   var(--space-5) }
+.mx5 { margin-left:   var(--space-5); margin-right:  var(--space-5) }
+.my5 { margin-top:    var(--space-5); margin-bottom: var(--space-5) }
+
 .m6  { margin:        var(--space-6) }
 .mt6 { margin-top:    var(--space-6) }
 .mr6 { margin-right:  var(--space-6) }
@@ -94,6 +102,7 @@
   --space-2: 1rem;
   --space-3: 2rem;
   --space-4: 4rem;
+  --space-5: 8rem;
   --space-6: 16rem;
   --space-7: 32rem;
   --space-8: 64rem;

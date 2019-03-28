@@ -9,6 +9,7 @@
             [storefront.components.money-formatters :refer [as-money]]
             [storefront.components.promotion-banner :as promotion-banner]
             [storefront.effects :as effects]
+            [storefront.hooks.quadpay :as quadpay]
             [storefront.components.ui :as ui]
             [storefront.transitions :as transitions]
             [storefront.events :as events]
@@ -43,10 +44,15 @@
                  selected-saved-card-id (assoc-in [:cart-payments :stripe :source] selected-saved-card-id))
         :navigate events/navigate-checkout-confirmation}))))
 
+(defmethod transitions/transition-state events/control-checkout-payment-select
+  [_ _ args app-state]
+  (assoc-in app-state keypaths/checkout-selected-payment-methods {(:payment-method args) {}}))
+
 (defn component
   [{:keys [step-bar
            saving?
            quadpay?
+           loaded-quadpay
            disabled?
            loaded-stripe?
            store-credit
@@ -72,9 +78,9 @@
 
         (if quadpay?
           (let [{:keys [credit-applicable fully-covered?]} store-credit
-                selected-stripe-or-store-credit? (and (seq selected-payment-methods)
-                                                      (set/subset? selected-payment-methods #{:stripe :store-credit}))
-                selected-quadpay? (contains? selected-payment-methods :affirm)]
+                selected-stripe-or-store-credit?           (and (seq selected-payment-methods)
+                                                                (set/subset? selected-payment-methods #{:stripe :store-credit}))
+                selected-quadpay?                          (contains? selected-payment-methods :quadpay)]
             (if (and fully-covered? (not applied-install-promotion))
                   (ui/note-box
                    {:color     "teal"
@@ -95,7 +101,7 @@
 
              (when selected-stripe-or-store-credit?
                (let [{:keys [credit-available credit-applicable]} store-credit]
-                 [:div.p2
+                 [:div.p2.ml5
                   (when (pos? credit-available)
                     (if applied-install-promotion
                       (ui/note-box
@@ -123,26 +129,32 @@
                               :field-errors field-errors})
                    [:div.h5
                     "You can review your order on the next page before we charge your card."]]]))
-             (ui/radio-section
-              (merge {:name         "payment-method"
-                      :id           "payment-method-quadpay"
-                      :data-test    "payment-method"
-                      :data-test-id "quadpay"
-                      :on-click     (utils/send-event-callback events/control-checkout-payment-select {:payment-method :quadpay})}
-                     (when selected-quadpay? {:checked "checked"}))
-              [:div.overflow-hidden
-               [:div.flex
-                [:div.mr1 "Pay with "]
-                [:div.mt1 {:style {:width "85px" :height "17px"}}
-                 svg/quadpay-logo]]
-               [:p.h6 (str "4 interest-free payments with QuadPay. Learn More")
-                [:div "Quadpay modal"]
-                #_(om/build affirm/modal-component {})
-                ]])
+            (ui/radio-section
+             (merge {:name         "payment-method"
+                     :id           "payment-method-quadpay"
+                     :data-test    "payment-method"
+                     :data-test-id "quadpay"
+                     :on-click     (utils/send-event-callback events/control-checkout-payment-select {:payment-method :quadpay})}
+                    (when selected-quadpay? {:checked "checked"}))
 
-             (when selected-quadpay?
-               [:div.h6.px2.ml4.dark-gray
-                "Before completing your purchase, you will be redirected to Affirm to securely set up your payment plan."])]))
+             [:div.overflow-hidden
+              [:div.flex
+               [:div.mr1 "Pay with "]
+               [:div.mt1 {:style {:width "85px" :height "17px"}}
+                svg/quadpay-logo]]
+              [:p.h6 "4 interest-free payments with QuadPay. "
+               [:a.blue.block {:href "#"
+                               :on-click (fn [e]
+                                           (.preventDefault e)
+                                           (quadpay/show-modal))}
+                "Learn more."]
+               (when loaded-quadpay
+                 [:div.hide (component/build quadpay/component {} nil)])]])
+
+            (when selected-quadpay?
+              [:div.h6.px2.ml5.dark-gray
+               "Before completing your purchase, you will be redirected to Quadpay to securely set up your payment plan."])]))
+
 
           (let [{:keys [credit-available credit-applicable fully-covered?]} store-credit]
             (if (and fully-covered?
@@ -269,25 +281,26 @@
                                   (get-in data keypaths/user))
         selected-payment-methods (set (keys (get-in data keypaths/checkout-selected-payment-methods)))]
     (merge
-     {:store-credit                     {:credit-available  available-store-credit
-                                         :credit-applicable credit-to-use
-                                         :fully-covered?    fully-covered?}
-      :promotion-banner                 (promotion-banner/query data)
-      :quadpay?                         (experiments/quadpay? data)
-      :promo-code                       (first (get-in data keypaths/order-promotion-codes))
-      :saving?                          (cc/saving-card? data)
-      :disabled?                        (or (and (utils/requesting? data request-keys/get-saved-cards)
-                                                 ;; Requesting cards, no existing cards, or not fully covered
-                                                 (empty? (get-in data keypaths/checkout-credit-card-existing-cards))
-                                                 (not fully-covered?))
-                                            (empty? selected-payment-methods))
-      :applied-install-promotion        (->> (orders/all-applied-promo-codes order)
-                                             (filter #{"freeinstall" "install"})
-                                             first)
-      :loaded-stripe?                   (get-in data keypaths/loaded-stripe)
-      :step-bar                         (checkout-steps/query data)
-      :field-errors                     (:field-errors (get-in data keypaths/errors))
-      :selected-payment-methods         selected-payment-methods}
+     {:store-credit              {:credit-available  available-store-credit
+                                  :credit-applicable credit-to-use
+                                  :fully-covered?    fully-covered?}
+      :promotion-banner          (promotion-banner/query data)
+      :quadpay?                  (experiments/quadpay? data)
+      :promo-code                (first (get-in data keypaths/order-promotion-codes))
+      :saving?                   (cc/saving-card? data)
+      :disabled?                 (or (and (utils/requesting? data request-keys/get-saved-cards)
+                                          ;; Requesting cards, no existing cards, or not fully covered
+                                          (empty? (get-in data keypaths/checkout-credit-card-existing-cards))
+                                          (not fully-covered?))
+                                     (empty? selected-payment-methods))
+      :applied-install-promotion (->> (orders/all-applied-promo-codes order)
+                                      (filter #{"freeinstall" "install"})
+                                      first)
+      :loaded-stripe?            (get-in data keypaths/loaded-stripe)
+      :step-bar                  (checkout-steps/query data)
+      :field-errors              (:field-errors (get-in data keypaths/errors))
+      :selected-payment-methods  selected-payment-methods
+      :loaded-quadpay            (get-in data keypaths/loaded-quadpay)}
      (cc/query data))))
 
 (defn built-component [data opts]
