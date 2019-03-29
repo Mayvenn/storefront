@@ -2,7 +2,8 @@
   (:require [adventure.stylist-results :as stylist-results]
             [adventure.keypaths :as adv-keypaths]
             [storefront.component :as component]
-            [storefront.components.formatters :as formatters]
+            #?(:cljs
+               [storefront.components.formatters :as formatters])
             [storefront.components.ui :as ui]
             [storefront.keypaths :as keypaths]
             [clojure.string :as string]))
@@ -43,7 +44,8 @@
     "Chat with your Stylist"]
    [:div.h5.line-height-3.center
     "A group text message will be sent to "
-    [:span.bold.nowrap (formatters/phone-number phone-number)]
+    [:span.bold.nowrap
+     #?(:cljs (formatters/phone-number phone-number))]
     " and your stylist, "
     [:span.nowrap {:data-test "servicing-stylist-firstname"}
      (-> servicing-stylist :address :firstname)]
