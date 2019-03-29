@@ -18,14 +18,17 @@
 (defn show-modal
   "Requires component to be on the page"
   []
-  (.displayModal (js/document.querySelector "quadpay-widget")))
+  (.displayModal (js/document.querySelector "quadpay-widget") ))
+
+(defn calc-installment-amount [full-amount]
+  (.toFixed (/ full-amount 4) 2))
 
 (defn component
-  [{} owner opts]
+  [{:keys [full-amount]} owner opts]
   (reify
     om/IDidMount
     (did-mount [_] (browser.events/invoke-late-ready-state-listeners))
     om/IRender
     (render [_]
       (html
-       [:quadpay-widget {:amount "100"}]))))
+       [:quadpay-widget {:amount full-amount}]))))

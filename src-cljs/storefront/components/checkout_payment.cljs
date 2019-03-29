@@ -33,7 +33,8 @@
                                            (orders/applied-install-promotion order))
                                    (get-in app-state keypaths/checkout-credit-card-selected-id))
         needs-stripe-token?      (and (contains? #{"add-new-card" nil} selected-saved-card-id)
-                                      (not covered-by-store-credit))]
+                                      (not covered-by-store-credit)
+                                      (not (contains? selected-payment-methods :quadpay)))]
     (if needs-stripe-token?
       (create-stripe-token app-state {:place-order? false})
       (api/update-cart-payments

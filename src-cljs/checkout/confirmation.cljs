@@ -1,24 +1,26 @@
 (ns checkout.confirmation
-  (:require [adventure.keypaths]
-            [storefront.components.money-formatters :as mf]
+  (:require [adventure.checkout.cart.items :as adventure-cart-items]
+            [adventure.keypaths]
+            [catalog.images :as catalog-images]
+            [checkout.cart.items :as cart-items]
+            [checkout.confirmation.summary :as confirmation-summary]
+            [checkout.templates.item-card :as item-card]
+            [spice.maps :as maps]
             [storefront.accessors.orders :as orders]
             [storefront.component :as component]
-            [storefront.components.checkout-delivery :as checkout-delivery]
             [storefront.components.checkout-credit-card :as checkout-credit-card]
+            [storefront.components.checkout-delivery :as checkout-delivery]
             [storefront.components.checkout-steps :as checkout-steps]
+            [storefront.components.money-formatters :as mf]
             [storefront.components.order-summary :as summary]
             [storefront.components.promotion-banner :as promotion-banner]
+            [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
-            [adventure.checkout.cart.items :as adventure-cart-items]
             [storefront.events :as events]
+            [storefront.hooks.quadpay :as quadpay]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.request-keys :as request-keys]
-            [spice.maps :as maps]
-            [catalog.images :as catalog-images]
-            [checkout.templates.item-card :as item-card]
-            [checkout.cart.items :as cart-items]
-            [checkout.confirmation.summary :as confirmation-summary]))
+            [storefront.request-keys :as request-keys]))
 
 (defn requires-additional-payment?
   [data]
@@ -29,31 +31,40 @@
      ;; stripe can charge any amount
      no-stripe-payment?
      ;; is total covered by remaining store-credit?
-     (> order-total store-credit-amount))))
+     (> order-total store-credit-amount)
+     (contains? (get-in data keypaths/checkout-selected-payment-methods) :store-credit))))
 
 (defn checkout-button
-  [{:keys [spinning? disabled?]}]
-  (ui/submit-button "Place Order" {:spinning? spinning?
-                                   :disabled? disabled?
-                                   :data-test "confirm-form-submit"}))
+  [{:keys [spinning? disabled? quadpay?]}]
+  (ui/submit-button (if quadpay?
+                      "Place Order with QuadPay"
+                      "Place Order")
+                    {:spinning? spinning?
+                     :disabled? disabled?
+                     :data-test "confirm-form-submit"}))
 
 (defn checkout-button-query
   [data]
   (let [saving-card?   (checkout-credit-card/saving-card? data)
         placing-order? (utils/requesting? data request-keys/place-order)]
     {:disabled? (utils/requesting? data request-keys/update-shipping-method)
-     :spinning? (or saving-card? placing-order?)}))
+     :spinning? (or saving-card? placing-order?)
+     :quadpay?  (contains? (get-in data keypaths/checkout-selected-payment-methods) :quadpay)}))
 
 (defn component
   [{:keys [available-store-credit
            checkout-steps
-           payment delivery order
+           payment
+           delivery
+           order
            items
            requires-additional-payment?
            promotion-banner
            install-or-free-install-applied?
            confirmation-summary
-           checkout-button-data]}
+           checkout-button-data
+           selected-quadpay?
+           loaded-quadpay]}
    owner]
   (component/create
    [:div.container.p2
@@ -89,6 +100,23 @@
                                         {:read-only?             true
                                          :use-store-credit?      (not install-or-free-install-applied?)
                                          :available-store-credit available-store-credit}))
+       (when (and selected-quadpay?
+                  loaded-quadpay)
+         [:div.border.border-blue.rounded.my2.py2.h6.dark-gray.center
+          "4 interest free payments of $" (quadpay/calc-installment-amount (:total order))
+          [:div.hide (component/build quadpay/component {} nil)]
+          [:div.flex.justify-center.items-center
+           "Continue with"
+           [:div.mx1 {:style {:width "70px" :height "14px"}}
+            svg/quadpay-logo]
+           "below."
+           [:a.blue.mx1 {:href     "#"
+                         :on-click (fn [e]
+                                     (.preventDefault e)
+                                     (quadpay/show-modal))}
+            "Learn more."]]
+          [:div.hide (component/build quadpay/component {:full-amount (:total order)} nil)]])
+
        [:div.col-12.col-6-on-tb-dt.mx-auto
         (checkout-button checkout-button-data)]]]]]))
 
@@ -182,7 +210,8 @@
   [data]
   (let [order                      (get-in data keypaths/order)
         freeinstall-line-item-data (cart-items/freeinstall-line-item-query data)
-        freeinstall-applied?       (orders/freeinstall-applied? order)]
+        freeinstall-applied?       (orders/freeinstall-applied? order)
+        selected-quadpay?          (contains? (get-in data keypaths/checkout-selected-payment-methods) :quadpay)]
     {:requires-additional-payment?     (requires-additional-payment? data)
      :promotion-banner                 (promotion-banner/query data)
      :checkout-steps                   (checkout-steps/query data)
@@ -202,10 +231,13 @@
      :payment                          (checkout-credit-card/query data)
      :delivery                         (checkout-delivery/query data)
      :install-or-free-install-applied? freeinstall-applied?
-     :available-store-credit           (get-in data keypaths/user-total-available-store-credit)
+     :available-store-credit           (when-not selected-quadpay?
+                                         (get-in data keypaths/user-total-available-store-credit))
+     :selected-quadpay?                selected-quadpay?
      :checkout-button-data             (checkout-button-query data)
      :confirmation-summary             (confirmation-summary/query data)
-     :store-slug                       (get-in data keypaths/store-slug)}))
+     :store-slug                       (get-in data keypaths/store-slug)
+     :loaded-quadpay                   (get-in data keypaths/loaded-quadpay)}))
 
 (defn adventure-query
   [data]
