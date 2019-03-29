@@ -52,6 +52,7 @@
             [adventure.checkout.cart :as adventure-cart]
             [adventure.out-of-area :as adventure.out-of-area]
             [adventure.match-success :as adventure.match-success]
+            [adventure.match-success-post-purchase :as adventure.match-success-post-purchase]
             [catalog.category :as category]
             [catalog.product-details :as product-details]
             [checkout.cart :as cart]
@@ -155,7 +156,8 @@
     events/navigate-adventure-stylist-results-pre-purchase        adventure.stylist-results/built-component
     events/navigate-adventure-stylist-results-post-purchase       adventure.stylist-results/built-component
     events/navigate-adventure-out-of-area                         adventure.out-of-area/built-component
-    events/navigate-adventure-match-success                       adventure.match-success/built-component
+    events/navigate-adventure-match-success-pre-purchase          adventure.match-success/built-component
+    events/navigate-adventure-match-success-post-purchase         adventure.match-success-post-purchase/built-component
     home/built-component))
 
 (defn sticky-promo-bar [data]

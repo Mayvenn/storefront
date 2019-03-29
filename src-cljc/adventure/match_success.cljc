@@ -10,7 +10,8 @@
             [adventure.progress :as progress]))
 
 (defn ^:private query [data]
-  (let [servicing-stylist (get-in data keypaths/adventure-servicing-stylist)]
+  (let [adventure-flow   (get-in data keypaths/adventure-choices-flow)
+        servicing-stylist (get-in data keypaths/adventure-servicing-stylist)]
     {:prompt               (str "Congrats on matching with " (-> servicing-stylist :address :firstname) "!")
      :mini-prompt          "We'll connect you with your stylist shortly. But first, pick out your hair!"
      :show-logo?           false
@@ -21,7 +22,9 @@
                              "url(//ucarecdn.com/8a87f86f-948f-48da-b59d-3ca4d8c6d5a0/-/format/png/-/quality/normal/)"}}
      :current-step         2
      :header-data          {:progress                progress/match-success
-                            :back-navigation-message [events/navigate-adventure-stylist-results-pre-purchase]}
+                            :back-navigation-message [(if (= "match-stylist" adventure-flow)
+                                                        events/navigate-adventure-stylist-results-pre-purchase
+                                                        events/navigate-adventure-stylist-results-post-purchase)]}
      :button               {:text           "Show me hair"
                             :data-test      "adventure-match-success-choice-show-hair"
                             :color          :white
@@ -39,4 +42,9 @@
 
 (defmethod effects/perform-effects events/api-success-assign-servicing-stylist [_ _ _ _ app-state]
   #?(:cljs
-     (history/enqueue-redirect events/navigate-adventure-match-success)))
+     (let [adventure-flow (get-in app-state keypaths/adventure-choices-flow)]
+       (prn adventure-flow)
+       (history/enqueue-redirect
+        (if (= "shop-hair" adventure-flow)
+          events/navigate-adventure-match-success-post-purchase
+          events/navigate-adventure-match-success-pre-purchase)))))
