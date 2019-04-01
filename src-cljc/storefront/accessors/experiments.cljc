@@ -147,3 +147,7 @@
 (defn quadpay?
   [data]
   (display-feature? data "quadpay"))
+
+(defn adv-cart-promo-entry?
+  [data]
+  (display-feature? data "adv-cart-promo-entry"))
