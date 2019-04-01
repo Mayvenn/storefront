@@ -53,6 +53,7 @@
             [adventure.out-of-area :as adventure.out-of-area]
             [adventure.match-success :as adventure.match-success]
             [adventure.match-success-post-purchase :as adventure.match-success-post-purchase]
+            [adventure.let-mayvenn-match :as adventure.let-mayvenn-match]
             [catalog.category :as category]
             [catalog.product-details :as product-details]
             [checkout.cart :as cart]
@@ -158,6 +159,7 @@
     events/navigate-adventure-out-of-area                         adventure.out-of-area/built-component
     events/navigate-adventure-match-success-pre-purchase          adventure.match-success/built-component
     events/navigate-adventure-match-success-post-purchase         adventure.match-success-post-purchase/built-component
+    events/navigate-adventure-let-mayvenn-match                   adventure.let-mayvenn-match/built-component
     home/built-component))
 
 (defn sticky-promo-bar [data]
@@ -241,7 +243,8 @@
        (and freeinstall?
             (or (routes/sub-page? [nav-event] [events/navigate-checkout])
                 (routes/sub-page? [nav-event] [events/navigate-order-complete])
-                (routes/sub-page? [nav-event] [events/navigate-need-match-order-complete])))
+                (routes/sub-page? [nav-event] [events/navigate-need-match-order-complete])
+                (routes/sub-page? [nav-event] [events/navigate-adventure-let-mayvenn-match])))
        (adventure-checkout-layout data nav-event)
 
        (or (routes/sub-page? [nav-event] [events/navigate-adventure])

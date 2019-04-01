@@ -1,7 +1,7 @@
 (ns adventure.stylist-results
   (:require [adventure.components.header :as header]
             [adventure.keypaths :as keypaths]
-            [storefront.keypaths :as storefront-keypaths]
+            [storefront.keypaths]
             [spice.date :as date]
             [storefront.component :as component]
             [storefront.components.ui :as ui]
@@ -131,14 +131,24 @@
       stylists)]]))
 
 (defn ^:private query [data]
-  {:current-step 2
-   :header-data  {:title                   "Find Your Stylist"
-                  :progress                progress/stylist-results
-                  :back-navigation-message [events/navigate-adventure-how-far]
-                  :subtitle                "Step 2 of 3"}
-   :card-data    {:stylist-gallery-index (get-in data keypaths/adventure-stylist-gallery-index)
-                  :gallery-image-index   (get-in data keypaths/adventure-stylist-gallery-image-index)
-                  :stylists              (get-in data keypaths/adventure-matched-stylists)}})
+  (let [post-purchase? (get-in data storefront.keypaths/completed-order)
+        current-step   (if-not post-purchase? 2 3)]
+    (cond->
+        {:current-step                  current-step
+         :header-data                   {:title                   "Find Your Stylist"
+                                         :progress                progress/stylist-results
+                                         :back-navigation-message [events/navigate-adventure-how-far]
+                                         :subtitle                (str "Step " current-step " of 3")}
+         :card-data                     {:stylist-gallery-index (get-in data keypaths/adventure-stylist-gallery-index)
+                                         :gallery-image-index   (get-in data keypaths/adventure-stylist-gallery-image-index)
+                                         :stylists              (get-in data keypaths/adventure-matched-stylists)}
+         :escape-hatch/navigation-event events/navigate-adventure-shop-hair
+         :escape-hatch/copy             "Shop hair"}
+
+      post-purchase?
+      (merge
+       {:escape-hatch/navigation-event events/navigate-adventure-let-mayvenn-match
+        :escape-hatch/copy             "Let Mayvenn Match"}))))
 
 (defn ^:private component
   [{:keys [header-data card-data] :as data} _ _]
@@ -155,9 +165,11 @@
         [:div.flex.flex-auto.justify-center.pt6
          [:div.h3.bold.purple "Pick your stylist"]]
         [:div (component/build stylist-cards-component card-data nil)]
-        [:div.h6.dark-gray.mt3.pb4
-         [:div.col-7-on-tb-dt.col-9.mx-auto.mb1 "Not ready to pick a stylist? Let a Mayvenn expert find one for you after you buy hair."]
-         [:a.teal.medium (utils/route-to events/navigate-adventure-shop-hair) "Shop hair"]]]]])))
+        (let [{:escape-hatch/keys [navigation-event copy]} data]
+          [:div.h6.dark-gray.mt3.pb4
+           [:div.col-7-on-tb-dt.col-9.mx-auto.mb1
+            "Not ready to pick a stylist? Let a Mayvenn expert find one for you after you buy hair."]
+           [:a.teal.medium (utils/route-to navigation-event) copy]])]]])))
 
 (defn built-component
   [data opts]
@@ -191,9 +203,9 @@
   [_ _ {:keys [stylist-id card-index servicing-stylist]} _ app-state]
   #?(:cljs
      (let [servicing-stylist-id stylist-id
-           store-stylist-id     (get-in app-state storefront-keypaths/store-stylist-id)
-           number               (get-in app-state storefront-keypaths/order-number)
-           token                (get-in app-state storefront-keypaths/order-token)]
+           store-stylist-id     (get-in app-state storefront.keypaths/store-stylist-id)
+           number               (get-in app-state storefront.keypaths/order-number)
+           token                (get-in app-state storefront.keypaths/order-token)]
        (api/assign-servicing-stylist servicing-stylist-id
                                      store-stylist-id
                                      number

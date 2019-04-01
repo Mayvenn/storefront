@@ -63,7 +63,8 @@
 
 (def ^:private order-complete-events
   #{events/navigate-order-complete
-    events/navigate-need-match-order-complete})
+    events/navigate-need-match-order-complete
+    events/navigate-adventure-let-mayvenn-match})
 
 (def return-blacklisted?
   (conj auth-events events/navigate-not-found))
@@ -89,5 +90,3 @@
 
 (defn show-minimal-header? [event adventure?]
   (contains? (set/union minimal-header-events (when adventure? order-complete-events)) event))
-
-

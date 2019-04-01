@@ -63,7 +63,8 @@
     ["/adv/shop/" :album-keyword "/texture"]                   (edn->bidi events/navigate-adventure-hair-texture)
     ["/adv/shop/" :album-keyword "/" :look-id]                 (edn->bidi events/navigate-adventure-look-detail)
     "/adv/match-success"                                       (edn->bidi events/navigate-adventure-match-success-pre-purchase)
-    "/adv/match-success-post-purchase"                         (edn->bidi events/navigate-adventure-match-success-post-purchase)}})
+    "/adv/match-success-post-purchase"                         (edn->bidi events/navigate-adventure-match-success-post-purchase)
+    "/adv/let-mayvenn-match"                                   (edn->bidi events/navigate-adventure-let-mayvenn-match)}})
 
 (def catalog-routes
   {["/categories/" [#"\d+" :catalog/category-id] "-" :page/slug]
