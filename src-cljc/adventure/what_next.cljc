@@ -21,11 +21,11 @@
                     progress/what-next
                     [{:text             "Match me with a certified stylist"
                       :data-test-suffix "match-stylist"
-                      :value            {:flow "match-stylist"}
+                      :value            {:flow "match-stylist"} ; Needed for analytics (even though nav event does the transition)
                       :target-message   [events/navigate-adventure-match-stylist]}
                      {:text             "Show me high quality hair"
                       :data-test-suffix "shop-hair"
-                      :value            {:flow "shop-hair"}
+                      :value            {:flow "shop-hair"} ; Needed for analytics (even though nav event does the transition)
                       :target-message   [events/navigate-adventure-shop-hair]}])}))
 
 

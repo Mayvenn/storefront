@@ -2,6 +2,8 @@
   (:require [adventure.components.basic-prompt :as basic-prompt]
             [storefront.component :as component]
             [storefront.events :as events]
+            adventure.keypaths
+            [storefront.transitions :as transitions]
             [adventure.progress :as progress]))
 
 (defn ^:private query [data]
@@ -22,3 +24,8 @@
 (defn built-component
   [data opts]
   (component/build basic-prompt/component (query data) opts))
+
+;; Need this transition for direct-load
+(defmethod transitions/transition-state events/navigate-adventure-match-stylist
+  [_ _ _ app-state]
+  (assoc-in app-state adventure.keypaths/adventure-choices-flow "match-stylist"))

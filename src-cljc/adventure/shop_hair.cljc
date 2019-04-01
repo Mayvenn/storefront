@@ -3,6 +3,7 @@
             [adventure.keypaths :as keypaths]
             [adventure.progress :as progress]
             [storefront.component :as component]
+            [storefront.transitions :as transitions]
             [storefront.events :as events]))
 
 (defn ^:private query [data]
@@ -25,3 +26,8 @@
 (defn built-component
   [data opts]
   (component/build basic-prompt/component (query data) opts))
+
+;; Need this transition for direct-load
+(defmethod transitions/transition-state events/navigate-adventure-shop-hair
+  [_ _ _ app-state]
+  (assoc-in app-state keypaths/adventure-choices-flow "shop-hair"))
