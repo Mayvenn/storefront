@@ -46,8 +46,15 @@
         :navigate events/navigate-checkout-confirmation}))))
 
 (defmethod transitions/transition-state events/control-checkout-payment-select
-  [_ _ args app-state]
-  (assoc-in app-state keypaths/checkout-selected-payment-methods {(:payment-method args) {}}))
+  [_ _ {:keys [payment-method]} app-state]
+  (let [current-uri  (get-in app-state keypaths/navigation-uri)
+        order-number (get-in app-state keypaths/order-number)]
+    (assoc-in app-state keypaths/checkout-selected-payment-methods
+              {payment-method (if (= :quadpay payment-method)
+                                {:return-url "TODO: Real return url"
+                                 :cancel-url (str (assoc current-uri :path "/cart"))}
+
+                                {})})))
 
 (defn component
   [{:keys [step-bar
@@ -135,7 +142,8 @@
                      :id           "payment-method-quadpay"
                      :data-test    "payment-method"
                      :data-test-id "quadpay"
-                     :on-click     (utils/send-event-callback events/control-checkout-payment-select {:payment-method :quadpay})}
+                     :on-click     (utils/send-event-callback events/control-checkout-payment-select
+                                                              {:payment-method :quadpay})}
                     (when selected-quadpay? {:checked "checked"}))
 
              [:div.overflow-hidden
