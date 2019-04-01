@@ -254,6 +254,8 @@
                (not= event events/navigate-force-set-password))
       (redirect events/navigate-force-set-password))
 
+    (quadpay/hide-modal)
+
     (exception-handler/refresh)
 
     (popup/touch-email-capture-session app-state)))

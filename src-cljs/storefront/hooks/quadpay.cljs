@@ -18,7 +18,14 @@
 (defn show-modal
   "Requires component to be on the page"
   []
-  (.displayModal (js/document.querySelector "quadpay-widget") ))
+  (when-let [quadpay-widget (js/document.querySelector "quadpay-widget")]
+    (.displayModal quadpay-widget)))
+
+(defn hide-modal
+  "Requires component to be on the page"
+  []
+  (when-let [quadpay-widget (js/document.querySelector "quadpay-widget")]
+    (.hideModal quadpay-widget)))
 
 (defn calc-installment-amount [full-amount]
   (.toFixed (/ full-amount 4) 2))
