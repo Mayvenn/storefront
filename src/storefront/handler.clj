@@ -641,6 +641,23 @@
            (= "submitted" (:state order))
            (util.response/redirect (str "/orders/" (:number order) "/complete"))))))
 
+(defn quadpay-routes [ctx]
+  (GET "/orders/:order-number/quadpay" [order-number :as request]
+    (let [order       (get-in-req-state request keypaths/order)
+          order-token (get (:query-params request) "order-token")]
+      (cond
+        (or (nil? order)
+            (not= (:number order) order-number)
+            (not= (:token order) order-token)
+            (not (#{"cart" "submitted"} (:state order))))
+        (util.response/redirect "/checkout/payment?error=quadpay-invalid-state")
+
+        (= "cart" (:state order))
+        (util.response/redirect "/checkout/processing")
+
+        (= "submitted" (:state order))
+        (util.response/redirect (str "/orders/" (:number order) "/complete"))))))
+
 (defn static-routes [_]
   (fn [{:keys [uri] :as req}]
     ;; can't use (:nav-message req) because routes/static-api-routes are not
@@ -702,6 +719,7 @@
 
 (defn routes-with-orders [ctx]
   (-> (routes (paypal-routes ctx)
+              (quadpay-routes ctx)
               (-> (routes (site-routes ctx)
                           (shared-cart-routes ctx))
                   (wrap-state ctx)
