@@ -118,7 +118,7 @@
              (orders/display-adjustment-name name)]
             (if (and freeinstall-line-item-data
                      (= "freeinstall" coupon-code))
-              (- 0 (:price freeinstall-line-item-data))
+              (- (:price freeinstall-line-item-data))
               price))))
 
        (when (not-any? #(-> % :coupon-code #{"freeinstall"}) adjustments-including-tax)

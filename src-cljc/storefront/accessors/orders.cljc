@@ -108,7 +108,7 @@
                    (map line-item-subtotal))))
 
 (defn tax-adjustment [order]
-  {:name "Tax (Estimated)" :price (:tax-total order)})
+  {:name "Tax (Estimated)" :price (:tax-total order 0.0)})
 
 (defn bundle-discount? [order]
   (->> (:adjustments order)
