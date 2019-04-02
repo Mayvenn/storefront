@@ -35,13 +35,18 @@
      (contains? (get-in data keypaths/checkout-selected-payment-methods) :store-credit))))
 
 (defn checkout-button
-  [{:keys [spinning? disabled? quadpay?]}]
-  (ui/submit-button (if quadpay?
-                      "Place Order with QuadPay"
-                      "Place Order")
-                    {:spinning? spinning?
-                     :disabled? disabled?
-                     :data-test "confirm-form-submit"}))
+  [{:keys [spinning? disabled? quadpay-redirect-url]}]
+  (if quadpay-redirect-url
+    (ui/teal-button
+     {:spinning? spinning?
+      :disabled? disabled?
+      :href      quadpay-redirect-url}
+     "Place Order with QuadPay")
+
+    (ui/submit-button "Place Order"
+                      {:spinning? spinning?
+                       :disabled? disabled?
+                       :data-test "confirm-form-submit"})))
 
 (defn checkout-button-query
   [data]
@@ -49,7 +54,10 @@
         placing-order? (utils/requesting? data request-keys/place-order)]
     {:disabled? (utils/requesting? data request-keys/update-shipping-method)
      :spinning? (or saving-card? placing-order?)
-     :quadpay?  (contains? (get-in data keypaths/checkout-selected-payment-methods) :quadpay)}))
+     :quadpay-redirect-url (-> (get-in data keypaths/order)
+                               :cart-payments
+                               :quadpay
+                               :redirect-url)}))
 
 (defn component
   [{:keys [available-store-credit
