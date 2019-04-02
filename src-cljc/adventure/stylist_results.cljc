@@ -215,8 +215,8 @@
   #?(:cljs
      (let [servicing-stylist-id   stylist-id
            store-stylist-id       (get-in app-state storefront.keypaths/store-stylist-id)
-           {:keys [number token]} (or (get-in app-state keypaths/order)
-                                      (get-in app-state keypaths/completed-order))]
+           {:keys [number token]} (or (get-in app-state storefront.keypaths/order)
+                                      (get-in app-state storefront.keypaths/completed-order))]
        (api/assign-servicing-stylist servicing-stylist-id
                                      store-stylist-id
                                      number
