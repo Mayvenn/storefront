@@ -689,5 +689,12 @@
     menu (assoc-in keypaths/stylist-service-menu menu)))
 
 (defmethod transition-state events/api-success-fetch-stylists-within-radius
-  [_ _ {:keys [stylists]} app-state]
-  (assoc-in app-state adventure.keypaths/adventure-matched-stylists stylists))
+  [_ _ {:keys [stylists query]} app-state]
+  (cond->
+      (assoc-in app-state adventure.keypaths/adventure-matched-stylists stylists)
+
+    (seq query)
+    (assoc-in adventure.keypaths/adventure-stylist-match-address
+              {:latitude  (:latitude query)
+               :longitude (:longitude query)
+               :radius    "10mi"})))

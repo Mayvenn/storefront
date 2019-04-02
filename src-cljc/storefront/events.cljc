@@ -508,6 +508,7 @@
 
 (defpath api-success-fetch-matched-stylist)
 (defpath adventure-stylist-search-results-displayed)
+(defpath adventure-stylist-search-results-post-purchase-displayed)
 
 (defpath adventure-visitor-identified)
 

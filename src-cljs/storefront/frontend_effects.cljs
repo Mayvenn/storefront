@@ -1078,12 +1078,15 @@
                                            :location
                                            .toJSON
                                            (js->clj :keywordize-keys true))]
-                      (if location
-                        (api/fetch-stylists-within-radius (get-in app-state keypaths/api-cache)
-                                                          {:latitude     (:lat location)
-                                                           :longitude    (:lng location)
-                                                           :radius       "10mi"
-                                                           :install-type (:install-type choices)
-                                                           :choices      choices}
-                                                          #(handle-message events/api-success-fetch-stylists-within-radius-post-purchase %))
+                      (if-let [{:keys [lat lng]} location]
+                        (let [query {:latitude     lat
+                                     :longitude    lng
+                                     :radius       "10mi"
+                                     :install-type (:install-type choices)
+                                     :choices      choices}]
+                          (api/fetch-stylists-within-radius (get-in app-state keypaths/api-cache)
+                                                            query
+                                                            #(handle-message events/api-success-fetch-stylists-within-radius-post-purchase
+                                                                             (merge {:query query}
+                                                                                    %))))
                         events/api-failure-fetch-geocode))))))))

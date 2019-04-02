@@ -143,12 +143,14 @@
                                          :gallery-image-index   (get-in data keypaths/adventure-stylist-gallery-image-index)
                                          :stylists              (get-in data keypaths/adventure-matched-stylists)}
          :escape-hatch/navigation-event events/navigate-adventure-shop-hair
-         :escape-hatch/copy             "Shop hair"}
+         :escape-hatch/copy             "Shop hair"
+         :escape-hatch/data-test        "shop-hair"}
 
       post-purchase?
       (merge
        {:escape-hatch/navigation-event events/navigate-adventure-let-mayvenn-match
-        :escape-hatch/copy             "Let Mayvenn Match"}))))
+        :escape-hatch/copy             "Let Mayvenn Match"
+        :escape-hatch/data-test        "let-mayvenn-match"}))))
 
 (defn ^:private component
   [{:keys [header-data card-data] :as data} _ _]
@@ -165,11 +167,11 @@
         [:div.flex.flex-auto.justify-center.pt6
          [:div.h3.bold.purple "Pick your stylist"]]
         [:div (component/build stylist-cards-component card-data nil)]
-        (let [{:escape-hatch/keys [navigation-event copy]} data]
+        (let [{:escape-hatch/keys [navigation-event copy data-test]} data]
           [:div.h6.dark-gray.mt3.pb4
            [:div.col-7-on-tb-dt.col-9.mx-auto.mb1
             "Not ready to pick a stylist? Let a Mayvenn expert find one for you after you buy hair."]
-           [:a.teal.medium (utils/route-to navigation-event) copy]])]]])))
+           [:a.teal.medium (merge {:data-test data-test} (utils/route-to navigation-event)) copy]])]]])))
 
 (defn built-component
   [data opts]
@@ -198,6 +200,14 @@
        (if (empty? matched-stylists)
          (history/enqueue-redirect events/navigate-adventure-matching-stylist-wait)
          (messages/handle-message events/adventure-stylist-search-results-displayed)))))
+
+(defmethod effects/perform-effects events/navigate-adventure-stylist-results-post-purchase
+  [_ _ args _ app-state]
+  #?(:cljs
+     (let [matched-stylists (get-in app-state keypaths/adventure-matched-stylists)]
+       (if (empty? matched-stylists)
+         (history/enqueue-redirect events/navigate-adventure-matching-stylist-wait)
+         (messages/handle-message events/adventure-stylist-search-results-post-purchase-displayed)))))
 
 (defmethod effects/perform-effects events/control-adventure-select-stylist
   [_ _ {:keys [stylist-id card-index servicing-stylist]} _ app-state]
@@ -238,3 +248,17 @@
                               :radius             how-far
                               :service_type       service-type
                               :current_step       2}))))
+
+(defmethod trackings/perform-track events/adventure-stylist-search-results-post-purchase-displayed
+  [_ event args app-state]
+  #?(:cljs
+     (let [{:keys [latitude longitude radius]} (get-in app-state keypaths/adventure-stylist-match-address)
+           service-type                        (get-in app-state keypaths/adventure-choices-install-type)
+           results                             (map :stylist-id (get-in app-state keypaths/adventure-matched-stylists))]
+       (stringer/track-event "stylist_search_results_displayed"
+                             {:results      results
+                              :latitude     latitude
+                              :longitude    longitude
+                              :service_type service-type
+                              :radius       radius
+                              :current_step 3}))))
