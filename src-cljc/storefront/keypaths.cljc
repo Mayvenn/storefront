@@ -52,7 +52,6 @@
 
 (def completed-order [:completed-order])
 (def completed-order-number (conj completed-order :number))
-(def completed-order-token (conj completed-order :token))
 
 (def pending-promo-code [:pending-promo-code])
 (def promotions [:promotions])

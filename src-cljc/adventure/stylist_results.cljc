@@ -213,12 +213,10 @@
 (defmethod effects/perform-effects events/control-adventure-select-stylist
   [_ _ {:keys [stylist-id card-index servicing-stylist]} _ app-state]
   #?(:cljs
-     (let [servicing-stylist-id stylist-id
-           store-stylist-id     (get-in app-state storefront.keypaths/store-stylist-id)
-           number               (or (get-in app-state storefront.keypaths/order-number)
-                                    (get-in app-state storefront.keypaths/completed-order-number))
-           token                (or (get-in app-state storefront.keypaths/order-token)
-                                    (get-in app-state storefront.keypaths/completed-order-token))]
+     (let [servicing-stylist-id   stylist-id
+           store-stylist-id       (get-in app-state storefront.keypaths/store-stylist-id)
+           {:keys [number token]} (or (get-in app-state keypaths/order)
+                                      (get-in app-state keypaths/completed-order))]
        (api/assign-servicing-stylist servicing-stylist-id
                                      store-stylist-id
                                      number
