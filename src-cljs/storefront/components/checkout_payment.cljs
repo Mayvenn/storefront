@@ -50,11 +50,12 @@
   (let [current-uri  (get-in app-state keypaths/navigation-uri)
         order-number (get-in app-state keypaths/order-number)]
     (assoc-in app-state keypaths/checkout-selected-payment-methods
-              {payment-method (if (= :quadpay payment-method)
-                                {:return-url "TODO: Real return url"
-                                 :cancel-url (str (assoc current-uri :path "/cart"))}
-
-                                {})})))
+              (condp = payment-method
+                :stripe (orders/form-payment-methods (get-in app-state keypaths/order-total)
+                                                     (get-in app-state keypaths/user-total-available-store-credit)
+                                                     (orders/all-applied-promo-codes (get-in app-state keypaths/order)))
+                :quadpay {:quadpay {:return-url "TODO: Real return url"
+                                    :cancel-url (str (assoc current-uri :path "/cart"))}}))))
 
 (defn component
   [{:keys [step-bar
