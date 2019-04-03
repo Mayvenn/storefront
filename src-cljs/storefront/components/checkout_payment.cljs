@@ -29,8 +29,9 @@
                                   order
                                   (get-in app-state keypaths/user))
         selected-payment-methods (get-in app-state keypaths/checkout-selected-payment-methods)
-        selected-saved-card-id   (when (or (not covered-by-store-credit)
-                                           (orders/applied-install-promotion order))
+        selected-saved-card-id   (when (and (or (not covered-by-store-credit)
+                                                (orders/applied-install-promotion order))
+                                            (not (contains? selected-payment-methods :quadpay)))
                                    (get-in app-state keypaths/checkout-credit-card-selected-id))
         needs-stripe-token?      (and (contains? #{"add-new-card" nil} selected-saved-card-id)
                                       (not covered-by-store-credit)
