@@ -697,4 +697,4 @@
     (assoc-in adventure.keypaths/adventure-stylist-match-address
               {:latitude  (:latitude query)
                :longitude (:longitude query)
-               :radius    "10mi"})))
+               :radius    "25mi"})))

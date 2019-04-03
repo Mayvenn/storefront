@@ -1081,7 +1081,7 @@
                       (if-let [{:keys [lat lng]} location]
                         (let [query {:latitude     lat
                                      :longitude    lng
-                                     :radius       "10mi"
+                                     :radius       "25mi"
                                      :install-type (:install-type choices)
                                      :choices      choices}]
                           (api/fetch-stylists-within-radius (get-in app-state keypaths/api-cache)
