@@ -42,9 +42,8 @@
 
 (defmethod effects/perform-effects events/api-success-assign-servicing-stylist [_ _ _ _ app-state]
   #?(:cljs
-     (let [adventure-flow (get-in app-state keypaths/adventure-choices-flow)]
-       (prn adventure-flow)
+     (let [post-purchase? (get-in app-state storefront-keypaths/completed-order)]
        (history/enqueue-redirect
-        (if (= "shop-hair" adventure-flow)
+        (if post-purchase?
           events/navigate-adventure-match-success-post-purchase
           events/navigate-adventure-match-success-pre-purchase)))))
