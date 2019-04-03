@@ -48,7 +48,7 @@
      (when-not stylist-selected?
        [:div.h6.center.pb8
         [:div.dark-gray "Not ready to shop hair?"]
-        [:a.teal (utils/fake-href events/navigate-adventure-find-your-stylist)
+        [:a.teal (utils/route-to events/navigate-adventure-find-your-stylist)
          "Find a stylist"]])]]))
 
 (defn built-component

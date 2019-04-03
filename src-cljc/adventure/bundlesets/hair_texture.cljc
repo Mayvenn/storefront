@@ -55,7 +55,7 @@
      :footer       (when-not stylist-selected?
                      [:div.h6.center.pb8.pt1
                       [:div.dark-gray "Not ready to shop hair?"]
-                      [:a.teal (utils/fake-href events/navigate-adventure-find-your-stylist)
+                      [:a.teal (utils/route-to events/navigate-adventure-find-your-stylist)
                        "Find a stylist"]])
      :spinning?    (utils/requesting-from-endpoint? data request-keys/search-v2-skus)
      :header-data  {:title                   "The New You"
