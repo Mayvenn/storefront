@@ -79,7 +79,6 @@
        (let [redirect-url (-> order :cart-payments :quadpay :redirect-url)]
          (messages/handle-message events/external-redirect-quadpay-checkout {:quadpay-redirect-url redirect-url}))))))
 
-
 (defn component
   [{:keys [available-store-credit
            checkout-steps

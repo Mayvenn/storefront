@@ -790,7 +790,7 @@
   (handle-message events/order-remove-promotion args))
 
 (defmethod perform-effects events/control-checkout-confirmation-submit [_ event {:keys [place-order?] :as args} _ app-state]
-  (let [order                (get-in app-state keypaths/order)]
+  (let [order (get-in app-state keypaths/order)]
     (if place-order?
       (create-stripe-token app-state args)
       (api/place-order (get-in app-state keypaths/session-id)
