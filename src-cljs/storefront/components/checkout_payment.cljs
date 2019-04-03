@@ -47,19 +47,12 @@
 
 (defmethod transitions/transition-state events/control-checkout-payment-select
   [_ _ {:keys [payment-method]} app-state]
-  (let [current-uri  (get-in app-state keypaths/navigation-uri)
-        order-number (get-in app-state keypaths/order-number)
-        order-token  (get-in app-state keypaths/order-token)]
-    (assoc-in app-state keypaths/checkout-selected-payment-methods
-              (condp = payment-method
-                :stripe  (orders/form-payment-methods (get-in app-state keypaths/order-total)
-                                                      (get-in app-state keypaths/user-total-available-store-credit)
-                                                      (orders/all-applied-promo-codes (get-in app-state keypaths/order)))
-                :quadpay {:quadpay {:return-url
-                                    (str (assoc current-uri
-                                                :path (str "/orders/" order-number "/quadpay" )
-                                                :query {:order-token order-token}))
-                                    :cancel-url (str (assoc current-uri :path "/cart"))}}))))
+  (assoc-in app-state keypaths/checkout-selected-payment-methods
+            (condp = payment-method
+              :stripe  (orders/form-payment-methods (get-in app-state keypaths/order-total)
+                                                    (get-in app-state keypaths/user-total-available-store-credit)
+                                                    (orders/all-applied-promo-codes (get-in app-state keypaths/order)))
+              :quadpay {:quadpay {}})))
 
 (defn component
   [{:keys [step-bar

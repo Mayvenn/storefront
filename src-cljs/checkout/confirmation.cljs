@@ -7,6 +7,7 @@
             [checkout.templates.item-card :as item-card]
             [spice.maps :as maps]
             [storefront.accessors.orders :as orders]
+            [storefront.api :as api]
             [storefront.component :as component]
             [storefront.components.checkout-credit-card :as checkout-credit-card]
             [storefront.components.checkout-delivery :as checkout-delivery]
@@ -20,7 +21,9 @@
             [storefront.hooks.quadpay :as quadpay]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.request-keys :as request-keys]))
+            [storefront.request-keys :as request-keys]
+            [storefront.effects :as effects]
+            [storefront.platform.messages :as messages]))
 
 (defn requires-additional-payment?
   [data]
@@ -35,29 +38,47 @@
      (contains? (get-in data keypaths/checkout-selected-payment-methods) :store-credit))))
 
 (defn checkout-button
-  [{:keys [spinning? disabled? quadpay-redirect-url]}]
-  (if quadpay-redirect-url
-    (ui/teal-button
-     {:spinning? spinning?
-      :disabled? disabled?
-      :href      quadpay-redirect-url}
-     "Place Order with QuadPay")
+  [quadpay? {:keys [spinning? disabled?]}]
+  (ui/submit-button (if quadpay?
+                      "Place Order with QuadPay"
+                      "Place Order")
+                    {:spinning? spinning?
+                     :disabled? disabled?
+                     :data-test "confirm-form-submit"}))
 
-    (ui/submit-button "Place Order"
-                      {:spinning? spinning?
-                       :disabled? disabled?
-                       :data-test "confirm-form-submit"})))
+(defn adventure-checkout-button
+  [{:keys [spinning? disabled?]}]
+  (ui/submit-button "Place Order"
+                    {:spinning? spinning?
+                     :disabled? disabled?
+                     :data-test "confirm-form-submit"}))
 
 (defn checkout-button-query
   [data]
   (let [saving-card?   (checkout-credit-card/saving-card? data)
         placing-order? (utils/requesting? data request-keys/place-order)]
     {:disabled? (utils/requesting? data request-keys/update-shipping-method)
-     :spinning? (or saving-card? placing-order?)
-     :quadpay-redirect-url (-> (get-in data keypaths/order)
-                               :cart-payments
-                               :quadpay
-                               :redirect-url)}))
+     :spinning? (or saving-card? placing-order?)}))
+
+(defmethod effects/perform-effects events/control-checkout-quadpay-confirmation-submit
+  [_ _ _ app-state]
+  (let [current-uri  (get-in app-state keypaths/navigation-uri)
+        order-number (get-in app-state keypaths/order-number)
+        order-token  (get-in app-state keypaths/order-token)]
+    (api/update-cart-payments
+     (get-in app-state keypaths/session-id)
+     {:order {:number        order-number
+              :token         order-token
+              :cart-payments {:quadpay
+                              {:return-url
+                               (str (assoc current-uri
+                                           :path (str "/orders/" order-number "/quadpay" )
+                                           :query {:order-token order-token}))
+                               :cancel-url (str (assoc current-uri :path "/cart"))}}}}
+     (fn [order]
+       (let [redirect-url (-> order :cart-payments :quadpay :redirect-url)]
+         (messages/handle-message events/external-redirect-quadpay-checkout {:quadpay-redirect-url redirect-url}))))))
+
 
 (defn component
   [{:keys [available-store-credit
@@ -81,8 +102,10 @@
 
     [:form
      {:on-submit
-      (utils/send-event-callback events/control-checkout-confirmation-submit
-                                 {:place-order? requires-additional-payment?})}
+      (if selected-quadpay?
+        (utils/send-event-callback events/control-checkout-quadpay-confirmation-submit)
+        (utils/send-event-callback events/control-checkout-confirmation-submit
+                                   {:place-order? requires-additional-payment?}))}
 
      [:.clearfix.mxn3
       [:.col-on-tb-dt.col-6-on-tb-dt.px3
@@ -126,7 +149,7 @@
           [:div.hide (component/build quadpay/component {:full-amount (:total order)} nil)]])
 
        [:div.col-12.col-6-on-tb-dt.mx-auto
-        (checkout-button checkout-button-data)]]]]]))
+        (checkout-button selected-quadpay? checkout-button-data)]]]]]))
 
 (defn item-card-query
   [data]
@@ -212,14 +235,14 @@
           (str "You’ll be connected with " servicing-stylist-firstname " after checkout.")
           "You’ll be able to select your Certified Mayvenn Stylist after checkout.")]
        [:div.col-12.col-6-on-tb-dt.mx-auto
-        (checkout-button checkout-button-data)]]]]]))
+        (adventure-checkout-button checkout-button-data)]]]]]))
 
 (defn query
   [data]
   (let [order                      (get-in data keypaths/order)
         freeinstall-line-item-data (cart-items/freeinstall-line-item-query data)
         freeinstall-applied?       (orders/freeinstall-applied? order)
-        selected-quadpay?          (contains? (get-in data keypaths/checkout-selected-payment-methods) :quadpay)]
+        selected-quadpay?          (-> (get-in data keypaths/order) :cart-payments :quadpay)]
     {:requires-additional-payment?     (requires-additional-payment? data)
      :promotion-banner                 (promotion-banner/query data)
      :checkout-steps                   (checkout-steps/query data)

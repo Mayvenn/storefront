@@ -719,6 +719,7 @@
 
 (defn routes-with-orders [ctx]
   (-> (routes (paypal-routes ctx)
+              (quadpay-routes ctx)
               (-> (routes (site-routes ctx)
                           (shared-cart-routes ctx))
                   (wrap-state ctx)

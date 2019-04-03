@@ -164,6 +164,9 @@
   (set! (.-location js/window) (or (get-in app-state keypaths/telligent-community-url)
                                    config/telligent-community-url)))
 
+(defmethod perform-effects events/external-redirect-quadpay-checkout [_ event {:keys [quadpay-redirect-url]} _ app-state]
+  (set! (.-location js/window) quadpay-redirect-url))
+
 (defmethod perform-effects events/control-navigate [_ event {:keys [navigation-message]} _ app-state]
   ;; A user has clicked a link
   ;; The URL has already changed. Save scroll position on the page they are

@@ -15,6 +15,7 @@
 (defpath external-redirect-sms)
 (defpath external-redirect-paypal-setup)
 (defpath external-redirect-telligent)
+(defpath external-redirect-quadpay-checkout)
 
 (defpath redirect)
 (defpath navigate)
@@ -204,6 +205,7 @@
 (defpath control-checkout-payment-select)
 (defpath control-checkout-remove-promotion)
 (defpath control-checkout-confirmation-submit)
+(defpath control-checkout-quadpay-confirmation-submit)
 
 (defpath control-dtc-banner-close)
 
