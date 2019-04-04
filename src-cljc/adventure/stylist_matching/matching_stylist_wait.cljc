@@ -63,7 +63,7 @@
         (cond (empty? matched-stylists)
               events/navigate-adventure-out-of-area
 
-              (= adventure-flow "shop-hair")
+              (get-in app-state keypaths/completed-order)
               events/navigate-adventure-stylist-results-post-purchase
 
               :else
