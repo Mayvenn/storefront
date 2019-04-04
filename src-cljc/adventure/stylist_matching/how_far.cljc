@@ -1,4 +1,4 @@
-(ns adventure.how-far
+(ns adventure.stylist-matching.how-far
   (:require #?@(:cljs [[storefront.api :as api]
                        [storefront.platform.messages :refer [handle-message]]])
             [storefront.events :as events]

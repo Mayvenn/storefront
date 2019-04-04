@@ -33,7 +33,6 @@
                        storefront.components.v2-homepage-popup])
             [adventure.home :as adventure.home]
             [adventure.what-next :as adventure.what-next]
-            [adventure.how-far :as adventure.how-far]
             [adventure.shop-hair :as adventure.shop-hair]
             [adventure.how-shop-hair :as adventure.how-shop-hair]
             [adventure.hair-texture :as adventure.hair-texture]
@@ -46,6 +45,7 @@
             [adventure.select-new-look :as adventure.select-new-look]
             [adventure.look-detail :as adventure.look-detail]
             [adventure.checkout.cart :as adventure-cart]
+            [adventure.stylist-matching.how-far]
             [adventure.stylist-matching.match-stylist]
             [adventure.stylist-matching.find-your-stylist]
             [adventure.stylist-matching.matching-stylist-wait]
@@ -137,7 +137,6 @@
 
     events/navigate-adventure-home                                adventure.home/built-component
     events/navigate-adventure-what-next                           adventure.what-next/built-component
-    events/navigate-adventure-how-far                             adventure.how-far/built-component
     events/navigate-adventure-shop-hair                           adventure.shop-hair/built-component
     events/navigate-adventure-how-shop-hair                       adventure.how-shop-hair/built-component
     events/navigate-adventure-hair-texture                        adventure.hair-texture/built-component
@@ -150,6 +149,7 @@
     events/navigate-adventure-select-new-look                     adventure.select-new-look/built-component
     events/navigate-adventure-look-detail                         adventure.look-detail/built-component
     events/navigate-adventure-select-bundle-set                   adventure.select-new-look/built-component
+    events/navigate-adventure-how-far                             adventure.stylist-matching.how-far/built-component
     events/navigate-adventure-match-stylist                       adventure.stylist-matching.match-stylist/built-component
     events/navigate-adventure-find-your-stylist                   adventure.stylist-matching.find-your-stylist/built-component
     events/navigate-adventure-matching-stylist-wait-pre-purchase  adventure.stylist-matching.matching-stylist-wait/built-component
