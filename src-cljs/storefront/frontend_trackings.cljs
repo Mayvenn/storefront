@@ -204,13 +204,15 @@
 (defmethod perform-track events/api-success-get-saved-cards [_ event args app-state]
   (google-analytics/set-dimension "dimension2" (count (get-in app-state keypaths/checkout-credit-card-existing-cards))))
 
+(def interesting-payment-methods
+  #{"apple-pay" "paypal" "quadpay"} )
+
 (defn payment-flow [{:keys [payments]}]
-  (or (some #{"apple-pay" "paypal"} (map :payment-type payments))
+  (or (some interesting-payment-methods (map :payment-type payments))
       "mayvenn"))
 
 (defn tracked-payment-method [payments]
-  (let [interesting-payment-methods #{"apple-pay" "paypal"}
-        first-payment-method (->> payments (map :payment-type) first)]
+  (let [first-payment-method (->> payments (map :payment-type) first)]
     ;; we can just use the first payment method because the specified options are
     ;; apple-pay, paypal, or other.  Store credit and stripe
     ;; are the only ones we allow to coexist.  Must be changed if that changes.
