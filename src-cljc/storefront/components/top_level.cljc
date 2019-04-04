@@ -33,10 +33,7 @@
                        storefront.components.v2-homepage-popup])
             [adventure.home :as adventure.home]
             [adventure.what-next :as adventure.what-next]
-            [adventure.match-stylist :as adventure.match-stylist]
-            [adventure.find-your-stylist :as adventure.find-your-stylist]
             [adventure.how-far :as adventure.how-far]
-            [adventure.matching-stylist-wait :as adventure.matching-stylist-wait]
             [adventure.shop-hair :as adventure.shop-hair]
             [adventure.how-shop-hair :as adventure.how-shop-hair]
             [adventure.hair-texture :as adventure.hair-texture]
@@ -48,12 +45,15 @@
             [adventure.install-type :as adventure.install-type]
             [adventure.select-new-look :as adventure.select-new-look]
             [adventure.look-detail :as adventure.look-detail]
-            [adventure.stylist-results :as adventure.stylist-results]
             [adventure.checkout.cart :as adventure-cart]
-            [adventure.out-of-area :as adventure.out-of-area]
-            [adventure.match-success :as adventure.match-success]
-            [adventure.match-success-post-purchase :as adventure.match-success-post-purchase]
-            [adventure.let-mayvenn-match :as adventure.let-mayvenn-match]
+            [adventure.stylist-matching.match-stylist]
+            [adventure.stylist-matching.find-your-stylist]
+            [adventure.stylist-matching.matching-stylist-wait]
+            [adventure.stylist-matching.stylist-results]
+            [adventure.stylist-matching.out-of-area]
+            [adventure.stylist-matching.match-success]
+            [adventure.stylist-matching.match-success-post-purchase]
+            [adventure.stylist-matching.let-mayvenn-match]
             [catalog.category :as category]
             [catalog.product-details :as product-details]
             [checkout.cart :as cart]
@@ -137,11 +137,7 @@
 
     events/navigate-adventure-home                                adventure.home/built-component
     events/navigate-adventure-what-next                           adventure.what-next/built-component
-    events/navigate-adventure-match-stylist                       adventure.match-stylist/built-component
-    events/navigate-adventure-find-your-stylist                   adventure.find-your-stylist/built-component
     events/navigate-adventure-how-far                             adventure.how-far/built-component
-    events/navigate-adventure-matching-stylist-wait-pre-purchase  adventure.matching-stylist-wait/built-component
-    events/navigate-adventure-matching-stylist-wait-post-purchase adventure.matching-stylist-wait/built-component
     events/navigate-adventure-shop-hair                           adventure.shop-hair/built-component
     events/navigate-adventure-how-shop-hair                       adventure.how-shop-hair/built-component
     events/navigate-adventure-hair-texture                        adventure.hair-texture/built-component
@@ -154,12 +150,16 @@
     events/navigate-adventure-select-new-look                     adventure.select-new-look/built-component
     events/navigate-adventure-look-detail                         adventure.look-detail/built-component
     events/navigate-adventure-select-bundle-set                   adventure.select-new-look/built-component
-    events/navigate-adventure-stylist-results-pre-purchase        adventure.stylist-results/built-component
-    events/navigate-adventure-stylist-results-post-purchase       adventure.stylist-results/built-component
-    events/navigate-adventure-out-of-area                         adventure.out-of-area/built-component
-    events/navigate-adventure-match-success-pre-purchase          adventure.match-success/built-component
-    events/navigate-adventure-match-success-post-purchase         adventure.match-success-post-purchase/built-component
-    events/navigate-adventure-let-mayvenn-match                   adventure.let-mayvenn-match/built-component
+    events/navigate-adventure-match-stylist                       adventure.stylist-matching.match-stylist/built-component
+    events/navigate-adventure-find-your-stylist                   adventure.stylist-matching.find-your-stylist/built-component
+    events/navigate-adventure-matching-stylist-wait-pre-purchase  adventure.stylist-matching.matching-stylist-wait/built-component
+    events/navigate-adventure-matching-stylist-wait-post-purchase adventure.stylist-matching.matching-stylist-wait/built-component
+    events/navigate-adventure-stylist-results-pre-purchase        adventure.stylist-matching.stylist-results/built-component
+    events/navigate-adventure-stylist-results-post-purchase       adventure.stylist-matching.stylist-results/built-component
+    events/navigate-adventure-out-of-area                         adventure.stylist-matching.out-of-area/built-component
+    events/navigate-adventure-match-success-pre-purchase          adventure.stylist-matching.match-success/built-component
+    events/navigate-adventure-match-success-post-purchase         adventure.stylist-matching.match-success-post-purchase/built-component
+    events/navigate-adventure-let-mayvenn-match                   adventure.stylist-matching.let-mayvenn-match/built-component
     home/built-component))
 
 (defn sticky-promo-bar [data]

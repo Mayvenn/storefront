@@ -1,4 +1,4 @@
-(ns adventure.stylist-results
+(ns adventure.stylist-matching.stylist-results
   (:require [adventure.components.header :as header]
             [adventure.keypaths :as keypaths]
             [storefront.keypaths]

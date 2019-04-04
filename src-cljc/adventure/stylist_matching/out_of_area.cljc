@@ -1,4 +1,4 @@
-(ns adventure.out-of-area
+(ns adventure.stylist-matching.out-of-area
   (:require [adventure.components.header :as header]
             [storefront.component :as component]
             [storefront.components.ui :as ui]

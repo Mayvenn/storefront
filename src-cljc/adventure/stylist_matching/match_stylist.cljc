@@ -1,4 +1,4 @@
-(ns adventure.match-stylist
+(ns adventure.stylist-matching.match-stylist
   (:require [adventure.components.basic-prompt :as basic-prompt]
             [storefront.component :as component]
             [storefront.events :as events]

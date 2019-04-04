@@ -1,4 +1,4 @@
-(ns adventure.find-your-stylist
+(ns adventure.stylist-matching.find-your-stylist
   (:require
    #?@(:cljs [[om.core :as om]
               [storefront.platform.messages :as messages]

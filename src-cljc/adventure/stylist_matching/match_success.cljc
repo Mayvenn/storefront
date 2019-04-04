@@ -1,4 +1,4 @@
-(ns adventure.match-success
+(ns adventure.stylist-matching.match-success
   (:require [storefront.events :as events]
             [storefront.component :as component]
             [adventure.components.basic-prompt :as basic-prompt]
@@ -10,7 +10,7 @@
             [adventure.progress :as progress]))
 
 (defn ^:private query [data]
-  (let [adventure-flow   (get-in data keypaths/adventure-choices-flow)
+  (let [adventure-flow    (get-in data keypaths/adventure-choices-flow)
         servicing-stylist (get-in data keypaths/adventure-servicing-stylist)]
     {:prompt               (str "Congrats on matching with " (-> servicing-stylist :address :firstname) "!")
      :mini-prompt          "We'll connect you with your stylist shortly. But first, pick out your hair!"

@@ -1,5 +1,5 @@
 (ns storefront.components.checkout-complete
-  (:require [adventure.stylist-results :as stylist-results]
+  (:require [adventure.stylist-matching.stylist-results :as stylist-results]
             [adventure.keypaths :as adv-keypaths]
             [storefront.assets :as assets]
             [storefront.transitions :as transitions]

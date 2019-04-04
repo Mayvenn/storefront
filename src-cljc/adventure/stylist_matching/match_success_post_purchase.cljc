@@ -1,5 +1,5 @@
-(ns adventure.match-success-post-purchase
-  (:require [adventure.stylist-results :as stylist-results]
+(ns adventure.stylist-matching.match-success-post-purchase
+  (:require [adventure.stylist-matching.stylist-results :as stylist-results]
             [adventure.keypaths :as adv-keypaths]
             [storefront.component :as component]
             #?(:cljs

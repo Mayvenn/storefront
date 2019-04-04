@@ -1,4 +1,4 @@
-(ns adventure.matching-stylist-wait
+(ns adventure.stylist-matching.matching-stylist-wait
   (:require #?@(:cljs [[om.core :as om]
                        [storefront.api :as api]
                        [storefront.components.ugc :as ugc]

@@ -1,4 +1,4 @@
-(ns adventure.let-mayvenn-match
+(ns adventure.stylist-matching.let-mayvenn-match
   (:require [adventure.keypaths :as adv-keypaths]
             [storefront.component :as component]
             [storefront.components.ui :as ui]
