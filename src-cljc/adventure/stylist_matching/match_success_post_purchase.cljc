@@ -1,5 +1,6 @@
 (ns adventure.stylist-matching.match-success-post-purchase
   (:require [adventure.stylist-matching.stylist-results :as stylist-results]
+            [adventure.stylist-matching.stylist-detail-line :as stylist-detail-line]
             [adventure.keypaths :as adv-keypaths]
             [storefront.component :as component]
             #?(:cljs
@@ -8,37 +9,40 @@
             [storefront.keypaths :as keypaths]
             [clojure.string :as string]))
 
-(defn stylist-card [servicing-stylist]
-  (let [firstname (-> servicing-stylist
-                      :address
-                      :firstname)
-        lastname  (-> servicing-stylist
-                      :address
-                      :lastname)
-        city      (-> servicing-stylist
-                      :salon
-                      :city)
-        state     (-> servicing-stylist
-                      :salon
-                      :state)
-        rating    (:rating servicing-stylist)
-        portrait  (-> servicing-stylist
-                      :portrait
-                      :resizable-url)
-        name      (-> servicing-stylist
-                      :salon
-                      :name)]
-    [:div.flex.bg-white.px1.my4.mxn2.rounded.py3
-     [:div.mr2 (ui/circle-picture {:width "104px"} portrait)]
-     [:div.flex-grow-1.left-align.dark-gray.h7.line-height-4
-      [:div.h3.black.line-height-1 (clojure.string/join  " " [firstname lastname])]
-      [:div.pyp2 (ui/star-rating rating)]
-      [:div.bold (str city ", " state)]
-      [:div name]
-      (stylist-results/stylist-detail-line servicing-stylist)]]))
+(defn stylist-card [{:keys [firstname
+                            lastname
+                            city
+                            state
+                            rating
+                            portrait
+                            name
+                            stylist-detail-line-data] :as card-data}]
+  [:div.flex.bg-white.px1.my4.mxn2.rounded.py3
+   [:div.mr2 (ui/circle-picture {:width "104px"} portrait)]
+   [:div.flex-grow-1.left-align.dark-gray.h7.line-height-4
+    [:div.h3.black.line-height-1 (str firstname " " lastname)]
+    [:div.pyp2 (ui/star-rating rating)]
+    [:div.bold (str city ", " state)]
+    [:div name]
+    (stylist-detail-line/component stylist-detail-line-data)]])
+
+(defn stylist-card-query [data]
+  (let [servicing-stylist (get-in data adv-keypaths/adventure-servicing-stylist)
+        address           (:address servicing-stylist)
+        salon             (:salon servicing-stylist)]
+    {:firstname                (:firstname address)
+     :lastname                 (:lastname address)
+     :city                     (:city salon)
+     :state                    (:state salon)
+     :rating                   (:rating servicing-stylist)
+     :portrait                 (-> servicing-stylist
+                                   :portrait
+                                   :resizable-url)
+     :name                     (:name salon)
+     :stylist-detail-line-data (stylist-detail-line/query servicing-stylist)}))
 
 (defn chat-with-your-stylist
-  [phone-number servicing-stylist]
+  [phone-number servicing-stylist-first-name]
   [:div {:data-test "matched-with-stylist"}
    [:div.py4.h3.bold
     "Chat with your Stylist"]
@@ -48,7 +52,7 @@
      #?(:cljs (formatters/phone-number phone-number))]
     " and your stylist, "
     [:span.nowrap {:data-test "servicing-stylist-firstname"}
-     (-> servicing-stylist :address :firstname)]
+     servicing-stylist-first-name]
     "."]])
 
 (def get-inspired-cta
@@ -61,7 +65,7 @@
                     "View #MayvennFreeInstall")]])
 
 (defn component
-  [{:keys [servicing-stylist phone-number]} _ _]
+  [{:keys [servicing-stylist-first-name stylist-card-data phone-number]} _ _]
   (component/create
    [:div.bg-lavender.white {:style {:min-height "95vh"}}
     [:div.border-bottom.border-gray.flex.items-center
@@ -71,17 +75,20 @@
     (ui/narrow-container
      [:div.center
       [:div.col-11.mx-auto.py4
-       (chat-with-your-stylist phone-number servicing-stylist)
-       (stylist-card servicing-stylist)
+       (chat-with-your-stylist phone-number servicing-stylist-first-name)
+       (stylist-card stylist-card-data)
        get-inspired-cta]])]))
 
 (defn query
   [data]
-  {:servicing-stylist (get-in data adv-keypaths/adventure-servicing-stylist)
-   :phone-number      (-> data
-                          (get-in keypaths/completed-order)
-                          :shipping-address
-                          :phone)})
+  (let [servicing-stylist (get-in data adv-keypaths/adventure-servicing-stylist)]
+    {:servicing-stylist-first-name (-> servicing-stylist :address :firstname)
+     :stylist-card-data            (stylist-card-query data)
+     :stylist-detail-line-data     (stylist-detail-line/query servicing-stylist)
+     :phone-number                 (-> data
+                                       (get-in keypaths/completed-order)
+                                       :shipping-address
+                                       :phone)}))
 
 (defn built-component
   [data opts]

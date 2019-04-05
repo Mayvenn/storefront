@@ -116,8 +116,7 @@
   [{:keys [header-data current-step places-loaded? background-image stylist-match-address selected-location]} owner _]
   (component/create
    [:div.bg-lavender.white.center.flex.flex-auto.flex-column
-    (when header-data
-      (header/built-component header-data nil))
+    (header/built-component header-data nil)
     [:div.flex.flex-column.items-center.justify-center
      {:style {:height              "246px"
               :background-image    (str "url(" background-image ")")
