@@ -27,13 +27,18 @@
      (api/place-order (get-in app-state keypaths/session-id)
                       (get-in app-state keypaths/order)
                       (cookie-jar/retrieve-utm-params (get-in app-state keypaths/cookie))
-                      {:error-handler #(let [error-code (-> % :response :body :error-code)]
+                      {:error-handler #(let [{:keys [error-code error-message]} (-> % :response :body)]
                                          (when (= error-code "ineligible-for-free-install")
                                            (messages/handle-message events/order-remove-promotion
                                                                     {:code         "freeinstall"
                                                                      :hide-success true}))
-                                         (history/enqueue-navigate events/navigate-cart
-                                                                   {:query-params {:error error-code}}))})))
+                                         (if (= error-code "quadpay-failed-to-capture-payment")
+                                           (do
+                                             (history/enqueue-navigate events/navigate-checkout-payment
+                                                                       {:query-params {:error error-code}})
+                                             (messages/handle-later events/flash-show-failure {:message error-message}))
+                                           (history/enqueue-navigate events/navigate-cart
+                                                                     {:query-params {:error error-code}})))})))
 
 (defmethod effects/perform-effects events/navigate-checkout-processing [dispatch event args _ app-state]
   #?(:cljs
