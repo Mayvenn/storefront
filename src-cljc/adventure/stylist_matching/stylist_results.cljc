@@ -16,7 +16,8 @@
                        [storefront.hooks.stringer :as stringer]
                        [storefront.api :as api]])
             [adventure.progress :as progress]
-            [storefront.keypaths :as storefront.keypaths]))
+            [storefront.keypaths :as storefront.keypaths]
+            [adventure.stylist-matching.stylist-detail-line :as stylist-detail-line]))
 
 (defn ^:private gallery-slide [index gallery-image]
   [:div {:key (str "gallery-slide" index)}
@@ -53,7 +54,8 @@
            rating
            salon
            stylist-id]
-    :as   stylist}]
+    :as   stylist}
+   stylist-detail-line-data]
   (let [{:keys [firstname lastname]} address
         {:keys [city state name]}    salon]
     [:div.bg-white.p2.pb2.h6.my2.col-12.col-8-on-tb-dt {:key stylist-id}
@@ -68,7 +70,7 @@
        [:div (ui/star-rating rating)]
        [:div.bold (str city ", " state)]
        [:div name]
-       (stylist-detail-line stylist)]]
+       (stylist-detail-line/component stylist-detail-line-data)]]
      [:div.my2.m1-on-tb-dt.mb2-on-tb-dt
       [:div.h7.dark-gray.bold.left-align.mb1
        "Recent Work"]
@@ -128,7 +130,8 @@
          {:selected-image-index   gallery-image-index
           :current-stylist-index  index
           :gallery-open?          (= stylist-gallery-index index)}
-         stylist))
+         stylist
+         (stylist-detail-line/query stylist)))
       stylists)]]))
 
 (defn ^:private query [data]
