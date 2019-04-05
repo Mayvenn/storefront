@@ -522,7 +522,11 @@
 (defpath adventure-clear-servicing-stylist)
 (defpath api-success-adventure-cleared-servicing-stylist)
 
+(defpath clear-adventure)
+
 (defpath attempt-shipping-address-geo-lookup)
+(defpath api-success-shipping-address-geo-lookup)
+(defpath api-failure-shipping-address-geo-lookup)
 
 (defpath control-chat-button-pressed)
 

@@ -79,6 +79,7 @@
 
 (defmethod effects/perform-effects events/navigate-adventure-home
   [_ _ args prev-app-state app-state]
+  (messages/handle-message events/clear-adventure)
   #?(:cljs (do (pixlee.hook/fetch-album-by-keyword :sleek-and-straight)
                (pixlee.hook/fetch-album-by-keyword :waves-and-curly)
                (pixlee.hook/fetch-album-by-keyword :free-install-mayvenn))))

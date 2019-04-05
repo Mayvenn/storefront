@@ -698,3 +698,16 @@
               {:latitude  (:latitude query)
                :longitude (:longitude query)
                :radius    "25mi"})))
+
+(defmethod transition-state events/api-success-shipping-address-geo-lookup [_ _ {:keys [locations]} app-state]
+  (assoc-in app-state adventure.keypaths/adventure-stylist-match-location (some-> locations
+                                                                                  (js->clj :keywordize-keys true)
+                                                                                  first
+                                                                                  :geometry
+                                                                                  :location
+                                                                                  .toJSON
+                                                                                  (js->clj :keywordize-keys true)
+                                                                                  (clojure.set/rename-keys {:lat :latitude
+                                                                                                            :lng :longitude}))))
+
+

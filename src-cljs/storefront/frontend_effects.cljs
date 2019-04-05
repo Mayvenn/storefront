@@ -480,6 +480,8 @@
     (facebook/insert))
   (when (and number order-token)
     (api/get-completed-order number order-token))
+  (when (not (get-in app-state adventure.keypaths/adventure-matched-stylists))
+    (handle-message events/api-fetch-stylists-within-radius))
   (when paypal
     (redirect events/navigate-need-match-order-complete {:number number})))
 
@@ -810,6 +812,9 @@
 (defmethod perform-effects events/clear-order [_ _ _ _ app-state]
   (cookie-jar/clear-order (get-in app-state keypaths/cookie)))
 
+(defmethod perform-effects events/clear-adventure [_ _ _ _ app-state]
+  (cookie-jar/clear-adventure (get-in app-state keypaths/cookie)))
+
 (defmethod perform-effects events/api-success-auth [_ _ {:keys [order]} _ app-state]
   (handle-message events/save-order {:order order})
   (cookie-jar/save-user (get-in app-state keypaths/cookie)
@@ -900,9 +905,6 @@
         freeinstall? (= "freeinstall" store-slug)]
     (when-not freeinstall?
       (talkable/show-pending-offer app-state))
-
-    (when freeinstall?
-      (cookie-jar/clear-adventure (get-in app-state keypaths/cookie)))
 
     (when (and freeinstall?
                (:servicing-stylist-id order))
@@ -1074,22 +1076,27 @@
       (. (js/google.maps.Geocoder.)
          (geocode params
                   (fn [results status]
-                    (let [location (some-> results
-                                           (js->clj :keywordize-keys true)
-                                           first
-                                           :geometry
-                                           :location
-                                           .toJSON
-                                           (js->clj :keywordize-keys true))]
-                      (if-let [{:keys [lat lng]} location]
-                        (let [query {:latitude     lat
-                                     :longitude    lng
-                                     :radius       "25mi"
-                                     :install-type (:install-type choices)
-                                     :choices      choices}]
-                          (api/fetch-stylists-within-radius (get-in app-state keypaths/api-cache)
-                                                            query
-                                                            #(handle-message events/api-success-fetch-stylists-within-radius-post-purchase
-                                                                             (merge {:query query}
-                                                                                    %))))
-                        events/api-failure-fetch-geocode))))))))
+                    (if (= "OK" status)
+                      (handle-message events/api-success-shipping-address-geo-lookup {:locations results})
+                      (handle-message events/api-failure-shipping-address-geo-lookup results))))))))
+
+(defmethod perform-effects events/api-success-shipping-address-geo-lookup [_ event locations _ app-state]
+  (let [cookie    (get-in app-state keypaths/cookie)
+        adventure (get-in app-state adventure.keypaths/adventure)]
+    (cookie/save-adventure cookie adventure))
+  (handle-message events/api-fetch-stylists-within-radius))
+
+(defmethod perform-effects events/api-fetch-stylists-within-radius [_ event _ _ app-state]
+  (if-let [{:keys [latitude longitude]} (get-in app-state adventure.keypaths/adventure-stylist-match-location)]
+    (let [choices (get-in app-state adventure.keypaths/adventure-choices)
+          query   {:latitude     latitude
+                   :longitude    longitude
+                   :radius       "25mi"
+                   :install-type (:install-type choices)
+                   :choices      choices}]
+      (api/fetch-stylists-within-radius (get-in app-state keypaths/api-cache)
+                                        query
+                                        #(handle-message events/api-success-fetch-stylists-within-radius-post-purchase
+                                                         (merge {:query query}
+                                                                %))))
+    events/api-failure-fetch-geocode))
