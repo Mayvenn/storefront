@@ -126,7 +126,7 @@
 
 (defmethod transitions/transition-state events/api-success-adventure-cleared-servicing-stylist [_ _ {:keys [order]} app-state]
   (-> app-state
-      (assoc-in keypaths/adventure-selected-stylist-id nil)
+      (assoc-in keypaths/adventure-choices-selected-stylist-id nil)
       (assoc-in keypaths/adventure-servicing-stylist nil)))
 
 (defmethod effects/perform-effects events/api-success-adventure-cleared-servicing-stylist [_ _ {:keys [order]} _ app-state]

@@ -195,7 +195,7 @@
 
 (defmethod transitions/transition-state events/control-adventure-select-stylist
   [_ _ {:keys [stylist-id]} app-state]
-  (assoc-in app-state keypaths/adventure-selected-stylist-id stylist-id))
+  (assoc-in app-state keypaths/adventure-choices-selected-stylist-id stylist-id))
 
 (defmethod effects/perform-effects events/navigate-adventure-stylist-results-pre-purchase
   [_ _ args _ app-state]

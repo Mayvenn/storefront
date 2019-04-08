@@ -17,7 +17,7 @@
 (defmethod transitions/transition-state events/navigate-adventure-matching-stylist-wait [_ _ _ app-state]
   (-> app-state
       (assoc-in adventure-keypaths/adventure-matching-stylists-timer (date/add-delta (date/now) {:seconds 3}))
-      (assoc-in adventure-keypaths/adventure-selected-stylist-id nil)
+      (assoc-in adventure-keypaths/adventure-choices-selected-stylist-id nil)
       (assoc-in adventure-keypaths/adventure-servicing-stylist nil)))
 
 ;; PRE-PURCHASE FLOW

@@ -627,7 +627,7 @@
                               (get-in app-state keypaths/user-id)
                               (get-in app-state keypaths/user-token)
                               (get-in app-state keypaths/store-stylist-id)
-                              (get-in app-state adv-keypaths/adventure-selected-stylist-id)))
+                              (get-in app-state adv-keypaths/adventure-choices-selected-stylist-id)))
 
 (defmethod perform-effects events/control-stylist-account-profile-submit [_ _ args _ app-state]
   (let [session-id      (get-in app-state keypaths/session-id)

@@ -9,14 +9,13 @@
 (def adventure-choices-color (conj adventure-choices :color))
 (def adventure-choices-how-shop (conj adventure-choices :how-shop))
 (def adventure-choices-install-type (conj adventure-choices :install-type))
+(def adventure-choices-selected-stylist-id (conj adventure-choices :selected-stylist-id))
 (def adventure-matched-stylists (conj adventure :matched-stylists))
 (def adventure-stylist-match-address (conj adventure :stylist-match-address))
 (def adventure-stylist-match-location (conj adventure-choices :location))
 (def adventure-matching-stylists-timer (conj adventure-choices :matching-stylists-timer))
 
 (def adventure-matching-skus-color (conj adventure :matching-skus-color))
-
-(def adventure-selected-stylist-id (conj adventure :selected-stylist-id))
 
 (def adventure-stylist-gallery (conj adventure :stylist-gallery))
 (def adventure-stylist-gallery-index (conj adventure-stylist-gallery :index))
