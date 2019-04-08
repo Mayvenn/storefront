@@ -1066,7 +1066,7 @@
          (get-in app-state keypaths/loaded-places)
          (nil? (get-in app-state adventure.keypaths/adventure-matched-stylists))
          (nil? (get-in app-state keypaths/order-servicing-stylist-id)))
-    (if (get-in app-state adventure.keypaths/adventure-stylist-match-location)
+    (if (empty? (get-in app-state keypaths/order-shipping-address))
       (handle-message events/api-fetch-stylists-within-radius)
       (let [{:keys [address1 address2 city state zipcode]} (get-in app-state keypaths/order-shipping-address)
             params                                         (clj->js {"address" (string/join " " [address1 address2 (str city ",") state zipcode])
