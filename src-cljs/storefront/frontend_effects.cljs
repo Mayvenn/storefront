@@ -812,9 +812,6 @@
 (defmethod perform-effects events/clear-order [_ _ _ _ app-state]
   (cookie-jar/clear-order (get-in app-state keypaths/cookie)))
 
-(defmethod perform-effects events/clear-adventure [_ _ _ _ app-state]
-  (cookie-jar/clear-adventure (get-in app-state keypaths/cookie)))
-
 (defmethod perform-effects events/api-success-auth [_ _ {:keys [order]} _ app-state]
   (handle-message events/save-order {:order order})
   (cookie-jar/save-user (get-in app-state keypaths/cookie)
