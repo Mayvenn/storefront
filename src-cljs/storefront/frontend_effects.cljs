@@ -1069,16 +1069,17 @@
          (get-in app-state keypaths/loaded-places)
          (nil? (get-in app-state adventure.keypaths/adventure-matched-stylists))
          (nil? (get-in app-state keypaths/order-servicing-stylist-id)))
-    (let [choices                                        (get-in app-state adventure.keypaths/adventure-choices)
-          {:keys [address1 address2 city state zipcode]} (get-in app-state keypaths/order-shipping-address)
-          params                                         (clj->js {"address" (string/join " " [address1 address2 (str city ",") state zipcode])
-                                                                   "region"  "US"})]
-      (. (js/google.maps.Geocoder.)
-         (geocode params
-                  (fn [results status]
-                    (if (= "OK" status)
-                      (handle-message events/api-success-shipping-address-geo-lookup {:locations results})
-                      (handle-message events/api-failure-shipping-address-geo-lookup results))))))))
+    (if (get-in app-state adventure.keypaths/adventure-stylist-match-location)
+      (handle-message events/api-fetch-stylists-within-radius)
+      (let [{:keys [address1 address2 city state zipcode]} (get-in app-state keypaths/order-shipping-address)
+            params                                         (clj->js {"address" (string/join " " [address1 address2 (str city ",") state zipcode])
+                                                                     "region"  "US"})]
+        (. (js/google.maps.Geocoder.)
+           (geocode params
+                    (fn [results status]
+                      (if (= "OK" status)
+                        (handle-message events/api-success-shipping-address-geo-lookup {:locations results})
+                        (handle-message events/api-failure-shipping-address-geo-lookup results)))))))))
 
 (defmethod perform-effects events/api-success-shipping-address-geo-lookup [_ event locations _ app-state]
   (let [cookie    (get-in app-state keypaths/cookie)
