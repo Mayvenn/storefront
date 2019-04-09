@@ -470,7 +470,11 @@
   (when (and number order-token)
     (api/get-completed-order number order-token))
   (when paypal
-    (redirect events/navigate-order-complete {:number number})))
+    (redirect events/navigate-order-complete {:number number}))
+  (let [servicing-stylist    (get-in app-state adv-keypaths/adventure-servicing-stylist)
+        servicing-stylist-id (get-in app-state adv-keypaths/adventure-choices-selected-stylist-id)]
+    (when (and servicing-stylist-id (not servicing-stylist))
+      (api/fetch-matched-stylist (get-in app-state keypaths/api-cache) servicing-stylist-id))))
 
 (defmethod perform-effects events/navigate-need-match-order-complete
   [_ event {{:keys [paypal order-token shipping-address]} :query-params
