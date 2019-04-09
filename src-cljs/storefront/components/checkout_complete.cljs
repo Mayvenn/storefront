@@ -93,7 +93,9 @@
     "Chat with your Stylist"]
    [:div.h5.line-height-3.center
     "A group text message will be sent to "
-    [:span.bold.nowrap (formatters/phone-number phone-number)]
+    (if phone-number
+      [:span.bold.nowrap (formatters/phone-number phone-number)]
+      "you")
     " and your stylist, "
     [:span.nowrap {:data-test "servicing-stylist-firstname"}
      (-> servicing-stylist
