@@ -147,7 +147,7 @@
 (defn locally-switch-shipment-line [shipment selected-shipping-method]
   (assoc shipment :line-items
          (conj (orders/product-items-for-shipment shipment)
-               (merge (->> shipment :line-items (filter orders/shipping-item?) first)
+               (merge (->> shipment :line-items (filter orders/shipping-method?) first)
                       {:product-name (:name selected-shipping-method)
                        :sku          (:sku selected-shipping-method)
                        :unit-price   (:price selected-shipping-method)

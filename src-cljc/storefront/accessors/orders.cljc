@@ -33,12 +33,18 @@
        (filter (comp #{variant-id} :id))
        first))
 
-(def shipping-item? (comp #{"waiter"} :source))
+(defn shipping-method?
+  [{:keys [id]}]
+  (= -1 id))
+
+(defn ^:private product?
+  [{:keys [id] :as line-item}]
+  (pos? id))
 
 (defn product-items-for-shipment [shipment]
   (->> shipment
        :line-items
-       (remove shipping-item?)))
+       (filter product?)))
 
 (defn first-commissioned-shipment [order]
   (->> order
@@ -48,18 +54,16 @@
 
 (defn all-product-items
   "Returns cart items from an order hashmap.
-   Excludes shipping and items added by El Jefe.
    Takes into account *ALL* shipments on the order "
   [order]
-  (->> order all-line-items (remove shipping-item?)))
+  (->> order all-line-items (filter product?)))
 
 (defn product-items
   "Returns cart items from an order hashmap.
-  Excludes shipping and items added by El Jefe.
   Cart line-items are added as the first shipment.
   Line-items are from first shipment as it is the user created shipment."
   [order]
-  (->> order line-items (remove shipping-item?)))
+  (->> order line-items (filter product?)))
 
 (defn shipping-item
   "Returns the first shipping line-item from an order hashmap.
@@ -67,7 +71,7 @@
   Shipping items are added as the first shipment.
   Line-items are from first shipment as it is the user created shipment."
   [order]
-  (->> order line-items (filter shipping-item?) first))
+  (->> order line-items (filter shipping-method?) first))
 
 (defn shipping-method-details [shipping-methods shipping-item]
   (->> shipping-methods
