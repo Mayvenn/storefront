@@ -1066,7 +1066,9 @@
 
 (defmethod perform-effects events/attempt-shipping-address-geo-lookup [_ event _ _ app-state]
   (when (and
-         (experiments/adv-match-post-purchase? app-state)
+         ;; This event happens before Convert sets the flag, so in order to run this on
+         ;; page refresh, we can't check the experiment.
+         #_(experiments/adv-match-post-purchase? app-state)
          (get-in app-state keypaths/loaded-places)
          (nil? (get-in app-state adventure.keypaths/adventure-matched-stylists))
          (nil? (get-in app-state keypaths/order-servicing-stylist-id)))
