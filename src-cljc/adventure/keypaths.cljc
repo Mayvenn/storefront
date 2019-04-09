@@ -18,9 +18,8 @@
 (def adventure-matching-skus-color (conj adventure :matching-skus-color))
 
 (def adventure-stylist-gallery (conj adventure :stylist-gallery))
-(def adventure-stylist-gallery-index (conj adventure-stylist-gallery :index))
+(def adventure-stylist-gallery-image-urls (conj adventure-stylist-gallery :image-urls))
 (def adventure-stylist-gallery-image-index (conj adventure-stylist-gallery :image-index))
-(def adventure-stylist-gallery-open? (conj adventure-stylist-gallery :open?))
 
 (def adventure-servicing-stylist (conj adventure :servicing-stylist))
 

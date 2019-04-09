@@ -4,19 +4,20 @@
             [storefront.components.ui :as ui]))
 
 (defn component
-  [{:keys [salon-description stylist-since-copy licensed] :as stylist-detail-line-data} ]
-  [:div
-   (into [:div.flex.flex-wrap]
-         (comp
-          (remove nil?)
-          (interpose [:div.mxp3 "·"]))
-         [(when licensed
-            [:div "Licensed"])
-          (when salon-description
-            [:div salon-description])
-          (when stylist-since-copy
-            [:div
-             stylist-since-copy])])])
+  [{:keys [salon-description stylist-since-copy licensed]} _ _]
+  (component/create
+   [:div
+    (into [:div.flex.flex-wrap]
+          (comp
+           (remove nil?)
+           (interpose [:div.mxp3 "·"]))
+          [(when licensed
+             [:div "Licensed"])
+           (when salon-description
+             [:div salon-description])
+           (when stylist-since-copy
+             [:div
+              stylist-since-copy])])]))
 
 (defn query
   [stylist]

@@ -1,6 +1,8 @@
 (ns storefront.components.checkout-complete
   (:require [adventure.stylist-matching.stylist-results :as stylist-results]
             [adventure.keypaths :as adv-keypaths]
+            [adventure.components.profile-card :as profile-card]
+            [adventure.components.card-stack :as card-stack]
             [storefront.assets :as assets]
             [storefront.transitions :as transitions]
             [storefront.events :as events]
@@ -57,35 +59,6 @@
          (sign-up/form sign-up-data
                        {:sign-up-text "Create my account"})]])])))
 
-(defn stylist-card [servicing-stylist]
-  (let [firstname (-> servicing-stylist
-                      :address
-                      :firstname)
-        lastname  (-> servicing-stylist
-                      :address
-                      :lastname)
-        city      (-> servicing-stylist
-                      :salon
-                      :city)
-        state     (-> servicing-stylist
-                      :salon
-                      :state)
-        rating    (:rating servicing-stylist)
-        portrait  (-> servicing-stylist
-                      :portrait
-                      :resizable-url)
-        name      (-> servicing-stylist
-                      :salon
-                      :name)]
-    [:div.flex
-     [:div.mr2 (ui/circle-picture {:width "104px"} portrait)]
-     [:div.flex-grow-1.left-align.dark-gray.h7.line-height-4
-      [:div.h3.black.line-height-1 (clojure.string/join  " " [firstname lastname])]
-      [:div.pyp2 (ui/star-rating rating)]
-      [:div.bold (str city ", " state)]
-      [:div name]
-      (stylist-results/stylist-detail-line servicing-stylist)]]))
-
 (defn servicing-stylist-component
   [phone-number servicing-stylist]
   [:div {:data-test "matched-with-stylist"}
@@ -103,7 +76,7 @@
          :firstname)]
     "."]
    [:div.bg-white.px1.my4.mxn2.rounded.py3
-    (stylist-card servicing-stylist)]])
+    (component/build profile-card/component (profile-card/stylist-profile-card-data servicing-stylist) nil)]])
 
 (defn need-match
   [matched-stylists]
