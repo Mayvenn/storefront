@@ -140,10 +140,6 @@
   [data]
   (display-feature? data "adv-address-login"))
 
-(defn adv-match-post-purchase?
-  [data]
-  (display-feature? data "adv-match-post-purchase"))
-
 (defn quadpay?
   [data]
   (display-feature? data "quadpay"))

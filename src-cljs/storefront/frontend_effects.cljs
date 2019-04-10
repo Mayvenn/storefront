@@ -892,7 +892,6 @@
   ;; TODO: rather than branching behavior within a single event handler, consider
   ;;       firing seperate events (with and without matching stylists).
   (let [user-needs-servicing-stylist-match? (and (= "freeinstall" (get-in app-state keypaths/store-slug))
-                                                 (experiments/adv-match-post-purchase? app-state)
                                                  (not (:servicing-stylist-id order))
                                                  (not-empty (get-in app-state adv-keypaths/adventure-matched-stylists)))]
     (if user-needs-servicing-stylist-match?
@@ -1068,7 +1067,6 @@
   (when (and
          ;; This event happens before Convert sets the flag, so in order to run this on
          ;; page refresh, we can't check the experiment.
-         #_(experiments/adv-match-post-purchase? app-state)
          (get-in app-state keypaths/loaded-places)
          (nil? (get-in app-state adventure.keypaths/adventure-matched-stylists))
          (nil? (get-in app-state keypaths/order-servicing-stylist-id)))

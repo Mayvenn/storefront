@@ -75,7 +75,7 @@
          :address
          :firstname)]
     "."]
-   [:div.bg-white.px1.my4.mxn2.rounded.py3
+   [:div.bg-white.px1.my4.mxn2.rounded.p3
     (component/build profile-card/component (profile-card/stylist-profile-card-data servicing-stylist) nil)]])
 
 (defn need-match
@@ -110,7 +110,7 @@
                     "View #MayvennFreeInstall")]])
 
 (defn adventure-component
-  [{:keys [servicing-stylist matched-stylists phone-number match-post-purchase? need-match?]} _ _]
+  [{:keys [servicing-stylist matched-stylists phone-number need-match?]} _ _]
   (component/create
    [:div.bg-lavender.white {:style {:min-height "95vh"}}
     (ui/narrow-container
@@ -125,10 +125,9 @@
 
        [:div.py2.mx-auto.white.border-bottom
         {:style {:border-width "0.5px"}}]
-       (cond servicing-stylist                      (servicing-stylist-component phone-number servicing-stylist)
-             (and need-match? match-post-purchase?) (need-match matched-stylists)
-             need-match?                            (need-match [])
-             :else                                  get-inspired-cta)]])]))
+       (cond servicing-stylist (servicing-stylist-component phone-number servicing-stylist)
+             need-match?       (need-match matched-stylists)
+             :else             get-inspired-cta)]])]))
 
 (defmethod transitions/transition-state events/api-success-fetch-matched-stylist
   [_ event {:keys [stylist]} app-state]
@@ -141,7 +140,6 @@
         servicing-stylist (get-in data adv-keypaths/adventure-servicing-stylist)]
     {:guest?               (not (get-in data keypaths/user-id))
      :freeinstall?         freeinstall?
-     :match-post-purchase? (experiments/adv-match-post-purchase? data)
      :need-match?          (and freeinstall?
                                 (empty? servicing-stylist))
      :matched-stylists     (get-in data adv-keypaths/adventure-matched-stylists)
