@@ -65,9 +65,8 @@
   [_ _ args _ app-state]
   #?(:cljs
      (let [matched-stylists (get-in app-state keypaths/adventure-matched-stylists)]
-       (if (empty? matched-stylists)
-         (history/enqueue-redirect events/navigate-adventure-matching-stylist-wait)
-         (messages/handle-message events/adventure-stylist-search-results-post-purchase-displayed)))))
+       (when (empty? matched-stylists) (messages/handle-message events/api-fetch-stylists-within-radius))
+       (messages/handle-message events/adventure-stylist-search-results-post-purchase-displayed))))
 
 (defmethod effects/perform-effects events/control-adventure-select-stylist
   [_ _ {:keys [stylist-id card-index servicing-stylist]} _ app-state]
