@@ -568,6 +568,7 @@
    events/navigate-content-tos               generic-server-render
    events/navigate-content-guarantee         generic-server-render
    events/navigate-content-ugc-usage-terms   generic-server-render
+   events/navigate-content-voucher-terms     generic-server-render
    events/navigate-content-program-terms     generic-server-render
    events/navigate-gallery                   generic-server-render
    events/navigate-checkout-processing       generic-server-render

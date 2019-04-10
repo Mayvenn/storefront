@@ -19,6 +19,7 @@
    "/policy/privacy"  (edn->bidi events/navigate-content-privacy)
    "/policy/tos"      (edn->bidi events/navigate-content-tos)
    "/ugc-usage-terms" (edn->bidi events/navigate-content-ugc-usage-terms)
+   "/voucher-terms"   (edn->bidi events/navigate-content-voucher-terms)
    "/program-terms"   (edn->bidi events/navigate-content-program-terms)
    "/our-hair"        (edn->bidi events/navigate-content-our-hair)})
 

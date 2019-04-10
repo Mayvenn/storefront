@@ -128,6 +128,7 @@
     events/navigate-content-tos             content/built-component
     events/navigate-content-about-us        content/built-component
     events/navigate-content-ugc-usage-terms content/built-component
+    events/navigate-content-voucher-terms   content/built-component
     events/navigate-content-program-terms   content/built-component
     events/navigate-content-our-hair        content/built-component
     events/navigate-sign-in                 sign-in/built-component
