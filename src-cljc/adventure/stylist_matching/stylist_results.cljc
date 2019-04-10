@@ -16,11 +16,12 @@
 
 (defn ^:private query [data]
   (let [post-purchase? (get-in data storefront.keypaths/completed-order)
-        current-step   (if-not post-purchase? 2 3)]
+        current-step   (if-not post-purchase? 2 3)
+        progress       (when-not post-purchase? progress/stylist-results)]
     (merge {:current-step                  current-step
             :title                         "Pick your stylist"
             :header-data                   {:title                   "Find Your Stylist"
-                                            :progress                progress/stylist-results
+                                            :progress                progress
                                             :back-navigation-message [events/navigate-adventure-how-far]
                                             :subtitle                (str "Step " current-step " of 3")}
             :gallery-modal-data            {:ucare-img-urls                 (get-in data keypaths/adventure-stylist-gallery-image-urls) ;; empty hides the modal
