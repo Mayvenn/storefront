@@ -15,31 +15,42 @@
                        [storefront.api :as api]])
             [adventure.progress :as progress]))
 
-(defn ^:private query [data]
-  (let [post-purchase? (get-in data storefront.keypaths/completed-order)
-        current-step   (if-not post-purchase? 2 3)
-        progress       (when-not post-purchase? progress/stylist-results)]
-    (merge {:current-step                  current-step
-            :title                         "Pick your stylist"
-            :header-data                   {:title                   "Find Your Stylist"
-                                            :progress                progress
-                                            :back-navigation-message [events/navigate-adventure-how-far]
-                                            :subtitle                (str "Step " current-step " of 3")}
-            :gallery-modal-data            {:ucare-img-urls                 (get-in data keypaths/adventure-stylist-gallery-image-urls) ;; empty hides the modal
-                                            :initially-selected-image-index (get-in data keypaths/adventure-stylist-gallery-image-index)
-                                            :close-button                   {:target-message events/control-adventure-stylist-gallery-close}}
-            :cards-data                    (map-indexed profile-card-with-gallery/stylist-profile-card-data (get-in data keypaths/adventure-matched-stylists))
-            :escape-hatch/navigation-event events/navigate-adventure-shop-hair
-            :escape-hatch/copy             "Shop hair"
-            :escape-hatch/data-test        "shop-hair"}
-           (when post-purchase?
-             {:escape-hatch/navigation-event events/navigate-adventure-let-mayvenn-match
-              :escape-hatch/copy             "Let Mayvenn Match"
-              :escape-hatch/data-test        "let-mayvenn-match"}))))
+(defn ^:private query-pre-purchase [data]
+  {:current-step                  2
+   :title                         "Pick your stylist"
+   :header-data                   {:title                   "Find Your Stylist"
+                                   :progress                progress/stylist-results
+                                   :back-navigation-message [events/navigate-adventure-how-far]
+                                   :subtitle                "Step 2 of 3"}
+   :gallery-modal-data            {:ucare-img-urls                 (get-in data keypaths/adventure-stylist-gallery-image-urls) ;; empty hides the modal
+                                   :initially-selected-image-index (get-in data keypaths/adventure-stylist-gallery-image-index)
+                                   :close-button                   {:target-message events/control-adventure-stylist-gallery-close}}
+   :cards-data                    (map-indexed profile-card-with-gallery/stylist-profile-card-data (get-in data keypaths/adventure-matched-stylists))
+   :escape-hatch/navigation-event events/navigate-adventure-shop-hair
+   :escape-hatch/copy             "Shop hair"
+   :escape-hatch/data-test        "shop-hair"})
 
-(defn built-component
+(defn ^:private query-post-purchase [data]
+  {:current-step                  3
+   :title                         "Pick your stylist"
+   :header-data                   {:title                   "Find Your Stylist"
+                                   :back-navigation-message [events/navigate-adventure-how-far]
+                                   :subtitle                "Step 3 of 3"}
+   :gallery-modal-data            {:ucare-img-urls                 (get-in data keypaths/adventure-stylist-gallery-image-urls) ;; empty hides the modal
+                                   :initially-selected-image-index (get-in data keypaths/adventure-stylist-gallery-image-index)
+                                   :close-button                   {:target-message events/control-adventure-stylist-gallery-close}}
+   :cards-data                    (map-indexed profile-card-with-gallery/stylist-profile-card-data (get-in data keypaths/adventure-matched-stylists))
+   :escape-hatch/navigation-event  events/navigate-adventure-let-mayvenn-match
+   :escape-hatch/copy             "Let Mayvenn Match"
+   :escape-hatch/data-test        "let-mayvenn-match"})
+
+(defn built-component-pre-purchase
   [data opts]
-  (component/build card-stack/component (query data) opts))
+  (component/build card-stack/component (query-pre-purchase data) opts))
+
+(defn built-component-post-purchase
+  [data opts]
+  (component/build card-stack/component (query-post-purchase data) opts))
 
 (defmethod transitions/transition-state events/control-adventure-stylist-gallery-open [_ _event {:keys [ucare-img-urls initially-selected-image-index]} app-state]
   (-> app-state
