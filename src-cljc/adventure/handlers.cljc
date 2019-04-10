@@ -133,3 +133,7 @@
   #?(:cljs
      (handle-message events/save-order {:order order})))
 
+(defmethod effects/perform-effects events/navigate-adventure-match-success-post-purchase [_ _ _ _ app-state]
+  #?(:cljs
+     (api/fetch-matched-stylist (get-in app-state storefront.keypaths/api-cache)
+                                (get-in app-state keypaths/adventure-choices-selected-stylist-id))))

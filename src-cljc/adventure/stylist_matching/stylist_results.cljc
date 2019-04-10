@@ -9,7 +9,8 @@
             [storefront.effects :as effects]
             [storefront.transitions :as transitions]
             [storefront.trackings :as trackings]
-            #?@(:cljs [[storefront.history :as history]
+            #?@(:cljs [[storefront.browser.cookie-jar :as cookie-jar]
+                       [storefront.history :as history]
                        [storefront.hooks.stringer :as stringer]
                        [storefront.api :as api]])
             [adventure.progress :as progress]))
@@ -75,6 +76,8 @@
            store-stylist-id       (get-in app-state storefront.keypaths/store-stylist-id)
            {:keys [number token]} (or (get-in app-state storefront.keypaths/order)
                                       (get-in app-state storefront.keypaths/completed-order))]
+       (cookie-jar/save-adventure (get-in app-state storefront.keypaths/cookie)
+                                  (get-in app-state keypaths/adventure))
        (api/assign-servicing-stylist servicing-stylist-id
                                      store-stylist-id
                                      number
