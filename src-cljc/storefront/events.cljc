@@ -480,7 +480,6 @@
 (defpath navigate-adventure-how-far)
 (defpath navigate-adventure-select-new-look)
 (defpath navigate-adventure-look-detail)
-(defpath wait-to-navigate-to-stylist-results)
 (defpath navigate-adventure-matching-stylist-wait)
 (defpath navigate-adventure-matching-stylist-wait-pre-purchase)
 (defpath navigate-adventure-matching-stylist-wait-post-purchase)
