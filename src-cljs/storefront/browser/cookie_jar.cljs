@@ -1,7 +1,8 @@
 (ns storefront.browser.cookie-jar
   (:require [storefront.config :as config]
             [clojure.string :as string]
-            [spice.core :as spice])
+            [spice.core :as spice]
+            [clojure.set :as set])
   (:import [goog.net Cookies]))
 
 (defn ^:private root-domain []
@@ -14,6 +15,7 @@
            (str "."))))
 
 (def one-day (* 60 60 24))
+(def three-days (* 3 one-day))
 (def week (* 7 one-day))
 (def four-weeks (* 4 week))
 (def one-year (* 52 week))
@@ -37,6 +39,12 @@
    :max-age       four-weeks
    :optional-keys []
    :required-keys [:token :number]})
+
+(def completed-order
+  {:domain        nil
+   :max-age       three-days
+   :optional-keys []
+   :required-keys [:completed-order-token :completed-order-number]})
 
 (def pending-promo
   {:domain        nil
@@ -113,6 +121,11 @@
 (def retrieve-pending-promo-code (partial retrieve pending-promo))
 (def retrieve-utm-params (partial retrieve utm-params))
 (def retrieve-adventure (partial retrieve adventure))
+(defn retrieve-completed-order [cookie]
+  (set/rename-keys (retrieve completed-order
+                             cookie)
+                   {:completed-order-number :number
+                    :completed-order-token  :token}))
 
 (def retrieve-email-capture-session (comp :popup-session (partial retrieve email-capture-session)))
 
@@ -138,6 +151,11 @@
 
 (def save-user (partial save-cookie user))
 (def save-order (partial save-cookie order))
+(defn save-completed-order [cookie order]
+  (save-cookie completed-order
+               cookie
+               (set/rename-keys order {:number :completed-order-number
+                                   :token  :completed-order-token})))
 
 (defn save-email-capture-session [cookie value]
   (let [max-age (condp = value

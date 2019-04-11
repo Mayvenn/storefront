@@ -302,6 +302,19 @@
                 (not (get-in-req-state req keypaths/order)))
            (assoc-in-req-state keypaths/order (api/get-order storeback-config order-number order-token)))))))
 
+(defn wrap-fetch-completed-order [h storeback-config]
+  (fn [{:as req :keys [nav-message]}]
+    (let [[nav-event params] nav-message
+          order-number       (cookies/get req "completed-order-number")
+          order-token        (cookies/get-and-attempt-parsing-poorly-encoded req "completed-order-token")]
+      (prn nav-event)
+      (h (cond-> req
+           (and order-number
+                order-token
+                (= :adventure (second nav-event)) ;; Only used for stylist matching
+                (not (get-in-req-state req keypaths/completed-order)))
+           (assoc-in-req-state keypaths/completed-order (api/get-order storeback-config order-number order-token)))))))
+
 (defn wrap-fetch-servicing-stylist-for-order
   [h storeback-config]
   (fn [{:as req :keys [nav-message]}]
@@ -727,6 +740,7 @@
                   (wrap-site-routes ctx)))
       (wrap-fetch-servicing-stylist-for-order (:storeback-config ctx))
       (wrap-fetch-order (:storeback-config ctx))
+      (wrap-fetch-completed-order (:storeback-config ctx))
       (wrap-adventure-route-params)
       (wrap-cookies (storefront-site-defaults (:environment ctx)))))
 

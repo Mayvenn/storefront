@@ -1,5 +1,6 @@
 (ns adventure.stylist-matching.stylist-results
   (:require [adventure.components.card-stack :as card-stack]
+            [adventure.components.profile-card :as profile-card]
             [adventure.components.profile-card-with-gallery :as profile-card-with-gallery]
             [adventure.keypaths :as keypaths]
             [storefront.keypaths]
@@ -15,6 +16,26 @@
                        [storefront.api :as api]])
             [adventure.progress :as progress]))
 
+
+(defn ^:private stylist-profile-card-data [target-event index {:keys [gallery-images stylist-id] :as stylist}]
+  (let [ucare-img-urls (map :resizable-url gallery-images)]
+    {:card-data    (profile-card/stylist-profile-card-data stylist)
+     :index        index
+     :key          (str "stylist-card-" stylist-id)
+     :gallery-data {:title "Recent Work"
+                    :items (map-indexed (fn [j ucare-img-url]
+                                          {:key            (str "gallery-img-" stylist-id "-" j)
+                                           :ucare-img-url  ucare-img-url
+                                           :target-message [events/control-adventure-stylist-gallery-open
+                                                            {:ucare-img-urls                 ucare-img-urls
+                                                             :initially-selected-image-index j}]})
+                                        ucare-img-urls)}
+     :button       {:text           "Select"
+                    :data-test      "select-stylist"
+                    :target-message [target-event {:stylist-id        stylist-id
+                                                   :servicing-stylist stylist
+                                                   :card-index        index}]}}))
+
 (defn ^:private query-pre-purchase [data]
   {:current-step                  2
    :title                         "Pick your stylist"
@@ -25,7 +46,8 @@
    :gallery-modal-data            {:ucare-img-urls                 (get-in data keypaths/adventure-stylist-gallery-image-urls) ;; empty hides the modal
                                    :initially-selected-image-index (get-in data keypaths/adventure-stylist-gallery-image-index)
                                    :close-button                   {:target-message events/control-adventure-stylist-gallery-close}}
-   :cards-data                    (map-indexed profile-card-with-gallery/stylist-profile-card-data (get-in data keypaths/adventure-matched-stylists))
+   :cards-data                    (map-indexed (partial stylist-profile-card-data events/control-adventure-select-stylist-pre-purchase)
+                                               (get-in data keypaths/adventure-matched-stylists))
    :escape-hatch/navigation-event events/navigate-adventure-shop-hair
    :escape-hatch/copy             "Shop hair"
    :escape-hatch/data-test        "shop-hair"})
@@ -39,8 +61,9 @@
    :gallery-modal-data            {:ucare-img-urls                 (get-in data keypaths/adventure-stylist-gallery-image-urls) ;; empty hides the modal
                                    :initially-selected-image-index (get-in data keypaths/adventure-stylist-gallery-image-index)
                                    :close-button                   {:target-message events/control-adventure-stylist-gallery-close}}
-   :cards-data                    (map-indexed profile-card-with-gallery/stylist-profile-card-data (get-in data keypaths/adventure-matched-stylists))
-   :escape-hatch/navigation-event  events/navigate-adventure-let-mayvenn-match
+   :cards-data                    (map-indexed (partial stylist-profile-card-data events/control-adventure-select-stylist-post-purchase)
+                                               (get-in data keypaths/adventure-matched-stylists))
+   :escape-hatch/navigation-event events/navigate-adventure-let-mayvenn-match
    :escape-hatch/copy             "Let Mayvenn Match"
    :escape-hatch/data-test        "let-mayvenn-match"})
 
@@ -79,30 +102,48 @@
        (when (empty? matched-stylists) (messages/handle-message events/api-fetch-stylists-within-radius))
        (messages/handle-message events/adventure-stylist-search-results-post-purchase-displayed))))
 
-(defmethod effects/perform-effects events/control-adventure-select-stylist
+(defmethod effects/perform-effects events/control-adventure-select-stylist-pre-purchase
   [_ _ {:keys [stylist-id card-index servicing-stylist]} _ app-state]
   #?(:cljs
-     (let [servicing-stylist-id   stylist-id
-           store-stylist-id       (get-in app-state storefront.keypaths/store-stylist-id)
-           {:keys [number token]} (or (get-in app-state storefront.keypaths/order)
-                                      (get-in app-state storefront.keypaths/completed-order))]
+     (let [{:keys [number token]} (get-in app-state storefront.keypaths/order)]
        (cookie-jar/save-adventure (get-in app-state storefront.keypaths/cookie)
                                   (get-in app-state keypaths/adventure))
-       (api/assign-servicing-stylist servicing-stylist-id
-                                     store-stylist-id
+       (api/assign-servicing-stylist stylist-id
+                                     (get-in app-state storefront.keypaths/store-stylist-id)
                                      number
                                      token
                                      (fn [order]
-                                       (messages/handle-message events/api-success-assign-servicing-stylist
+                                       (messages/handle-message events/api-success-assign-servicing-stylist-pre-purchase
                                                                 {:order             order
-                                                                 :servicing-stylist servicing-stylist})
-                                       (stringer/track-event "stylist_selected"
-                                                             {:stylist_id     servicing-stylist-id
-                                                              :card_index     card-index
-                                                              :current_step   2
-                                                              :service_type   (get-in app-state keypaths/adventure-choices-install-type)
-                                                              :order_number   (:number order)
-                                                              :stylist_rating (:rating servicing-stylist)}))))))
+                                                                 :servicing-stylist servicing-stylist
+                                                                 :card-index        card-index}))))))
+
+(defmethod effects/perform-effects events/control-adventure-select-stylist-post-purchase
+  [_ _ {:keys [stylist-id card-index servicing-stylist]} _ app-state]
+  #?(:cljs
+     (let [{:keys [number token]} (get-in app-state storefront.keypaths/completed-order)]
+       (cookie-jar/save-adventure (get-in app-state storefront.keypaths/cookie)
+                                  (get-in app-state keypaths/adventure))
+       (api/assign-servicing-stylist stylist-id
+                                     (get-in app-state storefront.keypaths/store-stylist-id)
+                                     number
+                                     token
+                                     (fn [order]
+                                       (messages/handle-message events/api-success-assign-servicing-stylist-post-purchase
+                                                                {:order             order
+                                                                 :servicing-stylist servicing-stylist
+                                                                 :card-index        card-index}))))))
+
+(defmethod trackings/perform-track events/api-success-assign-servicing-stylist
+  [_ event {:keys [servicing-stylist order card-index]} app-state]
+  #?(:cljs
+     (stringer/track-event "stylist_selected"
+                           {:stylist_id     (:stylist-id servicing-stylist)
+                            :card_index     card-index
+                            :current_step   3
+                            :service_type   (get-in app-state keypaths/adventure-choices-install-type)
+                            :order_number   (:number order)
+                            :stylist_rating (:rating servicing-stylist)})))
 
 (defmethod trackings/perform-track events/adventure-stylist-search-results-displayed
   [_ event args app-state]

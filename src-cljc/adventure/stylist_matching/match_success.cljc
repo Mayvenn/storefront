@@ -31,16 +31,22 @@
   [data opts]
   (component/build basic-prompt/component (query data) opts))
 
-(defmethod transitions/transition-state events/api-success-assign-servicing-stylist
-  [_ _ {:keys [order servicing-stylist]} app-state]
-  (-> app-state
-      (assoc-in storefront-keypaths/order order)
-      (assoc-in adventure.keypaths/adventure-servicing-stylist servicing-stylist)))
+(defmethod transitions/transition-state events/api-success-assign-servicing-stylist-pre-purchase
+  [_ _ {:keys [order]} app-state]
+  (assoc-in app-state storefront-keypaths/order order))
 
-(defmethod effects/perform-effects events/api-success-assign-servicing-stylist [_ _ _ _ app-state]
-  #?(:cljs
-     (let [post-purchase? (= "shop-hair" (get-in app-state keypaths/adventure-choices-flow))]
-       (history/enqueue-navigate
-        (if post-purchase?
-          events/navigate-adventure-match-success-post-purchase
-          events/navigate-adventure-match-success-pre-purchase)))))
+(defmethod transitions/transition-state events/api-success-assign-servicing-stylist-post-purchase
+  [_ _ {:keys [order]} app-state]
+  (assoc-in app-state storefront-keypaths/completed-order order))
+
+(defmethod transitions/transition-state events/api-success-assign-servicing-stylist
+  [_ _ {:keys [servicing-stylist]} app-state]
+  (assoc-in app-state adventure.keypaths/adventure-servicing-stylist servicing-stylist))
+
+#?(:cljs
+   (defmethod effects/perform-effects events/api-success-assign-servicing-stylist-pre-purchase [_ _ _ _ app-state]
+     (history/enqueue-navigate events/navigate-adventure-match-success-pre-purchase)))
+
+#?(:cljs
+   (defmethod effects/perform-effects events/api-success-assign-servicing-stylist-post-purchase [_ _ _ _ app-state]
+     (history/enqueue-navigate events/navigate-adventure-match-success-post-purchase)))

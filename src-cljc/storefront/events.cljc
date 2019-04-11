@@ -306,6 +306,8 @@
 (defpath api-success-shared-cart-fetch)
 
 (defpath api-success-assign-servicing-stylist)
+(defpath api-success-assign-servicing-stylist-pre-purchase)
+(defpath api-success-assign-servicing-stylist-post-purchase)
 
 (defpath api-success-update-order)
 (defpath api-success-update-order-from-shared-cart)
@@ -497,6 +499,8 @@
 (defpath control-adventure)
 (defpath control-adventure-choice)
 (defpath control-adventure-select-stylist)
+(defpath control-adventure-select-stylist-pre-purchase)
+(defpath control-adventure-select-stylist-post-purchase)
 (defpath control-adventure-emailcapture-submit)
 
 (defpath adventure-address-component-mounted)

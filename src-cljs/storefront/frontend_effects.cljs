@@ -900,6 +900,8 @@
     (handle-message events/order-completed order)))
 
 (defmethod perform-effects events/order-completed [dispatch event order _ app-state]
+  (cookie-jar/save-completed-order (get-in app-state keypaths/cookie)
+                                   (get-in app-state keypaths/completed-order))
   (handle-message events/clear-order)
   (let [store-slug   (get-in app-state keypaths/store-slug)
         freeinstall? (= "freeinstall" store-slug)]

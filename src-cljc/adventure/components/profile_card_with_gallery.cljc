@@ -38,22 +38,3 @@
             (apply utils/fake-href (:target-message button)))
      [:div.flex.items-center.justify-center.inherit-color
       (:text button)])]))
-
-(defn stylist-profile-card-data [index {:keys [gallery-images stylist-id] :as stylist}]
-  (let [ucare-img-urls (map :resizable-url gallery-images)]
-    {:card-data    (profile-card/stylist-profile-card-data stylist)
-     :index        index
-     :key          (str "stylist-card-" stylist-id)
-     :gallery-data {:title "Recent Work"
-                    :items (map-indexed (fn [j ucare-img-url]
-                                          {:key            (str "gallery-img-" stylist-id "-" j)
-                                           :ucare-img-url  ucare-img-url
-                                           :target-message [events/control-adventure-stylist-gallery-open
-                                                            {:ucare-img-urls                 ucare-img-urls
-                                                             :initially-selected-image-index j}]})
-                                        ucare-img-urls)}
-     :button       {:text           "Select"
-                    :data-test      "select-stylist"
-                    :target-message [events/control-adventure-select-stylist {:stylist-id        stylist-id
-                                                                              :servicing-stylist stylist
-                                                                              :card-index        index}]}}))
