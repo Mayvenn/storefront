@@ -17,17 +17,20 @@
 
 (defn freeinstall-line-item-query [data]
   (let [order                 (get-in data keypaths/order)
-        highest-value-service (or (some-> order
-                                          orders/product-items
-                                          vouchers/product-items->highest-value-service)
-                                  :leave-out)
+        highest-value-service (or
+                                (when-let [install-type (:install-type order)]
+                                  (keyword install-type))
+                                ;; TODO: GROT when all older cart orders have been migrated to install-type
+                                (some-> order
+                                        orders/product-items
+                                        vouchers/product-items->highest-value-service)
+                                :leave-out)
 
-        {:as   campaign
-         :keys [:voucherify/campaign-name
-                :service/diva-advertised-type]} (->> (get-in data keypaths/environment)
-                                                     vouchers/campaign-configuration
-                                                     (filter #(= (:service/type %) highest-value-service))
-                                                     first)
+        diva-advertised-type (->> (get-in data keypaths/environment)
+                                  vouchers/campaign-configuration
+                                  (filter #(= (:service/type %) highest-value-service))
+                                  first
+                                  :service/diva-advertised-type)
         service-price                           (some-> (or (get-in data adv-keypaths/adventure-servicing-stylist)
                                                             (get-in data keypaths/store))
                                                         :service-menu
