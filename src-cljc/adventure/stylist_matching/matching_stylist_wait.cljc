@@ -32,8 +32,6 @@
   #?(:cljs
      (let [{:keys [latitude longitude]}               (get-in app-state adventure-keypaths/adventure-stylist-match-location)
            {:as choices :keys [how-far install-type]} (get-in app-state adventure-keypaths/adventure-choices)]
-       (prn (get-in app-state adventure-keypaths/adventure-stylist-match-location))
-       (prn (get-in app-state adventure-keypaths/adventure-choices))
        (if-not (and latitude longitude how-far install-type)
          (history/enqueue-redirect events/navigate-adventure-home)
          (handle-message events/api-fetch-stylists-within-radius-pre-purchase)))))
