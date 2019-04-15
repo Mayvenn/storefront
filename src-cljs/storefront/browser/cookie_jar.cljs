@@ -122,10 +122,11 @@
 (def retrieve-utm-params (partial retrieve utm-params))
 (def retrieve-adventure (partial retrieve adventure))
 (defn retrieve-completed-order [cookie]
-  (set/rename-keys (retrieve completed-order
-                             cookie)
-                   {:completed-order-number :number
-                    :completed-order-token  :token}))
+  (-> (retrieve completed-order cookie)
+      (set/rename-keys
+       {:completed-order-number :number
+        :completed-order-token  :token})
+      (update :token js/decodeURIComponent)))
 
 (def retrieve-email-capture-session (comp :popup-session (partial retrieve email-capture-session)))
 
