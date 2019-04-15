@@ -90,7 +90,8 @@
             events/navigate-shop-by-look-details}
 
     ;; Incentivize checkout by reminding them they are saving
-    (#{:v2-freeinstall/applied :adventure-freeinstall/applied} promo-type)
+    (#{:v2-freeinstall/applied
+       :adventure-freeinstall/applied} promo-type)
     (conj events/navigate-checkout-returning-or-guest
           events/navigate-checkout-address
           events/navigate-checkout-payment
@@ -108,9 +109,10 @@
    experiment for"
   [data]
   (cond
-
+    ;; GROT: free-install-applied? when adventure orders using freeinstall promo code are no longer relevant
     (and
-     (orders/freeinstall-applied? (get-in data keypaths/order))
+     (or (orders/freeinstall-applied? (get-in data keypaths/order))
+         (orders/free-install-included? (get-in data keypaths/order)))
      (= "freeinstall" (get-in data keypaths/store-slug)))
     :adventure-freeinstall/applied
 

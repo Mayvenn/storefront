@@ -138,6 +138,11 @@
   (and (bundle-discount? order)
        (contains? (all-applied-promo-codes order) "freeinstall")))
 
+(defn free-install-included?
+  [order]
+  (and (bundle-discount? order)
+       (:install-type order)))
+
 (defn applied-install-promotion
   [{:as order :keys [promotion-codes]}]
   (some #{"freeinstall" "install"} (all-applied-promo-codes order)))
