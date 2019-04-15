@@ -42,10 +42,15 @@
 
 (defmethod effects/perform-effects events/navigate-checkout-processing [dispatch event args _ app-state]
   #?(:cljs
-     (let [order (get-in app-state keypaths/order)]
+     (let [order      (get-in app-state keypaths/order)
+           store-slug (get-in app-state keypaths/store-slug)]
        (cond
          (= (:state order) "cart")
          (place-order app-state)
+
+         (and (= (:state order) "submitted")
+              (= store-slug "freeinstall"))
+         (history/enqueue-navigate events/navigate-adventure-checkout-wait)
 
          (= (:state order) "submitted")
          (history/enqueue-navigate events/navigate-order-complete

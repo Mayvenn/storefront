@@ -31,26 +31,34 @@
 (defmethod effects/perform-effects events/navigate-adventure-matching-stylist-wait-pre-purchase [_ _ _ _ app-state]
   #?(:cljs
      (let [{:keys [latitude longitude]}               (get-in app-state adventure-keypaths/adventure-stylist-match-location)
-           {:as choices :keys [how-far install-type]} (get-in app-state adventure-keypaths/adventure-choices)
-           order                                      (get-in app-state keypaths/order)]
-       ;; NOTE: we always try to find stylists regardless of the data that is available but send all choices
-       ;;       so we can analyze a buggy behavior if we arrive here without the necessary data
+           {:as choices :keys [how-far install-type]} (get-in app-state adventure-keypaths/adventure-choices)]
+       (prn (get-in app-state adventure-keypaths/adventure-stylist-match-location))
+       (prn (get-in app-state adventure-keypaths/adventure-choices))
+       (if-not (and latitude longitude how-far install-type)
+         (history/enqueue-redirect events/navigate-adventure-home)
+         (handle-message events/api-fetch-stylists-within-radius-pre-purchase)))))
+
+(defmethod effects/perform-effects events/api-fetch-stylists-within-radius-pre-purchase [_ event _ _ app-state]
+  #?(:cljs
+     (let [{:keys [latitude longitude]} (get-in app-state adventure.keypaths/adventure-stylist-match-location)
+           choices (get-in app-state adventure.keypaths/adventure-choices)
+           query   {:latitude     latitude
+                    :longitude    longitude
+                    :radius       (:how-far choices)
+                    :install-type (:install-type choices)
+                    :choices      choices}] ; For trackings purposes only
        (api/fetch-stylists-within-radius (get-in app-state keypaths/api-cache)
-                                         {:latitude     latitude
-                                          :longitude    longitude
-                                          :radius       how-far
-                                          :install-type install-type
-                                          :choices      choices}
-                                         (fn [results]
-                                           (handle-message events/api-success-fetch-stylists-within-radius results)
-                                           (let [matched-stylists (get-in app-state adventure-keypaths/adventure-matched-stylists)
-                                                 nav-event        (if (empty? matched-stylists)
-                                                                    events/navigate-adventure-out-of-area
-                                                                    events/navigate-adventure-stylist-results-pre-purchase)]
-                                             (history/enqueue-redirect nav-event {:timeout (ms-to-wait app-state)}))))
-       ;; END NOTE
-       (when-not (and latitude longitude how-far install-type)
-         (history/enqueue-redirect events/navigate-adventure-home)))))
+                                         query
+                                         #(handle-message events/api-success-fetch-stylists-within-radius-pre-purchase
+                                                          (merge {:query query} %))))))
+
+(defmethod effects/perform-effects events/api-success-fetch-stylists-within-radius-pre-purchase [_ event _ _ app-state]
+  #?(:cljs
+     (let [matched-stylists (get-in app-state adventure-keypaths/adventure-matched-stylists)
+           nav-event        (if (empty? matched-stylists)
+                              events/navigate-adventure-out-of-area
+                              events/navigate-adventure-stylist-results-pre-purchase)]
+       (history/enqueue-redirect nav-event {:timeout (ms-to-wait app-state)}))))
 
 ;; POST-PURCHASE FLOW
 

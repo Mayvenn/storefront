@@ -31,29 +31,30 @@
                        storefront.components.email-capture
                        storefront.components.share-your-cart
                        storefront.components.v2-homepage-popup])
-            [adventure.home :as adventure.home]
-            [adventure.what-next :as adventure.what-next]
-            [adventure.shop-hair :as adventure.shop-hair]
-            [adventure.how-shop-hair :as adventure.how-shop-hair]
-            [adventure.hair-texture :as adventure.hair-texture]
-            [adventure.bundlesets.hair-texture :as adventure.bundlesets.hair-texture]
+            adventure.home
+            adventure.what-next
+            adventure.shop-hair
+            adventure.how-shop-hair
+            adventure.hair-texture
+            adventure.bundlesets.hair-texture
             adventure.a-la-carte.hair-texture
             adventure.a-la-carte.hair-color
             adventure.a-la-carte.product-list
             adventure.a-la-carte.product-details
-            [adventure.install-type :as adventure.install-type]
-            [adventure.select-new-look :as adventure.select-new-look]
-            [adventure.look-detail :as adventure.look-detail]
+            adventure.install-type
+            adventure.select-new-look
+            adventure.look-detail
             [adventure.checkout.cart :as adventure-cart]
-            [adventure.stylist-matching.how-far]
-            [adventure.stylist-matching.match-stylist]
-            [adventure.stylist-matching.find-your-stylist]
-            [adventure.stylist-matching.matching-stylist-wait]
-            [adventure.stylist-matching.stylist-results]
-            [adventure.stylist-matching.out-of-area]
-            [adventure.stylist-matching.match-success]
-            [adventure.stylist-matching.match-success-post-purchase]
-            [adventure.stylist-matching.let-mayvenn-match]
+            adventure.checkout.wait
+            adventure.stylist-matching.how-far
+            adventure.stylist-matching.match-stylist
+            adventure.stylist-matching.find-your-stylist
+            adventure.stylist-matching.matching-stylist-wait
+            adventure.stylist-matching.stylist-results
+            adventure.stylist-matching.out-of-area
+            adventure.stylist-matching.match-success
+            adventure.stylist-matching.match-success-post-purchase
+            adventure.stylist-matching.let-mayvenn-match
             [catalog.category :as category]
             [catalog.product-details :as product-details]
             [checkout.cart :as cart]
@@ -160,6 +161,7 @@
     events/navigate-adventure-out-of-area                         adventure.stylist-matching.out-of-area/built-component
     events/navigate-adventure-match-success-pre-purchase          adventure.stylist-matching.match-success/built-component
     events/navigate-adventure-match-success-post-purchase         adventure.stylist-matching.match-success-post-purchase/built-component
+    events/navigate-adventure-checkout-wait                       adventure.checkout.wait/built-component
     events/navigate-adventure-let-mayvenn-match                   adventure.stylist-matching.let-mayvenn-match/built-component
     home/built-component))
 

@@ -65,6 +65,7 @@
     ["/adv/shop/" :album-keyword "/" :look-id]                 (edn->bidi events/navigate-adventure-look-detail)
     "/adv/match-success"                                       (edn->bidi events/navigate-adventure-match-success-pre-purchase)
     "/adv/match-success-post-purchase"                         (edn->bidi events/navigate-adventure-match-success-post-purchase)
+    "/adv/checkout-wait"                                       (edn->bidi events/navigate-adventure-checkout-wait)
     "/adv/let-mayvenn-match"                                   (edn->bidi events/navigate-adventure-let-mayvenn-match)}})
 
 (def catalog-routes

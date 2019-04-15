@@ -92,14 +92,14 @@
   [_ _ args _ app-state]
   #?(:cljs
      (let [matched-stylists (get-in app-state keypaths/adventure-matched-stylists)]
-       (when (empty? matched-stylists) (messages/handle-message events/api-fetch-stylists-within-radius))
+       (when (empty? matched-stylists) (messages/handle-message events/api-fetch-stylists-within-radius-pre-purchase))
        (messages/handle-message events/adventure-stylist-search-results-displayed))))
 
 (defmethod effects/perform-effects events/navigate-adventure-stylist-results-post-purchase
   [_ _ args _ app-state]
   #?(:cljs
      (let [matched-stylists (get-in app-state keypaths/adventure-matched-stylists)]
-       (when (empty? matched-stylists) (messages/handle-message events/api-fetch-stylists-within-radius))
+       (when (empty? matched-stylists) (messages/handle-message events/api-fetch-stylists-within-radius-post-purchase))
        (messages/handle-message events/adventure-stylist-search-results-post-purchase-displayed))))
 
 (defmethod effects/perform-effects events/control-adventure-select-stylist-pre-purchase

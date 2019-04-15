@@ -103,6 +103,7 @@
 (defpath navigate-checkout-payment)
 (defpath navigate-checkout-confirmation)
 (defpath navigate-checkout-processing)
+(defpath navigate-adventure-checkout-wait)
 
 (defpath navigate-mayvenn-made)
 
@@ -286,7 +287,8 @@
 
 (defpath api-success-fetch-geocode)
 (defpath api-failure-fetch-geocode)
-(defpath api-fetch-stylists-within-radius)
+(defpath api-fetch-stylists-within-radius-pre-purchase)
+(defpath api-fetch-stylists-within-radius-post-purchase)
 (defpath api-success-fetch-stylists-within-radius)
 (defpath api-success-fetch-stylists-within-radius-pre-purchase)
 (defpath api-success-fetch-stylists-within-radius-post-purchase)
@@ -526,7 +528,7 @@
 (defpath adventure-clear-servicing-stylist)
 (defpath api-success-adventure-cleared-servicing-stylist)
 
-(defpath attempt-shipping-address-geo-lookup)
+(defpath api-shipping-address-geo-lookup)
 (defpath api-success-shipping-address-geo-lookup)
 (defpath api-failure-shipping-address-geo-lookup)
 

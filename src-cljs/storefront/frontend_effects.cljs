@@ -381,8 +381,8 @@
     (when (and user-token stylist-id)
       (api/get-stylist-account user-id user-token stylist-id)
       (api/get-stylist-payout-stats
-        events/api-success-stylist-payout-stats
-        stylist-id user-id user-token))))
+       events/api-success-stylist-payout-stats
+       stylist-id user-id user-token))))
 
 (defmethod perform-effects events/control-install-landing-page-look-back [_ event args _ app-state]
   (js/history.back))
@@ -457,7 +457,6 @@
     (quadpay/insert)))
 
 (defmethod perform-effects events/navigate-checkout-confirmation [_ event args _ app-state]
-  (handle-message events/attempt-shipping-address-geo-lookup)
   ;; TODO: get the credit card component to function correctly on direct page load
   (when (empty? (get-in app-state keypaths/order-cart-payments))
     (redirect events/navigate-checkout-payment))
@@ -477,17 +476,16 @@
       (api/fetch-matched-stylist (get-in app-state keypaths/api-cache) servicing-stylist-id))))
 
 (defmethod perform-effects events/navigate-need-match-order-complete
-  [_ event {{:keys [paypal order-token shipping-address]} :query-params
-            number                                        :number
-            :as                                           order} _ app-state]
-  (when (not (get-in app-state keypaths/user-id))
-    (facebook/insert))
-  (when (and number order-token)
-    (api/get-completed-order number order-token))
-  (when (not (get-in app-state adventure.keypaths/adventure-matched-stylists))
-    (handle-message events/api-fetch-stylists-within-radius))
-  (when paypal
-    (redirect events/navigate-need-match-order-complete {:number number})))
+  [_ event {{:keys [paypal]} :query-params} _ app-state]
+  (let [{:keys [number token] :as order} (get-in app-state keypaths/completed-order)]
+    (when (not (get-in app-state keypaths/user-id))
+      (facebook/insert))
+    (when (and number token)
+      (api/get-completed-order number token))
+    (when (not (get-in app-state adventure.keypaths/adventure-matched-stylists))
+      (handle-message events/api-fetch-stylists-within-radius-post-purchase))
+    (when paypal
+      (redirect events/navigate-need-match-order-complete {:number number}))))
 
 (defmethod perform-effects events/navigate-friend-referrals [_ event args _ app-state]
   (talkable/show-referrals app-state))
@@ -891,13 +889,10 @@
 (defmethod perform-effects events/api-success-update-order-place-order [_ event {:keys [order]} _ app-state]
   ;; TODO: rather than branching behavior within a single event handler, consider
   ;;       firing seperate events (with and without matching stylists).
-  (let [user-needs-servicing-stylist-match? (and (= "freeinstall" (get-in app-state keypaths/store-slug))
-                                                 (not (:servicing-stylist-id order))
-                                                 (not-empty (get-in app-state adv-keypaths/adventure-matched-stylists)))]
-    (if user-needs-servicing-stylist-match?
-      (history/enqueue-navigate events/navigate-need-match-order-complete order)
-      (history/enqueue-navigate events/navigate-order-complete order))
-    (handle-message events/order-completed order)))
+  (if (= "freeinstall" (get-in app-state keypaths/store-slug))
+    (history/enqueue-navigate events/navigate-adventure-checkout-wait)
+    (history/enqueue-navigate events/navigate-order-complete order))
+  (handle-message events/order-completed order))
 
 (defmethod perform-effects events/order-completed [dispatch event order _ app-state]
   (cookie-jar/save-completed-order (get-in app-state keypaths/cookie)
@@ -1023,9 +1018,6 @@
     (when (#{events/navigate-friend-referrals events/navigate-account-referrals} nav-event)
       (talkable/show-referrals app-state))))
 
-(defmethod perform-effects events/inserted-places [_ event args _ app-state]
-  (handle-message events/attempt-shipping-address-geo-lookup))
-
 (defmethod perform-effects events/control-email-captured-dismiss [_ event args _ app-state]
   (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) "dismissed"))
 
@@ -1064,43 +1056,3 @@
 (defmethod perform-effects events/inserted-stringer
   [_ event args app-state-before app-state]
   (handle-message events/stringer-distinct-id-available {:stringer-distinct-id (stringer/browser-id)}))
-
-(defmethod perform-effects events/attempt-shipping-address-geo-lookup [_ event _ _ app-state]
-  (when (and
-         ;; This event happens before Convert sets the flag, so in order to run this on
-         ;; page refresh, we can't check the experiment.
-         (get-in app-state keypaths/loaded-places)
-         (nil? (get-in app-state adventure.keypaths/adventure-matched-stylists))
-         (nil? (get-in app-state keypaths/order-servicing-stylist-id)))
-    (if (empty? (get-in app-state keypaths/order-shipping-address))
-      (handle-message events/api-fetch-stylists-within-radius)
-      (let [{:keys [address1 address2 city state zipcode]} (get-in app-state keypaths/order-shipping-address)
-            params                                         (clj->js {"address" (string/join " " [address1 address2 (str city ",") state zipcode])
-                                                                     "region"  "US"})]
-        (. (js/google.maps.Geocoder.)
-           (geocode params
-                    (fn [results status]
-                      (if (= "OK" status)
-                        (handle-message events/api-success-shipping-address-geo-lookup {:locations results})
-                        (handle-message events/api-failure-shipping-address-geo-lookup results)))))))))
-
-(defmethod perform-effects events/api-success-shipping-address-geo-lookup [_ event locations _ app-state]
-  (let [cookie    (get-in app-state keypaths/cookie)
-        adventure (get-in app-state adventure.keypaths/adventure)]
-    (cookie/save-adventure cookie adventure))
-  (handle-message events/api-fetch-stylists-within-radius))
-
-(defmethod perform-effects events/api-fetch-stylists-within-radius [_ event _ _ app-state]
-  (if-let [{:keys [latitude longitude]} (get-in app-state adventure.keypaths/adventure-stylist-match-location)]
-    (let [choices (get-in app-state adventure.keypaths/adventure-choices)
-          query   {:latitude     latitude
-                   :longitude    longitude
-                   :radius       "25mi"
-                   :install-type (:install-type choices)
-                   :choices      choices}]
-      (api/fetch-stylists-within-radius (get-in app-state keypaths/api-cache)
-                                        query
-                                        #(handle-message events/api-success-fetch-stylists-within-radius-post-purchase
-                                                         (merge {:query query}
-                                                                %))))
-    events/api-failure-fetch-geocode))

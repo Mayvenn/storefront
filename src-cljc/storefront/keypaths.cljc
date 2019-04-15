@@ -53,6 +53,8 @@
 (def completed-order [:completed-order])
 (def completed-order-number (conj completed-order :number))
 (def completed-order-token (conj completed-order :token))
+(def completed-order-shipping-address (conj completed-order :shipping-address))
+(def completed-order-servicing-stylist-id (conj completed-order :servicing-stylist-id))
 
 (def pending-promo-code [:pending-promo-code])
 (def promotions [:promotions])

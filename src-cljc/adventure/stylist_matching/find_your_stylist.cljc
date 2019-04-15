@@ -6,6 +6,7 @@
               [storefront.hooks.places-autocomplete :as places-autocomplete]
               [storefront.history :as history]
               [storefront.hooks.stringer :as stringer]
+              [storefront.browser.cookie-jar :as cookie]
               [sablono.core :as sablono]])
    [storefront.platform.component-utils :as utils]
    [adventure.components.header :as header]
@@ -82,7 +83,10 @@
 #?(:cljs
    (defmethod effects/perform-effects events/control-adventure-location-submit
      [_ event args _ app-state]
-     (history/enqueue-navigate events/navigate-adventure-how-far)))
+     (let [cookie    (get-in app-state storefront.keypaths/cookie)
+           adventure (get-in app-state keypaths/adventure)]
+       (cookie/save-adventure cookie adventure)
+       (history/enqueue-navigate events/navigate-adventure-how-far))))
 
 (defmethod transitions/transition-state events/navigate-adventure-find-your-stylist
   [_ event _ app-state]
