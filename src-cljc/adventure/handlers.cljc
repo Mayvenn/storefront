@@ -50,7 +50,7 @@
        (when (and (not= events/navigate-adventure-home event)
                   (empty? (get-in app-state keypaths/adventure-choices)))
          (history/enqueue-navigate events/navigate-adventure-home nil))
-       (when-let [emHash? (boolean (:emHash query-params))]
+       (when (boolean (:em_hash query-params))
          (messages/handle-message events/adventure-visitor-identified)))))
 
 (defmethod effects/perform-effects events/adventure-visitor-identified
