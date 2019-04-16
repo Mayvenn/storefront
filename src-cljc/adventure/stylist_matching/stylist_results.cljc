@@ -173,7 +173,7 @@
                              {:results            results
                               :latitude           latitude
                               :longitude          longitude
-                              :location_submitted location_submitted
+                              :location_submitted location-submitted
                               :service_type       service-type
                               :radius             radius
                               :current_step       3}))))
