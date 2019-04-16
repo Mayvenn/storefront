@@ -69,6 +69,7 @@
                     :infer-externs    false
                     :static-fns       true
                     :fn-invoke-direct true
+                    :parallel-build   true
                     :libs             ["src-cljs/rng/rng.js"]
                     :foreign-libs     [{:file     "src-cljs/storefront/react-slick.js"
                                         :provides ["react-slick"]}
@@ -111,6 +112,7 @@
                         :infer-externs    false
                         :static-fns       true
                         :fn-invoke-direct true
+                        :parallel-build   true
                         :libs             ["src-cljs/rng/rng.js"]
                         :foreign-libs     [{:file     "src-cljs/storefront/react-slick.js"
                                             :file-min "target/min-js/react-slick.js" ;; created by gulp
