@@ -23,10 +23,11 @@
 
 ;; TODO: find a better place for this query function
 (defn stylist-profile-card-data [stylist]
-  (let [address             (:address stylist)
-        salon               (:salon stylist)]
+  (let [address (:address stylist)
+        salon   (:salon stylist)]
     {:image-url         (-> stylist :portrait :resizable-url)
-     :title             (str (:firstname address) " " (:lastname address))
+     :title             [:div
+                         [:span {:data-test "stylist-firstname"} (:firstname address)] " " (:lastname address)]
      :subtitle          (str (:city salon) ", " (:state salon))
      :rating            (:rating stylist)
      :detail-line       (str (:name salon))
