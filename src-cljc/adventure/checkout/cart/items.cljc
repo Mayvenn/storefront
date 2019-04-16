@@ -18,25 +18,25 @@
 (defn freeinstall-line-item-query [data]
   (let [order                 (get-in data keypaths/order)
         highest-value-service (or
-                                (when-let [install-type (:install-type order)]
-                                  (keyword install-type))
-                                ;; TODO: GROT when all older cart orders have been migrated to install-type
-                                (some-> order
-                                        orders/product-items
-                                        vouchers/product-items->highest-value-service)
-                                :leave-out)
+                               (when-let [install-type (:install-type order)]
+                                 (keyword install-type))
+                               ;; TODO: GROT when all older cart orders have been migrated to install-type
+                               (some-> order
+                                       orders/product-items
+                                       vouchers/product-items->highest-value-service)
+                               :leave-out)
 
-        diva-advertised-type (->> (get-in data keypaths/environment)
-                                  vouchers/campaign-configuration
-                                  (filter #(= (:service/type %) highest-value-service))
-                                  first
-                                  :service/diva-advertised-type)
-        service-price                           (some-> (or (get-in data adv-keypaths/adventure-servicing-stylist)
-                                                            (get-in data keypaths/store))
-                                                        :service-menu
-                                                        (get diva-advertised-type ))
-        number-of-items-needed                  (- 3 (orders/product-quantity order))
-        {:keys [address]}                       (get-in data adv-keypaths/adventure-servicing-stylist)]
+        diva-advertised-type   (->> (get-in data keypaths/environment)
+                                    vouchers/campaign-configuration
+                                    (filter #(= (:service/type %) highest-value-service))
+                                    first
+                                    :service/diva-advertised-type)
+        service-price          (some-> (or (get-in data adv-keypaths/adventure-servicing-stylist)
+                                           (get-in data keypaths/store))
+                                       :service-menu
+                                       (get diva-advertised-type ))
+        number-of-items-needed (- 3 (orders/product-quantity order))
+        {:keys [address]}      (get-in data adv-keypaths/adventure-servicing-stylist)]
     {:id                     "freeinstall"
      :title                  "Install"
      :detail                 (line-item-detail (:firstname address))
