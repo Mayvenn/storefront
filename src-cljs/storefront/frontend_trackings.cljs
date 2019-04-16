@@ -317,6 +317,7 @@
   (stringer/track-event "email_capture-capture"
                         {:email            email
                          :test-variations  (get-in app-state keypaths/features)
+                         :store-slug       (get-in app-state keypaths/store-slug)
                          :store-experience (get-in app-state keypaths/store-experience)})
   (pinterest/track-event "EmailCapture"))
 
