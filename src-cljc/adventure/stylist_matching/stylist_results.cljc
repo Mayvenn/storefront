@@ -140,7 +140,9 @@
      (stringer/track-event "stylist_selected"
                            {:stylist_id     (:stylist-id servicing-stylist)
                             :card_index     card-index
-                            :current_step   3
+                            :current_step   (if (= event events/api-success-assign-servicing-stylist-post-purchase)
+                                              3
+                                              2)
                             :service_type   (get-in app-state keypaths/adventure-choices-install-type)
                             :order_number   (:number order)
                             :stylist_rating (:rating servicing-stylist)})))
