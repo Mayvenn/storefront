@@ -101,7 +101,8 @@
        (summary-row {:data-test "subtotal"} "Subtotal" subtotal)
        (when shipping-cost
          (summary-row {:class "black"} "Shipping" shipping-cost))
-       (when adv-cart-promo-entry?
+       (when (and adv-cart-promo-entry?
+                  (orders/no-applied-promo? order))
          [:tr.h5
           [:td
            {:col-span "2"}
@@ -115,7 +116,15 @@
              (when (= "Bundle Discount" name)
                (svg/discount-tag {:class  "mxnp6"
                                   :height "2em" :width "2em"}))
-             (orders/display-adjustment-name name)]
+             (orders/display-adjustment-name name)
+             (when coupon-code
+               [:a.ml1.h6.gray.flex.items-center
+                (merge {:data-test "cart-remove-promo"}
+                       (utils/fake-href events/control-checkout-remove-promotion
+                                        {:code coupon-code}))
+                (svg/close-x {:class "stroke-white fill-gray"})])]
+            ;; Still exists incase we have a cart that is relying on the
+            ;; existance of a freeinstall promotion with coupon code
             (if (and freeinstall-line-item-data
                      (= "freeinstall" coupon-code))
               (- (:price freeinstall-line-item-data))
