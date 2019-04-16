@@ -688,7 +688,7 @@
       (assoc-in app-state adventure.keypaths/adventure-matched-stylists stylists)
 
     (seq query)
-    (assoc-in adventure.keypaths/adventure-stylist-match-address
+    (assoc-in adventure.keypaths/adventure-stylist-match-location
               {:latitude  (:latitude query)
                :longitude (:longitude query)
                :radius    (:radius query)})))
