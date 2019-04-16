@@ -26,6 +26,7 @@
      (merge (utils/fake-href events/control-create-order-from-shared-cart {:shared-cart-id number
                                                                            :look-id        (:id look)})
             {:data-test "add-to-cart-submit"
+             :disabled? (not look)
              :spinning? creating-order?})
      "Add items to bag")))
 
