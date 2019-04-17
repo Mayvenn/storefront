@@ -359,9 +359,10 @@
 
 (defmethod perform-track events/api-success-update-order-update-cart-payments [_ events {:keys [order]} app-state]
   (stringer/track-event "checkout-payment_enter" {:order_number (:number order)
-                                                  :method (if (contains? (:cart-payments order) :paypal)
-                                                            "paypal"
-                                                            "other")}))
+                                                  :method       (cond
+                                                                  (contains? (:cart-payments order) :paypal)  "paypal"
+                                                                  (contains? (:cart-payments order) :quadpay) "quadpay"
+                                                                  :else                                       "other")}))
 
 (defmethod perform-track events/api-success-update-order-update-shipping-method [_ events {:keys [order]} app-state]
   (stringer/track-event "checkout-shipping_method_change"
