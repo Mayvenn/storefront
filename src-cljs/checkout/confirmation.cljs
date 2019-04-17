@@ -250,13 +250,15 @@
                                          freeinstall-applied?
                                          (update
                                           :items conj
-                                          {:react/key             (:id freeinstall-line-item-data)
-                                           :title/value           (:title freeinstall-line-item-data)
-                                           :title/id              "line-item-title-freeinstall"
-                                           :detail-top-left/id    "freeinstall-details"
-                                           :detail-top-left/value (:detail freeinstall-line-item-data)
-                                           :image/id              "freeinstall-needle-thread"
-                                           :image/value           (:thumbnail-image freeinstall-line-item-data)}))
+                                          {:react/key                 (:id freeinstall-line-item-data)
+                                           :title/value               (:title freeinstall-line-item-data)
+                                           :title/id                  "line-item-title-freeinstall"
+                                           :detail-top-left/id        "freeinstall-details"
+                                           :detail-top-left/value     (:detail freeinstall-line-item-data)
+                                           :image/id                  "freeinstall-needle-thread"
+                                           :image/value               (:thumbnail-image freeinstall-line-item-data)
+                                           :detail-bottom-right/id    (str "line-item-price-freeinstall")
+                                           :detail-bottom-right/value (mf/as-money-without-cents (:price freeinstall-line-item-data))}))
      :order                            order
      :payment                          (checkout-credit-card/query data)
      :delivery                         (checkout-delivery/query data)
@@ -279,13 +281,15 @@
      :products                         (get-in data keypaths/v2-products)
      :items                            (update (item-card-query data)
                                                :items conj
-                                               {:react/key             (:id freeinstall-line-item-data)
-                                                :title/value           (:title freeinstall-line-item-data)
-                                                :title/id              "line-item-title-freeinstall"
-                                                :detail-top-left/id    "freeinstall-details"
-                                                :detail-top-left/value (:detail freeinstall-line-item-data)
-                                                :image/id              "freeinstall-needle-thread"
-                                                :image/value           (:thumbnail-image freeinstall-line-item-data)})
+                                               {:react/key                 (:id freeinstall-line-item-data)
+                                                :title/value               (:title freeinstall-line-item-data)
+                                                :title/id                  "line-item-title-freeinstall"
+                                                :detail-top-left/id        "freeinstall-details"
+                                                :detail-top-left/value     (:detail freeinstall-line-item-data)
+                                                :image/id                  "freeinstall-needle-thread"
+                                                :image/value               (:thumbnail-image freeinstall-line-item-data)
+                                                :detail-bottom-right/id    (str "line-item-price-freeinstall")
+                                                :detail-bottom-right/value (mf/as-money-without-cents (:price freeinstall-line-item-data))})
      :order                            order
      :payment                          (checkout-credit-card/query data)
      :delivery                         (checkout-delivery/query data)
