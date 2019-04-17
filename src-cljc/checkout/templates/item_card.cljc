@@ -42,7 +42,7 @@
                (ui/ucare-img {:width 75} value)]])))]
 
        ;; info group
-       [:div.h6.flex.flex-wrap.flex-auto.items-center.justify-between.mt1
+       [:div.h6.flex.flex-wrap.flex-auto.justify-between.mt1
 
         ;; title
         (let [{:title/keys [id value]} item]
@@ -51,31 +51,25 @@
              [:a.medium.titleize.h5 {:data-test id} value])])
 
         ;; detail top-left
-        (let [{:detail-top-left/keys [id value]} item]
+        (let [{:detail-top-left/keys [id value opts]} item]
           [:div.col-10
-           (when id {:data-test id})
+           (when id (merge {:data-test id} opts))
            (when id value)])
 
         ;; action top-right
-        (let [{:detail-top-right/keys [id value]} item]
+        (let [{:detail-top-right/keys [id value opts]} item]
           [:div.col-2.right-align
-           (when id
-             [:div
-              #_(if spinning?
-                [:div.h3 {:style {:width "1.2em"}} ui/spinner]
-                [:a.medium
-                 (merge {:data-test id}
-                        (apply utils/fake-href event))
-                 value])])])
+           (when id (merge {:data-test id} opts))
+           (when id value)])
 
         ;; detail bottom-left
-        (let [{:detail-bottom-left/keys [id value]} item]
+        (let [{:detail-bottom-left/keys [id value opts]} item]
           [:div.col-6
-           (when id {:data-test id})
+           (when id (merge {:data-test id} opts))
            (when id value)])
 
         ;; detail bottom-right
-        (let [{:detail-bottom-right/keys [id value]} item]
+        (let [{:detail-bottom-right/keys [id value opts]} item]
           [:div.col-6.right-align
-           (when id {:data-test id})
+           (when id (merge {:data-test id} opts))
            (when id value)])]])]))

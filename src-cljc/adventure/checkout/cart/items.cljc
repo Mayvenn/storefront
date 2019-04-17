@@ -7,7 +7,7 @@
    [adventure.keypaths :as adv-keypaths]))
 
 (defn line-item-detail [servicing-stylist-name]
-  [:div.mb1.mt0
+  [:div.mt0
    (str "w/ " (if (empty? servicing-stylist-name)
                 "a Certified Mayvenn Stylist"
                 servicing-stylist-name))
