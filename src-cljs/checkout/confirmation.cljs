@@ -74,7 +74,7 @@
                                (str (assoc current-uri
                                            :path (str "/orders/" order-number "/quadpay" )
                                            :query {:order-token order-token}))
-                               :cancel-url (str (assoc current-uri :path "/cart"))}}}}
+                               :cancel-url (str (assoc current-uri :path "/cart?error=quadpay"))}}}}
      (fn [order]
        (let [redirect-url (-> order :cart-payments :quadpay :redirect-url)]
          (messages/handle-message events/external-redirect-quadpay-checkout {:quadpay-redirect-url redirect-url}))))))

@@ -388,7 +388,8 @@
   (js/history.back))
 
 (def cart-error-codes
-  {"paypal-incomplete"           "We were unable to complete your order with PayPal. Please try again."
+  {"quadpay"                     "There was an issue authorizing your QuadPay loan. Please check out again or use a different payment method."
+   "paypal-incomplete"           "We were unable to complete your order with PayPal. Please try again."
    "paypal-invalid-address"      (str "Unfortunately, Mayvenn products cannot be delivered to this address at this time. "
                                       "Please choose a new shipping destination. ")
    "ineligible-for-free-install" (str "The 'FreeInstall' promotion code has been removed from your order."
