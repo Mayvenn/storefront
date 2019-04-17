@@ -81,8 +81,6 @@
 (defmethod effects/perform-effects events/navigate-adventure-home
   [_ _ args prev-app-state app-state]
   #?(:cljs (do (cookie/clear-adventure (get-in app-state storefront.keypaths/cookie))
-               (pixlee.hook/fetch-album-by-keyword :sleek-and-straight)
-               (pixlee.hook/fetch-album-by-keyword :waves-and-curly)
                (pixlee.hook/fetch-album-by-keyword :free-install-mayvenn))))
 
 (defn ^:private adventure-choices->criteria
