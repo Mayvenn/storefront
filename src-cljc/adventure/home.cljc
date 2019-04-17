@@ -8,10 +8,12 @@
                        goog.dom
                        goog.style
                        goog.events])
+            [storefront.accessors.pixlee :as pixlee]
             [storefront.component :as component]
             [storefront.components.marquee :as marquee]
             [storefront.components.ui :as ui]
             [storefront.components.svg :as svg]
+            storefront.keypaths
             [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
             [storefront.components.video :as video]
@@ -390,6 +392,8 @@
                                      :images
                                      (filter (comp (partial = "approved") :status))
                                      (map (comp v2/get-ucare-id-from-url :resizable-url)))
+     :free-install-mayvenn-ugc  {:images        (pixlee/images-in-album (get-in data storefront.keypaths/ugc) :free-install-mayvenn)
+                                 :album-keyword :free-install-mayvenn}
      ;; TODO: get this faq data from checkout popup?
      :faq-data                  (faq/query data)
      :signed-in                 (auth/signed-in data)
