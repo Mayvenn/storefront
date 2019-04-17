@@ -109,10 +109,10 @@
    experiment for"
   [data]
   (cond
-    ;; GROT: free-install-applied? when adventure orders using freeinstall promo code are no longer relevant
+    ;; GROT: freeinstall-applied? when adventure orders using freeinstall promo code are no longer relevant
     (and
      (or (orders/freeinstall-applied? (get-in data keypaths/order))
-         (orders/free-install-included? (get-in data keypaths/order)))
+         (orders/freeinstall-included? (get-in data keypaths/order)))
      (= "freeinstall" (get-in data keypaths/store-slug)))
     :adventure-freeinstall/applied
 

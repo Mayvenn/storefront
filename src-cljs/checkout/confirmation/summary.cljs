@@ -108,7 +108,8 @@
                                      (adv-cart-items/freeinstall-line-item-query data)
                                      (cart-items/freeinstall-line-item-query data))]
     (when (and (experiments/aladdin-experience? data)
-               (orders/freeinstall-applied? order))
+               (or (orders/freeinstall-applied? order)
+                   (orders/freeinstall-included? order)))
       {:freeinstall-line-item-data freeinstall-line-item-data
        :order                      order
        :shipping-cost              (* (:quantity shipping-item) (:unit-price shipping-item))

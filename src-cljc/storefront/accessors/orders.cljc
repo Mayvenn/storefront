@@ -138,7 +138,7 @@
   (and (bundle-discount? order)
        (contains? (all-applied-promo-codes order) "freeinstall")))
 
-(defn free-install-included?
+(defn freeinstall-included?
   [order]
   (and (bundle-discount? order)
        (:install-type order)))
