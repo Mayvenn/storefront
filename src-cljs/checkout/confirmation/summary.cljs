@@ -121,38 +121,3 @@
        :subtotal                   (cond-> (orders/products-subtotal order)
                                      freeinstall-line-item-data
                                      (+ (spice/parse-double (:price freeinstall-line-item-data))))})))
-
-
-;; TODO: keeping it for reference. Remove it soon!
-#_(defn display-order-summary [order {:keys [available-store-credit use-store-credit?]}]
-  (let [adjustments-including-tax (orders/all-order-adjustments order)
-        shipping-item             (orders/shipping-item order)
-        store-credit              (min (:total order) (or available-store-credit
-                                                          (-> order :cart-payments :store-credit :amount)
-                                                          0.0))]
-    [:div
-     [:.py2.border-top.border-bottom.border-gray
-      [:table.col-12
-       [:tbody
-        (summary-row "Subtotal" (orders/products-subtotal order))
-        (for [{:keys [name price coupon-code]} adjustments-including-tax]
-          (when (or (not (= price 0))
-                    (#{"amazon" "freeinstall" "install"} coupon-code))
-            (summary-row
-             {:key name}
-             [:div {:data-test (text->data-test-name name)}
-              (orders/display-adjustment-name name)]
-             price)))
-
-        (when shipping-item
-          (summary-row "Shipping" (* (:quantity shipping-item) (:unit-price shipping-item))))
-
-        (when (and (pos? store-credit) use-store-credit?)
-          (summary-row "Store Credit" (- store-credit)))]]]
-     [:.py2.h2
-      [:.flex
-       [:.flex-auto.light "Total"]
-       [:.right-align
-        (cond-> (:total order)
-          use-store-credit? (- store-credit)
-          true              mf/as-money)]]]]))
