@@ -18,7 +18,9 @@
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
+            [storefront.trackings :as trackings]
             [storefront.hooks.quadpay :as quadpay]
+            [storefront.hooks.stringer :as stringer]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]
@@ -76,8 +78,20 @@
                                            :query {:order-token order-token}))
                                :cancel-url (str (assoc current-uri :path "/cart?error=quadpay"))}}}}
      (fn [order]
-       (let [redirect-url (-> order :cart-payments :quadpay :redirect-url)]
-         (messages/handle-message events/external-redirect-quadpay-checkout {:quadpay-redirect-url redirect-url}))))))
+       (messages/handle-message events/api-success-update-order-proceed-to-quadpay {:order order})))))
+
+(defmethod trackings/perform-track events/api-success-update-order-proceed-to-quadpay
+  [_ _ args app-state]
+  (let [order-number (get-in app-state keypaths/order-number)
+        store-slug   (get-in app-state keypaths/store-slug)
+        order-total  (get-in app-state keypaths/order-total)
+        redirect-url (-> (get-in app-state keypaths/order) :cart-payments :quadpay :redirect-url)]
+    (stringer/track-event "customer-sent-to-quadpay"
+                          {:order_number order-number
+                           :store_slug   store-slug
+                           :order_total  order-total}
+                          events/external-redirect-quadpay-checkout
+                          {:quadpay-redirect-url redirect-url})))
 
 (defn component
   [{:keys [available-store-credit

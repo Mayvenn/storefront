@@ -320,6 +320,7 @@
 (defpath api-success-update-order-add-promotion-code)
 (defpath api-success-update-order-remove-promotion-code)
 (defpath api-success-update-order-place-order)
+(defpath api-success-update-order-proceed-to-quadpay)
 (defpath api-success-promotions)
 (defpath api-success-gallery)
 
