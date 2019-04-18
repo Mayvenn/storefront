@@ -50,6 +50,14 @@
 .mtn8  { margin-top: -var(--space-8); }
 .mtn10 { margin-top: -var(--space-10); }
 
+.mbn1  { margin-bottom: -var(--space-1); }
+.mbn2  { margin-bottom: -var(--space-2); }
+.mbn3  { margin-bottom: -var(--space-3); }
+.mbn4  { margin-bottom: -var(--space-4); }
+.mbn6  { margin-bottom: -var(--space-6); }
+.mbn8  { margin-bottom: -var(--space-8); }
+.mbn10 { margin-bottom: -var(--space-10); }
+
 .m-auto { margin: auto; }
 
 /* pixel-based margin */
