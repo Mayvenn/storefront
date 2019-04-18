@@ -106,7 +106,7 @@
            confirmation-summary
            checkout-button-data
            selected-quadpay?
-           loaded-quadpay]}
+           loaded-quadpay?]}
    owner]
   (component/create
    [:div.container.p2
@@ -144,22 +144,14 @@
                                         {:read-only?             true
                                          :use-store-credit?      (not install-or-free-install-applied?)
                                          :available-store-credit available-store-credit}))
-       (when (and selected-quadpay?
-                  loaded-quadpay)
-         [:div.border.border-blue.rounded.my2.py2.h6.dark-gray.center
-          "4 interest free payments of $" (quadpay/calc-installment-amount (:total order))
-          [:div.hide (component/build quadpay/component {} nil)]
-          [:div.flex.justify-center.items-center
-           "Continue with"
-           [:div.mx1 {:style {:width "70px" :height "14px"}}
-            svg/quadpay-logo]
-           "below."
-           [:a.blue.mx1 {:href     "#"
-                         :on-click (fn [e]
-                                     (.preventDefault e)
-                                     (quadpay/show-modal))}
-            "Learn more."]]
-          [:div.hide (component/build quadpay/component {:full-amount (:total order)} nil)]])
+       (quadpay/informational-component
+        {:show?       (and selected-quadpay? loaded-quadpay?)
+         :order-total (:total order)
+         :directive   [:div.flex.justify-center.items-center
+                       "Continue with"
+                       [:div.mx1 {:style {:width "70px" :height "14px"}}
+                        svg/quadpay-logo]
+                       "below."]})
 
        [:div.col-12.col-6-on-tb-dt.mx-auto
         (checkout-button selected-quadpay? checkout-button-data)]]]]]))
@@ -288,7 +280,7 @@
      :checkout-button-data             (checkout-button-query data)
      :confirmation-summary             (confirmation-summary/query data)
      :store-slug                       (get-in data keypaths/store-slug)
-     :loaded-quadpay                   (get-in data keypaths/loaded-quadpay)}))
+     :loaded-quadpay?                  (get-in data keypaths/loaded-quadpay)}))
 
 (defn adventure-query
   [data]

@@ -30,7 +30,7 @@
 (defn calc-installment-amount [full-amount]
   (.toFixed (/ full-amount 4) 2))
 
-(defn component
+(defn ^:private component
   [{:keys [full-amount]} owner opts]
   (reify
     om/IDidMount
@@ -39,3 +39,19 @@
     (render [_]
       (html
        [:quadpay-widget {:amount full-amount}]))))
+
+(defn informational-component [{:keys [show? order-total directive]}]
+  (when show?
+    [:div.border.border-blue.rounded.my2.py2.h6.dark-gray.center
+     "4 interest free payments of $" [:span {:data-test "quadpay-payment-amount"}
+                                      (calc-installment-amount order-total)]
+     [:div.hide (component/build component {} nil)]
+     [:div.flex.justify-center.items-center
+      directive
+      [:a.blue.mx1 {:href      "#"
+                    :data-test "quadpay-learn-more"
+                    :on-click  (fn [e]
+                                 (.preventDefault e)
+                                 (show-modal))}
+       "Learn more."]]
+     [:div.hide {:full-amount (component/build component order-total nil)}]]))
