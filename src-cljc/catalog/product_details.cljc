@@ -34,6 +34,7 @@
                        [storefront.hooks.reviews :as review-hooks]
                        [storefront.api :as api]
                        [storefront.history :as history]
+                       [storefront.hooks.quadpay :as quadpay]
                        [storefront.browser.scroll :as scroll]
                        [goog.dom]
                        [goog.events.EventType :as EventType]
@@ -287,6 +288,8 @@
            selections
            options
            picker-data
+           loaded-quadpay?
+           quadpay?
            aladdin-or-phoenix?
            ugc] :as data} owner opts]
   (let [review?      (seq reviews)
@@ -331,6 +334,16 @@
                   unavailable? unavailable-button
                   sold-out?    sold-out-button
                   :else        (add-to-bag-button adding-to-bag? selected-sku sku-quantity))]]
+              #?(:cljs [:div.mbn4
+                         (component/build quadpay/component
+                                          {:show?       (and quadpay? loaded-quadpay?)
+                                           :order-total (:sku/price selected-sku)
+                                           :directive   [:div.flex.justify-center.items-center
+                                                         "Just select"
+                                                         [:div.mx1 {:style {:width "70px" :height "14px"}}
+                                                          svg/quadpay-logo]
+                                                         "at check out."]}
+                                          nil)])
               (when (products/stylist-only? product)
                 shipping-and-guarantee)]
              (product-description product)
@@ -459,7 +472,9 @@
                                        :gallery-ucare-ids     gallery-ucare-ids
                                        :stylist-portrait      (:portrait store)
                                        :stylist-name          (:store-nickname store)
-                                       :stylist-gallery-open? (get-in data keypaths/carousel-stylist-gallery-open?)}}))
+                                       :stylist-gallery-open? (get-in data keypaths/carousel-stylist-gallery-open?)}
+     :loaded-quadpay?            (get-in data keypaths/loaded-quadpay)
+     :quadpay?                   (experiments/quadpay? data)}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
