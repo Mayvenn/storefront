@@ -179,14 +179,15 @@
       (component/build cart-summary/component cart-summary nil)
 
       #?@(:cljs
-          [(quadpay/informational-component
-            {:show?       (and quadpay? loaded-quadpay?)
-             :order-total (:total order)
-             :directive   [:div.flex.items-center.justify-center
-                           "Just select"
-                           [:div.mx1 {:style {:width "70px" :height "14px"}}
-                            svg/quadpay-logo]
-                           "at checkout."]})])
+          [(component/build quadpay/component
+                            {:show?       (and quadpay? loaded-quadpay?)
+                             :order-total (:total order)
+                             :directive   [:div.flex.items-center.justify-center
+                                           "Just select"
+                                           [:div.mx1 {:style {:width "70px" :height "14px"}}
+                                            svg/quadpay-logo]
+                                           "at checkout."]}
+                            nil)])
       (ui/teal-button {:spinning? false
                        :disabled? updating?
                        :on-click  (utils/send-event-callback events/control-checkout-cart-submit)

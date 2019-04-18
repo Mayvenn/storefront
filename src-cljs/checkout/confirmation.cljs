@@ -144,14 +144,15 @@
                                         {:read-only?             true
                                          :use-store-credit?      (not install-or-free-install-applied?)
                                          :available-store-credit available-store-credit}))
-       (quadpay/informational-component
-        {:show?       (and selected-quadpay? loaded-quadpay?)
-         :order-total (:total order)
-         :directive   [:div.flex.justify-center.items-center
-                       "Continue with"
-                       [:div.mx1 {:style {:width "70px" :height "14px"}}
-                        svg/quadpay-logo]
-                       "below."]})
+       (component/build quadpay/component
+                        {:show?       (and selected-quadpay? loaded-quadpay?)
+                         :order-total (:total order)
+                         :directive   [:div.flex.justify-center.items-center
+                                       "Continue with"
+                                       [:div.mx1 {:style {:width "70px" :height "14px"}}
+                                        svg/quadpay-logo]
+                                       "below."]}
+                        nil)
 
        [:div.col-12.col-6-on-tb-dt.mx-auto
         (checkout-button selected-quadpay? checkout-button-data)]]]]]))
