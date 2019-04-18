@@ -186,7 +186,7 @@
                                            "Just select"
                                            [:div.mx1 {:style {:width "70px" :height "14px"}}
                                             svg/quadpay-logo]
-                                           "at checkout."]}
+                                           "at check out."]}
                             nil)])
       (ui/teal-button {:spinning? false
                        :disabled? updating?
