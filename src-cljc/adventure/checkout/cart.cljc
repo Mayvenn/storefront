@@ -1,5 +1,7 @@
 (ns adventure.checkout.cart
-  (:require [adventure.checkout.cart.items :as adventure-cart-items]
+  (:require
+   #?@(:cljs [[storefront.hooks.quadpay :as quadpay]])
+   [adventure.checkout.cart.items :as adventure-cart-items]
             [adventure.checkout.cart.summary :as adventure-cart-summary]
             [adventure.keypaths :as adventure.keypaths]
             [catalog.facets :as facets]
@@ -136,6 +138,7 @@
    [:div.mt2 (add-more-hair-button navigation-event)]])
 
 (defn full-component [{:keys [skus
+                              order
                               updating?
                               redirecting-to-paypal?
                               suggestions
@@ -148,6 +151,8 @@
                               servicing-stylist
                               how-shop-choice
                               add-more-hair-navigation-event
+                              quadpay?
+                              loaded-quadpay?
                               cart-summary]} owner _]
   (component/create
    (let [{:keys [number-of-items-needed add-more-hair?]} freeinstall-line-item-data]
@@ -171,6 +176,17 @@
 
         [:div.px3
          (component/build adventure-cart-summary/component cart-summary nil)
+
+         #?@(:cljs
+             [(component/build quadpay/component
+                               {:show?       (and quadpay? loaded-quadpay?)
+                                :order-total (:total order)
+                                :directive   [:div.flex.items-center.justify-center
+                                              "Just select"
+                                              [:div.mx1 {:style {:width "70px" :height "14px"}}
+                                               svg/quadpay-logo]
+                                              "at check out."]}
+                               nil)])
 
          (if add-more-hair?
            (add-more-hair-button add-more-hair-navigation-event)
@@ -233,6 +249,7 @@
         variant-ids     (map :id line-items)
         how-shop-choice (get-in data adventure.keypaths/adventure-choices-how-shop)]
     {:suggestions                    (suggestions/query data)
+     :order                          order
      :servicing-stylist              (get-in data adventure.keypaths/adventure-servicing-stylist)
      :line-items                     line-items
      :skus                           (get-in data keypaths/v2-skus)
@@ -250,7 +267,9 @@
      :delete-line-item-requests      (variants-requests data request-keys/delete-line-item variant-ids)
      :recently-added-skus            (get-in data keypaths/cart-recently-added-skus)
      :freeinstall-just-added?        (get-in data keypaths/cart-freeinstall-just-added?)
-     :freeinstall-line-item-data     (adventure-cart-items/freeinstall-line-item-query data)}))
+     :freeinstall-line-item-data     (adventure-cart-items/freeinstall-line-item-query data)
+     :loaded-quadpay?                (get-in data keypaths/loaded-quadpay)
+     :quadpay?                       (experiments/quadpay? data)}))
 
 (defn component
   [{:keys [fetching-order? full-cart]} owner opts]

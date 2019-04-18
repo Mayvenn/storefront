@@ -40,17 +40,10 @@
      (contains? (get-in data keypaths/checkout-selected-payment-methods) :store-credit))))
 
 (defn checkout-button
-  [quadpay? {:keys [spinning? disabled?]}]
-  (ui/submit-button (if quadpay?
+  [selected-quadpay? {:keys [spinning? disabled?]}]
+  (ui/submit-button (if selected-quadpay?
                       "Place Order with QuadPay"
                       "Place Order")
-                    {:spinning? spinning?
-                     :disabled? disabled?
-                     :data-test "confirm-form-submit"}))
-
-(defn adventure-checkout-button
-  [{:keys [spinning? disabled?]}]
-  (ui/submit-button "Place Order"
                     {:spinning? spinning?
                      :disabled? disabled?
                      :data-test "confirm-form-submit"}))
@@ -200,7 +193,10 @@
            install-or-free-install-applied?
            confirmation-summary
            checkout-button-data
-           servicing-stylist]}
+           servicing-stylist
+           selected-quadpay?
+           loaded-quadpay?
+           order]}
    owner]
   (component/create
    [:div.container.p2
@@ -209,8 +205,10 @@
 
     [:form
      {:on-submit
-      (utils/send-event-callback events/control-checkout-confirmation-submit
-                                 {:place-order? requires-additional-payment?})}
+      (if selected-quadpay?
+        (utils/send-event-callback events/control-checkout-quadpay-confirmation-submit)
+        (utils/send-event-callback events/control-checkout-confirmation-submit
+                                   {:place-order? requires-additional-payment?}))}
 
      [:.clearfix.mxn3
       [:.col-on-tb-dt.col-6-on-tb-dt.px3
@@ -236,16 +234,27 @@
                                         {:read-only?             true
                                          :use-store-credit?      (not install-or-free-install-applied?)
                                          :available-store-credit available-store-credit}))
+
+       (component/build quadpay/component
+                        {:show?       (and selected-quadpay? loaded-quadpay?)
+                         :order-total (:total order)
+                         :directive   [:div.flex.justify-center.items-center
+                                       "Continue with"
+                                       [:div.mx1 {:style {:width "70px" :height "14px"}}
+                                        svg/quadpay-logo]
+                                       "below."]}
+                        nil)
+
        [:div.h5.my4.center.col-10.mx-auto.line-height-3
         (if-let [servicing-stylist-firstname (-> servicing-stylist :address :firstname)]
           (str "You’ll be connected with " servicing-stylist-firstname " after checkout.")
           "You’ll be able to select your Certified Mayvenn Stylist after checkout.")]
        [:div.col-12.col-6-on-tb-dt.mx-auto
-        (adventure-checkout-button checkout-button-data)]]]]]))
+        (checkout-button selected-quadpay? checkout-button-data)]]]]]))
 
 (defn ^:private freeinstall-line-item-data->item-card
   [{:keys [id title detail thumbnail-image price]}]
-  {:react/key              id
+  {:react/key              (str "freeinstall-line-item-" id)
    :title/value            title
    :title/id               "line-item-title-freeinstall"
    :detail-top-left/id     "freeinstall-details"
@@ -302,7 +311,9 @@
      :checkout-button-data             (checkout-button-query data)
      :confirmation-summary             (confirmation-summary/query data)
      :store-slug                       (get-in data keypaths/store-slug)
-     :servicing-stylist                (get-in data adventure.keypaths/adventure-servicing-stylist)}))
+     :servicing-stylist                (get-in data adventure.keypaths/adventure-servicing-stylist)
+     :selected-quadpay?                (-> (get-in data keypaths/order) :cart-payments :quadpay)
+     :loaded-quadpay?                  (get-in data keypaths/loaded-quadpay)}))
 
 (defn built-component
   [data opts]
