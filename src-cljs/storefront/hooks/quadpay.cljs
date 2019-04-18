@@ -30,7 +30,7 @@
 (defn calc-installment-amount [full-amount]
   (.toFixed (/ full-amount 4) 2))
 
-(defn ^:private widget-component
+(defn widget-component
   [{:keys [full-amount]} owner opts]
   (reify
     om/IDidMount

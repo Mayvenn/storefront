@@ -59,7 +59,7 @@
   [{:keys [step-bar
            saving?
            quadpay?
-           loaded-quadpay
+           loaded-quadpay?
            disabled?
            loaded-stripe?
            store-credit
@@ -156,8 +156,8 @@
                                            (.preventDefault e)
                                            (quadpay/show-modal))}
                 "Learn more."]
-               (when loaded-quadpay
-                 [:div.hide (component/build quadpay/component {} nil)])]])
+               (when loaded-quadpay?
+                 [:div.hide (component/build quadpay/widget-component {} nil)])]])
 
             (when selected-quadpay?
               [:div.h6.px2.ml5.dark-gray
@@ -308,7 +308,7 @@
       :step-bar                  (checkout-steps/query data)
       :field-errors              (:field-errors (get-in data keypaths/errors))
       :selected-payment-methods  selected-payment-methods
-      :loaded-quadpay            (get-in data keypaths/loaded-quadpay)}
+      :loaded-quadpay?           (get-in data keypaths/loaded-quadpay)}
      (cc/query data))))
 
 (defn built-component [data opts]
