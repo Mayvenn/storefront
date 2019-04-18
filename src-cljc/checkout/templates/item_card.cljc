@@ -20,9 +20,9 @@
             (css-transitions/transition-background-color
              highlight?
              [:div.medium.h5
+              {:key (str react-key "-image")}
               [:div.absolute.z1.circle.stacking-context.border.border-light-gray.bg-too-light-teal.flex.items-center.justify-center
-               {:key       id
-                :data-test id
+               {:data-test id
                 :style     {:right  "-5px"
                             :top    "-12px"
                             :width  "32px"
@@ -35,7 +35,7 @@
             (css-transitions/transition-background-color
              highlight?
              [:div.flex.items-center.justify-center.ml1
-              {:key       id
+              {:key       (str react-key "-actual-image")
                :data-test id
                :style     {:width "79px" :height "74px"}}
               [:div.pp1
