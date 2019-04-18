@@ -8,6 +8,7 @@
               [storefront.hooks.browser-pay :as browser-pay]
               [storefront.browser.cookie-jar :as cookie-jar]
               [storefront.accessors.stylist-urls :as stylist-urls]
+              [storefront.hooks.quadpay :as quadpay]
               [goog.labs.userAgent.device :as device]])
    [catalog.images :as catalog-images]
    [cemerick.url :refer [url-encode]]
@@ -151,6 +152,8 @@
                               delete-line-item-requests
                               freeinstall-line-item-data
                               freeinstall-just-added?
+                              quadpay?
+                              loaded-quadpay?
                               cart-summary]} owner _]
   (component/create
    [:div.container.p2
@@ -175,6 +178,15 @@
 
       (component/build cart-summary/component cart-summary nil)
 
+      #?@(:cljs
+          [(quadpay/informational-component
+            {:show?       (and quadpay? loaded-quadpay?)
+             :order-total (:total order)
+             :directive   [:div.flex.items-center.justify-center
+                           "Just select"
+                           [:div.mx1 {:style {:width "70px" :height "14px"}}
+                            svg/quadpay-logo]
+                           "at checkout."]})])
       (ui/teal-button {:spinning? false
                        :disabled? updating?
                        :on-click  (utils/send-event-callback events/control-checkout-cart-submit)
@@ -357,6 +369,8 @@
      :redirecting-to-paypal?     (get-in data keypaths/cart-paypal-redirect)
      :share-carts?               (stylists/own-store? data)
      :requesting-shared-cart?    (utils/requesting? data request-keys/create-shared-cart)
+     :loaded-quadpay?            (get-in data keypaths/loaded-quadpay)
+     :quadpay?                   (experiments/quadpay? data)
      :show-browser-pay?          (and (get-in data keypaths/loaded-stripe)
                                       (experiments/browser-pay? data)
                                       (seq (get-in data keypaths/shipping-methods))

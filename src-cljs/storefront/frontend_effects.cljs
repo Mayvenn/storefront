@@ -403,6 +403,8 @@
   (api/get-shipping-methods)
   (api/get-states (get-in app-state keypaths/api-cache))
   (stripe/insert)
+  (when (experiments/quadpay? app-state)
+    (quadpay/insert))
   (refresh-current-order app-state)
   (when-let [error-msg (-> args :query-params :error cart-error-codes)]
     (handle-message events/flash-show-failure {:message error-msg})))
