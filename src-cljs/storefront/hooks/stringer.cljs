@@ -6,9 +6,7 @@
 (def stringer-src "//d6w7wdcyyr51t.cloudfront.net/cdn/stringer/stringer-dd6db0a.js")
 
 (defn insert-tracking [subdomain]
-  (let [source         (if (= subdomain "freeinstall")
-                         "freeinstall"
-                         "storefront")
+  (let [source         "storefront"
         onload-cb-text "function(){storefront.core.external_message(['inserted', 'stringer'], {})}"]
     (insert-tag-with-text
      (str "(function(d,e){function g(a){return function(){var b=Array.prototype.slice.call(arguments);b.unshift(a);c.push(b);return d.stringer}}var c=d.stringer=d.stringer||[],a=[\"init\",\"track\",\"identify\",\"clear\"];if(!c.snippetRan&&!c.loaded){c.snippetRan=!0;for(var b=0;b<a.length;b++){var f=a[b];c[f]=g(f)}a=e.createElement(\"script\");a.type=\"text/javascript\";a.async=!0;a.src=\"" stringer-src "\";a.onload="onload-cb-text";b=e.getElementsByTagName(\"script\")[0];b.parentNode.insertBefore(a,b);c.init({environment:\"" config/environment "\",sourceSite:\""source"\"})}})(window,document);")
