@@ -31,7 +31,7 @@
               updating?            (get update-line-item-requests sku-id)
               just-added-to-order? (contains? recently-added-skus sku-id)
               length-circle-value  (-> sku :hair/length first)]]
-    [:div.pt1.pb2 {:key (str (:catalog/sku-id sku) (:quantity line-item))}
+    [:div.pt1.pb2 {:key (str sku-id "-" (:quantity line-item))}
      [:div.left.pr1
       (when-not length-circle-value
         {:class "pr3"})
@@ -94,7 +94,8 @@
     (css-transitions/transition-background-color
      freeinstall-just-added?
      [:div.flex.justify-center.items-center
-      {:style {:height "79px"
+      {:key "freeinstall-line-item"
+       :style {:height "79px"
                :width  "79px"}}
       (thumbnail-image-fn 75)])]
    [:div
