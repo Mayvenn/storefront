@@ -26,33 +26,54 @@
     {:style {:width (str (calculate-width steps-completed)"%")
              :height "6px"}}]])
 
-(defn component
-  [{:keys [header-attrs progress back-navigation-message title subtitle shopping-bag?]} _ _]
-  (component/create
-   [:div.absolute.top-0.left-0.right-0
-    header-attrs
-    [:div.flex.flex-column
-     (if progress
-       (progress-bar (dec progress))
-       [:div {:style {:height "6px"}}])
-     [:div.relative.mt1
-      {:style {:height "59px"}}
-      [:div.absolute.left-0.right-0.top-0.flex.items-center.justify-between ;; Buttons (cart and back)
-       [:a.block.p3.inherit-color
-        (merge {:data-test "adventure-back"}
-               (utils/route-back {:navigation-message back-navigation-message}))
-        [:div.flex.items-center.justify-center {:style {:height "24px" :width "20px"}}
-         (ui/back-arrow {:width "14"})]]
-       (if shopping-bag?
-         [:a.block.p3 (merge {:data-test "adventure-cart"}
-                             (utils/route-to events/navigate-cart))
-          (ui/ucare-img
+(def shopping-bag
+  {:id    "adventure-cart"
+   :opts  (utils/route-to events/navigate-cart)
+   :value (ui/ucare-img
            {:width "20"}
-           "02f9e7fb-510f-458e-8be7-090399aad4de")]
-         [:div])]
-      [:div.center.mt1
-       [:div.h6.medium title]
-       [:div.h8 subtitle]]]]]))
+           "02f9e7fb-510f-458e-8be7-090399aad4de")})
+
+(defn component
+  [{:keys [back-navigation-message
+           header-attrs
+           progress
+           right-corner
+           shopping-bag?
+           subtitle
+           title
+           logo?]} _ _]
+  (component/create
+   (let [right-corner (cond (seq right-corner) right-corner
+                            shopping-bag?      shopping-bag
+                            :else              nil)]
+     [:div#header.absolute.top-0.left-0.right-0
+      header-attrs
+      [:div.flex.flex-column
+       (if progress
+         (progress-bar (dec progress))
+         [:div {:style {:height "6px"}}])
+       [:div.relative.mt1
+        {:style {:height "59px"}}
+        [:div.absolute.left-0.right-0.top-0.flex.items-center.justify-between ;; Buttons (cart and back)
+         [:div
+          (when back-navigation-message
+            [:a.block.p3.inherit-color
+             (merge {:data-test "adventure-back"}
+                    (utils/route-back {:navigation-message [back-navigation-message]}))
+             [:div.flex.items-center.justify-center {:style {:height "24px" :width "20px"}}
+              (ui/back-arrow {:width "14"})]])]
+         [:div
+          (when-let [{:keys [id opts value]} right-corner]
+            [:a.block.p3
+             (merge {:data-test id} opts)
+             (when id value)])]]
+        [:div.flex
+         (if logo?
+           [:div.mr4.mx-auto
+            (ui/ucare-img {:width "140"} "1970d88b-3798-4914-8a91-74288b09cc77")]
+           [:div.mt1.mx-auto
+            [:div.h6.medium title]
+            [:div.h8 subtitle]])]]]])))
 
 (defn built-component
   [data opts]

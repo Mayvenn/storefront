@@ -51,6 +51,7 @@
                   (empty? (get-in app-state keypaths/adventure-choices)))
          (history/enqueue-navigate events/navigate-adventure-home nil))
        (when (boolean (:em_hash query-params))
+         (prn (:em_hash query-params))
          (messages/handle-message events/adventure-visitor-identified)))))
 
 (defmethod effects/perform-effects events/adventure-visitor-identified
