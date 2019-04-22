@@ -503,7 +503,6 @@
 (defpath control-adventure-select-stylist)
 (defpath control-adventure-select-stylist-pre-purchase)
 (defpath control-adventure-select-stylist-post-purchase)
-(defpath control-adventure-emailcapture-dismiss)
 (defpath control-adventure-emailcapture-submit)
 
 (defpath adventure-address-component-mounted)

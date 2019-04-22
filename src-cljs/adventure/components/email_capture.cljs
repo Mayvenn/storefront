@@ -42,7 +42,7 @@
      :mini-prompt  "Enter your e-mail to get started!"
      :header-data  {:header-attrs nil
                     :right-corner {:id    "dismiss-email-capture"
-                                   :opts  (utils/fake-href events/control-adventure-emailcapture-dismiss)
+                                   :opts  (utils/fake-href events/control-email-captured-dismiss)
                                    :value (svg/simple-x {:class        "stroke-white"
                                                          :stroke-width "8"
                                                          :style        {:width  "20px"
@@ -62,10 +62,6 @@
   [_ _ {:keys [email]} _ app-state]
   (facebook-analytics/subscribe)
   (messages/handle-message events/adventure-visitor-identified))
-
-(defmethod transitions/transition-state events/control-adventure-emailcapture-dismiss
-  [_ _ _ app-state]
-  (assoc-in app-state storefront.keypaths/popup nil))
 
 (defmethod transitions/transition-state events/popup-show-adventure-emailcapture
   [_ event args app-state]
