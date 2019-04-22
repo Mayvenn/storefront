@@ -110,9 +110,6 @@
        (some #{"install"})
        boolean))
 
-(defn adv-email-capture? [data]
-  (display-feature? data "adv-email-capture"))
-
 (defn vouchers?
   [data]
   (or (display-feature? data "vouchers")

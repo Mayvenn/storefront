@@ -48,14 +48,12 @@
         seen-freeinstall-offer?     (get-in app-state keypaths/dismissed-free-install)
         signed-in?                  (get-in app-state keypaths/user-id)
         classic-experience?         (not v2-experience?)
-        adv-email-capture-exp       (experiments/adv-email-capture? app-state)
         email-capture-showable?     (and (not signed-in?)
                                          (not seen-email-capture?)
                                          on-non-minimal-footer-page?)]
     (cond
       (and freeinstall-store?
            email-capture-showable?
-           adv-email-capture-exp
            (contains? #{events/navigate-adventure-install-type}
                       navigation-event))
       (messages/handle-message events/popup-show-adventure-emailcapture)
