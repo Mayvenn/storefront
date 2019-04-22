@@ -1,22 +1,23 @@
 (ns adventure.components.email-capture
   (:require
-   [storefront.effects :as effects]
-   [storefront.hooks.facebook-analytics :as facebook-analytics]
-   [storefront.frontend-trackings :as frontend-trackings]
-   [storefront.components.popup :as popup]
-   [clojure.string :as string]
-   [storefront.platform.component-utils :as utils]
-   [storefront.platform.messages :as messages]
+   [adventure.components.answer-prompt]
    [adventure.keypaths :as keypaths]
-   [storefront.keypaths :as storefront.keypaths]
+   [clojure.string :as string]
+   [storefront.accessors.experiments :as experiments]
    [storefront.component :as component]
-   [storefront.events :as events]
+   [storefront.components.popup :as popup]
    [storefront.components.svg :as svg]
    [storefront.components.ui :as ui]
-   [storefront.transitions :as transitions]
    [storefront.effects :as effects]
+   [storefront.effects :as effects]
+   [storefront.events :as events]
+   [storefront.frontend-trackings :as frontend-trackings]
+   [storefront.hooks.facebook-analytics :as facebook-analytics]
+   [storefront.keypaths :as storefront.keypaths]
+   [storefront.platform.component-utils :as utils]
+   [storefront.platform.messages :as messages]
    [storefront.trackings :as trackings]
-   [adventure.components.answer-prompt]))
+   [storefront.transitions :as transitions]))
 
 (defn ^:private invalid-email? [email]
   (not (and (seq email)
@@ -28,6 +29,7 @@
   [data]
   (let [email               (get-in data storefront.keypaths/captured-email)
         errors              (get-in data storefront.keypaths/field-errors)
+        show-close-x?       (not (experiments/adv-force-email-capture? data))
         session-identified? (= "opted-in" (get-in data storefront.keypaths/email-capture-session))]
     {:input-data   {:value             email
                     :id                "email"
@@ -41,12 +43,13 @@
      :prompt       "Welcome! We can't wait for you to get a free install."
      :mini-prompt  "Enter your e-mail to get started!"
      :header-data  {:header-attrs nil
-                    :right-corner {:id    "dismiss-email-capture"
-                                   :opts  (utils/fake-href events/control-email-captured-dismiss)
-                                   :value (svg/simple-x {:class        "stroke-white"
-                                                         :stroke-width "8"
-                                                         :style        {:width  "20px"
-                                                                        :height "20px"}})}
+                    :right-corner (when show-close-x?
+                                    {:id    "dismiss-email-capture"
+                                     :opts  (utils/fake-href events/control-email-captured-dismiss)
+                                     :value (svg/simple-x {:class        "stroke-white"
+                                                           :stroke-width "8"
+                                                           :style        {:width  "20px"
+                                                                          :height "20px"}})})
                     :logo?        true
                     :title        nil
                     :subtitle     nil}
