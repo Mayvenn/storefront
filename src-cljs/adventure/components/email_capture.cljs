@@ -63,7 +63,6 @@
 
 (defmethod effects/perform-effects events/control-adventure-emailcapture-submit
   [_ _ {:keys [email]} _ app-state]
-  (facebook-analytics/subscribe)
   (messages/handle-message events/adventure-visitor-identified))
 
 (defmethod transitions/transition-state events/popup-show-adventure-emailcapture
@@ -72,6 +71,7 @@
 
 (defmethod trackings/perform-track events/control-adventure-emailcapture-submit
   [_ event {:keys [email]} app-state]
+  (facebook-analytics/subscribe)
   (frontend-trackings/track-email-capture-capture app-state {:email email}))
 
 (defmethod trackings/perform-track events/popup-show-adventure-emailcapture
