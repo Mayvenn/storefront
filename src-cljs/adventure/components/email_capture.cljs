@@ -69,6 +69,10 @@
   [_ event args app-state]
   (assoc-in app-state storefront.keypaths/popup :adv-email-capture))
 
+(defmethod transitions/transition-state events/control-adventure-emailcapture-submit
+  [_ event args app-state]
+  (assoc-in app-state storefront.keypaths/popup nil))
+
 (defmethod trackings/perform-track events/control-adventure-emailcapture-submit
   [_ event {:keys [email]} app-state]
   (facebook-analytics/subscribe)
