@@ -30,8 +30,6 @@
                                {:keypath keypath
                                 :value   (.. e -target -value)}))))
 
-
-
 (defn component
   [{:keys [input-data errors display? header-data prompt-image prompt mini-prompt on-submit]} owner _]
   (component/create
