@@ -307,7 +307,6 @@
     (let [[nav-event params] nav-message
           order-number       (cookies/get req "completed-order-number")
           order-token        (cookies/get-and-attempt-parsing-poorly-encoded req "completed-order-token")]
-      (prn nav-event)
       (h (cond-> req
            (and order-number
                 order-token
