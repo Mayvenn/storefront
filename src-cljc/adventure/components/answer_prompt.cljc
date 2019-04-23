@@ -1,15 +1,11 @@
 (ns adventure.components.answer-prompt
-  (:require [clojure.string :as string]
-            [adventure.components.header :as header]
-            [storefront.events :as events]
+  (:require [adventure.components.header :as header]
             [spice.maps :as maps]
+            [storefront.events :as events]
             [storefront.component :as component]
             [storefront.components.ui :as ui]
-            [storefront.components.svg :as svg]
-            storefront.keypaths
             [storefront.platform.component-utils :as utils]
-            [storefront.platform.messages :as messages]
-            ))
+            [storefront.platform.messages :as messages]))
 
 (def rect-button-attrs
   {:height-class "py6"
@@ -31,7 +27,7 @@
                                 :value   (.. e -target -value)}))))
 
 (defn component
-  [{:keys [input-data errors display? header-data prompt-image prompt mini-prompt on-submit]} owner _]
+  [{:keys [input-data header-data prompt-image prompt mini-prompt on-submit]} owner _]
   (component/create
    [:div.z5.bg-lavender.white.center.fixed.overlay.bg-contain.bg-no-repeat
     {:style {:background-position "bottom"
@@ -69,9 +65,7 @@
                              (when disabled?
                                {:disabled?      disabled?
                                 :disabled-class "bg-gray"})))
-          :data-test (str id "-answer-submit")} ;; TODO: Update heat
+          :data-test (str id "-answer-submit")}
          (ui/forward-arrow {:width     "14"
-                            :disabled? disabled?})]]])
-    ]))
+                            :disabled? disabled?})]]])]))
 
-;; Pages that use this component: Welcome/Home, find your stylist, shop-hair, match-stylist

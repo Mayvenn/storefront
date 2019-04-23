@@ -1,14 +1,11 @@
 (ns adventure.components.email-capture
   (:require
    [adventure.components.answer-prompt]
-   [adventure.keypaths :as keypaths]
    [clojure.string :as string]
    [storefront.accessors.experiments :as experiments]
    [storefront.component :as component]
    [storefront.components.popup :as popup]
    [storefront.components.svg :as svg]
-   [storefront.components.ui :as ui]
-   [storefront.effects :as effects]
    [storefront.effects :as effects]
    [storefront.events :as events]
    [storefront.frontend-trackings :as frontend-trackings]
@@ -29,8 +26,7 @@
   [data]
   (let [email               (get-in data storefront.keypaths/captured-email)
         errors              (get-in data storefront.keypaths/field-errors)
-        show-close-x?       (not (experiments/adv-force-email-capture? data))
-        session-identified? (= "opted-in" (get-in data storefront.keypaths/email-capture-session))]
+        show-close-x?       (not (experiments/adv-force-email-capture? data))]
     {:input-data   {:value             email
                     :id                "email"
                     :label             "E-mail address"
@@ -38,7 +34,6 @@
                     :on-change-keypath storefront.keypaths/captured-email
                     :disabled?         (invalid-email? email)}
      :errors       errors
-     :display?     (not session-identified?)
      :prompt-image "https://ucarecdn.com/03957478-feac-4e0c-aedf-e8e4a7123d69/-/format/auto/"
      :prompt       "Welcome! We can't wait for you to get a free install."
      :mini-prompt  "Enter your e-mail to get started!"
@@ -62,7 +57,7 @@
     (component/build adventure.components.answer-prompt/component queried-data nil)]))
 
 (defmethod effects/perform-effects events/control-adventure-emailcapture-submit
-  [_ _ {:keys [email]} _ app-state]
+  [_ _ args _ app-state]
   (messages/handle-message events/adventure-visitor-identified))
 
 (defmethod transitions/transition-state events/popup-show-adventure-emailcapture
