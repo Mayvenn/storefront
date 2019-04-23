@@ -117,7 +117,8 @@
                (svg/discount-tag {:class  "mxnp6"
                                   :height "2em" :width "2em"}))
              (orders/display-adjustment-name name)
-             (when coupon-code
+             (when (and adv-cart-promo-entry?
+                        coupon-code)
                [:a.ml1.h6.gray.flex.items-center
                 (merge {:data-test "cart-remove-promo"}
                        (utils/fake-href events/control-checkout-remove-promotion
