@@ -29,7 +29,7 @@
 (defn component
   [{:keys [input-data header-data prompt-image prompt mini-prompt on-submit]} owner _]
   (component/create
-   [:div.z5.bg-lavender.white.center.fixed.overlay.bg-contain.bg-no-repeat
+   [:div.z5.bg-lavender.white.center.fixed.overlay.bg-contain.bg-no-repeat.max-580.mx-auto
     {:style {:background-position "bottom"
              :background-image    (str "url('" prompt-image "')")}}
 
