@@ -48,7 +48,6 @@
   #?(:cljs
      (do
        (when (and (not= events/navigate-adventure-home event)
-                  (not (get-in app-state storefront.keypaths/email-capture-session))
                   (empty? (get-in app-state keypaths/adventure-choices)))
          (history/enqueue-navigate events/navigate-adventure-home nil))
        (when (boolean (:em_hash query-params))
@@ -73,16 +72,16 @@
 (defmethod transitions/transition-state events/navigate-adventure-home
   [_ event {:keys [query-params]} app-state]
   (-> app-state
-      (dissoc :adventure)
-      (update-in keypaths/adventure-choices
-                 merge {:adventure :started})
+      (assoc-in keypaths/adventure-choices {:adventure :started})
       (assoc-in keypaths/adventure-home-video (slug->video (:video query-params)))))
 
 
 (defmethod effects/perform-effects events/navigate-adventure-home
   [_ _ args prev-app-state app-state]
-  #?(:cljs (do (cookie/clear-adventure (get-in app-state storefront.keypaths/cookie))
-               (pixlee.hook/fetch-album-by-keyword :free-install-mayvenn))))
+  #?(:cljs (let [cookie    (get-in app-state storefront.keypaths/cookie)
+                 adventure (get-in app-state keypaths/adventure)]
+             (cookie/save-adventure cookie adventure)
+             (pixlee.hook/fetch-album-by-keyword :free-install-mayvenn))))
 
 (defn ^:private adventure-choices->criteria
   [choices]
