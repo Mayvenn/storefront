@@ -1,5 +1,6 @@
 (ns adventure.install-type
-  (:require [storefront.events :as events]
+  (:require [storefront.accessors.experiments :as experiments]
+            [storefront.events :as events]
             [storefront.component :as component]
             [storefront.keypaths :as keypaths]
             [adventure.utils.facets :as facets]
@@ -13,7 +14,10 @@
    "360-frontals" "Versatile, but highest maintenance & price"})
 
 (defn ^:private query [data]
-  (let [family-facet-options (facets/adventure-facet-options :hair/family (get-in data keypaths/v2-facets))]
+  (let [family-facet-options (facets/adventure-facet-options :hair/family (get-in data keypaths/v2-facets))
+        nav-event (if (experiments/match-before-purchase? data)
+                    events/navigate-adventure-match-stylist
+                    events/navigate-adventure-what-next)]
     {:prompt       "Which type of install are you looking for?"
      :prompt-image "//ucarecdn.com/a159aafc-b096-46b9-88ae-901e96699795/-/format/auto/bg.png"
      :data-test    "install-type"
@@ -28,7 +32,7 @@
                                               [:div.light.h6 (get subtexts slug)]]
                            :data-test-suffix slug
                            :value            {:install-type slug}
-                           :target-message   [events/navigate-adventure-what-next]})
+                           :target-message   [nav-event]})
                         family-facet-options)}))
 
 (defn built-component

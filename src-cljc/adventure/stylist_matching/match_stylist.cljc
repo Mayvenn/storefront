@@ -1,24 +1,28 @@
 (ns adventure.stylist-matching.match-stylist
   (:require [adventure.components.basic-prompt :as basic-prompt]
+            adventure.keypaths
+            [storefront.accessors.experiments :as experiments]
             [storefront.component :as component]
             [storefront.events :as events]
-            adventure.keypaths
-            [storefront.transitions :as transitions]
-            [adventure.progress :as progress]))
+            [adventure.progress :as progress]
+            [storefront.transitions :as transitions]))
 
 (defn ^:private query [data]
-  {:prompt               "We'll match you with a top stylist, guaranteed."
-   :mini-prompt          "If you don’t love the install, we’ll pay for you to get it redone. It’s a win-win!"
-   :background-overrides {:class "bg-adventure-match-stylist"}
-   :data-test            "adventure-match-stylist"
-   :current-step         2
-   :header-data          {:progress                progress/match-stylist
-                          :subtitle                "Welcome to step 2"
-                          :back-navigation-message [events/navigate-adventure-what-next]}
-   :button               {:text           "Next"
-                          :value          nil
-                          :target-message [events/navigate-adventure-find-your-stylist]
-                          :data-test      "adventure-find-your-stylist"}})
+  (let [back-event (if (experiments/match-before-purchase? data)
+                     events/navigate-adventure-install-type
+                     events/navigate-adventure-what-next)]
+    {:prompt               "We'll match you with a top stylist, guaranteed."
+     :mini-prompt          "If you don’t love the install, we’ll pay for you to get it redone. It’s a win-win!"
+     :background-overrides {:class "bg-adventure-match-stylist"}
+     :data-test            "adventure-match-stylist"
+     :current-step         2
+     :header-data          {:progress                progress/match-stylist
+                            :subtitle                "Welcome to step 2"
+                            :back-navigation-message [back-event]}
+     :button               {:text           "Next"
+                            :value          nil
+                            :target-message [events/navigate-adventure-find-your-stylist]
+                            :data-test      "adventure-find-your-stylist"}}))
 
 
 (defn built-component
