@@ -66,7 +66,13 @@
           (svg/check {:class "stroke-teal" :height "2em" :width "2em"}) "Licensed"])
        [:div.flex.items-center.dark-gray {:style {:height "1.5em"}}
         (ui/ucare-img {:width "7" :class "pr2"} "bd307d38-277d-465b-8360-ac8717aedb03")
-        (str (-> store :location :city) ", " (-> store :location :state-abbr))]]
+        (let [salon-city    (-> store :salon :city not-empty)
+              salon-state   (-> store :salon :state not-empty)
+              stylist-city  (-> store :location :city)
+              stylist-state (-> store :location :state-abbr)]
+          (if (and salon-city salon-state)
+            (str salon-city ", " salon-state)
+            (str stylist-city ", " stylist-state)))]]
       (when (seq gallery-ucare-ids)
         [:div.h6.pt1.flex.items-center
          (ui/ucare-img {:width "25"} "18ced560-296f-4b6c-9c82-79a4e8c15d95")
