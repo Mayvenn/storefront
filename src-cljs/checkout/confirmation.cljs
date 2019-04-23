@@ -8,6 +8,7 @@
             [spice.maps :as maps]
             [storefront.accessors.orders :as orders]
             [storefront.api :as api]
+            [storefront.config :as config]
             [storefront.component :as component]
             [storefront.components.checkout-credit-card :as checkout-credit-card]
             [storefront.components.checkout-delivery :as checkout-delivery]
@@ -65,7 +66,8 @@
      {:order {:number        order-number
               :token         order-token
               :cart-payments {:quadpay
-                              {:return-url
+                              {:status-url (str config/api-base-url "/hooks/quadpay_notifications")
+                               :return-url
                                (str (assoc current-uri
                                            :path (str "/orders/" order-number "/quadpay" )
                                            :query {:order-token order-token}))
