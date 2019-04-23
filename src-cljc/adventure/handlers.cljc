@@ -48,6 +48,7 @@
   #?(:cljs
      (do
        (when (and (not= events/navigate-adventure-home event)
+                  (not (get-in app-state storefront.keypaths/email-capture-session))
                   (empty? (get-in app-state keypaths/adventure-choices)))
          (history/enqueue-navigate events/navigate-adventure-home nil))
        (when (boolean (:em_hash query-params))
