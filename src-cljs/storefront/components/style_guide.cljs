@@ -4,6 +4,7 @@
             [storefront.components.ui :as ui]
             [storefront.platform.carousel :as carousel]
             [storefront.platform.component-utils :as utils]
+            [storefront.platform.messages :refer [handle-message]]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
             [clojure.string :as string]
@@ -135,45 +136,79 @@
    #_(header "Text Links")
    #_[:p [:a.navy {:href "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a"} "Learn more"]]])
 
-(def ^:private buttons
-  [:section
-   (header "Buttons")
-   [:div.clearfix.mxn1
-    [:div.col.col-6.p1 (ui/teal-button {} "ui/teal-button")]
-    [:div.col.col-6.p1 (ui/navy-button {} "ui/navy-button")]
-    [:div.col.col-6.p1 (ui/aqua-button {} "ui/aqua-button")]
-    [:div.col.col-6.p1 (ui/dark-gray-button {} "ui/dark-gray-button")]
-    [:div.col.col-6.p1 (ui/facebook-button {} "ui/facebook-button")]
+(declare color-swatch)
+(defn ^:private buttons [data]
+  (let [toggle-state (fn [keypath e]
+                       (handle-message events/control-change-state
+                                       {:keypath keypath
+                                        :value   (.. e -target -checked)}))
+        set-state(fn [keypath value e]
+                   (.preventDefault e)
+                   (prn keypath value)
+                   (handle-message events/control-change-state {:keypath keypath :value value}))
+        button-attrs (get-in data [:style-guide :buttons])]
+    [:section
+     (header "Buttons")
+     [:div.h6.flex.flex-column
+      [:div "Backgrounds: "]
+      [:a.black {:href "#" :on-click (partial set-state [:style-guide :buttons-bg] "bg-white")}
+       (color-swatch "white" "ffffff")]
+      [:a.black {:href "#" :on-click (partial set-state [:style-guide :buttons-bg] "bg-teal")}
+       (color-swatch "teal" "40cbac")]]
+     [:div.h6
+      "Button States: "
+      [:pre.inline
+       "{"
+       [:label
+        [:input.mr1.ml2 {:type      "checkbox"
+                         :checked   (get-in data [:style-guide :buttons :spinning?])
+                         :on-change (partial toggle-state [:style-guide :buttons :spinning?])}]
+        ":spinner? "
+        (if (get-in data [:style-guide :buttons :spinning?]) "true" "false")]
+       [:label
+        [:input.mr1.ml2 {:type      "checkbox"
+                         :checked   (get-in data [:style-guide :buttons :disabled?])
+                         :on-change (partial toggle-state [:style-guide :buttons :disabled?])}]
+        ":disabled? "
+        (if (get-in data [:style-guide :buttons :disabled?]) "true" "false")]
+       "}"]]
+     [:div.h6.dark-gray
+      "Not every button state is used everywhere (eg - spinners are only used if the action may take some time and we would like feedback. Eg - a button to an external site will not spin)"]
+     [:div.clearfix.mxn1
+      (when-let [bg (get-in data [:style-guide :buttons-bg])]
+        {:class (str bg)})
+      [:div.col.col-6.p1 (ui/teal-button button-attrs "ui/teal-button")]
+      [:div.col.col-6.p1 (ui/navy-button button-attrs "ui/navy-button")]
+      [:div.col.col-6.p1 (ui/aqua-button button-attrs "ui/aqua-button")]
+      [:div.col.col-6.p1 (ui/dark-gray-button button-attrs "ui/dark-gray-button")]
+      [:div.col.col-6.p1 (ui/facebook-button button-attrs "ui/facebook-button")]
 
-    [:div.col.col-6.p1 (ui/ghost-button {} "ui/ghost-button")]
-    [:div.col.col-6.p1 (ui/navy-ghost-button {} "ui/navy-ghost-button")]
-    [:div.col.col-6.p1 (ui/light-ghost-button {} "ui/light-ghost-button")]
-    [:div.col.col-6.p1 (ui/teal-ghost-button {} "ui/teal-ghost-button")]
+      [:div.col.col-6.p1 (ui/ghost-button button-attrs "ui/ghost-button")]
+      [:div.col.col-6.p1 (ui/navy-ghost-button button-attrs "ui/navy-ghost-button")]
+      [:div.col.col-6.p1 (ui/light-ghost-button button-attrs "ui/light-ghost-button")]
+      [:div.col.col-6.p1 (ui/teal-ghost-button button-attrs "ui/teal-ghost-button")]
 
-    [:div.col.col-6.p1 (ui/underline-button {} "ui/underline-button")]
-    [:div.col.col-6.p1 (ui/teal-button {:disabled? true} "(ui/teal-button {:disabled? true})")]
-    [:div.col.col-6.p1 (ui/teal-button {:height-class "py2" :title "Used for adding promo codes to cart"} "height-class py2")]
-    [:div.col.col-12.p1 (ui/teal-button {:spinning? false
-                                         :disabled? false}
-                                        [:div "col-12 with styled "
-                                         [:span.medium.italic.underline "SPAN™"]
-                                         " and svg "
-                                         (svg/dropdown-arrow {:class  "stroke-white"
-                                                              :width  "12px"
-                                                              :height "10px"
-                                                              :style  {:transform "rotate(-90deg)"}})])]
-    [:div.col.col-6.p1 (ui/input-group
-                        {:type          "text"
-                         :wrapper-class "col-7 pl3 flex items-center bg-white circled-item"
-                         :placeholder   "Text"
-                         :focused       false}
-                        {:ui-element ui/teal-button
-                         :content    "Button"
-                         :args       {:class      "flex justify-center items-center circled-item"
-                                      :size-class "col-5"}})]
-    [:div.col.col-6.p1 (ui/teal-button {:spinning? true :title ":spinning? true"})]]
-   [:div.clearfix.bg-teal
-    [:div.col.col-4.p1.mx-auto (ui/light-ghost-button {} "ui/light-ghost-button")]]])
+      [:div.col.col-6.p1 (ui/underline-button button-attrs "ui/underline-button")]
+      [:div.col.col-6.p1 (ui/teal-button (merge button-attrs {:height-class "py2" :title "Used for adding promo codes to cart"}) "height-class py2")]
+      [:div.col.col-12.p1 (ui/teal-button {:spinning? false
+                                           :disabled? false}
+                                          [:div "col-12 with styled "
+                                           [:span.medium.italic.underline "SPAN™"]
+                                           " and svg "
+                                           (svg/dropdown-arrow {:class  "stroke-white"
+                                                                :width  "12px"
+                                                                :height "10px"
+                                                                :style  {:transform "rotate(-90deg)"}})])]
+      [:div.col.col-12.p1 (ui/input-group
+                           {:type          "text"
+                            :wrapper-class "col-7 pl3 flex items-center bg-white circled-item"
+                            :placeholder   "Text"
+                            :focused       false}
+                           {:ui-element ui/teal-button
+                            :content    "Button"
+                            :args       (merge button-attrs
+                                               {:class      "flex justify-center items-center circled-item"
+                                                :size-class "col-5"})})]]]))
 
 (def ^:private increment->size
   {1 "5px"
@@ -295,6 +330,7 @@
    (color-swatch "black" "000000")
    (color-swatch "dark-gray" "666666")
    (color-swatch "gray" "cccccc")
+   (color-swatch "dark-silver" "dadada")
    (color-swatch "light-gray" "ebebeb")
    (color-swatch "fate-white" "f8f8f8")
    (color-swatch "white" "ffffff")]
@@ -322,7 +358,9 @@
 
   (subheader "Third party")
   [:div.flex.flex-wrap.mxn1.mb4
-   (color-swatch "fb-blue" "3b5998")]])
+   (color-swatch "fb-blue" "3b5998")
+   (color-swatch "twitter-blue" "00aced")
+   (color-swatch "sms-green" "1fcc23")]])
 
 (defn ^:private form [data]
   [:div
@@ -382,7 +420,7 @@
    (ui/text-field
     {:type    "text"
      :label   "Always wrong textfield"
-     :id      (str key "-" :first-name "-always-wrong")
+     :id      "first-name-always-wrong"
      :keypath [:style-guide :form :always-wrong]
      :focused (get-in data keypaths/ui-focus)
      :value   (get-in data [:style-guide :form :always-wrong])
@@ -614,7 +652,7 @@
       colors
       typography
       (form-fields data)
-      buttons
+      (buttons data)
 
       #_simple-custom-options
       #_swatch-custom-options
