@@ -27,7 +27,7 @@
   (let [salon          (:salon stylist)]
     {:image-url         (-> stylist :portrait :resizable-url)
      :title             [:div {:data-test "stylist-name"}
-                         (stylists/->display-name stylist {:full? true})]
+                         (stylists/->display-name stylist)]
      :subtitle          (str (:city salon) ", " (:state salon))
      :rating            (:rating stylist)
      :detail-line       (str (:name salon))
