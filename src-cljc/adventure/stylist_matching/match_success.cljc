@@ -1,5 +1,6 @@
 (ns adventure.stylist-matching.match-success
-  (:require [storefront.events :as events]
+  (:require [storefront.accessors.stylists :as stylists]
+            [storefront.events :as events]
             [storefront.component :as component]
             [adventure.components.basic-prompt :as basic-prompt]
             [storefront.keypaths :as storefront-keypaths]
@@ -11,7 +12,7 @@
 
 (defn ^:private query [data]
   (let [servicing-stylist (get-in data keypaths/adventure-servicing-stylist)]
-    {:prompt               (str "Congrats on matching with " (-> servicing-stylist :address :firstname) "!")
+    {:prompt               (str "Congrats on matching with " (stylists/->display-name servicing-stylist) "!")
      :mini-prompt          "We'll connect you with your stylist shortly. But first, pick out your hair!"
      :show-logo?           false
      :background-overrides {:style

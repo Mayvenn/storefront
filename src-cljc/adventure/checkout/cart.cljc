@@ -10,6 +10,7 @@
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.products :as products]
+            [storefront.accessors.stylists :as stylists]
             [storefront.component :as component]
             [storefront.components.flash :as flash]
             [storefront.components.footer :as storefront.footer]
@@ -193,8 +194,8 @@
            (add-more-hair-button add-more-hair-navigation-event)
            [:div.bg-too-light-teal.py4.px2
             [:div.h5.medium.center
-             (if-let [servicing-stylist-firstname (-> servicing-stylist :address :firstname)]
-               (str "You’ll be connected with " servicing-stylist-firstname " after checkout.")
+             (if-let [servicing-stylist-name (stylists/->display-name servicing-stylist)]
+               (str "You’ll be connected with " servicing-stylist-name " after checkout.")
                "You’ll be able to select your Certified Mayvenn Stylist after checkout.")]
             [:div.mt2
              (ui/teal-button {:spinning? false

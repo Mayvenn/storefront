@@ -24,7 +24,7 @@
                       [:span.bold.nowrap (formatters/phone-number phone)]
                       "you")
                     " and your stylist, "
-                    [:span.nowrap {:data-test "servicing-stylist-firstname"}
+                    [:span.nowrap {:data-test "servicing-stylist-name"}
                      (-> servicing-stylist :address :firstname)]
                     "."]
      :card-data    (profile-card/stylist-profile-card-data servicing-stylist)

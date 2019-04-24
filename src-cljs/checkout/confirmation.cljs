@@ -7,6 +7,7 @@
             [checkout.templates.item-card :as item-card]
             [spice.maps :as maps]
             [storefront.accessors.orders :as orders]
+            [storefront.accessors.stylists :as stylists]
             [storefront.api :as api]
             [storefront.config :as config]
             [storefront.component :as component]
@@ -248,8 +249,8 @@
                         nil)
 
        [:div.h5.my4.center.col-10.mx-auto.line-height-3
-        (if-let [servicing-stylist-firstname (-> servicing-stylist :address :firstname)]
-          (str "You’ll be connected with " servicing-stylist-firstname " after checkout.")
+        (if-let [servicing-stylist-name (stylists/->display-name servicing-stylist)]
+          (str "You’ll be connected with " servicing-stylist-name " after checkout.")
           "You’ll be able to select your Certified Mayvenn Stylist after checkout.")]
        [:div.col-12.col-6-on-tb-dt.mx-auto
         (checkout-button selected-quadpay? checkout-button-data)]]]]]))

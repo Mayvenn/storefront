@@ -15,6 +15,7 @@
             [storefront.components.ui :as ui]
             [storefront.platform.messages :refer [handle-message]]
             [storefront.accessors.experiments :as experiments]
+            [storefront.accessors.stylists :as stylists]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]
@@ -70,10 +71,8 @@
       [:span.bold.nowrap (formatters/phone-number phone-number)]
       "you")
     " and your stylist, "
-    [:span.nowrap {:data-test "servicing-stylist-firstname"}
-     (-> servicing-stylist
-         :address
-         :firstname)]
+    [:span.nowrap {:data-test "servicing-stylist-name"}
+     (stylists/->display-name servicing-stylist)]
     "."]
    [:div.bg-white.px1.my4.mxn2.rounded.p3
     (component/build profile-card/component (profile-card/stylist-profile-card-data servicing-stylist) nil)]])

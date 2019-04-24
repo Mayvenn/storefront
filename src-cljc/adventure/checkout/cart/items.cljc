@@ -4,7 +4,8 @@
    [storefront.accessors.orders :as orders]
    [storefront.components.ui :as ui]
    [storefront.keypaths :as keypaths]
-   [adventure.keypaths :as adv-keypaths]))
+   [adventure.keypaths :as adv-keypaths]
+   [storefront.accessors.stylists :as stylists]))
 
 (defn line-item-detail [servicing-stylist-name]
   [:div.mt0
@@ -25,7 +26,6 @@
                                        orders/product-items
                                        vouchers/product-items->highest-value-service)
                                :leave-out)
-
         diva-advertised-type   (->> (get-in data keypaths/environment)
                                     vouchers/campaign-configuration
                                     (filter #(= (:service/type %) highest-value-service))
@@ -36,10 +36,10 @@
                                        :service-menu
                                        (get diva-advertised-type ))
         number-of-items-needed (- 3 (orders/product-quantity order))
-        {:keys [address]}      (get-in data adv-keypaths/adventure-servicing-stylist)]
+        servicing-stylist      (get-in data adv-keypaths/adventure-servicing-stylist)]
     {:id                     "freeinstall"
      :title                  "Install"
-     :detail                 (line-item-detail (:firstname address))
+     :detail                 (line-item-detail (stylists/->display-name servicing-stylist))
      :price                  service-price
      :total-savings          (orders/total-savings order service-price)
      :number-of-items-needed number-of-items-needed

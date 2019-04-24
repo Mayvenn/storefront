@@ -11,6 +11,14 @@
   (or (own-store? data)
       (seq (get-in data keypaths/store-gallery-images))))
 
+(defn ->display-name
+  ([stylist]
+   (->display-name stylist {}))
+  ([{:keys [store-nickname address]} {full? :full?}]
+   (or store-nickname
+       (str (:firstname address)
+            (when full? (str " " (:lastname address)))))))
+
 (def community-url
   (merge (utils/fake-href events/control-stylist-community)
          {:data-test "community"}))

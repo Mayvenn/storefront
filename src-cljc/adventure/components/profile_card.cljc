@@ -1,5 +1,6 @@
 (ns adventure.components.profile-card
-  (:require [storefront.component :as component]
+  (:require [storefront.accessors.stylists :as stylists]
+            [storefront.component :as component]
             [storefront.components.ui :as ui]
             [spice.date :as date]))
 
@@ -23,11 +24,10 @@
 
 ;; TODO: find a better place for this query function
 (defn stylist-profile-card-data [stylist]
-  (let [address (:address stylist)
-        salon   (:salon stylist)]
+  (let [salon          (:salon stylist)]
     {:image-url         (-> stylist :portrait :resizable-url)
-     :title             [:div
-                         [:span {:data-test "stylist-firstname"} (:firstname address)] " " (:lastname address)]
+     :title             [:div {:data-test "stylist-name"}
+                         (stylists/->display-name stylist {:full? true})]
      :subtitle          (str (:city salon) ", " (:state salon))
      :rating            (:rating stylist)
      :detail-line       (str (:name salon))
