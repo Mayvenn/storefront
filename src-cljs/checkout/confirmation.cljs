@@ -279,7 +279,7 @@
      :checkout-steps                   (checkout-steps/query data)
      :products                         (get-in data keypaths/v2-products)
      :items                            (cond-> (item-card-query data)
-                                         freeinstall-applied?
+                                         (and freeinstall-applied? freeinstall-line-item-data)
                                          (update
                                           :items conj
                                           (freeinstall-line-item-data->item-card freeinstall-line-item-data)))
