@@ -141,6 +141,7 @@
 (defpath control-focus)
 (defpath control-blur)
 
+(defpath control-email-captured)
 (defpath control-email-captured-dismiss)
 (defpath control-email-captured-submit)
 
@@ -409,6 +410,8 @@
 (defpath video-component-mounted)
 (defpath video-component-unmounted)
 
+(defpath popup-hide)
+(defpath popup-show)
 (defpath popup-show-email-capture)
 (defpath popup-show-free-install)
 
@@ -437,7 +440,6 @@
 (defpath popup-show-v2-homepage)
 
 ;;SECTION v2 Control
-(defpath control-v2-homepage-popup)
 (defpath control-v2-homepage-popup-dismiss)
 (defpath control-v2-stylist-dashboard-section-toggle)
 (defpath control-v2-stylist-dashboard-sales-load-more)

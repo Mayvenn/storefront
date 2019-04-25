@@ -9,6 +9,7 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
+            [storefront.browser.scroll :as scroll]
             [storefront.routes :as routes]))
 
 (defn email-capture-session
@@ -68,9 +69,20 @@
                v2-experience?))
       (messages/handle-message events/popup-show-email-capture))))
 
-(defmethod transitions/transition-state events/control-popup-hide
+(defmethod effects/perform-effects events/control-popup-hide
+  [_ _ _ _ _]
+  (messages/handle-message events/popup-hide))
+
+(defmethod transitions/transition-state events/popup-hide
   [_ _ args app-state]
   (-> app-state
       transitions/clear-flash
       (assoc-in keypaths/popup nil)))
 
+(defmethod effects/perform-effects events/popup-hide
+  [_ _ _ _ _]
+  (scroll/enable-body-scrolling))
+
+(defmethod effects/perform-effects events/popup-show
+  [_ _ _ _ _]
+  (scroll/disable-body-scrolling))

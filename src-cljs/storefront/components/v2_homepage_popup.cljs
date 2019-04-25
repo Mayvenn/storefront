@@ -27,7 +27,7 @@
                [:div.col-12.clearfix.pt1.pb2
                 [:div.right.pt2.pr2.pointer
                  (svg/simple-x
-                  (merge (utils/fake-href events/control-v2-homepage-popup)
+                  (merge (utils/fake-href events/control-v2-homepage-popup-dismiss)
                          {:data-test    "v2-homepage-popup-dismiss"
                           :height       "1.5rem"
                           :width        "1.5rem"
@@ -97,7 +97,7 @@
      :faq-data              (faq-query data)
      :footer-data           (footer-modal/query data)}))
 
-(defmethod effects/perform-effects events/control-v2-homepage-popup
+(defmethod effects/perform-effects events/control-v2-homepage-popup-dismiss
   [_ _ _ _ app-state]
   (scroll/enable-body-scrolling)
   (api/get-promotions (get-in app-state keypaths/api-cache)
@@ -107,7 +107,7 @@
   (when-let [value (get-in app-state keypaths/dismissed-free-install)]
     (cookie-jar/save-dismissed-free-install (get-in app-state keypaths/cookie) value)))
 
-(defmethod transitions/transition-state events/control-v2-homepage-popup
+(defmethod transitions/transition-state events/control-v2-homepage-popup-dismiss
   [_ _ _ app-state]
   (-> app-state
       (assoc-in keypaths/pending-promo-code "freeinstall")
@@ -117,7 +117,3 @@
 (defmethod transitions/transition-state events/popup-show-v2-homepage
   [_ _ _ app-state]
   (assoc-in app-state keypaths/popup :v2-homepage))
-
-(defmethod effects/perform-effects events/popup-show-v2-homepage
-  [_ _ _ _ _]
-  (scroll/disable-body-scrolling))

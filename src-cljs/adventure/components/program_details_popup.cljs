@@ -13,7 +13,8 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.transitions :as transitions]))
+            [storefront.transitions :as transitions]
+            [storefront.browser.scroll :as scroll]))
 
 (def get-a-free-install
   (let [step (fn [{:keys [icon-uuid icon-width title description]}]
@@ -122,6 +123,9 @@
 
 (defmethod transitions/transition-state events/control-adventure-free-install-dismiss [_ event args app-state]
   (assoc-in app-state keypaths/popup nil))
+
+(defmethod effects/perform-effects events/control-adventure-free-install-dismiss [_ event args previous-app-state app-state]
+  (scroll/enable-body-scrolling))
 
 (defmethod transitions/transition-state events/popup-show-adventure-free-install [_ event args app-state]
   (assoc-in app-state keypaths/popup :adventure-free-install))

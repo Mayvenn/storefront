@@ -3,6 +3,7 @@
    [adventure.components.answer-prompt]
    [clojure.string :as string]
    [storefront.accessors.experiments :as experiments]
+   [storefront.browser.scroll :as scroll]
    [storefront.component :as component]
    [storefront.components.popup :as popup]
    [storefront.components.svg :as svg]
@@ -58,6 +59,7 @@
 
 (defmethod effects/perform-effects events/control-adventure-emailcapture-submit
   [_ _ args _ app-state]
+  (scroll/enable-body-scrolling)
   (messages/handle-message events/adventure-visitor-identified))
 
 (defmethod transitions/transition-state events/popup-show-adventure-emailcapture

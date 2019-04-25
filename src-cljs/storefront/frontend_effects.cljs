@@ -251,7 +251,7 @@
          utm-params)))
 
     (when (get-in app-state keypaths/popup)
-      (handle-message events/control-popup-hide))
+      (handle-message events/popup-hide))
 
     (when (and (get-in app-state keypaths/user-must-set-password)
                (not= event events/navigate-force-set-password))
@@ -887,7 +887,7 @@
     (handle-later events/poll-stylist-portrait {} 5000)))
 
 (defmethod perform-effects events/api-success-send-stylist-referrals [_ event args _ app-state]
-  (handle-later events/control-popup-hide {} 2000))
+  (handle-later events/popup-hide {} 2000))
 
 (defmethod perform-effects events/api-success-update-order-place-order [_ event {:keys [order]} _ app-state]
   ;; TODO: rather than branching behavior within a single event handler, consider
@@ -1020,6 +1020,9 @@
   (let [nav-event (get-in app-state keypaths/navigation-event)]
     (when (#{events/navigate-friend-referrals events/navigate-account-referrals} nav-event)
       (talkable/show-referrals app-state))))
+
+(defmethod perform-effects events/control-email-captured [_ event args _ app-state]
+  (scroll/enable-body-scrolling))
 
 (defmethod perform-effects events/control-email-captured-dismiss [_ event args _ app-state]
   (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) "dismissed"))
