@@ -2,7 +2,6 @@
   (:require [om.core :as om]
             [sablono.core :refer [html]]
             [storefront.accessors.auth :as auth]
-            [storefront.accessors.experiments :as experiments]
             [storefront.component :as component]
             [storefront.components.checkout-address :as checkout-address]
             [storefront.components.facebook :as facebook]
@@ -12,39 +11,37 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]))
 
-(defn component [{:keys [facebook-loaded? address promotion-banner adv-address-login?]} owner]
+(defn component [{:keys [facebook-loaded? address promotion-banner]} owner]
   (om/component
    (html
     [:div
      [:div.container ;; Tries to match what's going on in checkout-address/component
-      (when adv-address-login?
-        [:div
-         (component/build promotion-banner/sticky-component promotion-banner nil)
-         [:div.m-auto.col-8-on-tb-dt
-          [:div.p2
-           [:div.center
-            [:h1 "Secure checkout"]
-            [:p
-             "Sign in or checkout as a guest."
-             [:br]
-             "You’ll have an opportunity to create an account after placing your order."]]
+      [:div
+       (component/build promotion-banner/sticky-component promotion-banner nil)
+       [:div.m-auto.col-8-on-tb-dt
+        [:div.p2
+         [:div.center
+          [:h1 "Secure checkout"]
+          [:p
+           "Sign in or checkout as a guest."
+           [:br]
+           "You’ll have an opportunity to create an account after placing your order."]]
 
-           [:div.my2.mx-auto.col-12.col-6-on-tb-dt
-            [:div.clearfix.mxn1
-             [:div.col.col-6.p1
-              (ui/teal-button (assoc (utils/route-to events/navigate-checkout-sign-in)
-                                     :data-test "begin-password-sign-in-button")
-                              "Sign in")]
-             [:div.col.col-6.p1
-              (facebook/narrow-sign-in-button facebook-loaded?)]]]]]
+         [:div.my2.mx-auto.col-12.col-6-on-tb-dt
+          [:div.clearfix.mxn1
+           [:div.col.col-6.p1
+            (ui/teal-button (assoc (utils/route-to events/navigate-checkout-sign-in)
+                                   :data-test "begin-password-sign-in-button")
+                            "Sign in")]
+           [:div.col.col-6.p1
+            (facebook/narrow-sign-in-button facebook-loaded?)]]]]]
 
-         [:h2.mt1.center "Checkout as a guest"]])]
+       [:h2.mt1.center "Checkout as a guest"]]]
      (om/build checkout-address/component address)])))
 
 (defn query [data]
   {:facebook-loaded?   (get-in data keypaths/loaded-facebook)
    :promotion-banner   (promotion-banner/query data)
-   :adv-address-login? (experiments/adv-address-login? data)
    :address            (-> (checkout-address/query data)
                            (assoc-in [:shipping-address-data :become-guest?] true))})
 

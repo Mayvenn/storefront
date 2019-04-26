@@ -133,10 +133,6 @@
    (= (get-in data keypaths/store-slug) "shop")
    (display-feature? data "shop-to-freeinstall")))
 
-(defn adv-address-login?
-  [data]
-  (display-feature? data "adv-address-login"))
-
 (defn quadpay?
   [data]
   (display-feature? data "quadpay"))
