@@ -39,7 +39,7 @@
         servicing-stylist      (get-in data adv-keypaths/adventure-servicing-stylist)]
     {:id                     "freeinstall"
      :title                  "Install"
-     :detail                 (line-item-detail (stylists/->display-name servicing-stylist))
+     :detail                 (line-item-detail (some-> servicing-stylist stylists/->display-name))
      :price                  service-price
      :total-savings          (orders/total-savings order service-price)
      :number-of-items-needed number-of-items-needed
