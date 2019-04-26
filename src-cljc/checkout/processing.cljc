@@ -40,19 +40,44 @@
                                            (history/enqueue-navigate events/navigate-cart
                                                                      {:query-params {:error error-code}})))})))
 
-(defmethod effects/perform-effects events/navigate-checkout-processing [dispatch event args _ app-state]
+(defn get-order-status
+  [{:keys [number token]} freeinstall-domain?]
   #?(:cljs
-     (let [order      (get-in app-state keypaths/order)
-           store-slug (get-in app-state keypaths/store-slug)]
+     (api/poll-order number token
+                     (fn [{:keys [state] :as order'}]
+                       (do
+                         (case state
+                           "cart"
+                           (js/setTimeout #(get-order-status order'
+                                                             freeinstall-domain?)
+                                          3000)
+
+                           "submitted"
+                           (if freeinstall-domain?
+                             (history/enqueue-navigate events/navigate-adventure-checkout-wait)
+                             (history/enqueue-navigate events/navigate-order-complete
+                                                       {:query-params {:number number}})))
+
+                         (messages/handle-message events/api-success-get-order
+                                                  order'))))))
+
+(defmethod effects/perform-effects events/navigate-checkout-processing
+  [dispatch event args _ app-state]
+  #?(:cljs
+     (let [order                                (get-in app-state keypaths/order)
+           {:keys [state number cart-payments]} order
+           freeinstall-domain?                  (= "freeinstall"
+                                                   (get-in app-state keypaths/store-slug))]
        (cond
-         (= (:state order) "cart")
+         (seq (:quadpay cart-payments))
+         (get-order-status order freeinstall-domain?)
+
+         (= "cart" state)
          (place-order app-state)
 
-         (and (= (:state order) "submitted")
-              (= store-slug "freeinstall"))
-         (history/enqueue-navigate events/navigate-adventure-checkout-wait)
-
-         (= (:state order) "submitted")
-         (history/enqueue-navigate events/navigate-order-complete
-                                   {:query-params {:number (:number order)}})))))
+         (= "submitted" state)
+         (if freeinstall-domain?
+           (history/enqueue-navigate events/navigate-adventure-checkout-wait)
+           (history/enqueue-navigate events/navigate-order-complete
+                                     {:query-params {:number number}}))))))
 

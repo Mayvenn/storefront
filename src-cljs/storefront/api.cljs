@@ -765,6 +765,13 @@
     :handler
     #(messages/handle-message events/api-success-get-order %)}))
 
+(defn poll-order
+  [number token handler]
+  (storeback-api-req GET (str "/v2/orders/" number)
+                     request-keys/get-order
+                     {:params  {:token token}
+                      :handler handler}))
+
 (defn get-completed-order [number token]
   (storeback-api-req
    GET
