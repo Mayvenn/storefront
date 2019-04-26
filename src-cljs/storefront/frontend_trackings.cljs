@@ -250,7 +250,7 @@
    :length           (-> skuer :hair/length first)
    :material         (-> skuer :hair/base-material first)})
 
-(defmethod perform-track events/order-completed [_ event order app-state]
+(defmethod perform-track events/order-placed [_ event order app-state]
   (stringer/identify {:id    (-> order :user :id)
                       :email (-> order :user :email)})
   (stringer/track-event "checkout-complete" (stringer-order-completed order))

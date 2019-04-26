@@ -895,7 +895,8 @@
   (if (= "freeinstall" (get-in app-state keypaths/store-slug))
     (history/enqueue-navigate events/navigate-adventure-checkout-wait)
     (history/enqueue-navigate events/navigate-order-complete order))
-  (handle-message events/order-completed order))
+  (handle-message events/order-completed order)
+  (handle-message events/order-placed order))
 
 (defmethod perform-effects events/order-completed [dispatch event order _ app-state]
   (cookie-jar/save-completed-order (get-in app-state keypaths/cookie)

@@ -7,6 +7,7 @@
 
 (defpath domain)
 (defpath order-completed)
+(defpath order-placed)
 
 (defpath order-remove-promotion)
 
