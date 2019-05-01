@@ -765,6 +765,18 @@
     :handler
     #(messages/handle-message events/api-success-get-order %)}))
 
+(defn confirm-order-was-placed
+  [session-id order utm-params success-handler error-handler]
+  (storeback-api-req
+   POST
+   "/v2/quadpay-confirm-charge"
+   request-keys/place-order
+   {:params        (merge (select-keys order [:number :token])
+                          {:session-id session-id
+                           :utm-params utm-params})
+    :handler       success-handler
+    :error-handler (or error-handler default-error-handler)}))
+
 (defn poll-order
   [number token handler]
   (storeback-api-req GET (str "/v2/orders/" number)

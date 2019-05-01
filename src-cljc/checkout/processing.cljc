@@ -60,6 +60,17 @@
                          (messages/handle-message events/api-success-get-order
                                                   order'))))))
 
+(defn quadpay-confirm-order [app-state freeinstall-domain?]
+  ;; tell waiter to hurry up, otherwise just poll for status (webhook should update us)
+  #?(:cljs
+     (let [order                       (get-in app-state keypaths/order)
+           success-and-failure-handler (fn [& _] (get-order-status order freeinstall-domain?))]
+       (api/confirm-order-was-placed (get-in app-state keypaths/session-id)
+                                     order
+                                     (cookie-jar/retrieve-utm-params (get-in app-state keypaths/cookie))
+                                     success-and-failure-handler
+                                     success-and-failure-handler))))
+
 (defmethod effects/perform-effects events/navigate-checkout-processing
   [dispatch event args _ app-state]
   #?(:cljs
@@ -69,7 +80,7 @@
                                                    (get-in app-state keypaths/store-slug))]
        (cond
          (seq (:quadpay cart-payments))
-         (get-order-status order freeinstall-domain?)
+         (quadpay-confirm-order app-state freeinstall-domain?)
 
          (= "cart" state)
          (place-order app-state)
