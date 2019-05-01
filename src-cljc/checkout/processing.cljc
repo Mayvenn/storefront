@@ -54,9 +54,8 @@
 
                            "submitted"
                            (if freeinstall-domain?
-                             (history/enqueue-navigate events/navigate-adventure-checkout-wait)
-                             (history/enqueue-navigate events/navigate-order-complete
-                                                       {:query-params {:number number}})))
+                             (effects/redirect events/navigate-adventure-checkout-wait)
+                             (effects/redirect events/navigate-order-complete {:number number})))
 
                          (messages/handle-message events/api-success-get-order
                                                   order'))))))
@@ -77,7 +76,6 @@
 
          (= "submitted" state)
          (if freeinstall-domain?
-           (history/enqueue-navigate events/navigate-adventure-checkout-wait)
-           (history/enqueue-navigate events/navigate-order-complete
-                                     {:query-params {:number number}}))))))
+           (effects/redirect events/navigate-adventure-checkout-wait)
+           (effects/redirect events/navigate-order-complete {:number number}))))))
 
