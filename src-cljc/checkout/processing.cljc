@@ -53,12 +53,7 @@
                                           3000)
 
                            "submitted"
-                           (if freeinstall-domain?
-                             (effects/redirect events/navigate-adventure-checkout-wait)
-                             (effects/redirect events/navigate-order-complete {:number number})))
-
-                         (messages/handle-message events/api-success-get-order
-                                                  order'))))))
+                           (messages/handle-message events/api-success-update-order-place-order {:order order'})))))))
 
 (defn quadpay-confirm-order [app-state freeinstall-domain?]
   ;; tell waiter to hurry up, otherwise just poll for status (webhook should update us)
@@ -86,7 +81,4 @@
          (place-order app-state)
 
          (= "submitted" state)
-         (if freeinstall-domain?
-           (effects/redirect events/navigate-adventure-checkout-wait)
-           (effects/redirect events/navigate-order-complete {:number number}))))))
-
+         (messages/handle-message events/api-success-update-order-place-order {:order order})))))
