@@ -152,7 +152,6 @@
                               delete-line-item-requests
                               freeinstall-line-item-data
                               freeinstall-just-added?
-                              quadpay?
                               loaded-quadpay?
                               cart-summary]} owner _]
   (component/create
@@ -180,7 +179,7 @@
 
       #?@(:cljs
           [(component/build quadpay/component
-                            {:show?       (and quadpay? loaded-quadpay?)
+                            {:show?       loaded-quadpay?
                              :order-total (:total order)
                              :directive   [:div.flex.items-center.justify-center
                                            "Just select"
@@ -371,7 +370,6 @@
      :share-carts?               (stylists/own-store? data)
      :requesting-shared-cart?    (utils/requesting? data request-keys/create-shared-cart)
      :loaded-quadpay?            (get-in data keypaths/loaded-quadpay)
-     :quadpay?                   (experiments/quadpay? data)
      :show-browser-pay?          (and (get-in data keypaths/loaded-stripe)
                                       (experiments/browser-pay? data)
                                       (seq (get-in data keypaths/shipping-methods))

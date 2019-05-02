@@ -153,7 +153,6 @@
                               servicing-stylist
                               how-shop-choice
                               add-more-hair-navigation-event
-                              quadpay?
                               loaded-quadpay?
                               cart-summary]} owner _]
   (component/create
@@ -181,7 +180,7 @@
 
          #?@(:cljs
              [(component/build quadpay/component
-                               {:show?       (and quadpay? loaded-quadpay?)
+                               {:show?       loaded-quadpay?
                                 :order-total (:total order)
                                 :directive   [:div.flex.items-center.justify-center
                                               "Just select"
@@ -270,8 +269,7 @@
      :recently-added-skus            (get-in data keypaths/cart-recently-added-skus)
      :freeinstall-just-added?        (get-in data keypaths/cart-freeinstall-just-added?)
      :freeinstall-line-item-data     (adventure-cart-items/freeinstall-line-item-query data)
-     :loaded-quadpay?                (get-in data keypaths/loaded-quadpay)
-     :quadpay?                       (experiments/quadpay? data)}))
+     :loaded-quadpay?                (get-in data keypaths/loaded-quadpay)}))
 
 (defn component
   [{:keys [fetching-order? full-cart]} owner opts]

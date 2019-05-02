@@ -89,6 +89,7 @@
                     (js->clj :keywordize-keys true))]
     (handle-message events/control-adventure-choice {:choice {:value choices}}))
   (places-autocomplete/insert)
+  (quadpay/insert)
   (svg/insert-sprite)
   (stringer/insert-tracking (get-in app-state keypaths/store-slug))
   (google-analytics/insert-tracking)
@@ -119,9 +120,7 @@
   (browser-events/unattach-capture-late-readystatechange-callbacks))
 
 (defmethod perform-effects events/enable-feature [_ event {:keys [feature]} _ app-state]
-  (handle-message events/determine-and-show-popup)
-  (when (experiments/quadpay? app-state)
-    (quadpay/insert)))
+  (handle-message events/determine-and-show-popup))
 
 (defmethod perform-effects events/ensure-sku-ids
   [_ _ {:keys [sku-ids]} _ app-state]
@@ -403,8 +402,7 @@
   (api/get-shipping-methods)
   (api/get-states (get-in app-state keypaths/api-cache))
   (stripe/insert)
-  (when (experiments/quadpay? app-state)
-    (quadpay/insert))
+  (quadpay/insert)
   (refresh-current-order app-state)
   (when-let [error-msg (-> args :query-params :error cart-error-codes)]
     (handle-message events/flash-show-failure {:message error-msg})))
@@ -456,8 +454,7 @@
     (redirect events/navigate-checkout-address))
   (fetch-saved-cards app-state)
   (stripe/insert)
-  (when (experiments/quadpay? app-state)
-    (quadpay/insert)))
+  (quadpay/insert))
 
 (defmethod perform-effects events/navigate-checkout-confirmation [_ event args _ app-state]
   ;; TODO: get the credit card component to function correctly on direct page load

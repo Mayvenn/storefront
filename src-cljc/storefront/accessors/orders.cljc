@@ -156,8 +156,7 @@
 
 (defn fully-covered-by-store-credit? [order user]
   (boolean
-   (when (and #_(not (applied-install-promotion order))
-              (and order user))
+   (when (and order user)
      (>= (:total-available-store-credit user)
          (:total order)))))
 

@@ -289,7 +289,6 @@
            options
            picker-data
            loaded-quadpay?
-           quadpay?
            aladdin-or-phoenix?
            ugc] :as data} owner opts]
   (let [review?      (seq reviews)
@@ -336,7 +335,7 @@
                   :else        (add-to-bag-button adding-to-bag? selected-sku sku-quantity))]]
               #?(:cljs [:div.mbn4
                          (component/build quadpay/component
-                                          {:show?       (and quadpay? loaded-quadpay?)
+                                          {:show?       loaded-quadpay?
                                            :order-total (:sku/price selected-sku)
                                            :directive   [:div.flex.justify-center.items-center
                                                          "Just select"
@@ -473,8 +472,7 @@
                                        :stylist-portrait      (:portrait store)
                                        :stylist-name          (:store-nickname store)
                                        :stylist-gallery-open? (get-in data keypaths/carousel-stylist-gallery-open?)}
-     :loaded-quadpay?            (get-in data keypaths/loaded-quadpay)
-     :quadpay?                   (experiments/quadpay? data)}))
+     :loaded-quadpay?            (get-in data keypaths/loaded-quadpay)}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

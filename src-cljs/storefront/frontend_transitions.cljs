@@ -195,22 +195,16 @@
 
 (defmethod transition-state events/navigate-checkout-payment [_ event args app-state]
   (let [order                    (get-in app-state keypaths/order)
-        order-total              (get-in app-state keypaths/order-total)
         billing-address          (get-in app-state (conj keypaths/order :billing-address))
-        covered-by-store-credit? (and (orders/fully-covered-by-store-credit?
-                                       order
-                                       (get-in app-state keypaths/user))
-                                      (not (orders/applied-install-promotion order)))
-        available-store-credit   (get-in app-state keypaths/user-total-available-store-credit)
-        quadpay?                 (experiments/quadpay? app-state)]
-    (assoc-in (default-credit-card-name app-state  billing-address)
+        covered-by-store-credit? (orders/fully-covered-by-store-credit?
+                                  order
+                                  (get-in app-state keypaths/user))]
+    (assoc-in (default-credit-card-name app-state billing-address)
               keypaths/checkout-selected-payment-methods
-              (cond
-                covered-by-store-credit? {:store-credit {}}
-                quadpay?                 {}
-                :else                    (orders/form-payment-methods order-total
-                                                                      available-store-credit
-                                                                      (orders/all-applied-promo-codes order))))))
+              (if (and covered-by-store-credit?
+                       (not (orders/applied-install-promotion order)))
+                {:store-credit {}}
+                {}))))
 
 (defmethod transition-state events/pixlee-api-success-fetch-album [_ event {:keys [album-data album-keyword]} app-state]
   (let [images (pixlee/parse-ugc-album album-keyword album-data)]
