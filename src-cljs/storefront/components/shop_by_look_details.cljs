@@ -141,9 +141,8 @@
 (defn query [data]
   (let [skus (get-in data keypaths/v2-skus)
 
-        shared-cart-with-skus (put-skus-on-shared-cart
-                               (get-in data keypaths/shared-cart-current)
-                               skus)
+        shared-cart-with-skus (some-> (get-in data keypaths/shared-cart-current)
+                                      (put-skus-on-shared-cart skus))
 
         look          (pixlee/selected-look data)
         album-keyword (get-in data keypaths/selected-album-keyword)
@@ -158,7 +157,7 @@
      :creating-order?       (utils/requesting? data request-keys/create-order-from-shared-cart)
      :skus                  skus
      :sold-out?             (not-every? :inventory/in-stock? (:line-items shared-cart-with-skus))
-     :fetching-shared-cart? (utils/requesting? data request-keys/fetch-shared-cart)
+     :fetching-shared-cart? (or (not look) (utils/requesting? data request-keys/fetch-shared-cart))
      :back                  (first (get-in data keypaths/navigation-undo-stack))
      :back-event            (:default-back-event album-copy)
      :back-copy             (:back-copy album-copy)
@@ -172,9 +171,8 @@
 (defn adventure-query [data]
   (let [skus (get-in data keypaths/v2-skus)
 
-        shared-cart-with-skus (put-skus-on-shared-cart
-                               (get-in data keypaths/shared-cart-current)
-                               skus)
+        shared-cart-with-skus (some-> (get-in data keypaths/shared-cart-current)
+                                      (put-skus-on-shared-cart skus))
 
         look          (pixlee/selected-look data)
         album-keyword (get-in data keypaths/selected-album-keyword)
@@ -189,7 +187,7 @@
      :creating-order?       (utils/requesting? data request-keys/create-order-from-shared-cart)
      :skus                  skus
      :sold-out?             (not-every? :inventory/in-stock? (:line-items shared-cart-with-skus))
-     :fetching-shared-cart? (utils/requesting? data request-keys/fetch-shared-cart)
+     :fetching-shared-cart? (or (not look) (utils/requesting? data request-keys/fetch-shared-cart))
      :back                  (first (get-in data keypaths/navigation-undo-stack))
      :back-event            (:default-back-event album-copy)
      :back-copy             (:back-copy album-copy)
