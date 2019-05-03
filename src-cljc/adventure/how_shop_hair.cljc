@@ -23,8 +23,8 @@
     :target-message   [events/navigate-adventure-a-la-carte-hair-texture]}])
 
 (defn ^:private query [data]
-  (let [adventure-choices (get-in data adventure-keypaths/adventure-choices)
-        current-step      (if (-> adventure-choices :flow #{"match-stylist"}) 3 2)
+  (let [stylist-selected? (get-in data adventure-keypaths/adventure-servicing-stylist)
+        current-step      (if stylist-selected? 3 2)
         random-sequence   (get-in data adventure-keypaths/adventure-random-sequence)]
     {:prompt       "How do you want to shop for your hair?"
      :prompt-image "//ucarecdn.com/3d071ed0-5d9c-4819-b117-84eb4cfc6ed7/-/format/auto/bg.png"

@@ -18,8 +18,7 @@
             [adventure.progress :as progress]))
 
 (defn ^:private query [data]
-  (let [adventure-choices (get-in data adventure-keypaths/adventure-choices)
-        stylist-selected? (some-> adventure-choices :flow #{"match-stylist"})
+  (let [stylist-selected? (get-in data adventure-keypaths/adventure-servicing-stylist)
         current-step      (if stylist-selected? 3 2)
         album-keyword     (get-in data keypaths/selected-album-keyword)]
     {:look-detail-data  #?(:cljs (shop-look-details/adventure-query data)

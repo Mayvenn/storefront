@@ -7,8 +7,8 @@
             [storefront.events :as events]))
 
 (defn ^:private query [data]
-  (let [adventure-choices (get-in data keypaths/adventure-choices)
-        current-step      (if (-> adventure-choices :flow #{"match-stylist"}) 3 2)]
+  (let [servicing-stylist? (get-in data keypaths/adventure-servicing-stylist)
+        current-step       (if servicing-stylist? 3 2)]
     {:prompt               [:div.pb2.line-height-2 "It’s time to pick out some amazing virgin hair."]
      :mini-prompt          [:div.pt2.line-height-2 "Wear it, cut it, style it. If you don’t love your hair, we’ll exchange it for free."]
      :background-overrides {:class "bg-adventure-shop-hair"}

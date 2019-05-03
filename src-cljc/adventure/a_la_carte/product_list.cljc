@@ -18,14 +18,13 @@
 
 (defn ^:private query
   [data]
-  (let [{:as   adventure-choices
-         :keys [install-type texture color]} (get-in data adventure.keypaths/adventure-choices)
+  (let [{:keys [install-type texture color]} (get-in data adventure.keypaths/adventure-choices)
         products                             (selector/match-all {}
                                                                  {:hair/family  #{install-type "bundles"}
                                                                   :hair/texture #{texture}
                                                                   :hair/color   #{color}}
                                                                  (vals (get-in data keypaths/v2-products)))
-        stylist-selected?                    (some-> adventure-choices :flow #{"match-stylist"})
+        stylist-selected?                    (get-in data adventure.keypaths/adventure-servicing-stylist)
         current-step                         (if stylist-selected? 3 2)]
     (merge
      {:prompt-image      "//ucarecdn.com/4d53dac6-a7ce-4c10-bd5d-644821c5af4b/-/format/auto/"

@@ -16,9 +16,8 @@
 
 (defn ^:private query
   [data]
-  (let [adventure-choices (get-in data adventure-keypaths/adventure-choices)
-        album-keyword     (get-in data keypaths/selected-album-keyword)
-        stylist-selected? (some-> adventure-choices :flow #{"match-stylist"})
+  (let [album-keyword     (get-in data keypaths/selected-album-keyword)
+        stylist-selected? (get-in data adventure-keypaths/adventure-servicing-stylist)
         current-step      (if stylist-selected? 3 2)
         looks             (pixlee/images-in-album (get-in data keypaths/ugc) album-keyword)]
     (maps/deep-merge

@@ -43,11 +43,9 @@
         {:keys [install-type]} (get-in data adventure-keypaths/adventure-choices)
         selections             {:hair/family         #{install-type}
                                 :inventory/in-stock? #{true}}]
-    (let [selected-skus   (selector/match-all {} selections skus)
-          texture-choices (facets/available-options facets :hair/texture selected-skus)
-
-          adventure-choices (get-in data adventure-keypaths/adventure-choices)
-          stylist-selected? (some-> adventure-choices :flow #{"match-stylist"})
+    (let [selected-skus     (selector/match-all {} selections skus)
+          texture-choices   (facets/available-options facets :hair/texture selected-skus)
+          stylist-selected? (get-in data adventure-keypaths/adventure-servicing-stylist)
           current-step      (if stylist-selected? 3 2)]
       {:prompt       "Which texture are you looking for?"
        :prompt-image "//ucarecdn.com/3346657d-a039-487f-98fb-68b9b050e042/-/format/auto/"

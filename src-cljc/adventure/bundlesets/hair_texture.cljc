@@ -45,8 +45,7 @@
   (let [texture-facet-options (facets/available-adventure-facet-options :hair/texture
                                                                         (get-in data keypaths/v2-facets)
                                                                         (vals (get-in data keypaths/v2-skus)))
-        adventure-choices     (get-in data adventure-keypaths/adventure-choices)
-        stylist-selected?     (some-> adventure-choices :flow #{"match-stylist"})
+        stylist-selected?     (get-in data adventure-keypaths/adventure-servicing-stylist)
         current-step          (if stylist-selected? 3 2)]
     {:prompt       "Which texture are you looking for?"
      :prompt-image "//ucarecdn.com/3346657d-a039-487f-98fb-68b9b050e042/-/format/auto/"

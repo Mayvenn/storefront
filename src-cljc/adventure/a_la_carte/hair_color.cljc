@@ -38,11 +38,9 @@
         selections                     {:hair/family         #{install-type}
                                         :hair/texture        #{texture}
                                         :inventory/in-stock? #{true}}]
-    (let [selected-skus (selector/match-all {} selections skus)
-          color-choices (facets/available-options facets :hair/color selected-skus)
-
-          adventure-choices (get-in data adventure-keypaths/adventure-choices)
-          stylist-selected? (some-> adventure-choices :flow #{"match-stylist"})
+    (let [selected-skus     (selector/match-all {} selections skus)
+          color-choices     (facets/available-options facets :hair/color selected-skus)
+          stylist-selected? (get-in data adventure-keypaths/adventure-servicing-stylist)
           current-step      (if stylist-selected? 3 2)]
       {:prompt       "Which color are you looking for?"
        :prompt-image "//ucarecdn.com/47cd8de1-9bd0-4057-a050-c07749791d1a/-/format/auto/"

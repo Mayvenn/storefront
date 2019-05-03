@@ -443,8 +443,7 @@
                                (filter (comp (partial = "approved") :status))
                                (map (comp v2/get-ucare-id-from-url :resizable-url)))
 
-        adventure-choices (get-in data adventure.keypaths/adventure-choices)
-        stylist-selected? (some-> adventure-choices :flow #{"match-stylist"})
+        stylist-selected? (get-in data adventure.keypaths/adventure-servicing-stylist)
         current-step      (if stylist-selected? 3 2)]
     {:header-data                     {:progress                progress/product-details
                                        :title                   [:div.medium "The New You"]
