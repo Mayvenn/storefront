@@ -323,6 +323,7 @@
 
 (defmethod perform-track events/control-email-captured-submit [_ event _ app-state]
   (when (empty? (get-in app-state keypaths/errors))
+    (facebook-analytics/subscribe)
     (let [captured-email (get-in app-state keypaths/captured-email)]
       (track-email-capture-capture app-state {:email captured-email}))))
 
