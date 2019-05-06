@@ -28,7 +28,8 @@
        close-button]])))
 
 (defn freeinstall-query [data]
-  {:button-behavior (utils/fake-href events/external-redirect-freeinstall {:utm-source "shop"})
+  {:button-behavior (assoc (utils/fake-href events/external-redirect-freeinstall {:utm-source "shop"})
+                           :data-test "freeinstall-banner-dtc-button")
    :banner-copy     [[:div.medium "Get a Free Install!"]
                      " Mayvenn will pay for your sew-in from a local, certified stylist."]
    :button-copy     "Get a Free Install"})
