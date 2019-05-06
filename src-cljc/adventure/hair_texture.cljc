@@ -40,7 +40,7 @@
         servicing-stylist?    (get-in data adventure.keypaths/adventure-servicing-stylist)
         current-step          (if servicing-stylist? 3 2)]
     {:prompt       "Which texture are you looking for?"
-     :prompt-image "//ucarecdn.com/3346657d-a039-487f-98fb-68b9b050e042/-/format/auto/aladdinMatchingOverlayImagePurpleER203Lm3x.png"
+     :prompt-image "//ucarecdn.com/454b7522-de21-4f7c-a6cd-0288574ae672/-/format/auto/"
      :data-test    "hair-texture"
      :current-step current-step
      :spinning?    (utils/requesting-from-endpoint? data request-keys/search-v2-skus)

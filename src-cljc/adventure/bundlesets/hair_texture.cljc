@@ -48,7 +48,7 @@
         stylist-selected?     (get-in data adventure-keypaths/adventure-servicing-stylist)
         current-step          (if stylist-selected? 3 2)]
     {:prompt       "Which texture are you looking for?"
-     :prompt-image "//ucarecdn.com/3346657d-a039-487f-98fb-68b9b050e042/-/format/auto/"
+     :prompt-image "//ucarecdn.com/1b443614-0897-4549-8d54-33d798072f04/-/format/auto/"
      :data-test    "hair-texture"
      :current-step current-step
      :footer       (when-not stylist-selected?
