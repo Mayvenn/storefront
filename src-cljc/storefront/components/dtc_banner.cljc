@@ -27,13 +27,6 @@
          [:div.col-7 (ui/teal-button button-behavior button-copy)]]]
        close-button]])))
 
-(defn become-a-mayvenn-query [data]
-  {:button-behavior {:href     (get-in data keypaths/welcome-url)
-                     :on-click (utils/send-event-callback events/external-redirect-welcome)}
-   :banner-copy     [[:span.medium "Are you a stylist?"]
-                     " Grow your business & earn extra money by joining Mayvenn!"]
-   :button-copy     "Become a Mayvenn"})
-
 (defn freeinstall-query [data]
   {:button-behavior (utils/fake-href events/external-redirect-freeinstall {:utm-source "shop"})
    :banner-copy     [[:div.medium "Get a Free Install!"]
