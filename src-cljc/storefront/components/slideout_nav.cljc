@@ -149,11 +149,11 @@
    [:div.h4.border-bottom.border-gray.py3
     (into [:a.block.inherit-color.flex.items-center (assoc link-attrs :data-test data-test)] content)]])
 
-(defn shopping-rows [{:keys [shop-to-freeinstall? v2-experience?]}]
+(defn shopping-rows [{:keys [show-freeinstall-link? v2-experience?]}]
   (let [caret (ui/forward-caret {:width  "23px"
                                  :height "20px"})]
     (concat
-     (when shop-to-freeinstall?
+     (when show-freeinstall-link?
        [{:link-attrs (utils/fake-href events/external-redirect-freeinstall {:utm-source "shopHamburger"})
          :data-test  "menu-shop-freeinstall"
          :content    [[:span.teal.pr1 "NEW"]
@@ -274,14 +274,14 @@
       (component/build root-menu data nil))]))
 
 (defn basic-query [data]
-  {:signed-in            (auth/signed-in data)
-   :on-taxon?            (get-in data keypaths/current-traverse-nav-id)
-   :user                 {:email (get-in data keypaths/user-email)}
-   :store                (marquee/query data)
-   :vouchers?            (experiments/vouchers? data)
-   :v2-experience?       (experiments/v2-experience? data)
-   :shop-to-freeinstall? (experiments/shop-to-freeinstall? data)
-   :shopping             {:categories (get-in data keypaths/categories)}})
+  {:signed-in              (auth/signed-in data)
+   :on-taxon?              (get-in data keypaths/current-traverse-nav-id)
+   :user                   {:email (get-in data keypaths/user-email)}
+   :store                  (marquee/query data)
+   :vouchers?              (experiments/vouchers? data)
+   :v2-experience?         (experiments/v2-experience? data)
+   :show-freeinstall-link? (= (get-in data keypaths/store-slug) "shop")
+   :shopping               {:categories (get-in data keypaths/categories)}})
 
 (defn query [data]
   (-> (basic-query data)

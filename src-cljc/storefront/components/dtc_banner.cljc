@@ -44,6 +44,4 @@
   (when (and (= (get-in data keypaths/navigation-event) events/navigate-home)
              (= (get-in data keypaths/store-slug) "shop")
              (not (get-in data keypaths/dtc-banner-hidden?)))
-    (if (experiments/shop-to-freeinstall? data)
-      (component/build component (freeinstall-query data) opts)
-      (component/build component (become-a-mayvenn-query data) opts))))
+    (component/build component (freeinstall-query data) opts)))

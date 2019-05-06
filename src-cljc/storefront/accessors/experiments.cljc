@@ -127,12 +127,6 @@
   [data]
   (display-feature? data "freeinstall-pdp-looks?"))
 
-(defn shop-to-freeinstall?
-  [data]
-  (and
-   (= (get-in data keypaths/store-slug) "shop")
-   (display-feature? data "shop-to-freeinstall")))
-
 (defn quadpay?
   [data]
   (display-feature? data "quadpay"))

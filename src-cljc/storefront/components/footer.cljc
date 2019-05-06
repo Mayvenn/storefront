@@ -182,6 +182,6 @@
   [data opts]
   (if (nav/show-minimal-footer? (get-in data keypaths/navigation-event))
     (footer-minimal/built-component data nil)
-    (if (experiments/shop-to-freeinstall? data)
+    (if (= (get-in data keypaths/store-slug) "shop")
       (component/build dtc-full-component (dtc-query data) nil)
       (component/build full-component (query data) nil))))
