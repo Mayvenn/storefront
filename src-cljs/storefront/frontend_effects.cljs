@@ -150,7 +150,7 @@
               uri/uri
               (assoc :host (str "freeinstall." hostname)
                      :path "/"
-                     :query (str "utm_source="utm-source"&utm_medium=referral&utm_campaign=ShoptoFreeInstall"))
+                     :query (str "utm_campaign=ShoptoFreeInstall&utm_medium=referral&utm_source=" utm-source))
               str))))
 
 (defmethod perform-effects events/external-redirect-sms [_ event {:keys [sms-message number]} _ app-state]
