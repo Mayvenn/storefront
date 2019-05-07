@@ -80,8 +80,8 @@
 
 (defn hero [next-page]
   (let [file-name "free-install-hero"
-        mob-uuid  "5164ba48-d968-466b-9d13-6f5fbc9dcc3d"
-        dsk-uuid  "85579511-f08d-4f77-a769-e31a3653e3f4"]
+        mob-uuid  "71112238-b1d3-4e27-9f61-8dc9cddf8538"
+        dsk-uuid  "50cd1017-227d-453c-85b6-35b804346cee"]
     [:a.bold.shadow.white.center.bg-light-gray
      (merge
       {:data-test "adventure-home-choice-get-started"}
