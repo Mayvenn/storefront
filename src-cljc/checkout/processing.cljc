@@ -41,30 +41,39 @@
                                                                      {:query-params {:error error-code}})))})))
 
 (defn get-order-status
-  [{:keys [number token]} freeinstall-domain?]
+  [{:keys [number token]} freeinstall-domain? confirm-order-fn times-attempted]
   #?(:cljs
      (api/poll-order number token
                      (fn [{:keys [state] :as order'}]
                        (do
-                         (case state
-                           "cart"
-                           (js/setTimeout #(get-order-status order'
-                                                             freeinstall-domain?)
-                                          3000)
+                         (if (< times-attempted 5)
+                           (case state
+                             "cart"
+                             (js/setTimeout #(get-order-status order' freeinstall-domain? confirm-order-fn (inc times-attempted))
+                                            3000)
 
-                           "submitted"
-                           (messages/handle-message events/api-success-update-order-place-order {:order order'})))))))
+                             "submitted"
+                             (messages/handle-message events/api-success-update-order-place-order {:order order'}))
+                           (confirm-order-fn)))))))
 
 (defn quadpay-confirm-order [app-state freeinstall-domain?]
   ;; tell waiter to hurry up, otherwise just poll for status (webhook should update us)
   #?(:cljs
-     (let [order                       (get-in app-state keypaths/order)
-           success-and-failure-handler (fn [& _] (get-order-status order freeinstall-domain?))]
-       (api/confirm-order-was-placed (get-in app-state keypaths/session-id)
-                                     order
-                                     (cookie-jar/retrieve-utm-params (get-in app-state keypaths/cookie))
-                                     success-and-failure-handler
-                                     success-and-failure-handler))))
+     (let [order (get-in app-state keypaths/order)]
+       (api/confirm-order-was-placed
+        (get-in app-state keypaths/session-id)
+        order
+        (cookie-jar/retrieve-utm-params (get-in app-state keypaths/cookie))
+        (fn success-handler [& _]
+          (get-order-status order freeinstall-domain? (partial quadpay-confirm-order app-state freeinstall-domain?) 0))
+        (fn failure-handler [response]
+          (let [response-body (get-in response [:response :body])]
+            (if (api/waiter-style? response-body)
+              (do
+                (history/enqueue-navigate events/navigate-cart {:query-params {:error (:error-code response-body)}})
+                (messages/handle-later events/flash-show-failure {:message (:error-message response-body)}))
+
+              (get-order-status order freeinstall-domain? (partial quadpay-confirm-order app-state freeinstall-domain?) 0))))))))
 
 (defmethod effects/perform-effects events/navigate-checkout-processing
   [dispatch event args _ app-state]
