@@ -198,11 +198,12 @@
         billing-address          (get-in app-state (conj keypaths/order :billing-address))
         covered-by-store-credit? (orders/fully-covered-by-store-credit?
                                   order
-                                  (get-in app-state keypaths/user))]
+                                  (get-in app-state keypaths/user))
+        user                     (get-in app-state keypaths/user)]
     (assoc-in (default-credit-card-name app-state billing-address)
               keypaths/checkout-selected-payment-methods
               (if (and covered-by-store-credit?
-                       (not (orders/applied-install-promotion order)))
+                       (orders/can-use-store-credit? order user))
                 {:store-credit {}}
                 {}))))
 

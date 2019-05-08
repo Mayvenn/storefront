@@ -81,15 +81,6 @@
 (defn add-rounded-floats [a b]
   (/ (.toFixed (+ (* 100.0 a) (* 100.0 b)) 0) 100.0))
 
-(defn form-payment-methods [order-total store-credit promotions]
-  (let [store-credit-used (min order-total store-credit)]
-    (cond-> {}
-      (or (some #{"freeinstall"} promotions)
-          (> order-total store-credit-used))
-      (assoc :stripe {})
-      (and (pos? store-credit-used)
-           (not (some #{"freeinstall"} promotions)))
-      (assoc :store-credit {}))))
 
 (defn line-item-subtotal [{:keys [quantity unit-price]}]
   (* quantity unit-price))
@@ -159,6 +150,21 @@
    (when (and order user)
      (>= (:total-available-store-credit user)
          (:total order)))))
+
+(defn can-use-store-credit? [order user]
+  (let [user-is-stylist? (-> user :store-slug boolean)]
+    (and (pos? (:total-available-store-credit user))
+         (not (and (:install-type order) user-is-stylist?)))))
+
+(defn form-payment-methods [order user]
+  (let [order-total       (:total order)
+        store-credit      (:total-available-store-credit user)
+        promotions        (all-applied-promo-codes order)
+        store-credit-used (min order-total store-credit)]
+    (cond-> {}
+      (or (some #{"freeinstall"} promotions)
+          (> order-total store-credit-used)) (assoc :stripe {})
+      (can-use-store-credit? order user)     (assoc :store-credit {}))))
 
 (defn display-adjustment-name [name]
   (if (= name "Bundle Discount")

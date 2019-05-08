@@ -50,9 +50,8 @@
   [_ _ {:keys [payment-method]} app-state]
   (assoc-in app-state keypaths/checkout-selected-payment-methods
             (condp = payment-method
-              :stripe  (orders/form-payment-methods (get-in app-state keypaths/order-total)
-                                                    (get-in app-state keypaths/user-total-available-store-credit)
-                                                    (orders/all-applied-promo-codes (get-in app-state keypaths/order)))
+              :stripe  (orders/form-payment-methods (get-in app-state keypaths/order)
+                                                    (get-in app-state keypaths/user))
               :quadpay {:quadpay {}})))
 
 (defn component
@@ -66,6 +65,7 @@
            credit-card
            promo-code
            selected-payment-methods
+           can-use-store-credit?
            applied-install-promotion
            promotion-banner]}
    owner]
@@ -86,7 +86,7 @@
               selected-stripe-or-store-credit?           (and (seq selected-payment-methods)
                                                               (set/subset? selected-payment-methods #{:stripe :store-credit}))
               selected-quadpay?                          (contains? selected-payment-methods :quadpay)]
-          (if (and fully-covered? (not applied-install-promotion))
+          (if (and fully-covered? can-use-store-credit?)
             (ui/note-box
              {:color     "teal"
               :data-test "store-credit-note"}
@@ -108,7 +108,14 @@
                (let [{:keys [credit-available credit-applicable]} store-credit]
                  [:div.p2.ml5
                   (when (pos? credit-available)
-                    (if applied-install-promotion
+                    (if can-use-store-credit?
+                      (ui/note-box
+                       {:color     "teal"
+                        :data-test "store-credit-note"}
+                       [:.p2.navy
+                        [:div [:span.medium (as-money credit-applicable)] " in store credit will be applied to this order."]
+                        [:.h6.mt1
+                         "Please enter an additional payment method below for the remaining total on your order."]])
                       (ui/note-box
                        {:color     "orange"
                         :data-test "store-credit-note"}
@@ -119,14 +126,7 @@
                          [:span.medium "cannot"]
                          " be used with " [:span.shout applied-install-promotion] " orders."]
                         [:div.h6.mt1
-                         "To use store credit, please remove promo code " [:span.shout applied-install-promotion] " from your bag."]])
-                      (ui/note-box
-                       {:color     "teal"
-                        :data-test "store-credit-note"}
-                       [:.p2.navy
-                        [:div [:span.medium (as-money credit-applicable)] " in store credit will be applied to this order."]
-                        [:.h6.mt1
-                         "Please enter an additional payment method below for the remaining total on your order."]])))
+                         "To use store credit, please remove promo code " [:span.shout applied-install-promotion] " from your bag."]])))
 
                   [:div
                    (om/build cc/component
@@ -178,6 +178,7 @@
            promo-code
            selected-payment-methods
            applied-install-promotion
+           can-use-store-credit?
            loaded-quadpay?
            promotion-banner]}
    owner]
@@ -198,7 +199,7 @@
               selected-stripe-or-store-credit?           (and (seq selected-payment-methods)
                                                               (set/subset? selected-payment-methods #{:stripe :store-credit}))
               selected-quadpay?                          (contains? selected-payment-methods :quadpay)]
-          (if (and fully-covered? (not applied-install-promotion))
+          (if (and fully-covered? can-use-store-credit?)
             (ui/note-box
              {:color     "teal"
               :data-test "store-credit-note"}
@@ -220,7 +221,14 @@
                (let [{:keys [credit-available credit-applicable]} store-credit]
                  [:div.p2.ml5
                   (when (pos? credit-available)
-                    (if applied-install-promotion
+                    (if can-use-store-credit?
+                      (ui/note-box
+                       {:color     "teal"
+                        :data-test "store-credit-note"}
+                       [:.p2.navy
+                        [:div [:span.medium (as-money credit-applicable)] " in store credit will be applied to this order."]
+                        [:.h6.mt1
+                         "Please enter an additional payment method below for the remaining total on your order."]])
                       (ui/note-box
                        {:color     "orange"
                         :data-test "store-credit-note"}
@@ -231,14 +239,7 @@
                          [:span.medium "cannot"]
                          " be used with " [:span.shout applied-install-promotion] " orders."]
                         [:div.h6.mt1
-                         "To use store credit, please remove promo code " [:span.shout applied-install-promotion] " from your bag."]])
-                      (ui/note-box
-                       {:color     "teal"
-                        :data-test "store-credit-note"}
-                       [:.p2.navy
-                        [:div [:span.medium (as-money credit-applicable)] " in store credit will be applied to this order."]
-                        [:.h6.mt1
-                         "Please enter an additional payment method below for the remaining total on your order."]])))
+                         "To use store credit, please remove promo code " [:span.shout applied-install-promotion] " from your bag."]])))
 
                   [:div
                    (om/build cc/component
@@ -280,13 +281,15 @@
                                              :data-test "payment-form-submit"})])]])])))
 
 (defn query [data]
-  (let [available-store-credit   (get-in data keypaths/user-total-available-store-credit)
-        credit-to-use            (min available-store-credit (get-in data keypaths/order-total))
-        order                    (get-in data keypaths/order)
-        fully-covered?           (orders/fully-covered-by-store-credit?
-                                  order
-                                  (get-in data keypaths/user))
-        selected-payment-methods (set (keys (get-in data keypaths/checkout-selected-payment-methods)))]
+  (let [available-store-credit    (get-in data keypaths/user-total-available-store-credit)
+        credit-to-use             (min available-store-credit (get-in data keypaths/order-total))
+        order                     (get-in data keypaths/order)
+        fully-covered?            (orders/fully-covered-by-store-credit?
+                                   order
+                                   (get-in data keypaths/user))
+        selected-payment-methods  (set (keys (get-in data keypaths/checkout-selected-payment-methods)))
+        applied-install-promotion (orders/applied-install-promotion order)
+        user                      (get-in data keypaths/user)]
     (merge
      {:store-credit              {:credit-available  available-store-credit
                                   :credit-applicable credit-to-use
@@ -299,14 +302,15 @@
                                           (empty? (get-in data keypaths/checkout-credit-card-existing-cards))
                                           (not fully-covered?))
                                      (empty? selected-payment-methods))
-      :applied-install-promotion (->> (orders/all-applied-promo-codes order)
-                                      (filter #{"freeinstall" "install"})
-                                      first)
-      :loaded-stripe?            (get-in data keypaths/loaded-stripe)
-      :step-bar                  (checkout-steps/query data)
-      :field-errors              (:field-errors (get-in data keypaths/errors))
-      :selected-payment-methods  selected-payment-methods
-      :loaded-quadpay?           (get-in data keypaths/loaded-quadpay)}
+      ;; TODO: GROT
+      :applied-install-promotion applied-install-promotion
+      :can-use-store-credit?     (orders/can-use-store-credit? order user)
+
+      :loaded-stripe?           (get-in data keypaths/loaded-stripe)
+      :step-bar                 (checkout-steps/query data)
+      :field-errors             (:field-errors (get-in data keypaths/errors))
+      :selected-payment-methods selected-payment-methods
+      :loaded-quadpay?          (get-in data keypaths/loaded-quadpay)}
      (cc/query data))))
 
 (defn built-component [data opts]

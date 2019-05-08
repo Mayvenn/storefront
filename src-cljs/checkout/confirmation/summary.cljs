@@ -67,7 +67,6 @@
            store-credit
            shipping-cost
            adjustments-including-tax
-           use-store-credit?
            subtotal] :as props} owner _]
 
   (component/create
@@ -96,12 +95,13 @@
        (when shipping-cost
          (summary-row "Shipping" shipping-cost))
 
-       (when (and (pos? store-credit) use-store-credit?)
+       (when (pos? store-credit)
          (summary-row "Store Credit" (- store-credit)))]]]
     (summary-total-section props)]))
 
 (defn query [data]
   (let [order                      (get-in data keypaths/order)
+        user                       (get-in data keypaths/user)
         shipping-item              (orders/shipping-item order)
         adventure?                 (= "freeinstall" (get-in data keypaths/store-slug))
         freeinstall-line-item-data (if adventure?
@@ -114,6 +114,7 @@
        :order                      order
        :shipping-cost              (* (:quantity shipping-item) (:unit-price shipping-item))
        :adjustments-including-tax  (orders/all-order-adjustments order)
+       :store-credit               (-> order :cart-payments :store-credit :amount)
        :promo-data                 {:coupon-code   (get-in data keypaths/cart-coupon-code)
                                     :applying?     (utils/requesting? data request-keys/add-promotion-code)
                                     :focused       (get-in data keypaths/ui-focus)
