@@ -129,8 +129,9 @@
                                            {:file     "src-cljs/storefront/jsQR.js"
                                             :file-min "target/min-js/jsQR.js"
                                             :provides ["jsQR"]}
-                                           {:file        "src-cljs/storefront/dom-confetti.js"
-                                            :provides    ["dom-confetti"]}]
+                                           {:file     "src-cljs/storefront/dom-confetti.js"
+                                            :file-min "target/min-js/dom-confetti.js"
+                                            :provides ["dom-confetti"]}]
                         :externs          ["externs/bugsnag.js"
                                            "externs/convert.js"
                                            "externs/facebook.js"
