@@ -78,7 +78,9 @@
                                        {:file     "src-cljs/storefront/bugsnag-2.5.0.js"
                                         :provides ["bugsnag"]}
                                        {:file     "src-cljs/storefront/jsQR.js"
-                                        :provides ["jsQR"]}]
+                                        :provides ["jsQR"]}
+                                       {:file        "src-cljs/storefront/dom-confetti.js"
+                                        :provides    ["dom-confetti"]}]
                     :externs          ["externs/bugsnag.js"
                                        "externs/convert.js"
                                        "externs/facebook.js"
@@ -126,7 +128,9 @@
                                             :provides ["bugsnag"]}
                                            {:file     "src-cljs/storefront/jsQR.js"
                                             :file-min "target/min-js/jsQR.js"
-                                            :provides ["jsQR"]}]
+                                            :provides ["jsQR"]}
+                                           {:file        "src-cljs/storefront/dom-confetti.js"
+                                            :provides    ["dom-confetti"]}]
                         :externs          ["externs/bugsnag.js"
                                            "externs/convert.js"
                                            "externs/facebook.js"

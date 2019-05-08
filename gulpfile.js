@@ -26,7 +26,7 @@ gulp.task('css', function () {
       require('postcss-discard-comments')(),
       require('autoprefixer')({browsers: ['last 3 versions']}),
       /* require('postcss-reporter')(), */
-      /* comment out cssnano to see uncompressed css */
+      /* comment out cssnano to see encompressed css */
       require('cssnano')()
     ]))
     .pipe(gulp.dest('./resources/public/css'));
@@ -38,14 +38,27 @@ gulp.task('watch', ['css'], function (cb) {
 
 gulp.task('default', ['css']);
 
-gulp.task('refresh-deps', 
-	/* Run this after you update node module versions. */
-	/* Maybe there's a preferred way of including node modules in cljs projects? */
-	shell.task([
-		"cp",
-		"./node_modules/react-slick/dist/react-slick.js",
-		"./node_modules/jsqr/dist/jsQR.js",
-		"src-cljs/storefront/"].join(" ")));
+gulp.task('rename-confetti',
+          shell.task([
+            "cp",
+            "./node_modules/dom-confetti/lib/main.js",
+            "./node_modules/dom-confetti/lib/dom-confetti.js"
+          ].join(" ")));
+
+gulp.task('copy-deps',
+          shell.task([
+            "cp",
+            "./node_modules/react-slick/dist/react-slick.js",
+            "./node_modules/jsqr/dist/jsQR.js",
+            "./node_modules/dom-confetti/lib/dom-confetti.js",
+            "src-cljs/storefront/"
+          ].join(" ")));
+
+/* Run this after you update node module versions. */
+/* Maybe there's a preferred way of including node modules in cljs projects? */
+gulp.task('refresh-deps', function(cb) {
+  runSequence('rename-confetti', 'copy-deps', cb);
+});
 
 gulp.task('clean-min-js', function () {
   return del(['./target/min-js']);

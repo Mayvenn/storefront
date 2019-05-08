@@ -1,7 +1,8 @@
 (ns adventure.checkout.cart
-  (:require
-   #?@(:cljs [[storefront.hooks.quadpay :as quadpay]])
-   [adventure.checkout.cart.items :as adventure-cart-items]
+  (:require #?@(:cljs [[storefront.hooks.quadpay :as quadpay]
+                       [om.core :as om]
+                       [dom-confetti :as dom-confetti]])
+            [adventure.checkout.cart.items :as adventure-cart-items]
             [adventure.checkout.cart.summary :as adventure-cart-summary]
             [adventure.keypaths :as adventure.keypaths]
             [catalog.facets :as facets]
@@ -109,18 +110,47 @@
        detail]]
      [:div.h5.right {:data-test (str "line-item-price-ea-" id)} (some-> price mf/as-money)]]]])
 
-(def qualified-banner
-  [:div.flex.items-center.bold
-   {:data-test "adventure-qualified-banner"
-    :style {:height              "246px"
-            :padding-top         "43px"
-            :background-size     "cover"
-            :background-position "center"
-            :background-image    "url('//ucarecdn.com/97d80a16-1f48-467a-b8e2-fb16b532b75e/-/format/auto/-/quality/normal/aladdinMatchingCelebratoryOverlayImagePurpleR203Lm3x.png')"}}
-   [:div.col.col-12.center.white
-    [:div.h5.light "This order qualifies for a"]
-    [:div.h1.shout "free install"]
-    [:div.h5.light "from a Mayvenn Stylist near you"]]])
+(defn qualified-banner-component
+  [{:keys [confetti?]} owner _]
+  #?(:clj [:div]
+
+     :cljs
+     (reify
+       om/IDidMount
+       (did-mount [_]
+         (when confetti?
+           (js/confetti (om/get-ref owner "adventure-qualified-banner-confetti")
+                        (clj->js {:angle         90
+                                  :spread        80
+                                  :startVelocity 50
+                                  :elementCount  200
+                                  :width         "8px"
+                                  :height        "10px"
+                                  :duration      6000
+                                  :delay         0
+                                  :dragFriction  0.1
+                                  :random        js/Math.random
+                                  :colors        (clj->js ["#40cbac" "#931280" "#ffc520"])}))))
+       om/IRender
+       (render [_]
+         (component/html
+          [:div.flex.items-center.bold
+           {
+            :data-test "adventure-qualified-banner"
+            :style     {:height              "246px"
+                        :padding-top         "43px"
+                        :background-size     "cover"
+                        :background-position "center"
+                        :background-image    "url('//ucarecdn.com/97d80a16-1f48-467a-b8e2-fb16b532b75e/-/format/auto/-/quality/normal/aladdinMatchingCelebratoryOverlayImagePurpleR203Lm3x.png')"}}
+           [:div.col.col-12.center.white
+            [:div.absolute
+             {:ref   "adventure-qualified-banner-confetti"
+              :style {:left  "50%"
+                      :right "50%"}}]
+            [:div.h5.light "This order qualifies for a"]
+            [:div.h1.shout "free install"]
+            [:div.h5.light "from a Mayvenn Stylist near you"]]])))))
+
 
 (defn add-more-hair-button
   [navigation-event]
@@ -154,13 +184,14 @@
                               how-shop-choice
                               add-more-hair-navigation-event
                               loaded-quadpay?
-                              cart-summary]} owner _]
+                              confetti?
+                              cart-summary]} owner opts]
   (component/create
    (let [{:keys [number-of-items-needed add-more-hair?]} freeinstall-line-item-data]
      [:div.container
       (if add-more-hair?
         (add-more-hair-banner how-shop-choice number-of-items-needed add-more-hair-navigation-event)
-        qualified-banner)
+        (component/build qualified-banner-component {:confetti? confetti?} opts))
       [:div.p2
        [:div.clearfix.mxn3
         [:div.px3.pt2
@@ -269,6 +300,7 @@
      :recently-added-skus            (get-in data keypaths/cart-recently-added-skus)
      :freeinstall-just-added?        (get-in data keypaths/cart-freeinstall-just-added?)
      :freeinstall-line-item-data     (adventure-cart-items/freeinstall-line-item-query data)
+     :confetti?                      (experiments/confetti? data)
      :loaded-quadpay?                (get-in data keypaths/loaded-quadpay)}))
 
 (defn component
