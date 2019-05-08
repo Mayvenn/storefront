@@ -79,10 +79,11 @@
                                         :provides ["bugsnag"]}
                                        {:file     "src-cljs/storefront/jsQR.js"
                                         :provides ["jsQR"]}
-                                       {:file        "src-cljs/storefront/dom-confetti.js"
-                                        :provides    ["dom-confetti"]}]
+                                       {:file     "src-cljs/storefront/dom-confetti.js"
+                                        :provides ["dom-confetti"]}]
                     :externs          ["externs/bugsnag.js"
                                        "externs/convert.js"
+                                       "externs/dom-confetti.js"
                                        "externs/facebook.js"
                                        "externs/google_autocomplete.js"
                                        "externs/jsQR.js"
@@ -134,6 +135,7 @@
                                             :provides ["dom-confetti"]}]
                         :externs          ["externs/bugsnag.js"
                                            "externs/convert.js"
+                                           "externs/dom-confetti.js"
                                            "externs/facebook.js"
                                            "externs/google_autocomplete.js"
                                            "externs/jsQR.js"
