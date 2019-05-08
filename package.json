@@ -9,7 +9,6 @@
     "basscss-addons": "^1.0.0-beta4",
     "basscss-background-images": "^0.1.1",
     "basscss-ui-utility-groups": "^1.0.1",
-    "dom-confetti": "^0.1.0",
     "jsqr": "1.1.0",
     "normalize.css": "^4.2.0",
     "react-slick": "^0.14.6"
