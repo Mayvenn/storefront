@@ -71,6 +71,8 @@
                     :fn-invoke-direct true
                     :parallel-build   true
                     :libs             ["src-cljs/rng/rng.js"]
+                    :npm-deps         false
+                    :install-deps     false
                     :foreign-libs     [{:file     "src-cljs/storefront/react-slick.js"
                                         :provides ["react-slick"]}
                                        {:file     "src-cljs/storefront/bugsnag-2.5.0.js"
@@ -113,6 +115,8 @@
                         :static-fns       true
                         :fn-invoke-direct true
                         :parallel-build   true
+                        :npm-deps         false
+                        :install-deps     false
                         :libs             ["src-cljs/rng/rng.js"]
                         :foreign-libs     [{:file     "src-cljs/storefront/react-slick.js"
                                             :file-min "target/min-js/react-slick.js" ;; created by gulp
