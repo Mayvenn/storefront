@@ -756,8 +756,8 @@
                                                             keypaths/checkout-selected-shipping-method-sku)})))
 
 (defmethod perform-effects events/stripe-success-create-token [_ _ {:keys [token place-order?]} _ app-state]
-  (let [order                  (get-in app-state keypaths/order)
-        available-store-credit (or (get-in app-state keypaths/user-total-available-store-credit) 0.0)]
+  (let [order (get-in app-state keypaths/order)
+        user  (get-in app-state keypaths/user)]
     (api/update-cart-payments
      (get-in app-state keypaths/session-id)
      {:order        (-> order
@@ -766,8 +766,7 @@
                                                                :idempotent-key (str (random-uuid))
                                                                :save?          (boolean (and (get-in app-state keypaths/user-id)
                                                                                              (get-in app-state keypaths/checkout-credit-card-save)))}}
-                                                     (when (and (pos? available-store-credit)
-                                                                (not (orders/applied-install-promotion order)))
+                                                     (when (orders/can-use-store-credit? order user)
                                                        {:store-credit {}}))))
       :navigate     events/navigate-checkout-confirmation
       :place-order? place-order?})))
