@@ -138,3 +138,7 @@
 (defn match-before-purchase?
   [data]
   (display-feature? data "match-before-purchase"))
+
+(defn confetti?
+  [data]
+  (display-feature? data "confetti"))
