@@ -1,7 +1,6 @@
-(ns storefront.confetti
-  (:require [storefront.browser.scroll :as scroll]))
+(ns storefront.confetti)
 
-(defn create-elements
+(defn ^:private create-elements
   [node element-count colors width height]
   (mapv
    (fn [i]
@@ -18,7 +17,7 @@
        element))
    (range 0 element-count)))
 
-(defn random-physics [angle spread start-velocity]
+(defn ^:private random-physics [angle spread start-velocity]
   (let [rad-angle  (* angle (/ js/Math.PI 180))
         rad-spread (* spread (/ js/Math.PI 180))]
     {:x                0
@@ -35,7 +34,7 @@
      :tilt-angle       (* (js/Math.random) js/Math.PI)
      :tilt-angle-speed (+ 0.1 (* (js/Math.random) 0.3))}))
 
-(defn update-fetti
+(defn ^:private update-fetti
   [progress drag-friction {:keys [element physics] :as fetti}]
   (let [{:keys [angle-2d angle-3d velocity wobble-speed tilt-angle-speed]} physics
         {:keys [wobble x y tilt-angle] :as new-physics}
@@ -55,7 +54,7 @@
 
     (assoc fetti :physics new-physics)))
 
-(defn animate [node fettis drag-friction duration delay]
+(defn ^:private animate [node fettis drag-friction duration delay]
   (let [start-time-state (atom nil)
         fettis           (atom fettis)
         make-update-fn   (fn make-update-fn [resolve-fn]
