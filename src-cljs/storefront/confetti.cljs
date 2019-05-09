@@ -79,7 +79,7 @@
     (js/Promise. (fn [resolve] (js/requestAnimationFrame (make-update-fn resolve))))))
 
 
-(defn confetti
+(defn burst
   [node]
   (let [angle          90,
         spread         40,

@@ -1,7 +1,7 @@
 (ns adventure.checkout.cart
   (:require #?@(:cljs [[storefront.hooks.quadpay :as quadpay]
                        [om.core :as om]
-                       [storefront.confetti :as dom-confetti]])
+                       [storefront.confetti :as confetti]])
             [adventure.checkout.cart.items :as adventure-cart-items]
             [adventure.checkout.cart.summary :as adventure-cart-summary]
             [adventure.keypaths :as adventure.keypaths]
@@ -119,17 +119,20 @@
        om/IDidMount
        (did-mount [_]
          (when confetti?
-           (dom-confetti/confetti (om/get-ref owner "adventure-qualified-banner-confetti"))))
+           (confetti/burst (om/get-ref owner "adventure-qualified-banner-confetti"))))
        om/IRender
        (render [_]
          (component/html
           [:div.flex.items-center.bold
-           {:data-test "adventure-qualified-banner"
-            :style     {:height              "246px"
-                        :padding-top         "43px"
-                        :background-size     "cover"
-                        :background-position "center"
-                        :background-image    "url('//ucarecdn.com/97d80a16-1f48-467a-b8e2-fb16b532b75e/-/format/auto/-/quality/normal/aladdinMatchingCelebratoryOverlayImagePurpleR203Lm3x.png')"}}
+           (merge
+            {:data-test "adventure-qualified-banner"
+             :style     {:height              "246px"
+                         :padding-top         "43px"
+                         :background-size     "cover"
+                         :background-position "center"
+                         :background-image    "url('//ucarecdn.com/97d80a16-1f48-467a-b8e2-fb16b532b75e/-/format/auto/-/quality/normal/aladdinMatchingCelebratoryOverlayImagePurpleR203Lm3x.png')"}}
+            (when confetti?
+              {:on-click #(confetti/burst (om/get-ref owner "adventure-qualified-banner-confetti"))}))
            [:div.col.col-12.center.white
             [:div.absolute
              {:ref   "adventure-qualified-banner-confetti"
