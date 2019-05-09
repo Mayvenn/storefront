@@ -196,10 +196,8 @@
 (defmethod transition-state events/navigate-checkout-payment [_ event args app-state]
   (let [order                    (get-in app-state keypaths/order)
         billing-address          (get-in app-state (conj keypaths/order :billing-address))
-        covered-by-store-credit? (orders/fully-covered-by-store-credit?
-                                  order
-                                  (get-in app-state keypaths/user))
-        user                     (get-in app-state keypaths/user)]
+        user                     (get-in app-state keypaths/user)
+        covered-by-store-credit? (orders/fully-covered-by-store-credit? order user)]
     (assoc-in (default-credit-card-name app-state billing-address)
               keypaths/checkout-selected-payment-methods
               (if (and covered-by-store-credit?

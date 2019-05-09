@@ -302,7 +302,6 @@
                                           (empty? (get-in data keypaths/checkout-credit-card-existing-cards))
                                           (not fully-covered?))
                                      (empty? selected-payment-methods))
-      ;; TODO: GROT
       :applied-install-promotion applied-install-promotion
       :can-use-store-credit?     (orders/can-use-store-credit? order user)
 
