@@ -1,7 +1,7 @@
 (ns storefront.confetti)
 
 (defn ^:private create-elements
-  [node element-count colors width height]
+  [{:keys [node element-count colors width height]}]
   (mapv
    (fn [i]
      (let [color   (nth colors (mod i (count colors)))
@@ -17,7 +17,7 @@
        element))
    (range 0 element-count)))
 
-(defn ^:private random-physics [angle spread start-velocity]
+(defn ^:private random-physics [{:keys [angle spread start-velocity]}]
   (let [rad-angle  (* angle (/ js/Math.PI 180))
         rad-spread (* spread (/ js/Math.PI 180))]
     {:x                0
@@ -54,43 +54,50 @@
 
     (assoc fetti :physics new-physics)))
 
-(defn ^:private animate [node fettis drag-friction duration delay]
+(defn ^:private animate [{:keys [node drag-friction duration delay]} fettis]
   (let [start-time-state (atom nil)
         fettis           (atom fettis)
-        make-update-fn   (fn make-update-fn [resolve-fn]
-                           (fn update-fn [time]
-                             (let [start-time          (or @start-time-state (reset! start-time-state time))
-                                   elapsed-time        (- time start-time)
-                                   progress            (if (= start-time time)
-                                                         0
-                                                         (/ elapsed-time duration))
-                                   [fetti-to-update
-                                    fetti-left-behind] (split-at (js/Math.ceil (/ elapsed-time delay)) @fettis)
-                                   updated-fetti       (mapv (partial update-fetti progress drag-friction) fetti-to-update)]
-                               (reset! fettis (concat updated-fetti fetti-left-behind))
-                               (if (< elapsed-time duration)
-                                 (js/requestAnimationFrame update-fn)
-                                 (do
-                                   (doseq [fetti @fettis]
-                                     (when (= node (.-parentNode (:element fetti)))
-                                       (.removeChild node (:element fetti))))
-                                   (resolve-fn))))))]
-    (js/Promise. (fn [resolve] (js/requestAnimationFrame (make-update-fn resolve))))))
-
+        update-fn        (fn update-fn [time]
+                           (let [start-time          (or @start-time-state (reset! start-time-state time))
+                                 elapsed-time        (- time start-time)
+                                 progress            (if (= start-time time) 0 (/ elapsed-time duration))
+                                 [fetti-to-update
+                                  fetti-left-behind] (split-at (js/Math.ceil (/ elapsed-time delay)) @fettis)
+                                 updated-fetti       (mapv (partial update-fetti progress drag-friction) fetti-to-update)]
+                             (reset! fettis (concat updated-fetti fetti-left-behind))
+                             (if (< elapsed-time duration)
+                               (js/requestAnimationFrame update-fn)
+                               (doseq [fetti @fettis]
+                                 (when (= node (.-parentNode (:element fetti)))
+                                   (.removeChild node (:element fetti)))))))]
+    (js/Promise. (partial js/requestAnimationFrame update-fn))))
 
 (defn burst
-  [node]
-  (let [angle          90,
-        spread         40,
-        start-velocity 50,
-        element-count  200,
-        width          "8px",
-        height         "10px",
-        colors         ["#40cbac" "#931280" "#ffc520"],
-        duration       4000,
-        delay          0,
-        drag-friction  0.1,
-        elements       (create-elements node element-count colors width height)
-        fettis         (mapv (fn [e] {:element e :physics (random-physics angle spread start-velocity)}) elements)]
-
-    (animate node fettis drag-friction duration delay)))
+  ([node]
+   (burst node {}))
+  ([node {:keys [element-count colors width height
+                 angle spread start-velocity duration
+                 drag-friction delay]
+          :or   {element-count  200
+                 colors         ["#40cbac" "#931280" "#ffc520"]
+                 width          "8px"
+                 height         "10px"
+                 angle          90
+                 spread         40
+                 start-velocity 50
+                 drag-friction  0.1
+                 duration       4000
+                 delay          0}}]
+   (->> (create-elements {:node          node
+                          :element-count element-count
+                          :colors        colors
+                          :width         width
+                          :height        height})
+        (mapv (fn [e] {:element e
+                       :physics (random-physics {:angle          angle
+                                                 :spread         spread
+                                                 :start-velocity start-velocity})}))
+        (animate {:node          node
+                  :drag-friction drag-friction
+                  :duration      duration
+                  :delay         delay}))))
