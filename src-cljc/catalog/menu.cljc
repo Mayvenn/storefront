@@ -50,9 +50,6 @@
   [_ _ _ app-state]
   (update-in app-state keypaths/current-traverse-nav dissoc :id))
 
-(defmethod effects/perform-effects events/menu-home
-  [_ _ _ _ app-state])
-
 (defmethod transitions/transition-state events/menu-list
   [_ _ {:keys [catalog/category-id]} app-state]
   (assoc-in app-state keypaths/current-traverse-nav-id category-id))

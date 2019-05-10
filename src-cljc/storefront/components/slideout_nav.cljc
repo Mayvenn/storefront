@@ -7,7 +7,6 @@
             [storefront.component :as component]
             [storefront.components.marquee :as marquee]
             [storefront.components.money-formatters :refer [as-money]]
-            [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -262,7 +261,7 @@
        sign-out-area])]))
 
 (defn component
-  [{:keys [promo-data cart on-taxon? menu-data] :as data}
+  [{:keys [cart on-taxon? menu-data] :as data}
    owner
    opts]
   (component/create
