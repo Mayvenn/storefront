@@ -18,14 +18,14 @@
       (status 200)
       (content-type "application/json")))
 
-(deftest redirect-from-shop-to-preferred-store-adds-redirect-query-param
-  (assert-request (-> (mock/request :get "https://shop.mayvenn.com")
-                      (mock/header "cookie" "preferred-store-slug=bob"))
-                  common/storeback-stylist-response
-                  (fn [resp]
-                    (is (= 302 (:status resp)))
-                    (is (= "https://bob.mayvenn.com/?redirect=shop"
-                           (get-in resp [:headers "Location"]))))))
+(deftest preferred-store-slug-does-not-redirect-away-from-shop
+  (assert-request
+   (set-cookies (mock/request :get "https://shop.mayvenn.com")
+                {"preferred-store-slug" "bob"})
+   common/storeback-stylist-response
+   (fn [resp]
+     (is (not= 302 (:status resp)) (pr-str (:status resp))))))
+
 
 (deftest redirects-shop-to-store-subdomain-if-preferred-subdomain-is-invalid
   (assert-request (-> (mock/request :get "https://shop.mayvenn.com/categories/hair/straight?utm_source=cats")
@@ -48,15 +48,6 @@
                            (get-in resp [:headers "Location"])))
                     (let [cookie (first (get-in resp [:headers "Set-Cookie"]))]
                       (is (.contains cookie "preferred-store-slug=;Max-Age=0;") (str cookie))))))
-
-(deftest redirects-shop-to-preferred-subdomain-preserving-path-and-query-strings
-  (assert-request (-> (mock/request :get "https://shop.mayvenn.com/categories/hair/straight?utm_source=cats")
-                      (mock/header "cookie" "preferred-store-slug=bob"))
-                  storeback-shop-response
-                  (fn [resp]
-                    (is (= 302 (:status resp)))
-                    (is (= "https://bob.mayvenn.com/categories/hair/straight?utm_source=cats&redirect=shop"
-                           (get-in resp [:headers "Location"]))))))
 
 (deftest redirects-products-to-home
   (assert-request (mock/request :get "https://shop.mayvenn.com/products?utm_source=cats")
