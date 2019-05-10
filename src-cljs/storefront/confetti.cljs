@@ -69,20 +69,22 @@
 (defn ^:private animate [{:keys [node drag-friction duration delay]} fettis]
   (let [start-time-state (atom nil)
         fettis           (atom fettis)
-        update-fn        (fn update-fn [time]
-                           (let [start-time          (or @start-time-state (reset! start-time-state time))
-                                 elapsed-time        (- time start-time)
-                                 progress            (if (= start-time time) 0 (/ elapsed-time duration))
-                                 [fetti-to-update
-                                  fetti-left-behind] (split-at (js/Math.ceil (/ elapsed-time delay)) @fettis)
-                                 updated-fetti       (mapv (partial update-fetti progress drag-friction) fetti-to-update)]
-                             (reset! fettis (concat updated-fetti fetti-left-behind))
-                             (if (< elapsed-time duration)
-                               (js/requestAnimationFrame update-fn)
-                               (doseq [fetti @fettis]
-                                 (when (= node (.-parentNode (:element fetti)))
-                                   (.removeChild node (:element fetti)))))))]
-    (js/Promise. (partial js/requestAnimationFrame update-fn))))
+        make-update-fn   (fn make-update-fn [resolve-fn]
+                           (fn update-fn [time]
+                             (let [start-time          (or @start-time-state (reset! start-time-state time))
+                                   elapsed-time        (- time start-time)
+                                   progress            (if (= start-time time) 0 (/ elapsed-time duration))
+                                   [fetti-to-update
+                                    fetti-left-behind] (split-at (js/Math.ceil (/ elapsed-time delay)) @fettis)
+                                   updated-fetti       (mapv (partial update-fetti progress drag-friction) fetti-to-update)]
+                               (reset! fettis (concat updated-fetti fetti-left-behind))
+                               (if (< elapsed-time duration)
+                                 (js/requestAnimationFrame update-fn)
+                                 (doseq [fetti @fettis]
+                                   (when (= node (.-parentNode (:element fetti)))
+                                     (.removeChild node (:element fetti)))
+                                   (resolve-fn))))))]
+    (js/Promise. (fn [resolve] (js/requestAnimationFrame (make-update-fn resolve))))))
 
 (defn burst
   ([node]
