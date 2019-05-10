@@ -1,5 +1,8 @@
 (ns storefront.confetti)
 
+;; This implementation is based on the dom-confetti library found at:
+;; https://github.com/daniel-lundin/dom-confetti
+
 (defn ^:private create-elements
   [{:keys [node element-count colors width height]}]
   (mapv
