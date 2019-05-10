@@ -131,10 +131,6 @@
   [data]
   (display-feature? data "adv-cart-promo-entry"))
 
-(defn adv-force-email-capture?
-  [data]
-  (display-feature? data "adv-force-email-capture"))
-
 (defn match-before-purchase?
   [data]
   (display-feature? data "match-before-purchase"))

@@ -26,8 +26,7 @@
 (defmethod popup/query :adv-email-capture
   [data]
   (let [email               (get-in data storefront.keypaths/captured-email)
-        errors              (get-in data storefront.keypaths/field-errors)
-        show-close-x?       (not (experiments/adv-force-email-capture? data))]
+        errors              (get-in data storefront.keypaths/field-errors)]
     {:input-data   {:value             email
                     :id                "email"
                     :label             "E-mail address"
@@ -39,13 +38,12 @@
      :prompt       "Welcome! We can't wait for you to get a free install."
      :mini-prompt  "Enter your e-mail to get started!"
      :header-data  {:header-attrs nil
-                    :right-corner (when show-close-x?
-                                    {:id    "dismiss-email-capture"
-                                     :opts  (utils/fake-href events/control-email-captured-dismiss)
-                                     :value (svg/simple-x {:class        "stroke-white"
-                                                           :stroke-width "8"
-                                                           :style        {:width  "20px"
-                                                                          :height "20px"}})})
+                    :right-corner {:id    "dismiss-email-capture"
+                                   :opts  (utils/fake-href events/control-email-captured-dismiss)
+                                   :value (svg/simple-x {:class        "stroke-white"
+                                                         :stroke-width "8"
+                                                         :style        {:width  "20px"
+                                                                        :height "20px"}})}
                     :logo?        true
                     :title        nil
                     :subtitle     nil}
