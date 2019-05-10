@@ -92,7 +92,7 @@
   ([node {:keys [element-count colors width height
                  angle spread start-velocity duration
                  drag-friction delay]
-          :or   {element-count  200
+          :or   {element-count  100
                  colors         ["#40CBAC" "#7E006D" "#FFC0C6"]
                  width          "8px"
                  height         "10px"
