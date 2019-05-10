@@ -45,7 +45,6 @@
                  (comp (map parse-json-body) xf)
                  {:timeout 1000})))
 
-
 (defmacro is-redirected-to [resp domain path]
   `(let [resp# ~resp
          domain# ~domain
@@ -84,6 +83,14 @@
    (fn [resp]
      (is (= 200 (:status resp)))
      (is (.contains (first (get-in resp [:headers "Set-Cookie"])) "preferred-store-slug=bob;")))))
+
+(deftest preferred-store-slug-does-not-redirect-away-from-shop
+  (common/assert-request
+   (set-cookies (mock/request :get "https://shop.mayvenn.com")
+                {"preferred-store-slug" "bob"})
+   common/storeback-stylist-response
+   (fn [resp]
+     (is (not= 302 (:status resp)) (pr-str (:status resp))))))
 
 (defmacro has-canonized-link [handler url]
   `(let [handler#       ~handler
