@@ -112,36 +112,40 @@
 
 (defn qualified-banner-component
   [{:keys [confetti?]} owner _]
-  #?(:clj [:div]
-
-     :cljs
-     (reify
-       om/IDidMount
-       (did-mount [_]
-         (when confetti?
-           (confetti/burst (om/get-ref owner "adventure-qualified-banner-confetti"))))
-       om/IRender
-       (render [_]
-         (component/html
-          [:div.flex.items-center.bold
-           (merge
-            {:data-test "adventure-qualified-banner"
-             :style     {:height              "246px"
-                         :padding-top         "43px"
-                         :background-size     "cover"
-                         :background-position "center"
-                         :background-image    "url('//ucarecdn.com/97d80a16-1f48-467a-b8e2-fb16b532b75e/-/format/auto/-/quality/normal/aladdinMatchingCelebratoryOverlayImagePurpleR203Lm3x.png')"}}
-            (when confetti?
-              {:on-click #(confetti/burst (om/get-ref owner "adventure-qualified-banner-confetti"))}))
-           [:div.col.col-12.center.white
-            [:div.absolute
-             {:ref   "adventure-qualified-banner-confetti"
-              :style {:left  "50%"
-                      :right "50%"
-                      :top   "25%"}}]
-            [:div.h5.light "This order qualifies for a"]
-            [:div.h1.shout "free install"]
-            [:div.h5.light "from a Mayvenn Stylist near you"]]])))))
+  (let [burstable? (atom true)]
+    #?(:clj [:div]
+       :cljs
+       (reify
+         om/IDidMount
+         (did-mount [_]
+           (when confetti?
+             (confetti/burst (om/get-ref owner "adventure-qualified-banner-confetti"))))
+         om/IRender
+         (render [_]
+           (component/html
+            [:div.flex.items-center.bold
+             (merge
+              {:data-test "adventure-qualified-banner"
+               :style     {:height              "246px"
+                           :padding-top         "43px"
+                           :background-size     "cover"
+                           :background-position "center"
+                           :background-image    "url('//ucarecdn.com/97d80a16-1f48-467a-b8e2-fb16b532b75e/-/format/auto/-/quality/normal/aladdinMatchingCelebratoryOverlayImagePurpleR203Lm3x.png')"}}
+              (when confetti?
+                {:on-click (fn [_]
+                             (when @burstable?
+                               (reset! burstable? false)
+                               (.then (confetti/burst (om/get-ref owner "adventure-qualified-banner-confetti"))
+                                      #(reset! burstable? true))))}))
+             [:div.col.col-12.center.white
+              [:div.absolute
+               {:ref   "adventure-qualified-banner-confetti"
+                :style {:left  "50%"
+                        :right "50%"
+                        :top   "25%"}}]
+              [:div.h5.light "This order qualifies for a"]
+              [:div.h1.shout "free install"]
+              [:div.h5.light "from a Mayvenn Stylist near you"]]]))))))
 
 
 (defn add-more-hair-button
