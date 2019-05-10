@@ -79,7 +79,7 @@
                  angle spread start-velocity duration
                  drag-friction delay]
           :or   {element-count  200
-                 colors         ["#40cbac" "#931280" "#E48F80"]
+                 colors         ["#40CBAC" "#7E006D" "#FFC0C6"]
                  width          "8px"
                  height         "10px"
                  angle          90
