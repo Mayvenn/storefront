@@ -49,14 +49,12 @@
 (defn page [wide-left wide-right-and-narrow]
   [:div.clearfix.mxn2
    {:item-scope :itemscope :item-type "http://schema.org/Product"}
-   [:div.col-on-tb-dt.col-7-on-tb-dt.px2
-    [:div.hide-on-mb wide-left]]
-   [:div.col-on-tb-dt.col-5-on-tb-dt.px2 wide-right-and-narrow]])
+   [:div.px2 wide-right-and-narrow]])
 
 (defn full-bleed-narrow [body]
   ;; The mxn2 pairs with the p2 of the container, to make the body full width
   ;; on mobile.
-  [:div.hide-on-tb-dt.mxn2.mt2 body])
+  [:div.mxn2.mt2 body])
 
 (defn quantity-and-price-structure [quantity price]
   [:div
@@ -304,8 +302,7 @@
            [:div.p2
             (page
              [:div
-              (carousel carousel-images product)
-              [:div.hide-on-mb (component/build ugc/component ugc opts)]]
+              (carousel carousel-images product)]
              [:div
               [:div
                [:div.mx2
@@ -343,15 +340,15 @@
                (when (products/stylist-only? product)
                  shipping-and-guarantee)]
               (product-description product)
-              [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])]]
+              [:div.mxn2.mb3 (component/build ugc/component ugc opts)]])]]
           (when review?
-            [:div.container.col-7-on-tb-dt.px2
+            [:div.container.px2
              (component/build review-component/reviews-component reviews opts)])
           (when (and (nil? (:offset ugc))
                      (not (products/stylist-only? product)))
             ;; We use visibility:hidden rather than display:none so that this component has a height.
             ;; We use the height on mobile view to slide it on/off the bottom of the page.
-            [:div.invisible-on-tb-dt
+            [:div
              (component/build sticky-add-component
                               {:image            (->> options
                                                       :hair/color
