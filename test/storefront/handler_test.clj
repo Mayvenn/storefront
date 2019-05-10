@@ -72,7 +72,7 @@
 (deftest install-path-redirects-to-freeinstall
   (with-services
     (with-handler handler
-      (let [resp     (handler (mock/request :get "https://bob.mayvenn.com/install"))]
+      (let [resp (handler (mock/request :get "https://bob.mayvenn.com/install"))]
         (testing "It redirects to the freeinstall subdomain"
           (is-redirected-to resp "freeinstall" "/"))))))
 
