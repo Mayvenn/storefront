@@ -1,5 +1,6 @@
 (ns adventure.faq
-  (:require [storefront.component :as component]
+  (:require [storefront.accessors.experiments :as experiments]
+            [storefront.component :as component]
             [storefront.components.accordion :as accordion]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
@@ -51,15 +52,33 @@
                          " All orders are eligible for free shipping and backed by our 30 Day"
                          " Guarantee."])]))
 
+(def ^:private faq-section-copy-v2
+  [(accordion/section [:h6 "Who is going to do my hair?"]
+                      ["Mayvenn Certified Stylists have been chosen because of their professionalism, skillset, and client ratings. We’ve got a network of licensed stylists across the country who are all committed to providing you with amazing service and quality hair extensions."])
+   (accordion/section [:h6 "What kind of hair do you offer?"]
+                      ["We’ve got top of the line virgin hair in 8 different textures. In the event that you’d like to switch it up, we have pre-colored options available as well. The best part? All of our hair is quality-guaranteed."])
+   (accordion/section [:h6 "What happens after I choose my hair?"]
+                      ["After you choose your hair, you’ll be matched with a Certified Stylist of your choice. You can see the stylist’s work and their salon’s location. We’ll help you book an appointment and answer any questions you may have."])
+   (accordion/section [:h6 "Is Mayvenn Install really a better deal?"]
+                      ["Yes! It’s basically hair and service for the price of one. You can buy any 3 bundles (closures and frontals included) from Mayvenn, and we’ll pay for you to get your hair installed by a local stylist. That means that you’re paying $0 for your next sew-in, with no catch!"])
+   (accordion/section [:h6 "How does this process actually work?"]
+                      ["It’s super simple — after you purchase your hair, we’ll send you a pre-paid voucher that you’ll use during your appointment. When your stylist scans it, they get paid instantly by Mayvenn."])
+   (accordion/section [:h6 "What if I want to get my hair done by another stylist? Can I still get the free install?"]
+                      ["You must get your hair done from a Certified Stylist in order to get your hair installed for free."])])
+
 (defn query
   [data]
-  {:expanded-index (get-in data keypaths/faq-expanded-section)})
+  {:adventure-homepage-new? (experiments/adventure-homepage-new? data)
+   :expanded-index          (get-in data keypaths/faq-expanded-section)})
 
-(defn component [{:keys [expanded-index]}]
+(defn component [{:keys [adventure-homepage-new? expanded-index]}]
   [:div.px6.mx-auto
    [:h2.center "Frequently Asked Questions"]
    (component/build
     accordion/component
     {:expanded-indices #{expanded-index}
-     :sections         faq-section-copy}
+     :sections         (if adventure-homepage-new?
+                         faq-section-copy-v2
+                         faq-section-copy)}
     {:opts {:section-click-event events/faq-section-selected}})])
+

@@ -1,23 +1,16 @@
 (ns adventure.v2-home
-  (:require [adventure.keypaths :as keypaths]
-            [adventure.faq :as faq]
-            [storefront.accessors.auth :as auth]
+  (:require [adventure.faq :as faq]
             #?@(:cljs [[om.core :as om]
                        [goog.events.EventType :as EventType]
                        goog.dom
                        goog.style
                        goog.events])
-            [storefront.accessors.pixlee :as pixlee]
             [storefront.component :as component]
-            [storefront.components.marquee :as marquee]
             [storefront.components.ui :as ui]
             [storefront.components.svg :as svg]
-            storefront.keypaths
             [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
-            [storefront.components.video :as video]
-            [storefront.components.v2 :as v2]
-            [storefront.accessors.experiments :as experiments]))
+            [storefront.components.video :as video]))
 
 (defn sticky-component
   [{:keys [next-page]} owner opts]
@@ -62,7 +55,7 @@
                [:div {:ref "content-height"}
                 [:div
                  [:div.h6.white.bg-black.medium.px3.py4.flex.items-center
-                  [:div.col-7 "We can't wait for you to get a FREE install."]
+                  [:div.col-7 "We can't wait to pay for your install!"]
                   [:div.col-1]
                   [:div.col-4
                    (ui/teal-button (merge {:height-class "py2"}
@@ -101,7 +94,7 @@
      (ui/ucare-img {:alt "" :height "25"}
                    "38d0a770-2dcd-47a3-a035-fc3ccad11037")]
     [:div.h6.white.light
-     "FREE Standard Shipping, Always"]]])
+     "FREE standard shipping"]]])
 
 (def teal-play-video-mobile
   (svg/white-play-video {:class  "mr1 fill-teal"
@@ -112,6 +105,15 @@
   (svg/white-play-video {:class  "mr1 fill-teal"
                          :height "41px"
                          :width  "41px"}))
+
+(def paying-for-your-next-appt
+  [:div
+   [:div.h2 "We're paying for your next hair appointment"]
+   [:div.h4 "Purchase 3 or more bundles (closures or frontals included) and we’ll pay for you to get them installed. That’s a shampoo, condition, braid down, sew-in, and style, all on us."]
+   [:div "What's included?"]
+   [:ul.col-7.h6.list-img-purple-checkmark
+    (mapv (fn [%] [:li.mb1 %])
+          ["Shampoo and condition" "Braid down" "Sew-in and style" "Paid for by Mayvenn"])]])
 
 (def what-our-customers-are-saying
   (let [video-link (utils/route-to events/navigate-adventure-home {:query-params {:video "free-install"}})]
@@ -139,68 +141,10 @@
         teal-play-video-mobile]]
       [:a.block.ml2.dark-gray
        video-link
-       [:h6.bold.mbnp6 "#MayvennFleeInstall"]
-       [:p.pt2.h8 "Learn how you can get your " [:span.nowrap "FREE Install"]]
+       [:h6.bold.mbnp6 "#MayvennFreeInstall"]
+       [:p.pt2.h8 "Learn how you can get your " [:span.nowrap "FREE install"]]
        [:h6.teal.flex.items-center.medium.shout
         "Watch Now"]]]]))
-
-(def an-amazing-deal
-  [:div
-   [:div
-    [:div.col-12.col-8-on-tb.col-6-on-dt.mx-auto.pb6.pt4
-     [:div.center.clearfix.py3.h6.dark-gray
-      [:h2.mt4.black.relative.z2.mb2 "Dollar for Dollar, Mayvenn Wins"]
-      [:div.flex.justify-center
-       [:div
-        [:div.h6.mx-auto
-         {:style {:width "170px"}}
-         [:div.absolute.z1
-          [:div.relative
-           {:style {:top "-40px" :left "-40px"}}
-           (ui/ucare-img {:width "250"} "0db72798-6c51-48f2-8206-9fd6d91a3ada")]]
-         [:div.relative.z2
-          [:div.img-logo.bg-no-repeat.bg-center.bg-contain.mb2.mx-auto
-           {:style {:height "45px"}}]
-          [:div.mb1 "3 bundles.............." [:span.medium "$189"]]
-          [:div     "Install....................." [:span.medium "FREE"]]
-          [:div.mt2.mx-auto.flex.items-center
-           [:div.col-6.shout.line-height-1.left-align.px2.pl3
-            [:div "Install"]
-            [:div "+ Hair"]]
-           [:div.col-6
-            [:div.h1.purple.bold "$189"]]]]
-         [:div.mx-auto.flex.items-center
-          [:div.col-4]
-          [:div.col-8.relative.z2
-           [:div.italic.right-align "a $54 savings"]]]]]
-       [:div.col-1]
-       [:div.relative.z2
-        [:div.h6.mx-auto
-         {:style {:width "170px"}}
-         [:div.mb2 {:style {:height "45px"}}
-          [:div.pt1
-           [:div.mt4
-            (ui/ucare-img {:width "90" :class "mx-auto"}
-                          "9f1657d1-c792-44fb-b8e7-20ce64c7dbf4")]]]
-         [:div.mb1. "3 bundles.............." [:span.medium "$93"]]
-         [:div      "Install..................." [:span.medium "$$$$"]]
-         [:div.mt2.mx-auto.flex.items-center
-          [:div.col-6.shout.line-height-1.left-align.pl4
-           [:div "Install"]
-           [:div "+ Hair"]]
-          [:div.col-6.mtp2
-           [:div.h2.medium "$243"]]]]]]]
-
-     (let [row (fn [text]
-                 [:div.flex.justify-center.items-center.center.mx-auto.pt2.relative.z2
-                  (ui/ucare-img {:width "9"} "60b946bd-f276-46fc-9d13-3c8562b28d81")
-                  [:span.col-6 text]
-                  (ui/ucare-img {:width "9"} "f277849f-a27b-48b4-804b-7d523b6d2442")])]
-       [:div.clearfix.h6.dark-gray.px4.mx-auto.line-height-2
-        (row "High quality hair")
-        (row "Free Sew-In and Style")
-        (row "30 Day Guarantee")
-        (row "Black-owned Company")])]]])
 
 (defn free-install-mayvenn-grid [free-install-mayvenn-ugc]
   [:div.py8.col-10.mx-auto
@@ -214,6 +158,42 @@
         [:img {:class "col-12"
                :src   (-> imgs :original :src)}])])]])
 
+(defn ^:private why-mayvenn-entry
+  [{:keys [icon-uuid icon-width title description]}]
+  [:div.col-12.my2.flex.flex-column.items-center.items-end
+   {:class "col-3-on-dt"}
+   [:div.flex.justify-center.items-end.mb1
+    {:style {:height "35px"}}
+    (ui/ucare-img {:alt title :width icon-width} icon-uuid)]
+   [:div.h6.medium.mbnp4 title]
+
+   [:p.h6.col-11.center description]])
+
+(def why-mayvenn
+  [:div.col-12.bg-transparent-teal.mt3.py8.px4
+   [:div.col-11-on-dt.justify-center.flex.flex-wrap.mx-auto.pb2
+
+    [:div.my2.flex.flex-column.items-center.col-12
+     [:h2 "Mayvenn is More than a Hair Company"]
+     [:div.h6.dark-gray "It's a movement"]]
+
+    (why-mayvenn-entry {:icon-uuid   "ab1d2ed4-ff93-40e6-978a-721133ca88a7"
+                        :icon-width  "29"
+                        :title       "Top-Notch Customer Service"
+                        :description "Our team is made up of hair experts ready to help you by phone, text, and email."})
+    (why-mayvenn-entry {:icon-uuid   "8787e30c-2879-4a43-8d01-9d6790575084"
+                        :icon-width  "52"
+                        :title       "30 Day Guarantee"
+                        :description "Wear it, dye it, even cut it! If you're not satisfied we'll exchange it within 30 days."})
+    (why-mayvenn-entry {:icon-uuid   "e02561dd-c294-43b7-bb33-c40bfabea518"
+                        :icon-width  "35"
+                        :title       "100% Virgin Hair"
+                        :description "Our hair is gently steam-processed and can last up to a year. Available in 8 textures and 5 shades."})
+    (why-mayvenn-entry {:icon-uuid   "5a04ea88-b0f8-416b-a380-1da0baa8a114"
+                        :icon-width  "35"
+                        :title       "Certified Stylists"
+                        :description "Our stylists are chosen because of their industry-leading standards. Both our hair and service are quality guaranteed."})]])
+
 (def our-story
   (let [we-are-mayvenn-link (utils/route-to events/navigate-adventure-home {:query-params {:video "we-are-mayvenn"}})
         diishan-image       (ui/ucare-img {:class "col-12"} "e2186583-def8-4f97-95bc-180234b5d7f8")
@@ -221,8 +201,8 @@
         stylist-image       (ui/ucare-img {:class "col-12"} "6735b4d5-9b65-4fa9-96cd-871141b28672")
         diishan-image-2     (ui/ucare-img {:class "col-12"} "ec9e0533-9eee-41ae-a61b-8dc22f045cb5")]
     [:div.pt4.px4.pb8
-     [:div.h2.center "Better Hair + Better Service Begins Here"]
-     [:h6.center.mb2.dark-gray "Founded in Oakland, CA 2013"]
+     [:div.h2.center "We're Changing The Game"]
+     [:h6.center.mb2.dark-gray "Founded in Oakland, CA • 2013"]
 
      [:div.hide-on-tb-dt
       [:div.flex.flex-wrap
@@ -240,7 +220,7 @@
        [:div.col-6.p1 mikka-image]
        [:div.col-6.p1 stylist-image]
        [:div.col-6.px2.dark-gray
-        [:h4.my2.line-height-1 "“We're committed to giving our customers and stylists the tools they need to feel empowered.“"]
+        [:h4.my2.line-height-1 "“You deserve quality extensions and exceptional service without the unreasonable price tag.“"]
         [:h6.medium.line-height-1 "- Diishan Imira"]
         [:h6 "CEO of Mayvenn"]]
        [:div.col-6.p1 diishan-image-2]]]
@@ -252,7 +232,7 @@
         [:div.col-6.p1 stylist-image]
         [:div.col-6.px1.pb1.dark-gray.flex.justify-start.flex-column
          [:div.h3.line-height-3.col-11
-          "“We're committed to giving our customers and stylists the tools they need to feel empowered.“"]
+          "“You deserve quality extensions and exceptional service without the unreasonable price tag.“"]
          [:h6.medium.line-height-1.mt2 "- Diishan Imira"]
          [:h6.ml1 "CEO of Mayvenn"]]
         [:div.col-6.p1.flex diishan-image-2]]
@@ -262,7 +242,7 @@
          [:div.absolute.overlay.flex.items-center.justify-center.bg-darken-3
           teal-play-video-desktop]]]]]]))
 
-(defn get-a-free-install
+(defn free-install-steps
   [{:keys [modal?]}]
   (let [step (fn [{:keys [icon-uuid icon-width title description]}]
                [:div.col-12.mt2.center
@@ -276,22 +256,41 @@
 
     [:div.col-12
      [:div.mt2.flex.flex-column.items-center
-      [:h2 "Get a Free Install"]
-      [:div.h6.dark-gray "In three easy steps"]]
+      [:h2 "How It Works"]
+      [:div.h6.dark-gray "It's simple"]]
 
      [:div.col-8-on-dt.mx-auto.flex.flex-wrap
       (step {:icon-uuid   "6b2b4eee-7063-46b6-8d9e-7f189d1c1add"
              :icon-width  "27"
-             :title       "Find a Stylist in Your Area"
-             :description "Mayvenn has Certified Stylists all over the country who are dedicated to providing your free install service."})
+             :title       "1. Choose a Mayvenn Certified Stylist"
+             :description "We've partnered with thousands of top stylists around the nation. Choose one in your local area and we'll pay the stylist to do your install."})
       (step {:icon-uuid   "e90526f9-546f-4a6d-a05a-3bea94aedc21"
              :icon-width  "28"
-             :title       "Buy Any 3 Bundles or More"
-             :description "This includes closures, frontals, and 360 frontals. Rest easy - your 100% virgin hair purchase is backed by our 30 day guarantee."})
+             :title       "2. Buy Any Three Bundles or More"
+             :description "This includes closures, frontals, and 360 frontals. Risk free — your virgin hair and service are covered by our 30 day guarantee."})
       (step {:icon-uuid   "7712537c-3805-4d92-90b5-a899748a21c5"
              :icon-width  "35"
-             :title       "Show Your Stylist the Voucher"
-             :description "We’ll send you a free install voucher via SMS to use for payment at your appointment."})]]))
+             :title       "3. Schedule Your Appointment"
+             :description "We’ll connect you to your Mayvenn Certified Stylist and book an install appointment that’s convenient for you."})]]))
+
+(def certified-stylists
+  [:div.col-6-on-tb-dt.col-12-on-mb.mx-auto
+   {:style {:height "696px"
+            :background-size     "cover"
+            :background-position "center"
+            :background-image    "url('//ucarecdn.com/491eefec-02f6-447d-942d-bd864aaad5ed/-/format/auto/bg.png')"}}
+   [:div "Who's doing my hair?"]
+   [:div "Our Certified Stylist are the best of the best. They're chosen because of their top-rated reviews, professionalism, and amazing work."]])
+
+(def hair-quality
+  [:div.col-6-on-tb-dt.col-12-on-mb.mx-auto
+   {:style {:height "696px"
+            :background-size     "cover"
+            :background-position "center"
+            :background-image    "url('//ucarecdn.com/6ea84755-e0ba-4ccc-861e-2d39a711a982/-/format/auto/bg.png')"}}
+
+   [:div "Highest quality Virgin hair"]
+   [:div "Our bundles, closures, and frontals are crafted with the highest industry standards and come in a variety of textures and colors."]])
 
 (defn contact-us-block [url svg title copy]
   [:a.block.py3.col-12.col-4-on-tb-dt
@@ -367,19 +366,21 @@
                         ;;             an investigation to why history is replaced when doing A -> B -> A navigation
                         ;;             (B is removed from history).
                         {:opts {:close-attrs (utils/route-to events/navigate-adventure-home {:query-params {:video "0"}})}}))
+     [:section paying-for-your-next-appt]
      [:section what-our-customers-are-saying]]
     [:section.py10.bg-transparent-teal
-     (get-a-free-install {:store                 store
+     (free-install-steps {:store                 store
                           :gallery-ucare-ids     gallery-ucare-ids
                           :stylist-portrait      (:portrait store)
                           :stylist-name          (:store-nickname store)
                           :stylist-gallery-open? stylist-gallery-open?})]
-    [:section an-amazing-deal]
-    [:section [:div (v2/why-mayvenn-is-right-for-you)]]
+    [:section certified-stylists]
+    [:section hair-quality]
     [:section (free-install-mayvenn-grid free-install-mayvenn-ugc)]
-    [:hr.hide-on-mb-tb.border-top.border-dark-silver.col-9.mx-auto.mb6]
     [:section (faq/component faq-data)]
-    [:hr.border-top.border-dark-silver.col-9.mx-auto.my6]
+    [:section why-mayvenn]
     [:section our-story]
     [:section contact-us]
     (component/build sticky-component {:next-page next-page} nil)]))
+
+#_[:hr.hide-on-mb-tb.border-top.border-dark-silver.col-9.mx-auto.mb6]
