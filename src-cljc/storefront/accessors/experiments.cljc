@@ -138,3 +138,7 @@
 (defn confetti?
   [data]
   (display-feature? data "confetti"))
+
+(defn adventure-homepage-new?
+  [data]
+  (display-feature? data "adventure-homepage-new"))

@@ -1,4 +1,4 @@
-(ns adventure.home
+(ns adventure.v2-home
   (:require [adventure.keypaths :as keypaths]
             [adventure.faq :as faq]
             [storefront.accessors.auth :as auth]
@@ -17,7 +17,6 @@
             [storefront.events :as events]
             [storefront.components.video :as video]
             [storefront.components.v2 :as v2]
-            [adventure.v2-home :as v2-home]
             [storefront.accessors.experiments :as experiments]))
 
 (defn sticky-component
@@ -126,7 +125,7 @@
         teal-play-video-desktop]]
       [:a.block.ml4.dark-gray
        video-link
-       [:div.h4.bold "#MayvennFreeInstall"]
+       [:div.h4.bold "#MayvennFleeInstall"]
        [:div.h4.my2 "Learn about how to get your own FREE install"]
        [:div.h5.teal.flex.items-center.medium.shout
         "Watch Now"]]]
@@ -140,7 +139,7 @@
         teal-play-video-mobile]]
       [:a.block.ml2.dark-gray
        video-link
-       [:h6.bold.mbnp6 "#MayvennFreeInstall"]
+       [:h6.bold.mbnp6 "#MayvennFleeInstall"]
        [:p.pt2.h8 "Learn how you can get your " [:span.nowrap "FREE Install"]]
        [:h6.teal.flex.items-center.medium.shout
         "Watch Now"]]]]))
@@ -384,25 +383,3 @@
     [:section our-story]
     [:section contact-us]
     (component/build sticky-component {:next-page next-page} nil)]))
-
-(defn query [data]
-  (let [store (marquee/query data)]
-    {:store                     store
-     :gallery-ucare-ids         (->> store
-                                     :gallery
-                                     :images
-                                     (filter (comp (partial = "approved") :status))
-                                     (map (comp v2/get-ucare-id-from-url :resizable-url)))
-     :free-install-mayvenn-ugc  {:images        (pixlee/images-in-album (get-in data storefront.keypaths/ugc) :free-install-mayvenn)
-                                 :album-keyword :free-install-mayvenn}
-     ;; TODO: get this faq data from checkout popup?
-     :faq-data                  (faq/query data)
-     :signed-in                 (auth/signed-in data)
-     :video                     (get-in data keypaths/adventure-home-video)
-     :from-shop-to-freeinstall? (get-in data keypaths/adventure-from-shop-to-freeinstall?)
-     :next-page                 events/navigate-adventure-install-type}))
-
-(defn built-component [data opts]
-  (if (experiments/adventure-homepage-new? data)
-    (component/build v2-home/component (query data) opts)
-    (component/build component (query data) opts)))
