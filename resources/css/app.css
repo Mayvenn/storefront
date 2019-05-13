@@ -148,6 +148,9 @@
     --aqua:        #49bbf0;
     --purple:      #931280;
 
+    --light-lavender: rgb(202, 182, 215);
+    --lavender:       rgb(175, 159, 196);
+
     /* TODO FIX ALL OF THESE COLORS */
     --white:        #ffffff;
     --light-silver: #f2f2f2; /* #f8f8f8 */
