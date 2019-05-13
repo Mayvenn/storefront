@@ -434,6 +434,9 @@
 (defpath browser-fullscreen-enter)
 (defpath browser-fullscreen-exit)
 
+(defpath popup-show-to-adventure)
+(defpath control-to-adventure-popup-dismiss)
+
 ;;SECTION v2
 (defpath v2-show-home)
 

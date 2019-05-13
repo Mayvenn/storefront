@@ -30,7 +30,8 @@
                        adventure.components.program-details-popup
                        storefront.components.email-capture
                        storefront.components.share-your-cart
-                       storefront.components.v2-homepage-popup])
+                       storefront.components.v2-homepage-popup
+                       storefront.components.to-adventure-popup])
             adventure.home
             adventure.what-next
             adventure.shop-hair
