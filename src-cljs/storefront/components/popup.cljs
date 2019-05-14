@@ -56,6 +56,7 @@
         email-capture-showable?     (and (not signed-in?)
                                          (not seen-email-capture?)
                                          on-non-minimal-footer-page?
+                                         (not (and on-shop? on-homepage?))
                                          (or
                                           (not (experiments/to-adventure-modal? app-state))
                                           (not on-shop?)
