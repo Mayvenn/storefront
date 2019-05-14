@@ -107,12 +107,12 @@
                          :width  "41px"}))
 
 (def paying-for-your-next-appt
-  [:div
+  [:div.p8.center
    [:div.h2 "We're paying for your next hair appointment"]
-   [:div.h4 "Purchase 3 or more bundles (closures or frontals included) and we’ll pay for you to get them installed. That’s a shampoo, condition, braid down, sew-in, and style, all on us."]
-   [:div "What's included?"]
-   [:ul.col-7.h6.list-img-purple-checkmark
-    (mapv (fn [%] [:li.mb1 %])
+   [:div.h5.dark-gray.mt2 "Purchase 3 or more bundles (closures or frontals included) and we’ll pay for you to get them installed. That’s a shampoo, condition, braid down, sew-in, and style, all on us."]
+   [:div.mt6.mb4 "What's included?"]
+   [:ul.col-8.h6.list-img-purple-checkmark.dark-gray.left-align.mx-auto
+    (mapv (fn [%] [:li.mb1.pl1 %])
           ["Shampoo and condition" "Braid down" "Sew-in and style" "Paid for by Mayvenn"])]])
 
 (def what-our-customers-are-saying
@@ -127,12 +127,12 @@
         teal-play-video-desktop]]
       [:a.block.ml4.dark-gray
        video-link
-       [:div.h4.bold "#MayvennFleeInstall"]
+       [:div.h4.bold "#MayvennFreeInstall"]
        [:div.h4.my2 "Learn about how to get your own FREE install"]
        [:div.h5.teal.flex.items-center.medium.shout
         "Watch Now"]]]
 
-     [:div.hide-on-dt.flex.justify-center.py3
+     [:div.hide-on-dt.flex.justify-center.py3.px4
       [:a.block.relative
        video-link
        (ui/ucare-img {:alt "" :width "152"}
@@ -142,7 +142,7 @@
       [:a.block.ml2.dark-gray
        video-link
        [:h6.bold.mbnp6 "#MayvennFreeInstall"]
-       [:p.pt2.h8 "Learn how you can get your " [:span.nowrap "FREE install"]]
+       [:p.pt2.h7 "Learn how you can get your " [:span.nowrap "FREE install"]]
        [:h6.teal.flex.items-center.medium.shout
         "Watch Now"]]]]))
 
@@ -251,8 +251,8 @@
                 [:div.flex.justify-center.items-end.mb2
                  {:style {:height "39px"}}
                  (ui/ucare-img {:alt title :width icon-width} icon-uuid)]
-                [:div.h5.teal.medium title]
-                [:p.h6.col-10.col-9-on-dt.mx-auto description]])]
+                [:div.h5.medium title]
+                [:p.h6.col-10.col-9-on-dt.mx-auto.dark-gray description]])]
 
     [:div.col-12
      [:div.mt2.flex.flex-column.items-center
@@ -264,23 +264,23 @@
              :icon-width  "27"
              :title       "1. Choose a Mayvenn Certified Stylist"
              :description "We've partnered with thousands of top stylists around the nation. Choose one in your local area and we'll pay the stylist to do your install."})
-      (step {:icon-uuid   "e90526f9-546f-4a6d-a05a-3bea94aedc21"
+      (step {:icon-uuid   "08e9d3d8-6f3d-4b3c-bc46-3590175a9a4d"
              :icon-width  "28"
              :title       "2. Buy Any Three Bundles or More"
              :description "This includes closures, frontals, and 360 frontals. Risk free — your virgin hair and service are covered by our 30 day guarantee."})
-      (step {:icon-uuid   "7712537c-3805-4d92-90b5-a899748a21c5"
-             :icon-width  "35"
+      (step {:icon-uuid   "3fb9c2bf-c30e-4bee-957c-f273b1b5a233"
+             :icon-width  "28"
              :title       "3. Schedule Your Appointment"
              :description "We’ll connect you to your Mayvenn Certified Stylist and book an install appointment that’s convenient for you."})]]))
 
 (def certified-stylists
-  [:div.col-6-on-tb-dt.col-12-on-mb.mx-auto
+  [:div.col-6-on-tb-dt.col-12-on-mb.mx-auto.center.pt8
    {:style {:height "696px"
             :background-size     "cover"
             :background-position "center"
             :background-image    "url('//ucarecdn.com/491eefec-02f6-447d-942d-bd864aaad5ed/-/format/auto/bg.png')"}}
-   [:div "Who's doing my hair?"]
-   [:div "Our Certified Stylist are the best of the best. They're chosen because of their top-rated reviews, professionalism, and amazing work."]])
+   [:div.h2.my4 "Who's doing my hair?"]
+   [:div.dark-gray.mx10.h5 "Our Certified Stylist are the best of the best. They're chosen because of their top-rated reviews, professionalism, and amazing work."]])
 
 (def hair-quality
   [:div.col-6-on-tb-dt.col-12-on-mb.mx-auto
