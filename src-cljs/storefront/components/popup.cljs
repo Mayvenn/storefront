@@ -49,10 +49,26 @@
         seen-freeinstall-offer?     (get-in app-state keypaths/dismissed-free-install)
         signed-in?                  (get-in app-state keypaths/user-id)
         classic-experience?         (not v2-experience?)
+        on-shop?                    (= "shop" (get-in app-state keypaths/store-slug))
+        on-homepage?                (= events/navigate-home navigation-event)
+        nav-history-length          (count (get-in app-state keypaths/navigation-undo-stack))
         email-capture-showable?     (and (not signed-in?)
                                          (not seen-email-capture?)
+                                         on-non-minimal-footer-page?
+                                         (or
+                                          (not (experiments/to-adventure-modal? app-state))
+                                          (not on-shop?)
+                                          (and (not on-homepage?)
+                                               (= 1 nav-history-length))))
+        to-adventure-showable?      (and (experiments/to-adventure-modal? app-state)
+                                         on-shop?
+                                         (not on-homepage?)
+                                         (zero? nav-history-length)
                                          on-non-minimal-footer-page?)]
     (cond
+      to-adventure-showable?
+      (messages/handle-message events/popup-show-to-adventure)
+
       (and freeinstall-store?
            email-capture-showable?
            (contains? #{events/navigate-adventure-install-type}
