@@ -63,27 +63,39 @@
                                           (utils/route-to next-page))
                                    [:div.h7 "Get started"])]]]]]]]))))))
 
-(defn hero-image [{:keys [desktop-url mobile-url file-name alt]}]
+(defn hero-image [{:keys [desktop-url mobile-url file-name alt next-page]}]
   [:picture
    ;; Tablet/Desktop
    [:source {:media   "(min-width: 750px)"
              :src-set (str desktop-url "-/format/jpeg/-/quality/best/" file-name " 1x")}]
    ;; Mobile
-   [:img.block.col-12 {:src (str mobile-url "-/format/jpeg/" file-name)
-                       :alt alt}]])
+   [:div.flex.flex-auto.items-end.pb5
+    {:style {:height              "465px"
+             :background-size     "cover"
+             :background-position "top"
+             :background-image    (str "url('" mobile-url "-/format/jpeg/" file-name "')")
+             :alt                 alt}}
+    [:div.clearfix.col.col-12
+     [:div.col.col-6.px2 (ui/teal-button (merge (utils/route-to next-page)
+                                      {:height-class "py2"})
+                               "Learn More")]
+     [:div.col.col-6.px2 (ui/teal-button (merge (utils/route-to next-page)
+                                      {:height-class "py2"})
+                               "Get Started")]]
+
+    ]])
 
 (defn hero [next-page]
   (let [file-name "free-install-hero"
         mob-uuid  "a2b3778c-8ca6-4dd5-abb3-fa73bfa52912"
         dsk-uuid  "2a0dc3b9-cefa-4bca-b990-193198a82c80"]
-    [:a.bold.shadow.white.center.bg-light-gray
-     (merge
-      {:data-test "adventure-home-choice-get-started"}
-      (utils/route-to next-page))
+    [:div
+     {:data-test "adventure-home-choice-get-started"}
      (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
                   :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
                   :file-name   file-name
-                  :alt         "Beautiful Virgin Hair Installed for FREE"})]))
+                  :alt         "We're changing the game. Introducing Mayvenn Install Hair + Service for the price of one"
+                  :next-page   next-page})]))
 
 (def free-shipping-banner
   [:div {:style {:height "3em"}}
@@ -185,7 +197,7 @@
             :background-position "center"
             :background-image    "url('//ucarecdn.com/b1f30a37-27cc-46a6-9953-36ee40291b9e/-/format/auto/bg.png')"}}
    [:div.h2.my4 "Who's doing my hair?"]
-   [:div.dark-gray.mx10.h5 "Our Certified Stylist are the best of the best. They're chosen because of their top-rated reviews, professionalism, and amazing work."]])
+   [:div.dark-gray.mx10.h5 "Our Certified Stylists are the best in your area. They're chosen because of their top-rated reviews, professionalism, and amazing work."]])
 
 (def hair-quality
   [:div.col-6-on-tb-dt.col-12-on-mb.mx-auto.center.pt8
@@ -194,7 +206,7 @@
             :background-position "center"
             :background-image    "url('//ucarecdn.com/dcf735ed-9aa3-422c-9a9b-602eea248ada/-/format/auto/bg.png')"}}
 
-   [:div.h2.my4 "Highest quality Virgin hair"]
+   [:div.h2.my4 "Quality-Guaranteed Virgin Hair"]
    [:div.dark-gray.mx10.h5 "Our bundles, closures, and frontals are crafted with the highest industry standards and come in a variety of textures and colors."]])
 
 (defn free-install-mayvenn-grid [free-install-mayvenn-ugc]
