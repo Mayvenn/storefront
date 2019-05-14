@@ -1,5 +1,6 @@
 (ns adventure.v2-home
-  (:require [adventure.faq :as faq]
+  (:require adventure.handlers ;; Needed for its defmethods
+            [adventure.faq :as faq]
             #?@(:cljs [[om.core :as om]
                        [goog.events.EventType :as EventType]
                        goog.dom
@@ -73,7 +74,7 @@
 
 (defn hero [next-page]
   (let [file-name "free-install-hero"
-        mob-uuid  "c78397d4-96bb-4327-b1e2-4f1e05f8b662"
+        mob-uuid  "a2b3778c-8ca6-4dd5-abb3-fa73bfa52912"
         dsk-uuid  "2a0dc3b9-cefa-4bca-b990-193198a82c80"]
     [:a.bold.shadow.white.center.bg-light-gray
      (merge
@@ -93,8 +94,17 @@
     [:div.px2
      (ui/ucare-img {:alt "" :height "25"}
                    "38d0a770-2dcd-47a3-a035-fc3ccad11037")]
-    [:div.h6.white.light
+    [:div.h7.white.medium
      "FREE standard shipping"]]])
+
+(def paying-for-your-next-appt
+  [:div.py10.px6.center
+   [:div.h2 "We're paying for your next hair appointment"]
+   [:div.h5.dark-gray.mt3 "Purchase 3 or more bundles (closures or frontals included) and we’ll pay for you to get them installed. That’s a shampoo, condition, braid down, sew-in, and style, all on us."]
+   [:div.h5.mt6.mb4 "What's included?"]
+   [:ul.col-8.h6.list-img-purple-checkmark.dark-gray.left-align.mx-auto
+    (mapv (fn [%] [:li.mb1.pl1 %])
+          ["Shampoo and condition" "Braid down" "Sew-in and style" "Paid for by Mayvenn"])]])
 
 (def teal-play-video-mobile
   (svg/white-play-video {:class  "mr1 fill-teal"
@@ -106,16 +116,7 @@
                          :height "41px"
                          :width  "41px"}))
 
-(def paying-for-your-next-appt
-  [:div.p8.center
-   [:div.h2 "We're paying for your next hair appointment"]
-   [:div.h5.dark-gray.mt2 "Purchase 3 or more bundles (closures or frontals included) and we’ll pay for you to get them installed. That’s a shampoo, condition, braid down, sew-in, and style, all on us."]
-   [:div.mt6.mb4 "What's included?"]
-   [:ul.col-8.h6.list-img-purple-checkmark.dark-gray.left-align.mx-auto
-    (mapv (fn [%] [:li.mb1.pl1 %])
-          ["Shampoo and condition" "Braid down" "Sew-in and style" "Paid for by Mayvenn"])]])
-
-(def what-our-customers-are-saying
+(def video-block
   (let [video-link (utils/route-to events/navigate-adventure-home {:query-params {:video "free-install"}})]
     [:div.col-11.mx-auto
      [:div.hide-on-mb-tb.flex.justify-center.py3
@@ -132,7 +133,7 @@
        [:div.h5.teal.flex.items-center.medium.shout
         "Watch Now"]]]
 
-     [:div.hide-on-dt.flex.justify-center.py3.px4
+     [:div.hide-on-dt.flex.justify-center.pb10.px4
       [:a.block.relative
        video-link
        (ui/ucare-img {:alt "" :width "152"}
@@ -145,6 +146,56 @@
        [:p.pt2.h7 "Learn how you can get your " [:span.nowrap "FREE install"]]
        [:h6.teal.flex.items-center.medium.shout
         "Watch Now"]]]]))
+
+(defn free-install-steps
+  [{:keys [modal?]}]
+  (let [step (fn [{:keys [icon-uuid icon-width title description]}]
+               [:div.col-12.mt2.center
+                (when (not modal?)
+                  {:class "col-4-on-dt"})
+                [:div.flex.justify-center.items-end.my2
+                 {:style {:height "39px"}}
+                 (ui/ucare-img {:alt title :width icon-width} icon-uuid)]
+                [:div.h5.medium.mb1 title]
+                [:p.h6.col-10.col-9-on-dt.mx-auto.dark-gray description]])]
+
+    [:div.col-12.pb10
+     [:div.mt2.flex.flex-column.items-center
+      [:h2 "How It Works"]
+      [:div.h6.dark-gray "It's simple"]]
+
+     [:div.col-8-on-dt.mx-auto.flex.flex-wrap
+      (step {:icon-uuid   "6b2b4eee-7063-46b6-8d9e-7f189d1c1add"
+             :icon-width  "22"
+             :title       "1. Choose a Mayvenn Certified Stylist"
+             :description "We've partnered with thousands of top stylists around the nation. Choose one in your local area and we'll pay the stylist to do your install."})
+      (step {:icon-uuid   "08e9d3d8-6f3d-4b3c-bc46-3590175a9a4d"
+             :icon-width  "24"
+             :title       "2. Buy Any Three Bundles or More"
+             :description "This includes closures, frontals, and 360 frontals. Risk free — your virgin hair and service are covered by our 30 day guarantee."})
+      (step {:icon-uuid   "3fb9c2bf-c30e-4bee-957c-f273b1b5a233"
+             :icon-width  "27"
+             :title       "3. Schedule Your Appointment"
+             :description "We’ll connect you to your Mayvenn Certified Stylist and book an install appointment that’s convenient for you."})]]))
+
+(def certified-stylists
+  [:div.col-6-on-tb-dt.col-12-on-mb.mx-auto.center.pt8
+   {:style {:height "696px"
+            :background-size     "cover"
+            :background-position "center"
+            :background-image    "url('//ucarecdn.com/b1f30a37-27cc-46a6-9953-36ee40291b9e/-/format/auto/bg.png')"}}
+   [:div.h2.my4 "Who's doing my hair?"]
+   [:div.dark-gray.mx10.h5 "Our Certified Stylist are the best of the best. They're chosen because of their top-rated reviews, professionalism, and amazing work."]])
+
+(def hair-quality
+  [:div.col-6-on-tb-dt.col-12-on-mb.mx-auto.center.pt8
+   {:style {:height "696px"
+            :background-size     "cover"
+            :background-position "center"
+            :background-image    "url('//ucarecdn.com/dcf735ed-9aa3-422c-9a9b-602eea248ada/-/format/auto/bg.png')"}}
+
+   [:div.h2.my4 "Highest quality Virgin hair"]
+   [:div.dark-gray.mx10.h5 "Our bundles, closures, and frontals are crafted with the highest industry standards and come in a variety of textures and colors."]])
 
 (defn free-install-mayvenn-grid [free-install-mayvenn-ugc]
   [:div.py8.col-10.mx-auto
@@ -174,7 +225,7 @@
    [:div.col-11-on-dt.justify-center.flex.flex-wrap.mx-auto.pb2
 
     [:div.my2.flex.flex-column.items-center.col-12
-     [:h2 "Mayvenn is More than a Hair Company"]
+     [:h2.center "Mayvenn is More than a Hair Company"]
      [:div.h6.dark-gray "It's a movement"]]
 
     (why-mayvenn-entry {:icon-uuid   "ab1d2ed4-ff93-40e6-978a-721133ca88a7"
@@ -241,56 +292,6 @@
         [:div.relative diishan-image
          [:div.absolute.overlay.flex.items-center.justify-center.bg-darken-3
           teal-play-video-desktop]]]]]]))
-
-(defn free-install-steps
-  [{:keys [modal?]}]
-  (let [step (fn [{:keys [icon-uuid icon-width title description]}]
-               [:div.col-12.mt2.center
-                (when (not modal?)
-                  {:class "col-4-on-dt"})
-                [:div.flex.justify-center.items-end.mb2
-                 {:style {:height "39px"}}
-                 (ui/ucare-img {:alt title :width icon-width} icon-uuid)]
-                [:div.h5.medium title]
-                [:p.h6.col-10.col-9-on-dt.mx-auto.dark-gray description]])]
-
-    [:div.col-12
-     [:div.mt2.flex.flex-column.items-center
-      [:h2 "How It Works"]
-      [:div.h6.dark-gray "It's simple"]]
-
-     [:div.col-8-on-dt.mx-auto.flex.flex-wrap
-      (step {:icon-uuid   "6b2b4eee-7063-46b6-8d9e-7f189d1c1add"
-             :icon-width  "27"
-             :title       "1. Choose a Mayvenn Certified Stylist"
-             :description "We've partnered with thousands of top stylists around the nation. Choose one in your local area and we'll pay the stylist to do your install."})
-      (step {:icon-uuid   "08e9d3d8-6f3d-4b3c-bc46-3590175a9a4d"
-             :icon-width  "28"
-             :title       "2. Buy Any Three Bundles or More"
-             :description "This includes closures, frontals, and 360 frontals. Risk free — your virgin hair and service are covered by our 30 day guarantee."})
-      (step {:icon-uuid   "3fb9c2bf-c30e-4bee-957c-f273b1b5a233"
-             :icon-width  "28"
-             :title       "3. Schedule Your Appointment"
-             :description "We’ll connect you to your Mayvenn Certified Stylist and book an install appointment that’s convenient for you."})]]))
-
-(def certified-stylists
-  [:div.col-6-on-tb-dt.col-12-on-mb.mx-auto.center.pt8
-   {:style {:height "696px"
-            :background-size     "cover"
-            :background-position "center"
-            :background-image    "url('//ucarecdn.com/491eefec-02f6-447d-942d-bd864aaad5ed/-/format/auto/bg.png')"}}
-   [:div.h2.my4 "Who's doing my hair?"]
-   [:div.dark-gray.mx10.h5 "Our Certified Stylist are the best of the best. They're chosen because of their top-rated reviews, professionalism, and amazing work."]])
-
-(def hair-quality
-  [:div.col-6-on-tb-dt.col-12-on-mb.mx-auto
-   {:style {:height "696px"
-            :background-size     "cover"
-            :background-position "center"
-            :background-image    "url('//ucarecdn.com/6ea84755-e0ba-4ccc-861e-2d39a711a982/-/format/auto/bg.png')"}}
-
-   [:div "Highest quality Virgin hair"]
-   [:div "Our bundles, closures, and frontals are crafted with the highest industry standards and come in a variety of textures and colors."]])
 
 (defn contact-us-block [url svg title copy]
   [:a.block.py3.col-12.col-4-on-tb-dt
@@ -367,7 +368,7 @@
                         ;;             (B is removed from history).
                         {:opts {:close-attrs (utils/route-to events/navigate-adventure-home {:query-params {:video "0"}})}}))
      [:section paying-for-your-next-appt]
-     [:section what-our-customers-are-saying]]
+     [:section video-block]]
     [:section.py10.bg-transparent-teal
      (free-install-steps {:store                 store
                           :gallery-ucare-ids     gallery-ucare-ids
@@ -382,5 +383,3 @@
     [:section our-story]
     [:section contact-us]
     (component/build sticky-component {:next-page next-page} nil)]))
-
-#_[:hr.hide-on-mb-tb.border-top.border-dark-silver.col-9.mx-auto.mb6]
