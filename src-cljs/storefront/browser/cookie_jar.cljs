@@ -174,8 +174,14 @@
 (defn save-dismissed-free-install [cookie value]
   (.set cookie "dismissed-free-install" value four-weeks "/" nil config/secure?))
 
+(defn save-dismissed-to-adventure [cookie value]
+  (.set cookie "dismissed-to-adventure" value one-day "/" nil config/secure?))
+
 (defn get-dismissed-free-install [cookie]
   (.get cookie "dismissed-free-install"))
+
+(defn get-dismissed-to-adventure [cookie]
+  (.get cookie "dismissed-to-adventure"))
 
 (defn get-stringer-distinct-id [cookie]
   (.get cookie "stringer.distinct_id"))

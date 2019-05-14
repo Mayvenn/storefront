@@ -104,8 +104,11 @@
 
 (defmethod effects/perform-effects events/control-to-adventure-popup-dismiss
   [_ _ _ _ app-state]
+  (cookie-jar/save-dismissed-to-adventure (get-in app-state keypaths/cookie) true)
   (messages/handle-message events/popup-hide))
 
 (defmethod transitions/transition-state events/control-to-adventure-popup-dismiss
   [_ _ _ app-state]
-  (assoc-in app-state keypaths/popup nil))
+  (-> app-state
+      (assoc-in keypaths/dismissed-to-adventure true)
+      (assoc-in keypaths/popup nil)))

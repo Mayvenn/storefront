@@ -283,6 +283,7 @@
 
 (def email-capture-session (conj ui :email-capture-session))
 (def dismissed-free-install (conj ui :dismissed-free-install))
+(def dismissed-to-adventure (conj ui :dismissed-to-adventure))
 
 (def experiments [:experiments])
 (def experiments-manual (conj experiments :manual))

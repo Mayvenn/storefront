@@ -47,6 +47,7 @@
         freeinstall-store?          (= "freeinstall" (get-in app-state keypaths/store-slug))
         seen-email-capture?         (email-capture-session app-state)
         seen-freeinstall-offer?     (get-in app-state keypaths/dismissed-free-install)
+        seen-to-adventure-modal?    (get-in app-state keypaths/dismissed-to-adventure)
         signed-in?                  (get-in app-state keypaths/user-id)
         classic-experience?         (not v2-experience?)
         on-shop?                    (= "shop" (get-in app-state keypaths/store-slug))
@@ -61,6 +62,7 @@
                                           (and (not on-homepage?)
                                                (= 1 nav-history-length))))
         to-adventure-showable?      (and (experiments/to-adventure-modal? app-state)
+                                         (not seen-to-adventure-modal?)
                                          on-shop?
                                          (not on-homepage?)
                                          (zero? nav-history-length)
