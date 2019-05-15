@@ -139,7 +139,7 @@
 (defmethod perform-effects events/external-redirect-welcome [_ event args _ app-state]
   (set! (.-location js/window) (get-in app-state keypaths/welcome-url)))
 
-(defmethod perform-effects events/external-redirect-freeinstall [_ event {:keys [utm-source]} _ app-state]
+(defmethod perform-effects events/external-redirect-freeinstall [_ event {:keys [utm-source utm-term]} _ app-state]
   (cookie-jar/save-from-shop-to-freeinstall (get-in app-state keypaths/cookie))
   (let [hostname (case (get-in app-state keypaths/environment)
                    "production" "mayvenn.com"
@@ -150,7 +150,13 @@
               uri/uri
               (assoc :host (str "freeinstall." hostname)
                      :path "/"
-                     :query (str "utm_campaign=ShoptoFreeInstall&utm_medium=referral&utm_source=" utm-source))
+                     :query (string/join "&"
+                                         (concat ["utm_campaign=ShoptoFreeInstall"
+                                                  "utm_medium=referral"
+                                                  (str "utm_source=" utm-source)]
+                                                 (if utm-term
+                                                   [(str "utm_term=" utm-term)]
+                                                   []))))
               str))))
 
 (defmethod perform-effects events/external-redirect-sms [_ event {:keys [sms-message number]} _ app-state]

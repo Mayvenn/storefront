@@ -33,12 +33,13 @@
 (defmethod popup/component :to-adventure
   [_ _ _]
   (let [external-redirect (utils/fake-href events/external-redirect-freeinstall
-                                           {:utm-source "ToAdventureHomepageModal"})]
+                                           {:utm-source "toadventurehomepagemodal"
+                                            :utm-term   "fi_shoptofreeinstall"})]
     (component/create
      (html
-      (ui/modal {:col-class "col-12 col-6-on-tb col-6-on-dt my8-on-tb-dt flex justify-center"
+      (ui/modal {:col-class   "col-12 col-6-on-tb col-6-on-dt my8-on-tb-dt flex justify-center"
                  :close-attrs close-dialog-href
-                 :bg-class  "bg-darken-4"}
+                 :bg-class    "bg-darken-4"}
                 [:div.bg-white
                  {:style {:max-width "400px"}}
                  [:div.col-12.clearfix.py2
