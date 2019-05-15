@@ -76,14 +76,12 @@
              :background-image    (str "url('" mobile-url "-/format/jpeg/" file-name "')")
              :alt                 alt}}
     [:div.clearfix.col.col-12
-     [:div.col.col-6.px2 (ui/teal-button (merge (utils/route-to next-page)
-                                      {:height-class "py2"})
+     [:div.col.col-6.px2 (ui/teal-button (merge (utils/scroll-href "learn-more")
+                                                {:height-class "py2"})
                                "Learn More")]
      [:div.col.col-6.px2 (ui/teal-button (merge (utils/route-to next-page)
-                                      {:height-class "py2"})
-                               "Get Started")]]
-
-    ]])
+                                                {:height-class "py2"})
+                               "Get Started")]]]])
 
 (defn hero [next-page]
   (let [file-name "free-install-hero"
@@ -111,6 +109,7 @@
 
 (def paying-for-your-next-appt
   [:div.py10.px6.center
+   [:a {:name "learn-more"}]
    [:div.h2 "We're paying for your next hair appointment"]
    [:div.h5.dark-gray.mt3 "Purchase 3 or more bundles (closures or frontals included) and we’ll pay for you to get them installed. That’s a shampoo, condition, braid down, sew-in, and style, all on us."]
    [:div.h5.mt6.mb4 "What's included?"]
