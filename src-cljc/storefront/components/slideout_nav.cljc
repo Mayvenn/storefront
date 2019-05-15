@@ -153,7 +153,7 @@
                                  :height "20px"})]
     (concat
      (when show-freeinstall-link?
-       [{:link-attrs (utils/fake-href events/external-redirect-freeinstall {:utm-source "shopHamburger"})
+       [{:link-attrs (utils/fake-href events/external-redirect-freeinstall-from-menu {:utm-source "shopHamburger"})
          :data-test  "menu-shop-freeinstall"
          :content    [[:span.teal.pr1 "NEW"]
                       [:span.medium "Get a Free Install"]]}])

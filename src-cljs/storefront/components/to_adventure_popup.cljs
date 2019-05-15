@@ -32,7 +32,7 @@
 
 (defmethod popup/component :to-adventure
   [_ _ _]
-  (let [external-redirect (utils/fake-href events/external-redirect-freeinstall
+  (let [external-redirect (utils/fake-href events/external-redirect-freeinstall-from-modal
                                            {:utm-source "toadventurehomepagemodal"
                                             :utm-term   "fi_shoptofreeinstall"})]
     (component/create

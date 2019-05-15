@@ -12,7 +12,8 @@
 (defpath order-remove-promotion)
 
 (defpath external-redirect-welcome)
-(defpath external-redirect-freeinstall)
+(defpath external-redirect-freeinstall-from-menu)
+(defpath external-redirect-freeinstall-from-modal)
 (defpath external-redirect-sms)
 (defpath external-redirect-paypal-setup)
 (defpath external-redirect-telligent)
