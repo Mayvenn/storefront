@@ -56,11 +56,17 @@
                     (ui/clickable-logo {:class "col-12 mx4"
                                         :style {:height "40px"}})]]]
                  [:div.flex.flex-column
-                  [:div.px2.pointer
-                   external-redirect
-
-                   [:img.block.col-12 {:src "//ucarecdn.com/bdd51885-891a-4e06-b5e3-55638f4b3dff/-/format/jpeg/mobile.jpg"
-                                       :alt "Buy 3 bundles or more (closures and frontals included) and we'll pay for you to get your hair installed by a Mayvenn Certified Stylist. We've decided to improve the way you purchase hair and book your sew-ins. Learn more"}]]
+                  [:div.flex.flex-auto.items-end.mb6
+                   {:style {:height              "696px"
+                            :background-size     "cover"
+                            :background-position "top"
+                            :background-image    (str "url('//ucarecdn.com/279dac3f-317a-469a-a487-5b54857529aa/-/format/jpeg/')")
+                            :alt                 "Buy 3 bundles or more (closures and frontals included) and we'll pay for you to get your hair installed by a Mayvenn Certified Stylist. We've decided to improve the way you purchase hair and book your sew-ins. Learn more"}}
+                   [:div.mx-auto
+                    {:style {:width "150px"}}
+                    (ui/teal-button (merge external-redirect
+                                                              {:height-class "py2"})
+                                                       "Learn More")]]
 
                   [:div.col-12.bg-transparent-teal.mt3.pt6.pb8.px4
                    [:div.col-11-on-dt.justify-center.flex.flex-wrap.mx-auto.pb2
@@ -81,9 +87,10 @@
                             :icon-width  "35"
                             :title       "3. Schedule Your Appointment"
                             :description "We’ll connect you to your Mayvenn Certified Stylist and book an install appointment that’s convenient for you."})]
-                   [:div.col-5.mx-auto
+                   [:div.mx-auto
+                    {:style {:width "150px"}}
                     (ui/teal-button (merge
-                                     {:height-class "py1"}
+                                     {:height-class "py2"}
                                      external-redirect)
                                     [:span.h6 "Learn More"])]]]])))))
 
