@@ -87,7 +87,7 @@
 
 (defn hero [next-page]
   (let [file-name "free-install-hero"
-        mob-uuid  "a2b3778c-8ca6-4dd5-abb3-fa73bfa52912"
+        mob-uuid  "8b5bc7af-ca65-4812-88c2-e1601cb17b54"
         dsk-uuid  "2a0dc3b9-cefa-4bca-b990-193198a82c80"]
     [:div
      {:data-test "adventure-home-choice-get-started"}
