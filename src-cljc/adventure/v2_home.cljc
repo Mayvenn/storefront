@@ -191,23 +191,18 @@
              :description "We’ll connect you to your Mayvenn Certified Stylist and book an install appointment that’s convenient for you."})]]))
 
 (def certified-stylists
-  [:div.col-6-on-tb-dt.col-12-on-mb.mx-auto.center.pt8
-   {:style {:height "696px"
-            :background-size     "cover"
-            :background-position "center"
-            :background-image    "url('//ucarecdn.com/b1f30a37-27cc-46a6-9953-36ee40291b9e/-/format/auto/bg.png')"}}
+  [:div.center.mx-auto.col-6-on-tb-dt.col-12-on-mb
    [:div.h2.my4 "Who's doing my hair?"]
-   [:div.dark-gray.mx10.h5 "Our Certified Stylists are the best in your area. They're chosen because of their top-rated reviews, professionalism, and amazing work."]])
+   [:div.dark-gray.mx10.h5 "Our Certified Stylists are the best in your area. They're chosen because of their top-rated reviews, professionalism, and amazing work."]
+   [:img.col-12.mx-auto
+    {:src "//ucarecdn.com/b1f30a37-27cc-46a6-9953-36ee40291b9e/-/format/auto/bg.png"}]])
 
 (def hair-quality
-  [:div.col-6-on-tb-dt.col-12-on-mb.mx-auto.center.pt8
-   {:style {:height "696px"
-            :background-size     "cover"
-            :background-position "center"
-            :background-image    "url('//ucarecdn.com/dcf735ed-9aa3-422c-9a9b-602eea248ada/-/format/auto/bg.png')"}}
-
+  [:div.center.mx-auto.col-6-on-tb-dt.col-12-on-mb
    [:div.h2.my4 "Quality-Guaranteed Virgin Hair"]
-   [:div.dark-gray.mx10.h5 "Our bundles, closures, and frontals are crafted with the highest industry standards and come in a variety of textures and colors."]])
+   [:div.dark-gray.mx10.h5 "Our bundles, closures, and frontals are crafted with the highest industry standards and come in a variety of textures and colors."]
+   [:img.col-12.mx-auto
+    {:src "//ucarecdn.com/dcf735ed-9aa3-422c-9a9b-602eea248ada/-/format/auto/bg.png"}]])
 
 (defn free-install-mayvenn-grid [free-install-mayvenn-ugc]
   [:div.py8.col-10.mx-auto
@@ -263,7 +258,7 @@
         mikka-image         (ui/ucare-img {:class "col-12"} "838e25f5-cd4b-4e15-bfd9-8bdb4b2ac341")
         stylist-image       (ui/ucare-img {:class "col-12"} "6735b4d5-9b65-4fa9-96cd-871141b28672")
         diishan-image-2     (ui/ucare-img {:class "col-12"} "ec9e0533-9eee-41ae-a61b-8dc22f045cb5")]
-    [:div.pt4.px4.pb8
+    [:div.pt10.px4.pb8
      [:div.h2.center "We're Changing The Game"]
      [:h6.center.mb2.dark-gray "Founded in Oakland, CA • 2013"]
 
