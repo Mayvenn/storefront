@@ -193,16 +193,16 @@
 (def certified-stylists
   [:div.center.mx-auto.col-6-on-tb-dt.col-12-on-mb
    [:div.h2.my4 "Who's doing my hair?"]
-   [:div.dark-gray.mx10.h5 "Our Certified Stylists are the best in your area. They're chosen because of their top-rated reviews, professionalism, and amazing work."]
+   [:div.dark-gray.mx10.h5.pb2 "Our Certified Stylists are the best in your area. They're chosen because of their top-rated reviews, professionalism, and amazing work."]
    [:img.col-12.mx-auto
-    {:src "//ucarecdn.com/b1f30a37-27cc-46a6-9953-36ee40291b9e/-/format/auto/bg.png"}]])
+    {:src "//ucarecdn.com/d639d407-801e-408c-a480-3ceed8c14f14/-/format/auto/bg.png"}]])
 
 (def hair-quality
   [:div.center.mx-auto.col-6-on-tb-dt.col-12-on-mb
    [:div.h2.my4 "Quality-Guaranteed Virgin Hair"]
-   [:div.dark-gray.mx10.h5 "Our bundles, closures, and frontals are crafted with the highest industry standards and come in a variety of textures and colors."]
+   [:div.dark-gray.mx10.h5.pb2 "Our bundles, closures, and frontals are crafted with the highest industry standards and come in a variety of textures and colors."]
    [:img.col-12.mx-auto
-    {:src "//ucarecdn.com/dcf735ed-9aa3-422c-9a9b-602eea248ada/-/format/auto/bg.png"}]])
+    {:src "//ucarecdn.com/3e110ab0-6d0b-410d-8935-1288d536621c/-/format/auto/bg.png"}]])
 
 (defn free-install-mayvenn-grid [free-install-mayvenn-ugc]
   [:div.py8.col-10.mx-auto
