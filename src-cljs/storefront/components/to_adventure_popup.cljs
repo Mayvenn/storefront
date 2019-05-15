@@ -55,21 +55,11 @@
                     (ui/clickable-logo {:class "col-12 mx4"
                                         :style {:height "40px"}})]]]
                  [:div.flex.flex-column
-                  [:div.mb3.px2.pointer
+                  [:div.px2.pointer
                    external-redirect
 
-                   [:div.h3.bold.col-10.center.my2.mx-auto
-                    "Buy 3 bundles or more " [:br]
-                    "(closures and frontals included) and "
-                    [:span.lavender "we'll pay for you to get your hair installed "]
-                    "by a Mayvenn Certified Stylist."]
-
-                   [:div.mx-auto.col-9.medium.lavender.center.pb2
-                    "We've decided to improve the way you purchase hair and book your sew-ins."]
-
-                   [:div.col-6.mx-auto
-                    (ui/teal-button {:height-class "py1"}
-                                    [:span.bold.shout "Learn More"])]]
+                   [:img.block.col-12 {:src "//ucarecdn.com/bdd51885-891a-4e06-b5e3-55638f4b3dff/-/format/jpeg/mobile.jpg"
+                                       :alt "Buy 3 bundles or more (closures and frontals included) and we'll pay for you to get your hair installed by a Mayvenn Certified Stylist. We've decided to improve the way you purchase hair and book your sew-ins. Learn more"}]]
 
                   [:div.col-12.bg-transparent-teal.mt3.pt6.pb8.px4
                    [:div.col-11-on-dt.justify-center.flex.flex-wrap.mx-auto.pb2
