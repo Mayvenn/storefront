@@ -64,8 +64,7 @@
                             :alt                 "Buy 3 bundles or more (closures and frontals included) and we'll pay for you to get your hair installed by a Mayvenn Certified Stylist. We've decided to improve the way you purchase hair and book your sew-ins. Learn more"}}
                    [:div.mx-auto
                     {:style {:width "150px"}}
-                    (ui/teal-button (merge external-redirect
-                                                              {:height-class "py2"})
+                    (ui/teal-button (merge external-redirect {:height-class "py2"})
                                                        "Learn More")]]
 
                   [:div.col-12.bg-transparent-teal.mt3.pt6.pb8.px4
@@ -92,7 +91,7 @@
                     (ui/teal-button (merge
                                      {:height-class "py2"}
                                      external-redirect)
-                                    [:span.h6 "Learn More"])]]]])))))
+                                    [:span "Learn More"])]]]])))))
 
 (defmethod popup/query :to-adventure [data] {})
 
