@@ -72,7 +72,7 @@
    :expanded-index          (get-in data keypaths/faq-expanded-section)})
 
 (defn component [{:keys [adventure-homepage-new? expanded-index]}]
-  [:div.px6.mx-auto
+  [:div.px6.mx-auto.col-6-on-dt
    [:h2.center "Frequently Asked Questions"]
    (component/build
     accordion/component

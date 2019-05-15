@@ -63,18 +63,10 @@
                                           (utils/route-to next-page))
                                    [:div.h7 "Get started"])]]]]]]]))))))
 
-(defn hero-image [{:keys [desktop-url mobile-url file-name alt next-page]}]
-  [:picture
-   ;; Tablet/Desktop
-   [:source {:media   "(min-width: 750px)"
-             :src-set (str desktop-url "-/format/jpeg/-/quality/best/" file-name " 1x")}]
-   ;; Mobile
-   [:div.flex.flex-auto.items-end.pb5
-    {:style {:height              "465px"
-             :background-size     "cover"
-             :background-position "top"
-             :background-image    (str "url('" mobile-url "-/format/jpeg/" file-name "')")
-             :alt                 alt}}
+#_(defn hero-image [{:keys [mobile-url file-name alt next-page]}]
+  [:div
+   [:img.col-12.mx-auto
+    {:src "//ucarecdn.com/8b5bc7af-ca65-4812-88c2-e1601cb17b54/-/format/auto/bg.png"}]  [:div.flex.flex-auto.items-end.pb5
     [:div.clearfix.col.col-12
      [:div.col.col-6.px2 (ui/teal-button (merge (utils/scroll-href "learn-more")
                                                 {:height-class "py2"})
@@ -83,20 +75,31 @@
                                                 {:height-class "py2"})
                                "Get Started")]]]])
 
+#_[:div.center.mx-auto.col-6-on-tb-dt.col-12-on-mb
+ [:div.h2.my4 "Who's doing my hair?"]
+ [:div.dark-gray.mx10.h5.pb2 "Our Certified Stylists are the best in your area. They're chosen because of their top-rated reviews, professionalism, and amazing work."]
+ [:img.col-12.mx-auto
+  {:src "//ucarecdn.com/d639d407-801e-408c-a480-3ceed8c14f14/-/format/auto/bg.png"}]]
+
 (defn hero [next-page]
-  (let [file-name "free-install-hero"
-        mob-uuid  "8b5bc7af-ca65-4812-88c2-e1601cb17b54"
-        dsk-uuid  "2a0dc3b9-cefa-4bca-b990-193198a82c80"]
-    [:div
-     {:data-test "adventure-home-choice-get-started"}
-     (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
-                  :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
-                  :file-name   file-name
-                  :alt         "We're changing the game. Introducing Mayvenn Install Hair + Service for the price of one"
-                  :next-page   next-page})]))
+  [:div.mx-auto.col-6-on-dt.relative
+   {:data-test "adventure-home-choice-get-started"
+    :style {:margin-bottom "-78px"}}
+   [:img.center.mx-auto.col-12
+    {:src "//ucarecdn.com/8b5bc7af-ca65-4812-88c2-e1601cb17b54/-/format/auto/bg.png"
+     :alt "We're changing the game. Introducing Mayvenn Install Hair + Service for the price of one"}]
+   [:div.flex.flex-auto.items-end.pb5.mx-auto.relative
+    {:style {:top "-71px"}}
+    [:div.col.col-12
+     [:div.col.col-6.px2 (ui/teal-button (merge (utils/scroll-href "learn-more")
+                                                {:height-class "py2"})
+                                         "Learn More")]
+     [:div.col.col-6.px2 (ui/teal-button (merge (utils/route-to next-page)
+                                                {:height-class "py2"})
+                                         "Get Started")]]]])
 
 (def free-shipping-banner
-  [:div {:style {:height "3em"}}
+  [:div.mx-auto.col-6-on-dt {:style {:height "3em"}}
    [:div.bg-black.flex.items-center.justify-center
     {:style {:height "2.25em"
              :margin-top "-1px"
@@ -108,12 +111,13 @@
      "FREE standard shipping"]]])
 
 (def paying-for-your-next-appt
-  [:div.py10.px6.center
+  [:div.py10.px6.center.col-6-on-dt.mx-auto
    [:a {:name "learn-more"}]
    [:div.h2 "We're paying for your next hair appointment"]
    [:div.h5.dark-gray.mt3 "Purchase 3 or more bundles (closures or frontals included) and we’ll pay for you to get them installed. That’s a shampoo, condition, braid down, sew-in, and style, all on us."]
    [:div.h5.mt6.mb4 "What's included?"]
-   [:ul.col-8.h6.list-img-purple-checkmark.dark-gray.left-align.mx-auto
+   [:ul.h6.list-img-purple-checkmark.dark-gray.left-align.mx-auto
+    {:style {:width "max-content"}}
     (mapv (fn [%] [:li.mb1.pl1 %])
           ["Shampoo and condition" "Braid down" "Sew-in and style" "Paid for by Mayvenn"])]])
 
