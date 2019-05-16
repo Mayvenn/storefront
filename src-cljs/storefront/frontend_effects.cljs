@@ -139,7 +139,8 @@
 (defmethod perform-effects events/external-redirect-welcome [_ event args _ app-state]
   (set! (.-location js/window) (get-in app-state keypaths/welcome-url)))
 
-(defmethod perform-effects events/external-redirect-freeinstall-from-modal [_ event {:keys [utm-source utm-term]} _ app-state]
+(defmethod perform-effects events/external-redirect-freeinstall
+  [_ event {:keys [query-string]} _ app-state]
   (cookie-jar/save-from-shop-to-freeinstall (get-in app-state keypaths/cookie))
   (let [hostname (case (get-in app-state keypaths/environment)
                    "production" "mayvenn.com"
@@ -150,28 +151,16 @@
               uri/uri
               (assoc :host (str "freeinstall." hostname)
                      :path "/"
-                     :query (string/join "&"
-                                         ["utm_medium=referral"
-                                          (str "utm_source=" utm-source)
-                                          (str "utm_term=" utm-term)]))
+                     :query query-string)
               str))))
 
-(defmethod perform-effects events/external-redirect-freeinstall-from-menu [_ event {:keys [utm-source]} _ app-state]
-  (cookie-jar/save-from-shop-to-freeinstall (get-in app-state keypaths/cookie))
-  (let [hostname (case (get-in app-state keypaths/environment)
-                   "production" "mayvenn.com"
-                   "acceptance" "diva-acceptance.com"
-                   "storefront.localhost")]
-    (set! (.-location js/window)
-          (-> (.-location js/window)
-              uri/uri
-              (assoc :host (str "freeinstall." hostname)
-                     :path "/"
-                     :query (string/join "&"
-                                         ["utm_campaign=ShoptoFreeInstall"
-                                          "utm_medium=referral"
-                                          (str "utm_source=" utm-source)]))
-              str))))
+(defmethod perform-effects events/initiate-redirect-freeinstall-from-menu
+  [_ event {:keys [utm-source]} _ app-state]
+  (handle-message events/external-redirect-freeinstall
+                  {:query-string (string/join "&"
+                                              ["utm_campaign=ShoptoFreeInstall"
+                                               "utm_medium=referral"
+                                               (str "utm_source=" utm-source)])}))
 
 (defmethod perform-effects events/external-redirect-sms [_ event {:keys [sms-message number]} _ app-state]
   (set! (.-location js/window) (share-links/sms-link sms-message number)))

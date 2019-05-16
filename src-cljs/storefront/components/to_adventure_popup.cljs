@@ -15,7 +15,8 @@
             [storefront.platform.component-utils :as utils]
             [storefront.components.marquee :as marquee]
             [storefront.transitions :as transitions]
-            [storefront.platform.messages :as messages]))
+            [storefront.platform.messages :as messages]
+            [clojure.string :as string]))
 
 (defn entry
   [{:keys [icon-uuid icon-width title description]}]
@@ -32,9 +33,13 @@
 
 (defmethod popup/component :to-adventure
   [_ _ _]
-  (let [external-redirect (utils/fake-href events/external-redirect-freeinstall-from-modal
-                                           {:utm-source "toadventurehomepagemodal"
-                                            :utm-term   "fi_shoptofreeinstall"})]
+  (let [external-redirect (utils/fake-href events/external-redirect-freeinstall
+                                           {:query-string
+                                            (string/join
+                                             "&"
+                                             ["utm_medium=referral"
+                                              "utm_source=toadventurehomepagemodal"
+                                              "utm_term=fi_shoptofreeinstall"])})]
     (component/create
      (html
       (ui/modal {:col-class   "col-12 col-6-on-tb col-6-on-dt my8-on-tb-dt flex justify-center"

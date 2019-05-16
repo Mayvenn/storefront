@@ -142,7 +142,8 @@
      [:nav.clearfix {:aria-label "Shop Products"}
       [:div.col.col-6
        [:a.block.py1.dark-gray.light.titleize
-        (assoc (utils/fake-href events/external-redirect-freeinstall-from-menu {:utm-source "shopFooter"})
+        (assoc (utils/fake-href events/initiate-redirect-freeinstall-from-menu
+                                {:utm-source "shopFooter"})
                :data-test "freeinstall-footer-link")
         [:span.teal "NEW "]
         "Get A Free Install"]

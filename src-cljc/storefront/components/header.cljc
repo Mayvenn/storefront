@@ -139,7 +139,7 @@
    [:div.center
     (when show-freeinstall-link?
       (header-menu-link
-       (assoc (utils/fake-href events/external-redirect-freeinstall-from-menu {:utm-source "shopFlyout"})
+       (assoc (utils/fake-href events/initiate-redirect-freeinstall-from-menu {:utm-source "shopFlyout"})
               :on-mouse-enter close-shopping)
        [:span [:span.teal.pr1 "NEW"] "Get a free install"]))
 

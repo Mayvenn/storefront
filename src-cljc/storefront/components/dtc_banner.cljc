@@ -3,8 +3,7 @@
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.platform.component-utils :as utils]
-            [storefront.accessors.experiments :as experiments]))
+            [storefront.platform.component-utils :as utils]))
 
 (defn component
   [{:keys [button-behavior banner-copy button-copy]} owner opts]
@@ -28,7 +27,7 @@
        close-button]])))
 
 (defn freeinstall-query [data]
-  {:button-behavior (assoc (utils/fake-href events/external-redirect-freeinstall-from-menu {:utm-source "shop"})
+  {:button-behavior (assoc (utils/fake-href events/initiate-redirect-freeinstall-from-menu {:utm-source "shop"})
                            :data-test "freeinstall-banner-dtc-button")
    :banner-copy     [[:div.medium "Get a Free Install!"]
                      " Mayvenn will pay for your sew-in from a local, certified stylist."]
