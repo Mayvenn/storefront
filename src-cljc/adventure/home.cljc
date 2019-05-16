@@ -79,7 +79,7 @@
   (let [file-name "free-install-hero"
         mob-uuid  "8b5bc7af-ca65-4812-88c2-e1601cb17b54"
         dsk-uuid  "6421450f-071d-43ab-b5c9-69de8280d07b"]
-    [:div.mx-auto.relative
+    [:div.mx-auto.relative {:style {:min-height "390px"}}
      (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
                   :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
                   :file-name   file-name
