@@ -205,7 +205,7 @@
 
 (def certified-stylists
   (hero-block
-   {:mob-uuid  "d639d407-801e-408c-a480-3ceed8c14f14"
+   {:mob-uuid  "a6a607e6-aeb4-4b61-8bc7-60fd17d15abe"
     :dsk-uuid  "f2d82c41-2051-47d8-86c5-1c82568e324d"
     :title     "Who's doing my hair?"
     :copy      "Our Certified Stylists are the best in your area. They're chosen because of their top-rated reviews, professionalism, and amazing work."
@@ -214,7 +214,7 @@
 
 (def hair-quality
   (hero-block
-   {:mob-uuid  "3e110ab0-6d0b-410d-8935-1288d536621c"
+   {:mob-uuid  "e994076c-b21f-4925-b72b-f804b7408599"
     :dsk-uuid  "ddce59fd-2607-4415-a3e1-e1f12c459dc6"
     :title     "Quality-Guaranteed Virgin Hair"
     :copy      "Our bundles, closures, and frontals are crafted with the highest industry standards and come in a variety of textures and colors."
