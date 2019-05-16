@@ -65,8 +65,7 @@
 
 (defn hero [next-page]
   [:div.mx-auto.col-6-on-dt.relative
-   {:data-test "adventure-home-choice-get-started"
-    :style     {:margin-bottom "-78px"}}
+   {:style {:margin-bottom "-78px"}}
    [:img.center.mx-auto.col-12
     {:src "//ucarecdn.com/8b5bc7af-ca65-4812-88c2-e1601cb17b54/-/format/auto/bg.png"
      :alt "We're changing the game. Introducing Mayvenn Install Hair + Service for the price of one"}]
