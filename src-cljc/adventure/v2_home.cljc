@@ -77,7 +77,8 @@
                                                 {:height-class "py2"})
                                          "Learn More")]
      [:div.col.col-6.px2 (ui/teal-button (merge (utils/route-to next-page)
-                                                {:height-class "py2"})
+                                                {:data-test    "adventure-home-choice-get-started"
+                                                 :height-class "py2"})
                                          "Get Started")]]]])
 
 (def free-shipping-banner
