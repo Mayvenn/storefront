@@ -63,25 +63,38 @@
                                           (utils/route-to next-page))
                                    [:div.h7 "Get started"])]]]]]]]))))))
 
+(defn hero-image [{:keys [desktop-url mobile-url file-name alt]}]
+  [:picture
+   ;; Tablet/Desktop
+   [:source {:media   "(min-width: 750px)"
+             :src-set (str desktop-url "-/format/jpeg/-/quality/best/" file-name " 1x")}]
+   ;; Mobile
+   [:img.block.col-12 {:src (str mobile-url "-/format/jpeg/" file-name)
+                       :alt alt}]])
+
+
 (defn hero [next-page]
-  [:div.mx-auto.col-6-on-dt.relative
-   {:style {:margin-bottom "-78px"}}
-   [:img.center.mx-auto.col-12
-    {:src "//ucarecdn.com/8b5bc7af-ca65-4812-88c2-e1601cb17b54/-/format/auto/bg.png"
-     :alt "We're changing the game. Introducing Mayvenn Install Hair + Service for the price of one"}]
-   [:div.flex.flex-auto.items-end.pb5.mx-auto.relative
-    {:style {:top "-71px"}}
-    [:div.col.col-12
-     [:div.col.col-6.px2 (ui/teal-button (merge (utils/scroll-href "learn-more")
-                                                {:height-class "py2"})
-                                         "Learn More")]
-     [:div.col.col-6.px2 (ui/teal-button (merge (utils/route-to next-page)
-                                                {:data-test    "adventure-home-choice-get-started"
-                                                 :height-class "py2"})
-                                         "Get Started")]]]])
+  (let [file-name "free-install-hero"
+        mob-uuid  "8b5bc7af-ca65-4812-88c2-e1601cb17b54"
+        dsk-uuid  "6421450f-071d-43ab-b5c9-69de8280d07b"]
+    [:div.mx-auto.relative
+     (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
+                  :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
+                  :file-name   file-name
+                  :alt         "We're changing the game. Introducing Mayvenn Install Hair + Service for the price of one"})
+     [:div.relative.flex.justify-center
+      [:div.absolute.bottom-0.col-6-on-tb-dt.col-12.pb2.mb3-on-dt
+       [:div.col.col-12
+        [:div.col.col-6.px2 (ui/teal-button (merge (utils/scroll-href "learn-more")
+                                                   {:height-class "py2"})
+                                            "Learn More")]
+        [:div.col.col-6.px2 (ui/teal-button (merge (utils/route-to next-page)
+                                                   {:data-test    "adventure-home-choice-get-started"
+                                                    :height-class "py2"})
+                                            "Get Started")]]]]]))
 
 (def free-shipping-banner
-  [:div.mx-auto.col-6-on-dt {:style {:height "3em"}}
+  [:div.mx-auto {:style {:height "3em"}}
    [:div.bg-black.flex.items-center.justify-center
     {:style {:height "2.25em"
              :margin-top "-1px"
@@ -175,19 +188,39 @@
              :title       "3. Schedule Your Appointment"
              :description "We’ll connect you to your Mayvenn Certified Stylist and book an install appointment that’s convenient for you."})]]))
 
+(defn hero-block
+  [{:keys [mob-uuid
+           dsk-uuid
+           title
+           copy
+           file-name
+           alt-text]}]
+  [:div.center.mx-auto
+   [:div.h2.my4 title]
+   [:div.dark-gray.center.h5.pb2.col-10.col-6-on-tb-dt.mx-auto
+    copy]
+   (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
+                :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
+                :file-name   file-name
+                :alt         alt-text})])
+
 (def certified-stylists
-  [:div.center.mx-auto.col-6-on-tb-dt.col-12-on-mb
-   [:div.h2.my4 "Who's doing my hair?"]
-   [:div.dark-gray.mx10.h5.pb2 "Our Certified Stylists are the best in your area. They're chosen because of their top-rated reviews, professionalism, and amazing work."]
-   [:img.col-12.mx-auto
-    {:src "//ucarecdn.com/d639d407-801e-408c-a480-3ceed8c14f14/-/format/auto/bg.png"}]])
+  (hero-block
+   {:mob-uuid  "d639d407-801e-408c-a480-3ceed8c14f14"
+    :dsk-uuid  "f2d82c41-2051-47d8-86c5-1c82568e324d"
+    :title     "Who's doing my hair?"
+    :copy      "Our Certified Stylists are the best in your area. They're chosen because of their top-rated reviews, professionalism, and amazing work."
+    :file-name "bg"
+    :alt-text  ""}))
 
 (def hair-quality
-  [:div.center.mx-auto.col-6-on-tb-dt.col-12-on-mb
-   [:div.h2.my4 "Quality-Guaranteed Virgin Hair"]
-   [:div.dark-gray.mx10.h5.pb2 "Our bundles, closures, and frontals are crafted with the highest industry standards and come in a variety of textures and colors."]
-   [:img.col-12.mx-auto
-    {:src "//ucarecdn.com/3e110ab0-6d0b-410d-8935-1288d536621c/-/format/auto/bg.png"}]])
+  (hero-block
+   {:mob-uuid  "3e110ab0-6d0b-410d-8935-1288d536621c"
+    :dsk-uuid  "ddce59fd-2607-4415-a3e1-e1f12c459dc6"
+    :title     "Quality-Guaranteed Virgin Hair"
+    :copy      "Our bundles, closures, and frontals are crafted with the highest industry standards and come in a variety of textures and colors."
+    :file-name "bg"
+    :alt-text  ""}))
 
 (defn free-install-mayvenn-grid [free-install-mayvenn-ugc]
   [:div.py8.col-10.mx-auto
