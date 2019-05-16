@@ -200,7 +200,7 @@
         (for [items columns]
           (shopping-column items (count columns)))]])))
 
-(defn component [{:as data :keys [store user cart shopping signed-in vouchers?]} _ _]
+(defn component [{:as data :keys [store user cart shopping signed-in vouchers? shop-homepage-new?]} _ _]
   (component/create
    [:div
     [:div.hide-on-mb.relative
@@ -211,23 +211,30 @@
        [:div.right
         [:div.h6.my2.flex.items-center
          (account-info signed-in user vouchers? store)
-         [:div.pl2 (ui/shopping-bag {:style {:height (str ui/header-image-size "px") :width "28px"}
-                                  :data-test "desktop-cart"}
-                                 cart)]]]
+         [:div.pl2
+          (if shop-homepage-new?
+            [:div {:style {:height (str ui/header-image-size "px")
+                           :width  "28px"}}]
+            (ui/shopping-bag {:style     {:height (str ui/header-image-size "px")
+                                          :width  "28px"}
+                              :data-test "desktop-cart"}
+                             cart))]]]
        [:div.absolute.bottom-0.left-0.right-0
-        [:div.mb4 (ui/clickable-logo {:event events/navigate-home
+        [:div.mb4 (ui/clickable-logo {:event     events/navigate-home
                                       :data-test "desktop-header-logo"
-                                      :height "60px"})]
+                                      :height    "60px"})]
         [:div.mb1 (menu data)]]]]
      (shopping-flyout signed-in shopping)]
     [:div.hide-on-tb-dt.border-bottom.border-gray.flex.items-center
      hamburger
-     [:div.flex-auto.py3 (ui/clickable-logo {:event events/navigate-home
+     [:div.flex-auto.py3 (ui/clickable-logo {:event     events/navigate-home
                                              :data-test "header-logo"
-                                             :height "40px"})]
-     (ui/shopping-bag {:style     {:height "70px" :width "70px"}
-                       :data-test "mobile-cart"}
-                      cart)]]))
+                                             :height    "40px"})]
+     (if shop-homepage-new?
+       [:div {:style {:height "70px" :width "70px"}}]
+       (ui/shopping-bag {:style     {:height "70px" :width "70px"}
+                         :data-test "mobile-cart"}
+                        cart))]]))
 
 (defn minimal-component [adventure?]
   (component/html
@@ -272,7 +279,7 @@
    (when (get-in data keypaths/hide-header?)
      {:class "hide-on-mb-tb"})
    (let [navigation-event (get-in data keypaths/navigation-event)
-         sign-in? (#{events/navigate-checkout-sign-in} navigation-event)]
+         sign-in?         (#{events/navigate-checkout-sign-in} navigation-event)]
      (if (nav/show-minimal-header? navigation-event true)
          (adventure-minimal-component sign-in?)
          (component/build component (query data) nil)))])

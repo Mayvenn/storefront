@@ -10,7 +10,8 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.routes :as routes]))
+            [storefront.routes :as routes]
+            [adventure.home :as adventure-home]))
 
 (defn product-image
   [{:keys [resizable_url resizable_filename alt]}]
@@ -350,6 +351,14 @@
      :component/features      (select-keys cms-data [:feature-1 :feature-2 :feature-3])}))
 
 (defn built-component [data opts]
-  (if (experiments/v2-homepage? data)
+  (cond
+    (experiments/v2-homepage? data)
     (v2-home/built-component data opts)
+
+    (and
+     (experiments/shop-homepage-new? data)
+     (= "shop" (get-in data keypaths/store-slug)))
+    (adventure-home/built-component data opts)
+
+    :else
     (component/build component (query data) opts)))

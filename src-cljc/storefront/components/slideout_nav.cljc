@@ -273,14 +273,19 @@
       (component/build root-menu data nil))]))
 
 (defn basic-query [data]
-  {:signed-in              (auth/signed-in data)
-   :on-taxon?              (get-in data keypaths/current-traverse-nav-id)
-   :user                   {:email (get-in data keypaths/user-email)}
-   :store                  (marquee/query data)
-   :vouchers?              (experiments/vouchers? data)
-   :v2-experience?         (experiments/v2-experience? data)
-   :show-freeinstall-link? (= (get-in data keypaths/store-slug) "shop")
-   :shopping               {:categories (get-in data keypaths/categories)}})
+  (let [shop? (= "shop" (get-in data keypaths/store-slug))]
+    {:signed-in              (auth/signed-in data)
+     :on-taxon?              (get-in data keypaths/current-traverse-nav-id)
+     :user                   {:email (get-in data keypaths/user-email)}
+     :store                  (marquee/query data)
+     :vouchers?              (experiments/vouchers? data)
+     :v2-experience?         (experiments/v2-experience? data)
+     :shop-homepage-new?     (and shop?
+                                  (experiments/shop-homepage-new? data)
+                                  (= events/navigate-home
+                                     (get-in data keypaths/navigation-event)))
+     :show-freeinstall-link? shop?
+     :shopping               {:categories (get-in data keypaths/categories)}}))
 
 (defn query [data]
   (-> (basic-query data)

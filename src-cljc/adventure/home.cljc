@@ -6,7 +6,8 @@
                        [goog.events.EventType :as EventType]
                        goog.dom
                        goog.style
-                       goog.events])
+                       goog.events
+                       [storefront.browser.scroll :as scroll]])
             [storefront.accessors.pixlee :as pixlee]
             [storefront.component :as component]
             [storefront.components.ui :as ui]
@@ -14,10 +15,22 @@
             storefront.keypaths
             [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
-            [storefront.components.video :as video]))
+            [storefront.components.video :as video]
+            [storefront.platform.component-utils :as utils]
+            [storefront.platform.messages :as messages]
+            [storefront.effects :as effects]
+            [clojure.string :as string]))
+
+(defn redirect-to-freeinstall [source]
+  (utils/fake-href events/external-redirect-freeinstall
+                   {:query-string (string/join
+                                   "&"
+                                   ["utm_medium=referral"
+                                    (str "utm_source=" source)
+                                    "utm_term=fi_shoptofreeinstall"])}))
 
 (defn sticky-component
-  [{:keys [next-page]} owner opts]
+  [{:keys [next-page shop?]} owner opts]
   #?(:clj (component/create [:div])
      :cljs
      (letfn [(handle-scroll [e] (om/set-state! owner :show? (< 530 (.-y (goog.dom/getDocumentScroll)))))
@@ -45,6 +58,8 @@
          (render-state [this {:keys [show? content-height]}]
            (component/html
             [:div.hide-on-dt
+             (when shop?
+               {:class "fixed"})
              ;; padding div to allow content that's normally at the bottom to be visible
              [:div {:style {:height (str content-height "px")}}]
              [:div.fixed.z4.bottom-0.left-0.right-0
@@ -63,7 +78,9 @@
                   [:div.col-1]
                   [:div.col-4
                    (ui/teal-button (merge {:height-class "py2"}
-                                          (utils/route-to next-page))
+                                          (if shop?
+                                            (redirect-to-freeinstall "toadventurehomepagestickybar")
+                                            (utils/route-to next-page)))
                                    [:div.h7 "Get started"])]]]]]]]))))))
 
 (defn hero-image [{:keys [desktop-url mobile-url file-name alt]}]
@@ -75,7 +92,7 @@
    [:img.block.col-12 {:src (str mobile-url "-/format/jpeg/" file-name)
                        :alt alt}]])
 
-(defn hero [next-page]
+(defn hero [shop? next-page]
   (let [file-name "free-install-hero"
         mob-uuid  "8b5bc7af-ca65-4812-88c2-e1601cb17b54"
         dsk-uuid  "6421450f-071d-43ab-b5c9-69de8280d07b"]
@@ -90,10 +107,14 @@
         [:div.col.col-6.px2 (ui/teal-button (merge (utils/scroll-href "learn-more")
                                                    {:height-class "py2"})
                                             "Learn More")]
-        [:div.col.col-6.px2 (ui/teal-button (merge (utils/route-to next-page)
-                                                   {:data-test    "adventure-home-choice-get-started"
-                                                    :height-class "py2"})
-                                            "Get Started")]]]]]))
+        [:div.col.col-6.px2
+         (ui/teal-button (merge
+                          (if shop?
+                            (redirect-to-freeinstall "toadventurehomepagehero")
+                            (utils/route-to next-page))
+                                {:data-test    "adventure-home-choice-get-started"
+                                 :height-class "py2"})
+                         "Get Started")]]]]]))
 
 (def free-shipping-banner
   [:div.mx-auto {:style {:height "3em"}}
@@ -244,8 +265,27 @@
 
    [:p.h6.col-11.center description]])
 
+(defmethod effects/perform-effects events/control-open-shop-escape-hatch
+  [_ _ _ _ _]
+  (messages/handle-message events/control-menu-expand-hamburger
+                           {:keypath storefront.keypaths/menu-expanded})
+  #?(:cljs (scroll/snap-to-top)))
+
+(def escape-hatch
+  [:div.col-12.bg-fate-white.py8.flex.flex-column.items-center.justify-center
+   [:div.h2.col-8.center "Not interested in a Mayvenn Install?"]
+
+   [:a.block.h3.medium.teal.mt2.flex.items-center
+    (utils/fake-href events/control-open-shop-escape-hatch)
+    "Shop all products"
+    [:div.flex.items-end.ml2 {:style {:transform "rotate(-90deg)"}}
+     (svg/dropdown-arrow {:class  "stroke-teal"
+                          :style  {:stroke-width "3px"}
+                          :height "14px"
+                          :width  "14px"})]]])
+
 (def why-mayvenn
-  [:div.col-12.bg-transparent-teal.mt3.py8.px4
+  [:div.col-12.bg-transparent-teal.py8.px4
    [:div.col-11-on-dt.justify-center.flex.flex-wrap.mx-auto.pb2
 
     [:div.my2.flex.flex-column.items-center.col-12
@@ -359,25 +399,27 @@
                          faq-data
                          video
                          free-install-mayvenn-ugc
+                         shop?
                          next-page]
                   :as   data}
                  owner
                  opts]
   (component/create
    [:div
-    [:div.bg-white.flex.items-center.flex-wrap
-     {:style {:height "63px"}}
-     (if from-shop-to-freeinstall?
-       [:a.block.inherit-color.col-3.flex.items.center
-        (merge {:data-test "adventure-back-to-shop"}
-               (utils/route-to-shop events/navigate-home {}))
-        [:div.flex.items-center.justify-center {:style {:height "60px" :width "60px"}}
-         (svg/back-arrow {:width "24px" :height "24px"})]]
-       [:div.col-3])
-     [:div.col-6.img-logo.bg-no-repeat.bg-center.bg-contain.teal
-      {:style {:height "38px"}}]
-     [:div.col-3]]
-    [:section (hero next-page)]
+    (when-not shop?
+      [:div.bg-white.flex.items-center.flex-wrap
+       {:style {:height "63px"}}
+       (if from-shop-to-freeinstall?
+         [:a.block.inherit-color.col-3.flex.items.center
+          (merge {:data-test "adventure-back-to-shop"}
+                 (utils/route-to-shop events/navigate-home {}))
+          [:div.flex.items-center.justify-center {:style {:height "60px" :width "60px"}}
+           (svg/back-arrow {:width "24px" :height "24px"})]]
+         [:div.col-3])
+       [:div.col-6.img-logo.bg-no-repeat.bg-center.bg-contain.teal
+        {:style {:height "38px"}}]
+       [:div.col-3]])
+    [:section (hero shop? next-page)]
     [:section free-shipping-banner]
     [:a {:name "mayvenn-free-install-video"}]
     [:div
@@ -395,16 +437,20 @@
     [:section hair-quality]
     [:section (free-install-mayvenn-grid free-install-mayvenn-ugc)]
     [:section (faq/component faq-data)]
+    (when shop?
+      [:section escape-hatch])
     [:section why-mayvenn]
     [:section our-story]
     [:section contact-us]
-    (component/build sticky-component {:next-page next-page} nil)]))
+    (component/build sticky-component {:shop?     shop?
+                                       :next-page next-page} nil)]))
 
 (defn query [data]
   {:free-install-mayvenn-ugc  {:images        (pixlee/images-in-album
                                                (get-in data storefront.keypaths/ugc)
                                                :free-install-mayvenn)
                                :album-keyword :free-install-mayvenn}
+   :shop?                     (= "shop" (get-in data storefront.keypaths/store-slug))
    :faq-data                  (faq/query data)
    :video                     (get-in data keypaths/adventure-home-video)
    :from-shop-to-freeinstall? (get-in data keypaths/adventure-from-shop-to-freeinstall?)

@@ -177,7 +177,8 @@
                                 (#{events/navigate-home} nav-event))]
     [:div.flex.flex-column {:style {:min-height    "100vh"
                                     :margin-bottom "-1px"}}
-     (dtc-banner/built-component data nil)
+     (when-not (experiments/shop-homepage-new? data)
+       (dtc-banner/built-component data nil))
      (when-not v2-home?
        [:div
         (promotion-banner/built-component data nil)

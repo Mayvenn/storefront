@@ -518,6 +518,8 @@
 (defpath clear-selected-location)
 (defpath control-adventure-location-submit)
 
+(defpath control-open-shop-escape-hatch)
+
 (defpath popup-show-adventure-free-install)
 (defpath popup-show-adventure-emailcapture)
 (defpath control-adventure-free-install-dismiss)

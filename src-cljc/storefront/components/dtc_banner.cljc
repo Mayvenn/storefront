@@ -1,3 +1,4 @@
+;; GROT: after new shop home page
 (ns storefront.components.dtc-banner
   (:require [storefront.component :as component]
             [storefront.components.ui :as ui]
