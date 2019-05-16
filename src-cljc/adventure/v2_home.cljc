@@ -63,28 +63,10 @@
                                           (utils/route-to next-page))
                                    [:div.h7 "Get started"])]]]]]]]))))))
 
-#_(defn hero-image [{:keys [mobile-url file-name alt next-page]}]
-  [:div
-   [:img.col-12.mx-auto
-    {:src "//ucarecdn.com/8b5bc7af-ca65-4812-88c2-e1601cb17b54/-/format/auto/bg.png"}]  [:div.flex.flex-auto.items-end.pb5
-    [:div.clearfix.col.col-12
-     [:div.col.col-6.px2 (ui/teal-button (merge (utils/scroll-href "learn-more")
-                                                {:height-class "py2"})
-                               "Learn More")]
-     [:div.col.col-6.px2 (ui/teal-button (merge (utils/route-to next-page)
-                                                {:height-class "py2"})
-                               "Get Started")]]]])
-
-#_[:div.center.mx-auto.col-6-on-tb-dt.col-12-on-mb
- [:div.h2.my4 "Who's doing my hair?"]
- [:div.dark-gray.mx10.h5.pb2 "Our Certified Stylists are the best in your area. They're chosen because of their top-rated reviews, professionalism, and amazing work."]
- [:img.col-12.mx-auto
-  {:src "//ucarecdn.com/d639d407-801e-408c-a480-3ceed8c14f14/-/format/auto/bg.png"}]]
-
 (defn hero [next-page]
   [:div.mx-auto.col-6-on-dt.relative
    {:data-test "adventure-home-choice-get-started"
-    :style {:margin-bottom "-78px"}}
+    :style     {:margin-bottom "-78px"}}
    [:img.center.mx-auto.col-12
     {:src "//ucarecdn.com/8b5bc7af-ca65-4812-88c2-e1601cb17b54/-/format/auto/bg.png"
      :alt "We're changing the game. Introducing Mayvenn Install Hair + Service for the price of one"}]
