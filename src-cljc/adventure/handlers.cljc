@@ -47,11 +47,16 @@
   [_ event {:keys [query-params]} app-state-before app-state]
   #?(:cljs
      (do
-       (when (and (not= events/navigate-adventure-home event)
-                  (empty? (get-in app-state keypaths/adventure-choices)))
-         (history/enqueue-navigate events/navigate-adventure-home nil))
-       (when (boolean (:em_hash query-params))
-         (messages/handle-message events/adventure-visitor-identified)))))
+       (let [adventure-choices         (get-in app-state keypaths/adventure-choices)
+             from-shop-to-freeinstall? (get-in app-state keypaths/adventure-from-shop-to-freeinstall?)]
+         (when (and (not= events/navigate-adventure-home event)
+                    (empty? adventure-choices)
+                    (not (and (= events/navigate-adventure-install-type event)
+                              from-shop-to-freeinstall?)))
+           (history/enqueue-navigate events/navigate-adventure-home nil))
+         (when (boolean (:em_hash query-params))
+           (messages/handle-message events/adventure-visitor-identified))))))
+
 
 (defmethod effects/perform-effects events/adventure-visitor-identified
   [_ _ _ _ app-state]

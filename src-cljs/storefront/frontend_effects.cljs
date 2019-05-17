@@ -142,15 +142,16 @@
 (defmethod perform-effects events/external-redirect-freeinstall
   [_ event {:keys [query-string]} _ app-state]
   (cookie-jar/save-from-shop-to-freeinstall (get-in app-state keypaths/cookie))
-  (let [hostname (case (get-in app-state keypaths/environment)
-                   "production" "mayvenn.com"
-                   "acceptance" "diva-acceptance.com"
-                   "storefront.localhost")]
+  (let [on-homepage? (= events/navigate-home (get-in app-state keypaths/navigation-event))
+        hostname     (case (get-in app-state keypaths/environment)
+                       "production" "mayvenn.com"
+                       "acceptance" "diva-acceptance.com"
+                       "storefront.localhost")]
     (set! (.-location js/window)
           (-> (.-location js/window)
               uri/uri
               (assoc :host (str "freeinstall." hostname)
-                     :path "/"
+                     :path (if on-homepage? "/adv/install-type" "/")
                      :query query-string)
               str))))
 
