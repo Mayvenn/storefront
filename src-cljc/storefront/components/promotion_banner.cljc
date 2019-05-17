@@ -55,6 +55,13 @@
     [:div.pointer "CONGRATS — Your next install is FREE! "
      [:span.underline "More info"]]]))
 
+(defmethod component :shop/freeinstall
+  [{:keys [promo]} _ _]
+  (component/create
+   [:div.white.center.pp5.bg-teal.h5.bold
+    {:data-test "promo-banner"}
+    "PAY $0 ON YOUR NEXT INSTALL - USE PROMO CODE: FREEINSTALL"]))
+
 (defmethod component :basic
   [{:keys [promo]} _ _]
   (component/create
@@ -109,6 +116,10 @@
    experiment for"
   [data]
   (cond
+
+    (= "shop" (get-in data keypaths/store-slug))
+    :shop/freeinstall
+
     ;; GROT: freeinstall-applied? when adventure orders using freeinstall promo code are no longer relevant
     (and
      (or (orders/freeinstall-applied? (get-in data keypaths/order))
