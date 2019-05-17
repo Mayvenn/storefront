@@ -94,7 +94,6 @@
 (def static-id (conj static :id))
 (def static-content (conj static :content))
 
-(def dtc-banner-hidden? (conj ui :dtc-banner-hidden?))
 (def api-requests (conj ui :api-requests))
 (def redirecting? (conj ui :redirecting?))
 (def return-navigation-message (conj ui :return-navigation-message))

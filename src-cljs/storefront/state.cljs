@@ -132,7 +132,6 @@
           :account-menu-expanded false
           :store-info-expanded false
           :popup nil
-          :dtc-banner-hidden? false
 
           :expanded-commission-order-id #{nil}
           :email-capture-session

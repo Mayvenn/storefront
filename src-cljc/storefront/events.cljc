@@ -212,8 +212,6 @@
 (defpath control-checkout-confirmation-submit)
 (defpath control-checkout-quadpay-confirmation-submit)
 
-(defpath control-dtc-banner-close)
-
 (defpath control-stylist-account-profile-submit)
 (defpath control-stylist-account-password-submit)
 (defpath control-stylist-account-commission-submit)
