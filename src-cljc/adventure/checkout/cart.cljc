@@ -345,5 +345,4 @@
      (built-component data nil)]
 
     [:footer
-     (storefront.footer/built-component data nil)]
-    ui/adventure-chat-icon]])
+     (storefront.footer/built-component data nil)]]])

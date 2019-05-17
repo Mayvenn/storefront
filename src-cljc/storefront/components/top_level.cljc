@@ -221,8 +221,7 @@
     [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
      ((main-component nav-event) data nil)]
     [:footer
-     (footer/built-component data nil)]
-    ui/adventure-chat-icon]])
+     (footer/built-component data nil)]]])
 
 (defn top-level-component [data owner opts]
   (let [nav-event    (get-in data keypaths/navigation-event)
@@ -264,8 +263,7 @@
                    :margin-bottom "-30px"}}
           (when-not (= nav-event events/navigate-adventure-home)
             {:class "max-580 mx-auto relative"}))
-         ((main-component nav-event) data nil)
-         ui/adventure-chat-icon]]
+         ((main-component nav-event) data nil)]]
 
        :else
        (main-layout data nav-event)))))

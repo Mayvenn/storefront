@@ -542,8 +542,6 @@
 (defpath api-success-shipping-address-geo-lookup)
 (defpath api-failure-shipping-address-geo-lookup)
 
-(defpath control-chat-button-pressed)
-
 ;; Stripe Payment Button
 (defpath stripe-payment-request-button-inserted)
 (defpath stripe-payment-request-button-removed)
