@@ -58,12 +58,10 @@
                                          on-non-minimal-footer-page?
                                          (not (and on-shop? on-homepage?))
                                          (or
-                                          (not (experiments/to-adventure-modal? app-state))
                                           (not on-shop?)
                                           (and (not on-homepage?)
                                                (= 1 nav-history-length))))
-        to-adventure-showable?      (and (experiments/to-adventure-modal? app-state)
-                                         (not seen-to-adventure-modal?)
+        to-adventure-showable?      (and (not seen-to-adventure-modal?)
                                          on-shop?
                                          (not on-homepage?)
                                          (zero? nav-history-length)

@@ -138,7 +138,3 @@
 (defn confetti?
   [data]
   (display-feature? data "confetti"))
-
-(defn to-adventure-modal?
-  [data]
-  (display-feature? data "to-adventure-modal"))
