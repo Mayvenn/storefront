@@ -77,7 +77,6 @@
             [storefront.components.sign-up :as sign-up]
             [storefront.components.slideout-nav :as slideout-nav]
             [storefront.components.ui :as ui]
-            [storefront.components.dtc-banner :as dtc-banner]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]))
@@ -177,8 +176,6 @@
                                 (#{events/navigate-home} nav-event))]
     [:div.flex.flex-column {:style {:min-height    "100vh"
                                     :margin-bottom "-1px"}}
-     (when-not (experiments/shop-homepage-new? data)
-       (dtc-banner/built-component data nil))
      (when-not v2-home?
        [:div
         (promotion-banner/built-component data nil)

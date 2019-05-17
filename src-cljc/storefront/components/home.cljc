@@ -355,9 +355,7 @@
     (experiments/v2-homepage? data)
     (v2-home/built-component data opts)
 
-    (and
-     (experiments/shop-homepage-new? data)
-     (= "shop" (get-in data keypaths/store-slug)))
+    (= "shop" (get-in data keypaths/store-slug))
     (adventure-home/built-component data opts)
 
     :else

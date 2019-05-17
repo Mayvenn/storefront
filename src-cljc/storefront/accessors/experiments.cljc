@@ -139,10 +139,6 @@
   [data]
   (display-feature? data "confetti"))
 
-(defn shop-homepage-new?
-  [data]
-  (display-feature? data "shop-homepage-new"))
-
 (defn to-adventure-modal?
   [data]
   (display-feature? data "to-adventure-modal"))

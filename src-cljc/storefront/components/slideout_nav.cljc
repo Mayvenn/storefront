@@ -280,8 +280,7 @@
      :store                  (marquee/query data)
      :vouchers?              (experiments/vouchers? data)
      :v2-experience?         (experiments/v2-experience? data)
-     :shop-homepage-new?     (and shop?
-                                  (experiments/shop-homepage-new? data)
+     :shop-homepage?         (and shop?
                                   (= events/navigate-home
                                      (get-in data keypaths/navigation-event)))
      :show-freeinstall-link? shop?

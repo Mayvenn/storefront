@@ -200,7 +200,7 @@
         (for [items columns]
           (shopping-column items (count columns)))]])))
 
-(defn component [{:as data :keys [store user cart shopping signed-in vouchers? shop-homepage-new?]} _ _]
+(defn component [{:as data :keys [store user cart shopping signed-in vouchers? shop-homepage?]} _ _]
   (component/create
    [:div
     [:div.hide-on-mb.relative
@@ -212,7 +212,7 @@
         [:div.h6.my2.flex.items-center
          (account-info signed-in user vouchers? store)
          [:div.pl2
-          (if shop-homepage-new?
+          (if shop-homepage?
             [:div {:style {:height (str ui/header-image-size "px")
                            :width  "28px"}}]
             (ui/shopping-bag {:style     {:height (str ui/header-image-size "px")
@@ -230,7 +230,7 @@
      [:div.flex-auto.py3 (ui/clickable-logo {:event     events/navigate-home
                                              :data-test "header-logo"
                                              :height    "40px"})]
-     (if shop-homepage-new?
+     (if shop-homepage?
        [:div {:style {:height "70px" :width "70px"}}]
        (ui/shopping-bag {:style     {:height "70px" :width "70px"}
                          :data-test "mobile-cart"}
