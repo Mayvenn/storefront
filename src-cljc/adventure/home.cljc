@@ -77,7 +77,8 @@
                   [:div.col-7 "We can't wait to pay for your install!"]
                   [:div.col-1]
                   [:div.col-4
-                   (ui/teal-button (merge {:height-class "py2"}
+                   (ui/teal-button (merge {:height-class "py2"
+                                           :data-test    "sticky-footer-get-started"}
                                           (if shop?
                                             (redirect-to-freeinstall "toadventurehomepagestickybar")
                                             (utils/route-to next-page)))
@@ -105,15 +106,16 @@
       [:div.absolute.bottom-0.col-6-on-tb-dt.col-12.pb2.mb3-on-dt
        [:div.col.col-12
         [:div.col.col-6.px2 (ui/teal-button (merge (utils/scroll-href "learn-more")
-                                                   {:height-class "py2"})
+                                                   {:height-class "py2"
+                                                    :data-test    "learn-more"})
                                             "Learn More")]
         [:div.col.col-6.px2
          (ui/teal-button (merge
+                          {:data-test    "adventure-home-choice-get-started"
+                           :height-class "py2"}
                           (if shop?
                             (redirect-to-freeinstall "toadventurehomepagehero")
-                            (utils/route-to next-page))
-                                {:data-test    "adventure-home-choice-get-started"
-                                 :height-class "py2"})
+                            (utils/route-to next-page)))
                          "Get Started")]]]]]))
 
 (def free-shipping-banner
