@@ -210,7 +210,12 @@
 
 (defn add-pending-promo-code [app-state {:keys [number token] :as order}]
   (when-let [pending-promo-code (get-in app-state keypaths/pending-promo-code)]
-    (api/add-promotion-code (get-in app-state keypaths/session-id) number token pending-promo-code true)))
+    (api/add-promotion-code (= "shop" (get-in app-state keypaths/store-slug))
+                            (get-in app-state keypaths/session-id)
+                            number
+                            token
+                            pending-promo-code
+                            true)))
 
 (defmethod perform-effects events/navigate [_ event {:keys [query-params nav-stack-item] :as args} prev-app-state app-state]
   (let [args         (dissoc args :nav-stack-item)

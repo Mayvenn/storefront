@@ -809,20 +809,30 @@
 (defn api-failure? [event]
   (= events/api-failure (subvec event 0 2)))
 
-(defn add-promotion-code [session-id number token promo-code allow-dormant?]
+;; HACK: Move to backend
+(defn alter-shop-freeinstall-promotion-error
+  [shop? promo-code error-response]
+  (cond-> error-response
+    (and shop?
+         (= "ineligible-for-promotion" (-> error-response :response :body :error-code))
+         (= "freeinstall" (some-> promo-code str/trim str/lower-case)))
+    (assoc-in [:response :body :error-message]
+              "You need at least 3 bundles (closures and frontals included) to use promo code \"freeinstall\"")))
+
+(defn add-promotion-code [shop? session-id number token promo-code allow-dormant?]
   (storeback-api-req
    POST
    "/v2/add-promotion-code"
    request-keys/add-promotion-code
-   {:params {:session-id session-id
-             :number number
-             :token token
-             :code promo-code
-             :allow-dormant allow-dormant?}
-    :handler #(messages/handle-message events/api-success-update-order-add-promotion-code
-                                       {:order %
-                                        :promo-code promo-code
-                                        :allow-dormant? allow-dormant?})
+   {:params        {:session-id    session-id
+                    :number        number
+                    :token         token
+                    :code          promo-code
+                    :allow-dormant allow-dormant?}
+    :handler       #(messages/handle-message events/api-success-update-order-add-promotion-code
+                                             {:order          %
+                                              :promo-code     promo-code
+                                              :allow-dormant? allow-dormant?})
     :error-handler #(if allow-dormant?
                       (messages/handle-message events/api-failure-pending-promo-code %)
                       (let [response-body (get-in % [:response :body])]
@@ -830,7 +840,7 @@
                                  (= (:error-code response-body) "promotion-not-found"))
                           (messages/handle-message events/api-failure-errors-invalid-promo-code
                                                    (assoc (waiter-style->std-error response-body) :promo-code promo-code))
-                          (default-error-handler %))))}))
+                          (default-error-handler (alter-shop-freeinstall-promotion-error shop? promo-code %)))))}))
 
 (defn add-sku-to-bag [session-id {:keys [token number sku] :as params} handler]
   (storeback-api-req
