@@ -121,6 +121,15 @@
     (assoc-in app-state keypaths/cart-freeinstall-just-added? false)
     app-state))
 
+(def ^:private slug->video
+  {"we-are-mayvenn" {:youtube-id "hWJjyy5POTE"}
+   "free-install"   {:youtube-id "oR1keQ-31yc"}})
+
+(defmethod transition-state events/navigate-home [_ event {:keys [query-params]} app-state]
+  (cond-> app-state
+    (= "shop" (get-in app-state keypaths/store-slug))
+    (assoc-in adventure.keypaths/adventure-home-video (slug->video (:video query-params)))))
+
 (defmethod transition-state events/navigate [_ event args app-state]
   (let [args (dissoc args :nav-stack-item)
         uri  (url/url js/window.location)]

@@ -151,8 +151,9 @@
                          :height "41px"
                          :width  "41px"}))
 
-(def video-block
-  (let [video-link (utils/route-to events/navigate-adventure-home {:query-params {:video "free-install"}})]
+(defn video-block [video-nav-event]
+  (let [video-link (utils/route-to video-nav-event
+                                   {:query-params {:video "free-install"}})]
     [:div.col-11.mx-auto
      [:div.hide-on-mb-tb.flex.justify-center.py3
       [:a.block.relative
@@ -311,8 +312,8 @@
                         :title       "Certified Stylists"
                         :description "Our stylists are chosen because of their industry-leading standards. Both our hair and service are quality guaranteed."})]])
 
-(def our-story
-  (let [we-are-mayvenn-link (utils/route-to events/navigate-adventure-home {:query-params {:video "we-are-mayvenn"}})
+(defn our-story [video-nav-event]
+  (let [we-are-mayvenn-link (utils/route-to video-nav-event {:query-params {:video "we-are-mayvenn"}})
         diishan-image       (ui/ucare-img {:class "col-12"} "e2186583-def8-4f97-95bc-180234b5d7f8")
         mikka-image         (ui/ucare-img {:class "col-12"} "838e25f5-cd4b-4e15-bfd9-8bdb4b2ac341")
         stylist-image       (ui/ucare-img {:class "col-12"} "6735b4d5-9b65-4fa9-96cd-871141b28672")
@@ -402,6 +403,7 @@
                          video
                          free-install-mayvenn-ugc
                          shop?
+                         video-nav-event
                          next-page]
                   :as   data}
                  owner
@@ -431,9 +433,9 @@
                         ;; NOTE(jeff): we use an invalid video slug to preserve back behavior. There probably should be
                         ;;             an investigation to why history is replaced when doing A -> B -> A navigation
                         ;;             (B is removed from history).
-                        {:opts {:close-attrs (utils/route-to events/navigate-adventure-home {:query-params {:video "0"}})}}))
+                        {:opts {:close-attrs (utils/route-to video-nav-event {:query-params {:video "0"}})}}))
      [:section paying-for-your-next-appt]
-     [:section video-block]]
+     [:section (video-block video-nav-event)]]
     [:section.py10.bg-transparent-teal free-install-steps]
     [:section certified-stylists]
     [:section hair-quality]
@@ -442,21 +444,25 @@
     (when shop?
       [:section escape-hatch])
     [:section why-mayvenn]
-    [:section our-story]
+    [:section (our-story video-nav-event)]
     [:section contact-us]
     (component/build sticky-component {:shop?     shop?
                                        :next-page next-page} nil)]))
 
 (defn query [data]
-  {:free-install-mayvenn-ugc  {:images        (pixlee/images-in-album
-                                               (get-in data storefront.keypaths/ugc)
-                                               :free-install-mayvenn)
-                               :album-keyword :free-install-mayvenn}
-   :shop?                     (= "shop" (get-in data storefront.keypaths/store-slug))
-   :faq-data                  (faq/query data)
-   :video                     (get-in data keypaths/adventure-home-video)
-   :from-shop-to-freeinstall? (get-in data keypaths/adventure-from-shop-to-freeinstall?)
-   :next-page                 events/navigate-adventure-install-type})
+  (let [shop? (= "shop" (get-in data storefront.keypaths/store-slug))]
+    {:free-install-mayvenn-ugc  {:images        (pixlee/images-in-album
+                                                 (get-in data storefront.keypaths/ugc)
+                                                 :free-install-mayvenn)
+                                 :album-keyword :free-install-mayvenn}
+     :shop?                     shop?
+     :video-nav-event           (if shop?
+                                  events/navigate-home
+                                  events/navigate-adventure-home)
+     :faq-data                  (faq/query data)
+     :video                     (get-in data keypaths/adventure-home-video)
+     :from-shop-to-freeinstall? (get-in data keypaths/adventure-from-shop-to-freeinstall?)
+     :next-page                 events/navigate-adventure-install-type}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
