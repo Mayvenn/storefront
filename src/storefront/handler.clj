@@ -611,6 +611,8 @@
                                             ["https://shop.mayvenn.com/categories/12-closures-and-frontals" "0.80"]
                                             ["https://shop.mayvenn.com/categories/13-wigs"                  "0.80"]
                                             ["https://shop.mayvenn.com/categories/16-dyed-virgin-hair"      "0.80"]
+                                            ["https://shop.mayvenn.com/categories/17-dyed-virgin-closures"  "0.80"]
+                                            ["https://shop.mayvenn.com/categories/18-dyed-virgin-frontals"  "0.80"]
                                             ["https://shop.mayvenn.com/categories/21-seamless-clip-ins"     "0.80"]
                                             ["https://shop.mayvenn.com/shop/look"                           "0.80"]]
                                            (for [{:keys [catalog/product-id page/slug]} launched-products]
