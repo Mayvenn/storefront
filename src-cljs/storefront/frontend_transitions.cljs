@@ -121,14 +121,19 @@
     (assoc-in app-state keypaths/cart-freeinstall-just-added? false)
     app-state))
 
-(def ^:private slug->video
+(def ^:private v2-slug->video
+  {"we-are-mayvenn" {:youtube-id "hWJjyy5POTE"}
+   "free-install"   {:youtube-id "cWkSO_2nnD4"}})
+
+(def ^:private adventure-slug->video
   {"we-are-mayvenn" {:youtube-id "hWJjyy5POTE"}
    "free-install"   {:youtube-id "oR1keQ-31yc"}})
 
-(defmethod transition-state events/navigate-home [_ event {:keys [query-params]} app-state]
-  (cond-> app-state
-    (= "shop" (get-in app-state keypaths/store-slug))
-    (assoc-in adventure.keypaths/adventure-home-video (slug->video (:video query-params)))))
+(defmethod transition-state events/navigate-home
+  [_ event {:keys [query-params]} app-state]
+  (if (= "shop" (get-in app-state keypaths/store-slug))
+    (assoc-in app-state adventure.keypaths/adventure-home-video (adventure-slug->video (:video query-params)))
+    (assoc-in app-state keypaths/v2-ui-home-video (v2-slug->video (:video query-params)))))
 
 (defmethod transition-state events/navigate [_ event args app-state]
   (let [args (dissoc args :nav-stack-item)

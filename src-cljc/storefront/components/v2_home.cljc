@@ -361,14 +361,6 @@
 (defn built-component [data opts]
   (component/build component (query data) opts))
 
-(def ^:private slug->video
-  {"we-are-mayvenn" {:youtube-id "hWJjyy5POTE"}
-   "free-install"   {:youtube-id "cWkSO_2nnD4"}})
-
-(defmethod transitions/transition-state events/navigate-home
-  [_ _ {:keys [query-params]} app-state]
-  (assoc-in app-state keypaths/v2-ui-home-video (slug->video (:video query-params))))
-
 (defmethod effects/perform-effects events/v2-show-home
   [_ _ args prev-app-state app-state]
   #?(:cljs (do (pixlee.hook/fetch-album-by-keyword :sleek-and-straight)
