@@ -279,6 +279,8 @@
 
 (defmethod perform-effects events/navigate-home [_ _ {:keys [query-params]} _ app-state]
   (api/fetch-cms-data)
+  (when (= "shop" (get-in app-state keypaths/store-slug))
+    (pixlee/fetch-album-by-keyword :free-install-mayvenn))
   (when (experiments/v2-homepage? app-state)
     (handle-message events/v2-show-home)))
 
