@@ -1,4 +1,5 @@
 .bg-fb-blue                 { background-color: var(--facebook-blue); }
+.bg-quadpay-blue            { background-color: var(--quadpay-blue); }
 .bg-twitter-blue            { background-color: var(--twitter-blue); }
 .bg-sms-green               { background-color: var(--sms-green); }
 .bg-light-orange            { background-color: var(--light-orange); }
@@ -41,6 +42,7 @@
     --hover-only-teal-gray:   #e5eeec;
     --too-light-teal:         #f5fcfb;
     --facebook-blue:          #3b5998;
+    --quadpay-blue:           #1d73ec;
     --twitter-blue:           #00aced;
     --sms-green:              #1fcc23;
     --light-orange:           rgb(255, 248, 229);

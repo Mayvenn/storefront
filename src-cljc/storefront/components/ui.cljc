@@ -76,7 +76,8 @@
                          :color/teal-ghost  "btn-outline border-teal teal"
                          :color/navy-ghost  "btn-outline border-navy navy"
                          :color/facebook    "btn-primary bg-fb-blue white"
-                         :color/dark-gray   "btn-primary bg-dark-gray white"})]
+                         :color/dark-gray   "btn-primary bg-dark-gray white"
+                         :color/quadpay     "btn-primary bg-quadpay-blue white"})]
     (assert color (str "Button color " color-kw " has not been defined."))
     color))
 
@@ -132,12 +133,14 @@
 
 (defn submit-button
   ([title] (submit-button title {}))
-  ([title {:keys [spinning? disabled? data-test] :as attrs}]
+  ([title {:keys [spinning? disabled? data-test color-kw]
+           :as attrs
+           :or {color-kw :color/teal}}]
    (if spinning?
-     (color-button :color/teal attrs)
+     (color-button color-kw attrs)
      [:input
       {:type "submit"
-       :class (button-class :color/teal attrs)
+       :class (button-class color-kw attrs)
        :data-test data-test
        :value title
        :disabled (boolean disabled?)}])))

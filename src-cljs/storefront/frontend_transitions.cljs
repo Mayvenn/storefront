@@ -658,7 +658,10 @@
           (assoc-in keypaths/email-capture-session "opted-in")))))
 
 (defmethod transition-state events/popup-show-email-capture [_ event args app-state]
-  (assoc-in app-state keypaths/popup :email-capture))
+  (assoc-in app-state keypaths/popup
+            (if (experiments/email-capture-quadpay? app-state)
+              :email-capture-quadpay
+              :email-capture)))
 
 (defmethod transition-state events/sign-out [_ event args app-state]
   (-> app-state
