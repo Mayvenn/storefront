@@ -280,7 +280,76 @@
         (is (not-any? #{"Disallow: /"} (string/split-lines body)) body)))))
 
 (deftest fetches-data-from-contentful
-  (let [number-of-contentful-entities-to-fetch 3]
+  (testing "transforming content"
+    (testing "transforming 'latest' content"
+        (let [[_ storeback-handler]                    (with-requests-chan (GET "/store" req common/storeback-stylist-response))
+              [contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
+                                                                                {:status 200
+                                                                                 :body   (generate-string (:body common/contentful-response))}))]
+          (with-services {:storeback-handler  storeback-handler
+                          :contentful-handler contentful-handler}
+          (with-handler handler
+            (let [responses (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
+                  requests  (txfm-requests contentful-requests identity)]
+              (is (every? #(= 200 (:status %)) responses))
+              (is (=
+                   {:left-feature-block-file-name   "Left",
+                    :hero-image-mobile-uuid         "666b02ba-26f2-4349-aa98-1d251edc701c",
+                    :hero-image-desktop-uuid        "8cb671b1-33b8-496b-a77b-7281ac72c571",
+                    :right-feature-block-file-name  "Right",
+                    :hero-image-file-name           "Hair-Always-On-Beat.jpg",
+                    :hero-image-alt-text
+                    "Hair always on beat! 15% off everything! Shop looks!",
+                    :content/type                   "homepage",
+                    :content/updated-at             1522792187237,
+                    :middle-feature-block-file-name "Middle",
+                    :content/id                     "7kFmCirU3uO2w6ykgAQ4gY"}
+                   (-> (mock/request :get "https://bob.mayvenn.com/cms")
+                       handler
+                       :body
+                       (parse-string true)
+                       :homepage))))))))
+    (testing "transforming ugc-collections"
+      (let [[_ storeback-handler]                    (with-requests-chan (GET "/store" req common/storeback-stylist-response))
+            [contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
+                                                                              {:status 200
+                                                                               :body   (generate-string (:body common/contentful-ugc-collection-response))}))]
+        (with-services {:storeback-handler  storeback-handler
+                        :contentful-handler contentful-handler}
+            (with-handler handler
+              (let [responses (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
+                    requests  (txfm-requests contentful-requests identity)]
+
+                (is (= {:deals
+                        {:content/id         "2dZTVOLLqkNS9EoUJ1t6qn"
+                         :content/type       "ugc-collection"
+                         :content/updated-at 1558471238081
+                         :slug               "deals"
+                         :name               "Mayvenn Classic - Deals Page"
+                         :acceptance-looks   [{:content/type          "look"
+                                               :content/id            "QCCIxo6JWgxqZVqvJvQyB"
+                                               :content/updated-at    1557448824059
+                                               :title                 "Virgin Peruvian Deep Wave 16 18 20 22"
+                                               :texture               "Deep Wave"
+                                               :color                 "Natural Black"
+                                               :description           "16\" + 18\" + 20\" "
+                                               :shared-cart-url       "https://shop.mayvenn.com/c/BV7bOQQxuJ"
+                                               :photo-url             "https://static.pixlee.com/photos/235267317/original/bundle-deal-template-f-r1-01-lm.jpg"
+                                               :social-media-handle   "@mayvennhair"
+                                               :social-media-platform "Instagram"}]}
+                        :acceptance-deals
+                        {:slug               "acceptance-deals",
+                         :name               "[ACCEPTANCE] Mayvenn Classic - Deals Page",
+                         :content/updated-at 1558472526413,
+                         :content/type       "ugc-collection",
+                         :content/id         "6Za8EE8Kpn8NeoJciqN3uA"}}
+                       (-> (mock/request :get "https://bob.mayvenn.com/cms")
+                           handler
+                           :body
+                           (parse-string true)
+                           :ugc-collection)))))))))
+
+  (let [number-of-contentful-entities-to-fetch 4]
     (testing "caching content"
       (let [[storeback-requests storeback-handler]   (with-requests-chan (GET "/store" req common/storeback-stylist-response))
             [contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req

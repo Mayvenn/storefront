@@ -5,6 +5,7 @@
             [catalog.products :as products]
             [catalog.skuers :as skuers]
             [clj-time.core :as clj-time.core]
+            [cheshire.core :as json]
             [clojure.java.io :as io]
             [clojure.set :as set]
             [clojure.string :as string]
@@ -734,7 +735,7 @@
 
 (defn create-handler
   ([] (create-handler {}))
-  ([{:keys [logger exception-handler environment storeback-config contentful] :as ctx}]
+  ([{:keys [logger exception-handler environment contentful] :as ctx}]
    (-> (routes (GET "/healthcheck" [] "cool beans")
                (GET "/robots.txt" req (-> (robots req) util.response/response (util.response/content-type "text/plain")))
                (GET "/sitemap.xml" req (sitemap ctx req))
@@ -751,7 +752,7 @@
                (GET "/cms" req
                  (-> contentful
                      contentful/read-cache
-                     cheshire.core/generate-string
+                     json/generate-string
                      util.response/response))
                (GET "/marketing-site" req
                  (contentful/marketing-site-redirect req))

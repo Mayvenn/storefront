@@ -1,38 +1,33 @@
 (ns storefront.system.contentful
-  (:require [camel-snake-kebab.core :as csk]
-            [camel-snake-kebab.extras :as cske]
-            [clojure.set :as set]
+  (:require [clojure.walk :as walk]
             [com.stuartsierra.component :as component]
             [lambdaisland.uri :as uri]
             [overtone.at-at :as at-at]
             [ring.util.response :as util.response]
-            [spice.core :as spice]
             [spice.date :as date]
             [spice.maps :as maps]
-            [tugboat.core :as tugboat]))
+            [tugboat.core :as tugboat]
+            [clojure.string :as string]))
 
 (defn contentful-request
   "Wrapper for the Content Delivery endpoint"
-  [{:keys [endpoint env-param api-key space-id]} params]
-  (let [base-params {:access_token                     api-key
-                     :order                            (str "-fields." env-param)
-                     (str "fields." env-param "[lte]") (date/to-iso (date/now)) }]
-    (try
-      (tugboat/request {:endpoint endpoint}
-                       :get (str "/spaces/" space-id "/entries")
-                       {:socket-timeout 30000
-                        :conn-timeout   30000
-                        :as             :json
-                        :query-params   (merge base-params params)})
-      (catch java.io.IOException ioe
-        nil))))
+  [{:keys [endpoint api-key space-id]} params]
+  (try
+    (tugboat/request {:endpoint endpoint}
+                     :get (str "/spaces/" space-id "/entries")
+                     {:socket-timeout 30000
+                      :conn-timeout   30000
+                      :as             :json
+                      :query-params   (merge {:access_token api-key} params)})
+    (catch java.io.IOException ioe
+      nil)))
 
 (defn extract-fields
   "Contentful resources are boxed.
 
   We extract the fields, merging useful meta-data."
   [{:keys [fields sys]}]
-  (merge (cske/transform-keys csk/->kebab-case fields)
+  (merge (maps/kebabify fields)
          {:content/updated-at (spice.date/to-millis (:updatedAt sys 0))
           :content/type       (or
                                (some-> sys :contentType :sys :id)
@@ -57,15 +52,20 @@
       (update-in [:includes :Asset]
                  extract-latest-by :content/id)))
 
+
+(defn ^:private link->value [includes link]
+  (let [id        (some-> link :sys :id)
+        link-type (some-> link :sys :link-type keyword)]
+    (get-in includes [link-type id] link)))
+
 (defn resolve-link
   "Resolves contentful links in field values by stitching included
   resources in situ."
   [includes [key value]]
-  [key (if (map? value)
-         (let [id        (some-> value :sys :id)
-               link-type (some-> value :sys :link-type keyword)]
-           (get-in includes [link-type id] value))
-         value)])
+  [key (cond
+         (map? value)    (link->value includes value)
+         (vector? value) (mapv (partial link->value includes) value)
+         :else           value)])
 
 (defn resolve-children
   "Resolves child links in parent maps by lookup in includes."
@@ -83,18 +83,58 @@
       (update :Entry (partial resolve-children includes))
       (resolve-children items)))
 
+(defn resolve-all-collection
+  "Resolves Assets under Entries within items."
+  [{:keys [items includes]}]
+  (let [resolved-includes (-> includes
+                              (update :Entry (partial (partial mapv resolve-children includes)))
+                              (update :Entry (partial maps/index-by (comp :id :sys))))]
+    (walk/postwalk
+     (fn [form]
+       (if (and (map? form)
+                (-> form :sys :type (= "Link")))
+         (if-let [resolved-entry (get-in resolved-includes [:Entry (-> form :sys :id)])]
+           (extract-fields resolved-entry)
+           form)
+         form))
+     items)))
+
 (defn do-fetch-entries
-  ([contentful content-type]
-   (do-fetch-entries contentful content-type 1))
-  ([{:keys [logger exception-handler cache space-id] :as contentful} content-type attempt-number]
+  ([contentful content-params]
+   (do-fetch-entries contentful content-params 1))
+  ([{:keys [logger exception-handler cache env-param] :as contentful}
+    {:keys [content-type latest? select exists primary-key]
+     :as   content-params} attempt-number]
    (try
      (when (<= attempt-number 2)
-       (let [{:keys [status body]} (contentful-request contentful
-                                                       {"content_type" (name content-type)
-                                                        "limit"        1})]
+       (let [{:keys [status body]} (contentful-request
+                                    contentful
+                                    (merge
+                                     {"content_type" (name content-type)}
+                                     (when exists
+                                       (reduce
+                                        (fn [m field]
+                                          (assoc m (str field "[exists]") true))
+                                        {}
+                                        exists))
+                                     (when select
+                                       {"select" (string/join "," select)})
+                                     (when latest?
+                                       {"limit"                           1
+                                        :order                            (str "-fields." env-param)
+                                        (str "fields." env-param "[lte]") (date/to-iso (date/now))})))]
          (if (and status (<= 200 status 299))
-           (swap! cache merge (some-> body extract resolve-all clojure.walk/keywordize-keys (select-keys [content-type])))
-           (do-fetch-entries contentful content-type (inc attempt-number)))))
+           (swap! cache merge
+                  (if latest?
+                    (some-> body extract resolve-all walk/keywordize-keys (select-keys [content-type]))
+                    (some->> body
+                             resolve-all-collection
+                             (mapv extract-fields)
+                             walk/keywordize-keys
+                             (maps/index-by primary-key)
+                             (assoc {} content-type))))
+
+           (do-fetch-entries contentful content-params (inc attempt-number)))))
      (catch Throwable t
        ;; Ideally, we should never get here, but at-at halts all polls that throw exceptions silently.
        ;; This simply reports it and lets the polling continue
@@ -107,20 +147,34 @@
 (defrecord ContentfulContext [logger exception-handler environment cache-timeout api-key space-id endpoint]
   component/Lifecycle
   (start [c]
-    (let [pool   (at-at/mk-pool)
-          cache  (atom {})
-          config {:space-id  space-id
-                  :endpoint  endpoint
-                  :env-param (if (= environment "production")
-                               "production"
-                               "acceptance")
-                  :cache     cache
-                  :api-key   api-key}]
-      (doseq [content-type [:homepage :mayvennMadePage :advertisedPromo]]
+    (let [pool      (at-at/mk-pool)
+          cache     (atom {})
+          env-param (if (= environment "production")
+                      "production"
+                      "acceptance")]
+      (doseq [content-params [{:content-type :homepage
+                               :latest?      true}
+                              {:content-type :mayvennMadePage
+                               :latest?      true}
+                              {:content-type :advertisedPromo
+                               :latest?      true}
+                              {:content-type :ugc-collection
+                               :exists       ["fields.slug"]
+                               :primary-key  :slug
+                               :select       [(if (= "production" env-param)
+                                                "fields.looks"
+                                                "fields.acceptanceLooks")
+                                              "fields.slug"
+                                              "fields.name"
+                                              "sys.contentType"
+                                              "sys.updatedAt"
+                                              "sys.id"
+                                              "sys.type"]
+                               :latest?      false}]]
         (at-at/interspaced cache-timeout
-                           #(do-fetch-entries config content-type)
+                           #(do-fetch-entries (assoc c :cache cache :env-param env-param) content-params)
                            pool
-                           :desc (str "poller for " content-type)))
+                           :desc (str "poller for " (:content-type content-params))))
       (println "Pool polling status at start: " (at-at/show-schedule pool))
       (assoc c
              :pool  pool

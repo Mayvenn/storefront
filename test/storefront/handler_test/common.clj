@@ -1,13 +1,16 @@
 (ns storefront.handler-test.common
   (:require [cheshire.core :refer [generate-string parse-string]]
+            [camel-snake-kebab.core :as csk]
+            [camel-snake-kebab.extras :as cske]
             [com.stuartsierra.component :as component]
             [compojure.core :refer [routes GET POST]]
-            [spice.core :as spice]
             [ring.util.response :refer [content-type response status]]
             [standalone-test-server.core :refer [txfm-request txfm-requests
                                                  with-standalone-server standalone-server
                                                  with-requests-chan]]
-            [storefront.system :refer [create-system]]))
+            [storefront.system :refer [create-system]]
+            [storefront.system.contentful :as contentful]
+            [spice.maps :as maps]))
 
 (def contentful-port 4335)
 
@@ -47,6 +50,56 @@
       (response)
       (status 200)
       (content-type "application/json")))
+
+(def contentful-ugc-collection-response
+  {:body   {:sys   {:type "Array"},
+            :total 2,
+            :skip  0,
+            :limit 100,
+            :items
+            [{:fields
+              {:acceptanceLooks
+               [{:sys {:type "Link", :linkType "Entry", :id "QCCIxo6JWgxqZVqvJvQyB"}}],
+               :slug "deals",
+               :name "Mayvenn Classic - Deals Page"},
+              :sys
+              {:contentType
+               {:sys {:type "Link", :linkType "ContentType", :id "ugc-collection"}},
+               :updatedAt "2019-05-21T20:40:38.081Z",
+               :id        "2dZTVOLLqkNS9EoUJ1t6qn",
+               :type      "Entry"}}
+             {:fields
+              {:slug "acceptance-deals",
+               :name "[ACCEPTANCE] Mayvenn Classic - Deals Page"},
+              :sys
+              {:contentType
+               {:sys {:type "Link", :linkType "ContentType", :id "ugc-collection"}},
+               :updatedAt "2019-05-21T21:02:06.413Z",
+               :id        "6Za8EE8Kpn8NeoJciqN3uA",
+               :type      "Entry"}}],
+            :includes
+            {:Entry
+             [{:sys
+               {:space       {:sys {:type "Link", :linkType "Space", :id "76m8os65degn"}},
+                :updatedAt   "2019-05-10T00:40:24.059Z",
+                :revision    2,
+                :locale      "en-US",
+                :createdAt   "2019-04-04T21:16:39.491Z",
+                :type        "Entry",
+                :id          "QCCIxo6JWgxqZVqvJvQyB",
+                :environment {:sys {:id "master", :type "Link", :linkType "Environment"}},
+                :contentType {:sys {:type "Link", :linkType "ContentType", :id "look"}}},
+               :fields
+               {:title               "Virgin Peruvian Deep Wave 16 18 20 22",
+                :texture             "Deep Wave",
+                :color               "Natural Black",
+                :description         "16\" + 18\" + 20\" ",
+                :sharedCartUrl       "https://shop.mayvenn.com/c/BV7bOQQxuJ",
+                :photoUrl
+                "https://static.pixlee.com/photos/235267317/original/bundle-deal-template-f-r1-01-lm.jpg",
+                :socialMediaHandle   "@mayvennhair",
+                :socialMediaPlatform "Instagram"}}]}}
+   :status 200})
 
 (def contentful-response
   {:body
