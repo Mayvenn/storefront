@@ -138,7 +138,3 @@
 (defn confetti?
   [data]
   (display-feature? data "confetti"))
-
-(defn email-capture-quadpay?
-  [data]
-  (display-feature? data "email-capture-quadpay"))

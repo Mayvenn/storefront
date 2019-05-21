@@ -67,10 +67,6 @@
                                          (zero? nav-history-length)
                                          on-non-minimal-footer-page?)]
     (cond
-
-      :dev
-      (messages/handle-message events/popup-show-email-capture)
-
       to-adventure-showable?
       (messages/handle-message events/popup-show-to-adventure)
 
