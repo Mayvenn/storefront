@@ -8,9 +8,7 @@
             [storefront.transitions :as transitions]))
 
 (defn ^:private query [data]
-  (let [back-event (if (experiments/match-before-purchase? data)
-                     events/navigate-adventure-install-type
-                     events/navigate-adventure-what-next)]
+  (let [back-event events/navigate-adventure-install-type]
     {:prompt               "We'll match you with a top stylist, guaranteed."
      :mini-prompt          "If you don’t love the install, we’ll pay for you to get it redone. It’s a win-win!"
      :background-overrides {:class "bg-adventure-match-stylist"}

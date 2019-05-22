@@ -26,11 +26,7 @@
                                 :data-test-suffix (str %)
                                 :value            {:how-far (str % "mi")}
                                 :target-message   [events/navigate-adventure-matching-stylist-wait-pre-purchase]})
-                       [10 25 50 100])
-   :footer       (when-not (experiments/match-before-purchase? data)
-                   [:div.h6.dark-gray.mt3.pb4
-                    [:div.col-7-on-tb-dt.col-9.mx-auto.mb1 "Not ready to pick a stylist? Let a Mayvenn expert find one for you after you buy hair."]
-                    [:a.teal.medium (utils/route-to events/navigate-adventure-shop-hair) "Shop hair"]])})
+                       [10 25 50 100])})
 
 (defn built-component
   [data opts]

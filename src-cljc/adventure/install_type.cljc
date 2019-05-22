@@ -15,9 +15,7 @@
 
 (defn ^:private query [data]
   (let [family-facet-options (facets/adventure-facet-options :hair/family (get-in data keypaths/v2-facets))
-        nav-event (if (experiments/match-before-purchase? data)
-                    events/navigate-adventure-match-stylist
-                    events/navigate-adventure-what-next)]
+        nav-event            events/navigate-adventure-match-stylist]
     {:prompt       "Which type of install are you looking for?"
      :prompt-image "//ucarecdn.com/a159aafc-b096-46b9-88ae-901e96699795/-/format/auto/bg.png"
      :data-test    "install-type"
