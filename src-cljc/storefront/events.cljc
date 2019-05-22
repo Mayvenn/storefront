@@ -25,6 +25,7 @@
 (defpath navigate-home)
 
 (defpath navigate-info-certified-stylists)
+(defpath navigate-info-about-our-hair)
 
 (defpath navigate-category)
 (defpath navigate-category-update)

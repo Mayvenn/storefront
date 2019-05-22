@@ -33,6 +33,7 @@
                        storefront.components.v2-homepage-popup
                        storefront.components.to-adventure-popup])
             adventure.home
+            adventure.informational.about-our-hair
             adventure.informational.certified-stylists
             adventure.what-next
             adventure.shop-hair
@@ -139,6 +140,7 @@
     events/navigate-gallery                 gallery/built-component
 
     events/navigate-info-certified-stylists                       adventure.informational.certified-stylists/built-component
+    events/navigate-info-about-our-hair                           adventure.informational.about-our-hair/built-component
     events/navigate-adventure-home                                adventure.home/built-component
     events/navigate-adventure-what-next                           adventure.what-next/built-component
     events/navigate-adventure-shop-hair                           adventure.shop-hair/built-component
