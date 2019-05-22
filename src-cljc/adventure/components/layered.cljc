@@ -153,7 +153,7 @@
            (set-height))
          om/IRenderState
          (render-state [this {:keys [show? content-height]}]
-           (let [{:cta/keys [event]} data]
+           (let [{:cta/keys [message]} data]
              (component/html
               [:div.hide-on-dt
                [:div.fixed.z4.bottom-0.left-0.right-0
@@ -173,7 +173,7 @@
                     [:div.col-4
                      (ui/teal-button (merge {:height-class "py2"
                                              :data-test    "sticky-footer-get-started"}
-                                            (apply utils/route-to event))
+                                            (apply utils/route-to message))
                                      [:div.h7 "Get started"])]]]]]]])))))))
 
 (defmethod layer-view :default [_ _ _] (component/create [:div]))
