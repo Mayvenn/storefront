@@ -1,6 +1,6 @@
 (ns adventure.select-new-look
-  (:require #?@(:cljs [[storefront.components.ugc :as ugc]
-                       [storefront.hooks.pixlee :as pixlee-hook]])
+  (:require #?@(:cljs [[storefront.hooks.pixlee :as pixlee-hook]])
+            [storefront.components.ugc :as ugc]
             [storefront.events :as events]
             [storefront.effects :as effects]
             [storefront.transitions :as transitions]
@@ -19,25 +19,27 @@
   (let [album-keyword     (get-in data keypaths/selected-album-keyword)
         stylist-selected? (get-in data adventure-keypaths/adventure-servicing-stylist)
         current-step      (if stylist-selected? 3 2)
-        looks             (pixlee/images-in-album (get-in data keypaths/ugc) album-keyword)]
+        color-details     (->> (get-in data keypaths/v2-facets)
+                               (filter #(= :hair/color (:facet/slug %)))
+                               first
+                               :facet/options
+                               (maps/index-by :option/slug))
+        looks             (mapv (partial ugc/pixlee-look->social-card color-details)
+                                (pixlee/images-in-album (get-in data keypaths/ugc) album-keyword))]
     (maps/deep-merge
      (albums/by-keyword album-keyword)
      {:data-test         "select-new-look-choice"
       :current-step      current-step
       :header-data       {:subtitle (str "Step " current-step  " of 3")}
       :spinning?         (empty? looks)
-      :color-details     (->> (get-in data keypaths/v2-facets)
-                              (filter #(= :hair/color (:facet/slug %)))
-                              first
-                              :facet/options
-                              (maps/index-by :option/slug))
       :looks             looks
       :stylist-selected? stylist-selected?})))
 
 ;; TODO(jeff,corey): Move this to a separate template
 (defn ^:private component
   [{:as   data
-    :keys [prompt mini-prompt prompt-image header-data data-test stylist-selected? spinning?]} _ _]
+    :keys [prompt mini-prompt prompt-image header-data data-test stylist-selected? spinning?
+           looks]} _ _]
   (component/create
    [:div.bg-too-light-teal.white.center.flex-auto.self-stretch
     (when header-data
@@ -55,7 +57,10 @@
       [:div.flex.items-center.justify-center.h0.mt3
        ui/spinner]
       [:div {:data-test data-test}
-       #?(:cljs (component/build ugc/adventure-component data {}))
+       #?(:cljs
+          [:div.flex.flex-wrap.mtn2.py4.px2.justify-center.justify-start-on-tb-dt
+           (for [look looks]
+             (component/build ugc/adventure-social-image-card-component look {}))])
        (when-not stylist-selected?
          [:div.h6.center.pb8
           [:div.dark-gray "Not ready to shop hair?"]

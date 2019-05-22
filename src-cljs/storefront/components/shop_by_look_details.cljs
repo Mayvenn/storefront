@@ -10,6 +10,7 @@
             [storefront.components.order-summary :as order-summary]
             [storefront.components.ugc :as ugc]
             [storefront.components.ui :as ui]
+            [storefront.components.svg :as svg]
             [storefront.config :as config]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -43,19 +44,17 @@
        (map (fn [img] [:img.col-12 img]))))
 
 (defn imgs [look shared-cart]
-  (cons (ugc/content-view look)
+  (cons (ui/aspect-ratio
+         1 1
+         {:class "bg-black"}
+         [:div.container-size.bg-cover.bg-no-repeat.bg-center
+          {:style {:background-image (str "url(" (:image-url look) ")")}}])
         (distinct-product-imgs shared-cart)))
 
-(defn decode-title [title]
-  (try
-    ;; Sometimes Pixlee gives us URL encoded titles
-    (js/decodeURIComponent title)
-    (catch :default e
-      title)))
-
-(defn component [{:keys [creating-order? sold-out? look shared-cart skus back fetching-shared-cart? discount-warning?
-                         shared-cart-type-copy back-copy back-event above-button-copy album-keyword look-detail-price?
-                         base-price discounted-price]} owner opts]
+(defn component
+  [{:keys [creating-order? sold-out? look shared-cart skus back fetching-shared-cart?
+           shared-cart-type-copy back-copy back-event above-button-copy album-keyword
+           look-detail-price? base-price discounted-price]} owner opts]
   (om/component
    (html
     [:div.container.mb4
@@ -72,9 +71,14 @@
       (when look
         [:div.col-on-tb-dt.col-6-on-tb-dt.px3-on-tb-dt
          (carousel (imgs look shared-cart))
-         [:div.px3.py2.mbp1.bg-light-gray (ugc/user-attribution look)]
-         (when-not (str/blank? (:title look))
-           [:p.h5.px3.py1.dark-gray.bg-light-gray (decode-title (:title look))])])
+         [:div.px3.py2.mbp1.bg-light-gray
+          [:div.flex.items-center
+           [:div.flex-auto.dark-gray.medium {:style {:word-break "break-all"}}
+            (:title look)]
+           [:div.ml1.line-height-1 {:style {:width "1em" :height "1em"}}
+            (svg/social-icon (:social-service look))]]]
+         (when-not (str/blank? (:description look))
+           [:p.h5.px3.py1.dark-gray.bg-light-gray (:description look)])])
       (if fetching-shared-cart?
         [:div.flex.justify-center.items-center (ui/large-spinner {:style {:height "4em"}})]
         (when shared-cart
@@ -95,9 +99,10 @@
               (add-to-cart-button sold-out? creating-order? look shared-cart)]])))]])))
 
 (defn adventure-component
-  [{:keys [creating-order? sold-out? look shared-cart skus back fetching-shared-cart? discount-warning?
-           shared-cart-type-copy back-copy back-event above-button-copy album-keyword look-detail-price?
-           base-price discounted-price]} owner opts]
+  [{:keys [creating-order? sold-out? look shared-cart skus fetching-shared-cart?
+           shared-cart-type-copy above-button-copy base-price discounted-price]}
+   owner
+   opts]
   (om/component
    (html
     [:div.container.mb4
@@ -105,9 +110,15 @@
       (when look
         [:div
          (carousel (imgs look shared-cart))
-         [:div.px3.py2.mbp1.bg-light-gray (ugc/adventure-user-attribution look)]
-         (when-not (str/blank? (:title look))
-           [:p.h5.px3.py1.dark-gray.bg-light-gray (decode-title (:title look))])])
+         [:div.px3.py2.mbp1.bg-light-gray
+          [:div.flex.items-center
+           [:div.flex-auto.dark-gray.medium
+            {:style {:word-break "break-all"}}
+            [:div.left (:title look)]]
+           [:div.ml1.line-height-1 {:style {:width "1.5em" :height "1.5em"}}
+            (svg/social-icon (:social-service look))]]]
+         (when-not (str/blank? (:description look))
+           [:p.h5.px3.py1.dark-gray.bg-light-gray (:description look)])])
       (if fetching-shared-cart?
         [:div.flex.justify-center.items-center (ui/large-spinner {:style {:height "4em"}})]
         (when shared-cart
@@ -144,7 +155,7 @@
         shared-cart-with-skus (some-> (get-in data keypaths/shared-cart-current)
                                       (put-skus-on-shared-cart skus))
 
-        look          (pixlee/selected-look data)
+        look          (ugc/pixlee-look->look-detail-social-card (pixlee/selected-look data))
         album-keyword (get-in data keypaths/selected-album-keyword)
         album-copy    (-> config/pixlee :copy album-keyword)
         base-price    (apply + (map (fn [line-item]
@@ -174,7 +185,7 @@
         shared-cart-with-skus (some-> (get-in data keypaths/shared-cart-current)
                                       (put-skus-on-shared-cart skus))
 
-        look          (pixlee/selected-look data)
+        look          (ugc/pixlee-look->look-detail-social-card (pixlee/selected-look data))
         album-keyword (get-in data keypaths/selected-album-keyword)
         album-copy    (-> config/pixlee :copy album-keyword)
         base-price    (apply + (map (fn [line-item]

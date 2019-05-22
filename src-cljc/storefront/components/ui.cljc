@@ -90,7 +90,7 @@
                 (button-colors color-kw)
                 class]))
 
-(defn ^:private color-button [color-kw attrs & content]
+(defn color-button [color-kw attrs & content]
   (button (-> attrs
               (dissoc :size-class)
               (dissoc :height-class)

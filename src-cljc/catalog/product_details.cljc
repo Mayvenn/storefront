@@ -1,21 +1,15 @@
 (ns catalog.product-details
-  (:require [clojure.set :as set]
-            [clojure.string :as string]
+  (:require [clojure.string :as string]
             [catalog.products :as products]
-            [catalog.skuers :as skuers]
             [catalog.keypaths]
             [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.pixlee :as pixlee]
-            [storefront.accessors.promos :as promos]
             [storefront.accessors.skus :as skus]
             [catalog.facets :as facets]
-            [storefront.accessors.orders :as orders]
             [storefront.components.money-formatters :refer [as-money-without-cents as-money]]
             [storefront.components.picker.picker :as picker]
             [storefront.components.ui :as ui]
-            [spice.maps :as maps]
-            [spice.core :as spice]
             [spice.selector :as selector]
             [storefront.config :as config]
             [storefront.effects :as effects]
@@ -26,6 +20,7 @@
             [storefront.platform.reviews :as review-component]
             [catalog.selector.sku :as sku-selector]
             [catalog.product-details-ugc :as ugc]
+            [storefront.components.ugc :as component-ugc]
             [storefront.request-keys :as request-keys]
             [storefront.transitions :as transitions]
             [storefront.platform.component-utils :as utils]
@@ -393,12 +388,18 @@
 
 (defn ugc-query [product sku data]
   (when-let [ugc (get-in data keypaths/ugc)]
-    (when-let [images (pixlee/images-in-album ugc (keyword (:legacy/named-search-slug product)))]
+    (when-let [images (->> product
+                           :legacy/named-search-slug
+                           keyword
+                           (pixlee/images-in-album ugc)
+                           (mapv component-ugc/pixlee-look->pdp-social-card)
+                           not-empty)]
       {:carousel-data {:product-id   (:catalog/product-id product)
                        :product-name (:copy/title product)
                        :page-slug    (:page/slug product)
                        :sku-id       (:catalog/sku-id sku)
-                       :album        images}
+                       :social-cards images}
+       ;;GROT this constant
        :show-cta?     true
        :offset        (get-in data keypaths/ui-ugc-category-popup-offset)
        :close-message [events/navigate-product-details

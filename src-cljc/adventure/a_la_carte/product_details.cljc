@@ -32,6 +32,7 @@
             [storefront.components.money-formatters :refer [as-money-without-cents as-money]]
             [storefront.components.picker.picker :as picker]
             [storefront.components.svg :as svg]
+            [storefront.components.ugc :as component-ugc]
             [storefront.components.ui :as ui]
             [storefront.components.v2 :as v2]
             [storefront.events :as events]
@@ -384,12 +385,18 @@
 
 (defn ugc-query [product sku data]
   (when-let [ugc (get-in data keypaths/ugc)]
-    (when-let [images (pixlee/images-in-album ugc (keyword (:legacy/named-search-slug product)))]
+    (when-let [social-cards (->> product
+                                 :legacy/named-search-slug
+                                 keyword
+                                 (pixlee/images-in-album ugc)
+                                 (mapv component-ugc/pixlee-look->pdp-social-card)
+                                 (mapv #(assoc % :desktop-aware? false))
+                                 not-empty)]
       {:carousel-data {:product-name      (:copy/title product)
                        :page-slug         (:page/slug product)
                        :sku-id            (:catalog/sku-id sku)
                        :destination-event events/control-freeinstall-ugc-modal-open
-                       :album             images}
+                       :social-cards      social-cards}
        :show-cta?     (experiments/freeinstall-pdp-looks? data)
        :offset        (get-in data keypaths/ui-ugc-category-popup-offset)
        :close-message [events/control-freeinstall-ugc-modal-close {}]

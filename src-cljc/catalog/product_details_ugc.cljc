@@ -3,14 +3,14 @@
             [storefront.component :as component]
             [storefront.components.ugc :as ugc]
             [storefront.components.ui :as ui]
-            [storefront.components.svg :as svg]
             [storefront.platform.component-utils :as util]
             [storefront.events :as events]
             [storefront.platform.carousel :as carousel]
             [clojure.string :as str]))
 
 (defn ^:private carousel-slide
-  [destination-event product-id page-slug sku-id idx {:keys [imgs content-type]}]
+  [destination-event product-id page-slug sku-id idx
+   {:keys [image-url]}]
   [:div.p1
    [:a (if destination-event
          (util/fake-href destination-event {:offset idx})
@@ -22,10 +22,7 @@
     (ui/aspect-ratio
      1 1
      {:class "flex items-center"}
-     [:img.col-12 (:medium imgs)]
-     (when (= content-type "video")
-       [:div.absolute.overlay.flex.items-center.justify-center
-        svg/play-video-muted]))]])
+     [:img.col-12 {:src image-url}])]])
 
 (defn ->title-case [s]
   #?(:clj (str/capitalize s)
@@ -35,22 +32,20 @@
   #?(:clj (Integer/parseInt v)
      :cljs (js/parseInt v 10)))
 
-(defn ^:private popup-slide [show-cta? long-name {:keys [links] :as item}]
-  [:div.m1.rounded-bottom
-   (ugc/content-view item)
-   [:div.bg-white.rounded-bottom.p2
-    [:div.h5.px4 (ugc/user-attribution item)]
-    (when (and show-cta? (-> links :view-look boolean))
-      [:div.mt2 (ugc/view-look-button item "View this look" {:back-copy (str "back to " (->title-case long-name))})])]])
+(defn ^:private popup-slide [show-cta? long-name social-card]
+  (component/build ugc/social-image-card-component
+                   social-card
+                   {:opts {:copy {:back-copy (str "back to " (->title-case long-name))
+                                  :button-copy "View this look"}}}))
 
-(defn component [{{:keys [album product-id page-slug sku-id destination-event]} :carousel-data} owner opts]
+(defn component [{{:keys [social-cards product-id page-slug sku-id destination-event]} :carousel-data} owner opts]
   (component/create
-   (when (seq album)
+   (when (seq social-cards)
      [:div.center.mt4
       [:div.h2.medium.dark-gray.crush.m2 "#MayvennMade"]
       (component/build carousel/component
                        {:slides   (map-indexed (partial carousel-slide destination-event product-id page-slug sku-id)
-                                               album)
+                                               social-cards)
                         :settings {:centerMode    true
                             ;; must be in px, because it gets parseInt'd for
                             ;; the slide width calculation
@@ -76,7 +71,7 @@
       [:div.relative
        (component/build carousel/component
                         {:slides   (map (partial popup-slide show-cta? (:product-name carousel-data))
-                                        (:album carousel-data))
+                                        (:social-cards carousel-data))
                          :settings {:slidesToShow 1
                                     :initialSlide (parse-int offset)}
                          :now      now}

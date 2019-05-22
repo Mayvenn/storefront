@@ -138,3 +138,7 @@
 (defn confetti?
   [data]
   (display-feature? data "confetti"))
+
+(defn pixlee-to-contentful?
+  [data]
+  (display-feature? data "pixlee-to-contentful"))
