@@ -7,7 +7,8 @@
             [spice.date :as date]
             [spice.maps :as maps]
             [tugboat.core :as tugboat]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [clojure.set :as set]))
 
 (defn contentful-request
   "Wrapper for the Content Delivery endpoint"
@@ -103,7 +104,15 @@
   ([contentful content-params]
    (do-fetch-entries contentful content-params 1))
   ([{:keys [logger exception-handler cache env-param] :as contentful}
-    {:keys [content-type latest? select exists primary-key]
+    {:keys [content-type
+            latest?
+            select
+            exists
+            primary-key-fn
+            item-tx-fn
+            collection-tx-fn]
+     :or   {item-tx-fn       identity
+            collection-tx-fn identity}
      :as   content-params} attempt-number]
    (try
      (when (<= attempt-number 2)
@@ -131,7 +140,9 @@
                              resolve-all-collection
                              (mapv extract-fields)
                              walk/keywordize-keys
-                             (maps/index-by primary-key)
+                             (mapv item-tx-fn)
+                             (maps/index-by primary-key-fn)
+                             collection-tx-fn
                              (assoc {} content-type))))
 
            (do-fetch-entries contentful content-params (inc attempt-number)))))
@@ -147,30 +158,40 @@
 (defrecord ContentfulContext [logger exception-handler environment cache-timeout api-key space-id endpoint]
   component/Lifecycle
   (start [c]
-    (let [pool      (at-at/mk-pool)
-          cache     (atom {})
-          env-param (if (= environment "production")
-                      "production"
-                      "acceptance")]
+    (let [pool        (at-at/mk-pool)
+          production? (= environment "production")
+          cache       (atom {})
+          env-param   (if production?
+                        "production"
+                        "acceptance")]
       (doseq [content-params [{:content-type :homepage
                                :latest?      true}
                               {:content-type :mayvennMadePage
                                :latest?      true}
                               {:content-type :advertisedPromo
                                :latest?      true}
-                              {:content-type :ugc-collection
-                               :exists       ["fields.slug"]
-                               :primary-key  :slug
-                               :select       [(if (= "production" env-param)
-                                                "fields.looks"
-                                                "fields.acceptanceLooks")
-                                              "fields.slug"
-                                              "fields.name"
-                                              "sys.contentType"
-                                              "sys.updatedAt"
-                                              "sys.id"
-                                              "sys.type"]
-                               :latest?      false}]]
+                              {:content-type     :ugc-collection
+                               :exists           ["fields.slug"]
+                               :primary-key-fn   (comp keyword :slug)
+                               :select           [(if production?
+                                                    "fields.looks"
+                                                    "fields.acceptanceLooks")
+                                                  "fields.slug"
+                                                  "fields.name"
+                                                  "sys.contentType"
+                                                  "sys.updatedAt"
+                                                  "sys.id"
+                                                  "sys.type"]
+                               :item-tx-fn       (fn [ugc-collection]
+                                                   (if production?
+                                                     (dissoc ugc-collection :acceptance-looks)
+                                                     (set/rename-keys ugc-collection {:acceptance-looks :looks})))
+                               :collection-tx-fn (fn [m]
+                                                   (->> (vals m)
+                                                        (mapcat :looks)
+                                                        (maps/index-by :content/id)
+                                                        (assoc m :all-looks)))
+                               :latest?          false}]]
         (at-at/interspaced cache-timeout
                            #(do-fetch-entries (assoc c :cache cache :env-param env-param) content-params)
                            pool

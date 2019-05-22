@@ -18,6 +18,7 @@
             [storefront.effects :as effects :refer [page-not-found perform-effects redirect]]
             [storefront.events :as events]
             [storefront.history :as history]
+            [storefront.components.ugc :as ugc]
             [storefront.hooks.browser-pay :as browser-pay]
             [storefront.hooks.convert :as convert]
             [storefront.hooks.exception-handler :as exception-handler]
@@ -304,13 +305,17 @@
             (page-not-found)
 
             ;; Only fetch this album if you are viewing it (not it's look-details/specific photo)
-            (= dispatch event)
+            (and (= dispatch event)
+                 (not (experiments/pixlee-to-contentful? app-state)))
             (pixlee/fetch-album-by-keyword actual-album-keyword)))))
 
 (defmethod perform-effects events/navigate-shop-by-look-details [_ event {:keys [album-keyword look-id]} _ app-state]
-  (if-let [shared-cart-id (:shared-cart-id (accessors.pixlee/selected-look app-state))]
+  (if-let [shared-cart-id (if (experiments/pixlee-to-contentful? app-state)
+                            (ugc/contentful-shared-cart-id (ugc/selected-look app-state))
+                            (:shared-cart-id (accessors.pixlee/selected-look app-state)))]
     (api/fetch-shared-cart shared-cart-id)
-    (pixlee/fetch-image album-keyword look-id)))
+    (when-not (experiments/pixlee-to-contentful? app-state)
+      (pixlee/fetch-image album-keyword look-id))))
 
 (defmethod perform-effects events/pixlee-api-success-fetch-image [_ event _ _ app-state]
   (when-let [shared-cart-id (:shared-cart-id (accessors.pixlee/selected-look app-state))]

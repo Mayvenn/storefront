@@ -15,7 +15,8 @@
             [spice.maps :as maps]
             [spice.core :as spice]
             [adventure.components.header :as header]
-            [adventure.progress :as progress]))
+            [adventure.progress :as progress]
+            [storefront.accessors.experiments :as experiments]))
 
 (defn ^:private query [data]
   (let [stylist-selected? (get-in data adventure-keypaths/adventure-servicing-stylist)
@@ -55,9 +56,13 @@
   (component/build component (query data) opts))
 
 (defmethod effects/perform-effects events/navigate-adventure-look-detail [dispatch event event-args prev-app-state app-state]
-  #?(:cljs (pixlee-hook/fetch-image :adventure (:look-id event-args))))
+  #?(:cljs (when-not (experiments/pixlee-to-contentful? app-state)
+             pixlee-hook/fetch-image :adventure (:look-id event-args))))
 
 (defmethod transitions/transition-state events/navigate-adventure-look-detail [_ _ {:keys [album-keyword look-id]} app-state]
-  (-> app-state
-      (assoc-in keypaths/selected-album-keyword (keyword album-keyword))
-      (assoc-in keypaths/selected-look-id (spice/parse-int look-id))))
+  (let [look-id-converter (if (experiments/pixlee-to-contentful? app-state)
+                            keyword
+                            spice.core/parse-int)]
+    (-> app-state
+        (assoc-in keypaths/selected-album-keyword (keyword album-keyword))
+        (assoc-in keypaths/selected-look-id (look-id-converter look-id)))))

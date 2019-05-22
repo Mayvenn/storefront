@@ -1,6 +1,7 @@
 (ns storefront.components.shop-by-look
   (:require [storefront.component :as component]
             [storefront.accessors.pixlee :as pixlee]
+            [storefront.accessors.experiments :as experiments]
             [storefront.components.ugc :as ugc]
             [storefront.keypaths :as keypaths]
             [storefront.components.ui :as ui]
@@ -26,19 +27,29 @@
          (component/build ugc/social-image-card-component look {:opts {:copy copy}}))]])))
 
 (defn query [data]
-  (let [ugc-content       (get-in data keypaths/ugc)
-        selected-album-kw (get-in data keypaths/selected-album-keyword)
-        actual-album-kw   (pixlee/determine-look-album data selected-album-kw)
-        looks             (pixlee/images-in-album ugc-content actual-album-kw)
-        color-details     (->> (get-in data keypaths/v2-facets)
-                               (filter #(= :hair/color (:facet/slug %)))
-                               first
-                               :facet/options
-                               (maps/index-by :option/slug)) ]
-    {:looks         (mapv (partial ugc/pixlee-look->social-card color-details) looks)
-     :copy          (-> config/pixlee :copy actual-album-kw)
-     :spinning?     (empty? looks)
-     :deals?        (= selected-album-kw :deals)}))
+  (let [ugc-content           (get-in data keypaths/ugc)
+        navigation-event      (get-in data keypaths/navigation-event)
+        selected-album-kw     (get-in data keypaths/selected-album-keyword)
+        actual-album-kw       (pixlee/determine-look-album data selected-album-kw)
+        pixlee-to-contentful? (experiments/pixlee-to-contentful? data)
+        looks                 (if pixlee-to-contentful?
+                                (-> data (get-in keypaths/cms-ugc-collection) actual-album-kw :looks)
+                                (pixlee/images-in-album ugc-content actual-album-kw))
+        color-details         (->> (get-in data keypaths/v2-facets)
+                                   (filter #(= :hair/color (:facet/slug %)))
+                                   first
+                                   :facet/options
+                                   (maps/index-by :option/slug))
+        look-converter        (if pixlee-to-contentful?
+                                (partial ugc/contentful-look->social-card
+                                         navigation-event
+                                         selected-album-kw
+                                         color-details)
+                                (partial ugc/pixlee-look->social-card color-details))]
+    {:looks     (mapv look-converter looks)
+     :copy      (-> config/pixlee :copy actual-album-kw)
+     :spinning? (empty? looks)
+     :deals?    (= selected-album-kw :deals)}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

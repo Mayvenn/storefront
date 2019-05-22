@@ -150,18 +150,20 @@
                        {:legacy/variant-id :legacy/variant-id}))))
 
 (defn query [data]
-  (let [skus (get-in data keypaths/v2-skus)
-
+  (let [skus                  (get-in data keypaths/v2-skus)
         shared-cart-with-skus (some-> (get-in data keypaths/shared-cart-current)
                                       (put-skus-on-shared-cart skus))
+        navigation-event      (get-in data keypaths/navigation-event)
+        album-keyword         (get-in data keypaths/selected-album-keyword)
 
-        look          (ugc/pixlee-look->look-detail-social-card (pixlee/selected-look data))
-        album-keyword (get-in data keypaths/selected-album-keyword)
-        album-copy    (-> config/pixlee :copy album-keyword)
-        base-price    (apply + (map (fn [line-item]
-                                      (* (:item/quantity line-item)
-                                         (:sku/price line-item)))
-                                    (:line-items shared-cart-with-skus)))]
+        look       (if (experiments/pixlee-to-contentful? data)
+                     (ugc/contentful-look->look-detail-social-card navigation-event album-keyword (ugc/selected-look data))
+                     (ugc/pixlee-look->look-detail-social-card (pixlee/selected-look data)))
+        album-copy (-> config/pixlee :copy album-keyword)
+        base-price (apply + (map (fn [line-item]
+                                   (* (:item/quantity line-item)
+                                      (:sku/price line-item)))
+                                 (:line-items shared-cart-with-skus)))]
     {:shared-cart           shared-cart-with-skus
      :album-keyword         album-keyword
      :look                  look
@@ -185,13 +187,16 @@
         shared-cart-with-skus (some-> (get-in data keypaths/shared-cart-current)
                                       (put-skus-on-shared-cart skus))
 
-        look          (ugc/pixlee-look->look-detail-social-card (pixlee/selected-look data))
-        album-keyword (get-in data keypaths/selected-album-keyword)
-        album-copy    (-> config/pixlee :copy album-keyword)
-        base-price    (apply + (map (fn [line-item]
-                                      (* (:item/quantity line-item)
-                                         (:sku/price line-item)))
-                                    (:line-items shared-cart-with-skus)))]
+        navigation-event (get-in data keypaths/navigation-event)
+        album-keyword    (get-in data keypaths/selected-album-keyword)
+        look             (if (experiments/pixlee-to-contentful? data)
+                           (ugc/contentful-look->look-detail-social-card navigation-event album-keyword (ugc/selected-look data))
+                           (ugc/pixlee-look->look-detail-social-card (pixlee/selected-look data)))
+        album-copy       (-> config/pixlee :copy album-keyword)
+        base-price       (apply + (map (fn [line-item]
+                                         (* (:item/quantity line-item)
+                                            (:sku/price line-item)))
+                                       (:line-items shared-cart-with-skus)))]
     {:shared-cart           shared-cart-with-skus
      :album-keyword         album-keyword
      :look                  look

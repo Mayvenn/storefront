@@ -282,12 +282,12 @@
 (deftest fetches-data-from-contentful
   (testing "transforming content"
     (testing "transforming 'latest' content"
-        (let [[_ storeback-handler]                    (with-requests-chan (GET "/store" req common/storeback-stylist-response))
-              [contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
-                                                                                {:status 200
-                                                                                 :body   (generate-string (:body common/contentful-response))}))]
-          (with-services {:storeback-handler  storeback-handler
-                          :contentful-handler contentful-handler}
+      (let [[_ storeback-handler]                    (with-requests-chan (GET "/store" req common/storeback-stylist-response))
+            [contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
+                                                                              {:status 200
+                                                                               :body   (generate-string (:body common/contentful-response))}))]
+        (with-services {:storeback-handler  storeback-handler
+                        :contentful-handler contentful-handler}
           (with-handler handler
             (let [responses (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
                   requests  (txfm-requests contentful-requests identity)]
@@ -317,26 +317,27 @@
         (with-services {:storeback-handler  storeback-handler
                         :contentful-handler contentful-handler}
             (with-handler handler
-              (let [responses (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
-                    requests  (txfm-requests contentful-requests identity)]
-
-                (is (= {:deals
+              (let [responses     (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
+                    requests      (txfm-requests contentful-requests identity)
+                    expected-look {:content/type          "look"
+                                   :content/id            "QCCIxo6JWgxqZVqvJvQyB"
+                                   :content/updated-at    1557448824059
+                                   :title                 "Virgin Peruvian Deep Wave 16 18 20 22"
+                                   :texture               "Deep Wave"
+                                   :color                 "Natural Black"
+                                   :description           "16\" + 18\" + 20\" "
+                                   :shared-cart-url       "https://shop.mayvenn.com/c/BV7bOQQxuJ"
+                                   :photo-url             "https://static.pixlee.com/photos/235267317/original/bundle-deal-template-f-r1-01-lm.jpg"
+                                   :social-media-handle   "@mayvennhair"
+                                   :social-media-platform "Instagram"}]
+                (is (= {:all-looks {:QCCIxo6JWgxqZVqvJvQyB expected-look}
+                        :deals
                         {:content/id         "2dZTVOLLqkNS9EoUJ1t6qn"
                          :content/type       "ugc-collection"
                          :content/updated-at 1558471238081
                          :slug               "deals"
                          :name               "Mayvenn Classic - Deals Page"
-                         :acceptance-looks   [{:content/type          "look"
-                                               :content/id            "QCCIxo6JWgxqZVqvJvQyB"
-                                               :content/updated-at    1557448824059
-                                               :title                 "Virgin Peruvian Deep Wave 16 18 20 22"
-                                               :texture               "Deep Wave"
-                                               :color                 "Natural Black"
-                                               :description           "16\" + 18\" + 20\" "
-                                               :shared-cart-url       "https://shop.mayvenn.com/c/BV7bOQQxuJ"
-                                               :photo-url             "https://static.pixlee.com/photos/235267317/original/bundle-deal-template-f-r1-01-lm.jpg"
-                                               :social-media-handle   "@mayvennhair"
-                                               :social-media-platform "Instagram"}]}
+                         :looks              [expected-look]}
                         :acceptance-deals
                         {:slug               "acceptance-deals",
                          :name               "[ACCEPTANCE] Mayvenn Classic - Deals Page",
