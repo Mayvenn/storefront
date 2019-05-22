@@ -58,6 +58,9 @@
     events/navigate-shared-cart
     events/navigate-stylist-share-your-store})
 
+(def ^:private informational-events
+  #{events/navigate-info-certified-stylists})
+
 (def auth-events
   (set/union plain-auth-events checkout-auth-events))
 
@@ -74,6 +77,7 @@
              auth-events
              cart-events
              checkout-events
+             informational-events
              order-complete-events
              payout-events
              sharing-events
@@ -83,6 +87,7 @@
 (def minimal-header-events
   (set/union cart-events
              checkout-events
+             informational-events
              payout-events))
 
 (defn show-minimal-footer? [event]

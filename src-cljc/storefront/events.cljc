@@ -21,7 +21,11 @@
 
 (defpath redirect)
 (defpath navigate)
+
 (defpath navigate-home)
+
+(defpath navigate-info-certified-stylists)
+
 (defpath navigate-category)
 (defpath navigate-category-update)
 (defpath navigate-legacy-product-page)

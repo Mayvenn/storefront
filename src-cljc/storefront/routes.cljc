@@ -90,7 +90,8 @@
              {{:subdomain (complement freeinstall?)}
               (merge
                catalog-routes
-               {"/" (edn->bidi events/navigate-home)})}
+               {"/"                   (edn->bidi events/navigate-home)
+                "/certified-stylists" (edn->bidi events/navigate-info-certified-stylists)})}
 
              {"/login"                                            (edn->bidi events/navigate-sign-in)
               "/logout"                                           (edn->bidi events/navigate-sign-out)
