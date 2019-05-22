@@ -15,8 +15,8 @@
              :header/value "We believe that quality should be accessible for all."
              :body/value   "Our bundles, closures, and frontals are crafted with the highest industry standards and come in a variety of textures and colors. The best part? All of our products are quality-guaranteed."
              :cta/value    "Get started"
-             :cta/event    (layered/->freeinstall-nav-event "toadventurehomepagehairinfopage"
-                                                    "/adv/install-type")}
+             :cta/event    (layered/->freeinstall-nav-event "toadventurehomepageourhairpage"
+                                                            "/adv/install-type")}
             {:layer/type      :bulleted-explainer
              :header/value    "About Our Hair"
              :subheader/value "An overview"
@@ -54,8 +54,8 @@
                                :paragraphs ["You must get your hair done from a Certified Stylist in order to get your hair installed for free."]}] }
             {:layer/type :contact}
             {:layer/type :sticky-footer
-             :cta/event  (layered/->freeinstall-nav-event "toadventurehomepagestylistinfopage"
-                                                  "/adv/install-type")}]})
+             :cta/event  (layered/->freeinstall-nav-event "toadventurehomepageourhairpage"
+                                                          "/adv/install-type")}]})
 
 (defn built-component
   [data opts]
