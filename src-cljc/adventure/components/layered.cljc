@@ -32,6 +32,18 @@
   (component/create
    (ui/ucare-img {:class "col-12"} (:photo/uuid data))))
 
+(defn ^:private cta-with-chevron
+  [{:cta/keys [message value]}]
+  (when (and message value)
+    [:a.block.h3.medium.teal.my2
+     (apply utils/route-to message)
+     value
+     (svg/dropdown-arrow {:class  "stroke-teal ml2"
+                          :style  {:stroke-width "3px"
+                                   :transform "rotate(-90deg)"}
+                          :height "14px"
+                          :width  "14px"})]))
+
 (defmethod layer-view :find-out-more
   [data owner opts]
   (component/create
@@ -46,16 +58,7 @@
       (when value
         [:div.col-10.my2.h5.dark-gray value]))
 
-    (let [{:cta/keys [event value]} data]
-      (when (and event value)
-        [:a.block.h3.medium.teal.my2.flex.items-center
-         (apply utils/fake-href event)
-         value
-         [:div.flex.items-end.ml2 {:style {:transform "rotate(-90deg)"}}
-          (svg/dropdown-arrow {:class  "stroke-teal"
-                               :style  {:stroke-width "3px"}
-                               :height "14px"
-                               :width  "14px"})]]))]))
+    (cta-with-chevron data)]))
 
 (defmethod layer-view :bulleted-explainer
   [data owner opts]
@@ -66,7 +69,8 @@
                  {:style {:height "39px"}}
                  (ui/ucare-img {:alt (:header/title point) :width width} uuid)]
                 [:div.h5.medium.mb1 (:header/value point)]
-                [:p.h6.col-10.col-9-on-dt.mx-auto.dark-gray (:body/value point)]])]
+                [:p.h6.col-10.col-9-on-dt.mx-auto.dark-gray (:body/value point)]
+                (cta-with-chevron point)])]
 
     (component/create
      [:div.col-12.py10.bg-transparent-teal
@@ -169,7 +173,7 @@
                     [:div.col-4
                      (ui/teal-button (merge {:height-class "py2"
                                              :data-test    "sticky-footer-get-started"}
-                                            (apply utils/fake-href event))
+                                            (apply utils/route-to event))
                                      [:div.h7 "Get started"])]]]]]]])))))))
 
 (defmethod layer-view :default [_ _ _] (component/create [:div]))
