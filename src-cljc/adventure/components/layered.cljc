@@ -152,9 +152,6 @@
            (let [{:cta/keys [event]} data]
              (component/html
               [:div.hide-on-dt
-               {:class "fixed"}
-               ;; padding div to allow content that's normally at the bottom to be visible
-               [:div {:style {:height (str content-height "px")}}]
                [:div.fixed.z4.bottom-0.left-0.right-0
                 {:style {:margin-bottom (str "-" content-height "px")}}
                 ;; Using a separate element with reverse margin to prevent the
