@@ -92,7 +92,8 @@
                catalog-routes
                {"/"                   (edn->bidi events/navigate-home)
                 "/certified-stylists" (edn->bidi events/navigate-info-certified-stylists)
-                "/about-our-hair"     (edn->bidi events/navigate-info-about-our-hair)})}
+                "/about-our-hair"     (edn->bidi events/navigate-info-about-our-hair)
+                "/how-it-works"       (edn->bidi events/navigate-info-how-it-works) })}
 
              {"/login"                                            (edn->bidi events/navigate-sign-in)
               "/logout"                                           (edn->bidi events/navigate-sign-out)

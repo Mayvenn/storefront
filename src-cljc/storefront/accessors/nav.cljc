@@ -60,7 +60,8 @@
 
 (def ^:private informational-events
   #{events/navigate-info-certified-stylists
-    events/navigate-info-about-our-hair})
+    events/navigate-info-about-our-hair
+    events/navigate-info-how-it-works})
 
 (def auth-events
   (set/union plain-auth-events checkout-auth-events))
