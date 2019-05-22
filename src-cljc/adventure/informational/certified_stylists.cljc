@@ -12,8 +12,6 @@
   {:layers [{:layer/type :hero
              :photo/uuid "fed7867a-4b32-44d2-b095-81274620c8eb"}
             {:layer/type   :find-out-more
-             :react/key    "certified-stylists"
-             ;;:section/opts  {:class "bg-white"}
              :header/value "Our Certified Stylists are the best of the best."
              :body/value   (str "Our Certified Stylists are the best in your area. "
                                 "They’re chosen because of their top-rated reviews, professionalism, and amazing work.")
