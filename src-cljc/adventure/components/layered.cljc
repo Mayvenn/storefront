@@ -176,7 +176,10 @@
                                             (apply utils/route-to message))
                                      [:div.h7 "Get started"])]]]]]]])))))))
 
-(defmethod layer-view :default [_ _ _] (component/create [:div]))
+(defmethod layer-view :default
+  [data _ _]
+  (component/create [:div.bg-red.center.border.border-width-3.border-light-teal.p4
+                     (str (:layer/type data))]))
 
 (defn component [{:keys [layers]} owner opts]
   (component/create
