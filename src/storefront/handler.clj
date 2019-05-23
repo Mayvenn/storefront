@@ -753,7 +753,8 @@
                  (-> contentful
                      contentful/read-cache
                      json/generate-string
-                     util.response/response))
+                     util.response/response
+                     (util.response/content-type "application/json")))
                (GET "/marketing-site" req
                  (contentful/marketing-site-redirect req))
                (-> (routes (static-routes ctx)
