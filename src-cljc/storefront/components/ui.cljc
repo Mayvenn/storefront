@@ -57,13 +57,13 @@
     :as   opts}
    & content]
   (let [attrs   (cond-> opts
-                  :always                        (dissoc :spinning? :disabled? :disabled-class :navigation-message)
-                  navigation-message             (merge (apply utils/route-to navigation-message))
-                  (string/starts-with? href "#") (merge (utils/scroll-href (subs href 1)))
-                  (or disabled? spinning?)       (assoc :on-click utils/noop-callback)
-                  disabled?                      (assoc :data-test-disabled "yes")
-                  spinning?                      (assoc :data-test-spinning "yes")
-                  disabled?                      (update :class str (str " btn-disabled " (or disabled-class "is-disabled"))))
+                  :always                              (dissoc :spinning? :disabled? :disabled-class :navigation-message)
+                  navigation-message                   (merge (apply utils/route-to navigation-message))
+                  (string/starts-with? (str href) "#") (merge (utils/scroll-href (subs href 1)))
+                  (or disabled? spinning?)             (assoc :on-click utils/noop-callback)
+                  disabled?                            (assoc :data-test-disabled "yes")
+                  spinning?                            (assoc :data-test-spinning "yes")
+                  disabled?                            (update :class str (str " btn-disabled " (or disabled-class "is-disabled"))))
         content (if spinning? spinner content)]
     [:a (merge {:href "#"} attrs)
      content]))
