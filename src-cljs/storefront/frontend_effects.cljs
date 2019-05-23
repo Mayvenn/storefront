@@ -148,7 +148,6 @@
                        "production" "mayvenn.com"
                        "acceptance" "diva-acceptance.com"
                        "storefront.localhost")]
-    ;; TODO: Should we conditionally push history instead of always doing a hard-load?
     (set! (.-location js/window)
           (-> (.-location js/window)
               uri/uri
