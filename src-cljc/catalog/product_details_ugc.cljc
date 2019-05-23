@@ -33,7 +33,8 @@
      :cljs (js/parseInt v 10)))
 
 (defn ^:private popup-slide [show-cta? long-name social-card]
-  (component/build ugc/social-image-card-component
+  ;; TODO: Rename adventure social image card to something more accurate (mobile constrained card)
+  (component/build ugc/adventure-social-image-card-component
                    social-card
                    {:opts {:copy {:back-copy (str "back to " (->title-case long-name))
                                   :button-copy "View this look"}}}))
