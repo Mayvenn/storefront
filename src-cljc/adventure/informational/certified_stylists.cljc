@@ -11,13 +11,13 @@
   [data]
   {:layers [{:layer/type :hero
              :photo/uuid "fed7867a-4b32-44d2-b095-81274620c8eb"}
-            {:layer/type   :find-out-more
-             :header/value "Our Certified Stylists are the best of the best."
-             :body/value   (str "Our Certified Stylists are the best in your area. "
-                                "They’re chosen because of their top-rated reviews, professionalism, and amazing work.")
-             :cta/value    "Get started"
-             :cta/message  (layered/->freeinstall-nav-event "toadventurehomepagestylistinfopage"
-                                                            "/adv/install-type")}
+            {:layer/type             :find-out-more
+             :header/value           "Our Certified Stylists are the best of the best."
+             :body/value             (str "Our Certified Stylists are the best in your area. "
+                                          "They’re chosen because of their top-rated reviews, professionalism, and amazing work.")
+             :cta/value              "Get started"
+             :cta/navigation-message (layered/->freeinstall-nav-event "toadventurehomepagestylistinfopage"
+                                                                      "/adv/install-type")}
 
             {:layer/type      :bulleted-explainer
              :header/value    "About Our Certified Stylists"
@@ -58,9 +58,9 @@
                               {:title      "What if I want to get my hair done by another stylist? Can I still get the free install?",
                                :paragraphs ["You must get your hair done from a Certified Stylist in order to get your hair installed for free."]}] }
             {:layer/type :contact}
-            {:layer/type  :sticky-footer
-             :cta/message (layered/->freeinstall-nav-event "toadventurehomepagestylistinfopage"
-                                                           "/adv/install-type")}]})
+            {:layer/type             :sticky-footer
+             :cta/navigation-message (layered/->freeinstall-nav-event "toadventurehomepagestylistinfopage"
+                                                                      "/adv/install-type")}]})
 
 (defn built-component
   [data opts]

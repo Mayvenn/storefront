@@ -33,10 +33,10 @@
    (ui/ucare-img {:class "col-12"} (:photo/uuid data))))
 
 (defn ^:private cta-with-chevron
-  [{:cta/keys [message value]}]
-  (when (and message value)
+  [{:cta/keys [navigation-message value]}]
+  (when (and navigation-message value)
     [:a.block.h3.medium.teal.my2
-     (apply utils/route-to message)
+     (apply utils/route-to navigation-message)
      value
      (svg/dropdown-arrow {:class  "stroke-teal ml2"
                           :style  {:stroke-width "3px"
