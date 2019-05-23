@@ -33,9 +33,9 @@
      :cljs (js/parseInt v 10)))
 
 (defn ^:private popup-slide [show-cta? long-name social-card]
-  ;; TODO: Rename adventure social image card to something more accurate (mobile constrained card)
-  (component/build ugc/adventure-social-image-card-component
-                   social-card
+  ;; NOTE: desktop-aware? should always be false because we want the slide to take up the full width
+  (component/build ugc/social-image-card-component
+                   (assoc social-card :desktop-aware? false)
                    {:opts {:copy {:back-copy (str "back to " (->title-case long-name))
                                   :button-copy "View this look"}}}))
 
