@@ -52,53 +52,107 @@
       (content-type "application/json")))
 
 (def contentful-ugc-collection-response
-  {:body   {:sys   {:type "Array"},
-            :total 2,
-            :skip  0,
-            :limit 100,
-            :items
-            [{:fields
-              {:acceptanceLooks
-               [{:sys {:type "Link", :linkType "Entry", :id "QCCIxo6JWgxqZVqvJvQyB"}}],
-               :slug "deals",
-               :name "Mayvenn Classic - Deals Page"},
-              :sys
-              {:contentType
-               {:sys {:type "Link", :linkType "ContentType", :id "ugc-collection"}},
-               :updatedAt "2019-05-21T20:40:38.081Z",
-               :id        "2dZTVOLLqkNS9EoUJ1t6qn",
-               :type      "Entry"}}
-             {:fields
-              {:slug "acceptance-deals",
-               :name "[ACCEPTANCE] Mayvenn Classic - Deals Page"},
-              :sys
-              {:contentType
-               {:sys {:type "Link", :linkType "ContentType", :id "ugc-collection"}},
-               :updatedAt "2019-05-21T21:02:06.413Z",
-               :id        "6Za8EE8Kpn8NeoJciqN3uA",
-               :type      "Entry"}}],
-            :includes
-            {:Entry
-             [{:sys
-               {:space       {:sys {:type "Link", :linkType "Space", :id "76m8os65degn"}},
-                :updatedAt   "2019-05-10T00:40:24.059Z",
-                :revision    2,
-                :locale      "en-US",
-                :createdAt   "2019-04-04T21:16:39.491Z",
-                :type        "Entry",
-                :id          "QCCIxo6JWgxqZVqvJvQyB",
-                :environment {:sys {:id "master", :type "Link", :linkType "Environment"}},
-                :contentType {:sys {:type "Link", :linkType "ContentType", :id "look"}}},
-               :fields
-               {:title               "Virgin Peruvian Deep Wave 16 18 20 22",
-                :texture             "Deep Wave",
-                :color               "Natural Black",
-                :description         "16\" + 18\" + 20\" ",
-                :sharedCartUrl       "https://shop.mayvenn.com/c/BV7bOQQxuJ",
-                :photoUrl
-                "https://static.pixlee.com/photos/235267317/original/bundle-deal-template-f-r1-01-lm.jpg",
-                :socialMediaHandle   "@mayvennhair",
-                :socialMediaPlatform "Instagram"}}]}}
+  {:body {:sys {:type "Array"},
+          :total 5,
+          :skip 0,
+          :limit 100,
+          :items
+          [{:fields
+            {:acceptanceLooks
+             [{:sys {:type "Link", :linkType "Entry", :id "2zSbLYFcRYjVoEMMlsWLsJ"}}],
+             :slug "look",
+             :name "Mayvenn Classic - Shop By Look "},
+            :sys
+            {:contentType
+             {:sys {:type "Link", :linkType "ContentType", :id "ugc-collection"}},
+             :updatedAt "2019-05-22T23:22:54.792Z",
+             :id "5vqi7q9EeO1ULNjQ1Q4DEp",
+             :type "Entry"}}
+           {:fields
+            {:slug "acceptance-deals",
+             :name "[ACCEPTANCE] Mayvenn Classic - Deals Page"},
+            :sys
+            {:contentType
+             {:sys {:type "Link", :linkType "ContentType", :id "ugc-collection"}},
+             :updatedAt "2019-05-21T21:02:06.413Z",
+             :id "6Za8EE8Kpn8NeoJciqN3uA",
+             :type "Entry"}}
+           {:fields
+            {:acceptanceLooks
+             [{:sys {:type "Link", :linkType "Entry", :id "2zSbLYFcRYjVoEMMlsWLsJ"}}
+              {:sys {:type "Link", :linkType "Entry", :id "48c3sCi06BHRRMKJxmM4u3"}}],
+             :slug "deals",
+             :name "Mayvenn Classic - Deals Page"},
+            :sys
+            {:contentType
+             {:sys {:type "Link", :linkType "ContentType", :id "ugc-collection"}},
+             :updatedAt "2019-05-23T17:05:20.329Z",
+             :id "2dZTVOLLqkNS9EoUJ1t6qn",
+             :type "Entry"}}
+           {:fields
+            {:acceptanceLooks
+             [{:sys {:type "Link", :linkType "Entry", :id "2zSbLYFcRYjVoEMMlsWLsJ"}}],
+             :slug "bundle-sets-straight",
+             :name "Adventure  Bundle Sets Straight"},
+            :sys
+            {:contentType
+             {:sys {:type "Link", :linkType "ContentType", :id "ugc-collection"}},
+             :updatedAt "2019-05-22T23:44:28.793Z",
+             :id "4GfFV6dC7KjLhUxNDKvguP",
+             :type "Entry"}}
+           {:fields
+            {:acceptanceLooks
+             [{:sys {:type "Link", :linkType "Entry", :id "2zSbLYFcRYjVoEMMlsWLsJ"}}],
+             :slug "shop-by-look-straight",
+             :name "Adventure Shop By Look Straight"},
+            :sys
+            {:contentType
+             {:sys {:type "Link", :linkType "ContentType", :id "ugc-collection"}},
+             :updatedAt "2019-05-22T23:32:43.380Z",
+             :id "4NNviXNUw1odQtzXOdHaNY",
+             :type "Entry"}}],
+          :includes
+          {:Entry
+           [{:sys
+             {:space {:sys {:type "Link", :linkType "Space", :id "76m8os65degn"}},
+              :updatedAt "2019-05-22T22:59:58.189Z",
+              :revision 1,
+              :locale "en-US",
+              :createdAt "2019-05-22T22:59:58.189Z",
+              :type "Entry",
+              :id "2zSbLYFcRYjVoEMMlsWLsJ",
+              :environment {:sys {:id "master", :type "Link", :linkType "Environment"}},
+              :contentType {:sys {:type "Link", :linkType "ContentType", :id "look"}}},
+             :fields
+             {:title "Acceptance Virgin Peruvian Deep Wave 16 18 20 ",
+              :texture "Deep Wave",
+              :color "Natural Black",
+              :description "16\" + 18\" + 20\" ",
+              :sharedCartUrl "https://shop.mayvenn.com/c/XFoCrXR7Yx",
+              :photoUrl
+              "https://static.pixlee.com/photos/235267317/original/bundle-deal-template-f-r1-01-lm.jpg",
+              :socialMediaHandle "@mayvennhair",
+              :socialMediaPlatform "instagram"}}
+            {:sys
+             {:space {:sys {:type "Link", :linkType "Space", :id "76m8os65degn"}},
+              :updatedAt "2019-05-23T00:38:22.078Z",
+              :revision 1,
+              :locale "en-US",
+              :createdAt "2019-05-23T00:38:22.078Z",
+              :type "Entry",
+              :id "48c3sCi06BHRRMKJxmM4u3",
+              :environment {:sys {:id "master", :type "Link", :linkType "Environment"}},
+              :contentType {:sys {:type "Link", :linkType "ContentType", :id "look"}}},
+             :fields
+             {:title "BDW 12\" 12\" 12\"",
+              :texture "Deep Wave",
+              :color "Natural Black",
+              :description "12\" 12\" 12\"",
+              :sharedCartUrl "https://shop.mayvenn.com/c/nAOHqCV5Es",
+              :photoUrl
+              "https://static.pixlee.com/photos/270470339/original/Screen_Shot_2019-03-08_at_9.44.00_AM.png",
+              :socialMediaHandle "@enevicky",
+              :socialMediaPlatform "instagram"}}]}}
    :status 200})
 
 (def contentful-response

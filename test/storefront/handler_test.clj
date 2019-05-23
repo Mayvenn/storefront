@@ -317,33 +317,65 @@
         (with-services {:storeback-handler  storeback-handler
                         :contentful-handler contentful-handler}
             (with-handler handler
-              (let [responses     (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
-                    requests      (txfm-requests contentful-requests identity)
-                    expected-look {:content/type          "look"
-                                   :content/id            "QCCIxo6JWgxqZVqvJvQyB"
-                                   :content/updated-at    1557448824059
-                                   :title                 "Virgin Peruvian Deep Wave 16 18 20 22"
-                                   :texture               "Deep Wave"
-                                   :color                 "Natural Black"
-                                   :description           "16\" + 18\" + 20\" "
-                                   :shared-cart-url       "https://shop.mayvenn.com/c/BV7bOQQxuJ"
-                                   :photo-url             "https://static.pixlee.com/photos/235267317/original/bundle-deal-template-f-r1-01-lm.jpg"
-                                   :social-media-handle   "@mayvennhair"
-                                   :social-media-platform "Instagram"}]
-                (is (= {:all-looks {:QCCIxo6JWgxqZVqvJvQyB expected-look}
-                        :deals
-                        {:content/id         "2dZTVOLLqkNS9EoUJ1t6qn"
-                         :content/type       "ugc-collection"
-                         :content/updated-at 1558471238081
-                         :slug               "deals"
-                         :name               "Mayvenn Classic - Deals Page"
-                         :looks              [expected-look]}
+              (let [responses (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
+                    requests  (txfm-requests contentful-requests identity)
+                    look-1    {:content/type          "look"
+                               :content/id            "2zSbLYFcRYjVoEMMlsWLsJ"
+                               :content/updated-at    1558565998189
+                               :title                 "Acceptance Virgin Peruvian Deep Wave 16 18 20 "
+                               :texture               "Deep Wave"
+                               :color                 "Natural Black"
+                               :description           "16\" + 18\" + 20\" "
+                               :shared-cart-url       "https://shop.mayvenn.com/c/XFoCrXR7Yx"
+                               :photo-url             "https://static.pixlee.com/photos/235267317/original/bundle-deal-template-f-r1-01-lm.jpg"
+                               :social-media-handle   "@mayvennhair"
+                               :social-media-platform "instagram"}
+                    look-2    {:content/type          "look"
+                               :content/id            "48c3sCi06BHRRMKJxmM4u3"
+                               :content/updated-at    1558571902078
+                               :title                 "BDW 12\" 12\" 12\""
+                               :texture               "Deep Wave"
+                               :color                 "Natural Black"
+                               :description           "12\" 12\" 12\""
+                               :shared-cart-url       "https://shop.mayvenn.com/c/nAOHqCV5Es"
+                               :photo-url             "https://static.pixlee.com/photos/270470339/original/Screen_Shot_2019-03-08_at_9.44.00_AM.png"
+                               :social-media-handle   "@enevicky"
+                               :social-media-platform "instagram"}]
+                (is (= {:all-looks {(keyword "2zSbLYFcRYjVoEMMlsWLsJ") look-1
+                                    (keyword "48c3sCi06BHRRMKJxmM4u3") look-2}
+                        :deals     {:content/id         "2dZTVOLLqkNS9EoUJ1t6qn"
+                                    :content/type       "ugc-collection"
+                                    :content/updated-at 1558631120329
+                                    :slug               "deals"
+                                    :name               "Mayvenn Classic - Deals Page"
+                                    :looks              [look-1 look-2]}
                         :acceptance-deals
-                        {:slug               "acceptance-deals",
-                         :name               "[ACCEPTANCE] Mayvenn Classic - Deals Page",
-                         :content/updated-at 1558472526413,
+                        {:slug               "acceptance-deals"
+                         :name               "[ACCEPTANCE] Mayvenn Classic - Deals Page"
+                         :content/updated-at 1558472526413
+                         :content/type       "ugc-collection"
+                         :content/id         "6Za8EE8Kpn8NeoJciqN3uA"}
+                        :shop-by-look-straight
+                        {:slug               "shop-by-look-straight",
+                         :name               "Adventure Shop By Look Straight",
+                         :content/updated-at 1558567963380,
                          :content/type       "ugc-collection",
-                         :content/id         "6Za8EE8Kpn8NeoJciqN3uA"}}
+                         :content/id         "4NNviXNUw1odQtzXOdHaNY",
+                         :looks              [look-1]}
+                        :bundle-sets-straight
+                        {:slug               "bundle-sets-straight",
+                         :name               "Adventure  Bundle Sets Straight",
+                         :content/updated-at 1558568668793,
+                         :content/type       "ugc-collection",
+                         :content/id         "4GfFV6dC7KjLhUxNDKvguP",
+                         :looks              [look-1]}
+                        :look
+                        {:slug               "look"
+                         :name               "Mayvenn Classic - Shop By Look "
+                         :content/updated-at 1558567374792
+                         :content/type       "ugc-collection"
+                         :content/id         "5vqi7q9EeO1ULNjQ1Q4DEp"
+                         :looks              [look-1]}}
                        (-> (mock/request :get "https://bob.mayvenn.com/cms")
                            handler
                            :body

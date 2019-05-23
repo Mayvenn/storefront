@@ -88,7 +88,7 @@
   "Resolves Assets under Entries within items."
   [{:keys [items includes]}]
   (let [resolved-includes (-> includes
-                              (update :Entry (partial (partial mapv resolve-children includes)))
+                              (update :Entry (partial mapv (partial resolve-children includes)))
                               (update :Entry (partial maps/index-by (comp :id :sys))))]
     (walk/postwalk
      (fn [form]
