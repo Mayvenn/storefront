@@ -21,29 +21,46 @@
             [storefront.platform.messages :as messages]
             [storefront.effects :as effects]
             [clojure.string :as string]
-            [storefront.keypaths :as storefront.keypaths]))
+            [storefront.keypaths :as storefront.keypaths]
+            [storefront.routes :as routes]
+            [clojure.set :as set]))
+
+(def ^:private default-utm-params
+  {:utm_medium "referral"
+   :utm_term   "fi_shoptofreeinstall"})
+
+(defn ^:private route-to-or-redirect-to-freeinstall [shop? environment navigation-event navigation-arg]
+  (let [navigation-message [navigation-event navigation-arg]]
+    (merge (when-not shop?
+             {:navigation-message navigation-message})
+           {:href (layered/freeinstall-domain environment (apply routes/path-for navigation-message))})))
+
+(defn ^:private cta-route-to-or-redirect-to-freeinstall [shop? environment navigation-event navigation-arg]
+  (set/rename-keys (route-to-or-redirect-to-freeinstall shop? environment navigation-event nil)
+                   {:href               :cta/href
+                    :navigation-message :cta/navigation-message}))
 
 (defn query
   [data]
-  (let [shop? (= "shop" (get-in data storefront.keypaths/store-slug))]
+  (let [shop?       (= "shop" (get-in data storefront.keypaths/store-slug))
+        environment (get-in data storefront.keypaths/environment)]
     {:layers
      [{:layer/type      :hero-with-links
        :photo/mob-uuid  "8b5bc7af-ca65-4812-88c2-e1601cb17b54"
        :photo/dsk-uuid  "6421450f-071d-43ab-b5c9-69de8280d07b"
        :photo/file-name "free-install-hero"
        :photo/alt       "We're changing the game. Introducing Mayvenn Install Hair + Service for the price of one"
-       :buttons         [[(merge (utils/scroll-href "learn-more")
-                                 {:height-class "py2"
-                                  :data-test    "learn-more"})
+       :buttons         [[{:href         "#learn-more"
+                           :height-class "py2"
+                           :data-test    "learn-more"}
                           "Learn More"]
-                         [(merge (when-not shop?
-                                   (utils/route-to events/navigate-adventure-install-type
-                                                   {:query-params {:utm_medium "referral"
-                                                                   :utm_source "toadventurehomepagehero"
-                                                                   :utm_term "fi_shoptofreeinstall"}}))
+                         [(merge (route-to-or-redirect-to-freeinstall
+                                  shop? environment
+                                  events/navigate-adventure-install-type
+                                  {:query-params (merge default-utm-params
+                                                        {:utm_source "toadventurehomepagehero"})})
                                  {:data-test    "adventure-home-choice-get-started"
-                                  :height-class "py2"
-                                  :href         (layered/->freeinstall-url (get-in data storefront.keypaths/environment) "toadventurehomepagehero" "/adv/install-type")})
+                                  :height-class "py2"})
                           "Get Started"]]}
       {:layer/type :free-standard-shipping-bar}
       {:layer/type   :text-block
@@ -70,18 +87,20 @@
       {:layer/type      :bulleted-explainer
        :header/value    "How it Works"
        :subheader/value "It's simple"
-       :bullets         [{:icon/uuid              "3d2b326c-7773-4672-827e-f13dedfae15a"
-                          :icon/width             "22"
-                          :header/value           "1. Choose a Mayvenn Certified Stylist"
-                          :body/value             "We’ve partnered with thousands of top stylists around the nation. Choose one in your local area and we’ll pay the stylist to do your install."
-                          :cta/value              "Learn more"
-                          :cta/navigation-message [events/navigate-info-certified-stylists nil]}
-                         {:icon/uuid              "08e9d3d8-6f3d-4b3c-bc46-3590175a9a4d"
-                          :icon/width             "24"
-                          :header/value           "2. Buy ANY Three Bundles or More"
-                          :body/value             "This includes closures, frontals, and 360 frontals. Risk free - your virgin hair and service are covered by our 30 day guarantee."
-                          :cta/value              "Learn more"
-                          :cta/navigation-message [events/navigate-info-about-our-hair nil]}
+       :bullets         [(merge {:icon/uuid              "3d2b326c-7773-4672-827e-f13dedfae15a"
+                                 :icon/width             "22"
+                                 :header/value           "1. Choose a Mayvenn Certified Stylist"
+                                 :body/value             "We’ve partnered with thousands of top stylists around the nation. Choose one in your local area and we’ll pay the stylist to do your install."
+                                 :cta/value              "Learn more"}
+                                (cta-route-to-or-redirect-to-freeinstall
+                                 shop? environment events/navigate-info-certified-stylists nil))
+                         (merge {:icon/uuid              "08e9d3d8-6f3d-4b3c-bc46-3590175a9a4d"
+                                 :icon/width             "24"
+                                 :header/value           "2. Buy ANY Three Bundles or More"
+                                 :body/value             "This includes closures, frontals, and 360 frontals. Risk free - your virgin hair and service are covered by our 30 day guarantee."
+                                 :cta/value              "Learn more"}
+                                (cta-route-to-or-redirect-to-freeinstall
+                                 shop? environment events/navigate-info-about-our-hair nil))
                          {:icon/uuid    "3fb9c2bf-c30e-4bee-957c-f273b1b5a233"
                           :icon/width   "27"
                           :header/value "3. Schedule Your Appointment"
@@ -134,15 +153,12 @@
                                 {:query-params {:video "we-are-mayvenn"}}]}
       {:layer/type :contact}
       (merge
-       (when-not shop?
-         {:cta/navigation-message [events/navigate-adventure-install-type
-                                   {:query-params {:utm_medium "referral"
-                                                   :utm_source "toadventurehomepagestickybar"
-                                                   :utm_term "fi_shoptofreeinstall"}}]})
-       {:layer/type :sticky-footer
-        :cta/href   (layered/->freeinstall-url (get-in data storefront.keypaths/environment)
-                                               "toadventurehomepagestickybar"
-                                               "/adv/install-type")})]}))
+       {:layer/type :sticky-footer}
+       (cta-route-to-or-redirect-to-freeinstall
+        shop? environment
+        events/navigate-adventure-install-type
+        {:query-params (merge default-utm-params
+                              {:utm_source "toadventurehomepagestickybar"})}))]}))
 
 (defn built-component
   [data opts]

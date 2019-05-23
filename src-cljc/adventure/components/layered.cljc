@@ -16,6 +16,13 @@
                        goog.events
                        [storefront.browser.scroll :as scroll]])))
 
+(defn freeinstall-domain [environment path]
+  (let [domain (case environment
+                 "production" "freeinstall.mayvenn.com"
+                 "acceptance" "freeinstall.diva-acceptance.com"
+                 "freeinstall.storefront.localhost")]
+    (str "//" domain path)))
+
 (defn ->freeinstall-url [environment source path]
   (let [domain (case environment
                  "production" "freeinstall.mayvenn.com"
