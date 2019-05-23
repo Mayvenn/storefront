@@ -9,6 +9,7 @@
                        goog.style
                        goog.events
                        [storefront.browser.scroll :as scroll]])
+            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.pixlee :as pixlee]
             [storefront.component :as component]
             [storefront.components.ui :as ui]
@@ -43,25 +44,31 @@
 (defn query
   [data]
   (let [shop?       (= "shop" (get-in data storefront.keypaths/store-slug))
-        environment (get-in data storefront.keypaths/environment)]
+        environment (get-in data storefront.keypaths/environment)
+        browse-stylist-hero? (experiments/browse-stylist-hero? data)]
     {:layers
-     [{:layer/type      :hero-with-links
-       :photo/mob-uuid  "8b5bc7af-ca65-4812-88c2-e1601cb17b54"
-       :photo/dsk-uuid  "6421450f-071d-43ab-b5c9-69de8280d07b"
-       :photo/file-name "free-install-hero"
-       :photo/alt       "We're changing the game. Introducing Mayvenn Install Hair + Service for the price of one"
-       :buttons         [[{:href         "#learn-more"
-                           :height-class "py2"
-                           :data-test    "learn-more"}
-                          "Learn More"]
-                         [(merge (route-to-or-redirect-to-freeinstall
-                                  shop? environment
-                                  events/navigate-adventure-install-type
-                                  {:query-params (merge default-utm-params
-                                                        {:utm_source "toadventurehomepagehero"})})
-                                 {:data-test    "adventure-home-choice-get-started"
-                                  :height-class "py2"})
-                          "Get Started"]]}
+     [(merge {:layer/type      :hero-with-links
+              :photo/file-name "free-install-hero"
+              :buttons         (into (if browse-stylist-hero?
+                                       []
+                                       [[{:href         "#learn-more"
+                                          :height-class "py2"
+                                          :data-test    "learn-more"}
+                                         "Learn More"]])
+                                     [[(merge (route-to-or-redirect-to-freeinstall
+                                               shop? environment
+                                               events/navigate-adventure-install-type
+                                               {:query-params (merge default-utm-params
+                                                                     {:utm_source "toadventurehomepagehero"})})
+                                              {:data-test    "adventure-home-choice-get-started"
+                                               :height-class "py2"})
+                                       "Get Started"]])}
+             (if browse-stylist-hero?
+               {:photo/mob-uuid  "7edde421-146c-407f-be8b-87db0c81ae54"
+                :photo/dsk-uuid  "41adade2-0987-4f8f-9bed-99d9586fead3"}
+               {:photo/alt       "We're changing the game. Introducing Mayvenn Install Hair + Service for the price of one"
+                :photo/mob-uuid  "8b5bc7af-ca65-4812-88c2-e1601cb17b54"
+                :photo/dsk-uuid  "6421450f-071d-43ab-b5c9-69de8280d07b"}))
       {:layer/type :free-standard-shipping-bar}
       {:layer/type   :text-block
        :header/value "We're paying for your next hair appointment"

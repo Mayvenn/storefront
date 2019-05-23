@@ -1,7 +1,6 @@
 (ns storefront.components.ui
   (:require [cemerick.url :as url]
             [clojure.string :as string]
-            [storefront.accessors.experiments :as experiments]
             [storefront.assets :as assets]
             [storefront.component :as component]
             [storefront.components.money-formatters :as mf]

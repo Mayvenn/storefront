@@ -63,8 +63,10 @@
     [:div.relative.flex.justify-center
      [:div.absolute.bottom-0.col-6-on-tb-dt.col-12.pb2.mb3-on-dt
       [:div.col.col-12
-       (for [button (:buttons data)]
-         [:div.col.col-6.px2 (apply ui/teal-button button)])]]]]))
+       (let [num-buttons (count (:buttons data))
+             col-size    (/ 12 num-buttons)]
+         (for [button (:buttons data)]
+           [:div.col.px2 {:class (str "col-" col-size)} (apply ui/teal-button button)]))]]]]))
 
 (defmethod layer-view :free-standard-shipping-bar
   [_ _ _]
@@ -429,7 +431,7 @@
   (component/create
    (into [:div]
          (comp
-          (map (fn [layer-data]
-                 [:section
-                  (component/build layer-view layer-data opts)])))
+          (map-indexed (fn [i layer-data]
+                         [:section {:key (str "section-" i)}
+                          (component/build layer-view layer-data opts)])))
          layers)))

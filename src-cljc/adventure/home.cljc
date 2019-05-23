@@ -6,10 +6,6 @@
             [storefront.events :as events]
             adventure.shop-home))
 
-(defn query
-  [data]
-  {})
-
 (defn component
   [data _ opts]
   (component/create
@@ -19,10 +15,10 @@
                           {:event events/navigate-adventure-home
                            :data-test "header-logo"
                            :height    "40px"})]]
-    (component/build layered/component (adventure.shop-home/query data) opts)]))
+    (component/build layered/component data opts)]))
 
 (defn built-component
   [data opts]
-  (component/build component (query data) opts))
+  (component/build component (adventure.shop-home/query data) opts))
 
 
