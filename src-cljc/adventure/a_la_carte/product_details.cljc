@@ -384,14 +384,23 @@
              (group-by option-kw skus))))
 
 (defn ugc-query [product sku data]
-  (when-let [ugc (get-in data keypaths/ugc)]
-    (when-let [social-cards (->> product
-                                 :legacy/named-search-slug
-                                 keyword
-                                 (pixlee/images-in-album ugc)
-                                 (mapv component-ugc/pixlee-look->pdp-social-card)
-                                 (mapv #(assoc % :desktop-aware? false))
-                                 not-empty)]
+  (let [ugc                (get-in data keypaths/ugc)
+        album-keyword      (-> product :legacy/named-search-slug keyword)
+        cms-ugc-collection (get-in data (conj keypaths/cms-ugc-collection album-keyword))]
+    (when-let [social-cards (if (experiments/pixlee-to-contentful? data)
+                              (->> cms-ugc-collection
+                                   :looks
+                                   (mapv (partial component-ugc/contentful-look->pdp-social-card
+                                                  (get-in data keypaths/navigation-event)
+                                                  album-keyword))
+                                   (mapv #(assoc % :desktop-aware? false))
+                                   not-empty)
+                              (when ugc
+                                (->> album-keyword
+                                     (pixlee/images-in-album ugc)
+                                     (mapv component-ugc/pixlee-look->pdp-social-card)
+                                     (mapv #(assoc % :desktop-aware? false))
+                                     not-empty)))]
       {:carousel-data {:product-name      (:copy/title product)
                        :page-slug         (:page/slug product)
                        :sku-id            (:catalog/sku-id sku)

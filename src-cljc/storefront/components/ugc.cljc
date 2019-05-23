@@ -196,6 +196,21 @@
        :cta/button-type        :teal-button
        :cta/navigation-message (-> base :links :view-look)}))))
 
+(defn contentful-look->pdp-social-card
+  ([nav-event album-keyword look]
+   (contentful-look->pdp-social-card nav-event album-keyword {} look))
+  ([nav-event
+    album-keyword
+    color-details
+    {:keys [social-media-handle]
+     :as   contentful-look}]
+   (let [base (contentful-look->social-card nav-event album-keyword color-details contentful-look)]
+     (merge
+      base
+      {:title                  social-media-handle
+       :cta/button-type        :teal-button
+       :cta/navigation-message (-> base :links :view-look)}))))
+
 (defn pixlee-look->social-card
   ([look]
    (pixlee-look->social-card {} look))
