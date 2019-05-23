@@ -191,7 +191,7 @@
 (defn ^:private cta-with-chevron
   [{:cta/keys [navigation-message href value]}]
   (when (and navigation-message value)
-    [:a.block.h3.medium.teal.my2
+    [:a.block.h4.medium.teal.my2
      (merge
       (when href
         {:href href})
@@ -245,7 +245,9 @@
       (into
        [:div.mx-auto.col-11.flex.justify-center.hide-on-mb-tb]
        (comp (map (partial step "col-3")))
-       (:bullets data))])))
+       (:bullets data))
+      [:div.center.pt3
+       (cta-with-chevron data)]])))
 
 (defmethod layer-view :ugc
   [data owner opts]

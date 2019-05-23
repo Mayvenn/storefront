@@ -43,8 +43,8 @@
 
 (defn query
   [data]
-  (let [shop?       (= "shop" (get-in data storefront.keypaths/store-slug))
-        environment (get-in data storefront.keypaths/environment)
+  (let [shop?                (= "shop" (get-in data storefront.keypaths/store-slug))
+        environment          (get-in data storefront.keypaths/environment)
         browse-stylist-hero? (experiments/browse-stylist-hero? data)]
     {:layers
      [(merge {:layer/type      :hero-with-links
@@ -64,11 +64,11 @@
                                                :height-class "py2"})
                                        "Get Started"]])}
              (if browse-stylist-hero?
-               {:photo/mob-uuid  "7edde421-146c-407f-be8b-87db0c81ae54"
-                :photo/dsk-uuid  "41adade2-0987-4f8f-9bed-99d9586fead3"}
-               {:photo/alt       "We're changing the game. Introducing Mayvenn Install Hair + Service for the price of one"
-                :photo/mob-uuid  "8b5bc7af-ca65-4812-88c2-e1601cb17b54"
-                :photo/dsk-uuid  "6421450f-071d-43ab-b5c9-69de8280d07b"}))
+               {:photo/mob-uuid "7edde421-146c-407f-be8b-87db0c81ae54"
+                :photo/dsk-uuid "41adade2-0987-4f8f-9bed-99d9586fead3"}
+               {:photo/alt      "We're changing the game. Introducing Mayvenn Install Hair + Service for the price of one"
+                :photo/mob-uuid "8b5bc7af-ca65-4812-88c2-e1601cb17b54"
+                :photo/dsk-uuid "6421450f-071d-43ab-b5c9-69de8280d07b"}))
       {:layer/type :free-standard-shipping-bar}
       {:layer/type   :text-block
        :header/value "We're paying for your next hair appointment"
@@ -91,27 +91,27 @@
                                   events/navigate-home
                                   events/navigate-adventure-home)
                                 {:query-params {:video "free-install"}}]}
-      {:layer/type      :bulleted-explainer
-       :header/value    "How it Works"
-       :subheader/value "It's simple"
-       :bullets         [(merge {:icon/uuid              "3d2b326c-7773-4672-827e-f13dedfae15a"
-                                 :icon/width             "22"
-                                 :header/value           "1. Choose a Mayvenn Certified Stylist"
-                                 :body/value             "We’ve partnered with thousands of top stylists around the nation. Choose one in your local area and we’ll pay the stylist to do your install."
-                                 :cta/value              "Learn more"}
-                                (cta-route-to-or-redirect-to-freeinstall
-                                 shop? environment events/navigate-info-certified-stylists nil))
-                         (merge {:icon/uuid              "08e9d3d8-6f3d-4b3c-bc46-3590175a9a4d"
-                                 :icon/width             "24"
-                                 :header/value           "2. Buy ANY Three Bundles or More"
-                                 :body/value             "This includes closures, frontals, and 360 frontals. Risk free - your virgin hair and service are covered by our 30 day guarantee."
-                                 :cta/value              "Learn more"}
-                                (cta-route-to-or-redirect-to-freeinstall
-                                 shop? environment events/navigate-info-about-our-hair nil))
-                         {:icon/uuid    "3fb9c2bf-c30e-4bee-957c-f273b1b5a233"
-                          :icon/width   "27"
-                          :header/value "3. Schedule Your Appointment"
-                          :body/value   "We’ll connect you to your Mayvenn Certified Stylist and book an install appointment that’s convenient for you."}]}
+      (merge
+       {:layer/type      :bulleted-explainer
+        :header/value    "How it Works"
+        :subheader/value "It's simple"
+        :bullets         [{:icon/uuid    "3d2b326c-7773-4672-827e-f13dedfae15a"
+                           :icon/width   "22"
+                           :header/value "1. Choose a Mayvenn Certified Stylist"
+                           :body/value   "We’ve partnered with thousands of top stylists around the nation. Choose one in your local area and we’ll pay the stylist to do your install."}
+                          {:icon/uuid    "08e9d3d8-6f3d-4b3c-bc46-3590175a9a4d"
+                           :icon/width   "24"
+                           :header/value "2. Buy ANY Three Bundles or More"
+                           :body/value   "This includes closures, frontals, and 360 frontals. Risk free - your virgin hair and service are covered by our 30 day guarantee."}
+                          {:icon/uuid    "3fb9c2bf-c30e-4bee-957c-f273b1b5a233"
+                           :icon/width   "27"
+                           :header/value "3. Schedule Your Appointment"
+                           :body/value   "We’ll connect you to your Mayvenn Certified Stylist and book an install appointment that’s convenient for you."}]
+        #_#_
+        :cta/value "Learn more"}
+       #_
+       (cta-route-to-or-redirect-to-freeinstall
+        shop? environment events/navigate-info-about-our-hair nil))
       {:layer/type   :text-block
        :header/value "Who's doing my hair?"
        :body/value   "Our Certified Stylists are the best in your area. They're chosen because of their top-rated reviews, professionalism, and amazing work."}
