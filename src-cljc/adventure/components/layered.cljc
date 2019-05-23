@@ -388,7 +388,7 @@
            (set-height))
          om/IRenderState
          (render-state [this {:keys [show? content-height]}]
-           (let [{:cta/keys [href]} data]
+           (let [{:cta/keys [href navigation-message]} data]
              (component/html
               [:div.hide-on-dt
                [:div.fixed.z4.bottom-0.left-0.right-0
@@ -406,9 +406,12 @@
                     [:div.col-7 "We can't wait to pay for your install!"]
                     [:div.col-1]
                     [:div.col-4
-                     (ui/teal-button {:height-class "py2"
-                                      :data-test    "sticky-footer-get-started"
-                                      :href         href}
+                     (ui/teal-button (merge
+                                      (when navigation-message
+                                        (apply utils/route-to navigation-message))
+                                      {:height-class "py2"
+                                       :data-test    "sticky-footer-get-started"
+                                       :href         href})
                                      [:div.h7 "Get started"])]]]]]]])))))))
 
 (defmethod layer-view :default

@@ -11,7 +11,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.routes :as routes]
-            [adventure.home :as adventure-home]))
+            adventure.shop-home))
 
 (defn product-image
   [{:keys [resizable_url resizable_filename alt]}]
@@ -356,7 +356,7 @@
     (v2-home/built-component data opts)
 
     (= "shop" (get-in data keypaths/store-slug))
-    (adventure-home/built-component data opts)
+    (adventure.shop-home/built-component data opts)
 
     :else
     (component/build component (query data) opts)))
