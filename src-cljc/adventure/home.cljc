@@ -15,7 +15,8 @@
                           {:event events/navigate-adventure-home
                            :data-test "header-logo"
                            :height    "40px"})]]
-    (component/build layered/component data opts)]))
+    (component/build layered/component data opts)
+    [:div {:style {:height "75px"}}]]))
 
 (defn built-component
   [data opts]

@@ -107,21 +107,27 @@
                            :icon/width   "27"
                            :header/value "3. Schedule Your Appointment"
                            :body/value   "We’ll connect you to your Mayvenn Certified Stylist and book an install appointment that’s convenient for you."}]
-        #_#_
         :cta/value "Learn more"}
-       #_
        (cta-route-to-or-redirect-to-freeinstall
-        shop? environment events/navigate-info-about-our-hair nil))
-      {:layer/type   :text-block
-       :header/value "Who's doing my hair?"
-       :body/value   "Our Certified Stylists are the best in your area. They're chosen because of their top-rated reviews, professionalism, and amazing work."}
+        shop? environment events/navigate-info-how-it-works nil))
+      (merge
+       {:layer/type   :text-block
+        :header/value "Who's doing my hair?"
+        :body/value   "Our Certified Stylists are the best in your area. They're chosen because of their top-rated reviews, professionalism, and amazing work."
+        :cta/value "Learn more"}
+       (cta-route-to-or-redirect-to-freeinstall
+        shop? environment events/navigate-info-certified-stylists nil))
       {:layer/type      :image-block
        :photo/mob-uuid  "a6a607e6-aeb4-4b61-8bc7-60fd17d15abe"
        :photo/dsk-uuid  "f2d82c41-2051-47d8-86c5-1c82568e324d"
        :photo/file-name "who-shop-hair"}
-      {:layer/type   :text-block
-       :header/value "Quality-Guaranteed Virgin Hair"
-       :body/value   "Our bundles, closures, and frontals are crafted with the highest industry standards and come in a variety of textures and colors."}
+      (merge
+       {:layer/type   :text-block
+        :header/value "Quality-Guaranteed Virgin Hair"
+        :body/value   "Our bundles, closures, and frontals are crafted with the highest industry standards and come in a variety of textures and colors."
+        :cta/value "Learn more"}
+       (cta-route-to-or-redirect-to-freeinstall
+        shop? environment events/navigate-info-about-our-hair nil))
       {:layer/type      :image-block
        :photo/mob-uuid  "e994076c-b21f-4925-b72b-f804b7408599"
        :photo/dsk-uuid  "ddce59fd-2607-4415-a3e1-e1f12c459dc6"

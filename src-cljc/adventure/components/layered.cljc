@@ -82,6 +82,22 @@
      [:div.h7.white.medium
       "FREE standard shipping"]]]))
 
+(defn ^:private cta-with-chevron
+  [{:cta/keys [navigation-message href value]}]
+  (when (and navigation-message value)
+    [:a.block.h4.medium.teal.my2
+     (merge
+      (when href
+        {:href href})
+      (when navigation-message
+        (apply utils/route-to navigation-message)))
+     value
+     (svg/dropdown-arrow {:class  "stroke-teal ml2"
+                          :style  {:stroke-width "3px"
+                                   :transform "rotate(-90deg)"}
+                          :height "14px"
+                          :width  "14px"})]))
+
 (defmethod layer-view :text-block
   [data _ _]
   (component/create
@@ -90,7 +106,8 @@
       [:a {:name n}])
     (when-let [v (:header/value data)]
       [:div.h2 v])
-    [:div.h5.dark-gray.mt3 (:body/value data)]]))
+    [:div.h5.dark-gray.mt3 (:body/value data)]
+    (cta-with-chevron data)]))
 
 (defmethod layer-view :escape-hatch
   [_ _ _]
@@ -187,22 +204,6 @@
         [:p.pt2.h7 (:body/value data)]
         [:h6.teal.flex.items-center.medium.shout
          (:cta/value data)]]]])))
-
-(defn ^:private cta-with-chevron
-  [{:cta/keys [navigation-message href value]}]
-  (when (and navigation-message value)
-    [:a.block.h4.medium.teal.my2
-     (merge
-      (when href
-        {:href href})
-      (when navigation-message
-        (apply utils/route-to navigation-message)))
-     value
-     (svg/dropdown-arrow {:class  "stroke-teal ml2"
-                          :style  {:stroke-width "3px"
-                                   :transform "rotate(-90deg)"}
-                          :height "14px"
-                          :width  "14px"})]))
 
 (defmethod layer-view :find-out-more
   [data owner opts]
