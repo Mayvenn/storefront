@@ -7,7 +7,7 @@
   (if (seq query-params)
     (.. (URIBuilder. s)
         (setParameters (map (fn [[key value]]
-                              (BasicNameValuePair. (name key) value))
+                              (BasicNameValuePair. (name key) (str value)))
                             query-params))
         (build)
         (toString))
