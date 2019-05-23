@@ -413,8 +413,7 @@
 
 (defmethod layer-view :default
   [data _ _]
-  (component/create [:div.center.border.border-width-3.border-light-teal.p4
-                     (str (:layer/type data))]))
+  (component/create [:div]))
 
 (defn component [{:keys [layers]} owner opts]
   (component/create
