@@ -16,14 +16,17 @@
                        goog.events
                        [storefront.browser.scroll :as scroll]])))
 
-(defn ->freeinstall-nav-event [source path]
-  [events/external-redirect-freeinstall
-   {:query-string (string/join
-                   "&"
-                   ["utm_medium=referral"
-                    (str "utm_source=" source)
-                    "utm_term=fi_shoptofreeinstall"])
-    :path         path}])
+(defn ->freeinstall-url [environment source path]
+  (let [domain (case environment
+                 "production" "freeinstall.mayvenn.com"
+                 "acceptance" "freeinstall.diva-acceptance.com"
+                 "freeinstall.storefront.localhost")]
+    (str "//" domain path "?"
+         (string/join
+          "&"
+          ["utm_medium=referral"
+           (str "utm_source=" source)
+           "utm_term=fi_shoptofreeinstall"]))))
 
 (defmulti layer-view (fn [{:keys [layer/type]} _ _] type))
 
@@ -177,10 +180,14 @@
          (:cta/value data)]]]])))
 
 (defn ^:private cta-with-chevron
-  [{:cta/keys [navigation-message value]}]
+  [{:cta/keys [navigation-message href value]}]
   (when (and navigation-message value)
     [:a.block.h3.medium.teal.my2
-     (apply utils/route-to navigation-message)
+     (merge
+      (when href
+        {:href href})
+      (when navigation-message
+        (apply utils/route-to navigation-message)))
      value
      (svg/dropdown-arrow {:class  "stroke-teal ml2"
                           :style  {:stroke-width "3px"
@@ -381,7 +388,7 @@
            (set-height))
          om/IRenderState
          (render-state [this {:keys [show? content-height]}]
-           (let [{:cta/keys [message]} data]
+           (let [{:cta/keys [href]} data]
              (component/html
               [:div.hide-on-dt
                [:div.fixed.z4.bottom-0.left-0.right-0
@@ -399,9 +406,9 @@
                     [:div.col-7 "We can't wait to pay for your install!"]
                     [:div.col-1]
                     [:div.col-4
-                     (ui/teal-button (merge {:height-class "py2"
-                                             :data-test    "sticky-footer-get-started"}
-                                            (apply utils/route-to message))
+                     (ui/teal-button {:height-class "py2"
+                                      :data-test    "sticky-footer-get-started"
+                                      :href         href}
                                      [:div.h7 "Get started"])]]]]]]])))))))
 
 (defmethod layer-view :default

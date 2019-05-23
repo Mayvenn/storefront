@@ -20,7 +20,8 @@
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
             [storefront.effects :as effects]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            [storefront.keypaths :as storefront.keypaths]))
 
 
 
@@ -37,11 +38,9 @@
                                  {:height-class "py2"
                                   :data-test    "learn-more"})
                           "Learn More"]
-                         [(merge
-                           {:data-test    "adventure-home-choice-get-started"
-                            :height-class "py2"}
-                           ;; TODO is this right?
-                           (utils/route-to events/navigate-adventure-install-type))
+                         [{:data-test    "adventure-home-choice-get-started"
+                           :height-class "py2"
+                           :href         (layered/->freeinstall-url (get-in data storefront.keypaths/environment) "toadventurehomepagehero" "/adv/install-type")}
                           "Get Started"]]}
       {:layer/type :free-standard-shipping-bar}
       {:layer/type   :text-block
@@ -124,9 +123,10 @@
                                   events/navigate-adventure-home)
                                 {:query-params {:video "we-are-mayvenn"}}]}
       {:layer/type :contact}
-      {:layer/type             :sticky-footer
-       :cta/navigation-message (layered/->freeinstall-nav-event "toadventurehomepagestylistinfopage"
-                                                                "/adv/install-type")}]}))
+      {:layer/type :sticky-footer
+       :cta/href   (layered/->freeinstall-url (get-in data storefront.keypaths/environment)
+                                              "toadventurehomepagestickybar"
+                                              "/adv/install-type")}]}))
 
 (defn built-component
   [data opts]

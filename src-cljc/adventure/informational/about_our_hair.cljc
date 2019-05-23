@@ -12,12 +12,13 @@
   [data]
   {:layers [{:layer/type :hero
              :photo/uuid "5ab5e0a7-50f7-4d4e-ab74-dac695d72f68"}
-            {:layer/type             :find-out-more
-             :header/value           "We believe that quality should be accessible for all."
-             :body/value             "Our bundles, closures, and frontals are crafted with the highest industry standards and come in a variety of textures and colors. The best part? All of our products are quality-guaranteed."
-             :cta/value              "Get started"
-             :cta/navigation-message (layered/->freeinstall-nav-event "toadventurehomepageourhairpage"
-                                                                      "/adv/install-type")}
+            {:layer/type   :find-out-more
+             :header/value "We believe that quality should be accessible for all."
+             :body/value   "Our bundles, closures, and frontals are crafted with the highest industry standards and come in a variety of textures and colors. The best part? All of our products are quality-guaranteed."
+             :cta/value    "Get started"
+             :cta/href     (layered/->freeinstall-url (get-in data storefront.keypaths/environment)
+                                                      "toadventurehomepageourhairpage"
+                                                      "/adv/install-type")}
             {:layer/type      :bulleted-explainer
              :header/value    "About Our Hair"
              :subheader/value "An overview"
@@ -41,9 +42,10 @@
                                :free-install-mayvenn)}
             (merge {:layer/type :faq} (faq/free-install-query data))
             {:layer/type :contact}
-            {:layer/type             :sticky-footer
-             :cta/navigation-message (layered/->freeinstall-nav-event "toadventurehomepageourhairpage"
-                                                                      "/adv/install-type")}]})
+            {:layer/type :sticky-footer
+             :cta/href   (layered/->freeinstall-url (get-in data storefront.keypaths/environment)
+                                                    "toadventurehomepageourhairpage"
+                                                    "/adv/install-type")}]})
 
 (defn built-component
   [data opts]

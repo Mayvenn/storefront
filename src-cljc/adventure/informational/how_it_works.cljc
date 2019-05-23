@@ -6,18 +6,20 @@
             [storefront.events :as events]
             [adventure.faq :as faq]
             [adventure.components.layered :as layered]
-            #?@(:cljs [[storefront.hooks.pixlee :as pixlee.hook]])))
+            #?@(:cljs [[storefront.hooks.pixlee :as pixlee.hook]])
+            [storefront.keypaths :as storefront.keypaths]))
 
 (defn query
   [data]
   {:layers [{:layer/type :hero
              :photo/uuid "99a8ccca-b4fe-42d2-8ac1-7ebf8e4f6559"}
-            {:layer/type             :find-out-more
-             :header/value           "We’re offering hair + service for the price of one"
-             :body/value             "We know that quality bundles can be expensive. That’s why when you buy our hair, we’re paying for your install appointment."
-             :cta/value              "Get started"
-             :cta/navigation-message (layered/->freeinstall-nav-event "toadventurehomepagehowitworkspage"
-                                                                      "/adv/install-type")}
+            {:layer/type   :find-out-more
+             :header/value "We’re offering hair + service for the price of one"
+             :body/value   "We know that quality bundles can be expensive. That’s why when you buy our hair, we’re paying for your install appointment."
+             :cta/value    "Get started"
+             :cta/href     (layered/->freeinstall-url (get-in data storefront.keypaths/environment)
+                                                      "toadventurehomepagehowitworkspage"
+                                                      "/adv/install-type")}
             {:layer/type      :bulleted-explainer
              :header/value    "How it Works"
              :subheader/value "In 3 easy steps"
@@ -46,9 +48,10 @@
             (merge {:layer/type :faq}
                    (faq/free-install-query data))
             {:layer/type :contact}
-            {:layer/type             :sticky-footer
-             :cta/navigation-message (layered/->freeinstall-nav-event "toadventurehomepagehowitworkspage"
-                                                                      "/adv/install-type")}]})
+            {:layer/type :sticky-footer
+             :cta/href   (layered/->freeinstall-url (get-in data storefront.keypaths/environment)
+                                                    "toadventurehomepagehowitworkspage"
+                                                    "/adv/install-type")}]})
 
 (defn built-component
   [data opts]
