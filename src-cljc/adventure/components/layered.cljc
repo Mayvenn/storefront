@@ -235,7 +235,7 @@
      [:div.col-12.py10.bg-transparent-teal
       [:div.mt2.flex.flex-column.items-center
        (let [{:header/keys [value]} data]
-         [:h2 value])
+         [:h2.center value])
        (let [{:subheader/keys [value]} data]
          [:div.h6.dark-gray value])]
       (into
