@@ -79,12 +79,14 @@
              auth-events
              cart-events
              checkout-events
-             informational-events
              order-complete-events
              payout-events
              sharing-events
              stylist-dashboard-events
              voucher-events))
+
+(def blank-footer-events
+  informational-events)
 
 (def minimal-header-events
   (set/union cart-events
@@ -94,6 +96,9 @@
 
 (defn show-minimal-footer? [event]
   (contains? minimal-footer-events event))
+
+(defn show-blank-footer? [event]
+  (contains? blank-footer-events event))
 
 (defn show-minimal-header? [event adventure?]
   (contains? (set/union minimal-header-events (when adventure? order-complete-events)) event))

@@ -73,7 +73,7 @@
 (defmethod layer-view :text-block
   [data _ _]
   (component/create
-   [:div.pt10.px6.center.col-6-on-dt.mx-auto
+   [:div.pt10.pb2.px6.center.col-6-on-dt.mx-auto
     (when-let [n (:anchor/name data)]
       [:a {:name n}])
     (when-let [v (:header/value data)]
@@ -193,27 +193,26 @@
   (component/create
    [:div.col-12.bg-white.py8.flex.flex-column.items-center.justify-center.center
     (:section/opts data)
-
     (let [{:header/keys [value]} data]
       (when value
         [:div.col-10.my2.h2 value]))
-
     (let [{:body/keys [value]} data]
       (when value
         [:div.col-10.my2.h5.dark-gray value]))
-
     (cta-with-chevron data)]))
 
 (defmethod layer-view :bulleted-explainer
   [data owner opts]
-  (let [step (fn [{:as point
+  (let [step (fn [width-class
+                  {:as point
                    :keys [icon/uuid icon/width]}]
-               [:div.col-12.mt2.center.col-4-on-dt
+               [:div.mt2.center.px1
+                {:class width-class}
                 [:div.flex.justify-center.items-end.my2
                  {:style {:height "39px"}}
                  (ui/ucare-img {:alt (:header/title point) :width width} uuid)]
-                [:div.h5.medium.mb1 (:header/value point)]
-                [:p.h6.col-10.col-9-on-dt.mx-auto.dark-gray (:body/value point)]
+                [:div.h5.medium (:header/value point)]
+                [:p.h6.mx-auto.dark-gray (:body/value point)]
                 (cta-with-chevron point)])]
 
     (component/create
@@ -221,13 +220,15 @@
       [:div.mt2.flex.flex-column.items-center
        (let [{:header/keys [value]} data]
          [:h2 value])
-
        (let [{:subheader/keys [value]} data]
          [:div.h6.dark-gray value])]
-
       (into
-       [:div.col-8-on-dt.mx-auto.flex.flex-wrap]
-       (comp (map step))
+       [:div.col-12.flex.flex-column.items-center.hide-on-dt]
+       (comp (map (partial step "col-10")))
+       (:bullets data))
+      (into
+       [:div.mx-auto.col-11.flex.justify-center.hide-on-mb-tb]
+       (comp (map (partial step "col-3")))
        (:bullets data))])))
 
 (defmethod layer-view :ugc
@@ -394,7 +395,7 @@
                    {:style {:margin-bottom "0"}})
                  [:div {:ref "content-height"}
                   [:div
-                   [:div.h6.white.bg-black.medium.px3.py6.flex.items-center
+                   [:div.h6.white.bg-black.medium.px3.py4.flex.items-center
                     [:div.col-7 "We can't wait to pay for your install!"]
                     [:div.col-1]
                     [:div.col-4
@@ -405,7 +406,7 @@
 
 (defmethod layer-view :default
   [data _ _]
-  (component/create [:div.bg-red.center.border.border-width-3.border-light-teal.p4
+  (component/create [:div.center.border.border-width-3.border-light-teal.p4
                      (str (:layer/type data))]))
 
 (defn component [{:keys [layers]} owner opts]

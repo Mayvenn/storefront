@@ -182,8 +182,16 @@
 
 (defn built-component
   [data opts]
-  (if (nav/show-minimal-footer? (get-in data keypaths/navigation-event))
-    (footer-minimal/built-component data nil)
-    (if (= (get-in data keypaths/store-slug) "shop")
+  (let [nav-event (get-in data keypaths/navigation-event)]
+    (cond
+      (nav/show-minimal-footer? nav-event)
+      (footer-minimal/built-component data nil)
+
+      (nav/show-blank-footer? nav-event)
+      [:div {:style {:height "85px"}}]
+
+      (= (get-in data keypaths/store-slug) "shop")
       (component/build dtc-full-component (dtc-query data) nil)
+
+      :else
       (component/build full-component (query data) nil))))
