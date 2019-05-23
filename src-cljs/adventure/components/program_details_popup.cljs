@@ -118,7 +118,7 @@
 
 (defmethod popup/query :adventure-free-install
   [data]
-  {:faq-data    (faq/query data)
+  {:faq-data    (faq/free-install-query data)
    :footer-data (footer-modal/query data)})
 
 (defmethod transitions/transition-state events/control-adventure-free-install-dismiss [_ event args app-state]
