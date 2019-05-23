@@ -5,10 +5,10 @@
             [storefront.components.accordion :as accordion]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
+            [storefront.components.video :as video]
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.platform.component-utils :as utils]
-            adventure.home
             #?@(:cljs [[om.core :as om]
                        [goog.events.EventType :as EventType]
                        goog.dom
@@ -31,6 +31,150 @@
   [data owner opts]
   (component/create
    (ui/ucare-img {:class "col-12"} (:photo/uuid data))))
+
+(defn hero-image [{:keys [desktop-url mobile-url file-name alt]}]
+  [:picture
+   ;; Tablet/Desktop
+   [:source {:media   "(min-width: 750px)"
+             :src-set (str desktop-url "-/format/jpeg/-/quality/best/" file-name " 1x")}]
+   ;; Mobile
+   [:img.block.col-12 {:src (str mobile-url "-/format/jpeg/" file-name)
+                       :alt alt}]])
+
+(defmethod layer-view :hero-with-links
+  [data _ _]
+  (component/create
+   [:div.mx-auto.relative {:style {:min-height "300px"}}
+    (let [{:photo/keys [mob-uuid dsk-uuid file-name alt]} data]
+      (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
+                   :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
+                   :file-name   file-name
+                   :alt         alt}))
+    [:div.relative.flex.justify-center
+     [:div.absolute.bottom-0.col-6-on-tb-dt.col-12.pb2.mb3-on-dt
+      [:div.col.col-12
+       (for [button (:buttons data)]
+         [:div.col.col-6.px2 (apply ui/teal-button button)])]]]]))
+
+(defmethod layer-view :free-standard-shipping-bar
+  [_ _ _]
+  (component/create
+   [:div.mx-auto {:style {:height "3em"}}
+    [:div.bg-black.flex.items-center.justify-center
+     {:style {:height "2.25em"
+              :margin-top "-1px"
+              :padding-top "1px"}}
+     [:div.px2
+      (ui/ucare-img {:alt "" :height "25"}
+                    "38d0a770-2dcd-47a3-a035-fc3ccad11037")]
+     [:div.h7.white.medium
+      "FREE standard shipping"]]]))
+
+(defmethod layer-view :text-block
+  [data _ _]
+  (component/create
+   [:div.pt10.px6.center.col-6-on-dt.mx-auto
+    (when-let [n (:anchor/name data)]
+      [:a {:name n}])
+    (when-let [v (:header/value data)]
+      [:div.h2 v])
+    [:div.h5.dark-gray.mt3 (:body/value data)]]))
+
+(defmethod layer-view :escape-hatch
+  [_ _ _]
+  (component/create
+   [:div.col-12.bg-fate-white.py8.flex.flex-column.items-center.justify-center
+    [:div.h2.col-8.center "Not interested in a Mayvenn Install?"]
+
+    [:a.block.h3.medium.teal.mt2.flex.items-center
+     (utils/fake-href events/control-open-shop-escape-hatch)
+     "Shop all products"
+     [:div.flex.items-end.ml2 {:style {:transform "rotate(-90deg)"}}
+      (svg/dropdown-arrow {:class  "stroke-teal"
+                           :style  {:stroke-width "3px"}
+                           :height "14px"
+                           :width  "14px"})]]]))
+
+(defmethod layer-view :image-block
+  [{:photo/keys [mob-uuid
+                 dsk-uuid
+                 file-name
+                 alt]} _ _]
+  (component/create
+   [:div.center.mx-auto
+    (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
+                 :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
+                 :file-name   file-name
+                 :alt         alt})]))
+
+(defmethod layer-view :checklist
+  [data _ _]
+  (component/create
+   [:div.pb10.px6.center.col-6-on-dt.mx-auto
+    (when-let [v (:header/value data)]
+      [:div.h2 v])
+    (when-let [v (:subheader/value data)]
+      [:div.h5.mt6.mb4 v])
+    [:ul.h6.list-img-purple-checkmark.dark-gray.left-align.mx-auto
+     {:style {:width "max-content"}}
+     (for [b (:bullets data)]
+       [:li.mb1.pl1 b])]]))
+
+(def teal-play-video-mobile
+  (svg/white-play-video {:class  "mr1 fill-teal"
+                         :height "30px"
+                         :width  "30px"}))
+
+(def teal-play-video-desktop
+  (svg/white-play-video {:class  "mr1 fill-teal"
+                         :height "41px"
+                         :width  "41px"}))
+
+(defmethod layer-view :video-overlay
+  [data _ _]
+  (component/create
+   (when-let [video (:video data)]
+     (component/build video/component
+                      video
+                      ;; NOTE(jeff): we use an invalid video slug to preserve back behavior. There probably should be
+                      ;;             an investigation to why history is replaced when doing A -> B -> A navigation
+                      ;;             (B is removed from history).
+                      {:opts
+                       {:close-attrs
+                        (utils/route-to events/navigate-home
+                                        {:query-params {:video "0"}})}}))))
+
+(defmethod layer-view :video-block
+  [data _ _]
+  (let [video-link (apply utils/route-to (:cta/navigation-message data))]
+    (component/create
+     [:div.col-11.mx-auto
+      [:div.hide-on-mb-tb.flex.justify-center.py3
+       [:a.block.relative
+        video-link
+        (ui/ucare-img {:alt "" :width "212"}
+                      "c487eeef-0f84-4378-a9be-13dc7c311e23")
+        [:div.absolute.top-0.bottom-0.left-0.right-0.flex.items-center.justify-center.bg-darken-3
+         teal-play-video-desktop]]
+       [:a.block.ml4.dark-gray
+        video-link
+        [:div.h4.bold (:header/value data)]
+        [:div.h4.my2 (:body/value data)]
+        [:div.h5.teal.flex.items-center.medium.shout (:cta/value data)]]]
+
+      [:div.hide-on-dt.flex.justify-center.pb10.px4
+       [:a.block.relative
+        video-link
+        (ui/ucare-img {:alt "" :width "152"}
+                      "1b58b859-842a-44b1-885c-eac965eeaa0f")
+        [:div.absolute.top-0.bottom-0.left-0.right-0.flex.items-center.justify-center.bg-darken-3
+         teal-play-video-mobile]]
+       [:a.block.ml2.dark-gray
+        video-link
+        [:h6.bold.mbnp6 (:header/value data)]
+        [:p.pt2.h7 (:body/value data)]
+        [:h6.teal.flex.items-center.medium.shout
+         (:cta/value data)]]]])))
 
 (defn ^:private cta-with-chevron
   [{:cta/keys [navigation-message value]}]
@@ -117,9 +261,92 @@
                          sections)}
      {:opts {:section-click-event events/faq-section-selected}})]))
 
+(defn ^:private contact-us-block [url svg title copy]
+  [:a.block.py3.col-12.col-4-on-tb-dt
+   {:href url}
+   svg
+   [:div.h6.teal.bold.titlize title]
+   [:div.col-8.mx-auto.h6.black copy]])
+
 (defmethod layer-view :contact
   [_ _ _]
-  (component/create adventure.home/contact-us))
+  (component/create
+   [:div.bg-transparent-teal.center.py8
+    [:h5.mt6.teal.letter-spacing-3.shout.bold "Contact Us"]
+    [:h1.black.titleize "Have Questions?"]
+    [:h5 "We're here to help"]
+    [:div.py2.mx-auto.teal.border-bottom.border-width-2.mb2-on-tb-dt
+     {:style {:width "30px"}}]
+    [:div.flex.flex-wrap.items-baseline.justify-center.col-12.col-8-on-tb-dt.mx-auto
+     (contact-us-block
+      (ui/sms-url "346-49")
+      (svg/icon-sms {:height 51
+                     :width  56})
+      "Live Chat"
+      "Text: 346-49")
+     (contact-us-block
+      (ui/phone-url "1-310-733-0284")
+      (svg/icon-call {:class  "bg-white fill-black stroke-black circle"
+                      :height 57
+                      :width  57})
+      "Call Us"
+      "1-310-733-0284")
+     (contact-us-block
+      (ui/email-url "help@mayvenn.com")
+      (svg/icon-email {:height 39
+                       :width  56})
+      "Email Us"
+      "help@mayvenn.com")]]))
+
+(defmethod layer-view :homepage-were-changing-the-game
+  [{:cta/keys [navigation-message]} _ _]
+  (component/create
+   (let [we-are-mayvenn-link (apply utils/route-to navigation-message)
+        diishan-image       (ui/ucare-img {:class "col-12"} "e2186583-def8-4f97-95bc-180234b5d7f8")
+        mikka-image         (ui/ucare-img {:class "col-12"} "838e25f5-cd4b-4e15-bfd9-8bdb4b2ac341")
+        stylist-image       (ui/ucare-img {:class "col-12"} "6735b4d5-9b65-4fa9-96cd-871141b28672")
+        diishan-image-2     (ui/ucare-img {:class "col-12"} "ec9e0533-9eee-41ae-a61b-8dc22f045cb5")]
+    [:div.pt10.px4.pb8
+     [:div.h2.center "We're Changing The Game"]
+     [:h6.center.mb2.dark-gray "Founded in Oakland, CA • 2013"]
+
+     [:div.hide-on-tb-dt
+      [:div.flex.flex-wrap
+       [:a.block.col-6.p1
+        we-are-mayvenn-link
+        [:div.relative
+         diishan-image
+         [:div.absolute.bg-darken-3.overlay.flex.items-center.justify-center
+          teal-play-video-mobile]]]
+       [:a.col-6.px2
+        we-are-mayvenn-link
+        [:h4.my1.dark-gray.medium "Our Story"]
+        [:div.h6.teal.flex.items-center.medium.shout
+         "Watch Now"]]
+       [:div.col-6.p1 mikka-image]
+       [:div.col-6.p1 stylist-image]
+       [:div.col-6.px2.dark-gray
+        [:h4.my2.line-height-1 "“You deserve quality extensions and exceptional service without the unreasonable price tag.“"]
+        [:h6.medium.line-height-1 "- Diishan Imira"]
+        [:h6 "CEO of Mayvenn"]]
+       [:div.col-6.p1 diishan-image-2]]]
+
+     [:div.hide-on-mb.pb4
+      [:div.col-8.flex.flex-wrap.mx-auto
+       [:div.col-6.flex.flex-wrap.items-center
+        [:div.col-6.p1 mikka-image]
+        [:div.col-6.p1 stylist-image]
+        [:div.col-6.px1.pb1.dark-gray.flex.justify-start.flex-column
+         [:div.h3.line-height-3.col-11
+          "“You deserve quality extensions and exceptional service without the unreasonable price tag.“"]
+         [:h6.medium.line-height-1.mt2 "- Diishan Imira"]
+         [:h6.ml1 "CEO of Mayvenn"]]
+        [:div.col-6.p1.flex diishan-image-2]]
+       [:a.relative.col-6.p1
+        we-are-mayvenn-link
+        [:div.relative diishan-image
+         [:div.absolute.overlay.flex.items-center.justify-center.bg-darken-3
+          teal-play-video-desktop]]]]]])))
 
 (defmethod layer-view :sticky-footer
   [data owner opts]
@@ -189,4 +416,3 @@
                  [:section
                   (component/build layer-view layer-data opts)])))
          layers)))
-
