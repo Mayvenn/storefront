@@ -66,7 +66,10 @@
     "/adv/match-success"                                       (edn->bidi events/navigate-adventure-match-success-pre-purchase)
     "/adv/match-success-post-purchase"                         (edn->bidi events/navigate-adventure-match-success-post-purchase)
     "/adv/checkout-wait"                                       (edn->bidi events/navigate-adventure-checkout-wait)
-    "/adv/let-mayvenn-match"                                   (edn->bidi events/navigate-adventure-let-mayvenn-match)}})
+    "/adv/let-mayvenn-match"                                   (edn->bidi events/navigate-adventure-let-mayvenn-match)
+    "/certified-stylists"                                      (edn->bidi events/navigate-info-certified-stylists)
+    "/about-our-hair"                                          (edn->bidi events/navigate-info-about-our-hair)
+    "/how-it-works"                                            (edn->bidi events/navigate-info-how-it-works)}})
 
 (def catalog-routes
   {["/categories/" [#"\d+" :catalog/category-id] "-" :page/slug]
@@ -90,10 +93,7 @@
              {{:subdomain (complement freeinstall?)}
               (merge
                catalog-routes
-               {"/"                   (edn->bidi events/navigate-home)
-                "/certified-stylists" (edn->bidi events/navigate-info-certified-stylists)
-                "/about-our-hair"     (edn->bidi events/navigate-info-about-our-hair)
-                "/how-it-works"       (edn->bidi events/navigate-info-how-it-works) })}
+               {"/"                   (edn->bidi events/navigate-home)})}
 
              {"/login"                                            (edn->bidi events/navigate-sign-in)
               "/logout"                                           (edn->bidi events/navigate-sign-out)
