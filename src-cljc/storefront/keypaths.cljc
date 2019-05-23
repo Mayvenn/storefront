@@ -6,7 +6,7 @@
 
 (def cms [:cms])
 (def cms-ugc-collection (conj cms :ugc-collection))
-(def cms-ugc-collection-all-looks (conj cms :ugc-collection :all-looks))
+(def cms-ugc-collection-all-looks (conj cms-ugc-collection :all-looks))
 (def cms-homepage (conj cms :homepage))
 (def cms-homepage-hero (conj cms-homepage :hero))
 (def cms-mayvenn-made (conj cms :mayvennMadePage))

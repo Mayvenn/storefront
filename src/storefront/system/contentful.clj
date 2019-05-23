@@ -189,7 +189,7 @@
                                :collection-tx-fn (fn [m]
                                                    (->> (vals m)
                                                         (mapcat :looks)
-                                                        (maps/index-by :content/id)
+                                                        (maps/index-by (comp keyword :content/id))
                                                         (assoc m :all-looks)))
                                :latest?          false}]]
         (at-at/interspaced cache-timeout

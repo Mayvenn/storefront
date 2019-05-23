@@ -2,6 +2,7 @@
   (:require #?@(:cljs [[om.core :as om]
                        [storefront.components.ugc :as ugc]
                        [storefront.hooks.pixlee :as pixlee-hook]
+                       [storefront.api :as api]
                        [storefront.components.shop-by-look-details :as shop-look-details]
                        [storefront.config :as config]])
             [storefront.events :as events]
@@ -12,7 +13,6 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [adventure.keypaths :as adventure-keypaths]
-            [spice.maps :as maps]
             [spice.core :as spice]
             [adventure.components.header :as header]
             [adventure.progress :as progress]
@@ -55,14 +55,20 @@
   [data opts]
   (component/build component (query data) opts))
 
-(defmethod effects/perform-effects events/navigate-adventure-look-detail [dispatch event event-args prev-app-state app-state]
-  #?(:cljs (when-not (experiments/pixlee-to-contentful? app-state)
-             pixlee-hook/fetch-image :adventure (:look-id event-args))))
+(defmethod effects/perform-effects events/navigate-adventure-look-detail
+  [dispatch event {:keys [look-id]} prev-app-state app-state]
+  #?(:cljs (do
+             (if-let [shared-cart-id (if (experiments/pixlee-to-contentful? app-state)
+                                       (ugc/contentful-shared-cart-id (ugc/selected-look app-state))
+                                       (:shared-cart-id (pixlee/selected-look app-state)))]
+               (api/fetch-shared-cart shared-cart-id)
+               (when-not (experiments/pixlee-to-contentful? app-state)
+                 (pixlee-hook/fetch-image :adventure look-id))))))
 
 (defmethod transitions/transition-state events/navigate-adventure-look-detail [_ _ {:keys [album-keyword look-id]} app-state]
   (let [look-id-converter (if (experiments/pixlee-to-contentful? app-state)
                             keyword
-                            spice.core/parse-int)]
+                            spice/parse-int)]
     (-> app-state
         (assoc-in keypaths/selected-album-keyword (keyword album-keyword))
         (assoc-in keypaths/selected-look-id (look-id-converter look-id)))))

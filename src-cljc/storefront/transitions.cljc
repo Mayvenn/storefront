@@ -1,6 +1,7 @@
 (ns storefront.transitions
   (:require [storefront.keypaths :as keypaths]
             [storefront.events :as events]
+            [spice.core :as spice]
             [storefront.accessors.pixlee :as pixlee]
             [spice.core :as spice]
             [storefront.accessors.experiments :as experiments]
@@ -27,7 +28,7 @@
         current-shared-cart   (get-in app-state keypaths/shared-cart-current)
         look-id-converter     (if (experiments/pixlee-to-contentful? app-state)
                                 keyword
-                                spice.core/parse-int)]
+                                spice/parse-int)]
     (cond-> app-state
       :always
       (assoc-in keypaths/selected-look-id (look-id-converter look-id))
