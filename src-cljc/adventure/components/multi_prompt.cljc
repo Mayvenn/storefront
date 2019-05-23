@@ -48,7 +48,5 @@
                                 :buttons      buttons
                                 :choice       button
                                 :current-step current-step}))
-             text)
-
-            ]))
+             text)]))
        footer])]))
