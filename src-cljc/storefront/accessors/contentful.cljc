@@ -85,14 +85,14 @@
   ([nav-event
     album-keyword
     color-details
-    {:keys [title
-            social-media-handle]
+    {:keys [social-media-handle
+            social-media-post]
      :as   look}]
    (let [base (look->social-card nav-event album-keyword color-details look)]
      (merge
       base
       {:title                  social-media-handle
-       :description            title
+       :description            social-media-post
        :cta/button-type        :teal-button
        :cta/navigation-message (-> base :links :view-look)}))))
 
