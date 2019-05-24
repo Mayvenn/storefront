@@ -155,6 +155,11 @@
 (defprotocol CMSCache
   (read-cache [_] "Returns a map representing the CMS cache"))
 
+(defn ?update [m k & args]
+  (if (k m)
+    (apply update m k args)
+    m))
+
 (defrecord ContentfulContext [logger exception-handler environment cache-timeout api-key space-id endpoint]
   component/Lifecycle
   (start [c]
@@ -182,10 +187,11 @@
                                                   "sys.updatedAt"
                                                   "sys.id"
                                                   "sys.type"]
-                               :item-tx-fn       (fn [ugc-collection]
-                                                   (if production?
-                                                     (dissoc ugc-collection :acceptance-looks)
-                                                     (set/rename-keys ugc-collection {:acceptance-looks :looks})))
+                               :item-tx-fn       (fn [u]
+                                                   (let [u' (if production?
+                                                              (dissoc u :acceptance-looks)
+                                                              (set/rename-keys u {:acceptance-looks :looks}))]
+                                                     (?update u' :looks (partial remove :sys))))
                                :collection-tx-fn (fn [m]
                                                    (->> (vals m)
                                                         (mapcat :looks)

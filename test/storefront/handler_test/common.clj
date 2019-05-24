@@ -80,7 +80,8 @@
            {:fields
             {:acceptanceLooks
              [{:sys {:type "Link", :linkType "Entry", :id "2zSbLYFcRYjVoEMMlsWLsJ"}}
-              {:sys {:type "Link", :linkType "Entry", :id "48c3sCi06BHRRMKJxmM4u3"}}],
+              {:sys {:type "Link", :linkType "Entry", :id "48c3sCi06BHRRMKJxmM4u3"}}
+              {:sys {:type "Link", :linkType "Entry", :id "broken-link-id"}}],
              :slug "deals",
              :name "Mayvenn Classic - Deals Page"},
             :sys
