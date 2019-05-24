@@ -11,7 +11,7 @@
 (defn query
   [data]
   {:layers [{:layer/type :hero
-             :photo/uuid "fed7867a-4b32-44d2-b095-81274620c8eb"}
+             :photo/uuid "57ae5aa7-93aa-41d1-9024-2db9308a70e3"}
             {:layer/type   :find-out-more
              :header/value "Our Certified Stylists are the best of the best."
              :body/value   (str "Our Certified Stylists are the best in your area. "
