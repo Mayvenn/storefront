@@ -16,10 +16,7 @@
             [storefront.events :as events]
             [storefront.platform.messages :as messages]
             [storefront.effects :as effects]
-            [storefront.components.ugc :as ugc]
-            [storefront.routes :as routes]
-            [clojure.set :as set]
-            [clojure.string :as string]))
+            [storefront.components.ugc :as ugc]))
 
 (def ^:private default-utm-params
   {:utm_medium "referral"
