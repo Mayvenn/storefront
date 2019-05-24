@@ -84,7 +84,7 @@
 
 (defn ^:private cta-with-chevron
   [{:cta/keys [navigation-message href value]}]
-  (when (and navigation-message value)
+  (when (or navigation-message href)
     [:a.block.h4.medium.teal.my2
      (merge
       (when href
