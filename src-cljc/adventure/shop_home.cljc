@@ -62,7 +62,9 @@
                                                                      {:utm_source "toadventurehomepagehero"})})
                                               {:data-test    "adventure-home-choice-get-started"
                                                :height-class "py2"})
-                                       "Get Started"]])}
+                                       (if browse-stylist-hero?
+                                         "Browse Stylists"
+                                         "Get Started")]])}
              (if browse-stylist-hero?
                {:photo/mob-uuid "7edde421-146c-407f-be8b-87db0c81ae54"
                 :photo/dsk-uuid "41adade2-0987-4f8f-9bed-99d9586fead3"}
