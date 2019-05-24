@@ -29,7 +29,7 @@
            {:href (freeinstall-domain environment (apply routes/path-for navigation-message))})))
 
 (defn cta-route-to-or-redirect-to-freeinstall [shop? environment navigation-event navigation-arg]
-  (set/rename-keys (route-to-or-redirect-to-freeinstall shop? environment navigation-event nil)
+  (set/rename-keys (route-to-or-redirect-to-freeinstall shop? environment navigation-event navigation-arg)
                    {:href               :cta/href
                     :navigation-message :cta/navigation-message}))
 
