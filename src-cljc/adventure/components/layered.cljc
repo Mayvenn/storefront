@@ -39,8 +39,7 @@
   [:picture
    ;; Tablet/Desktop
    [:source {:media   "(min-width: 750px)"
-             :src-set (str desktop-url "-/format/jpeg/-/quality/lightest/-/resize/2880x/" file-name " 2x, "
-                           desktop-url "-/format/jpeg/-/quality/best/-/resize/1440x/" file-name " 1x")}]
+             :src-set (str desktop-url "-/format/jpeg/-/quality/best/-/resize/1440x/" file-name " 1x")}]
    ;; Mobile
    [:source {:src-set (str mobile-url "-/format/jpeg/-/quality/lightest/-/resize/2250x/" file-name " 3x, "
                            mobile-url "-/format/jpeg/-/quality/lightest/-/resize/1500x/" file-name " 2x, "
