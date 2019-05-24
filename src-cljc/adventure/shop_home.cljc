@@ -58,8 +58,9 @@
                                      [[(merge (route-to-or-redirect-to-freeinstall
                                                shop? environment
                                                events/navigate-adventure-install-type
-                                               {:query-params (merge default-utm-params
-                                                                     {:utm_source "toadventurehomepagehero"})})
+                                               (when shop?
+                                                 {:query-params (merge default-utm-params
+                                                                       {:utm_source "toadventurehomepagehero"})}))
                                               {:data-test    "adventure-home-choice-get-started"
                                                :height-class "py2"})
                                        (if browse-stylist-hero?
@@ -111,14 +112,20 @@
                            :body/value   "We’ll connect you to your Mayvenn Certified Stylist and book an install appointment that’s convenient for you."}]
         :cta/value       "Learn more"}
        (cta-route-to-or-redirect-to-freeinstall
-        shop? environment events/navigate-info-how-it-works nil))
+        shop?
+        environment
+        events/navigate-info-how-it-works
+        (when shop? {:query-params (merge default-utm-params {:utm_source "toadventurelearnmore"})})))
       (merge
        {:layer/type   :text-block
         :header/value "Who's doing my hair?"
         :body/value   "Our Certified Stylists are the best in your area. They're chosen because of their top-rated reviews, professionalism, and amazing work."
         :cta/value    "Learn more"}
        (cta-route-to-or-redirect-to-freeinstall
-        shop? environment events/navigate-info-certified-stylists nil))
+        shop?
+        environment
+        events/navigate-info-certified-stylists
+        (when shop? {:query-params (merge default-utm-params {:utm_source "toadventurelearnmore"})})))
       {:layer/type      :image-block
        :photo/mob-uuid  "a6a607e6-aeb4-4b61-8bc7-60fd17d15abe"
        :photo/dsk-uuid  "f2d82c41-2051-47d8-86c5-1c82568e324d"
@@ -129,7 +136,10 @@
         :body/value   "Our bundles, closures, and frontals are crafted with the highest industry standards and come in a variety of textures and colors."
         :cta/value    "Learn more"}
        (cta-route-to-or-redirect-to-freeinstall
-        shop? environment events/navigate-info-about-our-hair nil))
+        shop?
+        environment
+        events/navigate-info-about-our-hair
+        (when shop? {:query-params (merge default-utm-params {:utm_source "toadventurelearnmore"})})))
       {:layer/type      :image-block
        :photo/mob-uuid  "e994076c-b21f-4925-b72b-f804b7408599"
        :photo/dsk-uuid  "ddce59fd-2607-4415-a3e1-e1f12c459dc6"
@@ -172,8 +182,8 @@
        (cta-route-to-or-redirect-to-freeinstall
         shop? environment
         events/navigate-adventure-install-type
-        {:query-params (merge default-utm-params
-                              {:utm_source "toadventurehomepagestickybar"})}))]}))
+        (when shop? {:query-params (merge default-utm-params
+                                          {:utm_source "toadventurehomepagestickybar"})})))]}))
 
 (defn built-component
   [data opts]
