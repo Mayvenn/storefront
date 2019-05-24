@@ -117,6 +117,7 @@
       [:div.col-11.mx-auto.py4
        [:div
         [:div.h5.medium.py1
+         {:data-test "checkout-success-message"}
          "Thank you for your order!"]
         [:div.h5.line-height-3
          (copy "We've received your order and will be processing it right away."
