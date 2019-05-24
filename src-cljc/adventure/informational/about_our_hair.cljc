@@ -17,7 +17,7 @@
         pixlee-to-contentful? (experiments/pixlee-to-contentful? data)]
     {:layers [{:layer/type      :hero
                :photo/file-name "about-our-hair-hero"
-               :photo/mob-uuid  "5ab5e0a7-50f7-4d4e-ab74-dac695d72f68"
+               :photo/mob-uuid  "74034b48-0fab-4e31-92b2-66db9136472a"
                :photo/dsk-uuid  "1162a59d-162f-4c6b-bb8d-60cd7204644c"}
               {:layer/type             :find-out-more
                :header/value           "We believe that quality should be accessible for all."

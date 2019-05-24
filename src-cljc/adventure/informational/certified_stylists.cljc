@@ -17,7 +17,7 @@
         pixlee-to-contentful? (experiments/pixlee-to-contentful? data)]
     {:layers [{:layer/type      :hero
                :photo/file-name "certified-stylists-hero"
-               :photo/mob-uuid  "57ae5aa7-93aa-41d1-9024-2db9308a70e3"
+               :photo/mob-uuid  "0d06e8a8-123b-4265-b988-e7d55bddd7f0"
                :photo/dsk-uuid  "3cd59dc1-8f94-4ee5-a62e-d91b5aa6c97b"}
               {:layer/type             :find-out-more
                :header/value           "Our Certified Stylists are the best of the best."
