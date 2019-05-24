@@ -21,6 +21,7 @@
             [catalog.selector.sku :as sku-selector]
             [catalog.product-details-ugc :as ugc]
             [storefront.components.ugc :as component-ugc]
+            [storefront.accessors.contentful :as contentful]
             [storefront.request-keys :as request-keys]
             [storefront.transitions :as transitions]
             [storefront.platform.component-utils :as utils]
@@ -394,7 +395,7 @@
                               (when product
                                 (->> cms-ugc-collection
                                      :looks
-                                     (mapv (partial component-ugc/contentful-look->pdp-social-card
+                                     (mapv (partial contentful/look->pdp-social-card
                                                     (get-in data keypaths/navigation-event)
                                                     album-keyword))
                                      not-empty))

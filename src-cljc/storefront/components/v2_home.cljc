@@ -2,6 +2,7 @@
   (:require [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.pixlee :as pixlee]
+            [storefront.accessors.contentful :as contentful]
             [storefront.component :as component]
             [storefront.components.marquee :as marquee]
             [storefront.components.svg :as svg]
@@ -336,6 +337,7 @@
     [:hr.border-top.border-dark-silver.col-9.mx-auto.my6]
     [:section our-story]]))
 
+;; TODO: clean up a little bit
 (defn query [data]
   (let [homepage-data (get-in data keypaths/cms-homepage)
         store         (marquee/query data)
@@ -346,21 +348,21 @@
         pixlee-to-contentful?       (experiments/pixlee-to-contentful? data)
 
         free-install-mayvenn-images (if pixlee-to-contentful?
-                                      (mapv (partial ugc/contentful-look->homepage-social-card
+                                      (mapv (partial contentful/look->homepage-social-card
                                                      current-nav-event
                                                      :free-install-mayvenn)
                                             (->> cms-ugc-collection :free-install-mayvenn :looks))
                                       (mapv ugc/pixlee-look->homepage-social-card (pixlee/images-in-album ugc :free-install-mayvenn)))
 
         sleek-and-straight-images   (if pixlee-to-contentful?
-                                      (mapv (partial ugc/contentful-look->homepage-social-card
+                                      (mapv (partial contentful/look->homepage-social-card
                                                      current-nav-event
                                                      :sleek-and-straight)
                                             (->> cms-ugc-collection :sleek-and-straight :looks))
                                       (mapv ugc/pixlee-look->homepage-social-card (pixlee/images-in-album ugc :sleek-and-straight)))
 
         waves-and-curly-images      (if pixlee-to-contentful?
-                                      (mapv (partial ugc/contentful-look->homepage-social-card
+                                      (mapv (partial contentful/look->homepage-social-card
                                                      current-nav-event
                                                      :waves-and-curly)
                                             (->> cms-ugc-collection :waves-and-curly :looks))

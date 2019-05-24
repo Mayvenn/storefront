@@ -6,6 +6,7 @@
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.images :as images]
             [storefront.accessors.pixlee :as pixlee]
+            [storefront.accessors.contentful :as contentful]
             [storefront.components.money-formatters :as mf]
             [storefront.components.order-summary :as order-summary]
             [storefront.components.ugc :as ugc]
@@ -157,7 +158,7 @@
         album-keyword         (get-in data keypaths/selected-album-keyword)
 
         look       (if (experiments/pixlee-to-contentful? data)
-                     (ugc/contentful-look->look-detail-social-card navigation-event album-keyword (ugc/selected-look data))
+                     (contentful/look->look-detail-social-card navigation-event album-keyword (contentful/selected-look data))
                      (ugc/pixlee-look->look-detail-social-card (pixlee/selected-look data)))
         album-copy (-> config/pixlee :copy album-keyword)
         base-price (apply + (map (fn [line-item]
@@ -190,7 +191,7 @@
         navigation-event (get-in data keypaths/navigation-event)
         album-keyword    (get-in data keypaths/selected-album-keyword)
         look             (if (experiments/pixlee-to-contentful? data)
-                           (ugc/contentful-look->look-detail-social-card navigation-event album-keyword (ugc/selected-look data))
+                           (contentful/look->look-detail-social-card navigation-event album-keyword (contentful/selected-look data))
                            (ugc/pixlee-look->look-detail-social-card (pixlee/selected-look data)))
         album-copy       (-> config/pixlee :copy album-keyword)
         base-price       (apply + (map (fn [line-item]

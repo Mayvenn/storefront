@@ -1,14 +1,15 @@
 (ns adventure.look-detail
   (:require #?@(:cljs [[om.core :as om]
-                       [storefront.components.ugc :as ugc]
-                       [storefront.hooks.pixlee :as pixlee-hook]
+                       [storefront.accessors.contentful :as contentful]
+                       [storefront.accessors.pixlee :as pixlee]
                        [storefront.api :as api]
                        [storefront.components.shop-by-look-details :as shop-look-details]
+                       [storefront.components.ugc :as ugc]
+                       [storefront.hooks.pixlee :as pixlee-hook]
                        [storefront.config :as config]])
             [storefront.events :as events]
             [storefront.effects :as effects]
             [storefront.transitions :as transitions]
-            [storefront.accessors.pixlee :as pixlee]
             [storefront.component :as component]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
@@ -59,7 +60,7 @@
   [dispatch event {:keys [look-id]} prev-app-state app-state]
   #?(:cljs (do
              (if-let [shared-cart-id (if (experiments/pixlee-to-contentful? app-state)
-                                       (ugc/contentful-shared-cart-id (ugc/selected-look app-state))
+                                       (contentful/shared-cart-id (contentful/selected-look app-state))
                                        (:shared-cart-id (pixlee/selected-look app-state)))]
                (api/fetch-shared-cart shared-cart-id)
                (when-not (experiments/pixlee-to-contentful? app-state)

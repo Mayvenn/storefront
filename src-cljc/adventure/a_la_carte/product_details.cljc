@@ -26,6 +26,7 @@
             [spice.selector :as selector]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.pixlee :as pixlee]
+            [storefront.accessors.contentful :as contentful]
             [storefront.accessors.skus :as skus]
             [storefront.component :as component]
             [storefront.components.marquee :as marquee]
@@ -390,7 +391,7 @@
     (when-let [social-cards (if (experiments/pixlee-to-contentful? data)
                               (->> cms-ugc-collection
                                    :looks
-                                   (mapv (partial component-ugc/contentful-look->pdp-social-card
+                                   (mapv (partial contentful/look->pdp-social-card
                                                   (get-in data keypaths/navigation-event)
                                                   album-keyword))
                                    (mapv #(assoc % :desktop-aware? false))

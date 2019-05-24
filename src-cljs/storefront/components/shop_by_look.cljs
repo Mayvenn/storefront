@@ -1,6 +1,7 @@
 (ns storefront.components.shop-by-look
   (:require [storefront.component :as component]
             [storefront.accessors.pixlee :as pixlee]
+            [storefront.accessors.contentful :as contentful]
             [storefront.accessors.experiments :as experiments]
             [storefront.components.ugc :as ugc]
             [storefront.keypaths :as keypaths]
@@ -41,7 +42,7 @@
                                    :facet/options
                                    (maps/index-by :option/slug))
         look-converter        (if pixlee-to-contentful?
-                                (partial ugc/contentful-look->social-card
+                                (partial contentful/look->social-card
                                          navigation-event
                                          selected-album-kw
                                          color-details)

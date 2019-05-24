@@ -1,6 +1,7 @@
 (ns adventure.select-new-look
   (:require #?@(:cljs [[storefront.hooks.pixlee :as pixlee-hook]])
             [storefront.components.ugc :as ugc]
+            [storefront.accessors.contentful :as contentful]
             [storefront.events :as events]
             [storefront.effects :as effects]
             [storefront.transitions :as transitions]
@@ -33,7 +34,7 @@
         navigation-event      (get-in data keypaths/navigation-event)
 
         look-converter (if pixlee-to-contentful?
-                         (partial ugc/contentful-look->social-card
+                         (partial contentful/look->social-card
                                   navigation-event
                                   album-keyword
                                   color-details)

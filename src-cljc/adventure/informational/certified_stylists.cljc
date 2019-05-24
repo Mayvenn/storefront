@@ -1,6 +1,7 @@
 (ns adventure.informational.certified-stylists
   (:require storefront.keypaths
             [storefront.accessors.pixlee :as pixlee]
+            [storefront.accessors.contentful :as contentful]
             [storefront.component :as component]
             [storefront.effects :as effects]
             [storefront.events :as events]
@@ -48,7 +49,7 @@
                :header/value    "#MayvennFreeInstall"
                :subheader/value "Showcase your new look by tagging #MayvennFreeInstall"
                :images          (if pixlee-to-contentful?
-                                  (mapv (partial ugc/contentful-look->homepage-social-card
+                                  (mapv (partial contentful/look->homepage-social-card
                                                  current-nav-event
                                                  :free-install-mayvenn)
                                         (->> cms-ugc-collection :free-install-mayvenn :looks))

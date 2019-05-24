@@ -1,6 +1,7 @@
 (ns adventure.shop-home
   (:require [adventure.components.layered :as layered]
             adventure.handlers ;; Needed for its defmethods
+            [storefront.accessors.contentful :as contentful]
             [storefront.keypaths :as storefront.keypaths]
             [adventure.keypaths :as keypaths]
             [adventure.faq :as faq]
@@ -132,7 +133,7 @@
        :header/value    "#MayvennFreeInstall"
        :subheader/value "Showcase your new look by tagging #MayvennFreeInstall"
        :images          (if pixlee-to-contentful?
-                          (mapv (partial ugc/contentful-look->homepage-social-card
+                          (mapv (partial contentful/look->homepage-social-card
                                          current-nav-event
                                          :free-install-mayvenn)
                                 (->> cms-ugc-collection :free-install-mayvenn :looks))

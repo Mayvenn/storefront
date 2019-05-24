@@ -1,5 +1,6 @@
 (ns storefront.frontend-effects
   (:require [ajax.core :as ajax]
+            [storefront.accessors.contentful :as contentful]
             [clojure.set :as set]
             [clojure.string :as string]
             [spice.maps :as maps]
@@ -310,7 +311,7 @@
 
 (defmethod perform-effects events/navigate-shop-by-look-details [_ event {:keys [album-keyword look-id]} _ app-state]
   (if-let [shared-cart-id (if (experiments/pixlee-to-contentful? app-state)
-                            (ugc/contentful-shared-cart-id (ugc/selected-look app-state))
+                            (contentful/shared-cart-id (contentful/selected-look app-state))
                             (:shared-cart-id (accessors.pixlee/selected-look app-state)))]
     (api/fetch-shared-cart shared-cart-id)
     (when-not (experiments/pixlee-to-contentful? app-state)
