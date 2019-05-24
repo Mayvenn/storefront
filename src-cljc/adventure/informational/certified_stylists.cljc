@@ -54,7 +54,7 @@
                                         (->> cms-ugc-collection :free-install-mayvenn :looks))
                                   (mapv ugc/pixlee-look->homepage-social-card
                                         (pixlee/images-in-album
-                                         (get-in data storefront.keypaths/ugc) :free-install-mayven)))}
+                                         (get-in data storefront.keypaths/ugc) :free-install-mayvenn)))}
               (merge {:layer/type :faq} (faq/free-install-query data))
               {:layer/type :contact}
               {:layer/type             :sticky-footer

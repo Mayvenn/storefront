@@ -141,7 +141,7 @@
                                 (->> cms-ugc-collection :free-install-mayvenn :looks))
                           (mapv ugc/pixlee-look->homepage-social-card
                                 (pixlee/images-in-album
-                                 (get-in data storefront.keypaths/ugc) :free-install-mayven)))}
+                                 (get-in data storefront.keypaths/ugc) :free-install-mayvenn)))}
       (merge {:layer/type :faq} (faq/free-install-query data))
       (when shop? {:layer/type :escape-hatch})
       {:layer/type      :bulleted-explainer
