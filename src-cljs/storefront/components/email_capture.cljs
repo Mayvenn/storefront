@@ -9,7 +9,6 @@
             [storefront.platform.component-utils :as utils]))
 
 (s/def ::hiccup-html (s/and vector? #(keyword? (first %))))
-(s/def :capture/call-to-action ::hiccup-html)
 (s/def :capture/email string?)
 (s/def :form/errors (s/map-of string? string?))
 (s/def :form/focused boolean?)
@@ -21,61 +20,19 @@
 (s/def :handler/submit fn?)
 
 (s/def ::data
-  (s/keys :req [:capture/call-to-action :capture/email
-                :handler/close-dialog :handler/submit
+  (s/keys :req [:handler/close-dialog :handler/submit
                 :form/errors :form/focused]))
 
 (s/fdef component
   :args (s/cat :query-data ::data :owner any? :props any?)
   :ret vector?)
 
-(def got-35-percent-bundles
-  [:div.center.line-height-3
-   [:h1.bold.teal.mb2 {:style {:font-size "36px"}} "Get 35% Off!"]
-   [:p.h5.m2
-    "#GotBundles? We’ll email you a promo "
-    "code for free shipping AND 35% off any "
-    "3 bundles, just for signing up!"]])
-
-(def discount-cta
-  [:div.center.line-height-3
-   [:h1.bold.teal.mb2 {:style {:font-size "36px"}} "Get 35% Off!"]
-   [:p.h5.m2
-    "Sign up now and we'll email you a promotion code for "
-    "35% off your first order of 3 bundles or more."]])
-
-(def flawless-cta
-  [:div
-   [:div [:h1.bold.teal.mb0.center {:style {:font-size "36px"}}
-          "You're Flawless"]
-    [:p.h5.mb1.center "Make sure your hair is too"]]
-   [:p.h5.my2.line-height-2.center
-    "Sign up now for exclusive discounts, stylist-approved hair "
-    "tips, and first access to new products."]])
-
-(defn discount-for?
-  "These are the experiences that the discount should be called-to-action"
-  [experience]
-  (contains? #{"mayvenn-classic" "influencer"} experience))
-
-(defn call-to-action
-  "Determine the call-to-action for the current experience"
-  [app-state]
-  (let [store-experience        (get-in app-state keypaths/store-experience)
-        discount-cta?           (discount-for? store-experience)
-        got-35-percent-bundles? (experiments/email-capture-35-percent-got-bundles? app-state)]
-    (cond
-      got-35-percent-bundles? got-35-percent-bundles
-      discount-cta?           discount-cta
-      :else                   flawless-cta)))
-
 (def close-dialog-href (utils/fake-href events/control-email-captured-dismiss))
 (def submit-callback (utils/send-event-callback events/control-email-captured-submit))
 
 (defmethod popup/query :email-capture
   [app-state]
-  {:capture/call-to-action (call-to-action app-state)
-   :capture/email          (get-in app-state keypaths/captured-email)
+  {:capture/email          (get-in app-state keypaths/captured-email)
    :form/errors            (get-in app-state keypaths/field-errors)
    :form/focused           (get-in app-state keypaths/ui-focus)})
 
@@ -111,13 +68,12 @@
 
 (defmethod popup/query :email-capture-quadpay
   [app-state]
-  {:capture/call-to-action (call-to-action app-state)
-   :capture/email          (get-in app-state keypaths/captured-email)
+  {:capture/email          (get-in app-state keypaths/captured-email)
    :form/errors            (get-in app-state keypaths/field-errors)
    :form/focused           (get-in app-state keypaths/ui-focus)})
 
 (defmethod popup/component :email-capture-quadpay
-  [{:capture/keys [call-to-action email] :form/keys [errors focused]} _ _]
+  [{:capture/keys [email] :form/keys [errors focused]} _ _]
   (component/create
    (ui/modal
     {:close-attrs close-dialog-href
