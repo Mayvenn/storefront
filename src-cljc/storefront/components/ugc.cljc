@@ -211,6 +211,22 @@
        :cta/button-type        :teal-button
        :cta/navigation-message (-> base :links :view-look)}))))
 
+(defn contentful-look->homepage-social-card
+  ([nav-event album-keyword look]
+   (contentful-look->homepage-social-card nav-event album-keyword {} look))
+  ([nav-event
+    album-keyword
+    color-details
+    {:keys [social-media-handle
+            description]
+     :as   contentful-look}]
+   (let [base (contentful-look->social-card nav-event album-keyword color-details contentful-look)]
+     (merge
+      base
+      {:description            description
+       :cta/button-type        :teal-button
+       :cta/navigation-message (-> base :links :view-look)}))))
+
 (defn pixlee-look->social-card
   ([look]
    (pixlee-look->social-card {} look))
@@ -269,5 +285,19 @@
    (merge
     (pixlee-look->social-card color-details pixlee-look)
     {:title                  (str "@" user-handle)
+     :cta/button-type        :teal-button
+     :cta/navigation-message (:view-look links)})))
+
+(defn pixlee-look->homepage-social-card
+  ([look]
+   (pixlee-look->homepage-social-card {} look))
+  ([color-details
+    {:keys [links
+            look-attributes
+            user-handle]
+     :as   pixlee-look}]
+   (merge
+    (pixlee-look->social-card color-details pixlee-look)
+    {:description            (:price look-attributes)
      :cta/button-type        :teal-button
      :cta/navigation-message (:view-look links)})))

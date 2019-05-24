@@ -14,7 +14,8 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.carousel :as carousel]
-            #?(:cljs [storefront.hooks.pixlee :as pixlee.hook])))
+            #?(:cljs [storefront.hooks.pixlee :as pixlee.hook])
+            [storefront.components.ugc :as ugc]))
 
 (defn hero-image [{:keys [desktop-url mobile-url file-name alt]}]
   [:picture
@@ -92,23 +93,28 @@
        [:h6.teal.flex.items-center.medium.shout
         "Watch Now"]]]]))
 
-(defn carousel-slide [{:as pixlee-image :keys [look-attributes links]}]
+(defn carousel-slide
+  [{:as   social-card
+    :keys [image-url
+           description
+           overlay
+           cta/navigation-message]}]
   [:div
    [:div.relative.m1
-    (apply utils/route-to (:view-look links))
+    (apply utils/route-to navigation-message)
     (ui/aspect-ratio
      1 1
      [:img {:class "col-12"
-            :src   (-> pixlee-image :imgs :original :src)}])
-    (when-let [texture (:texture look-attributes)]
+            :src   image-url}])
+    (when overlay
       [:div.absolute.flex.justify-end.bottom-0.right-0.mb2
        [:div {:style {:width       "0"
                       :height      "0"
                       :border-top  "28px solid rgba(159, 229, 213, 0.8)"
                       :border-left "21px solid transparent"}}]
        [:div.flex.items-center.px2.medium.h6.bg-transparent-light-teal
-        texture]])]
-   [:div.h6.mx1.mt1.dark-gray.medium (:price look-attributes)]])
+        overlay]])]
+   [:div.h6.mx1.mt1.dark-gray.medium description]])
 
 (defn ^:private shop-button [album-keyword link-text]
   (ui/teal-button (merge
@@ -331,32 +337,46 @@
     [:section our-story]]))
 
 (defn query [data]
-  (let [homepage-data               (get-in data keypaths/cms-homepage)
-        store                       (marquee/query data)
-        ugc                         (get-in data keypaths/ugc)
+  (let [homepage-data (get-in data keypaths/cms-homepage)
+        store         (marquee/query data)
+        ugc           (get-in data keypaths/ugc)
+
         free-install-mayvenn-images (pixlee/images-in-album ugc :free-install-mayvenn)
-        sleek-and-straight-images   (pixlee/images-in-album ugc :sleek-and-straight)
-        waves-and-curly-images      (pixlee/images-in-album ugc :waves-and-curly)]
-    {:store                     store
-     :gallery-ucare-ids         (->> store
-                                     :gallery
-                                     :images
-                                     (filter (comp (partial = "approved") :status))
-                                     (map (comp v2/get-ucare-id-from-url :resizable-url)))
-     :faq-data                  {:expanded-index (get-in data keypaths/faq-expanded-section)}
-     :signed-in                 (auth/signed-in data)
-     :categories                (->> (get-in data keypaths/categories)
-                                     (filter :home/order)
-                                     (sort-by :home/order))
-     :video                     (get-in data keypaths/v2-ui-home-video)
-     :sleek-and-straight-ugc    {:images        sleek-and-straight-images
-                                 :album-keyword :sleek-and-straight}
-     :waves-and-curly-ugc       {:images        waves-and-curly-images
-                                 :album-keyword :waves-and-curly}
-     :free-install-mayvenn-ugc  {:images        free-install-mayvenn-images
-                                 :album-keyword :free-install-mayvenn}
-     :stylist-gallery-open?     (get-in data keypaths/carousel-stylist-gallery-open?)
-     :homepage-data             homepage-data}))
+        pixlee-to-contentful?       (experiments/pixlee-to-contentful? data)
+        cms-ugc-collection          (get-in data keypaths/cms-ugc-collection)
+        current-nav-event           (get-in data keypaths/navigation-event)
+        sleek-and-straight-images   (if pixlee-to-contentful?
+                                      (mapv (partial ugc/contentful-look->homepage-social-card
+                                                     current-nav-event
+                                                     :sleek-and-straight)
+                                            (->> cms-ugc-collection :sleek-and-straight :looks))
+                                      (mapv ugc/pixlee-look->homepage-social-card (pixlee/images-in-album ugc :sleek-and-straight)))
+        waves-and-curly-images      (if pixlee-to-contentful?
+                                      (mapv (partial ugc/contentful-look->homepage-social-card
+                                                     current-nav-event
+                                                     :waves-and-curly)
+                                            (->> cms-ugc-collection :waves-and-curly :looks))
+                                      (mapv ugc/pixlee-look->homepage-social-card (pixlee/images-in-album ugc :waves-and-curly)))]
+    {:store                    store
+     :gallery-ucare-ids        (->> store
+                                    :gallery
+                                    :images
+                                    (filter (comp (partial = "approved") :status))
+                                    (map (comp v2/get-ucare-id-from-url :resizable-url)))
+     :faq-data                 {:expanded-index (get-in data keypaths/faq-expanded-section)}
+     :signed-in                (auth/signed-in data)
+     :categories               (->> (get-in data keypaths/categories)
+                                    (filter :home/order)
+                                    (sort-by :home/order))
+     :video                    (get-in data keypaths/v2-ui-home-video)
+     :sleek-and-straight-ugc   {:images        sleek-and-straight-images
+                                :album-keyword :sleek-and-straight}
+     :waves-and-curly-ugc      {:images        waves-and-curly-images
+                                :album-keyword :waves-and-curly}
+     :free-install-mayvenn-ugc {:images        free-install-mayvenn-images
+                                :album-keyword :free-install-mayvenn}
+     :stylist-gallery-open?    (get-in data keypaths/carousel-stylist-gallery-open?)
+     :homepage-data            homepage-data}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
