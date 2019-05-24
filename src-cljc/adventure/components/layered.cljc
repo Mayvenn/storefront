@@ -258,12 +258,12 @@
     (let [{:subheader/keys [value]} data]
       [:h6.center.dark-gray value])
     [:div.flex.flex-wrap.pt2
-     (for [{:keys [imgs]} (:images data)]
+     (for [{:keys [image-url]} (:images data)]
        [:a.col-6.col-3-on-tb-dt.p1
         (ui/aspect-ratio
          1 1
          [:img {:class "col-12"
-                :src   (-> imgs :original :src)}])])]]))
+                :src   image-url}])])]]))
 
 (defmethod layer-view :faq
   [{:keys [expanded-index sections]} owner opts]
@@ -321,10 +321,10 @@
   [{:cta/keys [navigation-message]} _ _]
   (component/create
    (let [we-are-mayvenn-link (apply utils/route-to navigation-message)
-        diishan-image       (ui/ucare-img {:class "col-12"} "e2186583-def8-4f97-95bc-180234b5d7f8")
-        mikka-image         (ui/ucare-img {:class "col-12"} "838e25f5-cd4b-4e15-bfd9-8bdb4b2ac341")
-        stylist-image       (ui/ucare-img {:class "col-12"} "6735b4d5-9b65-4fa9-96cd-871141b28672")
-        diishan-image-2     (ui/ucare-img {:class "col-12"} "ec9e0533-9eee-41ae-a61b-8dc22f045cb5")]
+         diishan-image       (ui/ucare-img {:class "col-12"} "e2186583-def8-4f97-95bc-180234b5d7f8")
+         mikka-image         (ui/ucare-img {:class "col-12"} "838e25f5-cd4b-4e15-bfd9-8bdb4b2ac341")
+         stylist-image       (ui/ucare-img {:class "col-12"} "6735b4d5-9b65-4fa9-96cd-871141b28672")
+         diishan-image-2     (ui/ucare-img {:class "col-12"} "ec9e0533-9eee-41ae-a61b-8dc22f045cb5")]
     [:div.pt10.px4.pb8
      [:div.h2.center "We're Changing The Game"]
      [:h6.center.mb2.dark-gray "Founded in Oakland, CA • 2013"]

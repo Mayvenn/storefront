@@ -235,14 +235,14 @@
    [:h2.center "#MayvennFreeInstall"]
    [:h6.center.dark-gray "Show off your look by tagging us with #MayvennFreeInstall"]
    [:div.flex.flex-wrap.pt2
-    (for [{:keys [links imgs]} (:images free-install-mayvenn-ugc)]
+    (for [{:keys [cta/navigation-message image-url]} (:images free-install-mayvenn-ugc)]
       [:a.col-6.col-3-on-tb-dt.p1
-       (when-let [view-look (:view-look links)]
-         (apply utils/route-to view-look))
+       (when navigation-message
+         (apply utils/route-to navigation-message))
        (ui/aspect-ratio
         1 1
         [:img {:class "col-12"
-               :src   (-> imgs :original :src)}])])]])
+               :src   image-url}])])]])
 
 (def our-story
   (let [we-are-mayvenn-link (utils/route-to events/navigate-home {:query-params {:video "we-are-mayvenn"}})
@@ -341,16 +341,24 @@
         store         (marquee/query data)
         ugc           (get-in data keypaths/ugc)
 
-        free-install-mayvenn-images (pixlee/images-in-album ugc :free-install-mayvenn)
-        pixlee-to-contentful?       (experiments/pixlee-to-contentful? data)
         cms-ugc-collection          (get-in data keypaths/cms-ugc-collection)
         current-nav-event           (get-in data keypaths/navigation-event)
+        pixlee-to-contentful?       (experiments/pixlee-to-contentful? data)
+
+        free-install-mayvenn-images (if pixlee-to-contentful?
+                                      (mapv (partial ugc/contentful-look->homepage-social-card
+                                                     current-nav-event
+                                                     :free-install-mayvenn)
+                                            (->> cms-ugc-collection :free-install-mayvenn :looks))
+                                      (mapv ugc/pixlee-look->homepage-social-card (pixlee/images-in-album ugc :free-install-mayvenn)))
+
         sleek-and-straight-images   (if pixlee-to-contentful?
                                       (mapv (partial ugc/contentful-look->homepage-social-card
                                                      current-nav-event
                                                      :sleek-and-straight)
                                             (->> cms-ugc-collection :sleek-and-straight :looks))
                                       (mapv ugc/pixlee-look->homepage-social-card (pixlee/images-in-album ugc :sleek-and-straight)))
+
         waves-and-curly-images      (if pixlee-to-contentful?
                                       (mapv (partial ugc/contentful-look->homepage-social-card
                                                      current-nav-event
@@ -383,6 +391,7 @@
 
 (defmethod effects/perform-effects events/v2-show-home
   [_ _ args prev-app-state app-state]
-  #?(:cljs (do (pixlee.hook/fetch-album-by-keyword :sleek-and-straight)
+  #?(:cljs (when-not (experiments/pixlee-to-contentful? app-state)
+               (pixlee.hook/fetch-album-by-keyword :sleek-and-straight)
                (pixlee.hook/fetch-album-by-keyword :waves-and-curly)
                (pixlee.hook/fetch-album-by-keyword :free-install-mayvenn))))
