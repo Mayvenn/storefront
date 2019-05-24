@@ -15,17 +15,16 @@
   (let [cms-ugc-collection    (get-in data storefront.keypaths/cms-ugc-collection)
         current-nav-event     (get-in data storefront.keypaths/navigation-event)
         pixlee-to-contentful? (experiments/pixlee-to-contentful? data)]
-    {:layers [{:layer/type :hero
-               :photo/uuid "57ae5aa7-93aa-41d1-9024-2db9308a70e3"}
-              {:layer/type   :find-out-more
-               :header/value "Our Certified Stylists are the best of the best."
-               :body/value   (str "Our Certified Stylists are the best in your area. "
-                                  "They’re chosen because of their top-rated reviews, professionalism, and amazing work.")
-               :cta/value    "Get started"
-               :cta/href     (layered/->freeinstall-url (get-in data storefront.keypaths/environment)
-                                                        "toadventurehomepagestylistinfopage"
-                                                        "/adv/install-type")}
-
+    {:layers [{:layer/type      :hero
+               :photo/file-name "certified-stylists-hero"
+               :photo/mob-uuid  "57ae5aa7-93aa-41d1-9024-2db9308a70e3"
+               :photo/dsk-uuid  "3cd59dc1-8f94-4ee5-a62e-d91b5aa6c97b"}
+              {:layer/type             :find-out-more
+               :header/value           "Our Certified Stylists are the best of the best."
+               :body/value             (str "Our Certified Stylists are the best in your area. "
+                                            "They’re chosen because of their top-rated reviews, professionalism, and amazing work.")
+               :cta/value              "Get started"
+               :cta/navigation-message [events/navigate-adventure-install-type nil]}
 
               {:layer/type      :bulleted-explainer
                :header/value    "About Our Certified Stylists"
@@ -48,23 +47,18 @@
               {:layer/type      :ugc
                :header/value    "#MayvennFreeInstall"
                :subheader/value "Showcase your new look by tagging #MayvennFreeInstall"
-
-               :images (if pixlee-to-contentful?
-                         (mapv (partial ugc/contentful-look->homepage-social-card
-                                        current-nav-event
-                                        :free-install-mayvenn)
-                               (->> cms-ugc-collection :free-install-mayvenn :looks))
-                         (mapv ugc/pixlee-look->homepage-social-card
-                               (pixlee/images-in-album
-                                (get-in data storefront.keypaths/ugc) :free-install-mayven)))}
-
+               :images          (if pixlee-to-contentful?
+                                  (mapv (partial ugc/contentful-look->homepage-social-card
+                                                 current-nav-event
+                                                 :free-install-mayvenn)
+                                        (->> cms-ugc-collection :free-install-mayvenn :looks))
+                                  (mapv ugc/pixlee-look->homepage-social-card
+                                        (pixlee/images-in-album
+                                         (get-in data storefront.keypaths/ugc) :free-install-mayven)))}
               (merge {:layer/type :faq} (faq/free-install-query data))
-
               {:layer/type :contact}
-              {:layer/type :sticky-footer
-               :cta/href   (layered/->freeinstall-url (get-in data storefront.keypaths/environment)
-                                                      "toadventurehomepagestylistinfopage"
-                                                      "/adv/install-type")}]}))
+              {:layer/type             :sticky-footer
+               :cta/navigation-message [events/navigate-adventure-install-type nil]}]}))
 
 (defn built-component
   [data opts]

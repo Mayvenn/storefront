@@ -9,6 +9,8 @@
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.platform.component-utils :as utils]
+            [storefront.routes :as routes]
+            [clojure.set :as set]
             #?@(:cljs [[om.core :as om]
                        [goog.events.EventType :as EventType]
                        goog.dom
@@ -35,12 +37,18 @@
            (str "utm_source=" source)
            "utm_term=fi_shoptofreeinstall"]))))
 
-(defmulti layer-view (fn [{:keys [layer/type]} _ _] type))
+(defn route-to-or-redirect-to-freeinstall [shop? environment navigation-event navigation-arg]
+  (let [navigation-message [navigation-event navigation-arg]]
+    (merge (when-not shop?
+             {:navigation-message navigation-message})
+           {:href (environment (apply routes/path-for navigation-message))})))
 
-(defmethod layer-view :hero
-  [data owner opts]
-  (component/create
-   (ui/ucare-img {:class "col-12"} (:photo/uuid data))))
+(defn cta-route-to-or-redirect-to-freeinstall [shop? environment navigation-event navigation-arg]
+  (set/rename-keys (route-to-or-redirect-to-freeinstall shop? environment navigation-event nil)
+                   {:href               :cta/href
+                    :navigation-message :cta/navigation-message}))
+
+(defmulti layer-view (fn [{:keys [layer/type]} _ _] type))
 
 (defn hero-image [{:keys [desktop-url mobile-url file-name alt]}]
   [:picture
@@ -60,12 +68,13 @@
                    :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
                    :file-name   file-name
                    :alt         alt}))
-    [:div.relative.flex.justify-center
-     [:div.absolute.bottom-0.col-6-on-tb-dt.col-12.pb2.mb3-on-dt
-      [:div.col.col-12.flex.justify-center
-       (let [num-buttons (count (:buttons data))]
-         (for [button (:buttons data)]
-           [:div.px2 {:class (str "col-" (if (= num-buttons 1) 9 6))} (apply ui/teal-button button)]))]]]]))
+    (when-let [buttons (:buttons data)]
+      [:div.relative.flex.justify-center
+       [:div.absolute.bottom-0.col-6-on-tb-dt.col-12.pb2.mb3-on-dt
+        [:div.col.col-12.flex.justify-center
+         (let [num-buttons (count buttons)]
+           (for [button buttons]
+             [:div.px2 {:class (str "col-" (if (= num-buttons 1) 9 6))} (apply ui/teal-button button)]))]]])]))
 
 (defmethod layer-view :free-standard-shipping-bar
   [_ _ _]

@@ -15,15 +15,15 @@
   (let [cms-ugc-collection    (get-in data storefront.keypaths/cms-ugc-collection)
         current-nav-event     (get-in data storefront.keypaths/navigation-event)
         pixlee-to-contentful? (experiments/pixlee-to-contentful? data)]
-    {:layers [{:layer/type :hero
-               :photo/uuid "5ab5e0a7-50f7-4d4e-ab74-dac695d72f68"}
-              {:layer/type   :find-out-more
-               :header/value "We believe that quality should be accessible for all."
-               :body/value   "Our bundles, closures, and frontals are crafted with the highest industry standards and come in a variety of textures and colors. The best part? All of our products are quality-guaranteed."
-               :cta/value    "Get started"
-               :cta/href     (layered/->freeinstall-url (get-in data storefront.keypaths/environment)
-                                                        "toadventurehomepageourhairpage"
-                                                        "/adv/install-type")}
+    {:layers [{:layer/type      :hero
+               :photo/file-name "about-our-hair-hero"
+               :photo/mob-uuid  "5ab5e0a7-50f7-4d4e-ab74-dac695d72f68"
+               :photo/dsk-uuid  "1162a59d-162f-4c6b-bb8d-60cd7204644c"}
+              {:layer/type             :find-out-more
+               :header/value           "We believe that quality should be accessible for all."
+               :body/value             "Our bundles, closures, and frontals are crafted with the highest industry standards and come in a variety of textures and colors. The best part? All of our products are quality-guaranteed."
+               :cta/value              "Get started"
+               :cta/navigation-message [events/navigate-adventure-install-type nil]}
               {:layer/type      :bulleted-explainer
                :header/value    "About Our Hair"
                :subheader/value "An overview"
@@ -52,16 +52,13 @@
                                          (get-in data storefront.keypaths/ugc) :free-install-mayven)))}
               (merge {:layer/type :faq} (faq/free-install-query data))
               {:layer/type :contact}
-              {:layer/type :sticky-footer
-               :cta/href   (layered/->freeinstall-url (get-in data storefront.keypaths/environment)
-                                                      "toadventurehomepageourhairpage"
-                                                      "/adv/install-type")}]}))
+              {:layer/type             :sticky-footer
+               :cta/navigation-message [events/navigate-adventure-install-type nil]}]}))
 
 (defn built-component
   [data opts]
   (component/build layered/component (query data) opts))
 
 (defmethod effects/perform-effects events/navigate-info-about-our-hair
-
   [_ _ args prev-app-state app-state]
   #?(:cljs (pixlee.hook/fetch-album-by-keyword :free-install-mayvenn)))

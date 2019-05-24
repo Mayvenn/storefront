@@ -8,23 +8,23 @@
             [storefront.components.ugc :as ugc]
             [storefront.accessors.experiments :as experiments]
             [adventure.components.layered :as layered]
-            #?@(:cljs [[storefront.hooks.pixlee :as pixlee.hook]])
-            [storefront.keypaths :as storefront.keypaths]))
+            #?@(:cljs [[storefront.hooks.pixlee :as pixlee.hook]])))
 
 (defn query
   [data]
   (let [cms-ugc-collection    (get-in data storefront.keypaths/cms-ugc-collection)
         current-nav-event     (get-in data storefront.keypaths/navigation-event)
         pixlee-to-contentful? (experiments/pixlee-to-contentful? data)]
-    {:layers [{:layer/type :hero
-               :photo/uuid "99a8ccca-b4fe-42d2-8ac1-7ebf8e4f6559"}
-              {:layer/type   :find-out-more
-               :header/value "We’re offering hair + service for the price of one"
-               :body/value   "We know that quality bundles can be expensive. That’s why when you buy our hair, we’re paying for your install appointment."
-               :cta/value    "Get started"
-               :cta/href     (layered/->freeinstall-url (get-in data storefront.keypaths/environment)
-                                                        "toadventurehomepagehowitworkspage"
-                                                        "/adv/install-type")}
+    {:layers [{:layer/type      :hero
+               :photo/file-name "how-it-works-hero"
+               :photo/alt       "Mayvenn's Install includes: Shampoo & Condition, Braid down, Sew-In, Style"
+               :photo/mob-uuid  "99a8ccca-b4fe-42d2-8ac1-7ebf8e4f6559"
+               :photo/dsk-uuid  "cf2ba376-a913-49de-a2bd-e90c50c295ff"}
+              {:layer/type             :find-out-more
+               :header/value           "We’re offering hair + service for the price of one"
+               :body/value             "We know that quality bundles can be expensive. That’s why when you buy our hair, we’re paying for your install appointment."
+               :cta/value              "Get started"
+               :cta/navigation-message [events/navigate-adventure-install-type nil]}
               {:layer/type      :bulleted-explainer
                :header/value    "How it Works"
                :subheader/value "In 3 easy steps"
@@ -58,10 +58,8 @@
               (merge {:layer/type :faq}
                      (faq/free-install-query data))
               {:layer/type :contact}
-              {:layer/type :sticky-footer
-               :cta/href   (layered/->freeinstall-url (get-in data storefront.keypaths/environment)
-                                                      "toadventurehomepagehowitworkspage"
-                                                      "/adv/install-type")}]}))
+              {:layer/type             :sticky-footer
+               :cta/navigation-message [events/navigate-adventure-install-type nil]}]}))
 
 (defn built-component
   [data opts]

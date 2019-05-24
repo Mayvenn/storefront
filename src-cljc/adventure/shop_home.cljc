@@ -1,7 +1,7 @@
 (ns adventure.shop-home
   (:require [adventure.components.layered :as layered]
             adventure.handlers ;; Needed for its defmethods
-            storefront.keypaths
+            [storefront.keypaths :as storefront.keypaths]
             [adventure.keypaths :as keypaths]
             [adventure.faq :as faq]
             #?@(:cljs [[om.core :as om]
@@ -18,22 +18,12 @@
             [storefront.effects :as effects]
             [storefront.components.ugc :as ugc]
             [storefront.routes :as routes]
-            [clojure.set :as set]))
+            [clojure.set :as set]
+            [clojure.string :as string]))
 
 (def ^:private default-utm-params
   {:utm_medium "referral"
    :utm_term   "fi_shoptofreeinstall"})
-
-(defn ^:private route-to-or-redirect-to-freeinstall [shop? environment navigation-event navigation-arg]
-  (let [navigation-message [navigation-event navigation-arg]]
-    (merge (when-not shop?
-             {:navigation-message navigation-message})
-           {:href (layered/freeinstall-domain environment (apply routes/path-for navigation-message))})))
-
-(defn ^:private cta-route-to-or-redirect-to-freeinstall [shop? environment navigation-event navigation-arg]
-  (set/rename-keys (route-to-or-redirect-to-freeinstall shop? environment navigation-event nil)
-                   {:href               :cta/href
-                    :navigation-message :cta/navigation-message}))
 
 (defn query
   [data]
@@ -44,7 +34,7 @@
         current-nav-event     (get-in data storefront.keypaths/navigation-event)
         pixlee-to-contentful? (experiments/pixlee-to-contentful? data)]
     {:layers
-     [(merge {:layer/type      :hero-with-links
+     [(merge {:layer/type      :hero
               :photo/file-name "free-install-hero"
               :buttons         (into (if browse-stylist-hero?
                                        []
@@ -52,7 +42,7 @@
                                           :height-class "py2"
                                           :data-test    "learn-more"}
                                          "Learn More"]])
-                                     [[(merge (route-to-or-redirect-to-freeinstall
+                                     [[(merge (layered/route-to-or-redirect-to-freeinstall
                                                shop? environment
                                                events/navigate-adventure-install-type
                                                (when shop?
@@ -108,7 +98,7 @@
                            :header/value "3. Schedule Your Appointment"
                            :body/value   "We’ll connect you to your Mayvenn Certified Stylist and book an install appointment that’s convenient for you."}]
         :cta/value       "Learn more"}
-       (cta-route-to-or-redirect-to-freeinstall
+       (layered/cta-route-to-or-redirect-to-freeinstall
         shop?
         environment
         events/navigate-info-how-it-works
@@ -118,7 +108,7 @@
         :header/value "Who's doing my hair?"
         :body/value   "Our Certified Stylists are the best in your area. They're chosen because of their top-rated reviews, professionalism, and amazing work."
         :cta/value    "Learn more"}
-       (cta-route-to-or-redirect-to-freeinstall
+       (layered/cta-route-to-or-redirect-to-freeinstall
         shop?
         environment
         events/navigate-info-certified-stylists
@@ -132,7 +122,7 @@
         :header/value "Quality-Guaranteed Virgin Hair"
         :body/value   "Our bundles, closures, and frontals are crafted with the highest industry standards and come in a variety of textures and colors."
         :cta/value    "Learn more"}
-       (cta-route-to-or-redirect-to-freeinstall
+       (layered/cta-route-to-or-redirect-to-freeinstall
         shop?
         environment
         events/navigate-info-about-our-hair
@@ -181,7 +171,7 @@
       {:layer/type :contact}
       (merge
        {:layer/type :sticky-footer}
-       (cta-route-to-or-redirect-to-freeinstall
+       (layered/cta-route-to-or-redirect-to-freeinstall
         shop? environment
         events/navigate-adventure-install-type
         (when shop? {:query-params (merge default-utm-params
