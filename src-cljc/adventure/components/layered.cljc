@@ -25,23 +25,11 @@
                  "freeinstall.storefront.localhost")]
     (str "//" domain path)))
 
-(defn ->freeinstall-url [environment source path]
-  (let [domain (case environment
-                 "production" "freeinstall.mayvenn.com"
-                 "acceptance" "freeinstall.diva-acceptance.com"
-                 "freeinstall.storefront.localhost")]
-    (str "//" domain path "?"
-         (string/join
-          "&"
-          ["utm_medium=referral"
-           (str "utm_source=" source)
-           "utm_term=fi_shoptofreeinstall"]))))
-
 (defn route-to-or-redirect-to-freeinstall [shop? environment navigation-event navigation-arg]
   (let [navigation-message [navigation-event navigation-arg]]
     (merge (when-not shop?
              {:navigation-message navigation-message})
-           {:href (environment (apply routes/path-for navigation-message))})))
+           {:href (freeinstall-domain environment (apply routes/path-for navigation-message))})))
 
 (defn cta-route-to-or-redirect-to-freeinstall [shop? environment navigation-event navigation-arg]
   (set/rename-keys (route-to-or-redirect-to-freeinstall shop? environment navigation-event nil)
