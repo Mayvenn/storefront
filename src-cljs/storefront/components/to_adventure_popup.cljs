@@ -1,11 +1,7 @@
 (ns storefront.components.to-adventure-popup
   (:require [sablono.core :refer [html]]
-            [storefront.api :as api]
             [storefront.browser.cookie-jar :as cookie-jar]
-            [storefront.browser.scroll :as scroll]
             [storefront.component :as component]
-            [storefront.components.v2 :as v2]
-            [storefront.components.footer-modal :as footer-modal]
             [storefront.components.popup :as popup]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
@@ -13,7 +9,6 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.components.marquee :as marquee]
             [storefront.transitions :as transitions]
             [storefront.platform.messages :as messages]
             [clojure.string :as string]))
