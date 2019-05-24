@@ -54,13 +54,18 @@
   [:picture
    ;; Tablet/Desktop
    [:source {:media   "(min-width: 750px)"
-             :src-set (str desktop-url "-/format/jpeg/-/quality/best/" file-name " 1x")}]
+             :src-set (str desktop-url "-/format/jpeg/-/quality/lightest/-/resize/2880x/" file-name " 2x, "
+                           desktop-url "-/format/jpeg/-/quality/best/-/resize/1440x/" file-name " 1x")}]
    ;; Mobile
-   [:img.block.col-12 {:src (str mobile-url "-/format/jpeg/" file-name)
-                       :alt alt}]])
+   [:source {:src-set (str mobile-url "-/format/jpeg/-/quality/lightest/-/resize/2250x/" file-name " 3x, "
+                           mobile-url "-/format/jpeg/-/quality/lightest/-/resize/1500x/" file-name " 2x, "
+                           mobile-url "-/format/jpeg/-/quality/normal/-/resize/750x/" file-name " 1x ")}]
+   ;; mobile
+   [:img.block.col-12 {:src (str mobile-url "-/format/jpeg/-/quality/normal/-/resize/750x/" file-name)
+                       :alt (str alt)}]])
 
-(defmethod layer-view :hero-with-links
-  [data _ _]
+(defmethod layer-view :hero
+  [data owner opts]
   (component/create
    [:div.mx-auto.relative {:style {:min-height "300px"}}
     (let [{:photo/keys [mob-uuid dsk-uuid file-name alt]} data]
