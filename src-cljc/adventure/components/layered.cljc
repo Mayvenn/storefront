@@ -62,10 +62,10 @@
                    :alt         alt}))
     [:div.relative.flex.justify-center
      [:div.absolute.bottom-0.col-6-on-tb-dt.col-12.pb2.mb3-on-dt
-      [:div.col.col-12
+      [:div.col.col-12.flex.justify-center
        (let [num-buttons (count (:buttons data))]
          (for [button (:buttons data)]
-           [:div.mx-auto.px2 {:class (str "col-" (if (= num-buttons 1) 9 6))} (apply ui/teal-button button)]))]]]]))
+           [:div.px2 {:class (str "col-" (if (= num-buttons 1) 9 6))} (apply ui/teal-button button)]))]]]]))
 
 (defmethod layer-view :free-standard-shipping-bar
   [_ _ _]
