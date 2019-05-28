@@ -148,10 +148,44 @@ gulp.task('gzip', function () {
     .pipe(gulp.dest('resources/public/cdn'));
 });
 
+gulp.task('write-js-stats', function(cb){
+  fs.readFile('resources/rev-manifest.json', 'utf8', function(err, data) {
+    if (err) { cb(err); return console.log(err); }
+
+    var revManifest = JSON.parse(data),
+        mainJsFilePath = "resources/public/cdn/" + revManifest["js/out/main.js"];
+
+    exec('wc -c "' + mainJsFilePath + '" | awk \'{print $1}\'', function(err, stdout){
+      if (err) {
+        cb(err);
+      } else {
+        var fileSize = stdout.trim();
+        exec('(time -p node --check ' + mainJsFilePath + ' 2>/dev/null 1>/dev/null) 2>&1 | head -n1 | awk \'{print $2}\'', function(err, stdout) {
+          var parseTime = stdout.trim();
+
+          fs.writeFile("resources/main.js.file_size.stat", fileSize, function(err) {
+            if (err) {
+              cb(err);
+            } else {
+              fs.writeFile("resources/main.js.parse_time.stat", parseTime, function(err) {
+                cb(err);
+                console.log("==== MAIN JS STATS ====");
+                console.log('File Size: ' + fileSize + ' bytes');
+                console.log('Relative Parse Time: ' + parseTime + ' seconds');
+                console.log("=======================");
+              });
+            }
+          });
+        });
+      }
+    });
+  });
+});
+
 gulp.task('cdn', function (cb) {
   runSequence('clean-hashed-assets', 'fix-source-map', 'rev-assets', 'fix-main-js-pointing-to-source-map', 'gzip', cb);
 });
 
 gulp.task('compile-assets', function(cb) {
-  runSequence('css', 'minify-js', 'cljs-build', 'copy-release-assets', 'cdn', 'save-git-sha-version', cb);
+  runSequence('css', 'minify-js', 'cljs-build', 'copy-release-assets', 'cdn', 'save-git-sha-version', 'write-js-stats', cb);
 });
