@@ -65,8 +65,12 @@
                                          on-shop?
                                          (not on-homepage?)
                                          (zero? nav-history-length)
-                                         on-non-minimal-footer-page?)]
+                                         on-non-minimal-footer-page?)
+        is-style-guide?             (= events/navigate-style-guide (get-in app-state keypaths/navigation-event))]
     (cond
+      is-style-guide?
+      nil ;; never show popup for style guide
+
       to-adventure-showable?
       (messages/handle-message events/popup-show-to-adventure)
 
