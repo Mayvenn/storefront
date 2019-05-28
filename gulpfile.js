@@ -125,7 +125,7 @@ gulp.task('fix-main-js-pointing-to-source-map', function (cb) {
   // the js code doesn't become really wrong), we need to take special care to update
   // main.js to have the sha-ed version of the sourcemap in the file
   fs.readFile("resources/rev-manifest.json", 'utf8', function(err, data) {
-    if (err) { return console.log(err); }
+    if (err) { cb(err); return console.log(err); }
 
     var revManifest = JSON.parse(data),
         mainJsFilePath = "resources/public/cdn/" + revManifest["js/out/main.js"];
