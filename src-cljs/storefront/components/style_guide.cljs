@@ -296,7 +296,7 @@
    [:div.p1
     [:div.p4
      {:class (str "bg-" color-class
-                  (when (#{"black" "fb-blue" "dark-gray"} color-class) " white")
+                  (when (#{"purple" "black" "quadpay-blue" "fb-blue" "dark-gray"} color-class) " white")
                   (when (string/ends-with? color-class "white") " border border-gray"))
       :style {:height "8em"}}
      [:div.mt4
@@ -359,6 +359,7 @@
   (subheader "Third party")
   [:div.flex.flex-wrap.mxn1.mb4
    (color-swatch "fb-blue" "3b5998")
+   (color-swatch "quadpay-blue" "1d73ec")
    (color-swatch "twitter-blue" "00aced")
    (color-swatch "sms-green" "1fcc23")]])
 
