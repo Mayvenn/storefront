@@ -170,11 +170,14 @@ gulp.task('write-js-stats', function(cb){
               cb(err);
             } else {
               fs.writeFile("resources/main.js.parse_time.stat", parseTime, function(err) {
-                cb(err);
-                console.log("==== MAIN JS STATS ====");
-                console.log('File Size: ' + fileSize + ' bytes');
-                console.log('Relative Parse Time: ' + parseTime + ' seconds');
-                console.log("=======================");
+                if (err) {
+                  cb(err);
+                } else {
+                  console.log("==== MAIN JS STATS ====");
+                  console.log('File Size: ' + fileSize + ' bytes');
+                  console.log('Relative Parse Time: ' + parseTime + ' seconds');
+                  console.log("=======================");
+                }
               });
             }
           });
