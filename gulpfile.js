@@ -162,7 +162,7 @@ gulp.task('write-js-stats', function(cb){
       } else {
         var fileSize = stdout.trim();
         var fileCommand = (os.platform() == "darwin") ? "zless" : "zcat";
-        exec('(time -p ' + fileCommand + ' ' + mainJsFilePath + '| node --check 2>/dev/null 1>/dev/null) 2>&1 | head -n1 | awk \'{print $2}\'', function(err, stdout) {
+        exec('(time -p ' + fileCommand + ' ' + mainJsFilePath + '| node --check 2>/dev/null 1>/dev/null) 2>&1 | head -n1 | awk \'{print $2}\'', {shell: '/bin/bash'}, function(err, stdout) {
           var parseTime = stdout.trim();
 
           fs.writeFile("resources/main.js.file_size.stat", fileSize, function(err) {
