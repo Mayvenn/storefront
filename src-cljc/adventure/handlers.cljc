@@ -50,7 +50,7 @@
                     (empty? adventure-choices)
                     (not (and (= events/navigate-adventure-install-type event)
                               (or from-shop-to-freeinstall?
-                                  (-> query-params :utm_source (string/includes? "toadventure"))))))
+                                  (some-> query-params :utm_source (string/includes? "toadventure"))))))
            (history/enqueue-navigate events/navigate-adventure-home nil))
          (when (boolean (:em_hash query-params))
            (messages/handle-message events/adventure-visitor-identified))))))
