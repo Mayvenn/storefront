@@ -13,6 +13,7 @@ var postcss = require("gulp-postcss");
 var uglify = require('gulp-uglify');
 var fs = require('fs');
 var path = require('path');
+var os = require('os');
 var exec = require('child_process').exec;
 
 gulp.task('css', function () {
@@ -160,7 +161,8 @@ gulp.task('write-js-stats', function(cb){
         cb(err);
       } else {
         var fileSize = stdout.trim();
-        exec('(time -p node --check "' + mainJsFilePath + '" 2>/dev/null 1>/dev/null) 2>&1 | head -n1 | awk \'{print $2}\'', function(err, stdout) {
+        var fileCommand = (os.platform() == "darwin") ? "zless" : "zcat";
+        exec('(time -p ' + fileCommand + ' ' + mainJsFilePath + '| node --check 2>/dev/null 1>/dev/null) 2>&1 | head -n1 | awk \'{print $2}\'', function(err, stdout) {
           var parseTime = stdout.trim();
 
           fs.writeFile("resources/main.js.file_size.stat", fileSize, function(err) {
