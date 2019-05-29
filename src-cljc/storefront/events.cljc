@@ -401,11 +401,6 @@
 
 (defpath contentful-api-success-fetch-homepage)
 
-(defpath pixlee-api-success-fetch-album)
-(defpath pixlee-api-success-fetch-image)
-(defpath pixlee-api-success-fetch-named-search-album-ids)
-(defpath pixlee-api-failure-fetch-album)
-
 (defpath uploadcare-api-success-upload-portrait)
 (defpath uploadcare-api-success-upload-gallery)
 
@@ -443,7 +438,6 @@
 (defpath control-to-adventure-popup-dismiss)
 
 ;;SECTION v2
-(defpath v2-show-home)
 
 ;;SECTION v2 popup
 (defpath popup-show-v2-homepage)

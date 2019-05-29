@@ -135,10 +135,6 @@
   [data]
   (display-feature? data "confetti"))
 
-(defn pixlee-to-contentful?
-  [data]
-  (display-feature? data "pixlee-to-contentful"))
-
 (defn browse-stylist-hero?
   [data]
   (display-feature? data "browse-stylist-hero"))

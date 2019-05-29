@@ -4,7 +4,6 @@
             [catalog.keypaths]
             [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
-            [storefront.accessors.pixlee :as pixlee]
             [storefront.accessors.skus :as skus]
             [catalog.facets :as facets]
             [storefront.components.money-formatters :refer [as-money-without-cents as-money]]
@@ -20,14 +19,12 @@
             [storefront.platform.reviews :as review-component]
             [catalog.selector.sku :as sku-selector]
             [catalog.product-details-ugc :as ugc]
-            [storefront.components.ugc :as component-ugc]
             [storefront.accessors.contentful :as contentful]
             [storefront.request-keys :as request-keys]
             [storefront.transitions :as transitions]
             [storefront.platform.component-utils :as utils]
             [storefront.component :as component]
-            #?@(:cljs [[storefront.hooks.pixlee :as pixlee-hooks]
-                       [storefront.hooks.reviews :as review-hooks]
+            #?@(:cljs [[storefront.hooks.reviews :as review-hooks]
                        [storefront.api :as api]
                        [storefront.history :as history]
                        [storefront.hooks.quadpay :as quadpay]
@@ -391,19 +388,13 @@
   (let [ugc                (get-in data keypaths/ugc)
         album-keyword      (-> product :legacy/named-search-slug keyword)
         cms-ugc-collection (get-in data (conj keypaths/cms-ugc-collection album-keyword))]
-    (when-let [social-cards (if (experiments/pixlee-to-contentful? data)
-                              (when product
-                                (->> cms-ugc-collection
-                                     :looks
-                                     (mapv (partial contentful/look->pdp-social-card
-                                                    (get-in data keypaths/navigation-event)
-                                                    album-keyword))
-                                     not-empty))
-                              (when ugc
-                                (->> album-keyword
-                                     (pixlee/images-in-album ugc)
-                                     (mapv component-ugc/pixlee-look->pdp-social-card)
-                                     not-empty)))]
+    (when-let [social-cards (when product
+                              (->> cms-ugc-collection
+                                   :looks
+                                   (mapv (partial contentful/look->pdp-social-card
+                                                  (get-in data keypaths/navigation-event)
+                                                  album-keyword))
+                                   not-empty))]
       {:carousel-data {:product-id   (:catalog/product-id product)
                        :product-name (:copy/title product)
                        :page-slug    (:page/slug product)
@@ -487,14 +478,6 @@
 (defn built-component [data opts]
   (component/build component (query data) opts))
 
-(defn fetch-product-album
-  [{:keys [legacy/named-search-slug]}]
-  (let [named-search-kw (keyword named-search-slug)
-        album-id        (get-in config/pixlee [:albums named-search-kw])]
-    (when album-id
-      #?(:cljs (pixlee-hooks/fetch-album album-id named-search-kw)
-         :clj nil))))
-
 (defn get-valid-product-skus [product all-skus]
   (->> product
        :selector/skus
@@ -531,9 +514,7 @@
 
      (if-let [current-product (products/current-product app-state)]
        (if (auth/permitted-product? app-state current-product)
-         (do
-           (fetch-product-album current-product)
-           (review-hooks/insert-reviews))
+         (review-hooks/insert-reviews)
          (effects/redirect events/navigate-home)))))
 
 (defn first-when-only [coll]
@@ -664,10 +645,6 @@
    (defmethod effects/perform-effects events/navigate-product-details
      [_ event args _ app-state]
      (messages/handle-message events/initialize-product-details (assoc args :origin-nav-event event))))
-
-(defmethod effects/perform-effects events/api-success-v2-products-for-details
-  [_ _ _ _ app-state]
-  (fetch-product-album (products/current-product app-state)))
 
 (defmethod transitions/transition-state events/api-success-v2-products-for-details
   ;; for pre-selecting skus by url

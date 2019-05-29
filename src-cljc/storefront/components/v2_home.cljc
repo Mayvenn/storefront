@@ -1,7 +1,5 @@
 (ns storefront.components.v2-home
   (:require [storefront.accessors.auth :as auth]
-            [storefront.accessors.experiments :as experiments]
-            [storefront.accessors.pixlee :as pixlee]
             [storefront.accessors.contentful :as contentful]
             [storefront.component :as component]
             [storefront.components.marquee :as marquee]
@@ -14,9 +12,7 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.platform.carousel :as carousel]
-            #?(:cljs [storefront.hooks.pixlee :as pixlee.hook])
-            [storefront.components.ugc :as ugc]))
+            [storefront.platform.carousel :as carousel]))
 
 (defn hero-image [{:keys [desktop-url mobile-url file-name alt]}]
   [:picture
@@ -337,36 +333,11 @@
     [:hr.border-top.border-dark-silver.col-9.mx-auto.my6]
     [:section our-story]]))
 
-;; TODO: clean up a little bit
 (defn query [data]
-  (let [homepage-data (get-in data keypaths/cms-homepage)
-        store         (marquee/query data)
-        ugc           (get-in data keypaths/ugc)
-
-        cms-ugc-collection          (get-in data keypaths/cms-ugc-collection)
-        current-nav-event           (get-in data keypaths/navigation-event)
-        pixlee-to-contentful?       (experiments/pixlee-to-contentful? data)
-
-        free-install-mayvenn-images (if pixlee-to-contentful?
-                                      (mapv (partial contentful/look->homepage-social-card
-                                                     current-nav-event
-                                                     :free-install-mayvenn)
-                                            (->> cms-ugc-collection :free-install-mayvenn :looks))
-                                      (mapv ugc/pixlee-look->homepage-social-card (pixlee/images-in-album ugc :free-install-mayvenn)))
-
-        sleek-and-straight-images   (if pixlee-to-contentful?
-                                      (mapv (partial contentful/look->homepage-social-card
-                                                     current-nav-event
-                                                     :sleek-and-straight)
-                                            (->> cms-ugc-collection :sleek-and-straight :looks))
-                                      (mapv ugc/pixlee-look->homepage-social-card (pixlee/images-in-album ugc :sleek-and-straight)))
-
-        waves-and-curly-images      (if pixlee-to-contentful?
-                                      (mapv (partial contentful/look->homepage-social-card
-                                                     current-nav-event
-                                                     :waves-and-curly)
-                                            (->> cms-ugc-collection :waves-and-curly :looks))
-                                      (mapv ugc/pixlee-look->homepage-social-card (pixlee/images-in-album ugc :waves-and-curly)))]
+  (let [homepage-data      (get-in data keypaths/cms-homepage)
+        store              (marquee/query data)
+        cms-ugc-collection (get-in data keypaths/cms-ugc-collection)
+        current-nav-event  (get-in data keypaths/navigation-event)]
     {:store                    store
      :gallery-ucare-ids        (->> store
                                     :gallery
@@ -379,11 +350,11 @@
                                     (filter :home/order)
                                     (sort-by :home/order))
      :video                    (get-in data keypaths/v2-ui-home-video)
-     :sleek-and-straight-ugc   {:images        sleek-and-straight-images
+     :sleek-and-straight-ugc   {:images        (contentful/album-kw->homepage-social-cards cms-ugc-collection current-nav-event :sleek-and-straight)
                                 :album-keyword :sleek-and-straight}
-     :waves-and-curly-ugc      {:images        waves-and-curly-images
+     :waves-and-curly-ugc      {:images        (contentful/album-kw->homepage-social-cards cms-ugc-collection current-nav-event :waves-and-curly)
                                 :album-keyword :waves-and-curly}
-     :free-install-mayvenn-ugc {:images        free-install-mayvenn-images
+     :free-install-mayvenn-ugc {:images        (contentful/album-kw->homepage-social-cards cms-ugc-collection current-nav-event :free-install-mayvenn)
                                 :album-keyword :free-install-mayvenn}
      :stylist-gallery-open?    (get-in data keypaths/carousel-stylist-gallery-open?)
      :homepage-data            homepage-data}))
@@ -391,9 +362,3 @@
 (defn built-component [data opts]
   (component/build component (query data) opts))
 
-(defmethod effects/perform-effects events/v2-show-home
-  [_ _ args prev-app-state app-state]
-  #?(:cljs (when-not (experiments/pixlee-to-contentful? app-state)
-               (pixlee.hook/fetch-album-by-keyword :sleek-and-straight)
-               (pixlee.hook/fetch-album-by-keyword :waves-and-curly)
-               (pixlee.hook/fetch-album-by-keyword :free-install-mayvenn))))

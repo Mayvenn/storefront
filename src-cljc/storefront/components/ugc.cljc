@@ -50,7 +50,6 @@
          description
          [:div.mt2 (cta-button-fn nil "Shop Look")]]]]])))
 
-
 (defn social-image-card-component
   [{:keys                [desktop-aware?
                           id image-url overlay description social-service icon-url title]
@@ -100,76 +99,3 @@
            {:data-test (str "look-" id)})
           [:span.bold (:button-copy copy)]))]])))
 
-(defn pixlee-look->social-card
-  ([look]
-   (pixlee-look->social-card {} look))
-  ([color-details
-    {:keys [look-attributes
-            social-service
-            id
-            imgs
-            links]}]
-   (let [color-detail (get color-details (:color look-attributes))]
-     {:id                     id
-      :image-url              (or (-> imgs :medium :src)
-                                  (:medium imgs))
-      :overlay                (:texture look-attributes)
-      :description            (:lengths look-attributes)
-      :desktop-aware?         true
-      :social-service         social-service
-      :cta/button-type        :underline-button
-      :cta/navigation-message (or (:view-look links)
-                                  (:view-other links))
-      :icon-url               (:option/rectangle-swatch color-detail)
-      :title                  (or (:option/name color-detail)
-                                  "Check this out!")})))
-
-(defn decode-title [title]
-  #?(:cljs
-     (try
-       ;; Sometimes Pixlee gives us URL encoded titles
-       (js/decodeURIComponent title)
-       (catch :default e
-         title))
-     :clj title))
-
-(defn pixlee-look->look-detail-social-card
-  ([look]
-   (pixlee-look->look-detail-social-card {} look))
-  ([color-details
-    {:keys [links
-            title
-            user-handle]
-     :as   pixlee-look}]
-   (merge
-    (pixlee-look->social-card color-details pixlee-look)
-    {:title                  (str "@" user-handle)
-     :description            (decode-title title)
-     :cta/button-type        :teal-button
-     :cta/navigation-message (:view-look links)})))
-
-(defn pixlee-look->pdp-social-card
-  ([look]
-   (pixlee-look->pdp-social-card {} look))
-  ([color-details
-    {:keys [links
-            user-handle]
-     :as   pixlee-look}]
-   (merge
-    (pixlee-look->social-card color-details pixlee-look)
-    {:title                  (str "@" user-handle)
-     :cta/button-type        :teal-button
-     :cta/navigation-message (:view-look links)})))
-
-(defn pixlee-look->homepage-social-card
-  ([look]
-   (pixlee-look->homepage-social-card {} look))
-  ([color-details
-    {:keys [links
-            look-attributes]
-     :as   pixlee-look}]
-   (merge
-    (pixlee-look->social-card color-details pixlee-look)
-    {:description            (:price look-attributes)
-     :cta/button-type        :teal-button
-     :cta/navigation-message (:view-look links)})))

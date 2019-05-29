@@ -1,11 +1,7 @@
 (ns storefront.transitions
   (:require [storefront.keypaths :as keypaths]
             [storefront.events :as events]
-            [storefront.accessors.pixlee :as pixlee]
-            [storefront.accessors.contentful :as contentful]
-            [spice.core :as spice]
-            [storefront.accessors.experiments :as experiments]
-            [storefront.components.ugc :as ugc]))
+            [storefront.accessors.contentful :as contentful]))
 
 (defmulti transition-state
   (fn [dispatch event arguments app-state]
@@ -22,16 +18,11 @@
       (assoc-in keypaths/selected-look-id nil)))
 
 (defmethod transition-state events/navigate-shop-by-look-details [_ event {:keys [look-id]} app-state]
-  (let [shared-cart-id      (if (experiments/pixlee-to-contentful? app-state)
-                              (contentful/shared-cart-id (contentful/selected-look app-state))
-                              (:shared-cart-id (pixlee/selected-look app-state)))
-        current-shared-cart (get-in app-state keypaths/shared-cart-current)
-        look-id-converter   (if (experiments/pixlee-to-contentful? app-state)
-                              keyword
-                              spice/parse-int)]
+  (let [shared-cart-id      (contentful/shared-cart-id (contentful/selected-look app-state))
+        current-shared-cart (get-in app-state keypaths/shared-cart-current)]
     (cond-> app-state
       :always
-      (assoc-in keypaths/selected-look-id (look-id-converter look-id))
+      (assoc-in keypaths/selected-look-id (keyword look-id))
 
       (not= shared-cart-id (:number current-shared-cart))
       (assoc-in keypaths/shared-cart-current nil))))
