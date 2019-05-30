@@ -16,7 +16,8 @@
             [clojure.edn :refer [read-string]]
             [om.core :as om]
             [clojure.data :refer [diff]]
-            [storefront.api :as api]))
+            [storefront.api :as api]
+            [cognitect.transit :as transit]))
 
 (set! *warn-on-infer* true)
 
@@ -118,7 +119,8 @@
     (last maps)))
 
 (defn consume-preloaded-data []
-  (let [pre-data (read-string js/data)]
+  (let [pre-data (transit/read (transit/reader :json)
+                               js/data)]
     (js-delete js/window "data")
     (set! (.-data js/window) js/undefined)
     pre-data))

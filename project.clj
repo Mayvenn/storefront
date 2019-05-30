@@ -4,6 +4,8 @@
   :license {:name "All rights reserved"}
   :dependencies [[org.clojure/clojure "1.10.0"]
                  [com.stuartsierra/component "0.3.2"]
+                 [com.cognitect/transit-clj "0.8.313"]
+                 [com.cognitect/transit-cljs "0.8.256"]
                  [environ "1.1.0"]
                  [tocsin "0.1.4"]
                  [tugboat "0.1.22-SNAPSHOT"]
