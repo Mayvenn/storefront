@@ -47,7 +47,7 @@
             [storefront.routes :as routes]
             [storefront.accessors.nav :as nav]
             [storefront.components.share-links :as share-links]
-            [storefront.components.popup :as popup]
+            [storefront.components.popup :as popup]))
 
 
 
