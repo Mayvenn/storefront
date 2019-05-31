@@ -12,10 +12,12 @@
                        goog.events
                        [storefront.browser.scroll :as scroll]])
             [storefront.accessors.experiments :as experiments]
+            [storefront.accessors.pixlee :as pixlee]
             [storefront.component :as component]
             [storefront.events :as events]
             [storefront.platform.messages :as messages]
-            [storefront.effects :as effects]))
+            [storefront.effects :as effects]
+            [storefront.components.ugc :as ugc]))
 
 (def ^:private default-utm-params
   {:utm_medium "referral"
@@ -27,7 +29,8 @@
         environment           (get-in data storefront.keypaths/environment)
         browse-stylist-hero?  (experiments/browse-stylist-hero? data)
         cms-ugc-collection    (get-in data storefront.keypaths/cms-ugc-collection)
-        current-nav-event     (get-in data storefront.keypaths/navigation-event)]
+        current-nav-event     (get-in data storefront.keypaths/navigation-event)
+        pixlee-to-contentful? (experiments/pixlee-to-contentful? data)]
     {:layers
      [(merge {:layer/type      :hero
               :photo/file-name "free-install-hero"
@@ -129,10 +132,14 @@
       {:layer/type      :ugc
        :header/value    "#MayvennFreeInstall"
        :subheader/value "Showcase your new look by tagging #MayvennFreeInstall"
-       :images          (mapv (partial contentful/look->homepage-social-card
-                                       current-nav-event
-                                       :free-install-mayvenn)
-                              (->> cms-ugc-collection :free-install-mayvenn :looks))}
+       :images          (if pixlee-to-contentful?
+                          (mapv (partial contentful/look->homepage-social-card
+                                         current-nav-event
+                                         :free-install-mayvenn)
+                                (->> cms-ugc-collection :free-install-mayvenn :looks))
+                          (mapv ugc/pixlee-look->homepage-social-card
+                                (pixlee/images-in-album
+                                 (get-in data storefront.keypaths/ugc) :free-install-mayvenn)))}
       (merge {:layer/type :faq} (faq/free-install-query data))
       (when shop? {:layer/type :escape-hatch})
       {:layer/type      :bulleted-explainer

@@ -9,6 +9,7 @@
               [storefront.browser.scroll :as scroll]
               [storefront.effects :as effects]
               [storefront.history :as history]
+              [storefront.hooks.pixlee :as pixlee-hooks]
               [storefront.hooks.quadpay :as quadpay]
               [storefront.hooks.reviews :as review-hooks]
               [storefront.platform.messages :as messages]])
@@ -24,6 +25,7 @@
             [spice.date :as date]
             [spice.selector :as selector]
             [storefront.accessors.experiments :as experiments]
+            [storefront.accessors.pixlee :as pixlee]
             [storefront.accessors.contentful :as contentful]
             [storefront.accessors.skus :as skus]
             [storefront.component :as component]
@@ -383,15 +385,23 @@
              (group-by option-kw skus))))
 
 (defn ugc-query [product sku data]
-  (let [album-keyword      (-> product :legacy/named-search-slug keyword)
+  (let [ugc                (get-in data keypaths/ugc)
+        album-keyword      (-> product :legacy/named-search-slug keyword)
         cms-ugc-collection (get-in data (conj keypaths/cms-ugc-collection album-keyword))]
-    (when-let [social-cards (->> cms-ugc-collection
-                                 :looks
-                                 (mapv (partial contentful/look->pdp-social-card
-                                                (get-in data keypaths/navigation-event)
-                                                album-keyword))
-                                 (mapv #(assoc % :desktop-aware? false))
-                                 not-empty)]
+    (when-let [social-cards (if (experiments/pixlee-to-contentful? data)
+                              (->> cms-ugc-collection
+                                   :looks
+                                   (mapv (partial contentful/look->pdp-social-card
+                                                  (get-in data keypaths/navigation-event)
+                                                  album-keyword))
+                                   (mapv #(assoc % :desktop-aware? false))
+                                   not-empty)
+                              (when ugc
+                                (->> album-keyword
+                                     (pixlee/images-in-album ugc)
+                                     (mapv component-ugc/pixlee-look->pdp-social-card)
+                                     (mapv #(assoc % :desktop-aware? false))
+                                     not-empty)))]
       {:carousel-data {:product-name      (:copy/title product)
                        :page-slug         (:page/slug product)
                        :sku-id            (:catalog/sku-id sku)

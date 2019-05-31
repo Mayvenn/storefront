@@ -1,9 +1,11 @@
 (ns adventure.select-new-look
-  (:require #?(:cljs [storefront.components.ugc :as ugc])
+  (:require #?@(:cljs [[storefront.hooks.pixlee :as pixlee-hook]])
+            [storefront.components.ugc :as ugc]
             [storefront.accessors.contentful :as contentful]
             [storefront.events :as events]
             [storefront.effects :as effects]
             [storefront.transitions :as transitions]
+            [storefront.accessors.pixlee :as pixlee]
             [storefront.component :as component]
             [storefront.keypaths :as keypaths]
             [storefront.components.ui :as ui]
@@ -11,7 +13,8 @@
             [adventure.keypaths :as adventure-keypaths]
             [adventure.albums :as albums]
             [spice.maps :as maps]
-            [adventure.components.header :as header]))
+            [adventure.components.header :as header]
+            [storefront.accessors.experiments :as experiments]))
 
 (defn ^:private query
   [data]
@@ -23,15 +26,26 @@
                                first
                                :facet/options
                                (maps/index-by :option/slug))
-        looks             (-> data (get-in keypaths/cms-ugc-collection) album-keyword :looks)
-        navigation-event  (get-in data keypaths/navigation-event)]
+
+        pixlee-to-contentful? (experiments/pixlee-to-contentful? data)
+        looks                 (if pixlee-to-contentful?
+                                (-> data (get-in keypaths/cms-ugc-collection) album-keyword :looks)
+                                (pixlee/images-in-album (get-in data keypaths/ugc) album-keyword))
+        navigation-event      (get-in data keypaths/navigation-event)
+
+        look-converter (if pixlee-to-contentful?
+                         (partial contentful/look->social-card
+                                  navigation-event
+                                  album-keyword
+                                  color-details)
+                         (partial ugc/pixlee-look->social-card color-details)) ]
     (maps/deep-merge
      (albums/by-keyword album-keyword)
      {:data-test         "select-new-look-choice"
       :current-step      current-step
       :header-data       {:subtitle (str "Step " current-step  " of 3")}
       :spinning?         (empty? looks)
-      :looks             (mapv (partial contentful/look->social-card navigation-event album-keyword color-details) looks)
+      :looks             (mapv look-converter looks)
       :stylist-selected? stylist-selected?})))
 
 ;; TODO(jeff,corey): Move this to a separate template
@@ -71,10 +85,13 @@
   (component/build component (query data) opts))
 
 (defmethod effects/perform-effects events/navigate-adventure-select-new-look
-  [_ _ {album-keyword :album-keyword} _ app-state]
+  [_ _ args _ app-state]
   #?(:cljs
-     (when-not (albums/by-keyword (keyword album-keyword))
-       (effects/redirect events/navigate-adventure-how-shop-hair))))
+     (let [album-keyword (keyword (:album-keyword args))]
+       (if (seq (albums/by-keyword album-keyword))
+         (when-not (experiments/pixlee-to-contentful? app-state)
+          (pixlee-hook/fetch-album-by-keyword (keyword album-keyword)))
+         (effects/redirect events/navigate-adventure-how-shop-hair)))))
 
 (defmethod transitions/transition-state events/navigate-adventure-select-new-look
   [_ _ {:keys [album-keyword]} app-state]

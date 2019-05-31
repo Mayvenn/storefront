@@ -2,6 +2,7 @@
   (:require #?@(:cljs [[om.core :as om]
                        [storefront.api :as api]
                        [storefront.components.ugc :as ugc]
+                       [storefront.hooks.pixlee :as pixlee-hook]
                        [storefront.history :as history]
                        [storefront.config :as config]
                        [storefront.platform.messages :refer [handle-message]]])

@@ -6,7 +6,7 @@
             [catalog.categories :as categories]
             [catalog.products :as products]
             [spice.selector :as selector]
-            [storefront.ugc :as ugc]
+            [storefront.pixlee :refer [pixlee-config]]
             [clojure.string :as string]))
 
 (defn- use-case-then-order-key [img]
@@ -73,8 +73,15 @@
   (when-let [canonical-href (canonical-uri data)]
     [[:link {:rel "canonical" :href canonical-href}]]))
 
+(def ^:private pixlee-copy
+  {:deals {:seo-title "Shop Deals | Mayvenn"
+           :og-title "Shop Deals - Find and Buy your favorite Mayvenn bundles!"}
+   :look  {:seo-title "Shop by Look | Mayvenn"
+           :og-title "Shop by Look - Find and Buy your favorite Mayvenn bundles!"}})
+
 (defn tags-for-page [data]
-  (let [og-image-url (str "http:" assets/canonical-image)]
+  (let [og-image-url (str "http:" assets/canonical-image)
+        pixlee (pixlee-config (get-in data keypaths/environment))]
     (->
      (condp = (get-in data keypaths/navigation-event)
        events/navigate-sign-in [[:title {} "Sign In | Mayvenn"]
@@ -132,9 +139,9 @@
                                                  :content  "Mayvenn's story starts with a Toyota Corolla filled with bundles of hair to now having over 50,000 stylists selling Mayvenn hair and increasing their incomes. Learn more about us!"}]]
 
        events/navigate-shop-by-look (let [album-keyword (get-in data keypaths/selected-album-keyword)]
-                                      [[:title {} (-> ugc/album-copy album-keyword :seo-title)]
+                                      [[:title {} (-> pixlee :copy album-keyword :seo-title)]
                                        [:meta {:property "og:title"
-                                               :content  (-> ugc/album-copy album-keyword :og-title)}]
+                                               :content  (-> pixlee :copy album-keyword :og-title)}]
                                        [:meta {:name    "description"
                                                :content "Find your favorite Mayvenn hairstyle on social media and shop the exact look directly from our website."}]
                                        [:meta {:property "og:type"

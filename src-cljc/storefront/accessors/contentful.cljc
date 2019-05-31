@@ -125,8 +125,3 @@
       {:description            description
        :cta/button-type        :teal-button
        :cta/navigation-message (-> base :links :view-look)}))))
-
-(defn album-kw->homepage-social-cards
-  [ugc-collections nav-event album-kw]
-  (mapv (partial look->homepage-social-card nav-event album-kw)
-        (->> ugc-collections album-kw :looks)))

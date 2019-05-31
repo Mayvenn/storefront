@@ -1,17 +1,20 @@
 (ns adventure.handlers
   (:require #?@(:cljs
-                [[storefront.history :as history]
+                [[storefront.hooks.pixlee :as pixlee.hook]
+                 [storefront.platform.messages :refer [handle-message]]
+                 [storefront.history :as history]
                  [storefront.hooks.stringer :as stringer]
                  [storefront.browser.cookie-jar :as cookie]
-                 [storefront.api :as api]
-                 [storefront.platform.messages :as messages]
-                 [clojure.string :as string]])
+                 [storefront.api :as api]])
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.keypaths :as storefront.keypaths]
+            [storefront.accessors.pixlee :as pixlee]
             [adventure.keypaths :as keypaths]
             [storefront.trackings :as trackings]
             [storefront.transitions :as transitions]
+            [clojure.string :as string]
+            [storefront.platform.messages :as messages]
             [catalog.products :as products]))
 
 (defmethod transitions/transition-state events/control-adventure-choice
@@ -83,7 +86,8 @@
   [_ _ args prev-app-state app-state]
   #?(:cljs (let [cookie    (get-in app-state storefront.keypaths/cookie)
                  adventure (get-in app-state keypaths/adventure)]
-             (cookie/save-adventure cookie adventure))))
+             (cookie/save-adventure cookie adventure)
+             (pixlee.hook/fetch-album-by-keyword :free-install-mayvenn))))
 
 (defn ^:private adventure-choices->criteria
   [choices]
@@ -99,7 +103,7 @@
                                    (select-keys criteria)
                                    (assoc :catalog/department    "hair"
                                           :catalog/discontinued? "false"))
-                               #(messages/handle-message events/api-success-adventure-fetch-skus %))))
+                               #(handle-message events/api-success-adventure-fetch-skus %))))
 
 (defmethod transitions/transition-state events/api-success-adventure-fetch-skus
   [_ event {:keys [skus]} app-state]
@@ -113,7 +117,7 @@
                                    adventure-choices->criteria
                                    (select-keys criteria)
                                    (assoc :catalog/department "hair"))
-                               #(messages/handle-message events/api-success-v2-products %))))
+                               #(handle-message events/api-success-v2-products %))))
 
 (defmethod effects/perform-effects events/adventure-clear-servicing-stylist [_ _ _ _ app-state]
   #?(:cljs
@@ -122,7 +126,7 @@
          (api/remove-servicing-stylist servicing-stylist-id
                                        (:number order)
                                        (:token order)
-                                       #(messages/handle-message events/api-success-adventure-cleared-servicing-stylist {:order %}))))))
+                                       #(handle-message events/api-success-adventure-cleared-servicing-stylist {:order %}))))))
 
 (defmethod transitions/transition-state events/api-success-adventure-cleared-servicing-stylist [_ _ {:keys [order]} app-state]
   (-> app-state
@@ -131,7 +135,7 @@
 
 (defmethod effects/perform-effects events/api-success-adventure-cleared-servicing-stylist [_ _ {:keys [order]} _ app-state]
   #?(:cljs
-     (messages/handle-message events/save-order {:order order})))
+     (handle-message events/save-order {:order order})))
 
 (defmethod effects/perform-effects events/navigate-adventure-match-success-post-purchase [_ _ _ _ app-state]
   #?(:cljs

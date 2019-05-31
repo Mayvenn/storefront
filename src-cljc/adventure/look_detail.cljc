@@ -1,9 +1,11 @@
 (ns adventure.look-detail
   (:require #?@(:cljs [[om.core :as om]
                        [storefront.accessors.contentful :as contentful]
+                       [storefront.accessors.pixlee :as pixlee]
                        [storefront.api :as api]
                        [storefront.components.shop-by-look-details :as shop-look-details]
                        [storefront.components.ugc :as ugc]
+                       [storefront.hooks.pixlee :as pixlee-hook]
                        [storefront.config :as config]])
             [storefront.events :as events]
             [storefront.effects :as effects]
@@ -55,11 +57,19 @@
   (component/build component (query data) opts))
 
 (defmethod effects/perform-effects events/navigate-adventure-look-detail
-  [dispatch event _ prev-app-state app-state]
-  #?(:cljs (when-let [shared-cart-id (contentful/shared-cart-id (contentful/selected-look app-state))]
-             (api/fetch-shared-cart shared-cart-id))))
+  [dispatch event {:keys [look-id]} prev-app-state app-state]
+  #?(:cljs (do
+             (if-let [shared-cart-id (if (experiments/pixlee-to-contentful? app-state)
+                                       (contentful/shared-cart-id (contentful/selected-look app-state))
+                                       (:shared-cart-id (pixlee/selected-look app-state)))]
+               (api/fetch-shared-cart shared-cart-id)
+               (when-not (experiments/pixlee-to-contentful? app-state)
+                 (pixlee-hook/fetch-image :adventure look-id))))))
 
 (defmethod transitions/transition-state events/navigate-adventure-look-detail [_ _ {:keys [album-keyword look-id]} app-state]
-  (-> app-state
-      (assoc-in keypaths/selected-album-keyword (keyword album-keyword))
-      (assoc-in keypaths/selected-look-id (keyword look-id))))
+  (let [look-id-converter (if (experiments/pixlee-to-contentful? app-state)
+                            keyword
+                            spice/parse-int)]
+    (-> app-state
+        (assoc-in keypaths/selected-album-keyword (keyword album-keyword))
+        (assoc-in keypaths/selected-look-id (look-id-converter look-id)))))

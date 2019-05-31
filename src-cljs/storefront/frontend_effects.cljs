@@ -9,6 +9,7 @@
             [storefront.accessors.credit-cards :refer [filter-cc-number-format parse-expiration pad-year]]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
+            [storefront.accessors.pixlee :as accessors.pixlee]
             [storefront.accessors.stylists :as stylists]
             [storefront.api :as api]
             [storefront.browser.cookie-jar :as cookie-jar]
@@ -18,7 +19,8 @@
             [storefront.effects :as effects :refer [page-not-found perform-effects redirect]]
             [storefront.events :as events]
             [storefront.history :as history]
-            [storefront.ugc :as ugc]
+            [storefront.components.ugc :as ugc]
+            [storefront.hooks.browser-pay :as browser-pay]
             [storefront.hooks.convert :as convert]
             [storefront.hooks.exception-handler :as exception-handler]
             [storefront.hooks.facebook :as facebook]
@@ -43,8 +45,11 @@
             [adventure.keypaths :as adv-keypaths]
             [storefront.platform.messages :as messages :refer [handle-later handle-message]]
             [storefront.routes :as routes]
+            [storefront.accessors.nav :as nav]
             [storefront.components.share-links :as share-links]
-            [storefront.components.popup :as popup]))
+            [storefront.components.popup :as popup]
+
+
 
 (defn changed? [previous-app-state app-state keypath]
   (not= (get-in previous-app-state keypath)
@@ -274,8 +279,12 @@
 
     (popup/touch-email-capture-session app-state)))
 
-(defmethod perform-effects events/navigate-home [_ _ _ _ app-state]
-  (api/fetch-cms-data))
+(defmethod perform-effects events/navigate-home [_ _ {:keys [query-params]} _ app-state]
+  (api/fetch-cms-data)
+  (when (= "shop" (get-in app-state keypaths/store-slug))
+    (pixlee/fetch-album-by-keyword :free-install-mayvenn))
+  (when (experiments/v2-homepage? app-state)
+    (handle-message events/v2-show-home)))
 
 (defmethod perform-effects events/navigate-content [_ [_ _ & static-content-id :as event] _ _ app-state]
   (when-not (= static-content-id
@@ -287,16 +296,32 @@
 
 (defmethod perform-effects events/navigate-shop-by-look
   [dispatch event {:keys [album-keyword]} _ app-state]
-  (let [actual-album-kw (ugc/determine-look-album app-state album-keyword)]
+  (let [actual-album-keyword (accessors.pixlee/determine-look-album app-state album-keyword)]
     (if (and (experiments/v2-experience? app-state)
              (= album-keyword :deals))
       (redirect events/navigate-home) ; redirect to home page from /shop/deals for v2-experience
-      (when (= :ugc/unknown-album actual-album-kw)
-        (page-not-found)))))
+      (cond (= :pixlee/unknown-album actual-album-keyword)
+            (page-not-found)
 
-(defmethod perform-effects events/navigate-shop-by-look-details [_ event _ _ app-state]
-  (when-let [shared-cart-id (contentful/shared-cart-id (contentful/selected-look app-state))]
+            ;; Only fetch this album if you are viewing it (not it's look-details/specific photo)
+            (and (= dispatch event)
+                 (not (experiments/pixlee-to-contentful? app-state)))
+            (pixlee/fetch-album-by-keyword actual-album-keyword)))))
+
+(defmethod perform-effects events/navigate-shop-by-look-details [_ event {:keys [album-keyword look-id]} _ app-state]
+  (if-let [shared-cart-id (if (experiments/pixlee-to-contentful? app-state)
+                            (contentful/shared-cart-id (contentful/selected-look app-state))
+                            (:shared-cart-id (accessors.pixlee/selected-look app-state)))]
+    (api/fetch-shared-cart shared-cart-id)
+    (when-not (experiments/pixlee-to-contentful? app-state)
+      (pixlee/fetch-image album-keyword look-id))))
+
+(defmethod perform-effects events/pixlee-api-success-fetch-image [_ event _ _ app-state]
+  (when-let [shared-cart-id (:shared-cart-id (accessors.pixlee/selected-look app-state))]
     (api/fetch-shared-cart shared-cart-id)))
+
+(defmethod perform-effects events/pixlee-api-failure-fetch-album [_ event resp _ app-state]
+  (page-not-found))
 
 (defmethod perform-effects events/navigate-account [_ event args _ app-state]
   (when-not (get-in app-state keypaths/user-token)
