@@ -19,6 +19,7 @@
                                                                    "application/xhtml+xml"
                                                                    "text/css"
                                                                    "application/javascript"
+                                                                   "application/json"
                                                                    "text/javascript"
                                                                    "image/svg+xml"])))))
 
