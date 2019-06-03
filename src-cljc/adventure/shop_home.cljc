@@ -27,36 +27,24 @@
   [data]
   (let [shop?                 (= "shop" (get-in data storefront.keypaths/store-slug))
         environment           (get-in data storefront.keypaths/environment)
-        browse-stylist-hero?  (experiments/browse-stylist-hero? data)
         cms-ugc-collection    (get-in data storefront.keypaths/cms-ugc-collection)
         current-nav-event     (get-in data storefront.keypaths/navigation-event)
         pixlee-to-contentful? (experiments/pixlee-to-contentful? data)]
     {:layers
      [(merge {:layer/type      :hero
               :photo/file-name "free-install-hero"
-              :buttons         (into (if browse-stylist-hero?
-                                       []
-                                       [[{:href         "#learn-more"
-                                          :height-class "py2"
-                                          :data-test    "learn-more"}
-                                         "Learn More"]])
-                                     [[(merge (layered/route-to-or-redirect-to-freeinstall
-                                               shop? environment
-                                               events/navigate-adventure-install-type
-                                               (when shop?
-                                                 {:query-params (merge default-utm-params
-                                                                       {:utm_source "toadventurehomepagehero"})}))
-                                              {:data-test    "adventure-home-choice-get-started"
-                                               :height-class "py2"})
-                                       (if browse-stylist-hero?
-                                         "Browse Stylists"
-                                         "Get Started")]])}
-             (if browse-stylist-hero?
-               {:photo/mob-uuid "7edde421-146c-407f-be8b-87db0c81ae54"
-                :photo/dsk-uuid "41adade2-0987-4f8f-9bed-99d9586fead3"}
-               {:photo/alt      "We're changing the game. Introducing Mayvenn Install Hair + Service for the price of one"
-                :photo/mob-uuid "8b5bc7af-ca65-4812-88c2-e1601cb17b54"
-                :photo/dsk-uuid "6421450f-071d-43ab-b5c9-69de8280d07b"}))
+              :buttons         [[(merge (layered/route-to-or-redirect-to-freeinstall
+                                         shop?
+                                         environment
+                                         events/navigate-adventure-install-type
+                                         (when shop?
+                                           {:query-params (merge default-utm-params
+                                                                 {:utm_source "toadventurehomepagehero"})}))
+                                        {:data-test    "adventure-home-choice-get-started"
+                                         :height-class "py2"})
+                                 "Browse Stylists"]]}
+             {:photo/mob-uuid "7edde421-146c-407f-be8b-87db0c81ae54"
+              :photo/dsk-uuid "41adade2-0987-4f8f-9bed-99d9586fead3"})
       {:layer/type :free-standard-shipping-bar}
       {:layer/type   :text-block
        :header/value "We're paying for your next hair appointment"
