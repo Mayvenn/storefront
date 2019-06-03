@@ -706,10 +706,10 @@
 
 (defn clickable-logo [{:as attrs :keys [height event]}]
   [:a.block.img-logo.bg-no-repeat.bg-center.bg-contain.teal
-   (merge {:style {:height height}
-           :title "Mayvenn"
+   (merge {:style     {:height height}
+           :title     "Mayvenn"
            :item-prop "logo"
-           :content (str "https:" (assets/path "/images/header_logo.svg"))}
+           :content   (str "https:" (assets/path "/images/header_logo.svg"))}
           (when event (utils/route-to event))
           (dissoc attrs :height :event))])
 

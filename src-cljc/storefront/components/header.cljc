@@ -11,6 +11,7 @@
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
+            [storefront.routes :as routes]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]))
 
@@ -236,13 +237,16 @@
                          :data-test "mobile-cart"}
                         cart))]]))
 
-(defn minimal-component [adventure?]
+(defn minimal-component
+  [logo-nav-event]
   (component/html
    [:div.border-bottom.border-gray.flex.items-center
-    [:div.flex-auto.py3 (ui/clickable-logo
-                         (merge (when-not adventure? {:event events/navigate-home})
-                                {:data-test "header-logo"
-                                 :height    "40px"}))]]))
+    [:div.flex-auto.py3
+     (ui/clickable-logo
+      (cond-> {:data-test "header-logo"
+               :height    "40px"}
+        logo-nav-event
+        (merge {:event logo-nav-event})))]]))
 
 (defn query [data]
   (-> (slideout-nav/basic-query data)
@@ -254,9 +258,13 @@
   [:header.stacking-context.z4
    (when (get-in data keypaths/hide-header?)
      {:class "hide-on-mb-tb"})
-   (let [adventure? (= "freeinstall" (get-in data keypaths/store-slug))]
-     (if (nav/show-minimal-header? (get-in data keypaths/navigation-event) adventure?)
-       (minimal-component adventure?)
+   (let [nav-event              (get-in data keypaths/navigation-event)
+         freeinstall-subdomain? (= "freeinstall" (get-in data keypaths/store-slug))
+         info-page?             (routes/sub-page? [nav-event] [events/navigate-info])]
+     (if (nav/show-minimal-header? nav-event freeinstall-subdomain?)
+       (minimal-component (cond info-page?                   events/navigate-adventure-home
+                                (not freeinstall-subdomain?) events/navigate-home
+                                :else                        nil))
        (component/build component (query data) nil)))])
 
 (defn adventure-minimal-component [sign-in?]
