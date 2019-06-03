@@ -578,7 +578,8 @@
   (string/join "\n" (if (= "freeinstall" (last subdomains))
                       ["User-agent: *"
                        "Disallow: /"
-                       "Allow: /$"]
+                       "Allow: /$"
+                       "Sitemap: https://shop.mayvenn.com/sitemap.xml"]
                       user-specific-disalloweds)))
 
 (defn sitemap [{:keys [storeback-config]} {:keys [subdomains] :as req}]
@@ -615,7 +616,11 @@
                                             ["https://shop.mayvenn.com/categories/17-dyed-virgin-closures"  "0.80"]
                                             ["https://shop.mayvenn.com/categories/18-dyed-virgin-frontals"  "0.80"]
                                             ["https://shop.mayvenn.com/categories/21-seamless-clip-ins"     "0.80"]
-                                            ["https://shop.mayvenn.com/shop/look"                           "0.80"]]
+                                            ["https://shop.mayvenn.com/shop/look"                           "0.80"]
+                                            ["https://freeinstall.mayvenn.com"                              "0.80"]
+                                            ["https://freeinstall.mayvenn.com/how-it-works"                 "0.80"]
+                                            ["https://freeinstall.mayvenn.com/certified-stylists"           "0.80"]
+                                            ["https://freeinstall.mayvenn.com/about-our-hair"               "0.80"]]
                                            (for [{:keys [catalog/product-id page/slug]} launched-products]
                                              [(str "https://shop.mayvenn.com/products/" product-id "-" slug) "0.80"]))
                                      (mapv url-xml-elem))})
