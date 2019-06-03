@@ -1,5 +1,4 @@
-(ns storefront.config
-  (:require [storefront.pixlee :refer [pixlee-config]]))
+(ns storefront.config)
 
 (def environment js/environment)
 
@@ -108,7 +107,11 @@
     "AIzaSyBF1WsIRs4wIRTEsnNi8Klynxtxqz5RoIA"))
 
 (def pixlee
-  (pixlee-config js/environment))
+  (case js/environment
+    "production" {:api-key                "PUTXr6XBGuAhWqoIP4ir"
+                  :mayvenn-made-widget-id 1048394}
+    {:api-key                "iiQ27jLOrmKgTfIcRIk"
+     :mayvenn-made-widget-id 1057225}))
 
 (def manual-experiments
   (case js/environment

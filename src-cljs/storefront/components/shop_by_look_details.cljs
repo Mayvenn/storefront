@@ -5,14 +5,12 @@
             [sablono.core :refer [html]]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.images :as images]
-            [storefront.accessors.pixlee :as pixlee]
             [storefront.accessors.contentful :as contentful]
             [storefront.components.money-formatters :as mf]
             [storefront.components.order-summary :as order-summary]
-            [storefront.components.ugc :as ugc]
             [storefront.components.ui :as ui]
             [storefront.components.svg :as svg]
-            [storefront.config :as config]
+            [storefront.ugc :as ugc]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.carousel :as carousel]
@@ -157,10 +155,8 @@
         navigation-event      (get-in data keypaths/navigation-event)
         album-keyword         (get-in data keypaths/selected-album-keyword)
 
-        look       (if (experiments/pixlee-to-contentful? data)
-                     (contentful/look->look-detail-social-card navigation-event album-keyword (contentful/selected-look data))
-                     (ugc/pixlee-look->look-detail-social-card (pixlee/selected-look data)))
-        album-copy (-> config/pixlee :copy album-keyword)
+        look       (contentful/look->look-detail-social-card navigation-event album-keyword (contentful/selected-look data))
+        album-copy (get ugc/album-copy album-keyword)
         base-price (apply + (map (fn [line-item]
                                    (* (:item/quantity line-item)
                                       (:sku/price line-item)))
@@ -190,10 +186,8 @@
 
         navigation-event (get-in data keypaths/navigation-event)
         album-keyword    (get-in data keypaths/selected-album-keyword)
-        look             (if (experiments/pixlee-to-contentful? data)
-                           (contentful/look->look-detail-social-card navigation-event album-keyword (contentful/selected-look data))
-                           (ugc/pixlee-look->look-detail-social-card (pixlee/selected-look data)))
-        album-copy       (-> config/pixlee :copy album-keyword)
+        look             (contentful/look->look-detail-social-card navigation-event album-keyword (contentful/selected-look data))
+        album-copy       (get ugc/album-copy album-keyword)
         base-price       (apply + (map (fn [line-item]
                                          (* (:item/quantity line-item)
                                             (:sku/price line-item)))

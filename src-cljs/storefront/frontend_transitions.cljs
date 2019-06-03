@@ -5,7 +5,6 @@
             [rng :as rng]
             [storefront.accessors.nav :as nav]
             [storefront.accessors.orders :as orders]
-            [storefront.accessors.pixlee :as pixlee]
             [storefront.config :as config]
             [storefront.events :as events]
             [storefront.hooks.talkable :as talkable]
@@ -218,16 +217,6 @@
                        (orders/can-use-store-credit? order user))
                 {:store-credit {}}
                 {}))))
-
-(defmethod transition-state events/pixlee-api-success-fetch-album [_ event {:keys [album-data album-keyword]} app-state]
-  (let [images (pixlee/parse-ugc-album album-keyword album-data)]
-    (-> app-state
-        (assoc-in (conj keypaths/ugc-albums album-keyword) (map :id images))
-        (update-in keypaths/ugc-images merge (pixlee/images-by-id images)))))
-
-(defmethod transition-state events/pixlee-api-success-fetch-image [_ event {:keys [image-data album-keyword]} app-state]
-  (let [image (pixlee/parse-ugc-image album-keyword image-data)]
-    (assoc-in app-state (conj keypaths/ugc-images (:id image)) image)))
 
 (defn ensure-cart-has-shipping-method [app-state]
   (-> app-state
