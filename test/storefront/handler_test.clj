@@ -16,7 +16,9 @@
              common
              :refer
              [with-handler with-services]]
-            [ajax.json :as json]))
+            [ajax.json :as json]
+            [storefront.routes :as routes]
+            [storefront.events :as events]))
 
 (defn set-cookies [req cookies]
   (update req :headers assoc "cookie" (string/join "; " (map (fn [[k v]] (str k "=" v)) cookies))))
@@ -69,6 +71,14 @@
                               (ring.util.codec/form-encode "acceptance+bob@mayvenn.com"))}
                     cookies)))))))
 
+(def non-redirecting-affiliate-nav-messages
+  [[events/navigate-stylist-account-payout]
+   [events/navigate-stylist-dashboard-earnings]
+   [events/navigate-sign-in]
+   [events/navigate-forgot-password]
+   [events/navigate-reset-password {:reset-token "blah"}]
+   [events/navigate-force-set-password]])
+
 (deftest affiliate-store-urls-redirect-to-shop
   (with-services {:storeback-handler (routes
                                       (GET "/store" _ common/storeback-affiliate-stylist-response))}
@@ -78,7 +88,14 @@
 
       (testing "ignores extraneous URL elements"
         (let [resp (handler (mock/request :get "https://phil.mayvenn.com/whatever?irrelevant=true"))]
-          (is-redirected-to resp "shop" "/?affiliate_stylist_id=10"))))))
+          (is-redirected-to resp "shop" "/?affiliate_stylist_id=10")))
+
+      (testing "does not redirect to shop for a select set of nav-events"
+        (every?
+         (fn [nav-message]
+           (let [resp (handler (mock/request :get (str "https://phil.mayvenn.com" (apply routes/path-for nav-message))))]
+             (is (= 200 (:status resp)) nav-message)))
+         non-redirecting-affiliate-nav-messages)))))
 
 (deftest install-path-redirects-to-freeinstall
   (with-services

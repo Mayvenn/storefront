@@ -202,11 +202,21 @@
                           {:http-only true
                            :domain    (cookie-root-domain server-name)})))))
 
+(def allowed-affiliate-nav-events
+  [events/navigate-stylist
+   events/navigate-sign-in
+   events/navigate-forgot-password
+   events/navigate-reset-password
+   events/navigate-force-set-password])
+
 (defn wrap-redirect-affiliates [h environment]
   (fn [{{experience :experience
          stylist-id :stylist-id} :store
+        [nav-event _] :nav-message
         :as         req}]
-    (if (= experience "affiliate")
+    (if (and (= experience "affiliate")
+             (not (some (fn [allowed-nav-event]
+                          (routes/sub-page? [nav-event] [allowed-nav-event])) allowed-affiliate-nav-events)))
       (util.response/redirect
        (store-homepage "shop" environment (assoc req :query-params {"affiliate_stylist_id" stylist-id})))
       (h req))))
