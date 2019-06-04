@@ -16,7 +16,22 @@ var path = require('path');
 var os = require('os');
 var exec = require('child_process').exec;
 
-gulp.task('css', function () {
+if (process.versions.node.search('12.') === -1) {
+	console.error("Hey, you need to upgrade node to 12.x.x!");
+	console.error("");
+	console.error("This means running the following:");
+	console.error("  brew upgrade node");
+	console.error("  rm -rf node_modules");
+	console.error("  npm install");
+	console.error("");
+	console.error("If you installed gulp globally (aka - you never run node_modules/gulp/bin/gulp.js directly), then you need to reinstall that too:");
+	console.error("  npm uninstall -g gulp");
+	console.error("  npm install -g gulp");
+	process.exit(1);
+}
+
+exports.css = css;
+function css() {
   return gulp.src(['./resources/css/*.css'])
     .pipe(postcss([
       require('postcss-import')(),
@@ -31,52 +46,51 @@ gulp.task('css', function () {
       require('cssnano')()
     ]))
     .pipe(gulp.dest('./resources/public/css'));
-});
+}
 
-gulp.task('watch', ['css'], function (cb) {
-  gulp.watch('./resources/css/*.css', ['css']);
-});
+exports.watch = gulp.series(css, watch);
+function watch(cb) { // depends on css
+  gulp.watch(['./resources/css/*.css'], css);
+}
 
-gulp.task('default', ['css']);
+exports.default = css;
 
-gulp.task('refresh-deps',
-	/* Run this after you update node module versions. */
-	/* Maybe there's a preferred way of including node modules in cljs projects? */
-	shell.task([
-		"cp",
-		"./node_modules/react-slick/dist/react-slick.js",
-		"./node_modules/jsqr/dist/jsQR.js",
-		"src-cljs/storefront/"].join(" ")));
+/* Run this after you update node module versions. */
+/* Maybe there's a preferred way of including node modules in cljs projects? */
+exports['refresh-deps'] = shell.task([
+	"cp",
+	"./node_modules/react-slick/dist/react-slick.js",
+	"./node_modules/jsqr/dist/jsQR.js",
+	"src-cljs/storefront/"].join(" "));
 
-gulp.task('clean-min-js', function () {
+exports['clean-min-js'] = cleanMinJs;
+function cleanMinJs() {
   return del(['./target/min-js']);
-});
+};
 
-gulp.task('minify-js', ['clean-min-js'], function () {
+exports['minify-js'] = gulp.series(cleanMinJs, minifyJs);
+function minifyJs() {
   return gulp.src('src-cljs/storefront/*.js')
     .pipe(uglify({mangle: {reserved: ["jsQR"]}}))
     .pipe(gulp.dest('target/min-js/'));
-});
+}
 
-gulp.task('move-jsqr', shell.task(['mkdir -p ./resources/public/js/out/src-cljs/storefront/; mv target/min-js/jsQR.js resources/public/js/out/src-cljs/storefront/jsQR.js']));
+exports['move-jsqr'] = shell.task(['mkdir -p ./resources/public/js/out/src-cljs/storefront/; mv target/min-js/jsQR.js resources/public/js/out/src-cljs/storefront/jsQR.js']);
+exports['cljs-build'] = shell.task(['lein cljsbuild once release']);
 
-gulp.task('cljs-build', shell.task(['lein cljsbuild once release']));
-
-gulp.task('copy-release-assets', function () {
+exports['copy-release-assets'] = copyReleaseAssets;
+function copyReleaseAssets(){
   return gulp.src(['./target/release/**'])
     .pipe(gulp.dest('./resources/public/'));
-});
+}
 
-gulp.task('clean-hashed-assets', function () {
+exports['clean-hashed-assets'] = cleanHashedAssets;
+function cleanHashedAssets() {
   return del(['./resources/public/cdn', './resources/rev-manifest.json']);
-});
+};
 
-// Preserve external interface
-gulp.task('clean-shaed-assets', ['clean-hashed-assets'], function () {
-    console.log("'clean-shaed-assets' has been renamed to clean-hashed-assets.  Please use that.");
-});
-
-gulp.task('fix-source-map', function () {
+exports['fix-source-map'] = fixSourceMap;
+function fixSourceMap() {
   return sourceMapStream = gulp.src(['resources/public/js/out/main.js.map'], {base: './'})
     .pipe(jsonTransform(function(data) {
       data["sources"] = data["sources"].map(function(f) {
@@ -85,9 +99,10 @@ gulp.task('fix-source-map', function () {
       return data;
     }))
     .pipe(gulp.dest('./'));
-});
+}
 
-gulp.task('save-git-sha-version', function (cb) {
+exports['save-git-sha-version'] = saveGitShaVersion;
+function saveGitShaVersion(cb) {
   exec('git show --pretty=format:%H -q', function (err, stdout) {
     if (err) {
       cb(err);
@@ -98,15 +113,16 @@ gulp.task('save-git-sha-version', function (cb) {
       });
     }
   });
-});
+}
 
-var hashedAssetSources = function () {
+function hashedAssetSources () {
   return merge(gulp.src('resources/public/{js,css,images,fonts}/**')
                .pipe(gulpIgnore.exclude("*.map")),
                gulp.src('resources/public/js/out/main.js.map'));
-};
+}
 
-gulp.task('rev-assets', function () {
+exports['rev-assets'] = revAssets;
+function revAssets() {
   if (!argv.host) {
     throw "missing --host";
   }
@@ -121,9 +137,10 @@ gulp.task('rev-assets', function () {
     .pipe(gulp.dest('resources/public/cdn'))
     .pipe(revAll.manifestFile())
     .pipe(gulp.dest('resources'));
-});
+};
 
-gulp.task('fix-main-js-pointing-to-source-map', function (cb) {
+exports['fix-main-js-pointing-to-source-map'] = fixMainJsPointingToSourceMap;
+function fixMainJsPointingToSourceMap(cb) {
   // because .js files are excluded from search and replace of sha-ed versions (so that
   // the js code doesn't become really wrong), we need to take special care to update
   // main.js to have the sha-ed version of the sourcemap in the file
@@ -143,15 +160,17 @@ gulp.task('fix-main-js-pointing-to-source-map', function (cb) {
       });
     });
   });
-});
+}
 
-gulp.task('gzip', function () {
+exports['gzip'] = gzip;
+function gzip(){
   return gulp.src('resources/public/cdn/**')
     .pipe(gzip({ append: false }))
     .pipe(gulp.dest('resources/public/cdn'));
-});
+};
 
-gulp.task('write-js-stats', function(cb){
+exports['write-js-stats'] = writeJsStats;
+function writeJsStats(cb) {
   fs.readFile('resources/rev-manifest.json', 'utf8', function(err, data) {
     if (err) { cb(err); return console.log(err); }
 
@@ -187,12 +206,8 @@ gulp.task('write-js-stats', function(cb){
       }
     });
   });
-});
+};
 
-gulp.task('cdn', function (cb) {
-  runSequence('clean-hashed-assets', 'fix-source-map', 'rev-assets', 'fix-main-js-pointing-to-source-map', 'gzip', cb);
-});
+exports['cdn'] = gulp.series(cleanHashedAssets, fixSourceMap, revAssets, fixMainJsPointingToSourceMap, gzip);
 
-gulp.task('compile-assets', function(cb) {
-  runSequence('css', 'minify-js', 'move-jsqr', 'cljs-build', 'copy-release-assets', 'cdn', 'save-git-sha-version', 'write-js-stats', cb);
-});
+exports['compile-assets'] = gulp.series(css, minifyJs, exports['move-jsqr'], exports['cljs-build'], copyReleaseAssets, exports['cdn'], saveGitShaVersion, writeJsStats);
