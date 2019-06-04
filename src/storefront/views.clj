@@ -116,7 +116,7 @@
           [:link {:rel "preload" :href (assets/path "/images/sprites.svg") :as "image" :type "image/svg+xml"}]
           [:script {:type "text/javascript"} (raw prefetch-script)]
           [:script {:type "text/javascript"}
-           (raw (str "var assetManifest=" (generate-string asset-mappings/image-manifest) ";"
+           (raw (str "var assetManifest=" (generate-string (select-keys asset-mappings/image-manifest config/frontend-assets)) ";"
                      "var cdnHost=" (generate-string asset-mappings/cdn-host) ";"
                      ;; need to make sure the edn which has double quotes is validly escaped as
                      ;; json as it goes into the JS file
