@@ -37,6 +37,15 @@
       (status 200)
       (content-type "application/json")))
 
+(def storeback-affiliate-stylist-response
+  (-> (generate-string {:store_slug "phil"
+                        :store_name "Affiliate Store"
+                        :experience "affiliate"
+                        :stylist_id 10})
+      (response)
+      (status 200)
+      (content-type "application/json")))
+
 (def storeback-no-stylist-response
   (-> (response "{}")
       (status 404)

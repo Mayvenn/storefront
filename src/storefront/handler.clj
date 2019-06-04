@@ -202,6 +202,15 @@
                           {:http-only true
                            :domain    (cookie-root-domain server-name)})))))
 
+(defn wrap-redirect-affiliates [h environment]
+  (fn [{{experience :experience
+         stylist-id :stylist-id} :store
+        :as         req}]
+    (if (= experience "affiliate")
+      (util.response/redirect
+       (store-homepage "shop" environment (assoc req :query-params {"affiliate_stylist_id" stylist-id})))
+      (h req))))
+
 (defn wrap-known-subdomains-redirect [h environment]
   (fn [{:keys [subdomains] :as req}]
     (cond
@@ -359,6 +368,7 @@
   [routes {:keys [storeback-config contentful environment]}]
   (-> routes
       (wrap-set-preferred-store environment)
+      (wrap-redirect-affiliates environment)
       (wrap-stylist-not-found-redirect environment)
       (wrap-defaults (dissoc (storefront-site-defaults environment) :cookies))
       (wrap-remove-superfluous-www-redirect environment)

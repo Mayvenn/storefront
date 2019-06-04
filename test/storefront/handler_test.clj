@@ -69,6 +69,17 @@
                               (ring.util.codec/form-encode "acceptance+bob@mayvenn.com"))}
                     cookies)))))))
 
+(deftest affiliate-store-urls-redirect-to-shop
+  (with-services {:storeback-handler (routes
+                                      (GET "/store" _ common/storeback-affiliate-stylist-response))}
+    (with-handler handler
+      (let [resp (handler (mock/request :get "https://phil.mayvenn.com/categories/2-virgin-straight"))]
+        (is-redirected-to resp "shop" "/?affiliate_stylist_id=10"))
+
+      (testing "ignores extraneous URL elements"
+        (let [resp (handler (mock/request :get "https://phil.mayvenn.com/whatever?irrelevant=true"))]
+          (is-redirected-to resp "shop" "/?affiliate_stylist_id=10"))))))
+
 (deftest install-path-redirects-to-freeinstall
   (with-services
     (with-handler handler
