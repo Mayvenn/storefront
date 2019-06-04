@@ -218,8 +218,24 @@
                             true)))
 
 (defmethod perform-effects events/navigate [_ event {:keys [query-params nav-stack-item] :as args} prev-app-state app-state]
-  (let [args         (dissoc args :nav-stack-item)
-        freeinstall? (= "freeinstall" (get-in app-state keypaths/store-slug))]
+  (let [args             (dissoc args :nav-stack-item)
+        freeinstall?     (= "freeinstall" (get-in app-state keypaths/store-slug))
+        store-experience (get-in app-state keypaths/store-experience)
+        nav-event        (get-in app-state keypaths/navigation-event)]
+    (when (routes/should-redirect-affiliate-route? nav-event
+                                                   store-experience)
+      (let [hostname (case (get-in app-state keypaths/environment)
+                       "production" "mayvenn.com"
+                       "acceptance" "diva-acceptance.com"
+                       "storefront.localhost")]
+        (set! (.-location js/window)
+              (-> (.-location js/window)
+                  uri/uri
+                  (assoc :host (str "shop." hostname)
+                         :path "/"
+                         :query (str "affiliate_stylist_id=" (get-in app-state keypaths/store-stylist-id)))
+                  str))))
+
     (handle-message events/control-menu-collapse-all)
     (handle-message events/save-order {:order (get-in app-state keypaths/order)})
     (cookie-jar/save-user (get-in app-state keypaths/cookie)

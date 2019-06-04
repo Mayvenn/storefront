@@ -202,21 +202,12 @@
                           {:http-only true
                            :domain    (cookie-root-domain server-name)})))))
 
-(def allowed-affiliate-nav-events
-  [events/navigate-stylist
-   events/navigate-sign-in
-   events/navigate-forgot-password
-   events/navigate-reset-password
-   events/navigate-force-set-password])
-
 (defn wrap-redirect-affiliates [h environment]
   (fn [{{experience :experience
          stylist-id :stylist-id} :store
         [nav-event _] :nav-message
         :as         req}]
-    (if (and (= experience "affiliate")
-             (not (some (fn [allowed-nav-event]
-                          (routes/sub-page? [nav-event] [allowed-nav-event])) allowed-affiliate-nav-events)))
+    (if (routes/should-redirect-affiliate-route? nav-event experience)
       (util.response/redirect
        (store-homepage "shop" environment (assoc req :query-params {"affiliate_stylist_id" stylist-id})))
       (h req))))
@@ -282,6 +273,15 @@
              (assoc-in-req-state keypaths/static (static-page nav-event))
              (assoc-in-req-state keypaths/environment environment)
              (update-in-req-state [] experiments/determine-features))))))
+
+(defn wrap-affiliate-initial-login-landing-navigation-message [h]
+  (fn [{{experience :experience} :store
+        :as                      req}]
+    (h (cond->
+         req
+
+         (= "affiliate" experience)
+         (assoc-in-req-state keypaths/return-navigation-message [events/navigate-stylist-account-profile {}])))))
 
 (defn wrap-set-cms-cache [h contentful]
   (fn [req]
@@ -372,6 +372,7 @@
       (wrap-set-user)
       (wrap-set-welcome-url welcome-config)
       (wrap-set-cms-cache contentful)
+      wrap-affiliate-initial-login-landing-navigation-message
       (wrap-set-initial-state environment)))
 
 (defn wrap-site-routes
