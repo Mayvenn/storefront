@@ -1,5 +1,6 @@
 (ns storefront.browser.tags
-  (:require [goog.dom.classlist :as classlist]))
+  (:require [goog.dom.classlist :as classlist]
+            [clojure.string :as string]))
 
 (defn- insert-before-selector [selector tag]
   (let [first-tag (.querySelector js/document selector)]
@@ -22,7 +23,7 @@
 (defn text-tag [text class]
   (let [script-tag (.createElement js/document "script")]
     (set! (.-type script-tag) "text/javascript")
-    (set! (.-innerText script-tag) text)
+    (set! (.-innerText script-tag) (string/replace text #"\n" "")) ;; note: firefox puts <br/> in multiline strings?
     (classlist/add script-tag class)
     script-tag))
 
