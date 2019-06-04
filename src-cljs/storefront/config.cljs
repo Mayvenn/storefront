@@ -81,9 +81,7 @@
                          "production" "721931104522825"
                          "139664856621138"))
 
-(def twitter-pixel-id (case js/environment
-                        "production" "o1tn1"
-                        "THIS_IS_A_TEST"))
+(def twitter-pixel-id "o1tn1")
 
 (def stripe-publishable-key (case js/environment
                               "production" "pk_live_S8NS2f14rDQz9USq5Gu9qBnR"
