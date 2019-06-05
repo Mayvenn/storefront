@@ -39,7 +39,7 @@ gulp.task('watch', ['css'], function (cb) {
 
 gulp.task('default', ['css']);
 
-gulp.task('refresh-deps', 
+gulp.task('refresh-deps',
 	/* Run this after you update node module versions. */
 	/* Maybe there's a preferred way of including node modules in cljs projects? */
 	shell.task([
@@ -54,9 +54,11 @@ gulp.task('clean-min-js', function () {
 
 gulp.task('minify-js', ['clean-min-js'], function () {
   return gulp.src('src-cljs/storefront/*.js')
-    .pipe(uglify())
+    .pipe(uglify({mangle: {reserved: ["jsQR"]}}))
     .pipe(gulp.dest('target/min-js/'));
 });
+
+gulp.task('move-jsqr', shell.task(['mkdir -p ./resources/public/js/out/src-cljs/storefront/; mv target/min-js/jsQR.js resources/public/js/out/src-cljs/storefront/jsQR.js']));
 
 gulp.task('cljs-build', shell.task(['lein cljsbuild once release']));
 
@@ -111,7 +113,7 @@ gulp.task('rev-assets', function () {
 
   var revAll = new RevAll({
     prefix: "//" + argv.host + "/cdn/",
-    dontSearchFile: ['.js']
+    dontSearchFile: ['[^jsQR].js']
   });
 
   return hashedAssetSources()
@@ -192,5 +194,5 @@ gulp.task('cdn', function (cb) {
 });
 
 gulp.task('compile-assets', function(cb) {
-  runSequence('css', 'minify-js', 'cljs-build', 'copy-release-assets', 'cdn', 'save-git-sha-version', 'write-js-stats', cb);
+  runSequence('css', 'minify-js', 'move-jsqr', 'cljs-build', 'copy-release-assets', 'cdn', 'save-git-sha-version', 'write-js-stats', cb);
 });

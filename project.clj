@@ -78,14 +78,11 @@
                     :foreign-libs     [{:file     "src-cljs/storefront/react-slick.js"
                                         :provides ["react-slick"]}
                                        {:file     "src-cljs/storefront/bugsnag-2.5.0.js"
-                                        :provides ["bugsnag"]}
-                                       {:file     "src-cljs/storefront/jsQR.js"
-                                        :provides ["jsQR"]}]
+                                        :provides ["bugsnag"]}]
                     :externs          ["externs/bugsnag.js"
                                        "externs/convert.js"
                                        "externs/facebook.js"
                                        "externs/google_autocomplete.js"
-                                       "externs/jsQR.js"
                                        "externs/pixlee.js"
                                        "externs/quadpay.js"
                                        "externs/react-slick.js"
@@ -125,15 +122,11 @@
                                             :provides ["react-slick"]}
                                            {:file     "src-cljs/storefront/bugsnag-2.5.0.js"
                                             :file-min "target/min-js/bugsnag-2.5.0.js"
-                                            :provides ["bugsnag"]}
-                                           {:file     "src-cljs/storefront/jsQR.js"
-                                            :file-min "target/min-js/jsQR.js"
-                                            :provides ["jsQR"]}]
+                                            :provides ["bugsnag"]}]
                         :externs          ["externs/bugsnag.js"
                                            "externs/convert.js"
                                            "externs/facebook.js"
                                            "externs/google_autocomplete.js"
-                                           "externs/jsQR.js"
                                            "externs/pixlee.js"
                                            "externs/quadpay.js"
                                            "externs/react-slick.js"

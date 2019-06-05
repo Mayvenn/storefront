@@ -273,6 +273,7 @@
 (def loaded (conj ui :loaded))
 (def loaded-convert (conj loaded :convert))
 (def loaded-facebook (conj loaded :facebook))
+(def loaded-jsQR (conj loaded :jsQR))
 (def loaded-pixlee (conj loaded :pixlee))
 (def loaded-places (conj loaded :places))
 (def loaded-quadpay (conj loaded :quadpay))
