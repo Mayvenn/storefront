@@ -1,4 +1,4 @@
-(ns storefront.hooks.jsQR
+(ns storefront.hooks.js-qr
   (:require [storefront.assets :as assets]
             [storefront.browser.tags :as tags]
             [storefront.platform.messages :refer [handle-message]]
