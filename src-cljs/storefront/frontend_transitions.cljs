@@ -1,25 +1,22 @@
 (ns storefront.frontend-transitions
-  (:require [cemerick.url :as url]
+  (:require [adventure.keypaths :as adventure.keypaths]
+            [cemerick.url :as url]
             [clojure.string :as string]
-            [catalog.categories :as categories]
             [rng :as rng]
+            [spice.core :as spice]
             [storefront.accessors.nav :as nav]
             [storefront.accessors.orders :as orders]
             [storefront.config :as config]
             [storefront.events :as events]
             [storefront.hooks.talkable :as talkable]
             [storefront.keypaths :as keypaths]
-            [adventure.keypaths :as adventure.keypaths]
             [storefront.routes :as routes]
             [storefront.state :as state]
-            [storefront.transitions :refer [transition-state
-                                            sign-in-user
-                                            clear-fields]]
-            [spice.maps :as maps]
-            [storefront.accessors.experiments :as experiments]
-            [storefront.transitions :as transitions]
-            [storefront.browser.cookie-jar :as cookie-jar]))
-            [spice.core :as spice]
+            [storefront.transitions
+             :refer [transition-state
+                     sign-in-user
+                     clear-fields]
+             :as transitions]))
 
 (defn clear-nav-traversal
   [app-state]
