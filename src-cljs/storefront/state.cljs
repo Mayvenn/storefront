@@ -1,7 +1,8 @@
 (ns storefront.state
   (:require [storefront.events :as events]
             [storefront.config :as config]
-            [storefront.browser.cookie-jar :as cookie-jar]))
+            [storefront.browser.cookie-jar :as cookie-jar]
+            [spice.core :as spice]))
 
 (def initial-checkout-state
   {:as-guest false
@@ -78,8 +79,12 @@
 
 (defn initial-state []
   (let [cookie (cookie-jar/make-cookie)]
-    {:cookie cookie
-     :adventure {:from-shop-to-freeinstall? (boolean (cookie-jar/retrieve-from-shop-to-freeinstall cookie))}
+    {:cookie    cookie
+     :adventure {:from-shop-to-freeinstall? (boolean (cookie-jar/retrieve-from-shop-to-freeinstall cookie))
+                 :affiliate-stylist-id      (some-> cookie
+                                                    cookie-jar/retrieve-affiliate-stylist-id
+                                                    :affiliate-stylist-id
+                                                    spice/parse-int)}
      :features #{}
      :scheme (apply str (drop-last (.-protocol js/location)))
 

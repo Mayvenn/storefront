@@ -77,6 +77,12 @@
    :optional-keys []
    :required-keys [:from-shop-to-freeinstall]})
 
+(def affiliate-stylist-id
+  {:domain        (root-domain)
+   :max-age       one-day
+   :optional-keys []
+   :required-keys [:affiliate-stylist-id]})
+
 (def account-specs [user order pending-promo telligent-session])
 
 (defn all-keys [spec]
@@ -199,6 +205,9 @@
   (save-cookie (assoc telligent-session :max-age max-age) cookie {"AuthenticatedUser" contents}))
 
 (def clear-adventure (partial clear-cookie adventure))
+
+(def save-affiliate-stylist-id (partial save-cookie affiliate-stylist-id))
+(def retrieve-affiliate-stylist-id (partial retrieve affiliate-stylist-id))
 
 (defn save-adventure
   [cookie adventure-attrs]

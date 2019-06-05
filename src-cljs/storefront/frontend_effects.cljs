@@ -265,6 +265,11 @@
          pending-promo-code)
         (redirect event (update-in args [:query-params] dissoc :sha))))
 
+    (when-let [affiliate-stylist-id (:affiliate_stylist_id query-params)]
+      (cookie-jar/save-affiliate-stylist-id (get-in app-state keypaths/cookie)
+                                            {:affiliate-stylist-id affiliate-stylist-id})
+      (redirect event (update-in args [:query-params] dissoc :affiliate_stylist_id)))
+
     (handle-message events/determine-and-show-popup)
 
     (let [utm-params (some-> query-params

@@ -19,6 +19,7 @@
             [storefront.accessors.experiments :as experiments]
             [storefront.transitions :as transitions]
             [storefront.browser.cookie-jar :as cookie-jar]))
+            [spice.core :as spice]
 
 (defn clear-nav-traversal
   [app-state]
@@ -53,6 +54,12 @@
     (if sha
       (assoc-in app-state keypaths/pending-promo-code sha)
       app-state)))
+
+(defn add-affiliate-stylist-id
+  [app-state {{affiliate-stylist-id :affiliate_stylist_id} :query-params}]
+  (if affiliate-stylist-id
+    (assoc-in app-state adventure.keypaths/adventure-affiliate-stylist-id (spice/parse-int affiliate-stylist-id))
+    app-state))
 
 (defn default-credit-card-name [app-state {:keys [first-name last-name]}]
   (if-not (string/blank? (get-in app-state keypaths/checkout-credit-card-name))
@@ -141,6 +148,7 @@
         collapse-menus
         add-return-event
         (add-pending-promo-code args)
+        (add-affiliate-stylist-id args)
         clear-flash
         clear-completed-order
         (clear-recently-added-skus event)
