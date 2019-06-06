@@ -197,3 +197,9 @@
   (and (= experience "affiliate")
        (not (some (fn [allowed-nav-event]
                     (sub-page? [nav-event] [allowed-nav-event])) allowed-affiliate-nav-events))))
+
+(defn environment->hostname [environment]
+  (case environment
+    "production" "mayvenn.com"
+    "acceptance" "diva-acceptance.com"
+    "storefront.localhost") )

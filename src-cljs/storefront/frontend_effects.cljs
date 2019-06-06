@@ -141,15 +141,12 @@
 (defmethod perform-effects events/external-redirect-freeinstall
   [_ event {:keys [query-string path]} _ app-state]
   (cookie-jar/save-from-shop-to-freeinstall (get-in app-state keypaths/cookie))
-  (let [on-homepage? (= events/navigate-home (get-in app-state keypaths/navigation-event))
-        hostname     (case (get-in app-state keypaths/environment)
-                       "production" "mayvenn.com"
-                       "acceptance" "diva-acceptance.com"
-                       "storefront.localhost")]
+  (let [on-homepage? (= events/navigate-home
+                        (get-in app-state keypaths/navigation-event))]
     (set! (.-location js/window)
           (-> (.-location js/window)
               uri/uri
-              (assoc :host (str "freeinstall." hostname)
+              (assoc :host (str "freeinstall." (routes/environment->hostname (get-in app-state keypaths/environment)))
                      :path (or path
                                (if on-homepage? "/adv/install-type" "/"))
                      :query query-string)
@@ -222,19 +219,14 @@
         freeinstall?     (= "freeinstall" (get-in app-state keypaths/store-slug))
         store-experience (get-in app-state keypaths/store-experience)
         nav-event        (get-in app-state keypaths/navigation-event)]
-    (when (routes/should-redirect-affiliate-route? nav-event
-                                                   store-experience)
-      (let [hostname (case (get-in app-state keypaths/environment)
-                       "production" "mayvenn.com"
-                       "acceptance" "diva-acceptance.com"
-                       "storefront.localhost")]
-        (set! (.-location js/window)
-              (-> (.-location js/window)
-                  uri/uri
-                  (assoc :host (str "shop." hostname)
-                         :path "/"
-                         :query (str "affiliate_stylist_id=" (get-in app-state keypaths/store-stylist-id)))
-                  str))))
+    (when (routes/should-redirect-affiliate-route? nav-event store-experience)
+      (set! (.-location js/window)
+            (-> (.-location js/window)
+                uri/uri
+                (assoc :host (str "shop." (routes/environment->hostname (get-in app-state keypaths/environment)))
+                       :path "/"
+                       :query (str "affiliate_stylist_id=" (get-in app-state keypaths/store-stylist-id)))
+                str)))
 
     (handle-message events/control-menu-collapse-all)
     (handle-message events/save-order {:order (get-in app-state keypaths/order)})

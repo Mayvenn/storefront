@@ -1,10 +1,10 @@
 (ns storefront.components.stylist.share-your-store
-  (:require
-   [cemerick.url :as url]
-   [storefront.component :as component]
-   [storefront.components.share-links :as share-links]
-   [storefront.keypaths :as keypaths]
-   [storefront.platform.component-utils :as utils]))
+  (:require [cemerick.url :as url]
+            [storefront.component :as component]
+            [storefront.components.share-links :as share-links]
+            [storefront.keypaths :as keypaths]
+            [storefront.platform.component-utils :as utils]
+            [storefront.routes :as routes]))
 
 (defn facebook-link [share-url]
   (share-links/facebook-link (share-links/with-utm-medium share-url "facebook")))
@@ -90,10 +90,7 @@
          :data-test "store-link"}]]])))
 
 (defn query [data]
-  {:host         (case (get-in data keypaths/environment)
-                   "production" "mayvenn.com"
-                   "acceptance" "diva-acceptance.com"
-                   "storefront.localhost")
+  {:host         (routes/environment->hostname (get-in data keypaths/environment))
    :store-slug   (get-in data keypaths/store-slug)
    :utm-campaign "stylist_dashboard"})
 
