@@ -214,6 +214,11 @@
                             pending-promo-code
                             true)))
 
+(defn user-signed-into-affiliate-store?
+  [data]
+  (and (= "affiliate" (get-in data keypaths/store-experience))
+       (not (stylists/own-store? data))))
+
 (defmethod perform-effects events/navigate [_ event {:keys [query-params nav-stack-item] :as args} prev-app-state app-state]
   (let [args             (dissoc args :nav-stack-item)
         freeinstall?     (= "freeinstall" (get-in app-state keypaths/store-slug))
@@ -230,8 +235,11 @@
 
     (handle-message events/control-menu-collapse-all)
     (handle-message events/save-order {:order (get-in app-state keypaths/order)})
-    (cookie-jar/save-user (get-in app-state keypaths/cookie)
-                          (get-in app-state keypaths/user))
+
+    (when-not (user-signed-into-affiliate-store? app-state)
+      (cookie-jar/save-user (get-in app-state keypaths/cookie)
+                            (get-in app-state keypaths/user)))
+
     (refresh-account app-state)
     (api/get-promotions (get-in app-state keypaths/api-cache)
                         (or
@@ -828,8 +836,9 @@
 
 (defmethod perform-effects events/api-success-auth [_ _ {:keys [order]} _ app-state]
   (handle-message events/save-order {:order order})
-  (cookie-jar/save-user (get-in app-state keypaths/cookie)
-                        (get-in app-state keypaths/user))
+  (when-not (user-signed-into-affiliate-store? app-state)
+    (cookie-jar/save-user (get-in app-state keypaths/cookie)
+                          (get-in app-state keypaths/user)))
   (redirect-to-return-navigation app-state))
 
 (defmethod perform-effects events/api-success-auth-sign-in [_ _ _ _ app-state]
