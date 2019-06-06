@@ -22,10 +22,10 @@
        (util/route-to nav-event nav-args {:back-copy  (:back-copy copy)
                                           :short-name (:short-name copy)}))
       [:div.border.border-light-gray
-       [:div.relative
+       [:div.relative.bg-white
         (ui/aspect-ratio
          1 1
-         {}
+         {:class "flex items-center"}
          [:img.col-12.block {:src image-url}])
         (when overlay
           [:div.absolute.flex.justify-end.bottom-0.right-0.mb8
@@ -65,10 +65,10 @@
       (merge {:key (str "small-" id)}
              (when desktop-aware?
                {:class "col-6-on-tb col-4-on-dt"}))
-      [:div.relative
+      [:div.relative.bg-white
        (ui/aspect-ratio
         1 1
-        {}
+        {:class "flex items-center"}
         [:img.col-12.block {:src image-url}])
        (when overlay
          [:div.absolute.flex.justify-end.bottom-0.right-0.mb8
