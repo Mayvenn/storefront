@@ -190,7 +190,8 @@
    events/navigate-sign-in
    events/navigate-forgot-password
    events/navigate-reset-password
-   events/navigate-force-set-password])
+   events/navigate-force-set-password
+   events/navigate-v2-stylist-dashboard])
 
 (defn should-redirect-affiliate-route?
   [nav-event experience]

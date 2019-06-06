@@ -74,6 +74,7 @@
 (def non-redirecting-affiliate-nav-messages
   [[events/navigate-stylist-account-payout]
    [events/navigate-stylist-dashboard-earnings]
+   [events/navigate-v2-stylist-dashboard-payments]
    [events/navigate-sign-in]
    [events/navigate-forgot-password]
    [events/navigate-reset-password {:reset-token "blah"}]
