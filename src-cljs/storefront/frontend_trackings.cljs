@@ -15,7 +15,6 @@
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
             [storefront.trackings :refer [perform-track]]
-            [storefront.utils.query :as query]
             [storefront.accessors.images :as images]))
 
 (defn ^:private convert-revenue [{:keys [number total] :as order}]
@@ -410,7 +409,7 @@
 
 (defmethod perform-track events/control-stylist-dashboard-cash-out-begin
   [_ _ {:keys [amount payout-method-name]} app-state]
-  (let [stylist-id                     (get-in app-state keypaths/store-stylist-id)]
+  (let [stylist-id (get-in app-state keypaths/user-store-id)]
     (stringer/track-event "dashboard_cash_out_begin_button_pressed"
                           {:stylist_id         stylist-id
                            :amount             amount
@@ -418,7 +417,7 @@
 
 (defmethod perform-track events/control-stylist-dashboard-cash-out-commit
   [_ _ _ app-state]
-  (let [stylist-id                     (get-in app-state keypaths/store-stylist-id)
+  (let [stylist-id                     (get-in app-state keypaths/user-store-id)
         store-slug                     (get-in app-state keypaths/store-slug)
         {:keys [amount payout-method]} (get-in app-state keypaths/stylist-payout-stats-next-payout)]
     (stringer/track-event "cash_out_commit_button_pressed"
@@ -429,8 +428,8 @@
 
 (defmethod perform-track events/api-success-cash-out-complete
   [_ _ {:keys [amount payout-method] :as cash-out-status} app-state]
-  (let [stylist-id                     (get-in app-state keypaths/store-stylist-id)
-        store-slug                     (get-in app-state keypaths/store-slug)]
+  (let [stylist-id (get-in app-state keypaths/user-store-id)
+        store-slug (get-in app-state keypaths/store-slug)]
     (stringer/track-event "cash_out_succeeded"
                           {:stylist_id stylist-id
                            :store_slug store-slug
@@ -439,8 +438,8 @@
 
 (defmethod perform-track events/api-success-cash-out-failed
   [_ _ {:keys [amount payout-method] :as cash-out-status} app-state]
-  (let [stylist-id                     (get-in app-state keypaths/store-stylist-id)
-        store-slug                     (get-in app-state keypaths/store-slug)]
+  (let [stylist-id (get-in app-state keypaths/user-store-id)
+        store-slug (get-in app-state keypaths/store-slug)]
     (stringer/track-event "cash_out_failed"
                           {:stylist_id stylist-id
                            :store_slug store-slug

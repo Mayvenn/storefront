@@ -95,7 +95,13 @@
 (defn select-user-keys [user]
   (-> user
       maps/kebabify
-      (select-keys [:email :token :store-slug :id :is-new-user])))
+      (select-keys [:email
+                    :token
+                    :store-slug
+                    :id
+                    :is-new-user
+                    :store-id
+                    :stylist-experience])))
 
 (defn select-auth-keys [args]
   (-> args

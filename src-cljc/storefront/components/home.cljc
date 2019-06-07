@@ -219,7 +219,7 @@
 (defn store-welcome [signed-in {:keys [store-nickname portrait expanded?]} expandable?]
   [:div.flex.justify-center.items-center.border-bottom.border-gray.h5
    {:style {:height "50px"}}
-   (case (marquee/portrait-status (-> signed-in ::auth/as (= :stylist)) portrait)
+   (case (marquee/portrait-status (auth/stylist-on-own-store? signed-in) portrait)
      ::marquee/show-what-we-have [:div.left.pr2 (marquee/stylist-portrait portrait)]
      ::marquee/ask-for-portrait  [:div.left.pr2 marquee/add-portrait-cta]
      ::marquee/show-nothing      [:div.left {:style {:height (str ui/header-image-size "px")}}])

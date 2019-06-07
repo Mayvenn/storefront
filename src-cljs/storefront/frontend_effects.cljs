@@ -327,19 +327,14 @@
     (redirect events/navigate-sign-in)))
 
 (defmethod perform-effects events/navigate-stylist [_ event args _ app-state]
-  (cond
-    (not (get-in app-state keypaths/user-token))
-    (redirect events/navigate-sign-in)
-
-    (not (stylists/own-store? app-state))
-    (page-not-found)
-
-    :else nil))
+  (when (not (and (get-in app-state keypaths/user-token)
+                (get-in app-state keypaths/user-store-id)))
+    (redirect events/navigate-sign-in)))
 
 (defmethod perform-effects events/navigate-stylist-account [_ event args _ app-state]
   (let [user-token (get-in app-state keypaths/user-token)
         user-id    (get-in app-state keypaths/user-id)
-        stylist-id (get-in app-state keypaths/store-stylist-id)]
+        stylist-id (get-in app-state keypaths/user-store-id)]
     (when (and user-token stylist-id)
       (uploadcare/insert)
       (spreedly/insert)
@@ -397,7 +392,7 @@
 (defmethod perform-effects events/navigate-stylist-dashboard [_ event args _ app-state]
   (let [user-token (get-in app-state keypaths/user-token)
         user-id    (get-in app-state keypaths/user-id)
-        stylist-id (get-in app-state keypaths/store-stylist-id)]
+        stylist-id (get-in app-state keypaths/user-store-id)]
     (when (and user-token stylist-id)
       (api/get-stylist-account user-id user-token stylist-id)
       (api/get-stylist-payout-stats
@@ -654,7 +649,7 @@
 
 (defmethod perform-effects events/control-stylist-account-profile-submit [_ _ args _ app-state]
   (let [session-id      (get-in app-state keypaths/session-id)
-        stylist-id      (get-in app-state keypaths/store-stylist-id)
+        stylist-id      (get-in app-state keypaths/user-store-id)
         user-id         (get-in app-state keypaths/user-id)
         user-token      (get-in app-state keypaths/user-token)
         stylist-account (dissoc (get-in app-state keypaths/stylist-manage-account)
@@ -664,7 +659,7 @@
 
 (defmethod perform-effects events/control-stylist-account-password-submit [_ _ args _ app-state]
   (let [session-id      (get-in app-state keypaths/session-id)
-        stylist-id      (get-in app-state keypaths/store-stylist-id)
+        stylist-id      (get-in app-state keypaths/user-store-id)
         user-id         (get-in app-state keypaths/user-id)
         user-token      (get-in app-state keypaths/user-token)
         stylist-account (dissoc (get-in app-state keypaths/stylist-manage-account)
@@ -690,7 +685,7 @@
 
 (defmethod perform-effects events/spreedly-frame-tokenized [_ _ {:keys [token payment]} _ app-state]
   (let [session-id      (get-in app-state keypaths/session-id)
-        stylist-id      (get-in app-state keypaths/store-stylist-id)
+        stylist-id      (get-in app-state keypaths/user-store-id)
         user-id         (get-in app-state keypaths/user-id)
         user-token      (get-in app-state keypaths/user-token)
         stylist-account (-> (get-in app-state keypaths/stylist-manage-account)
@@ -707,7 +702,7 @@
 (defmethod perform-effects events/control-stylist-account-commission-submit [_ _ args _ app-state]
   (let [payout-method   (get-in app-state keypaths/stylist-manage-account-chosen-payout-method)
         session-id      (get-in app-state keypaths/session-id)
-        stylist-id      (get-in app-state keypaths/store-stylist-id)
+        stylist-id      (get-in app-state keypaths/user-store-id)
         user-id         (get-in app-state keypaths/user-id)
         user-token      (get-in app-state keypaths/user-token)
         stylist-account (-> (get-in app-state keypaths/stylist-manage-account)
@@ -727,7 +722,7 @@
 
 (defmethod perform-effects events/control-stylist-account-social-submit [_ _ _ _ app-state]
   (let [session-id      (get-in app-state keypaths/session-id)
-        stylist-id      (get-in app-state keypaths/store-stylist-id)
+        stylist-id      (get-in app-state keypaths/user-store-id)
         user-id         (get-in app-state keypaths/user-id)
         user-token      (get-in app-state keypaths/user-token)
         stylist-account (dissoc (get-in app-state keypaths/stylist-manage-account)
@@ -744,7 +739,7 @@
 (defmethod perform-effects events/uploadcare-api-success-upload-portrait [_ _ {:keys [cdnUrl]} _ app-state]
   (let [user-id    (get-in app-state keypaths/user-id)
         user-token (get-in app-state keypaths/user-token)
-        stylist-id      (get-in app-state keypaths/store-stylist-id)
+        stylist-id (get-in app-state keypaths/user-store-id)
         session-id (get-in app-state keypaths/session-id)]
     (api/update-stylist-account-portrait session-id user-id user-token stylist-id {:portrait-url cdnUrl})
     (history/enqueue-navigate events/navigate-stylist-account-profile)))
@@ -865,7 +860,7 @@
 (defmethod perform-effects events/poll-stylist-portrait [_ event args _ app-state]
   (api/refresh-stylist-portrait (get-in app-state keypaths/user-id)
                                 (get-in app-state keypaths/user-token)
-                                (get-in app-state keypaths/store-stylist-id)))
+                                (get-in app-state keypaths/user-store-id)))
 
 (defmethod perform-effects events/poll-gallery [_ event args _ app-state]
   (when (stylists/own-store? app-state)

@@ -64,13 +64,13 @@
                (marquee/actions store gallery-link instagram-link styleseat-link))]])
 
 (defn ^:private portrait [signed-in {:keys [portrait]}]
-  (case (marquee/portrait-status (-> signed-in ::auth/as (= :stylist)) portrait)
+  (case (marquee/portrait-status (auth/stylist-on-own-store? signed-in) portrait)
     ::marquee/show-what-we-have [:div.left.self-center.pr2 (marquee/stylist-portrait portrait)]
     ::marquee/ask-for-portrait  [:div.left.self-center.pr2 marquee/add-portrait-cta]
     ::marquee/show-nothing      nil))
 
 (defn ^:private store-info-marquee [signed-in store]
-  (when (-> signed-in ::auth/to (= :marketplace))
+  (when (-> signed-in ::auth/to #{:marketplace :own-store})
     [:div.mb3.flex
      (portrait signed-in store)
      (store-actions store)]))

@@ -30,16 +30,24 @@
 ;; Utilities
 
 (defn sign-in-user
-  [app-state {:keys [email token store-slug id total-available-store-credit must-set-password]}]
+  [app-state {:keys [email
+                     token
+                     store-slug
+                     id
+                     stylist-experience
+                     total-available-store-credit
+                     must-set-password
+                     store-id]}]
   (-> app-state
       (assoc-in keypaths/user-id id)
       (assoc-in keypaths/user-email email)
       (assoc-in keypaths/user-token token)
       (assoc-in keypaths/user-must-set-password must-set-password)
       (assoc-in keypaths/user-store-slug store-slug)
+      (assoc-in keypaths/user-store-id store-id)
+      (assoc-in keypaths/user-stylist-experience stylist-experience)
       (assoc-in keypaths/checkout-as-guest false)
-      #?(:cljs
-         (assoc-in keypaths/user-total-available-store-credit (js/parseFloat total-available-store-credit)))))
+      #?(:cljs (assoc-in keypaths/user-total-available-store-credit (js/parseFloat total-available-store-credit)))))
 
 (defn clear-fields [app-state & fields]
   (reduce #(assoc-in %1 %2 "") app-state fields))

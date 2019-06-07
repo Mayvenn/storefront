@@ -61,12 +61,12 @@
   (if (should-redirect? (get-in app-state keypaths/stylist-payout-stats-next-payout))
     (effects/redirect events/navigate-v2-stylist-dashboard-payments)
     (api/get-stylist-payout-stats events/api-success-stylist-payout-stats-cash-out
-                                  (get-in app-state keypaths/store-stylist-id)
+                                  (get-in app-state keypaths/user-store-id)
                                   (get-in app-state keypaths/user-id)
                                   (get-in app-state keypaths/user-token))))
 
 (defmethod effects/perform-effects events/control-stylist-dashboard-cash-out-commit [_ _ _ _ app-state]
-  (let [stylist-id (get-in app-state keypaths/store-stylist-id)
+  (let [stylist-id (get-in app-state keypaths/user-store-id)
         user-id    (get-in app-state keypaths/user-id)
         user-token (get-in app-state keypaths/user-token)]
     (api/cash-out-commit user-id user-token stylist-id)))

@@ -24,15 +24,15 @@
     [:img {:width (str ui/header-image-size "px")
            :src   (assets/path "/images/icons/stylist-bug-no-pic-fallback.png")}]]))
 
-(defn portrait-status [stylist? portrait]
+(defn portrait-status [stylist-on-own-store? portrait]
   (let [status (:status portrait)]
     (cond
       (or (= "approved" status)
           (and (= "pending" status)
-               stylist?))
+               stylist-on-own-store?))
       ::show-what-we-have
 
-      stylist?
+      stylist-on-own-store?
       ::ask-for-portrait
 
       :else

@@ -56,7 +56,7 @@
 
 (defn store-welcome [signed-in {:keys [store-nickname portrait expanded?]} expandable?]
   [:div.h6.flex.items-center.mt2
-   (case (marquee/portrait-status (-> signed-in ::auth/as (= :stylist)) portrait)
+   (case (marquee/portrait-status (auth/stylist-on-own-store? signed-in) portrait)
      ::marquee/show-what-we-have [:div.left.pr2 (marquee/stylist-portrait portrait)]
      ::marquee/ask-for-portrait  [:div.left.pr2 marquee/add-portrait-cta]
      ::marquee/show-nothing      [:div.left {:style {:height (str ui/header-image-size "px")}}])
@@ -66,7 +66,7 @@
       [:span.ml1 (ui/expand-icon expanded?)])]])
 
 (defn store-info [signed-in {:keys [expanded?] :as store}]
-  (when (-> signed-in ::auth/to (= :marketplace))
+  (when (-> signed-in ::auth/to #{:marketplace :own-store})
     (let [rows (marquee/actions store gallery-link instagram-link styleseat-link)]
       (if-not (boolean (seq rows))
         (store-welcome signed-in store false)

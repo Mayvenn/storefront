@@ -219,7 +219,15 @@
                               (select-keys % [:states]))}))
 
 (defn select-user-keys [user]
-  (select-keys user [:email :token :store-slug :id :is-new-user :must-set-password]))
+  (select-keys user
+               [:email
+                :token
+                :store-slug
+                :id
+                :is-new-user
+                :must-set-password
+                :store-id
+                :stylist-experience]))
 
 (defn select-auth-keys [args]
   (-> args

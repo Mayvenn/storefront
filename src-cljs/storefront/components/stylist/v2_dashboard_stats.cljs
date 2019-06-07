@@ -161,7 +161,7 @@
   (history/enqueue-navigate events/navigate-stylist-dashboard-cash-out-begin))
 
 (defmethod effects/perform-effects events/v2-stylist-dashboard-stats-fetch [_ event args _ app-state]
-  (let [stylist-id (get-in app-state keypaths/store-stylist-id)
+  (let [stylist-id (get-in app-state keypaths/user-store-id)
         user-id    (get-in app-state keypaths/user-id)
         user-token (get-in app-state keypaths/user-token)]
     (when (and user-id user-token)

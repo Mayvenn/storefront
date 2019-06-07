@@ -26,6 +26,8 @@
 (def user-email (conj user :email))
 (def user-token (conj user :user-token))
 (def user-store-slug (conj user :store-slug))
+(def user-store-id (conj user :store-id))
+(def user-stylist-experience (conj user :stylist-experience))
 (def user-id (conj user :id))
 (def user-must-set-password (conj user :must-set-password))
 (def user-total-available-store-credit (conj user :total-available-store-credit))

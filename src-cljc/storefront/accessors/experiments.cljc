@@ -96,9 +96,7 @@
   (display-feature? data "email-capture-35-percent-got-bundles"))
 
 (defn dashboard-with-vouchers? [data]
-  (->> (get-in data keypaths/store-features)
-       (some #{"aladdin-dashboard" "phoenix-dashboard" "dashboard-with-vouchers"})
-       boolean))
+  (= "aladdin" (get-in data keypaths/user-stylist-experience)))
 
 (defn look-detail-price?
   [data]
@@ -112,8 +110,7 @@
 
 (defn vouchers?
   [data]
-  (or (display-feature? data "vouchers")
-      (install? data)))
+  (= "aladdin" (get-in data keypaths/user-stylist-experience)))
 
 (defn phone-capture? [data]
   (display-feature? data "phone-capture"))

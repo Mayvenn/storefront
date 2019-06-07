@@ -31,7 +31,7 @@
 (def user
   {:domain        nil
    :max-age       four-weeks
-   :optional-keys [:store-slug]
+   :optional-keys [:store-slug :store-id]
    :required-keys [:email :user-token :id]})
 
 (def order

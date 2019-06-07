@@ -363,6 +363,8 @@
            (assoc-in-req-state keypaths/user-id (str->int (cookies/get req "id")))
            (assoc-in-req-state keypaths/user-token (cookies/get req "user-token"))
            (assoc-in-req-state keypaths/user-store-slug (cookies/get req "store-slug"))
+           (assoc-in-req-state keypaths/user-store-id (cookies/get req "store-id"))
+           (assoc-in-req-state keypaths/user-stylist-experience (cookies/get req "stylist-experience"))
            (assoc-in-req-state keypaths/user-email (cookies/get-and-attempt-parsing-poorly-encoded req "email"))))))
 
 ;;TODO Have all of these middleswarez perform event transitions, just like the frontend
@@ -709,21 +711,24 @@
                 :nav-uri (uri/map->URI {:host server-name :path uri :query query-string})
                 :nav-message nav-message)))))
 
-(defn login-and-redirect [{:keys [environment storeback-config] :as ctx}
-                          {:keys [subdomains query-params server-name store] :as req}]
-  (let [{:strs [token user-id target]}     query-params
-        {:keys [user] :as response} (api/one-time-login-in storeback-config user-id token (:stylist-id store))
-        cookie-options              {:max-age   (cookies/days 30)
-                                     :domain    (str (first subdomains) (cookie-root-domain server-name))}
-        whitelisted-redirect-paths #{"/" "/products/49-rings-kits"}
-        dest-req (-> req
-                     (assoc :uri (or (whitelisted-redirect-paths target) "/"))
-                     (update :query-params dissoc "token" "user-id" "target"))]
+(defn login-and-redirect
+  [{:keys [environment storeback-config] :as ctx}
+   {:keys [subdomains query-params server-name store] :as req}]
+  (let [{:strs [token user-id target]} query-params
+        {:keys [user] :as response}    (api/one-time-login-in storeback-config user-id token (:stylist-id store))
+        cookie-options                 {:max-age (cookies/days 30)
+                                        :domain  (str (first subdomains) (cookie-root-domain server-name))}
+        whitelisted-redirect-paths     #{"/" "/products/49-rings-kits"}
+        dest-req                       (-> req
+                                           (assoc :uri (or (whitelisted-redirect-paths target) "/"))
+                                           (update :query-params dissoc "token" "user-id" "target"))]
     (if user
       (->  (util.response/redirect (store-url (first subdomains) environment dest-req))
            (cookies/set environment :email (:email user) cookie-options)
            (cookies/set environment :id (:id user) cookie-options)
            (cookies/set environment :store-slug (:store-slug user) cookie-options)
+           (cookies/set environment :store-id (:store-id user) cookie-options)
+           (cookies/set environment :stylist-experience (:stylist-experience user) cookie-options)
            (cookies/set environment :user-token (:token user) cookie-options))
       (util.response/redirect (store-homepage (first subdomains) environment dest-req)))))
 

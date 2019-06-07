@@ -91,7 +91,7 @@
 
 (defn query [data]
   {:host         (routes/environment->hostname (get-in data keypaths/environment))
-   :store-slug   (get-in data keypaths/store-slug)
+   :store-slug   (get-in data keypaths/user-store-slug)
    :utm-campaign "stylist_dashboard"})
 
 (defn built-component [data opts]

@@ -140,7 +140,7 @@
       (messages/handle-message events/v2-stylist-dashboard-balance-transfers-fetch))))
 
 (defmethod effects/perform-effects events/v2-stylist-dashboard-balance-transfers-fetch [_ event args _ app-state]
-  (let [stylist-id (get-in app-state keypaths/store-stylist-id)
+  (let [stylist-id (get-in app-state keypaths/user-store-id)
         user-id    (get-in app-state keypaths/user-id)
         user-token (get-in app-state keypaths/user-token)]
     (api/get-stylist-dashboard-balance-transfers stylist-id

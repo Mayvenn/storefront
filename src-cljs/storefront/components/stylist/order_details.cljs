@@ -1,14 +1,11 @@
 (ns storefront.components.stylist.order-details
-  (:require [spice.date :as date]
-            [checkout.cart :as cart]
+  (:require [checkout.cart :as cart]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.sales :as sales]
             [storefront.accessors.shipping :as shipping]
             [storefront.accessors.experiments :as experiments]
             [storefront.component :as component]
             [storefront.components.formatters :as f]
-            [storefront.components.money-formatters :as mf]
-            [storefront.components.order-summary :as summary]
             [storefront.components.stylist.line-items :as line-items]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
@@ -74,7 +71,7 @@
                        {})]])
 
 (defn ^:private get-user-info [app-state]
-  {:user-id (get-in app-state keypaths/user-id)
+  {:user-id    (get-in app-state keypaths/user-id)
    :user-token (get-in app-state keypaths/user-token)})
 
 (defn popup [text]
@@ -211,8 +208,7 @@
   (->> (get-in app-state keypaths/v2-dashboard-sales-elements)
        vals
        (filter (fn [sale] (= order-number (:order-number sale))))
-       first
-       ))
+       first))
 
 (defn query [app-state]
   (let [order-number           (:order-number (get-in app-state keypaths/navigation-args))
@@ -245,7 +241,7 @@
 (defmethod effects/perform-effects events/navigate-stylist-dashboard-order-details
   [_ event {:keys [order-number] :as args} _ app-state]
   (let [user-info  (get-user-info app-state)
-        stylist-id (get-in app-state keypaths/store-stylist-id)
+        stylist-id (get-in app-state keypaths/user-store-id)
         handler    #(messages/handle-message events/api-success-v2-stylist-dashboard-sale %)
         params     (merge {:stylist-id   stylist-id
                            :order-number order-number
