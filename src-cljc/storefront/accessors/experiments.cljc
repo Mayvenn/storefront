@@ -102,12 +102,6 @@
   [data]
   (display-feature? data "look-detail-price"))
 
-(defn install?
-  [data]
-  (->> (get-in data keypaths/store-features)
-       (some #{"install"})
-       boolean))
-
 (defn vouchers?
   [data]
   (= "aladdin" (get-in data keypaths/user-stylist-experience)))
