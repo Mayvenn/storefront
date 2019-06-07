@@ -3,6 +3,7 @@
             [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
+            [storefront.accessors.stylists :as stylists]
             [storefront.community :as community]
             [storefront.component :as component]
             [storefront.components.marquee :as marquee]
@@ -72,7 +73,8 @@
         [:div.h8.medium "Store credit:"]
         [:div.teal.h5.bold (as-money store-credit)]])]))
 
-(defn ^:private stylist-actions [vouchers? store]
+(defn ^:private stylist-actions
+  [vouchers? show-community?]
   (component/html
    [:div
     (when vouchers?
@@ -92,7 +94,7 @@
       (ui/underline-button (assoc (utils/route-to events/navigate-v2-stylist-dashboard-orders)
                                   :data-test "dashboard")
                            "Dashboard")
-      (when-not (:match-eligible store)
+      (when show-community?
         (ui/underline-button community/community-url
                              "Community")))]]))
 
@@ -118,9 +120,10 @@
              :data-test "sign-up")
       "Sign up now, get offers!"]])))
 
-(defn ^:private actions-marquee [signed-in vouchers? store]
+(defn ^:private actions-marquee
+  [signed-in vouchers? show-community?]
   (case (-> signed-in ::auth/as)
-    :stylist (stylist-actions vouchers? store)
+    :stylist (stylist-actions vouchers? show-community?)
     :user    user-actions
     :guest   guest-actions))
 
@@ -227,13 +230,14 @@
                      "Sign out")
     [:div])))
 
-(defn ^:private root-menu [{:keys [user signed-in store vouchers?] :as data} owner opts]
+(defn ^:private root-menu
+  [{:keys [user signed-in show-community? vouchers?] :as data} owner opts]
   (component/create
    [:div
     [:div.px6.border-bottom.border-gray.bg-light-gray.pt3
      (account-info-marquee signed-in user)
      [:div.my3.dark-gray
-      (actions-marquee signed-in vouchers? store)]]
+      (actions-marquee signed-in vouchers? show-community?)]]
     [:div.px6
      (menu-area data)]
     (when (-> signed-in ::auth/at-all)
@@ -253,11 +257,13 @@
       (component/build root-menu data nil))]))
 
 (defn basic-query [data]
-  (let [shop? (= "shop" (get-in data keypaths/store-slug))]
+  (let [shop?                              (= "shop" (get-in data keypaths/store-slug))
+        {:keys [match-eligible] :as store} (marquee/query data)]
     {:signed-in              (auth/signed-in data)
      :on-taxon?              (get-in data keypaths/current-traverse-nav-id)
      :user                   {:email (get-in data keypaths/user-email)}
-     :store                  (marquee/query data)
+     :store                  store
+     :show-community?        (and match-eligible (stylists/own-store? data))
      :vouchers?              (experiments/vouchers? data)
      :v2-experience?         (experiments/v2-experience? data)
      :shop-homepage?         (and shop?
