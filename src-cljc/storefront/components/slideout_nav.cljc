@@ -56,25 +56,6 @@
    {:href (marquee/styleseat-url styleseat-account)}
    "Book"])
 
-(defn ^:private store-actions [{:keys [store-nickname] :as store}]
-  [:div
-   [:div.h8.medium "Welcome to " store-nickname "'s store"]
-   [:div.dark-gray
-    (interpose " | "
-               (marquee/actions store gallery-link instagram-link styleseat-link))]])
-
-(defn ^:private portrait [signed-in {:keys [portrait]}]
-  (case (marquee/portrait-status (auth/stylist-on-own-store? signed-in) portrait)
-    ::marquee/show-what-we-have [:div.left.self-center.pr2 (marquee/stylist-portrait portrait)]
-    ::marquee/ask-for-portrait  [:div.left.self-center.pr2 marquee/add-portrait-cta]
-    ::marquee/show-nothing      nil))
-
-(defn ^:private store-info-marquee [signed-in store]
-  (when (-> signed-in ::auth/to #{:marketplace :own-store})
-    [:div.mb3.flex
-     (portrait signed-in store)
-     (store-actions store)]))
-
 (defn ^:private account-info-marquee [signed-in {:keys [email store-credit]}]
   (when (-> signed-in ::auth/at-all)
     [:div.my3
@@ -250,7 +231,6 @@
   (component/create
    [:div
     [:div.px6.border-bottom.border-gray.bg-light-gray.pt3
-     (store-info-marquee signed-in store)
      (account-info-marquee signed-in user)
      [:div.my3.dark-gray
       (actions-marquee signed-in vouchers? store)]]
