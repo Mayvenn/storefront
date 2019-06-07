@@ -1,7 +1,5 @@
 (ns storefront.accessors.stylists
-  (:require [storefront.keypaths :as keypaths]
-            [storefront.events :as events]
-            [storefront.platform.component-utils :as utils]))
+  (:require [storefront.keypaths :as keypaths]))
 
 (defn own-store? [data]
   (= (get-in data keypaths/user-store-slug)
@@ -17,7 +15,3 @@
     (if (= store-nickname (:firstname address))
       (str (:firstname address) " " (:lastname address))
       store-nickname)))
-
-(def community-url
-  (merge (utils/fake-href events/control-stylist-community)
-         {:data-test "community"}))

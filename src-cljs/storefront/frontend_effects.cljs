@@ -6,7 +6,8 @@
             [spice.maps :as maps]
             [lambdaisland.uri :as uri]
             [storefront.accessors.auth :as auth]
-            [storefront.accessors.credit-cards :refer [filter-cc-number-format parse-expiration pad-year]]
+            [storefront.accessors.credit-cards
+             :refer [filter-cc-number-format parse-expiration pad-year]]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.stylists :as stylists]
@@ -15,7 +16,9 @@
             [storefront.browser.events :as browser-events]
             [storefront.browser.scroll :as scroll]
             [storefront.config :as config]
-            [storefront.effects :as effects :refer [page-not-found perform-effects redirect]]
+            [storefront.community :as community]
+            [storefront.effects :as effects
+             :refer [page-not-found perform-effects redirect]]
             [storefront.events :as events]
             [storefront.history :as history]
             [storefront.ugc :as ugc]
@@ -42,7 +45,8 @@
             [storefront.hooks.wistia :as wistia]
             [storefront.keypaths :as keypaths]
             [adventure.keypaths :as adv-keypaths]
-            [storefront.platform.messages :as messages :refer [handle-later handle-message]]
+            [storefront.platform.messages :as messages
+             :refer [handle-later handle-message]]
             [storefront.routes :as routes]
             [storefront.components.share-links :as share-links]
             [storefront.components.popup :as popup]))
@@ -165,10 +169,6 @@
 
 (defmethod perform-effects events/external-redirect-paypal-setup [_ event args _ app-state]
   (set! (.-location js/window) (get-in app-state keypaths/order-cart-payments-paypal-redirect-url)))
-
-(defmethod perform-effects events/external-redirect-telligent [_ event args _ app-state]
-  (set! (.-location js/window) (or (get-in app-state keypaths/telligent-community-url)
-                                   config/telligent-community-url)))
 
 (defmethod perform-effects events/external-redirect-quadpay-checkout [_ event {:keys [quadpay-redirect-url]} _ app-state]
   (set! (.-location js/window) quadpay-redirect-url))
@@ -385,10 +385,6 @@
     (when needs-restart?
       (handle-later events/app-restart))))
 
-(defmethod perform-effects events/api-success-telligent-login [_ event {:keys [cookie max-age]} _ app-state]
-  (cookie-jar/save-telligent-cookie (get-in app-state keypaths/cookie) cookie max-age)
-  (handle-message events/external-redirect-telligent))
-
 (defmethod perform-effects events/navigate-stylist-dashboard [_ event args _ app-state]
   (let [user-token (get-in app-state keypaths/user-token)
         user-id    (get-in app-state keypaths/user-id)
@@ -516,19 +512,14 @@
   (apply redirect
          (get-in app-state keypaths/return-navigation-message)))
 
-(defn ^:private redirect-to-telligent-as-user [app-state]
-  (api/telligent-sign-in (get-in app-state keypaths/session-id)
-                         (get-in app-state keypaths/user-id)
-                         (get-in app-state keypaths/user-token))
-  (handle-message events/flash-later-show-success {:message "Redirecting to the stylist community"}) )
-
 (defn redirect-when-signed-in [app-state]
   (when (get-in app-state keypaths/user-email)
     (if (get-in app-state keypaths/telligent-community-url)
-      (redirect-to-telligent-as-user app-state)
+      (community/redirect-to-telligent-as-user app-state)
       (do
         (redirect-to-return-navigation app-state)
-        (handle-message events/flash-later-show-success {:message "You are already signed in."})))))
+        (handle-message events/flash-later-show-success
+                        {:message "You are already signed in."})))))
 
 (defmethod perform-effects events/navigate-sign-in [_ event args _ app-state]
   (facebook/insert)
@@ -836,10 +827,12 @@
                           (get-in app-state keypaths/user)))
   (redirect-to-return-navigation app-state))
 
-(defmethod perform-effects events/api-success-auth-sign-in [_ _ _ _ app-state]
+(defmethod perform-effects events/api-success-auth-sign-in
+  [_ _ _ _ app-state]
   (if (get-in app-state keypaths/telligent-community-url)
-    (redirect-to-telligent-as-user app-state)
-    (handle-message events/flash-later-show-success {:message "Logged in successfully"})))
+    (community/redirect-to-telligent-as-user app-state)
+    (handle-message events/flash-later-show-success
+                    {:message "Logged in successfully"})))
 
 (defmethod perform-effects events/api-success-auth-sign-up [dispatch event args _ app-state]
   (handle-message events/flash-later-show-success {:message "Welcome! You have signed up successfully."}))
@@ -1040,11 +1033,6 @@
 
 (defmethod perform-effects events/control-email-captured-dismiss [_ event args _ app-state]
   (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) "dismissed"))
-
-(defmethod perform-effects events/control-stylist-community [_ event args _ app-state]
-  (api/telligent-sign-in (get-in app-state keypaths/session-id)
-                         (get-in app-state keypaths/user-id)
-                         (get-in app-state keypaths/user-token)))
 
 (defmethod perform-effects events/sign-out [_ event args app-state-before app-state]
   (when (not= "opted-in" (popup/email-capture-session app-state))

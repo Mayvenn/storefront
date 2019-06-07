@@ -3,7 +3,7 @@
             [storefront.accessors.auth :as auth]
             [storefront.accessors.nav :as nav]
             [storefront.accessors.orders :as orders]
-            [storefront.accessors.stylists :as stylists]
+            [storefront.community :as community]
             [storefront.assets :as assets]
             [storefront.component :as component]
             [storefront.components.marquee :as marquee]
@@ -115,7 +115,7 @@
      (drop-down-row (utils/route-to events/navigate-stylist-share-your-store) "Share Your store")]
     (when-not (:match-eligible store)
       [:div.border-top.border-gray
-       (drop-down-row stylists/community-url "Community")])
+       (drop-down-row community/community-url "Community")])
     [:div.border-top.border-gray
      (drop-down-row (utils/route-to events/navigate-stylist-account-profile) "Account Settings")]
     [:div.border-top.border-gray

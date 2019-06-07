@@ -3,7 +3,7 @@
             [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
-            [storefront.accessors.stylists :as stylists]
+            [storefront.community :as community]
             [storefront.component :as component]
             [storefront.components.marquee :as marquee]
             [storefront.components.money-formatters :refer [as-money]]
@@ -93,7 +93,7 @@
                                   :data-test "dashboard")
                            "Dashboard")
       (when-not (:match-eligible store)
-        (ui/underline-button stylists/community-url
+        (ui/underline-button community/community-url
                              "Community")))]]))
 
 (def ^:private user-actions
