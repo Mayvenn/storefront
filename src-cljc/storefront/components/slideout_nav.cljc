@@ -263,7 +263,8 @@
      :on-taxon?              (get-in data keypaths/current-traverse-nav-id)
      :user                   {:email (get-in data keypaths/user-email)}
      :store                  store
-     :show-community?        (and match-eligible (stylists/own-store? data))
+     :show-community?        (and (not match-eligible)
+                                  (stylists/own-store? data))
      :vouchers?              (experiments/vouchers? data)
      :v2-experience?         (experiments/v2-experience? data)
      :shop-homepage?         (and shop?
