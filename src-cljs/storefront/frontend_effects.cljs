@@ -45,7 +45,8 @@
             [storefront.platform.messages :as messages]
             [storefront.routes :as routes]
             [storefront.components.share-links :as share-links]
-            [storefront.components.popup :as popup]))
+            [storefront.components.popup :as popup]
+            [spice.core :as spice]))
 
 (defn changed? [previous-app-state app-state keypath]
   (not= (get-in previous-app-state keypath)
@@ -801,7 +802,12 @@
       (create-stripe-token app-state args)
       (api/place-order (get-in app-state keypaths/session-id)
                        order
-                       (cookie-jar/retrieve-utm-params (get-in app-state keypaths/cookie))))))
+                       (cookie-jar/retrieve-utm-params (get-in app-state keypaths/cookie))
+                       (some-> app-state
+                               (get-in keypaths/cookie)
+                               cookie-jar/retrieve-affiliate-stylist-id
+                               :affiliate-stylist-id
+                               spice/parse-int)))))
 
 (defmethod effects/perform-effects events/save-order
   [_ _ {:keys [order]} _ app-state]
@@ -918,7 +924,12 @@
   (when place-order?
     (api/place-order (get-in app-state keypaths/session-id)
                      order
-                     (cookie-jar/retrieve-utm-params (get-in app-state keypaths/cookie)))))
+                     (cookie-jar/retrieve-utm-params (get-in app-state keypaths/cookie))
+                     (some-> app-state
+                             (get-in keypaths/cookie)
+                             cookie-jar/retrieve-affiliate-stylist-id
+                             :affiliate-stylist-id
+                             spice/parse-int))))
 
 (defmethod effects/perform-effects events/api-success-update-order [_ event {:keys [order navigate event]} _ app-state]
   (messages/handle-message events/save-order {:order order})
