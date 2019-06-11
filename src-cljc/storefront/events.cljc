@@ -19,6 +19,8 @@
 (defpath external-redirect-telligent)
 (defpath external-redirect-quadpay-checkout)
 
+(defpath module-loaded)
+
 (defpath redirect)
 (defpath navigate)
 

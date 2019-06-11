@@ -59,12 +59,12 @@
             adventure.stylist-matching.match-success
             adventure.stylist-matching.match-success-post-purchase
             adventure.stylist-matching.let-mayvenn-match
+
+            [storefront.components.ui :as ui]
             [catalog.category :as category]
             [catalog.product-details :as product-details]
             [checkout.cart :as cart]
             [checkout.processing :as checkout-processing]
-            [voucher.redeem :as voucher-redeem]
-            [voucher.redeemed :as voucher-redeemed]
             [mayvenn-made.home :as mayvenn-made.home]
             [storefront.accessors.experiments :as experiments]
             [storefront.components.content :as content]
@@ -85,92 +85,92 @@
             [storefront.routes :as routes]))
 
 (defn main-component [nav-event]
-  (condp = nav-event
-    #?@(:cljs
-        [events/navigate-reset-password                             reset-password/built-component
-         events/navigate-force-set-password                         force-set-password/built-component
-         events/navigate-shop-by-look                               shop-by-look/built-component
-         events/navigate-shop-by-look-details                       shop-by-look-details/built-component
-         events/navigate-stylist-dashboard-balance-transfer-details balance-transfer-details/built-component
-         events/navigate-stylist-dashboard-order-details            stylist.order-details/built-component
-         events/navigate-stylist-dashboard-cash-out-begin           stylist.cash-out/built-component
-         events/navigate-stylist-dashboard-cash-out-pending         stylist.cash-out-pending/built-component
-         events/navigate-stylist-dashboard-cash-out-success         stylist.cash-out-success/built-component
-         events/navigate-stylist-share-your-store                   stylist.share-your-store/built-component
-         events/navigate-stylist-account-profile                    stylist.account/built-component
-         events/navigate-stylist-account-portrait                   stylist.portrait/built-component
-         events/navigate-stylist-account-password                   stylist.account/built-component
-         events/navigate-stylist-account-payout                     stylist.account/built-component
-         events/navigate-stylist-account-social                     stylist.account/built-component
-         events/navigate-v2-stylist-dashboard-payments              v2.dashboard/built-component
-         events/navigate-v2-stylist-dashboard-orders                v2.dashboard/built-component
-         events/navigate-gallery-image-picker                       gallery-image-picker/built-component
-         events/navigate-account-manage                             (partial sign-in/requires-sign-in account/built-component)
-         events/navigate-account-referrals                          (partial sign-in/requires-sign-in friend-referrals/built-component)
-         events/navigate-friend-referrals-freeinstall               friend-referrals/built-component
-         events/navigate-friend-referrals                           friend-referrals/built-component
-         events/navigate-checkout-returning-or-guest                checkout-returning-or-guest/built-component
-         events/navigate-checkout-sign-in                           checkout-sign-in/built-component
-         events/navigate-checkout-address                           (partial checkout-returning-or-guest/requires-sign-in-or-initiated-guest-checkout checkout-address/built-component)
-         events/navigate-checkout-payment                           (partial checkout-returning-or-guest/requires-sign-in-or-initiated-guest-checkout checkout-payment/built-component)
-         events/navigate-checkout-confirmation                      (partial checkout-returning-or-guest/requires-sign-in-or-initiated-guest-checkout checkout-confirmation/built-component)
-         events/navigate-order-complete                             checkout-complete/built-component
-         events/navigate-need-match-order-complete                  checkout-complete/built-component])
+  (doto (condp = nav-event
+          #?@(:cljs
+              [events/navigate-reset-password                             reset-password/built-component
+               events/navigate-force-set-password                         force-set-password/built-component
+               events/navigate-shop-by-look                               shop-by-look/built-component
+               events/navigate-shop-by-look-details                       shop-by-look-details/built-component
+               events/navigate-stylist-dashboard-balance-transfer-details balance-transfer-details/built-component
+               events/navigate-stylist-dashboard-order-details            stylist.order-details/built-component
+               events/navigate-stylist-dashboard-cash-out-begin           stylist.cash-out/built-component
+               events/navigate-stylist-dashboard-cash-out-pending         stylist.cash-out-pending/built-component
+               events/navigate-stylist-dashboard-cash-out-success         stylist.cash-out-success/built-component
+               events/navigate-stylist-share-your-store                   stylist.share-your-store/built-component
+               events/navigate-stylist-account-profile                    stylist.account/built-component
+               events/navigate-stylist-account-portrait                   stylist.portrait/built-component
+               events/navigate-stylist-account-password                   stylist.account/built-component
+               events/navigate-stylist-account-payout                     stylist.account/built-component
+               events/navigate-stylist-account-social                     stylist.account/built-component
+               events/navigate-v2-stylist-dashboard-payments              v2.dashboard/built-component
+               events/navigate-v2-stylist-dashboard-orders                v2.dashboard/built-component
+               events/navigate-gallery-image-picker                       gallery-image-picker/built-component
+               events/navigate-account-manage                             (partial sign-in/requires-sign-in account/built-component)
+               events/navigate-account-referrals                          (partial sign-in/requires-sign-in friend-referrals/built-component)
+               events/navigate-friend-referrals-freeinstall               friend-referrals/built-component
+               events/navigate-friend-referrals                           friend-referrals/built-component
+               events/navigate-checkout-returning-or-guest                checkout-returning-or-guest/built-component
+               events/navigate-checkout-sign-in                           checkout-sign-in/built-component
+               events/navigate-checkout-address                           (partial checkout-returning-or-guest/requires-sign-in-or-initiated-guest-checkout checkout-address/built-component)
+               events/navigate-checkout-payment                           (partial checkout-returning-or-guest/requires-sign-in-or-initiated-guest-checkout checkout-payment/built-component)
+               events/navigate-checkout-confirmation                      (partial checkout-returning-or-guest/requires-sign-in-or-initiated-guest-checkout checkout-confirmation/built-component)
+               events/navigate-order-complete                             checkout-complete/built-component
+               events/navigate-need-match-order-complete                  checkout-complete/built-component])
 
-    events/navigate-home                    home/built-component
-    events/navigate-category                category/built-component
-    events/navigate-product-details         product-details/built-component
-    events/navigate-shared-cart             shared-cart/built-component
-    events/navigate-checkout-processing     checkout-processing/built-component
-    events/navigate-cart                    cart/built-component
-    events/navigate-voucher-redeem          voucher-redeem/built-component
-    events/navigate-voucher-redeemed        voucher-redeemed/built-component
-    events/navigate-mayvenn-made            mayvenn-made.home/built-component
-    events/navigate-content-guarantee       content/built-component
-    events/navigate-content-help            content/built-component
-    events/navigate-content-privacy         content/built-component
-    events/navigate-content-tos             content/built-component
-    events/navigate-content-about-us        content/built-component
-    events/navigate-content-ugc-usage-terms content/built-component
-    events/navigate-content-voucher-terms   content/built-component
-    events/navigate-content-program-terms   content/built-component
-    events/navigate-content-our-hair        content/built-component
-    events/navigate-sign-in                 sign-in/built-component
-    events/navigate-sign-up                 sign-up/built-component
-    events/navigate-forgot-password         forgot-password/built-component
-    events/navigate-gallery                 gallery/built-component
+          events/navigate-home                    home/built-component
+          events/navigate-category                category/built-component
+          events/navigate-product-details         product-details/built-component
+          events/navigate-shared-cart             shared-cart/built-component
+          events/navigate-checkout-processing     checkout-processing/built-component
+          events/navigate-cart                    cart/built-component
+          events/navigate-voucher-redeem          (ui/lazy-load-component :redeem 'voucher.redeem/built-component)
+          events/navigate-voucher-redeemed        (ui/lazy-load-component :redeem 'voucher.redeemed/built-component)
+          events/navigate-mayvenn-made            mayvenn-made.home/built-component
+          events/navigate-content-guarantee       content/built-component
+          events/navigate-content-help            content/built-component
+          events/navigate-content-privacy         content/built-component
+          events/navigate-content-tos             content/built-component
+          events/navigate-content-about-us        content/built-component
+          events/navigate-content-ugc-usage-terms content/built-component
+          events/navigate-content-voucher-terms   content/built-component
+          events/navigate-content-program-terms   content/built-component
+          events/navigate-content-our-hair        content/built-component
+          events/navigate-sign-in                 sign-in/built-component
+          events/navigate-sign-up                 sign-up/built-component
+          events/navigate-forgot-password         forgot-password/built-component
+          events/navigate-gallery                 gallery/built-component
 
-    events/navigate-info-certified-stylists                       adventure.informational.certified-stylists/built-component
-    events/navigate-info-about-our-hair                           adventure.informational.about-our-hair/built-component
-    events/navigate-info-how-it-works                             adventure.informational.how-it-works/built-component
+          events/navigate-info-certified-stylists                       adventure.informational.certified-stylists/built-component
+          events/navigate-info-about-our-hair                           adventure.informational.about-our-hair/built-component
+          events/navigate-info-how-it-works                             adventure.informational.how-it-works/built-component
 
-    events/navigate-adventure-home                                adventure.home/built-component
-    events/navigate-adventure-what-next                           adventure.what-next/built-component
-    events/navigate-adventure-shop-hair                           adventure.shop-hair/built-component
-    events/navigate-adventure-how-shop-hair                       adventure.how-shop-hair/built-component
-    events/navigate-adventure-hair-texture                        adventure.hair-texture/built-component
-    events/navigate-adventure-bundlesets-hair-texture             adventure.bundlesets.hair-texture/built-component
-    events/navigate-adventure-a-la-carte-hair-texture             adventure.a-la-carte.hair-texture/built-component
-    events/navigate-adventure-a-la-carte-hair-color               adventure.a-la-carte.hair-color/built-component
-    events/navigate-adventure-a-la-carte-product-list             adventure.a-la-carte.product-list/built-component
-    events/navigate-adventure-product-details                     adventure.a-la-carte.product-details/built-component
-    events/navigate-adventure-install-type                        adventure.install-type/built-component
-    events/navigate-adventure-select-new-look                     adventure.select-new-look/built-component
-    events/navigate-adventure-look-detail                         adventure.look-detail/built-component
-    events/navigate-adventure-select-bundle-set                   adventure.select-new-look/built-component
-    events/navigate-adventure-how-far                             adventure.stylist-matching.how-far/built-component
-    events/navigate-adventure-match-stylist                       adventure.stylist-matching.match-stylist/built-component
-    events/navigate-adventure-find-your-stylist                   adventure.stylist-matching.find-your-stylist/built-component
-    events/navigate-adventure-matching-stylist-wait-pre-purchase  adventure.stylist-matching.matching-stylist-wait/built-component
-    events/navigate-adventure-matching-stylist-wait-post-purchase adventure.stylist-matching.matching-stylist-wait/built-component
-    events/navigate-adventure-stylist-results-pre-purchase        adventure.stylist-matching.stylist-results/built-component-pre-purchase
-    events/navigate-adventure-stylist-results-post-purchase       adventure.stylist-matching.stylist-results/built-component-post-purchase
-    events/navigate-adventure-out-of-area                         adventure.stylist-matching.out-of-area/built-component
-    events/navigate-adventure-match-success-pre-purchase          adventure.stylist-matching.match-success/built-component
-    events/navigate-adventure-match-success-post-purchase         adventure.stylist-matching.match-success-post-purchase/built-component
-    events/navigate-adventure-checkout-wait                       adventure.checkout.wait/built-component
-    events/navigate-adventure-let-mayvenn-match                   adventure.stylist-matching.let-mayvenn-match/built-component
-    home/built-component))
+          events/navigate-adventure-home                                adventure.home/built-component
+          events/navigate-adventure-what-next                           adventure.what-next/built-component
+          events/navigate-adventure-shop-hair                           adventure.shop-hair/built-component
+          events/navigate-adventure-how-shop-hair                       adventure.how-shop-hair/built-component
+          events/navigate-adventure-hair-texture                        adventure.hair-texture/built-component
+          events/navigate-adventure-bundlesets-hair-texture             adventure.bundlesets.hair-texture/built-component
+          events/navigate-adventure-a-la-carte-hair-texture             adventure.a-la-carte.hair-texture/built-component
+          events/navigate-adventure-a-la-carte-hair-color               adventure.a-la-carte.hair-color/built-component
+          events/navigate-adventure-a-la-carte-product-list             adventure.a-la-carte.product-list/built-component
+          events/navigate-adventure-product-details                     adventure.a-la-carte.product-details/built-component
+          events/navigate-adventure-install-type                        adventure.install-type/built-component
+          events/navigate-adventure-select-new-look                     adventure.select-new-look/built-component
+          events/navigate-adventure-look-detail                         adventure.look-detail/built-component
+          events/navigate-adventure-select-bundle-set                   adventure.select-new-look/built-component
+          events/navigate-adventure-how-far                             adventure.stylist-matching.how-far/built-component
+          events/navigate-adventure-match-stylist                       adventure.stylist-matching.match-stylist/built-component
+          events/navigate-adventure-find-your-stylist                   adventure.stylist-matching.find-your-stylist/built-component
+          events/navigate-adventure-matching-stylist-wait-pre-purchase  adventure.stylist-matching.matching-stylist-wait/built-component
+          events/navigate-adventure-matching-stylist-wait-post-purchase adventure.stylist-matching.matching-stylist-wait/built-component
+          events/navigate-adventure-stylist-results-pre-purchase        adventure.stylist-matching.stylist-results/built-component-pre-purchase
+          events/navigate-adventure-stylist-results-post-purchase       adventure.stylist-matching.stylist-results/built-component-post-purchase
+          events/navigate-adventure-match-success-pre-purchase          adventure.stylist-matching.match-success/built-component
+          events/navigate-adventure-match-success-post-purchase         adventure.stylist-matching.match-success-post-purchase/built-component
+          events/navigate-adventure-checkout-wait                       adventure.checkout.wait/built-component
+          events/navigate-adventure-let-mayvenn-match                   adventure.stylist-matching.let-mayvenn-match/built-component
+          home/built-component)
+    (assert (str "Expected main-component to return a component, but did not: " (pr-str nav-event)))))
 
 (defn sticky-promo-bar [data]
   (when (or (experiments/sticky-promo-bar? data)

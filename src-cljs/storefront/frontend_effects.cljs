@@ -236,7 +236,6 @@
     (when-not (user-signed-into-affiliate-store? app-state)
       (cookie-jar/save-user (get-in app-state keypaths/cookie)
                             (get-in app-state keypaths/user)))
-
     (refresh-account app-state)
     (api/get-promotions (get-in app-state keypaths/api-cache)
                         (or
@@ -1063,3 +1062,6 @@
 (defmethod effects/perform-effects events/inserted-stringer
   [_ event args app-state-before app-state]
   (messages/handle-message events/stringer-distinct-id-available {:stringer-distinct-id (stringer/browser-id)}))
+
+(defmethod effects/perform-effects events/module-loaded [_ _ {:keys [module-name]} app-state]
+  (apply messages/handle-message (get-in app-state keypaths/navigation-message)))

@@ -1,4 +1,4 @@
-goog.provide('rng')
+goog.provide('rng');
 
 /**
  * @param {number} a

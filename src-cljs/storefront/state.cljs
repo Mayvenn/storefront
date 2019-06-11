@@ -80,6 +80,7 @@
 (defn initial-state []
   (let [cookie (cookie-jar/make-cookie)]
     {:cookie    cookie
+     :modules []
      :adventure {:from-shop-to-freeinstall? (boolean (cookie-jar/retrieve-from-shop-to-freeinstall cookie))
                  :affiliate-stylist-id      (some-> cookie
                                                     cookie-jar/retrieve-affiliate-stylist-id

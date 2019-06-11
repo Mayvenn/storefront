@@ -67,6 +67,12 @@
                     :asset-path       "/js/out"
                     :output-to        "resources/public/js/out/main.js"
                     :output-dir       "resources/public/js/out"
+                    :modules          {:cljs-base {:output-to "target/release/js/out/cljs_base.js"}
+                                       :main      {:output-to "target/release/js/out/main.js"
+                                                   :entries   #{"storefront.core" "rng"}}
+                                       :redeem    {:output-to  "target/release/js/out/redeem.js"
+                                                   :entries    #{"voucher.redeem" "voucher.redeemed"}
+                                                   :depends-on #{:main}}}
                     :pretty-print     true
                     :infer-externs    false
                     :static-fns       true
@@ -104,18 +110,22 @@
                               (binding [*out* *err*]
                                 (println (cljs.analyzer/message env s))
                                 (System/exit 1)))))]
-     :compiler         {:main             "storefront.core"
-                        :output-to        "target/release/js/out/main.js"
-                        :output-dir       "target/release/js/out"
-                        :source-map       "target/release/js/out/main.js.map"
-                        :source-map-path  "/js/out"
-                        :pretty-print     false
+     :compiler         {:output-dir       "target/release/js/out"
+                        :asset-path       "/js/out"
+                        :source-map       true
+                        :modules          {:cljs-base {:output-to "target/release/js/out/cljs_base.js"}
+                                           :main      {:output-to "target/release/js/out/main.js"
+                                                       :entries   #{storefront.core rng}}
+                                           :redeem    {:output-to  "target/release/js/out/redeem.js"
+                                                       :entries    #{voucher.redeem voucher.redeemed}
+                                                       :depends-on #{:main}}}
                         :infer-externs    false
                         :static-fns       true
                         :fn-invoke-direct true
                         :parallel-build   true
                         :npm-deps         false
                         :install-deps     false
+                        ;;:stable-names     true
                         :libs             ["src-cljs/rng/rng.js"]
                         :foreign-libs     [{:file     "src-cljs/storefront/react-slick.js"
                                             :file-min "target/min-js/react-slick.js" ;; created by gulp

@@ -7,14 +7,28 @@ var merge = require('merge-stream');
 var gulpIgnore = require('gulp-ignore');
 var debug = require('gulp-debug');
 var runSequence = require('run-sequence');
-var shell = require('gulp-shell');
 var del = require('del');
 var postcss = require("gulp-postcss");
 var uglify = require('gulp-uglify');
 var fs = require('fs');
 var path = require('path');
 var os = require('os');
-var exec = require('child_process').exec;
+var {exec} = require('child_process');
+
+function run(cmd, cb) {
+  var p = exec(cmd);
+  p.stdout.on('data', function (data) {
+    process.stdout.write(data.toString());
+  });
+
+  p.stderr.on('data', function (data) {
+    process.stderr.write(data.toString());
+  });
+
+  p.on('exit', function (code) {
+    cb(code === 0 ? null : ('child process exited with code ' + code.toString()));
+  });
+}
 
 if (process.versions.node.search('12.') === -1) {
 	console.error("Hey, you need to upgrade node to 12.x.x!");
@@ -57,11 +71,13 @@ exports.default = css;
 
 /* Run this after you update node module versions. */
 /* Maybe there's a preferred way of including node modules in cljs projects? */
-exports['refresh-deps'] = shell.task([
-	"cp",
-	"./node_modules/react-slick/dist/react-slick.js",
-	"./node_modules/jsqr/dist/jsQR.js",
-	"src-cljs/storefront/"].join(" "));
+exports['refresh-deps'] = function refreshDeps(cb) {
+  run([
+    "cp",
+    "./node_modules/react-slick/dist/react-slick.js",
+    "./node_modules/jsqr/dist/jsQR.js",
+    "src-cljs/storefront/"].join(" "), cb);
+}
 
 exports['clean-min-js'] = cleanMinJs;
 function cleanMinJs() {
@@ -75,8 +91,12 @@ function minifyJs() {
     .pipe(gulp.dest('target/min-js/'));
 }
 
-exports['move-jsqr'] = shell.task(['mkdir -p ./resources/public/js/out/src-cljs/storefront/; mv target/min-js/jsQR.js resources/public/js/out/src-cljs/storefront/jsQR.js']);
-exports['cljs-build'] = shell.task(['lein cljsbuild once release']);
+exports['move-jsqr'] = function moveJSQR(cb) {
+  run('mkdir -p ./resources/public/js/out/src-cljs/storefront/; mv target/min-js/jsQR.js resources/public/js/out/src-cljs/storefront/jsQR.js', cb);
+};
+exports['cljs-build'] = function cljsBuild(cb) {
+  run('lein cljsbuild once release', cb);
+};
 
 exports['copy-release-assets'] = copyReleaseAssets;
 function copyReleaseAssets(){
@@ -87,11 +107,13 @@ function copyReleaseAssets(){
 exports['clean-hashed-assets'] = cleanHashedAssets;
 function cleanHashedAssets() {
   return del(['./resources/public/cdn', './resources/rev-manifest.json']);
-};
+}
 
 exports['fix-source-map'] = fixSourceMap;
 function fixSourceMap() {
-  return sourceMapStream = gulp.src(['resources/public/js/out/main.js.map'], {base: './'})
+  return sourceMapStream = gulp.src(['resources/public/js/out/main.js.map',
+                                     'resources/public/js/out/cljs_base.js.map',
+                                     'resources/public/js/out/redeem.js.map'], {base: './'})
     .pipe(jsonTransform(function(data) {
       data["sources"] = data["sources"].map(function(f) {
         return f.replace("\/", "/");
@@ -118,7 +140,9 @@ function saveGitShaVersion(cb) {
 function hashedAssetSources () {
   return merge(gulp.src('resources/public/{js,css,images,fonts}/**')
                .pipe(gulpIgnore.exclude("*.map")),
-               gulp.src('resources/public/js/out/main.js.map'));
+               gulp.src('resources/public/js/out/cljs_base.js.map'),
+               gulp.src('resources/public/js/out/main.js.map'),
+               gulp.src('resources/public/js/out/redeem.js.map'));
 }
 
 exports['rev-assets'] = revAssets;
@@ -127,17 +151,18 @@ function revAssets() {
     throw "missing --host";
   }
 
-  var revAll = new RevAll({
+  var options = {
     prefix: "//" + argv.host + "/cdn/",
+    includeFilesInManifest: ['.css', '.js', '.svg', '.png', '.gif', '.woff', '.cljs', '.cljc', '.map'],
     dontSearchFile: ['[^jsQR].js']
-  });
+  };
 
   return hashedAssetSources()
-    .pipe(revAll.revision())
+    .pipe(RevAll.revision(options))
     .pipe(gulp.dest('resources/public/cdn'))
-    .pipe(revAll.manifestFile())
+    .pipe(RevAll.manifestFile())
     .pipe(gulp.dest('resources'));
-};
+}
 
 exports['fix-main-js-pointing-to-source-map'] = fixMainJsPointingToSourceMap;
 function fixMainJsPointingToSourceMap(cb) {
@@ -147,23 +172,35 @@ function fixMainJsPointingToSourceMap(cb) {
   fs.readFile("resources/rev-manifest.json", 'utf8', function(err, data) {
     if (err) { cb(err); return console.log(err); }
 
-    var revManifest = JSON.parse(data),
-        mainJsFilePath = "resources/public/cdn/" + revManifest["js/out/main.js"];
+    var revManifest = JSON.parse(data);
 
-    fs.readFile(mainJsFilePath, 'utf8', function (err,data) {
-      if (err) { return console.log(err); }
-      var result = data.replace(/main\.js\.map/g, path.basename(revManifest["js/out/main.js.map"]));
+    var jsRootFiles = ["js/out/cljs_base.js", "js/out/main.js", "js/out/redeem.js"];
 
-      fs.writeFile(mainJsFilePath, result, 'utf8', function (err) {
+    var i = 0;
+    jsRootFiles.forEach(function(jsKey){
+      var fullJsFile = "resources/public/cdn/" + revManifest[jsKey];
+
+      fs.readFile(fullJsFile, 'utf8', function (err,data) {
         if (err) { return console.log(err); }
-        cb();
+        function escapeRegExp(string) {
+          return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+        }
+        var result = data.replace(new RegExp(escapeRegExp(path.basename(jsKey)), 'g'), path.basename(revManifest[jsKey]));
+
+        fs.writeFile(fullJsFile, result, 'utf8', function (err) {
+          if (err) { return console.log(err); }
+          i++;
+
+          if (jsRootFiles.length <= i) {
+            cb();
+          }
+        });
       });
     });
   });
 }
 
-exports['gzip'] = gzip;
-function gzip(){
+exports['gzip'] = function gzipTask(){
   return gulp.src('resources/public/cdn/**')
     .pipe(gzip({ append: false }))
     .pipe(gulp.dest('resources/public/cdn'));
@@ -198,6 +235,7 @@ function writeJsStats(cb) {
                   console.log('File Size: ' + fileSize + ' bytes');
                   console.log('Relative Parse Time: ' + parseTime + ' seconds');
                   console.log("=======================");
+                  cb();
                 }
               });
             }
@@ -206,8 +244,8 @@ function writeJsStats(cb) {
       }
     });
   });
-};
+}
 
-exports['cdn'] = gulp.series(cleanHashedAssets, fixSourceMap, revAssets, fixMainJsPointingToSourceMap, gzip);
+exports['cdn'] = gulp.series(cleanHashedAssets, fixSourceMap, revAssets, fixMainJsPointingToSourceMap, exports['gzip']);
 
 exports['compile-assets'] = gulp.series(css, minifyJs, exports['move-jsqr'], exports['cljs-build'], copyReleaseAssets, exports['cdn'], saveGitShaVersion, writeJsStats);

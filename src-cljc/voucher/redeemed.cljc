@@ -1,4 +1,4 @@
-(ns voucher.redeemed
+(ns ^:figwheel-load voucher.redeemed
   (:require #?@(:cljs [[storefront.history :as history]])
             [storefront.component :as component]
             [storefront.components.money-formatters :as mf]
@@ -43,7 +43,7 @@
    :spinning?     (utils/requesting? app-state request-keys/fetch-stylist-service-menu)
    :service-menu  (get-in app-state keypaths/stylist-service-menu)})
 
-(defn built-component
+(defn ^:export built-component
   [data opts]
   (component/build component (query data) opts))
 

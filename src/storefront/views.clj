@@ -2,6 +2,7 @@
   (:require [cheshire.core :refer [generate-string]]
             [clojure.java.io :as io]
             [cognitect.transit :as transit]
+            [cheshire.core :as json]
             [hiccup.page :as page]
             [storefront.assets :as assets]
             [storefront.component :as component]
@@ -139,7 +140,9 @@
           ;; in production, we want to load the script tag asynchronously which has better
           ;; support when that script tag is in the <head>
           (when-not (config/development? environment)
-            [:script {:src (assets/path "/js/out/main.js") :async true}])
+            (for [n ["cljs_base.js" "main.js"]]
+              [:script {:src (assets/path (str "/js/out/" n))
+                        :async true}]))
           ;; inline styles in production because our css file is so small and it avoids another round
           ;; trip request. At time of writing this greatly includes our pagespeed score
           (if (#{"development" "test"} environment)

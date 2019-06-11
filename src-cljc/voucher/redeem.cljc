@@ -1,9 +1,13 @@
-(ns voucher.redeem
+(ns ^:figwheel-load voucher.redeem
   (:require #?@(:cljs [[storefront.accessors.auth :as auth]
                        [storefront.history :as history]
                        [storefront.hooks.js-qr :as js-qr]
                        [storefront.api :as api]
-                       [voucher.components.qr-reader :as qr-reader]])
+                       [voucher.components.qr-reader :as qr-reader]
+                       [storefront.loader :as loader]
+                       ;; we need to load this namespace first for google closure's tree shaking to put this file (from the same module)
+                       ;; before the set-load! call at the bottom of this file.
+                       [voucher.redeemed :as _]])
             [storefront.accessors.experiments :as experiments]
             [storefront.component :as component]
             [storefront.components.ui :as ui]
@@ -115,7 +119,8 @@
      :redeeming-voucher?     (utils/requesting? data request-keys/voucher-redemption)
      :field-errors           (get-in data keypaths/field-errors)}))
 
-(defn built-component
+;; exported for main module to know how to load this function
+(defn ^:export built-component
   [data opts]
   (component/build component (query data) opts))
 
@@ -197,3 +202,5 @@
   (messages/handle-message events/flash-show-failure
                            {:message (str "Unable to use the device's camera, "
                                           "please enter the code manually.")}))
+
+#?(:cljs (loader/set-loaded! :redeem))

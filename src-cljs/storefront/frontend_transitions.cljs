@@ -695,5 +695,7 @@
                :radius    (:radius query)})))
 
 
+(defmethod transition-state events/module-loaded [_ _ {:keys [module-name]} app-state]
+  (update app-state :modules (fnil conj #{}) module-name))
 
 

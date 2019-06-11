@@ -1,5 +1,6 @@
 (ns storefront.components.ui
-  (:require [cemerick.url :as url]
+  (:require #?@(:cljs [[storefront.loader :as loader]])
+            [cemerick.url :as url]
             [clojure.string :as string]
             [storefront.assets :as assets]
             [storefront.component :as component]
@@ -43,6 +44,35 @@
   [:div.img-large-spinner.bg-center.bg-contain.bg-no-repeat.col-12
    (merge {:data-test "spinner"}
           attrs)])
+
+(defn built-loading-component [data opts]
+  (component/build (fn c [data owner opts]
+                     (component/create (large-spinner {:style {:height "6em"}})))
+                   data
+                   opts))
+
+(defn lazy-load-component
+  "Lazily loads a given component in a different google closure module. Server-side render is unchanged.
+
+  Parameters:
+
+   - module-name is the keyword of the module to load if the component is missing. See project.clj for modules.
+   - fully-qualified-built-component-symbol is a symbol of the absolute namespace + function to use as the component when the module is loaded.
+  "
+  [module-name fully-qualified-built-component-symbol]
+  #?(:cljs (or (when-not (loader/loaded? module-name)
+                 (loader/load module-name
+                              (fn []
+                                (handle-message events/module-loaded {:module-name module-name})))
+                 nil)
+               (let [path (string/split (str (munge-str (namespace fully-qualified-built-component-symbol))
+                                             "."
+                                             (munge-str (name fully-qualified-built-component-symbol)))
+                                        #"\.")]
+                 (js/eval (string/join " && " (map (partial string/join ".") (rest (reductions conj [] path))))))
+               built-loading-component)
+     :clj (do (require (symbol (namespace fully-qualified-built-component-symbol)))
+              (resolve fully-qualified-built-component-symbol))))
 
 (defn aspect-ratio
   "Refer to https://css-tricks.com/snippets/sass/maintain-aspect-ratio-mixin/. This is a slight modification, adapted from the wistia player."

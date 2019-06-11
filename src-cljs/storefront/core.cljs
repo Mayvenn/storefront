@@ -1,5 +1,6 @@
 (ns storefront.core
   (:require [storefront.config :as config]
+            [storefront.loader :as loader]
             [storefront.state :as state]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
@@ -77,7 +78,7 @@
      (try
        (let [app-state-before @app-state]
          ;; rename transition to transition-log to log messages
-         (om/transact! (om/root-cursor app-state) #(transition % message))
+         (om/transact! (om/root-cursor app-state) #(transition-log % message))
          (effects app-state-before @app-state message))
        (track @app-state message)
        (catch :default e
@@ -150,3 +151,4 @@
                     (js->clj args :keywordize-keys true))))
 
 (dom-ready #(main app-state))
+(loader/set-loaded! :main)
