@@ -8,7 +8,8 @@
             [storefront.keypaths :as keypaths]
             [storefront.effects :as effects]
             [storefront.events :as events]
-            [storefront.platform.messages :as messages]))
+            [storefront.platform.messages :as messages]
+            [storefront.accessors.stylists :as stylists]))
 
 (defn component
   [{:keys []} _ _]
@@ -28,11 +29,7 @@
      (api/place-order (get-in app-state keypaths/session-id)
                       (get-in app-state keypaths/order)
                       (cookie-jar/retrieve-utm-params (get-in app-state keypaths/cookie))
-                      (some-> app-state
-                              (get-in keypaths/cookie)
-                              cookie-jar/retrieve-affiliate-stylist-id
-                              :affiliate-stylist-id
-                              spice/parse-int)
+                      (stylists/retrieve-parsed-affiliate-id app-state)
                       {:error-handler #(let [{:keys [error-code error-message]} (-> % :response :body)]
                                          (when (= error-code "ineligible-for-free-install")
                                            (messages/handle-message events/order-remove-promotion

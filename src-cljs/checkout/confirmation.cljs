@@ -5,11 +5,13 @@
             [checkout.cart.items :as cart-items]
             [checkout.confirmation.summary :as confirmation-summary]
             [checkout.templates.item-card :as item-card]
+            [spice.core :as spice]
             [spice.maps :as maps]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.stylists :as stylists]
             [storefront.api :as api]
             [storefront.config :as config]
+            [storefront.browser.cookie-jar :as cookie-jar]
             [storefront.component :as component]
             [storefront.components.checkout-credit-card :as checkout-credit-card]
             [storefront.components.checkout-delivery :as checkout-delivery]
@@ -59,15 +61,24 @@
 
 (defmethod effects/perform-effects events/control-checkout-quadpay-confirmation-submit
   [_ _ _ app-state]
-  (let [current-uri  (get-in app-state keypaths/navigation-uri)
-        order-number (get-in app-state keypaths/order-number)
-        order-token  (get-in app-state keypaths/order-token)]
+  (let [current-uri          (get-in app-state keypaths/navigation-uri)
+        order-number         (get-in app-state keypaths/order-number)
+        order-token          (get-in app-state keypaths/order-token)
+        store-slug           (get-in app-state keypaths/store-slug)
+        affiliate-stylist-id (some-> app-state
+                                     (get-in keypaths/cookie)
+                                     cookie-jar/retrieve-affiliate-stylist-id
+                                     :affiliate-stylist-id
+                                     spice/parse-int)]
     (api/update-cart-payments
      (get-in app-state keypaths/session-id)
      {:order {:number        order-number
               :token         order-token
               :cart-payments {:quadpay
-                              {:status-url (str config/api-base-url "/hooks/quadpay_notifications")
+                              {:status-url (str config/api-base-url "/hooks/quadpay_notifications"
+                                                (when (and affiliate-stylist-id
+                                                           (contains? #{"shop" "freeinstall"} store-slug))
+                                                  (str "?affiliate-stylist-id=" affiliate-stylist-id)))
                                :return-url
                                (str (assoc current-uri
                                            :path (str "/orders/" order-number "/quadpay" )

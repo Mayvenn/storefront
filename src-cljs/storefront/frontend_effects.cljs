@@ -803,11 +803,7 @@
       (api/place-order (get-in app-state keypaths/session-id)
                        order
                        (cookie-jar/retrieve-utm-params (get-in app-state keypaths/cookie))
-                       (some-> app-state
-                               (get-in keypaths/cookie)
-                               cookie-jar/retrieve-affiliate-stylist-id
-                               :affiliate-stylist-id
-                               spice/parse-int)))))
+                       (stylists/retrieve-parsed-affiliate-id app-state)))))
 
 (defmethod effects/perform-effects events/save-order
   [_ _ {:keys [order]} _ app-state]
@@ -925,11 +921,7 @@
     (api/place-order (get-in app-state keypaths/session-id)
                      order
                      (cookie-jar/retrieve-utm-params (get-in app-state keypaths/cookie))
-                     (some-> app-state
-                             (get-in keypaths/cookie)
-                             cookie-jar/retrieve-affiliate-stylist-id
-                             :affiliate-stylist-id
-                             spice/parse-int))))
+                     (stylists/retrieve-parsed-affiliate-id app-state))))
 
 (defmethod effects/perform-effects events/api-success-update-order [_ event {:keys [order navigate event]} _ app-state]
   (messages/handle-message events/save-order {:order order})
