@@ -387,7 +387,6 @@
 (defpath inserted-stringer)
 (defpath inserted-convert)
 (defpath inserted-facebook)
-(defpath inserted-jsQR)
 (defpath inserted-pixlee)
 (defpath inserted-places)
 (defpath inserted-quadpay)

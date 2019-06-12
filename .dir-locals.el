@@ -3,5 +3,5 @@
          (cider-lein-parameters . "with-profile +dev repl :headless :host localhost")
          (eval . (with-eval-after-load 'clojure-mode
                    (setq
-                    cider-default-cljs-repl 'figwheel
+                    cider-default-cljs-repl 'figwheel-main
                     clojure-use-metadata-for-privacy t))))))

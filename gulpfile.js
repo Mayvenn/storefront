@@ -87,13 +87,10 @@ function cleanMinJs() {
 exports['minify-js'] = gulp.series(cleanMinJs, minifyJs);
 function minifyJs() {
   return gulp.src('src-cljs/storefront/*.js')
-    .pipe(uglify({mangle: {reserved: ["jsQR"]}}))
+    .pipe(uglify())
     .pipe(gulp.dest('target/min-js/'));
 }
 
-exports['move-jsqr'] = function moveJSQR(cb) {
-  run('mkdir -p ./resources/public/js/out/src-cljs/storefront/; mv target/min-js/jsQR.js resources/public/js/out/src-cljs/storefront/jsQR.js', cb);
-};
 exports['cljs-build'] = function cljsBuild(cb) {
   run('lein cljsbuild once release', cb);
 };
@@ -154,7 +151,7 @@ function revAssets() {
   var options = {
     prefix: "//" + argv.host + "/cdn/",
     includeFilesInManifest: ['.css', '.js', '.svg', '.png', '.gif', '.woff', '.cljs', '.cljc', '.map'],
-    dontSearchFile: ['[^jsQR].js']
+    dontSearchFile: ['.js']
   };
 
   return hashedAssetSources()
@@ -248,4 +245,4 @@ function writeJsStats(cb) {
 
 exports['cdn'] = gulp.series(cleanHashedAssets, fixSourceMap, revAssets, fixMainJsPointingToSourceMap, exports['gzip']);
 
-exports['compile-assets'] = gulp.series(css, minifyJs, exports['move-jsqr'], exports['cljs-build'], copyReleaseAssets, exports['cdn'], saveGitShaVersion, writeJsStats);
+exports['compile-assets'] = gulp.series(css, minifyJs, exports['cljs-build'], copyReleaseAssets, exports['cdn'], saveGitShaVersion, writeJsStats);

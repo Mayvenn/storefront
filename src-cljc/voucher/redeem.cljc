@@ -1,7 +1,6 @@
 (ns ^:figwheel-load voucher.redeem
   (:require #?@(:cljs [[storefront.accessors.auth :as auth]
                        [storefront.history :as history]
-                       [storefront.hooks.js-qr :as js-qr]
                        [storefront.api :as api]
                        [voucher.components.qr-reader :as qr-reader]
                        [storefront.loader :as loader]
@@ -91,13 +90,10 @@
   [:div.mt8 (ui/large-spinner {:style {:height "6em"}})])
 
 (defn ^:private component
-  [{:keys [service-menu-fetching? service-menu-missing? jsQR-loading?] :as data} owner opts]
+  [{:keys [service-menu-fetching? service-menu-missing?] :as data} owner opts]
   (component/create
    [:div.bg-light-silver
-    (cond jsQR-loading?
-          spinner
-
-          service-menu-fetching?
+    (cond service-menu-fetching?
           spinner
 
           service-menu-missing?
@@ -115,7 +111,6 @@
                                   (or (utils/requesting? data request-keys/fetch-stylist-service-menu)
                                       (nil? service-menu)))
      :service-menu-missing?  (and service-menu-required? (= service-menu ::missing))
-     :jsQR-loading?          (not (get-in data keypaths/loaded-jsQR))
      :redeeming-voucher?     (utils/requesting? data request-keys/voucher-redemption)
      :field-errors           (get-in data keypaths/field-errors)}))
 
@@ -126,9 +121,8 @@
 
 (defmethod effects/perform-effects events/navigate-voucher-redeem
   [dispatch event args prev-app-state app-state]
-  #?(:cljs (if (and (auth/stylist? (auth/signed-in app-state))
-                    (experiments/vouchers? app-state))
-             (js-qr/insert)
+  #?(:cljs (when-not (and (auth/stylist? (auth/signed-in app-state))
+                          (experiments/vouchers? app-state))
              (history/enqueue-redirect events/navigate-home))))
 
 (defmethod transitions/transition-state events/navigate-voucher-redeem

@@ -12,10 +12,15 @@
                  [mayvenn/spice "0.1.60"]
                  [compojure "1.6.1"]
                  [noir-exception "0.2.3"]
+                 [ring "1.7.1"]
                  [ring/ring-json "0.3.1"]
-                 [ring/ring-defaults "0.1.4"]
+                 [ring/ring-defaults "0.3.2" :exclusions [[javax.servlet/servlet-api]]]
                  [ring-jetty-component "0.3.1"]
-                 [org.eclipse.jetty/jetty-server "9.3.9.v20160517"]
+                 [ring/ring-jetty-adapter "1.7.1"]
+                 [javax.servlet/javax.servlet-api "3.1.0"]
+		             [org.eclipse.jetty/jetty-server                "9.4.12.v20180830"]
+		             [org.eclipse.jetty.websocket/websocket-servlet "9.4.12.v20180830"]
+		             [org.eclipse.jetty.websocket/websocket-server  "9.4.12.v20180830"]
                  [hiccup "1.0.5"]
                  [cheshire "5.8.0"]
                  [cljsjs/google-maps "3.18-1"]
@@ -39,8 +44,7 @@
   :repositories [["private" {:url "s3p://mayvenn-dependencies/releases/"}]]
   :plugins [[s3-wagon-private "1.3.1"]
             [lein-cljsbuild "1.1.7"]
-            [lein-cljfmt "0.1.10"]
-            [lein-figwheel "0.5.18"]]
+            [lein-cljfmt "0.1.10"]]
   :figwheel {:nrepl-port 4000
              :css-dirs   ["resources/public/css"]}
   :main storefront.core
@@ -58,50 +62,10 @@
                                     "resources/public/cdn"]
   :source-paths ["src" "src-cljc" "src-cljs"]
   :resource-paths ["resources"]
+  :aliases {"fig" ["trampoline" "run" "-m" "figwheel.main" "-b" "dev" "-r"]}
   :cljsbuild
   {:builds
-   {:dev
-    {:source-paths ["src-cljc" "src-cljs"]
-     :figwheel     {:on-jsload "storefront.core/on-jsload"}
-     :compiler     {:main             "storefront.core"
-                    :asset-path       "/js/out"
-                    :output-to        "resources/public/js/out/main.js"
-                    :output-dir       "resources/public/js/out"
-                    :modules          {:cljs-base {:output-to "target/release/js/out/cljs_base.js"}
-                                       :main      {:output-to "target/release/js/out/main.js"
-                                                   :entries   #{"storefront.core" "rng"}}
-                                       :redeem    {:output-to  "target/release/js/out/redeem.js"
-                                                   :entries    #{"voucher.redeem" "voucher.redeemed"}
-                                                   :depends-on #{:main}}}
-                    :pretty-print     true
-                    :infer-externs    false
-                    :static-fns       true
-                    :fn-invoke-direct true
-                    :parallel-build   true
-                    :libs             ["src-cljs/rng/rng.js"]
-                    :npm-deps         false
-                    :install-deps     false
-                    :foreign-libs     [{:file     "src-cljs/storefront/react-slick.js"
-                                        :provides ["react-slick"]}
-                                       {:file     "src-cljs/storefront/bugsnag-2.5.0.js"
-                                        :provides ["bugsnag"]}]
-                    :externs          ["externs/bugsnag.js"
-                                       "externs/convert.js"
-                                       "externs/facebook.js"
-                                       "externs/google_autocomplete.js"
-                                       "externs/pixlee.js"
-                                       "externs/quadpay.js"
-                                       "externs/react-slick.js"
-                                       "externs/riskified.js"
-                                       "externs/spreedly.js"
-                                       "externs/stringer.js"
-                                       "externs/stripe.js"
-                                       "externs/talkable.js"
-                                       "externs/uploadcare.js"
-                                       "externs/wistia.js"
-                                       "externs/yotpo.js"]
-                    :preloads         [devtools.preload]}}
-    :release
+   {:release
     {:source-paths     ["src-cljc" "src-cljs"]
      :warning-handlers [cljs.analyzer/default-warning-handler
                         (fn [warning-type env extra]
@@ -125,15 +89,18 @@
                         :parallel-build   true
                         :npm-deps         false
                         :install-deps     false
-                        ;;:stable-names     true
                         :libs             ["src-cljs/rng/rng.js"]
-                        :foreign-libs     [{:file     "src-cljs/storefront/react-slick.js"
+                        :foreign-libs     [{:file     "src-cljs/storefront/jsQR.js"
+                                            :file-min "target/min-js/jsQR.js"
+                                            :provides ["jsQR"]}
+                                           {:file     "src-cljs/storefront/react-slick.js"
                                             :file-min "target/min-js/react-slick.js" ;; created by gulp
                                             :provides ["react-slick"]}
                                            {:file     "src-cljs/storefront/bugsnag-2.5.0.js"
                                             :file-min "target/min-js/bugsnag-2.5.0.js"
                                             :provides ["bugsnag"]}]
-                        :externs          ["externs/bugsnag.js"
+                        :externs          ["externs/jsQR.js"
+                                           "externs/bugsnag.js"
                                            "externs/convert.js"
                                            "externs/facebook.js"
                                            "externs/google_autocomplete.js"
@@ -157,7 +124,8 @@
                         [nrepl "0.6.0"]]}
              :dev     {:source-paths ["dev/clj"]
                        :dependencies [[cider/piggieback "0.4.0"]
-                                      [figwheel-sidecar "0.5.18"]
+                                      [com.bhauman/figwheel-main "0.2.1-SNAPSHOT"]
+                                      [com.bhauman/rebel-readline-cljs "0.1.4"]
                                       [nrepl "0.6.0"]
                                       [binaryage/devtools "0.9.10"]
                                       [org.clojure/tools.reader "1.3.0"]

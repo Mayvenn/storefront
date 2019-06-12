@@ -27,10 +27,6 @@
 (def enable-style-guide?
   (not= "production" js/environment))
 
-(def enable-loader?
-  true
-  #_(not= "development" js/environment))
-
 (def telligent-community-secured?
   (= "production" js/environment))
 

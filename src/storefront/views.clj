@@ -154,7 +154,8 @@
           ;; additionally, we want developers to see the server side render, so we don't want
           ;; to put this tag in <head> and be synchronous
           (when (config/development? environment)
-            [:script {:src (assets/path "/js/out/main.js")}])]))
+            (for [n ["cljs_base.js" "main.js"]]
+              [:script {:src (str "/js/out/" n)}]))]))
 
 (defn index [render-ctx data]
   (layout render-ctx data spinner-content))

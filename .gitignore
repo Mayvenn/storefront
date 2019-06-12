@@ -17,6 +17,7 @@ resources/public/js/out
 resources/public/css
 resources/public/cdn
 resources/public/sourcemaps
+resources/public/cljs-out
 resources/rev-manifest.json
 resources/client_version.txt
 resources/*.stat

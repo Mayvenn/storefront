@@ -601,9 +601,6 @@
 (defmethod transition-state events/inserted-stripe [_ event _ app-state]
   (assoc-in app-state keypaths/loaded-stripe true))
 
-(defmethod transition-state events/inserted-jsQR [_ event _ app-state]
-  (assoc-in app-state keypaths/loaded-jsQR true))
-
 (defmethod transition-state events/inserted-uploadcare [_ _ _ app-state]
   (assoc-in app-state keypaths/loaded-uploadcare true))
 

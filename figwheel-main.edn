@@ -1,0 +1,3 @@
+{:target-dir "resources/"
+ :watch-dirs ["src-cljc" "src-cljs"]
+ :css-dirs ["resources/public/css"]}

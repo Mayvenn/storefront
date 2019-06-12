@@ -1,0 +1,39 @@
+{:asset-path       "/js/out"
+ :output-dir       "resources/public/js/out"
+ :modules          {:cljs-base {:output-to "resources/public/js/out/cljs_base.js"}
+                    :main      {:output-to "resources/public/js/out/main.js"
+                                :entries   #{"storefront.core" "rng"}}
+                    :redeem    {:output-to  "resources/public/js/out/redeem.js"
+                                :entries    #{"voucher.redeem" "voucher.redeemed"}
+                                :depends-on #{:main}}}
+ :pretty-print     true
+ :infer-externs    false
+ :static-fns       true
+ :fn-invoke-direct true
+ :parallel-build   true
+ :libs             ["src-cljs/rng/rng.js"]
+ :npm-deps         false
+ :install-deps     false
+ :foreign-libs     [{:file     "src-cljs/storefront/jsQR.js"
+                     :provides ["jsQR"]}
+                    {:file     "src-cljs/storefront/react-slick.js"
+                     :provides ["react-slick"]}
+                    {:file     "src-cljs/storefront/bugsnag-2.5.0.js"
+                     :provides ["bugsnag"]}]
+ :externs          ["externs/jsQR.js"
+                    "externs/bugsnag.js"
+                    "externs/convert.js"
+                    "externs/facebook.js"
+                    "externs/google_autocomplete.js"
+                    "externs/pixlee.js"
+                    "externs/quadpay.js"
+                    "externs/react-slick.js"
+                    "externs/riskified.js"
+                    "externs/spreedly.js"
+                    "externs/stringer.js"
+                    "externs/stripe.js"
+                    "externs/talkable.js"
+                    "externs/uploadcare.js"
+                    "externs/wistia.js"
+                    "externs/yotpo.js"]
+ :preloads         [devtools.preload]}

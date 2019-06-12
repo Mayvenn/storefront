@@ -3,14 +3,10 @@
             [storefront.config :as config]))
 
 (defn set-loaded! [module-name]
-  (when config/enable-loader?
-    (loader/set-loaded! module-name)))
+  (loader/set-loaded! module-name))
 
 (defn loaded? [module-name]
-  (if config/enable-loader?
-    (loader/loaded? module-name)
-    true))
+  (loader/loaded? module-name))
 
 (defn load [module-name completed-fn]
-  (when config/enable-loader?
-    (loader/load module-name completed-fn)))
+  (loader/load module-name completed-fn))

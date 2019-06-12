@@ -13,7 +13,6 @@
   (->> manifest
        (filter (fn [[filename _]]
                  (or (= "css/app.css" filename)
-                     (= "js/out/src-cljs/storefront/jsQR.js" filename)
                      (re-find #"^images/" filename))))
        (into {})))
 
