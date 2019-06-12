@@ -1,4 +1,4 @@
-(ns storefront.core
+(ns ^:figwheel-hooks storefront.core
   (:require [storefront.config :as config]
             [storefront.loader :as loader]
             [storefront.state :as state]
@@ -133,8 +133,10 @@
 (defn ^:export debug-app-state []
   (clj->js @app-state))
 
-(defn on-jsload []
-  (handle-message app-state events/app-stop)
+(defn ^:before-load before-load []
+  (handle-message app-state events/app-stop))
+
+(defn ^:after-load after-load []
   (reload-app app-state))
 
 (defn ^:export fail []
