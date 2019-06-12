@@ -137,12 +137,9 @@
                         document.fonts.add(robotoRegular);
                     });
                 }"))]
-          ;; in production, we want to load the script tag asynchronously which has better
-          ;; support when that script tag is in the <head>
           (when-not (config/development? environment)
             (for [n ["cljs_base.js" "main.js"]]
-              [:script {:src (assets/path (str "/js/out/" n))
-                        :async true}]))
+              [:script {:src (assets/path (str "/js/out/" n))}]))
           ;; inline styles in production because our css file is so small and it avoids another round
           ;; trip request. At time of writing this greatly includes our pagespeed score
           (if (#{"development" "test"} environment)
