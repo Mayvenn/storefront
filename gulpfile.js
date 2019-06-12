@@ -208,16 +208,16 @@ function writeJsStats(cb) {
   fs.readFile('resources/rev-manifest.json', 'utf8', function(err, data) {
     if (err) { cb(err); return console.log(err); }
 
-    var revManifest = JSON.parse(data),
-        mainJsFilePath = "resources/public/cdn/" + revManifest["js/out/main.js"];
+    let revManifest = JSON.parse(data),
+        mainJsFilePath = "resources/public/cdn/" + revManifest["js/out/main.js"],
+        cljsBaseFilePath = "resources/public/cdn/" + revManifest["js/out/cljs_base.js"];
 
-    exec('wc -c "' + mainJsFilePath + '" | awk \'{print $1}\'', function(err, stdout){
+    exec('wc -c "' + mainJsFilePath + '" "' + cljsBaseFilePath + '" | awk \'{print $1}\' | tail -n 1', function(err, stdout){
       if (err) {
         cb(err);
       } else {
         var fileSize = stdout.trim();
-        var fileCommand = (os.platform() == "darwin") ? "zless" : "zcat";
-        exec('(time -p ' + fileCommand + ' ' + mainJsFilePath + '| node --check 2>/dev/null 1>/dev/null) 2>&1 | head -n1 | awk \'{print $2}\'', {shell: '/bin/bash'}, function(err, stdout) {
+        exec('(time -p /bin/bash -c \'cat "' + cljsBaseFilePath  +  '" "' + mainJsFilePath + '" | gunzip -c | node --check\' 2>/dev/null 1>/dev/null) 2>&1 | head -n1 | awk \'{print $2}\'', {shell: '/bin/bash'}, function(err, stdout) {
           var parseTime = stdout.trim();
 
           fs.writeFile("resources/main.js.file_size.stat", fileSize, function(err) {
