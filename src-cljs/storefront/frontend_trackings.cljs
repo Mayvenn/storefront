@@ -418,7 +418,7 @@
 (defmethod perform-track events/control-stylist-dashboard-cash-out-commit
   [_ _ _ app-state]
   (let [stylist-id                     (get-in app-state keypaths/user-store-id)
-        store-slug                     (get-in app-state keypaths/store-slug)
+        store-slug                     (get-in app-state keypaths/user-store-slug)
         {:keys [amount payout-method]} (get-in app-state keypaths/stylist-payout-stats-next-payout)]
     (stringer/track-event "cash_out_commit_button_pressed"
                           {:stylist_id stylist-id
@@ -429,7 +429,7 @@
 (defmethod perform-track events/api-success-cash-out-complete
   [_ _ {:keys [amount payout-method] :as cash-out-status} app-state]
   (let [stylist-id (get-in app-state keypaths/user-store-id)
-        store-slug (get-in app-state keypaths/store-slug)]
+        store-slug (get-in app-state keypaths/user-store-slug)]
     (stringer/track-event "cash_out_succeeded"
                           {:stylist_id stylist-id
                            :store_slug store-slug
@@ -439,7 +439,7 @@
 (defmethod perform-track events/api-success-cash-out-failed
   [_ _ {:keys [amount payout-method] :as cash-out-status} app-state]
   (let [stylist-id (get-in app-state keypaths/user-store-id)
-        store-slug (get-in app-state keypaths/store-slug)]
+        store-slug (get-in app-state keypaths/user-store-slug)]
     (stringer/track-event "cash_out_failed"
                           {:stylist_id stylist-id
                            :store_slug store-slug
