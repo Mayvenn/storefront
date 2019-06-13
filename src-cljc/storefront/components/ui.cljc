@@ -59,11 +59,12 @@
    - module-name is the keyword of the module to load if the component is missing. See project.clj for modules.
    - fully-qualified-built-component-symbol is a symbol of the absolute namespace + function to use as the component when the module is loaded.
   "
-  [module-name fully-qualified-built-component-symbol]
+  [module-name fully-qualified-built-component-symbol for-navigation-event]
   #?(:cljs (or (when-not (loader/loaded? module-name)
                  (loader/load module-name
                               (fn []
-                                (handle-message events/module-loaded {:module-name module-name})))
+                                (handle-message events/module-loaded {:module-name          module-name
+                                                                      :for-navigation-event for-navigation-event})))
                  nil)
                (let [path (string/split (str (munge-str (namespace fully-qualified-built-component-symbol))
                                              "."

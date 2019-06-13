@@ -123,8 +123,8 @@
           events/navigate-shared-cart             shared-cart/built-component
           events/navigate-checkout-processing     checkout-processing/built-component
           events/navigate-cart                    cart/built-component
-          events/navigate-voucher-redeem          (ui/lazy-load-component :redeem 'voucher.redeem/built-component)
-          events/navigate-voucher-redeemed        (ui/lazy-load-component :redeem 'voucher.redeemed/built-component)
+          events/navigate-voucher-redeem          (ui/lazy-load-component :redeem 'voucher.redeem/built-component events/navigate-voucher-redeem)
+          events/navigate-voucher-redeemed        (ui/lazy-load-component :redeem 'voucher.redeemed/built-component events/navigate-voucher-redeemed)
           events/navigate-mayvenn-made            mayvenn-made.home/built-component
           events/navigate-content-guarantee       content/built-component
           events/navigate-content-help            content/built-component

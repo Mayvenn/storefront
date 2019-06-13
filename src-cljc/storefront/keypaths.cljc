@@ -3,6 +3,7 @@
 
 (def cookie [:cookie])
 (def scheme [:scheme])
+(def modules [:modules])
 
 (def cms [:cms])
 (def cms-ugc-collection (conj cms :ugc-collection))

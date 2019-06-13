@@ -200,7 +200,8 @@
       (apply messages/handle-message navigation-message))))
 
 (defmethod effects/perform-effects events/redirect [_ event {:keys [nav-message]} _ app-state]
-  (apply history/enqueue-redirect nav-message))
+  (let [[event args] nav-message]
+    (history/enqueue-redirect event (assoc args :navigate/caused-by :redirect))))
 
 (defn add-pending-promo-code [app-state {:keys [number token] :as order}]
   (when-let [pending-promo-code (get-in app-state keypaths/pending-promo-code)]
@@ -1063,5 +1064,10 @@
   [_ event args app-state-before app-state]
   (messages/handle-message events/stringer-distinct-id-available {:stringer-distinct-id (stringer/browser-id)}))
 
-(defmethod effects/perform-effects events/module-loaded [_ _ {:keys [module-name]} app-state]
-  (apply messages/handle-message (get-in app-state keypaths/navigation-message)))
+(defmethod effects/perform-effects events/module-loaded [_ _ {:keys [module-name for-navigation-event]} app-state-before app-state]
+  (let [already-loaded-module? (= (get-in app-state-before keypaths/modules)
+                                  (get-in app-state keypaths/modules))
+        [evt args]             (get-in app-state keypaths/navigation-message)]
+    (when (and (not already-loaded-module?)
+               (= for-navigation-event evt))
+      (messages/handle-message evt (assoc args :navigate/caused-by :module-load)))))
