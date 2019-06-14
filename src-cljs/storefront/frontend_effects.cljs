@@ -259,13 +259,11 @@
       (when-let [pending-promo-code (:sha query-params)]
         (cookie-jar/save-pending-promo-code
          (get-in app-state keypaths/cookie)
-         pending-promo-code)
-        (effects/redirect event (update-in args [:query-params] dissoc :sha))))
+         pending-promo-code)))
 
     (when-let [affiliate-stylist-id (:affiliate_stylist_id query-params)]
       (cookie-jar/save-affiliate-stylist-id (get-in app-state keypaths/cookie)
-                                            {:affiliate-stylist-id affiliate-stylist-id})
-      (effects/redirect event (update-in args [:query-params] dissoc :affiliate_stylist_id)))
+                                            {:affiliate-stylist-id affiliate-stylist-id}))
 
     (messages/handle-message events/determine-and-show-popup)
 
