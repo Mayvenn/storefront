@@ -603,7 +603,7 @@
                                  products/current-product
                                  (select-keys [:catalog/product-id :page/slug])
                                  (assoc :query-params {:SKU sku-id-for-selection}))]
-    (effects/redirect navigation-event params-with-sku-id)
+    (effects/redirect navigation-event params-with-sku-id :sku-option-select)
     #?(:cljs (scroll/enable-body-scrolling))))
 
 (defmethod transitions/transition-state events/control-product-detail-picker-open

@@ -145,7 +145,7 @@
 ;; TODO(jeff,corey): history/path-for should support domains like navigation-message-for
 (defn path-for [navigation-event & [args]]
   (let [query-params (cond-> (:query-params args)
-                       (:navigate/caused-by args) (assoc :nav-cause (name (:navigate/caused-by args))))
+                       (:navigate/caused-by args) (assoc :nav_cause (name (:navigate/caused-by args))))
         args         (dissoc args :query-params)
         path         (apply bidi/path-for
                             app-routes
