@@ -224,6 +224,7 @@
            :data-test (str "picker-length-" (:option/slug item))}
      (ui/option {:height   "4em"
                  :key      (str key "-option")
+                 :href     "#"
                  :on-click #(select-and-close
                              events/control-product-detail-picker-option-select
                              {:selection        selected-picker

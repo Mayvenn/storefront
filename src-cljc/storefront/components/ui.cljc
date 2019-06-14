@@ -692,15 +692,15 @@
 
 (defn option
   [{:keys [key disabled? height on-click]} & content]
-  [:div.relative.my1.mx2
-   {:key   key
-    :style {:height height}}
+  [:a.block.relative.my1.mx2
+   (merge
+    {:key      key
+     :style    {:height height}
+     :on-click (if disabled? utils/noop-callback on-click)}
+    (when disabled?
+      {:data-test-disabled "disabled"}))
    [:div.absolute.overlay.rounded-0.border.border-gray]
-   content
-   (when-not disabled?
-     [:div.absolute.overlay
-      (when on-click
-        {:on-click on-click})])])
+   content])
 
 (def header-image-size 36)
 
