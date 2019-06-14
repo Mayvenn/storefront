@@ -17,8 +17,7 @@
   ([event args]
    (redirect event args nil))
   ([event args caused-by]
-   (messages/handle-message events/redirect {:nav-message [event args]
-                                             :navigate/caused-by caused-by})))
+   (messages/handle-message events/redirect {:nav-message [event args]})))
 
 (defn page-not-found
   []

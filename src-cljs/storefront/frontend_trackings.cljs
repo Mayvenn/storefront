@@ -69,7 +69,7 @@
            (= (:catalog/product-id nav-args) (:catalog/product-id prev-nav-args))))))
 
 (defmethod perform-track events/navigate [_ event {:keys [navigate/caused-by] :as args} app-state]
-  (when (not (#{:module-load :redirect} caused-by))
+  (when (not (#{:module-load} caused-by))
     (let [path (routes/current-path app-state)]
       (google-analytics/track-page path)
       (when (not (nav-was-selecting-bundle-option? app-state))

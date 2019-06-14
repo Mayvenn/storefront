@@ -144,8 +144,7 @@
 
 ;; TODO(jeff,corey): history/path-for should support domains like navigation-message-for
 (defn path-for [navigation-event & [args]]
-  (let [query-params (cond-> (:query-params args)
-                       (:navigate/caused-by args) (assoc :nav_cause (name (:navigate/caused-by args))))
+  (let [query-params (:query-params args)
         args         (dissoc args :query-params)
         path         (apply bidi/path-for
                             app-routes
@@ -168,8 +167,7 @@
                                                      :subdomain subdomain)]
      [(if nav-event (bidi->edn nav-event) events/navigate-not-found)
       (-> params
-          (merge (when (seq query-params) {:query-params (dissoc query-params "nav_cause")
-                                           :navigate/caused-by (keyword (get query-params "nav_cause"))}))
+          (merge (when (seq query-params) {:query-params query-params}))
           keywordize-keys)])))
 
 (defn sub-page?

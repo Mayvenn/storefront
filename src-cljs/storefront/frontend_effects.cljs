@@ -199,9 +199,9 @@
 
       (apply messages/handle-message navigation-message))))
 
-(defmethod effects/perform-effects events/redirect [_ event {:keys [nav-message navigate/caused-by]} _ app-state]
+(defmethod effects/perform-effects events/redirect [_ event {:keys [nav-message]} _ app-state]
   (let [[event args] nav-message]
-    (history/enqueue-redirect event (assoc args :navigate/caused-by (or caused-by :redirect)))))
+    (history/enqueue-redirect event args)))
 
 (defn add-pending-promo-code [app-state {:keys [number token] :as order}]
   (when-let [pending-promo-code (get-in app-state keypaths/pending-promo-code)]
