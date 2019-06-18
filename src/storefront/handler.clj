@@ -602,6 +602,9 @@
                       ["User-agent: *"
                        "Disallow: /"
                        "Allow: /$"
+                       "Allow: /how-it-works"
+                       "Allow: /certified-stylists"
+                       "Allow: /about-our-hair"
                        "Sitemap: https://shop.mayvenn.com/sitemap.xml"]
                       user-specific-disalloweds)))
 
