@@ -58,6 +58,8 @@
 
    - module-name is the keyword of the module to load if the component is missing. See project.clj for modules.
    - fully-qualified-built-component-symbol is a symbol of the absolute namespace + function to use as the component when the module is loaded.
+   - for-navigation-event is the nav event that the page is of to know if a re-triggering of navigate event is necessary (ie - b/c the module loaded,
+     or the user navigated elsewhere).
   "
   [module-name fully-qualified-built-component-symbol for-navigation-event]
   #?(:cljs (or (when-not (loader/loaded? module-name)
