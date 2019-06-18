@@ -16,8 +16,8 @@
 (defn storeback-post [storeback-config path params]
   (tugboat/request {:endpoint (:internal-endpoint storeback-config)}
                    :post path
-                   (merge {:socket-timeout 30000 ;; Note that some apis trigger multiple requests
-                           :conn-timeout   30000
+                   (merge {:socket-timeout 37000 ;; Note that some apis trigger multiple requests
+                           :conn-timeout   35000
                            :content-type   :json
                            :as             :json
                            :coerce         :always}
