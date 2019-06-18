@@ -1,4 +1,4 @@
-(ns ^:figwheel-load voucher.redeem
+(ns voucher.redeem
   (:require #?@(:cljs [[storefront.accessors.auth :as auth]
                        [storefront.history :as history]
                        [storefront.api :as api]
