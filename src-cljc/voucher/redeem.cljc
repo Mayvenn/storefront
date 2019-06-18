@@ -136,7 +136,7 @@
   [dispatch event {:keys [code]} prev-app-state app-state]
   #?(:cljs
      (when-not (utils/requesting? app-state request-keys/voucher-redemption)
-       (api/voucher-redemption code (get-in app-state keypaths/store-stylist-id)))))
+       (api/voucher-redemption code (get-in app-state keypaths/user-store-id)))))
 
 (defmethod effects/perform-effects events/control-voucher-qr-redeem
   [dispatch event {:keys [code]} prev-app-state app-state]
@@ -144,7 +144,7 @@
      (when (and (not (utils/requesting? app-state request-keys/voucher-redemption))
                 (not= (get-in app-state voucher-keypaths/scanned-code)
                       (get-in prev-app-state voucher-keypaths/scanned-code)))
-       (api/voucher-redemption code (get-in app-state keypaths/store-stylist-id)))))
+       (api/voucher-redemption code (get-in app-state keypaths/user-store-id)))))
 
 (defn ^:private redemption-error [voucherify-error-code]
   (let [[error-message field-errors] (case voucherify-error-code
