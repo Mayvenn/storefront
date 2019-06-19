@@ -388,7 +388,7 @@
 
 (defn empty-cart-query [data]
   {:promotions          (get-in data keypaths/promotions)
-   :aladdin-or-phoenix? (experiments/v2-experience? data)})
+   :aladdin-or-phoenix? (experiments/aladdin-experience? data)})
 
 (defn component
   [{:keys [fetching-order?

@@ -266,7 +266,7 @@
      :show-community?        (and (not match-eligible)
                                   (stylists/own-store? data))
      :vouchers?              (experiments/vouchers? data)
-     :v2-experience?         (experiments/v2-experience? data)
+     :v2-experience?         (experiments/aladdin-experience? data)
      :shop-homepage?         (and shop?
                                   (= events/navigate-home
                                      (get-in data keypaths/navigation-event)))

@@ -454,7 +454,7 @@
                                (map (comp v2/get-ucare-id-from-url :resizable-url)))]
     {:reviews                         (review-component/query data)
      :ugc                             ugc
-     :aladdin-or-phoenix?             (experiments/v2-experience? data)
+     :aladdin-or-phoenix?             (experiments/aladdin-experience? data)
      :fetching-product?               (utils/requesting? data (conj request-keys/search-v2-products
                                                                     (:catalog/product-id product)))
      :adding-to-bag?                  (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))

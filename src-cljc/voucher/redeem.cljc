@@ -103,7 +103,7 @@
           (primary-component data))]))
 
 (defn ^:private query [data]
-  (let [service-menu-required? (experiments/v2-experience? data)
+  (let [service-menu-required? (experiments/aladdin-experience? data)
         service-menu           (get-in data keypaths/stylist-service-menu ::missing)]
     {:code                   (get-in data voucher-keypaths/eight-digit-code)
      :scanning?              (get-in data voucher-keypaths/scanning?)

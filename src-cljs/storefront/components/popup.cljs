@@ -42,7 +42,7 @@
 (defmethod effects/perform-effects events/determine-and-show-popup
   [_ _ args _ app-state]
   (let [navigation-event            (get-in app-state keypaths/navigation-event)
-        v2-experience?              (experiments/v2-experience? app-state)
+        v2-experience?              (experiments/aladdin-experience? app-state)
         on-non-minimal-footer-page? (not (nav/show-minimal-footer? navigation-event))
         freeinstall-store?          (= "freeinstall" (get-in app-state keypaths/store-slug))
         seen-email-capture?         (email-capture-session app-state)

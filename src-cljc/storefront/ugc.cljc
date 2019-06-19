@@ -113,7 +113,7 @@
                        (not= target-album-keyword :look)
                        target-album-keyword
 
-                       (experiments/v2-experience? data)
+                       (experiments/aladdin-experience? data)
                        :aladdin-free-install
 
                        :elsewise target-album-keyword)]

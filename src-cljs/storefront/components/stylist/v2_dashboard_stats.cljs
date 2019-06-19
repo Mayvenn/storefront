@@ -147,7 +147,7 @@
     {:stats                                  (cond-> stats
                                                (not-reimbursed-for-services? data)
                                                (dissoc :services))
-     :v2-experience?                         (experiments/v2-experience? data)
+     :v2-experience?                         (experiments/aladdin-experience? data)
      :cashing-out?                           (utils/requesting? data request-keys/cash-out-commit)
      :payout-method                          (get-in data keypaths/stylist-manage-account-chosen-payout-method)
      :cash-balance-section-expanded?         (get-in data keypaths/v2-ui-dashboard-cash-balance-section-expanded?)

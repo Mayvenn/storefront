@@ -56,10 +56,6 @@
 (defn ^:private display-feature? [data feature]
   (contains? (set (get-in data keypaths/features)) feature))
 
-(defn v2-experience? [data]
-  (contains? #{"aladdin" "phoenix"}
-             (get-in data keypaths/store-experience)))
-
 (defn aladdin-experience?
   "Use v2-experience? unless you absolutely need just aladdin"
   [data]

@@ -456,7 +456,7 @@
                                        :back-navigation-message [events/navigate-adventure-match-stylist]}
      :reviews                         (review-component/query data)
      :ugc                             ugc
-     :aladdin-or-phoenix?             (experiments/v2-experience? data)
+     :aladdin-or-phoenix?             (experiments/aladdin-experience? data)
      :adding-to-bag?                  (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
      :sku-quantity                    (get-in data keypaths/browse-sku-quantity 1)
      :options                         options

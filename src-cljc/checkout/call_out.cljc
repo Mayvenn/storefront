@@ -37,7 +37,7 @@
 (defn query
   [data]
   (let [order (get-in data keypaths/order)]
-    {:v2-experience?     (experiments/v2-experience? data)
+    {:v2-experience?     (experiments/aladdin-experience? data)
      :show-green-banner? (orders/freeinstall-applied? order)}))
 
 (defn built-component

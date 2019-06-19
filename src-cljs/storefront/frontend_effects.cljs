@@ -307,7 +307,7 @@
 (defmethod effects/perform-effects events/navigate-shop-by-look
   [dispatch event {:keys [album-keyword]} _ app-state]
   (let [actual-album-kw (ugc/determine-look-album app-state album-keyword)]
-    (if (and (experiments/v2-experience? app-state)
+    (if (and (experiments/aladdin-experience? app-state)
              (= album-keyword :deals))
       (effects/redirect events/navigate-home) ; redirect to home page from /shop/deals for v2-experience
       (when (= :ugc/unknown-album actual-album-kw)
