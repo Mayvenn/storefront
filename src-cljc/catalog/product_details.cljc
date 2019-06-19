@@ -282,7 +282,7 @@
            options
            picker-data
            loaded-quadpay?
-           aladdin-or-phoenix?
+           aladdin?
            ugc] :as data} owner opts]
   (let [review?      (seq reviews)
         unavailable? (not (seq selected-sku))
@@ -340,7 +340,7 @@
                 shipping-and-guarantee)]
              (product-description product)
              [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])]]
-         (when aladdin-or-phoenix?
+         (when aladdin?
            [:div.py10.bg-transparent-teal.col-on-tb-dt.mt4
             (v2/get-a-free-install get-a-free-install-section-data)])
          (when review?
@@ -454,7 +454,7 @@
                                (map (comp v2/get-ucare-id-from-url :resizable-url)))]
     {:reviews                         (review-component/query data)
      :ugc                             ugc
-     :aladdin-or-phoenix?             (experiments/aladdin-experience? data)
+     :aladdin?                        (experiments/aladdin-experience? data)
      :fetching-product?               (utils/requesting? data (conj request-keys/search-v2-products
                                                                     (:catalog/product-id product)))
      :adding-to-bag?                  (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
@@ -473,7 +473,7 @@
                                        :stylist-portrait      (:portrait store)
                                        :stylist-name          (:store-nickname store)
                                        :stylist-gallery-open? (get-in data keypaths/carousel-stylist-gallery-open?)}
-     :loaded-quadpay?            (get-in data keypaths/loaded-quadpay)}))
+     :loaded-quadpay?                 (get-in data keypaths/loaded-quadpay)}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

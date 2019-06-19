@@ -63,7 +63,7 @@
 
 (defn v2-homepage? [data]
   (->> (get-in data keypaths/store-features)
-       (some #{"aladdin-homepage" "phoenix-homepage"})
+       (some #{"aladdin-homepage"})
        boolean))
 
 ;; Promo bar experiments
