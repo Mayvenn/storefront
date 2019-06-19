@@ -57,7 +57,6 @@
   (contains? (set (get-in data keypaths/features)) feature))
 
 (defn aladdin-experience?
-  "Use v2-experience? unless you absolutely need just aladdin"
   [data]
   (= "aladdin" (get-in data keypaths/store-experience)))
 
