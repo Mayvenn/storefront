@@ -62,17 +62,18 @@
      or the user navigated elsewhere).
   "
   [module-name fully-qualified-built-component-symbol for-navigation-event]
-  #?(:cljs (or (when-not (loader/loaded? module-name)
-                 (loader/load module-name
-                              (fn []
-                                (handle-message events/module-loaded {:module-name          module-name
-                                                                      :for-navigation-event for-navigation-event})))
-                 nil)
-               (let [path (string/split (str (munge-str (namespace fully-qualified-built-component-symbol))
-                                             "."
-                                             (munge-str (name fully-qualified-built-component-symbol)))
-                                        #"\.")]
-                 (js/eval (string/join " && " (map (partial string/join ".") (rest (reductions conj [] path))))))
+  #?(:cljs (or (if (loader/loaded? module-name)
+                 (let [path (string/split (str (munge-str (namespace fully-qualified-built-component-symbol))
+                                               "."
+                                               (munge-str (name fully-qualified-built-component-symbol)))
+                                          #"\.")]
+                   (js/eval (string/join " && " (map (partial string/join ".") (rest (reductions conj [] path))))))
+                 (do
+                   (loader/load module-name
+                                (fn []
+                                  (handle-message events/module-loaded {:module-name          module-name
+                                                                        :for-navigation-event for-navigation-event})))
+                   nil))
                built-loading-component)
      :clj (do (require (symbol (namespace fully-qualified-built-component-symbol)))
               (resolve fully-qualified-built-component-symbol))))
