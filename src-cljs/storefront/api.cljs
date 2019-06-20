@@ -1,6 +1,7 @@
 (ns storefront.api
   (:require [ajax.core :refer [GET POST PUT] :as ajax]
             [clojure.string :as str]
+            [clojure.walk :as walk]
             [storefront.accessors.orders :as orders]
             [storefront.routes :as routes]
             [storefront.cache :as c]
@@ -124,9 +125,9 @@
   So as a hack, we are simply making sets vecs.
   Using a more capable format such as transit or edn would also work."
   [params]
-  (clojure.walk/postwalk #(cond (set? %) (vec %)
-                                :else %)
-                         params))
+  (walk/postwalk #(cond (set? %) (vec %)
+                        :else %)
+                 params))
 
 (defn api-request [method url req-key request-opts]
   (let [request-opts (-> request-opts

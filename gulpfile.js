@@ -136,7 +136,8 @@ function saveGitShaVersion(cb) {
 
 function hashedAssetSources () {
   return merge(gulp.src('resources/public/{js,css,images,fonts}/**')
-               .pipe(gulpIgnore.exclude("*.map")));
+               .pipe(gulpIgnore.exclude("*.map")),
+               gulp.src('resources/public/js/out/*.map'));
 }
 
 exports['rev-assets'] = revAssets;
@@ -148,7 +149,8 @@ function revAssets() {
   var options = {
     prefix: "//" + argv.host + "/cdn/",
     includeFilesInManifest: ['.css', '.js', '.svg', '.png', '.gif', '.woff', '.cljs', '.cljc', '.map'],
-    dontSearchFile: ['.js']
+    dontSearchFile: ['.js'],
+    dontRenameFile: ['.map']
   };
 
   return hashedAssetSources()
@@ -158,51 +160,78 @@ function revAssets() {
     .pipe(gulp.dest('resources'));
 }
 
-exports['cp-source-maps'] = copySourceMaps;
-function copySourceMaps() {
-  return gulp.src('resources/public/js/out/*.map')
-    .pipe(gulp.dest('resources/public/cdn/js/out'));
+function readFile(filename) {
+  return new Promise((resolve, reject) => {
+    fs.readFile(filename, 'utf8', function(err, data) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(data);
+      }
+    });
+  });
 }
 
-exports['fix-main-js-pointing-to-source-map'] = gulp.series(copySourceMaps, fixMainJsPointingToSourceMap);
-function fixMainJsPointingToSourceMap(cb) {
+function writeFile(filename, data) {
+  return new Promise((resolve, reject) => {
+    fs.writeFile(filename, data, 'utf8', function(err) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(true);
+      }
+    });
+  });
+}
+
+function renameFile(oldFilename, newFilename) {
+  return new Promise((resolve, reject) => {
+    fs.rename(oldFilename, newFilename, function(err) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(true);
+      }
+    });
+  });
+}
+
+exports['fix-main-js-pointing-to-source-map'] = fixMainJsPointingToSourceMap;
+async function fixMainJsPointingToSourceMap() {
   // because .js files are excluded from search and replace of sha-ed versions (so that
   // the js code doesn't become really wrong), we need to take special care to update
   // main.js to have the sha-ed version of the sourcemap in the file
-  fs.readFile("resources/rev-manifest.json", 'utf8', function(err, data) {
-    if (err) { cb(err); return console.log(err); }
+  var revManifest = JSON.parse(await readFile("resources/rev-manifest.json"));
 
-    var revManifest = JSON.parse(data);
+  let jsRootFiles = ["js/out/cljs_base.js", "js/out/main.js", "js/out/redeem.js"];
+  let base = "resources/public/cdn/";
 
-    let jsRootFiles = ["js/out/cljs_base.js", "js/out/main.js", "js/out/redeem.js"];
-    let base = "resources/public/cdn/";
 
-    var i = 0;
-    jsRootFiles.forEach(function(jsKey){
-      var originalFullJsMapFile = base + jsKey + ".map";
-      var finalFullJsMapFile = base + revManifest[jsKey] + ".map";
-      fs.renameSync(originalFullJsMapFile, finalFullJsMapFile);
-      revManifest[jsKey + ".map"] = revManifest[jsKey] + ".map";
+  await Promise.all(jsRootFiles.map(async (jsKey) => {
+    var originalFullJsMapFile = base + jsKey + ".map";
+    var finalFullJsMapFile = base + revManifest[jsKey] + ".map";
 
-      var fullJsFile = "resources/public/cdn/" + revManifest[jsKey];
-      fs.readFile(fullJsFile, 'utf8', function (err,data) {
-        if (err) { return console.log(err); }
-        function escapeRegExp(string) {
-          return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
-        }
-        var result = data.replace(new RegExp(escapeRegExp(path.basename(jsKey)), 'g'), path.basename(revManifest[jsKey]));
+    revManifest[jsKey + ".map"] = revManifest[jsKey] + ".map";
+    await renameFile(originalFullJsMapFile, finalFullJsMapFile);
+  }));
 
-        fs.writeFile(fullJsFile, result, 'utf8', function (err) {
-          if (err) { return console.log(err); }
-          i++;
+  await Promise.all(jsRootFiles.map(async (jsKey) => {
+    var fullJsFile = "resources/public/cdn/" + revManifest[jsKey];
+    var data = await readFile(fullJsFile);
+    var result = data.replace(new RegExp(escapeRegExp(path.basename(jsKey)), 'g'), path.basename(revManifest[jsKey]));
 
-          if (jsRootFiles.length <= i) {
-            fs.writeFile("resources/rev-manifest.json", JSON.stringify(revManifest, null, 2), 'utf8', cb);
-          }
-        });
-      });
-    });
-  });
+    await writeFile(fullJsFile, result);
+
+    let sourceMap = 'resources/public/cdn/' + revManifest[jsKey + ".map"];
+    data = await readFile(sourceMap);
+    result = data.replace(new RegExp(escapeRegExp(path.basename(jsKey)), 'g'),
+                          path.basename(revManifest[jsKey]));
+    await writeFile(sourceMap, result);
+  }));
+  await writeFile("resources/rev-manifest.json", JSON.stringify(revManifest, null, 2));
+}
+function escapeRegExp(string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
 }
 
 exports['gzip'] = function gzipTask(){
