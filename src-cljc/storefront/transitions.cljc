@@ -31,13 +31,14 @@
 
 (defn sign-in-user
   [app-state {:keys [email
-                     token
-                     store-slug
                      id
-                     stylist-experience
-                     total-available-store-credit
                      must-set-password
-                     store-id]}]
+                     service-menu
+                     store-id
+                     store-slug
+                     stylist-experience
+                     token
+                     total-available-store-credit]}]
   (-> app-state
       (assoc-in keypaths/user-id id)
       (assoc-in keypaths/user-email email)
@@ -46,6 +47,7 @@
       (assoc-in keypaths/user-store-slug store-slug)
       (assoc-in keypaths/user-store-id store-id)
       (assoc-in keypaths/user-stylist-experience stylist-experience)
+      (assoc-in keypaths/user-stylist-service-menu service-menu)
       (assoc-in keypaths/checkout-as-guest false)
       #?(:cljs (assoc-in keypaths/user-total-available-store-credit (js/parseFloat total-available-store-credit)))))
 

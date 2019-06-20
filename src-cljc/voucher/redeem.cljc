@@ -103,8 +103,10 @@
           (primary-component data))]))
 
 (defn ^:private query [data]
-  (let [service-menu-required? (experiments/aladdin-experience? data)
-        service-menu           (get-in data keypaths/stylist-service-menu ::missing)]
+  (let [service-menu-required? (experiments/dashboard-with-vouchers? data)
+        service-menu           (get-in data
+                                       keypaths/user-stylist-service-menu
+                                       ::missing)]
     {:code                   (get-in data voucher-keypaths/eight-digit-code)
      :scanning?              (get-in data voucher-keypaths/scanning?)
      :service-menu-fetching? (and service-menu-required?
