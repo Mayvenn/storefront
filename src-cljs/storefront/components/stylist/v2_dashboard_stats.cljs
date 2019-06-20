@@ -113,14 +113,14 @@
        (earnings-count "Lifetime Bonuses" (mf/as-money lifetime-earned))]]]
     ))
 
-(defn ^:private sales-bonus-progress [{:keys [previous-level next-level award-for-next-level total-eligible-sales]} v2-experience?]
+(defn ^:private sales-bonus-progress [{:keys [previous-level next-level award-for-next-level total-eligible-sales]} dashboard-with-vouchers?]
   [:div.p2
    [:div.h6.letter-spacing-1.shout.dark-gray "Sales Bonus Progress"]
    [:div.h8
     "Sell "
     (mf/as-money (- next-level total-eligible-sales))
     " more in"
-    (when v2-experience? " non-FREEINSTALL")
+    (when dashboard-with-vouchers? " non-FREEINSTALL")
     " sales to earn your next "
     [:span.bold (mf/as-money award-for-next-level)]
     " in credit."]
@@ -129,7 +129,7 @@
                          :maximum (- next-level previous-level)})]])
 
 (defn component
-  [{:keys [cash-balance-section-expanded? store-credit-balance-section-expanded? stats total-available-store-credit payout-method cashing-out? fetching-stats? v2-experience?]} owner opts]
+  [{:keys [cash-balance-section-expanded? store-credit-balance-section-expanded? stats total-available-store-credit payout-method cashing-out? fetching-stats? dashboard-with-vouchers?]} owner opts]
   (let [{:keys [bonuses earnings services]} stats
         {:keys [lifetime-earned]}           bonuses]
     (component/create
@@ -138,7 +138,7 @@
        [:div.p2
         (cash-balance-card payout-method cash-balance-section-expanded? cashing-out? earnings services)
         [:div.mt2 (store-credit-balance-card total-available-store-credit lifetime-earned store-credit-balance-section-expanded?)]
-        (sales-bonus-progress bonuses v2-experience?)]))))
+        (sales-bonus-progress bonuses dashboard-with-vouchers?)]))))
 
 (def not-reimbursed-for-services? (complement experiments/dashboard-with-vouchers?))
 
@@ -147,7 +147,7 @@
     {:stats                                  (cond-> stats
                                                (not-reimbursed-for-services? data)
                                                (dissoc :services))
-     :v2-experience?                         (experiments/aladdin-experience? data)
+     :dashboard-with-vouchers?               (experiments/dashboard-with-vouchers? data)
      :cashing-out?                           (utils/requesting? data request-keys/cash-out-commit)
      :payout-method                          (get-in data keypaths/stylist-manage-account-chosen-payout-method)
      :cash-balance-section-expanded?         (get-in data keypaths/v2-ui-dashboard-cash-balance-section-expanded?)
