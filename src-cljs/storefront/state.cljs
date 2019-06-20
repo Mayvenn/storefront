@@ -77,6 +77,10 @@
                               :zipcode nil
                               :phone nil}}})
 
+(def initial-dashboard-state
+  {:cash-balance-section-expanded?         false
+   :store-credit-balance-section-expanded? false})
+
 (defn initial-state []
   (let [cookie (cookie-jar/make-cookie)]
     {:cookie    cookie
@@ -171,6 +175,5 @@
                                          :places   false
                                          :talkable false}}
 
-     :v2 {:ui {:dashboard {:cash-balance-section-expanded?         false
-                           :store-credit-balance-section-expanded? false}}
+     :v2 {:ui {:dashboard initial-dashboard-state}
           :db {}}}))
