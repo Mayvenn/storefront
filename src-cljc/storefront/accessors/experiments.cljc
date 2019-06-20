@@ -97,10 +97,6 @@
   [data]
   (display-feature? data "look-detail-price"))
 
-(defn vouchers?
-  [data]
-  (= "aladdin" (get-in data keypaths/user-stylist-experience)))
-
 (defn phone-capture? [data]
   (display-feature? data "phone-capture"))
 

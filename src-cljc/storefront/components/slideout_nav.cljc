@@ -265,7 +265,7 @@
      :store                  store
      :show-community?        (and (not match-eligible)
                                   (stylists/own-store? data))
-     :vouchers?              (experiments/vouchers? data)
+     :vouchers?              (experiments/dashboard-with-vouchers? data)
      :v2-experience?         (experiments/aladdin-experience? data)
      :shop-homepage?         (and shop?
                                   (= events/navigate-home

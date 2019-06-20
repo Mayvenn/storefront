@@ -122,7 +122,7 @@
 (defmethod effects/perform-effects events/navigate-voucher-redeem
   [dispatch event args prev-app-state app-state]
   #?(:cljs (when-not (and (auth/stylist? (auth/signed-in app-state))
-                          (experiments/vouchers? app-state))
+                          (experiments/dashboard-with-vouchers? app-state))
              (history/enqueue-redirect events/navigate-home))))
 
 (defmethod transitions/transition-state events/navigate-voucher-redeem
