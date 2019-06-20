@@ -136,10 +136,7 @@ function saveGitShaVersion(cb) {
 
 function hashedAssetSources () {
   return merge(gulp.src('resources/public/{js,css,images,fonts}/**')
-               .pipe(gulpIgnore.exclude("*.map")),
-               gulp.src('resources/public/js/out/cljs_base.js.map'),
-               gulp.src('resources/public/js/out/main.js.map'),
-               gulp.src('resources/public/js/out/redeem.js.map'));
+               .pipe(gulpIgnore.exclude("*.map")));
 }
 
 exports['rev-assets'] = revAssets;
@@ -161,7 +158,13 @@ function revAssets() {
     .pipe(gulp.dest('resources'));
 }
 
-exports['fix-main-js-pointing-to-source-map'] = fixMainJsPointingToSourceMap;
+exports['cp-source-maps'] = copySourceMaps;
+function copySourceMaps() {
+  return gulp.src('resources/public/js/out/*.map')
+    .pipe(gulp.dest('resources/public/cdn/js/out'));
+}
+
+exports['fix-main-js-pointing-to-source-map'] = gulp.series(copySourceMaps, fixMainJsPointingToSourceMap);
 function fixMainJsPointingToSourceMap(cb) {
   // because .js files are excluded from search and replace of sha-ed versions (so that
   // the js code doesn't become really wrong), we need to take special care to update
@@ -171,12 +174,17 @@ function fixMainJsPointingToSourceMap(cb) {
 
     var revManifest = JSON.parse(data);
 
-    var jsRootFiles = ["js/out/cljs_base.js", "js/out/main.js", "js/out/redeem.js"];
+    let jsRootFiles = ["js/out/cljs_base.js", "js/out/main.js", "js/out/redeem.js"];
+    let base = "resources/public/cdn/";
 
     var i = 0;
     jsRootFiles.forEach(function(jsKey){
-      var fullJsFile = "resources/public/cdn/" + revManifest[jsKey];
+      var originalFullJsMapFile = base + jsKey + ".map";
+      var finalFullJsMapFile = base + revManifest[jsKey] + ".map";
+      fs.renameSync(originalFullJsMapFile, finalFullJsMapFile);
+      revManifest[jsKey + ".map"] = revManifest[jsKey] + ".map";
 
+      var fullJsFile = "resources/public/cdn/" + revManifest[jsKey];
       fs.readFile(fullJsFile, 'utf8', function (err,data) {
         if (err) { return console.log(err); }
         function escapeRegExp(string) {
@@ -189,7 +197,7 @@ function fixMainJsPointingToSourceMap(cb) {
           i++;
 
           if (jsRootFiles.length <= i) {
-            cb();
+            fs.writeFile("resources/rev-manifest.json", JSON.stringify(revManifest, null, 2), 'utf8', cb);
           }
         });
       });
@@ -243,6 +251,6 @@ function writeJsStats(cb) {
   });
 }
 
-exports['cdn'] = gulp.series(cleanHashedAssets, fixSourceMap, revAssets, fixMainJsPointingToSourceMap, exports['gzip']);
+exports['cdn'] = gulp.series(cleanHashedAssets, fixSourceMap, revAssets, exports['fix-main-js-pointing-to-source-map'], exports['gzip']);
 
 exports['compile-assets'] = gulp.series(css, minifyJs, exports['cljs-build'], copyReleaseAssets, exports['cdn'], saveGitShaVersion, writeJsStats);
