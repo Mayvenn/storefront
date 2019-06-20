@@ -1053,10 +1053,10 @@
     (history/enqueue-navigate events/navigate-adventure-home {:query-params {:video "0"}})))
 
 (defmethod effects/perform-effects events/navigate-voucher [_ event args app-state-before app-state]
-  (api/fetch-stylist-service-menu (get-in app-state keypaths/api-cache)
-                                  {:user-id    (get-in app-state keypaths/user-id)
-                                   :user-token (get-in app-state keypaths/user-token)
-                                   :stylist-id (get-in app-state keypaths/user-store-id)}))
+  (api/fetch-user-stylist-service-menu (get-in app-state keypaths/api-cache)
+                                       {:user-id    (get-in app-state keypaths/user-id)
+                                        :user-token (get-in app-state keypaths/user-token)
+                                        :stylist-id (get-in app-state keypaths/user-store-id)}))
 
 (defmethod effects/perform-effects events/inserted-stringer
   [_ event args app-state-before app-state]

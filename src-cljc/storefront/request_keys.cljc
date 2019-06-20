@@ -67,7 +67,7 @@
 
 (def fetch-cms-data [:fetch-cms-data])
 (def voucher-redemption [:voucher-redemption])
-(def fetch-stylist-service-menu [:fetch-stylist-service-menu])
+(def fetch-user-stylist-service-menu [:fetch-user-stylist-service-menu])
 (def fetch-stylists-within-radius [:fetch-stylists-within-radius])
 
 (def fetch-matched-stylist [:fetch-matched-stylist])

@@ -165,10 +165,10 @@
         user-id    (get-in app-state keypaths/user-id)
         user-token (get-in app-state keypaths/user-token)]
     (when (and user-id user-token)
-      (api/fetch-stylist-service-menu (get-in app-state keypaths/api-cache)
-                                      {:user-id    user-id
-                                       :user-token user-token
-                                       :stylist-id stylist-id})
+      (api/fetch-user-stylist-service-menu (get-in app-state keypaths/api-cache)
+                                           {:user-id    user-id
+                                            :user-token user-token
+                                            :stylist-id stylist-id})
       (api/get-stylist-account user-id user-token stylist-id)
       (api/get-stylist-dashboard-stats events/api-success-v2-stylist-dashboard-stats
                                        stylist-id

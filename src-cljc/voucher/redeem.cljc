@@ -110,7 +110,7 @@
     {:code                   (get-in data voucher-keypaths/eight-digit-code)
      :scanning?              (get-in data voucher-keypaths/scanning?)
      :service-menu-fetching? (and service-menu-required?
-                                  (or (utils/requesting? data request-keys/fetch-stylist-service-menu)
+                                  (or (utils/requesting? data request-keys/fetch-user-stylist-service-menu)
                                       (nil? service-menu)))
      :service-menu-missing?  (and service-menu-required? (= service-menu ::missing))
      :redeeming-voucher?     (utils/requesting? data request-keys/voucher-redemption)

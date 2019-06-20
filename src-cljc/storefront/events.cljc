@@ -291,7 +291,7 @@
 (defpath api-success-cash-out-failed)
 (defpath api-success-cash-out-complete)
 (defpath api-success-stylist-referral-program)
-(defpath api-success-stylist-service-menu-fetch)
+(defpath api-success-user-stylist-service-menu-fetch)
 (defpath api-success-send-stylist-referrals)
 (defpath api-partial-success-send-stylist-referrals)
 

@@ -40,8 +40,8 @@
 
 (defn ^:private query [app-state]
   {:voucher       (get-in app-state voucher-keypaths/voucher-response)
-   :spinning?     (utils/requesting? app-state request-keys/fetch-stylist-service-menu)
-   :service-menu  (get-in app-state keypaths/stylist-service-menu)})
+   :spinning?     (utils/requesting? app-state request-keys/fetch-user-stylist-service-menu)
+   :service-menu  (get-in app-state keypaths/user-stylist-service-menu)})
 
 (defn ^:export built-component
   [data opts]

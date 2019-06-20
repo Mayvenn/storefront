@@ -991,16 +991,16 @@
                                     "X-Client-Token"          client-app-token}
                   :params          {:metadata {:stylist-id stylist-id}}})))
 
-(defn fetch-stylist-service-menu [cache {:as params :keys [user-id user-token stylist-id]}]
+(defn fetch-user-stylist-service-menu [cache {:as params :keys [user-id user-token stylist-id]}]
   (cache-req
    cache
    GET
    "/v1/stylist/service-menu"
-   request-keys/fetch-stylist-service-menu
+   request-keys/fetch-user-stylist-service-menu
    {:params  {:stylist-id stylist-id
               :user-id    user-id
               :user-token user-token}
-    :handler #(messages/handle-message events/api-success-stylist-service-menu-fetch %)}))
+    :handler #(messages/handle-message events/api-success-user-stylist-service-menu-fetch %)}))
 
 ;; TODO: Perhaps cache
 (defn fetch-stylists-within-radius [cache params handler]

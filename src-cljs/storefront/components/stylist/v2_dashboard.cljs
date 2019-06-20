@@ -68,7 +68,7 @@
         balance-transfers    (get-in data keypaths/v2-dashboard-balance-transfers-elements)]
     {:stats-cards         (v2-dashboard-stats/query data)
      :activity-ledger-tab (determine-active-tab (get-in data keypaths/navigation-event))
-     :service-menu        (get-in data keypaths/stylist-service-menu)
+     :service-menu        (get-in data keypaths/user-stylist-service-menu)
      :pending-voucher     (get-in data voucher-keypaths/voucher-response)
 
      :balance-transfers            (into []
@@ -79,7 +79,7 @@
                                                       (not= "paid" status)))))
                                          balance-transfers)
      :fetching-balance-transfers?  (or (utils/requesting? data request-keys/get-stylist-dashboard-balance-transfers)
-                                       (utils/requesting? data request-keys/fetch-stylist-service-menu))
+                                       (utils/requesting? data request-keys/fetch-user-stylist-service-menu))
      :balance-transfers-pagination (get-in data keypaths/v2-dashboard-balance-transfers-pagination)
      :orders-data (orders-tab/query data)}))
 
