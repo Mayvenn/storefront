@@ -79,7 +79,7 @@
                         :source-map       true
                         :modules          {:cljs-base {:output-to "target/release/js/out/cljs_base.js"}
                                            :main      {:output-to "target/release/js/out/main.js"
-                                                       :entries   #{storefront.core rng}}
+                                                       :entries   #{storefront.core}}
                                            :redeem    {:output-to  "target/release/js/out/redeem.js"
                                                        :entries    #{voucher.redeem voucher.redeemed}
                                                        :depends-on #{:main}}}
