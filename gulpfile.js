@@ -14,6 +14,7 @@ var fs = require('fs');
 var path = require('path');
 var os = require('os');
 var {exec} = require('child_process');
+var jsedn = require('jsedn');
 
 function run(cmd, cb) {
   var p = exec(cmd);
@@ -203,9 +204,17 @@ async function fixMainJsPointingToSourceMap() {
   // main.js to have the sha-ed version of the sourcemap in the file
   var revManifest = JSON.parse(await readFile("resources/rev-manifest.json"));
 
-  let jsRootFiles = ["js/out/cljs_base.js", "js/out/main.js", "js/out/redeem.js"];
-  let base = "resources/public/cdn/";
+  // probably should be production, but this is probably easier
+  var config = jsedn.toJS(jsedn.parse(await readFile('dev.cljs.edn')));
+  let outputDir = config[':output-dir'];
+  let assetPath = config[':asset-path'].substring(1);
 
+  var jsRootFiles = [];
+  for (let [_, options] of Object.entries(config[':modules'])) {
+    jsRootFiles.push(assetPath + options[':output-to'].replace(outputDir, ''));
+  }
+
+  let base = "resources/public/cdn/";
 
   await Promise.all(jsRootFiles.map(async (jsKey) => {
     var originalFullJsMapFile = base + jsKey + ".map";

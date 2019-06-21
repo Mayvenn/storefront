@@ -25,6 +25,7 @@
     "gulp-postcss": "8.0.0",
     "gulp-rev-all": "^2.0.1",
     "gulp-uglify": "^1.5.3",
+    "jsedn": "^0.4.1",
     "merge-stream": "^0.1.7",
     "postcss": "^5.0.14",
     "postcss-calc": "^5.2.0",
