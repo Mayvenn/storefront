@@ -50,7 +50,8 @@
       (assoc-in keypaths/user-stylist-experience stylist-experience)
       (assoc-in keypaths/user-stylist-service-menu service-menu)
       (assoc-in keypaths/checkout-as-guest false)
-      #?(:cljs (assoc-in keypaths/user-total-available-store-credit (spice/parse-double total-available-store-credit)))))
+      #?(:clj identity
+         :cljs (assoc-in keypaths/user-total-available-store-credit (spice/parse-double total-available-store-credit)))))
 
 (defn clear-fields [app-state & fields]
   (reduce #(assoc-in %1 %2 "") app-state fields))

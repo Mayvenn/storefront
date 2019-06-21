@@ -14,10 +14,9 @@
             [storefront.frontend-transitions]
             [storefront.trackings :refer [perform-track]]
             [storefront.frontend-trackings]
-            [clojure.edn :refer [read-string]]
+            [clojure.string :as string]
             [om.core :as om]
             [clojure.data :refer [diff]]
-            [storefront.api :as api]
             [cognitect.transit :as transit]))
 
 (set! *warn-on-infer* true)
@@ -59,7 +58,7 @@
 
 (defn- log-deltas [old-app-state new-app-state [event args]]
   (let [[deleted added _unchanged] (diff old-app-state new-app-state)]
-    (js/console.groupCollapsed (clojure.string/join "-" (map name event)) (clj->js args))
+    (js/console.groupCollapsed (string/join "-" (map name event)) (clj->js args))
     (apply js/console.log (map clj->js (remove nil? [(when (seq deleted) "Δ-")
                                                      deleted
                                                      (when (seq added) "Δ+")
@@ -71,6 +70,9 @@
 (defn- transition-log [app-state message]
   (log-deltas app-state (transition app-state message) message))
 
+(def msg-transition
+  transition)
+
 (defn handle-message
   ([app-state event] (handle-message app-state event nil))
   ([app-state event args]
@@ -78,7 +80,7 @@
      (try
        (let [app-state-before @app-state]
          ;; rename transition to transition-log to log messages
-         (om/transact! (om/root-cursor app-state) #(transition % message))
+         (om/transact! (om/root-cursor app-state) #(msg-transition % message))
          (effects app-state-before @app-state message))
        (track @app-state message)
        (catch :default e
@@ -144,6 +146,11 @@
     (throw (js/Error. "Pokemon"))
     (catch js/Error e
       (exception-handler/report e {:api-version (get-in @app-state keypaths/app-version "unknown")}))))
+
+(defn ^:export debug-messages [enabled?]
+  (if enabled?
+    (set! msg-transition transition-log)
+    (set! msg-transition transition)))
 
 (defn ^:export external-message [event args]
   (let [event (js->clj event)
