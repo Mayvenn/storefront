@@ -4,7 +4,7 @@
             [compojure.core :refer [routes GET POST]]
             [ring.mock.request :as mock]
             [standalone-test-server.core :refer [with-requests-chan txfm-request txfm-requests]]
-            [storefront.handler-test :refer [ set-cookies ]]
+            [storefront.handler-test :refer [set-cookies]]
             [ring.util.response :refer [content-type response status]]
             [storefront.handler-test.common :as common
              :refer [with-services with-handler assert-request storeback-shop-response]]))

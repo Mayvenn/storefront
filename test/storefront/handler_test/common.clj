@@ -1,16 +1,12 @@
 (ns storefront.handler-test.common
   (:require [cheshire.core :refer [generate-string parse-string]]
-            [camel-snake-kebab.core :as csk]
-            [camel-snake-kebab.extras :as cske]
             [com.stuartsierra.component :as component]
             [compojure.core :refer [routes GET POST]]
             [ring.util.response :refer [content-type response status]]
             [standalone-test-server.core :refer [txfm-request txfm-requests
                                                  with-standalone-server standalone-server
                                                  with-requests-chan]]
-            [storefront.system :refer [create-system]]
-            [storefront.system.contentful :as contentful]
-            [spice.maps :as maps]))
+            [storefront.system :refer [create-system]]))
 
 (def contentful-port 4335)
 
