@@ -14,7 +14,7 @@
    :main      [(str asset-mappings/cdn-host (assets/path "js/out/main.js"))]
    :redeem    [(str asset-mappings/cdn-host (assets/path "js/out/redeem.js"))]})
 
-(def frontend-modules (memfn define-frontend-modules))
+(def frontend-modules (memoize define-frontend-modules))
 
 (def frontend-assets
   "Asset mappings to send to the frontend"
