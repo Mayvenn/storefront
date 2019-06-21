@@ -15,7 +15,8 @@
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
             [storefront.trackings :refer [perform-track]]
-            [storefront.accessors.images :as images]))
+            [storefront.accessors.images :as images]
+            [spice.core :as spice]))
 
 (defn ^:private convert-revenue [{:keys [number total] :as order}]
   {:order-number   number
@@ -423,7 +424,7 @@
     (stringer/track-event "cash_out_commit_button_pressed"
                           {:stylist_id stylist-id
                            :store_slug store-slug
-                           :amount     (js/parseFloat amount)
+                           :amount     (spice/parse-float amount)
                            :method     (:type payout-method)})))
 
 (defmethod perform-track events/api-success-cash-out-complete
@@ -433,7 +434,7 @@
     (stringer/track-event "cash_out_succeeded"
                           {:stylist_id stylist-id
                            :store_slug store-slug
-                           :amount     (js/parseFloat amount)
+                           :amount     (spice/parse-float amount)
                            :method     (:type payout-method)})))
 
 (defmethod perform-track events/api-success-cash-out-failed
@@ -443,5 +444,5 @@
     (stringer/track-event "cash_out_failed"
                           {:stylist_id stylist-id
                            :store_slug store-slug
-                           :amount     (js/parseFloat amount)
+                           :amount     (spice/parse-float amount)
                            :method     (:type payout-method)})))

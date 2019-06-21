@@ -1,5 +1,6 @@
 (ns storefront.components.money-formatters
-  (:require [storefront.platform.numbers :as num]
+  (:require [spice.core :as spice]
+            [storefront.platform.numbers :as num]
             [storefront.platform.strings :as str]))
 
 (defn warn-if-nil [amount]
@@ -32,7 +33,7 @@
 (defn as-cents [amount]
   (warn-if-nil amount)
   (-> (or amount 0)
-      num/parse-float
+      spice/parse-float
       num/abs
       (* 100)
       num/round))
