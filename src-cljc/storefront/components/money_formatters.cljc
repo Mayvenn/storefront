@@ -26,7 +26,7 @@
 
 (defn as-money-without-cents [amount]
   (warn-if-nil amount)
-  (let [amount (num/parse-int (or amount 0))
+  (let [amount (spice/parse-int (or amount 0))
         format (if (< amount 0) "-$%s" "$%s")]
     (str/format format (number-with-commas (num/abs amount)))))
 
