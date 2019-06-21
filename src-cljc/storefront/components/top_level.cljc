@@ -23,7 +23,7 @@
                        [storefront.components.stylist.order-details :as stylist.order-details]
                        [storefront.components.stylist.portrait :as stylist.portrait]
                        [storefront.components.stylist.share-your-store :as stylist.share-your-store]
-                       [storefront.components.stylist.v2-dashboard :as v2.dashboard]
+                       stylist.dashboard
                        [storefront.config :as config]
                        [storefront.history :as history]
                        adventure.components.email-capture
@@ -102,8 +102,8 @@
                events/navigate-stylist-account-password                   stylist.account/built-component
                events/navigate-stylist-account-payout                     stylist.account/built-component
                events/navigate-stylist-account-social                     stylist.account/built-component
-               events/navigate-v2-stylist-dashboard-payments              v2.dashboard/built-component
-               events/navigate-v2-stylist-dashboard-orders                v2.dashboard/built-component
+               events/navigate-v2-stylist-dashboard-payments              stylist.dashboard/built-component
+               events/navigate-v2-stylist-dashboard-orders                stylist.dashboard/built-component
                events/navigate-gallery-image-picker                       gallery-image-picker/built-component
                events/navigate-account-manage                             (partial sign-in/requires-sign-in account/built-component)
                events/navigate-account-referrals                          (partial sign-in/requires-sign-in friend-referrals/built-component)

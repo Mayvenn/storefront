@@ -1,8 +1,8 @@
-(ns storefront.components.stylist.v2-dashboard
+(ns stylist.dashboard
   (:require [storefront.component :as component]
-            [storefront.components.stylist.v2-dashboard-stats :as v2-dashboard-stats]
-            [storefront.components.stylist.v2-dashboard-payments-tab :as payments-tab]
-            [storefront.components.stylist.v2-dashboard-orders-tab :as orders-tab]
+            stylist.dashboard-stats
+            stylist.dashboard-orders-tab
+            stylist.dashboard-payments-tab
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -45,15 +45,15 @@
   (let [{:keys [active-tab-name]} activity-ledger-tab]
     (component/create
      [:div.col-6-on-dt.col-9-on-tb.mx-auto
-      (component/build v2-dashboard-stats/component stats-cards nil)
+      (component/build stylist.dashboard-stats/component stats-cards nil)
       (ledger-tabs active-tab-name)
 
       (case active-tab-name
         :payments
-        (payments-tab/payments-table pending-voucher service-menu balance-transfers balance-transfers-pagination fetching-balance-transfers?)
+        (stylist.dashboard-payments-tab/payments-table pending-voucher service-menu balance-transfers balance-transfers-pagination fetching-balance-transfers?)
 
         :orders
-        (component/build orders-tab/component orders-data nil))])))
+        (component/build stylist.dashboard-orders-tab/component orders-data nil))])))
 
 (def determine-active-tab
   {events/navigate-v2-stylist-dashboard-payments {:active-tab-name :payments
@@ -66,7 +66,7 @@
   [data]
   (let [get-balance-transfer second
         balance-transfers    (get-in data keypaths/v2-dashboard-balance-transfers-elements)]
-    {:stats-cards         (v2-dashboard-stats/query data)
+    {:stats-cards         (stylist.dashboard-stats/query data)
      :activity-ledger-tab (determine-active-tab (get-in data keypaths/navigation-event))
      :service-menu        (get-in data keypaths/user-stylist-service-menu)
      :pending-voucher     (get-in data voucher-keypaths/voucher-response)
@@ -81,7 +81,7 @@
      :fetching-balance-transfers?  (or (utils/requesting? data request-keys/get-stylist-dashboard-balance-transfers)
                                        (utils/requesting? data request-keys/fetch-user-stylist-service-menu))
      :balance-transfers-pagination (get-in data keypaths/v2-dashboard-balance-transfers-pagination)
-     :orders-data (orders-tab/query data)}))
+     :orders-data (stylist.dashboard-orders-tab/query data)}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

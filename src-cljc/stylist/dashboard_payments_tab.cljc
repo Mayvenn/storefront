@@ -1,14 +1,15 @@
-(ns storefront.components.stylist.v2-dashboard-payments-tab
+(ns stylist.dashboard-payments-tab
   (:require [spice.core :as spice]
             [spice.date :as date]
             [spice.maps :as maps]
             [storefront.accessors.auth :as auth]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.service-menu :as service-menu]
-            [storefront.api :as api]
+            #?@(:cljs
+                [[storefront.api :as api]
+                 [storefront.components.stylist.pagination :as pagination]])
             [storefront.components.formatters :as f]
             [storefront.components.money-formatters :as mf]
-            [storefront.components.stylist.pagination :as pagination]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
             [storefront.events :as events]
@@ -67,7 +68,7 @@
      [:div.flex-auto.mx3
       [:h5.medium {:class (:title-color styles)} title]
       [:div.flex.h8.dark-gray
-       [:div.mr4 (f/long-date date)]
+       [:div.mr4 #?(:cljs (f/long-date date))]
        subtitle]]
      [:div.right-align
       [:div.bold {:class (:amount-color styles)} amount]
@@ -91,14 +92,15 @@
     (payment-row item)))
 
 (defn group-payments-by-month [payments]
-  (let [year-month           (fn [{:keys [date]}]
-                               (let [[year month _] (f/date-tuple date)]
-                                 [year month]))
-        year-month->payments (group-by year-month (reverse payments))
-        sorted-year-months   (reverse (sort (keys year-month->payments)))]
-    (for [[year month :as ym] sorted-year-months]
-      {:title (str (get f/month-names month) " " year)
-       :items (year-month->payments ym)})))
+  #?(:cljs
+     (let [year-month           (fn [{:keys [date]}]
+                                  (let [[year month _] (f/date-tuple date)]
+                                    [year month]))
+           year-month->payments (group-by year-month (reverse payments))
+           sorted-year-months   (reverse (sort (keys year-month->payments)))]
+       (for [[year month :as ym] sorted-year-months]
+         {:title (str (get f/month-names month) " " year)
+          :items (year-month->payments ym)}))))
 
 (def empty-payments
   [:div.my6.center
@@ -128,10 +130,11 @@
             ;; ASK: Sales Bonus row
             (for [item (reverse (sort-by :date items))]
               (payment-row item))])]
-        (pagination/fetch-more events/control-v2-stylist-dashboard-balance-transfers-load-more
-                               fetching?
-                               current-page
-                               total-pages)])]))
+        #?(:cljs
+           (pagination/fetch-more events/control-v2-stylist-dashboard-balance-transfers-load-more
+                                  fetching?
+                                  current-page
+                                  total-pages))])]))
 
 (defmethod effects/perform-effects events/navigate-v2-stylist-dashboard-payments [_ event args _ app-state]
   (let [no-balance-transfers-loaded? (empty? (get-in app-state keypaths/v2-dashboard-balance-transfers-pagination-ordering))]
@@ -140,15 +143,16 @@
       (messages/handle-message events/v2-stylist-dashboard-balance-transfers-fetch))))
 
 (defmethod effects/perform-effects events/v2-stylist-dashboard-balance-transfers-fetch [_ event args _ app-state]
-  (let [stylist-id (get-in app-state keypaths/user-store-id)
-        user-id    (get-in app-state keypaths/user-id)
-        user-token (get-in app-state keypaths/user-token)]
-    (api/get-stylist-dashboard-balance-transfers stylist-id
-                                                 user-id
-                                                 user-token
-                                                 (get-in app-state keypaths/v2-dashboard-balance-transfers-pagination)
-                                                 #(messages/handle-message events/api-success-v2-stylist-dashboard-balance-transfers
-                                                                           (select-keys % [:balance-transfers :pagination])))))
+  #?(:cljs
+     (let [stylist-id (get-in app-state keypaths/user-store-id)
+           user-id    (get-in app-state keypaths/user-id)
+           user-token (get-in app-state keypaths/user-token)]
+       (api/get-stylist-dashboard-balance-transfers stylist-id
+                                                    user-id
+                                                    user-token
+                                                    (get-in app-state keypaths/v2-dashboard-balance-transfers-pagination)
+                                                    #(messages/handle-message events/api-success-v2-stylist-dashboard-balance-transfers
+                                                                              (select-keys % [:balance-transfers :pagination]))))))
 
 (defn most-recent-voucher-award [balance-transfers]
   (->> balance-transfers

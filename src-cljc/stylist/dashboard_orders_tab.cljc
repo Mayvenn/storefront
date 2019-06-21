@@ -1,13 +1,14 @@
-(ns storefront.components.stylist.v2-dashboard-orders-tab
+(ns stylist.dashboard-orders-tab
   (:require [spice.core :as spice]
             [spice.maps :as maps]
             [storefront.accessors.auth :as auth]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.sales :as sales]
-            [storefront.api :as api]
+            #?@(:cljs
+               [[storefront.api :as api]
+                [storefront.components.stylist.pagination :as pagination]])
             [storefront.component :as component]
             [storefront.components.formatters :as f]
-            [storefront.components.stylist.pagination :as pagination]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
             [storefront.events :as events]
@@ -85,7 +86,7 @@
    (merge (utils/route-to events/navigate-stylist-dashboard-order-details {:order-number order-number})
           {:key       (str "sales-table-" id)
            :data-test (str "sales-" order-number)})
-   [:td.p2.left-align.dark-gray.h8 (some-> order-updated-at f/abbr-date)]
+   [:td.p2.left-align.dark-gray.h8 (some-> order-updated-at #?(:cljs f/abbr-date))]
    [:td.p2.left-align.medium.h5.nowrap
     {:style {:overflow-x :hidden :max-width 120 :text-overflow :ellipsis}}  ; For really long first names
     (some-> order orders/first-name-plus-last-name-initial)]
@@ -96,7 +97,7 @@
    (merge (utils/route-to events/navigate-stylist-dashboard-order-details {:order-number order-number})
           {:key       (str "sales-table-" id)
            :data-test (str "sales-" order-number)})
-   [:td.p2.left-align.dark-gray.h8 (some-> order-updated-at f/abbr-date)]
+   [:td.p2.left-align.dark-gray.h8 (some-> order-updated-at #?(:cljs f/abbr-date))]
    [:td.p2.left-align.medium.h5.nowrap
     {:style {:overflow-x :hidden :max-width 120 :text-overflow :ellipsis}}  ; For really long first names
     (some-> order orders/first-name-plus-last-name-initial)]
@@ -130,8 +131,9 @@
         sale-row-fn                   (if show-voucher-elements? sale-row-with-voucher sale-row)]
     {:sales-ui       (mapv sale-row-fn sales-sorted)
      :fetching-data? fetching-data?
-     :pagination-ui  (pagination/fetch-more events/control-v2-stylist-dashboard-sales-load-more
-                                            fetching-data? page total)
+     :pagination-ui  #?(:cljs (pagination/fetch-more events/control-v2-stylist-dashboard-sales-load-more
+                                                     fetching-data? page total)
+                        :clj nil)
      :header-ui      (header-ui show-voucher-elements?)}))
 
 (defmethod effects/perform-effects events/navigate-v2-stylist-dashboard-orders [_ event args _ app-state]
@@ -141,15 +143,16 @@
       (messages/handle-message events/v2-stylist-dashboard-sales-fetch))))
 
 (defmethod effects/perform-effects events/v2-stylist-dashboard-sales-fetch [_ event args _ app-state]
-  (let [stylist-id (get-in app-state keypaths/user-store-id)
-        user-id    (get-in app-state keypaths/user-id)
-        user-token (get-in app-state keypaths/user-token)]
-    (api/get-stylist-dashboard-sales stylist-id
-                                     user-id
-                                     user-token
-                                     (get-in app-state keypaths/v2-dashboard-sales-pagination)
-                                     #(messages/handle-message events/api-success-v2-stylist-dashboard-sales
-                                                               (select-keys % [:sales :pagination])))))
+  #?(:cljs
+     (let [stylist-id (get-in app-state keypaths/user-store-id)
+           user-id    (get-in app-state keypaths/user-id)
+           user-token (get-in app-state keypaths/user-token)]
+       (api/get-stylist-dashboard-sales stylist-id
+                                        user-id
+                                        user-token
+                                        (get-in app-state keypaths/v2-dashboard-sales-pagination)
+                                        #(messages/handle-message events/api-success-v2-stylist-dashboard-sales
+                                                                  (select-keys % [:sales :pagination]))))))
 
 (defmethod transitions/transition-state events/api-success-v2-stylist-dashboard-sales
   [_ event {:keys [sales pagination]} app-state]

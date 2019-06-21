@@ -1,14 +1,15 @@
-(ns storefront.components.stylist.v2-dashboard-stats
+(ns stylist.dashboard-stats
   (:require [storefront.accessors.experiments :as experiments]
             [storefront.accessors.payouts :as payouts]
-            [storefront.api :as api]
+            #?@(:cljs
+                [[storefront.api :as api]
+                 [storefront.history :as history]])
             [storefront.component :as component]
             [storefront.components.money-formatters :as mf]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
             [storefront.events :as events]
-            [storefront.history :as history]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.numbers :as numbers]
@@ -158,22 +159,25 @@
 
 (defmethod effects/perform-effects events/control-stylist-dashboard-cash-out-begin
   [_ _ _ _ app-state]
-  (history/enqueue-navigate events/navigate-stylist-dashboard-cash-out-begin))
+  #?(:cljs
+     (history/enqueue-navigate events/navigate-stylist-dashboard-cash-out-begin)))
 
-(defmethod effects/perform-effects events/v2-stylist-dashboard-stats-fetch [_ event args _ app-state]
-  (let [stylist-id (get-in app-state keypaths/user-store-id)
-        user-id    (get-in app-state keypaths/user-id)
-        user-token (get-in app-state keypaths/user-token)]
-    (when (and user-id user-token)
-      (api/fetch-user-stylist-service-menu (get-in app-state keypaths/api-cache)
-                                           {:user-id    user-id
-                                            :user-token user-token
-                                            :stylist-id stylist-id})
-      (api/get-stylist-account user-id user-token stylist-id)
-      (api/get-stylist-dashboard-stats events/api-success-v2-stylist-dashboard-stats
-                                       stylist-id
-                                       user-id
-                                       user-token))))
+(defmethod effects/perform-effects events/v2-stylist-dashboard-stats-fetch
+  [_ event args _ app-state]
+  #?(:cljs
+     (let [stylist-id (get-in app-state keypaths/user-store-id)
+           user-id    (get-in app-state keypaths/user-id)
+           user-token (get-in app-state keypaths/user-token)]
+       (when (and user-id user-token)
+         (api/fetch-user-stylist-service-menu (get-in app-state keypaths/api-cache)
+                                              {:user-id    user-id
+                                               :user-token user-token
+                                               :stylist-id stylist-id})
+         (api/get-stylist-account user-id user-token stylist-id)
+         (api/get-stylist-dashboard-stats events/api-success-v2-stylist-dashboard-stats
+                                          stylist-id
+                                          user-id
+                                          user-token)))))
 
 (defmethod transitions/transition-state events/api-success-v2-stylist-dashboard-stats
   [_ event {:as stats :keys [stylist earnings services store-credit-balance bonuses]} app-state]
