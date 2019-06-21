@@ -214,7 +214,7 @@ async function fixMainJsPointingToSourceMap() {
   if (!argv.host) {
     throw "missing --host";
   }
-  var root = "https://" + argv.host + "/cdn/";
+  var root = "https://" + argv.host + "/cdn/js/out/";
 
   // because .js files are excluded from search and replace of sha-ed versions (so that
   // the js code doesn't become really wrong), we need to take special care to update
