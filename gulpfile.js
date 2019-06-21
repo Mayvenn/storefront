@@ -148,10 +148,9 @@ function revAssets() {
   }
 
   var options = {
-    prefix: "//" + argv.host + "/cdn/",
+    prefix: "https://" + argv.host + "/cdn/",
     includeFilesInManifest: ['.css', '.js', '.svg', '.png', '.gif', '.woff', '.cljs', '.cljc', '.map'],
-    dontSearchFile: ['.js'],
-    dontRenameFile: ['.map']
+    dontSearchFile: ['.js']
   };
 
   return hashedAssetSources()
@@ -197,13 +196,7 @@ function renameFile(oldFilename, newFilename) {
   });
 }
 
-exports['fix-main-js-pointing-to-source-map'] = fixMainJsPointingToSourceMap;
-async function fixMainJsPointingToSourceMap() {
-  // because .js files are excluded from search and replace of sha-ed versions (so that
-  // the js code doesn't become really wrong), we need to take special care to update
-  // main.js to have the sha-ed version of the sourcemap in the file
-  var revManifest = JSON.parse(await readFile("resources/rev-manifest.json"));
-
+async function rootJSFiles() {
   // probably should be production, but this is probably easier
   var config = jsedn.toJS(jsedn.parse(await readFile('dev.cljs.edn')));
   let outputDir = config[':output-dir'];
@@ -213,31 +206,37 @@ async function fixMainJsPointingToSourceMap() {
   for (let [_, options] of Object.entries(config[':modules'])) {
     jsRootFiles.push(assetPath + options[':output-to'].replace(outputDir, ''));
   }
+  return jsRootFiles;
+}
+
+exports['fix-main-js-pointing-to-source-map'] = fixMainJsPointingToSourceMap;
+async function fixMainJsPointingToSourceMap() {
+  if (!argv.host) {
+    throw "missing --host";
+  }
+  var root = "https://" + argv.host + "/cdn/";
+
+  // because .js files are excluded from search and replace of sha-ed versions (so that
+  // the js code doesn't become really wrong), we need to take special care to update
+  // main.js to have the sha-ed version of the sourcemap in the file
+  var revManifest = JSON.parse(await readFile("resources/rev-manifest.json"));
+
+  var jsRootFiles = await rootJSFiles();
 
   let base = "resources/public/cdn/";
 
   await Promise.all(jsRootFiles.map(async (jsKey) => {
-    var originalFullJsMapFile = base + jsKey + ".map";
-    var finalFullJsMapFile = base + revManifest[jsKey] + ".map";
-
-    revManifest[jsKey + ".map"] = revManifest[jsKey] + ".map";
-    await renameFile(originalFullJsMapFile, finalFullJsMapFile);
-  }));
-
-  await Promise.all(jsRootFiles.map(async (jsKey) => {
     var fullJsFile = "resources/public/cdn/" + revManifest[jsKey];
     var data = await readFile(fullJsFile);
-    var result = data.replace(new RegExp(escapeRegExp(path.basename(jsKey)), 'g'), path.basename(revManifest[jsKey]));
-
+    var result = data.replace(new RegExp(escapeRegExp(path.basename(jsKey + '.map')), 'g'),
+                              path.basename(revManifest[jsKey + '.map']));
     await writeFile(fullJsFile, result);
 
-    let sourceMap = 'resources/public/cdn/' + revManifest[jsKey + ".map"];
-    data = await readFile(sourceMap);
-    result = data.replace(new RegExp(escapeRegExp(path.basename(jsKey)), 'g'),
-                          path.basename(revManifest[jsKey]));
-    await writeFile(sourceMap, result);
+    fullJsFile = "resources/public/cdn/" + revManifest[jsKey + '.map'];
+    var sourceMap = JSON.parse(await readFile(fullJsFile));
+    sourceMap.sourceRoot = root;
+    await writeFile(fullJsFile, JSON.stringify(sourceMap));
   }));
-  await writeFile("resources/rev-manifest.json", JSON.stringify(revManifest, null, 2));
 }
 function escapeRegExp(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
