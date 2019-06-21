@@ -6,6 +6,14 @@
 (defn digits-only [value]
   (when value (string/replace value #"[^0-9]" "")))
 
+(defn parse-float [s]
+  (js/parseFloat s))
+
+(defn parse-int [s]
+  (int s))
+
+(def to-float parse-float)
+
 (defn abs [x]
   (js/Math.abs x))
 

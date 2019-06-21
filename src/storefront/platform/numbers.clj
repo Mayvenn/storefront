@@ -5,6 +5,14 @@
 (defn digits-only [value]
   (clojure.string/replace value #"[^0-9]" ""))
 
+(defn parse-float [s]
+  (Float/parseFloat (str s)))
+
+(defn parse-int [s]
+  (Math/round (Math/floor (parse-float (str s)))))
+
+(def to-float float)
+
 (defn abs [x]
   (Math/abs x))
 

@@ -1,6 +1,5 @@
 (ns storefront.components.money-formatters
-  (:require [spice.core :as spice]
-            [storefront.platform.numbers :as num]
+  (:require [storefront.platform.numbers :as num]
             [storefront.platform.strings :as str]))
 
 (defn warn-if-nil [amount]
@@ -26,14 +25,14 @@
 
 (defn as-money-without-cents [amount]
   (warn-if-nil amount)
-  (let [amount (spice/parse-int (or amount 0))
+  (let [amount (num/parse-int (or amount 0))
         format (if (< amount 0) "-$%s" "$%s")]
     (str/format format (number-with-commas (num/abs amount)))))
 
 (defn as-cents [amount]
   (warn-if-nil amount)
   (-> (or amount 0)
-      spice/parse-double
+      num/parse-float
       num/abs
       (* 100)
       num/round))
