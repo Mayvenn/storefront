@@ -33,7 +33,7 @@
 (defn as-cents [amount]
   (warn-if-nil amount)
   (-> (or amount 0)
-      spice/parse-float
+      spice/parse-double
       num/abs
       (* 100)
       num/round))

@@ -424,7 +424,7 @@
     (stringer/track-event "cash_out_commit_button_pressed"
                           {:stylist_id stylist-id
                            :store_slug store-slug
-                           :amount     (spice/parse-float amount)
+                           :amount     (spice/parse-double amount)
                            :method     (:type payout-method)})))
 
 (defmethod perform-track events/api-success-cash-out-complete
@@ -434,7 +434,7 @@
     (stringer/track-event "cash_out_succeeded"
                           {:stylist_id stylist-id
                            :store_slug store-slug
-                           :amount     (spice/parse-float amount)
+                           :amount     (spice/parse-double amount)
                            :method     (:type payout-method)})))
 
 (defmethod perform-track events/api-success-cash-out-failed
@@ -444,5 +444,5 @@
     (stringer/track-event "cash_out_failed"
                           {:stylist_id stylist-id
                            :store_slug store-slug
-                           :amount     (spice/parse-float amount)
+                           :amount     (spice/parse-double amount)
                            :method     (:type payout-method)})))
