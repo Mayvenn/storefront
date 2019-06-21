@@ -1,10 +1,20 @@
 (ns storefront.config
   (:require [environ.core :refer [env]]
-            [clojure.java.io :as io]))
+            [clojure.java.io :as io]
+            [clojure.string :as string]
+            [storefront.assets :as assets]
+            [storefront.platform.asset-mappings :as asset-mappings]))
 
 (def welcome-subdomain "welcome")
 
 (def freeinstall-subdomain "freeinstall")
+
+(defn define-frontend-modules []
+  {:cljs-base [(str asset-mappings/cdn-host (assets/path "js/out/cljs_base.js"))]
+   :main      [(str asset-mappings/cdn-host (assets/path "js/out/main.js"))]
+   :redeem    [(str asset-mappings/cdn-host (assets/path "js/out/redeem.js"))]})
+
+(def frontend-modules (memfn define-frontend-modules))
 
 (def frontend-assets
   "Asset mappings to send to the frontend"
