@@ -107,6 +107,20 @@ function cleanHashedAssets() {
   return del(['./resources/public/cdn', './resources/rev-manifest.json']);
 }
 
+exports['fix-source-map'] = fixSourceMap;
+function fixSourceMap() {
+  return sourceMapStream = gulp.src(['resources/public/js/out/main.js.map',
+                                     'resources/public/js/out/cljs_base.js.map',
+                                     'resources/public/js/out/redeem.js.map'], {base: './'})
+    .pipe(jsonTransform(function(data) {
+      data["sources"] = data["sources"].map(function(f) {
+        return f.replace("\/", "/");
+      });
+      return data;
+    }))
+    .pipe(gulp.dest('./'));
+}
+
 exports['save-git-sha-version'] = saveGitShaVersion;
 function saveGitShaVersion(cb) {
   exec('git show --pretty=format:%H -q', function (err, stdout) {
@@ -275,6 +289,6 @@ function writeJsStats(cb) {
   });
 }
 
-exports['cdn'] = gulp.series(cleanHashedAssets, revAssets, exports['fix-main-js-pointing-to-source-map'], exports['gzip']);
+exports['cdn'] = gulp.series(cleanHashedAssets, fixSourceMap, revAssets, exports['fix-main-js-pointing-to-source-map'], exports['gzip']);
 
 exports['compile-assets'] = gulp.series(css, minifyJs, exports['cljs-build'], copyReleaseAssets, exports['cdn'], saveGitShaVersion, writeJsStats);
