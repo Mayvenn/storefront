@@ -57,7 +57,7 @@
 
 (deftest one-time-login-sets-cookies
   (with-services {:storeback-handler (routes
-                                      (GET "/store" _ common/storeback-stylist-response)
+                                      common/default-storeback-handler
                                       (POST "/v2/one-time-login" _ storeback-one-time-login-response))}
     (with-handler handler
       (let [resp (handler (mock/request :get "https://bob.mayvenn.com/one-time-login?token=USERTOKEN&user-id=1&sha=FIRST&target=%2F"))
@@ -82,6 +82,8 @@
 
 (deftest affiliate-store-urls-redirect-to-shop
   (with-services {:storeback-handler (routes
+                                      (GET "/v2/facets" req {:status 200
+                                                             :body   "{}"})
                                       (GET "/store" _ common/storeback-affiliate-stylist-response))}
     (with-handler handler
       (let [resp (handler (mock/request :get "https://phil.mayvenn.com/categories/2-virgin-straight"))]
@@ -142,24 +144,25 @@
 
 (deftest server-side-renders-product-details-page
   (testing "when the product does not exist storefront returns 404"
-    (let [[storeback-requests storeback-handler] (with-requests-chan (routes
-                                                                      (GET "/v2/orders/:number" req {:status 404
-                                                                                                     :body   "{}"})
-                                                                      (GET "/v2/products" req
-                                                                           {:status 200
-                                                                            :body   (generate-string {:products []})})
-                                                                      (GET "/store" req common/storeback-stylist-response)))]
+    (let [[_ storeback-handler] (with-requests-chan (routes
+                                                     common/default-storeback-handler
+                                                     (GET "/v2/orders/:number"
+                                                          req {:status 404
+                                                               :body   "{}"})
+                                                     (GET "/v2/products" req
+                                                          {:status 200
+                                                           :body   (generate-string {:products []})})))]
       (with-services {:storeback-handler storeback-handler}
         (with-handler handler
           (let [resp (handler (mock/request :get "https://bob.mayvenn.com/products/99-red-balloons"))]
             (is (= 404 (:status resp))))))))
   (testing "when whitelisted for discontinued"
-    (let [[storeback-requests storeback-handler] (with-requests-chan (routes
-                                                                      (GET "/store" req common/storeback-stylist-response)
-                                                                      (GET "/v2/products" req
-                                                                           {:status 200
-                                                                            :body   (generate-string {:products []
-                                                                                                      :skus     []})})))]
+    (let [[_ storeback-handler] (with-requests-chan (routes
+                                                     common/default-storeback-handler
+                                                     (GET "/v2/products" req
+                                                          {:status 200
+                                                           :body   (generate-string {:products []
+                                                                                     :skus     []})})))]
       (with-services {:storeback-handler storeback-handler}
         (with-handler handler
           (let [resp (handler (mock/request :get "https://bob.mayvenn.com/products/104-dyed-100-human-hair-brazilian-loose-wave-bundle?SKU=BLWLR1JB1"))]
@@ -167,6 +170,7 @@
   (testing "when the product exists"
     (let [[_ storeback-handler]
           (with-requests-chan (routes
+                               common/default-storeback-handler
                                (GET "/v2/orders/:number" req {:status 404
                                                               :body   "{}"})
                                (GET "/v2/products" req
@@ -235,9 +239,7 @@
                                                                            :legacy/product-name          "A balloon"
                                                                            :legacy/product-id            133
                                                                            :legacy/variant-id            641
-                                                                           :promo.triple-bundle/eligible true}]})})
-                               (GET "/store" req
-                                    common/storeback-stylist-response)))]
+                                                                           :promo.triple-bundle/eligible true}]})})))]
       (with-services {:storeback-handler storeback-handler}
         (with-handler handler
           (has-canonized-link handler "//bob.mayvenn.com/products/67-peruvian-water-wave-lace-closures?SKU=PWWLC10")
@@ -250,10 +252,10 @@
     (let [number                                 "W123456"
           token                                  "iA1bjIUAqCfyS3cuvdNYindmlRZ3ICr3g+vSfzvUM1c="
           [storeback-requests storeback-handler] (with-requests-chan (routes
+                                                                      common/default-storeback-handler
                                                                       (GET "/v2/orders/:number" req {:status 200
                                                                                                      ;; TODO: fixme
-                                                                                                     :body   "{\"number\": \"W123456\"}"})
-                                                                      (GET "/store" req common/storeback-stylist-response)))]
+                                                                                                     :body   "{\"number\": \"W123456\"}"})))]
       (with-services {:storeback-handler storeback-handler}
         (with-handler handler
           (let [resp (handler (-> (mock/request :get "https://bob.mayvenn.com/")
@@ -311,12 +313,10 @@
 (deftest fetches-data-from-contentful
   (testing "transforming content"
     (testing "transforming 'latest' content"
-      (let [[_ storeback-handler]                    (with-requests-chan (GET "/store" req common/storeback-stylist-response))
-            [contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
+      (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
                                                                               {:status 200
                                                                                :body   (generate-string (:body common/contentful-response))}))]
-        (with-services {:storeback-handler  storeback-handler
-                        :contentful-handler contentful-handler}
+        (with-services {:contentful-handler contentful-handler}
           (with-handler handler
             (let [responses (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
                   requests  (txfm-requests contentful-requests identity)]
@@ -339,12 +339,10 @@
                        (parse-string true)
                        :homepage))))))))
     (testing "transforming ugc-collections"
-      (let [[_ storeback-handler]                    (with-requests-chan (GET "/store" req common/storeback-stylist-response))
-            [contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
+      (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
                                                                               {:status 200
                                                                                :body   (generate-string (:body common/contentful-ugc-collection-response))}))]
-        (with-services {:storeback-handler  storeback-handler
-                        :contentful-handler contentful-handler}
+        (with-services {:contentful-handler contentful-handler}
             (with-handler handler
               (let [responses (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
                     requests  (txfm-requests contentful-requests identity)
@@ -413,12 +411,10 @@
 
   (let [number-of-contentful-entities-to-fetch 4]
     (testing "caching content"
-      (let [[storeback-requests storeback-handler]   (with-requests-chan (GET "/store" req common/storeback-stylist-response))
-            [contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
+      (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
                                                                               {:status 200
                                                                                :body   (generate-string (:body common/contentful-response))}))]
-        (with-services {:storeback-handler  storeback-handler
-                        :contentful-handler contentful-handler}
+        (with-services {:contentful-handler contentful-handler}
           (with-handler handler
             (let [responses (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
                   requests  (txfm-requests contentful-requests identity)]
@@ -434,12 +430,10 @@
             (is (= number-of-contentful-entities-to-fetch (count (txfm-requests contentful-requests identity))))))))
 
     (testing "attempts-to-retry-fetch-from-contentful"
-      (let [[storeback-requests storeback-handler]   (with-requests-chan (GET "/store" req common/storeback-stylist-response))
-            [contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
+      (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
                                                                               {:status 500
                                                                                :body   "{}"}))]
-        (with-services {:storeback-handler  storeback-handler
-                        :contentful-handler contentful-handler}
+        (with-services {:contentful-handler contentful-handler}
           (with-handler handler
             (let [responses (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
                   requests  (txfm-requests contentful-requests identity)]
