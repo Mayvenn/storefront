@@ -76,7 +76,7 @@
                                 (System/exit 1)))))]
      :compiler         {:output-dir       "target/release/js/out"
                         :asset-path       "/js/out"
-                        :source-map       false
+                        :source-map       nil
                         :modules          {:cljs-base {:output-to "target/release/js/out/cljs_base.js"}
                                            :main      {:output-to "target/release/js/out/main.js"
                                                        :entries   #{storefront.core}}
