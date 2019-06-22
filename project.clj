@@ -76,7 +76,7 @@
                                 (System/exit 1)))))]
      :compiler         {:output-dir       "target/release/js/out"
                         :asset-path       "/js/out"
-                        :source-map       true
+                        :source-map       false
                         :modules          {:cljs-base {:output-to "target/release/js/out/cljs_base.js"}
                                            :main      {:output-to "target/release/js/out/main.js"
                                                        :entries   #{storefront.core}}
@@ -89,6 +89,7 @@
                         :parallel-build   true
                         :npm-deps         false
                         :install-deps     false
+                        :pseudo-names     true
                         :libs             ["src-cljs/rng/rng.js"]
                         :foreign-libs     [{:file     "src-cljs/storefront/jsQR.js"
                                             :file-min "target/min-js/jsQR.js"

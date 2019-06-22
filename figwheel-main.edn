@@ -1,3 +1,4 @@
 {:target-dir "resources/"
  :watch-dirs ["src-cljc" "src-cljs"]
- :css-dirs ["resources/public/css"]}
+ :css-dirs ["resources/public/css"]
+ :repl-eval-timeout 30000}
