@@ -108,17 +108,18 @@ function cleanHashedAssets() {
 }
 
 exports['fix-source-map'] = fixSourceMap;
-function fixSourceMap() {
-  return sourceMapStream = gulp.src(['resources/public/js/out/main.js.map',
-                                     'resources/public/js/out/cljs_base.js.map',
-                                     'resources/public/js/out/redeem.js.map'], {base: './'})
-    .pipe(jsonTransform(function(data) {
-      data["sources"] = data["sources"].map(function(f) {
-        return f.replace("\/", "/");
-      });
-      return data;
-    }))
-    .pipe(gulp.dest('./'));
+function fixSourceMap(cb) {
+  cb();
+  // return sourceMapStream = gulp.src(['resources/public/js/out/main.js.map',
+  //                                    'resources/public/js/out/cljs_base.js.map',
+  //                                    'resources/public/js/out/redeem.js.map'], {base: './'})
+  //   .pipe(jsonTransform(function(data) {
+  //     data["sources"] = data["sources"].map(function(f) {
+  //       return f.replace("\/", "/");
+  //     });
+  //     return data;
+  //   }))
+  //   .pipe(gulp.dest('./'));
 }
 
 exports['save-git-sha-version'] = saveGitShaVersion;
@@ -211,6 +212,8 @@ async function rootJSFiles() {
 
 exports['fix-main-js-pointing-to-source-map'] = fixMainJsPointingToSourceMap;
 async function fixMainJsPointingToSourceMap() {
+  return;
+
   if (!argv.host) {
     throw "missing --host";
   }
