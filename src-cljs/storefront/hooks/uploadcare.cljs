@@ -17,7 +17,7 @@
      #(do
         ;; These custom styles don't work on localhost... test on diva-acceptance.com
         (when config/secure?
-          (.addUrl js/uploadcare.tabsCss (str "https:" (assets/path "/css/app.css"))))
+          (.addUrl js/uploadcare.tabsCss (assets/path "/css/app.css")))
         (handle-message events/inserted-uploadcare)))))
 
 (defn ^:private receive-file-or-group-info [on-success file-or-group-info]
