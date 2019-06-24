@@ -10,7 +10,8 @@
 (def freeinstall-subdomain "freeinstall")
 
 (defn define-frontend-modules []
-  {:cljs-base [(str "https://" asset-mappings/cdn-host (assets/path "js/out/cljs_base.js"))]
+  ;; all module names must be cljs mangled (aka - hyphens get converted to underscore)
+  {:cljs_base [(str "https://" asset-mappings/cdn-host (assets/path "js/out/cljs_base.js"))]
    :main      [(str "https://" asset-mappings/cdn-host (assets/path "js/out/main.js"))]
    :redeem    [(str "https://" asset-mappings/cdn-host (assets/path "js/out/redeem.js"))]})
 
