@@ -904,10 +904,8 @@
   (cookie-jar/save-completed-order (get-in app-state keypaths/cookie)
                                    (get-in app-state keypaths/completed-order))
   (messages/handle-message events/clear-order)
-  (let [store-slug   (get-in app-state keypaths/store-slug)
-        freeinstall? (= "freeinstall" store-slug)]
-    (when-not freeinstall?
-      (talkable/show-pending-offer app-state))
+  (let [freeinstall? (= "freeinstall" (get-in app-state keypaths/store-slug))]
+    (talkable/show-pending-offer app-state)
 
     (when (and freeinstall?
                (:servicing-stylist-id order))
