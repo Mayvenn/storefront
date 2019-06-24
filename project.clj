@@ -102,7 +102,8 @@
                                            {:file     "src-cljs/storefront/bugsnag-2.5.0.js"
                                             :file-min "target/min-js/bugsnag-2.5.0.js"
                                             :provides ["bugsnag"]}]
-                        :externs          ["externs/jsQR.js"
+                        :externs          ["externs/luckyorange.js"
+                                           "externs/jsQR.js"
                                            "externs/bugsnag.js"
                                            "externs/convert.js"
                                            "externs/facebook.js"
