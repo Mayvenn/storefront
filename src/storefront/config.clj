@@ -10,9 +10,9 @@
 (def freeinstall-subdomain "freeinstall")
 
 (defn define-frontend-modules []
-  {:cljs-base [(str asset-mappings/cdn-host (assets/path "js/out/cljs_base.js"))]
-   :main      [(str asset-mappings/cdn-host (assets/path "js/out/main.js"))]
-   :redeem    [(str asset-mappings/cdn-host (assets/path "js/out/redeem.js"))]})
+  {:cljs-base [(str "https://" asset-mappings/cdn-host (assets/path "js/out/cljs_base.js"))]
+   :main      [(str "https://" asset-mappings/cdn-host (assets/path "js/out/main.js"))]
+   :redeem    [(str "https://" asset-mappings/cdn-host (assets/path "js/out/redeem.js"))]})
 
 (def frontend-modules (memoize define-frontend-modules))
 
