@@ -175,7 +175,7 @@
   ;; The URL has already changed. Save scroll position on the page they are
   ;; leaving, and handle the nav message.
   (messages/handle-message events/navigation-save (-> (get-in app-state keypaths/navigation-stashed-stack-item)
-                                             (assoc :final-scroll js/document.body.scrollTop)))
+                                                      (assoc :final-scroll js/document.body.scrollTop)))
   (apply messages/handle-message navigation-message))
 
 (defmethod effects/perform-effects events/browser-navigate [_ _ {:keys [navigation-message]} _ app-state]
