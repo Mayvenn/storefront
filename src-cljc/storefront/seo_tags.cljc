@@ -37,7 +37,7 @@
    [:meta {:property "og:type"
            :content "website"}]
    [:meta {:property "og:image"
-           :content (str "http:" assets/canonical-image)}]
+           :content assets/canonical-image}]
    [:meta {:property "og:description"
            :content "Mayvenn is the recommended and trusted source for quality hair by 100,000 stylists across the country. Mayvenn's 100% virgin human hair is backed by a 30 Day Quality Guarantee & includes FREE shipping!"}]])
 
@@ -74,7 +74,7 @@
     [[:link {:rel "canonical" :href canonical-href}]]))
 
 (defn tags-for-page [data]
-  (let [og-image-url (str "http:" assets/canonical-image)]
+  (let [og-image-url assets/canonical-image]
     (->
      (condp = (get-in data keypaths/navigation-event)
        events/navigate-sign-in [[:title {} "Sign In | Mayvenn"]

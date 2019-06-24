@@ -743,7 +743,7 @@
    (merge {:style     {:height height}
            :title     "Mayvenn"
            :item-prop "logo"
-           :content   (str "https:" (assets/path "/images/header_logo.svg"))}
+           :content   (assets/path "/images/header_logo.svg")}
           (when event (utils/route-to event))
           (dissoc attrs :height :event))])
 

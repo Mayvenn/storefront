@@ -8,6 +8,9 @@
       (str "https://" asset-mappings/cdn-host "/cdn/" mapped-asset)
       resource-path)))
 
-(def canonical-image "https://ucarecdn.com/efeb9b11-04a1-4f50-bec3-9cda594407ae/canonical_image.png")
+;; We need http, because facebook doesn't recognize https for og:image tags
+;; https://stackoverflow.com/questions/8855361/fb-opengraph-ogimage-not-pulling-images-possibly-https
+(def canonical-image
+  "http://ucarecdn.com/efeb9b11-04a1-4f50-bec3-9cda594407ae/canonical_image.png")
 
 (defn css-url [url] (str "url(" url ")"))
