@@ -11,6 +11,7 @@
 
 (defn define-frontend-modules []
   ;; all module names must be cljs mangled (aka - hyphens get converted to underscore)
+  ;; See implementation of cljs.loader: https://github.com/clojure/clojurescript/blob/master/src/main/cljs/cljs/loader.cljs#L15-L46
   {:cljs_base [(str "https://" asset-mappings/cdn-host (assets/path "js/out/cljs_base.js"))]
    :main      [(str "https://" asset-mappings/cdn-host (assets/path "js/out/main.js"))]
    :redeem    [(str "https://" asset-mappings/cdn-host (assets/path "js/out/redeem.js"))]})

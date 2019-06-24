@@ -1,5 +1,7 @@
 {:asset-path       "/js/out"
  :output-dir       "resources/public/js/out"
+ ;; Don't forget to update config.clj > define-frontend-modules
+ ;; Don't forget to update project.clj
  :modules          {:cljs-base {:output-to "resources/public/js/out/cljs_base.js"}
                     :main      {:output-to "resources/public/js/out/main.js"
                                 :entries   #{"storefront.core" "rng"}}

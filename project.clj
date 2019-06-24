@@ -75,8 +75,10 @@
                                 (println (cljs.analyzer/message env s))
                                 (System/exit 1)))))]
      :compiler         {:output-dir       "target/release/js/out"
-                        :asset-path       "/js/out"
+                        :asset-path       "/js/out"  ; our CDN host is defined at startup time, so we're basically ignoring this value
                         :source-map       nil
+                        ;; Don't forget to update config.clj > define-frontend-modules
+                        ;; Don't forget to update dev.cljs.edn
                         :modules          {:cljs-base {:output-to "target/release/js/out/cljs_base.js"}
                                            :main      {:output-to "target/release/js/out/main.js"
                                                        :entries   #{storefront.core}}
@@ -89,7 +91,7 @@
                         :parallel-build   true
                         :npm-deps         false
                         :install-deps     false
-                        :pseudo-names     true
+                        :pseudo-names     false
                         :libs             ["src-cljs/rng/rng.js"]
                         :foreign-libs     [{:file     "src-cljs/storefront/jsQR.js"
                                             :file-min "target/min-js/jsQR.js"
