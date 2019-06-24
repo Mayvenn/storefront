@@ -89,7 +89,7 @@
                         :parallel-build   true
                         :npm-deps         false
                         :install-deps     false
-                        :pseudo-names     true
+                        :pseudo-names     false
                         :libs             ["src-cljs/rng/rng.js"]
                         :foreign-libs     [{:file     "src-cljs/storefront/jsQR.js"
                                             :file-min "target/min-js/jsQR.js"
