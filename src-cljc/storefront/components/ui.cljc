@@ -62,7 +62,8 @@
      or the user navigated elsewhere).
   "
   [module-name fully-qualified-built-component-symbol for-navigation-event]
-  #?(:cljs (or (let [path (string/split (str (munge-str (namespace fully-qualified-built-component-symbol))
+  #?(:cljs (or (let [path (string/split (str "window."
+                                             (munge-str (namespace fully-qualified-built-component-symbol))
                                              "."
                                              (munge-str (name fully-qualified-built-component-symbol)))
                                         #"\.")]
