@@ -50,7 +50,6 @@
             adventure.look-detail
             [adventure.checkout.cart :as adventure-cart]
             adventure.checkout.wait
-            adventure.stylist-matching.how-far
             adventure.stylist-matching.match-stylist
             adventure.stylist-matching.find-your-stylist
             adventure.stylist-matching.matching-stylist-wait
@@ -158,7 +157,6 @@
           events/navigate-adventure-select-new-look                     adventure.select-new-look/built-component
           events/navigate-adventure-look-detail                         adventure.look-detail/built-component
           events/navigate-adventure-select-bundle-set                   adventure.select-new-look/built-component
-          events/navigate-adventure-how-far                             adventure.stylist-matching.how-far/built-component
           events/navigate-adventure-match-stylist                       adventure.stylist-matching.match-stylist/built-component
           events/navigate-adventure-find-your-stylist                   adventure.stylist-matching.find-your-stylist/built-component
           events/navigate-adventure-matching-stylist-wait-pre-purchase  adventure.stylist-matching.matching-stylist-wait/built-component

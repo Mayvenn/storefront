@@ -86,11 +86,15 @@
      (let [cookie    (get-in app-state storefront.keypaths/cookie)
            adventure (get-in app-state keypaths/adventure)]
        (cookie/save-adventure cookie adventure)
-       (history/enqueue-navigate events/navigate-adventure-how-far))))
+       (history/enqueue-navigate events/navigate-adventure-matching-stylist-wait-pre-purchase))))
 
 (defmethod transitions/transition-state events/navigate-adventure-find-your-stylist
   [_ event _ app-state]
   (assoc-in app-state keypaths/adventure-stylist-match-address nil))
+
+#?(:cljs
+   (defmethod effects/perform-effects events/navigate-adventure-find-your-stylist [_ _ _ _ app-state]
+     (messages/handle-message events/adventure-clear-servicing-stylist)))
 
 (defmethod trackings/perform-track events/control-adventure-location-submit
   [_ event {:keys [current-step]} app-state]

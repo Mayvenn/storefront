@@ -257,6 +257,7 @@
 
 (deftest create-shared-cart-from-url-redirects-to-cart-preserving-query-params
   (with-services {:storeback-handler (routes
+                                      common/default-storeback-handler
                                       (GET "/store" _ common/storeback-stylist-response)
                                       (POST "/create-order-from-shared-cart" _ storeback-partially-fake-order-handler-response))}
     (with-handler handler
@@ -359,3 +360,10 @@
        (is (= "https://shop.mayvenn.com"
               (get-in resp [:headers "Location"])))))))
 
+(deftest redirects-to-find-your-stylist-from-defunct-how-far-freeinstall-page
+  (assert-request (mock/request :get "https://freeinstall.mayvenn.com/adv/how-far")
+                  common/storeback-stylist-response
+                  (fn [resp]
+                    (is (= 302 (:status resp)))
+                    (is (= "https://freeinstall.mayvenn.com/adv/find-your-stylist"
+                           (get-in resp [:headers "Location"]))))))

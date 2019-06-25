@@ -41,7 +41,7 @@
    :title                         "Pick your stylist"
    :header-data                   {:title                   "Find Your Stylist"
                                    :progress                progress/stylist-results
-                                   :back-navigation-message [events/navigate-adventure-how-far]
+                                   :back-navigation-message [events/navigate-adventure-find-your-stylist]
                                    :subtitle                "Step 2 of 3"}
    :gallery-modal-data            {:ucare-img-urls                 (get-in data keypaths/adventure-stylist-gallery-image-urls) ;; empty hides the modal
                                    :initially-selected-image-index (get-in data keypaths/adventure-stylist-gallery-image-index)
@@ -56,7 +56,7 @@
   {:current-step                  3
    :title                         "Pick your stylist"
    :header-data                   {:title                   "Find Your Stylist"
-                                   :back-navigation-message [events/navigate-adventure-how-far]
+                                   :back-navigation-message [events/navigate-adventure-find-your-stylist]
                                    :subtitle                "Step 3 of 3"}
    :gallery-modal-data            {:ucare-img-urls                 (get-in data keypaths/adventure-stylist-gallery-image-urls) ;; empty hides the modal
                                    :initially-selected-image-index (get-in data keypaths/adventure-stylist-gallery-image-index)
@@ -151,7 +151,6 @@
   [_ event args app-state]
   #?(:cljs
      (let [{:keys [latitude longitude]} (get-in app-state keypaths/adventure-stylist-match-location)
-           {:keys [how-far]}            (get-in app-state keypaths/adventure-choices)
            service-type                 (get-in app-state keypaths/adventure-choices-install-type)
            location-submitted           (get-in app-state keypaths/adventure-stylist-match-address)
            results                      (map :stylist-id (get-in app-state keypaths/adventure-matched-stylists))]
@@ -160,7 +159,7 @@
                               :latitude           latitude
                               :longitude          longitude
                               :location_submitted location-submitted
-                              :radius             how-far
+                              :radius             "100mi"
                               :service_type       service-type
                               :current_step       2}))))
 

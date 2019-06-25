@@ -30,8 +30,8 @@
 (defmethod effects/perform-effects events/navigate-adventure-matching-stylist-wait-pre-purchase [_ _ _ _ app-state]
   #?(:cljs
      (let [{:keys [latitude longitude]}               (get-in app-state adventure-keypaths/adventure-stylist-match-location)
-           {:as choices :keys [how-far install-type]} (get-in app-state adventure-keypaths/adventure-choices)]
-       (if-not (and latitude longitude how-far install-type)
+           {:as choices :keys [install-type]} (get-in app-state adventure-keypaths/adventure-choices)]
+       (if-not (and latitude longitude install-type)
          (history/enqueue-redirect events/navigate-adventure-home)
          (handle-message events/api-fetch-stylists-within-radius-pre-purchase)))))
 
@@ -41,7 +41,7 @@
            choices (get-in app-state adventure.keypaths/adventure-choices)
            query   {:latitude     latitude
                     :longitude    longitude
-                    :radius       (:how-far choices)
+                    :radius       "100mi"
                     :install-type (:install-type choices)
                     :choices      choices}] ; For trackings purposes only
        (api/fetch-stylists-within-radius (get-in app-state keypaths/api-cache)

@@ -12,7 +12,7 @@
    :header-data  {:title                   "Your New Stylist"
                   :header-attrs            {:class "bg-light-lavender white"}
                   :progress                progress/out-of-area
-                  :back-navigation-message [events/navigate-adventure-how-far]
+                  :back-navigation-message [events/navigate-adventure-find-your-stylist]
                   :subtitle                "Step 2 of 3"}})
 
 (defn ^:private component
