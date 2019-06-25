@@ -2,6 +2,7 @@
   (:require #?@(:cljs
                 [[storefront.history :as history]
                  [storefront.hooks.stringer :as stringer]
+                 [storefront.hooks.talkable :as talkable]
                  [storefront.browser.cookie-jar :as cookie]
                  [storefront.api :as api]
                  [storefront.platform.messages :as messages]
@@ -133,7 +134,14 @@
   #?(:cljs
      (messages/handle-message events/save-order {:order order})))
 
+(defmethod transitions/transition-state events/navigate-adventure-match-success-post-purchase
+  [_ _ _ {:keys [completed-order] :as app-state}]
+  #?@(:cljs
+      [(prn completed-order)
+       (assoc-in app-state storefront.keypaths/pending-talkable-order (talkable/completed-order completed-order))]))
+
 (defmethod effects/perform-effects events/navigate-adventure-match-success-post-purchase [_ _ _ _ app-state]
-  #?(:cljs
-     (api/fetch-matched-stylist (get-in app-state storefront.keypaths/api-cache)
-                                (get-in app-state keypaths/adventure-choices-selected-stylist-id))))
+  #?@(:cljs
+      [(talkable/show-pending-offer app-state)
+       (api/fetch-matched-stylist (get-in app-state storefront.keypaths/api-cache)
+                                  (get-in app-state keypaths/adventure-choices-selected-stylist-id))]))

@@ -905,7 +905,9 @@
                                    (get-in app-state keypaths/completed-order))
   (messages/handle-message events/clear-order)
   (let [freeinstall? (= "freeinstall" (get-in app-state keypaths/store-slug))]
-    (talkable/show-pending-offer app-state)
+    (when (or (not freeinstall?)
+              (:servicing-stylist-id order))
+      (talkable/show-pending-offer app-state))
 
     (when (and freeinstall?
                (:servicing-stylist-id order))
