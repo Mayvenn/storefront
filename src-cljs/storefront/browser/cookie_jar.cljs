@@ -79,7 +79,7 @@
 
 (def affiliate-stylist-id
   {:domain        (root-domain)
-   :max-age       one-day
+   :max-age       four-weeks
    :optional-keys []
    :required-keys [:affiliate-stylist-id]})
 
