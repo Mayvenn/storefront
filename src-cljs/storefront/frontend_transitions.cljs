@@ -694,6 +694,6 @@
 
 (defmethod transition-state events/module-loaded [_ _ {:keys [module-name]} app-state]
   (when module-name
-    (update app-state :modules conj module-name)))
+    (update app-state :modules (fnil conj #{}) module-name)))
 
 
