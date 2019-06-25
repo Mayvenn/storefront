@@ -48,7 +48,6 @@
       (assoc-in keypaths/user-store-slug store-slug)
       (assoc-in keypaths/user-store-id store-id)
       (assoc-in keypaths/user-stylist-experience stylist-experience)
-      (assoc-in keypaths/user-stylist-service-menu service-menu)
       (assoc-in keypaths/checkout-as-guest false)
       #?(:clj identity
          :cljs (assoc-in keypaths/user-total-available-store-credit (spice/parse-double total-available-store-credit)))))

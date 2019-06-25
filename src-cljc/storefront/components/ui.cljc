@@ -73,8 +73,7 @@
                               (fn []
                                 (handle-message events/module-loaded {:module-name          module-name
                                                                       :for-navigation-event for-navigation-event})))
-                 nil)
-               built-loading-component)
+                 built-loading-component))
      :clj (do (require (symbol (namespace fully-qualified-built-component-symbol)))
               (resolve fully-qualified-built-component-symbol))))
 
