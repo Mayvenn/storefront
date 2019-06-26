@@ -28,14 +28,7 @@
 
 (defmethod popup/component :to-adventure
   [_ _ _]
-  (let [external-redirect (utils/fake-href events/external-redirect-freeinstall
-                                           {:path "/adv/install-type"
-                                            :query-string
-                                            (string/join
-                                             "&"
-                                             ["utm_medium=referral"
-                                              "utm_source=toadventurehomepagemodal"
-                                              "utm_term=fi_shoptofreeinstall"])})]
+  (let [external-redirect (utils/fake-href events/control-to-adventure-popup-dismiss)]
     (component/create
      (html
       (ui/modal {:col-class   "col-12 col-6-on-tb col-6-on-dt my8-on-tb-dt flex justify-center"
@@ -66,7 +59,7 @@
                    [:div.mx-auto
                     {:style {:width "150px"}}
                     (ui/teal-button (merge external-redirect {:height-class "py2"
-                                                              :data-test    "to-adventure-modal-learn-more"})
+                                                              :data-test    "to-adventure-modal-browse-stylists"})
                                                        "Browse Stylists")]]
 
                   [:div.col-12.bg-transparent-teal.mt3.pt6.pb8.px4
@@ -103,7 +96,13 @@
 (defmethod effects/perform-effects events/control-to-adventure-popup-dismiss
   [_ _ _ _ app-state]
   (cookie-jar/save-dismissed-to-adventure (get-in app-state keypaths/cookie) true)
-  (messages/handle-message events/popup-hide))
+  (messages/handle-message events/popup-hide)
+  (messages/handle-message events/external-redirect-freeinstall {:path         "/adv/install-type"
+                                                                 :query-string (string/join
+                                                                                "&"
+                                                                                ["utm_medium=referral"
+                                                                                 "utm_source=toadventurehomepagemodal"
+                                                                                 "utm_term=fi_shoptofreeinstall"])}))
 
 (defmethod transitions/transition-state events/control-to-adventure-popup-dismiss
   [_ _ _ app-state]
