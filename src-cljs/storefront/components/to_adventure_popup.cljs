@@ -48,8 +48,8 @@
                    (svg/simple-x
                     (merge close-dialog-href
                            {:data-test    "to-adventure-popup-dismiss"
-                            :height       "1.5rem"
-                            :width        "1.5rem"
+                            :height       "27px"
+                            :width        "27px"
                             :class        "stroke-black"
                             :stroke-width "5"}))]
                   [:div.flex.justify-center.pb2
