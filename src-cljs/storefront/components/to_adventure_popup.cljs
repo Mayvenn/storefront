@@ -29,7 +29,8 @@
 (defmethod popup/component :to-adventure
   [_ _ _]
   (let [external-redirect (utils/fake-href events/external-redirect-freeinstall
-                                           {:query-string
+                                           {:path "/adv/install-type"
+                                            :query-string
                                             (string/join
                                              "&"
                                              ["utm_medium=referral"
@@ -66,7 +67,7 @@
                     {:style {:width "150px"}}
                     (ui/teal-button (merge external-redirect {:height-class "py2"
                                                               :data-test    "to-adventure-modal-learn-more"})
-                                                       "Learn More")]]
+                                                       "Browse Stylists")]]
 
                   [:div.col-12.bg-transparent-teal.mt3.pt6.pb8.px4
                    [:div.col-11-on-dt.justify-center.flex.flex-wrap.mx-auto.pb2
@@ -89,10 +90,9 @@
                             :description "We’ll connect you to your Mayvenn Certified Stylist and book an install appointment that’s convenient for you."})]
                    [:div.mx-auto
                     {:style {:width "150px"}}
-                    (ui/teal-button (merge
-                                     {:height-class "py2"}
-                                     external-redirect)
-                                    [:span "Learn More"])]]]])))))
+                    (ui/teal-button (merge {:height-class "py2"}
+                                           external-redirect)
+                                    [:span "Browse Stylists"])]]]])))))
 
 (defmethod popup/query :to-adventure [data] {})
 
