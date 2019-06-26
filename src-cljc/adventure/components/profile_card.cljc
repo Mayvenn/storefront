@@ -1,7 +1,9 @@
 (ns adventure.components.profile-card
   (:require [storefront.accessors.stylists :as stylists]
             [storefront.component :as component]
+            [storefront.components.formatters :as formatters]
             [storefront.components.ui :as ui]
+            [clojure.string :as string]
             [spice.date :as date]))
 
 (defn component [{:keys [image-url title subtitle rating detail-line detail-attributes]} _ _]
@@ -28,9 +30,19 @@
     {:image-url         (-> stylist :portrait :resizable-url)
      :title             [:div {:data-test "stylist-name"}
                          (stylists/->display-name stylist)]
-     :subtitle          (str (:city salon) ", " (:state salon))
+     :subtitle          (let [{:keys [name address-1 address-2 city state zipcode] :as salon} (:salon stylist)]
+                          [:div.py1
+                           [:div name]
+                           [:a.navy
+                            {:href (str "https://www.google.com/maps/place/"
+                                        (string/join "+" (list address-1 address-2 city state zipcode)))}
+                            (when address-1
+                              [:div address-1
+                               (when address-2
+                                 [:span ", " address-2])])
+                            [:div city ", " state " " zipcode]]])
      :rating            (:rating stylist)
-     :detail-line       (str (:name salon))
+     :detail-line       (ui/link :link/phone :a.navy {} (formatters/phone-number (:phone (:address stylist))))
      :detail-attributes [(when (:licensed stylist)
                            "Licensed")
                          (case (:salon-type salon)

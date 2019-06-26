@@ -90,10 +90,8 @@
 (defn phone-number [phone]
   (let [num (numbers/digits-only (str phone))]
     (str
-     (subs num 0 1)
+     (subs num 0 3)
      "-"
-     (subs num 1 4)
+     (subs num 3 6)
      "-"
-     (subs num 4 7)
-     "-"
-     (subs num 7 11))))
+     (subs num 6 10))))
