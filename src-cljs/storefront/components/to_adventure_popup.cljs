@@ -24,11 +24,11 @@
    [:p.h6.col-11.center.dark-gray description]])
 
 (def close-dialog-href
-  (utils/fake-href events/control-to-adventure-popup-dismiss))
+  (utils/fake-href events/control-to-adventure-popup-dismiss "close"))
 
 (defmethod popup/component :to-adventure
   [_ _ _]
-  (let [external-redirect (utils/fake-href events/control-to-adventure-popup-dismiss)]
+  (let [external-redirect (utils/fake-href events/control-to-adventure-browse-stylists)]
     (component/create
      (html
       (ui/modal {:col-class   "col-12 col-6-on-tb col-6-on-dt my8-on-tb-dt flex justify-center"
@@ -94,6 +94,17 @@
   (assoc-in app-state keypaths/popup :to-adventure))
 
 (defmethod effects/perform-effects events/control-to-adventure-popup-dismiss
+  [_ _ args _ app-state]
+  (cookie-jar/save-dismissed-to-adventure (get-in app-state keypaths/cookie) true)
+  (messages/handle-message events/popup-hide))
+
+(defmethod transitions/transition-state events/control-to-adventure-popup-dismiss
+  [_ _ _ app-state]
+  (-> app-state
+      (assoc-in keypaths/dismissed-to-adventure true)
+      (assoc-in keypaths/popup nil)))
+
+(defmethod effects/perform-effects events/control-to-adventure-browse-stylists
   [_ _ _ _ app-state]
   (cookie-jar/save-dismissed-to-adventure (get-in app-state keypaths/cookie) true)
   (messages/handle-message events/popup-hide)
@@ -103,8 +114,7 @@
                                                                                 ["utm_medium=referral"
                                                                                  "utm_source=toadventurehomepagemodal"
                                                                                  "utm_term=fi_shoptofreeinstall"])}))
-
-(defmethod transitions/transition-state events/control-to-adventure-popup-dismiss
+(defmethod transitions/transition-state events/control-to-adventure-browse-stylists
   [_ _ _ app-state]
   (-> app-state
       (assoc-in keypaths/dismissed-to-adventure true)
