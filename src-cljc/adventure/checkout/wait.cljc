@@ -74,7 +74,7 @@
            api-cache                    (get-in app-state keypaths/api-cache)
            query                        {:latitude     latitude
                                          :longitude    longitude
-                                         :radius       "25mi"
+                                         :radius       "100mi"
                                          :install-type (:install-type choices)
                                          :choices      choices}] ; For trackings purposes only
        (api/fetch-stylists-within-radius api-cache
