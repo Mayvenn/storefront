@@ -66,7 +66,7 @@
   "Find the sku best matching selectors, falling back to trying one facet at a time"
   [selections skus]
   (some (fn [criteria]
-          (first (selector/match-all {:selector/complete? true} criteria skus)))
+          (first (sort-by :sku/price (selector/match-all {:selector/complete? true} criteria skus))))
         [selections
          {:hair/color (:hair/color selections)}
          {:hair/length (:hair/length selections)}]))
