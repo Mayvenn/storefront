@@ -92,6 +92,7 @@
                         :static-fns       true
                         :fn-invoke-direct true
                         :parallel-build   true
+                        :language-out     :es6-strict
                         :npm-deps         false
                         :install-deps     false
                         :pseudo-names     false
