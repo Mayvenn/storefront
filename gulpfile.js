@@ -45,6 +45,55 @@ if (process.versions.node.search('12.') === -1) {
 	process.exit(1);
 }
 
+function readFile(filename) {
+  return new Promise((resolve, reject) => {
+    fs.readFile(filename, 'utf8', function(err, data) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(data);
+      }
+    });
+  });
+}
+
+function writeFile(filename, data) {
+  return new Promise((resolve, reject) => {
+    fs.writeFile(filename, data, 'utf8', function(err) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(true);
+      }
+    });
+  });
+}
+
+function renameFile(oldFilename, newFilename) {
+  return new Promise((resolve, reject) => {
+    fs.rename(oldFilename, newFilename, function(err) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(true);
+      }
+    });
+  });
+}
+
+async function rootJSFiles() {
+  // probably should be production, but this is probably easier
+  var config = jsedn.toJS(jsedn.parse(await readFile('dev.cljs.edn')));
+  let outputDir = config[':output-dir'];
+  let assetPath = config[':asset-path'].substring(1);
+
+  var jsRootFiles = [];
+  for (let [_, options] of Object.entries(config[':modules'])) {
+    jsRootFiles.push(assetPath + options[':output-to'].replace(outputDir, ''));
+  }
+  return jsRootFiles;
+}
+
 exports.css = css;
 function css() {
   return gulp.src(['./resources/css/*.css'])
@@ -108,18 +157,20 @@ function cleanHashedAssets() {
 }
 
 exports['fix-source-map'] = fixSourceMap;
-function fixSourceMap(cb) {
-  cb();
-  // return sourceMapStream = gulp.src(['resources/public/js/out/main.js.map',
-  //                                    'resources/public/js/out/cljs_base.js.map',
-  //                                    'resources/public/js/out/redeem.js.map'], {base: './'})
-  //   .pipe(jsonTransform(function(data) {
-  //     data["sources"] = data["sources"].map(function(f) {
-  //       return f.replace("\/", "/");
-  //     });
-  //     return data;
-  //   }))
-  //   .pipe(gulp.dest('./'));
+async function fixSourceMap() {
+  var jsRootFiles = await rootJSFiles();
+  jsRootFiles = jsRootFiles.map(fn => "resources/public/" + fn + ".map");
+  await new Promise((resolve, reject) => {
+    gulp.src(jsRootFiles, {base: './'})
+      .pipe(jsonTransform(function(data) {
+        data["sources"] = data["sources"].map(function(f) {
+          return f.replace("\/", "/");
+        });
+        return data;
+      }))
+      .pipe(gulp.dest('./'))
+      .on("end", resolve);
+  });
 }
 
 exports['save-git-sha-version'] = saveGitShaVersion;
@@ -160,60 +211,8 @@ function revAssets() {
     .pipe(RevAll.manifestFile())
     .pipe(gulp.dest('resources'));
 }
-
-function readFile(filename) {
-  return new Promise((resolve, reject) => {
-    fs.readFile(filename, 'utf8', function(err, data) {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(data);
-      }
-    });
-  });
-}
-
-function writeFile(filename, data) {
-  return new Promise((resolve, reject) => {
-    fs.writeFile(filename, data, 'utf8', function(err) {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(true);
-      }
-    });
-  });
-}
-
-function renameFile(oldFilename, newFilename) {
-  return new Promise((resolve, reject) => {
-    fs.rename(oldFilename, newFilename, function(err) {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(true);
-      }
-    });
-  });
-}
-
-async function rootJSFiles() {
-  // probably should be production, but this is probably easier
-  var config = jsedn.toJS(jsedn.parse(await readFile('dev.cljs.edn')));
-  let outputDir = config[':output-dir'];
-  let assetPath = config[':asset-path'].substring(1);
-
-  var jsRootFiles = [];
-  for (let [_, options] of Object.entries(config[':modules'])) {
-    jsRootFiles.push(assetPath + options[':output-to'].replace(outputDir, ''));
-  }
-  return jsRootFiles;
-}
-
 exports['fix-main-js-pointing-to-source-map'] = fixMainJsPointingToSourceMap;
 async function fixMainJsPointingToSourceMap() {
-  return;
-
   if (!argv.host) {
     throw "missing --host";
   }

@@ -76,7 +76,7 @@
                                 (System/exit 1)))))]
      :compiler         {:output-dir       "target/release/js/out"
                         :asset-path       "/js/out" ; our CDN host is defined at startup time, so we're basically ignoring this value
-                        :source-map       nil
+                        :source-map       true
                         ;; Don't forget to update config.clj > define-frontend-modules
                         ;; Don't forget to update dev.cljs.edn
                         :modules          {:cljs-base   {:output-to "target/release/js/out/cljs_base.js"}
