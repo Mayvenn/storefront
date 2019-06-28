@@ -13,7 +13,6 @@
                        [storefront.components.reset-password :as reset-password]
                        [storefront.components.shop-by-look :as shop-by-look]
                        [storefront.components.shop-by-look-details :as shop-by-look-details]
-                       [storefront.components.style-guide :as style-guide]
                        [storefront.components.stylist.account :as stylist.account]
                        [storefront.components.stylist.balance-transfer-details :as balance-transfer-details]
                        [storefront.components.stylist.cash-out :as stylist.cash-out]
@@ -237,7 +236,9 @@
                     (->> nav-event
                          (take (count events/navigate-style-guide))
                          vec)))
-            [:div (style-guide/built-component data nil)]])
+            [:div (ui/lazy-load-component :style-guide 'storefront.components.style-guide/built-component events/navigate-style-guide)]])
+
+
 
        (get-in data keypaths/menu-expanded)
        (slideout-nav/built-component data nil)

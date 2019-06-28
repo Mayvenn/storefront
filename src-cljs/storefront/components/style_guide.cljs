@@ -2,6 +2,7 @@
   (:require [storefront.component :as component]
             [storefront.components.tabs :as tabs]
             [storefront.components.ui :as ui]
+            [storefront.loader :as loader]
             [storefront.platform.carousel :as carousel]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :refer [handle-message]]
@@ -672,3 +673,5 @@
 
 (defn built-component [data opts]
   (component/build component data opts))
+
+(loader/set-load! :style-guide)
