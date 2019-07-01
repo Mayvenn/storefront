@@ -1,15 +1,27 @@
 (ns storefront.components.stylist.account
-  (:require [storefront.component :as component]
+  (:require [clojure.string :as string]
+            [spice.maps :as maps]
+            [storefront.component :as component]
             [storefront.components.stylist.account.payout :as account.payout]
             [storefront.components.stylist.account.password :as account.password]
             [storefront.components.stylist.account.profile :as account.profile]
             [storefront.components.stylist.account.social :as account.social]
             [storefront.components.tabs :as tabs]
             [storefront.components.ui :as ui]
+            [storefront.accessors.credit-cards :as cc]
+            [storefront.effects :as effects]
+            [storefront.platform.messages :as messages]
+            [storefront.transitions :as transitions :refer [transition-state]]
+            [storefront.hooks.uploadcare :as uploadcare]
+            [storefront.hooks.spreedly :as spreedly]
+            [storefront.hooks.stringer :as stringer]
+            [storefront.hooks.exception-handler :as exception-handler]
+            [storefront.api :as api]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.request-keys :as request-keys]))
+            [storefront.request-keys :as request-keys]
+            [adventure.keypaths :as adv-keypaths]))
 
 (defn uploadcare-photo [{:keys [status] :as portrait} saving?]
   [:a.navy
@@ -98,5 +110,204 @@
    :social              (account.social/query data)
    :loaded-uploadcare?  (get-in data keypaths/loaded-uploadcare)})
 
-(defn built-component [data opts]
+(defn ^:export built-component [data opts]
   (component/build component (query data) opts))
+
+;;;;;;;;;;;;;;;; not the best place to put, but it's at least out of main module ;;;;;;;;;;;;;;;;;;;;;
+
+(defmethod effects/perform-effects events/navigate-stylist-account [_ event args _ app-state]
+  (let [user-token (get-in app-state keypaths/user-token)
+        user-id    (get-in app-state keypaths/user-id)
+        stylist-id (get-in app-state keypaths/user-store-id)]
+    (when (and user-token stylist-id)
+      (uploadcare/insert)
+      (spreedly/insert)
+      (api/get-states (get-in app-state keypaths/api-cache))
+      (api/get-stylist-account user-id user-token stylist-id))))
+
+(defmethod effects/perform-effects events/control-reset-password-submit [_ event args _ app-state]
+  (if (empty? (get-in app-state keypaths/reset-password-password))
+    (messages/handle-message events/flash-show-failure {:message "Your password cannot be blank."})
+    (api/reset-password (get-in app-state keypaths/session-id)
+                        (stringer/browser-id)
+                        (get-in app-state keypaths/reset-password-password)
+                        (get-in app-state keypaths/reset-password-token)
+                        (get-in app-state keypaths/order-number)
+                        (get-in app-state keypaths/order-token)
+                        (get-in app-state keypaths/store-stylist-id))))
+
+(defmethod effects/perform-effects events/facebook-success-reset [_ event facebook-response _ app-state]
+  (api/facebook-reset-password (get-in app-state keypaths/session-id)
+                               (stringer/browser-id)
+                               (-> facebook-response :authResponse :userID)
+                               (-> facebook-response :authResponse :accessToken)
+                               (get-in app-state keypaths/reset-password-token)
+                               (get-in app-state keypaths/order-number)
+                               (get-in app-state keypaths/order-token)
+                               (get-in app-state keypaths/store-stylist-id)))
+
+(defmethod effects/perform-effects events/control-account-profile-submit [_ event args _ app-state]
+  (when (empty? (get-in app-state keypaths/errors))
+    (api/update-account (get-in app-state keypaths/session-id)
+                        (get-in app-state keypaths/user-id)
+                        (get-in app-state keypaths/manage-account-email)
+                        (get-in app-state keypaths/manage-account-password)
+                        (get-in app-state keypaths/user-token))))
+
+(defmethod effects/perform-effects events/control-create-order-from-shared-cart
+  [_ event {:keys [look-id shared-cart-id] :as args} _ app-state]
+  (api/create-order-from-cart (get-in app-state keypaths/session-id)
+                              shared-cart-id
+                              look-id
+                              (get-in app-state keypaths/user-id)
+                              (get-in app-state keypaths/user-token)
+                              (get-in app-state keypaths/store-stylist-id)
+                              (get-in app-state adv-keypaths/adventure-choices-selected-stylist-id)))
+
+(defmethod effects/perform-effects events/control-stylist-account-profile-submit [_ _ args _ app-state]
+  (let [session-id      (get-in app-state keypaths/session-id)
+        stylist-id      (get-in app-state keypaths/user-store-id)
+        user-id         (get-in app-state keypaths/user-id)
+        user-token      (get-in app-state keypaths/user-token)
+        stylist-account (dissoc (get-in app-state keypaths/stylist-manage-account)
+                                :green-dot-payout-attributes)]
+    (api/update-stylist-account session-id user-id user-token stylist-id stylist-account
+                                events/api-success-stylist-account-profile)))
+
+(defmethod effects/perform-effects events/control-stylist-account-password-submit [_ _ args _ app-state]
+  (let [session-id      (get-in app-state keypaths/session-id)
+        stylist-id      (get-in app-state keypaths/user-store-id)
+        user-id         (get-in app-state keypaths/user-id)
+        user-token      (get-in app-state keypaths/user-token)
+        stylist-account (dissoc (get-in app-state keypaths/stylist-manage-account)
+                                :green-dot-payout-attributes)]
+    (when (empty? (get-in app-state keypaths/errors))
+      (api/update-stylist-account session-id user-id user-token stylist-id stylist-account
+                                  events/api-success-stylist-account-password))))
+
+(defn reformat-green-dot [greendot-attributes]
+  (let [{:keys [expiration-date card-number] :as attributes}
+        (select-keys greendot-attributes [:expiration-date
+                                          :card-number
+                                          :card-first-name
+                                          :card-last-name
+                                          :postalcode])]
+    (when (seq card-number)
+      (let [[month year] (cc/parse-expiration (str expiration-date))]
+        (-> attributes
+            (dissoc :expiration-date)
+            (assoc :expiration-month month)
+            (assoc :expiration-year year)
+            (update :card-number (comp string/join cc/filter-cc-number-format str)))))))
+
+(defmethod effects/perform-effects events/spreedly-frame-tokenized [_ _ {:keys [token payment]} _ app-state]
+  (let [session-id      (get-in app-state keypaths/session-id)
+        stylist-id      (get-in app-state keypaths/user-store-id)
+        user-id         (get-in app-state keypaths/user-id)
+        user-token      (get-in app-state keypaths/user-token)
+        stylist-account (-> (get-in app-state keypaths/stylist-manage-account)
+                            (assoc :green-dot-payout-attributes {:expiration-month (:month payment)
+                                                                 :expiration-year  (:year payment)
+                                                                 :card-token       token
+                                                                 :card-first-name  (:first_name payment)
+                                                                 :card-last-name   (:last_name payment)
+                                                                 :postalcode       (:zip payment)})
+                            maps/deep-remove-nils)]
+    (api/update-stylist-account session-id user-id user-token stylist-id stylist-account
+                                events/api-success-stylist-account-commission)))
+
+(defmethod effects/perform-effects events/control-stylist-account-commission-submit [_ _ args _ app-state]
+  (let [payout-method   (get-in app-state keypaths/stylist-manage-account-chosen-payout-method)
+        session-id      (get-in app-state keypaths/session-id)
+        stylist-id      (get-in app-state keypaths/user-store-id)
+        user-id         (get-in app-state keypaths/user-id)
+        user-token      (get-in app-state keypaths/user-token)
+        stylist-account (-> (get-in app-state keypaths/stylist-manage-account)
+                            (update :green-dot-payout-attributes reformat-green-dot)
+                            maps/deep-remove-nils)]
+    (if (= "green_dot" payout-method)
+      (let [payout-attributes (get-in app-state (conj keypaths/stylist-manage-account :green-dot-payout-attributes))
+            [month year]      (cc/parse-expiration (str (:expiration-date payout-attributes)))]
+        (spreedly/tokenize (get-in app-state keypaths/spreedly-frame)
+                           {:first-name (:card-first-name payout-attributes)
+                            :last-name  (:card-last-name payout-attributes)
+                            :exp-month  month
+                            :exp-year   (cc/pad-year year)
+                            :zip        (:postalcode payout-attributes)}))
+      (api/update-stylist-account session-id user-id user-token stylist-id stylist-account
+                                  events/api-success-stylist-account-commission))))
+
+(defmethod effects/perform-effects events/control-stylist-account-social-submit [_ _ _ _ app-state]
+  (let [session-id      (get-in app-state keypaths/session-id)
+        stylist-id      (get-in app-state keypaths/user-store-id)
+        user-id         (get-in app-state keypaths/user-id)
+        user-token      (get-in app-state keypaths/user-token)
+        stylist-account (dissoc (get-in app-state keypaths/stylist-manage-account)
+                                :green-dot-payout-attributes)]
+    (api/update-stylist-account session-id user-id user-token stylist-id stylist-account
+                                events/api-success-stylist-account-social)))
+
+(defmethod effects/perform-effects events/uploadcare-api-failure [_ _ {:keys [error error-data]} _ app-state]
+  (exception-handler/report error error-data))
+
+(defmethod effects/perform-effects events/navigate-stylist-dashboard [_ event args _ app-state]
+  (let [user-token (get-in app-state keypaths/user-token)
+        user-id    (get-in app-state keypaths/user-id)
+        stylist-id (get-in app-state keypaths/user-store-id)]
+    (when (and user-token stylist-id)
+      (api/get-stylist-account user-id user-token stylist-id)
+      (api/get-stylist-payout-stats
+       events/api-success-stylist-payout-stats
+       stylist-id user-id user-token))))
+
+(defn clear-field-errors [app-state] ;; dup of frontend-transitions
+  (assoc-in app-state keypaths/errors {}))
+
+(defmethod transition-state events/control-account-profile-submit [_ event args app-state]
+  (let [password              (get-in app-state keypaths/manage-account-password)
+        field-errors          (cond-> {}
+                                (> 6 (count password))
+                                (merge (group-by :path [{:path ["password"] :long-message "New password must be at least 6 characters"}])))]
+    (if (and (seq password) (seq field-errors))
+      (assoc-in app-state keypaths/errors {:field-errors field-errors :error-code "invalid-input" :error-message "Oops! Please fix the errors below."})
+      (clear-field-errors app-state))))
+
+(defmethod transition-state events/control-stylist-account-commission-submit [_ event args app-state]
+  (let [selected-id (get-in app-state keypaths/stylist-manage-account-green-dot-card-selected-id)
+        last-4      (:last-4 (get-in app-state keypaths/stylist-manage-account-green-dot-payout-attributes))]
+    (cond-> app-state
+      (and (seq last-4) (= selected-id last-4))
+      (assoc-in keypaths/stylist-manage-account-green-dot-payout-attributes {:last-4 last-4}))))
+
+(defmethod transition-state events/api-success-stylist-account
+  [_ event {:keys [stylist]} app-state]
+  (let [stylist-zipcode (-> stylist :address :zipcode)]
+    (-> app-state
+        (update-in keypaths/stylist-manage-account merge stylist)
+        (update-in (conj keypaths/stylist-manage-account-green-dot-payout-attributes :postalcode) #(or % stylist-zipcode)))))
+
+(defmethod transition-state events/api-success-stylist-account-commission [_ event {:keys [stylist]} app-state]
+  (let [green-dot-payout-attributes (some-> stylist :green-dot-payout-attributes (select-keys [:last-4 :payout-timeframe]))]
+    (cond-> (update-in app-state keypaths/stylist-manage-account dissoc :green-dot-payout-attributes)
+      (= "green_dot" (:chosen-payout-method stylist))
+      (-> (assoc-in keypaths/stylist-manage-account-green-dot-card-selected-id (:last-4 green-dot-payout-attributes))
+          (assoc-in keypaths/stylist-manage-account-green-dot-payout-attributes green-dot-payout-attributes)))))
+
+(defmethod transition-state events/api-success-gallery [_ event {:keys [images]} app-state]
+  (-> app-state
+      (assoc-in keypaths/store-gallery-images images)))
+
+(defmethod transition-state events/api-success-stylist-payout-stats
+  [_ _ stats app-state]
+  (assoc-in app-state keypaths/stylist-payout-stats stats))
+
+(defmethod transition-state events/api-success-stylist-referral-program
+  [_ event {:keys [sales-rep-email bonus-amount earning-amount lifetime-total referrals current-page pages]} app-state]
+  (-> app-state
+      (assoc-in keypaths/stylist-referral-program-bonus-amount bonus-amount)
+      (assoc-in keypaths/stylist-referral-program-earning-amount earning-amount)
+      (assoc-in keypaths/stylist-referral-program-lifetime-total lifetime-total)
+      (update-in keypaths/stylist-referral-program-referrals into referrals)
+      (assoc-in keypaths/stylist-referral-program-pages (or pages 0))
+      (assoc-in keypaths/stylist-referral-program-page (or current-page 1))
+      (assoc-in keypaths/stylist-sales-rep-email sales-rep-email)))

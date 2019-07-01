@@ -231,7 +231,7 @@
      :popup-visible? (get-in app-state keypaths/v2-dashboard-balance-transfers-voucher-popup-visible?)
      :back           (first (get-in app-state keypaths/navigation-undo-stack))}))
 
-(defn built-component [data opts]
+(defn ^:export built-component [data opts]
   (component/build component (query data) opts))
 
 (defmethod transitions/transition-state events/control-v2-stylist-dashboard-balance-transfers-voucher-popup-set-visible
