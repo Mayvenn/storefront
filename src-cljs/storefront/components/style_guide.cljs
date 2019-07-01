@@ -671,7 +671,7 @@
           events/navigate-style-guide-progress        (component/build progress data opts)
           events/navigate-style-guide-carousel        (component/build carousel data opts))]]]))
 
-(defn built-component [data opts]
+(defn ^:export built-component [data opts]
   (component/build component data opts))
 
 (loader/set-loaded! :style-guide)
