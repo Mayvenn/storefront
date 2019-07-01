@@ -71,34 +71,31 @@
                               (ring.util.codec/form-encode "acceptance+bob@mayvenn.com"))}
                     cookies)))))))
 
-(def non-redirecting-affiliate-nav-messages
-  [[events/navigate-stylist-account-payout]
-   [events/navigate-stylist-dashboard-earnings]
-   [events/navigate-v2-stylist-dashboard-payments]
-   [events/navigate-sign-in]
-   [events/navigate-forgot-password]
-   [events/navigate-reset-password {:reset-token "blah"}]
-   [events/navigate-force-set-password]])
-
 (deftest affiliate-store-urls-redirect-to-shop
   (with-services {:storeback-handler (routes
+                                      (GET "/v2/products" req {:status 200
+                                                               :body "{}"})
                                       (GET "/v2/facets" req {:status 200
                                                              :body   "{}"})
                                       (GET "/store" _ common/storeback-affiliate-stylist-response))}
     (with-handler handler
-      (let [resp (handler (mock/request :get "https://phil.mayvenn.com/categories/2-virgin-straight"))]
-        (is-redirected-to resp "shop" "/?affiliate_stylist_id=10"))
+      (testing "every page redirects to shop"
+        (doseq [[to-path from-path] [["/categories/2-virgin-straight" "/categories/2-virgin-straight?affiliate_stylist_id=10"]
+                                     ["/products/9-brazilian-straight-bundles?SKU=BNS10" "/products/9-brazilian-straight-bundles?SKU=BNS10&affiliate_stylist_id=10"]
+                                     ["/about-us" "/about-us?affiliate_stylist_id=10"]
+                                     ["/" "/?affiliate_stylist_id=10"]]]
+          (let [resp (handler (mock/request :get (str "https://phil.mayvenn.com" to-path)))]
+            (is-redirected-to resp "shop" from-path))))
 
-      (testing "ignores extraneous URL elements"
-        (let [resp (handler (mock/request :get "https://phil.mayvenn.com/whatever?irrelevant=true"))]
-          (is-redirected-to resp "shop" "/?affiliate_stylist_id=10")))
+      (testing "preserves utm params"
+        (let [resp (handler (mock/request :get "https://phil.mayvenn.com/?utm_source=blog&utm_medium=referral&utm_campaign=HomePage&utm_term=Button"))]
+          (is-redirected-to resp "shop" "/?utm_source=blog&utm_medium=referral&utm_campaign=HomePage&utm_term=Button&affiliate_stylist_id=10")))
 
-      (testing "does not redirect to shop for a select set of nav-events"
-        (every?
-         (fn [nav-message]
-           (let [resp (handler (mock/request :get (str "https://phil.mayvenn.com" (apply routes/path-for nav-message))))]
-             (is (= 200 (:status resp)) nav-message)))
-         non-redirecting-affiliate-nav-messages)))))
+      (testing "but not robot pages"
+        (doseq [path ["/robots.txt"
+                      "/sitemap.xml"]]
+          (let [resp (handler (mock/request :get (str "https://phil.mayvenn.com" path)))]
+            (is (= 200 (:status resp)))))))))
 
 (deftest install-path-redirects-to-freeinstall
   (with-services

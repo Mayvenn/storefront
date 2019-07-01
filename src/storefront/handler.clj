@@ -207,9 +207,9 @@
          stylist-id :stylist-id} :store
         [nav-event _] :nav-message
         :as         req}]
-    (if (routes/should-redirect-affiliate-route? nav-event experience)
+    (if (routes/should-redirect-affiliate-route? experience)
       (util.response/redirect
-       (store-homepage "shop" environment (assoc req :query-params {"affiliate_stylist_id" stylist-id})))
+       (store-url "shop" environment (update req :query-params merge {"affiliate_stylist_id" stylist-id})))
       (h req))))
 
 (defn wrap-known-subdomains-redirect [h environment]
@@ -291,7 +291,6 @@
   (fn [req]
     (h (assoc-in-req-state req keypaths/welcome-url
                            (str (:url welcome-config) "?utm_source=shop&utm_medium=referral&utm_campaign=ShoptoWelcome")))))
-
 
 (defn wrap-fetch-store [h storeback-config]
   (fn [{:keys [subdomains] :as req}]

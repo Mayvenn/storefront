@@ -212,31 +212,14 @@
                             pending-promo-code
                             true)))
 
-(defn user-signed-into-affiliate-store?
-  [data]
-  (and (= "affiliate" (get-in data keypaths/store-experience))
-       (not (stylists/own-store? data))))
-
-(defmethod effects/perform-effects events/navigate [_ event {:keys [query-params nav-stack-item] :as args} prev-app-state app-state]
-  (let [args             (dissoc args :nav-stack-item)
-        freeinstall?     (= "freeinstall" (get-in app-state keypaths/store-slug))
-        store-experience (get-in app-state keypaths/store-experience)
-        nav-event        (get-in app-state keypaths/navigation-event)]
-    (when (routes/should-redirect-affiliate-route? nav-event store-experience)
-      (set! (.-location js/window)
-            (-> (.-location js/window)
-                uri/uri
-                (assoc :host (str "shop." (routes/environment->hostname (get-in app-state keypaths/environment)))
-                       :path "/"
-                       :query (str "affiliate_stylist_id=" (get-in app-state keypaths/store-stylist-id)))
-                str)))
+(defmethod effects/perform-effects events/navigate [_ event {:keys [query-params nav-stack-item]} prev-app-state app-state]
+  (let [freeinstall? (= "freeinstall" (get-in app-state keypaths/store-slug))]
 
     (messages/handle-message events/control-menu-collapse-all)
     (messages/handle-message events/save-order {:order (get-in app-state keypaths/order)})
 
-    (when-not (user-signed-into-affiliate-store? app-state)
-      (cookie-jar/save-user (get-in app-state keypaths/cookie)
-                            (get-in app-state keypaths/user)))
+    (cookie-jar/save-user (get-in app-state keypaths/cookie)
+                          (get-in app-state keypaths/user))
     (refresh-account app-state)
     (api/get-promotions (get-in app-state keypaths/api-cache)
                         (or
@@ -818,9 +801,8 @@
 
 (defmethod effects/perform-effects events/api-success-auth [_ _ {:keys [order]} _ app-state]
   (messages/handle-message events/save-order {:order order})
-  (when-not (user-signed-into-affiliate-store? app-state)
-    (cookie-jar/save-user (get-in app-state keypaths/cookie)
-                          (get-in app-state keypaths/user)))
+  (cookie-jar/save-user (get-in app-state keypaths/cookie)
+                        (get-in app-state keypaths/user))
   (redirect-to-return-navigation app-state))
 
 (defmethod effects/perform-effects events/api-success-auth-sign-in

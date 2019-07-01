@@ -184,19 +184,9 @@
   (= [page1-event (or page1-args {})]
      [page2-event (or page2-args {})]))
 
-(def ^:private allowed-affiliate-nav-events
-  [events/navigate-stylist
-   events/navigate-sign-in
-   events/navigate-forgot-password
-   events/navigate-reset-password
-   events/navigate-force-set-password
-   events/navigate-v2-stylist-dashboard])
-
 (defn should-redirect-affiliate-route?
-  [nav-event experience]
-  (and (= experience "affiliate")
-       (not (some (fn [allowed-nav-event]
-                    (sub-page? [nav-event] [allowed-nav-event])) allowed-affiliate-nav-events))))
+  [experience]
+  (= experience "affiliate"))
 
 (defn environment->hostname [environment]
   (case environment
