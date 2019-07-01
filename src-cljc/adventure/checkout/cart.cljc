@@ -111,32 +111,29 @@
      [:div.h5.right {:data-test (str "line-item-price-ea-" id)} (some-> price mf/as-money)]]]])
 
 (defn qualified-banner-component
-  [{:keys [confetti?]} owner _]
+  [_ owner _]
   (let [burstable? (atom true)]
     #?(:clj [:div]
        :cljs
        (reify
          om/IDidMount
          (did-mount [_]
-           (when confetti?
-             (confetti/burst (om/get-ref owner "adventure-qualified-banner-confetti"))))
+           (confetti/burst (om/get-ref owner "adventure-qualified-banner-confetti")))
          om/IRender
          (render [_]
            (component/html
             [:div.flex.items-center.bold
-             (merge
-              {:data-test "adventure-qualified-banner"
-               :style     {:height              "246px"
-                           :padding-top         "43px"
-                           :background-size     "cover"
-                           :background-position "center"
-                           :background-image    "url('//ucarecdn.com/97d80a16-1f48-467a-b8e2-fb16b532b75e/-/format/auto/-/quality/normal/aladdinMatchingCelebratoryOverlayImagePurpleR203Lm3x.png')"}}
-              (when confetti?
-                {:on-click (fn [_]
-                             (when @burstable?
-                               (reset! burstable? false)
-                               (.then (confetti/burst (om/get-ref owner "adventure-qualified-banner-confetti"))
-                                      #(reset! burstable? true))))}))
+             {:data-test "adventure-qualified-banner"
+              :style     {:height              "246px"
+                          :padding-top         "43px"
+                          :background-size     "cover"
+                          :background-position "center"
+                          :background-image    "url('//ucarecdn.com/97d80a16-1f48-467a-b8e2-fb16b532b75e/-/format/auto/-/quality/normal/aladdinMatchingCelebratoryOverlayImagePurpleR203Lm3x.png')"}
+              :on-click (fn [_]
+                          (when @burstable?
+                            (reset! burstable? false)
+                            (.then (confetti/burst (om/get-ref owner "adventure-qualified-banner-confetti"))
+                                   #(reset! burstable? true))))}
              [:div.col.col-12.center.white
               [:div.absolute
                {:ref   "adventure-qualified-banner-confetti"
@@ -180,14 +177,13 @@
                               how-shop-choice
                               add-more-hair-navigation-event
                               loaded-quadpay?
-                              confetti?
                               cart-summary]} owner opts]
   (component/create
    (let [{:keys [number-of-items-needed add-more-hair?]} freeinstall-line-item-data]
      [:div.container
       (if add-more-hair?
         (add-more-hair-banner how-shop-choice number-of-items-needed add-more-hair-navigation-event)
-        (component/build qualified-banner-component {:confetti? confetti?} opts))
+        (component/build qualified-banner-component nil opts))
       [:div.p2
        [:div.clearfix.mxn3
         [:div.px3.pt2
@@ -296,7 +292,6 @@
      :recently-added-skus            (get-in data keypaths/cart-recently-added-skus)
      :freeinstall-just-added?        (get-in data keypaths/cart-freeinstall-just-added?)
      :freeinstall-line-item-data     (adventure-cart-items/freeinstall-line-item-query data)
-     :confetti?                      (experiments/confetti? data)
      :loaded-quadpay?                (get-in data keypaths/loaded-quadpay)}))
 
 (defn component

@@ -112,7 +112,3 @@
 (defn adv-cart-promo-entry?
   [data]
   (display-feature? data "adv-cart-promo-entry"))
-
-(defn confetti?
-  [data]
-  (display-feature? data "confetti"))
