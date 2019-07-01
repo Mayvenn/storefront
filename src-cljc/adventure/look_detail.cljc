@@ -21,16 +21,18 @@
   (let [stylist-selected? (get-in data adventure-keypaths/adventure-servicing-stylist)
         current-step      (if stylist-selected? 3 2)
         album-keyword     (get-in data keypaths/selected-album-keyword)]
-    {:header-data       {:title                   "The New You"
-                         :subtitle                (str "Step " current-step " of 3")
-                         :height                  "65px"
-                         :progress                progress/look-detail
-                         :shopping-bag?           true
-                         :back-navigation-message [events/navigate-adventure-select-new-look
-                                                   {:album-keyword album-keyword}]}}))
+    {:look-detail-data #?(:cljs (shop-look-details/adventure-query data)
+                          :clj nil)
+     :header-data      {:title                   "The New You"
+                        :subtitle                (str "Step " current-step " of 3")
+                        :height                  "65px"
+                        :progress                progress/look-detail
+                        :shopping-bag?           true
+                        :back-navigation-message [events/navigate-adventure-select-new-look
+                                                  {:album-keyword album-keyword}]}}))
 
 (defn ^:private component
-  [{:keys [header-data]} _ _]
+  [{:keys [header-data look-detail-data]} _ _]
   (component/create
    [:div.bg-white.center.flex-auto.self-stretch
     [:div.white
