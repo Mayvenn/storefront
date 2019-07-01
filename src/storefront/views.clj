@@ -154,8 +154,7 @@
           ;; to put this tag in <head> and be synchronous
           (when (config/development? environment)
             (for [n ["cljs_base.js" "main.js"]]
-              [:script {:src   (str "/js/out/" n)
-                        :defer true}]))]))
+              [:script {:src   (str "/js/out/" n)}]))]))
 
 (defn index [render-ctx data]
   (layout render-ctx data spinner-content))
