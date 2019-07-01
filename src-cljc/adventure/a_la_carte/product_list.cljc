@@ -30,10 +30,6 @@
      {:prompt-image      "//ucarecdn.com/4d53dac6-a7ce-4c10-bd5d-644821c5af4b/-/format/auto/"
       :data-test         "product-list"
       :current-step      current-step
-      :footer            [:div.h6.center.pb8
-                          [:div.dark-gray "Not ready to shop hair?"]
-                          [:a.teal (utils/route-to events/navigate-adventure-find-your-stylist)
-                           "Find a stylist"]]
       :header-data       {:title                   "The New You"
                           :progress                adventure.progress/a-la-carte-product-list
                           :back-navigation-message [events/navigate-adventure-a-la-carte-hair-color]
@@ -65,13 +61,11 @@
 
 (defn ^:private component
   [{:keys [add-more-hair?
-           data-test
            header-data
            number-of-items-needed
            product-cards
            prompt-image
-           spinning?
-           stylist-selected?]}
+           spinning?]}
    _ _]
   (component/create
    [:div.bg-too-light-teal.white.center.flex-auto.self-stretch
@@ -92,12 +86,7 @@
        ui/spinner]
       [:div.flex.flex-wrap.px5.col-12
        (for [product-card product-cards]
-         (component/build product-card/component product-card nil))])
-    (when-not stylist-selected?
-      [:div.h6.center.pb8.mx-auto
-       [:div.dark-gray "Not ready to shop hair?"]
-       [:a.teal (utils/route-to events/navigate-adventure-find-your-stylist)
-        "Find a stylist"]])]))
+         (component/build product-card/component product-card nil))])]))
 
 (defn built-component
   [data opts]

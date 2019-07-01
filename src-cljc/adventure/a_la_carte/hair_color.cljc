@@ -37,26 +37,22 @@
         {:keys [install-type texture]} (get-in data adventure-keypaths/adventure-choices)
         selections                     {:hair/family         #{install-type}
                                         :hair/texture        #{texture}
-                                        :inventory/in-stock? #{true}}]
-    (let [selected-skus     (selector/match-all {} selections skus)
-          color-choices     (facets/available-options facets :hair/color selected-skus)
-          stylist-selected? (get-in data adventure-keypaths/adventure-servicing-stylist)
-          current-step      (if stylist-selected? 3 2)]
-      {:prompt       "Which color are you looking for?"
-       :prompt-image "//ucarecdn.com/47cd8de1-9bd0-4057-a050-c07749791d1a/-/format/auto/"
-       :data-test    "hair-color"
-       :current-step current-step
-       :footer       (when-not stylist-selected?
-                       [:div.h6.center.pb8
-                        [:div.dark-gray "Not ready to shop hair?"]
-                        [:a.teal (utils/route-to events/navigate-adventure-find-your-stylist)
-                         "Find a stylist"]])
-       :spinning?    (utils/requesting-from-endpoint? data request-keys/search-v2-products)
-       :header-data  {:title                   "The New You"
-                      :progress                progress/hair-texture
-                      :back-navigation-message [events/navigate-adventure-how-shop-hair]
-                      :subtitle                (str "Step " current-step " of 3")}
-       :buttons      (enriched-buttons color-choices)})))
+                                        :inventory/in-stock? #{true}}
+
+        selected-skus     (selector/match-all {} selections skus)
+        color-choices     (facets/available-options facets :hair/color selected-skus)
+        stylist-selected? (get-in data adventure-keypaths/adventure-servicing-stylist)
+        current-step      (if stylist-selected? 3 2)]
+    {:prompt       "Which color are you looking for?"
+     :prompt-image "//ucarecdn.com/47cd8de1-9bd0-4057-a050-c07749791d1a/-/format/auto/"
+     :data-test    "hair-color"
+     :current-step current-step
+     :spinning?    (utils/requesting-from-endpoint? data request-keys/search-v2-products)
+     :header-data  {:title                   "The New You"
+                    :progress                progress/hair-texture
+                    :back-navigation-message [events/navigate-adventure-how-shop-hair]
+                    :subtitle                (str "Step " current-step " of 3")}
+     :buttons      (enriched-buttons color-choices)}))
 
 (defn built-component
   [data opts]

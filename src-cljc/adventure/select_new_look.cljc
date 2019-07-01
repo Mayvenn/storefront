@@ -31,13 +31,12 @@
       :current-step      current-step
       :header-data       {:subtitle (str "Step " current-step  " of 3")}
       :spinning?         (empty? looks)
-      :looks             (mapv (partial contentful/look->social-card navigation-event album-keyword color-details) looks)
-      :stylist-selected? stylist-selected?})))
+      :looks             (mapv (partial contentful/look->social-card navigation-event album-keyword color-details) looks)})))
 
 ;; TODO(jeff,corey): Move this to a separate template
 (defn ^:private component
   [{:as   data
-    :keys [prompt mini-prompt prompt-image header-data data-test stylist-selected? spinning?
+    :keys [prompt mini-prompt prompt-image header-data data-test spinning?
            looks]} _ _]
   (component/create
    [:div.bg-too-light-teal.white.center.flex-auto.self-stretch
@@ -59,12 +58,7 @@
        #?(:cljs
           [:div.flex.flex-wrap.mtn2.py4.px2.justify-center.justify-start-on-tb-dt
            (for [look looks]
-             (component/build ugc/adventure-social-image-card-component look {}))])
-       (when-not stylist-selected?
-         [:div.h6.center.pb8
-          [:div.dark-gray "Not ready to shop hair?"]
-          [:a.teal (utils/route-to events/navigate-adventure-find-your-stylist)
-           "Find a stylist"]])])]))
+             (component/build ugc/adventure-social-image-card-component look {}))])])]))
 
 (defn built-component
   [data opts]

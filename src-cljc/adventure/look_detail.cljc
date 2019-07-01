@@ -21,19 +21,16 @@
   (let [stylist-selected? (get-in data adventure-keypaths/adventure-servicing-stylist)
         current-step      (if stylist-selected? 3 2)
         album-keyword     (get-in data keypaths/selected-album-keyword)]
-    {:look-detail-data  #?(:cljs (shop-look-details/adventure-query data)
-                           :clj nil)
-     :header-data       {:title                   "The New You"
+    {:header-data       {:title                   "The New You"
                          :subtitle                (str "Step " current-step " of 3")
                          :height                  "65px"
                          :progress                progress/look-detail
                          :shopping-bag?           true
                          :back-navigation-message [events/navigate-adventure-select-new-look
-                                                   {:album-keyword album-keyword}]}
-     :stylist-selected? stylist-selected?}))
+                                                   {:album-keyword album-keyword}]}}))
 
 (defn ^:private component
-  [{:keys [header-data look-detail-data stylist-selected?]} _ _]
+  [{:keys [header-data]} _ _]
   (component/create
    [:div.bg-white.center.flex-auto.self-stretch
     [:div.white
@@ -42,13 +39,7 @@
     [:div.left-align
      [:div.flex.items-center.bold.bg-light-lavender {:style {:height "75px"}}]
      [:div.black
-      #?(:cljs (om/build shop-look-details/adventure-component look-detail-data nil))]
-
-     (when-not stylist-selected?
-       [:div.h6.center.pb8
-        [:div.dark-gray "Not ready to shop hair?"]
-        [:a.teal (utils/route-to events/navigate-adventure-find-your-stylist)
-         "Find a stylist"]])]]))
+      #?(:cljs (om/build shop-look-details/adventure-component look-detail-data nil))]]]))
 
 (defn built-component
   [data opts]

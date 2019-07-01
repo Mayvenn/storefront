@@ -51,11 +51,6 @@
      :prompt-image "//ucarecdn.com/1b443614-0897-4549-8d54-33d798072f04/-/format/auto/"
      :data-test    "hair-texture"
      :current-step current-step
-     :footer       (when-not stylist-selected?
-                     [:div.h6.center.pb8.pt1
-                      [:div.dark-gray "Not ready to shop hair?"]
-                      [:a.teal (utils/route-to events/navigate-adventure-find-your-stylist)
-                       "Find a stylist"]])
      :spinning?    (utils/requesting-from-endpoint? data request-keys/search-v2-skus)
      :header-data  {:title                   "The New You"
                     :progress                progress/hair-texture
