@@ -12,6 +12,7 @@
             [storefront.hooks.riskified :as riskified]
             [storefront.hooks.stringer :as stringer]
             [storefront.hooks.twitter-analytics :as twitter-analytics]
+            [storefront.hooks.pandora :as pandora]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
             [storefront.trackings :refer [perform-track]]
@@ -323,7 +324,8 @@
   (pinterest/track-event (if (= (get-in app-state keypaths/store-slug) "freeinstall")
                            ;; See https://help.pinterest.com/en/business/article/event-code
                            "Signup"                ; Pinterest-defined event we're adding to adv. flow
-                           "EmailCapture")))       ; User-defined event we've used previously
+                           "EmailCapture"))        ; User-defined event we've used previously
+  (pandora/track-signup))
 
 (defmethod perform-track events/control-email-captured-submit [_ event _ app-state]
   (when (empty? (get-in app-state keypaths/errors))

@@ -60,3 +60,11 @@
 (defn replace-tag-with-src [src class]
   (remove-tags-by-class class)
   (insert-tag-with-src src class))
+
+(defn insert-image-with-src [src]
+  (let [img-tag (.createElement js/document "img")]
+    (set! (.-src img-tag) src)
+    (set! (.-width img-tag) "1")
+    (set! (.-height img-tag) "1")
+    (set! (.-border img-tag) "0")
+    (insert-body-bottom img-tag)))
