@@ -8,7 +8,7 @@
                     :redeem      {:output-to  "resources/public/js/out/redeem.js"
                                   :entries    #{voucher.redeem}
                                   :depends-on #{:main}}
-                    :style-guide {:output-to  "resources/public/js/out/style-guide.js"
+                    :style-guide {:output-to  "resources/public/js/out/style_guide.js"
                                   :entries    #{storefront.components.style-guide}
                                   :depends-on #{:main}}}
  :pretty-print     true
