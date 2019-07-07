@@ -26,7 +26,7 @@
     {:style {:width (str (calculate-width steps-completed)"%")
              :height "6px"}}]])
 
-(def shopping-bag
+(defn shopping-bag []
   {:id    "adventure-cart"
    :opts  (utils/route-to events/navigate-cart)
    :value (ui/ucare-img
@@ -44,7 +44,7 @@
            logo?]} _ _]
   (component/create
    (let [right-corner (cond (seq right-corner) right-corner
-                            shopping-bag?      shopping-bag
+                            shopping-bag?      (shopping-bag)
                             :else              nil)]
      [:div#header.absolute.top-0.left-0.right-0.center
       header-attrs

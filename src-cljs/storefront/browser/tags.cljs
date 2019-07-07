@@ -1,13 +1,18 @@
 (ns storefront.browser.tags
   (:require [goog.dom.classlist :as classlist]
+            [storefront.browser.events :as events]
             [clojure.string :as string]))
 
+(defn ^:private wait-for-dom-ready [f]
+  (events/after-dom-ready f))
+
 (defn- insert-before-selector [selector tag]
-  (let [first-tag (.querySelector js/document selector)]
-    (.insertBefore (.-parentNode first-tag) tag first-tag)))
+  (wait-for-dom-ready
+   #(let [first-tag (.querySelector js/document selector)]
+      (.insertBefore (.-parentNode first-tag) tag first-tag))))
 
 (defn insert-body-bottom [tag]
-  (.appendChild js/document.body tag))
+  (wait-for-dom-ready #(.appendChild js/document.body tag)))
 
 (def insert-in-head (partial insert-before-selector "head link"))
 

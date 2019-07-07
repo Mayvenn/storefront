@@ -70,7 +70,9 @@
 (defmacro create [body]
   `(create* (fn [] (html ~body))))
 
-(defmacro build [component data opts]
-  `(build* ~component ~data ~opts))
+(defmacro build
+  ([component] `(build* ~component nil nil))
+  ([component data] `(build* ~component ~data nil))
+  ([component data opts] `(build* ~component ~data ~opts)))
 
 

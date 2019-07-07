@@ -15,36 +15,47 @@
             [storefront.platform.carousel :as carousel]))
 
 (defn hero-image [{:keys [desktop-url mobile-url file-name alt]}]
-  [:picture
-   ;; Tablet/Desktop
-   [:source {:media   "(min-width: 750px)"
-             :src-set (str desktop-url "-/format/auto/-/quality/best/" file-name " 1x")}]
-   ;; Mobile
-   [:img.block.col-12 {:src (str mobile-url "-/format/auto/" file-name)
-                       :alt alt}]])
+  (component/build
+   (fn [_ _ _]
+     (component/create
+      [:picture
+       ;; Tablet/Desktop
+       [:source {:media   "(min-width: 750px)"
+                 :src-set (str desktop-url "-/format/auto/-/quality/best/" file-name " 1x")}]
+       ;; Mobile
+       [:img.block.col-12 {:src (str mobile-url "-/format/auto/" file-name)
+                           :alt alt}]]))
+   {:desktop-url desktop-url
+    :mobile-url  mobile-url}))
 
 (defn hero []
-  (let [file-name "free-install-hero"
-        mob-uuid  "841c504e-fce9-404d-9652-a66b0af86057"
-        dsk-uuid  "f423c9d9-1073-4b0c-86a5-dc810e18e505"]
-    [:a.bold.shadow.white.center.bg-light-gray
-     (utils/scroll-href "mayvenn-free-install-video")
-     (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
-                  :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
-                  :file-name   file-name
-                  :alt         "Use code FREEINSTALL when you buy 3 bundles or more"})]))
+  (component/build
+   (fn [_ _ _]
+     (component/create
+      (let [file-name "free-install-hero"
+            mob-uuid  "841c504e-fce9-404d-9652-a66b0af86057"
+            dsk-uuid  "f423c9d9-1073-4b0c-86a5-dc810e18e505"]
+        [:a.bold.shadow.white.center.bg-light-gray
+         (utils/scroll-href "mayvenn-free-install-video")
+         ^:inline (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
+                               :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
+                               :file-name   file-name
+                               :alt         "Use code FREEINSTALL when you buy 3 bundles or more"})])))))
 
-(def free-shipping-banner
-  [:div {:style {:height "3em"}}
-   [:div.bg-black.flex.items-center.justify-center
-    {:style {:height "2.25em"
-             :margin-top "-1px"
-             :padding-top "1px"}}
-    [:div.px2
-     (ui/ucare-img {:alt "" :height "25"}
-                   "38d0a770-2dcd-47a3-a035-fc3ccad11037")]
-    [:div.h6.white.light
-     "FREE standard shipping"]]])
+(defn free-shipping-banner []
+  (component/build
+   (fn [_ _ _]
+     (component/create
+      [:div {:style {:height "3em"}}
+       [:div.bg-black.flex.items-center.justify-center
+        {:style {:height "2.25em"
+                 :margin-top "-1px"
+                 :padding-top "1px"}}
+        [:div.px2
+         (ui/ucare-img {:alt "" :height "25"}
+                       "38d0a770-2dcd-47a3-a035-fc3ccad11037")]
+        [:div.h6.white.light
+         "FREE standard shipping"]]]))))
 
 (def teal-play-video-mobile
   (svg/white-play-video {:class  "mr1 fill-teal"
@@ -56,39 +67,42 @@
                          :height "41px"
                          :width  "41px"}))
 
-(def what-our-customers-are-saying
-  (let [video-link (utils/route-to events/navigate-home {:query-params {:video "free-install"}})]
-    [:div.col-11.mx-auto
-     [:div.hide-on-mb-tb.flex.justify-center.py3
-      [:a.block.relative
-       video-link
-       (ui/ucare-img {:alt "" :width "212"}
-                     "c487eeef-0f84-4378-a9be-13dc7c311e23")
-       [:div.absolute.top-0.bottom-0.left-0.right-0.flex.items-center.justify-center.bg-darken-3
-        teal-play-video-desktop]]
-      [:a.block.ml4.dark-gray
-       video-link
-       [:div.h4.bold "#MayvennFreeInstall"]
-       [:div.h4.my2 "See why customers love their FREE Install"]
-       [:div.h5.teal.flex.items-center.medium.shout
-        "Watch Now"]]]
+(defn what-our-customers-are-saying []
+  (component/build
+   (fn [_ _ _]
+     (component/create
+      (let [video-link (utils/route-to events/navigate-home {:query-params {:video "free-install"}})]
+        [:div.col-11.mx-auto
+         [:div.hide-on-mb-tb.flex.justify-center.py3
+          [:a.block.relative
+           video-link
+           (ui/ucare-img {:alt "" :width "212"}
+                         "c487eeef-0f84-4378-a9be-13dc7c311e23")
+           [:div.absolute.top-0.bottom-0.left-0.right-0.flex.items-center.justify-center.bg-darken-3
+            teal-play-video-desktop]]
+          [:a.block.ml4.dark-gray
+           video-link
+           [:div.h4.bold "#MayvennFreeInstall"]
+           [:div.h4.my2 "See why customers love their FREE Install"]
+           [:div.h5.teal.flex.items-center.medium.shout
+            "Watch Now"]]]
 
-     [:div.hide-on-dt.flex.justify-center.py3
-      [:a.block.relative
-       video-link
-       (ui/ucare-img {:alt "" :width "152"}
-                     "1b58b859-842a-44b1-885c-eac965eeaa0f")
-       [:div.absolute.top-0.bottom-0.left-0.right-0.flex.items-center.justify-center.bg-darken-3
-        teal-play-video-mobile]]
-      [:a.block.ml2.dark-gray
-       video-link
-       [:h6.bold.mbnp6 "#MayvennFreeInstall"]
-       [:p.pt2.h8
-        [:span {:style {:white-space "nowrap"}} "See why customers love their"]
-        " "
-        [:span {:style {:white-space "nowrap"}} "FREE Install"]]
-       [:h6.teal.flex.items-center.medium.shout
-        "Watch Now"]]]]))
+         [:div.hide-on-dt.flex.justify-center.py3
+          [:a.block.relative
+           video-link
+           (ui/ucare-img {:alt "" :width "152"}
+                         "1b58b859-842a-44b1-885c-eac965eeaa0f")
+           [:div.absolute.top-0.bottom-0.left-0.right-0.flex.items-center.justify-center.bg-darken-3
+            teal-play-video-mobile]]
+          [:a.block.ml2.dark-gray
+           video-link
+           [:h6.bold.mbnp6 "#MayvennFreeInstall"]
+           [:p.pt2.h8
+            [:span {:style {:white-space "nowrap"}} "See why customers love their"]
+            " "
+            [:span {:style {:white-space "nowrap"}} "FREE Install"]]
+           [:h6.teal.flex.items-center.medium.shout
+            "Watch Now"]]]])))))
 
 (defn carousel-slide
   [{:as   social-card
@@ -149,63 +163,66 @@
      [:div.col-8 (when album-first? {:style {:order -1}})
       (style-carousel-component (:images ugc))]]]])
 
-(def an-amazing-deal
-  [:div
-   [:div
-    [:div.col-12.col-8-on-tb.col-6-on-dt.mx-auto.pb6.pt4
-     [:div.center.clearfix.py3.h6.dark-gray
-      [:h2.mt4.black.relative.z2 "An Amazing Deal"]
-      [:div.flex.justify-center
+(defn an-amazing-deal []
+  (component/build
+   (fn [_ _ _]
+     (component/create
+      [:div
        [:div
-        [:div.h6.mx-auto
-         {:style {:width "170px"}}
-         [:div.absolute.z1
-          [:div.relative
-           {:style {:top "-40px" :left "-40px"}}
-           (ui/ucare-img {:width "250"} "0db72798-6c51-48f2-8206-9fd6d91a3ada")]]
-         [:div.relative.z2
-          [:div.img-logo.bg-no-repeat.bg-center.bg-contain.mb2
-           {:style {:height "45px"}}]
-          [:div.mb1 "3 bundles.............." [:span.medium "$189"]]
-          [:div     "Install....................." [:span.medium "FREE"]]
-          [:div.mt2.mx-auto.flex.items-center
-           [:div.col-6.shout.line-height-1.left-align.px2.pl3
-            [:div "Install"]
-            [:div "+ Hair"]]
-           [:div.col-6
-            [:div.h1.purple.bold "$189"]]]]
-         [:div.mx-auto.flex.items-center
-          [:div.col-4]
-          [:div.col-8.relative.z2
-           [:div.italic.right-align "a $54 savings"]]]]]
-       [:div.col-1]
-       [:div.relative.z2
-        [:div.h6.mx-auto
-         {:style {:width "170px"}}
-         [:div.mb2 {:style {:height "45px"}}
-          [:div.pt1
-           [:div.mt4
-            (ui/ucare-img {:width "90" :class "mx-auto"}
-                          "9f1657d1-c792-44fb-b8e7-20ce64c7dbf4")]]]
-         [:div.mb1. "3 bundles.............." [:span.medium "$93"]]
-         [:div      "Install..................." [:span.medium "$$$$"]]
-         [:div.mt2.mx-auto.flex.items-center
-          [:div.col-6.shout.line-height-1.left-align.pl4
-           [:div "Install"]
-           [:div "+ Hair"]]
-          [:div.col-6
-           [:div.h2.medium "$243"]]]]]]]
+        [:div.col-12.col-8-on-tb.col-6-on-dt.mx-auto.pb6.pt4
+         [:div.center.clearfix.py3.h6.dark-gray
+          [:h2.mt4.black.relative.z2 "An Amazing Deal"]
+          [:div.flex.justify-center
+           [:div
+            [:div.h6.mx-auto
+             {:style {:width "170px"}}
+             [:div.absolute.z1
+              [:div.relative
+               {:style {:top "-40px" :left "-40px"}}
+               (ui/ucare-img {:width "250"} "0db72798-6c51-48f2-8206-9fd6d91a3ada")]]
+             [:div.relative.z2
+              [:div.img-logo.bg-no-repeat.bg-center.bg-contain.mb2
+               {:style {:height "45px"}}]
+              [:div.mb1 "3 bundles.............." [:span.medium "$189"]]
+              [:div     "Install....................." [:span.medium "FREE"]]
+              [:div.mt2.mx-auto.flex.items-center
+               [:div.col-6.shout.line-height-1.left-align.px2.pl3
+                [:div "Install"]
+                [:div "+ Hair"]]
+               [:div.col-6
+                [:div.h1.purple.bold "$189"]]]]
+             [:div.mx-auto.flex.items-center
+              [:div.col-4]
+              [:div.col-8.relative.z2
+               [:div.italic.right-align "a $54 savings"]]]]]
+           [:div.col-1]
+           [:div.relative.z2
+            [:div.h6.mx-auto
+             {:style {:width "170px"}}
+             [:div.mb2 {:style {:height "45px"}}
+              [:div.pt1
+               [:div.mt4
+                (ui/ucare-img {:width "90" :class "mx-auto"}
+                              "9f1657d1-c792-44fb-b8e7-20ce64c7dbf4")]]]
+             [:div.mb1. "3 bundles.............." [:span.medium "$93"]]
+             [:div      "Install..................." [:span.medium "$$$$"]]
+             [:div.mt2.mx-auto.flex.items-center
+              [:div.col-6.shout.line-height-1.left-align.pl4
+               [:div "Install"]
+               [:div "+ Hair"]]
+              [:div.col-6
+               [:div.h2.medium "$243"]]]]]]]
 
-     (let [row (fn [text]
-                 [:div.flex.justify-center.items-center.center.mx-auto.pt2.relative.z2
-                  (ui/ucare-img {:width "9"} "60b946bd-f276-46fc-9d13-3c8562b28d81")
-                  [:span.col-6 text]
-                  (ui/ucare-img {:width "9"} "f277849f-a27b-48b4-804b-7d523b6d2442")])]
-       [:div.clearfix.h6.dark-gray.px4.mx-auto.line-height-2
-        (row "High quality hair")
-        (row "FREE install")
-        (row "30 Day Guarantee")
-        (row "Black-owned company")])]]])
+         (let [row (fn [text]
+                     [:div.flex.justify-center.items-center.center.mx-auto.pt2.relative.z2
+                      (ui/ucare-img {:width "9"} "60b946bd-f276-46fc-9d13-3c8562b28d81")
+                      [:span.col-6 text]
+                      (ui/ucare-img {:width "9"} "f277849f-a27b-48b4-804b-7d523b6d2442")])]
+           [:div.clearfix.h6.dark-gray.px4.mx-auto.line-height-2
+            (row "High quality hair")
+            (row "FREE install")
+            (row "30 Day Guarantee")
+            (row "Black-owned company")])]]]))))
 
 (defn most-popular-looks [sleek-ugc wave-ugc]
   [:div.col-12.col-8-on-tb-dt.mt3.px2.py5.mx-auto
@@ -241,53 +258,56 @@
         [:img {:class "col-12"
                :src   image-url}])])]])
 
-(def our-story
-  (let [we-are-mayvenn-link (utils/route-to events/navigate-home {:query-params {:video "we-are-mayvenn"}})
-        diishan-image       (ui/ucare-img {:class "col-12"} "e2186583-def8-4f97-95bc-180234b5d7f8")
-        mikka-image         (ui/ucare-img {:class "col-12"} "838e25f5-cd4b-4e15-bfd9-8bdb4b2ac341")
-        stylist-image       (ui/ucare-img {:class "col-12"} "6735b4d5-9b65-4fa9-96cd-871141b28672")
-        diishan-image-2     (ui/ucare-img {:class "col-12"} "ec9e0533-9eee-41ae-a61b-8dc22f045cb5")]
-    [:div.pt4.px4.pb8
-     [:div.h2.center "A Better Hair Experience Starts Here"]
-     [:h6.center.mb2.dark-gray "Founded in Oakland, CA • 2013"]
+(defn our-story []
+  (component/build
+   (fn [_ _ _]
+     (component/create
+      (let [we-are-mayvenn-link (utils/route-to events/navigate-home {:query-params {:video "we-are-mayvenn"}})
+            diishan-image       (ui/ucare-img {:class "col-12"} "e2186583-def8-4f97-95bc-180234b5d7f8")
+            mikka-image         (ui/ucare-img {:class "col-12"} "838e25f5-cd4b-4e15-bfd9-8bdb4b2ac341")
+            stylist-image       (ui/ucare-img {:class "col-12"} "6735b4d5-9b65-4fa9-96cd-871141b28672")
+            diishan-image-2     (ui/ucare-img {:class "col-12"} "ec9e0533-9eee-41ae-a61b-8dc22f045cb5")]
+        [:div.pt4.px4.pb8
+         [:div.h2.center "A Better Hair Experience Starts Here"]
+         [:h6.center.mb2.dark-gray "Founded in Oakland, CA • 2013"]
 
-     [:div.hide-on-tb-dt
-      [:div.flex.flex-wrap
-       [:a.block.col-6.p1
-        we-are-mayvenn-link
-        [:div.relative
-         diishan-image
-         [:div.absolute.bg-darken-3.overlay.flex.items-center.justify-center
-          teal-play-video-mobile]]]
-       [:a.col-6.px2
-        we-are-mayvenn-link
-        [:h4.my1.dark-gray.medium "Our Story"]
-        [:div.h6.teal.flex.items-center.medium.shout
-         "Watch Now"]]
-       [:div.col-6.p1 mikka-image]
-       [:div.col-6.p1 stylist-image]
-       [:div.col-6.px2.dark-gray
-        [:h4.my2.line-height-1 "“We're committed to giving our customers and stylists the tools they need to feel empowered.“"]
-        [:h6.medium.line-height-1 "- Diishan Imira"]
-        [:h6 "CEO of Mayvenn"]]
-       [:div.col-6.p1 diishan-image-2]]]
+         [:div.hide-on-tb-dt
+          [:div.flex.flex-wrap
+           [:a.block.col-6.p1
+            we-are-mayvenn-link
+            [:div.relative
+             diishan-image
+             [:div.absolute.bg-darken-3.overlay.flex.items-center.justify-center
+              teal-play-video-mobile]]]
+           [:a.col-6.px2
+            we-are-mayvenn-link
+            [:h4.my1.dark-gray.medium "Our Story"]
+            [:div.h6.teal.flex.items-center.medium.shout
+             "Watch Now"]]
+           [:div.col-6.p1 mikka-image]
+           [:div.col-6.p1 stylist-image]
+           [:div.col-6.px2.dark-gray
+            [:h4.my2.line-height-1 "“We're committed to giving our customers and stylists the tools they need to feel empowered.“"]
+            [:h6.medium.line-height-1 "- Diishan Imira"]
+            [:h6 "CEO of Mayvenn"]]
+           [:div.col-6.p1 diishan-image-2]]]
 
-     [:div.hide-on-mb.pb4
-      [:div.col-8.flex.flex-wrap.mx-auto
-       [:div.col-6.flex.flex-wrap.items-center
-        [:div.col-6.p1 mikka-image]
-        [:div.col-6.p1 stylist-image]
-        [:div.col-6.px1.pb1.dark-gray.flex.justify-start.flex-column
-         [:div.h3.line-height-3.col-11
-          "“We're committed to giving our customers and stylists the tools they need to feel empowered.“"]
-         [:h6.medium.line-height-1.mt2 "- Diishan Imira"]
-         [:h6.ml1 "CEO of Mayvenn"]]
-        [:div.col-6.p1.flex diishan-image-2]]
-       [:a.relative.col-6.p1
-        we-are-mayvenn-link
-        [:div.relative diishan-image
-         [:div.absolute.overlay.flex.items-center.justify-center.bg-darken-3
-          teal-play-video-desktop]]]]]]))
+         [:div.hide-on-mb.pb4
+          [:div.col-8.flex.flex-wrap.mx-auto
+           [:div.col-6.flex.flex-wrap.items-center
+            [:div.col-6.p1 mikka-image]
+            [:div.col-6.p1 stylist-image]
+            [:div.col-6.px1.pb1.dark-gray.flex.justify-start.flex-column
+             [:div.h3.line-height-3.col-11
+              "“We're committed to giving our customers and stylists the tools they need to feel empowered.“"]
+             [:h6.medium.line-height-1.mt2 "- Diishan Imira"]
+             [:h6.ml1 "CEO of Mayvenn"]]
+            [:div.col-6.p1.flex diishan-image-2]]
+           [:a.relative.col-6.p1
+            we-are-mayvenn-link
+            [:div.relative diishan-image
+             [:div.absolute.overlay.flex.items-center.justify-center.bg-darken-3
+              teal-play-video-desktop]]]]]])))))
 
 (defn component [{:keys [signed-in
                          homepage-data
@@ -305,10 +325,11 @@
                  opts]
   (component/create
    [:div
-    [:section (hero)]
-    [:section free-shipping-banner]
+    [:section ^:inline (hero)]
+    [:section ^:inline (free-shipping-banner)]
     [:a {:name "mayvenn-free-install-video"}]
     [:div
+     ^:inline
      (when video
             (component/build video/component
                              video
@@ -316,22 +337,22 @@
                              ;;             an investigation to why history is replaced when doing A -> B -> A navigation
                              ;;             (B is removed from history).
                              {:opts {:close-attrs (utils/route-to events/navigate-home {:query-params {:video "0"}})}}))
-     [:section what-our-customers-are-saying]]
+     [:section ^:inline (what-our-customers-are-saying)]]
     [:section.py10.bg-transparent-teal
-     (v2/get-a-free-install {:store                 store
-                             :gallery-ucare-ids     gallery-ucare-ids
-                             :stylist-portrait      (:portrait store)
-                             :stylist-name          (:store-nickname store)
-                             :stylist-gallery-open? stylist-gallery-open?})]
-    [:section an-amazing-deal]
+     ^:inline (v2/get-a-free-install {:store                 store
+                                      :gallery-ucare-ids     gallery-ucare-ids
+                                      :stylist-portrait      (:portrait store)
+                                      :stylist-name          (:store-nickname store)
+                                      :stylist-gallery-open? stylist-gallery-open?})]
+    [:section ^:inline (an-amazing-deal)]
     [:hr.border-top.border-dark-silver.col-9.mx-auto.my6]
-    [:section (most-popular-looks sleek-and-straight-ugc waves-and-curly-ugc)]
+    [:section ^:inline (most-popular-looks sleek-and-straight-ugc waves-and-curly-ugc)]
     [:section [:div (v2/why-mayvenn-is-right-for-you)]]
-    [:section (free-install-mayvenn-grid free-install-mayvenn-ugc)]
+    [:section ^:inline (free-install-mayvenn-grid free-install-mayvenn-ugc)]
     [:hr.hide-on-mb-tb.border-top.border-dark-silver.col-9.mx-auto.mb6]
-    [:section (v2/faq faq-data)]
+    [:section ^:inline (v2/faq faq-data)]
     [:hr.border-top.border-dark-silver.col-9.mx-auto.my6]
-    [:section our-story]]))
+    [:section ^:inline (our-story)]]))
 
 (defn query [data]
   (let [homepage-data      (get-in data keypaths/cms-homepage)

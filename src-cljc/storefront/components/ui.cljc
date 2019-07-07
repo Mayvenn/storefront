@@ -62,12 +62,13 @@
      or the user navigated elsewhere).
   "
   [module-name fully-qualified-built-component-symbol for-navigation-event]
-  #?(:cljs (or (let [path (string/split (str "window."
-                                             (munge-str (namespace fully-qualified-built-component-symbol))
-                                             "."
-                                             (munge-str (name fully-qualified-built-component-symbol)))
-                                        #"\.")]
-                 (js/eval (string/join " && " (map (partial string/join ".") (rest (reductions conj [] path))))))
+  #?(:cljs (or (when (loader/loaded? module-name)
+                 (let [path (string/split (str "window."
+                                               (munge-str (namespace fully-qualified-built-component-symbol))
+                                               "."
+                                               (munge-str (name fully-qualified-built-component-symbol)))
+                                          #"\.")]
+                   (js/eval (string/join " && " (map (partial string/join ".") (rest (reductions conj [] path)))))))
                (do
                  (loader/load module-name
                               (fn []
@@ -512,23 +513,29 @@
     url-or-image-id))
 
 (defn ucare-img
-  [{:as img-attrs
+  [{:as   img-attrs
     :keys [width retina-quality default-quality]
-    :or {retina-quality "lightest"
-         default-quality "normal"}}
+    :or   {retina-quality  "lightest"
+           default-quality "normal"}}
    image-id]
   {:pre [(or (spice.core/parse-int width) (nil? width))]}
-  (let [image-id    (ucare-img-id image-id)
-        retina-url  (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/" retina-quality "/")
-                      width (str "-/resize/" (* 2 (spice/parse-int width)) "x/"))
-        default-url (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/" default-quality "/")
-                      width (str "-/resize/" width "x/"))]
-    [:picture
-     [:source {:src-set (str retina-url " 2x,"
-                             default-url " 1x")}]
-     [:img.block (-> img-attrs
-                     (dissoc :width :retina-quality :default-quality)
-                     (assoc :src default-url))]]))
+  (component/build
+   (fn [_ _ _]
+     (component/create
+      (let [image-id    (ucare-img-id image-id)
+            retina-url  (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/" retina-quality "/")
+                          width (str "-/resize/" (* 2 (spice/parse-int width)) "x/"))
+            default-url (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/" default-quality "/")
+                          width (str "-/resize/" width "x/"))]
+        [:picture
+         [:source {:src-set (str retina-url " 2x,"
+                                 default-url " 1x")}]
+         [:img.block (-> img-attrs
+                         (dissoc :width :retina-quality :default-quality)
+                         (assoc :src default-url))]])))
+   {:attrs img-attrs
+    :id    image-id}
+   nil))
 
 (defn circle-ucare-img
   [{:keys [width] :as attrs :or {width "4em"}} image-id]
@@ -595,38 +602,52 @@
     contents]])
 
 (defn big-money [amount]
-  [:div.flex.justify-center.line-height-1
-   (mf/as-money-without-cents amount)
-   [:span.h5 {:style {:margin "5px 3px"}} (mf/as-money-cents-only amount)]])
+  (component/build
+   (fn [_ _ _]
+     (component/create
+      [:div.flex.justify-center.line-height-1
+       (mf/as-money-without-cents amount)
+       [:span.h5 {:style {:margin "5px 3px"}} (mf/as-money-cents-only amount)]]))
+   {:amount amount}))
 
 ;; To be deprecated
 (defn progress-indicator [{:keys [value maximum]}]
-  (let [bar-value (-> value (/ maximum) (* 100.0) (min 100))
-        bar-width (str (numbers/round bar-value) "%")
-        bar-style {:padding-top "0.3em" :padding-bottom "0.15em" :height "20px"}]
-    [:div.flex.items-center
-     [:div.my2.border.border-dark-gray.capped.h4.flex-auto
-      (cond
-        (zero? value) [:div.px2.capped {:style bar-style}]
-        (= value maximum) [:div.bg-teal.px2.capped {:style bar-style}]
-        :else [:div.bg-teal.px2.capped {:style (merge bar-style {:width bar-width})}])]
-     (if (= value maximum)
-       (svg/circled-check {:class "stroke-teal"
-                           :style {:width "3rem" :height "3rem"
-                                   :margin-left "0.4rem"
-                                   :margin-right "-0.2rem"}})
-       [:div.border.circle.border-dark-gray.h6.center.ml1
-        {:style {:height "2.66667rem" :width "2.66667rem" :line-height "2.666667rem"}}
-        bar-width])]))
+  (component/build
+   (fn [_ _ _]
+     (component/create
+      (let [bar-value (-> value (/ maximum) (* 100.0) (min 100))
+            bar-width (str (numbers/round bar-value) "%")
+            bar-style {:padding-top "0.3em" :padding-bottom "0.15em" :height "20px"}]
+        [:div.flex.items-center
+         [:div.my2.border.border-dark-gray.capped.h4.flex-auto
+          (cond
+            (zero? value)     [:div.px2.capped {:style bar-style}]
+            (= value maximum) [:div.bg-teal.px2.capped {:style bar-style}]
+            :else             [:div.bg-teal.px2.capped {:style (merge bar-style {:width bar-width})}])]
+         (if (= value maximum)
+           (svg/circled-check {:class "stroke-teal"
+                               :style {:width        "3rem" :height "3rem"
+                                       :margin-left  "0.4rem"
+                                       :margin-right "-0.2rem"}})
+           [:div.border.circle.border-dark-gray.h6.center.ml1
+            {:style {:height "2.66667rem" :width "2.66667rem" :line-height "2.666667rem"}}
+            bar-width])])))
+   {:value   value
+    :maximum maximum}))
 
 (defn shopping-bag [opts {:keys [quantity]}]
-  [:a.relative.pointer.block (merge (utils/route-to events/navigate-cart)
-                                    opts)
-   (svg/bag {:class (str "absolute overlay m-auto "
-                         (if (pos? quantity) "fill-navy" "fill-black"))})
-   (when (pos? quantity)
-     [:div.absolute.overlay.m-auto {:style {:height "9px"}}
-      [:div.center.navy.h6.line-height-1 {:data-test (-> opts :data-test (str  "-populated"))} quantity]])])
+  (component/build
+   (fn [_ _ _]
+     (component/create
+      [:a.relative.pointer.block (merge (utils/route-to events/navigate-cart)
+                                        opts)
+       (svg/bag {:class (str "absolute overlay m-auto "
+                             (if (pos? quantity) "fill-navy" "fill-black"))})
+       (when (pos? quantity)
+         [:div.absolute.overlay.m-auto {:style {:height "9px"}}
+          [:div.center.navy.h6.line-height-1 {:data-test (-> opts :data-test (str  "-populated"))} quantity]])]))
+   {:opts     opts
+    :quantity quantity}))
 
 (defn lqip
   "Generates a Low Quality Image Placeholder.
@@ -688,9 +709,14 @@
   (assert (contains? contentful-type->mime type)
           (str "[ui/source] Invalid contentful format:" type
                "; must be one of:" (keys contentful-type->mime)))
-  [:source (merge attrs
-                  {:src-set (build-src-set url type src-set)
-                   :type    (contentful-type->mime type)})])
+  (component/build
+   (fn [_ _ _]
+     (component/create
+      [:source (merge attrs
+                      {:src-set (build-src-set url type src-set)
+                       :type    (contentful-type->mime type)})]))
+   {:url   url
+    :attrs attrs}))
 
 (defn option
   [{:keys [key disabled? height on-click]} & content]
@@ -707,10 +733,14 @@
 (def header-image-size 36)
 
 (defn expand-icon [expanded?]
-  [:img {:style {:width "8px"}
-         :src   (if expanded?
-                  (assets/path "/images/icons/collapse.png")
-                  (assets/path "/images/icons/expand.png"))}])
+  (component/build
+   (fn [_ _ _]
+     (component/create
+      [:img {:style {:width "8px"}
+             :src   (if expanded?
+                      (assets/path "/images/icons/collapse.png")
+                      (assets/path "/images/icons/expand.png"))}]))
+   {:expanded? expanded?}))
 
 (defn back-arrow [attrs]
   (ucare-img (merge {:width "24"}

@@ -19,24 +19,33 @@
             [storefront.request-keys :as request-keys]
             [storefront.transitions :as transitions]))
 
-(def divider
-  [:hr.border-top.border-dark-silver.col-12.m0
-   {:style {:border-bottom 0
-            :border-left 0
-            :border-right 0}}])
+(defn ^:private divider []
+  (component/build
+   (fn [data owner opts]
+     (component/create
+      [:hr.border-top.border-dark-silver.col-12.m0
+       {:style {:border-bottom 0
+                :border-left 0
+                :border-right 0}}]))))
 
-(def ^:private inactive-qr-section
-  [:div
-   [:h3.pt6 "Scan the QR code to redeem a certificate"]
-   [:h6 "Your camera will be used as the scanner."]
-   [:div.flex.justify-center.py4 (ui/ucare-img {:width "50"} "4bd0f715-fa5a-4d82-9cec-62dc993c5d23")]
-   [:div.mx-auto.col-10.col-3-on-tb-dt.mb4
-    (ui/teal-button {:on-click     (utils/send-event-callback events/control-voucher-scan)
-                     :height-class "py2"
-                     :data-test    "voucher-scan"} "Scan")]])
+(defn ^:private inactive-qr-section []
+  (component/build
+   (fn [data owner opts]
+     (component/create
+      [:div
+       [:h3.pt6 "Scan the QR code to redeem a certificate"]
+       [:h6 "Your camera will be used as the scanner."]
+       [:div.flex.justify-center.py4 (ui/ucare-img {:width "50"} "4bd0f715-fa5a-4d82-9cec-62dc993c5d23")]
+       [:div.mx-auto.col-10.col-3-on-tb-dt.mb4
+        (ui/teal-button {:on-click     (utils/send-event-callback events/control-voucher-scan)
+                         :height-class "py2"
+                         :data-test    "voucher-scan"} "Scan")]]))))
 
-(def ^:private qr-preview-section
-  [:div.col-10.mt3.mx-auto #?(:cljs (component/build qr-reader/component nil nil))])
+(defn ^:private qr-preview-section []
+  (component/build
+   (fn [data owner opts]
+     (component/create
+      [:div.col-10.mt3.mx-auto #?(:cljs (component/build qr-reader/component nil nil))]))))
 
 (defn ^:private primary-component
   [{:keys [code redeeming-voucher? field-errors scanning?]}]
@@ -44,13 +53,13 @@
    [:div.hide-on-dt.center
 
     (if scanning?
-      qr-preview-section
-      inactive-qr-section)
+      (qr-preview-section)
+      (inactive-qr-section))
 
     [:div.mx-auto.col-10.pb2.flex.items-center.justify-between
-     divider
+     ^:inline (divider)
      [:span.h6.px2 "or"]
-     divider]]
+     ^:inline (divider)]]
    [:div.p4.col-4-on-tb-dt.center.mx-auto
     [:div.hide-on-mb-tb.py4 ]
     [:h3.pb4 "Enter the 8-digit code"]

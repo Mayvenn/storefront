@@ -1,13 +1,14 @@
 (ns storefront.browser.scroll
   (:require [goog.object :as object]
             [goog.dom.classlist :as classlist]
+            [storefront.browser.events :as events]
             [clojure.string :as string]))
 
 (defn disable-body-scrolling []
-  (-> (js/document.querySelector "body") .-classList (.add "overflow-hidden")))
+  (some-> js/document.body .-classList (.add "overflow-hidden")))
 
 (defn enable-body-scrolling []
-  (-> (js/document.querySelector "body") .-classList (.remove "overflow-hidden")))
+  (some-> js/document.body .-classList (.remove "overflow-hidden")))
 
 (defn scroll-target []
   (or (.-scrollingElement js/document)
@@ -25,7 +26,9 @@
     (.addEventListener el end-event listener)))
 
 (defn scroll-to-y
-  [elem y] (set! (.. elem -scrollTop) y))
+  [elem y]
+  (when elem
+    (set! (.. elem -scrollTop) y)))
 
 (defn snap-to [y]
   (scroll-to-y (scroll-target) y))
@@ -52,11 +55,11 @@
 ;; TODO: rename
 (defn scroll-to-elem [el]
   (let [scroll-top (.. (scroll-target) -scrollTop)
-        el-bottom (object/get (.getBoundingClientRect el) "bottom")
-        window-height js/window.innerHeight]
-    (when (> el-bottom window-height)
-      (scroll-to (- (+ scroll-top el-bottom scroll-padding)
-                    window-height)))))
+         el-bottom (object/get (.getBoundingClientRect el) "bottom")
+         window-height js/window.innerHeight]
+     (when (> el-bottom window-height)
+       (scroll-to (- (+ scroll-top el-bottom scroll-padding)
+                     window-height)))))
 
 (defn scroll-elem-to-top [el]
   (let [el-top (object/get (.getBoundingClientRect el) "top")

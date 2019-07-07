@@ -227,10 +227,10 @@
                     (->> nav-event
                          (take (count events/navigate-style-guide))
                          vec)))
-            [:div ((ui/lazy-load-component :style-guide 'storefront.components.style-guide/built-component events/navigate-style-guide)
-                   data nil)]])
-
-
+            [:div
+             ((ui/lazy-load-component :style-guide 'storefront.components.style-guide/built-component
+                                      (get-in data keypaths/navigation-event))
+              data nil)]])
 
        (get-in data keypaths/menu-expanded)
        (slideout-nav/built-component data nil)

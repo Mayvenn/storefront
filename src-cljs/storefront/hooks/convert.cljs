@@ -13,7 +13,7 @@
 
 (defn insert-tracking []
   (ensure-queue)
-  (tags/insert-tag-with-callback (tags/src-tag (str "//cdn-3.convertexperiments.com/js/"
+  (tags/insert-tag-with-callback (tags/src-tag (str "https://cdn-3.convertexperiments.com/js/"
                                                     config/convert-project-id
                                                     ".js" )
                                                "convert")

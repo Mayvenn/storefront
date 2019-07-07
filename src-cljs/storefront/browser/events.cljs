@@ -53,6 +53,17 @@
 
 (def ^:private i-know-i-have-attached (atom false))
 
+(def ^:private dom-is-ready (atom false))
+
+(defn after-dom-ready [f]
+  (if @dom-is-ready
+    (f)
+    (goog.events/listen js/document "readystatechange"
+                        (fn [e]
+                          (when (= "complete" (.-readyState js/document))
+                            (reset! dom-is-ready true)
+                            (f))))))
+
 (defn attach-global-listeners []
   ;; we don't need to worry about unlistening because the handler will do that
   (goog.events/listen js/document "readystatechange"

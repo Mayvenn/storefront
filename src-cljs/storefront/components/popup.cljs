@@ -66,7 +66,8 @@
                                          (not on-homepage?)
                                          (zero? nav-history-length)
                                          on-non-minimal-footer-page?)
-        is-style-guide?             (= events/navigate-style-guide (get-in app-state keypaths/navigation-event))]
+        is-style-guide?             (= events/navigate-style-guide
+                                       (take (count events/navigate-style-guide) navigation-event))]
     (cond
       is-style-guide?
       nil ;; never show popup for style guide
