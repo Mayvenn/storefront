@@ -1,6 +1,7 @@
 (ns storefront.components.top-level
   (:require [storefront.component :as component]
             #?@(:cljs [[checkout.confirmation :as checkout-confirmation]
+                       [storefront.components.style-guide :as style-guide]
                        [storefront.components.account :as account]
                        [storefront.components.checkout-address :as checkout-address]
                        [storefront.components.checkout-complete :as checkout-complete]
@@ -236,7 +237,7 @@
                     (->> nav-event
                          (take (count events/navigate-style-guide))
                          vec)))
-            [:div (ui/lazy-load-component :style-guide 'storefront.components.style-guide/built-component events/navigate-style-guide)]])
+            [:div (style-guide/built-component data nil) #_(ui/lazy-load-component :style-guide 'storefront.components.style-guide/built-component events/navigate-style-guide)]])
 
 
 
