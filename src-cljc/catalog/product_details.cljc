@@ -4,7 +4,6 @@
                        [goog.events]
                        [goog.style]
                        [om.core :as om]
-                       [spice.maps :as maps]
                        [storefront.accessors.auth :as auth]
                        [storefront.api :as api]
                        [storefront.browser.scroll :as scroll]
@@ -135,12 +134,10 @@
            (render-state [this {:keys [show? add-button-height]}]
              (component/html
               [:div.fixed.z4.bottom-0.left-0.right-0.transition-2
-               (maps/deep-merge
-                {:style {:z-index "9999999999"}}
-                (cond
-                  (nil? show?) {:style {:visibility "hidden"}}
-                  show?        {:style {:margin-bottom "0"}}
-                  :else        {:style {:margin-bottom (str "-" add-button-height "px")}}))
+               (cond
+                 (nil? show?) {:style {:visibility "hidden"}}
+                 show?        {:style {:margin-bottom "0"}}
+                 :else        {:style {:margin-bottom (str "-" add-button-height "px")}})
                [:div {:ref "add-button"}
                 [:div.p3.flex.justify-center.items-center.bg-white.border-top.border-light-gray
                  [:div.col-8
