@@ -400,8 +400,9 @@
            (let [{:cta/keys [href navigation-message]} data]
              (component/html
               [:div.hide-on-dt
-               [:div.fixed.z4.bottom-0.left-0.right-0
-                {:style {:margin-bottom (str "-" content-height "px")}}
+               [:div.fixed.bottom-0.left-0.right-0
+                {:style {:z-index       "9999999999"
+                         :margin-bottom (str "-" content-height "px")}}
                 ;; Using a separate element with reverse margin to prevent the
                 ;; sticky component from initially appearing on the page and then
                 ;; animate hiding.
