@@ -94,6 +94,8 @@
         _              (transit/write writer sanitized-data)]
     (generate-string (.toString out "UTF-8"))))
 
+(def js-files ["cljs_base.js" "main.js"])
+
 (defn layout
   [{:keys [storeback-config environment client-version]} data initial-content]
   (html5 {:lang "en"}
@@ -109,11 +111,14 @@
           (into '() (seo/tags-for-page data))
 
           favicon-links
-          (when asset-mappings/cdn-host
-            [:link {:rel "dns-prefetch" :href (str "//" asset-mappings/cdn-host)}])
+          [:link {:rel "preconnect" :href (:endpoint storeback-config)}]
+          [:link {:rel "preconnect" :href "https://www.sendsonar.com"}]
+          [:link {:rel "preconnect" :href "https://ucarecdn.com"}]
+          (when asset-mappings/cdn-host [:link {:rel "preconnect" :href (str "https://" asset-mappings/cdn-host)}])
+          (when asset-mappings/cdn-host [:link {:rel "dns-prefetch" :href (str "https://" asset-mappings/cdn-host)}])
           [:link {:rel "dns-prefetch" :href (:endpoint storeback-config)}]
-          [:link {:rel "dns-prefetch" :href "//www.sendsonar.com"}]
-          [:link {:rel "dns-prefetch" :href "//ucarecdn.com"}]
+          [:link {:rel "dns-prefetch" :href "https://www.sendsonar.com"}]
+          [:link {:rel "dns-prefetch" :href "https://ucarecdn.com"}]
           [:link {:rel "preload" :href (assets/path "/images/sprites.svg") :as "image" :type "image/svg+xml"}]
           [:script {:type "text/javascript"} (raw prefetch-script)]
           [:script {:type "text/javascript"}
@@ -138,9 +143,10 @@
                         document.fonts.add(robotoRegular);
                     });
                 }"))]
-          (when-not (config/development? environment)
-            (for [n ["cljs_base.js" "main.js"]]
-              [:script {:src (assets/path (str "/js/out/" n))}]))
+          (when (config/development? environment)
+            (for [n js-files]
+              [:script {:src   (assets/path (str "/js/out/" n))
+                        :defer true}]))
           ;; inline styles in production because our css file is so small and it avoids another round
           ;; trip request. At time of writing this greatly includes our pagespeed score
           (if (#{"development" "test"} environment)
@@ -148,12 +154,12 @@
             [:style (raw (css-styles))])]
          [:body {:itemscope "itemscope" :itemtype "http://schema.org/Corporation"}
           [:div#content initial-content]
-          ;; in development, figwheel uses document.write which can't be done asynchronously
-          ;; additionally, we want developers to see the server side render, so we don't want
-          ;; to put this tag in <head> and be synchronous
-          (when (config/development? environment)
-            (for [n ["cljs_base.js" "main.js"]]
-              [:script {:src   (str "/js/out/" n)}]))]))
+          (when-not (config/development? environment)
+            ;; in development, figwheel uses document.write which can't be done asynchronously
+            ;; additionally, we want developers to see the server side render, so we don't want
+            ;; to put this tag in <head> and be synchronous
+            (for [n js-files]
+              [:script {:src (str "/js/out/" n)}]))]))
 
 (defn index [render-ctx data]
   (layout render-ctx data spinner-content))

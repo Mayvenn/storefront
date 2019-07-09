@@ -159,5 +159,5 @@
                     event
                     (js->clj args :keywordize-keys true))))
 
-(dom-ready #(main app-state))
 (loader/set-loaded! :main)
+(dom-ready #(main app-state))
