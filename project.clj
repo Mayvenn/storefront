@@ -106,7 +106,6 @@
                                             :file-min "target/min-js/bugsnag-2.5.0.js"
                                             :provides ["bugsnag"]}]
                         :externs          ["externs/luckyorange.js"
-                                           "externs/unknown.js"
                                            "externs/jsQR.js"
                                            "externs/bugsnag.js"
                                            "externs/convert.js"
