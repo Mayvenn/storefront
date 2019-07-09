@@ -15,7 +15,7 @@
   {:cljs_base   [(assets/path "/js/out/cljs_base.js")]
    :main        [(assets/path "/js/out/main.js")]
    :redeem      [(assets/path "/js/out/redeem.js")]
-   :style_guide [(assets/path "/js/out/style_guide.js")]})
+   #_#_ :style_guide [(assets/path "/js/out/style_guide.js")]})
 
 (def frontend-modules (memoize define-frontend-modules))
 

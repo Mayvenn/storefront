@@ -674,4 +674,4 @@
 (defn ^:export built-component [data opts]
   (component/build component data opts))
 
-(loader/set-loaded! :style-guide)
+#_(loader/set-loaded! :style-guide)
