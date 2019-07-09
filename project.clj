@@ -82,11 +82,10 @@
                         :modules          {:cljs-base   {:output-to "target/release/js/out/cljs_base.js"}
                                            :main        {:output-to "target/release/js/out/main.js"
                                                          :entries   #{storefront.core}}
-                                           :redeem      {:output-to  "target/release/js/out/redeem.js"
-                                                         :entries    #{voucher.redeem}}
-                                           #_#_:style-guide {:output-to  "target/release/js/out/style_guide.js"
-                                                         :entries    #{storefront.components.style-guide}
-                                                         :depends-on #{:main}}}
+                                           :redeem      {:output-to "target/release/js/out/redeem.js"
+                                                         :entries   #{voucher.redeem}}
+                                           :style-guide {:output-to "target/release/js/out/style_guide.js"
+                                                         :entries   #{storefront.components.style-guide}}}
                         :infer-externs    false
                         :static-fns       true
                         :fn-invoke-direct true
