@@ -143,7 +143,7 @@
                         document.fonts.add(robotoRegular);
                     });
                 }"))]
-          (when (config/development? environment)
+          (when-not (config/development? environment)
             (for [n js-files]
               [:script {:src   (assets/path (str "/js/out/" n))
                         :defer true}]))
@@ -154,7 +154,7 @@
             [:style (raw (css-styles))])]
          [:body {:itemscope "itemscope" :itemtype "http://schema.org/Corporation"}
           [:div#content initial-content]
-          (when-not (config/development? environment)
+          (when (config/development? environment)
             ;; in development, figwheel uses document.write which can't be done asynchronously
             ;; additionally, we want developers to see the server side render, so we don't want
             ;; to put this tag in <head> and be synchronous
