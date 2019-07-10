@@ -232,8 +232,11 @@
            (root-domain-pages-to-preserve-paths-in-redirects (:uri req)))
       (util.response/redirect (store-url "shop" environment req) 301)
 
-      (#{[] ["www"] ["internal"] ["peakmill"]} subdomains)
+      (#{[] ["www"] ["internal"]} subdomains)
       (util.response/redirect (store-homepage "shop" environment req) 301)
+
+      (#{["peakmill"]} subdomains)
+      (util.response/redirect (store-homepage "shop" environment req) 302)
 
       :else
       (h req))))
