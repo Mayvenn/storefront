@@ -124,7 +124,9 @@
           [:script {:type "text/javascript"}
            (raw (str "var assetManifest=" (generate-string (select-keys asset-mappings/image-manifest (map #(subs % 1) config/frontend-assets))) ";"
                      "var cdnHost=" (generate-string asset-mappings/cdn-host) ";"
-                     "var COMPILED_MODULE_URIS=" (json/generate-string (config/frontend-modules)) ";"
+                     (when (config/development? environment)
+                       ;; Use CDN urls when not in dev, otherwise let figwheel control the compiled modules
+                       (str "var COMPILED_MODULE_URIS=" (json/generate-string (config/frontend-modules))) ";")
                      ;; need to make sure the edn which has double quotes is validly escaped as
                      ;; json as it goes into the JS file
                      (format "var data = %s;" (data->transit data))
