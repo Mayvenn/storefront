@@ -10,6 +10,7 @@ h1, h2, h3, h4, h5, h6 { font-weight: var(--heading-font-weight); }
 
 .titleize { text-transform: capitalize; }
 .shout { text-transform: uppercase; }
+.whisper { text-transform: lowercase; }
 .strike { text-decoration: line-through; }
 
 .shadow { text-shadow: 0 2px 2px var(--darken-3); }

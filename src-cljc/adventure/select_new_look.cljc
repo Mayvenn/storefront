@@ -39,7 +39,7 @@
     :keys [prompt mini-prompt prompt-image header-data data-test spinning?
            looks]} _ _]
   (component/create
-   [:div.bg-too-light-teal.white.center.flex-auto.self-stretch
+   [:div.bg-light-gray.white.center.flex-auto.self-stretch
     (when header-data
       (header/built-component header-data nil))
     [:div.flex.items-center.bold.bg-light-lavender
@@ -56,7 +56,7 @@
        ui/spinner]
       [:div {:data-test data-test}
        #?(:cljs
-          [:div.flex.flex-wrap.mtn2.py4.px2.justify-center.justify-start-on-tb-dt
+          [:div.flex.flex-wrap.pb4.mt2-on-tb-dt.justify-center.justify-start-on-tb-dt
            (for [look looks]
              (component/build ugc/adventure-social-image-card-component look {}))])])]))
 
