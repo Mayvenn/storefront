@@ -56,7 +56,7 @@
        ui/spinner]
       [:div {:data-test data-test}
        #?(:cljs
-          [:div.flex.flex-wrap.pb4.mt2-on-tb-dt.justify-center.justify-start-on-tb-dt
+          [:div.flex.flex-wrap.pb4.mt2.justify-center.justify-start-on-tb-dt
            (for [look looks]
              (component/build ugc/adventure-social-image-card-component look {}))])])]))
 
