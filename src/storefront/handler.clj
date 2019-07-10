@@ -228,15 +228,11 @@
       (= "ambassador" (first subdomains))
       (util.response/redirect (store-url "freeinstall" environment (update req :query-params merge {:redirect (last subdomains)})) 302)
 
-      (and (#{[] ["www"] ["internal"]} subdomains)
-           (root-domain-pages-to-preserve-paths-in-redirects (:uri req)))
+      (#{[] ["www"] ["internal"]} subdomains)
       (util.response/redirect (store-url "shop" environment req) 301)
 
-      (#{[] ["www"] ["internal"]} subdomains)
-      (util.response/redirect (store-homepage "shop" environment req) 301)
-
       (#{["peakmill"]} subdomains)
-      (util.response/redirect (store-homepage "shop" environment req) 302)
+      (util.response/redirect (store-url "shop" environment req) 302)
 
       :else
       (h req))))
