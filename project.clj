@@ -62,7 +62,8 @@
                                     "resources/public/cdn"]
   :source-paths ["src" "src-cljc" "src-cljs"]
   :resource-paths ["resources"]
-  :aliases {"fig" ["trampoline" "run" "-m" "figwheel.main" "-b" "dev" "-r"]}
+  :aliases {"fig" ["trampoline" "run" "-m" "figwheel.main" "-b" "dev" "-r"]
+            "fig:pc" ["trampoline" "run" "-m" "figwheel.main" "-pc" "-b" "dev" "-r"]}
   :cljsbuild
   {:builds
    {:release
