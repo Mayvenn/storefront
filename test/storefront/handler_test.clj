@@ -55,6 +55,14 @@
      (is (= (format "https://%s.mayvenn.com%s" domain# path#)
             (-> resp# :headers (get "Location"))))))
 
+(defmacro is-permanently-redirected-to [resp domain path]
+  `(let [resp# ~resp
+         domain# ~domain
+         path# ~path]
+     (is (= 301 (:status resp#)))
+     (is (= (format "https://%s.mayvenn.com%s" domain# path#)
+            (-> resp# :headers (get "Location"))))))
+
 (deftest one-time-login-sets-cookies
   (with-services {:storeback-handler (routes
                                       common/default-storeback-handler
@@ -103,6 +111,13 @@
       (let [resp (handler (mock/request :get "https://bob.mayvenn.com/install"))]
         (testing "It redirects to the freeinstall subdomain"
           (is-redirected-to resp "freeinstall" "/"))))))
+
+(deftest peakmill-subdomain-redirects-to-shop
+  (with-services
+    (with-handler handler
+      (let [resp (handler (mock/request :get "https://peakmill.mayvenn.com/"))]
+        (testing "It redirects to the shop subdomain"
+          (is-permanently-redirected-to resp "shop" "/"))))))
 
 (deftest renders-page-when-matches-stylist-subdomain-and-sets-the-preferred-subdomain
   (common/assert-request
