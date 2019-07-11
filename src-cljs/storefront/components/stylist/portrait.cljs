@@ -21,5 +21,5 @@
    :back-link          {:navigation-event events/navigate-stylist-account-profile
                         :back-copy        "back to account"}})
 
-(defn built-component [data opts]
+(defn ^:export built-component [data opts]
   (component/build component (query data) opts))

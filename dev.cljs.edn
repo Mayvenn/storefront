@@ -5,6 +5,8 @@
  :modules          {:cljs-base   {:output-to "resources/public/js/out/cljs_base.js"}
                     :main        {:output-to "resources/public/js/out/main.js"
                                   :entries   #{storefront.core}}
+                    :dashboard   {:output-to "resources/public/js/out/dashboard.js"
+                                  :entries   #{stylist.dashboard}}
                     :redeem      {:output-to "resources/public/js/out/redeem.js"
                                   :entries   #{voucher.redeem}}
                     :style-guide {:output-to "resources/public/js/out/style_guide.js"

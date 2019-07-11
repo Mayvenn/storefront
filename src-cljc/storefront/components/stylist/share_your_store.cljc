@@ -94,5 +94,5 @@
    :store-slug   (get-in data keypaths/user-store-slug)
    :utm-campaign "stylist_dashboard"})
 
-(defn built-component [data opts]
+(defn ^:export built-component [data opts]
   (component/build component (query data) opts))
