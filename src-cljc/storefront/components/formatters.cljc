@@ -1,6 +1,7 @@
 (ns storefront.components.formatters
   (:require [spice.date :as date]
             [storefront.platform.numbers :as numbers]
+            [clojure.string :as string]
             #?@(:cljs [[goog.string.format]
                        [goog.string]])))
 
@@ -88,10 +89,8 @@
            [(.getFullYear date) (.getMonth date) (.getDate date)]))]))
 
 (defn phone-number [phone]
-  (let [num (numbers/digits-only (str phone))]
-    (str
-     (subs num 0 3)
-     "-"
-     (subs num 3 6)
-     "-"
-     (subs num 6 10))))
+  (let [num (->> phone str numbers/digits-only)]
+    (string/join "-"
+                 (if (-> num count (= 11))
+                   [(first num) (subs num 1 4) (subs num 4 7) (subs num 7 11)]
+                   [(subs num 0 3) (subs num 3 6) (subs num 6 10)]))))
