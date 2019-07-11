@@ -226,6 +226,26 @@
     error?                   (add-classes "red")
     (and value? label) (add-classes "has-value")))
 
+(defn text-input [{:keys [id type label keypath value] :as input-attributes}]
+  [:input.h5.border-none.px2.bg-white.col-12.rounded.placeholder-dark-silver
+   (merge
+    {:style       {:height    "56px"
+                   :font-size "16px"}
+     :key         id
+     :label       label
+     :data-test   (str id "-input")
+     :name        id
+     :id          (str id "-input")
+     :type        (or type "text")
+     :value       (or value "")
+     :placeholder label
+     :on-change   #?(:clj (fn [_e] nil)
+                     :cljs (fn [^js/Event e]
+                             (handle-message events/control-change-state
+                                             {:keypath keypath
+                                              :value   (.. e -target -value)})))}
+    (dissoc input-attributes :id :type :label :keypath :value))])
+
 (defn plain-text-field
   [label keypath value error? {:keys [wrapper-class wrapper-style id hint focused] :as input-attributes}]
   (let [input-attributes (dissoc input-attributes :wrapper-class :hint :focused :wrapper-style)

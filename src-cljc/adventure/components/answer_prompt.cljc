@@ -17,15 +17,6 @@
 (defn white-rect-button [attrs & content]
   (ui/white-button (maps/deep-merge rect-button-attrs attrs) content))
 
-(defn ^:private handle-on-change
-  #?(:clj
-     ([keypath _e] nil)
-     :cljs
-     ([keypath ^js/Event e]
-      (messages/handle-message events/control-change-state
-                               {:keypath keypath
-                                :value   (.. e -target -value)}))))
-
 (defn ^:private content-component [{:keys [input-data header-data prompt-image prompt mini-prompt on-submit title-image-uuid title-image-alt]} owner _]
   (component/create
    [:div
@@ -41,22 +32,13 @@
       [:form.col-12.block.mx-auto.mt4.pt2
        {:on-submit (apply utils/send-event-callback on-submit)}
        [:div.col-9.mx-auto
-        ;; TODO: have a new textfield component
-        ;;  [x] should placeholder text be more grayed out - yes
-        [:input.h5.border-none.px2.bg-white.col-12.rounded.placeholder-dark-silver
-         {:style                           {:height    "56px" ; style-guide is 18px
-                                            :font-size "16px"} ; style-guide is 41px
-          :key                             id
-          :label                           label
-          :data-test                       (str id "-input")
-          :name                            id
-          :id                              (str id "-input")
-          :type                            (or type "text")
-          :value                           (or value "")
-          :autoFocus                       true
-          :required                        true
-          :placeholder                     label
-          :on-change                       (partial handle-on-change on-change-keypath)}]]
+        (ui/text-input {:id        id
+                        :label     label
+                        :keypath   on-change-keypath
+                        :value     value
+                        :type      "email"
+                        :required  true
+                        :autoFocus true})]
        [:div.pt3.col-9.mx-auto
         (ui/submit-button "Get Started"
                           {:data-test (str id "-answer-submit")})]])]))

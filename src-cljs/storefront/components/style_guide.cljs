@@ -367,6 +367,10 @@
 (defn ^:private form [data]
   [:div
    [:p.h6.mb2 "Type " [:pre.inline "wrong"] " in input field to show it's failed validation state."]
+   (ui/text-input {:label   "Text Input"
+                   :id      "text-input"
+                   :keypath [:style-guide :form :text-input]
+                   :value   (get-in data [:style-guide :form :test-input])})
    (ui/text-field-group
     {:type    "text"
      :label   "First Name"
@@ -470,11 +474,11 @@
                       [])} 
     {:ui-element ui/teal-button
      :content    "Get Survey"
-     :args       {:class          "flex justify-center medium items-center circled-item"
-                  :size-class     "col-4"
-                  :height-class   "py2"
-                  :data-test      ""
-                  :disabled?      true}})])
+     :args       {:class        "flex justify-center medium items-center circled-item"
+                  :size-class   "col-4"
+                  :height-class "py2"
+                  :data-test    ""
+                  :disabled?    true}})])
 
 (defn ^:private form-fields [data]
   [:section
