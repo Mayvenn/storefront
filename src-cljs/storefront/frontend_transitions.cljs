@@ -335,6 +335,39 @@
 (defmethod transition-state events/api-success-states [_ event {:keys [states]} app-state]
   (assoc-in app-state keypaths/states states))
 
+(defmethod transition-state events/api-success-stylist-account
+  [_ event {:keys [stylist]} app-state]
+  (let [stylist-zipcode (-> stylist :address :zipcode)]
+    (-> app-state
+        (update-in keypaths/stylist-manage-account merge stylist)
+        (update-in (conj keypaths/stylist-manage-account-green-dot-payout-attributes :postalcode) #(or % stylist-zipcode)))))
+
+(defmethod transition-state events/api-success-stylist-account-commission [_ event {:keys [stylist]} app-state]
+  (let [green-dot-payout-attributes (some-> stylist :green-dot-payout-attributes (select-keys [:last-4 :payout-timeframe]))]
+    (cond-> (update-in app-state keypaths/stylist-manage-account dissoc :green-dot-payout-attributes)
+      (= "green_dot" (:chosen-payout-method stylist))
+      (-> (assoc-in keypaths/stylist-manage-account-green-dot-card-selected-id (:last-4 green-dot-payout-attributes))
+          (assoc-in keypaths/stylist-manage-account-green-dot-payout-attributes green-dot-payout-attributes)))))
+
+(defmethod transition-state events/api-success-gallery [_ event {:keys [images]} app-state]
+  (-> app-state
+      (assoc-in keypaths/store-gallery-images images)))
+
+(defmethod transition-state events/api-success-stylist-payout-stats
+  [_ _ stats app-state]
+  (assoc-in app-state keypaths/stylist-payout-stats stats))
+
+(defmethod transition-state events/api-success-stylist-referral-program
+  [_ event {:keys [sales-rep-email bonus-amount earning-amount lifetime-total referrals current-page pages]} app-state]
+  (-> app-state
+      (assoc-in keypaths/stylist-referral-program-bonus-amount bonus-amount)
+      (assoc-in keypaths/stylist-referral-program-earning-amount earning-amount)
+      (assoc-in keypaths/stylist-referral-program-lifetime-total lifetime-total)
+      (update-in keypaths/stylist-referral-program-referrals into referrals)
+      (assoc-in keypaths/stylist-referral-program-pages (or pages 0))
+      (assoc-in keypaths/stylist-referral-program-page (or current-page 1))
+      (assoc-in keypaths/stylist-sales-rep-email sales-rep-email)))
+
 (defmethod transition-state events/api-partial-success-send-stylist-referrals
   [_ event {:keys [results]} app-state]
   (update-in app-state keypaths/stylist-referrals
@@ -414,6 +447,33 @@
 
 (defmethod transition-state events/api-success-fetch-cms-data [_ event cms-data app-state]
   (assoc-in app-state keypaths/cms cms-data))
+
+(defmethod transition-state events/control-account-profile-submit [_ event args app-state]
+  (let [password              (get-in app-state keypaths/manage-account-password)
+        field-errors          (cond-> {}
+                                (> 6 (count password))
+                                (merge (group-by :path [{:path ["password"] :long-message "New password must be at least 6 characters"}])))]
+    (if (and (seq password) (seq field-errors))
+      (assoc-in app-state keypaths/errors {:field-errors field-errors :error-code "invalid-input" :error-message "Oops! Please fix the errors below."})
+      (clear-field-errors app-state))))
+
+(defmethod transition-state events/control-stylist-account-commission-submit [_ event args app-state]
+  (let [selected-id (get-in app-state keypaths/stylist-manage-account-green-dot-card-selected-id)
+        last-4      (:last-4 (get-in app-state keypaths/stylist-manage-account-green-dot-payout-attributes))]
+    (cond-> app-state
+      (and (seq last-4) (= selected-id last-4))
+      (assoc-in keypaths/stylist-manage-account-green-dot-payout-attributes {:last-4 last-4}))))
+
+(defmethod transition-state events/control-stylist-account-password-submit [_ event args app-state]
+  (let [stylist-account       (get-in app-state keypaths/stylist-manage-account)
+        password              (-> stylist-account :user :password)
+        field-errors          (cond-> {}
+                                (> 6 (count password))
+                                (merge (group-by :path [{:path ["user" "password"] :long-message "New password must be at least 6 characters"}])))]
+    (if (seq field-errors)
+      (assoc-in app-state keypaths/errors {:field-errors field-errors :error-code "invalid-input" :error-message "Oops! Please fix the errors below."})
+      (clear-field-errors app-state))))
+
 
 (defmethod transition-state events/control-cancel-editing-gallery [_ event args app-state]
   (assoc-in app-state keypaths/editing-gallery? false))

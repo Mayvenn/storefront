@@ -13,6 +13,16 @@
                        [storefront.components.reset-password :as reset-password]
                        [storefront.components.shop-by-look :as shop-by-look]
                        [storefront.components.shop-by-look-details :as shop-by-look-details]
+                       [storefront.components.stylist.account :as stylist.account]
+                       [storefront.components.stylist.balance-transfer-details :as balance-transfer-details]
+                       [storefront.components.stylist.cash-out :as stylist.cash-out]
+                       [storefront.components.stylist.cash-out-pending :as stylist.cash-out-pending]
+                       [storefront.components.stylist.cash-out-success :as stylist.cash-out-success]
+                       [storefront.components.stylist.gallery-image-picker :as gallery-image-picker]
+                       [storefront.components.stylist.order-details :as stylist.order-details]
+                       [storefront.components.stylist.portrait :as stylist.portrait]
+                       [storefront.components.stylist.share-your-store :as stylist.share-your-store]
+                       stylist.dashboard
                        [storefront.config :as config]
                        [storefront.history :as history]
                        adventure.components.email-capture
@@ -79,21 +89,20 @@
                events/navigate-force-set-password                         force-set-password/built-component
                events/navigate-shop-by-look                               shop-by-look/built-component
                events/navigate-shop-by-look-details                       shop-by-look-details/built-component
-               events/navigate-stylist-dashboard-balance-transfer-details (ui/lazy-load-component :dashboard 'storefront.components.stylist.balance-transfer-details/built-component
-                                                                                                  events/navigate-stylist-dashboard-balance-transfer-details)
-               events/navigate-stylist-dashboard-order-details            (ui/lazy-load-component :dashboard 'storefront.components.stylist.order-details/built-component events/navigate-stylist-dashboard-order-details)
-               events/navigate-stylist-dashboard-cash-out-begin           (ui/lazy-load-component :dashboard 'storefront.components.stylist.cash-out/built-component events/navigate-stylist-dashboard-cash-out-begin)
-               events/navigate-stylist-dashboard-cash-out-pending         (ui/lazy-load-component :dashboard 'storefront.components.stylist.cash-out-pending/built-component events/navigate-stylist-dashboard-cash-out-pending)
-               events/navigate-stylist-dashboard-cash-out-success         (ui/lazy-load-component :dashboard 'storefront.components.stylist.cash-out-success/built-component events/navigate-stylist-dashboard-cash-out-success)
-               events/navigate-stylist-share-your-store                   (ui/lazy-load-component :dashboard 'storefront.components.stylist.share-your-store/built-component events/navigate-stylist-share-your-store)
-               events/navigate-stylist-account-profile                    (ui/lazy-load-component :dashboard 'storefront.components.stylist.account/built-component events/navigate-stylist-account-profile)
-               events/navigate-stylist-account-portrait                   (ui/lazy-load-component :dashboard 'storefront.components.stylist.portrait/built-component events/navigate-stylist-account-portrait)
-               events/navigate-stylist-account-password                   (ui/lazy-load-component :dashboard 'storefront.components.stylist.account/built-component events/navigate-stylist-account-password)
-               events/navigate-stylist-account-payout                     (ui/lazy-load-component :dashboard 'storefront.components.stylist.account/built-component events/navigate-stylist-account-payout)
-               events/navigate-stylist-account-social                     (ui/lazy-load-component :dashboard 'storefront.components.stylist.account/built-component events/navigate-stylist-account-social)
-               events/navigate-v2-stylist-dashboard-payments              (ui/lazy-load-component :dashboard 'storefront.components.stylist.dashboard/built-component events/navigate-v2-stylist-dashboard-payments)
-               events/navigate-v2-stylist-dashboard-orders                (ui/lazy-load-component :dashboard 'storefront.components.stylist.dashboard/built-component events/navigate-v2-stylist-dashboard-orders)
-               events/navigate-gallery-image-picker                       (ui/lazy-load-component :dashboard 'storefront.components.stylist.gallery-image-picker/built-component events/navigate-gallery-image-picker)
+               events/navigate-stylist-dashboard-balance-transfer-details balance-transfer-details/built-component
+               events/navigate-stylist-dashboard-order-details            stylist.order-details/built-component
+               events/navigate-stylist-dashboard-cash-out-begin           stylist.cash-out/built-component
+               events/navigate-stylist-dashboard-cash-out-pending         stylist.cash-out-pending/built-component
+               events/navigate-stylist-dashboard-cash-out-success         stylist.cash-out-success/built-component
+               events/navigate-stylist-share-your-store                   stylist.share-your-store/built-component
+               events/navigate-stylist-account-profile                    stylist.account/built-component
+               events/navigate-stylist-account-portrait                   stylist.portrait/built-component
+               events/navigate-stylist-account-password                   stylist.account/built-component
+               events/navigate-stylist-account-payout                     stylist.account/built-component
+               events/navigate-stylist-account-social                     stylist.account/built-component
+               events/navigate-v2-stylist-dashboard-payments              stylist.dashboard/built-component
+               events/navigate-v2-stylist-dashboard-orders                stylist.dashboard/built-component
+               events/navigate-gallery-image-picker                       gallery-image-picker/built-component
                events/navigate-account-manage                             (partial sign-in/requires-sign-in account/built-component)
                events/navigate-account-referrals                          (partial sign-in/requires-sign-in friend-referrals/built-component)
                events/navigate-friend-referrals-freeinstall               friend-referrals/built-component

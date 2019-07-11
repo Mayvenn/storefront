@@ -271,7 +271,7 @@
          "award"         (award-component data)
          "voucher_award" (voucher-award-component data))))))
 
-(defn ^:export built-component [data opts]
+(defn built-component [data opts]
   (component/build component (query data) opts))
 
 (defmethod effects/perform-effects events/navigate-stylist-dashboard-balance-transfer-details

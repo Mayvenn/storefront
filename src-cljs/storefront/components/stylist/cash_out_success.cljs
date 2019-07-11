@@ -23,6 +23,6 @@
                             {:data-test "see-transfer-button"})
                      "See Transfer")])))
 
-(defn ^:export built-component [data opts]
+(defn built-component [data opts]
   (om/build component (query data) opts))
 

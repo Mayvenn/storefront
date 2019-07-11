@@ -48,7 +48,7 @@
      :payout-method     payout-method
      :cashing-out?      (utils/requesting? data request-keys/cash-out-commit)}))
 
-(defn ^:export built-component [data opts]
+(defn built-component [data opts]
   (om/build component (query data) opts))
 
 (defn ^:private should-redirect? [next-payout]

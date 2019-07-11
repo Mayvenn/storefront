@@ -83,8 +83,6 @@
                         :modules          {:cljs-base   {:output-to "target/release/js/out/cljs_base.js"}
                                            :main        {:output-to "target/release/js/out/main.js"
                                                          :entries   #{storefront.core}}
-                                           :dashboard   {:output-to "target/release/js/out/dashboard.js"
-                                                         :entries   #{stylist.dashboard}}
                                            :redeem      {:output-to "target/release/js/out/redeem.js"
                                                          :entries   #{voucher.redeem}}
                                            :style-guide {:output-to "target/release/js/out/style_guide.js"

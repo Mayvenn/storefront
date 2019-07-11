@@ -23,7 +23,7 @@
 (defn query [data]
   {})
 
-(defn ^:export built-component [data opts]
+(defn built-component [data opts]
   (om/build component {} opts))
 
 (defn- poll-status [user-id user-token status-id stylist-id]

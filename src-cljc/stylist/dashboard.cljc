@@ -1,17 +1,5 @@
 (ns stylist.dashboard
-  (:require #?@(:cljs [[storefront.loader :as loader]
-                       ;; The following a part of this module, but we need set-loaded! to be called last,
-                       ;; which is at the bottom of this page
-                       storefront.components.stylist.account
-                       storefront.components.stylist.balance-transfer-details
-                       storefront.components.stylist.cash-out
-                       storefront.components.stylist.cash-out-pending
-                       storefront.components.stylist.cash-out-success
-                       storefront.components.stylist.gallery-image-picker
-                       storefront.components.stylist.order-details
-                       storefront.components.stylist.portrait
-                       storefront.components.stylist.share-your-store])
-            [storefront.component :as component]
+  (:require [storefront.component :as component]
             stylist.dashboard-stats
             stylist.dashboard-orders-tab
             stylist.dashboard-payments-tab
@@ -95,7 +83,7 @@
      :balance-transfers-pagination (get-in data keypaths/v2-dashboard-balance-transfers-pagination)
      :orders-data (stylist.dashboard-orders-tab/query data)}))
 
-(defn ^:export built-component [data opts]
+(defn built-component [data opts]
   (component/build component (query data) opts))
 
 (defmethod effects/perform-effects events/navigate-v2-stylist-dashboard [_ event args _ app-state]
@@ -121,5 +109,3 @@
 (defmethod effects/perform-effects events/navigate-stylist-dashboard-referrals
   [_ event args _ app-state]
   (effects/redirect events/navigate-v2-stylist-dashboard-orders))
-
-#?(:cljs (loader/set-loaded! :dashboard))
