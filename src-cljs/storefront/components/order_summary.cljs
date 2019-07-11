@@ -73,12 +73,3 @@
           use-store-credit? (- store-credit)
           true              as-money)]]]]))
 
-(defn display-line-items [line-items skus]
-  (for [line-item line-items]
-    (let [sku-id   (or (:catalog/sku-id line-item) (:sku line-item))
-          sku      (get skus sku-id)
-          quantity (or (:item/quantity line-item) (:quantity line-item))]
-      (cart/display-line-item line-item
-                              sku
-                              (images/cart-image sku)
-                              [:div.pyp2 "Quantity: " quantity]))))

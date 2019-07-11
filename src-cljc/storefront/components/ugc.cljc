@@ -45,7 +45,7 @@
           [:div.regular description]]]
         [:div.m1.self-start {:style {:width "21px"
                                      :height "21px"
-                                     :opacity 0.4}}
+                                     :opacity 0.2}}
          (svg/social-icon social-service)]]
        [:div.mt2 (ui/underline-button {:height-class "py2"} "Shop Look")]]]]]))
 
@@ -91,7 +91,7 @@
            [:div.regular description]]]
          [:div.m1.self-start {:style {:width "21px"
                                     :height "21px"
-                                    :opacity 0.4}}
+                                    :opacity 0.2}}
           (svg/social-icon social-service)]]]
        (when nav-event
          (cta-button-fn
