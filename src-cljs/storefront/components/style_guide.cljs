@@ -308,8 +308,7 @@
   [:div.col-6.col-4-on-tb.col-2-on-dt
    [:div.p1
     [:div.p4
-     {
-      :style {:background (str "linear-gradient(#" light-hex ", #" dark-hex ")")
+     {:style {:background (str "linear-gradient(#" light-hex ", #" dark-hex ")")
               :height "8em"}}
      [:div.mt4
       [:div color-class]
