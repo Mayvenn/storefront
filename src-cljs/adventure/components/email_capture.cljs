@@ -25,29 +25,33 @@
 
 (defmethod popup/query :adv-email-capture
   [data]
-  (let [email               (get-in data storefront.keypaths/captured-email)
-        errors              (get-in data storefront.keypaths/field-errors)]
-    {:input-data   {:value             email
-                    :id                "email"
-                    :label             "E-mail address"
-                    :type              "email"
-                    :on-change-keypath storefront.keypaths/captured-email
-                    :disabled?         (invalid-email? email)}
-     :errors       errors
-     :prompt-image "https://ucarecdn.com/03957478-feac-4e0c-aedf-e8e4a7123d69/-/format/auto/"
-     :prompt       "Welcome! We can't wait for you to get a free install."
-     :mini-prompt  "Enter your e-mail to get started!"
-     :header-data  {:header-attrs nil
-                    :right-corner {:id    "dismiss-email-capture"
-                                   :opts  (utils/fake-href events/control-email-captured-dismiss)
-                                   :value (svg/simple-x {:class        "stroke-white"
-                                                         :stroke-width "8"
-                                                         :style        {:width  "20px"
-                                                                        :height "20px"}})}
-                    :logo?        true
-                    :title        nil
-                    :subtitle     nil}
-     :on-submit    [events/control-adventure-emailcapture-submit {:email email}]}))
+  (let [email  (get-in data storefront.keypaths/captured-email)
+        errors (get-in data storefront.keypaths/field-errors)]
+    {:input-data           {:value             email
+                            :id                "email"
+                            :label             "Your Email Address"
+                            :type              "email"
+                            :on-change-keypath storefront.keypaths/captured-email
+                            :disabled?         (invalid-email? email)}
+     :errors               errors
+     :prompt-image         "https://ucarecdn.com/374049b5-d6ad-4938-ab98-771bb7287e68/-/format/auto/"
+     :prompt-desktop-image "https://ucarecdn.com/7ca22134-eaa6-4144-b660-faa0db211515/-/format/auto/"
+     :prompt               [:div.italic
+                            [:h1.bold.inline.mr2 "Welcome!"]
+                            [:span.h1.light "We can't wait for you to get a free install."]]
+     :title-image-uuid     "57fde383-01eb-494f-96e1-7070b8fc434d"
+     :title-image-alt      "Mayvenn"
+     :header-data          {:header-attrs nil
+                            :right-corner {:id    "dismiss-email-capture"
+                                           :opts  (utils/fake-href events/control-email-captured-dismiss)
+                                           :value (svg/simple-x {:class        "stroke-white"
+                                                                 :stroke-width "8"
+                                                                 :style        {:width  "20px"
+                                                                                :height "20px"}})}
+                            :logo?        false
+                            :title        nil
+                            :subtitle     nil}
+     :on-submit            [events/control-adventure-emailcapture-submit {:email email}]}))
 
 (defmethod popup/component :adv-email-capture
   [queried-data owner _]

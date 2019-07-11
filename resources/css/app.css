@@ -155,7 +155,8 @@
     /* TODO FIX ALL OF THESE COLORS */
     --white:        #ffffff;
     --light-silver: #f2f2f2; /* #f8f8f8 */
-    --silver:       #ebebeb; /* #f2f2f2 */
+    --silver:       #dadada;
+    --dark-silver:  #aaaaaa;
     --light-gray:   #ebebeb;
     --gray:         #cccccc;
     --dark-gray:    #666666;

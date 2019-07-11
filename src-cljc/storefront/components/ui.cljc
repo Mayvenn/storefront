@@ -519,23 +519,17 @@
            default-quality "normal"}}
    image-id]
   {:pre [(or (spice.core/parse-int width) (nil? width))]}
-  (component/build
-   (fn [_ _ _]
-     (component/create
-      (let [image-id    (ucare-img-id image-id)
-            retina-url  (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/" retina-quality "/")
-                          width (str "-/resize/" (* 2 (spice/parse-int width)) "x/"))
-            default-url (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/" default-quality "/")
-                          width (str "-/resize/" width "x/"))]
-        [:picture
-         [:source {:src-set (str retina-url " 2x,"
-                                 default-url " 1x")}]
-         [:img.block (-> img-attrs
-                         (dissoc :width :retina-quality :default-quality)
-                         (assoc :src default-url))]])))
-   {:attrs img-attrs
-    :id    image-id}
-   nil))
+  (let [image-id    (ucare-img-id image-id)
+        retina-url  (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/" retina-quality "/")
+                      width (str "-/resize/" (* 2 (spice/parse-int width)) "x/"))
+        default-url (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/" default-quality "/")
+                      width (str "-/resize/" width "x/"))]
+    [:picture {:key image-id}
+     [:source {:src-set (str retina-url " 2x,"
+                             default-url " 1x")}]
+     [:img.block (-> img-attrs
+                     (dissoc :width :retina-quality :default-quality)
+                     (assoc :src default-url))]]))
 
 (defn circle-ucare-img
   [{:keys [width] :as attrs :or {width "4em"}} image-id]

@@ -235,7 +235,7 @@
                     sleek-ugc
                     true)
 
-    [:hr.hide-on-mb-tb.border-top.border-dark-silver.col-12.mx-auto.my6]
+    [:hr.hide-on-mb-tb.border-top.border-silver.col-12.mx-auto.my6]
 
     (style-carousel "Wavy & Curly"
                     "Virgin & Dyed Virgin Hair"
@@ -345,13 +345,13 @@
                                       :stylist-name          (:store-nickname store)
                                       :stylist-gallery-open? stylist-gallery-open?})]
     [:section ^:inline (an-amazing-deal)]
-    [:hr.border-top.border-dark-silver.col-9.mx-auto.my6]
+    [:hr.border-top.border-silver.col-9.mx-auto.my6]
     [:section ^:inline (most-popular-looks sleek-and-straight-ugc waves-and-curly-ugc)]
     [:section [:div (v2/why-mayvenn-is-right-for-you)]]
     [:section ^:inline (free-install-mayvenn-grid free-install-mayvenn-ugc)]
-    [:hr.hide-on-mb-tb.border-top.border-dark-silver.col-9.mx-auto.mb6]
+    [:hr.hide-on-mb-tb.border-top.border-silver.col-9.mx-auto.mb6]
     [:section ^:inline (v2/faq faq-data)]
-    [:hr.border-top.border-dark-silver.col-9.mx-auto.my6]
+    [:hr.border-top.border-silver.col-9.mx-auto.my6]
     [:section ^:inline (our-story)]]))
 
 (defn query [data]

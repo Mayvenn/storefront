@@ -16,7 +16,7 @@
        [:span.hide-on-mb
         (ui/link :link/phone :a.dark-gray {} call-number)]
        " | 8am-5pm PST M-F"]
-      [:div.my1.dark-silver.h6
+      [:div.my1.silver.h6
        (component/build footer-links/component {:minimal? true} nil)]]]]))
 
 (defn query

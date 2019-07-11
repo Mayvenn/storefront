@@ -23,7 +23,7 @@
   (component/build
    (fn [data owner opts]
      (component/create
-      [:hr.border-top.border-dark-silver.col-12.m0
+      [:hr.border-top.border-silver.col-12.m0
        {:style {:border-bottom 0
                 :border-left 0
                 :border-right 0}}]))))

@@ -26,46 +26,53 @@
                                {:keypath keypath
                                 :value   (.. e -target -value)}))))
 
-(defn component
-  [{:keys [input-data header-data prompt-image prompt mini-prompt on-submit]} owner _]
+(defn ^:private content-component [{:keys [input-data header-data prompt-image prompt mini-prompt on-submit title-image-uuid title-image-alt]} owner _]
   (component/create
-   [:div.z5.bg-lavender.white.center.fixed.overlay.bg-contain.bg-no-repeat.max-580.mx-auto
-    {:style {:background-position "bottom"
-             :background-image    (str "url('" prompt-image "')")}}
-
+   [:div
     (when header-data
       [:div.mx-auto {:style {:height "100px"}}
        (header/built-component header-data nil)])
-    [:div.h3.medium.mb2.col-8.mx-auto prompt]
+    [:div.h3.medium.mb2.col-8.mx-auto
+     (when title-image-uuid
+       (ui/ucare-img {:alt title-image-alt :class "mx-auto mb4"} title-image-uuid))
+     prompt]
     [:div.h5.light.mb2.col-8.mx-auto mini-prompt]
     (let [{:keys [value id label type on-change-keypath disabled?]} input-data]
-      [:div.col-12.mx-auto
-       [:form.block.flex.justify-center
-        {:on-submit (apply utils/send-event-callback on-submit)}
-        [:input.h5.border-none.px3.bg-white.col-9
-         {:key         id
-          :label       label
-          :data-test   (str id "-input")
-          :name        id
-          :id          (str id "-input")
-          :type        (or type "text")
-          :value       (or value "")
-          :autoFocus   true
-          :required    true
-          :placeholder label
-          :on-change   (partial handle-on-change on-change-keypath)}]
-        [:button
-         {:type      "submit"
-          :disabled  disabled?
-          :style     {:width  "45px"
-                      :height "43px"}
-          :class     (ui/button-class
-                      :color/teal
-                      (merge {:class "flex items-center justify-center not-rounded x-group-item"}
-                             (when disabled?
-                               {:disabled?      disabled?
-                                :disabled-class "bg-gray"})))
-          :data-test (str id "-answer-submit")}
-         (ui/forward-arrow {:width     "14"
-                            :disabled? disabled?})]]])]))
+      [:form.col-12.block.mx-auto.mt4.pt2
+       {:on-submit (apply utils/send-event-callback on-submit)}
+       [:div.col-9.mx-auto
+        ;; TODO: have a new textfield component
+        ;;  [x] should placeholder text be more grayed out - yes
+        [:input.h5.border-none.px2.bg-white.col-12.rounded.placeholder-dark-silver
+         {:style                           {:height    "56px" ; style-guide is 18px
+                                            :font-size "16px"} ; style-guide is 41px
+          :key                             id
+          :label                           label
+          :data-test                       (str id "-input")
+          :name                            id
+          :id                              (str id "-input")
+          :type                            (or type "text")
+          :value                           (or value "")
+          :autoFocus                       true
+          :required                        true
+          :placeholder                     label
+          :on-change                       (partial handle-on-change on-change-keypath)}]]
+       [:div.pt3.col-9.mx-auto
+        (ui/submit-button "Get Started"
+                          {:data-test (str id "-answer-submit")})]])]))
+
+(defn component
+  [{:keys [input-data header-data prompt-image prompt-desktop-image prompt mini-prompt on-submit] :as data} owner _]
+  (component/create
+   [:div
+    [:div.z5.bg-lavender.white.center.fixed.overlay.bg-contain.bg-no-repeat.max-580.mx-auto.bg-contain.hide-on-mb
+     {:style {:background-position "123px bottom"
+              :background-size     "80%"
+              :background-image    (str "url('" prompt-desktop-image  ")")}}
+     (component/build content-component data nil)]
+
+    [:div.z5.bg-lavender.white.center.fixed.overlay.bg-contain.bg-no-repeat.max-580.mx-auto.bg-contain.hide-on-tb-dt
+     {:style {:background-position "right top 34px"
+              :background-image    (str "url('" prompt-image "')")}}
+     (component/build content-component data nil)]]))
 

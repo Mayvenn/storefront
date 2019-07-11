@@ -330,8 +330,9 @@
   [:div.flex.flex-wrap.mxn1.mb4
    (color-swatch "black" "000000")
    (color-swatch "dark-gray" "666666")
+   (color-swatch "dark-silver" "aaaaaa")
    (color-swatch "gray" "cccccc")
-   (color-swatch "dark-silver" "dadada")
+   (color-swatch "silver" "dadada")
    (color-swatch "light-gray" "ebebeb")
    (color-swatch "fate-white" "f8f8f8")
    (color-swatch "white" "ffffff")]
