@@ -93,10 +93,6 @@
 (defn dashboard-with-vouchers? [data]
   (= "aladdin" (get-in data keypaths/user-stylist-experience)))
 
-(defn look-detail-price?
-  [data]
-  (display-feature? data "look-detail-price"))
-
 (defn phone-capture? [data]
   (display-feature? data "phone-capture"))
 

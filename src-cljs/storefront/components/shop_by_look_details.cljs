@@ -255,8 +255,7 @@
      :back-copy             (:back-copy album-copy)
      :above-button-copy     (:above-button-copy album-copy)
      :shared-cart-type-copy (:short-name album-copy)
-     :look-detail-price?    true #_(and (experiments/look-detail-price? data)
-                                 (not= album-keyword :deals))
+     :look-detail-price?    (not= album-keyword :deals)
      :base-price            base-price
      :discounted-price      (* 0.75 base-price)
      :quadpay-loaded?       (get-in data keypaths/loaded-quadpay)}))
@@ -289,8 +288,6 @@
      :shared-cart-type-copy (if (str/includes? (some-> album-keyword name str) "bundle-set")
                               "bundle set"
                               "look")
-     :look-detail-price?    (and (experiments/look-detail-price? data)
-                                 (not= album-keyword :deals))
      :base-price            base-price
      :discounted-price      (* 0.90 base-price)
      :quadpay-loaded?       (get-in data keypaths/loaded-quadpay)}))
