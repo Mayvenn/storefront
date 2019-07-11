@@ -96,12 +96,66 @@
                          (images/cart-image sku)
                          [:div.pyp2 "Quantity: " quantity]))))
 
-
+(defn look-details-body [{:keys [creating-order? sold-out? look shared-cart skus fetching-shared-cart?
+                                 shared-cart-type-copy above-button-copy base-price discounted-price
+                                 quadpay-loaded? discount-text desktop-two-column?]}]
+  [:div.clearfix
+      (when look
+        [:div
+         (when desktop-two-column?
+           {:class "col-on-tb-dt col-6-on-tb-dt px3-on-tb-dt"})
+         (carousel (imgs look shared-cart))
+         [:div.px3.pt2.bg-white
+          [:div.flex.items-center
+           [:div.flex-auto.medium {:style {:word-break "break-all"}}
+            (:title look)]
+           [:div.ml1.line-height-1 {:style {:width   "21px"
+                                            :height  "21px"
+                                            :opacity 0.2}}
+            (svg/social-icon (:social-service look))]]]
+         (when-not (str/blank? (:description look))
+           [:p.h7.px3.py1.dark-gray.bg-white (:description look)])])
+      (if fetching-shared-cart?
+        [:div.flex.justify-center.items-center (ui/large-spinner {:style {:height "4em"}})]
+        (when shared-cart
+          (let [line-items (:line-items shared-cart)
+                item-count (->> line-items (map :item/quantity) (reduce + 0))]
+            [:div.px2
+             {:class
+              (if desktop-two-column?
+                "col-on-tb-dt col-6-on-tb-dt px3-on-tb-dt"
+                [:mt3])}
+             [:div.border-top.border-light-gray.mt2.mxn2
+              (when desktop-two-column? {:class "hide-on-tb-dt"})]
+             [:div.h4.medium.pt2
+              {:data-test "item-quantity-in-look"}
+              (str item-count " items in this " shared-cart-type-copy)]
+             (display-line-items line-items skus)
+             [:div.border-top.border-light-gray.mxn2]
+             [:div.center.mb3
+              [:p.center.h5.flex.items-center.justify-center.bold
+               (svg/discount-tag {:class  "mxnp6"
+                                  :height "40px"
+                                  :width  "40px"})
+               discount-text]
+              [:div.strike.dark-gray.h6 (mf/as-money base-price)]
+              [:div.h2.medium (mf/as-money discounted-price)]]
+             (when above-button-copy
+               [:div.center.teal.medium.mt2 above-button-copy])
+             [:div.mt2.col-11.mx-auto
+              (add-to-cart-button sold-out? creating-order? look shared-cart)]
+             (component/build quadpay/component
+                              {:show?       quadpay-loaded?
+                               :order-total discounted-price
+                               :directive   [:div.flex.justify-center.items-center
+                                             "Just select"
+                                             [:div.mx1 {:style {:width "70px" :height "14px"}}
+                                              svg/quadpay-logo]
+                                             "at check out."]}
+                              nil)])))])
 
 (defn component
-  [{:keys [creating-order? sold-out? look shared-cart skus back fetching-shared-cart?
-           shared-cart-type-copy back-copy back-event above-button-copy album-keyword
-           look-detail-price? base-price discounted-price quadpay-loaded?]} owner opts]
+  [{:keys [back back-copy back-event album-keyword] :as look-details} owner opts]
   (om/component
    (html
     [:div.container.mb4
@@ -112,112 +166,14 @@
           (utils/fake-href back-event)
           (utils/route-back-or-to back events/navigate-shop-by-look {:album-keyword album-keyword}))
         (ui/back-caret back-copy)]]]
-     [:div.clearfix
-      (when look
-        [:div.col-on-tb-dt.col-6-on-tb-dt.px3-on-tb-dt
-         (carousel (imgs look shared-cart))
-         [:div.px3.pt2.bg-white
-          [:div.flex.items-center
-           [:div.flex-auto.dark-gray.medium {:style {:word-break "break-all"}}
-            (:title look)]
-           [:div.ml1.line-height-1 {:style {:width "21px"
-                                            :height "21px"
-                                            :opacity 0.2}}
-            (svg/social-icon (:social-service look))]]]
-         (when-not (str/blank? (:description look))
-           [:p.h7.px3.py1.dark-gray.bg-white (:description look)])])
-      (if fetching-shared-cart?
-        [:div.flex.justify-center.items-center (ui/large-spinner {:style {:height "4em"}})]
-        (when shared-cart
-          (let [line-items (:line-items shared-cart)
-                item-count (->> line-items (map :item/quantity) (reduce + 0))]
-            [:div.col-on-tb-dt.col-6-on-tb-dt.px2.px3-on-tb-dt
-             [:div.border-top.border-light-gray.mt2.mxn2.hide-on-tb-dt]
-             [:div.h4.medium.pt2
-              {:data-test "item-quantity-in-look"}
-              (str item-count " items in this " shared-cart-type-copy)]
-             (display-line-items line-items skus)
-             [:div.border-top.border-light-gray.mxn2]
-             [:div.center.mb3
-              [:p.center.h5.flex.items-center.justify-center.bold
-               (svg/discount-tag {:class  "mxnp6"
-                                  :height "40px"
-                                  :width  "40px"})
-               "15% Off + 10% Bundle Discount"]
-              [:div.strike.dark-gray.h6 (mf/as-money base-price)]
-              [:div.h2.medium (mf/as-money discounted-price)]]
-             (when above-button-copy
-               [:div.center.teal.medium.mt2 above-button-copy])
-             [:div.mt2.col-11.mx-auto
-              (add-to-cart-button sold-out? creating-order? look shared-cart)]
-             (component/build quadpay/component
-                              {:show?       quadpay-loaded?
-                               :order-total discounted-price
-                               :directive   [:div.flex.justify-center.items-center
-                                             "Just select"
-                                             [:div.mx1 {:style {:width "70px" :height "14px"}}
-                                              svg/quadpay-logo]
-                                             "at check out."]}
-                              nil)])))]])))
+     (look-details-body look-details)])))
 
 (defn adventure-component
-  [{:keys [creating-order? sold-out? look shared-cart skus fetching-shared-cart?
-           shared-cart-type-copy above-button-copy base-price discounted-price
-           quadpay-loaded?]}
-   owner
-   opts]
+  [look-details owner opts]
   (om/component
    (html
     [:div.container.mb4
-     [:div.clearfix
-      (when look
-        [:div
-         (carousel (imgs look shared-cart))
-         [:div.px3.pt2.bg-white
-          [:div.flex.items-center
-           [:div.flex-auto.medium
-            {:style {:word-break "break-all"}}
-            [:div.left (:title look)]]
-           [:div.ml1.line-height-1 {:style {:width   "21px"
-                                            :height  "21px"
-                                            :opacity 0.2}}
-            (svg/social-icon (:social-service look))]]]
-         (when-not (str/blank? (:description look))
-           [:p.h7.px3.py1.dark-gray.bg-white
-            (:description look)])])
-      (if fetching-shared-cart?
-        [:div.flex.justify-center.items-center (ui/large-spinner {:style {:height "4em"}})]
-        (when shared-cart
-          (let [line-items (:line-items shared-cart)
-                item-count (->> line-items (map :item/quantity) (reduce + 0))]
-            [:div.px2.mt3
-             [:div.border-top.border-light-gray.mt2.mxn2]
-             [:div.h4.medium.pt2
-              {:data-test "item-quantity-in-look"}
-              (str item-count " items in this " shared-cart-type-copy)]
-             (display-line-items line-items skus)
-             [:div.border-top.border-light-gray.mxn2]
-             [:div.center.mb3
-              [:p.center.h5.flex.items-center.justify-center.bold
-               (svg/discount-tag {:class  "mxnp6"
-                                  :height "40px"
-                                  :width  "40px"})
-               "10% OFF + FREE Install"]
-              [:div.strike.dark-gray.h6 (mf/as-money base-price)]
-              [:div.h2.medium (mf/as-money discounted-price)]]
-             (when above-button-copy
-               [:div.center.teal.medium.mt2 above-button-copy])
-             [:div.mt2.col-11.mx-auto
-              (add-to-cart-button sold-out? creating-order? look shared-cart)]
-             (component/build quadpay/component
-                              {:show?       quadpay-loaded?
-                               :order-total discounted-price
-                               :directive   [:div.flex.justify-center.items-center
-                                             "Just select"
-                                             [:div.mx1 {:style {:width "70px" :height "14px"}}
-                                              svg/quadpay-logo]
-                                             "at check out."]}
-                              nil)])))]])))
+     (look-details-body look-details)])))
 
 (defn put-skus-on-shared-cart [shared-cart skus]
   (let [shared-cart-variant-ids (into #{}
@@ -258,7 +214,9 @@
      :look-detail-price?    (not= album-keyword :deals)
      :base-price            base-price
      :discounted-price      (* 0.75 base-price)
-     :quadpay-loaded?       (get-in data keypaths/loaded-quadpay)}))
+     :quadpay-loaded?       (get-in data keypaths/loaded-quadpay)
+     :desktop-two-column?   true
+     :discount-text         "15% Off + 10% Bundle Discount"}))
 
 (defn adventure-query [data]
   (let [skus (get-in data keypaths/v2-skus)
@@ -290,7 +248,9 @@
                               "look")
      :base-price            base-price
      :discounted-price      (* 0.90 base-price)
-     :quadpay-loaded?       (get-in data keypaths/loaded-quadpay)}))
+     :quadpay-loaded?       (get-in data keypaths/loaded-quadpay)
+     :desktop-two-column?   false
+     :discount-text         "10% OFF + FREE Install"}))
 
 (defn built-component [data opts]
   (om/build component (query data) opts))
