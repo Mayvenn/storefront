@@ -31,8 +31,7 @@
                          {:data-test    "v2-homepage-popup-dismiss"
                           :height       "1.5rem"
                           :width        "1.5rem"
-                          :class        "stroke-black"
-                          :stroke-width "5"}))]
+                          :class        "black"}))]
                 [:div.flex.justify-center.pb2
                  [:div.col-6
                   (ui/clickable-logo {:class "col-12 mx4"

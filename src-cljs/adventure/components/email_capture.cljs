@@ -44,7 +44,8 @@
      :header-data          {:header-attrs nil
                             :right-corner {:id    "dismiss-email-capture"
                                            :opts  (utils/fake-href events/control-email-captured-dismiss)
-                                           :value (svg/simple-x {:style {:width  "20px"
+                                           :value (svg/simple-x {:style {:class  "white"
+                                                                         :width  "20px"
                                                                          :height "20px"}})}
                             :logo?        false
                             :title        nil

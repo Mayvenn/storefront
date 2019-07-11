@@ -43,8 +43,7 @@
                            {:data-test    "to-adventure-popup-dismiss"
                             :height       "27px"
                             :width        "27px"
-                            :class        "stroke-black"
-                            :stroke-width "5"}))]
+                            :class        "black"}))]
                   [:div.flex.justify-center.pb2
                    [:div.col-6
                     (ui/clickable-logo {:class "col-12 mx4"

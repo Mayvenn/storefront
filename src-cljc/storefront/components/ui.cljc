@@ -428,10 +428,9 @@
      (when disabled
        {:class "border-gray"})
      (if value
-       (svg/simple-x {:class        "block stroke-teal"
+       (svg/simple-x {:class        "block teal"
                       :width        "15px"
-                      :height       "15px"
-                      :stroke-width "15"})
+                      :height       "15px"})
        [:div {:style {:width "15px" :height "15px"}}])]
     [:input.hide
      (merge (utils/toggle-checkbox keypath value)
