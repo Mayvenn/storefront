@@ -1,18 +1,10 @@
 (ns storefront.components.order-summary
-  (:require [checkout.control-cart :as cart]
-            [storefront.accessors.orders :as orders]
-            [storefront.accessors.products :as products]
-            [storefront.assets :as assets]
-            [storefront.components.money-formatters
-             :refer
-             [as-money as-money-or-free as-money-without-cents]]
-            [storefront.components.ui :as ui]
+  (:require [storefront.accessors.orders :as orders]
+            [storefront.components.money-formatters :as mf]
             [storefront.events :as events]
             [storefront.platform.component-utils :as utils]
-            [storefront.utils.query :as query]
             [spice.core :as spice]
-            [clojure.string :as string]
-            [storefront.accessors.images :as images]))
+            [clojure.string :as string]))
 
 (defn ^:private summary-row
   ([name amount] (summary-row {} name amount))
@@ -25,7 +17,7 @@
     [:td.pyp3.right-align.medium
      {:class (when (pos? amount)
                "navy")}
-     (as-money-or-free amount)]]))
+     (mf/as-money-or-free amount)]]))
 
 (defn ^:private text->data-test-name [name]
   (-> name
@@ -71,5 +63,6 @@
        [:.right-align
         (cond-> (:total order)
           use-store-credit? (- store-credit)
-          true              as-money)]]]]))
+          true              mf/as-money)]]]]))
+
 
