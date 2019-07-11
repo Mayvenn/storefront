@@ -55,6 +55,7 @@
 
     [:div.z5.bg-lavender.white.center.fixed.overlay.bg-contain.bg-no-repeat.max-580.mx-auto.bg-contain.hide-on-tb-dt
      {:style {:background-position "right top 34px"
+              :background-size     "100vw auto"
               :background-image    (str "url('" prompt-image "')")}}
      (component/build content-component data nil)]]))
 
