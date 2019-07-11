@@ -1,2 +1,2 @@
-figwheel: rm -rf resources/public/js/out/ && lein figwheel
+figwheel: rm -rf resources/public/js/out/ && lein fig
 gulp: node_modules/.bin/gulp && node_modules/.bin/gulp watch
