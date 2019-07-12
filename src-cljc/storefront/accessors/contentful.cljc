@@ -47,8 +47,8 @@
             description
             social-media-platform
             shared-cart-url]}]
-   (let [color-detail                  (get color-details (color-name->color-slug color))
-         [nav-event _ :as nav-message] (product-link shared-cart-url)
+   (let [color-detail (get color-details (color-name->color-slug color))
+         nav-message  (product-link shared-cart-url)
          links
          (merge
           {:view-other nav-message}
