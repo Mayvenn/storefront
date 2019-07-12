@@ -799,9 +799,6 @@
   ([cnt singular plural]
    (if (= 1 (max cnt (- cnt))) singular plural)))
 
-(defn phone-href [tel-num]
-  (str "tel://+" (numbers/digits-only tel-num)))
-
 (defn phone-url [tel-num]
   (str "tel://+" (numbers/digits-only tel-num)))
 
