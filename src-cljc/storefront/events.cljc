@@ -18,6 +18,7 @@
 (defpath external-redirect-paypal-setup)
 (defpath external-redirect-telligent)
 (defpath external-redirect-quadpay-checkout)
+(defpath external-redirect-google-maps)
 
 (defpath module-loaded)
 
@@ -514,6 +515,7 @@
 (defpath control-adventure-emailcapture-submit)
 
 (defpath adventure-address-component-mounted)
+(defpath control-adventure-stylist-salon-address-clicked)
 (defpath control-adventure-stylist-gallery-open)
 (defpath control-adventure-stylist-gallery-close)
 (defpath clear-selected-location)
