@@ -17,6 +17,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.carousel :as carousel]
             [storefront.platform.component-utils :as utils]
+            [storefront.platform.reviews :as reviews]
             [storefront.request-keys :as request-keys]))
 
 (defn add-to-cart-button [sold-out? creating-order? look {:keys [number]}]
@@ -98,7 +99,7 @@
 
 (defn look-details-body [{:keys [creating-order? sold-out? look shared-cart skus fetching-shared-cart?
                                  shared-cart-type-copy above-button-copy base-price discounted-price
-                                 quadpay-loaded? discount-text desktop-two-column?]}]
+                                 quadpay-loaded? discount-text desktop-two-column? yotpo-data-attributes]}]
   [:div.clearfix
       (when look
         [:div
@@ -113,8 +114,10 @@
                                             :height  "21px"
                                             :opacity 0.2}}
             (svg/social-icon (:social-service look))]]]
+         [:div
+          (om/build reviews/reviews-summary-component {:yotpo-data-attributes yotpo-data-attributes} nil)]
          (when-not (str/blank? (:description look))
-           [:p.h7.px3.py1.dark-gray.bg-white (:description look)])])
+           [:p.h7.px3.pb1.dark-gray.bg-white.clearfix (:description look)])])
       (if fetching-shared-cart?
         [:div.flex.justify-center.items-center (ui/large-spinner {:style {:height "4em"}})]
         (when shared-cart
@@ -152,7 +155,8 @@
                                              [:div.mx1 {:style {:width "70px" :height "14px"}}
                                               svg/quadpay-logo]
                                              "at check out."]}
-                              nil)])))])
+                              nil)
+             (om/build reviews/reviews-component {:yotpo-data-attributes yotpo-data-attributes} nil)])))])
 
 (defn component
   [{:keys [back back-copy back-event album-keyword] :as look-details} owner opts]
@@ -199,24 +203,25 @@
                                    (* (:item/quantity line-item)
                                       (:sku/price line-item)))
                                  (:line-items shared-cart-with-skus)))]
-    {:shared-cart           shared-cart-with-skus
-     :album-keyword         album-keyword
-     :look                  look
-     :creating-order?       (utils/requesting? data request-keys/create-order-from-shared-cart)
-     :skus                  skus
-     :sold-out?             (not-every? :inventory/in-stock? (:line-items shared-cart-with-skus))
-     :fetching-shared-cart? (or (not look) (utils/requesting? data request-keys/fetch-shared-cart))
-     :back                  (first (get-in data keypaths/navigation-undo-stack))
-     :back-event            (:default-back-event album-copy)
-     :back-copy             (:back-copy album-copy)
-     :above-button-copy     (:above-button-copy album-copy)
-     :shared-cart-type-copy (:short-name album-copy)
-     :look-detail-price?    (not= album-keyword :deals)
-     :base-price            base-price
-     :discounted-price      (* 0.75 base-price)
-     :quadpay-loaded?       (get-in data keypaths/loaded-quadpay)
-     :desktop-two-column?   true
-     :discount-text         "15% Off + 10% Bundle Discount"}))
+    (merge {:shared-cart           shared-cart-with-skus
+            :album-keyword         album-keyword
+            :look                  look
+            :creating-order?       (utils/requesting? data request-keys/create-order-from-shared-cart)
+            :skus                  skus
+            :sold-out?             (not-every? :inventory/in-stock? (:line-items shared-cart-with-skus))
+            :fetching-shared-cart? (or (not look) (utils/requesting? data request-keys/fetch-shared-cart))
+            :back                  (first (get-in data keypaths/navigation-undo-stack))
+            :back-event            (:default-back-event album-copy)
+            :back-copy             (:back-copy album-copy)
+            :above-button-copy     (:above-button-copy album-copy)
+            :shared-cart-type-copy (:short-name album-copy)
+            :look-detail-price?    (not= album-keyword :deals)
+            :base-price            base-price
+            :discounted-price      (* 0.75 base-price)
+            :quadpay-loaded?       (get-in data keypaths/loaded-quadpay)
+            :desktop-two-column?   true
+            :discount-text         "15% Off + 10% Bundle Discount"}
+           (reviews/query-look-detail shared-cart-with-skus data))))
 
 (defn adventure-query [data]
   (let [skus (get-in data keypaths/v2-skus)
@@ -232,25 +237,26 @@
                                          (* (:item/quantity line-item)
                                             (:sku/price line-item)))
                                        (:line-items shared-cart-with-skus)))]
-    {:shared-cart           shared-cart-with-skus
-     :album-keyword         album-keyword
-     :look                  look
-     :creating-order?       (utils/requesting? data request-keys/create-order-from-shared-cart)
-     :skus                  skus
-     :sold-out?             (not-every? :inventory/in-stock? (:line-items shared-cart-with-skus))
-     :fetching-shared-cart? (or (not look) (utils/requesting? data request-keys/fetch-shared-cart))
-     :back                  (first (get-in data keypaths/navigation-undo-stack))
-     :back-event            (:default-back-event album-copy)
-     :back-copy             (:back-copy album-copy)
-     :above-button-copy     (:above-button-copy album-copy)
-     :shared-cart-type-copy (if (str/includes? (some-> album-keyword name str) "bundle-set")
-                              "bundle set"
-                              "look")
-     :base-price            base-price
-     :discounted-price      (* 0.90 base-price)
-     :quadpay-loaded?       (get-in data keypaths/loaded-quadpay)
-     :desktop-two-column?   false
-     :discount-text         "10% OFF + FREE Install"}))
+    (merge {:shared-cart           shared-cart-with-skus
+            :album-keyword         album-keyword
+            :look                  look
+            :creating-order?       (utils/requesting? data request-keys/create-order-from-shared-cart)
+            :skus                  skus
+            :sold-out?             (not-every? :inventory/in-stock? (:line-items shared-cart-with-skus))
+            :fetching-shared-cart? (or (not look) (utils/requesting? data request-keys/fetch-shared-cart))
+            :back                  (first (get-in data keypaths/navigation-undo-stack))
+            :back-event            (:default-back-event album-copy)
+            :back-copy             (:back-copy album-copy)
+            :above-button-copy     (:above-button-copy album-copy)
+            :shared-cart-type-copy (if (str/includes? (some-> album-keyword name str) "bundle-set")
+                                     "bundle set"
+                                     "look")
+            :base-price            base-price
+            :discounted-price      (* 0.90 base-price)
+            :quadpay-loaded?       (get-in data keypaths/loaded-quadpay)
+            :desktop-two-column?   false
+            :discount-text         "10% OFF + FREE Install"}
+           (reviews/query-look-detail shared-cart-with-skus data))))
 
 (defn built-component [data opts]
   (om/build component (query data) opts))

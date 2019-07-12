@@ -4,7 +4,8 @@
                        [storefront.api :as api]
                        [storefront.components.shop-by-look-details :as shop-look-details]
                        [storefront.components.ugc :as ugc]
-                       [storefront.config :as config]])
+                       [storefront.config :as config]
+                       [storefront.hooks.reviews :as reviews]])
             [storefront.events :as events]
             [storefront.effects :as effects]
             [storefront.transitions :as transitions]
@@ -50,6 +51,7 @@
 (defmethod effects/perform-effects events/navigate-adventure-look-detail
   [dispatch event _ prev-app-state app-state]
   #?(:cljs (when-let [shared-cart-id (contentful/shared-cart-id (contentful/selected-look app-state))]
+             (reviews/insert-reviews)
              (api/fetch-shared-cart shared-cart-id))))
 
 (defmethod transitions/transition-state events/navigate-adventure-look-detail [_ _ {:keys [album-keyword look-id]} app-state]

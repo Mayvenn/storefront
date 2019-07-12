@@ -298,6 +298,7 @@
 
 (defmethod effects/perform-effects events/navigate-shop-by-look-details [_ event _ _ app-state]
   (when-let [shared-cart-id (contentful/shared-cart-id (contentful/selected-look app-state))]
+    (reviews/insert-reviews)
     (api/fetch-shared-cart shared-cart-id)))
 
 (defmethod effects/perform-effects events/navigate-account [_ event args _ app-state]

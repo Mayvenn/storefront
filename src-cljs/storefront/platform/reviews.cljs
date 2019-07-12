@@ -40,7 +40,7 @@
     (render [_]
       (html
        [:div
-        [:.clearfix.flex.justify-center.flex-wrap.my1
+        [:.px3.clearfix.pyp3
          [:.yotpo.bottomLine.mr2 yotpo-data-attributes]
          [:.yotpo.QABottomLine yotpo-data-attributes]]]))))
 
@@ -87,6 +87,13 @@
 
 (defn query [data]
   (when-let [product (products/current-product data)]
+    (when (products/eligible-for-reviews? product)
+      (let [all-skus (get-in data keypaths/v2-skus)]
+        {:yotpo-data-attributes (yotpo-data-attributes product all-skus)}))))
+
+(defn query-look-detail [shared-cart-with-skus data]
+  (let [line-item (first (:line-items shared-cart-with-skus))
+        product (get (get-in data keypaths/v2-products) (first (:selector/from-products line-item)))]
     (when (products/eligible-for-reviews? product)
       (let [all-skus (get-in data keypaths/v2-skus)]
         {:yotpo-data-attributes (yotpo-data-attributes product all-skus)}))))
