@@ -79,7 +79,6 @@
    (let [message [event args]]
      (try
        (let [app-state-before @app-state]
-         ;; rename transition to transition-log to log messages
          (om/transact! (om/root-cursor app-state) #(msg-transition % message))
          (effects app-state-before @app-state message))
        (track @app-state message)
