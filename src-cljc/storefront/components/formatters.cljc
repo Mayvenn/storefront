@@ -89,8 +89,11 @@
            [(.getFullYear date) (.getMonth date) (.getDate date)]))]))
 
 (defn phone-number [phone]
-  (let [num (->> phone str numbers/digits-only)]
-    (string/join "-"
-                 (if (-> num count (= 11))
-                   [(first num) (subs num 1 4) (subs num 4 7) (subs num 7 11)]
-                   [(subs num 0 3) (subs num 3 6) (subs num 6 10)]))))
+  {:pre [(#{10 11} (->> phone str numbers/digits-only count))]}
+  (->> phone
+       str
+       numbers/digits-only
+       (re-find #"(1?)(\d{3})(\d{3})(\d{4})")
+       rest
+       (remove empty?)
+       (string/join "-")))
