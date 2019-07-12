@@ -112,7 +112,7 @@
            cta/navigation-message]}]
   [:div
    [:div.relative.m1
-    (when navigation-message
+    (when (seq navigation-message)
       (apply utils/route-to navigation-message))
     (ui/aspect-ratio
      1 1

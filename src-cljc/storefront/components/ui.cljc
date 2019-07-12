@@ -538,9 +538,10 @@
            default-quality "normal"}}
    image-id]
   {:pre [(or (spice.core/parse-int width) (nil? width))]}
-  (let [image-id    (ucare-img-id image-id)
+  (let [width       (spice/parse-int width)
+        image-id    (ucare-img-id image-id)
         retina-url  (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/" retina-quality "/")
-                      width (str "-/resize/" (* 2 (spice/parse-int width)) "x/"))
+                      width (str "-/resize/" (* 2 width) "x/"))
         default-url (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/" default-quality "/")
                       width (str "-/resize/" width "x/"))]
     [:picture {:key image-id}
