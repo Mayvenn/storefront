@@ -26,7 +26,6 @@
    (fn [resp]
      (is (not= 302 (:status resp)) (pr-str (:status resp))))))
 
-
 (deftest redirects-shop-to-store-subdomain-if-preferred-subdomain-is-invalid
   (assert-request (-> (mock/request :get "https://shop.mayvenn.com/categories/hair/straight?utm_source=cats")
                       (mock/header "cookie" "preferred-store-slug=non-existent-stylist"))
@@ -78,12 +77,12 @@
                     (is (= "https://shop.mayvenn.com/?utm_source=cats"
                            (get-in resp [:headers "Location"]))))))
 
-(deftest redirects-old-categories-to-new-categories
-  (assert-request (mock/request :get "https://shop.mayvenn.com/categories/hair/straight")
+(deftest redirects-old-categories-to-new-categories-preserving-utm-and-affiliate-params
+  (assert-request (mock/request :get "https://shop.mayvenn.com/categories/hair/straight?utm_source=cats&affiliate_stylist_id=10")
                   storeback-shop-response
                   (fn [resp]
                     (is (= 301 (:status resp)) (pr-str resp))
-                    (is (= "https://shop.mayvenn.com/categories/2-virgin-straight"
+                    (is (= "https://shop.mayvenn.com/categories/2-virgin-straight?utm_source=cats&affiliate_stylist_id=10"
                            (get-in resp [:headers "Location"]))))))
 
 (deftest redirects-legacy-products-to-new-products

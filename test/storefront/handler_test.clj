@@ -88,12 +88,14 @@
                                       (GET "/store" _ common/storeback-affiliate-stylist-response))}
     (with-handler handler
       (testing "every page redirects to shop"
-        (doseq [[to-path from-path] [["/categories/2-virgin-straight" "/categories/2-virgin-straight?affiliate_stylist_id=10"]
-                                     ["/products/9-brazilian-straight-bundles?SKU=BNS10" "/products/9-brazilian-straight-bundles?SKU=BNS10&affiliate_stylist_id=10"]
-                                     ["/about-us" "/about-us?affiliate_stylist_id=10"]
-                                     ["/" "/?affiliate_stylist_id=10"]]]
-          (let [resp (handler (mock/request :get (str "https://phil.mayvenn.com" to-path)))]
-            (is-redirected-to resp "shop" from-path))))
+        (doseq [[to-path redirect-path] [["/categories/2-virgin-straight" "/categories/2-virgin-straight?affiliate_stylist_id=10"]
+                                         ["/categories/hair/straight" "/categories/hair/straight?affiliate_stylist_id=10"]
+                                         ["/products/9-brazilian-straight-bundles?SKU=BNS10" "/products/9-brazilian-straight-bundles?SKU=BNS10&affiliate_stylist_id=10"]
+                                         ["/about-us" "/about-us?affiliate_stylist_id=10"]
+                                         ["/" "/?affiliate_stylist_id=10"]]]
+          (testing (format "Visiting %s should redirect to %s" to-path redirect-path)
+            (let [resp (handler (mock/request :get (str "https://phil.mayvenn.com" to-path)))]
+              (is-redirected-to resp "shop" redirect-path)))))
 
       (testing "preserves utm params"
         (let [resp (handler (mock/request :get "https://phil.mayvenn.com/?utm_source=blog&utm_medium=referral&utm_campaign=HomePage&utm_term=Button"))]

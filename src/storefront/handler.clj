@@ -42,6 +42,11 @@
 (def root-domain-pages-to-preserve-paths-in-redirects
   #{"/mayvenn-made"})
 
+(defn ^:private path-for
+  "Like routes/path-for, but preserves query params."
+  ([req navigation-event] (path-for req navigation-event nil))
+  ([req navigation-event args] (routes/path-for navigation-event (merge args {:query-params (:query-params req)}))))
+
 (defn ^:private str->int [s]
   (try
     (Integer/parseInt s)
@@ -416,7 +421,7 @@
   [render-ctx data req {:keys [named-search-slug]}]
   (let [categories (get-in data keypaths/categories)]
     (when-let [category (categories/named-search->category named-search-slug categories)]
-      (-> (routes/path-for events/navigate-category category)
+      (-> (path-for req events/navigate-category category)
           (util.response/redirect :moved-permanently)))))
 
 (def legacy-product-slug->new-location
@@ -452,18 +457,18 @@
     (let [product    (first (:products (api/fetch-v2-products (:storeback-config render-ctx) {:catalog/product-id id})))
           categories (index-by :catalog/category-id (get-in data keypaths/categories))
           path       (if (= :product type)
-                       (routes/path-for events/navigate-product-details product)
-                       (routes/path-for events/navigate-category (categories id)))]
+                       (path-for req events/navigate-product-details product)
+                       (path-for req events/navigate-category (categories id)))]
       (util.response/redirect path :moved-permanently))))
 
 (defn render-category
   [render-ctx data req {:keys [catalog/category-id page/slug]}]
   (if (contains? discontinued-categories category-id)
-    (util.response/redirect (routes/path-for events/navigate-home) :moved-permanently)
+    (util.response/redirect (path-for req events/navigate-home) :moved-permanently)
     (let [categories (get-in data keypaths/categories)]
       (when-let [category (categories/id->category category-id categories)]
         (if (not= slug (:page/slug category))
-          (-> (routes/path-for events/navigate-category category)
+          (-> (path-for req events/navigate-category category)
               (util.response/redirect :moved-permanently))
           (->> (assoc-in data
                          keypaths/current-category-id
@@ -476,7 +481,7 @@
                               {:keys [catalog/product-id
                                       page/slug]}]
   (if (contains? discontinued-products product-id)
-    (util.response/redirect (routes/path-for events/navigate-home) :moved-permanently)
+    (util.response/redirect (path-for req events/navigate-home) :moved-permanently)
     (when-let [product (get-in data (conj keypaths/v2-products product-id))]
       (let [sku-id         (product-details/determine-sku-id data product (:SKU params))
             sku            (get-in data (conj keypaths/v2-skus sku-id))
@@ -508,11 +513,6 @@
                              (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
                              (assoc-in catalog.keypaths/detailed-product-selected-sku-id sku-id)
                              (assoc-in catalog.keypaths/detailed-product-id product-id))))))))
-
-(defn- redirect-if-necessary [render-ctx data event]
-  (if (not= (get-in data keypaths/navigation-event) event)
-    (util.response/redirect (routes/path-for event))
-    (html-response render-ctx data)))
 
 ;;TODO Move to wrap set catalog
 ;;TODO join queries!!!
