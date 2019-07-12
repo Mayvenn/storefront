@@ -112,7 +112,8 @@
            cta/navigation-message]}]
   [:div
    [:div.relative.m1
-    (apply utils/route-to navigation-message)
+    (when navigation-message
+      (apply utils/route-to navigation-message))
     (ui/aspect-ratio
      1 1
      [:img {:class "col-12"
