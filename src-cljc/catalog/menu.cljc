@@ -24,7 +24,7 @@
      [:div
       [:a.dark-gray.block.py1.px3.h6
        (utils/fake-href events/menu-home)
-       [:span.mr1 (ui/back-caret "Back")]]
+       [:span.mr1 (ui/back-caret "Back" "14px")]]
       [:div.px6
        (major-menu-row
         [:div.h2.flex-auto.center "Shop " (:copy/title nav-root)])

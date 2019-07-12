@@ -28,7 +28,7 @@
    (merge
      {:data-test "back-link"}
      (utils/route-back-or-to back events/navigate-v2-stylist-dashboard-orders))
-   (ui/back-caret "Back")])
+   (ui/back-caret "Back" "18px")])
 
 (defn ^:private info-block [header content]
   [:div.align-top.pt2.mb2.h6

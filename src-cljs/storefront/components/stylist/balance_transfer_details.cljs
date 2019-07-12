@@ -26,7 +26,7 @@
    (merge
     {:data-test "back-link"}
     (utils/route-to events/navigate-v2-stylist-dashboard-payments))
-   (ui/back-caret "Back")])
+   (ui/back-caret "Back" "18px")])
 
 (defn ^:private info-block [header content]
   [:div.align-top.mb2

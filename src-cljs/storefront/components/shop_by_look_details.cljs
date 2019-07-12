@@ -169,7 +169,7 @@
         (if (and (not back) back-event)
           (utils/fake-href back-event)
           (utils/route-back-or-to back events/navigate-shop-by-look {:album-keyword album-keyword}))
-        (ui/back-caret back-copy)]]]
+        (ui/back-caret back-copy "18px")]]]
      (look-details-body look-details)])))
 
 (defn adventure-component

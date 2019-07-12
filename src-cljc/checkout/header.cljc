@@ -36,7 +36,7 @@
        [:div.col-2.hide-on-mb-tb
         [:a.h5.black.pointer.flex.justify-start.items-center close-cart-route
          (svg/left-caret {:class "stroke-dark-gray"
-                          :height "1em" :width "1em"}) "Back to Shopping"]]
+                          :height "18px" :width "18px"}) "Back to Shopping"]]
 
        [:div.col-1.hide-on-dt]
 

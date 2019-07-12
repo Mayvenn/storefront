@@ -27,11 +27,11 @@
                         :width  width
                         :style  {:transform "rotate(-90deg)"}})))
 
-(defn back-caret [back-copy]
+(defn back-caret [back-copy width]
   (component/html
    [:div.flex.items-center.stroke-dark-gray
-    (svg/left-caret {:width  "1rem"
-                     :height "1rem"})
+    (svg/left-caret {:width  width
+                     :height width})
     [:div back-copy]]))
 
 (def spinner
