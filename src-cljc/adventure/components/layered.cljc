@@ -39,17 +39,17 @@
   [:picture
    ;; Tablet/Desktop
    [:source {:media   "(min-width: 750px)"
-             :src-set (str desktop-url "-/format/jpeg/-/quality/best/-/resize/1440x/" file-name " 1x")}]
+             :src-set (str desktop-url "-/format/auto/-/quality/best/-/resize/1440x/" file-name " 1x")}]
    ;; Mobile
    [:source {:media   "(min-width: 426px)"
-             :src-set (str mobile-url "-/format/jpeg/-/quality/lightest/-/resize/2250x/" file-name " 3x, "
-                           mobile-url "-/format/jpeg/-/quality/lightest/-/resize/1500x/" file-name " 2x, "
-                           mobile-url "-/format/jpeg/-/quality/normal/-/resize/750x/" file-name " 1x ")}]
-   [:source {:src-set (str mobile-url "-/format/jpeg/-/quality/lightest/-/resize/1275x/" file-name " 3x, "
-                           mobile-url "-/format/jpeg/-/quality/lightest/-/resize/850x/" file-name " 2x, "
-                           mobile-url "-/format/jpeg/-/quality/normal/-/resize/425x/" file-name " 1x ")}]
+             :src-set (str mobile-url "-/format/auto/-/quality/lightest/-/resize/2250x/" file-name " 3x, "
+                           mobile-url "-/format/auto/-/quality/lightest/-/resize/1500x/" file-name " 2x, "
+                           mobile-url "-/format/auto/-/quality/normal/-/resize/750x/" file-name " 1x ")}]
+   [:source {:src-set (str mobile-url "-/format/auto/-/quality/lightest/-/resize/1275x/" file-name " 3x, "
+                           mobile-url "-/format/auto/-/quality/lightest/-/resize/850x/" file-name " 2x, "
+                           mobile-url "-/format/auto/-/quality/normal/-/resize/425x/" file-name " 1x ")}]
    ;; mobile
-   [:img.block.col-12 {:src (str mobile-url "-/format/jpeg/-/quality/normal/-/resize/750x/" file-name)
+   [:img.block.col-12 {:src (str mobile-url "-/format/auto/-/quality/normal/-/resize/750x/" file-name)
                        :alt (str alt)}]])
 
 (defmethod layer-view :hero
