@@ -96,12 +96,31 @@
          (for [img-type ["webp" "jpg"]]
            [(ui/source desktop-url
                        {:media   "(min-width: 750px)"
-                        :src-set {"1x" {}}
+                        :src-set {"1x" {:w "1600"
+                                        :q "75"}}
                         :type    img-type})
             (ui/source mobile-url
-                       {:src-set {"1x" {}}
+                       {:media   "(min-width: 426px)"
+                        :src-set {"1x" {:w "750"
+                                        :q "75"}
+                                  "2x" {:w "1500"
+                                        :q "50"}}
+                        :type    img-type})
+            (ui/source mobile-url
+                       {:media   "(min-width: 321px)"
+                        :src-set {"1x" {:w "425"
+                                        :q "75"}
+                                  "2x" {:w "850"
+                                        :q "50"}}
+                        :type    img-type})
+            (ui/source mobile-url
+                       {:src-set {"1x" {:w "320"
+                                        :q "75"}
+                                  "2x" {:w "640"
+                                        :q "50"}}
                         :type    img-type})])
-         [:img.block.col-12 {:src mobile-url :alt alt}]]]])))
+         [:img.block.col-12 {:src mobile-url
+                             :alt alt}]]]])))
 
 (defn legacy-hero [{:keys [route-to-fn mobile-uuid desktop-uuid alt]}]
   [:h1.h2
@@ -155,24 +174,31 @@
       [:picture
        (for [img-type ["webp" "jpg"]]
          [(ui/source desktop-url
-                  {:media   "(min-width: 1000px)"
-                   :type    img-type
-                   :src-set {"1x" {:w "480"}
-                             "2x" {:w "960"
-                                   :q "50"}}})
+                     {:media   "(min-width: 1000px)"
+                      :type    img-type
+                      :src-set {"1x" {:w "625"}}})
           (ui/source tablet-url
-                  {:media   "(min-width: 750px)"
-                   :type    img-type
-                   :src-set {"1x" {:w "360"}
-                             "2x" {:w "720"
-                                   :q "50"}}})
+                     {:media   "(min-width: 750px)"
+                      :type    img-type
+                      :src-set {"1x" {:w "625"
+                                      :q "75"}
+                                "2x" {:w "720"
+                                      :q "75"}}})
           (ui/source mobile-url
-                  {:type    img-type
-                   :src-set {"1x" {:w "375"}
-                             "2x" {:w "750"
-                                   :q "50"}}})])
+                     {:media   "(min-width: 376px)"
+                      :type    img-type
+                      :src-set {"1x" {:w "750"
+                                      :q "75"}
+                                "2x" {:w "1500"
+                                      :q "50"}}})
+          (ui/source mobile-url
+                     {:type    img-type
+                      :src-set {"1x" {:w "375"
+                                      :q "75"}
+                                "2x" {:w "750"
+                                      :q "50"}}})])
        ;; Fallback
-       [:img.block.col-12 {:src (str mobile-url "?w=375&fm=jpg")
+       [:img.block.col-12 {:src (str mobile-url "?w=625&fm=jpg")
                            :alt alt}]]]]))
 
 (defn feature-blocks

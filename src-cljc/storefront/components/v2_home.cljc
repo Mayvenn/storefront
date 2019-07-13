@@ -22,8 +22,15 @@
        ;; Tablet/Desktop
        [:source {:media   "(min-width: 750px)"
                  :src-set (str desktop-url "-/format/auto/-/quality/best/" file-name " 1x")}]
+       [:source {:media   "(min-width: 376px)"
+                 :src-set (str mobile-url "-/format/auto/-/resize/750x/" file-name " 1x,"
+                               mobile-url "-/format/auto/-/resize/1500x/-/quality/lightest/" file-name " 2x")
+                 :alt     alt}]
+       [:source {:src-set (str mobile-url "-/format/auto/-/resize/375x/" file-name " 1x,"
+                               mobile-url "-/format/auto/-/resize/750x/-/quality/lightest/" file-name " 2x")
+                 :alt     alt}]
        ;; Mobile
-       [:img.block.col-12 {:src (str mobile-url "-/format/auto/" file-name)
+       [:img.block.col-12 {:src (str mobile-url "-/format/auto/-/resize/750x/" file-name)
                            :alt alt}]]))
    {:desktop-url desktop-url
     :mobile-url  mobile-url}))
