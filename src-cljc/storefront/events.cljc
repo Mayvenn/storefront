@@ -19,6 +19,7 @@
 (defpath external-redirect-telligent)
 (defpath external-redirect-quadpay-checkout)
 (defpath external-redirect-google-maps)
+(defpath external-redirect-phone)
 
 (defpath module-loaded)
 
