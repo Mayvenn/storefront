@@ -11,6 +11,9 @@
             [storefront.components.ui :as ui]
             [storefront.components.svg :as svg]
             [storefront.component :as component]
+            [storefront.effects :as effects]
+            [storefront.api :as api]
+            [adventure.keypaths :as adv-keypaths]
             [storefront.ugc :as ugc]
             [storefront.events :as events]
             [storefront.hooks.quadpay :as quadpay]
@@ -20,18 +23,30 @@
             [storefront.platform.reviews :as reviews]
             [storefront.request-keys :as request-keys]))
 
-(defn add-to-cart-button [sold-out? creating-order? look {:keys [number]}]
+(defn add-to-cart-button
+  [sold-out? creating-order? look {:keys [number]}]
   (if sold-out?
     [:div.btn.col-12.h5.btn-primary.bg-gray.white
      {:on-click nil}
      "Sold Out"]
     (ui/teal-button
-     (merge (utils/fake-href events/control-create-order-from-shared-cart {:shared-cart-id number
-                                                                           :look-id        (:id look)})
+     (merge (utils/fake-href events/control-create-order-from-shared-cart
+                             {:shared-cart-id number
+                              :look-id        (:id look)})
             {:data-test "add-to-cart-submit"
              :disabled? (not look)
              :spinning? creating-order?})
      "Add items to bag")))
+
+(defmethod effects/perform-effects events/control-create-order-from-shared-cart
+  [_ event {:keys [look-id shared-cart-id] :as args} _ app-state]
+  (api/create-order-from-cart (get-in app-state keypaths/session-id)
+                              shared-cart-id
+                              look-id
+                              (get-in app-state keypaths/user-id)
+                              (get-in app-state keypaths/user-token)
+                              (get-in app-state keypaths/store-stylist-id)
+                              (get-in app-state adv-keypaths/adventure-choices-selected-stylist-id)))
 
 (defn carousel [imgs]
   (om/build carousel/component

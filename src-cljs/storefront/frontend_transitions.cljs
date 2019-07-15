@@ -291,7 +291,8 @@
 (defmethod transition-state events/control-checkout-cart-paypal-setup [_ event args app-state]
   (assoc-in app-state keypaths/cart-paypal-redirect true))
 
-(defmethod transition-state events/control-create-order-from-shared-cart [_ event {:keys [look-id]} app-state]
+(defmethod transition-state events/control-create-order-from-shared-cart
+  [_ event {:keys [look-id]} app-state]
   (assoc-in app-state keypaths/selected-look-id look-id))
 
 (defn random-number-generator [seed]

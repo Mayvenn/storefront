@@ -154,16 +154,6 @@
                         (get-in app-state keypaths/manage-account-password)
                         (get-in app-state keypaths/user-token))))
 
-(defmethod effects/perform-effects events/control-create-order-from-shared-cart
-  [_ event {:keys [look-id shared-cart-id] :as args} _ app-state]
-  (api/create-order-from-cart (get-in app-state keypaths/session-id)
-                              shared-cart-id
-                              look-id
-                              (get-in app-state keypaths/user-id)
-                              (get-in app-state keypaths/user-token)
-                              (get-in app-state keypaths/store-stylist-id)
-                              (get-in app-state adv-keypaths/adventure-choices-selected-stylist-id)))
-
 (defmethod effects/perform-effects events/control-stylist-account-profile-submit [_ _ args _ app-state]
   (let [session-id      (get-in app-state keypaths/session-id)
         stylist-id      (get-in app-state keypaths/user-store-id)

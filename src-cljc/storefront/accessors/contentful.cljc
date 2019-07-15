@@ -35,9 +35,9 @@
       :shared-cart-id))
 
 (defn look->social-card
-  ([nav-event album-keyword look]
-   (look->social-card nav-event album-keyword {} look))
-  ([nav-event
+  ([current-nav-event album-keyword look]
+   (look->social-card current-nav-event album-keyword {} look))
+  ([current-nav-event
     album-keyword
     color-details
     {:keys [photo-url
@@ -45,44 +45,27 @@
             :content/id
             texture
             description
-            social-media-platform
-            shared-cart-url]}]
-   (let [color-detail (get color-details (color-name->color-slug color))
-         nav-message  (product-link shared-cart-url)
-         links
-         (merge
-          {:view-other nav-message}
-          (cond
-            (and (= nav-event events/navigate-shared-cart)
-                 (adventure.albums/by-keyword album-keyword))
-            {:view-look [events/navigate-adventure-look-detail
-                         {:album-keyword album-keyword
-                          :look-id       id}]}
-
-            (= nav-event events/navigate-shared-cart)
-            {:view-look [events/navigate-shop-by-look-details
-                         {:album-keyword (or (#{:deals} album-keyword) :look)
-                          :look-id       id}]}
-
-            (= nav-event events/navigate-shop-by-look)
-            {:view-look [events/navigate-shop-by-look-details
-                         {:album-keyword (or (#{:deals} album-keyword) :look)
-                          :look-id       id}]}
-
-            :else nil))]
-     {:id                     id
-      :links                  links
-      :image-url              photo-url
-      :overlay                texture
-      :description            description
-      :desktop-aware?         true
-      :social-service         social-media-platform
-      :cta/button-type        :underline-button
-      :cta/navigation-message (or (:view-look links)
-                                  (:view-other links))
-      :icon-url               (:option/rectangle-swatch color-detail)
-      :title                  (or (:option/name color-detail)
-                                  "Check this out!")})) )
+            social-media-platform]}]
+   (let [color-detail            (get color-details (color-name->color-slug color))
+         cta-nav-message
+         (if (adventure.albums/by-keyword album-keyword)
+           [events/navigate-adventure-look-detail {:album-keyword album-keyword
+                                                   :look-id       id}]
+           [events/navigate-shop-by-look-details {:album-keyword (or (#{:deals} album-keyword) :look)
+                                                  :look-id       id}])]
+     (merge
+      {:id                     id
+       :image-url              photo-url
+       :overlay                texture
+       :description            description
+       :desktop-aware?         true
+       :social-service         social-media-platform
+       :icon-url               (:option/rectangle-swatch color-detail)
+       :title                  (or (:option/name color-detail)
+                                   "Check this out!")}
+      (when-not (= events/navigate-adventure-product-details current-nav-event)
+        {:cta/button-type        :underline-button
+         :cta/navigation-message cta-nav-message})))) )
 
 (defn look->look-detail-social-card
   ([nav-event album-keyword look]
@@ -99,7 +82,7 @@
       {:title                  social-media-handle
        :description            social-media-post
        :cta/button-type        :teal-button
-       :cta/navigation-message (-> base :links :view-look)}))))
+       :cta/navigation-message (-> base :cta/navigation-message)}))))
 
 (defn look->pdp-social-card
   ([nav-event album-keyword look]
@@ -114,7 +97,7 @@
       base
       {:title                  social-media-handle
        :cta/button-type        :teal-button
-       :cta/navigation-message (-> base :links :view-look)}))))
+       :cta/navigation-message (-> base :cta/navigation-message)}))))
 
 (defn look->homepage-social-card
   ([nav-event album-keyword look]
@@ -129,7 +112,7 @@
       base
       {:description            description
        :cta/button-type        :teal-button
-       :cta/navigation-message (-> base :links :view-look)}))))
+       :cta/navigation-message (-> base :cta/navigation-message)}))))
 
 (defn album-kw->homepage-social-cards
   [ugc-collections nav-event album-kw]
