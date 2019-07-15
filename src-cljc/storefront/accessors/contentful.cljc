@@ -64,6 +64,11 @@
                          {:album-keyword (or (#{:deals} album-keyword) :look)
                           :look-id       id}]}
 
+            (= nav-event events/navigate-shop-by-look)
+            {:view-look [events/navigate-shop-by-look-details
+                         {:album-keyword (or (#{:deals} album-keyword) :look)
+                          :look-id       id}]}
+
             :else nil))]
      {:id                     id
       :links                  links

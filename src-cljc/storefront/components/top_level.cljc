@@ -129,9 +129,9 @@
           events/navigate-forgot-password         forgot-password/built-component
           events/navigate-gallery                 gallery/built-component
 
-          events/navigate-info-certified-stylists                       adventure.informational.certified-stylists/built-component
-          events/navigate-info-about-our-hair                           adventure.informational.about-our-hair/built-component
-          events/navigate-info-how-it-works                             adventure.informational.how-it-works/built-component
+          events/navigate-info-certified-stylists adventure.informational.certified-stylists/built-component
+          events/navigate-info-about-our-hair     adventure.informational.about-our-hair/built-component
+          events/navigate-info-how-it-works       adventure.informational.how-it-works/built-component
 
           events/navigate-adventure-home                                adventure.home/built-component
           events/navigate-adventure-what-next                           adventure.what-next/built-component
