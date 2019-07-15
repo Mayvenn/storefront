@@ -516,6 +516,7 @@
 
 (defpath adventure-address-component-mounted)
 (defpath control-adventure-stylist-salon-address-clicked)
+(defpath control-adventure-stylist-phone-clicked)
 (defpath control-adventure-stylist-gallery-open)
 (defpath control-adventure-stylist-gallery-close)
 (defpath clear-selected-location)

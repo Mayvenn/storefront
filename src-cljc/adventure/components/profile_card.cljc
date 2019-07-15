@@ -55,7 +55,9 @@
                                [:span ", " address-2])])
                           [:div city ", " state " " zipcode]]])
    :rating            (:rating stylist)
-   :detail-line       (ui/link :link/phone :a.navy {} (formatters/phone-number (:phone (:address stylist))))
+   :detail-line       (ui/link :link/phone :a.navy
+                               {:on-click (utils/send-event-callback events/control-adventure-stylist-phone-clicked {:stylist-id (:stylist-id stylist)})}
+                               (formatters/phone-number (:phone (:address stylist))))
    :detail-attributes [(when (:licensed stylist)
                          "Licensed")
                        (case (-> stylist :salon :salon-type)
@@ -67,6 +69,11 @@
                                (- (date/year (date/now)) (:stylist-since stylist))
                                "yr")
                               " Experience"))]})
+
+(defmethod trackings/perform-track events/control-adventure-stylist-phone-clicked
+  [_ event {:keys [stylist-id]} app-state]
+  #?(:cljs
+     (stringer/track-event "stylist_phone_clicked" {:stylist_id stylist-id})))
 
 (defmethod trackings/perform-track events/control-adventure-stylist-salon-address-clicked
   [_ event {:keys [stylist-id google-maps-redirect-url]} app-state]
