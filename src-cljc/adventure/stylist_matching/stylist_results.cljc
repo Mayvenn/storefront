@@ -3,7 +3,7 @@
             [adventure.components.profile-card :as profile-card]
             [adventure.components.profile-card-with-gallery :as profile-card-with-gallery]
             [adventure.keypaths :as keypaths]
-            [storefront.experiments :as experiments]
+            [storefront.accessors.experiments :as experiments]
             [storefront.keypaths]
             [storefront.component :as component]
             [storefront.events :as events]
@@ -43,13 +43,14 @@
   (let [[h & r] (partition-all position coll)]
     (flatten (into [h] (concat [i] r)))))
 
-(defn ^:private query-pre-purchase [data]
-  (let [cards-data (->> (get-in data keypaths/adventure-matched-stylists)
-                        (map-indexed (partial stylist-profile-card-data
-                                              events/control-adventure-select-stylist-post-purchase))
-                        (when (experiments/recommend-your-stylist? data)
-                          (insert-at-pos 3 {:card/type :callout
-                                            :item      :recommend-stylist})))]
+(defn ^:private query-pre-purchase
+  [data]
+  (let [cards-data (cond->> (->> (get-in data keypaths/adventure-matched-stylists)
+                                 (map-indexed (partial stylist-profile-card-data
+                                                       events/control-adventure-select-stylist-post-purchase)))
+                     (experiments/recommend-your-stylist? data)
+                     (insert-at-pos 3 {:card/type :callout
+                                       :item      :recommend-stylist}))]
     {:current-step                  2
      :title                         "Pick your stylist"
      :header-data                   {:title                   "Find Your Stylist"
@@ -64,20 +65,25 @@
      :escape-hatch/copy             "Shop hair"
      :escape-hatch/data-test        "shop-hair"}))
 
-(defn ^:private query-post-purchase [data]
-  {:current-step                  3
-   :title                         "Pick your stylist"
-   :header-data                   {:title                   "Find Your Stylist"
-                                   :back-navigation-message [events/navigate-adventure-find-your-stylist]
-                                   :subtitle                "Step 3 of 3"}
-   :gallery-modal-data            {:ucare-img-urls                 (get-in data keypaths/adventure-stylist-gallery-image-urls) ;; empty hides the modal
-                                   :initially-selected-image-index (get-in data keypaths/adventure-stylist-gallery-image-index)
-                                   :close-button                   {:target-message events/control-adventure-stylist-gallery-close}}
-   :cards-data                    (map-indexed (partial stylist-profile-card-data events/control-adventure-select-stylist-post-purchase)
-                                               (get-in data keypaths/adventure-matched-stylists))
-   :escape-hatch/navigation-event events/navigate-adventure-let-mayvenn-match
-   :escape-hatch/copy             "Let Mayvenn Match"
-   :escape-hatch/data-test        "let-mayvenn-match"})
+(defn ^:private query-post-purchase
+  [data]
+  (let [cards-data (cond->> (->> (get-in data keypaths/adventure-matched-stylists)
+                                 (map-indexed (partial stylist-profile-card-data events/control-adventure-select-stylist-post-purchase)))
+                     (experiments/recommend-your-stylist? data)
+                     (insert-at-pos 3 {:card/type :callout
+                                       :item      :recommend-stylist}))]
+    {:current-step                  3
+     :title                         "Pick your stylist"
+     :header-data                   {:title                   "Find Your Stylist"
+                                     :back-navigation-message [events/navigate-adventure-find-your-stylist]
+                                     :subtitle                "Step 3 of 3"}
+     :gallery-modal-data            {:ucare-img-urls                 (get-in data keypaths/adventure-stylist-gallery-image-urls) ;; empty hides the modal
+                                     :initially-selected-image-index (get-in data keypaths/adventure-stylist-gallery-image-index)
+                                     :close-button                   {:target-message events/control-adventure-stylist-gallery-close}}
+     :cards-data                    cards-data
+     :escape-hatch/navigation-event events/navigate-adventure-let-mayvenn-match
+     :escape-hatch/copy             "Let Mayvenn Match"
+     :escape-hatch/data-test        "let-mayvenn-match"}))
 
 (defn built-component-pre-purchase
   [data opts]
