@@ -125,35 +125,6 @@
       (api/get-states (get-in app-state keypaths/api-cache))
       (api/get-stylist-account user-id user-token stylist-id))))
 
-(defmethod effects/perform-effects events/control-reset-password-submit [_ event args _ app-state]
-  (if (empty? (get-in app-state keypaths/reset-password-password))
-    (messages/handle-message events/flash-show-failure {:message "Your password cannot be blank."})
-    (api/reset-password (get-in app-state keypaths/session-id)
-                        (stringer/browser-id)
-                        (get-in app-state keypaths/reset-password-password)
-                        (get-in app-state keypaths/reset-password-token)
-                        (get-in app-state keypaths/order-number)
-                        (get-in app-state keypaths/order-token)
-                        (get-in app-state keypaths/store-stylist-id))))
-
-(defmethod effects/perform-effects events/facebook-success-reset [_ event facebook-response _ app-state]
-  (api/facebook-reset-password (get-in app-state keypaths/session-id)
-                               (stringer/browser-id)
-                               (-> facebook-response :authResponse :userID)
-                               (-> facebook-response :authResponse :accessToken)
-                               (get-in app-state keypaths/reset-password-token)
-                               (get-in app-state keypaths/order-number)
-                               (get-in app-state keypaths/order-token)
-                               (get-in app-state keypaths/store-stylist-id)))
-
-(defmethod effects/perform-effects events/control-account-profile-submit [_ event args _ app-state]
-  (when (empty? (get-in app-state keypaths/errors))
-    (api/update-account (get-in app-state keypaths/session-id)
-                        (get-in app-state keypaths/user-id)
-                        (get-in app-state keypaths/manage-account-email)
-                        (get-in app-state keypaths/manage-account-password)
-                        (get-in app-state keypaths/user-token))))
-
 (defmethod effects/perform-effects events/control-stylist-account-profile-submit [_ _ args _ app-state]
   (let [session-id      (get-in app-state keypaths/session-id)
         stylist-id      (get-in app-state keypaths/user-store-id)
@@ -249,18 +220,6 @@
       (api/get-stylist-payout-stats
        events/api-success-stylist-payout-stats
        stylist-id user-id user-token))))
-
-(defn clear-field-errors [app-state] ;; dup of frontend-transitions
-  (assoc-in app-state keypaths/errors {}))
-
-(defmethod transition-state events/control-account-profile-submit [_ event args app-state]
-  (let [password              (get-in app-state keypaths/manage-account-password)
-        field-errors          (cond-> {}
-                                (> 6 (count password))
-                                (merge (group-by :path [{:path ["password"] :long-message "New password must be at least 6 characters"}])))]
-    (if (and (seq password) (seq field-errors))
-      (assoc-in app-state keypaths/errors {:field-errors field-errors :error-code "invalid-input" :error-message "Oops! Please fix the errors below."})
-      (clear-field-errors app-state))))
 
 (defmethod transition-state events/control-stylist-account-commission-submit [_ event args app-state]
   (let [selected-id (get-in app-state keypaths/stylist-manage-account-green-dot-card-selected-id)

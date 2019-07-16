@@ -557,8 +557,17 @@
 
 (defmethod effects/perform-effects events/control-forgot-password-submit [_ event args _ app-state]
   (api/forgot-password (get-in app-state keypaths/session-id) (get-in app-state keypaths/forgot-password-email)))
+
 (defmethod effects/perform-effects events/image-picker-component-mounted [_ _ args _ app-state]
   (uploadcare/dialog args))
+
+(defmethod effects/perform-effects events/control-account-profile-submit [_ event args _ app-state]
+  (when (empty? (get-in app-state keypaths/errors))
+    (api/update-account (get-in app-state keypaths/session-id)
+                        (get-in app-state keypaths/user-id)
+                        (get-in app-state keypaths/manage-account-email)
+                        (get-in app-state keypaths/manage-account-password)
+                        (get-in app-state keypaths/user-token))))
 
 (defmethod effects/perform-effects events/uploadcare-api-success-upload-portrait [_ _ {:keys [cdnUrl]} _ app-state]
   (let [user-id    (get-in app-state keypaths/user-id)
@@ -567,6 +576,27 @@
         session-id (get-in app-state keypaths/session-id)]
     (api/update-stylist-account-portrait session-id user-id user-token stylist-id {:portrait-url cdnUrl})
     (history/enqueue-navigate events/navigate-stylist-account-profile)))
+
+(defmethod effects/perform-effects events/control-reset-password-submit [_ event args _ app-state]
+  (if (empty? (get-in app-state keypaths/reset-password-password))
+    (messages/handle-message events/flash-show-failure {:message "Your password cannot be blank."})
+    (api/reset-password (get-in app-state keypaths/session-id)
+                        (stringer/browser-id)
+                        (get-in app-state keypaths/reset-password-password)
+                        (get-in app-state keypaths/reset-password-token)
+                        (get-in app-state keypaths/order-number)
+                        (get-in app-state keypaths/order-token)
+                        (get-in app-state keypaths/store-stylist-id))))
+
+(defmethod effects/perform-effects events/facebook-success-reset [_ event facebook-response _ app-state]
+  (api/facebook-reset-password (get-in app-state keypaths/session-id)
+                               (stringer/browser-id)
+                               (-> facebook-response :authResponse :userID)
+                               (-> facebook-response :authResponse :accessToken)
+                               (get-in app-state keypaths/reset-password-token)
+                               (get-in app-state keypaths/order-number)
+                               (get-in app-state keypaths/order-token)
+                               (get-in app-state keypaths/store-stylist-id)))
 
 (defmethod effects/perform-effects events/uploadcare-api-success-upload-gallery [_ event {:keys [cdnUrl]} _ app-state]
   (let [user-id    (get-in app-state keypaths/user-id)

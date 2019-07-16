@@ -34,6 +34,15 @@
 (defn clear-field-errors [app-state]
   (assoc-in app-state keypaths/errors {}))
 
+(defmethod transition-state events/control-account-profile-submit [_ event args app-state]
+  (let [password              (get-in app-state keypaths/manage-account-password)
+        field-errors          (cond-> {}
+                                (> 6 (count password))
+                                (merge (group-by :path [{:path ["password"] :long-message "New password must be at least 6 characters"}])))]
+    (if (and (seq password) (seq field-errors))
+      (assoc-in app-state keypaths/errors {:field-errors field-errors :error-code "invalid-input" :error-message "Oops! Please fix the errors below."})
+      (clear-field-errors app-state))))
+
 (defn clear-flash [app-state]
   (-> app-state
       clear-field-errors
