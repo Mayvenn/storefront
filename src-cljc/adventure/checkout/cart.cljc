@@ -271,8 +271,7 @@
         line-items           (map (partial add-product-title-and-color-to-line-item products facets)
                                   (orders/product-items order))
         variant-ids          (map :id line-items)
-        how-shop-choice      (get-in data adventure.keypaths/adventure-choices-how-shop)
-        shop-a-la-carte-only (experiments/shop-a-la-carte-only? data)]
+        how-shop-choice      (get-in data adventure.keypaths/adventure-choices-how-shop)]
     {:suggestions                    (suggestions/query data)
      :order                          order
      :servicing-stylist              (get-in data adventure.keypaths/adventure-servicing-stylist)
@@ -281,10 +280,9 @@
      :updating?                      (update-pending? data)
      :redirecting-to-paypal?         (get-in data keypaths/cart-paypal-redirect)
      :how-shop-choice                how-shop-choice
-     :add-more-hair-navigation-event (cond
-                                       shop-a-la-carte-only                     events/navigate-adventure-a-la-carte-hair-texture
-                                       (= "individual-bundles" how-shop-choice) events/navigate-adventure-a-la-carte-product-list
-                                       :else                                    events/navigate-adventure-how-shop-hair)
+     :add-more-hair-navigation-event (if (= "individual-bundles" how-shop-choice)
+                                       events/navigate-adventure-a-la-carte-product-list
+                                       events/navigate-adventure-how-shop-hair)
      :update-line-item-requests      (merge-with
                                       #(or %1 %2)
                                       (variants-requests data request-keys/add-to-bag (map :sku line-items))

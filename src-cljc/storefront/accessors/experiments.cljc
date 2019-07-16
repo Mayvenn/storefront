@@ -109,6 +109,3 @@
   [data]
   (display-feature? data "adv-cart-promo-entry"))
 
-(defn shop-a-la-carte-only?
-  [data]
-  (display-feature? data "shop-a-la-carte-only"))

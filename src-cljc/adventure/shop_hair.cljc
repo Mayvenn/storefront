@@ -9,8 +9,7 @@
 
 (defn ^:private query [data]
   (let [servicing-stylist? (get-in data keypaths/adventure-servicing-stylist)
-        current-step       (if servicing-stylist? 3 2)
-        a-la-carte-only?   (experiments/shop-a-la-carte-only? data)]
+        current-step       (if servicing-stylist? 3 2)]
     {:prompt               [:div.pb2.line-height-2 "It’s time to pick out some amazing virgin hair."]
      :mini-prompt          [:div.pt2.line-height-2 "Wear it, cut it, style it. If you don’t love your hair, we’ll exchange it for free."]
      :background-overrides {:class "bg-adventure-shop-hair"}
@@ -23,10 +22,7 @@
                                                         events/navigate-adventure-match-success)]}
      :button               {:text           "Next"
                             :data-test      "shop-hair-button"
-                            :target-message
-                            (if a-la-carte-only?
-                              [events/navigate-adventure-a-la-carte-hair-texture]
-                              [events/navigate-adventure-how-shop-hair])}}))
+                            :target-message [events/navigate-adventure-how-shop-hair]}}))
 
 (defn built-component
   [data opts]
