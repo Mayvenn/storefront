@@ -35,6 +35,22 @@
            (ui/modal-close {:class       "stroke-dark-gray fill-gray"
                             :close-attrs close-attrs})]])))]))
 
+(defn callout-prompt-component
+  [_ _ _]
+  (component/create
+   [:div.p8.bg-lavender
+    [:div.center.col-12
+     [:div.h1.white
+      "Wish you could use your own stylist?"]
+     [:div.p3.white
+      "Well, your wish is my command ;)"]]
+    [:div.col-9.mx-auto
+     (ui/teal-button
+      (merge {:data-test "recommend-stylist"}
+             #_ (apply utils/fake-href {}))
+      [:div.flex.items-center.justify-center.inherit-color
+       "Submit Your Stylist"])]]))
+
 (defn component
   [{:keys [header-data gallery-modal-data cards-data title] :as data} _ _]
   (component/create
@@ -50,10 +66,14 @@
        [:div.bg-white
         [:div.flex.flex-auto.justify-center.pt6
          [:div.h3.bold.purple title]]
-        [:div.px3.p1.bg-white.flex-wrap.flex.justify-center
+        [:div.bg-white.flex-wrap.flex.justify-center
          [:div.col-12.py2.flex-wrap.flex.justify-center
-          (for [{:keys [key] :as cd} cards-data]
-            (component/build profile-card-with-gallery/component cd {:key key}))]]
+          (for [{:keys [key] card-type :card/type :as cd} cards-data]
+            (do
+              (case card-type
+                :stylist-profile (component/build profile-card-with-gallery/component cd {:key key})
+                :callout         (component/build callout-prompt-component cd {:key key})
+                [:div "no matching clause"])))]]
         (let [{:escape-hatch/keys [navigation-event copy data-test]} data]
           [:div.h6.dark-gray.mt3.pb4
            [:div.col-7-on-tb-dt.col-9.mx-auto.mb1

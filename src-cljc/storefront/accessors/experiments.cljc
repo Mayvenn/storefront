@@ -109,3 +109,7 @@
   [data]
   (display-feature? data "adv-cart-promo-entry"))
 
+(defn recommend-your-stylist?
+  [data]
+  (display-feature? data "recommend-your-stylist"))
+

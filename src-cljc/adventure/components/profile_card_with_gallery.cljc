@@ -11,7 +11,7 @@
 (defn component
   [{:keys [card-data gallery-data button]} _ _]
   (component/create
-   [:div.bg-white.h6.my2.col-12.col-8-on-tb-dt
+   [:div.p3.bg-white.h6.my2.col-12.col-8-on-tb-dt
     (component/build profile-card/component card-data nil)
     [:div.my2.m1-on-tb-dt.mb2-on-tb-dt
      [:div.h7.dark-gray.bold.left-align.mb1 (:title gallery-data)]

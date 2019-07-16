@@ -3,6 +3,7 @@
             [adventure.components.profile-card :as profile-card]
             [adventure.components.profile-card-with-gallery :as profile-card-with-gallery]
             [adventure.keypaths :as keypaths]
+            [storefront.experiments :as experiments]
             [storefront.keypaths]
             [storefront.component :as component]
             [storefront.events :as events]
@@ -21,6 +22,7 @@
   (let [ucare-img-urls (map :resizable-url gallery-images)]
     {:card-data    (profile-card/stylist-profile-card-data stylist)
      :index        index
+     :card/type    :stylist-profile
      :key          (str "stylist-card-" stylist-id)
      :gallery-data {:title "Recent Work"
                     :items (map-indexed (fn [j ucare-img-url]
@@ -36,21 +38,31 @@
                                                    :servicing-stylist stylist
                                                    :card-index        index}]}}))
 
+(defn ^:private insert-at-pos
+  [position i coll]
+  (let [[h & r] (partition-all position coll)]
+    (flatten (into [h] (concat [i] r)))))
+
 (defn ^:private query-pre-purchase [data]
-  {:current-step                  2
-   :title                         "Pick your stylist"
-   :header-data                   {:title                   "Find Your Stylist"
-                                   :progress                progress/stylist-results
-                                   :back-navigation-message [events/navigate-adventure-find-your-stylist]
-                                   :subtitle                "Step 2 of 3"}
-   :gallery-modal-data            {:ucare-img-urls                 (get-in data keypaths/adventure-stylist-gallery-image-urls) ;; empty hides the modal
-                                   :initially-selected-image-index (get-in data keypaths/adventure-stylist-gallery-image-index)
-                                   :close-button                   {:target-message events/control-adventure-stylist-gallery-close}}
-   :cards-data                    (map-indexed (partial stylist-profile-card-data events/control-adventure-select-stylist-pre-purchase)
-                                               (get-in data keypaths/adventure-matched-stylists))
-   :escape-hatch/navigation-event events/navigate-adventure-shop-hair
-   :escape-hatch/copy             "Shop hair"
-   :escape-hatch/data-test        "shop-hair"})
+  (let [cards-data (->> (get-in data keypaths/adventure-matched-stylists)
+                        (map-indexed (partial stylist-profile-card-data
+                                              events/control-adventure-select-stylist-post-purchase))
+                        (when (experiments/recommend-your-stylist? data)
+                          (insert-at-pos 3 {:card/type :callout
+                                            :item      :recommend-stylist})))]
+    {:current-step                  2
+     :title                         "Pick your stylist"
+     :header-data                   {:title                   "Find Your Stylist"
+                                     :progress                progress/stylist-results
+                                     :back-navigation-message [events/navigate-adventure-find-your-stylist]
+                                     :subtitle                "Step 2 of 3"}
+     :gallery-modal-data            {:ucare-img-urls                 (get-in data keypaths/adventure-stylist-gallery-image-urls) ;; empty hides the modal
+                                     :initially-selected-image-index (get-in data keypaths/adventure-stylist-gallery-image-index)
+                                     :close-button                   {:target-message events/control-adventure-stylist-gallery-close}}
+     :cards-data                    cards-data
+     :escape-hatch/navigation-event events/navigate-adventure-shop-hair
+     :escape-hatch/copy             "Shop hair"
+     :escape-hatch/data-test        "shop-hair"}))
 
 (defn ^:private query-post-purchase [data]
   {:current-step                  3
