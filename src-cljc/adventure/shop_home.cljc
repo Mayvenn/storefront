@@ -45,7 +45,7 @@
       {:layer/type :free-standard-shipping-bar}
       {:layer/type   :text-block
        :header/value "We're paying for your next hair appointment"
-       :body/value   "Purchase 3 or more bundles (closures or frontals included) and we’ll pay for you to get them installed. That’s a shampoo, condition, braid down, sew-in, and style, all on us."
+       :body/value   "Purchase 3 or more bundles, closures or frontals and we’ll pay for you to get them installed. That’s a shampoo, condition, braid down, sew-in, and style, all on us."
        :anchor/name  "learn-more"}
       {:layer/type      :checklist
        :subheader/value "What's included?"
