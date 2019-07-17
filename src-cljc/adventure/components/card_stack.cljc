@@ -1,6 +1,8 @@
 (ns adventure.components.card-stack
   (:require [adventure.components.header :as header]
             [adventure.components.profile-card-with-gallery :as profile-card-with-gallery]
+            [storefront.events :as events]
+            [storefront.effects :as effects]
             [storefront.component :as component]
             [storefront.components.ui :as ui]
             [storefront.platform.carousel :as carousel]
@@ -35,21 +37,29 @@
            (ui/modal-close {:class       "stroke-dark-gray fill-gray"
                             :close-attrs close-attrs})]])))]))
 
-(defn callout-prompt-component
+(defn recommend-stylist-component
   [_ _ _]
   (component/create
    [:div.p8.bg-lavender
+    {:style {:background-position "right center"
+             :background-repeat   "no-repeat"
+             :background-size     "contain"
+             :background-image    (str "url('" (str "//ucarecdn.com/" "6a221a42-9a1f-4443-8ecc-595af233ab42" "/-/format/auto/") "')")}}
     [:div.center.col-12
-     [:div.h1.white
-      "Wish you could use your own stylist?"]
-     [:div.p3.white
-      "Well, your wish is my command ;)"]]
+     [:div.h1.white "Wish you could use your own stylist?"]
+     [:div.p3.white "Well, your wish is my command ;)"]]
     [:div.col-9.mx-auto
      (ui/teal-button
       (merge {:data-test "recommend-stylist"}
-             #_ (apply utils/fake-href {}))
+             (utils/fake-href events/external-redirect-typeform-recommend-stylist))
       [:div.flex.items-center.justify-center.inherit-color
        "Submit Your Stylist"])]]))
+
+(defmethod effects/perform-effects events/external-redirect-typeform-recommend-stylist
+  [_ _ _ _ _ _]
+  #?(:cljs
+     (set! (.-location js/window)
+           "https://mayvenn.typeform.com/to/J2Y1cC")))
 
 (defn component
   [{:keys [header-data gallery-modal-data cards-data title] :as data} _ _]
@@ -71,8 +81,8 @@
           (for [{:keys [key] card-type :card/type :as cd} cards-data]
             (do
               (case card-type
-                :stylist-profile (component/build profile-card-with-gallery/component cd {:key key})
-                :callout         (component/build callout-prompt-component cd {:key key})
+                :stylist-profile   (component/build profile-card-with-gallery/component cd {:key key})
+                :recommend-stylist (component/build recommend-stylist-component cd {:key key})
                 [:div "no matching clause"])))]]
         (let [{:escape-hatch/keys [navigation-event copy data-test]} data]
           [:div.h6.dark-gray.mt3.pb4
