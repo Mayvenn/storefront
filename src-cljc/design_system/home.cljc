@@ -165,11 +165,11 @@
         ":height-class "
         [:select
          {:on-change #(handle-message events/control-change-state
-                                       {:keypath [:style-guide :buttons :height-class]
+                                       {:keypath [:design-system :buttons :height-class]
                                         :value   (keyword (.. % -target -value))})}
          (for [option [:small :medium :large]]
            [:option {:value (name option)
-                     :selected (= option (get-in data [:style-guide :buttons :height-class]))}
+                     :selected (= option (get-in data [:design-system :buttons :height-class]))}
             (pr-str option)])]]
        [:br]
        [:label
@@ -177,7 +177,7 @@
                          :checked   (get-in data [:design-system :buttons :spinning?])
                          :on-change (partial toggle-state [:design-system :buttons :spinning?])}]
         ":spinner? "
-        (if (get-in data [:style-guide :buttons :spinning?]) "true" "false")]
+        (if (get-in data [:design-system :buttons :spinning?]) "true" "false")]
        [:br]
         (if (get-in data [:design-system :buttons :spinning?]) "true" "false")]
        [:label
