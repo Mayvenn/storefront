@@ -66,10 +66,10 @@
                                          (not on-homepage?)
                                          (zero? nav-history-length)
                                          on-non-minimal-footer-page?)
-        is-style-guide?             (= events/navigate-style-guide
-                                       (take (count events/navigate-style-guide) navigation-event))]
+        is-design-system?           (= events/navigate-design-system
+                                       (take (count events/navigate-design-system) navigation-event))]
     (cond
-      is-style-guide?
+      is-design-system?
       nil ;; never show popup for style guide
 
       to-adventure-showable?

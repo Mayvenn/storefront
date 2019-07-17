@@ -26,17 +26,17 @@
 (def static-api-routes
   ["/static" static-page-routes])
 
-(def style-guide-routes
-  {"/_style"                 (edn->bidi events/navigate-style-guide)
-   "/_style/color"           (edn->bidi events/navigate-style-guide-color)
-   "/_style/spacing"         (edn->bidi events/navigate-style-guide-spacing)
-   "/_style/buttons"         (edn->bidi events/navigate-style-guide-buttons)
-   "/_style/form-fields"     (edn->bidi events/navigate-style-guide-form-fields)
-   "/_style/navigation"      (edn->bidi events/navigate-style-guide-navigation)
-   "/_style/navigation/tab1" (edn->bidi events/navigate-style-guide-navigation-tab1)
-   "/_style/navigation/tab3" (edn->bidi events/navigate-style-guide-navigation-tab3)
-   "/_style/progress"        (edn->bidi events/navigate-style-guide-progress)
-   "/_style/carousel"        (edn->bidi events/navigate-style-guide-carousel)})
+(def design-system-routes
+  {"/_style"                 (edn->bidi events/navigate-design-system)
+   "/_style/color"           (edn->bidi events/navigate-design-system-color)
+   "/_style/spacing"         (edn->bidi events/navigate-design-system-spacing)
+   "/_style/buttons"         (edn->bidi events/navigate-design-system-buttons)
+   "/_style/form-fields"     (edn->bidi events/navigate-design-system-form-fields)
+   "/_style/navigation"      (edn->bidi events/navigate-design-system-navigation)
+   "/_style/navigation/tab1" (edn->bidi events/navigate-design-system-navigation-tab1)
+   "/_style/navigation/tab3" (edn->bidi events/navigate-design-system-navigation-tab3)
+   "/_style/progress"        (edn->bidi events/navigate-design-system-progress)
+   "/_style/carousel"        (edn->bidi events/navigate-design-system-carousel)})
 
 (def freeinstall? (partial contains? #{"freeinstall"}))
 
@@ -87,7 +87,7 @@
 
 (def app-routes
   ["" (merge static-page-routes
-             style-guide-routes
+             design-system-routes
              freeinstall-routes
              {{:subdomain (complement freeinstall?)}
               (merge

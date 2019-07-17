@@ -62,7 +62,7 @@
                                     "resources/public/cdn"]
   :source-paths ["src" "src-cljc" "src-cljs"]
   :resource-paths ["resources"]
-  :aliases {"fig" ["trampoline" "run" "-m" "figwheel.main" "-b" "dev" "-r"]
+  :aliases {"fig"    ["trampoline" "run" "-m" "figwheel.main" "-b" "dev" "-r"]
             "fig:pc" ["trampoline" "run" "-m" "figwheel.main" "-pc" "-b" "dev" "-r"]}
   :cljsbuild
   {:builds
@@ -80,15 +80,15 @@
                         :source-map       true
                         ;; Don't forget to update config.clj > define-frontend-modules
                         ;; Don't forget to update dev.cljs.edn
-                        :modules          {:cljs-base   {:output-to "target/release/js/out/cljs_base.js"}
-                                           :main        {:output-to "target/release/js/out/main.js"
-                                                         :entries   #{storefront.core}}
-                                           :dashboard   {:output-to "target/release/js/out/dashboard.js"
-                                                         :entries   #{stylist.dashboard}}
-                                           :redeem      {:output-to "target/release/js/out/redeem.js"
-                                                         :entries   #{voucher.redeem}}
-                                           :style-guide {:output-to "target/release/js/out/style_guide.js"
-                                                         :entries   #{storefront.components.style-guide}}}
+                        :modules          {:cljs-base     {:output-to "target/release/js/out/cljs_base.js"}
+                                           :main          {:output-to "target/release/js/out/main.js"
+                                                           :entries   #{storefront.core}}
+                                           :dashboard     {:output-to "target/release/js/out/dashboard.js"
+                                                           :entries   #{stylist.dashboard}}
+                                           :redeem        {:output-to "target/release/js/out/redeem.js"
+                                                           :entries   #{voucher.redeem}}
+                                           :design-system {:output-to "target/release/js/out/design-system.js"
+                                                           :entries   #{design-system.home}}}
                         :infer-externs    false
                         :static-fns       true
                         :fn-invoke-direct true

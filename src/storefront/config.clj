@@ -12,11 +12,11 @@
 (defn define-frontend-modules []
   ;; all module names must be cljs mangled (aka - hyphens get converted to underscore)
   ;; See implementation of cljs.loader: https://github.com/clojure/clojurescript/blob/master/src/main/cljs/cljs/loader.cljs#L15-L46
-  {:cljs_base   [(assets/path "/js/out/cljs_base.js")]
-   :main        [(assets/path "/js/out/main.js")]
-   :dashboard   [(assets/path "/js/out/dashboard.js")]
-   :redeem      [(assets/path "/js/out/redeem.js")]
-   :style_guide [(assets/path "/js/out/style_guide.js")]})
+  {:cljs_base     [(assets/path "/js/out/cljs_base.js")]
+   :main          [(assets/path "/js/out/main.js")]
+   :dashboard     [(assets/path "/js/out/dashboard.js")]
+   :redeem        [(assets/path "/js/out/redeem.js")]
+   :design-system [(assets/path "/js/out/design-system.js")]})
 
 (def frontend-modules (memoize define-frontend-modules))
 

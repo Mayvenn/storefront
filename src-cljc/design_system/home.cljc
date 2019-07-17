@@ -1,8 +1,9 @@
-(ns storefront.components.style-guide
+(ns design-system.home
   (:require [storefront.component :as component]
-            [storefront.components.tabs :as tabs]
+            #?@(:cljs
+                [[storefront.components.tabs :as tabs]
+                 [storefront.loader :as loader]])
             [storefront.components.ui :as ui]
-            [storefront.loader :as loader]
             [storefront.platform.carousel :as carousel]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :refer [handle-message]]
@@ -22,7 +23,7 @@
   [:a.h5 (utils/route-to navigation-event) name])
 
 (defn compression [data]
-  (let [{:keys [viewport-width file-width format quality]} (get-in data [:style-guide :compression])
+  (let [{:keys [viewport-width file-width format quality]} (get-in data [:design-system :compression])
         focused? (get-in data keypaths/ui-focus)]
     [:div
      (header "Compression")
@@ -32,13 +33,13 @@
        (ui/text-field
         {:type    "number"
          :label   "Width"
-         :keypath [:style-guide :compression :viewport-width]
+         :keypath [:design-system :compression :viewport-width]
          :focused focused?
          :value   viewport-width})]
       [:div.col.p2
        [:div.mb2 (subheader "File")]
        (ui/select-field {:id      "format"
-                         :keypath [:style-guide :compression :format]
+                         :keypath [:design-system :compression :format]
                          :focused focused?
                          :label   "format"
                          :options [["as uploaded" ""]
@@ -47,7 +48,7 @@
                                    ["webp" "webp"]]
                          :value   format})
        (ui/select-field {:id      "quality"
-                         :keypath [:style-guide :compression :quality]
+                         :keypath [:design-system :compression :quality]
                          :focused focused?
                          :label   "quality"
                          :options [["no setting" ""]
@@ -60,7 +61,7 @@
        (ui/text-field
         {:type    "number"
          :label   "Resize width"
-         :keypath [:style-guide :compression :file-width]
+         :keypath [:design-system :compression :file-width]
          :focused focused?
          :value   file-width})]
       (for [file ["//ucarecdn.com/927f7594-e766-4985-98fa-3bc80e340947/"
@@ -79,18 +80,18 @@
    [:ul.list-reset.py2.col-8.mx-auto
     [:li [:h2.h5.my1 "Style"]
      [:ul.list-reset.ml1
-      [:li (section-link "Typography" events/navigate-style-guide)]
-      [:li (section-link "Color" events/navigate-style-guide-color)]]]
+      [:li (section-link "Typography" events/navigate-design-system)]
+      [:li (section-link "Color" events/navigate-design-system-color)]]]
     [:li [:h2.h5.my1 "Layout"]
      [:ul.list-reset.ml1
-      [:li (section-link "Spacing" events/navigate-style-guide-spacing)]]]
+      [:li (section-link "Spacing" events/navigate-design-system-spacing)]]]
     [:li [:h2.h5.my1 "Components"]
      [:ul.list-reset.ml1
-      [:li (section-link "Buttons" events/navigate-style-guide-buttons)]
-      [:li (section-link "Form Fields" events/navigate-style-guide-form-fields)]
-      [:li (section-link "Navigation" events/navigate-style-guide-navigation)]
-      [:li (section-link "Progress" events/navigate-style-guide-progress)]
-      [:li (section-link "Carousels" events/navigate-style-guide-carousel)]]]]])
+      [:li (section-link "Buttons" events/navigate-design-system-buttons)]
+      [:li (section-link "Form Fields" events/navigate-design-system-form-fields)]
+      [:li (section-link "Navigation" events/navigate-design-system-navigation)]
+      [:li (section-link "Progress" events/navigate-design-system-progress)]
+      [:li (section-link "Carousels" events/navigate-design-system-carousel)]]]]])
 
 (def lorem "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam euismod justo ut metus blandit commodo. Quisque iaculis odio non sem suscipit porta. Donec id bibendum tellus. Proin eu malesuada massa, mattis vestibulum orci.")
 
@@ -147,14 +148,14 @@
                        (.preventDefault e)
                        (prn keypath value)
                        (handle-message events/control-change-state {:keypath keypath :value value}))
-        button-attrs (get-in data [:style-guide :buttons])]
+        button-attrs (get-in data [:design-system :buttons])]
     [:section
      (header "Buttons")
      [:div.h6.flex.flex-column
       [:div "Backgrounds: "]
-      [:a.black {:href "#" :on-click (partial set-state [:style-guide :buttons-bg] "bg-white")}
+      [:a.black {:href "#" :on-click (partial set-state [:design-system :buttons-bg] "bg-white")}
        (color-swatch "white" "ffffff")]
-      [:a.black {:href "#" :on-click (partial set-state [:style-guide :buttons-bg] "bg-teal")}
+      [:a.black {:href "#" :on-click (partial set-state [:design-system :buttons-bg] "bg-teal")}
        (color-swatch "teal" "40cbac")]]
      [:div.h6
       "Button States: "
@@ -173,22 +174,23 @@
        [:br]
        [:label
         [:input.mr1.ml2 {:type      "checkbox"
-                         :checked   (get-in data [:style-guide :buttons :spinning?])
-                         :on-change (partial toggle-state [:style-guide :buttons :spinning?])}]
+                         :checked   (get-in data [:design-system :buttons :spinning?])
+                         :on-change (partial toggle-state [:design-system :buttons :spinning?])}]
         ":spinner? "
         (if (get-in data [:style-guide :buttons :spinning?]) "true" "false")]
        [:br]
+        (if (get-in data [:design-system :buttons :spinning?]) "true" "false")]
        [:label
         [:input.mr1.ml2 {:type      "checkbox"
-                         :checked   (get-in data [:style-guide :buttons :disabled?])
-                         :on-change (partial toggle-state [:style-guide :buttons :disabled?])}]
+                         :checked   (get-in data [:design-system :buttons :disabled?])
+                         :on-change (partial toggle-state [:design-system :buttons :disabled?])}]
         ":disabled? "
-        (if (get-in data [:style-guide :buttons :disabled?]) "true" "false")]
+        (if (get-in data [:design-system :buttons :disabled?]) "true" "false")]
        "}"]]
      [:div.h6.dark-gray
       "Not every button state is used everywhere (eg - spinners are only used if the action may take some time and we would like feedback. Eg - a button to an external site will not spin)"]
      [:div.clearfix.mxn1
-      (when-let [bg (get-in data [:style-guide :buttons-bg])]
+      (when-let [bg (get-in data [:design-system :buttons-bg])]
         {:class (str bg)})
       [:div.col.col-6.p1 (ui/teal-button button-attrs "ui/teal-button")]
       [:div.col.col-6.p1 (ui/navy-button button-attrs "ui/navy-button")]
@@ -379,34 +381,34 @@
    [:p.h6.mb2 "Type " [:pre.inline "wrong"] " in input field to show it's failed validation state."]
    (ui/text-input {:label   "Text Input"
                    :id      "text-input"
-                   :keypath [:style-guide :form :text-input]
-                   :value   (get-in data [:style-guide :form :test-input])})
+                   :keypath [:design-system :form :text-input]
+                   :value   (get-in data [:design-system :form :test-input])})
    (ui/text-field-group
     {:type    "text"
      :label   "First Name"
      :id      "first-name"
-     :keypath [:style-guide :form :first-name]
+     :keypath [:design-system :form :first-name]
      :focused (get-in data keypaths/ui-focus)
-     :value   (get-in data [:style-guide :form :first-name])
-     :errors  (if (= "wrong" (get-in data [:style-guide :form :first-name]))
+     :value   (get-in data [:design-system :form :first-name])
+     :errors  (if (= "wrong" (get-in data [:design-system :form :first-name]))
                 [{:long-message "wrong"}]
                 [])}
     {:type    "text"
      :label   "Last Name"
      :id      "last-name"
-     :keypath [:style-guide :form :last-name]
+     :keypath [:design-system :form :last-name]
      :focused (get-in data keypaths/ui-focus)
-     :value   (get-in data [:style-guide :form :last-name])
-     :errors  (if (= "wrong" (get-in data [:style-guide :form :last-name]))
+     :value   (get-in data [:design-system :form :last-name])
+     :errors  (if (= "wrong" (get-in data [:design-system :form :last-name]))
                 [{:long-message "wrong"}]
                 [])})
    (ui/text-field
     {:type     "text"
      :label    "Mobile Phone"
-     :keypath  [:style-guide :form :phone]
+     :keypath  [:design-system :form :phone]
      :focused  (get-in data keypaths/ui-focus)
-     :value    (get-in data [:style-guide :form :phone])
-     :errors   (if (= "wrong" (get-in data [:style-guide :form :phone]))
+     :value    (get-in data [:design-system :form :phone])
+     :errors   (if (= "wrong" (get-in data [:design-system :form :phone]))
                  [{:long-message "wrong"}]
                  [])
      :required true})
@@ -414,53 +416,53 @@
     {:type     "password"
      :label    "Password"
      :id       "password"
-     :keypath  [:style-guide :form :password]
+     :keypath  [:design-system :form :password]
      :focused  (get-in data keypaths/ui-focus)
-     :value    (get-in data [:style-guide :form :password])
-     :errors   (if (= "wrong" (get-in data [:style-guide :form :password]))
+     :value    (get-in data [:design-system :form :password])
+     :errors   (if (= "wrong" (get-in data [:design-system :form :password]))
                  [{:long-message "Incorrect"}]
                  [])
-     :hint     (get-in data [:style-guide :form :password])
+     :hint     (get-in data [:design-system :form :password])
      :required true})
-   (ui/select-field {:errors      (if (= "jacob" (get-in data [:style-guide :form :besty]))
+   (ui/select-field {:errors      (if (= "jacob" (get-in data [:design-system :form :besty]))
                                     [{:long-message "wrong"}]
                                     [])
                      :id          "id-is-required"
-                     :keypath     [:style-guide :form :besty]
+                     :keypath     [:design-system :form :besty]
                      :focused     (get-in data keypaths/ui-focus)
                      :label       "Besty"
                      :options     [["Corey" "corey"] ["Jacob" "jacob"]]
                      :placeholder "Besty"
                      :required    true
-                     :value       (get-in data [:style-guide :form :besty])})
+                     :value       (get-in data [:design-system :form :besty])})
    (ui/text-field
     {:type    "text"
      :label   "Always wrong textfield"
      :id      "first-name-always-wrong"
-     :keypath [:style-guide :form :always-wrong]
+     :keypath [:design-system :form :always-wrong]
      :focused (get-in data keypaths/ui-focus)
-     :value   (get-in data [:style-guide :form :always-wrong])
+     :value   (get-in data [:design-system :form :always-wrong])
      :errors  [{:long-message "your answer is always incorrect"}]})
    (ui/select-field {:errors      [{:long-message "your answer is always incorrect"}]
                      :id          "id-is-required"
-                     :keypath     [:style-guide :form :wrong-choices]
+                     :keypath     [:design-system :form :wrong-choices]
                      :focused     (get-in data keypaths/ui-focus)
                      :label       "Wrong Choices select field"
                      :options     [["Corey" "corey"] ["Jacob" "jacob"]]
                      :placeholder "Wrong Choices"
                      :required    true
-                     :value       (get-in data [:style-guide :form :wrong-choices])})
+                     :value       (get-in data [:design-system :form :wrong-choices])})
 
    (ui/input-group
-    {:keypath       [:style-guide :form :pill-phone]
+    {:keypath       [:design-system :form :pill-phone]
      :wrapper-class "col-8 flex bg-white pl3 items-center circled-item"
      :class         ""
      :name          "phone"
      :focused       (get-in data keypaths/ui-focus)
      :placeholder   "(xxx) xxx - xxxx"
      :type          "tel"
-     :value         (get-in data [:style-guide :form :pill-phone])
-     :errors        (if (= (get-in data [:style-guide :form :pill-phone]) "wrong")
+     :value         (get-in data [:design-system :form :pill-phone])
+     :errors        (if (= (get-in data [:design-system :form :pill-phone]) "wrong")
                       [{:long-message "wrong"}]
                       [])} 
     {:ui-element ui/teal-button
@@ -471,15 +473,15 @@
                   :data-test      ""
                   :disabled-class "disabled bg-teal"}})
    (ui/input-group
-    {:keypath       [:style-guide :form :pill-phone-2]
+    {:keypath       [:design-system :form :pill-phone-2]
      :wrapper-class "col-8 flex bg-white pl3 items-center circled-item"
      :class         ""
      :name          "phone"
      :focused       (get-in data keypaths/ui-focus)
      :placeholder   "With disabled button"
      :type          "tel"
-     :value         (get-in data [:style-guide :form :pill-phone-2])
-     :errors        (if (= (get-in data [:style-guide :form :pill-phone-2]) "wrong")
+     :value         (get-in data [:design-system :form :pill-phone-2])
+     :errors        (if (= (get-in data [:design-system :form :pill-phone-2]) "wrong")
                       [{:long-message "wrong"}]
                       [])} 
     {:ui-element ui/teal-button
@@ -502,13 +504,14 @@
     [:.dark-gray
      [:div.bg-light-gray
       [:div.col-6-on-tb-dt.mx-auto
-       (component/build tabs/component
-                        {:selected-tab (get-in data keypaths/navigation-event)}
-                        {:opts {:tab-refs ["one" "two" "three"]
-                                :labels   ["One" "Two" "Three"]
-                                :tabs     [events/navigate-style-guide-navigation-tab1
-                                           events/navigate-style-guide-navigation
-                                           events/navigate-style-guide-navigation-tab3]}})]]]]))
+       #?(:cljs
+          (component/build tabs/component
+                           {:selected-tab (get-in data keypaths/navigation-event)}
+                           {:opts {:tab-refs ["one" "two" "three"]
+                                   :labels   ["One" "Two" "Three"]
+                                   :tabs     [events/navigate-design-system-navigation-tab1
+                                              events/navigate-design-system-navigation
+                                              events/navigate-design-system-navigation-tab3]}}))]]]]))
 
 (defn ^:private progress [data _ _]
   (component/create
@@ -674,18 +677,18 @@
       #_swatch-custom-options
 
       #_(condp = (get-in data keypaths/navigation-event)
-          events/navigate-style-guide                 typography
-          events/navigate-style-guide-color           colors
-          events/navigate-style-guide-buttons         buttons
-          events/navigate-style-guide-spacing         spacing
-          events/navigate-style-guide-form-fields     (form-fields data)
-          events/navigate-style-guide-navigation      (component/build navigation data opts)
-          events/navigate-style-guide-navigation-tab1 (component/build navigation data opts)
-          events/navigate-style-guide-navigation-tab3 (component/build navigation data opts)
-          events/navigate-style-guide-progress        (component/build progress data opts)
-          events/navigate-style-guide-carousel        (component/build carousel data opts))]]]))
+          events/navigate-design-system                 typography
+          events/navigate-design-system-color           colors
+          events/navigate-design-system-buttons         buttons
+          events/navigate-design-system-spacing         spacing
+          events/navigate-design-system-form-fields     (form-fields data)
+          events/navigate-design-system-navigation      (component/build navigation data opts)
+          events/navigate-design-system-navigation-tab1 (component/build navigation data opts)
+          events/navigate-design-system-navigation-tab3 (component/build navigation data opts)
+          events/navigate-design-system-progress        (component/build progress data opts)
+          events/navigate-design-system-carousel        (component/build carousel data opts))]]]))
 
 (defn ^:export built-component [data opts]
   (component/build component data opts))
 
-(loader/set-loaded! :style-guide)
+#?(:cljs (loader/set-loaded! :design-system))

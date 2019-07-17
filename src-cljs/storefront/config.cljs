@@ -24,7 +24,7 @@
 (def enable-console-print?
   (= "development" js/environment))
 
-(def enable-style-guide?
+(def enable-design-system?
   (not= "production" js/environment))
 
 (def telligent-community-secured?

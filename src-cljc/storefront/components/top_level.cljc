@@ -222,13 +222,13 @@
     (component/create
      (cond
        #?@(:cljs
-           [(and config/enable-style-guide?
-                 (= events/navigate-style-guide
+           [(and config/enable-design-system?
+                 (= events/navigate-design-system
                     (->> nav-event
-                         (take (count events/navigate-style-guide))
+                         (take (count events/navigate-design-system))
                          vec)))
             [:div
-             ((ui/lazy-load-component :style-guide 'storefront.components.style-guide/built-component
+             ((ui/lazy-load-component :design-system 'design-system.home/built-component
                                       (get-in data keypaths/navigation-event))
               data nil)]])
 
