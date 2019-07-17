@@ -41,8 +41,9 @@
 
         ;; TODO(cwr,jjh) these ought to be stored in app-state ready-to-go
         {:keys [install-type]} (get-in data adventure-keypaths/adventure-choices)
-        selections             {:hair/family         #{install-type}
-                                :inventory/in-stock? #{true}}]
+        selections             (merge {:inventory/in-stock? #{true}}
+                                      (when (some? install-type)
+                                        {:hair/family #{install-type}}))]
     (let [selected-skus     (selector/match-all {} selections skus)
           texture-choices   (facets/available-options facets :hair/texture selected-skus)
           stylist-selected? (get-in data adventure-keypaths/adventure-servicing-stylist)

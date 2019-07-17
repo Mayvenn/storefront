@@ -15,6 +15,9 @@
             [storefront.transitions :as transitions]
             [catalog.products :as products]))
 
+(def default-adventure-hair-family
+  #{"bundles" "closures" "frontals" "360-frontals"})
+
 (defmethod transitions/transition-state events/control-adventure-choice
   [_ event {:keys [choice]} app-state]
   (-> app-state
@@ -98,6 +101,7 @@
                                (-> (get-in app-state keypaths/adventure-choices)
                                    adventure-choices->criteria
                                    (select-keys criteria)
+                                   (update :hair/family disj nil)
                                    (assoc :catalog/department    "hair"
                                           :catalog/discontinued? "false"))
                                #(messages/handle-message events/api-success-adventure-fetch-skus %))))
@@ -113,6 +117,7 @@
                                (-> (get-in app-state keypaths/adventure-choices)
                                    adventure-choices->criteria
                                    (select-keys criteria)
+                                   (update :hair/family disj nil)
                                    (assoc :catalog/department "hair"))
                                #(messages/handle-message events/api-success-v2-products %))))
 

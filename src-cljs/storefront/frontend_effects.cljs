@@ -366,10 +366,6 @@
                                       " Please visit freehairinstall.com to complete your order.")})
 
 (defmethod effects/perform-effects events/navigate-cart [_ event args _ app-state]
-  (let [answered-basic-info?  (boolean (get-in app-state adv-keypaths/adventure-choices-flow))]
-    (when (and (= "freeinstall" (get-in app-state keypaths/store-slug))
-               (not answered-basic-info?))
-      (history/enqueue-navigate events/navigate-adventure-home nil)))
   (api/get-shipping-methods)
   (api/get-states (get-in app-state keypaths/api-cache))
   (stripe/insert)

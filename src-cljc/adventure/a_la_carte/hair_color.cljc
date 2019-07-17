@@ -11,6 +11,7 @@
             [adventure.keypaths :as adventure-keypaths]
             [adventure.components.multi-prompt :as multi-prompt]
             [adventure.utils.facets :as facets]
+            [adventure.handlers :as handlers]
             [spice.selector :as selector]))
 
 (defn enriched-buttons [facet-options]
@@ -35,7 +36,9 @@
 
         ;; TODO(cwr,jjh) these ought to be stored in app-state ready-to-go
         {:keys [install-type texture]} (get-in data adventure-keypaths/adventure-choices)
-        selections                     {:hair/family         #{install-type}
+        selections                     {:hair/family        (if (some? install-type)
+                                                              #{install-type}
+                                                              handlers/default-adventure-hair-family)
                                         :hair/texture        #{texture}
                                         :inventory/in-stock? #{true}}
 

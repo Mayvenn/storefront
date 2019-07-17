@@ -7,22 +7,24 @@
             [storefront.platform.component-utils :as utils]
             [adventure.components.product-card :as product-card]
             [adventure.components.header :as header]
+            [adventure.handlers :as handlers]
             adventure.checkout.cart.items
             [storefront.effects :as effects]
             [adventure.progress]
             [adventure.keypaths]
             [storefront.request-keys :as request-keys]
             [adventure.keypaths :as adventure.keypaths]
-            [spice.maps :as maps]
             [spice.selector :as selector]))
 
 (defn ^:private query
   [data]
   (let [{:keys [install-type texture color]} (get-in data adventure.keypaths/adventure-choices)
         products                             (selector/match-all {}
-                                                                 {:hair/family  #{install-type "bundles"}
-                                                                  :hair/texture #{texture}
-                                                                  :hair/color   #{color}}
+                                                                 {:hair/texture #{texture}
+                                                                  :hair/color   #{color}
+                                                                  :hair/family  (if (some? install-type)
+                                                                                  #{install-type "bundles"}
+                                                                                  handlers/default-adventure-hair-family)}
                                                                  (vals (get-in data keypaths/v2-products)))
         stylist-selected?                    (get-in data adventure.keypaths/adventure-servicing-stylist)
         current-step                         (if stylist-selected? 3 2)]
@@ -93,4 +95,7 @@
 
 (defmethod effects/perform-effects events/navigate-adventure-a-la-carte-product-list
   [_ _ args _ app-state]
-  #?(:cljs (messages/handle-message events/adventure-fetch-matched-products {:criteria [:hair/texture :hair/family]})))
+  #?(:cljs (let [{:keys [install-type]} (get-in app-state adventure.keypaths/adventure-choices)]
+             (messages/handle-message events/adventure-fetch-matched-products {:criteria (if (some? install-type)
+                                                                                           [:hair/texture :hair/family]
+                                                                                           [:hair/texture])}))))
