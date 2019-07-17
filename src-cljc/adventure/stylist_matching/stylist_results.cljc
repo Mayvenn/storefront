@@ -47,7 +47,7 @@
   [data]
   (let [cards-data (cond->> (->> (get-in data keypaths/adventure-matched-stylists)
                                  (map-indexed (partial stylist-profile-card-data
-                                                       events/control-adventure-select-stylist-post-purchase)))
+                                                       events/control-adventure-select-stylist-pre-purchase)))
                      (experiments/recommend-your-stylist? data)
                      (insert-at-pos 3 {:card/type :callout
                                        :item      :recommend-stylist}))]
