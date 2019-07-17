@@ -115,6 +115,9 @@
 
 ;;;;;;;;;;;;;;;; not the best place to put, but it's at least out of main module ;;;;;;;;;;;;;;;;;;;;;
 
+(defn clear-field-errors [app-state]
+  (assoc-in app-state keypaths/errors {}))
+
 (defmethod effects/perform-effects events/navigate-stylist-account [_ event args _ app-state]
   (let [user-token (get-in app-state keypaths/user-token)
         user-id    (get-in app-state keypaths/user-id)
@@ -227,6 +230,16 @@
     (cond-> app-state
       (and (seq last-4) (= selected-id last-4))
       (assoc-in keypaths/stylist-manage-account-green-dot-payout-attributes {:last-4 last-4}))))
+
+(defmethod transition-state events/control-stylist-account-password-submit [_ event args app-state]
+  (let [stylist-account       (get-in app-state keypaths/stylist-manage-account)
+        password              (-> stylist-account :user :password)
+        field-errors          (cond-> {}
+                                (> 6 (count password))
+                                (merge (group-by :path [{:path ["user" "password"] :long-message "New password must be at least 6 characters"}])))]
+    (if (seq field-errors)
+      (assoc-in app-state keypaths/errors {:field-errors field-errors :error-code "invalid-input" :error-message "Oops! Please fix the errors below."})
+      (clear-field-errors app-state))))
 
 (defmethod transition-state events/api-success-stylist-account
   [_ event {:keys [stylist]} app-state]
