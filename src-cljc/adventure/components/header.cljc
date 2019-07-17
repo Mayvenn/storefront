@@ -41,7 +41,8 @@
            shopping-bag?
            subtitle
            title
-           logo?]} _ _]
+           logo?]
+    :or   {shopping-bag? true}} _ _]
   (component/create
    (let [right-corner (cond (seq right-corner) right-corner
                             shopping-bag?      (shopping-bag)

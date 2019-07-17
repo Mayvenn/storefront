@@ -449,7 +449,6 @@
     {:header-data                     {:progress                progress/product-details
                                        :title                   [:div.medium "The New You"]
                                        :subtitle                (str "Step " current-step " of 3")
-                                       :shopping-bag?           true
                                        :back-navigation-message [events/navigate-adventure-match-stylist]}
      :reviews                         (review-component/query data)
      :ugc                             ugc

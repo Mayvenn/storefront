@@ -76,6 +76,7 @@
      :title                         "Pick your stylist"
      :header-data                   {:title                   "Find Your Stylist"
                                      :back-navigation-message [events/navigate-adventure-find-your-stylist]
+                                     :shopping-bag?           false
                                      :subtitle                "Step 3 of 3"}
      :gallery-modal-data            {:ucare-img-urls                 (get-in data keypaths/adventure-stylist-gallery-image-urls) ;; empty hides the modal
                                      :initially-selected-image-index (get-in data keypaths/adventure-stylist-gallery-image-index)

@@ -9,7 +9,6 @@
 (def by-keyword
   {:shop-by-look-straight
    {:header-data  {:title                   "The New You"
-                   :shopping-bag?           true
                    :progress                progress/select-new-look-shop-by-look
                    :back-navigation-message [events/navigate-adventure-how-shop-hair]}
     :prompt       "Choose your Straight look"
@@ -18,7 +17,6 @@
 
    :shop-by-look-loose-wave
    {:header-data  {:title                   "The New You"
-                   :shopping-bag?           true
                    :progress                progress/select-new-look-shop-by-look
                    :back-navigation-message [events/navigate-adventure-how-shop-hair]}
     :prompt       "Choose your Loose Wave look"
@@ -27,7 +25,6 @@
 
    :shop-by-look-body-wave
    {:header-data  {:title                   "The New You"
-                   :shopping-bag?           true
                    :progress                progress/select-new-look-shop-by-look
                    :back-navigation-message [events/navigate-adventure-how-shop-hair]}
     :prompt       "Choose your Body Wave look"
@@ -36,7 +33,6 @@
 
    :shop-by-look-deep-wave
    {:header-data  {:title                   "The New You"
-                   :shopping-bag?           true
                    :progress                progress/select-new-look-shop-by-look
                    :back-navigation-message [events/navigate-adventure-how-shop-hair]}
     :prompt       "Choose your Deep Wave look"
@@ -45,7 +41,6 @@
 
    :bundle-sets-straight
    {:header-data  {:title                   "The New You"
-                   :shopping-bag?           true
                    :progress                progress/select-new-look-shop-by-bundlesets
                    :back-navigation-message [events/navigate-adventure-how-shop-hair]}
     :prompt       "Our fave Straight bundle sets"
@@ -54,7 +49,6 @@
 
    :bundle-sets-yaki-straight
    {:header-data  {:title                   "The New You"
-                   :shopping-bag?           true
                    :progress                progress/select-new-look-shop-by-bundlesets
                    :back-navigation-message [events/navigate-adventure-how-shop-hair]}
     :prompt       "Our fave Yaki Straight bundle sets"
@@ -63,7 +57,6 @@
 
    :bundle-sets-kinky-straight
    {:header-data  {:title                   "The New You"
-                   :shopping-bag?           true
                    :progress                progress/select-new-look-shop-by-bundlesets
                    :back-navigation-message [events/navigate-adventure-how-shop-hair]}
     :prompt       "Our fave Kinky Straight bundle sets"
@@ -72,7 +65,6 @@
 
    :bundle-sets-loose-wave
    {:header-data  {:title                   "The New You"
-                   :shopping-bag?           true
                    :progress                progress/select-new-look-shop-by-bundlesets
                    :back-navigation-message [events/navigate-adventure-how-shop-hair]}
     :prompt       "Our fave Loose Wave bundle sets"
@@ -81,7 +73,6 @@
 
    :bundle-sets-body-wave
    {:header-data  {:title                   "The New You"
-                   :shopping-bag?           true
                    :progress                progress/select-new-look-shop-by-bundlesets
                    :back-navigation-message [events/navigate-adventure-how-shop-hair]}
     :prompt       "Our fave Body Wave bundle sets"
@@ -90,7 +81,6 @@
 
    :bundle-sets-deep-wave
    {:header-data  {:title                   "The New You"
-                   :shopping-bag?           true
                    :progress                progress/select-new-look-shop-by-bundlesets
                    :back-navigation-message [events/navigate-adventure-how-shop-hair]}
     :prompt       "Our fave Deep Wave bundle sets"
@@ -99,7 +89,6 @@
 
    :bundle-sets-water-wave
    {:header-data  {:title                   "The New You"
-                   :shopping-bag?           true
                    :progress                progress/select-new-look-shop-by-bundlesets
                    :back-navigation-message [events/navigate-adventure-how-shop-hair]}
     :prompt       "Our fave Water Wave bundle sets"
@@ -108,7 +97,6 @@
 
    :bundle-sets-curly
    {:header-data  {:title                   "The New You"
-                   :shopping-bag?           true
                    :progress                progress/select-new-look-shop-by-bundlesets
                    :back-navigation-message [events/navigate-adventure-how-shop-hair]}
     :prompt       "Our fave Curly bundle sets"

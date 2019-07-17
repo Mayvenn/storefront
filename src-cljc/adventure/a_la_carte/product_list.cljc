@@ -33,8 +33,7 @@
       :header-data       {:title                   "The New You"
                           :progress                adventure.progress/a-la-carte-product-list
                           :back-navigation-message [events/navigate-adventure-a-la-carte-hair-color]
-                          :subtitle                (str "Step " current-step " of 3")
-                          :shopping-bag?           true}
+                          :subtitle                (str "Step " current-step " of 3")}
       :spinning?         (utils/requesting-from-endpoint? data request-keys/search-v2-products)
       :stylist-selected? stylist-selected?
       :product-cards     (->> products

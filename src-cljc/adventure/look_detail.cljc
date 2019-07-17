@@ -28,7 +28,6 @@
                         :subtitle                (str "Step " current-step " of 3")
                         :height                  "65px"
                         :progress                progress/look-detail
-                        :shopping-bag?           true
                         :back-navigation-message [events/navigate-adventure-select-new-look
                                                   {:album-keyword album-keyword}]}}))
 
