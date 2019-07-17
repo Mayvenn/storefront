@@ -143,10 +143,10 @@
                        (handle-message events/control-change-state
                                        {:keypath keypath
                                         :value   (.. e -target -checked)}))
-        set-state(fn [keypath value e]
-                   (.preventDefault e)
-                   (prn keypath value)
-                   (handle-message events/control-change-state {:keypath keypath :value value}))
+        set-state    (fn [keypath value e]
+                       (.preventDefault e)
+                       (prn keypath value)
+                       (handle-message events/control-change-state {:keypath keypath :value value}))
         button-attrs (get-in data [:style-guide :buttons])]
     [:section
      (header "Buttons")
@@ -158,14 +158,26 @@
        (color-swatch "teal" "40cbac")]]
      [:div.h6
       "Button States: "
-      [:pre.inline
+      [:pre
        "{"
+       [:label
+        ":height-class "
+        [:select
+         {:on-change #(handle-message events/control-change-state
+                                       {:keypath [:style-guide :buttons :height-class]
+                                        :value   (keyword (.. % -target -value))})}
+         (for [option [:small :medium :large]]
+           [:option {:value (name option)
+                     :selected (= option (get-in data [:style-guide :buttons :height-class]))}
+            (pr-str option)])]]
+       [:br]
        [:label
         [:input.mr1.ml2 {:type      "checkbox"
                          :checked   (get-in data [:style-guide :buttons :spinning?])
                          :on-change (partial toggle-state [:style-guide :buttons :spinning?])}]
         ":spinner? "
         (if (get-in data [:style-guide :buttons :spinning?]) "true" "false")]
+       [:br]
        [:label
         [:input.mr1.ml2 {:type      "checkbox"
                          :checked   (get-in data [:style-guide :buttons :disabled?])
@@ -190,9 +202,7 @@
       [:div.col.col-6.p1 (ui/teal-ghost-button button-attrs "ui/teal-ghost-button")]
 
       [:div.col.col-6.p1 (ui/underline-button button-attrs "ui/underline-button")]
-      [:div.col.col-6.p1 (ui/teal-button (merge button-attrs {:height-class "py2" :title "Used for adding promo codes to cart"}) "height-class py2")]
-      [:div.col.col-12.p1 (ui/teal-button {:spinning? false
-                                           :disabled? false}
+      [:div.col.col-12.p1 (ui/teal-button button-attrs
                                           [:div "col-12 with styled "
                                            [:span.medium.italic.underline "SPAN™"]
                                            " and svg "
@@ -208,8 +218,8 @@
                            {:ui-element ui/teal-button
                             :content    "Button"
                             :args       (merge button-attrs
-                                               {:class      "flex justify-center items-center circled-item"
-                                                :size-class "col-5"})})]]]))
+                                               {:class       "flex justify-center items-center circled-item"
+                                                :width-class "col-5"})})]]]))
 
 (def ^:private increment->size
   {1 "5px"
@@ -456,7 +466,7 @@
     {:ui-element ui/teal-button
      :content    "Get Survey"
      :args       {:class          "flex justify-center medium items-center circled-item"
-                  :size-class     "col-4"
+                  :width-class    "col-4"
                   :height-class   "py2"
                   :data-test      ""
                   :disabled-class "disabled bg-teal"}})
@@ -475,7 +485,7 @@
     {:ui-element ui/teal-button
      :content    "Get Survey"
      :args       {:class        "flex justify-center medium items-center circled-item"
-                  :size-class   "col-4"
+                  :width-class  "col-4"
                   :height-class "py2"
                   :data-test    ""
                   :disabled?    true}})])

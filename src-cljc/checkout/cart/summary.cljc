@@ -48,11 +48,12 @@
      :data-ref      "promo-code"}
     {:ui-element ui/teal-button
      :content    "Apply"
-     :args       {:on-click   (utils/send-event-callback events/control-cart-update-coupon)
-                  :class      "flex justify-center items-center"
-                  :size-class "flex-grow-3"
-                  :data-test  "cart-apply-promo"
-                  :disabled?  updating? :spinning?  applying?}})])
+     :args       {:on-click    (utils/send-event-callback events/control-cart-update-coupon)
+                  :class       "flex justify-center items-center"
+                  :width-class "flex-grow-3"
+                  :data-test   "cart-apply-promo"
+                  :disabled?   updating?
+                  :spinning?   applying?}})])
 
 (defn non-zero-adjustment? [{:keys [price coupon-code]}]
   (or (not (= price 0))

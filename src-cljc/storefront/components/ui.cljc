@@ -117,18 +117,23 @@
     (assert color (str "Button color " color-kw " has not been defined."))
     color))
 
-(defn button-class [color-kw {:keys [height-class size-class class]
-                              :or   {size-class "col-12" height-class "py3"}}]
+(def ^:private predefined-height-classes
+  {:small  "py1 h7"
+   :medium "py2"
+   :large  "py3"})
+
+(defn button-class [color-kw {:keys [height-class width-class class]
+                              :or   {width-class "col-12" height-class "py3"}}]
   (string/join " "
                ["btn h5"
-                size-class
-                height-class
+                width-class
+                (predefined-height-classes height-class height-class)
                 (button-colors color-kw)
                 class]))
 
 (defn color-button [color-kw attrs & content]
   (button (-> attrs
-              (dissoc :size-class)
+              (dissoc :width-class)
               (dissoc :height-class)
               (assoc :class (button-class color-kw attrs)))
           (into [:div] content)))

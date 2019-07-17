@@ -1,20 +1,24 @@
 (ns adventure.checkout.cart.items
   (:require
+   [adventure.keypaths :as adv-keypaths]
    [checkout.accessors.vouchers :as vouchers]
    [storefront.accessors.orders :as orders]
+   [storefront.accessors.stylists :as stylists]
    [storefront.components.ui :as ui]
+   [storefront.events :as events]
    [storefront.keypaths :as keypaths]
-   [adventure.keypaths :as adv-keypaths]
-   [storefront.accessors.stylists :as stylists]))
+   [storefront.platform.component-utils :as utils]))
 
 (defn line-item-detail [servicing-stylist-name]
-  [:div.mt0
+  [:div.mtn1
    (str "w/ " (if (empty? servicing-stylist-name)
                 "a Certified Mayvenn Stylist"
                 servicing-stylist-name))
-   [:ul.h6.list-img-purple-checkmark.pl4
-    (mapv (fn [%] [:li %])
-          ["Licensed Salon Stylist" "Mayvenn Certified" "In your area"])]])
+   (ui/teal-button (merge {:height-class :small
+                           :width-class "col-6"
+                           :class "mt1"}
+                          (utils/route-to events/navigate-adventure-find-your-stylist))
+                   "Pick a Stylist")])
 
 (defn freeinstall-line-item-query [data]
   (let [order                 (get-in data keypaths/order)
