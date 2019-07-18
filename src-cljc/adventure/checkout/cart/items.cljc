@@ -17,7 +17,7 @@
    (ui/teal-button (merge {:height-class :small
                            :width-class "col-6"
                            :class "mt1"}
-                          (utils/route-to events/navigate-adventure-find-your-stylist))
+                          (utils/route-to events/navigate-adventure-install-type))
                    "Pick a Stylist")])
 
 (defn freeinstall-line-item-query [data]
