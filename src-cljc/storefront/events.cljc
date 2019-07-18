@@ -1,4 +1,4 @@
-(ns storefront.events
+(ns ^:figwheel-always storefront.events
   (:require [storefront.macros :refer [defpath]]))
 
 (defpath app-start)
