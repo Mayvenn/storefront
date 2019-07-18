@@ -284,9 +284,7 @@
         (ui/aspect-ratio
          1 1
          [:img {:class "col-12"
-                :src   (if seen?
-                         image-url
-                         "")}])])]]))
+                :src   image-url}])])]]))
 
 (defmethod layer-view :faq
   [{:keys [expanded-index sections]} owner opts]
