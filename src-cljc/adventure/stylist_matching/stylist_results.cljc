@@ -110,8 +110,11 @@
 (defmethod effects/perform-effects events/navigate-adventure-stylist-results-pre-purchase
   [_ _ args _ app-state]
   #?(:cljs
-     (let [matched-stylists (get-in app-state keypaths/adventure-matched-stylists)]
-       (when (empty? matched-stylists) (messages/handle-message events/api-fetch-stylists-within-radius-pre-purchase))
+     (let [{:keys [latitude longitude]} (get-in app-state keypaths/adventure-choices)
+           matched-stylists             (get-in app-state keypaths/adventure-matched-stylists)]
+       (if (and latitude longitude)
+         (when (empty? matched-stylists)
+           (messages/handle-message events/api-fetch-stylists-within-radius-pre-purchase)))
        (messages/handle-message events/adventure-stylist-search-results-displayed))))
 
 (defmethod effects/perform-effects events/navigate-adventure-stylist-results-post-purchase

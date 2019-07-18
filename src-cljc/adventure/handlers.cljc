@@ -18,6 +18,20 @@
 (def default-adventure-hair-family
   #{"bundles" "closures" "frontals" "360-frontals"})
 
+(def events-not-to-direct-load
+  #{events/navigate-adventure-a-la-carte-hair-color
+    events/navigate-adventure-a-la-carte-product-list
+    events/navigate-adventure-out-of-area
+    events/navigate-adventure-stylist-results-pre-purchase
+    events/navigate-adventure-stylist-results-post-purchase
+    events/navigate-adventure-matching-stylist-wait-pre-purchase
+    events/navigate-adventure-matching-stylist-wait-post-purchase
+    events/navigate-adventure-find-your-stylist
+    events/navigate-adventure-match-stylist
+    events/navigate-adventure-match-success-pre-purchase
+    events/navigate-adventure-match-success-post-purchase
+    events/navigate-adventure-checkout-wait})
+
 (defmethod transitions/transition-state events/control-adventure-choice
   [_ event {:keys [choice]} app-state]
   (-> app-state
@@ -50,7 +64,7 @@
      (do
        (let [adventure-choices         (get-in app-state keypaths/adventure-choices)
              from-shop-to-freeinstall? (get-in app-state keypaths/adventure-from-shop-to-freeinstall?)]
-         (when (and (not= events/navigate-adventure-home event)
+         (when (and (events-not-to-direct-load event)
                     (empty? adventure-choices)
                     (not (and (= events/navigate-adventure-install-type event)
                               (or from-shop-to-freeinstall?

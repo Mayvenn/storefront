@@ -61,7 +61,7 @@
                                :a.navy
                                {:data-test "stylist-phone"
                                 :on-click  (utils/send-event-callback events/control-adventure-stylist-phone-clicked {:stylist-id   (:stylist-id stylist)
-                                                                                                                      :phone-number (formatters/phone-number (:phone (:address stylist)))})}
+                                                                                                                      :phone-number (some-> stylist :address :phone formatters/phone-number)})}
                                (formatters/phone-number (:phone (:address stylist))))
    :detail-attributes [(when (:licensed stylist)
                          "Licensed")
