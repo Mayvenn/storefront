@@ -221,7 +221,7 @@
                             :content    "Button"
                             :args       (merge button-attrs
                                                {:class       "flex justify-center items-center circled-item"
-                                                :width-class "col-5"})})]]]))
+                                                :width-class "col-5"})})]]))
 
 (def ^:private increment->size
   {1 "5px"
