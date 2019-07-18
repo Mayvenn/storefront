@@ -50,7 +50,7 @@
       :else expr)))
 
 (defn build* [component data opts]
-  #?(:clj (component data nil opts)
+  #?(:clj (component data nil (:opts opts))
      :cljs (om.core/build component data opts)))
 
 (defn create* [f]

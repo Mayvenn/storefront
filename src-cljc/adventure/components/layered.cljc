@@ -35,22 +35,25 @@
 
 (defmulti layer-view (fn [{:keys [layer/type]} _ _] type))
 
-(defn hero-image [{:keys [desktop-url mobile-url file-name alt]}]
-  [:picture
-   ;; Tablet/Desktop
-   [:source {:media   "(min-width: 750px)"
-             :src-set (str desktop-url "-/format/auto/-/quality/best/-/resize/1440x/" file-name " 1x")}]
-   ;; Mobile
-   [:source {:media   "(min-width: 426px)"
-             :src-set (str mobile-url "-/format/auto/-/quality/lightest/-/resize/2250x/" file-name " 3x, "
-                           mobile-url "-/format/auto/-/quality/lightest/-/resize/1500x/" file-name " 2x, "
-                           mobile-url "-/format/auto/-/quality/normal/-/resize/750x/" file-name " 1x ")}]
-   [:source {:src-set (str mobile-url "-/format/auto/-/quality/lightest/-/resize/1275x/" file-name " 3x, "
-                           mobile-url "-/format/auto/-/quality/lightest/-/resize/850x/" file-name " 2x, "
-                           mobile-url "-/format/auto/-/quality/normal/-/resize/425x/" file-name " 1x ")}]
-   ;; mobile
-   [:img.block.col-12 {:src (str mobile-url "-/format/auto/-/quality/normal/-/resize/750x/" file-name)
-                       :alt (str alt)}]])
+(defn hero-image [{:keys [desktop-url mobile-url file-name alt off-screen?]}]
+  (if off-screen?
+    [:img.block.col-12 {:src (str mobile-url "-/format/auto/-/quality/lightest/-/resize/50x/" file-name)
+                        :alt (str alt)}]
+    [:picture
+     ;; Tablet/Desktop
+     [:source {:media   "(min-width: 750px)"
+               :src-set (str desktop-url "-/format/auto/-/quality/best/-/resize/1440x/" file-name " 1x")}]
+     ;; Mobile
+     [:source {:media   "(min-width: 426px)"
+               :src-set (str mobile-url "-/format/auto/-/quality/lightest/-/resize/2250x/" file-name " 3x, "
+                             mobile-url "-/format/auto/-/quality/lightest/-/resize/1500x/" file-name " 2x, "
+                             mobile-url "-/format/auto/-/quality/normal/-/resize/750x/" file-name " 1x ")}]
+     [:source {:src-set (str mobile-url "-/format/auto/-/quality/lightest/-/resize/1275x/" file-name " 3x, "
+                             mobile-url "-/format/auto/-/quality/lightest/-/resize/850x/" file-name " 2x, "
+                             mobile-url "-/format/auto/-/quality/normal/-/resize/425x/" file-name " 1x ")}]
+     ;; mobile
+     [:img.block.col-12 {:src (str mobile-url "-/format/auto/-/quality/normal/-/resize/750x/" file-name)
+                         :alt (str alt)}]]))
 
 (defmethod layer-view :hero
   [data owner opts]
@@ -125,6 +128,10 @@
                            :height "14px"
                            :width  "14px"})]]]))
 
+(defn hero-image-component [{:screen/keys [seen?] :as data} owner opts]
+  (component/create
+   (hero-image (merge data {:off-screen? (not seen?)}))))
+
 (defmethod layer-view :image-block
   [{:photo/keys [mob-uuid
                  dsk-uuid
@@ -132,10 +139,13 @@
                  alt]} _ _]
   (component/create
    [:div.center.mx-auto
-    (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
-                 :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
-                 :file-name   file-name
-                 :alt         alt})]))
+    (ui/screen-aware
+      hero-image-component
+      {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
+       :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
+       :file-name   file-name
+       :alt         alt}
+      nil)]))
 
 (defmethod layer-view :checklist
   [data _ _]
@@ -251,6 +261,18 @@
       [:div.center.pt3
        (cta-with-chevron data)]])))
 
+(defn ^:private static-ugc [{:screen/keys [seen?] :keys [images]} owner opts]
+  (component/create
+   [:div.flex.flex-wrap.pt2
+    (for [{:keys [image-url]} images]
+      [:a.col-6.col-3-on-tb-dt.p1
+       (ui/aspect-ratio
+        1 1
+        [:img {:class "col-12"
+               :src   (if seen?
+                        image-url
+                        "")}])])]))
+
 (defmethod layer-view :ugc
   [data owner opts]
   (component/create
@@ -259,13 +281,7 @@
       [:h2.center value])
     (let [{:subheader/keys [value]} data]
       [:h6.center.dark-gray value])
-    [:div.flex.flex-wrap.pt2
-     (for [{:keys [image-url]} (:images data)]
-       [:a.col-6.col-3-on-tb-dt.p1
-        (ui/aspect-ratio
-         1 1
-         [:img {:class "col-12"
-                :src   image-url}])])]]))
+    (ui/screen-aware static-ugc data nil)]))
 
 (defmethod layer-view :faq
   [{:keys [expanded-index sections]} owner opts]
@@ -319,8 +335,54 @@
       "Email Us"
       "help@mayvenn.com")]]))
 
+(defn ^:private changing-the-game-mosaic [{:cta/keys [navigation-message]} owner opts]
+  (component/create
+   (let [we-are-mayvenn-link (apply utils/route-to navigation-message)
+         diishan-image       (ui/ucare-img {:class "col-12"} "e2186583-def8-4f97-95bc-180234b5d7f8")
+         mikka-image         (ui/ucare-img {:class "col-12"} "838e25f5-cd4b-4e15-bfd9-8bdb4b2ac341")
+         stylist-image       (ui/ucare-img {:class "col-12"} "6735b4d5-9b65-4fa9-96cd-871141b28672")
+         diishan-image-2     (ui/ucare-img {:class "col-12"} "ec9e0533-9eee-41ae-a61b-8dc22f045cb5")]
+     [:div
+      [:div.hide-on-tb-dt
+       [:div.flex.flex-wrap
+        [:a.block.col-6.p1
+         we-are-mayvenn-link
+         [:div.relative
+          diishan-image
+          [:div.absolute.bg-darken-3.overlay.flex.items-center.justify-center
+           teal-play-video-mobile]]]
+        [:a.col-6.px2
+         we-are-mayvenn-link
+         [:h4.my1.dark-gray.medium "Our Story"]
+         [:div.h6.teal.flex.items-center.medium.shout
+          "Watch Now"]]
+        [:div.col-6.p1 mikka-image]
+        [:div.col-6.p1 stylist-image]
+        [:div.col-6.px2.dark-gray
+         [:h4.my2.line-height-1 "“You deserve quality extensions and exceptional service without the unreasonable price tag.“"]
+         [:h6.medium.line-height-1 "- Diishan Imira"]
+         [:h6 "CEO of Mayvenn"]]
+        [:div.col-6.p1 diishan-image-2]]]
+
+      [:div.hide-on-mb.pb4
+       [:div.col-8.flex.flex-wrap.mx-auto
+        [:div.col-6.flex.flex-wrap.items-center
+         [:div.col-6.p1 mikka-image]
+         [:div.col-6.p1 stylist-image]
+         [:div.col-6.px1.pb1.dark-gray.flex.justify-start.flex-column
+          [:div.h3.line-height-3.col-11
+           "“You deserve quality extensions and exceptional service without the unreasonable price tag.“"]
+          [:h6.medium.line-height-1.mt2 "- Diishan Imira"]
+          [:h6.ml1 "CEO of Mayvenn"]]
+         [:div.col-6.p1.flex diishan-image-2]]
+        [:a.relative.col-6.p1
+         we-are-mayvenn-link
+         [:div.relative diishan-image
+          [:div.absolute.overlay.flex.items-center.justify-center.bg-darken-3
+           teal-play-video-desktop]]]]]])))
+
 (defmethod layer-view :homepage-were-changing-the-game
-  [{:cta/keys [navigation-message]} _ _]
+  [{:cta/keys [navigation-message] :as data} _ _]
   (component/create
    (let [we-are-mayvenn-link (apply utils/route-to navigation-message)
          diishan-image       (ui/ucare-img {:class "col-12"} "e2186583-def8-4f97-95bc-180234b5d7f8")
@@ -331,43 +393,7 @@
      [:div.h2.center "We're Changing The Game"]
      [:h6.center.mb2.dark-gray "Founded in Oakland, CA • 2013"]
 
-     [:div.hide-on-tb-dt
-      [:div.flex.flex-wrap
-       [:a.block.col-6.p1
-        we-are-mayvenn-link
-        [:div.relative
-         diishan-image
-         [:div.absolute.bg-darken-3.overlay.flex.items-center.justify-center
-          teal-play-video-mobile]]]
-       [:a.col-6.px2
-        we-are-mayvenn-link
-        [:h4.my1.dark-gray.medium "Our Story"]
-        [:div.h6.teal.flex.items-center.medium.shout
-         "Watch Now"]]
-       [:div.col-6.p1 mikka-image]
-       [:div.col-6.p1 stylist-image]
-       [:div.col-6.px2.dark-gray
-        [:h4.my2.line-height-1 "“You deserve quality extensions and exceptional service without the unreasonable price tag.“"]
-        [:h6.medium.line-height-1 "- Diishan Imira"]
-        [:h6 "CEO of Mayvenn"]]
-       [:div.col-6.p1 diishan-image-2]]]
-
-     [:div.hide-on-mb.pb4
-      [:div.col-8.flex.flex-wrap.mx-auto
-       [:div.col-6.flex.flex-wrap.items-center
-        [:div.col-6.p1 mikka-image]
-        [:div.col-6.p1 stylist-image]
-        [:div.col-6.px1.pb1.dark-gray.flex.justify-start.flex-column
-         [:div.h3.line-height-3.col-11
-          "“You deserve quality extensions and exceptional service without the unreasonable price tag.“"]
-         [:h6.medium.line-height-1.mt2 "- Diishan Imira"]
-         [:h6.ml1 "CEO of Mayvenn"]]
-        [:div.col-6.p1.flex diishan-image-2]]
-       [:a.relative.col-6.p1
-        we-are-mayvenn-link
-        [:div.relative diishan-image
-         [:div.absolute.overlay.flex.items-center.justify-center.bg-darken-3
-          teal-play-video-desktop]]]]]])))
+     (ui/screen-aware changing-the-game-mosaic data nil)])))
 
 (defmethod layer-view :sticky-footer
   [data owner opts]

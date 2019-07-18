@@ -1,5 +1,7 @@
 (ns storefront.components.ui
-  (:require #?@(:cljs [[storefront.loader :as loader]])
+  (:require #?@(:cljs [[storefront.loader :as loader]
+                       [om.core :as om]
+                       goog.events])
             [cemerick.url :as url]
             [clojure.string :as string]
             [storefront.assets :as assets]
@@ -887,3 +889,74 @@
      empty-stars
      [:span.mlp2 rating]]))
 
+(defn ^:private screen-aware-component [{:screen/keys [root-margin] :as data} owner {:keys [embed opts]}]
+  #?(:clj (component/create [:div
+                             (component/build embed
+                                                   (assoc data
+                                                          :screen/seen? nil
+                                                          :screen/visible? nil)
+                                                   opts)])
+     :cljs (reify
+             om/IInitState
+             (init-state [this]
+               {:seen?    false
+                :visible? nil})
+
+             om/IDidMount
+             (did-mount [this]
+               (if js/IntersectionObserver
+                 (let [observer (js/IntersectionObserver.
+                                 (fn [entries observer]
+                                   (doseq [entry entries]
+                                     (when (= (.-target entry)
+                                              (om/get-ref owner "trigger"))
+                                       (if (.-isIntersecting entry)
+                                         (do
+                                           (om/set-state! owner :seen? true)
+                                           (om/set-state! owner :visible? true))
+                                         (om/set-state! owner :visible? false)))))
+                                 #js {:rootMargin (or root-margin "25px")})]
+                   (om/set-state! owner :observer observer)
+                   (.observe observer (om/get-ref owner "trigger")))
+                 (do
+                   ;; No API, lie about it
+                   (om/set-state! owner :seen? true)
+                   (om/set-state! owner :visible? true))))
+             om/IWillUnmount
+             (will-unmount [_]
+               (when-let [observer (:observer (om/get-state owner))]
+                 (.unobserve observer (om/get-ref owner "trigger"))
+                 (.disconnect observer)))
+             om/IRenderState
+             (render-state [this {:keys [seen? visible?]}]
+               (component/html [:div {:ref "trigger"}
+                                (component/build embed
+                                                 (assoc data
+                                                        :screen/seen? seen?
+                                                        :screen/visible? visible?)
+                                                 opts)])))))
+
+(defn screen-aware
+  "A decorator around component/build that sets the screen information data to
+  the underlying component.
+
+  Extra keys associated into the data:
+
+   :screen/seen? (bool) if the user's screen has this element on the screen at
+      least once
+   :screen/visible? (bool) if the user's screen currently has this element on
+      the screen.
+
+  If :screen/seen? and :screen/visible? is nil, then the component is under a
+  server-side render.
+
+  Note that this is best-effort and not a guarantee of accuracy. This requires
+  browsers to support the IntersectionObserver APIs. A browser that does not support
+  this API will have :screen/seen? and :screen/visible? both sets to true.
+  "
+  [component data opts]
+  (component/build
+   screen-aware-component
+   data
+   {:opts {:embed component
+           :opts  opts}}))
