@@ -578,7 +578,7 @@
         (assoc-in keypaths/browse-recently-added-skus [])
         (assoc-in keypaths/browse-sku-quantity 1)
         (assoc-in catalog.keypaths/detailed-product-selected-picker nil)
-        (assoc-selections sku)
+        (cond-> sku (assoc-selections sku))  ; can be nil if not yet fetched
         (assoc-in catalog.keypaths/detailed-product-options options))))
 
 (defmethod transitions/transition-state events/control-product-detail-picker-option-select
@@ -655,6 +655,7 @@
         product-skus (products/extract-product-skus app-state product)
         options      (generate-product-options app-state)]
     (-> app-state
+        (assoc-selections sku)
         (assoc-in catalog.keypaths/detailed-product-product-skus product-skus)
         (assoc-in catalog.keypaths/detailed-product-selected-sku sku)
         (assoc-in catalog.keypaths/detailed-product-options options))))
