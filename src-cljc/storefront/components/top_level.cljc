@@ -21,6 +21,8 @@
                        storefront.components.share-your-cart
                        storefront.components.v2-homepage-popup
                        storefront.components.to-adventure-popup])
+            #?@(:clj
+                [[design-system.home :as design-system]])
             adventure.home
             adventure.informational.about-our-hair
             adventure.informational.certified-stylists
@@ -221,16 +223,14 @@
         freeinstall? (= "freeinstall" (get-in data keypaths/store-slug))]
     (component/create
      (cond
-       #?@(:cljs
-           [(and config/enable-design-system?
-                 (= events/navigate-design-system
-                    (->> nav-event
-                         (take (count events/navigate-design-system))
-                         vec)))
-            [:div
-             ((ui/lazy-load-component :design-system 'design-system.home/built-component
-                                      (get-in data keypaths/navigation-event))
-              data nil)]])
+       (routes/sub-page? [nav-event] [events/navigate-design-system])
+       #?(:clj
+          (design-system.home/top-level data nil)
+          :cljs
+           ((ui/lazy-load-component :design-system
+                                    'design-system.home/top-level
+                                    (get-in data keypaths/navigation-event))
+            data nil))
 
        (get-in data keypaths/menu-expanded)
        (slideout-nav/built-component data nil)

@@ -72,6 +72,7 @@
 (defpath navigate-design-system-navigation-tab3)
 (defpath navigate-design-system-progress)
 (defpath navigate-design-system-carousel)
+(defpath navigate-design-system-adventure)
 
 (defpath navigate-order-complete)
 (defpath navigate-need-match-order-complete)

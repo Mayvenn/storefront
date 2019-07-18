@@ -1,5 +1,6 @@
 (ns design-system.home
-  (:require [storefront.component :as component]
+  (:require [design-system.adventure :as adventure]
+            [storefront.component :as component]
             #?@(:cljs
                 [[storefront.components.tabs :as tabs]
                  [storefront.loader :as loader]])
@@ -690,5 +691,23 @@
 
 (defn ^:export built-component [data opts]
   (component/build component data opts))
+
+(defn top-level
+  [data opts]
+  (let [routed-component
+        (condp = (get-in data keypaths/navigation-event)
+          events/navigate-design-system-adventure adventure/built-component
+          built-component)]
+    (component/build
+     #(component/create
+       [:div
+        [:div
+         [:a.h1 (utils/route-to events/navigate-design-system) "Design System"]
+         " - "
+         [:a.h2 (utils/route-to events/navigate-design-system-adventure) "adventure"]]
+        (routed-component %1 %3)
+        ])
+     data
+     opts)))
 
 #?(:cljs (loader/set-loaded! :design-system))
