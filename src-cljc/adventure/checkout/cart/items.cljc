@@ -9,32 +9,34 @@
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]))
 
-(defn line-item-detail [servicing-stylist-name]
+(defn line-item-detail [confirmation-page? servicing-stylist-name]
   [:div.mtn1
    (str "w/ " (if (empty? servicing-stylist-name)
                 "a Certified Mayvenn Stylist"
                 servicing-stylist-name))
 
    (if (empty? servicing-stylist-name)
-     (ui/teal-button (merge {:height-class :small
-                             :width-class "col-6"
-                             :class "mt1"}
-                            (utils/route-to events/navigate-adventure-install-type))
-                     "Pick a Stylist")
+     (when (not confirmation-page?)
+       (ui/teal-button (merge {:height-class :small
+                               :width-class  "col-6"
+                               :class        "mt1"}
+                              (utils/route-to events/navigate-adventure-install-type))
+                       "Pick a Stylist"))
      [:ul.h6.list-img-purple-checkmark.pl4
       (mapv (fn [%] [:li %])
             ["Licensed Salon Stylist" "Mayvenn Certified" "In your area"])])])
 
 (defn freeinstall-line-item-query [data]
-  (let [order                 (get-in data keypaths/order)
-        highest-value-service (or
-                               (when-let [install-type (:install-type order)]
-                                 (keyword install-type))
-                               ;; TODO: GROT when all older cart orders have been migrated to install-type
-                               (some-> order
-                                       orders/product-items
-                                       vouchers/product-items->highest-value-service)
-                               :leave-out)
+  (let [order                  (get-in data keypaths/order)
+        confirmation?          (= events/navigate-checkout-confirmation (get-in data keypaths/navigation-event))
+        highest-value-service  (or
+                                (when-let [install-type (:install-type order)]
+                                  (keyword install-type))
+                                ;; TODO: GROT when all older cart orders have been migrated to install-type
+                                (some-> order
+                                        orders/product-items
+                                        vouchers/product-items->highest-value-service)
+                                :leave-out)
         diva-advertised-type   (->> (get-in data keypaths/environment)
                                     vouchers/campaign-configuration
                                     (filter #(= (:service/type %) highest-value-service))
@@ -48,7 +50,8 @@
         servicing-stylist      (get-in data adv-keypaths/adventure-servicing-stylist)]
     {:id                     "freeinstall"
      :title                  "Install"
-     :detail                 (line-item-detail (stylists/->display-name servicing-stylist))
+     :detail                 (line-item-detail confirmation?
+                                               (stylists/->display-name servicing-stylist))
      :price                  service-price
      :total-savings          (orders/total-savings order service-price)
      :number-of-items-needed number-of-items-needed
