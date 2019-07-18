@@ -49,7 +49,7 @@
                                  (map-indexed (partial stylist-profile-card-data
                                                        events/control-adventure-select-stylist-pre-purchase)))
                      (experiments/recommend-your-stylist? data)
-                     (insert-at-pos 3 {:card/type :callout
+                     (insert-at-pos 3 {:card/type :recommend-stylist
                                        :item      :recommend-stylist}))]
     {:current-step                  2
      :title                         "Pick your stylist"
