@@ -270,18 +270,6 @@
       [:div.center.pt3
        (cta-with-chevron data)]])))
 
-(defn ^:private static-ugc [{:screen/keys [seen?] :keys [images]} owner opts]
-  (component/create
-   [:div.flex.flex-wrap.pt2
-    (for [{:keys [image-url]} images]
-      [:a.col-6.col-3-on-tb-dt.p1
-       (ui/aspect-ratio
-        1 1
-        [:img {:class "col-12"
-               :src   (if seen?
-                        image-url
-                        "")}])])]))
-
 (defmethod layer-view :ugc
   [data owner opts]
   (component/create
@@ -290,7 +278,15 @@
       [:h2.center value])
     (let [{:subheader/keys [value]} data]
       [:h6.center.dark-gray value])
-    (ui/screen-aware static-ugc data nil)]))
+    [:div.flex.flex-wrap.pt2
+     (for [{:keys [image-url]} (:images data)]
+       [:a.col-6.col-3-on-tb-dt.p1
+        (ui/aspect-ratio
+         1 1
+         [:img {:class "col-12"
+                :src   (if seen?
+                         image-url
+                         "")}])])]]))
 
 (defmethod layer-view :faq
   [{:keys [expanded-index sections]} owner opts]
