@@ -129,8 +129,8 @@
                                             :height  "21px"
                                             :opacity 0.2}}
             (svg/social-icon (:social-service look))]]]
-         [:div
-          (om/build reviews/reviews-summary-component {:yotpo-data-attributes yotpo-data-attributes} nil)]
+         (when yotpo-data-attributes
+           [:div (om/build reviews/reviews-summary-component {:yotpo-data-attributes yotpo-data-attributes} nil)])
          (when-not (str/blank? (:description look))
            [:p.h7.px3.pb1.dark-gray.bg-white.clearfix (:description look)])])
       (if fetching-shared-cart?
