@@ -4,7 +4,7 @@
 (def adventure-affiliate-stylist-id (conj adventure :affiliate-stylist-id))
 (def adventure-from-shop-to-freeinstall? (conj adventure :from-shop-to-freeinstall?))
 (def adventure-random-sequence (conj adventure :random-sequence))
-(def adventure-home-video (conj adventure [:home-video]))
+(def adventure-home-video (conj adventure :home-video))
 (def adventure-choices (conj adventure :choices))
 (def adventure-choices-flow (conj adventure-choices :flow))
 (def adventure-choices-color (conj adventure-choices :color))
