@@ -89,7 +89,7 @@
         (svg/simple-x (merge close-dialog-href
                              {:class     "white"
                               :data-test "dismiss-email-capture"
-                              :style     {:width  "18"
+                              :style     {:width  "18px"
                                           :height "18px"
                                           :color  "gray"}}))]
        [:div.bold.px3
