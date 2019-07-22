@@ -83,8 +83,8 @@
      (ui/modal
       {:close-attrs close-dialog-href
        :col-class   "col-11 col-5-on-tb col-4-on-dt flex justify-center"}
-      [:div.flex.flex-column.bg-cover.bg-top.bg-white.p2
-       {:style {:max-width "400px"}}
+      [:div.flex.flex-column.bg-cover.bg-top.bg-white.p2.rounded.col-12
+       {:style {:max-width "345px"}}
        [:div.flex.justify-end.mt2.mr1
         (svg/simple-x (merge close-dialog-href
                              {:class     "white"
@@ -93,19 +93,25 @@
                                           :height "18px"
                                           :color  "gray"}}))]
        [:div.bold.px3
-        [:div (ui/ucare-img {:width "24px"}
-                            "6620eab6-ca9b-4400-b8e5-d6ec00654dd3")]
-        [:div.h0 [:div "Buy Now,"]
+        (ui/ucare-img {:width "24px"} ;; Mayvenn logo
+                      "6620eab6-ca9b-4400-b8e5-d6ec00654dd3")
+        [:div.h0.line-height-1.pt3
+         [:div "Buy Now,"]
          [:div "Pay Later."]]
-        [:div.flex.items-center.my4
-         [:div.h2 "with"]
-         [:div.ml1 {:style {:width  "124px"
-                            :height "23px"}}
+        [:div.flex.my4
+         [:div.h2.mtb1 "with"]
+         [:div.ml2.mtp6 {:style {:width  "124px"
+                                 :height "23px"}}
           svg/quadpay-logo]]
-        [:div "Buy hair with 0% interest over 4 installments."]]
-       #_[:div {:style {:height "200px"}}]
-       [:div.px3.pt1.py3.m4
-        [:form.col-12.flex.flex-column.items-center {:on-submit submit-callback}
+        [:div.mt1
+         "Buy hair with "
+         [:span.purple "0%"]
+         " interest over "
+         [:div [:span.purple "4"]
+          " installments."]]]
+       [:div.px3.mt10.mb4
+        [:form.col-12.flex.flex-column.items-center
+         {:on-submit submit-callback}
          [:div.col-12.mx-auto
           (ui/text-field {:errors    (get errors ["email"])
                           :keypath   keypaths/captured-email
@@ -115,12 +121,12 @@
                           :required  true
                           :type      "email"
                           :value     email
-                          :class     "col-12 center bold"
+                          :class     "dark-gray h6 bg-light-silver"
                           :data-test "email-input"})
-          (ui/submit-button "Sign Up Now"
-                            {:color-kw     :color/quadpay
-                             :height-class "py1"
-                             :class        "h6 bold mt1"
+          (ui/submit-button "Shop Now"
+                            {:color-kw     :color/teal
+                             :height-class "py3"
+                             :class        "h3 bold mt1"
                              :data-test    "email-input-submit"})]]]])
      (ui/modal ;; not email-capture-quadpay-new?
       {:close-attrs close-dialog-href
