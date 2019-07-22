@@ -4,6 +4,7 @@
             [storefront.component :as component]
             [storefront.components.ui :as ui]
             [storefront.components.popup :as popup]
+            [storefront.components.svg :as svg]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]))
@@ -78,13 +79,28 @@
    (ui/modal
     {:close-attrs close-dialog-href
      :col-class   "col-11 col-5-on-tb col-4-on-dt flex justify-center"}
-    [:div.flex.flex-column.bg-cover.bg-top.bg-email-capture
+    [:div.flex.flex-column.bg-cover.bg-top.bg-white.p2 ;; .bg-email-capture
      {:style {:max-width "400px"}}
-     [:div.flex.justify-end
-      (ui/big-x {:data-test "dismiss-email-capture"
-                 :attrs     close-dialog-href})]
-     [:div {:style {:height "200px"}}]
-     [:div.px4.pt1.py3.m4
+     [:div.flex.justify-end.mt2.mr1
+      (svg/simple-x (merge close-dialog-href
+                           {:class     "white"
+                            :data-test "dismiss-email-capture"
+                            :style     {:width  "18"
+                                        :height "18px"
+                                        :color  "gray"}}))]
+     [:div.bold.px3
+      [:div (ui/ucare-img {:width "24px"}
+                          "6620eab6-ca9b-4400-b8e5-d6ec00654dd3")]
+      [:div.h0 [:div "Buy Now,"]
+               [:div "Pay Later."]]
+      [:div.flex.items-center.my4
+       [:div.h2 "with"]
+       [:div.ml1 {:style {:width  "124px"
+                          :height "23px"}}
+        svg/quadpay-logo]]
+      [:div "Buy hair with 0% interest over 4 installments."]]
+     #_[:div {:style {:height "200px"}}]
+     [:div.px3.pt1.py3.m4
       [:form.col-12.flex.flex-column.items-center {:on-submit submit-callback}
        [:div.col-12.mx-auto
         (ui/text-field {:errors    (get errors ["email"])
