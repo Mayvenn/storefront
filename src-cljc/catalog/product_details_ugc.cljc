@@ -9,9 +9,10 @@
             [clojure.string :as str]))
 
 (defn ^:private carousel-slide
-  [destination-event product-id page-slug sku-id idx
+  [destination-event product-id page-slug sku-id dt-prefix idx
    {:keys [image-url]}]
   [:div.p1
+   (when dt-prefix {:data-test (str dt-prefix idx)})
    [:a (if destination-event
          (util/fake-href destination-event {:offset idx})
          (util/route-to events/navigate-product-details
@@ -45,7 +46,7 @@
      [:div.center.mt4
       [:div.h2.medium.dark-gray.crush.m2 "#MayvennMade"]
       (component/build carousel/component
-                       {:slides   (map-indexed (partial carousel-slide destination-event product-id page-slug sku-id)
+                       {:slides   (map-indexed (partial carousel-slide destination-event product-id page-slug sku-id "mayvenn-made-slide-")
                                                social-cards)
                         :settings {:centerMode    true
                             ;; must be in px, because it gets parseInt'd for

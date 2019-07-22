@@ -46,24 +46,32 @@
             texture
             description
             social-media-platform]}]
-   (let [color-detail            (get color-details (color-name->color-slug color))
+   (let [color-detail     (get color-details (color-name->color-slug color))
+         on-adventure?    (routes/sub-page? [current-nav-event] [events/navigate-adventure])
+         adventure-album? (boolean (adventure.albums/by-keyword album-keyword))
          cta-nav-message
-         (if (adventure.albums/by-keyword album-keyword)
+         (cond
+           (and on-adventure? adventure-album?)
            [events/navigate-adventure-look-detail {:album-keyword album-keyword
                                                    :look-id       id}]
+
+           (and on-adventure? (not adventure-album?))
+           nil
+
+           :else
            [events/navigate-shop-by-look-details {:album-keyword (or (#{:deals} album-keyword) :look)
                                                   :look-id       id}])]
      (merge
-      {:id                     id
-       :image-url              photo-url
-       :overlay                texture
-       :description            description
-       :desktop-aware?         true
-       :social-service         social-media-platform
-       :icon-url               (:option/rectangle-swatch color-detail)
-       :title                  (or (:option/name color-detail)
-                                   "Check this out!")}
-      (when-not (= events/navigate-adventure-product-details current-nav-event)
+      {:id             id
+       :image-url      photo-url
+       :overlay        texture
+       :description    description
+       :desktop-aware? true
+       :social-service social-media-platform
+       :icon-url       (:option/rectangle-swatch color-detail)
+       :title          (or (:option/name color-detail)
+                           "Check this out!")}
+      (when cta-nav-message
         {:cta/button-type        :underline-button
          :cta/navigation-message cta-nav-message})))) )
 
