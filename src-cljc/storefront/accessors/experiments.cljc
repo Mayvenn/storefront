@@ -113,3 +113,6 @@
   [data]
   (display-feature? data "recommend-your-stylist"))
 
+(defn email-capture-quadpay-new?
+    [data]
+    (display-feature? data "email-capture-quadpay-new"))
