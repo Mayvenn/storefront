@@ -97,3 +97,10 @@
        rest
        (remove empty?)
        (string/join "-")))
+
+(defn phone-number-parens [phone]
+  (let [[area-code first-group second-group]
+        (-> phone
+            phone-number
+            (string/split #"-" 3))]
+    (str "(" area-code ") - " first-group " - " second-group )))
