@@ -56,11 +56,10 @@
 
 (defn ^:private query-pre-purchase
   [data]
-  (let [cards-data (cond->> (->> (get-in data keypaths/adventure-matched-stylists)
-                                 (map-indexed (partial stylist-profile-card-data
-                                                       events/control-adventure-select-stylist-pre-purchase)))
-                     (experiments/recommend-your-stylist? data)
-                     (insert-at-pos 3 recommend-your-stylist-query))]
+  (let [cards-data (->> (get-in data keypaths/adventure-matched-stylists)
+                        (map-indexed (partial stylist-profile-card-data
+                                              events/control-adventure-select-stylist-pre-purchase))
+                        (insert-at-pos 3 recommend-your-stylist-query))]
     {:current-step                  2
      :title                         "Pick your stylist"
      :header-data                   {:title                   "Find Your Stylist"
@@ -77,10 +76,9 @@
 
 (defn ^:private query-post-purchase
   [data]
-  (let [cards-data (cond->> (->> (get-in data keypaths/adventure-matched-stylists)
-                                 (map-indexed (partial stylist-profile-card-data events/control-adventure-select-stylist-post-purchase)))
-                     (experiments/recommend-your-stylist? data)
-                     (insert-at-pos 3 recommend-your-stylist-query))]
+  (let [cards-data (->> (get-in data keypaths/adventure-matched-stylists)
+                        (map-indexed (partial stylist-profile-card-data events/control-adventure-select-stylist-post-purchase))
+                        (insert-at-pos 3 recommend-your-stylist-query))]
     {:current-step                  3
      :title                         "Pick your stylist"
      :header-data                   {:title                   "Find Your Stylist"
