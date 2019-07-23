@@ -507,6 +507,7 @@
 (defpath navigate-adventure-match-success-pre-purchase)
 (defpath navigate-adventure-match-success-post-purchase)
 (defpath navigate-adventure-let-mayvenn-match)
+(defpath navigate-adventure-stylist-profile)
 
 (defpath navigate-adventure-product-details)
 

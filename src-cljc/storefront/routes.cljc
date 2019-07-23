@@ -67,6 +67,7 @@
     "/adv/match-success-post-purchase"                         (edn->bidi events/navigate-adventure-match-success-post-purchase)
     "/adv/checkout-wait"                                       (edn->bidi events/navigate-adventure-checkout-wait)
     "/adv/let-mayvenn-match"                                   (edn->bidi events/navigate-adventure-let-mayvenn-match)
+    ["/stylist/" [#"\d+" :stylist-id] "-" :store-slug]         (edn->bidi events/navigate-adventure-stylist-profile)
     "/certified-stylists"                                      (edn->bidi events/navigate-info-certified-stylists)
     "/about-our-hair"                                          (edn->bidi events/navigate-info-about-our-hair)
     "/how-it-works"                                            (edn->bidi events/navigate-info-how-it-works)}})

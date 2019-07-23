@@ -49,6 +49,7 @@
             adventure.stylist-matching.match-success
             adventure.stylist-matching.match-success-post-purchase
             adventure.stylist-matching.let-mayvenn-match
+            adventure.stylist-matching.stylist-profile
 
             [storefront.components.ui :as ui]
             [catalog.category :as category]
@@ -160,6 +161,7 @@
           events/navigate-adventure-match-success-post-purchase         adventure.stylist-matching.match-success-post-purchase/built-component
           events/navigate-adventure-checkout-wait                       adventure.checkout.wait/built-component
           events/navigate-adventure-let-mayvenn-match                   adventure.stylist-matching.let-mayvenn-match/built-component
+          events/navigate-adventure-stylist-profile                     adventure.stylist-matching.stylist-profile/built-component
           home/built-component)
     (assert (str "Expected main-component to return a component, but did not: " (pr-str nav-event)))))
 
