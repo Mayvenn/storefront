@@ -709,8 +709,7 @@
          [:a.h2 (utils/route-to events/navigate-design-system-classic) "Classic"]
          " - "
          [:a.h2 (utils/route-to events/navigate-design-system-adventure) "Adventure"]]
-        (routed-component %1 %3)
-        ])
+        (routed-component %1 %3)])
      data
      opts)))
 
