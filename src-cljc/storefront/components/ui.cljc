@@ -861,8 +861,7 @@
       :empty         "92d024c6-1e82-4561-925a-00d45862e358"
       nil))])
 
-(defn star-rating
-  [rating]
+(defn rating->stars [rating]
   (let [remainder-rating (mod rating 1)
         whole-stars      (map (partial star :whole) (range (int rating)))
         partial-star     (cond
@@ -883,6 +882,13 @@
                       (- 5
                          (count whole-stars)
                          (if partial-star 1 0))))]
+    {:whole-stars  whole-stars
+     :partial-star partial-star
+     :empty-stars  empty-stars}))
+
+(defn star-rating
+  [rating]
+  (let [{:keys [whole-stars partial-star empty-stars]} (rating->stars rating)]
     [:div.flex.items-center
      whole-stars
      partial-star
