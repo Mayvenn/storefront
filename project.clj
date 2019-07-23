@@ -8,7 +8,7 @@
                  [com.cognitect/transit-cljs "0.8.256"]
                  [environ "1.1.0"]
                  [tocsin "0.1.4"]
-                 [tugboat "0.1.22"]
+                 [tugboat "0.1.23"]
                  [mayvenn/spice "0.1.60"]
                  [compojure "1.6.1"]
                  [noir-exception "0.2.3"]
