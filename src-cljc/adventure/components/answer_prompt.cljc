@@ -58,7 +58,8 @@
      (component/build content-component data {:opts {:text-style "48px"}})]
 
     [:div.z5.bg-lavender.white.center.absolute.overflow-scroll.overflow-auto.overlay.bg-contain.bg-no-repeat.max-580.mx-auto.bg-contain.hide-on-tb-dt.pb3
-     {:style {:background-position "right top 34px"
+     {:style {:position "fixed"
+              :background-position "right top 34px"
               :background-size     "90vw auto"
               :background-image    (str "url('" prompt-image "')")}}
      (component/build content-component data nil)]]))
