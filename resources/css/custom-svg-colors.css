@@ -27,7 +27,7 @@
 .fill-dark-gray        { fill: var(--dark-gray); }
 .fill-black            { fill: var(--black); }
 
-:root {
+:root { /* Compare to app.css :( */
   --twitter-blue:   #00aced;
   --teal:         #40CBAC;
   --navy:         #175674;
