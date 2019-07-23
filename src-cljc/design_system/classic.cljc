@@ -1,20 +1,39 @@
 (ns design-system.classic
   (:require [storefront.component :as component]
             [design-system.organisms :as organisms]
-            [storefront.events :as events]))
+            [storefront.keypaths :as keypaths]
+            [storefront.transitions :as transitions]
+            [storefront.events :as events]
+            [popup.organisms :as popup]
+            [storefront.components.ui :as ui]
+            [storefront.platform.component-utils :as utils]))
 
-(def organisms
-  [#_
-   {:organism/label     :call-out-center
-    :organism/component call-out-center/organism
-    :organism/query     {:call-out-center/bg-class    "bg-lavender"
-                         :call-out-center/bg-ucare-id "6a221a42-9a1f-4443-8ecc-595af233ab42"
-                         :call-out-center/title       "Call Out Centered Title"
-                         :call-out-center/subtitle    "Subtitle"
-                         :cta/id                      "call-out-center"
-                         :cta/target                  events/navigate-design-system-adventure
-                         :cta/label                   "Call To Action"
-                         :react/key                   :call-out-center}}])
+(defn query
+  [data]
+  {:organism/label     :popup
+   :organism/component popup/organism
+   :organism/show?     (get-in data keypaths/popup)
+   :organism/query
+   {:modal-close/event             events/control-design-system-popup-dismiss
+    :pre-title/content             [:h7 "Pre-title"]
+    :monstrous-title/copy          ["Monstrous" "Title"]
+    :subtitle/copy                 "Subtitle"
+    :description/copy              ["Description"]
+    :single-field-form/callback    (utils/fake-href events/control-design-system-popup-dismiss)
+    :single-field-form/field-data  {:errors    nil
+                                    :keypath   nil
+                                    :focused   false
+                                    :label     "Placeholder"
+                                    :name      "textfield"
+                                    :type      "textfield"
+                                    :value     ""
+                                    :data-test "textfield-input"}
+    :single-field-form/button-data {:title        "Submit"
+                                    :color-kw     :color/teal
+                                    :height-class :large
+                                    :data-test    "email-input-submit"}}})
+
+
 
 (defn component
   [data owner opts]
@@ -23,9 +42,19 @@
     [:div.h1 "Classic Template"]
     [:section
      [:div.h2 "Organisms"]
-     [:section
-      (organisms/demo organisms)]]]))
+     [:section.p4
+      (ui/teal-button (utils/fake-href events/control-design-system-popup-show) "Show popup")
+      (when (:organism/show? data)
+        (component/build (:organism/component data)
+                         (:organism/query data)
+                         nil))]]]))
 
 (defn built-component
-  [data opts]
-  (component/build component data nil))
+  [app-state opts]
+  (component/build component (query app-state) nil))
+
+(defmethod transitions/transition-state events/control-design-system-popup-show [_ event args app-state]
+  (assoc-in app-state keypaths/popup true))
+
+(defmethod transitions/transition-state events/control-design-system-popup-dismiss [_ event args app-state]
+  (assoc-in app-state keypaths/popup nil))

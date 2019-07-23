@@ -161,6 +161,9 @@
 (defpath control-email-captured-dismiss)
 (defpath control-email-captured-submit)
 
+(defpath control-design-system-popup-show)
+(defpath control-design-system-popup-dismiss)
+
 (defpath control-free-install)
 (defpath control-free-install-shop-looks)
 

@@ -70,14 +70,44 @@
 
 (defmethod popup/query :email-capture-quadpay
   [app-state]
-  (popup.organisms/query app-state))
+  (let [errors  (get-in app-state keypaths/field-errors)
+        focused (get-in app-state keypaths/ui-focus)
+        email   (get-in app-state keypaths/captured-email)]
+    {:modal-close/event                  events/control-email-captured-dismiss
+     :capture/email-capture-quadpay-new? (experiments/email-capture-quadpay-new? app-state) ;; ns?
+     :pre-title/content                  (ui/ucare-img {:width "24px"} ;; Mayvenn logo
+                                                       "6620eab6-ca9b-4400-b8e5-d6ec00654dd3")
+     :monstrous-title/copy               ["Buy Now," "Pay Later."]
+     :subtitle/copy                      [[:div.mtb1 "with"]
+                                          [:div.ml2.mtp6 {:style {:width  "124px"
+                                                                  :height "23px"}}
+                                           svg/quadpay-logo]]
+     :description/copy                   [:div.mt1
+                                          "Buy hair with "
+                                          [:span.purple "0%"]
+                                          " interest over "
+                                          [:div [:span.purple "4"]
+                                           " installments."]]
+     :single-field-form/callback         events/control-email-captured-submit
+     :single-field-form/field-data       {:errors    (get errors ["email"])
+                                          :keypath   keypaths/captured-email
+                                          :focused   focused
+                                          :label     "Your E-Mail Address"
+                                          :name      "email"
+                                          :type      "email"
+                                          :value     email
+                                          :data-test "email-input"}
+     :single-field-form/button-data      {:title        "Shop Now"
+                                          :color-kw     :color/teal
+                                          :height-class :large
+                                          :data-test    "email-input-submit"}}))
 
 (defmethod popup/component :email-capture-quadpay
-  [{:as           args
-    :capture/keys [email email-capture-quadpay-new?]
-    :form/keys    [errors focused]} _ _]
+  [{:as                     query-data
+    :capture/keys           [email-capture-quadpay-new?]
+    :single-field-form/keys [callback field-data]} _ _]
   (if email-capture-quadpay-new?
-    (popup.organisms/organism args _ _)
+    (popup.organisms/organism query-data _ _)
     (component/create
      (ui/modal
       {:close-attrs close-dialog-href
@@ -89,19 +119,12 @@
                    :attrs     close-dialog-href})]
        [:div {:style {:height "200px"}}]
        [:div.px4.pt1.py3.m4
-        [:form.col-12.flex.flex-column.items-center {:on-submit submit-callback}
+        [:form.col-12.flex.flex-column.items-center {:on-submit (utils/send-event-callback callback)}
          [:div.col-12.mx-auto
-          (ui/text-field {:errors    (get errors ["email"])
-                          :keypath   keypaths/captured-email
-                          :focused   focused
-                          :label     "Your E-Mail Address"
-                          :name      "email"
-                          :required  true
-                          :type      "email"
-                          :value     email
-                          :class     "col-12 center bold"
-                          :data-test "email-input"})
-          (ui/submit-button "Sign Up Now"
+          (ui/text-field (merge {:required true
+                                 :class    "col-12 center bold"}
+                                field-data))
+          (ui/submit-button "Sign Up No"
                             {:color-kw     :color/quadpay
                              :height-class "py1"
                              :class        "h6 bold mt1"
