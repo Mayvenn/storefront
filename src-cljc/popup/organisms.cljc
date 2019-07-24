@@ -13,9 +13,8 @@
   ([close-event opts]
    [:div.flex.justify-end.mt2.mr1
     (svg/simple-x (merge (utils/fake-href close-event)
-                         {:class     "red"
-                          :style     {:width  "18px"
-                                      :height "18px"}}
+                         {:style {:width  "18px"
+                                  :height "18px"}}
                          opts))]))
 
 (defn monstrous-title
@@ -57,7 +56,8 @@
     [:div.flex.flex-column.bg-cover.bg-top.bg-white.p2.rounded.col-12
      {:style {:max-width "345px"}}
      (close-x modal-close-event
-              {:data-test "dismiss-email-capture"}
+              {:class     "fill-dark-gray"
+               :data-test "dismiss-email-capture"}
 )
      [:div.bold.px3
       pre-title-content
