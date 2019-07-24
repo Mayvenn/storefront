@@ -46,7 +46,8 @@
                                            :opts  (utils/fake-href events/control-email-captured-dismiss)
                                            :value (svg/simple-x {:class "white"
                                                                  :style {:width  "20px"
-                                                                         :height "20px"}})}
+                                                                         :height "20px"
+                                                                         :fill   "currentColor"}})}
                             :logo?        false
                             :title        nil
                             :subtitle     nil}
