@@ -55,7 +55,7 @@
      (stars-rating-molecule query)
      (stylist-phone-molecule query)]]))
 
-(defn ^:private checks-or-x
+(defn checks-or-x
   [specialty specialize?]
   [:div.h6.flex.items-center
    (if specialize?
