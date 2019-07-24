@@ -64,13 +64,13 @@
 
 (defn sku-best-matching-selections
   "Find the sku best matching selectors, falling back to trying one facet at a time"
-  [selections skus]
-  (when (seq selections)
-    (some (fn [criteria]
-            (first (sort-by :sku/price (selector/match-all {:selector/complete? true} criteria skus))))
-          [selections
-           {:hair/color (:hair/color selections)}
-           {:hair/length (:hair/length selections)}])))
+  [selections skus color-order-map]
+  (some (fn [criteria]
+          (skus/determine-epitome color-order-map
+                                  (selector/match-all {:selector/complete? true} criteria skus)))
+        [selections
+         {:hair/color (:hair/color selections)}
+         {:hair/length (:hair/length selections)}]))
 
 (defn query [data product]
   (let [selections       (get-in data catalog.keypaths/category-selections)
@@ -85,10 +85,9 @@
         ;; in order to fill the product card, we should always have a sku to use for
         ;; the cheapest-sku and epitome
         skus-to-search            (or (not-empty in-stock-skus) skus)
-        ;; It is technically possible for the cheapest sku to not be the epitome
-        cheapest-sku              (->> skus-to-search
-                                       (sort-by :sku/price)
-                                       first)
+        ;; It is technically possible for the cheapest sku to not be the epitome:
+        ;; If 10'' Black is sold out, 10'' Brown is the cheapest, but 12'' Black is the epitome
+        cheapest-sku              (skus/determine-cheapest color-order-map skus-to-search)
         ;; Product definition of epitome is the "first" SKU on the product details page where
         ;; first is when the first of every facet is selected.
         ;;
@@ -97,9 +96,10 @@
         product-detail-selections (get-in data catalog.keypaths/detailed-product-selections)]
     {:product                          product
      :skus                             skus
-     :epitome                          epitome
-     :sku-matching-previous-selections (sku-best-matching-selections product-detail-selections skus)
-     :cheapest-sku                     epitome
+     :sku-matching-previous-selections (sku-best-matching-selections product-detail-selections
+                                                                     skus
+                                                                     color-order-map)
+     :cheapest-sku                     cheapest-sku
      :color-order-map                  color-order-map
      :sold-out?                        (empty? in-stock-skus)
      :title                            (:copy/title product)
@@ -107,20 +107,19 @@
      :image                            (->> epitome
                                             :selector/images
                                             (filter (comp #{"catalog"} :use-case))
-                                            (sort-by (comp color-order-map first :hair/color))
                                             first)
      :facets                           facets
      :selections                       (get-in data catalog.keypaths/category-selections)}))
 
 (defn component
-  [{:keys [product skus cheapest-sku epitome sku-matching-previous-selections sold-out? title slug image facets color-order-map]}]
+  [{:keys [product skus cheapest-sku sku-matching-previous-selections sold-out? title slug image facets color-order-map]}]
   [:div.col.col-6.col-4-on-tb-dt.px1
    {:key slug}
    [:a.inherit-color
     (assoc (utils/route-to events/navigate-product-details
                            {:catalog/product-id (:catalog/product-id product)
                             :page/slug          slug
-                            :query-params       {:SKU (:catalog/sku-id (or sku-matching-previous-selections epitome))}})
+                            :query-params       {:SKU (:catalog/sku-id sku-matching-previous-selections)}})
            :data-test (str "product-" slug))
     [:div.center.relative
      ;; TODO: when adding aspect ratio, also use srcset/sizes to scale these images.
