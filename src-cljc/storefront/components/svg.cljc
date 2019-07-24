@@ -135,10 +135,8 @@
    [:svg.rotate-45 {:class class :style {:width "1.2em" :height "1.2em"}}
     (svg-xlink "counter-inc")]))
 
-(defn simple-x
-  [opts]
-  [:svg (maps/deep-merge {:class "stroke-black fill-black"} opts)
-   (svg-xlink "simple-x")])
+(defn simple-x [opts]
+  [:svg opts (svg-xlink "simple-x")])
 
 (def open-hamburger-menu
   (component/html
