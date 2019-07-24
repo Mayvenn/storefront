@@ -13,10 +13,8 @@
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
    [storefront.platform.messages :as messages]
-   [storefront.accessors.experiments :as experiments]
    [storefront.accessors.auth :as auth]
    [storefront.request-keys :as request-keys]
-   [catalog.products :as products]
    [catalog.keypaths]
    [catalog.skuers :as skuers]
    [spice.maps :as maps]
@@ -190,8 +188,7 @@
 (defn ^:private query
   [data]
   (let [category      (categories/current-category data)
-        selections    (get-in data catalog.keypaths/category-selections)
-        all-skus      (get-in data keypaths/v2-skus)
+        selections    (get-in data catalog.keypaths/category-selections )
         products-matching-category (selector/match-all {:selector/strict? true}
                                                        (skuers/essentials category)
                                                        (vals (get-in data keypaths/v2-products)))
