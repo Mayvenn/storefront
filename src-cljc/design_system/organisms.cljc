@@ -5,8 +5,8 @@
 (defn demo-component
   [{:organism/keys [label component query]} _ _]
   (component/create
-   [:div.py3
-    [:div.h3.px6.py2 (str label)]
+   [:div.py3.border.border-black.bg-light-gray
+    [:div.h3.px6.py2.bold (str label)]
     [:div (component/build component query nil)]
     [:div.p6
      [:div "query"]

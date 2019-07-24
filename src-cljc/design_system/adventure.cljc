@@ -5,6 +5,10 @@
             [design-system.organisms :as organisms]
             [storefront.events :as events]))
 
+;; - Atom is ui at the level of the browser
+;; - Molecule is an element that has a meaning... a contract
+;; - Organism is an element composed of molecules and atoms that is a merged contract
+
 (def nowhere events/navigate-design-system-adventure)
 
 (def organisms
@@ -40,24 +44,17 @@
                                                        :target-message [nowhere
                                                                         {:ucare-img-urls                 ["https://ucarecdn.com/41d4fb30-fa4c-45d9-907a-ce83964b7caf/"]
                                                                          :initially-selected-image-index 0}]}]
-                         :details [{:section-details/title "Detail A"
-                                    :section-details/content "x, y, z"}
-                                   {:section-details/title "Specialties"
-                                    :section-details/content [:div.mt1.col-12.col.regular
-                                                              [:div.col-4.col
-                                                               (stylist-profile/checks-or-x "A" false)
-                                                               (stylist-profile/checks-or-x "B" true)]
-                                                              [:div.col-4.col
-                                                               (stylist-profile/checks-or-x "C" true)
-                                                               (stylist-profile/checks-or-x "D" false)]]}]
-
-                         :profile-card-data          {:card-data {:image-url         "https://ucarecdn.com/6a221a42-9a1f-4443-8ecc-595af233ab42/"
-                                                                  :detail-line       "details details"
-                                                                  :detail-attributes ["comma" "separated" "list"]
-                                                                  :specialties       {:specialty-sew-in-leave-out   true
-                                                                                      :specialty-sew-in-closure     true
-                                                                                      :specialty-sew-in-frontal     false
-                                                                                      :specialty-sew-in-360-frontal false}}}}}])
+                         :details                    [{:section-details/title   "Detail A"
+                                                       :section-details/content "x, y, z"}
+                                                      {:section-details/title "Specialties"
+                                                       :section-details/content
+                                                       [:div.mt1.col-12.col.regular
+                                                        [:div.col-4.col
+                                                         (stylist-profile/checks-or-x "A" false)
+                                                         (stylist-profile/checks-or-x "B" true)]
+                                                        [:div.col-4.col
+                                                         (stylist-profile/checks-or-x "C" true)
+                                                         (stylist-profile/checks-or-x "D" false)]]}]}}])
 
 (defn component
   [data owner opts]

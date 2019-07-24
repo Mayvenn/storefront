@@ -148,7 +148,6 @@
                                         :value   (.. e -target -checked)}))
         set-state    (fn [keypath value e]
                        (.preventDefault e)
-                       (prn keypath value)
                        (handle-message events/control-change-state {:keypath keypath :value value}))
         button-attrs (get-in data [:design-system :buttons])]
     [:section
