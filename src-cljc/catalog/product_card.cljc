@@ -65,11 +65,12 @@
 (defn sku-best-matching-selections
   "Find the sku best matching selectors, falling back to trying one facet at a time"
   [selections skus]
-  (some (fn [criteria]
-          (first (sort-by :sku/price (selector/match-all {:selector/complete? true} criteria skus))))
-        [selections
-         {:hair/color (:hair/color selections)}
-         {:hair/length (:hair/length selections)}]))
+  (when (seq selections)
+    (some (fn [criteria]
+            (first (sort-by :sku/price (selector/match-all {:selector/complete? true} criteria skus))))
+          [selections
+           {:hair/color (:hair/color selections)}
+           {:hair/length (:hair/length selections)}])))
 
 (defn query [data product]
   (let [selections       (get-in data catalog.keypaths/category-selections)
@@ -98,7 +99,7 @@
      :skus                             skus
      :epitome                          epitome
      :sku-matching-previous-selections (sku-best-matching-selections product-detail-selections skus)
-     :cheapest-sku                     cheapest-sku
+     :cheapest-sku                     epitome
      :color-order-map                  color-order-map
      :sold-out?                        (empty? in-stock-skus)
      :title                            (:copy/title product)
