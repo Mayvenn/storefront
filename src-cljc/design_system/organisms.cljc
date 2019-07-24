@@ -1,12 +1,6 @@
 (ns design-system.organisms
   (:require [storefront.component :as component]
-            [clojure.string :as string]
             [clojure.pprint :as pprint]))
-
-(defn- pp
-  [form]
-  (interpose [:br]
-             (string/split-lines (with-out-str (pprint/pprint form)))))
 
 (defn demo-component
   [{:organism/keys [label component query]} _ _]
@@ -16,7 +10,7 @@
     [:div (component/build component query nil)]
     [:div.p6
      [:div "query"]
-     [:code.h8.nowrap (pp query)]]]))
+     [:pre.h8 (with-out-str (pprint/pprint query))]]]))
 
 (defn demo
   [organisms]
