@@ -56,9 +56,8 @@
     [:div.flex.flex-column.bg-cover.bg-top.bg-white.p2.rounded.col-12
      {:style {:max-width "345px"}}
      (close-x modal-close-event
-              {:class     "fill-dark-gray"
-               :data-test "dismiss-email-capture"}
-)
+              {:class     "dark-gray"
+               :data-test "dismiss-email-capture"})
      [:div.bold.px3
       pre-title-content
       (monstrous-title query)
