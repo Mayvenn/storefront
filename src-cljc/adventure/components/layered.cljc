@@ -137,9 +137,12 @@
                            :height "14px"
                            :width  "14px"})]]]))
 
-(defn hero-image-component [{:screen/keys [seen?] :as data} owner opts]
+(defn hero-image-component [{:screen/keys [server-render? seen?] :as data} owner opts]
   (component/create
-   (hero-image (merge data {:off-screen? (not seen?)}))))
+   [:div
+    (when server-render?
+      [:noscript (hero-image (merge data {:off-screen? false}))])
+    (hero-image (merge data {:off-screen? (not seen?)}))]))
 
 (defmethod layer-view :image-block
   [{:photo/keys [mob-uuid
@@ -247,7 +250,7 @@
                 {:class width-class}
                 [:div.flex.justify-center.items-end.my2
                  {:style {:height "39px"}}
-                 (ui/ucare-img {:alt (:header/title point) :width width} uuid)]
+                 (ui/defer-ucare-img {:alt (:header/title point) :width width} uuid)]
                 [:div.h5.medium (:header/value point)]
                 [:p.h6.mx-auto.dark-gray (:body/value point)]
                 (cta-with-chevron point)])]
@@ -270,6 +273,18 @@
       [:div.center.pt3
        (cta-with-chevron data)]])))
 
+(defn ^:private ugc-image [{:screen/keys [seen? server-render?] :keys [image-url]} owner opts]
+  (component/create
+   (ui/aspect-ratio
+    1 1
+    (cond
+      server-render? [:noscript
+                      [:img {:class "col-12"
+                             :src   image-url}]]
+      seen?          [:img {:class "col-12"
+                            :src   image-url}]
+      :else          [:div.col-12 " "]))))
+
 (defmethod layer-view :ugc
   [data owner opts]
   (component/create
@@ -281,10 +296,10 @@
     [:div.flex.flex-wrap.pt2
      (for [{:keys [image-url]} (:images data)]
        [:a.col-6.col-3-on-tb-dt.p1
-        (ui/aspect-ratio
-         1 1
-         [:img {:class "col-12"
-                :src   image-url}])])]]))
+        (ui/screen-aware
+         ugc-image
+         {:image-url image-url}
+         nil)])]]))
 
 (defmethod layer-view :faq
   [{:keys [expanded-index sections]} owner opts]
@@ -338,13 +353,18 @@
       "Email Us"
       "help@mayvenn.com")]]))
 
-(defn ^:private changing-the-game-mosaic [{:cta/keys [navigation-message]} owner opts]
+(defmethod layer-view :homepage-were-changing-the-game
+  [{:cta/keys [navigation-message] :as data} _ _]
   (component/create
    (let [we-are-mayvenn-link (apply utils/route-to navigation-message)
-         diishan-image       (ui/ucare-img {:class "col-12"} "e2186583-def8-4f97-95bc-180234b5d7f8")
-         mikka-image         (ui/ucare-img {:class "col-12"} "838e25f5-cd4b-4e15-bfd9-8bdb4b2ac341")
-         stylist-image       (ui/ucare-img {:class "col-12"} "6735b4d5-9b65-4fa9-96cd-871141b28672")
-         diishan-image-2     (ui/ucare-img {:class "col-12"} "ec9e0533-9eee-41ae-a61b-8dc22f045cb5")]
+         diishan-image       (ui/defer-ucare-img {:class "col-12"} "e2186583-def8-4f97-95bc-180234b5d7f8")
+         mikka-image         (ui/defer-ucare-img {:class "col-12"} "838e25f5-cd4b-4e15-bfd9-8bdb4b2ac341")
+         stylist-image       (ui/defer-ucare-img {:class "col-12"} "6735b4d5-9b65-4fa9-96cd-871141b28672")
+         diishan-image-2     (ui/defer-ucare-img {:class "col-12"} "ec9e0533-9eee-41ae-a61b-8dc22f045cb5")]
+    [:div.pt10.px4.pb8
+     [:div.h2.center "We're Changing The Game"]
+     [:h6.center.mb2.dark-gray "Founded in Oakland, CA • 2013"]
+
      [:div
       [:div.hide-on-tb-dt
        [:div.flex.flex-wrap
@@ -382,21 +402,7 @@
          we-are-mayvenn-link
          [:div.relative diishan-image
           [:div.absolute.overlay.flex.items-center.justify-center.bg-darken-3
-           teal-play-video-desktop]]]]]])))
-
-(defmethod layer-view :homepage-were-changing-the-game
-  [{:cta/keys [navigation-message] :as data} _ _]
-  (component/create
-   (let [we-are-mayvenn-link (apply utils/route-to navigation-message)
-         diishan-image       (ui/ucare-img {:class "col-12"} "e2186583-def8-4f97-95bc-180234b5d7f8")
-         mikka-image         (ui/ucare-img {:class "col-12"} "838e25f5-cd4b-4e15-bfd9-8bdb4b2ac341")
-         stylist-image       (ui/ucare-img {:class "col-12"} "6735b4d5-9b65-4fa9-96cd-871141b28672")
-         diishan-image-2     (ui/ucare-img {:class "col-12"} "ec9e0533-9eee-41ae-a61b-8dc22f045cb5")]
-    [:div.pt10.px4.pb8
-     [:div.h2.center "We're Changing The Game"]
-     [:h6.center.mb2.dark-gray "Founded in Oakland, CA • 2013"]
-
-     (ui/screen-aware changing-the-game-mosaic data nil)])))
+           teal-play-video-desktop]]]]]]])))
 
 (defmethod layer-view :sticky-footer
   [data owner opts]

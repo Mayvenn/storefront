@@ -900,6 +900,7 @@
   #?(:clj (component/create [:div
                              (component/build embed
                                                    (assoc data
+                                                          :screen/server-render? true
                                                           :screen/seen? nil
                                                           :screen/visible? nil)
                                                    opts)])
@@ -939,6 +940,7 @@
                (component/html [:div {:ref "trigger"}
                                 (component/build embed
                                                  (assoc data
+                                                        :screen/server-render? false
                                                         :screen/seen? seen?
                                                         :screen/visible? visible?)
                                                  opts)])))))
@@ -961,9 +963,33 @@
   browsers to support the IntersectionObserver APIs. A browser that does not support
   this API will have :screen/seen? and :screen/visible? both sets to true.
   "
-  [component data opts]
-  (component/build
-   screen-aware-component
-   data
-   {:opts {:embed component
-           :opts  opts}}))
+  ([component] (screen-aware component nil nil))
+  ([component data] (screen-aware component data nil))
+  ([component data opts]
+   (component/build
+    screen-aware-component
+    data
+    {:opts {:embed component
+            :opts  opts}})))
+
+(defn ^:private defer-ucare-img-component [{:screen/keys [seen? server-render?] :keys [id attrs]} owner opts]
+  (component/create
+   (let [placeholder-attrs (select-keys attrs [:class :width :height])]
+     (cond
+       server-render? [:noscript placeholder-attrs (ucare-img attrs id)]
+       seen? (ucare-img attrs id)
+       :else [:div placeholder-attrs]))))
+
+(defn defer-ucare-img
+  "A particular instance of screen-aware that only loads the image when the
+  screen can render (or almost render) this content.
+
+  Server side renders this via noscript.
+  "
+  [{:as   img-attrs
+    :keys [width retina-quality default-quality]
+    :or   {retina-quality  "lightest"
+           default-quality "normal"}}
+   image-id]
+  (screen-aware defer-ucare-img-component {:attrs img-attrs
+                                           :id    image-id}))

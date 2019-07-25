@@ -83,8 +83,8 @@
          [:div.hide-on-mb-tb.flex.justify-center.py3
           [:a.block.relative
            video-link
-           (ui/ucare-img {:alt "" :width "212"}
-                         "c487eeef-0f84-4378-a9be-13dc7c311e23")
+           (ui/defer-ucare-img {:alt "" :width "212"}
+             "c487eeef-0f84-4378-a9be-13dc7c311e23")
            [:div.absolute.top-0.bottom-0.left-0.right-0.flex.items-center.justify-center.bg-darken-3
             teal-play-video-desktop]]
           [:a.block.ml4.dark-gray
@@ -97,8 +97,8 @@
          [:div.hide-on-dt.flex.justify-center.py3
           [:a.block.relative
            video-link
-           (ui/ucare-img {:alt "" :width "152"}
-                         "1b58b859-842a-44b1-885c-eac965eeaa0f")
+           (ui/defer-ucare-img {:alt "" :width "152"}
+             "1b58b859-842a-44b1-885c-eac965eeaa0f")
            [:div.absolute.top-0.bottom-0.left-0.right-0.flex.items-center.justify-center.bg-darken-3
             teal-play-video-mobile]]
           [:a.block.ml2.dark-gray
