@@ -2,6 +2,7 @@
   (:require [om.core :as om]
             [clojure.set :as set]
             [clojure.string :as str]
+            [spice.core :as spice]
             [sablono.core :refer [html]]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.images :as images]
@@ -116,62 +117,63 @@
                                  shared-cart-type-copy above-button-copy base-price discounted-price
                                  quadpay-loaded? discount-text desktop-two-column? yotpo-data-attributes]}]
   [:div.clearfix
-      (when look
-        [:div
-         (when desktop-two-column?
-           {:class "col-on-tb-dt col-6-on-tb-dt px3-on-tb-dt"})
-         (carousel (imgs look shared-cart))
-         [:div.px3.pt2.bg-white
-          [:div.flex.items-center
-           [:div.flex-auto.medium {:style {:word-break "break-all"}}
-            (:title look)]
-           [:div.ml1.line-height-1 {:style {:width   "21px"
-                                            :height  "21px"
-                                            :opacity 0.2}}
-            (svg/social-icon (:social-service look))]]]
-         (when yotpo-data-attributes
-           [:div (om/build reviews/reviews-summary-component {:yotpo-data-attributes yotpo-data-attributes} nil)])
-         (when-not (str/blank? (:description look))
-           [:p.h7.px3.pb1.dark-gray.bg-white.clearfix (:description look)])])
-      (if fetching-shared-cart?
-        [:div.flex.justify-center.items-center (ui/large-spinner {:style {:height "4em"}})]
-        (when shared-cart
-          (let [line-items (:line-items shared-cart)
-                item-count (->> line-items (map :item/quantity) (reduce + 0))]
-            [:div.px2
-             {:class
-              (if desktop-two-column?
-                "col-on-tb-dt col-6-on-tb-dt px3-on-tb-dt"
-                [:mt3])}
-             [:div.border-top.border-light-gray.mt2.mxn2
-              (when desktop-two-column? {:class "hide-on-tb-dt"})]
-             [:div.h4.medium.pt2
-              {:data-test "item-quantity-in-look"}
-              (str item-count " items in this " shared-cart-type-copy)]
-             (display-line-items line-items skus)
-             [:div.border-top.border-light-gray.mxn2]
-             [:div.center.mb3
-              [:p.center.h5.flex.items-center.justify-center.bold
-               (svg/discount-tag {:class  "mxnp6"
-                                  :height "40px"
-                                  :width  "40px"})
-               discount-text]
-              [:div.strike.dark-gray.h6 (mf/as-money base-price)]
-              [:div.h2.medium (mf/as-money discounted-price)]]
-             (when above-button-copy
-               [:div.center.teal.medium.mt2 above-button-copy])
-             [:div.mt2.col-11.mx-auto
-              (add-to-cart-button sold-out? creating-order? look shared-cart)]
-             (component/build quadpay/component
-                              {:show?       quadpay-loaded?
-                               :order-total discounted-price
-                               :directive   [:div.flex.justify-center.items-center
-                                             "Just select"
-                                             [:div.mx1 {:style {:width "70px" :height "14px"}}
-                                              svg/quadpay-logo]
-                                             "at check out."]}
-                              nil)
-             (om/build reviews/reviews-component {:yotpo-data-attributes yotpo-data-attributes} nil)])))])
+   (when look
+     [:div
+      (when desktop-two-column?
+        {:class "col-on-tb-dt col-6-on-tb-dt px3-on-tb-dt"})
+      (carousel (imgs look shared-cart))
+      [:div.px3.pt2.bg-white
+       [:div.flex.items-center
+        [:div.flex-auto.medium {:style {:word-break "break-all"}}
+         (:title look)]
+        [:div.ml1.line-height-1 {:style {:width   "21px"
+                                         :height  "21px"
+                                         :opacity 0.2}}
+         (svg/social-icon (:social-service look))]]]
+      (when yotpo-data-attributes
+        [:div (om/build reviews/reviews-summary-component {:yotpo-data-attributes yotpo-data-attributes} nil)])
+      (when-not (str/blank? (:description look))
+        [:p.h7.px3.pb1.dark-gray.bg-white.clearfix (:description look)])])
+   (if fetching-shared-cart?
+     [:div.flex.justify-center.items-center (ui/large-spinner {:style {:height "4em"}})]
+     (when shared-cart
+       (let [line-items (:line-items shared-cart)
+             item-count (->> line-items (map :item/quantity) (reduce + 0))]
+         [:div.px2
+          {:class
+           (if desktop-two-column?
+             "col-on-tb-dt col-6-on-tb-dt px3-on-tb-dt"
+             [:mt3])}
+          [:div.border-top.border-light-gray.mt2.mxn2
+           (when desktop-two-column? {:class "hide-on-tb-dt"})]
+          [:div.h4.medium.pt2
+           {:data-test "item-quantity-in-look"}
+           (str item-count " items in this " shared-cart-type-copy)]
+          (display-line-items line-items skus)
+          [:div.border-top.border-light-gray.mxn2]
+          [:div.center.pt2.mb3
+           (when discount-text
+             [:p.center.h5.flex.items-center.justify-center.bold
+              (svg/discount-tag {:height "40px"
+                                 :width  "40px"})
+              discount-text])
+           (when-not (= discounted-price base-price)
+             [:div.strike.dark-gray.h6 (mf/as-money base-price)])
+           [:div.h2.medium (mf/as-money discounted-price)]]
+          (when above-button-copy
+            [:div.center.teal.medium.mt2 above-button-copy])
+          [:div.mt2.col-11.mx-auto
+           (add-to-cart-button sold-out? creating-order? look shared-cart)]
+          (component/build quadpay/component
+                           {:show?       quadpay-loaded?
+                            :order-total discounted-price
+                            :directive   [:div.flex.justify-center.items-center
+                                          "Just select"
+                                          [:div.mx1 {:style {:width "70px" :height "14px"}}
+                                           svg/quadpay-logo]
+                                          "at check out."]}
+                           nil)
+          (om/build reviews/reviews-component {:yotpo-data-attributes yotpo-data-attributes} nil)])))])
 
 (defn component
   [{:keys [back back-copy back-event album-keyword] :as look-details} owner opts]
@@ -205,6 +207,27 @@
             #(set/join % shared-cart-skus
                        {:legacy/variant-id :legacy/variant-id}))))
 
+(defn shared-cart-promo->discount
+  [promotions price shared-cart-promo]
+  (if (= "freeinstall" shared-cart-promo)
+    {:discount-text    "10% OFF + FREE Install"
+     :discounted-price (* 0.90 price)}
+    (let [promotion% (some->> promotions
+                              (filter (comp #{shared-cart-promo} str/lower-case :code))
+                              first
+                              :description
+                              (re-find #"\b(\d\d?\d?)%")
+                              second)]
+      {:discount-text    (some-> promotion% (str "% + 10% Bundle Discount"))
+       :discounted-price (or
+                          (some->> promotion%
+                                  spice/parse-int
+                                  (* 0.01)
+                                  (+ 0.10) ;; bundle-discount
+                                  (- 1.0)  ;; 100% - discount %
+                                  (* price))
+                          price)}))) ;; discounted price was unparsable
+
 (defn query [data]
   (let [skus                  (get-in data keypaths/v2-skus)
         shared-cart-with-skus (some-> (get-in data keypaths/shared-cart-current)
@@ -212,12 +235,16 @@
         navigation-event      (get-in data keypaths/navigation-event)
         album-keyword         (get-in data keypaths/selected-album-keyword)
 
-        look       (contentful/look->look-detail-social-card navigation-event album-keyword (contentful/selected-look data))
-        album-copy (get ugc/album-copy album-keyword)
-        base-price (apply + (map (fn [line-item]
-                                   (* (:item/quantity line-item)
-                                      (:sku/price line-item)))
-                                 (:line-items shared-cart-with-skus)))]
+        look              (contentful/look->look-detail-social-card navigation-event album-keyword (contentful/selected-look data))
+        album-copy        (get ugc/album-copy album-keyword)
+        base-price        (apply + (map (fn [line-item]
+                                          (* (:item/quantity line-item)
+                                             (:sku/price line-item)))
+                                        (:line-items shared-cart-with-skus)))
+        shared-cart-promo (some-> shared-cart-with-skus :promotion-codes first str/lower-case)
+        discount          (shared-cart-promo->discount (get-in data keypaths/promotions)
+                                                       base-price
+                                                       shared-cart-promo)]
     (merge {:shared-cart           shared-cart-with-skus
             :album-keyword         album-keyword
             :look                  look
@@ -228,14 +255,16 @@
             :back                  (first (get-in data keypaths/navigation-undo-stack))
             :back-event            (:default-back-event album-copy)
             :back-copy             (:back-copy album-copy)
-            :above-button-copy     (:above-button-copy album-copy)
+            :above-button-copy     (if-not (:discount-text discount)
+                                     "*Discounts applied at check out"
+                                     (:above-button-copy album-copy))
             :shared-cart-type-copy (:short-name album-copy)
             :look-detail-price?    (not= album-keyword :deals)
             :base-price            base-price
-            :discounted-price      (* 0.75 base-price)
+            :discounted-price      (:discounted-price discount)
             :quadpay-loaded?       (get-in data keypaths/loaded-quadpay)
             :desktop-two-column?   true
-            :discount-text         "15% Off + 10% Bundle Discount"}
+            :discount-text         (:discount-text discount)}
            (reviews/query-look-detail shared-cart-with-skus data))))
 
 (defn adventure-query [data]
