@@ -80,7 +80,7 @@
   #?(:cljs
      (api/get-promotions (get-in app-state keypaths/api-cache)
                          (some-> app-state
-                                 (get-in  keypaths/shared-cart-current)
+                                 (get-in keypaths/shared-cart-current)
                                  :promotion-codes
                                  first))))
 
