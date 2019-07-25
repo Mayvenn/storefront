@@ -9,23 +9,23 @@
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]))
 
-(defn ^:private line-item-detail [confirmation-page? add-more-hair? servicing-stylist-name]
-  [:div.mtn1
-   (str "w/ " (if (empty? servicing-stylist-name)
-                "a Certified Mayvenn Stylist"
-                servicing-stylist-name))
+(defn ^:private line-item-detail [on-confirmation-page? need-more-hair? servicing-stylist-name]
+  (let [need-servicing-stylist? (empty? servicing-stylist-name)]
+    [:div.mtn1
+     (str "w/" (if need-servicing-stylist? "a Certified Mayvenn Stylist" servicing-stylist-name))
 
-   (if (empty? servicing-stylist-name)
-     (when-not (or add-more-hair? confirmation-page?)
-       (ui/teal-button (merge {:height-class :small
-                               :width-class  "col-6"
-                               :class        "mt1"
-                               :data-test    "cart-pick-a-stylist"}
-                              (utils/route-to events/navigate-adventure-install-type))
-                       "Pick a Stylist"))
-     [:ul.h6.list-img-purple-checkmark.pl4
-      (mapv (fn [%] [:li %])
-            ["Licensed Salon Stylist" "Mayvenn Certified" "In your area"])])])
+     (when need-servicing-stylist?
+       (if (and (not on-confirmation-page?)
+                (not need-more-hair?))
+         (ui/teal-button (merge {:height-class :small
+                                 :width-class  "col-6"
+                                 :class        "mt1"
+                                 :data-test    "cart-pick-a-stylist"}
+                                (utils/route-to events/navigate-adventure-install-type))
+                         "Pick a Stylist")
+         [:ul.h6.list-img-purple-checkmark.pl4
+          (mapv (fn [%] [:li %])
+                ["Licensed Salon Stylist" "Mayvenn Certified" "In your area"])]))]))
 
 (defn freeinstall-line-item-query [data]
   (let [order                  (get-in data keypaths/order)
