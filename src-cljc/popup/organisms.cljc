@@ -1,6 +1,5 @@
 (ns popup.organisms
-  (:require [clojure.spec.alpha :as s]
-            [storefront.component :as component]
+  (:require [storefront.component :as component]
             [storefront.components.ui :as ui]
             [storefront.components.svg :as svg]
             [storefront.platform.component-utils :as utils]))

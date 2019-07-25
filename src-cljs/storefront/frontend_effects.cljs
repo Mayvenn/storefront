@@ -99,6 +99,7 @@
   (talkable/insert)
   (refresh-account app-state)
   (browser-events/attach-global-listeners)
+  (browser-events/attach-esc-key-listener)
   (browser-events/attach-capture-late-readystatechange-callbacks)
   (lucky-orange/track-store-experience (get-in app-state keypaths/store-experience))
   (when-let [stringer-distinct-id (cookie-jar/get-stringer-distinct-id (get-in app-state keypaths/cookie))]
@@ -117,10 +118,25 @@
   (pinterest/remove-tracking)
   (lucky-orange/remove-tracking)
   (pixlee/remove-tracking)
-  (browser-events/unattach-capture-late-readystatechange-callbacks))
+  (browser-events/unattach-capture-late-readystatechange-callbacks)
+  (browser-events/detach-esc-key-listener))
 
 (defmethod effects/perform-effects events/enable-feature [_ event {:keys [feature]} _ app-state]
   (messages/handle-message events/determine-and-show-popup))
+
+(def popup-dismiss-events
+  {:email-capture-quadpay  events/control-email-captured-dismiss
+   :email-capture          events/control-email-captured-dismiss
+   ;; TODO: this is a page take over not a normal modal should it still escape?
+   ;; :adv-email-capture  events/control
+   :adventure-free-install events/control-adventure-free-install-dismiss
+   :v2-homepage            events/control-v2-homepage-popup-dismiss
+   :to-adventure           events/control-to-adventure-popup-dismiss
+   :share-cart             events/control-popup-hide})
+
+(defmethod effects/perform-effects events/escape-key-pressed [_ event args _ app-state]
+  (when-let [message-to-handle (get popup-dismiss-events (get-in app-state keypaths/popup))]
+    (messages/handle-message message-to-handle)))
 
 (defmethod effects/perform-effects events/ensure-sku-ids
   [_ _ {:keys [sku-ids]} _ app-state]

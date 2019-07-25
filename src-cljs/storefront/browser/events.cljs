@@ -1,5 +1,6 @@
 (ns storefront.browser.events
   (:require goog.events
+            [goog.events.EventType :as EventType]
             [storefront.platform.messages :refer [handle-message]]
             [storefront.events :as events]))
 
@@ -63,6 +64,19 @@
                           (when (= "complete" (.-readyState js/document))
                             (reset! dom-is-ready true)
                             (f))))))
+
+(defn esc-key-handler
+  [e]
+  (when (= "Escape" (.-key e))
+    (handle-message events/escape-key-pressed)))
+
+(defn attach-esc-key-listener
+  []
+  (goog.events/listen js/document EventType/KEYDOWN esc-key-handler))
+
+(defn detach-esc-key-listener
+  []
+  (goog.events/unlisten js/document EventType/KEYDOWN esc-key-handler))
 
 (defn attach-global-listeners []
   ;; we don't need to worry about unlistening because the handler will do that

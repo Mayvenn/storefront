@@ -566,3 +566,5 @@
 (defpath spreedly-did-unmount)
 (defpath spreedly-frame-initialized)
 (defpath spreedly-frame-tokenized)
+
+(defpath escape-key-pressed)
