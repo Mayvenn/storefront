@@ -3,5 +3,5 @@
             catalog.product-details
             [storefront.loader :as loader]))
 
-(loader/set-loaded! :catalog)
+;; (loader/set-loaded! :catalog)
 
