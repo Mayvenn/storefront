@@ -33,6 +33,7 @@
             [storefront.config :as config]
             [storefront.cookies :as cookies]
             [storefront.events :as events]
+            [adventure.keypaths :as adventure-keypaths]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
             [storefront.system.contentful :as contentful]
