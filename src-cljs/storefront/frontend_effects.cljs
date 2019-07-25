@@ -86,7 +86,6 @@
                     js/JSON.parse
                     (js->clj :keywordize-keys true))]
     (messages/handle-message events/control-adventure-choice {:choice {:value choices}}))
-  (places-autocomplete/insert)
   (quadpay/insert)
   (svg/insert-sprite)
   (stringer/insert-tracking (get-in app-state keypaths/store-slug))
@@ -386,6 +385,7 @@
 (defmethod effects/perform-effects events/navigate-cart [_ event args _ app-state]
   (api/get-shipping-methods)
   (api/get-states (get-in app-state keypaths/api-cache))
+  (places-autocomplete/insert) ;; for address screen on the next page
   (stripe/insert)
   (quadpay/insert)
   (refresh-current-order app-state)
@@ -400,6 +400,7 @@
         (messages/handle-message events/enable-feature {:experiment experiment :feature (:feature variation)})))))
 
 (defmethod effects/perform-effects events/navigate-checkout [_ event args _ app-state]
+  (places-autocomplete/insert)
   (let [have-cart? (get-in app-state keypaths/order-number)]
     (cond
       (and (not have-cart?)

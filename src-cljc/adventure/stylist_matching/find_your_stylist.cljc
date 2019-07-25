@@ -3,9 +3,9 @@
    #?@(:cljs [[om.core :as om]
               [storefront.platform.messages :as messages]
               [storefront.effects :as effects]
-              [storefront.hooks.places-autocomplete :as places-autocomplete]
               [storefront.history :as history]
               [storefront.hooks.stringer :as stringer]
+              [storefront.hooks.places-autocomplete :as places-autocomplete]
               [storefront.browser.cookie-jar :as cookie]
               [sablono.core :as sablono]])
    [storefront.platform.component-utils :as utils]
@@ -94,7 +94,8 @@
 
 #?(:cljs
    (defmethod effects/perform-effects events/navigate-adventure-find-your-stylist [_ _ _ _ app-state]
-     (messages/handle-message events/adventure-clear-servicing-stylist)))
+     (messages/handle-message events/adventure-clear-servicing-stylist)
+     (places-autocomplete/insert)))
 
 (defmethod trackings/perform-track events/control-adventure-location-submit
   [_ event {:keys [current-step]} app-state]
