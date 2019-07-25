@@ -12,4 +12,4 @@
             checkout.processing
             storefront.components.checkout-complete))
 
-;; (loader/set-loaded! :checkout)
+(loader/set-loaded! :checkout)

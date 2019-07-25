@@ -474,7 +474,7 @@
                                        :stylist-gallery-open? (get-in data keypaths/carousel-stylist-gallery-open?)}
      :loaded-quadpay?                 (get-in data keypaths/loaded-quadpay)}))
 
-(defn built-component [data opts]
+(defn ^:export built-component [data opts]
   (component/build component (query data) opts))
 
 (defn get-valid-product-skus [product all-skus]

@@ -62,7 +62,7 @@
    :fetching-products?    (utils/requesting? data (conj request-keys/search-v2-products {}))
    :creating-cart?        (utils/requesting? data request-keys/create-order-from-shared-cart)})
 
-(defn built-component
+(defn ^:export built-component
   [data opts]
   (component/build component (query data) opts))
 

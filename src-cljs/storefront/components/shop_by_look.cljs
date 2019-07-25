@@ -44,5 +44,5 @@
      :spinning? (empty? looks)
      :deals?    (= selected-album-kw :deals)}))
 
-(defn built-component [data opts]
+(defn ^:export built-component [data opts]
   (component/build component (query data) opts))

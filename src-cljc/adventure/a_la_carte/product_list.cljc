@@ -89,7 +89,7 @@
        (for [product-card product-cards]
          (component/build product-card/component product-card nil))])]))
 
-(defn built-component
+(defn ^:export built-component
   [data opts]
   (component/build component (query data) opts))
 

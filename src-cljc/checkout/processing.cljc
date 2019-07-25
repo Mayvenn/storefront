@@ -21,7 +21,7 @@
 
 (defn query [data] {})
 
-(defn built-component [data opts]
+(defn ^:export built-component [data opts]
   (component/build component (query data) opts))
 
 (defn place-order [app-state]

@@ -5,6 +5,7 @@
             [storefront.accessors.orders :as orders]
             [storefront.component :as component]
             [storefront.components.checkout-credit-card :as cc]
+            [storefront.components.checkout-returning-or-guest :as checkout-returning-or-guest]
             [storefront.components.checkout-steps :as checkout-steps]
             [storefront.components.money-formatters :refer [as-money]]
             [storefront.components.promotion-banner :as promotion-banner]
@@ -312,7 +313,13 @@
       :loaded-quadpay?          (get-in data keypaths/loaded-quadpay)}
      (cc/query data))))
 
-(defn built-component [data opts]
+(defn ^:private built-non-auth-component [data opts]
   (if (= "freeinstall" (get-in data keypaths/store-slug))
     (om/build adventure-component (query data) opts)
     (om/build component (query data) opts)))
+
+(defn ^:export built-component [data opts]
+  (checkout-returning-or-guest/requires-sign-in-or-initiated-guest-checkout
+   built-non-auth-component
+   data
+   opts))

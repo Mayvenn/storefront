@@ -225,7 +225,7 @@
      :loading-products?   (utils/requesting? data (conj request-keys/search-v2-products
                                                         (skuers/essentials category)))}))
 
-(defn built-component
+(defn ^:export built-component
   [data opts]
   (component/build component (query data) opts))
 

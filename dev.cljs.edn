@@ -10,7 +10,12 @@
                     :redeem        {:output-to "resources/public/js/out/redeem.js"
                                     :entries   #{voucher.redeem}}
                     :design-system {:output-to "resources/public/js/out/design-system.js"
-                                    :entries   #{design-system.home}}}
+                                    :entries   #{design-system.home}}
+                    :catalog       {:output-to "resources/public/js/out/catalog.js"
+                                    :entries   #{catalog.core}}
+                    :checkout      {:output-to  "resources/public/js/out/checkout.js"
+                                    :entries    #{checkout.core}
+                                    :depends-on #{:catalog}}}
  :pretty-print     true
  :infer-externs    false
  :static-fns       true

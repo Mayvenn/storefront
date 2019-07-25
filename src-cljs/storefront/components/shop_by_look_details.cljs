@@ -273,5 +273,5 @@
             :discount-text         "10% OFF + FREE Install"}
            (reviews/query-look-detail shared-cart-with-skus data))))
 
-(defn built-component [data opts]
+(defn ^:export built-component [data opts]
   (om/build component (query data) opts))

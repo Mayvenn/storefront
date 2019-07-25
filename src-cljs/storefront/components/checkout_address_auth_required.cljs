@@ -5,7 +5,7 @@
 
 (defn ^:export built-component [data opts]
   (checkout-returning-or-guest/requires-sign-in-or-initiated-guest-checkout
-   (checkout-address/built-component data opts)
+   checkout-address/built-component
    data
    opts))
 

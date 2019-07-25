@@ -87,7 +87,12 @@
                                            :redeem        {:output-to "target/release/js/out/redeem.js"
                                                            :entries   #{voucher.redeem}}
                                            :design-system {:output-to "target/release/js/out/design-system.js"
-                                                           :entries   #{design-system.home}}}
+                                                           :entries   #{design-system.home}}
+                                           :catalog       {:output-to "target/release/js/out/catalog.js"
+                                                           :entries   #{catalog.core}}
+                                           :checkout      {:output-to  "target/release/js/out/checkout.js"
+                                                           :entries    #{checkout.core}
+                                                           :depends-on #{:catalog}}}
                         :infer-externs    false
                         :static-fns       true
                         :fn-invoke-direct true

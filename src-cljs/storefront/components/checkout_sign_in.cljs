@@ -18,7 +18,7 @@
       [:div.col-12.col-6-on-tb-dt.mx-auto
        (facebook/sign-in-button facebook-loaded?)]]))))
 
-(defn built-component [data opts]
+(defn ^:export built-component [data opts]
   (if (= "freeinstall" (get-in data keypaths/store-slug))
     (adventure-sign-in/built-component data opts)
     (om/build component (sign-in/query data) opts)))

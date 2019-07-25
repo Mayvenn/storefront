@@ -55,7 +55,7 @@
                     :subtitle                (str "Step " current-step " of 3")}
      :buttons      (enriched-buttons texture-facet-options)}))
 
-(defn built-component
+(defn ^:export built-component
   [data opts]
   (component/build multi-prompt/component (query data) opts))
 

@@ -9,6 +9,7 @@
             [storefront.effects :as effects]
             [storefront.api :as api]
             [storefront.component :as component]
+            [storefront.components.checkout-returning-or-guest :as checkout-returning-or-guest]
             [storefront.components.formatters :as formatters]
             [storefront.components.facebook :as facebook]
             [storefront.components.sign-up :as sign-up]
@@ -150,9 +151,15 @@
                                :shipping-address
                                :phone)}))
 
-(defn built-component
-  [data opts]
+(defn ^:private built-non-auth-component [data opts]
   (let [{:as queried-data :keys [freeinstall?]} (query data)]
     (if freeinstall?
       (component/build adventure-component queried-data opts)
       (component/build component queried-data opts))))
+
+(defn ^:export built-component
+  [data opts]
+  (checkout-returning-or-guest/requires-sign-in-or-initiated-guest-checkout
+   built-non-auth-component
+   data
+   opts))

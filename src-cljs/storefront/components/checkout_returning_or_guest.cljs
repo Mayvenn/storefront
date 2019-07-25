@@ -46,7 +46,7 @@
    :address          (-> (checkout-address/query data)
                          (assoc-in [:shipping-address-data :become-guest?] true))})
 
-(defn built-component [data opts]
+(defn ^:export built-component [data opts]
   (if (= "freeinstall" (get-in data keypaths/store-slug))
     (adventure-returning-or-guest/built-component data opts)
     (om/build component (query data) opts)))
@@ -55,4 +55,5 @@
   (if (auth/signed-in-or-initiated-guest-checkout? data)
     (authorized-component data nil)
     ;; rely on redirects to get you to the right page... if they misfire, user will be stuck on this page.
-    [:div.h1.my4 ui/spinner]))
+    (component/html
+     [:div.h1.my4 ui/spinner])))

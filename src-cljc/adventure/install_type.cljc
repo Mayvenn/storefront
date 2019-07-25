@@ -33,6 +33,6 @@
                            :target-message   [nav-event]})
                         family-facet-options)}))
 
-(defn built-component
+(defn ^:export built-component
   [data opts]
   (component/build multi-prompt/component (query data) opts))

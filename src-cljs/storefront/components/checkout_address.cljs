@@ -305,5 +305,5 @@
                              :field-errors     field-errors
                              :focused          (get-in data keypaths/ui-focus)}}))
 
-(defn built-component [data opts]
+(defn ^:export built-component [data opts]
   (om/build component (query data)))

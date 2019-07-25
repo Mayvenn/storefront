@@ -45,7 +45,7 @@
    :address            (-> (checkout-address/query data)
                            (assoc-in [:shipping-address-data :become-guest?] true))})
 
-(defn built-component [data opts]
+(defn ^:export built-component [data opts]
   (om/build component (query data) opts))
 
 (defn requires-sign-in-or-initiated-guest-checkout [authorized-component data opts]

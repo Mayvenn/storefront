@@ -1,18 +1,10 @@
 (ns storefront.components.top-level
   (:require [storefront.component :as component]
-            #?@(:cljs [[checkout.confirmation :as checkout-confirmation]
-                       [storefront.components.account :as account]
-                       [storefront.components.checkout-address :as checkout-address]
-                       [storefront.components.checkout-complete :as checkout-complete]
-                       [storefront.components.checkout-payment :as checkout-payment]
-                       [storefront.components.checkout-returning-or-guest :as checkout-returning-or-guest]
-                       [storefront.components.checkout-sign-in :as checkout-sign-in]
+            #?@(:cljs [[storefront.components.account :as account]
                        [storefront.components.force-set-password :as force-set-password]
                        [storefront.components.friend-referrals :as friend-referrals]
                        [storefront.components.popup :as popup]
                        [storefront.components.reset-password :as reset-password]
-                       [storefront.components.shop-by-look :as shop-by-look]
-                       [storefront.components.shop-by-look-details :as shop-by-look-details]
                        [storefront.config :as config]
                        [storefront.history :as history]
                        adventure.components.email-capture
@@ -31,16 +23,9 @@
             adventure.shop-hair
             adventure.how-shop-hair
             adventure.hair-texture
-            adventure.bundlesets.hair-texture
-            adventure.a-la-carte.hair-texture
-            adventure.a-la-carte.hair-color
-            adventure.a-la-carte.product-list
-            adventure.a-la-carte.product-details
             adventure.install-type
             adventure.select-new-look
-            adventure.look-detail
             [adventure.checkout.cart :as adventure-cart]
-            adventure.checkout.wait
             adventure.stylist-matching.match-stylist
             adventure.stylist-matching.find-your-stylist
             adventure.stylist-matching.matching-stylist-wait
@@ -52,11 +37,8 @@
             adventure.stylist-matching.stylist-profile
 
             [storefront.components.ui :as ui]
-            [catalog.category :as category]
-            [catalog.product-details :as product-details]
-            [checkout.cart :as cart]
-            [checkout.processing :as checkout-processing]
             [mayvenn-made.home :as mayvenn-made.home]
+            [checkout.cart :as cart]
             [storefront.accessors.experiments :as experiments]
             [storefront.components.content :as content]
             [storefront.components.flash :as flash]
@@ -66,7 +48,6 @@
             [storefront.components.header :as header]
             [storefront.components.home :as home]
             [storefront.components.promotion-banner :as promotion-banner]
-            [storefront.components.shared-cart :as shared-cart]
             [storefront.components.sign-in :as sign-in]
             [storefront.components.sign-up :as sign-up]
             [storefront.components.slideout-nav :as slideout-nav]
@@ -80,8 +61,10 @@
           #?@(:cljs
               [events/navigate-reset-password                             reset-password/built-component
                events/navigate-force-set-password                         force-set-password/built-component
-               events/navigate-shop-by-look                               shop-by-look/built-component
-               events/navigate-shop-by-look-details                       shop-by-look-details/built-component
+               events/navigate-shop-by-look                               (ui/lazy-load-component :catalog 'storefront.components.shop-by-look/built-component
+                                                                                                  events/navigate-shop-by-look)
+               events/navigate-shop-by-look-details                       (ui/lazy-load-component :catalog 'storefront.components.shop-by-look-details/built-component
+                                                                                                  events/navigate-shop-by-look-details)
                events/navigate-stylist-dashboard-balance-transfer-details (ui/lazy-load-component :dashboard 'storefront.components.stylist.balance-transfer-details/built-component
                                                                                                   events/navigate-stylist-dashboard-balance-transfer-details)
                events/navigate-stylist-dashboard-order-details            (ui/lazy-load-component :dashboard 'storefront.components.stylist.order-details/built-component events/navigate-stylist-dashboard-order-details)
@@ -101,20 +84,20 @@
                events/navigate-account-referrals                          (partial sign-in/requires-sign-in friend-referrals/built-component)
                events/navigate-friend-referrals-freeinstall               friend-referrals/built-component
                events/navigate-friend-referrals                           friend-referrals/built-component
-               events/navigate-checkout-returning-or-guest                checkout-returning-or-guest/built-component
-               events/navigate-checkout-sign-in                           checkout-sign-in/built-component
-               events/navigate-checkout-address                           (partial checkout-returning-or-guest/requires-sign-in-or-initiated-guest-checkout checkout-address/built-component)
-               events/navigate-checkout-payment                           (partial checkout-returning-or-guest/requires-sign-in-or-initiated-guest-checkout checkout-payment/built-component)
-               events/navigate-checkout-confirmation                      (partial checkout-returning-or-guest/requires-sign-in-or-initiated-guest-checkout checkout-confirmation/built-component)
-               events/navigate-order-complete                             checkout-complete/built-component
-               events/navigate-need-match-order-complete                  checkout-complete/built-component])
+               events/navigate-checkout-returning-or-guest                (ui/lazy-load-component :checkout 'storefront.components.checkout-returning-or-guest/built-component events/navigate-checkout-returning-or-guest)
+               events/navigate-checkout-sign-in                           (ui/lazy-load-component :checkout 'storefront.components.checkout-sign-in/built-component events/navigate-checkout-sign-in)
+               events/navigate-checkout-address                           (ui/lazy-load-component :checkout 'storefront.components.checkout-address-auth-required/built-component events/navigate-checkout-address)
+               events/navigate-checkout-payment                           (ui/lazy-load-component :checkout 'storefront.components.checkout-payment/built-component events/navigate-checkout-payment)
+               events/navigate-checkout-confirmation                      (ui/lazy-load-component :checkout 'checkout.confirmation/built-component events/navigate-checkout-confirmation)
+               events/navigate-order-complete                             (ui/lazy-load-component :checkout 'storefront.components.checkout-complete/built-component events/navigate-order-complete)
+               events/navigate-need-match-order-complete                  (ui/lazy-load-component :checkout 'storefront.components.checkout-complete/built-component events/navigate-order-complete)])
 
           events/navigate-home                    home/built-component
-          events/navigate-category                category/built-component
-          events/navigate-product-details         product-details/built-component
-          events/navigate-shared-cart             shared-cart/built-component
-          events/navigate-checkout-processing     checkout-processing/built-component
-          events/navigate-cart                    cart/built-component
+          events/navigate-category                (ui/lazy-load-component :catalog 'catalog.category/built-component events/navigate-category)
+          events/navigate-product-details         (ui/lazy-load-component :catalog 'catalog.product-details/built-component events/navigate-product-details)
+          events/navigate-shared-cart             (ui/lazy-load-component :catalog 'storefront.components.shared-cart/built-component events/navigate-shared-cart)
+          events/navigate-checkout-processing     (ui/lazy-load-component :checkout 'checkout.processing/built-component events/navigate-checkout-processing)
+          events/navigate-cart                    (ui/lazy-load-component :catalog 'checkout.cart/built-component events/navigate-cart)
           events/navigate-voucher-redeem          (ui/lazy-load-component :redeem 'voucher.redeem/built-component events/navigate-voucher-redeem)
           events/navigate-voucher-redeemed        (ui/lazy-load-component :redeem 'voucher.redeemed/built-component events/navigate-voucher-redeemed)
           events/navigate-mayvenn-made            mayvenn-made.home/built-component
@@ -140,15 +123,15 @@
           events/navigate-adventure-what-next                           adventure.what-next/built-component
           events/navigate-adventure-shop-hair                           adventure.shop-hair/built-component
           events/navigate-adventure-how-shop-hair                       adventure.how-shop-hair/built-component
-          events/navigate-adventure-hair-texture                        adventure.hair-texture/built-component
-          events/navigate-adventure-bundlesets-hair-texture             adventure.bundlesets.hair-texture/built-component
-          events/navigate-adventure-a-la-carte-hair-texture             adventure.a-la-carte.hair-texture/built-component
-          events/navigate-adventure-a-la-carte-hair-color               adventure.a-la-carte.hair-color/built-component
-          events/navigate-adventure-a-la-carte-product-list             adventure.a-la-carte.product-list/built-component
-          events/navigate-adventure-product-details                     adventure.a-la-carte.product-details/built-component
-          events/navigate-adventure-install-type                        adventure.install-type/built-component
+          events/navigate-adventure-hair-texture                        (ui/lazy-load-component :catalog 'adventure.hair-texture/built-component events/navigate-adventure-hair-texture)
+          events/navigate-adventure-bundlesets-hair-texture             (ui/lazy-load-component :catalog 'adventure.bundlesets.hair-texture/built-component events/navigate-adventure-bundlesets-hair-texture)
+          events/navigate-adventure-a-la-carte-hair-texture             (ui/lazy-load-component :catalog 'adventure.a-la-carte.hair-texture/built-component events/navigate-adventure-a-la-carte-hair-texture)
+          events/navigate-adventure-a-la-carte-hair-color               (ui/lazy-load-component :catalog 'adventure.a-la-carte.hair-color/built-component events/navigate-adventure-a-la-carte-hair-color)
+          events/navigate-adventure-a-la-carte-product-list             (ui/lazy-load-component :catalog 'adventure.a-la-carte.product-list/built-component events/navigate-adventure-a-la-carte-product-list)
+          events/navigate-adventure-product-details                     (ui/lazy-load-component :catalog 'adventure.a-la-carte.product-details/built-component events/navigate-adventure-product-details)
+          events/navigate-adventure-install-type                        (ui/lazy-load-component :catalog 'adventure.install-type/built-component events/navigate-adventure-install-type)
           events/navigate-adventure-select-new-look                     adventure.select-new-look/built-component
-          events/navigate-adventure-look-detail                         adventure.look-detail/built-component
+          events/navigate-adventure-look-detail                         (ui/lazy-load-component :catalog 'adventure.look-detail/built-component events/navigate-adventure-look-detail)
           events/navigate-adventure-select-bundle-set                   adventure.select-new-look/built-component
           events/navigate-adventure-match-stylist                       adventure.stylist-matching.match-stylist/built-component
           events/navigate-adventure-find-your-stylist                   adventure.stylist-matching.find-your-stylist/built-component
@@ -159,7 +142,7 @@
           events/navigate-adventure-out-of-area                         adventure.stylist-matching.out-of-area/built-component
           events/navigate-adventure-match-success-pre-purchase          adventure.stylist-matching.match-success/built-component
           events/navigate-adventure-match-success-post-purchase         adventure.stylist-matching.match-success-post-purchase/built-component
-          events/navigate-adventure-checkout-wait                       adventure.checkout.wait/built-component
+          events/navigate-adventure-checkout-wait                       (ui/lazy-load-component :checkout 'adventure.checkout.wait/built-component events/navigate-adventure-checkout-wait)
           events/navigate-adventure-let-mayvenn-match                   adventure.stylist-matching.let-mayvenn-match/built-component
           events/navigate-adventure-stylist-profile                     adventure.stylist-matching.stylist-profile/built-component
           home/built-component)
