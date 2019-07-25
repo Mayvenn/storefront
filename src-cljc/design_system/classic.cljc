@@ -54,7 +54,7 @@
   (component/build component (query app-state) nil))
 
 (defmethod transitions/transition-state events/control-design-system-popup-show [_ event args app-state]
-  (assoc-in app-state keypaths/popup true))
+  (assoc-in app-state keypaths/popup :design-system))
 
 (defmethod transitions/transition-state events/control-design-system-popup-dismiss [_ event args app-state]
   (assoc-in app-state keypaths/popup nil))

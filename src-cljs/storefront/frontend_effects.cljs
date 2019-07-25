@@ -127,12 +127,12 @@
 (def popup-dismiss-events
   {:email-capture-quadpay  events/control-email-captured-dismiss
    :email-capture          events/control-email-captured-dismiss
-   ;; TODO: this is a page take over not a normal modal should it still escape?
-   ;; :adv-email-capture  events/control
+   :adv-email-capture      events/control-email-captured-dismiss
    :adventure-free-install events/control-adventure-free-install-dismiss
    :v2-homepage            events/control-v2-homepage-popup-dismiss
    :to-adventure           events/control-to-adventure-popup-dismiss
-   :share-cart             events/control-popup-hide})
+   :share-cart             events/control-popup-hide
+   :design-system          events/control-design-system-popup-dismiss})
 
 (defmethod effects/perform-effects events/escape-key-pressed [_ event args _ app-state]
   (when-let [message-to-handle (get popup-dismiss-events (get-in app-state keypaths/popup))]
