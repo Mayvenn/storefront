@@ -817,7 +817,7 @@
   [tag (assoc attrs :href (email-url (last body))) (apply str body)])
 
 (defn phone-link [tag attrs & body]
-  [tag (assoc attrs :href (phone-url (last body))) (apply str body)])
+  [tag (assoc attrs :href (phone-url (last body))) body])
 
 (defn sms-url [tel-num]
   ;; Android cannot detect shortcodes properly if you're using sms://+34649 or sms://34649

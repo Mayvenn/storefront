@@ -1,4 +1,5 @@
 (ns storefront.accessors.stylists
+  "TODO move these to stylist-directory ns if they are directory related"
   (:require #?@(:cljs [[spice.core :as spice]
                        [storefront.browser.cookie-jar :as cookie-jar]])
             [storefront.keypaths :as keypaths]))

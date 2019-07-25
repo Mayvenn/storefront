@@ -3,16 +3,20 @@
             [adventure.keypaths :as keypaths]
             [clojure.string :as string]
             [spice.date :as date]
-            [storefront.accessors.stylists :as stylists]
             [storefront.component :as component]
             [storefront.components.formatters :as formatters]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
+            [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.platform.carousel :as carousel]
             [storefront.platform.component-utils :as utils]
-            [storefront.platform.messages :as messages]))
-
+            [storefront.platform.messages :as messages]
+            [storefront.transitions :as transitions]
+            [stylist-directory.stylists :as stylists]
+            #?(:cljs
+               [storefront.api :as api])
+            [spice.core :as spice]))
 
 (defn transposed-title-molecule
   [{:transposed-title/keys [id primary secondary]}]
@@ -31,15 +35,18 @@
 
 (defn stylist-phone-molecule
   [{:phone-link/keys [target phone-number]}]
-  [:div.mt1
-   (ui/link :link/phone
-            :a.dark-gray
-            {:data-test "stylist-phone"
-             :on-click  (apply utils/send-event-callback target)}
-            phone-number)])
+  (when (and target phone-number)
+    [:div.mt1
+     (ui/link :link/phone
+              :a.dark-gray
+              {:data-test "stylist-phone"
+               :on-click  (apply utils/send-event-callback target)}
+              (svg/phone {:style {:width          "7px"
+                                  :height         "13px"
+                                  :vertical-align "bottom"}
+                          :class "mr1"}) phone-number)]))
 
-(defn circle-portrait-molecule
-  [{:circle-portrait/keys [ucare-id]}]
+(defn circle-portrait-molecule  [{:circle-portrait/keys [ucare-id]}]
   (let [ucare-uri (str "//ucarecdn.com/" ucare-id "/-/scale_crop/72x72/center/-/format/auto/")]
     [:div.mr2
      (ui/circle-picture {:width "72px"} ucare-uri)]))
@@ -64,71 +71,75 @@
                     :style {:width "12px" :height "12px"}}))
    specialty])
 
-(defn query [data]
-  (let [{:keys [stylist-id gallery-images
-                licensed stylist-since] :as stylist} {}]
-    {:header-data                {:subtitle                [:div.mt2.h4.medium
-                                                            (str "More about " (stylists/->display-name stylist))]
-                                  :back-navigation-message [events/navigate-adventure-find-your-stylist]
-                                  :header-attrs            {:class "bg-light-lavender"}
-                                  :shopping-bag?           true}
-     :cta/id                     "select-stylist"
-     :cta/target                 [events/control-adventure-select-stylist-pre-purchase
-                                  {:stylist-id        (:stylist-id stylist)
-                                   :servicing-stylist stylist
-                                   :card-index        0}]
-     :cta/label                  (str "Select " (stylists/->display-name stylist))
-     :transposed-title/id        "stylist-name"
-     :transposed-title/primary   (stylists/->display-name stylist)
-     :transposed-title/secondary (-> stylist :salon :name)
-     :rating/value               (:rating stylist)
-     :phone-link/target          [events/control-adventure-stylist-phone-clicked
-                                  {:stylist-id   (:stylist-id stylist)
-                                   :phone-number (some-> stylist :address :phone formatters/phone-number)}]
-     :phone-link/phone-number    (some-> stylist :address :phone formatters/phone-number-parens)
-     :circle-portrait/ucare-id   (-> stylist :portrait :resizable-url ui/ucare-img-id)
-     :carousel/items             (let [ucare-img-urls (map :resizable-url gallery-images)]
-                                   (map-indexed (fn [j ucare-img-url]
-                                                {:key            (str "gallery-img-" stylist-id "-" j)
-                                                 :ucare-img-url  ucare-img-url
-                                                 :target-message [events/control-adventure-stylist-gallery-open
-                                                                  {:ucare-img-urls                 ucare-img-urls
-                                                                   :initially-selected-image-index j}]})
-                                              ucare-img-urls))
+(defn query
+  [data]
+  (let [stylist-id (get-in data keypaths/stylist-profile-id)
+        stylist    (stylists/stylist-by-id data stylist-id)]
+    (when stylist
+      {:header-data                {:subtitle                [:div.mt2.h4.medium
+                                                              (str "More about " (stylists/->display-name stylist))]
+                                    :back-navigation-message [events/navigate-adventure-find-your-stylist]
+                                    :header-attrs            {:class "bg-light-lavender"}
+                                    :shopping-bag?           true}
+       :cta/id                     "select-stylist"
+       :cta/target                 [events/control-adventure-select-stylist-pre-purchase
+                                    {:stylist-id        (:stylist-id stylist)
+                                     :servicing-stylist stylist
+                                     :card-index        0}]
+       :cta/label                  (str "Select " (stylists/->display-name stylist))
+       :transposed-title/id        "stylist-name"
+       :transposed-title/primary   (stylists/->display-name stylist)
+       :transposed-title/secondary (-> stylist :salon :name)
+       :rating/value               (:rating stylist)
+       :phone-link/target          [events/control-adventure-stylist-phone-clicked
+                                    {:stylist-id   (:stylist-id stylist)
+                                     :phone-number (some-> stylist :address :phone formatters/phone-number)}]
+       :phone-link/phone-number    (some-> stylist :address :phone formatters/phone-number-parens)
+       :circle-portrait/ucare-id   (-> stylist :portrait :resizable-url ui/ucare-img-id)
+       :carousel/items             (let [ucare-img-urls (map :resizable-url (:gallery-images stylist))]
+                                     (map-indexed (fn [j ucare-img-url]
+                                                    {:key            (str "gallery-img-" stylist-id "-" j)
+                                                     :ucare-img-url  ucare-img-url
+                                                     :target-message [events/control-adventure-stylist-gallery-open
+                                                                      {:ucare-img-urls                 ucare-img-urls
+                                                                       :initially-selected-image-index j}]})
+                                                  ucare-img-urls))
 
-     :details [{:section-details/title "Experience"
-                :section-details/content (string/join ", " (remove nil?
-                                                                   [(when stylist-since
-                                                                      (ui/pluralize-with-amount
-                                                                       (- (date/year (date/now)) stylist-since)
-                                                                       "year"))
-                                                                    (case (-> stylist :salon :salon-type)
-                                                                      "salon"   "in-salon"
-                                                                      "in-home" "in-home"
-                                                                      nil)
-                                                                    (when licensed
-                                                                      "licensed")]))}
-               (when (-> stylist :service-menu :specialty-sew-in-leave-out)
-                 (let [specialties (:service-menu stylist)]
-                   {:section-details/title "Specialties"
-                    :section-details/content [:div.mt1.col-12.col.regular
-                                              [:div.col-4.col
-                                               (checks-or-x "Leave Out" (:specialty-sew-in-leave-out specialties))
-                                               (checks-or-x "360" (:specialty-sew-in-360-frontal specialties))]
-                                              [:div.col-4.col
-                                               (checks-or-x "Closure" (:specialty-sew-in-closure specialties))
-                                               (checks-or-x "Frontal" (:specialty-sew-in-frontal specialties))]]}))]
+       :details [{:section-details/title   "Experience"
+                  :section-details/content (string/join ", " (remove nil?
+                                                                     [(when-let [stylist-since (:stylist-since stylist)]
+                                                                        (ui/pluralize-with-amount
+                                                                         (- (date/year (date/now)) stylist-since)
+                                                                         "year"))
+                                                                      (case (-> stylist :salon :salon-type)
+                                                                        "salon"   "in-salon"
+                                                                        "in-home" "in-home"
+                                                                        nil)
+                                                                      (when (:licensed stylist)
+                                                                        "licensed")]))}
+                 (when (-> stylist :service-menu :specialty-sew-in-leave-out)
+                   (let [specialties (:service-menu stylist)]
+                     {:section-details/title   "Specialties"
+                      :section-details/content [:div.mt1.col-12.col.regular
+                                                [:div.col-4.col
+                                                 (checks-or-x "Leave Out" (:specialty-sew-in-leave-out specialties))
+                                                 (checks-or-x "360" (:specialty-sew-in-360-frontal specialties))]
+                                                [:div.col-4.col
+                                                 (checks-or-x "Closure" (:specialty-sew-in-closure specialties))
+                                                 (checks-or-x "Frontal" (:specialty-sew-in-frontal specialties))]]}))]
 
-     :gallery-modal-data {:ucare-img-urls                 (get-in data keypaths/adventure-stylist-gallery-image-urls) ;; empty hides the modal
-                          :initially-selected-image-index (get-in data keypaths/adventure-stylist-gallery-image-index)
-                          :close-button                   {:target-message events/control-adventure-stylist-gallery-close}}}))
+       :gallery-modal-data {:ucare-img-urls                 (get-in data keypaths/adventure-stylist-gallery-image-urls) ;; empty hides the modal
+                            :initially-selected-image-index (get-in data keypaths/adventure-stylist-gallery-image-index)
+                            :close-button                   {:target-message events/control-adventure-stylist-gallery-close}}})))
 
-(defn ^:private gallery-slide [index ucare-img-url]
+(defn ^:private gallery-slide
+  [index ucare-img-url]
   [:div {:key (str "gallery-slide" index)}
    (ui/aspect-ratio 1 1
                     (ui/ucare-img {:class "col-12"} ucare-img-url))])
 
-(defn carousel-molecule [{:carousel/keys [items]}]
+(defn carousel-molecule
+  [{:carousel/keys [items]}]
  (component/build carousel/component
                         {:slides   (map (fn [{:keys [target-message
                                                      key
@@ -150,7 +161,8 @@
                                     :infinite     true}}
                         {}))
 
-(defn gallery-modal-component [{:keys [ucare-img-urls initially-selected-image-index close-button] :as gallery-modal} _ _]
+(defn gallery-modal-component
+  [{:keys [ucare-img-urls initially-selected-image-index close-button] :as gallery-modal} _ _]
   (component/create
    [:div
     (when (seq ucare-img-urls)
@@ -170,10 +182,6 @@
            (ui/modal-close {:class       "stroke-dark-gray fill-gray"
                             :close-attrs close-attrs})]])))]))
 
-;; - Atom is ui at the level of the browser
-;; - Molecule is an element that has a meaning... a contract
-;; - Organism is an element composed of molecules and atoms that is a merged contract
-
 (defn cta-molecule
   [{:cta/keys [id label target]}]
   (when (and id label target)
@@ -188,23 +196,33 @@
    [:div.mt1.h6.regular
     content]] )
 
-(defn component [{:keys [header-data gallery-modal-data] :as query} owner opts]
+(defn component
+  [{:keys [header-data gallery-modal-data] :as query} owner opts]
   (component/create
-   [:div.col-12
-    (component/build gallery-modal-component gallery-modal-data nil)
-    [:div.white
-     (header/built-component header-data nil)]
+   [:div.col-12.bg-white
+    [:div.white (header/built-component header-data nil)]
     [:div {:style {:height "75px"}}]
-    [:div.px3
-     (component/build stylist-profile-card-component query nil)]
+    [:div.px3 (component/build stylist-profile-card-component query nil)]
+    (component/build gallery-modal-component gallery-modal-data nil)
+
     [:div.my2.m1-on-tb-dt.mb2-on-tb-dt.px3
      [:div.mb3 (cta-molecule query)]
 
      (carousel-molecule query)
 
      (for [section-details (:details query)]
-       (section-details-molecule section-details))]]))
+       (section-details-molecule section-details))]
+    [:div.clearfix]]))
 
 (defn built-component
   [data opts]
   (component/build component (query data) {}))
+
+(defmethod effects/perform-effects events/navigate-adventure-stylist-profile
+  [dispatch event {:keys [stylist-id]} prev-app-state app-state]
+  #?(:cljs
+     (api/fetch-stylist-details (get-in app-state storefront.keypaths/api-cache) stylist-id)))
+
+(defmethod transitions/transition-state events/navigate-adventure-stylist-profile
+  [_ _ {:keys [stylist-id]} app-state]
+  (assoc-in app-state keypaths/stylist-profile-id (spice/parse-int stylist-id)))

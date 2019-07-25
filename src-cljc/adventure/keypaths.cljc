@@ -1,4 +1,5 @@
-(ns adventure.keypaths)
+(ns adventure.keypaths
+  (:require [storefront.keypaths :as keypaths]))
 
 (def adventure [:adventure])
 (def adventure-affiliate-stylist-id (conj adventure :affiliate-stylist-id))
@@ -25,3 +26,7 @@
 (def adventure-servicing-stylist (conj adventure :servicing-stylist))
 
 (def adventure-geocode-address (conj adventure :geocode-address))
+
+(def stylist-matching-ui (conj keypaths/ui :stylist-matching))
+(def stylist-profile (conj stylist-matching-ui :stylist-profile))
+(def stylist-profile-id (conj stylist-profile :id))

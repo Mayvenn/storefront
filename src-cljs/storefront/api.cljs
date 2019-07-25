@@ -1020,3 +1020,12 @@
    request-keys/fetch-matched-stylist
    {:params  {:stylist-id stylist-id}
     :handler #(messages/handle-message events/api-success-fetch-matched-stylist %)}))
+
+(defn fetch-stylist-details [cache stylist-id]
+  (cache-req
+   cache
+   GET
+   "/v1/stylist/matched-by-id"
+   request-keys/fetch-matched-stylist
+   {:params  {:stylist-id stylist-id}
+    :handler #(messages/handle-message events/api-success-fetch-stylist-details %)}))
