@@ -1,6 +1,7 @@
 (ns adventure.stylist-matching.match-success
   (:require [storefront.accessors.stylists :as stylists]
             [storefront.events :as events]
+            [storefront.accessors.orders :as orders]
             [storefront.component :as component]
             [adventure.components.basic-prompt :as basic-prompt]
             [storefront.keypaths :as storefront-keypaths]
@@ -11,7 +12,11 @@
             [adventure.progress :as progress]))
 
 (defn ^:private query [data]
-  (let [servicing-stylist (get-in data keypaths/adventure-servicing-stylist)]
+  (let [servicing-stylist     (get-in data keypaths/adventure-servicing-stylist)
+        order                 (get-in data storefront-keypaths/order)
+        cart-has-hair?        (> (orders/product-quantity order) 0)
+        button-text           (if cart-has-hair? "Continue to Cart" "Show me hair")
+        button-target-message (if cart-has-hair? [events/navigate-cart] [events/navigate-adventure-shop-hair])]
     {:prompt               (str "Congrats on matching with " (stylists/->display-name servicing-stylist) "!")
      :mini-prompt          "We'll connect you with your stylist shortly. But first, pick out your hair!"
      :show-logo?           false
@@ -23,10 +28,10 @@
      :current-step         2
      :header-data          {:progress                progress/match-success
                             :back-navigation-message [events/navigate-adventure-stylist-results-pre-purchase]}
-     :button               {:text           "Show me hair"
+     :button               {:text           button-text
                             :data-test      "adventure-match-success-choice-show-hair"
                             :color          :white
-                            :target-message [events/navigate-adventure-shop-hair]}}))
+                            :target-message button-target-message}}))
 
 (defn built-component
   [data opts]
