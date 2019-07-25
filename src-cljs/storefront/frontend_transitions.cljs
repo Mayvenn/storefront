@@ -490,7 +490,7 @@
       (assoc-in keypaths/pending-talkable-order (talkable/completed-order order))))
 
 (defmethod transition-state events/api-success-promotions [_ event {promotions :promotions} app-state]
-  (assoc-in app-state keypaths/promotions promotions))
+  (update-in app-state keypaths/promotions #(-> (concat % promotions) set vec)))
 
 (defmethod transition-state events/api-success-get-static-content
   [_ event args app-state]
