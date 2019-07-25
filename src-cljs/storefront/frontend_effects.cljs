@@ -312,10 +312,12 @@
       (when (= :ugc/unknown-album actual-album-kw)
         (effects/page-not-found)))))
 
-(defmethod effects/perform-effects events/navigate-shop-by-look-details [_ event _ _ app-state]
-  (when-let [shared-cart-id (contentful/shared-cart-id (contentful/selected-look app-state))]
-    (reviews/insert-reviews)
-    (api/fetch-shared-cart shared-cart-id)))
+(defmethod effects/perform-effects events/navigate-shop-by-look-details [_ event {:keys [album-keyword]} _ app-state]
+  (if-let [shared-cart-id (contentful/shared-cart-id (contentful/selected-look app-state))]
+    (do
+      (reviews/insert-reviews)
+      (api/fetch-shared-cart shared-cart-id))
+    (effects/redirect events/navigate-shop-by-look {:album-keyword album-keyword})))
 
 (defmethod effects/perform-effects events/navigate-account [_ event args _ app-state]
   (when-not (get-in app-state keypaths/user-token)
