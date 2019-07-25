@@ -333,3 +333,8 @@
   (component/html
    [:svg opts
     (svg-xlink "cascade")]))
+
+(defn phone [opts]
+  (component/html
+   [:svg opts
+    (svg-xlink "phone")]))
