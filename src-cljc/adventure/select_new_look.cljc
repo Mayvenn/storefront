@@ -60,7 +60,7 @@
            (for [look looks]
              (component/build ugc/adventure-social-image-card-component look {}))])])]))
 
-(defn built-component
+(defn ^:export built-component
   [data opts]
   (component/build component (query data) opts))
 

@@ -24,7 +24,7 @@
                             :data-test      "shop-hair-button"
                             :target-message [events/navigate-adventure-how-shop-hair]}}))
 
-(defn built-component
+(defn ^:export built-component
   [data opts]
   (component/build basic-prompt/component (query data) opts))
 

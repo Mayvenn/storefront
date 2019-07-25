@@ -7,6 +7,7 @@
                        [storefront.components.reset-password :as reset-password]
                        [storefront.config :as config]
                        [storefront.history :as history]
+                       ;; popups, must be required to load properly
                        adventure.components.email-capture
                        adventure.components.program-details-popup
                        storefront.components.email-capture
@@ -20,12 +21,6 @@
             adventure.informational.certified-stylists
             adventure.informational.how-it-works
             adventure.what-next
-            adventure.shop-hair
-            adventure.how-shop-hair
-            adventure.hair-texture
-            adventure.install-type
-            adventure.select-new-look
-            [adventure.checkout.cart :as adventure-cart]
             adventure.stylist-matching.match-stylist
             adventure.stylist-matching.find-your-stylist
             adventure.stylist-matching.matching-stylist-wait
@@ -39,6 +34,7 @@
             [storefront.components.ui :as ui]
             [mayvenn-made.home :as mayvenn-made.home]
             [checkout.cart :as cart]
+            [adventure.checkout.cart :as adventure-cart]
             [storefront.accessors.experiments :as experiments]
             [storefront.components.content :as content]
             [storefront.components.flash :as flash]
@@ -121,8 +117,8 @@
 
           events/navigate-adventure-home                                adventure.home/built-component
           events/navigate-adventure-what-next                           adventure.what-next/built-component
-          events/navigate-adventure-shop-hair                           adventure.shop-hair/built-component
-          events/navigate-adventure-how-shop-hair                       adventure.how-shop-hair/built-component
+          events/navigate-adventure-shop-hair                           (ui/lazy-load-component :catalog 'adventure.shop-hair/built-component events/navigate-adventure-shop-hair)
+          events/navigate-adventure-how-shop-hair                       (ui/lazy-load-component :catalog 'adventure.how-shop-hair/built-component events/navigate-adventure-how-shop-hair)
           events/navigate-adventure-hair-texture                        (ui/lazy-load-component :catalog 'adventure.hair-texture/built-component events/navigate-adventure-hair-texture)
           events/navigate-adventure-bundlesets-hair-texture             (ui/lazy-load-component :catalog 'adventure.bundlesets.hair-texture/built-component events/navigate-adventure-bundlesets-hair-texture)
           events/navigate-adventure-a-la-carte-hair-texture             (ui/lazy-load-component :catalog 'adventure.a-la-carte.hair-texture/built-component events/navigate-adventure-a-la-carte-hair-texture)
@@ -130,9 +126,9 @@
           events/navigate-adventure-a-la-carte-product-list             (ui/lazy-load-component :catalog 'adventure.a-la-carte.product-list/built-component events/navigate-adventure-a-la-carte-product-list)
           events/navigate-adventure-product-details                     (ui/lazy-load-component :catalog 'adventure.a-la-carte.product-details/built-component events/navigate-adventure-product-details)
           events/navigate-adventure-install-type                        (ui/lazy-load-component :catalog 'adventure.install-type/built-component events/navigate-adventure-install-type)
-          events/navigate-adventure-select-new-look                     adventure.select-new-look/built-component
+          events/navigate-adventure-select-new-look                     (ui/lazy-load-component :catalog 'adventure.select-new-look/built-component events/navigate-adventure-select-new-look)
           events/navigate-adventure-look-detail                         (ui/lazy-load-component :catalog 'adventure.look-detail/built-component events/navigate-adventure-look-detail)
-          events/navigate-adventure-select-bundle-set                   adventure.select-new-look/built-component
+          events/navigate-adventure-select-bundle-set                   (ui/lazy-load-component :catalog 'adventure.select-new-look/built-component events/navigate-adventure-select-bundle-set)
           events/navigate-adventure-match-stylist                       adventure.stylist-matching.match-stylist/built-component
           events/navigate-adventure-find-your-stylist                   adventure.stylist-matching.find-your-stylist/built-component
           events/navigate-adventure-matching-stylist-wait-pre-purchase  adventure.stylist-matching.matching-stylist-wait/built-component
