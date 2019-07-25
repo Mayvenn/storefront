@@ -932,9 +932,11 @@
                    (om/set-state! owner :visible? true))))
              om/IWillUnmount
              (will-unmount [_]
-               (when-let [observer (:observer (om/get-state owner))]
-                 (.unobserve observer (om/get-ref owner "trigger"))
-                 (.disconnect observer)))
+               (let [observer (:observer (om/get-state owner))
+                     element (om/get-ref owner "trigger")]
+                 (when (and observer element)
+                   (.unobserve observer element)
+                   (.disconnect observer))))
              om/IRenderState
              (render-state [this {:keys [seen? visible?]}]
                (component/html [:div {:ref "trigger"}
