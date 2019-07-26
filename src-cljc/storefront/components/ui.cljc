@@ -912,7 +912,7 @@
 
              om/IDidMount
              (did-mount [this]
-               (if js/IntersectionObserver
+               (if (.hasOwnProperty js/window "IntersectionObserver")
                  (let [observer (js/IntersectionObserver.
                                  (fn [entries observer]
                                    (doseq [entry entries]
