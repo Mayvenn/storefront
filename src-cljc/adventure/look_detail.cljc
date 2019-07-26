@@ -43,7 +43,7 @@
      [:div.black
       #?(:cljs (om/build shop-look-details/adventure-component look-detail-data nil))]]]))
 
-(defn built-component
+(defn ^:export built-component
   [data opts]
   (component/build component (query data) opts))
 
