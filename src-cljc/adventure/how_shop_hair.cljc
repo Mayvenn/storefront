@@ -39,6 +39,6 @@
                     progress/how-shop-hair
                     enriched-buttons)}))
 
-(defn built-component
+(defn ^:export built-component
   [data opts]
   (component/build multi-prompt/component (query data) opts))
