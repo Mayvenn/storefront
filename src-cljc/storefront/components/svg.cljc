@@ -338,3 +338,8 @@
   (component/html
    [:svg opts
     (svg-xlink "phone")]))
+
+(defn position [opts]
+  (component/html
+   [:svg opts
+    (svg-xlink "position")]))

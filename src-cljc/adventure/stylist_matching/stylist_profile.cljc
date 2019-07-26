@@ -9,13 +9,15 @@
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
             [storefront.events :as events]
+            [storefront.keypaths]
             [storefront.platform.carousel :as carousel]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
             [storefront.transitions :as transitions]
             [stylist-directory.stylists :as stylists]
-            #?(:cljs
-               [storefront.api :as api])
+            #?@(:cljs
+                [[storefront.api :as api]
+                 [storefront.platform.maps :as maps]])
             [spice.core :as spice]))
 
 (defn transposed-title-molecule
@@ -81,6 +83,8 @@
                                     :back-navigation-message [events/navigate-adventure-find-your-stylist]
                                     :header-attrs            {:class "bg-light-lavender"}
                                     :shopping-bag?           true}
+       :google-map-data            #?(:cljs (maps/map-query data)
+                                      :clj  nil)
        :cta/id                     "select-stylist"
        :cta/target                 [events/control-adventure-select-stylist-pre-purchase
                                     {:stylist-id        (:stylist-id stylist)
@@ -197,13 +201,16 @@
     content]] )
 
 (defn component
-  [{:keys [header-data gallery-modal-data] :as query} owner opts]
+  [{:keys [header-data google-map-data gallery-modal-data] :as query} owner opts]
   (component/create
    [:div.col-12.bg-white
     [:div.white (header/built-component header-data nil)]
     [:div {:style {:height "75px"}}]
     [:div.px3 (component/build stylist-profile-card-component query nil)]
-    (component/build gallery-modal-component gallery-modal-data nil)
+    (component/build gallery-modal-component gallery-modal-data)
+
+    #?(:cljs (component/build maps/component google-map-data))
+
 
     [:div.my2.m1-on-tb-dt.mb2-on-tb-dt.px3
      [:div.mb3 (cta-molecule query)]
