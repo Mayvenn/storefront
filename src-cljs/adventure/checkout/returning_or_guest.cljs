@@ -48,7 +48,7 @@
 (defn ^:export built-component [data opts]
   (om/build component (query data) opts))
 
-(defn requires-sign-in-or-initiated-guest-checkout [authorized-component data opts]
+(defn ^:export requires-sign-in-or-initiated-guest-checkout [authorized-component data opts]
   (if (auth/signed-in-or-initiated-guest-checkout? data)
     (authorized-component data nil)
     ;; rely on redirects to get you to the right page... if they misfire, user will be stuck on this page.

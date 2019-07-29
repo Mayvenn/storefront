@@ -7,9 +7,11 @@
             storefront.components.checkout-address
             storefront.components.checkout-address-auth-required
             storefront.components.checkout-payment
+            storefront.components.checkout-complete
+            adventure.handlers
+            adventure.checkout.wait
             checkout.confirmation.summary
             checkout.confirmation
-            checkout.processing
-            storefront.components.checkout-complete))
+            checkout.processing))
 
 (loader/set-loaded! :checkout)
