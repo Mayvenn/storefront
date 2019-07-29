@@ -64,19 +64,21 @@
      or the user navigated elsewhere).
   "
   [module-name fully-qualified-built-component-symbol for-navigation-event]
-  #?(:cljs (or (when (loader/loaded? module-name)
-                 (let [path (string/split (str "window."
-                                               (munge-str (namespace fully-qualified-built-component-symbol))
-                                               "."
-                                               (munge-str (name fully-qualified-built-component-symbol)))
-                                          #"\.")]
-                   (js/eval (string/join " && " (map (partial string/join ".") (rest (reductions conj [] path)))))))
-               (do
-                 (loader/load module-name
-                              (fn []
-                                (handle-message events/module-loaded {:module-name          module-name
-                                                                      :for-navigation-event for-navigation-event})))
-                 built-loading-component))
+  #?(:cljs (if (loader/loaded? module-name)
+             (let [obj  (str "window."
+                             (munge-str (namespace fully-qualified-built-component-symbol))
+                             "."
+                             (munge-str (name fully-qualified-built-component-symbol)))
+                   path (string/split obj #"\.")]
+               (or (js/eval (string/join " && " (map (partial string/join ".") (rest (reductions conj [] path)))))
+                   (when (and (.hasOwnProperty js/window "console") js/window.console.error)
+                     (js/console.error (str "Failed to load component '" obj "' in module '" module-name "'")))))
+             (do
+               (loader/load module-name
+                            (fn []
+                              (handle-message events/module-loaded {:module-name          module-name
+                                                                    :for-navigation-event for-navigation-event})))
+               built-loading-component))
      :clj (do (require (symbol (namespace fully-qualified-built-component-symbol)))
               (resolve fully-qualified-built-component-symbol))))
 
