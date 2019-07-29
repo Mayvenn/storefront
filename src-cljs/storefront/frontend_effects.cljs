@@ -227,7 +227,7 @@
                             pending-promo-code
                             true)))
 
-(defmethod effects/perform-effects events/navigate [_ event {:keys [query-params nav-stack-item]} prev-app-state app-state]
+(defmethod effects/perform-effects events/navigate [_ event {:keys [navigate/caused-by query-params nav-stack-item]} prev-app-state app-state]
   (let [freeinstall? (= "freeinstall" (get-in app-state keypaths/store-slug))]
 
     (messages/handle-message events/control-menu-collapse-all)
@@ -278,14 +278,15 @@
          (get-in app-state keypaths/cookie)
          utm-params)))
 
-    (when (get-in app-state keypaths/popup)
-      (messages/handle-message events/popup-hide))
-
     (when (and (get-in app-state keypaths/user-must-set-password)
                (not= event events/navigate-force-set-password))
       (effects/redirect events/navigate-force-set-password))
 
-    (quadpay/hide-modal)
+    (when-not (= caused-by :module-load)
+      (when (get-in app-state keypaths/popup)
+        (messages/handle-message events/popup-hide))
+
+      (quadpay/hide-modal))
 
     (exception-handler/refresh)
 
