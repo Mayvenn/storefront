@@ -48,10 +48,8 @@
                                   :vertical-align "bottom"}
                           :class "mr1"}) phone-number)]))
 
-(defn circle-portrait-molecule  [{:circle-portrait/keys [ucare-id]}]
-  (let [ucare-uri (str "//ucarecdn.com/" ucare-id "/-/scale_crop/72x72/center/-/format/auto/")]
-    [:div.mr2
-     (ui/circle-picture {:width "72px"} ucare-uri)]))
+(defn circle-portrait-molecule  [{:circle-portrait/keys [portrait-url]}]
+  [:div.mr2 (ui/circle-picture {:width "72px"} portrait-url)])
 
 (defn stylist-profile-card-component
   [query _ _]
@@ -78,36 +76,36 @@
   (let [stylist-id (get-in data keypaths/stylist-profile-id)
         stylist    (stylists/stylist-by-id data stylist-id)]
     (when stylist
-      {:header-data                {:subtitle                [:div.mt2.h4.medium
-                                                              (str "More about " (stylists/->display-name stylist))]
-                                    :back-navigation-message [events/navigate-adventure-find-your-stylist]
-                                    :header-attrs            {:class "bg-light-lavender"}
-                                    :shopping-bag?           true}
-       :google-map-data            #?(:cljs (maps/map-query data)
-                                      :clj  nil)
-       :cta/id                     "select-stylist"
-       :cta/target                 [events/control-adventure-select-stylist-pre-purchase
-                                    {:stylist-id        (:stylist-id stylist)
-                                     :servicing-stylist stylist
-                                     :card-index        0}]
-       :cta/label                  (str "Select " (stylists/->display-name stylist))
-       :transposed-title/id        "stylist-name"
-       :transposed-title/primary   (stylists/->display-name stylist)
-       :transposed-title/secondary (-> stylist :salon :name)
-       :rating/value               (:rating stylist)
-       :phone-link/target          [events/control-adventure-stylist-phone-clicked
-                                    {:stylist-id   (:stylist-id stylist)
-                                     :phone-number (some-> stylist :address :phone formatters/phone-number)}]
-       :phone-link/phone-number    (some-> stylist :address :phone formatters/phone-number-parens)
-       :circle-portrait/ucare-id   (-> stylist :portrait :resizable-url ui/ucare-img-id)
-       :carousel/items             (let [ucare-img-urls (map :resizable-url (:gallery-images stylist))]
-                                     (map-indexed (fn [j ucare-img-url]
-                                                    {:key            (str "gallery-img-" stylist-id "-" j)
-                                                     :ucare-img-url  ucare-img-url
-                                                     :target-message [events/control-adventure-stylist-gallery-open
-                                                                      {:ucare-img-urls                 ucare-img-urls
-                                                                       :initially-selected-image-index j}]})
-                                                  ucare-img-urls))
+      {:header-data                  {:subtitle                [:div.mt2.h4.medium
+                                                                (str "More about " (stylists/->display-name stylist))]
+                                      :back-navigation-message [events/navigate-adventure-find-your-stylist]
+                                      :header-attrs            {:class "bg-light-lavender"}
+                                      :shopping-bag?           true}
+       :google-map-data              #?(:cljs (maps/map-query data)
+                                        :clj  nil)
+       :cta/id                       "select-stylist"
+       :cta/target                   [events/control-adventure-select-stylist-pre-purchase
+                                      {:stylist-id        (:stylist-id stylist)
+                                       :servicing-stylist stylist
+                                       :card-index        0}]
+       :cta/label                    (str "Select " (stylists/->display-name stylist))
+       :transposed-title/id          "stylist-name"
+       :transposed-title/primary     (stylists/->display-name stylist)
+       :transposed-title/secondary   (-> stylist :salon :name)
+       :rating/value                 (:rating stylist)
+       :phone-link/target            [events/control-adventure-stylist-phone-clicked
+                                      {:stylist-id   (:stylist-id stylist)
+                                       :phone-number (some-> stylist :address :phone formatters/phone-number)}]
+       :phone-link/phone-number      (some-> stylist :address :phone formatters/phone-number-parens)
+       :circle-portrait/portrait-url (-> stylist :portrait :resizable-url)
+       :carousel/items               (let [ucare-img-urls (map :resizable-url (:gallery-images stylist))]
+                                       (map-indexed (fn [j ucare-img-url]
+                                                      {:key            (str "gallery-img-" stylist-id "-" j)
+                                                       :ucare-img-url  ucare-img-url
+                                                       :target-message [events/control-adventure-stylist-gallery-open
+                                                                        {:ucare-img-urls                 ucare-img-urls
+                                                                         :initially-selected-image-index j}]})
+                                                    ucare-img-urls))
 
        :details [{:section-details/title   "Experience"
                   :section-details/content (string/join ", " (remove nil?
