@@ -33,7 +33,7 @@
                                                              :initially-selected-image-index j}]})
                                         ucare-img-urls)}
      :button       {:text           "Select"
-                    :data-test      "select-stylist"
+                    :data-test      (str "select-stylist-" (:store-nickname stylist))
                     :target-message [target-event {:stylist-id        stylist-id
                                                    :servicing-stylist stylist
                                                    :card-index        index}]}}))
