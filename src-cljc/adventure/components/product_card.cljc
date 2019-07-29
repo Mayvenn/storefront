@@ -80,17 +80,17 @@
         in-stock-skus               (selector/match-all {:selector/strict? true}
                                                         {:inventory/in-stock? #{true}}
                                                         all-skus)
-        product-skus                (->> (or (not-empty in-stock-skus)
-                                             all-skus)
-                                         (filter #((-> % :selector/from-products set)
-                                                   (:catalog/product-id product))))
+        filter-pred                 #((-> % :selector/from-products set)
+                                      (:catalog/product-id product))
+        product-skus                (or (not-empty (filter filter-pred in-stock-skus))
+                                        (filter filter-pred all-skus))
         selected-color              (get-in data adventure.keypaths/adventure-choices-color)
         product-skus-matching-color (->> product-skus
                                          (filter #(contains? (set (:hair/color %)) selected-color)))
         cheapest-product-sku        (->> product-skus
                                          (sort-by :sku/price)
                                          first)
-        epitome                     (skus/determine-epitome color-order-map product-skus-matching-color)]
+        epitome                     (skus/determine-epitome color-order-map product-skus)]
     {:product         product
      :skus            product-skus
      :epitome         epitome
