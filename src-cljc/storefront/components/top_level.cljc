@@ -87,7 +87,7 @@
                events/navigate-checkout-payment                           (ui/lazy-load-component :checkout 'storefront.components.checkout-payment/built-component events/navigate-checkout-payment)
                events/navigate-checkout-confirmation                      (ui/lazy-load-component :checkout 'checkout.confirmation/built-component events/navigate-checkout-confirmation)
                events/navigate-order-complete                             (ui/lazy-load-component :checkout 'storefront.components.checkout-complete/built-component events/navigate-order-complete)
-               events/navigate-need-match-order-complete                  (ui/lazy-load-component :checkout 'storefront.components.checkout-complete/built-component events/navigate-order-complete)])
+               events/navigate-need-match-order-complete                  (ui/lazy-load-component :checkout 'storefront.components.checkout-complete/built-component events/navigate-need-match-order-complete)])
 
           events/navigate-home                    home/built-component
           events/navigate-category                (ui/lazy-load-component :catalog 'catalog.category/built-component events/navigate-category)
