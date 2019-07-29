@@ -9,7 +9,6 @@
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
             [storefront.events :as events]
-            [storefront.keypaths]
             [storefront.platform.carousel :as carousel]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
@@ -17,6 +16,7 @@
             [stylist-directory.stylists :as stylists]
             #?@(:cljs
                 [[storefront.api :as api]
+                 [storefront.hooks.google-maps :as google-maps]
                  [storefront.platform.maps :as maps]])
             [spice.core :as spice]))
 
@@ -227,8 +227,9 @@
 
 (defmethod effects/perform-effects events/navigate-adventure-stylist-profile
   [dispatch event {:keys [stylist-id]} prev-app-state app-state]
-  #?(:cljs
-     (api/fetch-stylist-details (get-in app-state storefront.keypaths/api-cache) stylist-id)))
+  #?@(:cljs
+      [(google-maps/insert)
+       (api/fetch-stylist-details (get-in app-state storefront.keypaths/api-cache) stylist-id)]))
 
 (defmethod transitions/transition-state events/navigate-adventure-stylist-profile
   [_ _ {:keys [stylist-id]} app-state]
