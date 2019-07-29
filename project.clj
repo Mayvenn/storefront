@@ -116,7 +116,7 @@
                                            "externs/bugsnag.js"
                                            "externs/convert.js"
                                            "externs/facebook.js"
-                                           "externs/google_autocomplete.js"
+                                           "externs/google_maps.js"
                                            "externs/pixlee.js"
                                            "externs/quadpay.js"
                                            "externs/react-slick.js"

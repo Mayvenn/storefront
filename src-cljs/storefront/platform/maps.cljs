@@ -4,12 +4,12 @@
             [sablono.core :as sablono]
             [storefront.component :as component]
             [storefront.components.svg :as svg]
-            [storefront.hooks.places-autocomplete :as places]
+            [storefront.hooks.google-maps :as maps]
             [storefront.keypaths]
             [stylist-directory.stylists :as stylists]))
 
 (defn map-query [data]
-  (let [places-loaded? (get-in data storefront.keypaths/loaded-places)
+  (let [loaded-google-maps? (get-in data storefront.keypaths/loaded-google-maps)
         salon          (->> (get-in data adventure.keypaths/stylist-profile-id)
                             (stylists/stylist-by-id data)
                             :salon)
@@ -18,7 +18,7 @@
     {:salon     salon
      :latitude  latitude
      :longitude longitude
-     :loaded?   (and places-loaded?
+     :loaded?   (and loaded-google-maps?
                      (some? latitude)
                      (some? longitude))}))
 
@@ -26,7 +26,7 @@
   [{:keys [latitude longitude]} owner opts]
   (reify
     om/IDidMount
-    (did-mount [_] (places/attach-map latitude longitude "stylist-profile-map"))
+    (did-mount [_] (maps/attach-map latitude longitude "stylist-profile-map"))
     om/IRender
     (render [_]
       (sablono/html

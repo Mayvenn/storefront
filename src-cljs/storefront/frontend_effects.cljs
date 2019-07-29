@@ -27,7 +27,7 @@
             [storefront.hooks.lucky-orange :as lucky-orange]
             [storefront.hooks.pinterest :as pinterest]
             [storefront.hooks.pixlee :as pixlee]
-            [storefront.hooks.places-autocomplete :as places-autocomplete]
+            [storefront.hooks.google-maps :as google-maps]
             [storefront.hooks.reviews :as reviews]
             [storefront.hooks.riskified :as riskified]
             [storefront.hooks.quadpay :as quadpay]
@@ -385,7 +385,7 @@
 (defmethod effects/perform-effects events/navigate-cart [_ event args _ app-state]
   (api/get-shipping-methods)
   (api/get-states (get-in app-state keypaths/api-cache))
-  (places-autocomplete/insert) ;; for address screen on the next page
+  (google-maps/insert) ;; for address screen on the next page
   (stripe/insert)
   (quadpay/insert)
   (refresh-current-order app-state)
@@ -400,7 +400,7 @@
         (messages/handle-message events/enable-feature {:experiment experiment :feature (:feature variation)})))))
 
 (defmethod effects/perform-effects events/navigate-checkout [_ event args _ app-state]
-  (places-autocomplete/insert)
+  (google-maps/insert)
   (let [have-cart? (get-in app-state keypaths/order-number)]
     (cond
       (and (not have-cart?)
@@ -420,7 +420,7 @@
   (facebook/insert))
 
 (defmethod effects/perform-effects events/navigate-checkout-returning-or-guest [_ event args _ app-state]
-  (places-autocomplete/remove-containers)
+  (google-maps/remove-containers)
   (api/get-states (get-in app-state keypaths/api-cache))
   (facebook/insert))
 
@@ -431,7 +431,7 @@
 (defmethod effects/perform-effects events/navigate-checkout-address [_ event args _ app-state]
   (when-not (get-in app-state keypaths/user-id)
     (effects/redirect events/navigate-checkout-returning-or-guest))
-  (places-autocomplete/remove-containers)
+  (google-maps/remove-containers)
   (api/get-states (get-in app-state keypaths/api-cache))
   (fetch-saved-cards app-state))
 
@@ -885,7 +885,7 @@
 
 (defmethod effects/perform-effects events/checkout-address-component-mounted
   [_ event {:keys [address-elem address-keypath]} _ app-state]
-  (places-autocomplete/attach "address" address-elem address-keypath))
+  (google-maps/attach "address" address-elem address-keypath))
 
 (defmethod effects/perform-effects events/api-success-update-order-remove-promotion-code
   [_ _ {:keys [hide-success]} _ app-state]

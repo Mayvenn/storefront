@@ -33,7 +33,7 @@
                        :value       value})))))
 
 (defn ^:private shipping-address-component
-  [{:keys [focused shipping-address states email become-guest? places-loaded? field-errors]} owner]
+  [{:keys [focused shipping-address states email become-guest? google-maps-loaded? field-errors]} owner]
   (om/component
    (html
     [:.flex.flex-column.items-center.col-12
@@ -86,7 +86,7 @@
                      :type      "tel"
                      :value     (:phone shipping-address)})
 
-     (when places-loaded?
+     (when google-maps-loaded?
        (om/build places-component {:id              :shipping-address1
                                    :data-test       "shipping-address1"
                                    :address-keypath keypaths/checkout-shipping-address
@@ -148,7 +148,7 @@
                         :value       (:state shipping-address)})]])))
 
 (defn ^:private billing-address-component
-  [{:keys [focused billing-address states bill-to-shipping-address? places-loaded? field-errors]} owner]
+  [{:keys [focused billing-address states bill-to-shipping-address? google-maps-loaded? field-errors]} owner]
   (om/component
    (html
     [:.flex.flex-column.items-center.col-12
@@ -201,7 +201,7 @@
                         :type      "tel"
                         :value     (:phone billing-address)})
 
-        (when places-loaded?
+        (when google-maps-loaded?
           (om/build places-component {:id              :billing-address1
                                       :data-test       "billing-address1"
                                       :address-keypath keypaths/checkout-billing-address
@@ -285,25 +285,25 @@
                                                   :data-test "address-form-submit"})]]]]])))
 
 (defn query [data]
-  (let [places-loaded? (get-in data keypaths/loaded-places)
-        states         (map (juxt :name :abbr) (get-in data keypaths/states))
-        field-errors   (get-in data keypaths/field-errors)]
+  (let [google-maps-loaded? (get-in data keypaths/loaded-google-maps)
+        states              (map (juxt :name :abbr) (get-in data keypaths/states))
+        field-errors        (get-in data keypaths/field-errors)]
     {:saving?               (utils/requesting? data request-keys/update-addresses)
      :step-bar              (checkout-steps/query data)
      :promotion-banner      (promotion-banner/query data)
      :billing-address-data  {:billing-address           (get-in data keypaths/checkout-billing-address)
                              :states                    states
                              :bill-to-shipping-address? (get-in data keypaths/checkout-bill-to-shipping-address)
-                             :places-loaded?            places-loaded?
+                             :google-maps-loaded?       google-maps-loaded?
                              :field-errors              field-errors
                              :focused                   (get-in data keypaths/ui-focus)}
-     :shipping-address-data {:shipping-address (get-in data keypaths/checkout-shipping-address)
-                             :states           states
-                             :email            (get-in data keypaths/checkout-guest-email)
-                             :become-guest?    false
-                             :places-loaded?   places-loaded?
-                             :field-errors     field-errors
-                             :focused          (get-in data keypaths/ui-focus)}}))
+     :shipping-address-data {:shipping-address    (get-in data keypaths/checkout-shipping-address)
+                             :states              states
+                             :email               (get-in data keypaths/checkout-guest-email)
+                             :become-guest?       false
+                             :google-maps-loaded? google-maps-loaded?
+                             :field-errors        field-errors
+                             :focused             (get-in data keypaths/ui-focus)}}))
 
 (defn ^:export built-component [data opts]
   (om/build component (query data)))

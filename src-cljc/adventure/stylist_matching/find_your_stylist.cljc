@@ -5,7 +5,7 @@
               [storefront.effects :as effects]
               [storefront.history :as history]
               [storefront.hooks.stringer :as stringer]
-              [storefront.hooks.places-autocomplete :as places-autocomplete]
+              [storefront.hooks.google-maps :as google-maps]
               [storefront.browser.cookie-jar :as cookie]
               [sablono.core :as sablono]])
    [storefront.platform.component-utils :as utils]
@@ -26,13 +26,13 @@
 
 #?(:cljs (defmethod effects/perform-effects events/adventure-address-component-mounted
            [_ event {:keys [address-elem address-keypath]} _ app-state]
-           (places-autocomplete/attach "geocode" address-elem address-keypath)))
+           (google-maps/attach "geocode" address-elem address-keypath)))
 
 (defn ^:private query [data]
   (let [current-step 2]
     {:background-image      "https://ucarecdn.com/54f294be-7d57-49ba-87ce-c73394231f3c/-/format/auto/aladdinMatchingOverlayImagePurpleGR203Lm3x.png"
      :stylist-match-address (get-in data keypaths/adventure-stylist-match-address)
-     :places-loaded?        (get-in data storefront.keypaths/loaded-places)
+     :google-maps-loaded?   (get-in data storefront.keypaths/loaded-google-maps)
      :current-step          current-step
      :header-data           {:progress                progress/find-your-stylist
                              :title                   [:div.medium "Find Your Stylist"]
@@ -95,7 +95,7 @@
 #?(:cljs
    (defmethod effects/perform-effects events/navigate-adventure-find-your-stylist [_ _ _ _ app-state]
      (messages/handle-message events/adventure-clear-servicing-stylist)
-     (places-autocomplete/insert)))
+     (google-maps/insert)))
 
 (defmethod trackings/perform-track events/control-adventure-location-submit
   [_ event {:keys [current-step]} app-state]
@@ -122,7 +122,7 @@
          (sablono/html (places-component-inner data))))))
 
 (defn component
-  [{:keys [header-data current-step places-loaded? background-image stylist-match-address selected-location]} owner _]
+  [{:keys [header-data current-step google-maps-loaded? background-image stylist-match-address selected-location]} owner _]
   (component/create
    [:div.bg-lavender.white.center.flex.flex-auto.flex-column
     (header/built-component header-data nil)
@@ -137,7 +137,7 @@
 
       [:div.col-12.mx-auto
        #?(:cljs
-          (if places-loaded?
+          (if google-maps-loaded?
             (om/build places-component-outer {:value             stylist-match-address
                                               :current-step      current-step
                                               :selected-location selected-location})

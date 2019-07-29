@@ -1,5 +1,6 @@
-(ns storefront.hooks.places-autocomplete
-  (:require [storefront.browser.tags :as tags]
+(ns storefront.hooks.google-maps
+  (:require [spice.core :as spice]
+            [storefront.browser.tags :as tags]
             [storefront.events :as events]
             [storefront.platform.messages :as m]
             [storefront.config :as config]))
@@ -41,7 +42,7 @@
                         config/places-api-key
                         "&libraries=places")
                    "places-autocomplete")
-     #(m/handle-message events/inserted-places))))
+     #(m/handle-message events/inserted-google-maps))))
 
 (defn- wrapped-callback [autocomplete address-keypath]
   (fn [e]
@@ -154,8 +155,8 @@
 (defn attach-map
   [latitude longitude address-elem]
   (when (.hasOwnProperty js/window "google")
-    (let [lat-long {:lat (spice.core/parse-double latitude)
-                    :lng (spice.core/parse-double longitude)}
+    (let [lat-long {:lat (spice/parse-double latitude)
+                    :lng (spice/parse-double longitude)}
           opts (clj->js (assoc map-opts :center lat-long))
           elem (.getElementById js/document (name address-elem))
           map  (google.maps.Map. elem opts)]
