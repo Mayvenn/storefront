@@ -129,12 +129,12 @@
 (defmethod effects/perform-effects events/adventure-fetch-matched-products
   [_ _ {:keys [criteria] :or {criteria [:hair/family]}} _ app-state]
   #?(:cljs (api/search-v2-products (get-in app-state storefront.keypaths/api-cache)
-                               (-> (get-in app-state keypaths/adventure-choices)
-                                   adventure-choices->criteria
-                                   (select-keys criteria)
-                                   (update :hair/family disj nil)
-                                   (assoc :catalog/department "hair"))
-                               #(messages/handle-message events/api-success-v2-products %))))
+                                   (-> (get-in app-state keypaths/adventure-choices)
+                                       adventure-choices->criteria
+                                       (select-keys criteria)
+                                       (update :hair/family disj nil)
+                                       (assoc :catalog/department "hair"))
+                                   #(messages/handle-message events/api-success-v2-products %))))
 
 (defmethod effects/perform-effects events/adventure-clear-servicing-stylist [_ _ _ _ app-state]
   #?(:cljs
