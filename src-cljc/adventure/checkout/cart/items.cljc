@@ -12,7 +12,7 @@
 (defn ^:private line-item-detail [on-confirmation-page? need-more-hair? servicing-stylist-name]
   (let [need-servicing-stylist? (empty? servicing-stylist-name)]
     [:div.mtn1
-     (str "w/" (if need-servicing-stylist? "a Certified Mayvenn Stylist" servicing-stylist-name))
+     (str "w/ " (if need-servicing-stylist? "a Certified Mayvenn Stylist" servicing-stylist-name))
 
      (when need-servicing-stylist?
        (if (and (not on-confirmation-page?)
