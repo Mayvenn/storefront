@@ -486,7 +486,6 @@
 ;; ADVENTURE
 (defpath navigate-adventure)
 (defpath navigate-adventure-home)
-(defpath navigate-adventure-what-next)
 (defpath navigate-adventure-match-stylist)
 (defpath navigate-adventure-find-your-stylist)
 (defpath navigate-adventure-shop-hair)

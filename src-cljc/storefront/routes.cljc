@@ -45,7 +45,6 @@
 (def freeinstall-routes
   {{:subdomain freeinstall?}
    {"/"                                                        (edn->bidi events/navigate-adventure-home)
-    "/adv/what-next"                                           (edn->bidi events/navigate-adventure-what-next)
     "/adv/match-stylist"                                       (edn->bidi events/navigate-adventure-match-stylist)
     "/adv/find-your-stylist"                                   (edn->bidi events/navigate-adventure-find-your-stylist)
     "/adv/matching-stylist-wait"                               (edn->bidi events/navigate-adventure-matching-stylist-wait-pre-purchase)

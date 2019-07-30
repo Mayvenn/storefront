@@ -4,8 +4,7 @@
             [adventure.progress :as progress]
             [storefront.component :as component]
             [storefront.transitions :as transitions]
-            [storefront.events :as events]
-            [storefront.accessors.experiments :as experiments]))
+            [storefront.events :as events]))
 
 (defn ^:private query [data]
   (let [servicing-stylist? (get-in data keypaths/adventure-servicing-stylist)
@@ -17,9 +16,7 @@
      :current-step         current-step
      :header-data          {:progress                progress/shop-hair
                             :subtitle                (str "Welcome to Step " current-step )
-                            :back-navigation-message [(if (= 2 current-step)
-                                                        events/navigate-adventure-what-next
-                                                        events/navigate-adventure-match-success)]}
+                            :back-navigation-message [events/navigate-adventure-match-success]}
      :button               {:text           "Next"
                             :data-test      "shop-hair-button"
                             :target-message [events/navigate-adventure-how-shop-hair]}}))

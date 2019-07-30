@@ -20,7 +20,6 @@
             adventure.informational.about-our-hair
             adventure.informational.certified-stylists
             adventure.informational.how-it-works
-            adventure.what-next
             adventure.install-type
             adventure.stylist-matching.match-stylist
             adventure.stylist-matching.find-your-stylist
@@ -117,7 +116,6 @@
           events/navigate-info-how-it-works       adventure.informational.how-it-works/built-component
 
           events/navigate-adventure-home                                adventure.home/built-component
-          events/navigate-adventure-what-next                           adventure.what-next/built-component
           events/navigate-adventure-shop-hair                           (ui/lazy-load-component :catalog 'adventure.shop-hair/built-component events/navigate-adventure-shop-hair)
           events/navigate-adventure-how-shop-hair                       (ui/lazy-load-component :catalog 'adventure.how-shop-hair/built-component events/navigate-adventure-how-shop-hair)
           events/navigate-adventure-hair-texture                        (ui/lazy-load-component :catalog 'adventure.hair-texture/built-component events/navigate-adventure-hair-texture)

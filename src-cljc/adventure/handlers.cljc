@@ -30,8 +30,7 @@
     events/navigate-adventure-match-stylist
     events/navigate-adventure-match-success-pre-purchase
     events/navigate-adventure-match-success-post-purchase
-    events/navigate-adventure-checkout-wait
-    events/navigate-adventure-what-next})
+    events/navigate-adventure-checkout-wait})
 
 (defmethod transitions/transition-state events/control-adventure-choice
   [_ event {:keys [choice]} app-state]
