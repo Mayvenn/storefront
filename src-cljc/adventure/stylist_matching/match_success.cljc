@@ -18,7 +18,9 @@
         button-text           (if cart-has-hair? "Continue to Cart" "Show me hair")
         button-target-message (if cart-has-hair? [events/navigate-cart] [events/navigate-adventure-shop-hair])]
     {:prompt               (str "Congrats on matching with " (stylists/->display-name servicing-stylist) "!")
-     :mini-prompt          "We'll connect you with your stylist shortly. But first, pick out your hair!"
+     :mini-prompt          (if cart-has-hair?
+                             "We'll connect you with your stylist after your place your order!"
+                             "We'll connect you with your stylist shortly. But first, pick out your hair!")
      :show-logo?           false
      :background-overrides {:style
                             {:background-size     "200px"
