@@ -134,6 +134,9 @@
 (defn ^:export debug-app-state []
   (clj->js @app-state))
 
+(defn ^:export current-order []
+  (clj->js (get-in @app-state keypaths/order)))
+
 (defn ^:before-load before-load []
   (handle-message app-state events/app-stop))
 
