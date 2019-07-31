@@ -233,8 +233,10 @@
     (messages/handle-message events/control-menu-collapse-all)
     (messages/handle-message events/save-order {:order (get-in app-state keypaths/order)})
 
-    (cookie-jar/save-user (get-in app-state keypaths/cookie)
-                          (get-in app-state keypaths/user))
+    (when (not= (get-in prev-app-state keypaths/user)
+                (get-in app-state keypaths/user))
+      (cookie-jar/save-user (get-in app-state keypaths/cookie) (get-in app-state keypaths/user)))
+
     (refresh-account app-state)
     (api/get-promotions (get-in app-state keypaths/api-cache)
                         (or
@@ -700,10 +702,12 @@
 (defmethod effects/perform-effects events/clear-order [_ _ _ _ app-state]
   (cookie-jar/clear-order (get-in app-state keypaths/cookie)))
 
-(defmethod effects/perform-effects events/api-success-auth [_ _ {:keys [order]} _ app-state]
+(defmethod effects/perform-effects events/api-success-auth [_ _ {:keys [order]} prev-app-state app-state]
   (messages/handle-message events/save-order {:order order})
-  (cookie-jar/save-user (get-in app-state keypaths/cookie)
-                        (get-in app-state keypaths/user))
+  (when (not= (get-in prev-app-state keypaths/user)
+              (get-in app-state keypaths/user))
+    (cookie-jar/save-user (get-in app-state keypaths/cookie)
+                          (get-in app-state keypaths/user)))
   (redirect-to-return-navigation app-state))
 
 (defmethod effects/perform-effects events/api-success-auth-sign-in
@@ -723,9 +727,11 @@
   (history/enqueue-navigate events/navigate-home)
   (messages/handle-message events/flash-later-show-success {:message "You will receive an email with instructions on how to reset your password in a few minutes."}))
 
-(defmethod effects/perform-effects events/api-success-manage-account [_ event args _ app-state]
-  (cookie-jar/save-user (get-in app-state keypaths/cookie)
-                        (get-in app-state keypaths/user))
+(defmethod effects/perform-effects events/api-success-manage-account [_ event args prev-app-state app-state]
+  (when (not= (get-in prev-app-state keypaths/user)
+              (get-in app-state keypaths/user))
+    (cookie-jar/save-user (get-in app-state keypaths/cookie)
+                          (get-in app-state keypaths/user)))
   (history/enqueue-navigate events/navigate-home)
   (messages/handle-message events/flash-later-show-success {:message "Account updated"}))
 
@@ -748,8 +754,10 @@
                               (changed? previous-app-state app-state keypaths/stylist-portrait-status)
                               (= "pending" (get-in app-state keypaths/stylist-portrait-status)))]
     (messages/handle-later events/poll-stylist-portrait {} 5000))
-  (cookie-jar/save-user (get-in app-state keypaths/cookie)
-                        (get-in app-state keypaths/user)))
+  (when (not= (get-in previous-app-state keypaths/user)
+              (get-in app-state keypaths/user))
+    (cookie-jar/save-user (get-in app-state keypaths/cookie)
+                          (get-in app-state keypaths/user))))
 
 (defmethod effects/perform-effects events/api-success-stylist-account-profile [_ event args _ app-state]
   (messages/handle-message events/flash-show-success {:message "Profile updated"}))

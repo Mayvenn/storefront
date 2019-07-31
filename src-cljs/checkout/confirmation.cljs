@@ -69,11 +69,7 @@
         order-number         (get-in app-state keypaths/order-number)
         order-token          (get-in app-state keypaths/order-token)
         store-slug           (get-in app-state keypaths/store-slug)
-        affiliate-stylist-id (some-> app-state
-                                     (get-in keypaths/cookie)
-                                     cookie-jar/retrieve-affiliate-stylist-id
-                                     :affiliate-stylist-id
-                                     spice/parse-int)]
+        affiliate-stylist-id (get-in app-state adventure.keypaths/adventure-affiliate-stylist-id)]
     (api/update-cart-payments
      (get-in app-state keypaths/session-id)
      {:order {:number        order-number
