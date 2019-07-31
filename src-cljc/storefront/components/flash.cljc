@@ -4,24 +4,24 @@
             [storefront.components.ui :as ui]
             [storefront.keypaths :as keypaths]))
 
-(def success-img
+(defn success-img []
   (svg/circled-check {:class "stroke-teal"
                       :style {:width "1em" :height "1em"}}))
 
-(def error-img
+(defn error-img []
   (svg/error {:class "red"
               :style {:width "1em" :height "1em"}}))
 
 (defn success-box [box-opts body]
   [:div.teal.bg-teal.border.border-teal.rounded.light.letter-spacing-1
    [:div.clearfix.px2.py1.bg-lighten-5.rounded box-opts
-    [:div.right.ml1 success-img]
+    [:div.right.ml1 ^:inline (success-img)]
     [:div.overflow-hidden body]]])
 
 (defn error-box [box-opts body]
   [:div.red.bg-red.border.border-red.rounded.light.letter-spacing-1
    [:div.clearfix.px2.py1.bg-lighten-5.rounded box-opts
-    [:div.right.ml1 error-img]
+    [:div.right.ml1 ^:inline (error-img)]
     [:div.overflow-hidden body]]])
 
 (defn component [{:keys [success failure errors]} _ _]

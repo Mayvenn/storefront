@@ -67,7 +67,7 @@
           [:div.h6
            (when (:licensed store)
              [:div.flex.items-center.dark-gray {:style {:height "1.5em"}}
-              (svg/check {:class "stroke-teal" :height "2em" :width "2em"}) "Licensed"])
+              ^:inline (svg/check {:class "stroke-teal" :height "2em" :width "2em"}) "Licensed"])
            [:div.flex.items-center.dark-gray {:style {:height "1.5em"}}
             (ui/ucare-img {:width "7" :class "pr2"} "bd307d38-277d-465b-8360-ac8717aedb03")
             (let [salon-city    (-> store :salon :city not-empty)

@@ -209,10 +209,10 @@
                                           [:div "col-12 with styled "
                                            [:span.medium.italic.underline "SPAN™"]
                                            " and svg "
-                                           (svg/dropdown-arrow {:class  "stroke-white"
-                                                                :width  "12px"
-                                                                :height "10px"
-                                                                :style  {:transform "rotate(-90deg)"}})])]
+                                           ^:inline (svg/dropdown-arrow {:class  "stroke-white"
+                                                                         :width  "12px"
+                                                                         :height "10px"
+                                                                         :style  {:transform "rotate(-90deg)"}})])]
       [:div.col.col-12.p1 (ui/input-group
                            {:type          "text"
                             :wrapper-class "col-7 pl3 flex items-center bg-white circled-item"

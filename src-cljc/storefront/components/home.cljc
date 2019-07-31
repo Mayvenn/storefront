@@ -223,7 +223,7 @@
   [:img.ml2 {:style {:height "20px"}
              :src   path}])
 
-(def ^:private gallery-link
+(defn ^:private gallery-link []
   (component/html
    (drop-down-row
     (utils/route-to events/navigate-gallery)
@@ -256,7 +256,7 @@
 
 (defn store-info [signed-in {:keys [expanded?] :as store}]
   (when (-> signed-in ::auth/to (= :marketplace))
-    (let [rows (marquee/actions store gallery-link instagram-link styleseat-link)]
+    (let [rows (marquee/actions store (gallery-link) instagram-link styleseat-link)]
       (if-not (boolean (seq rows))
         (store-welcome signed-in store false)
         (ui/drop-down
@@ -267,7 +267,7 @@
           (for [[index row] (map-indexed vector rows)]
             [:div.border-gray.border-bottom {:key (str "action-row-" index)} row])])))))
 
-(def about-mayvenn
+(defn about-mayvenn []
   (component/html
    [:div.container.py1.my1.pt2-on-tb-dt.mt4-on-tb-dt.center.mb1-on-tb-dt.center
     [:h1.line-length.mx-auto.pb4 "Why people love Mayvenn"]
@@ -302,15 +302,15 @@
                          :data-test "nav-shop-look")
        "Shop our looks"]]]]))
 
-(def video-autoplay
-  (component/html
-   (let [video-src  "https://embedwistia-a.akamaihd.net/deliveries/e88ed4645e104735c3bdcd095c370e5ccb1e1ef4/file.mp4"
-         image-src  "https://ucarecdn.com/17256a9e-78ef-4762-a5bd-7096bb9181c9/-/format/auto/testimonialpostervideoplay.jpg"
-         video-html (str "<video onClick=\"this.play();\" loop muted poster=\""
-                         image-src
-                         "\" preload=\"none\" playsinline controls class=\"col-12\"><source src=\""
-                         video-src
-                         "\"></source></video>")]
+(defn video-autoplay []
+  (let [video-src  "https://embedwistia-a.akamaihd.net/deliveries/e88ed4645e104735c3bdcd095c370e5ccb1e1ef4/file.mp4"
+        image-src  "https://ucarecdn.com/17256a9e-78ef-4762-a5bd-7096bb9181c9/-/format/auto/testimonialpostervideoplay.jpg"
+        video-html (str "<video onClick=\"this.play();\" loop muted poster=\""
+                        image-src
+                        "\" preload=\"none\" playsinline controls class=\"col-12\"><source src=\""
+                        video-src
+                        "\"></source></video>")]
+    (component/html
      [:div
       [:div.center.hide-on-tb-dt.mbn2
        [:div.px3
@@ -361,8 +361,8 @@
     [:section.hide-on-tb-dt (store-info signed-in store)]
     (feature-blocks features)
     [:section (popular-grid categories)]
-    [:section video-autoplay]
-    [:section about-mayvenn]
+    [:section ^:inline (video-autoplay)]
+    [:section ^:inline (about-mayvenn)]
     [:section talkable-banner]]))
 
 (defn query

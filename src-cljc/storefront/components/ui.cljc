@@ -18,20 +18,21 @@
 (defn narrow-container
   "A container that is 480px wide on desktop and tablet, but squishes on mobile"
   [& content]
-  [:div.container
-   [:div.m-auto.col-8-on-tb.col-6-on-dt
-    content]])
+  (component/html
+   [:div.container
+    [:div.m-auto.col-8-on-tb.col-6-on-dt
+     content]]))
 
 (defn forward-caret [{:keys [height width]}]
-  (component/html
-   (svg/dropdown-arrow {:class  "stroke-black"
-                        :height height
-                        :width  width
-                        :style  {:transform "rotate(-90deg)"}})))
+  (svg/dropdown-arrow {:class  "stroke-black"
+                       :height height
+                       :width  width
+                       :style  {:transform "rotate(-90deg)"}}))
 
 (defn back-caret [back-copy width]
   (component/html
    [:div.flex.items-center.stroke-dark-gray
+    ^:inline
     (svg/left-caret {:width  width
                      :height width})
     [:div back-copy]]))
@@ -43,9 +44,10 @@
     {:style {:height "1.5em"}}]))
 
 (defn large-spinner [attrs]
-  [:div.img-large-spinner.bg-center.bg-contain.bg-no-repeat.col-12
-   (merge {:data-test "spinner"}
-          attrs)])
+  (component/html
+   [:div.img-large-spinner.bg-center.bg-contain.bg-no-repeat.col-12
+    (merge {:data-test "spinner"}
+           attrs)]))
 
 (defn built-loading-component [data opts]
   (component/build (fn c [data owner opts]
@@ -84,27 +86,34 @@
 
 (defn aspect-ratio
   "Refer to https://css-tricks.com/snippets/sass/maintain-aspect-ratio-mixin/. This is a slight modification, adapted from the wistia player."
-  [x y & content]
-  [:div.relative.overflow-hidden
-   {:style {:padding-top (-> y (/ x) (* 100) float (str "%")) }}
-   (into [:div.absolute.overlay] content)])
+  ([x y content]
+   (component/html
+    [:div.relative.overflow-hidden
+     {:style {:padding-top (-> y (/ x) (* 100) float (str "%")) }}
+     [:div.absolute.overlay content]]))
+  ([x y attrs content]
+   (component/html
+    [:div.relative.overflow-hidden
+     {:style {:padding-top (-> y (/ x) (* 100) float (str "%")) }}
+     [:div.absolute.overlay attrs content]])))
 
 (defn button
   [{:keys [disabled? disabled-class spinning? navigation-message href]
     :as   opts}
    & content]
-  (let [shref   (str href)
-        attrs   (cond-> opts
-                  :always                                                   (dissoc :spinning? :disabled? :disabled-class :navigation-message)
-                  navigation-message                                        (merge (apply utils/route-to navigation-message))
-                  (and (string/starts-with? shref "#") (> (count shref) 1)) (merge (utils/scroll-href (subs href 1)))
-                  (or disabled? spinning?)                                  (assoc :on-click utils/noop-callback)
-                  disabled?                                                 (assoc :data-test-disabled "yes")
-                  spinning?                                                 (assoc :data-test-spinning "yes")
-                  disabled?                                                 (update :class str (str " btn-disabled " (or disabled-class "is-disabled"))))
-        content (if spinning? spinner content)]
-    [:a (merge {:href "#"} attrs)
-     content]))
+  (component/html
+   (let [shref   (str href)
+         attrs   (cond-> opts
+                   :always                                                   (dissoc :spinning? :disabled? :disabled-class :navigation-message)
+                   navigation-message                                        (merge (apply utils/route-to navigation-message))
+                   (and (string/starts-with? shref "#") (> (count shref) 1)) (merge (utils/scroll-href (subs href 1)))
+                   (or disabled? spinning?)                                  (assoc :on-click utils/noop-callback)
+                   disabled?                                                 (assoc :data-test-disabled "yes")
+                   spinning?                                                 (assoc :data-test-spinning "yes")
+                   disabled?                                                 (update :class str (str " btn-disabled " (or disabled-class "is-disabled"))))
+         content (if spinning? spinner content)]
+     [:a (merge {:href "#"} attrs)
+      content])))
 
 (defn ^:private button-colors [color-kw]
   (let [color (color-kw {:color/teal        "btn-primary bg-teal white"
@@ -190,10 +199,10 @@
        :value title
        :disabled (boolean disabled?)}])))
 
-(def nbsp (component/html [:span {:dangerouslySetInnerHTML {:__html "&nbsp;"}}]))
-(def rarr (component/html [:span {:dangerouslySetInnerHTML {:__html " &rarr;"}}]))
-(def times (component/html [:span {:dangerouslySetInnerHTML {:__html " &times;"}}]))
-(def new-flag
+(def ^:inline nbsp (component/html [:span {:dangerouslySetInnerHTML {:__html "&nbsp;"}}]))
+(def ^:inline rarr (component/html [:span {:dangerouslySetInnerHTML {:__html " &rarr;"}}]))
+(def ^:inline times (component/html [:span {:dangerouslySetInnerHTML {:__html " &times;"}}]))
+(def ^:inline new-flag
   (component/html
    [:div.right
     [:div.border.border-navy.navy.pp2.h8.line-height-1.medium "NEW"]]))
@@ -381,8 +390,8 @@
 (def ^:private custom-select-dropdown
   (component/html
    [:div.absolute.floating-label--icon
-    (svg/dropdown-arrow {:class "stroke-gray"
-                         :style {:width "1.2em" :height "1em"}})]))
+    ^:inline (svg/dropdown-arrow {:class "stroke-gray"
+                                  :style {:width "1.2em" :height "1em"}})]))
 
 (defn ^:private plain-select-field
   [label keypath value options error? {:keys [id placeholder] :as select-attributes}]
@@ -579,7 +588,7 @@
            (dissoc attrs :width :overlay-copy))
     (if src
       [:img {:style {:width width :height width} :src src}]
-      (svg/missing-portrait {:width width :height width}))
+      ^:inline (svg/missing-portrait {:width width :height width}))
     (when overlay-copy
       [:div.absolute.overlay.bg-darken-2
        [:div.absolute.m-auto.overlay {:style {:height "50%"}} overlay-copy]])]))
@@ -648,10 +657,10 @@
             (= value maximum) [:div.bg-teal.px2.capped {:style bar-style}]
             :else             [:div.bg-teal.px2.capped {:style (merge bar-style {:width bar-width})}])]
          (if (= value maximum)
-           (svg/circled-check {:class "stroke-teal"
-                               :style {:width        "3rem" :height "3rem"
-                                       :margin-left  "0.4rem"
-                                       :margin-right "-0.2rem"}})
+           ^:inline (svg/circled-check {:class "stroke-teal"
+                                        :style {:width        "3rem" :height "3rem"
+                                                :margin-left  "0.4rem"
+                                                :margin-right "-0.2rem"}})
            [:div.border.circle.border-dark-gray.h6.center.ml1
             {:style {:height "2.66667rem" :width "2.66667rem" :line-height "2.666667rem"}}
             bar-width])])))
@@ -664,8 +673,8 @@
      (component/create
       [:a.relative.pointer.block (merge (utils/route-to events/navigate-cart)
                                         opts)
-       (svg/bag {:class (str "absolute overlay m-auto "
-                             (if (pos? quantity) "fill-navy" "fill-black"))})
+       ^:inline (svg/bag {:class (str "absolute overlay m-auto "
+                                      (if (pos? quantity) "fill-navy" "fill-black"))})
        (when (pos? quantity)
          [:div.absolute.overlay.m-auto {:style {:height "9px"}}
           [:div.center.navy.h6.line-height-1 {:data-test (-> opts :data-test (str  "-populated"))} quantity]])]))

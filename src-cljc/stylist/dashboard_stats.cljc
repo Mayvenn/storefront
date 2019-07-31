@@ -43,12 +43,12 @@
      [:div.letter-spacing-1.shout.dark-gray.mbnp5.flex.items-center
       [:a.dark-gray toggle-expand
        "Cash Balance"
-       (svg/dropdown-arrow {:class  (str "ml1 stroke-dark-gray "
-                                         (when expanded? "rotate-180"))
-                            :style  {:stroke-width "2"}
-                            :height ".75em"
-                            :width  ".75em"
-                            :data-test "toggle-cash-balance"})]]
+       ^:inline (svg/dropdown-arrow {:class  (str "ml1 stroke-dark-gray "
+                                                  (when expanded? "rotate-180"))
+                                     :style  {:stroke-width "2"}
+                                     :height ".75em"
+                                     :width  ".75em"
+                                     :data-test "toggle-cash-balance"})]]
 
      [:div.flex.mt1.items-center.justify-between
       [:a.col-5 toggle-expand
@@ -94,11 +94,11 @@
      [:div.letter-spacing-1.shout.dark-gray.mbnp5.flex.items-center
       [:a.dark-gray toggle-expand
        "Credit Balance"
-       (svg/dropdown-arrow {:class  (str "ml1 stroke-dark-gray "
-                                         (when expanded? "rotate-180"))
-                            :style  {:stroke-width "2"}
-                            :height ".75em"
-                            :width  ".75em"})]]
+       ^:inline (svg/dropdown-arrow {:class  (str "ml1 stroke-dark-gray "
+                                                  (when expanded? "rotate-180"))
+                                     :style  {:stroke-width "2"}
+                                     :height ".75em"
+                                     :width  ".75em"})]]
 
      [:div.flex.items-center
       [:a.col-7 toggle-expand

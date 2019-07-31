@@ -34,48 +34,50 @@
      :nav-message   nav-message}))
 
 (defn shop-section [{:keys [partition-count categories]}]
-  (let [links (mapv category->link categories)]
-    [:div.col-12
-     [:div.medium.border-bottom.border-gray.mb1 "Shop"]
-     [:nav.clearfix {:aria-label "Shop Products"}
-      (for [link-column (partition-all partition-count links)]
-        [:div.col.col-6 {:key (str "footer-column-" (-> link-column first :slug))}
-         (for [{:keys [title new-category? nav-message slug]} link-column]
-           [:a.block.py1.dark-gray.light.titleize
-            (merge {:key (str "footer-link-" slug)}
-                   (apply utils/route-to nav-message))
-            (when new-category?
-              [:span.teal "NEW "])
-            title])])]]))
+  (component/html
+   (let [links (mapv category->link categories)]
+     [:div.col-12
+      [:div.medium.border-bottom.border-gray.mb1 "Shop"]
+      [:nav.clearfix {:aria-label "Shop Products"}
+       (for [link-column (partition-all partition-count links)]
+         [:div.col.col-6 {:key (str "footer-column-" (-> link-column first :slug))}
+          (for [{:keys [title new-category? nav-message slug]} link-column]
+            [:a.block.py1.dark-gray.light.titleize
+             (merge {:key (str "footer-link-" slug)}
+                    (apply utils/route-to nav-message))
+             (when new-category?
+               [:span.teal "NEW "])
+             title])])]])))
 
 (defn contacts-section [{:keys [call-number sms-number contact-email]}]
-  [:div
-   [:div.medium.border-bottom.border-gray.mb1 "Contact"]
-   [:div.dark-gray.light
-    [:div.py1
-     [:span.hide-on-tb-dt (ui/link :link/phone :a.dark-gray {} call-number)] ;; mobile
-     [:span.hide-on-mb call-number] ;; desktop
-     " | 8am-5pm PST M-F"]
-    (ui/link :link/email :a.block.py1.dark-gray {} contact-email)]
+  (component/html
+   [:div
+    [:div.medium.border-bottom.border-gray.mb1 "Contact"]
+    [:div.dark-gray.light
+     [:div.py1
+      [:span.hide-on-tb-dt (ui/link :link/phone :a.dark-gray {} call-number)] ;; mobile
+      [:span.hide-on-mb call-number] ;; desktop
+      " | 8am-5pm PST M-F"]
+     (ui/link :link/email :a.block.py1.dark-gray {} contact-email)]
 
-   [:div.py1.hide-on-tb-dt
-    (ui/ghost-button {:href (phone-uri call-number)
-                      :class "my1"}
-                     [:div.flex.items-center.justify-center
-                      (svg/phone-ringing {:class "stroke-teal"})
-                      [:div.ml1.left-align "Call Now"]])
-    (ui/ghost-button {:href (str "sms:" sms-number)
-                      :class "my1"}
-                     [:div.flex.items-center.justify-center
-                      (svg/message-bubble {:class "stroke-teal"})
-                      [:div.ml1.left-align "Send Message"]])
-    (ui/ghost-button {:href (str "mailto:" contact-email)
-                      :class "my1"}
-                     [:div.flex.items-center.justify-center
-                      (svg/mail-envelope {:class "stroke-teal"})
-                      [:div.ml1.left-align "Send Email"]])]])
+    [:div.py1.hide-on-tb-dt
+     (ui/ghost-button {:href (phone-uri call-number)
+                       :class "my1"}
+                      [:div.flex.items-center.justify-center
+                       ^:inline (svg/phone-ringing {:class "stroke-teal"})
+                       [:div.ml1.left-align "Call Now"]])
+     (ui/ghost-button {:href (str "sms:" sms-number)
+                       :class "my1"}
+                      [:div.flex.items-center.justify-center
+                       ^:inline (svg/message-bubble {:class "stroke-teal"})
+                       [:div.ml1.left-align "Send Message"]])
+     (ui/ghost-button {:href (str "mailto:" contact-email)
+                       :class "my1"}
+                      [:div.flex.items-center.justify-center
+                       ^:inline (svg/mail-envelope {:class "stroke-teal"})
+                       [:div.ml1.left-align "Send Email"]])]]))
 
-(def social-section
+(defn social-section []
   (component/html
    [:div
     [:div.medium.border-bottom.border-gray
@@ -83,16 +85,20 @@
     [:div.border-bottom.border-gray.p1.flex.items-center.justify-around.py2
      [:a.block {:item-prop "sameAs"
                 :href "https://www.facebook.com/MayvennHair"}
-      [:div {:style {:width "22px" :height "22px"}} svg/mayvenn-on-facebook]]
+      [:div {:style {:width "22px" :height "22px"}}
+       ^:inline (svg/mayvenn-on-facebook)]]
      [:a.block {:item-prop "sameAs"
                 :href "http://instagram.com/mayvennhair"}
-      [:div {:style {:width "22px" :height "22px"}} svg/mayvenn-on-instagram]]
+      [:div {:style {:width "22px" :height "22px"}}
+       ^:inline (svg/mayvenn-on-instagram)]]
      [:a.block {:item-prop "sameAs"
                 :href "https://twitter.com/MayvennHair"}
-      [:div {:style {:width "22px" :height "22px"}} svg/mayvenn-on-twitter]]
+      [:div {:style {:width "22px" :height "22px"}}
+       ^:inline (svg/mayvenn-on-twitter)]]
      [:a.block {:item-prop "sameAs"
                 :href "http://www.pinterest.com/mayvennhair/"}
-      [:div {:style {:width "22px" :height "22px"}} svg/mayvenn-on-pinterest]]]]))
+      [:div {:style {:width "22px" :height "22px"}}
+       ^:inline (svg/mayvenn-on-pinterest)]]]]))
 
 (defn full-component
   [{:keys [contacts categories]} owner opts]
@@ -101,11 +107,11 @@
     [:div.container
      [:div.col-12.clearfix
       [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
-       (shop-section {:partition-count 10 :categories categories})]
+       ^:inline (shop-section {:partition-count 10 :categories categories})]
       [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
-       (contacts-section contacts)]
+       ^:inline (contacts-section contacts)]
       [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
-       social-section]]]
+       ^:inline (social-section)]]]
 
     [:div.mt3.bg-dark-gray.white.py1.px3.clearfix.h8
      [:div
@@ -135,24 +141,25 @@
    title])
 
 (defn dtc-shop-section [{:keys [categories partition-count]}]
-  (let [links                          (mapv category->link categories)
-        [column-1-links rest-of-links] (split-at partition-count links)]
-    [:div.col-12
-     [:div.medium.border-bottom.border-gray.mb1 "Shop"]
-     [:nav.clearfix {:aria-label "Shop Products"}
-      [:div.col.col-6
-       [:a.block.py1.dark-gray.light.titleize
-        (assoc (utils/fake-href events/initiate-redirect-freeinstall-from-menu
-                                {:utm-source "shopFooter"})
-               :data-test "freeinstall-footer-link")
-        [:span.teal "NEW "]
-        "Get A Free Install"]
-       (for [link column-1-links]
-         (dtc-link link))]
-      (for [link-column (partition-all partition-count rest-of-links)]
-        [:div.col.col-6 {:key (str "footer-column-" (-> link-column first :slug))}
-         (for [link link-column]
-           (dtc-link link))])]]))
+  (component/html
+   (let [links                          (mapv category->link categories)
+         [column-1-links rest-of-links] (split-at partition-count links)]
+     [:div.col-12
+      [:div.medium.border-bottom.border-gray.mb1 "Shop"]
+      [:nav.clearfix {:aria-label "Shop Products"}
+       [:div.col.col-6
+        [:a.block.py1.dark-gray.light.titleize
+         (assoc (utils/fake-href events/initiate-redirect-freeinstall-from-menu
+                                 {:utm-source "shopFooter"})
+                :data-test "freeinstall-footer-link")
+         [:span.teal "NEW "]
+         "Get A Free Install"]
+        (for [link column-1-links]
+          (dtc-link link))]
+       (for [link-column (partition-all partition-count rest-of-links)]
+         [:div.col.col-6 {:key (str "footer-column-" (-> link-column first :slug))}
+          (for [link link-column]
+            (dtc-link link))])]])))
 
 (defn dtc-full-component
   [{:keys [contacts categories]} owner opts]
@@ -161,11 +168,11 @@
     [:div.container
      [:div.col-12.clearfix
       [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
-       (dtc-shop-section {:partition-count 5 :categories categories})]
+       ^:inline (dtc-shop-section {:partition-count 5 :categories categories})]
       [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
-       (contacts-section contacts)]
+       ^:inline (contacts-section contacts)]
       [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
-       social-section]]]
+       ^:inline (social-section)]]]
 
     [:div.mt3.bg-dark-gray.white.py1.px3.clearfix.h8
      [:div

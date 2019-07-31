@@ -81,7 +81,7 @@
      :subtitle/copy                      [[:div.mtb1 "with"]
                                           [:div.ml2.mtp6 {:style {:width  "124px"
                                                                   :height "23px"}}
-                                           svg/quadpay-logo]]
+                                           ^:inline (svg/quadpay-logo)]]
      :description/copy                   [:div.mt1
                                           "Buy hair with "
                                           [:span.purple "0%"]

@@ -92,9 +92,9 @@
            [:a.gray.medium
             (merge {:data-test (str "line-item-remove-" sku-id)}
                    (utils/fake-href events/control-cart-remove (:id line-item)))
-            (svg/trash-can {:height "1.1em"
-                            :width  "1.1em"
-                            :class  "stroke-dark-gray"})])]]
+            ^:inline (svg/trash-can {:height "1.1em"
+                                     :width  "1.1em"
+                                     :class  "stroke-dark-gray"})])]]
        [:div.flex.justify-between.mt1
         [:div.h3
          {:data-test (str "line-item-quantity-" sku-id)}
@@ -131,9 +131,9 @@
          [:a.gray.medium
           (merge {:data-test (str "line-item-remove-" id)}
                  (apply utils/fake-href remove-event))
-          (svg/trash-can {:height "1.1em"
-                          :width  "1.1em"
-                          :class  "stroke-dark-gray"})])]]
+          ^:inline (svg/trash-can {:height "1.1em"
+                                   :width  "1.1em"
+                                   :class  "stroke-dark-gray"})])]]
      [:div.h5.right {:data-test (str "line-item-price-ea-" id)} (some-> price mf/as-money)]]]])
 
 (defn full-component [{:keys [order
@@ -184,7 +184,7 @@
                              :directive   [:div.flex.items-center.justify-center
                                            "Just select"
                                            [:div.mx1 {:style {:width "70px" :height "14px"}}
-                                            svg/quadpay-logo]
+                                            ^:inline (svg/quadpay-logo)]
                                            "at check out."]}
                             nil)])
       (ui/teal-button {:spinning? false
@@ -227,8 +227,8 @@
    (ui/narrow-container
     [:div.p2
      [:.center {:data-test "empty-bag"}
-      [:div.m2 (svg/bag {:style {:height "70px" :width "70px"}
-                         :class "fill-black"})]
+      [:div.m2 ^:inline (svg/bag {:style {:height "70px" :width "70px"}
+                                  :class "fill-black"})]
 
       [:p.m2.h2.light "Your bag is empty."]
 

@@ -129,7 +129,7 @@
         [:div.ml1.line-height-1 {:style {:width   "21px"
                                          :height  "21px"
                                          :opacity 0.2}}
-         (svg/social-icon (:social-service look))]]]
+         ^:inline (svg/social-icon (:social-service look))]]]
       (when yotpo-data-attributes
         [:div (om/build reviews/reviews-summary-component {:yotpo-data-attributes yotpo-data-attributes} nil)])
       (when-not (str/blank? (:description look))
@@ -170,7 +170,7 @@
                             :directive   [:div.flex.justify-center.items-center
                                           "Just select"
                                           [:div.mx1 {:style {:width "70px" :height "14px"}}
-                                           svg/quadpay-logo]
+                                           ^:inline (svg/quadpay-logo)]
                                           "at check out."]}
                            nil)
           (om/build reviews/reviews-component {:yotpo-data-attributes yotpo-data-attributes} nil)])))])

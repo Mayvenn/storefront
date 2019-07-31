@@ -105,11 +105,11 @@
       (when navigation-message
         (apply utils/route-to navigation-message)))
      value
-     (svg/dropdown-arrow {:class  "stroke-teal ml2"
-                          :style  {:stroke-width "3px"
-                                   :transform "rotate(-90deg)"}
-                          :height "14px"
-                          :width  "14px"})]))
+     ^:inline (svg/dropdown-arrow {:class  "stroke-teal ml2"
+                                   :style  {:stroke-width "3px"
+                                            :transform "rotate(-90deg)"}
+                                   :height "14px"
+                                   :width  "14px"})]))
 
 (defmethod layer-view :text-block
   [data _ _]
@@ -132,10 +132,10 @@
      (utils/fake-href events/control-open-shop-escape-hatch)
      "Shop all products"
      [:div.flex.items-end.ml2 {:style {:transform "rotate(-90deg)"}}
-      (svg/dropdown-arrow {:class  "stroke-teal"
-                           :style  {:stroke-width "3px"}
-                           :height "14px"
-                           :width  "14px"})]]]))
+      ^:inline (svg/dropdown-arrow {:class  "stroke-teal"
+                                    :style  {:stroke-width "3px"}
+                                    :height "14px"
+                                    :width  "14px"})]]]))
 
 (defn hero-image-component [{:screen/keys [server-render? seen?] :as data} owner opts]
   (component/create
@@ -246,14 +246,15 @@
   (let [step (fn [width-class
                   {:as point
                    :keys [icon/uuid icon/width]}]
-               [:div.mt2.center.px1
-                {:class width-class}
-                [:div.flex.justify-center.items-end.my2
-                 {:style {:height "39px"}}
-                 (ui/defer-ucare-img {:alt (:header/title point) :width width} uuid)]
-                [:div.h5.medium (:header/value point)]
-                [:p.h6.mx-auto.dark-gray (:body/value point)]
-                (cta-with-chevron point)])]
+               (component/html
+                [:div.mt2.center.px1
+                 {:class width-class}
+                 [:div.flex.justify-center.items-end.my2
+                  {:style {:height "39px"}}
+                  (ui/defer-ucare-img {:alt (:header/title point) :width width} uuid)]
+                 [:div.h5.medium (:header/value point)]
+                 [:p.h6.mx-auto.dark-gray (:body/value point)]
+                 (cta-with-chevron point)]))]
 
     (component/create
      [:div.col-12.py10.bg-transparent-teal

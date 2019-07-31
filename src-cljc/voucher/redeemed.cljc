@@ -23,9 +23,9 @@
        (ui/large-spinner {:style {:height "6em"}})]
       [:div.flex.flex-column.items-center
        [:div.mt4.mb10.h6.flex.items-center.justify-center
-        (svg/check {:class  "stroke-black"
-                    :height "3em"
-                    :width  "3em"})
+        ^:inline (svg/check {:class  "stroke-black"
+                             :height "3em"
+                             :width  "3em"})
         "Voucher Redeemed:"
         [:span.pl1.bold (-> voucher :discount :unit_type)]]
        [:div.h00.teal.bold {:data-test "redemption-amount"}

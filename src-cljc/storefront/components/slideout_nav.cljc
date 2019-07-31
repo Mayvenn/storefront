@@ -133,8 +133,8 @@
     (into [:a.block.inherit-color.flex.items-center (assoc link-attrs :data-test data-test)] content)]])
 
 (defn shopping-rows [{:keys [show-freeinstall-link? v2-experience?]}]
-  (let [caret (ui/forward-caret {:width  "23px"
-                                 :height "20px"})]
+  (let [^:inline caret (ui/forward-caret {:width  "23px"
+                                          :height "20px"})]
     (concat
      (when show-freeinstall-link?
        [{:link-attrs (utils/fake-href events/initiate-redirect-freeinstall-from-menu {:utm-source "shopHamburger"})

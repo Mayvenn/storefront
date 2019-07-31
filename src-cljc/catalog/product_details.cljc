@@ -332,7 +332,7 @@
                                            :directive   [:div.flex.justify-center.items-center
                                                          "Just select"
                                                          [:div.mx1 {:style {:width "70px" :height "14px"}}
-                                                          svg/quadpay-logo]
+                                                          ^:inline (svg/quadpay-logo)]
                                                          "at check out."]}
                                           nil)])
               (when (products/stylist-only? product)

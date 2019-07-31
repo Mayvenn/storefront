@@ -74,9 +74,9 @@
            [:a.gray.medium
             (merge {:data-test (str "line-item-remove-" sku-id)}
                    (utils/fake-href events/control-cart-remove (:id line-item)))
-            (svg/trash-can {:height "1.1em"
-                            :width  "1.1em"
-                            :class  "stroke-dark-gray"})])]]
+            ^:inline (svg/trash-can {:height "1.1em"
+                                     :width  "1.1em"
+                                     :class  "stroke-dark-gray"})])]]
        [:div.flex.justify-between.mt1
         [:div.h3
          {:data-test (str "line-item-quantity-" sku-id)}
@@ -208,7 +208,7 @@
                                 :directive   [:div.flex.items-center.justify-center
                                               "Just select"
                                               [:div.mx1 {:style {:width "70px" :height "14px"}}
-                                               svg/quadpay-logo]
+                                               ^:inline (svg/quadpay-logo)]
                                               "at check out."]}
                                nil)])
 

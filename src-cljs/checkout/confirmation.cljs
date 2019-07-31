@@ -161,7 +161,7 @@
                          :directive   [:div.flex.justify-center.items-center
                                        "Continue with"
                                        [:div.mx1 {:style {:width "70px" :height "14px"}}
-                                        svg/quadpay-logo]
+                                        ^:inline (svg/quadpay-logo)]
                                        "below."]}
                         nil)
 
@@ -261,7 +261,7 @@
                            :directive   [:div.flex.justify-center.items-center
                                          "Continue with"
                                          [:div.mx1 {:style {:width "70px" :height "14px"}}
-                                          svg/quadpay-logo]
+                                          ^:inline (svg/quadpay-logo)]
                                          "below."]}
                           nil)
 

@@ -76,8 +76,8 @@ Thanks,
                   [:a.h6.col-12.btn.btn-primary.bg-dark-gray
                    {:href (email-link utm-url store-nickname)
                     :target "_blank"}
-                   (svg/mail-envelope {:class "stroke-white align-middle mr1"
-                                       :style {:height "18px" :width "18px"}})
+                   ^:inline (svg/mail-envelope {:class "stroke-white align-middle mr1"
+                                                :style {:height "18px" :width "18px"}})
                    "Email"]]]]
                [:div.mt3.mb1
                 [:input.border.border-dark-gray.rounded.pl1.py1.bg-white.teal.col-12

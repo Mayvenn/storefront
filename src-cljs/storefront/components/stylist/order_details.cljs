@@ -130,8 +130,8 @@
          [:div {:style {:grid-area "back-btn"}}
           (back-button back)]
          [:div {:style {:grid-area "type-icon"}}
-          (svg/box-package {:height 18
-                            :width  25})]
+          ^:inline (svg/box-package {:height 18
+                                     :width  25})]
          [:div
           {:style {:grid-area "title"}}
           [:h4.medium (orders/first-name-plus-last-name-initial order)]]

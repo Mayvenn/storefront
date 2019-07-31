@@ -22,162 +22,119 @@
 
 (defn svg-xlink
   ([id] (svg-xlink {} id))
-  ([opts id] [:g {:dangerouslySetInnerHTML {:__html (str "<use xlink:href=\"#" id "\"></use>")}}]))
+  ([opts id] (component/html [:g {:dangerouslySetInnerHTML {:__html (str "<use xlink:href=\"#" id "\"></use>")}}])))
 
 (defn error [opts]
-  [:svg opts (svg-xlink "circled-exclamation")])
-
-(defn question-circle [opts]
   (component/html
-   [:svg opts
-    (svg-xlink "question-circle")]))
-
-(defn radio-circle [opts]
-  (component/html
-   [:svg (assoc-in opts
-                   [:style :fill]
-                   (if (:selected? opts)
-                     "black"
-                     "white"))
-    (svg-xlink "radio-circle")]))
+   [:svg opts (svg-xlink "circled-exclamation")]))
 
 (defn dropdown-arrow [opts]
-  [:svg (maps/deep-merge {:style {:stroke-width "3"}} opts)
-   (svg-xlink "dropdown-arrow")])
+  (component/html
+   [:svg (maps/deep-merge {:style {:stroke-width "3"}} opts)
+    ^:inline (svg-xlink "dropdown-arrow")]))
 
 (defn back-arrow [opts]
-  [:svg opts
-   (svg-xlink "back-arrow")])
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "back-arrow")]))
 
 (defn left-caret [opts]
-  [:svg opts
-   (svg-xlink "left-caret")])
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "left-caret")]))
 
 ;; Stylist Dashboard
 
-(def micro-dollar-sign
-  (component/html
-   [:svg {:class "stroke-dark-gray" :style {:width "14px" :height "14px"}}
-    (svg-xlink "micro-dollar-sign")]))
-
-(def large-dollar
-  ;; TODO: is there a way to use vector-effect: non-scaling-stroke; to unify
-  ;; micro-dollar-sign and large-dollar?
-  (component/html
-   [:svg {:class "stroke-white" :style {:width "1em" :height "1em"}}
-    (svg-xlink "large-dollar")]))
-
-(def large-percent
-  (component/html
-   [:svg {:class "stroke-white" :style {:width "1em" :height "1em"}}
-    (svg-xlink "large-percent")]))
-
-(def large-payout
-  (component/html
-   [:svg {:class "stroke-white" :style {:width "1em" :height "1em"}}
-    (svg-xlink "large-payout")]))
-
-(def no-expenses
-  (component/html
-   [:svg {:class "stroke-teal" :style {:width "70px" :height "70px" :stroke-width "2"}}
-    (svg-xlink "large-payout")]))
-
-(def large-mail
-  (component/html
-   [:svg {:style {:width "44px" :height "44px"}}
-    (svg-xlink "large-mail")]))
-
 (defn box-package [opts]
   (component/html
-    [:svg opts
-     (svg-xlink "box-package")]))
+   [:svg opts
+    ^:inline (svg-xlink "box-package")]))
 
 ;; Help
 
 (defn phone-ringing [opts]
-  [:svg (merge {:class "stroke-dark-gray" :style {:width "30px" :height "30px"}} opts)
-   (svg-xlink "phone-ringing")])
+  (component/html
+   [:svg (merge {:class "stroke-dark-gray" :style {:width "30px" :height "30px"}} opts)
+    ^:inline (svg-xlink "phone-ringing")]))
 
 (defn mail-envelope [opts]
-  [:svg (merge {:class "stroke-dark-gray" :style {:width "30px" :height "30px"}} opts)
-   (svg-xlink "closed-mail-envelope")])
+  (component/html
+   [:svg (merge {:class "stroke-dark-gray" :style {:width "30px" :height "30px"}} opts)
+    ^:inline (svg-xlink "closed-mail-envelope")]))
 
 (defn message-bubble [opts]
-  [:svg (merge {:class "stroke-dark-gray" :style {:width "30px" :height "30px"}} opts)
-   (svg-xlink "message-bubble")])
+  (component/html
+   [:svg (merge {:class "stroke-dark-gray" :style {:width "30px" :height "30px"}} opts)
+    ^:inline (svg-xlink "message-bubble")]))
 
 ;;
 
 (defn circled-check [svg-options]
-  [:svg svg-options (svg-xlink "circled-check")])
+  (component/html
+   [:svg svg-options ^:inline (svg-xlink "circled-check")]))
 
 (defn check [svg-options]
-  [:svg svg-options (svg-xlink "check")])
+  (component/html
+   [:svg svg-options ^:inline (svg-xlink "check")]))
 
 (defn bag [opts]
-  [:svg (merge {:style {:width "25px" :height "28px"}} opts)
-   (svg-xlink "bag")])
+  (component/html
+   [:svg (merge {:style {:width "25px" :height "28px"}} opts)
+    ^:inline (svg-xlink "bag")]))
 
 (defn counter-inc
   ([] (counter-inc {}))
   ([opts]
-   [:svg (maps/deep-merge {:class "stroke-white fill-gray" :style {:width "1.2em" :height "1.2em"}} opts)
-    (svg-xlink "counter-inc")]))
+   (component/html
+    [:svg (maps/deep-merge {:class "stroke-white fill-gray" :style {:width "1.2em" :height "1.2em"}} opts)
+     ^:inline (svg-xlink "counter-inc")])))
 
 (defn counter-dec
   ([] (counter-dec {}))
   ([opts]
-   [:svg (maps/deep-merge {:class "stroke-white fill-gray" :style {:width "1.2em" :height "1.2em"}} opts)
-    (svg-xlink "counter-dec")]))
+   (component/html
+    [:svg (maps/deep-merge {:class "stroke-white fill-gray" :style {:width "1.2em" :height "1.2em"}} opts)
+     ^:inline (svg-xlink "counter-dec")])))
 
 (defn close-x [{:keys [class]}]
   (component/html
    [:svg.rotate-45 {:class class :style {:width "1.2em" :height "1.2em"}}
-    (svg-xlink "counter-inc")]))
+    ^:inline (svg-xlink "counter-inc")]))
 
 (defn simple-x [opts]
-  [:svg opts (svg-xlink "simple-x")])
-
-(def open-hamburger-menu
   (component/html
-   [:svg {:class "fill-dark-gray" :style {:width "30px" :height "30px"}}
-    (svg-xlink "open-hamburger-menu")]))
+   [:svg opts ^:inline (svg-xlink "simple-x")]))
 
-(def close-hamburger-menu
-  (component/html
-   [:svg {:class "fill-dark-gray" :style {:width "30px" :height "30px"}}
-    (svg-xlink "close-hamburger-menu")]))
-
-(def quadpay-logo
+(defn quadpay-logo []
   (component/html
    [:svg.container-size
-    (svg-xlink "quadpay-logo")]))
+    ^:inline (svg-xlink "quadpay-logo")]))
 
 ;; Social
-(def instagram
+(defn instagram []
   (component/html
    [:svg.container-size
-    (svg-xlink "instagram")]))
+    ^:inline (svg-xlink "instagram")]))
 
-(def facebook-f
+(defn facebook-f []
   (component/html
    [:svg.container-size
-    (svg-xlink "facebook-f")]))
+    ^:inline (svg-xlink "facebook-f")]))
 
-(def pinterest
+(defn pinterest []
   (component/html
    [:svg.container-size
-    (svg-xlink "pinterest")]))
+    ^:inline (svg-xlink "pinterest")]))
 
-(def twitter
+(defn twitter []
   (component/html
    [:svg.container-size
-    (svg-xlink "twitter")]))
+    ^:inline (svg-xlink "twitter")]))
 
-(def styleseat
+(defn styleseat []
   (component/html
    [:svg.container-size
-    (svg-xlink "styleseat")]))
+    ^:inline (svg-xlink "styleseat")]))
 
 (def social-icon
   {"instagram" instagram
@@ -194,152 +151,112 @@
     (component/html
      [:svg.container-size {:class "fill-dark-gray" :role "img" :aria-labelledby title-id}
       [:title {:id title-id} title]
-      (svg-xlink {:role "presentation"} xlink)])))
+      ^:inline (svg-xlink {:role "presentation"} xlink)])))
 
-(def mayvenn-on-facebook
+(defn mayvenn-on-facebook []
   (mayvenn-on-social "Follow Mayvenn on Facebook" "facebook-f"))
 
-(def mayvenn-on-instagram
+(defn mayvenn-on-instagram []
   (mayvenn-on-social "Follow Mayvenn on Instagram" "instagram"))
 
-(def mayvenn-on-twitter
+(defn mayvenn-on-twitter []
   (mayvenn-on-social "Follow Mayvenn on Twitter" "twitter"))
 
-(def mayvenn-on-pinterest
+(defn mayvenn-on-pinterest []
   (mayvenn-on-social "Follow Mayvenn on Pinterest" "pinterest"))
 
 ;;
 
 (defn missing-portrait [svg-options]
-  [:svg svg-options
-   (svg-xlink "mayvenn-wave")])
-
-(def play-video-muted
   (component/html
-   [:svg {:class "fill-dark-gray" :style {:width "64px" :height "64px" :fill-opacity "0.6"}}
-    (svg-xlink "play-video")]))
+   [:svg svg-options
+    ^:inline (svg-xlink "mayvenn-wave")]))
 
 (defn white-play-video [opts]
   (component/html
-   [:svg opts (svg-xlink "play-video")]))
-
-(defn clear-play-video [opts]
-  (component/html
-   [:svg opts (svg-xlink "clear-play-video")]))
+   [:svg opts ^:inline (svg-xlink "play-video")]))
 
 (defn guarantee [opts]
   (component/html
    [:svg opts
-    (svg-xlink "guarantee")]))
-
-(defn number-circle [number-kw]
-  (component/html
-   [:svg {:class "fill-teal bold"
-          :style {:width     "74px"
-                  :height    "74px"
-                  :font-size "35px"}}
-    (svg-xlink
-     (case number-kw
-       :1 "number-circle-1"
-       :2 "number-circle-2"
-       :3 "number-circle-3"))]))
-
-(defn number-circle-with-white-border [number-kw]
-  (component/html
-   [:div.relative {:style {:left "-37px"}}
-    [:svg.absolute {:class "fill-white bold"
-                    :style {:width     "80px"
-                            :height    "80px"
-                            :font-size "35px"}}
-     (svg-xlink "number-circle-1")]
-    [:svg.absolute {:class "fill-teal bold"
-                    :style {:width       "74px"
-                            :height      "74px"
-                            :font-size   "35px"
-                            :margin-left "3px"
-                            :margin-top  "3px"}}
-     (svg-xlink
-      (case number-kw
-        :1 "number-circle-1"
-        :2 "number-circle-2"
-        :3 "number-circle-3"))]]))
+    ^:inline (svg-xlink "guarantee")]))
 
 (defn minus-sign [opts]
   (component/html
    [:svg opts
-    (svg-xlink "minus-sign")]))
+    ^:inline (svg-xlink "minus-sign")]))
 
 (defn plus-sign [opts]
   (component/html
    [:svg opts
-    (svg-xlink "plus-sign")]))
+    ^:inline (svg-xlink "plus-sign")]))
 
 (defn trash-can [opts]
   (component/html
    [:svg opts
-    (svg-xlink "trash-can")]))
+    ^:inline (svg-xlink "trash-can")]))
 
 (defn discount-tag [opts]
   (component/html
    [:svg opts
-    (svg-xlink "discount-tag")]))
+    ^:inline (svg-xlink "discount-tag")]))
 
 (defn share-arrow [opts]
   (component/html
    [:svg opts
-    (svg-xlink "share-arrow")]))
+    ^:inline (svg-xlink "share-arrow")]))
 
 (defn celebration-horn [opts]
   (component/html
    [:svg opts
-    (svg-xlink "celebration-horn")]))
+    ^:inline (svg-xlink "celebration-horn")]))
 
 (defn coin-stack [opts]
   (component/html
    [:svg opts
-    (svg-xlink "coin-stack")]))
+    ^:inline (svg-xlink "coin-stack")]))
 
 (defn coin-in-slot [opts]
   (component/html
-    [:svg opts
-     (svg-xlink "coin-in-slot")]))
+   [:svg opts
+    ^:inline (svg-xlink "coin-in-slot")]))
 
 (defn stack-o-cash [opts]
   (component/html
-    [:svg opts
-     (svg-xlink "stack-o-cash")]))
+   [:svg opts
+    ^:inline (svg-xlink "stack-o-cash")]))
 
 (defn certified-ribbon [opts]
   (component/html
    [:svg opts
-    (svg-xlink "certified-ribbon")]))
+    ^:inline (svg-xlink "certified-ribbon")]))
 
 (defn icon-sms [opts]
   (component/html
    [:svg opts
-    (svg-xlink "icon-sms")]))
+    ^:inline (svg-xlink "icon-sms")]))
 
 (defn icon-call [opts]
   (component/html
    [:svg opts
-    (svg-xlink "icon-call")]))
+    ^:inline (svg-xlink "icon-call")]))
 
 (defn icon-email [opts]
   (component/html
    [:svg opts
-    (svg-xlink "icon-email")]))
+    ^:inline (svg-xlink "icon-email")]))
 
 (defn cascade [opts]
   (component/html
    [:svg opts
-    (svg-xlink "cascade")]))
+    ^:inline (svg-xlink "cascade")]))
 
 (defn phone [opts]
   (component/html
    [:svg opts
-    (svg-xlink "phone")]))
+    ^:inline (svg-xlink "phone")]))
 
 (defn position [opts]
   (component/html
    [:svg opts
-    (svg-xlink "position")]))
+    ^:inline (svg-xlink "position")]))

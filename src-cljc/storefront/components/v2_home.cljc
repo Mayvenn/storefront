@@ -64,12 +64,12 @@
         [:div.h6.white.light
          "FREE standard shipping"]]]))))
 
-(def teal-play-video-mobile
+(defn teal-play-video-mobile []
   (svg/white-play-video {:class  "mr1 fill-teal"
                          :height "30px"
                          :width  "30px"}))
 
-(def teal-play-video-desktop
+(defn teal-play-video-desktop []
   (svg/white-play-video {:class  "mr1 fill-teal"
                          :height "41px"
                          :width  "41px"}))
@@ -86,7 +86,7 @@
            (ui/defer-ucare-img {:alt "" :width "212"}
              "c487eeef-0f84-4378-a9be-13dc7c311e23")
            [:div.absolute.top-0.bottom-0.left-0.right-0.flex.items-center.justify-center.bg-darken-3
-            teal-play-video-desktop]]
+            ^:inline (teal-play-video-desktop)]]
           [:a.block.ml4.dark-gray
            video-link
            [:div.h4.bold "#MayvennFreeInstall"]
@@ -100,7 +100,7 @@
            (ui/defer-ucare-img {:alt "" :width "152"}
              "1b58b859-842a-44b1-885c-eac965eeaa0f")
            [:div.absolute.top-0.bottom-0.left-0.right-0.flex.items-center.justify-center.bg-darken-3
-            teal-play-video-mobile]]
+            ^:inline (teal-play-video-mobile)]]
           [:a.block.ml2.dark-gray
            video-link
            [:h6.bold.mbnp6 "#MayvennFreeInstall"]
@@ -286,7 +286,7 @@
             [:div.relative
              diishan-image
              [:div.absolute.bg-darken-3.overlay.flex.items-center.justify-center
-              teal-play-video-mobile]]]
+              ^:inline (teal-play-video-mobile)]]]
            [:a.col-6.px2
             we-are-mayvenn-link
             [:h4.my1.dark-gray.medium "Our Story"]
@@ -315,7 +315,7 @@
             we-are-mayvenn-link
             [:div.relative diishan-image
              [:div.absolute.overlay.flex.items-center.justify-center.bg-darken-3
-              teal-play-video-desktop]]]]]])))))
+              ^:inline (teal-play-video-desktop)]]]]]])))))
 
 (defn component [{:keys [signed-in
                          homepage-data

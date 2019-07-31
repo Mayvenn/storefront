@@ -40,9 +40,9 @@
    {:style {:height "100%"}}
    label-html
    [:div.ml2.flex-auto selected-value-html]
-   [:div.self-center (svg/dropdown-arrow {:height ".575em"
-                                          :width  ".575em"
-                                          :class  "stroke-teal"})]])
+   [:div.self-center ^:inline (svg/dropdown-arrow {:height ".575em"
+                                                   :width  ".575em"
+                                                   :class  "stroke-teal"})]])
 
 (defn desktop-dropdown [label-html selected-value-html select-html]
   [:div.flex.flex-column.relative.flex-auto {:style {:height "100%"}}
@@ -50,9 +50,9 @@
     {:style {:height "100%"}}
     label-html
     [:div.ml2.flex-auto selected-value-html]
-    [:div.self-center (svg/dropdown-arrow {:height ".575em"
-                                           :width  ".575em"
-                                           :class  "stroke-teal"})]]
+    [:div.self-center ^:inline (svg/dropdown-arrow {:height ".575em"
+                                                    :width  ".575em"
+                                                    :class  "stroke-teal"})]]
    select-html])
 
 (defn field
