@@ -1,4 +1,4 @@
-(ns storefront.keypaths
+(ns ^:figwheel-always storefront.keypaths
   (:require [clojure.string :as string]))
 
 (def cookie [:cookie])
