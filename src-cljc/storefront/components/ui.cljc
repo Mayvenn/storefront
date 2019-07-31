@@ -765,14 +765,11 @@
 (def header-image-size 36)
 
 (defn expand-icon [expanded?]
-  (component/build
-   (fn [_ _ _]
-     (component/create
-      [:img {:style {:width "8px"}
-             :src   (if expanded?
-                      (assets/path "/images/icons/collapse.png")
-                      (assets/path "/images/icons/expand.png"))}]))
-   {:expanded? expanded?}))
+  (component/html
+   [:img {:style {:width "8px"}
+          :src   (if expanded?
+                   (assets/path "/images/icons/collapse.png")
+                   (assets/path "/images/icons/expand.png"))}]))
 
 (defn back-arrow [attrs]
   (ucare-img (merge {:width "24"}
