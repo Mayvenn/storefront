@@ -692,7 +692,7 @@
 (defn ^:export built-component [data opts]
   (component/build component data opts))
 
-(defn top-level
+(defn ^:export top-level
   [data opts]
   (let [routed-component
         (condp = (get-in data keypaths/navigation-event)
