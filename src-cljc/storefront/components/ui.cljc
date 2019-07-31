@@ -101,19 +101,18 @@
   [{:keys [disabled? disabled-class spinning? navigation-message href]
     :as   opts}
    & content]
-  (component/html
-   (let [shref   (str href)
-         attrs   (cond-> opts
-                   :always                                                   (dissoc :spinning? :disabled? :disabled-class :navigation-message)
-                   navigation-message                                        (merge (apply utils/route-to navigation-message))
-                   (and (string/starts-with? shref "#") (> (count shref) 1)) (merge (utils/scroll-href (subs href 1)))
-                   (or disabled? spinning?)                                  (assoc :on-click utils/noop-callback)
-                   disabled?                                                 (assoc :data-test-disabled "yes")
-                   spinning?                                                 (assoc :data-test-spinning "yes")
-                   disabled?                                                 (update :class str (str " btn-disabled " (or disabled-class "is-disabled"))))
-         content (if spinning? spinner content)]
-     [:a (merge {:href "#"} attrs)
-      content])))
+  (let [shref   (str href)
+        attrs   (cond-> opts
+                  :always                                                   (dissoc :spinning? :disabled? :disabled-class :navigation-message)
+                  navigation-message                                        (merge (apply utils/route-to navigation-message))
+                  (and (string/starts-with? shref "#") (> (count shref) 1)) (merge (utils/scroll-href (subs href 1)))
+                  (or disabled? spinning?)                                  (assoc :on-click utils/noop-callback)
+                  disabled?                                                 (assoc :data-test-disabled "yes")
+                  spinning?                                                 (assoc :data-test-spinning "yes")
+                  disabled?                                                 (update :class str (str " btn-disabled " (or disabled-class "is-disabled"))))
+        content (if spinning? spinner content)]
+    (into [:a (merge {:href "#"} attrs)]
+          content)))
 
 (defn ^:private button-colors [color-kw]
   (let [color (color-kw {:color/teal        "btn-primary bg-teal white"
