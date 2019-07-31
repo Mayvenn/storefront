@@ -151,25 +151,26 @@
                    {}))
 
 (defn style-carousel [styles treatments origins link-text {:as ugc :keys [album-keyword]} album-first?]
-  [:div.col-12.mt4
-   [:div.hide-on-dt
-    [:h5.bold.center styles]
-    [:div.h6.center.mb2.dark-gray treatments [:span.px2 "•"] origins]
-    (style-carousel-component (:images ugc))
-    [:div.col-8.mx-auto.mt2
-     (shop-button album-keyword link-text)]]
+  (component/html
+   [:div.col-12.mt4
+    [:div.hide-on-dt
+     [:h5.bold.center styles]
+     [:div.h6.center.mb2.dark-gray treatments [:span.px2 "•"] origins]
+     ^:inline (style-carousel-component (:images ugc))
+     [:div.col-8.mx-auto.mt2
+      (shop-button album-keyword link-text)]]
 
-   [:div.hide-on-mb-tb
-    [:div.flex.flex-wrap.justify-between
-     [:div.col-4.flex.justify-center.items-center.flex-column.px2
-      [:h4.medium.center styles]
-      [:div.h5.center.mb2.dark-gray.col-12
-       treatments [:span "•"] origins]
+    [:div.hide-on-mb-tb
+     [:div.flex.flex-wrap.justify-between
+      [:div.col-4.flex.justify-center.items-center.flex-column.px2
+       [:h4.medium.center styles]
+       [:div.h5.center.mb2.dark-gray.col-12
+        treatments [:span "•"] origins]
 
-      [:div.mx-auto.mt2 (shop-button album-keyword link-text)]]
+       [:div.mx-auto.mt2 (shop-button album-keyword link-text)]]
 
-     [:div.col-8 (when album-first? {:style {:order -1}})
-      (style-carousel-component (:images ugc))]]]])
+      [:div.col-8 (when album-first? {:style {:order -1}})
+       ^:inline (style-carousel-component (:images ugc))]]]]))
 
 (defn an-amazing-deal []
   (component/build
@@ -233,38 +234,40 @@
             (row "Black-owned company")])]]]))))
 
 (defn most-popular-looks [sleek-ugc wave-ugc]
-  [:div.col-12.col-8-on-tb-dt.mt3.px2.py5.mx-auto
-   [:div.my2.flex.flex-column.items-center
-    [:h2.center "Our Most Popular Looks"]
-    (style-carousel "Sleek & Straight"
-                    "Virgin & Dyed Virgin Hair"
-                    "Brazilian & Peruvian"
-                    "Straight"
-                    sleek-ugc
-                    true)
+  (component/html
+   [:div.col-12.col-8-on-tb-dt.mt3.px2.py5.mx-auto
+    [:div.my2.flex.flex-column.items-center
+     [:h2.center "Our Most Popular Looks"]
+     ^:inline (style-carousel "Sleek & Straight"
+                              "Virgin & Dyed Virgin Hair"
+                              "Brazilian & Peruvian"
+                              "Straight"
+                              sleek-ugc
+                              true)
 
-    [:hr.hide-on-mb-tb.border-top.border-silver.col-12.mx-auto.my6]
+     [:hr.hide-on-mb-tb.border-top.border-silver.col-12.mx-auto.my6]
 
-    (style-carousel "Wavy & Curly"
-                    "Virgin & Dyed Virgin Hair"
-                    "Brazilian, Malaysian & Peruvian"
-                    "Wavy & Curly"
-                    wave-ugc
-                    false)]])
+     ^:inline (style-carousel "Wavy & Curly"
+                              "Virgin & Dyed Virgin Hair"
+                              "Brazilian, Malaysian & Peruvian"
+                              "Wavy & Curly"
+                              wave-ugc
+                              false)]]))
 
 (defn free-install-mayvenn-grid [free-install-mayvenn-ugc]
-  [:div.py8.col-10.mx-auto
-   [:h2.center "#MayvennFreeInstall"]
-   [:h6.center.dark-gray "Show off your look by tagging us with #MayvennFreeInstall"]
-   [:div.flex.flex-wrap.pt2
-    (for [{:keys [cta/navigation-message image-url]} (:images free-install-mayvenn-ugc)]
-      [:a.col-6.col-3-on-tb-dt.p1
-       (when navigation-message
-         (apply utils/route-to navigation-message))
-       (ui/aspect-ratio
-        1 1
-        [:img {:class "col-12"
-               :src   image-url}])])]])
+  (component/html
+   [:div.py8.col-10.mx-auto
+    [:h2.center "#MayvennFreeInstall"]
+    [:h6.center.dark-gray "Show off your look by tagging us with #MayvennFreeInstall"]
+    [:div.flex.flex-wrap.pt2
+     (for [{:keys [cta/navigation-message image-url]} (:images free-install-mayvenn-ugc)]
+       [:a.col-6.col-3-on-tb-dt.p1
+        (when navigation-message
+          (apply utils/route-to navigation-message))
+        (ui/aspect-ratio
+         1 1
+         [:img {:class "col-12"
+                :src   image-url}])])]]))
 
 (defn our-story []
   (component/build
@@ -358,7 +361,7 @@
     [:section [:div (v2/why-mayvenn-is-right-for-you)]]
     [:section ^:inline (free-install-mayvenn-grid free-install-mayvenn-ugc)]
     [:hr.hide-on-mb-tb.border-top.border-silver.col-9.mx-auto.mb6]
-    [:section ^:inline (v2/faq faq-data)]
+    [:section (v2/faq faq-data)]
     [:hr.border-top.border-silver.col-9.mx-auto.my6]
     [:section ^:inline (our-story)]]))
 
