@@ -14,7 +14,8 @@
 
 (defn email-capture-session
   [app-state]
-  (get-in app-state keypaths/email-capture-session))
+  (-> (get-in app-state keypaths/cookie)
+      cookie-jar/retrieve-email-capture-session))
 
 (defn touch-email-capture-session
   [app-state]

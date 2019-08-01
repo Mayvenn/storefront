@@ -2,9 +2,7 @@
   "TODO move these to stylist-directory ns if they are directory related"
   (:require #?@(:cljs [[spice.core :as spice]
                        [storefront.browser.cookie-jar :as cookie-jar]])
-            [adventure.keypaths]
-            [storefront.keypaths :as keypaths]
-            [adventure.keypaths :as adventure.keypaths]))
+            [storefront.keypaths :as keypaths]))
 
 (defn own-store? [data]
   (= (get-in data keypaths/user-store-slug)
@@ -25,5 +23,9 @@
 (defn retrieve-parsed-affiliate-id [app-state]
   #?(:cljs (and
             (contains? #{"shop" "freeinstall"} (get-in app-state keypaths/store-slug))
-            (get-in app-state adventure.keypaths/adventure-affiliate-stylist-id))
+            (some-> app-state
+                    (get-in keypaths/cookie)
+                    cookie-jar/retrieve-affiliate-stylist-id
+                    :affiliate-stylist-id
+                    spice/parse-int))
      :clj nil))
