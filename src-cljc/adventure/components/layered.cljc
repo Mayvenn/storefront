@@ -169,8 +169,8 @@
       [:div.h5.mt6.mb4 v])
     [:ul.h6.list-img-purple-checkmark.dark-gray.left-align.mx-auto
      {:style {:width "max-content"}}
-     (for [b (:bullets data)]
-       [:li.mb1.pl1 b])]]))
+     (for [[i b] (map-indexed vector (:bullets data))]
+       [:li.mb1.pl1 {:key (str i)} b])]]))
 
 (def teal-play-video-mobile
   (svg/white-play-video {:class  "mr1 fill-teal"
@@ -297,6 +297,7 @@
     [:div.flex.flex-wrap.pt2
      (for [{:keys [image-url]} (:images data)]
        [:a.col-6.col-3-on-tb-dt.p1
+        {:key (str image-url)}
         (ui/screen-aware
          ugc-image
          {:image-url image-url}
