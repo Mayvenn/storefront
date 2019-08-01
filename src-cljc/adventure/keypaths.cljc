@@ -10,7 +10,6 @@
 (def adventure-choices-flow (conj adventure-choices :flow))
 (def adventure-choices-color (conj adventure-choices :color))
 (def adventure-choices-how-shop (conj adventure-choices :how-shop))
-(def adventure-choices-install-type (conj adventure-choices :install-type))
 (def adventure-choices-selected-stylist-id (conj adventure-choices :selected-stylist-id))
 (def adventure-matched-stylists (conj adventure :matched-stylists))
 (def adventure-stylist-match-address (conj adventure :stylist-match-address))

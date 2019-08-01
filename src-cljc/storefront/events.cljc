@@ -495,7 +495,6 @@
 (defpath navigate-adventure-a-la-carte-hair-texture)
 (defpath navigate-adventure-a-la-carte-hair-color)
 (defpath navigate-adventure-a-la-carte-product-list)
-(defpath navigate-adventure-install-type)
 (defpath navigate-adventure-select-new-look)
 (defpath navigate-adventure-look-detail)
 (defpath navigate-adventure-matching-stylist-wait)

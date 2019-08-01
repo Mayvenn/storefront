@@ -75,7 +75,6 @@
            query                        {:latitude     latitude
                                          :longitude    longitude
                                          :radius       "100mi"
-                                         :install-type (:install-type choices)
                                          :choices      choices}] ; For trackings purposes only
        (api/fetch-stylists-within-radius api-cache
                                          query

@@ -51,7 +51,6 @@
     "/adv/matching-stylist-wait-post-purchase"                 (edn->bidi events/navigate-adventure-matching-stylist-wait-post-purchase)
     "/adv/shop-hair"                                           (edn->bidi events/navigate-adventure-shop-hair)
     "/adv/how-shop-hair"                                       (edn->bidi events/navigate-adventure-how-shop-hair)
-    "/adv/install-type"                                        (edn->bidi events/navigate-adventure-install-type)
     "/adv/stylist-results"                                     (edn->bidi events/navigate-adventure-stylist-results-pre-purchase)
     "/adv/stylist-results-post-purchase"                       (edn->bidi events/navigate-adventure-stylist-results-post-purchase)
     "/adv/out-of-area"                                         (edn->bidi events/navigate-adventure-out-of-area)

@@ -18,16 +18,14 @@
 
 (defn ^:private query
   [data]
-  (let [{:keys [install-type texture color]} (get-in data adventure.keypaths/adventure-choices)
-        products                             (selector/match-all {}
-                                                                 {:hair/texture #{texture}
-                                                                  :hair/color   #{color}
-                                                                  :hair/family  (if (some? install-type)
-                                                                                  #{install-type "bundles"}
-                                                                                  handlers/default-adventure-hair-family)}
-                                                                 (vals (get-in data keypaths/v2-products)))
-        stylist-selected?                    (get-in data adventure.keypaths/adventure-servicing-stylist)
-        current-step                         (if stylist-selected? 3 2)]
+  (let [{:keys [texture color]} (get-in data adventure.keypaths/adventure-choices)
+        products                (selector/match-all {}
+                                                    {:hair/texture #{texture}
+                                                     :hair/color   #{color}
+                                                     :hair/family  handlers/default-adventure-hair-family}
+                                                    (vals (get-in data keypaths/v2-products)))
+        stylist-selected?       (get-in data adventure.keypaths/adventure-servicing-stylist)
+        current-step            (if stylist-selected? 3 2)]
     (merge
      {:prompt-image      "//ucarecdn.com/4d53dac6-a7ce-4c10-bd5d-644821c5af4b/-/format/auto/"
       :data-test         "product-list"
@@ -95,7 +93,4 @@
 
 (defmethod effects/perform-effects events/navigate-adventure-a-la-carte-product-list
   [_ _ args _ app-state]
-  #?(:cljs (let [{:keys [install-type]} (get-in app-state adventure.keypaths/adventure-choices)]
-             (messages/handle-message events/adventure-fetch-matched-products {:criteria (if (some? install-type)
-                                                                                           [:hair/texture :hair/family]
-                                                                                           [:hair/texture])}))))
+  #?(:cljs (messages/handle-message events/adventure-fetch-matched-products {:criteria [:hair/texture]})))

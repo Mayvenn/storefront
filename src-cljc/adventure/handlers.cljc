@@ -66,7 +66,7 @@
              from-shop-to-freeinstall? (get-in app-state keypaths/adventure-from-shop-to-freeinstall?)]
          (when (and (events-not-to-direct-load event)
                     (empty? adventure-choices)
-                    (not (and (= events/navigate-adventure-install-type event)
+                    (not (and (= events/navigate-adventure-match-stylist event)
                               (or from-shop-to-freeinstall?
                                   (some-> query-params :utm_source (string/includes? "toadventure"))))))
            (history/enqueue-navigate events/navigate-adventure-home nil))
@@ -106,7 +106,7 @@
 (defn ^:private adventure-choices->criteria
   [choices]
   ;; Always return bundles for a la carte
-  {:hair/family  (conj #{"bundles"} (:install-type choices))
+  {:hair/family  default-adventure-hair-family
    :hair/texture (:texture choices)})
 
 (defmethod effects/perform-effects events/adventure-fetch-matched-skus

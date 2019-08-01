@@ -17,7 +17,7 @@
              :header/value           "We believe that quality should be accessible for all."
              :body/value             "Our bundles, closures, and frontals are crafted with the highest industry standards and come in a variety of textures and colors. The best part? All of our products are quality-guaranteed."
              :cta/value              "Get started"
-             :cta/navigation-message [events/navigate-adventure-install-type nil]}
+             :cta/navigation-message [events/navigate-adventure-match-stylist nil]}
             {:layer/type      :bulleted-explainer
              :header/value    "About Our Hair"
              :subheader/value "An overview"
@@ -42,7 +42,7 @@
             (merge {:layer/type :faq} (faq/free-install-query data))
             {:layer/type :contact}
             {:layer/type             :sticky-footer
-             :cta/navigation-message [events/navigate-adventure-install-type nil]}]})
+             :cta/navigation-message [events/navigate-adventure-match-stylist nil]}]})
 
 (defn built-component
   [data opts]

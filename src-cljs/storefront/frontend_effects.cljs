@@ -164,7 +164,7 @@
               uri/uri
               (assoc :host (str "freeinstall." (routes/environment->hostname (get-in app-state keypaths/environment)))
                      :path (or path
-                               (if on-homepage? "/adv/install-type" "/"))
+                               (if on-homepage? "/adv/match-stylist" "/"))
                      :query query-string)
               str))))
 

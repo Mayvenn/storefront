@@ -171,7 +171,6 @@
                             :current_step   (if (= event events/api-success-assign-servicing-stylist-post-purchase)
                                               3
                                               2)
-                            :service_type   (get-in app-state keypaths/adventure-choices-install-type)
                             :order_number   (:number order)
                             :stylist_rating (:rating servicing-stylist)})))
 
@@ -179,7 +178,6 @@
   [_ event args app-state]
   #?(:cljs
      (let [{:keys [latitude longitude]} (get-in app-state keypaths/adventure-stylist-match-location)
-           service-type                 (get-in app-state keypaths/adventure-choices-install-type)
            location-submitted           (get-in app-state keypaths/adventure-stylist-match-address)
            results                      (map :stylist-id (get-in app-state keypaths/adventure-matched-stylists))]
        (stringer/track-event "stylist_search_results_displayed"
@@ -188,19 +186,16 @@
                               :longitude          longitude
                               :location_submitted location-submitted
                               :radius             "100mi"
-                              :service_type       service-type
                               :current_step       2}))))
 
 (defmethod trackings/perform-track events/adventure-stylist-search-results-post-purchase-displayed
   [_ event args app-state]
   #?(:cljs
      (let [{:keys [latitude longitude radius]} (get-in app-state keypaths/adventure-stylist-match-location)
-           service-type                        (get-in app-state keypaths/adventure-choices-install-type)
            results                             (map :stylist-id (get-in app-state keypaths/adventure-matched-stylists))]
        (stringer/track-event "stylist_search_results_displayed"
                              {:results            results
                               :latitude           latitude
                               :longitude          longitude
-                              :service_type       service-type
                               :radius             radius
                               :current_step       3}))))

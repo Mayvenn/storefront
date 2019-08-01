@@ -20,7 +20,6 @@
             adventure.informational.about-our-hair
             adventure.informational.certified-stylists
             adventure.informational.how-it-works
-            adventure.install-type
             adventure.stylist-matching.match-stylist
             adventure.stylist-matching.find-your-stylist
             adventure.stylist-matching.matching-stylist-wait
@@ -124,7 +123,6 @@
           events/navigate-adventure-a-la-carte-hair-color               (ui/lazy-load-component :catalog 'adventure.a-la-carte.hair-color/built-component events/navigate-adventure-a-la-carte-hair-color)
           events/navigate-adventure-a-la-carte-product-list             (ui/lazy-load-component :catalog 'adventure.a-la-carte.product-list/built-component events/navigate-adventure-a-la-carte-product-list)
           events/navigate-adventure-product-details                     (ui/lazy-load-component :catalog 'adventure.a-la-carte.product-details/built-component events/navigate-adventure-product-details)
-          events/navigate-adventure-install-type                        adventure.install-type/built-component
           events/navigate-adventure-select-new-look                     (ui/lazy-load-component :catalog 'adventure.select-new-look/built-component events/navigate-adventure-select-new-look)
           events/navigate-adventure-look-detail                         (ui/lazy-load-component :catalog 'adventure.look-detail/built-component events/navigate-adventure-look-detail)
           events/navigate-adventure-select-bundle-set                   (ui/lazy-load-component :catalog 'adventure.select-new-look/built-component events/navigate-adventure-select-bundle-set)

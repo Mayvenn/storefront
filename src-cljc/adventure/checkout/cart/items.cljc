@@ -21,7 +21,7 @@
                                  :width-class  "col-6"
                                  :class        "mt1"
                                  :data-test    "cart-pick-a-stylist"}
-                                (utils/route-to events/navigate-adventure-install-type))
+                                (utils/route-to events/navigate-adventure-match-stylist))
                          "Pick a Stylist")
          [:ul.h6.list-img-purple-checkmark.pl4
           (mapv (fn [%] [:li %])

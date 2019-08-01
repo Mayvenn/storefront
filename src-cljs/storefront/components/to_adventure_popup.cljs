@@ -107,7 +107,7 @@
   [_ _ _ _ app-state]
   (cookie-jar/save-dismissed-to-adventure (get-in app-state keypaths/cookie) true)
   (messages/handle-message events/popup-hide)
-  (messages/handle-message events/external-redirect-freeinstall {:path         "/adv/install-type"
+  (messages/handle-message events/external-redirect-freeinstall {:path         "/adv/match-stylist"
                                                                  :query-string (string/join
                                                                                 "&"
                                                                                 ["utm_medium=referral"

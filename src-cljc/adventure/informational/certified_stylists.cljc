@@ -17,7 +17,7 @@
              :body/value             (str "Our Certified Stylists are the best in your area. "
                                           "They’re chosen because of their top-rated reviews, professionalism, and amazing work.")
              :cta/value              "Get started"
-             :cta/navigation-message [events/navigate-adventure-install-type nil]}
+             :cta/navigation-message [events/navigate-adventure-match-stylist nil]}
 
             {:layer/type      :bulleted-explainer
              :header/value    "About Our Certified Stylists"
@@ -46,7 +46,7 @@
             (merge {:layer/type :faq} (faq/free-install-query data))
             {:layer/type :contact}
             {:layer/type             :sticky-footer
-             :cta/navigation-message [events/navigate-adventure-install-type nil]}]})
+             :cta/navigation-message [events/navigate-adventure-match-stylist nil]}]})
 
 (defn built-component
   [data opts]

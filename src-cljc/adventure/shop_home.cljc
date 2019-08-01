@@ -33,7 +33,7 @@
               :buttons         [[(merge (layered/route-to-or-redirect-to-freeinstall
                                          shop?
                                          environment
-                                         events/navigate-adventure-install-type
+                                         events/navigate-adventure-match-stylist
                                          (when shop?
                                            {:query-params (merge default-utm-params
                                                                  {:utm_source "toadventurehomepagehero"})}))
@@ -152,7 +152,7 @@
        {:layer/type :sticky-footer}
        (layered/cta-route-to-or-redirect-to-freeinstall
         shop? environment
-        events/navigate-adventure-install-type
+        events/navigate-adventure-match-stylist
         (when shop? {:query-params (merge default-utm-params
                                           {:utm_source "toadventurehomepagestickybar"})})))]}))
 

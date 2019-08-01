@@ -37,14 +37,8 @@
   [data]
   (let [;; TODO(cwr,jjh) these ought to be underneath the catalog api
         facets (get-in data keypaths/v2-facets)
-        skus   (vals (get-in data keypaths/v2-skus))
-
-        ;; TODO(cwr,jjh) these ought to be stored in app-state ready-to-go
-        {:keys [install-type]} (get-in data adventure-keypaths/adventure-choices)
-        selections             (merge {:inventory/in-stock? #{true}}
-                                      (when (some? install-type)
-                                        {:hair/family #{install-type}}))]
-    (let [selected-skus     (selector/match-all {} selections skus)
+        skus   (vals (get-in data keypaths/v2-skus))]
+    (let [selected-skus     (selector/match-all {} {:inventory/in-stock? #{true}} skus)
           texture-choices   (facets/available-options facets :hair/texture selected-skus)
           stylist-selected? (get-in data adventure-keypaths/adventure-servicing-stylist)
           current-step      (if stylist-selected? 3 2)]

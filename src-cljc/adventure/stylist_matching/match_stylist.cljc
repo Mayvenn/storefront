@@ -1,14 +1,13 @@
 (ns adventure.stylist-matching.match-stylist
   (:require [adventure.components.basic-prompt :as basic-prompt]
             adventure.keypaths
-            [storefront.accessors.experiments :as experiments]
             [storefront.component :as component]
             [storefront.events :as events]
             [adventure.progress :as progress]
             [storefront.transitions :as transitions]))
 
 (defn ^:private query [data]
-  (let [back-event events/navigate-adventure-install-type]
+  (let [back-event events/navigate-adventure-match-stylist]
     {:prompt               "We'll match you with a top stylist, guaranteed."
      :mini-prompt          "If you don’t love the install, we’ll pay for you to get it redone. It’s a win-win!"
      :background-overrides {:class "bg-adventure-match-stylist"}

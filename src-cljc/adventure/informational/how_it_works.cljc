@@ -17,7 +17,7 @@
              :header/value           "We’re offering hair + service for the price of one"
              :body/value             "We know that quality bundles can be expensive. That’s why when you buy our hair, we’re paying for your install appointment."
              :cta/value              "Get started"
-             :cta/navigation-message [events/navigate-adventure-install-type nil]}
+             :cta/navigation-message [events/navigate-adventure-match-stylist nil]}
             {:layer/type      :bulleted-explainer
              :header/value    "How it Works"
              :subheader/value "In 3 easy steps"
@@ -47,7 +47,7 @@
                    (faq/free-install-query data))
             {:layer/type :contact}
             {:layer/type             :sticky-footer
-             :cta/navigation-message [events/navigate-adventure-install-type nil]}]})
+             :cta/navigation-message [events/navigate-adventure-match-stylist nil]}]})
 
 (defn built-component
   [data opts]

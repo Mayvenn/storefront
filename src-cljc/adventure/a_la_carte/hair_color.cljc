@@ -35,12 +35,10 @@
         skus   (vals (get-in data keypaths/v2-skus))
 
         ;; TODO(cwr,jjh) these ought to be stored in app-state ready-to-go
-        {:keys [install-type texture]} (get-in data adventure-keypaths/adventure-choices)
-        selections                     {:hair/family        (if (some? install-type)
-                                                              #{install-type}
-                                                              handlers/default-adventure-hair-family)
-                                        :hair/texture        #{texture}
-                                        :inventory/in-stock? #{true}}
+        {:keys [texture]} (get-in data adventure-keypaths/adventure-choices)
+        selections        {:hair/family         handlers/default-adventure-hair-family
+                           :hair/texture        #{texture}
+                           :inventory/in-stock? #{true}}
 
         selected-skus     (selector/match-all {} selections skus)
         color-choices     (facets/available-options facets :hair/color selected-skus)

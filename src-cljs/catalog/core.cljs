@@ -16,7 +16,6 @@
             adventure.a-la-carte.hair-color
             adventure.a-la-carte.product-list
             adventure.a-la-carte.product-details
-            adventure.install-type
             adventure.look-detail
             [storefront.loader :as loader]))
 

@@ -76,7 +76,7 @@
 
       (and freeinstall-store?
            email-capture-showable?
-           (contains? #{events/navigate-adventure-install-type}
+           (contains? #{events/navigate-adventure-match-stylist}
                       navigation-event))
       (messages/handle-message events/popup-show-adventure-emailcapture)
 
