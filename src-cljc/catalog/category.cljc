@@ -77,12 +77,14 @@
 
 (defn filter-panel [facets represented-options selections open-panel]
   [:div.px1
-   (for [options (->> facets
-                      open-panel
-                      :facet/options
-                      (sort-by :option/order)
-                      (partition-all 4))]
+   (for [[i options] (->> facets
+                          open-panel
+                          :facet/options
+                          (sort-by :option/order)
+                          (partition-all 4)
+                          (map-indexed vector))]
      [:div.flex-on-dt.justify-around
+      {:key (str "filter-panel-" i)}
       (for [option options]
         (let [selected?    (contains? (open-panel selections)
                                       (:option/slug option))
@@ -117,40 +119,45 @@
       "Done")]]])
 
 (defn hero-section [category]
-  [:h1
-   (let [{:keys [mobile-url file-name desktop-url alt]} (-> category :images :hero)]
-     (when (and mobile-url desktop-url)
-       [:picture
-        [:source {:media   "(min-width: 750px)"
-                  :src-set (str desktop-url "-/format/auto/" file-name " 1x")}]
-        [:img.block.col-12 {:src (str mobile-url "-/format/auto/" file-name)
-                            :alt alt}]]))])
+  (component/html
+   [:h1
+    (let [{:keys [mobile-url file-name desktop-url alt]} (-> category :images :hero)]
+      (when (and mobile-url desktop-url)
+        [:picture
+         [:source {:media   "(min-width: 750px)"
+                   :src-set (str desktop-url "-/format/auto/" file-name " 1x")}]
+         [:img.block.col-12 {:src (str mobile-url "-/format/auto/" file-name)
+                             :alt alt}]]))]))
 
 (defn copy-section [category]
-  [:div.mt6.mb2 [:p.py6.max-580.mx-auto.center (:copy/description category)]])
+  (component/html
+   [:div.mt6.mb2 [:p.py6.max-580.mx-auto.center (:copy/description category)]]))
 
 (defn product-cards-empty-state [loading?]
-  [:div.col-12.my8.py4.center
-   (if loading?
-     (ui/large-spinner {:style {:height "4em"}})
-     [:div
-      [:p.h1.py4 "😞"]
-      [:p.h2.dark-gray.py6 "Sorry, we couldn’t find any matches."]
-      [:p.h4.dark-gray.mb10.pb10
-       [:a.teal (utils/fake-href events/control-category-option-clear) "Clear all filters"]
-       " to see more hair."]])])
+  (component/html
+   [:div.col-12.my8.py4.center
+    (if loading?
+      (ui/large-spinner {:style {:height "4em"}})
+      [:div
+       [:p.h1.py4 "😞"]
+       [:p.h2.dark-gray.py6 "Sorry, we couldn’t find any matches."]
+       [:p.h4.dark-gray.mb10.pb10
+        [:a.teal (utils/fake-href events/control-category-option-clear) "Clear all filters"]
+        " to see more hair."]])]))
 
 (defn render-subsection [loading? {:keys [product-cards image/mob-url image/dsk-url copy]}]
-  [:div
-   (when (and mob-url dsk-url copy)
-     [:div.pb6.flex.flex-column
-      [:div.hide-on-mb-tb.mx1
-       [:img.col.col-12 {:src dsk-url}]]
-      [:div.mxn2.hide-on-dt
-       [:img.col.col-12 {:src mob-url}]]
-      [:div.mx-auto.col.col-11.h5.dark-gray.center.pt2 copy]])
-   [:div.flex.flex-wrap
-    (map product-card/component product-cards)]])
+  (component/html
+   [:div
+    {:key mob-url}
+    (when (and mob-url dsk-url copy)
+      [:div.pb6.flex.flex-column
+       [:div.hide-on-mb-tb.mx1
+        [:img.col.col-12 {:src dsk-url}]]
+       [:div.mxn2.hide-on-dt
+        [:img.col.col-12 {:src mob-url}]]
+       [:div.mx-auto.col.col-11.h5.dark-gray.center.pt2 copy]])
+    [:div.flex.flex-wrap
+     (map product-card/component product-cards)]]))
 
 (defn ^:private component
   [{:keys [category
