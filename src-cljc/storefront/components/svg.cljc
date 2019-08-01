@@ -260,3 +260,8 @@
   (component/html
    [:svg opts
     ^:inline (svg-xlink "position")]))
+
+(defn info [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "info")]))
