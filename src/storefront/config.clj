@@ -16,7 +16,7 @@
    :main          [(assets/path "/js/out/main.js")]
    :dashboard     [(assets/path "/js/out/dashboard.js")]
    :redeem        [(assets/path "/js/out/redeem.js")]
-   :design-system [(assets/path "/js/out/design-system.js")]
+   :design_system [(assets/path "/js/out/design-system.js")]
    :catalog       [(assets/path "/js/out/catalog.js")]
    :checkout      [(assets/path "/js/out/checkout.js")]})
 
