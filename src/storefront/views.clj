@@ -126,7 +126,7 @@
                      "var cdnHost=" (generate-string asset-mappings/cdn-host) ";"
                      (when-not (config/development? environment)
                        ;; Use CDN urls when not in dev, otherwise let figwheel control the compiled modules
-                       (str "var COMPILED_MODULE_URIS=" (json/generate-string (config/frontend-modules))) ";")
+                       (str "var COMPILED_MODULE_URIS=" (json/generate-string (config/frontend-modules)) ";"))
                      ;; need to make sure the edn which has double quotes is validly escaped as
                      ;; json as it goes into the JS file
                      (format "var data = %s;" (data->transit data))
