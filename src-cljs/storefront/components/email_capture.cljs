@@ -124,7 +124,7 @@
           (ui/text-field (merge {:required true
                                  :class    "col-12 center bold"}
                                 field-data))
-          (ui/submit-button "Sign Up No"
+          (ui/submit-button "Sign Up Now"
                             {:color-kw     :color/quadpay
                              :height-class "py1"
                              :class        "h6 bold mt1"
