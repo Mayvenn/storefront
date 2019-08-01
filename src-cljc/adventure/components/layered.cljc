@@ -361,10 +361,10 @@
   [{:cta/keys [navigation-message] :as data} _ _]
   (component/create
    (let [we-are-mayvenn-link (apply utils/route-to navigation-message)
-         diishan-image       (ui/defer-ucare-img {:class "col-12"} "e2186583-def8-4f97-95bc-180234b5d7f8")
-         mikka-image         (ui/defer-ucare-img {:class "col-12"} "838e25f5-cd4b-4e15-bfd9-8bdb4b2ac341")
-         stylist-image       (ui/defer-ucare-img {:class "col-12"} "6735b4d5-9b65-4fa9-96cd-871141b28672")
-         diishan-image-2     (ui/defer-ucare-img {:class "col-12"} "ec9e0533-9eee-41ae-a61b-8dc22f045cb5")]
+         diishan-image       "e2186583-def8-4f97-95bc-180234b5d7f8"
+         mikka-image         "838e25f5-cd4b-4e15-bfd9-8bdb4b2ac341"
+         stylist-image       "6735b4d5-9b65-4fa9-96cd-871141b28672"
+         diishan-image-2     "ec9e0533-9eee-41ae-a61b-8dc22f045cb5"]
     [:div.pt10.px4.pb8
      [:div.h2.center "We're Changing The Game"]
      [:h6.center.mb2.dark-gray "Founded in Oakland, CA • 2013"]
@@ -375,7 +375,7 @@
         [:a.block.col-6.p1
          we-are-mayvenn-link
          [:div.relative
-          diishan-image
+          (ui/defer-ucare-img {:class "col-12"} diishan-image)
           [:div.absolute.bg-darken-3.overlay.flex.items-center.justify-center
            teal-play-video-mobile]]]
         [:a.col-6.px2
@@ -383,28 +383,28 @@
          [:h4.my1.dark-gray.medium "Our Story"]
          [:div.h6.teal.flex.items-center.medium.shout
           "Watch Now"]]
-        [:div.col-6.p1 mikka-image]
-        [:div.col-6.p1 stylist-image]
+        [:div.col-6.p1 (ui/defer-ucare-img {:class "col-12"} mikka-image)]
+        [:div.col-6.p1 (ui/defer-ucare-img {:class "col-12"} stylist-image)]
         [:div.col-6.px2.dark-gray
          [:h4.my2.line-height-1 "“You deserve quality extensions and exceptional service without the unreasonable price tag.“"]
          [:h6.medium.line-height-1 "- Diishan Imira"]
          [:h6 "CEO of Mayvenn"]]
-        [:div.col-6.p1 diishan-image-2]]]
+        [:div.col-6.p1 (ui/defer-ucare-img {:class "col-12"} diishan-image-2)]]]
 
       [:div.hide-on-mb.pb4
        [:div.col-8.flex.flex-wrap.mx-auto
         [:div.col-6.flex.flex-wrap.items-center
-         [:div.col-6.p1 mikka-image]
-         [:div.col-6.p1 stylist-image]
+         [:div.col-6.p1 (ui/defer-ucare-img {:class "col-12"} mikka-image)]
+         [:div.col-6.p1 (ui/defer-ucare-img {:class "col-12"} stylist-image)]
          [:div.col-6.px1.pb1.dark-gray.flex.justify-start.flex-column
           [:div.h3.line-height-3.col-11
            "“You deserve quality extensions and exceptional service without the unreasonable price tag.“"]
           [:h6.medium.line-height-1.mt2 "- Diishan Imira"]
           [:h6.ml1 "CEO of Mayvenn"]]
-         [:div.col-6.p1.flex diishan-image-2]]
+         [:div.col-6.p1.flex (ui/defer-ucare-img {:class "col-12"} diishan-image-2)]]
         [:a.relative.col-6.p1
          we-are-mayvenn-link
-         [:div.relative diishan-image
+         [:div.relative (ui/defer-ucare-img {:class "col-12"} diishan-image)
           [:div.absolute.overlay.flex.items-center.justify-center.bg-darken-3
            teal-play-video-desktop]]]]]]])))
 
