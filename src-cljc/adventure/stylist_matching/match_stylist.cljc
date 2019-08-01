@@ -29,6 +29,4 @@
 ;; Need this transition for direct-load
 (defmethod transitions/transition-state events/navigate-adventure-match-stylist
   [_ _ _ app-state]
-  (let [adventure-choices (get-in app-state adventure.keypaths/adventure-choices)]
-    (cond-> app-state
-      (not-empty adventure-choices) (assoc-in adventure.keypaths/adventure-choices-flow "match-stylist"))))
+  (assoc-in app-state adventure.keypaths/adventure-choices-flow "match-stylist"))
