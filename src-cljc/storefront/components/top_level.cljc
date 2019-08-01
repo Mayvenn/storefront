@@ -152,15 +152,16 @@
                                 (#{events/navigate-home} nav-event))]
     [:div.flex.flex-column {:style {:min-height    "100vh"
                                     :margin-bottom "-1px"}}
+     [:div {:key "popup"}
+      #?(:cljs (popup/built-component data nil))]
+
+     (header/built-component data nil)
+
      (when-not v2-home?
        [:div
         (promotion-banner/built-component data nil)
         (sticky-promo-bar data)])
 
-     [:div {:key "popup"}
-      #?(:cljs (popup/built-component data nil))]
-
-     (header/built-component data nil)
      [:div.relative.flex.flex-column.flex-auto
       ;; Hack: one page does not have a white background, nor enough
       ;; content to fill its inner div.

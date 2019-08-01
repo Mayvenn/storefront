@@ -416,10 +416,10 @@
 (defn layout [data nav-event]
   [:div.flex.flex-column {:style {:min-height    "100vh"
                                   :margin-bottom "-1px"}}
-   (promotion-banner/built-component data nil)
    #?(:cljs (popup/built-component data nil))
 
    (header/built-component data nil)
+   (promotion-banner/built-component data nil)
    [:div.relative.flex.flex-column.flex-auto
     (flash/built-component data nil)
 

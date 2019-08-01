@@ -12,7 +12,8 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.accessors.experiments :as experiments]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            [storefront.components.ui :as ui]))
 
 (defmulti component
   "Display a different component based on type of promotion"
@@ -56,11 +57,17 @@
      [:span.underline "More info"]]]))
 
 (defmethod component :shop/freeinstall
-  [{:keys [promo]} _ _]
+  [_ _ _]
   (component/create
-   [:div.white.center.pp5.bg-teal.h5.bold
-    {:data-test "promo-banner"}
-    "PAY $0 ON YOUR NEXT INSTALL - USE PROMO CODE: FREEINSTALL"]))
+   [:a.block.white.p2.bg-lavender.flex
+    {:on-click  (utils/send-event-callback events/popup-show-adventure-free-install)
+     :data-test "shop-freeinstall-promo-banner"}
+    (svg/info {:height "14px"
+               :width  "14px"
+               :class  "mr1 mt1"})
+    [:div.h6.medium "Buy 3 items and receive your free "
+     [:span.bold.underline
+      "Mayvenn" ui/nbsp "Install"]]]))
 
 (defmethod component :basic
   [{:keys [promo]} _ _]
