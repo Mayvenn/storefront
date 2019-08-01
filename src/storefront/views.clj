@@ -112,12 +112,10 @@
 
           favicon-links
           [:link {:rel "preconnect" :href (:endpoint storeback-config)}]
-          [:link {:rel "preconnect" :href "https://www.sendsonar.com"}]
           [:link {:rel "preconnect" :href "https://ucarecdn.com"}]
           (when asset-mappings/cdn-host [:link {:rel "preconnect" :href (str "https://" asset-mappings/cdn-host)}])
           (when asset-mappings/cdn-host [:link {:rel "dns-prefetch" :href (str "https://" asset-mappings/cdn-host)}])
           [:link {:rel "dns-prefetch" :href (:endpoint storeback-config)}]
-          [:link {:rel "dns-prefetch" :href "https://www.sendsonar.com"}]
           [:link {:rel "dns-prefetch" :href "https://ucarecdn.com"}]
           [:link {:rel "preload" :href (assets/path "/images/sprites.svg") :as "image" :type "image/svg+xml"}]
           [:script {:type "text/javascript"} (raw prefetch-script)]

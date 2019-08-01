@@ -5,7 +5,7 @@
             [storefront.accessors.orders :as orders]
             [storefront.routes :as routes]
             [storefront.cache :as c]
-            [storefront.config :refer [api-base-url send-sonar-base-url send-sonar-publishable-key] :as config]
+            [storefront.config :refer [api-base-url] :as config]
             [storefront.events :as events]
             [storefront.platform.messages :as messages]
             [storefront.request-keys :as request-keys]
