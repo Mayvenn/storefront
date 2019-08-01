@@ -15,24 +15,24 @@
     (component/build profile-card/component card-data nil)
     [:div.my2.m1-on-tb-dt.mb2-on-tb-dt
      [:div.h7.dark-gray.bold.left-align.mb1 (:title gallery-data)]
-     (component/build carousel/component
-                      {:slides   (map (fn [gallery-item]
-                                        [:div
-                                         {:on-click #(apply messages/handle-message (:target-message gallery-item))
-                                          :key (:key gallery-item)}
-                                         (ui/aspect-ratio
-                                          1 1
-                                          [:img {:src   (str (:ucare-img-url gallery-item) "-/scale_crop/204x204/-/format/auto/")
-                                                 :class "rounded"
-                                                 :width "102"}])])
-                                      (:items gallery-data))
-                       :settings {:swipe        true
-                                  :initialSlide 0
-                                  :arrows       true
-                                  :dots         false
-                                  :slidesToShow 3
-                                  :infinite     true}}
-                      {})]
+     [:div.mxn1
+      (component/build carousel/component
+                       {:slides   (map (fn [gallery-item]
+                                         [:div.px1
+                                          {:on-click #(apply messages/handle-message (:target-message gallery-item))
+                                           :key (:key gallery-item)}
+                                          (ui/aspect-ratio
+                                           1 1
+                                           [:img {:src   (str (:ucare-img-url gallery-item) "-/scale_crop/216x216/-/format/auto/")
+                                                  :class "rounded col-12"}])])
+                                       (:items gallery-data))
+                        :settings {:swipe        true
+                                   :initialSlide 0
+                                   :arrows       true
+                                   :dots         false
+                                   :slidesToShow 3
+                                   :infinite     true}}
+                       {})]]
     (ui/teal-button
      (merge {:data-test (:data-test button)}
             (apply utils/fake-href (:target-message button)))
