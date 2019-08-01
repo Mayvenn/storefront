@@ -262,8 +262,10 @@
     [:div.flex.flex-wrap.pt2
      (for [{:keys [cta/navigation-message image-url]} (:images free-install-mayvenn-ugc)]
        [:a.col-6.col-3-on-tb-dt.p1
-        (when navigation-message
-          (apply utils/route-to navigation-message))
+        (merge
+         {:key image-url}
+         (when navigation-message
+           (apply utils/route-to navigation-message)))
         (ui/aspect-ratio
          1 1
          [:img {:class "col-12"
