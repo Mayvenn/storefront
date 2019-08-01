@@ -223,11 +223,12 @@
      (or (:long-message error) nbsp)]))
 
 (defn ^:private floating-label [label id {:keys [value?]}]
-  [:div.absolute
-   [:label.floating-label--label.col-12.h8.relative.gray.medium
-    (cond-> {:for id}
-      value? (add-classes "has-value"))
-    label]])
+  (component/html
+   [:div.absolute
+    [:label.floating-label--label.col-12.h8.relative.gray.medium
+     (cond-> {:for id}
+       value? (add-classes "has-value"))
+     label]]))
 
 (defn ^:private field-wrapper-class [wrapper-class {:keys [error? focused?]}]
   (cond-> {:class wrapper-class}
@@ -244,103 +245,109 @@
     (and value? label) (add-classes "has-value")))
 
 (defn text-input [{:keys [id type label keypath value] :as input-attributes}]
-  [:input.h5.border-none.px2.bg-white.col-12.rounded.placeholder-dark-silver
-   (merge
-    {:style       {:height    "56px"
-                   :font-size "16px"}
-     :key         id
-     :label       label
-     :data-test   (str id "-input")
-     :name        id
-     :id          (str id "-input")
-     :type        (or type "text")
-     :value       (or value "")
-     :placeholder label
-     :on-change   #?(:clj (fn [_e] nil)
-                     :cljs (fn [^js/Event e]
-                             (handle-message events/control-change-state
-                                             {:keypath keypath
-                                              :value   (.. e -target -value)})))}
-    (dissoc input-attributes :id :type :label :keypath :value))])
+  (component/html
+   [:input.h5.border-none.px2.bg-white.col-12.rounded.placeholder-dark-silver
+    (merge
+     {:style       {:height    "56px"
+                    :font-size "16px"}
+      :key         id
+      :label       label
+      :data-test   (str id "-input")
+      :name        id
+      :id          (str id "-input")
+      :type        (or type "text")
+      :value       (or value "")
+      :placeholder label
+      :on-change   #?(:clj (fn [_e] nil)
+                      :cljs (fn [^js/Event e]
+                              (handle-message events/control-change-state
+                                              {:keypath keypath
+                                               :value   (.. e -target -value)})))}
+     (dissoc input-attributes :id :type :label :keypath :value))]))
 
 (defn plain-text-field
   [label keypath value error? {:keys [wrapper-class wrapper-style id hint focused] :as input-attributes}]
-  (let [input-attributes (dissoc input-attributes :wrapper-class :hint :focused :wrapper-style)
-        hint?            (seq hint)
-        focused?         (= focused keypath)
-        status           {:error?   error?
-                          :focused? focused?
-                          :hint?    hint?
-                          :value?   (seq value)}]
-    [:div (merge (field-wrapper-class wrapper-class status)
-                 {:style wrapper-style})
-     [:div.pp1.col-12
-      (floating-label label id status)
-      [:label
-       [:input.col-12.h4.line-height-1
-        (field-class (merge {:key         id
-                             :placeholder label
-                             :label       label
-                             :value       (or value "")}
-                            #?(:cljs
-                               {:on-focus
-                                (fn [^js/Event e]
-                                  (handle-message events/control-focus {:keypath keypath}))
-                                :on-blur
-                                (fn [^js/Event e]
-                                  (handle-message events/control-blur {:keypath keypath}))
-                                :on-change
-                                (fn [^js/Event e]
-                                  (handle-message events/control-change-state
-                                                  {:keypath keypath
-                                                   :value   (.. e -target -value)}))})
-                            input-attributes)
-                     status)]
-       (when hint? [:div.py1.px2
-                    (when error? {:class "red"})
-                    hint])]]]))
+  (component/html
+   (let [input-attributes (dissoc input-attributes :wrapper-class :hint :focused :wrapper-style)
+         hint?            (seq hint)
+         focused?         (= focused keypath)
+         status           {:error?   error?
+                           :focused? focused?
+                           :hint?    hint?
+                           :value?   (seq value)}]
+     [:div (merge (field-wrapper-class wrapper-class status)
+                  {:style wrapper-style})
+      [:div.pp1.col-12
+       (floating-label label id status)
+       [:label
+        [:input.col-12.h4.line-height-1
+         (field-class (merge {:key         id
+                              :placeholder label
+                              :label       label
+                              :value       (or value "")}
+                             #?(:cljs
+                                {:on-focus
+                                 (fn [^js/Event e]
+                                   (handle-message events/control-focus {:keypath keypath}))
+                                 :on-blur
+                                 (fn [^js/Event e]
+                                   (handle-message events/control-blur {:keypath keypath}))
+                                 :on-change
+                                 (fn [^js/Event e]
+                                   (handle-message events/control-change-state
+                                                   {:keypath keypath
+                                                    :value   (.. e -target -value)}))})
+                             input-attributes)
+                      status)]
+        (when hint? [:div.py1.px2
+                     (when error? {:class "red"})
+                     hint])]]])))
 
 (defn hidden-field
   [{:keys [keypath type disabled? checked?] :as attributes}]
-  (let [args    (dissoc attributes :keypath)
-        handler (utils/send-event-callback keypath args)]
-    [:input.hide
-     (cond-> {:type type :on-change handler}
-       disabled?
-       (assoc :disabled true)
-       checked?
-       (assoc :checked true))]))
+  (component/html
+   (let [args    (dissoc attributes :keypath)
+         handler (utils/send-event-callback keypath args)]
+     [:input.hide
+      (cond-> {:type type :on-change handler}
+        disabled?
+        (assoc :disabled true)
+        checked?
+        (assoc :checked true))])))
 
 (defn text-field [{:keys [label keypath value errors data-test class] :as input-attributes :or {class "col-12"}}]
-  (let [error (first errors)]
-    [:div.mb2.stacking-context {:class class}
-     (plain-text-field label keypath value (not (nil? error))
-                       (dissoc input-attributes :label :keypath :value :errors))
-     (field-error-message error data-test)]))
+  (component/html
+   (let [error (first errors)]
+     [:div.mb2.stacking-context {:class class}
+      (plain-text-field label keypath value (not (nil? error))
+                        (dissoc input-attributes :label :keypath :value :errors))
+      (field-error-message error data-test)])))
 
 (defn input-group [{:keys [label keypath value errors data-test class] :as input-attributes :or {class "col-12"}}
                    {:keys [ui-element args content]}]
-  (let [error (first errors)]
-    [:div.mb2.stacking-context
-     [:div.flex.justify-around
-      (plain-text-field label keypath value (not (nil? error))
-                        (-> input-attributes
-                            (dissoc :label :keypath :value :errors)
-                            (update :wrapper-class str " rounded-left x-group-item")))
-      (ui-element (update args :class str " rounded-right x-group-item") content)]
-     (field-error-message error data-test)]))
+  (component/html
+   (let [error (first errors)]
+     [:div.mb2.stacking-context
+      [:div.flex.justify-around
+       (plain-text-field label keypath value (not (nil? error))
+                         (-> input-attributes
+                             (dissoc :label :keypath :value :errors)
+                             (update :wrapper-class str " rounded-left x-group-item")))
+       (ui-element (update args :class str " rounded-right x-group-item") content)]
+      (field-error-message error data-test)])))
 
 (defn pill-group [{:keys [label keypath value errors data-test class] :as input-attributes :or {class "col-12"}}
                   {:keys [ui-element args content]}]
-  (let [error (first errors)]
-    [:div.mb2.stacking-context
-     [:div.flex.justify-around
-      (plain-text-field label keypath value (not (nil? error))
-                        (-> input-attributes
-                            (dissoc :label :keypath :value :errors)
-                            (update :wrapper-class str " x-group-item")))
-      (ui-element (update args :class str " x-group-item") content)]
-     (field-error-message error data-test)]))
+  (component/html
+   (let [error (first errors)]
+     [:div.mb2.stacking-context
+      [:div.flex.justify-around
+       (plain-text-field label keypath value (not (nil? error))
+                         (-> input-attributes
+                             (dissoc :label :keypath :value :errors)
+                             (update :wrapper-class str " x-group-item")))
+       (ui-element (update args :class str " x-group-item") content)]
+      (field-error-message error data-test)])))
 
 (defn text-field-group
   "For grouping many fields on one line. Sets up columns, rounding of
@@ -394,151 +401,160 @@
 
 (defn ^:private plain-select-field
   [label keypath value options error? {:keys [id placeholder] :as select-attributes}]
-  (let [option-text   first
-        option-value  (comp str second)
-        selected-text (->> options
-                           (filter (comp #{(str value)} option-value))
-                           first
-                           option-text)
-        status        {:error? error?
-                       :value? (seq selected-text)}]
-    [:div.clearfix.relative
-     (field-wrapper-class "" status)
-     (floating-label label id status)
-     [:select.col-12.bg-clear
-      (field-class (merge {:key         label
-                           :label       ""
-                           :value       (or value "")}
-                          #?(:clj nil
-                             :cljs {:on-change #(handle-message events/control-change-state
-                                                                {:keypath keypath
-                                                                 :value   (selected-value %)})})
-                          (dissoc select-attributes :focused)
-                          (when-not (seq selected-text) {:style {:opacity 0.5}}))
-                   status)
-      (when placeholder
-        [:option {:value "" :disabled "disabled"} placeholder])
-      (for [option options]
-        [:option
-         {:key   (option-value option)
-          :value (option-value option)}
-         (option-text option)])]
-     custom-select-dropdown]))
+  (component/html
+   (let [option-text   first
+         option-value  (comp str second)
+         selected-text (->> options
+                            (filter (comp #{(str value)} option-value))
+                            first
+                            option-text)
+         status        {:error? error?
+                        :value? (seq selected-text)}]
+     [:div.clearfix.relative
+      (field-wrapper-class "" status)
+      (floating-label label id status)
+      [:select.col-12.bg-clear
+       (field-class (merge {:key         label
+                            :label       ""
+                            :value       (or value "")}
+                           #?(:clj nil
+                              :cljs {:on-change #(handle-message events/control-change-state
+                                                                 {:keypath keypath
+                                                                  :value   (selected-value %)})})
+                           (dissoc select-attributes :focused)
+                           (when-not (seq selected-text) {:style {:opacity 0.5}}))
+                    status)
+       (when placeholder
+         [:option {:value "" :disabled "disabled"} placeholder])
+       (for [option options]
+         [:option
+          {:key   (option-value option)
+           :value (option-value option)}
+          (option-text option)])]
+      custom-select-dropdown])))
 
 (defn select-field [{:keys [label keypath value options errors data-test div-attrs] :as select-attributes}]
-  (when (seq options) ;; Hacky fix to get around React not invalidating the element if only options change
-    (let [error (first errors)]
-      [:div.col-12.mb2.stacking-context
-       div-attrs
-       (plain-select-field label keypath value options (not (nil? error))
-                           (dissoc select-attributes :label :keypath :value :options :errors :div-attrs))
-       (field-error-message error data-test)])))
+  (component/html
+   (when (seq options) ;; Hacky fix to get around React not invalidating the element if only options change
+     (let [error (first errors)]
+       [:div.col-12.mb2.stacking-context
+        div-attrs
+        (plain-select-field label keypath value options (not (nil? error))
+                            (dissoc select-attributes :label :keypath :value :options :errors :div-attrs))
+        (field-error-message error data-test)]))))
 
 (defn check-box [{:keys [label data-test errors keypath value label-classes disabled] :as attributes}]
-  [:div.col-12.mb2
-   [:label.flex.items-center
-    (merge {:class label-classes}
-           (when data-test
-             {:data-test (str "label-" data-test)}))
-    ;; 15px svg + 2*2px padding + 2*1px border = 21px
-    [:div.border.left.mr3.pp2
-     (when disabled
-       {:class "border-gray"})
-     (if value
-       (svg/simple-x {:class        "block teal"
-                      :width        "15px"
-                      :height       "15px"})
-       [:div {:style {:width "15px" :height "15px"}}])]
-    [:input.hide
-     (merge (utils/toggle-checkbox keypath value)
-            (dissoc attributes :label :keypath :value :label-classes)
-            {:type "checkbox"})]
-    [:span
-     (when disabled {:class "gray"})
-     label]]
-   (when-let [error (first errors)]
-     (field-error-message error data-test))])
+  (component/html
+   [:div.col-12.mb2
+    [:label.flex.items-center
+     (merge {:class label-classes}
+            (when data-test
+              {:data-test (str "label-" data-test)}))
+     ;; 15px svg + 2*2px padding + 2*1px border = 21px
+     [:div.border.left.mr3.pp2
+      (when disabled
+        {:class "border-gray"})
+      (if value
+        (svg/simple-x {:class        "block teal"
+                       :width        "15px"
+                       :height       "15px"})
+        [:div {:style {:width "15px" :height "15px"}}])]
+     [:input.hide
+      (merge (utils/toggle-checkbox keypath value)
+             (dissoc attributes :label :keypath :value :label-classes)
+             {:type "checkbox"})]
+     [:span
+      (when disabled {:class "gray"})
+      label]]
+    (when-let [error (first errors)]
+      (field-error-message error data-test))]))
 
 (defn radio-section [radio-attrs & content]
-  (let [k (:key radio-attrs)
-        radio-attrs (dissoc radio-attrs :key)]
-    [:label.flex.items-center.col-12.py1
-     (when k {:key k})
-     [:input.mx2.h2
-      (merge {:type "radio"}
-             radio-attrs)]
-     (into [:div.clearfix.col-12]
-           content)]))
+  (component/html
+   (let [k (:key radio-attrs)
+         radio-attrs (dissoc radio-attrs :key)]
+     [:label.flex.items-center.col-12.py1
+      (when k {:key k})
+      [:input.mx2.h2
+       (merge {:type "radio"}
+              radio-attrs)]
+      (into [:div.clearfix.col-12]
+            content)])))
 
 (defn radio-group [{:keys [group-name keypath checked-value] :as attributes} options]
-  [:div
-   (for [{:keys [id label value] :as option} options]
-     [:label
-      {:key (str group-name id)}
-      [:input.mx2.h2
-       (merge {:type         "radio"
-               :name         group-name
-               :data-test    group-name
-               :data-test-id id
-               :id           (str group-name id)
-               :on-change    #(handle-message events/control-change-state
-                                              {:keypath keypath
-                                               :value   value})}
-              (when (= checked-value value)
-                {:checked (= checked-value value)})
-              (dissoc attributes
-                      :group-name :keypath :checked-value
-                      :id :checked :data-test-id))]
-      [:span label]])])
+  (component/html
+   [:div
+    (for [{:keys [id label value] :as option} options]
+      [:label
+       {:key (str group-name id)}
+       [:input.mx2.h2
+        (merge {:type         "radio"
+                :name         group-name
+                :data-test    group-name
+                :data-test-id id
+                :id           (str group-name id)
+                :on-change    #(handle-message events/control-change-state
+                                               {:keypath keypath
+                                                :value   value})}
+               (when (= checked-value value)
+                 {:checked (= checked-value value)})
+               (dissoc attributes
+                       :group-name :keypath :checked-value
+                       :id :checked :data-test-id))]
+       [:span label]])]))
 
 (defn drop-down [expanded? menu-keypath [link-tag & link-contents] menu]
-  [:div.pointer
-   (into [link-tag
-          (utils/fake-href events/control-menu-expand {:keypath menu-keypath})]
-         link-contents)
-   (when expanded?
-     [:div.relative.z4
-      {:on-click #(handle-message events/control-menu-collapse-all)}
-      [:div.fixed.overlay]
-      menu])])
+  (component/html
+   [:div.pointer
+    (into [link-tag
+           (utils/fake-href events/control-menu-expand {:keypath menu-keypath})]
+          link-contents)
+    (when expanded?
+      [:div.relative.z4
+       {:on-click #(handle-message events/control-menu-collapse-all)}
+       [:div.fixed.overlay]
+       menu])]))
 
 (defn modal [{:keys [close-attrs bg-class col-class] :or {col-class "col-11 col-7-on-tb col-5-on-dt"}} & body]
-  ;; The scrim
-  [:div.z5.fixed.overlay.bg-darken-4
-   ;; Set bg-class to override or darken the scrim
-   [:div.absolute.overlay {:class bg-class}]
-   ;; The modal itself, centered with https://www.smashingmagazine.com/2013/08/absolute-horizontal-vertical-centering-css/2/#table-cell
-   ;; This method was chosen because it is widely supported and avoids bluriness.
-   ;; Flex may also work, with less markup, but we couldn't find a way to use
-   ;; it and have overflow scroll vertically
-   [:div.absolute.overlay.overflow-auto
-    [:div.table.container-size
-     {:style {:table-layout "fixed"}}
-     [:div.table-cell.align-middle
-      {:on-click (:on-click close-attrs)}
-      ;; The inner wrapper
-      ;; - provides a place to adjust the width of the modal content (col-class)
-      ;;   - should be a percentage based width; will be centered with mx-auto
-      ;; - collaborates with its wrapper to ensure that clicks around the modal
-      ;;   close it, but clicks within it do not
-      (into [:div.mx-auto {:class col-class
-                           :on-click utils/stop-propagation}]
-            body)]]]])
+  (component/html
+   ;; The scrim
+   [:div.z5.fixed.overlay.bg-darken-4
+    ;; Set bg-class to override or darken the scrim
+    [:div.absolute.overlay {:class bg-class}]
+    ;; The modal itself, centered with https://www.smashingmagazine.com/2013/08/absolute-horizontal-vertical-centering-css/2/#table-cell
+    ;; This method was chosen because it is widely supported and avoids bluriness.
+    ;; Flex may also work, with less markup, but we couldn't find a way to use
+    ;; it and have overflow scroll vertically
+    [:div.absolute.overlay.overflow-auto
+     [:div.table.container-size
+      {:style {:table-layout "fixed"}}
+      [:div.table-cell.align-middle
+       {:on-click (:on-click close-attrs)}
+       ;; The inner wrapper
+       ;; - provides a place to adjust the width of the modal content (col-class)
+       ;;   - should be a percentage based width; will be centered with mx-auto
+       ;; - collaborates with its wrapper to ensure that clicks around the modal
+       ;;   close it, but clicks within it do not
+       (into [:div.mx-auto {:class col-class
+                            :on-click utils/stop-propagation}]
+             body)]]]]))
 
 (defn modal-close [{:keys [class data-test close-attrs]}]
-  [:div.clearfix
-   {:data-scrollable "not-a-modal"}
-   [:a.h3.right (merge {:data-test data-test :title "Close"} close-attrs)
-    (svg/close-x {:class (or class "stroke-white fill-gray")})]])
+  (component/html
+   [:div.clearfix
+    {:data-scrollable "not-a-modal"}
+    [:a.h3.right (merge {:data-test data-test :title "Close"} close-attrs)
+     (svg/close-x {:class (or class "stroke-white fill-gray")})]]))
 
 ;; TODO(ellie) Replace with svg version
 (defn big-x [{:keys [data-test attrs]}]
-  [:div {:style {:width "70px"}}
-   [:div.relative.rotate-45.p2 (merge  {:style     {:height "70px"}
-                                        :data-test data-test}
-                                       attrs)
-    [:div.absolute.border-right.border-dark-gray {:style {:width "25px" :height "50px"}}]
-    [:div.absolute.border-bottom.border-dark-gray {:style {:width "50px" :height "25px"}}]]])
+  (component/html
+   [:div {:style {:width "70px"}}
+    [:div.relative.rotate-45.p2 (merge  {:style     {:height "70px"}
+                                         :data-test data-test}
+                                        attrs)
+     [:div.absolute.border-right.border-dark-gray {:style {:width "25px" :height "50px"}}]
+     [:div.absolute.border-bottom.border-dark-gray {:style {:width "50px" :height "25px"}}]]]))
 
 (defn square-image [{:keys [resizable-url]} size]
   (some-> resizable-url (str "-/scale_crop/" size "x" size "/center/")))

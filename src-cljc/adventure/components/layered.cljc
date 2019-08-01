@@ -36,33 +36,34 @@
 (defmulti layer-view (fn [{:keys [layer/type]} _ _] type))
 
 (defn hero-image [{:keys [desktop-url mobile-url file-name alt off-screen?]}]
-  (if off-screen?
-    [:picture
-     ;; Tablet/Desktop
-     [:source {:media   "(min-width: 750px)"
-               :src-set (str desktop-url "-/format/auto/-/quality/best/-/resize/720x/" file-name " 1x")}]
-     ;; Mobile
-     [:source {:media   "(min-width: 426px)"
-               :src-set (str mobile-url "-/format/auto/-/quality/lightest/-/resize/425x/" file-name " 1x ")}]
-     [:source {:src-set (str mobile-url "-/format/auto/-/quality/lightest/-/resize/425x/" file-name " 1x ")}]
-     ;; mobile
-     [:img.block.col-12 {:src (str mobile-url "-/format/auto/-/quality/lightest/-/resize/425x/" file-name)
-                         :alt (str alt)}]]
-    [:picture
-     ;; Tablet/Desktop
-     [:source {:media   "(min-width: 750px)"
-               :src-set (str desktop-url "-/format/auto/-/quality/best/-/resize/1440x/" file-name " 1x")}]
-     ;; Mobile
-     [:source {:media   "(min-width: 426px)"
-               :src-set (str mobile-url "-/format/auto/-/quality/lightest/-/resize/2250x/" file-name " 3x, "
-                             mobile-url "-/format/auto/-/quality/lightest/-/resize/1500x/" file-name " 2x, "
-                             mobile-url "-/format/auto/-/quality/normal/-/resize/750x/" file-name " 1x ")}]
-     [:source {:src-set (str mobile-url "-/format/auto/-/quality/lightest/-/resize/1275x/" file-name " 3x, "
-                             mobile-url "-/format/auto/-/quality/lightest/-/resize/850x/" file-name " 2x, "
-                             mobile-url "-/format/auto/-/quality/normal/-/resize/425x/" file-name " 1x ")}]
-     ;; mobile
-     [:img.block.col-12 {:src (str mobile-url "-/format/auto/-/quality/normal/-/resize/750x/" file-name)
-                         :alt (str alt)}]]))
+  (component/html
+   (if off-screen?
+     [:picture
+      ;; Tablet/Desktop
+      [:source {:media   "(min-width: 750px)"
+                :src-set (str desktop-url "-/format/auto/-/quality/best/-/resize/720x/" file-name " 1x")}]
+      ;; Mobile
+      [:source {:media   "(min-width: 426px)"
+                :src-set (str mobile-url "-/format/auto/-/quality/lightest/-/resize/425x/" file-name " 1x ")}]
+      [:source {:src-set (str mobile-url "-/format/auto/-/quality/lightest/-/resize/425x/" file-name " 1x ")}]
+      ;; mobile
+      [:img.block.col-12 {:src (str mobile-url "-/format/auto/-/quality/lightest/-/resize/425x/" file-name)
+                          :alt (str alt)}]]
+     [:picture
+      ;; Tablet/Desktop
+      [:source {:media   "(min-width: 750px)"
+                :src-set (str desktop-url "-/format/auto/-/quality/best/-/resize/1440x/" file-name " 1x")}]
+      ;; Mobile
+      [:source {:media   "(min-width: 426px)"
+                :src-set (str mobile-url "-/format/auto/-/quality/lightest/-/resize/2250x/" file-name " 3x, "
+                              mobile-url "-/format/auto/-/quality/lightest/-/resize/1500x/" file-name " 2x, "
+                              mobile-url "-/format/auto/-/quality/normal/-/resize/750x/" file-name " 1x ")}]
+      [:source {:src-set (str mobile-url "-/format/auto/-/quality/lightest/-/resize/1275x/" file-name " 3x, "
+                              mobile-url "-/format/auto/-/quality/lightest/-/resize/850x/" file-name " 2x, "
+                              mobile-url "-/format/auto/-/quality/normal/-/resize/425x/" file-name " 1x ")}]
+      ;; mobile
+      [:img.block.col-12 {:src (str mobile-url "-/format/auto/-/quality/normal/-/resize/750x/" file-name)
+                          :alt (str alt)}]])))
 
 (defmethod layer-view :hero
   [data owner opts]
@@ -97,19 +98,20 @@
 
 (defn ^:private cta-with-chevron
   [{:cta/keys [navigation-message href value]}]
-  (when (or navigation-message href)
-    [:a.block.h4.medium.teal.my2
-     (merge
-      (when href
-        {:href href})
-      (when navigation-message
-        (apply utils/route-to navigation-message)))
-     value
-     ^:inline (svg/dropdown-arrow {:class  "stroke-teal ml2"
-                                   :style  {:stroke-width "3px"
-                                            :transform "rotate(-90deg)"}
-                                   :height "14px"
-                                   :width  "14px"})]))
+  (component/html
+   (when (or navigation-message href)
+     [:a.block.h4.medium.teal.my2
+      (merge
+       (when href
+         {:href href})
+       (when navigation-message
+         (apply utils/route-to navigation-message)))
+      value
+      ^:inline (svg/dropdown-arrow {:class  "stroke-teal ml2"
+                                    :style  {:stroke-width "3px"
+                                             :transform "rotate(-90deg)"}
+                                    :height "14px"
+                                    :width  "14px"})])))
 
 (defmethod layer-view :text-block
   [data _ _]
@@ -120,7 +122,7 @@
     (when-let [v (:header/value data)]
       [:div.h2 v])
     [:div.h5.dark-gray.mt3 (:body/value data)]
-    (cta-with-chevron data)]))
+    ^:inline (cta-with-chevron data)]))
 
 (defmethod layer-view :escape-hatch
   [_ _ _]
@@ -142,7 +144,7 @@
    [:div
     (when server-render?
       [:noscript (hero-image (merge data {:off-screen? false}))])
-    (hero-image (merge data {:off-screen? (not seen?)}))]))
+    ^:inline (hero-image (merge data {:off-screen? (not seen?)}))]))
 
 (defmethod layer-view :image-block
   [{:photo/keys [mob-uuid

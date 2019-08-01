@@ -32,8 +32,9 @@
         content))
 
 (defn social-icon [path]
-  [:img.ml2 {:style {:height "20px"}
-             :src   path}] )
+  (component/html
+   [:img.ml2 {:style {:height "20px"}
+              :src   path}]) )
 
 (def ^:private gallery-link
   (component/html
@@ -55,15 +56,16 @@
    (social-icon (assets/path "/images/share/styleseat-logotype.png"))))
 
 (defn store-welcome [signed-in {:keys [store-nickname portrait expanded?]} expandable?]
-  [:div.h6.flex.items-center.mt2
-   (case (marquee/portrait-status (auth/stylist-on-own-store? signed-in) portrait)
-     ::marquee/show-what-we-have [:div.left.pr2 (marquee/stylist-portrait portrait)]
-     ::marquee/ask-for-portrait  [:div.left.pr2 marquee/add-portrait-cta]
-     ::marquee/show-nothing      [:div.left {:style {:height (str ui/header-image-size "px")}}])
-   [:div.dark-gray
-    "Welcome to " [:span.black.medium {:data-test "nickname"} store-nickname "'s"] " shop"
-    (when expandable?
-      [:span.ml1 (ui/expand-icon expanded?)])]])
+  (component/html
+   [:div.h6.flex.items-center.mt2
+    (case (marquee/portrait-status (auth/stylist-on-own-store? signed-in) portrait)
+      ::marquee/show-what-we-have [:div.left.pr2 (marquee/stylist-portrait portrait)]
+      ::marquee/ask-for-portrait  [:div.left.pr2 marquee/add-portrait-cta]
+      ::marquee/show-nothing      [:div.left {:style {:height (str ui/header-image-size "px")}}])
+    [:div.dark-gray
+     "Welcome to " [:span.black.medium {:data-test "nickname"} store-nickname "'s"] " shop"
+     (when expandable?
+       [:span.ml1 (ui/expand-icon expanded?)])]]))
 
 (defn store-info [signed-in {:keys [expanded?] :as store}]
   (when (-> signed-in ::auth/to #{:marketplace :own-store})
@@ -122,18 +124,20 @@
      (drop-down-row (utils/fake-href events/control-sign-out) "Sign out")]]))
 
 (defmethod account-info :guest [_ _ _ _]
-  [:div.h6
-   [:a.inherit-color (utils/route-to events/navigate-sign-in) "Sign in"]
-   " | "
-   [:a.inherit-color (utils/route-to events/navigate-sign-up) "No account? Sign up"]])
+  (component/html
+   [:div.h6
+    [:a.inherit-color (utils/route-to events/navigate-sign-in) "Sign in"]
+    " | "
+    [:a.inherit-color (utils/route-to events/navigate-sign-up) "No account? Sign up"]]))
 
 (def open-shopping (utils/expand-menu-callback keypaths/shop-menu-expanded))
 (def close-shopping (utils/collapse-menus-callback keypaths/header-menus))
 
 (defn header-menu-link [opts text]
-  [:a.h5.medium.inherit-color.py2
-   (merge opts {:style {:padding-left "24px" :padding-right "24px"}})
-   text])
+  (component/html
+   [:a.h5.medium.inherit-color.py2
+    (merge opts {:style {:padding-left "24px" :padding-right "24px"}})
+    text]))
 
 (defn menu [{:keys [show-freeinstall-link? v2-experience?]}]
   (component/html
@@ -167,22 +171,23 @@
 
 (defn shopping-column [items col-count]
   {:pre [(zero? (mod 12 col-count))]}
-  [:ul.list-reset.col.px2
-   {:class (str "col-" (/ 12 col-count))}
-   (for [{:keys [page/slug copy/title category/new?] :as category} items]
-     [:li {:key slug}
-      [:a.inherit-color.block.pyp2.titleize
-       (if (:direct-to-details/id category)
-         (utils/route-to events/navigate-product-details
-                         (merge
-                          {:catalog/product-id (:direct-to-details/id category)
-                           :page/slug          (:direct-to-details/slug category)}
-                          (when-let [sku-id (:direct-to-details/sku-id category)]
-                            {:query-params {:SKU sku-id}})))
-         (utils/route-to events/navigate-category category))
-       (when new?
-         [:span.teal "NEW "])
-       (string/capitalize title)]])])
+  (component/html
+   [:ul.list-reset.col.px2
+    {:class (str "col-" (/ 12 col-count))}
+    (for [{:keys [page/slug copy/title category/new?] :as category} items]
+      [:li {:key slug}
+       [:a.inherit-color.block.pyp2.titleize
+        (if (:direct-to-details/id category)
+          (utils/route-to events/navigate-product-details
+                          (merge
+                           {:catalog/product-id (:direct-to-details/id category)
+                            :page/slug          (:direct-to-details/slug category)}
+                           (when-let [sku-id (:direct-to-details/sku-id category)]
+                             {:query-params {:SKU sku-id}})))
+          (utils/route-to events/navigate-category category))
+        (when new?
+          [:span.teal "NEW "])
+        (string/capitalize title)]])]))
 
 (defn shopping-flyout [signed-in {:keys [expanded? categories]}]
   (when expanded?
@@ -196,10 +201,11 @@
                        vals
                        (map (partial sort-by :header/order))
                        (mapcat (partial partition-all 11)))]
-      [:div.absolute.bg-white.col-12.z3.border-bottom.border-gray
-       [:div.mx-auto.clearfix.my6.col-10
-        (for [items columns]
-          (shopping-column items (count columns)))]])))
+      (component/html
+       [:div.absolute.bg-white.col-12.z3.border-bottom.border-gray
+        [:div.mx-auto.clearfix.my6.col-10
+         (for [items columns]
+           (shopping-column items (count columns)))]]))))
 
 (defn component [{:as data :keys [store user cart shopping signed-in vouchers?]} _ _]
   (component/create
