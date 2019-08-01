@@ -59,7 +59,7 @@
 (defmethod component :shop/freeinstall
   [_ _ _]
   (component/create
-   [:a.block.white.p2.bg-lavender.flex
+   [:a.block.white.p2.bg-lavender.flex.justify-center
     {:on-click  (utils/send-event-callback events/popup-show-adventure-free-install)
      :data-test "shop-freeinstall-promo-banner"}
     (svg/info {:height "14px"
