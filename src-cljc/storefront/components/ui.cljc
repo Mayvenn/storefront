@@ -110,7 +110,7 @@
                   disabled?                                                 (assoc :data-test-disabled "yes")
                   spinning?                                                 (assoc :data-test-spinning "yes")
                   disabled?                                                 (update :class str (str " btn-disabled " (or disabled-class "is-disabled"))))
-        content (if spinning? spinner content)]
+        content (if spinning? [spinner] content)]
     (into [:a (merge {:href "#"} attrs)]
           content)))
 
