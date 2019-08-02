@@ -51,4 +51,4 @@
          (string/join ", " (filter identity [address-1 address-2 city state zipcode]))]]
        [:a.self-center.navy.h6.medium
         {:href (str "https://www.google.com/maps/dir/?api=1&destination=" latitude "," longitude)}
-        "DIRECTION"]])]))
+        "DIRECTIONS"]])]))
