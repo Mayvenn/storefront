@@ -65,7 +65,7 @@
     (svg/info {:height "14px"
                :width  "14px"
                :class  "mr1 mt1"})
-    [:div.h6.medium "Buy 3 items and receive your free "
+    [:div.pointer.h6.medium "Buy 3 items and receive your free "
      [:span.bold.underline
       "Mayvenn" ui/nbsp "Install"]]]))
 
