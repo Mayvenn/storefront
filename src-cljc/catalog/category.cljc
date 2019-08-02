@@ -259,11 +259,6 @@
                                  success-fn)
          (effects/redirect events/navigate-home)))))
 
-;; TODO: why?
-(defmethod transitions/transition-state events/api-success-v2-products-for-browse
-  [_ event {:keys [products skus category-id] :as response} app-state]
-  app-state)
-
 (defmethod transitions/transition-state events/control-category-panel-open
   [_ _ {:keys [selected]} app-state]
   (-> app-state
