@@ -59,7 +59,7 @@
                     {:style {:width "150px"}}
                     (ui/teal-button (merge external-redirect {:height-class "py2"
                                                               :data-test    "to-adventure-modal-browse-stylists"})
-                                                       "Browse Stylists")]]
+                                    "Browse Stylists")]]
 
                   [:div.col-12.bg-transparent-teal.mt3.pt6.pb8.px4
                    [:div.col-11-on-dt.justify-center.flex.flex-wrap.mx-auto.pb2

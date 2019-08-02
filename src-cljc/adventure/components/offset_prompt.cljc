@@ -31,4 +31,4 @@
                (utils/route-to (-> button :target :event)
                                (-> button :target :args))
                (utils/route-to (:target button))))
-                     (:text button))]]))
+      (:text button))]]))

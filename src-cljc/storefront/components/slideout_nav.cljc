@@ -85,11 +85,11 @@
     [:div
      (marquee-row
       (ui/underline-button (assoc (utils/route-to events/navigate-stylist-account-profile)
-                              :data-test "account-settings")
-                       "Settings")
+                                  :data-test "account-settings")
+                           "Settings")
       (ui/underline-button (assoc (utils/route-to events/navigate-stylist-share-your-store)
-                              :data-test "share-your-store")
-                       "Share your store"))
+                                  :data-test "share-your-store")
+                           "Share your store"))
      (marquee-row
       (ui/underline-button (assoc (utils/route-to events/navigate-v2-stylist-dashboard-orders)
                                   :data-test "dashboard")
