@@ -44,8 +44,7 @@
           [:div.h3 title]
           [:div.regular description]]]
         [:div.m1.self-start {:style {:width "21px"
-                                     :height "21px"
-                                     :opacity 0.2}}
+                                     :height "21px"}}
          ^:inline (svg/instagram)]]
        [:div.mt2 (ui/underline-button {:height-class "py2"} "Shop Look")]]]]]))
 
@@ -90,8 +89,7 @@
            [:div.h3 title]
            [:div.regular description]]]
          [:div.m1.self-start {:style {:width "21px"
-                                    :height "21px"
-                                    :opacity 0.2}}
+                                    :height "21px"}}
           ^:inline (svg/instagram)]]]
        (when nav-event
          (cta-button-fn
