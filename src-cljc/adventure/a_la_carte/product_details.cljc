@@ -394,7 +394,6 @@
                        :sku-id            (:catalog/sku-id sku)
                        :destination-event events/control-freeinstall-ugc-modal-open
                        :social-cards      social-cards}
-       :show-cta?     (experiments/freeinstall-pdp-looks? data)
        :offset        (get-in data keypaths/ui-ugc-category-popup-offset)
        :close-message [events/control-freeinstall-ugc-modal-close {}]
        ;;TODO GROT:

@@ -399,7 +399,6 @@
                        :page-slug    (:page/slug product)
                        :sku-id       (:catalog/sku-id sku)
                        :social-cards social-cards}
-       :show-cta?     true
        :offset        (get-in data keypaths/ui-ugc-category-popup-offset)
        :close-message [events/navigate-product-details
                        {:catalog/product-id (:catalog/product-id product)

@@ -33,7 +33,7 @@
   #?(:clj (Integer/parseInt v)
      :cljs (js/parseInt v 10)))
 
-(defn ^:private popup-slide [show-cta? long-name social-card]
+(defn ^:private popup-slide [long-name social-card]
   ;; NOTE: desktop-aware? should always be false because we want the slide to take up the full width
   (component/build ugc/social-image-card-component
                    (assoc social-card :desktop-aware? false)
@@ -63,7 +63,7 @@
        "Want to show up on our homepage? "
        "Tag your best pictures wearing Mayvenn with " [:span.bold "#MayvennMade"]]])))
 
-(defn popup-component [{:keys [now carousel-data offset show-cta? close-message]} owner opts]
+(defn popup-component [{:keys [now carousel-data offset close-message]} owner opts]
   (let [close-attrs (apply util/route-to close-message)]
     (component/create
      ;; NOTE(jeff,corey): events/navigate-product-details should be the current
@@ -72,7 +72,7 @@
       {:close-attrs close-attrs}
       [:div.relative
        (component/build carousel/component
-                        {:slides   (map (partial popup-slide show-cta? (:product-name carousel-data))
+                        {:slides   (map (partial popup-slide (:product-name carousel-data))
                                         (:social-cards carousel-data))
                          :settings {:slidesToShow 1
                                     :initialSlide (parse-int offset)}
