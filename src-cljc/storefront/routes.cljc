@@ -145,15 +145,19 @@
               ["/stylist/" [#"\d+" :stylist-id] "-" :store-slug]         (edn->bidi events/navigate-adventure-stylist-profile)})])
 
 ;; TODO(jeff,corey): history/path-for should support domains like navigation-message-for
-(defn path-for [navigation-event & [args]]
-  (let [query-params (:query-params args)
-        args         (dissoc args :query-params)
-        path         (apply bidi/path-for
-                            app-routes
-                            (edn->bidi navigation-event)
-                            (apply concat (seq args)))]
-    (when path
-      (uri/set-query-string path query-params))))
+(defn path-for*
+  ([navigation-event] (path-for* navigation-event nil))
+  ([navigation-event args]
+   (let [query-params (:query-params args)
+         args         (dissoc args :query-params)
+         path         (apply bidi/path-for
+                             app-routes
+                             (edn->bidi navigation-event)
+                             (apply concat (seq args)))]
+     (when path
+       (uri/set-query-string path query-params)))))
+
+(def path-for (memoize path-for*))
 
 (defn current-path [app-state]
   (apply path-for (get-in app-state keypaths/navigation-message)))
@@ -171,6 +175,16 @@
       (-> params
           (merge (when (seq query-params) {:query-params query-params}))
           keywordize-keys)])))
+
+;; TODO: probably not worth this optimization
+(defn fast-guess-navigation-message-for
+  ;; Heuristic guess for feature blocks. Feature blocks take roughly 20ms to just generating these events
+  [uri]
+  (or ({"/categories/16-dyed-virgin-hair"  [events/navigate-category {:catalog/category-id 16 :page/slug "dyed-virgin-hair"}]
+        "/categories/13-wigs"              [events/navigate-category {:catalog/category-id 13 :page/slug "wigs"}]
+        "/categories/21-seamless-clip-ins" [events/navigate-category {:catalog/category-id 21 :page/slug "seamless-clip-ins"}]}
+       uri)
+      (navigation-message-for uri)))
 
 (defn sub-page?
   "Returns whether page1 is the same as page2 OR is a 'sub-page'.

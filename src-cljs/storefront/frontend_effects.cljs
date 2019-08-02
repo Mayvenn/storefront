@@ -139,17 +139,16 @@
 
 (defmethod effects/perform-effects events/ensure-sku-ids
   [_ _ {:keys [sku-ids]} _ app-state]
-  (let [ids-in-db   (keys (get-in app-state keypaths/v2-skus))
-        missing-ids (seq (set/difference (set sku-ids)
-                                         (set ids-in-db)))
-
-        api-cache (get-in app-state keypaths/api-cache)
-        handler   (partial messages/handle-message
-                           events/api-success-v2-products)]
-    (when missing-ids
-      (api/search-v2-products api-cache
-                              {:selector/sku-ids missing-ids}
-                              handler))))
+  ;; like events/save-order, this code is in the hotpath and is called all the time
+  ;; some more care is taken here to reduce timing from ~20ms -> 2ms
+  (let [skus-db     (get-in app-state keypaths/v2-skus)
+        predicate   #(contains? skus-db %)
+        missing-ids (remove predicate sku-ids)]
+    (when (some (complement predicate) sku-ids)
+      (let [missing-ids (remove #(contains? skus-db %) sku-ids)]
+        (api/search-v2-products (get-in app-state keypaths/api-cache)
+                                {:selector/sku-ids missing-ids}
+                                (partial messages/handle-message events/api-success-v2-products))))))
 
 (defmethod effects/perform-effects events/external-redirect-welcome [_ event args _ app-state]
   (set! (.-location js/window) (get-in app-state keypaths/welcome-url)))
@@ -231,69 +230,71 @@
                             true)))
 
 (defmethod effects/perform-effects events/navigate [_ event {:keys [navigate/caused-by query-params nav-stack-item]} prev-app-state app-state]
-  (let [freeinstall? (= "freeinstall" (get-in app-state keypaths/store-slug))]
+  ;; events/navigate takes around ~30ms to run, so why not skip it if we're
+  ;; under module-load event (b/c we just called this not too long ago)
+  (when-not (= caused-by :module-load)
+    (let [freeinstall? (= "freeinstall" (get-in app-state keypaths/store-slug))]
 
-    (messages/handle-message events/control-menu-collapse-all)
-    (messages/handle-message events/save-order {:order (get-in app-state keypaths/order)})
+      (messages/handle-message events/control-menu-collapse-all)
+      (messages/handle-message events/save-order {:order (get-in app-state keypaths/order)})
 
-    (cookie-jar/save-user (get-in app-state keypaths/cookie)
-                          (get-in app-state keypaths/user))
-    (refresh-account app-state)
-    (api/get-promotions (get-in app-state keypaths/api-cache)
-                        (or
-                         (first (get-in app-state keypaths/order-promotion-codes))
-                         (get-in app-state keypaths/pending-promo-code)))
+      (cookie-jar/save-user (get-in app-state keypaths/cookie)
+                            (get-in app-state keypaths/user))
+      (refresh-account app-state)
+      (api/get-promotions (get-in app-state keypaths/api-cache)
+                          (or
+                           (first (get-in app-state keypaths/order-promotion-codes))
+                           (get-in app-state keypaths/pending-promo-code)))
 
-    (seo/set-tags app-state)
-    (when (or (not= (get-in prev-app-state keypaths/navigation-event)
-                    (get-in app-state keypaths/navigation-event))
-              (not= (not-empty (dissoc (get-in prev-app-state keypaths/navigation-args) :query-params))
-                    (not-empty (dissoc (get-in app-state keypaths/navigation-args) :query-params))))
-      (let [restore-scroll-top (:final-scroll nav-stack-item 0)]
-        (if (zero? restore-scroll-top)
-          ;; We can always snap to 0, so just do it immediately. (HEAT is unhappy if the page is scrolling underneath it.)
-          (scroll/snap-to-top)
-          ;; Otherwise give the screen some time to render before trying to restore scroll
-          (messages/handle-later events/snap {:top restore-scroll-top} 100))))
+      (seo/set-tags app-state)
+      (when (or (not= (get-in prev-app-state keypaths/navigation-event)
+                      (get-in app-state keypaths/navigation-event))
+                (not= (not-empty (dissoc (get-in prev-app-state keypaths/navigation-args) :query-params))
+                      (not-empty (dissoc (get-in app-state keypaths/navigation-args) :query-params))))
+        (let [restore-scroll-top (:final-scroll nav-stack-item 0)]
+          (if (zero? restore-scroll-top)
+            ;; We can always snap to 0, so just do it immediately. (HEAT is unhappy if the page is scrolling underneath it.)
+            (scroll/snap-to-top)
+            ;; Otherwise give the screen some time to render before trying to restore scroll
+            (messages/handle-later events/snap {:top restore-scroll-top} 100))))
 
-    (when-not freeinstall?
-      (when-let [pending-promo-code (:sha query-params)]
-        (cookie-jar/save-pending-promo-code
-         (get-in app-state keypaths/cookie)
-         pending-promo-code)))
+      (when-not freeinstall?
+        (when-let [pending-promo-code (:sha query-params)]
+          (cookie-jar/save-pending-promo-code
+           (get-in app-state keypaths/cookie)
+           pending-promo-code)))
 
-    (when-let [affiliate-stylist-id (:affiliate_stylist_id query-params)]
-      (cookie-jar/save-affiliate-stylist-id (get-in app-state keypaths/cookie)
-                                            {:affiliate-stylist-id affiliate-stylist-id}))
+      (when-let [affiliate-stylist-id (:affiliate_stylist_id query-params)]
+        (cookie-jar/save-affiliate-stylist-id (get-in app-state keypaths/cookie)
+                                              {:affiliate-stylist-id affiliate-stylist-id}))
 
-    (messages/handle-message events/determine-and-show-popup)
+      (messages/handle-message events/determine-and-show-popup)
 
-    (let [utm-params (some-> query-params
-                             (select-keys [:utm_source :utm_medium :utm_campaign :utm_content :utm_term])
-                             (set/rename-keys {:utm_source   :storefront/utm-source
-                                               :utm_medium   :storefront/utm-medium
-                                               :utm_campaign :storefront/utm-campaign
-                                               :utm_content  :storefront/utm-content
-                                               :utm_term     :storefront/utm-term})
-                             (maps/deep-remove-nils))]
-      (when (seq utm-params)
-        (cookie-jar/save-utm-params
-         (get-in app-state keypaths/cookie)
-         utm-params)))
+      (let [utm-params (some-> query-params
+                               (select-keys [:utm_source :utm_medium :utm_campaign :utm_content :utm_term])
+                               (set/rename-keys {:utm_source   :storefront/utm-source
+                                                 :utm_medium   :storefront/utm-medium
+                                                 :utm_campaign :storefront/utm-campaign
+                                                 :utm_content  :storefront/utm-content
+                                                 :utm_term     :storefront/utm-term})
+                               (maps/deep-remove-nils))]
+        (when (seq utm-params)
+          (cookie-jar/save-utm-params
+           (get-in app-state keypaths/cookie)
+           utm-params)))
 
-    (when (and (get-in app-state keypaths/user-must-set-password)
-               (not= event events/navigate-force-set-password))
-      (effects/redirect events/navigate-force-set-password))
+      (when (and (get-in app-state keypaths/user-must-set-password)
+                 (not= event events/navigate-force-set-password))
+        (effects/redirect events/navigate-force-set-password))
 
-    (when-not (= caused-by :module-load)
       (when (get-in app-state keypaths/popup)
         (messages/handle-message events/popup-hide))
 
-      (quadpay/hide-modal))
+      (quadpay/hide-modal)
 
-    (exception-handler/refresh)
+      (exception-handler/refresh)
 
-    (popup/touch-email-capture-session app-state)))
+      (popup/touch-email-capture-session app-state))))
 
 (defmethod effects/perform-effects events/navigate-home [_ _ _ _ app-state]
   (api/fetch-cms-data))
@@ -691,12 +692,13 @@
                        (stylists/retrieve-parsed-affiliate-id app-state)))))
 
 (defmethod effects/perform-effects events/save-order
-  [_ _ {:keys [order]} _ app-state]
+  [_ _ {:keys [order]} previous-app-state app-state]
   (if (and order (orders/incomplete? order))
     (do
       (when-let [sku-ids (->> order orders/product-items (map :sku) seq)]
         (messages/handle-message events/ensure-sku-ids {:sku-ids sku-ids}))
-      (cookie-jar/save-order (get-in app-state keypaths/cookie) order)
+      (when-not (= order (get-in previous-app-state keypaths/order))
+        (cookie-jar/save-order (get-in app-state keypaths/cookie) order))
       (add-pending-promo-code app-state order))
     (messages/handle-message events/clear-order)))
 
