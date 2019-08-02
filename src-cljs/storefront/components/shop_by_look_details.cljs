@@ -127,9 +127,8 @@
         [:div.flex-auto.medium {:style {:word-break "break-all"}}
          (:title look)]
         [:div.ml1.line-height-1 {:style {:width   "21px"
-                                         :height  "21px"
-                                         :opacity 0.2}}
-         ^:inline (svg/social-icon (:social-service look))]]]
+                                         :height  "21px"}}
+         ^:inline (svg/instagram)]]]
       (when yotpo-data-attributes
         [:div (om/build reviews/reviews-summary-component {:yotpo-data-attributes yotpo-data-attributes} nil)])
       (when-not (str/blank? (:description look))
