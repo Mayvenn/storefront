@@ -44,7 +44,7 @@
       [:div.flex.items-center {:style {:height "250px"}} ui/spinner])
     (let [{:keys [address-1 address-2 city state zipcode latitude longitude]} salon]
       [:div.bg-fate-white.p2.flex.justify-between
-       [:div.flex.justfy-start
+       [:div.flex.justfy-start.mr2
         [:div.line-height-3.pr1 (svg/position {:height "13px"
                                                :width  "10px"})]
         [:div.h6.self-center
