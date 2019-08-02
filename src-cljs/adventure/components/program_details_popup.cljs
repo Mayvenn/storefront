@@ -91,8 +91,8 @@
                  (svg/simple-x
                   (merge (utils/fake-href events/control-adventure-free-install-dismiss)
                          {:data-test    "adventure-popup-dismiss"
-                          :height       "1.5rem"
-                          :width        "1.5rem"
+                          :height       "27px"
+                          :width        "27px"
                           :class        "black"}))]
                 [:div.flex.justify-center.pb2
                  [:div.col-6
