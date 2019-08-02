@@ -8,7 +8,6 @@
             [storefront.components.ui :as ui]
             [storefront.platform.carousel :as carousel]
             [storefront.platform.component-utils :as utils]
-            [storefront.platform.messages :as messages]
             #?@(:cljs [[storefront.history :as history]
                        [storefront.hooks.stringer :as stringer]
                        [storefront.api :as api]])))
@@ -62,11 +61,10 @@
         [:div.bg-white.flex-wrap.flex.justify-center
          [:div.col-12.py2.flex-wrap.flex.justify-center
           (for [{:keys [key] card-type :card/type :as card} cards-data]
-            (do
-              (case card-type
-                :stylist-profile   (component/build profile-card-with-gallery/component card {:key key})
-                :recommend-stylist (component/build call-out-center/organism card {:key key})
-                [:div "no matching clause"])))]]
+            (case card-type
+              :stylist-profile   (component/build profile-card-with-gallery/component card {:key key})
+              :recommend-stylist (component/build call-out-center/organism card {:key key})
+              [:div "no matching clause"]))]]
         (let [{:escape-hatch/keys [navigation-event copy data-test]} data]
           [:div.h6.dark-gray.mt3.pb4
            [:div.col-7-on-tb-dt.col-9.mx-auto.mb1

@@ -1,4 +1,5 @@
 (ns adventure.stylist-matching.stylist-profile
+  "This organism is a stylist profile that includes a map and gallery."
   (:require [adventure.components.header :as header]
             [adventure.keypaths :as keypaths]
             [clojure.string :as string]

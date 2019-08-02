@@ -4,9 +4,7 @@
             [storefront.components.ui :as ui]
             [storefront.platform.carousel :as carousel]
             [storefront.platform.component-utils :as utils]
-            [storefront.events :as events]
             [storefront.platform.messages :as messages]))
-
 
 (defn component
   [{:keys [card-data gallery-data button]} _ _]
