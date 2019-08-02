@@ -381,19 +381,11 @@
       wrap-affiliate-initial-login-landing-navigation-message
       (wrap-set-initial-state environment)))
 
-(defn wrap-redirect-deprecated-adventure-routes [h environment]
-  (fn [req]
-    (if (and (= "/adv/how-far" (:uri req))
-             (= "freeinstall" (last (:subdomains req))))
-      (util.response/redirect (store-url "freeinstall" environment (assoc req :uri "/adv/find-your-stylist")))
-      (h req))))
-
 (defn wrap-site-routes
-  [routes {:keys [storeback-config contentful environment]}]
+  [routes {:keys [storeback-config environment]}]
   (-> routes
       (wrap-set-preferred-store environment)
       (wrap-redirect-affiliates environment)
-      (wrap-redirect-deprecated-adventure-routes environment)
       (wrap-stylist-not-found-redirect environment)
       (wrap-defaults (dissoc (storefront-site-defaults environment) :cookies))
       (wrap-remove-superfluous-www-redirect environment)

@@ -140,7 +140,7 @@
      [:span.teal "NEW "])
    title])
 
-(defn dtc-shop-section [{:keys [categories partition-count]}]
+(defn dtc-shop-section [{:keys [categories]} partition-count]
   (component/html
    (let [links                          (mapv category->link categories)
          [column-1-links rest-of-links] (split-at partition-count links)]
@@ -162,13 +162,13 @@
             (dtc-link link))])]])))
 
 (defn dtc-full-component
-  [{:keys [contacts categories]} owner opts]
+  [{:keys [contacts] :as data} owner opts]
   (component/create
    [:div.h5.border-top.border-gray.bg-light-gray
     [:div.container
      [:div.col-12.clearfix
       [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
-       ^:inline (dtc-shop-section {:partition-count 5 :categories categories})]
+       ^:inline (dtc-shop-section data 5)]
       [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
        ^:inline (contacts-section contacts)]
       [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2

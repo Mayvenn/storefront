@@ -45,28 +45,16 @@
 (def freeinstall-routes
   {{:subdomain freeinstall?}
    {"/"                                                        (edn->bidi events/navigate-adventure-home)
-    "/adv/match-stylist"                                       (edn->bidi events/navigate-adventure-match-stylist)
-    "/adv/find-your-stylist"                                   (edn->bidi events/navigate-adventure-find-your-stylist)
-    "/adv/matching-stylist-wait"                               (edn->bidi events/navigate-adventure-matching-stylist-wait-pre-purchase)
-    "/adv/matching-stylist-wait-post-purchase"                 (edn->bidi events/navigate-adventure-matching-stylist-wait-post-purchase)
-    "/adv/shop-hair"                                           (edn->bidi events/navigate-adventure-shop-hair)
-    "/adv/how-shop-hair"                                       (edn->bidi events/navigate-adventure-how-shop-hair)
-    "/adv/stylist-results"                                     (edn->bidi events/navigate-adventure-stylist-results-pre-purchase)
-    "/adv/stylist-results-post-purchase"                       (edn->bidi events/navigate-adventure-stylist-results-post-purchase)
-    "/adv/out-of-area"                                         (edn->bidi events/navigate-adventure-out-of-area)
     "/adv/shop-a-la-carte/texture"                             (edn->bidi events/navigate-adventure-a-la-carte-hair-texture)
     "/adv/shop-a-la-carte/color"                               (edn->bidi events/navigate-adventure-a-la-carte-hair-color)
     "/adv/shop-a-la-carte/product-list"                        (edn->bidi events/navigate-adventure-a-la-carte-product-list)
+    "/adv/shop-hair"                                           (edn->bidi events/navigate-adventure-shop-hair)
+    "/adv/how-shop-hair"                                       (edn->bidi events/navigate-adventure-how-shop-hair)
     ["/products/" [#"\d+" :catalog/product-id] "-" :page/slug] (edn->bidi events/navigate-adventure-product-details)
     ["/adv/shop/bundle-sets-texture"]                          (edn->bidi events/navigate-adventure-bundlesets-hair-texture)
     ["/adv/shop/" :album-keyword]                              (edn->bidi events/navigate-adventure-select-new-look)
     ["/adv/shop/" :album-keyword "/texture"]                   (edn->bidi events/navigate-adventure-hair-texture)
     ["/adv/shop/" :album-keyword "/" :look-id]                 (edn->bidi events/navigate-adventure-look-detail)
-    "/adv/match-success"                                       (edn->bidi events/navigate-adventure-match-success-pre-purchase)
-    "/adv/match-success-post-purchase"                         (edn->bidi events/navigate-adventure-match-success-post-purchase)
-    "/adv/checkout-wait"                                       (edn->bidi events/navigate-adventure-checkout-wait)
-    "/adv/let-mayvenn-match"                                   (edn->bidi events/navigate-adventure-let-mayvenn-match)
-    ["/stylist/" [#"\d+" :stylist-id] "-" :store-slug]         (edn->bidi events/navigate-adventure-stylist-profile)
     "/certified-stylists"                                      (edn->bidi events/navigate-info-certified-stylists)
     "/about-our-hair"                                          (edn->bidi events/navigate-info-about-our-hair)
     "/how-it-works"                                            (edn->bidi events/navigate-info-how-it-works)}})
@@ -93,7 +81,7 @@
              {{:subdomain (complement freeinstall?)}
               (merge
                catalog-routes
-               {"/"                   (edn->bidi events/navigate-home)})}
+               {"/" (edn->bidi events/navigate-home)})}
 
              {"/login"                                            (edn->bidi events/navigate-sign-in)
               "/logout"                                           (edn->bidi events/navigate-sign-out)
@@ -140,7 +128,21 @@
               "/checkout/confirm"                         (edn->bidi events/navigate-checkout-confirmation)
               "/checkout/processing"                      (edn->bidi events/navigate-checkout-processing)
               ["/orders/" :number "/complete"]            (edn->bidi events/navigate-order-complete)
-              ["/orders/" :number "/complete-need-match"] (edn->bidi events/navigate-need-match-order-complete)})])
+              ["/orders/" :number "/complete-need-match"] (edn->bidi events/navigate-need-match-order-complete)
+
+              ;; Adventure on shop
+              "/adv/match-stylist"                                       (edn->bidi events/navigate-adventure-match-stylist)
+              "/adv/find-your-stylist"                                   (edn->bidi events/navigate-adventure-find-your-stylist)
+              "/adv/matching-stylist-wait"                               (edn->bidi events/navigate-adventure-matching-stylist-wait-pre-purchase)
+              "/adv/matching-stylist-wait-post-purchase"                 (edn->bidi events/navigate-adventure-matching-stylist-wait-post-purchase)
+              "/adv/stylist-results"                                     (edn->bidi events/navigate-adventure-stylist-results-pre-purchase)
+              "/adv/stylist-results-post-purchase"                       (edn->bidi events/navigate-adventure-stylist-results-post-purchase)
+              "/adv/out-of-area"                                         (edn->bidi events/navigate-adventure-out-of-area)
+              "/adv/match-success"                                       (edn->bidi events/navigate-adventure-match-success-pre-purchase)
+              "/adv/match-success-post-purchase"                         (edn->bidi events/navigate-adventure-match-success-post-purchase)
+              "/adv/checkout-wait"                                       (edn->bidi events/navigate-adventure-checkout-wait)
+              "/adv/let-mayvenn-match"                                   (edn->bidi events/navigate-adventure-let-mayvenn-match)
+              ["/stylist/" [#"\d+" :stylist-id] "-" :store-slug]         (edn->bidi events/navigate-adventure-stylist-profile)})])
 
 ;; TODO(jeff,corey): history/path-for should support domains like navigation-message-for
 (defn path-for [navigation-event & [args]]

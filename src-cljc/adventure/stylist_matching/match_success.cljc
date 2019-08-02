@@ -9,14 +9,16 @@
             [storefront.effects :as effects]
             [storefront.transitions :as transitions]
             #?(:cljs [storefront.history :as history])
-            [adventure.progress :as progress]))
+            [adventure.progress :as progress]
+            [storefront.accessors.experiments :as experiments]))
 
 (defn ^:private query [data]
   (let [servicing-stylist     (get-in data keypaths/adventure-servicing-stylist)
         order                 (get-in data storefront-keypaths/order)
+        adv-on-shop?          (experiments/adventure-on-shop? data)
         cart-has-hair?        (> (orders/product-quantity order) 0)
         button-text           (if cart-has-hair? "Continue to Cart" "Show me hair")
-        button-target-message (if cart-has-hair? [events/navigate-cart] [events/navigate-adventure-shop-hair])]
+        button-target-message (if (or cart-has-hair? adv-on-shop?) [events/navigate-cart] [events/navigate-adventure-shop-hair])]
     {:prompt               (str "Congrats on matching with " (stylists/->display-name servicing-stylist) "!")
      :mini-prompt          (if cart-has-hair?
                              "We'll connect you with your stylist after your place your order!"
@@ -28,7 +30,7 @@
                              :background-image
                              "url(//ucarecdn.com/8a87f86f-948f-48da-b59d-3ca4d8c6d5a0/-/format/png/-/quality/normal/)"}}
      :current-step         2
-     :header-data          {:progress                progress/match-success
+     :header-data          {:progress                (if adv-on-shop? 6 progress/match-success)
                             :back-navigation-message [events/navigate-adventure-stylist-results-pre-purchase]}
      :button               {:text           button-text
                             :data-test      "adventure-match-success-choice-show-hair"

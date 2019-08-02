@@ -75,8 +75,7 @@
       to-adventure-showable?
       (messages/handle-message events/popup-show-to-adventure)
 
-      (and freeinstall-store?
-           email-capture-showable?
+      (and email-capture-showable?
            (contains? #{events/navigate-adventure-match-stylist}
                       navigation-event))
       (messages/handle-message events/popup-show-adventure-emailcapture)

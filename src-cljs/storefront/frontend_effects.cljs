@@ -158,11 +158,14 @@
   [_ event {:keys [query-string path]} _ app-state]
   (cookie-jar/save-from-shop-to-freeinstall (get-in app-state keypaths/cookie))
   (let [on-homepage? (= events/navigate-home
-                        (get-in app-state keypaths/navigation-event))]
+                        (get-in app-state keypaths/navigation-event))
+        host         (if (experiments/adventure-on-shop? app-state)
+                       "shop."
+                       "freeinstall.")]
     (set! (.-location js/window)
           (-> (.-location js/window)
               uri/uri
-              (assoc :host (str "freeinstall." (routes/environment->hostname (get-in app-state keypaths/environment)))
+              (assoc :host (str host (routes/environment->hostname (get-in app-state keypaths/environment)))
                      :path (or path
                                (if on-homepage? "/adv/match-stylist" "/"))
                      :query query-string)

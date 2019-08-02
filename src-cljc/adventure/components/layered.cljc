@@ -22,14 +22,16 @@
                  "freeinstall.storefront.localhost")]
     (str "//" domain path)))
 
-(defn route-to-or-redirect-to-freeinstall [shop? environment navigation-event navigation-arg]
+(defn route-to-or-redirect-to-freeinstall [{:keys [shop? adventure-on-shop? environment navigation-event navigation-arg]}]
   (let [navigation-message [navigation-event navigation-arg]]
-    (merge (when-not shop?
-             {:navigation-message navigation-message})
-           {:href (freeinstall-domain environment (apply routes/path-for navigation-message))})))
+    (if adventure-on-shop?
+      {:navigation-message navigation-message}
+      (merge (when-not shop?
+               {:navigation-message navigation-message})
+             {:href (freeinstall-domain environment (apply routes/path-for navigation-message))}))))
 
-(defn cta-route-to-or-redirect-to-freeinstall [shop? environment navigation-event navigation-arg]
-  (set/rename-keys (route-to-or-redirect-to-freeinstall shop? environment navigation-event navigation-arg)
+(defn cta-route-to-or-redirect-to-freeinstall [nav-args]
+  (set/rename-keys (route-to-or-redirect-to-freeinstall nav-args)
                    {:href               :cta/href
                     :navigation-message :cta/navigation-message}))
 
