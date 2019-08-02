@@ -29,8 +29,8 @@
                                 :cta/navigation-message [events/navigate-info-certified-stylists nil]}
                                {:icon/uuid              "08e9d3d8-6f3d-4b3c-bc46-3590175a9a4d"
                                 :icon/width             "24"
-                                :header/value           "2. Buy ANY Three Bundles or More"
-                                :body/value             "This includes closures, frontals, and 360 frontals. Risk free - your virgin hair and service are covered by our 30 day guarantee."
+                                :header/value           "2. Buy Any 3 Items or More"
+                                :body/value             "Purchase 3 or more bundles, closures or frontals. Rest easy - your 100% virgin hair purchase is backed by our 30 day guarantee."
                                 :cta/value              "Learn more"
                                 :cta/navigation-message [events/navigate-info-about-our-hair nil]}
                                {:icon/uuid    "3fb9c2bf-c30e-4bee-957c-f273b1b5a233"
