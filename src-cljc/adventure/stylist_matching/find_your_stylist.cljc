@@ -56,7 +56,7 @@
             :id          "stylist-match-address"
             :data-test   "stylist-match-address"
             :autoFocus   true
-            :placeholder "search city, address, or zip code"}
+            :placeholder "search city or street address"}
            #?(:cljs
               {:on-submit (partial handle-on-change selected-location)
                :on-change (partial handle-on-change selected-location)}))]
