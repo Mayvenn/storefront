@@ -193,7 +193,7 @@
 
 (defn section-details-molecule
   [{:section-details/keys [title content]}]
-  [:div.medium.h5.pb3
+  [:div.medium.h5.py3
    title
    [:div.mt1.h6.regular
     content]] )
