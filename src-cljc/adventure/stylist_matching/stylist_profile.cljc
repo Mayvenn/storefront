@@ -146,14 +146,13 @@
                         {:slides   (map (fn [{:keys [target-message
                                                      key
                                                      ucare-img-url]}]
-                                          [:div
+                                          [:div.px1
                                            {:on-click #(apply messages/handle-message target-message)
                                             :key key}
                                            (ui/aspect-ratio
                                             1 1
                                             [:img {:src   (str ucare-img-url "-/scale_crop/204x204/-/format/auto/")
-                                                   :class "rounded"
-                                                   :width "102"}])])
+                                                   :class "rounded col-12"}])])
                                         items)
                          :settings {:swipe        true
                                     :initialSlide 0
