@@ -358,11 +358,3 @@
        (is (= 302 (:status resp)))
        (is (= "https://shop.mayvenn.com"
               (get-in resp [:headers "Location"])))))))
-
-(deftest redirects-to-find-your-stylist-from-defunct-how-far-freeinstall-page
-  (assert-request (mock/request :get "https://freeinstall.mayvenn.com/adv/how-far")
-                  common/storeback-stylist-response
-                  (fn [resp]
-                    (is (= 302 (:status resp)))
-                    (is (= "https://freeinstall.mayvenn.com/adv/find-your-stylist"
-                           (get-in resp [:headers "Location"]))))))
