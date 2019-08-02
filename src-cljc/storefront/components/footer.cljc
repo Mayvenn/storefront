@@ -58,24 +58,27 @@
       [:span.hide-on-tb-dt (ui/link :link/phone :a.dark-gray {} call-number)] ;; mobile
       [:span.hide-on-mb call-number] ;; desktop
       " | 8am-5pm PST M-F"]
-     (ui/link :link/email :a.block.py1.dark-gray {} contact-email)]
+     (ui/email-link {:class "block py1 dark-gray"} contact-email)]
 
     [:div.py1.hide-on-tb-dt
      (ui/ghost-button {:href (phone-uri call-number)
                        :class "my1"}
-                      [:div.flex.items-center.justify-center
-                       ^:inline (svg/phone-ringing {:class "stroke-teal"})
-                       [:div.ml1.left-align "Call Now"]])
+                      (component/html
+                       [:div.flex.items-center.justify-center
+                        ^:inline (svg/phone-ringing {:class "stroke-teal"})
+                        [:div.ml1.left-align "Call Now"]]))
      (ui/ghost-button {:href (str "sms:" sms-number)
                        :class "my1"}
-                      [:div.flex.items-center.justify-center
-                       ^:inline (svg/message-bubble {:class "stroke-teal"})
-                       [:div.ml1.left-align "Send Message"]])
+                      (component/html
+                       [:div.flex.items-center.justify-center
+                        ^:inline (svg/message-bubble {:class "stroke-teal"})
+                        [:div.ml1.left-align "Send Message"]]))
      (ui/ghost-button {:href (str "mailto:" contact-email)
                        :class "my1"}
-                      [:div.flex.items-center.justify-center
-                       ^:inline (svg/mail-envelope {:class "stroke-teal"})
-                       [:div.ml1.left-align "Send Email"]])]]))
+                      (component/html
+                       [:div.flex.items-center.justify-center
+                        ^:inline (svg/mail-envelope {:class "stroke-teal"})
+                        [:div.ml1.left-align "Send Email"]]))]]))
 
 (defn social-section []
   (component/html
@@ -116,7 +119,7 @@
     [:div.mt3.bg-dark-gray.white.py1.px3.clearfix.h8
      [:div
       {:style {:margin-bottom "90px"}}
-      (component/build footer-links/component {:minimal? false} nil)]]]))
+      ^:inline (footer-links/template {:minimal? false} nil)]]]))
 
 (defn contacts-query
   [data]
@@ -133,12 +136,13 @@
                     (sort-by :footer/order))})
 
 (defn dtc-link [{:keys [title new-category? nav-message slug]}]
-  [:a.block.py1.dark-gray.light.titleize
-   (merge {:key (str "footer-link-" slug)}
-          (apply utils/route-to nav-message))
-   (when new-category?
-     [:span.teal "NEW "])
-   title])
+  (component/html
+   [:div {:key (str "footer-link-" slug)}
+    [:a.block.py1.dark-gray.light.titleize
+     (apply utils/route-to nav-message)
+     (when new-category?
+       [:span.teal "NEW "])
+     ^:inline (str title)]]))
 
 (defn dtc-shop-section [{:keys [categories]} partition-count]
   (component/html
@@ -161,7 +165,7 @@
           (for [link link-column]
             (dtc-link link))])]])))
 
-(defn dtc-full-component
+(defn dtc-component
   [{:keys [contacts] :as data} owner opts]
   (component/create
    [:div.h5.border-top.border-gray.bg-light-gray
@@ -177,7 +181,7 @@
     [:div.mt3.bg-dark-gray.white.py1.px3.clearfix.h8
      [:div
       {:style {:margin-bottom "90px"}}
-      (component/build footer-links/component {:minimal? false} nil)]]]))
+      ^:inline (footer-links/template {:minimal? false} nil)]]]))
 
 (defn dtc-query
   [data]
@@ -192,13 +196,13 @@
   (let [nav-event (get-in data keypaths/navigation-event)]
     (cond
       (nav/show-minimal-footer? nav-event)
-      (footer-minimal/built-component data nil)
+      (component/build footer-minimal/component (footer-minimal/query data) nil)
 
       (nav/show-blank-footer? nav-event)
-      [:div {:style {:height "85px"}}]
+      (component/html [:div {:style {:height "85px"}}])
 
       (= (get-in data keypaths/store-slug) "shop")
-      (component/build dtc-full-component (dtc-query data) nil)
+      (component/build dtc-component (dtc-query data) nil)
 
       :else
       (component/build full-component (query data) nil))))

@@ -31,26 +31,27 @@
 
 (defn normalize-image [image]
   ;; hot-path: index-skus is ~60ms if work is done naively here
-  (let [attrs  (:criteria/attributes image)
-        ks     (keys attrs)
-        image! (-> (transient image)
-                   (assoc! :id (str (:use-case image) "-" (:url image)))
-                   (assoc! :order (or (:order image)
-                                      (case (:image/of attrs)
-                                        "model"   1
-                                        "product" 2
-                                        "seo"     3
-                                        "catalog" 4
-                                        5)))
-                   (dissoc! :criteria/attributes :filename))]
+  (let [attrs   (:criteria/attributes image)
+        entries (vec attrs)
+        image!  (-> (transient image)
+                    (assoc! :id (str (:use-case image) "-" (:url image)))
+                    (assoc! :order (or (:order image)
+                                       (case (:image/of attrs)
+                                         "model"   1
+                                         "product" 2
+                                         "seo"     3
+                                         "catalog" 4
+                                         5)))
+                    (dissoc! :criteria/attributes :filename))
+        len (count entries)]
 
     ;; (merge image' (:criteria/attributes images))
     (loop [image! image!
-           i 0]
-      (if (< i (count ks))
-        (let [k (.indexOf ks i)]
-          (if (not= -1 k)
-            (recur (assoc! image! k (k attrs)) (inc i))
+           i      0]
+      (if (< i len)
+        (let [e (.indexOf entries i)]
+          (if (not= -1 e)
+            (recur (assoc! image! (key e) (val e)) (inc i))
             (persistent! image!)))
         (persistent! image!)))))
 

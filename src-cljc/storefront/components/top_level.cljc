@@ -177,7 +177,7 @@
                                     {:class "bg-light-silver"}))
         ((main-component nav-event) data nil)]
 
-       [:footer (footer/built-component data nil)]]])))
+       [:footer ^:inline (footer/built-component data nil)]]])))
 
 (defn adventure-checkout-layout [data nav-event]
   [:div.flex.flex-column {:style {:min-height    "100vh"
@@ -196,7 +196,7 @@
     [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
      ((main-component nav-event) data nil)]
     [:footer
-     (footer/built-component data nil)]]])
+     ^:inline (footer/built-component data nil)]]])
 
 (defn top-level-component [data owner opts]
   (let [nav-event    (get-in data keypaths/navigation-event)

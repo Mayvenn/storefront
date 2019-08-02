@@ -100,19 +100,20 @@
 (defn button
   [{:keys [disabled? disabled-class spinning? navigation-message href]
     :as   opts}
-   & content]
-  (let [shref   (str href)
-        attrs   (cond-> opts
-                  :always                                                   (dissoc :spinning? :disabled? :disabled-class :navigation-message)
-                  navigation-message                                        (merge (apply utils/route-to navigation-message))
-                  (and (string/starts-with? shref "#") (> (count shref) 1)) (merge (utils/scroll-href (subs href 1)))
-                  (or disabled? spinning?)                                  (assoc :on-click utils/noop-callback)
-                  disabled?                                                 (assoc :data-test-disabled "yes")
-                  spinning?                                                 (assoc :data-test-spinning "yes")
-                  disabled?                                                 (update :class str (str " btn-disabled " (or disabled-class "is-disabled"))))
-        content (if spinning? [spinner] content)]
-    (into [:a (merge {:href "#"} attrs)]
-          content)))
+   content]
+  (component/html
+   (let [shref   (str href)
+         attrs   (cond-> opts
+                   :always                                                   (dissoc :spinning? :disabled? :disabled-class :navigation-message)
+                   navigation-message                                        (merge (apply utils/route-to navigation-message))
+                   (and (string/starts-with? shref "#") (> (count shref) 1)) (merge (utils/scroll-href (subs href 1)))
+                   (or disabled? spinning?)                                  (assoc :on-click utils/noop-callback)
+                   disabled?                                                 (assoc :data-test-disabled "yes")
+                   spinning?                                                 (assoc :data-test-spinning "yes")
+                   disabled?                                                 (update :class str (str " btn-disabled " (or disabled-class "is-disabled"))))
+         content (if spinning? [spinner] content)]
+     [:a (merge {:href "#"} attrs)
+      content])))
 
 (defn ^:private button-colors [color-kw]
   (let [color (color-kw {:color/teal        "btn-primary bg-teal white"
@@ -143,45 +144,48 @@
                 (button-colors color-kw)
                 class]))
 
-(defn color-button [color-kw attrs & content]
-  (button (-> attrs
-              (dissoc :width-class)
-              (dissoc :height-class)
-              (assoc :class (button-class color-kw attrs)))
-          (into [:div] content)))
+(defn color-button
+  ([color-kw attrs] (color-button color-kw attrs ""))
+  ([color-kw attrs content]
+   (button (-> attrs
+               (dissoc :width-class)
+               (dissoc :height-class)
+               (assoc :class (button-class color-kw attrs)))
+           ;; TODO: do we need this wrapping div?
+           (component/html [:div content]))))
 
-(defn teal-button [attrs & content]
+(defn teal-button [attrs content]
   (color-button :color/teal attrs content))
 
-(defn white-button [attrs & content]
+(defn white-button [attrs content]
   (color-button :color/white attrs content))
 
-(defn underline-button [attrs & content]
+(defn underline-button [attrs content]
   (color-button :color/white attrs
                 [:span.pxp3.border-bottom.border-teal.border-width-2 content]))
 
-(defn dark-gray-button [attrs & content]
+(defn dark-gray-button [attrs content]
   (color-button :color/dark-gray attrs content))
 
-(defn navy-button [attrs & content]
+(defn navy-button [attrs content]
   (color-button :color/navy attrs content))
 
-(defn aqua-button [attrs & content]
+(defn aqua-button [attrs content]
   (color-button :color/aqua attrs content))
 
-(defn facebook-button [attrs & content]
+(defn facebook-button [attrs content]
   (color-button :color/facebook attrs content))
 
-(defn ghost-button [attrs & content]
+(defn ghost-button [attrs content]
   (color-button :color/ghost attrs content))
 
-(defn light-ghost-button [attrs & content]
+(defn light-ghost-button [attrs content]
   (color-button :color/light-ghost attrs content))
 
-(defn teal-ghost-button [attrs & content]
+(defn teal-ghost-button [attrs content]
   (color-button :color/teal-ghost attrs content))
 
-(defn navy-ghost-button [attrs & content]
+(defn navy-ghost-button [attrs content]
   (color-button :color/navy-ghost attrs content))
 
 (defn submit-button
@@ -684,18 +688,15 @@
     :maximum maximum}))
 
 (defn shopping-bag [opts {:keys [quantity]}]
-  (component/build
-   (fn [_ _ _]
-     (component/create
-      [:a.relative.pointer.block (merge (utils/route-to events/navigate-cart)
-                                        opts)
-       ^:inline (svg/bag {:class (str "absolute overlay m-auto "
-                                      (if (pos? quantity) "fill-navy" "fill-black"))})
-       (when (pos? quantity)
-         [:div.absolute.overlay.m-auto {:style {:height "9px"}}
-          [:div.center.navy.h6.line-height-1 {:data-test (-> opts :data-test (str  "-populated"))} quantity]])]))
-   {:opts     opts
-    :quantity quantity}))
+  (component/html
+   [:a.relative.pointer.block (merge (utils/route-to events/navigate-cart)
+                                     opts)
+    ^:inline (svg/bag {:class (str "absolute overlay m-auto "
+                                   (if (pos? quantity) "fill-navy" "fill-black"))})
+    (when (pos? quantity)
+      [:div.absolute.overlay.m-auto {:style {:height "9px"}}
+       [:div.center.navy.h6.line-height-1 {:data-test (-> opts :data-test (str  "-populated"))}
+        (str quantity)]])]))
 
 (defn lqip
   "Generates a Low Quality Image Placeholder.
@@ -833,8 +834,9 @@
 (defn email-url [email]
   (str "mailto:" email))
 
-(defn email-link [tag attrs & body]
-  [tag (assoc attrs :href (email-url (last body))) (apply str body)])
+(defn email-link [attrs email-address]
+  (component/html
+   [:a (assoc attrs :href (email-url email-address)) email-address]))
 
 (defn phone-link [tag attrs & body]
   [tag (assoc attrs :href (phone-url (last body))) body])
@@ -861,8 +863,6 @@
       :allowFullScreen true}]]))
 
 (defmulti link (fn [link-type & _] link-type))
-(defmethod link :link/email [link-type tag attrs & body]
-  (apply email-link tag attrs body))
 (defmethod link :link/phone [link-type tag attrs & body]
   (apply phone-link tag attrs body))
 (defmethod link :link/sms [link-type tag attrs & body]
