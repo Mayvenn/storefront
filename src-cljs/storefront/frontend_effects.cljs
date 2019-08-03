@@ -139,16 +139,17 @@
 
 (defmethod effects/perform-effects events/ensure-sku-ids
   [_ _ {:keys [sku-ids]} _ app-state]
-  ;; like events/save-order, this code is in the hotpath and is called all the time
-  ;; some more care is taken here to reduce timing from ~20ms -> 2ms
-  (let [skus-db     (get-in app-state keypaths/v2-skus)
-        predicate   #(contains? skus-db %)
-        missing-ids (remove predicate sku-ids)]
-    (when (some (complement predicate) sku-ids)
-      (let [missing-ids (remove #(contains? skus-db %) sku-ids)]
-        (api/search-v2-products (get-in app-state keypaths/api-cache)
-                                {:selector/sku-ids missing-ids}
-                                (partial messages/handle-message events/api-success-v2-products))))))
+  (let [ids-in-db   (keys (get-in app-state keypaths/v2-skus))
+        missing-ids (seq (set/difference (set sku-ids)
+                                         (set ids-in-db)))
+
+        api-cache (get-in app-state keypaths/api-cache)
+        handler   (partial messages/handle-message
+                           events/api-success-v2-products)]
+    (when missing-ids
+      (api/search-v2-products api-cache
+                              {:selector/sku-ids missing-ids}
+                              handler))))
 
 (defmethod effects/perform-effects events/external-redirect-welcome [_ event args _ app-state]
   (set! (.-location js/window) (get-in app-state keypaths/welcome-url)))
@@ -288,11 +289,11 @@
       (when (get-in app-state keypaths/popup)
         (messages/handle-message events/popup-hide))
 
-      (quadpay/hide-modal)
+      (quadpay/hide-modal))
 
-      (exception-handler/refresh)
+    (exception-handler/refresh)
 
-      (popup/touch-email-capture-session app-state))))
+    (popup/touch-email-capture-session app-state)))
 
 (defmethod effects/perform-effects events/navigate-home [_ _ _ _ app-state]
   (api/fetch-cms-data))
@@ -690,13 +691,12 @@
                        (stylists/retrieve-parsed-affiliate-id app-state)))))
 
 (defmethod effects/perform-effects events/save-order
-  [_ _ {:keys [order]} previous-app-state app-state]
+  [_ _ {:keys [order]} _ app-state]
   (if (and order (orders/incomplete? order))
     (do
       (when-let [sku-ids (->> order orders/product-items (map :sku) seq)]
         (messages/handle-message events/ensure-sku-ids {:sku-ids sku-ids}))
-      (when-not (= order (get-in previous-app-state keypaths/order))
-        (cookie-jar/save-order (get-in app-state keypaths/cookie) order))
+      (cookie-jar/save-order (get-in app-state keypaths/cookie) order)
       (add-pending-promo-code app-state order))
     (messages/handle-message events/clear-order)))
 

@@ -581,13 +581,12 @@
                       width (str "-/resize/" (* 2 width) "x/"))
         default-url (cond-> (str "//ucarecdn.com/" image-id "/-/format/auto/-/quality/" default-quality "/")
                       width (str "-/resize/" width "x/"))]
-    (component/html
-     [:picture {:key image-id}
-      [:source {:src-set (str retina-url " 2x,"
-                              default-url " 1x")}]
-      [:img.block (-> img-attrs
-                      (dissoc :width :retina-quality :default-quality)
-                      (assoc :src default-url))]])))
+    [:picture {:key image-id}
+     [:source {:src-set (str retina-url " 2x,"
+                             default-url " 1x")}]
+     [:img.block (-> img-attrs
+                     (dissoc :width :retina-quality :default-quality)
+                     (assoc :src default-url))]]))
 
 (defn circle-ucare-img
   [{:keys [width] :as attrs :or {width "4em"}} image-id]
@@ -758,10 +757,14 @@
   (assert (contains? contentful-type->mime type)
           (str "[ui/source] Invalid contentful format:" type
                "; must be one of:" (keys contentful-type->mime)))
-  (component/html
-   [:source (merge attrs
-                   {:src-set (build-src-set url type src-set)
-                    :type    (contentful-type->mime type)})]))
+  (component/build
+   (fn [_ _ _]
+     (component/create
+      [:source (merge attrs
+                      {:src-set (build-src-set url type src-set)
+                       :type    (contentful-type->mime type)})]))
+   {:url   url
+    :attrs attrs}))
 
 (defn option
   [{:keys [key disabled? height on-click]} & content]
@@ -918,12 +921,12 @@
 
 (defn ^:private screen-aware-component [{:screen/keys [root-margin] :as data} owner {:keys [embed opts]}]
   #?(:clj (component/create [:div
-                             (embed
-                              (assoc data
-                                     :screen/server-render? true
-                                     :screen/seen? nil
-                                     :screen/visible? nil)
-                              opts)])
+                             (component/build embed
+                                                   (assoc data
+                                                          :screen/server-render? true
+                                                          :screen/seen? nil
+                                                          :screen/visible? nil)
+                                                   opts)])
      :cljs (reify
              om/IInitState
              (init-state [this]
@@ -960,12 +963,12 @@
              om/IRenderState
              (render-state [this {:keys [seen? visible?]}]
                (component/html [:div {:ref "trigger"}
-                                ^:inline (embed
-                                          (assoc data
-                                                 :screen/server-render? false
-                                                 :screen/seen? seen?
-                                                 :screen/visible? visible?)
-                                          opts)])))))
+                                (component/build embed
+                                                 (assoc data
+                                                        :screen/server-render? false
+                                                        :screen/seen? seen?
+                                                        :screen/visible? visible?)
+                                                 opts)])))))
 
 (defn screen-aware
   "A decorator around component/build that sets the screen information data to
@@ -994,12 +997,13 @@
     {:opts {:embed component
             :opts  opts}})))
 
-(defn ^:private defer-ucare-img-component [{:screen/keys [seen? server-render?] :keys [id attrs]} opts]
-  (let [placeholder-attrs (select-keys attrs [:class :width :height])]
-    (cond
-      server-render? (component/html [:noscript placeholder-attrs (ucare-img attrs id)])
-      seen? (ucare-img attrs id)
-      :else (component/html [:div placeholder-attrs]))))
+(defn ^:private defer-ucare-img-component [{:screen/keys [seen? server-render?] :keys [id attrs]} owner opts]
+  (component/create
+   (let [placeholder-attrs (select-keys attrs [:class :width :height])]
+     (cond
+       server-render? [:noscript placeholder-attrs (ucare-img attrs id)]
+       seen? (ucare-img attrs id)
+       :else [:div placeholder-attrs]))))
 
 (defn defer-ucare-img
   "A particular instance of screen-aware that only loads the image when the

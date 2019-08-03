@@ -30,52 +30,39 @@
                  (get-in app-state k/detailed-product-id)))
 
 (defn normalize-image [image]
-  ;; hot-path: index-skus is ~60ms if work is done naively here
-  (let [attrs   (:criteria/attributes image)
-        entries (vec attrs)
-        image!  (-> (transient image)
-                    (assoc! :id (str (:use-case image) "-" (:url image)))
-                    (assoc! :order (or (:order image)
-                                       (case (:image/of attrs)
-                                         "model"   1
-                                         "product" 2
-                                         "seo"     3
-                                         "catalog" 4
-                                         5)))
-                    (dissoc! :criteria/attributes :filename))
-        len (count entries)]
-
-    ;; (merge image' (:criteria/attributes images))
-    (loop [image! image!
-           i      0]
-      (if (< i len)
-        (let [e (.indexOf entries i)]
-          (if (not= -1 e)
-            (recur (assoc! image! (key e) (val e)) (inc i))
-            (persistent! image!)))
-        (persistent! image!)))))
+  (-> image
+      (assoc :id (str (:use-case image) "-" (:url image)))
+      (assoc :order (or (:order image)
+                        (case (:image/of (:criteria/attributes image))
+                          "model"   1
+                          "product" 2
+                          "seo"     3
+                          "catalog" 4
+                          5)))
+      (merge (:criteria/attributes image))
+      (dissoc :criteria/attributes :filename)))
 
 (defn ->skuer [value]
-  ;; hot-path: index-skus is ~60ms if work is done naively here
-  (let [value (-> (transient value)
-                  (assoc! :selector/electives (mapv keyword (:selector/electives value))
-                          :selector/essentials (mapv keyword (:selector/essentials value))
-                          :selector/images (mapv normalize-image (:selector/images value)))
-                  persistent!)
-        ks    (into (:selector/essentials value)
-                    (:selector/electives value))]
+  (let [value (-> value
+                  (update :selector/electives
+                          (partial map keyword))
+                  (update :selector/essentials
+                          (partial map keyword))
+                  (update :selector/images (partial mapv normalize-image)))
+        ks (concat (:selector/essentials value)
+                   (:selector/electives value))]
     (->> (select-keys value ks)
          (maps/map-values set)
          (merge value))))
 
 (defn index-skus [skus]
   (->> skus
-       (mapv ->skuer)
+       (map ->skuer)
        (maps/index-by :catalog/sku-id)))
 
 (defn index-products [products]
   (->> products
-       (mapv ->skuer)
+       (map ->skuer)
        (maps/index-by :catalog/product-id)))
 
 (defmethod transition-state events/api-success-v2-products

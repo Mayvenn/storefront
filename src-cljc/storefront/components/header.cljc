@@ -219,24 +219,24 @@
         [:div.h6.my2.flex.items-center
          (account-info signed-in user vouchers? store)
          [:div.pl2
-          ^:inline (ui/shopping-bag {:style     {:height (str ui/header-image-size "px")
-                                                 :width  "28px"}
-                                     :data-test "desktop-cart"}
-                                    cart)]]]
+          (ui/shopping-bag {:style     {:height (str ui/header-image-size "px")
+                                        :width  "28px"}
+                            :data-test "desktop-cart"}
+                           cart)]]]
        [:div.absolute.bottom-0.left-0.right-0
         [:div.mb4 (ui/clickable-logo {:event     events/navigate-home
                                       :data-test "desktop-header-logo"
                                       :height    "60px"})]
-        [:div.mb1 ^:inline (menu data)]]]]
+        [:div.mb1 (menu data)]]]]
      (shopping-flyout signed-in shopping)]
     [:div.hide-on-tb-dt.border-bottom.border-gray.flex.items-center
-     ^:inline hamburger
+     hamburger
      [:div.flex-auto.py3 (ui/clickable-logo {:event     events/navigate-home
                                              :data-test "header-logo"
                                              :height    "40px"})]
-     ^:inline (ui/shopping-bag {:style     {:height "70px" :width "70px"}
-                                :data-test "mobile-cart"}
-                               cart)]]))
+     (ui/shopping-bag {:style     {:height "70px" :width "70px"}
+                       :data-test "mobile-cart"}
+                      cart)]]))
 
 (defn minimal-component
   [logo-nav-event]
@@ -256,18 +256,17 @@
       (assoc-in [:cart :quantity]      (orders/product-quantity (get-in data keypaths/order)))))
 
 (defn built-component [data opts]
-  (component/html
-   [:header.stacking-context.z4
-    (when (get-in data keypaths/hide-header?)
-      {:class "hide-on-mb-tb"})
-    (let [nav-event              (get-in data keypaths/navigation-event)
-          freeinstall-subdomain? (= "freeinstall" (get-in data keypaths/store-slug))
-          info-page?             (routes/sub-page? [nav-event] [events/navigate-info])]
-      (if (nav/show-minimal-header? nav-event freeinstall-subdomain?)
-        (minimal-component (cond info-page?                   events/navigate-adventure-home
-                                 (not freeinstall-subdomain?) events/navigate-home
-                                 :else                        nil))
-        (component/build component (query data) nil)))]))
+  [:header.stacking-context.z4
+   (when (get-in data keypaths/hide-header?)
+     {:class "hide-on-mb-tb"})
+   (let [nav-event              (get-in data keypaths/navigation-event)
+         freeinstall-subdomain? (= "freeinstall" (get-in data keypaths/store-slug))
+         info-page?             (routes/sub-page? [nav-event] [events/navigate-info])]
+     (if (nav/show-minimal-header? nav-event freeinstall-subdomain?)
+       (minimal-component (cond info-page?                   events/navigate-adventure-home
+                                (not freeinstall-subdomain?) events/navigate-home
+                                :else                        nil))
+       (component/build component (query data) nil)))])
 
 (defn adventure-minimal-component [sign-in?]
   (component/html
@@ -285,12 +284,11 @@
     [:div.col-3]]))
 
 (defn adventure-built-component [data opts]
-  (component/html
-   [:header.stacking-context.z4
-    (when (get-in data keypaths/hide-header?)
-      {:class "hide-on-mb-tb"})
-    (let [navigation-event (get-in data keypaths/navigation-event)
-          sign-in?         (#{events/navigate-checkout-sign-in} navigation-event)]
-      (if (nav/show-minimal-header? navigation-event true)
-        (adventure-minimal-component sign-in?)
-        (component/build component (query data) nil)))]))
+  [:header.stacking-context.z4
+   (when (get-in data keypaths/hide-header?)
+     {:class "hide-on-mb-tb"})
+   (let [navigation-event (get-in data keypaths/navigation-event)
+         sign-in?         (#{events/navigate-checkout-sign-in} navigation-event)]
+     (if (nav/show-minimal-header? navigation-event true)
+         (adventure-minimal-component sign-in?)
+         (component/build component (query data) nil)))])

@@ -141,8 +141,8 @@
                                     :height "14px"
                                     :width  "14px"})]]]))
 
-(defn hero-image-component [{:screen/keys [server-render? seen?] :as data} opts]
-  (component/html
+(defn hero-image-component [{:screen/keys [server-render? seen?] :as data} owner opts]
+  (component/create
    [:div
     (when server-render?
       [:noscript (hero-image (merge data {:off-screen? false}))])
@@ -278,16 +278,17 @@
       [:div.center.pt3
        (cta-with-chevron data)]])))
 
-(defn ^:private ugc-image [{:screen/keys [seen? server-render?] :keys [image-url]} opts]
-  (ui/aspect-ratio
-   1 1
-   (cond
-     server-render? [:noscript
-                     [:img {:class "col-12"
-                            :src   image-url}]]
-     seen?          [:img {:class "col-12"
-                           :src   image-url}]
-     :else          [:div.col-12 " "])))
+(defn ^:private ugc-image [{:screen/keys [seen? server-render?] :keys [image-url]} owner opts]
+  (component/create
+   (ui/aspect-ratio
+    1 1
+    (cond
+      server-render? [:noscript
+                      [:img {:class "col-12"
+                             :src   image-url}]]
+      seen?          [:img {:class "col-12"
+                            :src   image-url}]
+      :else          [:div.col-12 " "]))))
 
 (defmethod layer-view :ugc
   [data owner opts]

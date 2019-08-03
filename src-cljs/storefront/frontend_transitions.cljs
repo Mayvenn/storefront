@@ -83,14 +83,10 @@
 (def max-nav-stack-depth 5)
 
 (defn push-nav-stack [app-state stack-keypath stack-item]
-  ;; We're using a javascript array here for a 8x performance improvement
-  ;; (events/navigation-save 40ms -> 5ms)
   (let [leaving-nav (get-in app-state keypaths/navigation-message)
         item        (merge {:navigation-message leaving-nav} stack-item)
-        nav-stack   (or (get-in app-state stack-keypath) (js/Array.))]
-    (doto nav-stack
-      (.unshift item)
-      (.slice 0 max-nav-stack-depth))))
+        nav-stack   (get-in app-state stack-keypath nil)]
+    (->> (conj nav-stack item) (take max-nav-stack-depth))))
 
 (defn pop-nav-stack [stack]
   (let [nav-stack (or stack (js/Array.))]
@@ -129,12 +125,10 @@
     (assoc-in keypaths/completed-order nil)))
 
 (defn prefill-guest-email-address [app-state]
-  (if (not-empty (get-in app-state keypaths/checkout-guest-email))
-    (assoc-in app-state keypaths/checkout-guest-email
-              (or
-               (get-in app-state keypaths/order-user-email)
-               (get-in app-state keypaths/captured-email)))
-    app-state))
+  (update-in app-state keypaths/checkout-guest-email
+             #(or (not-empty %1) %2 %3)
+             (get-in app-state keypaths/order-user-email)
+             (get-in app-state keypaths/captured-email)))
 
 (defn clear-recently-added-skus [app-state nav-event]
   (if (not= nav-event events/navigate-cart)
@@ -386,28 +380,23 @@
 
 (defmethod transition-state events/save-order [_ event {:keys [order]} app-state]
   (if (orders/incomplete? order)
-    ;; conditional update app-state because this is code is in the hotpath and is called all the time.
-    ;; this allows for more efficient updates
-    (let [previous-order           (get-in app-state keypaths/order)
-          newly-added-sku-ids      (if (= order previous-order)
-                                     (get-in app-state keypaths/cart-recently-added-skus)
-                                     (orders/newly-added-sku-ids previous-order order))
-          selected-shipping-method (merge (first (get-in app-state keypaths/shipping-methods))
-                                          (orders/shipping-item order))
-          freeinstall-just-added?  (if (= order previous-order)
-                                     (get-in app-state keypaths/cart-freeinstall-just-added?)
-                                     (freeinstall-new-to-order? previous-order order))
-          order-changed?           (not= order (get-in app-state order))
-          sku-ids-changed?         (not= newly-added-sku-ids (get-in app-state keypaths/cart-recently-added-skus))
-          shipping-method-changed? (not= selected-shipping-method (get-in app-state keypaths/checkout-selected-shipping-method))]
-      (cond-> app-state
-        order-changed?           (assoc-in keypaths/order order)
-        sku-ids-changed?         (assoc-in keypaths/cart-recently-added-skus newly-added-sku-ids)
-        :always                  (assoc-in keypaths/cart-freeinstall-just-added? freeinstall-just-added?)
-        order-changed?           (update-in keypaths/checkout-billing-address merge (:billing-address order))
-        order-changed?           (update-in keypaths/checkout-shipping-address merge (:shipping-address order))
-        shipping-method-changed? (assoc-in keypaths/checkout-selected-shipping-method selected-shipping-method)
-        :always                  prefill-guest-email-address))
+    (let [previous-order          (get-in app-state keypaths/order)
+          newly-added-sku-ids     (if (= order previous-order)
+                                    (get-in app-state keypaths/cart-recently-added-skus)
+                                    (orders/newly-added-sku-ids previous-order order))
+          freeinstall-just-added? (if (= order previous-order)
+                                    (get-in app-state keypaths/cart-freeinstall-just-added?)
+                                    (freeinstall-new-to-order? previous-order order))]
+      (-> app-state
+          (assoc-in keypaths/order order)
+          (assoc-in keypaths/cart-recently-added-skus newly-added-sku-ids)
+          (assoc-in keypaths/cart-freeinstall-just-added? freeinstall-just-added?)
+          (update-in keypaths/checkout-billing-address merge (:billing-address order))
+          (update-in keypaths/checkout-shipping-address merge (:shipping-address order))
+          (assoc-in keypaths/checkout-selected-shipping-method
+                    (merge (first (get-in app-state keypaths/shipping-methods))
+                           (orders/shipping-item order)))
+          prefill-guest-email-address))
     (assoc-in app-state keypaths/order nil)))
 
 (defmethod transition-state events/clear-order [_ event _ app-state]
