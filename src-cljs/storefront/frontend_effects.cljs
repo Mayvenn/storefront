@@ -230,63 +230,61 @@
                             true)))
 
 (defmethod effects/perform-effects events/navigate [_ event {:keys [navigate/caused-by query-params nav-stack-item]} prev-app-state app-state]
-  ;; events/navigate takes around ~30ms to run, so why not skip it if we're
-  ;; under module-load event (b/c we just called this not too long ago)
-  (when-not (= caused-by :module-load)
-    (let [freeinstall? (= "freeinstall" (get-in app-state keypaths/store-slug))]
+  (let [freeinstall? (= "freeinstall" (get-in app-state keypaths/store-slug))]
 
-      (messages/handle-message events/control-menu-collapse-all)
-      (messages/handle-message events/save-order {:order (get-in app-state keypaths/order)})
+    (messages/handle-message events/control-menu-collapse-all)
+    (messages/handle-message events/save-order {:order (get-in app-state keypaths/order)})
 
-      (cookie-jar/save-user (get-in app-state keypaths/cookie)
-                            (get-in app-state keypaths/user))
-      (refresh-account app-state)
-      (api/get-promotions (get-in app-state keypaths/api-cache)
-                          (or
-                           (first (get-in app-state keypaths/order-promotion-codes))
-                           (get-in app-state keypaths/pending-promo-code)))
+    (cookie-jar/save-user (get-in app-state keypaths/cookie)
+                          (get-in app-state keypaths/user))
+    (refresh-account app-state)
+    (api/get-promotions (get-in app-state keypaths/api-cache)
+                        (or
+                         (first (get-in app-state keypaths/order-promotion-codes))
+                         (get-in app-state keypaths/pending-promo-code)))
 
-      (seo/set-tags app-state)
-      (when (or (not= (get-in prev-app-state keypaths/navigation-event)
-                      (get-in app-state keypaths/navigation-event))
-                (not= (not-empty (dissoc (get-in prev-app-state keypaths/navigation-args) :query-params))
-                      (not-empty (dissoc (get-in app-state keypaths/navigation-args) :query-params))))
-        (let [restore-scroll-top (:final-scroll nav-stack-item 0)]
-          (if (zero? restore-scroll-top)
-            ;; We can always snap to 0, so just do it immediately. (HEAT is unhappy if the page is scrolling underneath it.)
-            (scroll/snap-to-top)
-            ;; Otherwise give the screen some time to render before trying to restore scroll
-            (messages/handle-later events/snap {:top restore-scroll-top} 100))))
+    (seo/set-tags app-state)
+    (when (or (not= (get-in prev-app-state keypaths/navigation-event)
+                    (get-in app-state keypaths/navigation-event))
+              (not= (not-empty (dissoc (get-in prev-app-state keypaths/navigation-args) :query-params))
+                    (not-empty (dissoc (get-in app-state keypaths/navigation-args) :query-params))))
+      (let [restore-scroll-top (:final-scroll nav-stack-item 0)]
+        (if (zero? restore-scroll-top)
+          ;; We can always snap to 0, so just do it immediately. (HEAT is unhappy if the page is scrolling underneath it.)
+          (scroll/snap-to-top)
+          ;; Otherwise give the screen some time to render before trying to restore scroll
+          (messages/handle-later events/snap {:top restore-scroll-top} 100))))
 
-      (when-not freeinstall?
-        (when-let [pending-promo-code (:sha query-params)]
-          (cookie-jar/save-pending-promo-code
-           (get-in app-state keypaths/cookie)
-           pending-promo-code)))
+    (when-not freeinstall?
+      (when-let [pending-promo-code (:sha query-params)]
+        (cookie-jar/save-pending-promo-code
+         (get-in app-state keypaths/cookie)
+         pending-promo-code)))
 
-      (when-let [affiliate-stylist-id (:affiliate_stylist_id query-params)]
-        (cookie-jar/save-affiliate-stylist-id (get-in app-state keypaths/cookie)
-                                              {:affiliate-stylist-id affiliate-stylist-id}))
+    (when-let [affiliate-stylist-id (:affiliate_stylist_id query-params)]
+      (cookie-jar/save-affiliate-stylist-id (get-in app-state keypaths/cookie)
+                                            {:affiliate-stylist-id affiliate-stylist-id}))
 
-      (messages/handle-message events/determine-and-show-popup)
+    (messages/handle-message events/determine-and-show-popup)
 
-      (let [utm-params (some-> query-params
-                               (select-keys [:utm_source :utm_medium :utm_campaign :utm_content :utm_term])
-                               (set/rename-keys {:utm_source   :storefront/utm-source
-                                                 :utm_medium   :storefront/utm-medium
-                                                 :utm_campaign :storefront/utm-campaign
-                                                 :utm_content  :storefront/utm-content
-                                                 :utm_term     :storefront/utm-term})
-                               (maps/deep-remove-nils))]
-        (when (seq utm-params)
-          (cookie-jar/save-utm-params
-           (get-in app-state keypaths/cookie)
-           utm-params)))
+    (let [utm-params (some-> query-params
+                             (select-keys [:utm_source :utm_medium :utm_campaign :utm_content :utm_term])
+                             (set/rename-keys {:utm_source   :storefront/utm-source
+                                               :utm_medium   :storefront/utm-medium
+                                               :utm_campaign :storefront/utm-campaign
+                                               :utm_content  :storefront/utm-content
+                                               :utm_term     :storefront/utm-term})
+                             (maps/deep-remove-nils))]
+      (when (seq utm-params)
+        (cookie-jar/save-utm-params
+         (get-in app-state keypaths/cookie)
+         utm-params)))
 
-      (when (and (get-in app-state keypaths/user-must-set-password)
-                 (not= event events/navigate-force-set-password))
-        (effects/redirect events/navigate-force-set-password))
+    (when (and (get-in app-state keypaths/user-must-set-password)
+               (not= event events/navigate-force-set-password))
+      (effects/redirect events/navigate-force-set-password))
 
+    (when-not (= caused-by :module-load)
       (when (get-in app-state keypaths/popup)
         (messages/handle-message events/popup-hide))
 
