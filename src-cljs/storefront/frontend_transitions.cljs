@@ -92,6 +92,13 @@
       (.unshift item)
       (.slice 0 max-nav-stack-depth))))
 
+(defn pop-nav-stack [stack]
+  (let [nav-stack (or stack (js/Array.))]
+    (if (pos? (.-length nav-stack))
+      (doto nav-stack
+        (.shift))
+      nav-stack)))
+
 (defmethod transition-state events/navigation-save [_ _ stack-item app-state]
   ;; Going to a new page; add an element to the undo stack, and discard the redo stack
   (let [nav-undo-stack (push-nav-stack app-state keypaths/navigation-undo-stack stack-item)]
@@ -103,7 +110,7 @@
   ;; Going to prior page; pop an element from the undo stack, push one onto the redo stack
   (let [nav-redo-stack (push-nav-stack app-state keypaths/navigation-redo-stack stack-item)]
     (-> app-state
-        (update-in keypaths/navigation-undo-stack rest)
+        (update-in keypaths/navigation-undo-stack pop-nav-stack)
         (assoc-in keypaths/navigation-redo-stack nav-redo-stack))))
 
 (defmethod transition-state events/navigation-redo [_ _ stack-item app-state]
@@ -111,7 +118,7 @@
   (let [nav-undo-stack (push-nav-stack app-state keypaths/navigation-undo-stack stack-item)]
     (-> app-state
         (assoc-in keypaths/navigation-undo-stack nav-undo-stack)
-        (update-in keypaths/navigation-redo-stack rest))))
+        (update-in keypaths/navigation-redo-stack pop-nav-stack))))
 
 (defmethod transition-state events/redirect [_ event _ app-state]
   (assoc-in app-state keypaths/redirecting? true))
