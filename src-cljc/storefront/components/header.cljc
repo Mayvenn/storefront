@@ -240,7 +240,7 @@
 
 (defn minimal-component
   [logo-nav-event]
-  (component/html
+  (component/create
    [:div.border-bottom.border-gray.flex.items-center
     [:div.flex-auto.py3
      (ui/clickable-logo
@@ -256,17 +256,18 @@
       (assoc-in [:cart :quantity]      (orders/product-quantity (get-in data keypaths/order)))))
 
 (defn built-component [data opts]
-  [:header.stacking-context.z4
-   (when (get-in data keypaths/hide-header?)
-     {:class "hide-on-mb-tb"})
-   (let [nav-event              (get-in data keypaths/navigation-event)
-         freeinstall-subdomain? (= "freeinstall" (get-in data keypaths/store-slug))
-         info-page?             (routes/sub-page? [nav-event] [events/navigate-info])]
-     (if (nav/show-minimal-header? nav-event freeinstall-subdomain?)
-       (minimal-component (cond info-page?                   events/navigate-adventure-home
-                                (not freeinstall-subdomain?) events/navigate-home
-                                :else                        nil))
-       (component/build component (query data) nil)))])
+  (component/html
+   [:header.stacking-context.z4
+    (when (get-in data keypaths/hide-header?)
+      {:class "hide-on-mb-tb"})
+    (let [nav-event              (get-in data keypaths/navigation-event)
+          freeinstall-subdomain? (= "freeinstall" (get-in data keypaths/store-slug))
+          info-page?             (routes/sub-page? [nav-event] [events/navigate-info])]
+      (if (nav/show-minimal-header? nav-event freeinstall-subdomain?)
+        (minimal-component (cond info-page?                   events/navigate-adventure-home
+                                 (not freeinstall-subdomain?) events/navigate-home
+                                 :else                        nil))
+        (component/build component (query data) nil)))]))
 
 (defn adventure-minimal-component [sign-in?]
   (component/html
@@ -284,11 +285,12 @@
     [:div.col-3]]))
 
 (defn adventure-built-component [data opts]
-  [:header.stacking-context.z4
-   (when (get-in data keypaths/hide-header?)
-     {:class "hide-on-mb-tb"})
-   (let [navigation-event (get-in data keypaths/navigation-event)
-         sign-in?         (#{events/navigate-checkout-sign-in} navigation-event)]
-     (if (nav/show-minimal-header? navigation-event true)
-         (adventure-minimal-component sign-in?)
-         (component/build component (query data) nil)))])
+  (component/html
+   [:header.stacking-context.z4
+    (when (get-in data keypaths/hide-header?)
+      {:class "hide-on-mb-tb"})
+    (let [navigation-event (get-in data keypaths/navigation-event)
+          sign-in?         (#{events/navigate-checkout-sign-in} navigation-event)]
+      (if (nav/show-minimal-header? navigation-event true)
+        (adventure-minimal-component sign-in?)
+        (component/build component (query data) nil)))]))
