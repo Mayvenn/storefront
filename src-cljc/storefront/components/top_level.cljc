@@ -140,10 +140,12 @@
           home/built-component)
     (assert (str "Expected main-component to return a component, but did not: " (pr-str nav-event)))))
 
-(defn sticky-promo-bar [data]
-  (when (or (experiments/sticky-promo-bar? data)
-            (experiments/sticky-promo-bar-everywhere? data))
-    (component/build promotion-banner/sticky-component (promotion-banner/query data) nil)))
+(defn sticky-promo-bar
+  [data]
+  (when-not (= events/navigate-category (get-in data keypaths/navigation-event))
+    (component/build promotion-banner/sticky-component
+                     (promotion-banner/query data)
+                     nil)))
 
 (defn main-layout [data nav-event]
   (component/html

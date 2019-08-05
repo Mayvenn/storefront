@@ -97,11 +97,13 @@
   "Promo code banner should only show on these nav-events
 
    Depending on experiments, this whitelist may be modified"
-  [category-pdp-promo-bar? no-promotions? promo-type]
+  [no-promotions? promo-type]
   (cond-> #{events/navigate-home
             events/navigate-cart
             events/navigate-shop-by-look
-            events/navigate-shop-by-look-details}
+            events/navigate-shop-by-look-details
+            events/navigate-category
+            events/navigate-product-details}
 
     ;; Incentivize checkout by reminding them they are saving
     (#{:v2-freeinstall/applied
@@ -112,11 +114,7 @@
           events/navigate-checkout-confirmation)
 
     (not no-promotions?)
-    (disj events/navigate-cart)
-
-    category-pdp-promo-bar?
-    (conj events/navigate-category
-          events/navigate-product-details)))
+    (disj events/navigate-cart)))
 
 (defn ^:private promo-type*
   "Determine what type of promotion behavior we are under
@@ -146,15 +144,10 @@
 
 (defn query
   [data]
-  (let [nav-whitelist-for
-        (partial nav-whitelist-for*
-                 (or (experiments/category-pdp-promo-bar? data)
-                     (experiments/sticky-promo-bar-everywhere? data))
-                 (orders/no-applied-promo? (get-in data
-                                                   keypaths/order)))
-
-        nav-event  (get-in data keypaths/navigation-event)
-        promo-type (promo-type* data)]
+  (let [no-applied-promo? (orders/no-applied-promo? (get-in data keypaths/order))
+        nav-whitelist-for (partial nav-whitelist-for* no-applied-promo?)
+        nav-event         (get-in data keypaths/navigation-event)
+        promo-type        (promo-type* data)]
     (cond-> {:promo (promotion-to-advertise data)}
       (contains? (nav-whitelist-for promo-type) nav-event)
       (assoc :promo/type promo-type))))
