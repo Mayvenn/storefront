@@ -30,29 +30,17 @@
                  (get-in app-state k/detailed-product-id)))
 
 (defn normalize-image [image]
-  ;; hot-path: index-skus is ~60ms if work is done naively here
-  (let [attrs  (:criteria/attributes image)
-        ks     (keys attrs)
-        image! (-> (transient image)
-                   (assoc! :id (str (:use-case image) "-" (:url image)))
-                   (assoc! :order (or (:order image)
-                                      (case (:image/of attrs)
-                                        "model"   1
-                                        "product" 2
-                                        "seo"     3
-                                        "catalog" 4
-                                        5)))
-                   (dissoc! :criteria/attributes :filename))]
-
-    ;; (merge image' (:criteria/attributes images))
-    (loop [image! image!
-           i 0]
-      (if (< i (count ks))
-        (let [k (.indexOf ks i)]
-          (if (not= -1 k)
-            (recur (assoc! image! k (k attrs)) (inc i))
-            (persistent! image!)))
-        (persistent! image!)))))
+  (-> image
+      (assoc :id (str (:use-case image) "-" (:url image)))
+      (assoc :order (or (:order image)
+                        (case (:image/of (:criteria/attributes image))
+                          "model"   1
+                          "product" 2
+                          "seo"     3
+                          "catalog" 4
+                          5)))
+      (merge (:criteria/attributes image))
+      (dissoc :criteria/attributes :filename)))
 
 (defn ->skuer [value]
   (let [value (-> value
