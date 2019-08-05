@@ -201,7 +201,7 @@
 (defn component
   [{:keys [header-data google-map-data gallery-modal-data] :as query} owner opts]
   (component/create
-   [:div.col-12.bg-white
+   [:div.col-12.bg-white.mb6
     [:div.white (header/built-component header-data nil)]
     [:div {:style {:height "75px"}}]
     [:div.px3 (component/build stylist-profile-card-component query nil)]
