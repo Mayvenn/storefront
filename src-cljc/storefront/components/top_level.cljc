@@ -147,36 +147,37 @@
     (component/build promotion-banner/sticky-component (promotion-banner/query data) nil)))
 
 (defn main-layout [data nav-event]
-  (let [silver-background? (#{events/navigate-voucher-redeem events/navigate-voucher-redeemed} nav-event)
-        v2-home?           (and (experiments/v2-homepage? data)
-                                (#{events/navigate-home} nav-event))]
-    [:div.flex.flex-column {:style {:min-height    "100vh"
-                                    :margin-bottom "-1px"}}
-     [:div {:key "popup"}
-      #?(:cljs (popup/built-component data nil))]
+  (component/html
+   (let [silver-background? (#{events/navigate-voucher-redeem events/navigate-voucher-redeemed} nav-event)
+         v2-home?           (and (experiments/v2-homepage? data)
+                                 (#{events/navigate-home} nav-event))]
+     [:div.flex.flex-column {:style {:min-height    "100vh"
+                                     :margin-bottom "-1px"}}
+      [:div {:key "popup"}
+       #?(:cljs (popup/built-component data nil))]
 
-     (header/built-component data nil)
+      ^:inline (header/built-component data nil)
 
-     (when-not v2-home?
-       [:div
-        (promotion-banner/built-component data nil)
-        (sticky-promo-bar data)])
+      (when-not v2-home?
+        [:div
+         ^:inline (promotion-banner/built-component data nil)
+         ^:inline (sticky-promo-bar data)])
 
-     [:div.relative.flex.flex-column.flex-auto
-      ;; Hack: one page does not have a white background, nor enough
-      ;; content to fill its inner div.
-      (when silver-background?
-        {:class "bg-light-silver"})
-      (flash/built-component data nil)
+      [:div.relative.flex.flex-column.flex-auto
+       ;; Hack: one page does not have a white background, nor enough
+       ;; content to fill its inner div.
+       (when silver-background?
+         {:class "bg-light-silver"})
+       ^:inline (flash/built-component data nil)
 
-      [:main.bg-white.flex-auto (merge
-                                 {:data-test (keypaths/->component-str nav-event)}
-                                 ;; Hack: See above hack
-                                 (when silver-background?
-                                   {:class "bg-light-silver"}))
-       ((main-component nav-event) data nil)]
+       [:main.bg-white.flex-auto (merge
+                                  {:data-test (keypaths/->component-str nav-event)}
+                                  ;; Hack: See above hack
+                                  (when silver-background?
+                                    {:class "bg-light-silver"}))
+        ((main-component nav-event) data nil)]
 
-      [:footer (footer/built-component data nil)]]]))
+       [:footer (footer/built-component data nil)]]])))
 
 (defn adventure-checkout-layout [data nav-event]
   [:div.flex.flex-column {:style {:min-height    "100vh"
@@ -195,7 +196,7 @@
     [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
      ((main-component nav-event) data nil)]
     [:footer
-     ^:inline (footer/built-component data nil)]]])
+     (footer/built-component data nil)]]])
 
 (defn top-level-component [data owner opts]
   (let [nav-event    (get-in data keypaths/navigation-event)

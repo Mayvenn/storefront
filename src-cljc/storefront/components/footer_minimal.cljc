@@ -12,13 +12,17 @@
       [:div.my1.medium.dark-gray "Need Help?"]
       [:div.dark-gray.light.h5
        [:span.hide-on-tb-dt
-        ^:inline (ui/link :link/phone :a.dark-gray {} call-number)]
+        (ui/link :link/phone :a.dark-gray {} call-number)]
        [:span.hide-on-mb
-        ^:inline (ui/link :link/phone :a.dark-gray {} call-number)]
+        (ui/link :link/phone :a.dark-gray {} call-number)]
        " | 8am-5pm PST M-F"]
       [:div.my1.silver.h6
-       ^:inline (footer-links/template {:minimal? true} nil)]]]]))
+       (component/build footer-links/component {:minimal? true} nil)]]]]))
 
 (defn query
   [data]
   {:call-number "+1 (888) 562-7952"})
+
+(defn built-component
+  [data opts]
+  (component/build component (query data) nil))
