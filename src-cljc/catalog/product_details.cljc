@@ -40,7 +40,7 @@
 
 (defn item-price [price]
   (when price
-    [:span {:item-prop "price"} (as-money-without-cents price)]))
+    [:span {:item-prop "price"} (as-money price)]))
 
 (defn page [wide-left wide-right-and-narrow]
   [:div.clearfix.mxn2
@@ -52,7 +52,7 @@
 (defn full-bleed-narrow [body]
   ;; The mxn2 pairs with the p2 of the container, to make the body full width
   ;; on mobile.
-  [:div.hide-on-tb-dt.mxn2.mt2 body])
+  [:div.hide-on-tb-dt.mxn2 body])
 
 (defn quantity-and-price-structure [quantity price]
   [:div
@@ -206,7 +206,7 @@
 (defn product-description
   [{:keys [copy/description copy/colors copy/weights copy/materials copy/summary hair/family] :as product}]
   (when (seq description)
-    [:div.border.border-dark-gray.mt7.p2.rounded
+    [:div.border.border-dark-gray.mt7.p2.rounded.mx3
      [:h2.h3.medium.navy.shout "Description"]
      [:div {:item-prop "description"}
       (when (or colors weights materials)
@@ -268,6 +268,26 @@
    {}
    (keys selections)))
 
+(defn reviews-molecule
+  [reviews opts]
+  [:div
+   (when (seq reviews)
+     [:div.h6
+      {:style {:min-height "18px"}}
+      (component/build review-component/reviews-summary-dropdown-experiment-component reviews opts)])])
+
+(defn price-per-item-molecule [price]
+  [:div
+   {:style {:text-align "right"}}
+   [:div.bold (item-price price)]
+   [:div.h8.dark-gray "per item"]])
+
+(defn title-molecule
+  [{:title/keys [id primary secondary]}]
+  [:div {:data-test id}
+   [:h3.black.medium.titleize primary]
+   [:div.medium secondary]])
+
 (defn component
   [{:keys [adding-to-bag?
            carousel-images
@@ -283,8 +303,7 @@
            loaded-quadpay?
            aladdin?
            ugc] :as data} owner opts]
-  (let [review?      (seq reviews)
-        unavailable? (not (seq selected-sku))
+  (let [unavailable? (not (seq selected-sku))
         sold-out?    (not (:inventory/in-stock? selected-sku))]
     (component/create
       (if-not product
@@ -296,36 +315,32 @@
           (when (:offset ugc)
             [:div.absolute.overlay.z4.overflow-auto
              (component/build ugc/popup-component ugc opts)])
-          [:div.p2
+          [:div
            (page
             [:div
              (carousel carousel-images product)
              [:div.hide-on-mb (component/build ugc/component ugc opts)]]
             [:div
              [:div
-              [:div.mx2
-               [:h1.h2.medium.titleize {:item-prop "name"}
-                (:copy/title product)]
-               (when review? (reviews-summary reviews opts))]
               [:meta {:item-prop "image"
                       :content   (:url (first carousel-images))}]
               (full-bleed-narrow (carousel carousel-images product))]
+             [:div.mt3.mx3
+              (title-molecule {:title/primary (:copy/title product)})
+              [:div.flex.justify-between
+               (reviews-molecule reviews opts)
+               (price-per-item-molecule (:sku/price selected-sku))]]
              [:div {:item-prop  "offers"
                     :item-scope ""
                     :item-type  "http://schema.org/Offer"}
               [:div.pb2 (component/build picker/component picker-data opts)]
-              (when (products/eligible-for-triple-bundle-discount? product)
-                [:div triple-bundle-upsell])
-              [:div.center.mb6.pt4
-               [:div.h6.navy "Price Per Item"]
-               [:div.medium (item-price (:sku/price selected-sku))]]
               [:div
                [:div.mt1.mx3
                 (cond
                   unavailable? unavailable-button
                   sold-out?    sold-out-button
                   :else        (add-to-bag-button adding-to-bag? selected-sku sku-quantity))]]
-              #?(:cljs [:div.mbn4
+              #?(:cljs [:div.mbn4.mx3
                          (component/build quadpay/component
                                           {:show?       loaded-quadpay?
                                            :order-total (:sku/price selected-sku)
@@ -342,7 +357,7 @@
          (when aladdin?
            [:div.py10.bg-transparent-teal.col-on-tb-dt.mt4
             (v2/get-a-free-install get-a-free-install-section-data)])
-         (when review?
+         (when (seq reviews)
            [:div.container.col-7-on-tb-dt.px2
             (component/build review-component/reviews-component reviews opts)])
          (when (and (nil? (:offset ugc))

@@ -40,7 +40,7 @@
 (defn as-money-cents-only [amount]
   (warn-if-nil amount)
   (let [amount (-> (or amount 0) as-cents (rem 100))]
-    (str/format "%02i" amount)))
+    (str/format "%02d" amount)))
 
 (defn as-money [amount]
   (warn-if-nil amount)
