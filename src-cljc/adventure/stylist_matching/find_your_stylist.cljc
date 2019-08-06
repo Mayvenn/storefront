@@ -136,7 +136,8 @@
               :background-repeat   "no-repeat"
               :background-size     "cover"}}
      [:div.pt8
-      (when flash-data [:div.pt8 (flash/built-component flash-data nil)])
+      (when flash-data
+        [:div.pt8 (flash/find-your-stylist-built-component flash-data nil)])
       [:div.h3.medium.mb2.col-8.mx-auto "Where do you want to get your hair done?"]
 
       [:div.col-12.mx-auto

@@ -40,10 +40,30 @@
           {:data-test "flash-success"}
           [:div.px2 success]))]))))
 
+(defn find-your-stylist-component [{:keys [success failure errors]} _ _]
+  (component/create
+   (when (or success failure (and (seq (:error-message errors)) (seq errors)))
+     [:div.container
+      [:div.m-auto.col-10-on-tb-dt
+       [:div.p2
+        (cond
+          (or failure (seq errors))
+          (error-box
+           {:data-test "flash-error"}
+           [:div.px2 (or failure (get errors :error-message))])
+
+          success
+          (success-box
+           {:data-test "flash-success"}
+           [:div.px2 success]))]]])))
+
 (defn query [data]
   {:success (get-in data keypaths/flash-now-success-message)
    :failure (get-in data keypaths/flash-now-failure-message)
    :errors  (get-in data keypaths/errors)})
+
+(defn find-your-stylist-built-component [data opts]
+  (component/build find-your-stylist-component (query data) opts))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
