@@ -23,7 +23,8 @@
        [:p.dark-gray.col-10.col-6-on-tb-dt.mx-auto (:description copy)]]
       [:div.flex.flex-wrap.mbn2.justify-center.justify-start-on-tb-dt.bg-light-gray.py2-on-tb-dt.px1-on-tb-dt
        (for [look looks]
-         (component/build component-ugc/social-image-card-component look {:opts {:copy copy}}))]])))
+         (component/build component-ugc/social-image-card-component look {:opts {:copy copy}
+                                                                          :key  (str (:id look))}))]])))
 
 (defn query [data]
   (let [navigation-event  (get-in data keypaths/navigation-event)

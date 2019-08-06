@@ -78,7 +78,8 @@
      ~content))
 
 (defmacro create [body]
-  `(create* (fn [] (html ~body))))
+  `(create* (fn [] (or (html ~body)
+                       (html [:div.component-empty])))))
 
 (defmacro build
   ([component] `(build* ~component nil nil))
