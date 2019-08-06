@@ -212,7 +212,7 @@
    [:div
     [:div.hide-on-mb.relative
      {:on-mouse-leave close-shopping}
-     [:div.relative.border-bottom.border-gray {:style {:height "150px"}}
+     [:div.relative.border-bottom.border-gray {:style {:height "180px"}}
       [:div.max-960.mx-auto
        [:div.left (store-info signed-in store)]
        [:div.right
