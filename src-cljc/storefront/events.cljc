@@ -447,8 +447,6 @@
 
 (defpath popup-show-to-adventure)
 (defpath control-to-adventure-popup-dismiss)
-(defpath control-to-adventure-browse-stylists)
-
 ;;SECTION v2
 
 ;;SECTION v2 popup
