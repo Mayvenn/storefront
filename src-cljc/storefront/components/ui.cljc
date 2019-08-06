@@ -17,11 +17,17 @@
 
 (defn narrow-container
   "A container that is 480px wide on desktop and tablet, but squishes on mobile"
-  [& content]
-  (component/html
-   [:div.container
-    [:div.m-auto.col-8-on-tb.col-6-on-dt
-     content]]))
+  ([content]
+   (component/html
+    [:div.container
+     [:div.m-auto.col-8-on-tb.col-6-on-dt
+      content]]))
+  ;; Please don't use this form anymore, exists for backwards compatibility reasons
+  ([main & content]
+   (narrow-container [:div main (map-indexed (fn [[i v]]
+                                               [:div {:key (str "i-" i)}
+                                                v])
+                                             content)])))
 
 (defn forward-caret [{:keys [height width]}]
   (svg/dropdown-arrow {:class  "stroke-black"
