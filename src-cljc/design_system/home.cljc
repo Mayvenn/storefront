@@ -1,6 +1,7 @@
 (ns design-system.home
   (:require [design-system.adventure :as adventure]
             [design-system.classic :as classic]
+            [design-system.ui :as common]
             [storefront.component :as component]
             #?@(:cljs
                 [[storefront.components.tabs :as tabs]
@@ -698,6 +699,7 @@
         (condp = (get-in data keypaths/navigation-event)
           events/navigate-design-system-adventure adventure/built-component
           events/navigate-design-system-classic   classic/built-component
+          events/navigate-design-system-ui        common/built-component
           built-component)]
     (component/build
      #(component/create
@@ -707,7 +709,9 @@
          " - "
          [:a.h2 (utils/route-to events/navigate-design-system-classic) "Classic"]
          " - "
-         [:a.h2 (utils/route-to events/navigate-design-system-adventure) "Adventure"]]
+         [:a.h2 (utils/route-to events/navigate-design-system-adventure) "Adventure"]
+         " - "
+         [:a.h2 (utils/route-to events/navigate-design-system-ui) "Common"]]
         (routed-component %1 %3)])
      data
      opts)))

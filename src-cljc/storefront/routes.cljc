@@ -38,7 +38,8 @@
    "/_style/progress"        (edn->bidi events/navigate-design-system-progress)
    "/_style/carousel"        (edn->bidi events/navigate-design-system-carousel)
    "/_style/classic"         (edn->bidi events/navigate-design-system-classic)
-   "/_style/adventure"       (edn->bidi events/navigate-design-system-adventure)})
+   "/_style/adventure"       (edn->bidi events/navigate-design-system-adventure)
+   "/_style/ui"              (edn->bidi events/navigate-design-system-ui)})
 
 (def freeinstall? (partial contains? #{"freeinstall"}))
 

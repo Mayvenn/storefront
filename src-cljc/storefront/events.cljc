@@ -74,6 +74,7 @@
 (defpath navigate-design-system-carousel)
 (defpath navigate-design-system-classic)
 (defpath navigate-design-system-adventure)
+(defpath navigate-design-system-ui)
 
 (defpath navigate-order-complete)
 (defpath navigate-need-match-order-complete)
