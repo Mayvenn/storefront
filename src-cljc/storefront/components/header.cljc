@@ -240,7 +240,7 @@
 
 (defn minimal-component
   [logo-nav-event]
-  (component/create
+  (component/html
    [:div.border-bottom.border-gray.flex.items-center
     [:div.flex-auto.py3
      (ui/clickable-logo
