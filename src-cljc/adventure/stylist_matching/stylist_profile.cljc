@@ -121,15 +121,8 @@
                                                                       (when (:licensed stylist)
                                                                         "licensed")]))}
                  (when (-> stylist :service-menu :specialty-sew-in-leave-out)
-                   (let [specialties (:service-menu stylist)]
-                     {:section-details/title   "Specialties"
-                      :section-details/content [:div.mt1.col-12.col.regular
-                                                [:div.col-4.col
-                                                 (checks-or-x "Leave Out" (:specialty-sew-in-leave-out specialties))
-                                                 (checks-or-x "360" (:specialty-sew-in-360-frontal specialties))]
-                                                [:div.col-4.col
-                                                 (checks-or-x "Closure" (:specialty-sew-in-closure specialties))
-                                                 (checks-or-x "Frontal" (:specialty-sew-in-frontal specialties))]]}))]
+                   {:section-details/title   "Specialties"
+                    :section-details/content (:service-menu stylist)})]
 
        :gallery-modal-data {:ucare-img-urls                 (get-in data keypaths/adventure-stylist-gallery-image-urls) ;; empty hides the modal
                             :initially-selected-image-index (get-in data keypaths/adventure-stylist-gallery-image-index)
@@ -196,7 +189,15 @@
   [:div.medium.h5.py3
    title
    [:div.mt1.h6.regular
-    content]] )
+    (if (string? content)
+      content
+      [:div.mt1.col-12.col.regular
+       [:div.col-4.col
+        (checks-or-x "Leave Out" (:specialty-sew-in-leave-out content))
+        (checks-or-x "360" (:specialty-sew-in-360-frontal content))]
+       [:div.col-4.col
+        (checks-or-x "Closure" (:specialty-sew-in-closure content))
+        (checks-or-x "Frontal" (:specialty-sew-in-frontal content))]])]] )
 
 (defn component
   [{:keys [header-data google-map-data gallery-modal-data] :as query} owner opts]

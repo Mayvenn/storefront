@@ -46,15 +46,11 @@
                                                                          :initially-selected-image-index 0}]}]
                          :details                    [{:section-details/title   "Detail A"
                                                        :section-details/content "x, y, z"}
-                                                      {:section-details/title "Specialties"
-                                                       :section-details/content
-                                                       [:div.mt1.col-12.col.regular
-                                                        [:div.col-4.col
-                                                         (stylist-profile/checks-or-x "A" false)
-                                                         (stylist-profile/checks-or-x "B" true)]
-                                                        [:div.col-4.col
-                                                         (stylist-profile/checks-or-x "C" true)
-                                                         (stylist-profile/checks-or-x "D" false)]]}]}}])
+                                                      {:section-details/title   "Specialties"
+                                                       :section-details/content {:specialty-sew-in-leave-out   true
+                                                                                 :specialty-sew-in-360-frontal false
+                                                                                 :specialty-sew-in-closure     true
+                                                                                 :specialty-sew-in-frontal     false}}]}}])
 
 (defn component
   [data owner opts]
