@@ -106,7 +106,7 @@
 (defn button
   [{:keys [disabled? disabled-class spinning? navigation-message href]
     :as   opts}
-   & content]
+   content]
   (let [shref   (str href)
         attrs   (cond-> opts
                   :always                                                   (dissoc :spinning? :disabled? :disabled-class :navigation-message)
@@ -117,8 +117,8 @@
                   spinning?                                                 (assoc :data-test-spinning "yes")
                   disabled?                                                 (update :class str (str " btn-disabled " (or disabled-class "is-disabled"))))
         content (if spinning? [spinner] content)]
-    (into [:a (merge {:href "#"} attrs)]
-          content)))
+    [:a (merge {:href "#"} attrs)
+     content]))
 
 (defn ^:private button-colors [color-kw]
   (let [color (color-kw {:color/teal        "btn-primary bg-teal white"
@@ -187,7 +187,7 @@
 (defn teal-ghost-button [attrs & content]
   (color-button :color/teal-ghost attrs content))
 
-(defn navy-ghost-button [attrs & content]
+(defn navy-ghost-button [attrs content]
   (color-button :color/navy-ghost attrs content))
 
 (defn submit-button
