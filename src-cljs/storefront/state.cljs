@@ -148,8 +148,6 @@
           (cookie-jar/retrieve-email-capture-session cookie)
           :phone-capture-session
           (cookie-jar/get-phone-capture-session cookie)
-          :dismissed-to-adventure
-          (cookie-jar/get-dismissed-to-adventure cookie)
           :dismissed-free-install
           (cookie-jar/get-dismissed-free-install cookie)
           :sign-in                      {:email    ""

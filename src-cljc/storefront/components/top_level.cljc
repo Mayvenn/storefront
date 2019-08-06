@@ -12,8 +12,7 @@
                        adventure.components.program-details-popup
                        storefront.components.email-capture
                        storefront.components.share-your-cart
-                       storefront.components.v2-homepage-popup
-                       storefront.components.to-adventure-popup])
+                       storefront.components.v2-homepage-popup])
             #?@(:clj
                 [[design-system.home :as design-system]])
             adventure.home

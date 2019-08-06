@@ -47,7 +47,6 @@
         freeinstall-store?          (= "freeinstall" (get-in app-state keypaths/store-slug))
         seen-email-capture?         (email-capture-session app-state)
         seen-freeinstall-offer?     (get-in app-state keypaths/dismissed-free-install)
-        seen-to-adventure-modal?    (get-in app-state keypaths/dismissed-to-adventure)
         signed-in?                  (get-in app-state keypaths/user-id)
         classic-experience?         (not v2-experience?)
         on-shop?                    (= "shop" (get-in app-state keypaths/store-slug))
@@ -61,19 +60,11 @@
                                           (not on-shop?)
                                           (and (not on-homepage?)
                                                (= 1 nav-history-length))))
-        to-adventure-showable?      (and (not seen-to-adventure-modal?)
-                                         on-shop?
-                                         (not on-homepage?)
-                                         (zero? nav-history-length)
-                                         on-non-minimal-footer-page?)
         is-design-system?           (= events/navigate-design-system
                                        (take (count events/navigate-design-system) navigation-event))]
     (cond
       is-design-system?
       nil ;; never show popup for style guide
-
-      to-adventure-showable?
-      (messages/handle-message events/popup-show-to-adventure)
 
       (and email-capture-showable?
            (contains? #{events/navigate-adventure-match-stylist}

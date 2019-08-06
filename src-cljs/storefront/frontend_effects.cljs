@@ -129,7 +129,6 @@
    :adv-email-capture      events/control-email-captured-dismiss
    :adventure-free-install events/control-adventure-free-install-dismiss
    :v2-homepage            events/control-v2-homepage-popup-dismiss
-   :to-adventure           events/control-to-adventure-popup-dismiss
    :share-cart             events/control-popup-hide
    :design-system          events/control-design-system-popup-dismiss})
 
