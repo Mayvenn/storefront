@@ -817,9 +817,6 @@
     :handler #(messages/handle-message events/api-success-get-order %)
     :error-handler (constantly nil)}))
 
-(defn api-failure? [event]
-  (= events/api-failure (subvec event 0 2)))
-
 ;; HACK: Move to backend
 (defn alter-shop-freeinstall-promotion-error
   [shop? promo-code error-response]
