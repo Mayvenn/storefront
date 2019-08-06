@@ -532,6 +532,7 @@
 
 (defpath api-success-fetch-matched-stylist)
 (defpath api-success-fetch-stylist-details)
+(defpath api-failure-fetch-stylist-details)
 (defpath adventure-stylist-search-results-displayed)
 (defpath adventure-stylist-search-results-post-purchase-displayed)
 

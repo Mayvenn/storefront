@@ -1027,5 +1027,6 @@
    GET
    "/v1/stylist/matched-by-id"
    request-keys/fetch-matched-stylist
-   {:params  {:stylist-id stylist-id}
-    :handler #(messages/handle-message events/api-success-fetch-stylist-details %)}))
+   {:params        {:stylist-id stylist-id}
+    :handler       #(messages/handle-message events/api-success-fetch-stylist-details %)
+    :error-handler #(messages/handle-message events/api-failure-fetch-stylist-details %)}))

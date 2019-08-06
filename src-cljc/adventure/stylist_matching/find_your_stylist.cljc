@@ -14,6 +14,7 @@
    [storefront.keypaths :as storefront.keypaths]
    [storefront.component :as component]
    [storefront.events :as events]
+   [storefront.components.flash :as flash]
    [storefront.components.ui :as ui]
    [storefront.transitions :as transitions]
    [storefront.trackings :as trackings]
@@ -29,7 +30,9 @@
            (google-maps/attach "geocode" address-elem address-keypath)))
 
 (defn ^:private query [data]
-  (let [current-step 2]
+  (let [current-step 2
+        flash-data   (when (get-in data storefront.keypaths/flash-now-failure-message)
+                       {:ui {:flash (get-in data storefront.keypaths/flash)}})]
     {:background-image      "https://ucarecdn.com/54f294be-7d57-49ba-87ce-c73394231f3c/-/format/auto/aladdinMatchingOverlayImagePurpleGR203Lm3x.png"
      :stylist-match-address (get-in data keypaths/adventure-stylist-match-address)
      :google-maps-loaded?   (get-in data storefront.keypaths/loaded-google-maps)
@@ -38,6 +41,7 @@
                              :title                   [:div.medium "Find Your Stylist"]
                              :subtitle                (str "Step " current-step " of 3")
                              :back-navigation-message [events/navigate-adventure-match-stylist]}
+     :flash-data            flash-data
      :selected-location     (get-in data keypaths/adventure-stylist-match-location)}))
 
 #?(:cljs
@@ -121,7 +125,7 @@
          (sablono/html (places-component-inner data))))))
 
 (defn component
-  [{:keys [header-data current-step google-maps-loaded? background-image stylist-match-address selected-location]} owner _]
+  [{:keys [header-data flash-data current-step google-maps-loaded? background-image stylist-match-address selected-location]} owner _]
   (component/create
    [:div.bg-lavender.white.center.flex.flex-auto.flex-column
     (header/built-component header-data nil)
@@ -132,6 +136,7 @@
               :background-repeat   "no-repeat"
               :background-size     "cover"}}
      [:div.pt8
+      (when flash-data [:div.pt8 (flash/built-component flash-data nil)])
       [:div.h3.medium.mb2.col-8.mx-auto "Where do you want to get your hair done?"]
 
       [:div.col-12.mx-auto
