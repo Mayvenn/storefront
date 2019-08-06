@@ -149,7 +149,7 @@
                 [:div.mr1 "Pay with "]
                 [:div.mt1 {:style {:width "85px" :height "17px"}}
                  ^:inline (svg/quadpay-logo)]]
-               [:p.h6 "4 interest-free payments with QuadPay. "
+               [:div.h6 "4 interest-free payments with QuadPay. "
                 [:a.blue.block {:href "#"
                                 :on-click (fn [e]
                                             (.preventDefault e)
