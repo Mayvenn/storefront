@@ -93,6 +93,7 @@
                                            :checkout      {:output-to  "target/release/js/out/checkout.js"
                                                            :entries    #{checkout.core}
                                                            :depends-on #{:catalog}}}
+                        :closure-defines  {goog.DEBUG false}
                         :infer-externs    false
                         :static-fns       true
                         :fn-invoke-direct true
