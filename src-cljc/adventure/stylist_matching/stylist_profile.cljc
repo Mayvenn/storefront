@@ -136,25 +136,25 @@
 
 (defn carousel-molecule
   [{:carousel/keys [items]}]
- (component/build carousel/component
-                        {:slides   (map (fn [{:keys [target-message
-                                                     key
-                                                     ucare-img-url]}]
-                                          [:div.px1
-                                           {:on-click #(apply messages/handle-message target-message)
-                                            :key key}
-                                           (ui/aspect-ratio
-                                            1 1
-                                            [:img {:src   (str ucare-img-url "-/scale_crop/204x204/-/format/auto/")
-                                                   :class "rounded col-12"}])])
-                                        items)
-                         :settings {:swipe        true
-                                    :initialSlide 0
-                                    :arrows       true
-                                    :dots         false
-                                    :slidesToShow 3
-                                    :infinite     true}}
-                        {}))
+  (component/build carousel/component
+                   {:slides   (map (fn [{:keys [target-message
+                                                key
+                                                ucare-img-url]}]
+                                     [:div.px1
+                                      {:on-click #(apply messages/handle-message target-message)
+                                       :key key}
+                                      (ui/aspect-ratio
+                                       1 1
+                                       [:img {:src   (str ucare-img-url "-/scale_crop/204x204/-/format/auto/")
+                                              :class "rounded col-12"}])])
+                                   items)
+                    :settings {:swipe        true
+                               :initialSlide 0
+                               :arrows       true
+                               :dots         false
+                               :slidesToShow 3
+                               :infinite     true}}
+                   {}))
 
 (defn gallery-modal-component
   [{:keys [ucare-img-urls initially-selected-image-index close-button] :as gallery-modal} _ _]
@@ -180,9 +180,9 @@
 (defn cta-molecule
   [{:cta/keys [id label target]}]
   (when (and id label target)
-   (ui/teal-button
-    (merge {:data-test id} (apply utils/fake-href target))
-    [:div.flex.items-center.justify-center.inherit-color label]) ))
+    (ui/teal-button
+     (merge {:data-test id} (apply utils/fake-href target))
+     [:div.flex.items-center.justify-center.inherit-color label]) ))
 
 (defn section-details-molecule
   [{:section-details/keys [title content]}]
