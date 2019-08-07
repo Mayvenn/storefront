@@ -48,7 +48,8 @@
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.routes :as routes]))
+            [storefront.routes :as routes]
+            [checkout.consolidated-cart :as consolidated-cart]))
 
 (defn main-component [nav-event]
   (doto (condp = nav-event
@@ -201,7 +202,8 @@
 
 (defn top-level-component [data owner opts]
   (let [nav-event    (get-in data keypaths/navigation-event)
-        freeinstall? (= "freeinstall" (get-in data keypaths/store-slug))]
+        freeinstall? (= "freeinstall" (get-in data keypaths/store-slug))
+        shop?        (= "shop" (get-in data keypaths/store-slug))]
     (component/create
      (cond
        (routes/sub-page? [nav-event] [events/navigate-design-system])
@@ -217,9 +219,10 @@
        (slideout-nav/built-component data nil)
 
        (routes/sub-page? [nav-event] [events/navigate-cart])
-       (if freeinstall?
-         (adventure-cart/layout data nav-event)
-         (cart/layout data nav-event))
+       (cond
+         (and (experiments/consolidated-cart? data) shop?) (consolidated-cart/layout data nav-event)
+         freeinstall?                                      (adventure-cart/layout data nav-event)
+         :else                                             (cart/layout data nav-event))
 
        (and freeinstall?
             (or (routes/sub-page? [nav-event] [events/navigate-checkout])

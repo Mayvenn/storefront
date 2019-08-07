@@ -412,9 +412,7 @@
    :full-cart       (full-cart-query data)})
 
 (defn built-component [data opts]
-  (if (experiments/consolidated-cart? data)
-    (consolidated-cart/built-component data opts)
-    (component/build component (query data) opts)))
+  (component/build component (query data) opts))
 
 (defn layout [data nav-event]
   [:div.flex.flex-column {:style {:min-height    "100vh"
