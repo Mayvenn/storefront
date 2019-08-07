@@ -19,6 +19,7 @@
             [catalog.product-details-ugc :as ugc]
             [catalog.products :as products]
             [catalog.selector.sku :as sku-selector]
+            [catalog.ui.molecules :as catalog.M]
             [clojure.string :as string]
             [spice.date :as date]
             [spice.selector :as selector]
@@ -262,6 +263,16 @@
    {}
    (keys selections)))
 
+(defn organism
+  "Product Details organism"
+  [data _ _]
+  (component/create
+   [:div.mt3.mx3
+    (catalog.M/title data)
+    [:div.flex.justify-between
+     (catalog.M/yotpo-reviews-summary data)
+     (catalog.M/price-block data)]]))
+
 (defn component
   [{:keys [header-data
            adding-to-bag?
@@ -276,16 +287,15 @@
            options
            picker-data
            loaded-quadpay?
-           ugc]} owner opts]
-  (let [review?      (seq reviews)
-        unavailable? (not (seq selected-sku))
+           ugc] :as data} owner opts]
+  (let [unavailable? (not (seq selected-sku))
         sold-out?    (not (:inventory/in-stock? selected-sku))]
     (component/create
      [:div.bg-too-light-teal.white.flex-auto.self-stretch
       (when header-data
         (header/built-component header-data nil))
       [:div.flex.items-center.medium.bg-light-lavender {:style {:height "75px"}}]
-      [:div.bg-white.black
+      [:div.bg-white.black.m0
        (if-not product
          [:div.flex.h2.p1.m1.items-center.justify-center
           {:style {:height "25em"}}
@@ -296,28 +306,24 @@
            (when (:offset ugc)
              [:div.absolute.overlay.z4.overflow-auto
               (component/build ugc/popup-component ugc opts)])
-           [:div.p2
+           [:div
             (page
              [:div
               (carousel carousel-images product)]
              [:div
               [:div
-               [:div.mx2
-                [:h1.h2.medium.titleize {:item-prop "name"}
-                 (:copy/title product)]
-                (when review? (reviews-summary reviews opts))]
                [:meta {:item-prop "image"
                        :content   (:url (first carousel-images))}]
                (full-bleed-narrow (carousel carousel-images product))]
+
+              (component/build organism data)
+
               [:div {:item-prop  "offers"
                      :item-scope ""
                      :item-type  "http://schema.org/Offer"}
                [:div.pb2 (component/build picker/component picker-data opts)]
                (when (products/eligible-for-triple-bundle-discount? product)
                  [:div triple-bundle-upsell])
-               [:div.center.mb6.pt4
-                [:div.h6.navy "Price Per Item"]
-                [:div.medium (item-price (:sku/price selected-sku))]]
                [:div
                 [:div.mt1.mx3
                  (cond
@@ -338,7 +344,7 @@
                  shipping-and-guarantee)]
               (product-description product)
               [:div.mxn2.mb3 (component/build ugc/component ugc opts)]])]]
-          (when review?
+          (when (seq reviews)
             [:div.container.px2
              (component/build review-component/reviews-component reviews opts)])
           (when (and (nil? (:offset ugc))
@@ -444,30 +450,37 @@
                                (map (comp v2/get-ucare-id-from-url :resizable-url)))
 
         stylist-selected? (get-in data adventure.keypaths/adventure-servicing-stylist)
-        current-step      (if stylist-selected? 3 2)]
-    {:header-data                     {:progress                progress/product-details
-                                       :title                   [:div.medium "The New You"]
-                                       :subtitle                (str "Step " current-step " of 3")
-                                       :back-navigation-message [events/navigate-adventure-match-stylist]}
-     :reviews                         (review-component/query data)
-     :ugc                             ugc
-     :adding-to-bag?                  (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
-     :sku-quantity                    (get-in data keypaths/browse-sku-quantity 1)
-     :options                         options
-     :product                         product
-     :selections                      selections
-     :selected-options                (get-selected-options selections options)
-     :selected-sku                    selected-sku
-     :facets                          facets
-     :selected-picker                 (get-in data catalog.keypaths/detailed-product-selected-picker)
-     :picker-data                     (picker/query data)
-     :carousel-images                 carousel-images
-     :get-a-free-install-section-data {:store                 store
-                                       :gallery-ucare-ids     gallery-ucare-ids
-                                       :stylist-portrait      (:portrait store)
-                                       :stylist-name          (:store-nickname store)
-                                       :stylist-gallery-open? (get-in data keypaths/carousel-stylist-gallery-open?)}
-     :loaded-quadpay?                 (get-in data keypaths/loaded-quadpay)}))
+        current-step      (if stylist-selected? 3 2)
+        review-data       (review-component/query data)]
+    {:header-data                        {:progress                progress/product-details
+                                          :title                   [:div.medium "The New You"]
+                                          :subtitle                (str "Step " current-step " of 3")
+                                          :back-navigation-message [events/navigate-adventure-match-stylist]}
+     :reviews                            review-data
+     :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
+     :yotpo-reviews-summary/product-id   (some-> review-data :yotpo-data-attributes :data-product-id)
+     :yotpo-reviews-summary/data-url     (some-> review-data :yotpo-data-attributes :data-url)
+     :title/primary                      (:copy/title product)
+     :price-block/primary                (:sku/price selected-sku)
+     :price-block/secondary              "per item"
+     :ugc                                ugc
+     :adding-to-bag?                     (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
+     :sku-quantity                       (get-in data keypaths/browse-sku-quantity 1)
+     :options                            options
+     :product                            product
+     :selections                         selections
+     :selected-options                   (get-selected-options selections options)
+     :selected-sku                       selected-sku
+     :facets                             facets
+     :selected-picker                    (get-in data catalog.keypaths/detailed-product-selected-picker)
+     :picker-data                        (picker/query data)
+     :carousel-images                    carousel-images
+     :get-a-free-install-section-data    {:store                 store
+                                          :gallery-ucare-ids     gallery-ucare-ids
+                                          :stylist-portrait      (:portrait store)
+                                          :stylist-name          (:store-nickname store)
+                                          :stylist-gallery-open? (get-in data keypaths/carousel-stylist-gallery-open?)}
+     :loaded-quadpay?                    (get-in data keypaths/loaded-quadpay)}))
 
 (defn ^:export built-component [data opts]
   (component/build component (query data) opts))

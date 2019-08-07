@@ -16,6 +16,7 @@
             [catalog.product-details-ugc :as ugc]
             [catalog.products :as products]
             [catalog.selector.sku :as sku-selector]
+            [catalog.ui.molecules :as catalog.M]
             [clojure.string :as string]
             [spice.date :as date]
             [spice.selector :as selector]
@@ -268,41 +269,15 @@
    {}
    (keys selections)))
 
-(defn reviews-molecule
-  [{:yotpo-reviews-summary/keys [product-title product-id data-url]}]
-  [:div
-   (when product-id
-     [:div.h6
-      {:style {:min-height "18px"}}
-      (component/build review-component/reviews-summary-dropdown-experiment-component
-                       {:yotpo-data-attributes
-                        {:data-name       product-title
-                         :data-product-id product-id
-                         :data-url        data-url}})])])
-
-(defn price-block-molecule
-  [{:price-block/keys [primary secondary]}]
-  [:div.right-align
-   (when-let [primary-formatted (item-price primary)]
-     [:div
-      [:div.bold primary-formatted]
-      [:div.h8.dark-gray secondary]])])
-
-(defn title-molecule
-  [{:title/keys [id primary secondary]}]
-  [:div {:data-test id}
-   [:h3.black.medium.titleize primary]
-   [:div.medium secondary]])
-
 (defn organism
   "Product Details organism"
   [data _ _]
   (component/create
    [:div.mt3.mx3
-    (title-molecule data)
+    (catalog.M/title data)
     [:div.flex.justify-between
-     (reviews-molecule data)
-     (price-block-molecule data)]]))
+     (catalog.M/yotpo-reviews-summary data)
+     (catalog.M/price-block data)]]))
 
 (defn component
   [{:keys [adding-to-bag?
