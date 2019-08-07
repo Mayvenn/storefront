@@ -28,6 +28,8 @@
    [storefront.components.flash :as flash]
    [storefront.components.footer :as storefront.footer]
    [storefront.components.money-formatters :as mf]
+   [ui.promo-banner :as promo-banner]
+   storefront.ui.promo-banner
    [storefront.components.promotion-banner :as promotion-banner]
    [storefront.components.svg :as svg]
    [storefront.components.ui :as ui]
@@ -156,7 +158,8 @@
                               cart-summary]} owner _]
   (component/create
    [:div.container.p2
-    (component/build promotion-banner/sticky-component promotion-banner nil)
+    #_(component/build promotion-banner/sticky-component promotion-banner nil)
+    (promo-banner/built-organism (assoc promotion-banner :promo-banner/sticky? true) nil)
 
     (component/build call-out/component call-out nil)
 
@@ -364,7 +367,7 @@
      :line-items                 line-items
      :skus                       (get-in data keypaths/v2-skus)
      :products                   products
-     :promotion-banner           (promotion-banner/query data)
+     :promotion-banner           (storefront.ui.promo-banner/query data)
      :call-out                   (call-out/query data)
      :updating?                  (update-pending? data)
      :redirecting-to-paypal?     (get-in data keypaths/cart-paypal-redirect)
@@ -413,18 +416,19 @@
 (defn built-component [data opts]
   (component/build component (query data) opts))
 
-(defn layout [data nav-event]
+(defn layout [app-state nav-event]
   [:div.flex.flex-column {:style {:min-height    "100vh"
                                   :margin-bottom "-1px"}}
-   #?(:cljs (popup/built-component data nil))
+   #?(:cljs (popup/built-component app-state nil))
 
-   (header/built-component data nil)
-   (promotion-banner/built-component data nil)
+   (header/built-component app-state nil)
+   #_(promotion-banner/built-component app-state nil)
+   (promo-banner/built-organism (assoc app-state :promo-banner/static? true) nil)
    [:div.relative.flex.flex-column.flex-auto
-    (flash/built-component data nil)
+    (flash/built-component app-state nil)
 
     [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
-     (built-component data nil)]
+     (built-component app-state nil)]
 
     [:footer
-     (storefront.footer/built-component data nil)]]])
+     (storefront.footer/built-component app-state nil)]]])

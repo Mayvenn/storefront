@@ -148,6 +148,9 @@
         nav-whitelist-for (partial nav-whitelist-for* no-applied-promo?)
         nav-event         (get-in data keypaths/navigation-event)
         promo-type        (promo-type* data)]
+    (prn no-applied-promo?)
+    (prn nav-event)
+    (prn promo-type)
     (cond-> {:promo (promotion-to-advertise data)}
       (contains? (nav-whitelist-for promo-type) nav-event)
       (assoc :promo/type promo-type))))

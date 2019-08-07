@@ -146,6 +146,6 @@
         nav-event         (get-in data keypaths/navigation-event)
         promo-type        (promo-type* data)]
     (cond-> {:promo     (promotion-to-advertise data)
-             :nav-event nav-event}
+             :nav-event nav-event}  ;; ADDED!
       (contains? (nav-whitelist-for promo-type) nav-event)
       (assoc :promo/type promo-type))))

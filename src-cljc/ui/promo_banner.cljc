@@ -55,7 +55,6 @@
 (defn built-organism
   [{:promo-banner/keys [static? sticky?] :as data} opts]
   [:div
-   (when sticky?
-     (component/build sticky-organism data opts))
-   (when static?
-     (component/build static-organism data opts))])
+   (cond sticky?  (component/build sticky-organism data opts)
+         static?  (component/build static-organism data opts)
+         :default nil)])
