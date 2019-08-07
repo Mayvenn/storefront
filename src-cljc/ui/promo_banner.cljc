@@ -68,8 +68,8 @@
      [:span.bold.underline
       "Mayvenn" ui/nbsp "Install"]]]))
 
-(defmethod component :basic-promo-banner
-  [{:basic-promo-banner/keys [promo]} _ _]
+(defmethod component :basic
+  [{:keys [promo]} _ _]
   (component/create
    [:div.white.center.pp5.bg-teal.h5.bold
     {:data-test "promo-banner"}
