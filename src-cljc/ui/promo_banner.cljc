@@ -93,11 +93,11 @@
            :advertised true}
           (promos/default-advertised-promotion promotion-db)))))
 
-(defn ^:private nav-whitelist-for*
+(defn ^:private nav-whitelist-for
   "Promo code banner should only show on these nav-events
 
    Depending on experiments, this whitelist may be modified"
-  [no-promotions? promo-type]
+  [no-promotions? consolidated-cart? promo-type]
   (cond-> #{events/navigate-home
             events/navigate-cart
             events/navigate-shop-by-look
@@ -113,44 +113,46 @@
           events/navigate-checkout-payment
           events/navigate-checkout-confirmation)
 
-    (not no-promotions?)
+    (and (not no-promotions?) (not consolidated-cart?))
     (disj events/navigate-cart)))
 
 (defn ^:private promo-type*
   "Determine what type of promotion behavior we are under
    experiment for"
   [data]
-  (cond
+  (let [shop? (= "shop" (get-in data keypaths/store-slug))]
+    (cond
+      (and shop? (experiments/consolidated-cart? data))
+      :shop/freeinstall
 
-    (= "shop" (get-in data keypaths/store-slug))
-    :shop/freeinstall
+      shop?
+      :shop/freeinstall
 
-    ;; GROT: freeinstall-applied? when adventure orders using freeinstall promo code are no longer relevant
-    (and
-     (or (orders/freeinstall-applied? (get-in data keypaths/order))
-         (orders/freeinstall-included? (get-in data keypaths/order)))
-     (= "freeinstall" (get-in data keypaths/store-slug)))
-    :adventure-freeinstall/applied
+      ;; GROT: freeinstall-applied? when adventure orders using freeinstall promo code are no longer relevant
+      (and
+       (or (orders/freeinstall-applied? (get-in data keypaths/order))
+           (orders/freeinstall-included? (get-in data keypaths/order)))
+       (= "freeinstall" (get-in data keypaths/store-slug)))
+      :adventure-freeinstall/applied
 
-    (and
-     (orders/freeinstall-applied? (get-in data keypaths/order))
-     (experiments/aladdin-experience? data))
-    :v2-freeinstall/applied
+      (and
+       (orders/freeinstall-applied? (get-in data keypaths/order))
+       (experiments/aladdin-experience? data))
+      :v2-freeinstall/applied
 
-    (experiments/aladdin-experience? data)
-    :v2-freeinstall/eligible
+      (experiments/aladdin-experience? data)
+      :v2-freeinstall/eligible
 
-    :else :basic))
+      :else :basic)))
 
 (defn query
   [data]
-  (let [no-applied-promo? (orders/no-applied-promo? (get-in data keypaths/order))
-        nav-whitelist-for (partial nav-whitelist-for* no-applied-promo?)
-        nav-event         (get-in data keypaths/navigation-event)
-        promo-type        (promo-type* data)]
-    (cond-> {:promo     (promotion-to-advertise data)
-             :nav-event nav-event}  ;; ADDED!
-      (contains? (nav-whitelist-for promo-type) nav-event)
+  (let [no-applied-promo?  (orders/no-applied-promo? (get-in data keypaths/order))
+        consolidated-cart? (experiments/consolidated-cart? data)
+        nav-event          (get-in data keypaths/navigation-event)
+        promo-type         (promo-type* data)]
+    (cond-> {:promo (promotion-to-advertise data)}
+      (contains? (nav-whitelist-for no-applied-promo? consolidated-cart? promo-type) nav-event)
       (assoc :promo/type promo-type))))
 
 (defn static-organism

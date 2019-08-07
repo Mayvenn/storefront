@@ -106,3 +106,7 @@
 (defn adventure-on-shop?
   [data]
   (display-feature? data "adventure-on-shop"))
+
+(defn consolidated-cart?
+  [data]
+  (display-feature? data "consolidated-cart"))

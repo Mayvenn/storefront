@@ -98,7 +98,6 @@
 
 #?(:cljs
    (defmethod effects/perform-effects events/navigate-adventure-find-your-stylist [_ _ _ _ app-state]
-     (messages/handle-message events/adventure-clear-servicing-stylist)
      (google-maps/insert)))
 
 (defmethod trackings/perform-track events/control-adventure-location-submit
