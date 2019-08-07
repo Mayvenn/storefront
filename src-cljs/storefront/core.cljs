@@ -71,7 +71,7 @@
   (log-deltas app-state (transition app-state message) message))
 
 (def msg-transition
-  transition-log)
+  transition)
 
 (defn handle-message
   ([app-state event] (handle-message app-state event nil))
