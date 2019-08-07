@@ -1,7 +1,10 @@
-(ns checkout.cart
+(ns checkout.consolidated-cart
   (:require
    #?@(:cljs [[storefront.components.popup :as popup]
               [storefront.components.order-summary :as summary]
+              [storefront.config :as config]
+              [cemerick.url :refer [url-encode]]
+              [storefront.platform.messages :as messages]
               [storefront.components.payment-request-button :as payment-request-button]
               [storefront.api :as api]
               [storefront.history :as history]
@@ -11,15 +14,13 @@
               [storefront.hooks.quadpay :as quadpay]
               [goog.labs.userAgent.device :as device]])
    [catalog.images :as catalog-images]
-   [cemerick.url :refer [url-encode]]
    [checkout.call-out :as call-out]
-   [checkout.cart.items :as cart-items]
-   [checkout.cart.summary :as cart-summary]
+   [checkout.consolidated-cart.items :as cart-items]
+   [checkout.consolidated-cart.summary :as cart-summary]
    [checkout.header :as header]
    [checkout.suggestions :as suggestions]
    [storefront.accessors.experiments :as experiments]
    [catalog.facets :as facets]
-   [storefront.accessors.images :as images]
    [storefront.accessors.orders :as orders]
    [storefront.accessors.products :as products]
    [storefront.accessors.promos :as promos]
@@ -31,22 +32,17 @@
    [storefront.components.promotion-banner :as promotion-banner]
    [storefront.components.svg :as svg]
    [storefront.components.ui :as ui]
-   [storefront.config :as config]
    [storefront.css-transitions :as css-transitions]
-   [storefront.effects :as effects]
    [storefront.events :as events]
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
-   [storefront.platform.messages :as messages]
-   [storefront.request-keys :as request-keys]
-   [checkout.consolidated-cart :as consolidated-cart]))
+   [storefront.request-keys :as request-keys]))
 
 (defn display-adjustable-line-items
   [recently-added-skus line-items skus update-line-item-requests delete-line-item-requests]
   (for [{sku-id :sku variant-id :id :as line-item} line-items
 
         :let [sku                  (get skus sku-id)
-              legacy-variant-id    (or (:legacy/variant-id line-item) (:id line-item))
               price                (or (:sku/price line-item)         (:unit-price line-item))
               removing?            (get delete-line-item-requests variant-id)
               updating?            (get update-line-item-requests sku-id)
@@ -175,7 +171,6 @@
       (component/build suggestions/component suggestions nil)]
 
      [:div.col-on-tb-dt.col-6-on-tb-dt.px3
-
       (component/build cart-summary/component cart-summary nil)
 
       #?@(:cljs
@@ -266,93 +261,6 @@
                                        (facets/get-color facets)
                                        :option/name)}))
 
-(defmethod effects/perform-effects events/control-cart-update-coupon
-  [_ _ _ _ app-state]
-  #?(:cljs
-     (let [coupon-code (get-in app-state keypaths/cart-coupon-code)]
-       (when-not (empty? coupon-code)
-         (api/add-promotion-code (= "shop" (get-in app-state keypaths/store-slug))
-                                 (get-in app-state keypaths/session-id)
-                                 (get-in app-state keypaths/order-number)
-                                 (get-in app-state keypaths/order-token)
-                                 coupon-code
-                                 false)))))
-
-(defmethod effects/perform-effects events/control-cart-share-show
-  [_ _ _ _ app-state]
-  #?(:cljs
-     (api/create-shared-cart (get-in app-state keypaths/session-id)
-                             (get-in app-state keypaths/order-number)
-                             (get-in app-state keypaths/order-token))))
-
-(defmethod effects/perform-effects events/control-cart-remove
-  [_ event variant-id _ app-state]
-  #?(:cljs
-     (api/delete-line-item (get-in app-state keypaths/session-id) (get-in app-state keypaths/order) variant-id)))
-
-(defmethod effects/perform-effects events/control-cart-line-item-inc
-  [_ event {:keys [variant]} _ app-state]
-  #?(:cljs
-     (let [sku      (get (get-in app-state keypaths/v2-skus) (:sku variant))
-           order    (get-in app-state keypaths/order)
-           quantity 1]
-       (api/add-sku-to-bag (get-in app-state keypaths/session-id)
-                           {:sku      sku
-                            :token    (:token order)
-                            :number   (:number order)
-                            :quantity quantity}
-                           #(messages/handle-message events/api-success-add-sku-to-bag
-                                            {:order    %
-                                             :quantity quantity
-                                             :sku      sku})))))
-
-(defmethod effects/perform-effects events/control-cart-line-item-dec
-  [_ event {:keys [variant]} _ app-state]
-  #?(:cljs
-     (let [order (get-in app-state keypaths/order)]
-       (api/remove-line-item (get-in app-state keypaths/session-id)
-                             {:number     (:number order)
-                              :token      (:token order)
-                              :variant-id (:id variant)
-                              :sku-code   (:sku variant)}
-                             #(messages/handle-message events/api-success-add-to-bag {:order %})))))
-
-(defmethod effects/perform-effects events/control-checkout-cart-submit
-  [dispatch event args _ app-state]
-  #?(:cljs
-     ;; If logged in, this will send user to checkout-address. If not, this sets
-     ;; things up so that if the user chooses sign-in from the returning-or-guest
-     ;; page, then signs-in, they end up on the address page. Convoluted.
-     (history/enqueue-navigate events/navigate-checkout-address)))
-
-(defmethod effects/perform-effects events/control-checkout-cart-paypal-setup
-  [dispatch event args _ app-state]
-  #?(:cljs
-     (let [order (get-in app-state keypaths/order)]
-       (api/update-cart-payments
-        (get-in app-state keypaths/session-id)
-        {:order (-> app-state
-                    (get-in keypaths/order)
-                    (select-keys [:token :number])
-                 ;;; Get ready for some nonsense!
-                    ;;
-                    ;; Paypal requires that urls are *double* url-encoded, such as
-                    ;; the token part of the return url, but that *query
-                    ;; parameters* are only singley encoded.
-                    ;;
-                    ;; Thanks for the /totally sane/ API, PayPal.
-                    (assoc-in [:cart-payments]
-                              {:paypal {:amount (get-in app-state keypaths/order-total)
-                                        :mobile-checkout? (not (device/isDesktop))
-                                        :return-url (str stylist-urls/store-url "/orders/" (:number order) "/paypal/"
-                                                         (url-encode (url-encode (:token order)))
-                                                         "?sid="
-                                                         (url-encode (get-in app-state keypaths/session-id)))
-                                        :callback-url (str config/api-base-url "/v2/paypal-callback?number=" (:number order)
-                                                           "&order-token=" (url-encode (:token order)))
-                                        :cancel-url (str stylist-urls/store-url "/cart?error=paypal-cancel")}}))
-         :event events/external-redirect-paypal-setup}))))
-
 (defn full-cart-query [data]
   (let [order       (get-in data keypaths/order)
         products    (get-in data keypaths/v2-products)
@@ -412,9 +320,7 @@
    :full-cart       (full-cart-query data)})
 
 (defn built-component [data opts]
-  (if (experiments/consolidated-cart? data)
-    (consolidated-cart/built-component data opts)
-    (component/build component (query data) opts)))
+  (component/build component (query data) opts))
 
 (defn layout [data nav-event]
   [:div.flex.flex-column {:style {:min-height    "100vh"
