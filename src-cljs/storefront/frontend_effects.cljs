@@ -882,7 +882,7 @@
 
 (defmethod effects/perform-effects events/reviews-component-mounted [_ event args _ app-state]
   (let [expected-reviews-count 2
-        actual-reviews-count (get-in app-state keypaths/review-components-count)]
+        actual-reviews-count   (get-in app-state keypaths/review-components-count)]
     (when (= expected-reviews-count actual-reviews-count)
       (reviews/start))))
 

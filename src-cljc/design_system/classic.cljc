@@ -1,10 +1,12 @@
 (ns design-system.classic
-  (:require [storefront.component :as component]
+  (:require [catalog.product-details :as product-details]
             [design-system.organisms :as organisms]
-            [storefront.events :as events]
             [popup.organisms :as popup]
+            [storefront.component :as component]
+            [storefront.effects :as effects]
+            [storefront.events :as events]
+            #?(:cljs [storefront.hooks.reviews :as reviews])
             [storefront.platform.component-utils :as utils]))
-
 
 (def nowhere events/navigate-design-system-adventure)
 
@@ -30,7 +32,16 @@
      :single-field-form/button-data {:title        "Submit"
                                      :color-kw     :color/teal
                                      :height-class :large
-                                     :data-test    "email-input-submit"}}}])
+                                     :data-test    "email-input-submit"}}}
+   {:organism/label     :product-details
+    :organism/component product-details/organism
+    :organism/query
+    {:title/primary                       "A product title"
+     :yotpo-reviews-summary/product-titel "A product title"
+     :yotpo-reviews-summary/product-id    80
+     :yotpo-reviews-summary/data-url      "/products/9-brazilian-straight-bundles"
+     :price-block/primary                 108
+     :price-block/secondary               "per item"}}])
 
 (defn component
   [data owner opts]
@@ -45,3 +56,11 @@
 (defn built-component
   [{:keys [design-system]} opts]
   (component/build component design-system nil))
+
+(defmethod effects/perform-effects events/navigate-design-system-classic
+  [_ _ _ _ _]
+  #?(:cljs (do
+             (reviews/insert-reviews)
+             ;; hack to unhack the fact that reviews expect two instances of reviews
+             (js/setTimeout #(reviews/start) 2000))))
+

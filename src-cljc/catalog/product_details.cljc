@@ -269,24 +269,40 @@
    (keys selections)))
 
 (defn reviews-molecule
-  [reviews opts]
+  [{:yotpo-reviews-summary/keys [product-title product-id data-url]}]
   [:div
-   (when (seq reviews)
+   (when product-id
      [:div.h6
       {:style {:min-height "18px"}}
-      (component/build review-component/reviews-summary-dropdown-experiment-component reviews opts)])])
+      (component/build review-component/reviews-summary-dropdown-experiment-component
+                       {:yotpo-data-attributes
+                        {:data-name       product-title
+                         :data-product-id product-id
+                         :data-url        data-url}})])])
 
-(defn price-per-item-molecule [price]
-  [:div
-   {:style {:text-align "right"}}
-   [:div.bold (item-price price)]
-   [:div.h8.dark-gray "per item"]])
+(defn price-block-molecule
+  [{:price-block/keys [primary secondary]}]
+  [:div.right-align
+   (when-let [primary-formatted (item-price primary)]
+     [:div
+      [:div.bold primary-formatted]
+      [:div.h8.dark-gray secondary]])])
 
 (defn title-molecule
   [{:title/keys [id primary secondary]}]
   [:div {:data-test id}
    [:h3.black.medium.titleize primary]
    [:div.medium secondary]])
+
+(defn organism
+  "Product Details organism"
+  [data _ _]
+  (component/create
+   [:div.mt3.mx3
+    (title-molecule data)
+    [:div.flex.justify-between
+     (reviews-molecule data)
+     (price-block-molecule data)]]))
 
 (defn component
   [{:keys [adding-to-bag?
@@ -325,11 +341,9 @@
               [:meta {:item-prop "image"
                       :content   (:url (first carousel-images))}]
               (full-bleed-narrow (carousel carousel-images product))]
-             [:div.mt3.mx3
-              (title-molecule {:title/primary (:copy/title product)})
-              [:div.flex.justify-between
-               (reviews-molecule reviews opts)
-               (price-per-item-molecule (:sku/price selected-sku))]]
+
+             (component/build organism data)
+
              [:div {:item-prop  "offers"
                     :item-scope ""
                     :item-type  "http://schema.org/Offer"}
@@ -464,29 +478,36 @@
                                :gallery
                                :images
                                (filter (comp (partial = "approved") :status))
-                               (map (comp v2/get-ucare-id-from-url :resizable-url)))]
-    {:reviews                         (review-component/query data)
-     :ugc                             ugc
-     :aladdin?                        (experiments/aladdin-experience? data)
-     :fetching-product?               (utils/requesting? data (conj request-keys/search-v2-products
-                                                                    (:catalog/product-id product)))
-     :adding-to-bag?                  (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
-     :sku-quantity                    (get-in data keypaths/browse-sku-quantity 1)
-     :options                         options
-     :product                         product
-     :selections                      selections
-     :selected-options                (get-selected-options selections options)
-     :selected-sku                    selected-sku
-     :facets                          facets
-     :selected-picker                 (get-in data catalog.keypaths/detailed-product-selected-picker)
-     :picker-data                     (picker/query data)
-     :carousel-images                 carousel-images
-     :get-a-free-install-section-data {:store                 store
-                                       :gallery-ucare-ids     gallery-ucare-ids
-                                       :stylist-portrait      (:portrait store)
-                                       :stylist-name          (:store-nickname store)
-                                       :stylist-gallery-open? (get-in data keypaths/carousel-stylist-gallery-open?)}
-     :loaded-quadpay?                 (get-in data keypaths/loaded-quadpay)}))
+                               (map (comp v2/get-ucare-id-from-url :resizable-url)))
+        review-data       (review-component/query data)]
+    {:reviews                            review-data
+     :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
+     :yotpo-reviews-summary/product-id   (some-> review-data :yotpo-data-attributes :data-product-id)
+     :yotpo-reviews-summary/data-url     (some-> review-data :yotpo-data-attributes :data-url)
+     :title/primary                      (:copy/title product)
+     :price-block/primary                (:sku/price selected-sku)
+     :price-block/secondary              "per item"
+     :ugc                                ugc
+     :aladdin?                           (experiments/aladdin-experience? data)
+     :fetching-product?                  (utils/requesting? data (conj request-keys/search-v2-products
+                                                                       (:catalog/product-id product)))
+     :adding-to-bag?                     (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
+     :sku-quantity                       (get-in data keypaths/browse-sku-quantity 1)
+     :options                            options
+     :product                            product
+     :selections                         selections
+     :selected-options                   (get-selected-options selections options)
+     :selected-sku                       selected-sku
+     :facets                             facets
+     :selected-picker                    (get-in data catalog.keypaths/detailed-product-selected-picker)
+     :picker-data                        (picker/query data)
+     :carousel-images                    carousel-images
+     :get-a-free-install-section-data    {:store                 store
+                                          :gallery-ucare-ids     gallery-ucare-ids
+                                          :stylist-portrait      (:portrait store)
+                                          :stylist-name          (:store-nickname store)
+                                          :stylist-gallery-open? (get-in data keypaths/carousel-stylist-gallery-open?)}
+     :loaded-quadpay?                    (get-in data keypaths/loaded-quadpay)}))
 
 (defn ^:export built-component [data opts]
   (component/build component (query data) opts))
