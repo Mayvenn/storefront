@@ -29,8 +29,6 @@
    [storefront.components.footer :as storefront.footer]
    [storefront.components.money-formatters :as mf]
    [ui.promo-banner :as promo-banner]
-   storefront.ui.promo-banner
-   [storefront.components.promotion-banner :as promotion-banner]
    [storefront.components.svg :as svg]
    [storefront.components.ui :as ui]
    [storefront.config :as config]
@@ -140,7 +138,7 @@
 
 (defn full-component [{:keys [order
                               skus
-                              promotion-banner
+                              promo-banner
                               call-out
                               updating?
                               redirecting-to-paypal?
@@ -158,8 +156,7 @@
                               cart-summary]} owner _]
   (component/create
    [:div.container.p2
-    #_(component/build promotion-banner/sticky-component promotion-banner nil)
-    (promo-banner/built-organism (assoc promotion-banner :promo-banner/sticky? true) nil)
+    (component/build promo-banner/sticky-organism promo-banner nil)
 
     (component/build call-out/component call-out nil)
 
@@ -367,7 +364,7 @@
      :line-items                 line-items
      :skus                       (get-in data keypaths/v2-skus)
      :products                   products
-     :promotion-banner           (storefront.ui.promo-banner/query data)
+     :promo-banner           (promo-banner/query data)
      :call-out                   (call-out/query data)
      :updating?                  (update-pending? data)
      :redirecting-to-paypal?     (get-in data keypaths/cart-paypal-redirect)
@@ -422,8 +419,7 @@
    #?(:cljs (popup/built-component app-state nil))
 
    (header/built-component app-state nil)
-   #_(promotion-banner/built-component app-state nil)
-   (promo-banner/built-organism (assoc app-state :promo-banner/static? true) nil)
+   (promo-banner/built-static-organism app-state nil)
    [:div.relative.flex.flex-column.flex-auto
     (flash/built-component app-state nil)
 

@@ -19,7 +19,7 @@
             [storefront.components.checkout-steps :as checkout-steps]
             [storefront.components.money-formatters :as mf]
             [storefront.components.order-summary :as summary]
-            [storefront.components.promotion-banner :as promotion-banner]
+            [ui.promo-banner :as promo-banner]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
@@ -112,7 +112,7 @@
            order
            items
            requires-additional-payment?
-           promotion-banner
+           promo-banner
            install-or-free-install-applied?
            confirmation-summary
            checkout-button-data
@@ -121,7 +121,7 @@
    owner]
   (component/create
    [:div.container.p2
-    (component/build promotion-banner/sticky-component promotion-banner nil)
+    (component/build promo-banner/sticky-organism promo-banner nil)
     (component/build checkout-steps/component checkout-steps nil)
 
     [:form
@@ -207,7 +207,7 @@
            checkout-steps
            payment delivery order
            requires-additional-payment?
-           promotion-banner
+           promo-banner
            install-or-free-install-applied?
            confirmation-summary
            checkout-button-data
@@ -218,7 +218,7 @@
    owner]
   (component/create
    [:div.container.p2
-    (component/build promotion-banner/sticky-component promotion-banner nil)
+    (component/build promo-banner/sticky-organism promo-banner nil)
     (component/build checkout-steps/component checkout-steps nil)
 
     (if order
@@ -295,7 +295,7 @@
         freeinstall-applied?       (orders/freeinstall-applied? order)
         selected-quadpay?          (-> (get-in data keypaths/order) :cart-payments :quadpay)]
     {:requires-additional-payment?     (requires-additional-payment? data)
-     :promotion-banner                 (promotion-banner/query data)
+     :promo-banner                     (promo-banner/query data)
      :checkout-steps                   (checkout-steps/query data)
      :products                         (get-in data keypaths/v2-products)
      :items                            (cond-> (item-card-query data)
@@ -320,7 +320,7 @@
   (let [order                      (get-in data keypaths/order)
         freeinstall-line-item-data (adventure-cart-items/freeinstall-line-item-query data)]
     {:requires-additional-payment?     (requires-additional-payment? data)
-     :promotion-banner                 (promotion-banner/query data)
+     :promo-banner                     (promo-banner/query data)
      :checkout-steps                   (checkout-steps/query data)
      :products                         (get-in data keypaths/v2-products)
      :items                            (update (item-card-query data)

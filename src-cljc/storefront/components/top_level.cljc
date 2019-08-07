@@ -41,7 +41,7 @@
             [storefront.components.gallery :as gallery]
             [storefront.components.header :as header]
             [storefront.components.home :as home]
-            [storefront.components.promotion-banner :as promotion-banner]
+            [ui.promo-banner :as promo-banner]
             [storefront.components.sign-in :as sign-in]
             [storefront.components.sign-up :as sign-up]
             [storefront.components.slideout-nav :as slideout-nav]
@@ -143,9 +143,7 @@
 (defn sticky-promo-bar
   [data]
   (when-not (= events/navigate-category (get-in data keypaths/navigation-event))
-    (component/build promotion-banner/sticky-component
-                     (promotion-banner/query data)
-                     nil)))
+    (component/build promo-banner/sticky-organism (promo-banner/query data) nil)))
 
 (defn main-layout [data nav-event]
   (component/html
@@ -161,7 +159,7 @@
 
       (when-not v2-home?
         [:div
-         ^:inline (promotion-banner/built-component data nil)
+         ^:inline (promo-banner/built-static-organism data nil)
          ^:inline (sticky-promo-bar data)])
 
       [:div.relative.flex.flex-column.flex-auto
@@ -184,7 +182,7 @@
   [:div.flex.flex-column {:style {:min-height    "100vh"
                                   :margin-bottom "-60px"}}
    [:div
-    (promotion-banner/built-component data nil)
+    (promo-banner/built-static-organism data nil)
     (sticky-promo-bar data)]
 
    [:div {:key "popup"}

@@ -1,6 +1,6 @@
 (ns design-system.ui
   (:require [storefront.component :as component]
-            [storefront.ui.promo-banner :as promo-banner]
+            [ui.promo-banner :as promo-banner]
             [design-system.organisms :as organisms]
             [storefront.events :as events]))
 

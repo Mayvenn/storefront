@@ -8,7 +8,7 @@
             [storefront.components.checkout-returning-or-guest :as checkout-returning-or-guest]
             [storefront.components.checkout-steps :as checkout-steps]
             [storefront.components.money-formatters :refer [as-money]]
-            [storefront.components.promotion-banner :as promotion-banner]
+            [ui.promo-banner :as promo-banner]
             [storefront.effects :as effects]
             [storefront.hooks.quadpay :as quadpay]
             [storefront.components.ui :as ui]
@@ -68,12 +68,12 @@
            selected-payment-methods
            can-use-store-credit?
            applied-install-promotion
-           promotion-banner]}
+           promo-banner]}
    owner]
   (om/component
    (html
     [:div.container.p2
-     (component/build promotion-banner/sticky-component promotion-banner nil)
+     (component/build promo-banner/sticky-organism promo-banner nil)
      (om/build checkout-steps/component step-bar)
 
      (ui/narrow-container
@@ -181,12 +181,12 @@
            applied-install-promotion
            can-use-store-credit?
            loaded-quadpay?
-           promotion-banner]}
+           promo-banner]}
    owner]
   (om/component
    (html
     [:div.container.p2
-     (component/build promotion-banner/sticky-component promotion-banner nil)
+     (component/build promo-banner/sticky-organism promo-banner nil)
      (om/build checkout-steps/component step-bar)
 
      (ui/narrow-container
@@ -295,7 +295,7 @@
      {:store-credit              {:credit-available  available-store-credit
                                   :credit-applicable credit-to-use
                                   :fully-covered?    fully-covered?}
-      :promotion-banner          (promotion-banner/query data)
+      :promo-banner              (promo-banner/query data)
       :promo-code                (first (get-in data keypaths/order-promotion-codes))
       :saving?                   (cc/saving-card? data)
       :disabled?                 (or (and (utils/requesting? data request-keys/get-saved-cards)
