@@ -11,21 +11,27 @@
   (component/create
    [:div.py3.border.border-black.bg-light-gray
     [:div.h3.px6.py2.bold (str label)]
-    [:div (component/build component query nil)]
+    [:div.border.border-black (component/build component query nil)]
     [:div.p6
      [:div "query"]
      [:pre.h8 (with-out-str (pprint/pprint query))]]]))
 
+(defn popup-button-component
+  [_ _ _]
+  (component/create
+   [:div.bg-white
+    (ui/teal-button (utils/fake-href events/control-design-system-popup-show)
+                    "Show popup")]))
+
 (defn demo
   [organisms & [{:keys [popup-visible?]}]]
-  (for [{:organism/keys [label popup? component query] :as organism} organisms]
-    [:div {:key (str "organism-" label)}
-     (if popup?
-       (if popup-visible?
-         (component/build component query nil)
-         (ui/teal-button (utils/fake-href events/control-design-system-popup-show)
-                         "Show popup wow, you can really dance"))
-       (component/build demo-component organism nil))]))
+  (for [{:organism/keys [label popup?] :as organism} organisms
+        :let [component (cond-> organism
+                          (and popup? (not popup-visible?))
+                          (assoc :organism/component popup-button-component))]]
+    [:div
+     {:key (str "organism-" label)}
+     (component/build demo-component component nil)]))
 
 (def dismiss events/control-design-system-popup-dismiss)
 
