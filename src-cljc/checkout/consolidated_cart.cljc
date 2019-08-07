@@ -170,38 +170,39 @@
 
       (component/build suggestions/component suggestions nil)]
 
-     [:div.col-on-tb-dt.col-6-on-tb-dt.px3
+     [:div.col-on-tb-dt.col-6-on-tb-dt
       (component/build cart-summary/component cart-summary nil)
 
-      #?@(:cljs
-          [(component/build quadpay/component
-                            {:show?       loaded-quadpay?
-                             :order-total (:total order)
-                             :directive   [:div.flex.items-center.justify-center
-                                           "Just select"
-                                           [:div.mx1 {:style {:width "70px" :height "14px"}}
-                                            ^:inline (svg/quadpay-logo)]
-                                           "at check out."]}
-                            nil)])
-      (ui/teal-button {:spinning? false
-                       :disabled? updating?
-                       :on-click  (utils/send-event-callback events/control-checkout-cart-submit)
-                       :data-test "start-checkout-button"}
-                      [:div "Check out"])
-
-      [:div.h5.black.center.py1.flex.justify-around.items-center
-       [:div.flex-grow-1.border-bottom.border-light-gray]
-       [:div.mx2 "or"]
-       [:div.flex-grow-1.border-bottom.border-light-gray]]
-
-      [:div.pb2
-       (ui/aqua-button {:on-click  (utils/send-event-callback events/control-checkout-cart-paypal-setup)
-                        :spinning? redirecting-to-paypal?
+      [:div.px4
+       #?@(:cljs
+           [(component/build quadpay/component
+                             {:show?       loaded-quadpay?
+                              :order-total (:total order)
+                              :directive   [:div.flex.items-center.justify-center
+                                            "Just select"
+                                            [:div.mx1 {:style {:width "70px" :height "14px"}}
+                                             ^:inline (svg/quadpay-logo)]
+                                            "at check out."]}
+                             nil)])
+       (ui/teal-button {:spinning? false
                         :disabled? updating?
-                        :data-test "paypal-checkout"}
-                       [:div
-                        "Check out with "
-                        [:span.medium.italic "PayPal™"]])]
+                        :on-click  (utils/send-event-callback events/control-checkout-cart-submit)
+                        :data-test "start-checkout-button"}
+                       [:div "Check out"])
+
+       [:div.h5.black.center.py1.flex.justify-around.items-center
+        [:div.flex-grow-1.border-bottom.border-light-gray]
+        [:div.mx2 "or"]
+        [:div.flex-grow-1.border-bottom.border-light-gray]]
+
+       [:div.pb2
+        (ui/aqua-button {:on-click  (utils/send-event-callback events/control-checkout-cart-paypal-setup)
+                         :spinning? redirecting-to-paypal?
+                         :disabled? updating?
+                         :data-test "paypal-checkout"}
+                        [:div
+                         "Check out with "
+                         [:span.medium.italic "PayPal™"]])]]
 
       #?@(:cljs [(when show-browser-pay? (payment-request-button/built-component nil {}))])
 

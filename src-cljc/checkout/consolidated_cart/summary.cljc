@@ -1,5 +1,6 @@
 (ns checkout.consolidated-cart.summary
-  (:require [checkout.consolidated-cart.items :as cart-items]
+  (:require #?@(:cljs [[storefront.api :as api]])
+            [checkout.consolidated-cart.items :as cart-items]
             [clojure.string :as string]
             [spice.core :as spice]
             [storefront.accessors.orders :as orders]
@@ -7,10 +8,22 @@
             [storefront.components.money-formatters :as mf]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
+            [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.request-keys :as request-keys]))
+            [storefront.request-keys :as request-keys]
+            [storefront.platform.messages :as messages]))
+
+(defmethod effects/perform-effects events/control-cart-add-freeinstall-coupon
+  [_ _ _ _ app-state]
+  #?(:cljs
+     (api/add-promotion-code (= "shop" (get-in app-state keypaths/store-slug))
+                             (get-in app-state keypaths/session-id)
+                             (get-in app-state keypaths/order-number)
+                             (get-in app-state keypaths/order-token)
+                             "freeinstall"
+                             false)))
 
 (defn ^:private text->data-test-name [name]
   (-> name
@@ -21,7 +34,7 @@
 (defn ^:private summary-row
   ([content amount] (summary-row {} content amount))
   ([row-attrs content amount]
-   [:tr.h5
+   [:tr.h6.medium
     (merge
      (when-not (pos? amount)
        {:class "teal"})
@@ -32,7 +45,7 @@
 
 (defn promo-entry
   [{:keys [focused coupon-code field-errors updating? applying? error-message] :as promo-data}]
-  [:form.mt2
+  [:form.mt2.bg-white
    {:on-submit (utils/send-event-callback events/control-cart-update-coupon)}
    (ui/input-group
     {:keypath       keypaths/cart-coupon-code
@@ -65,7 +78,7 @@
     "Total"))
 
 (defn summary-total-section [{:keys [freeinstall-line-item-data order]}]
-  [:div.py2.h2
+  [:div.h3.medium
    [:div.flex
     [:div.flex-auto.light (order-total-title freeinstall-line-item-data)]
     [:div.right-align.medium
@@ -84,26 +97,18 @@
 (defn component
   [{:keys [freeinstall-line-item-data
            order
-           store-credit
            shipping-cost
            adjustments-including-tax
            promo-data
            subtotal] :as data} owner _]
   (component/create
    [:div {:data-test "cart-order-summary"}
-    [:div.hide-on-dt.border-top.border-light-gray]
-    [:div.py1.border-bottom.border-light-gray
+    [:div.py1.bg-fate-white.px4
      [:table.col-12
       [:tbody
        (summary-row {:data-test "subtotal"} "Subtotal" subtotal)
        (when shipping-cost
          (summary-row {:class "black"} "Shipping" shipping-cost))
-
-       (when (orders/no-applied-promo? order)
-         [:tr.h5
-          [:td
-           {:col-span "2"}
-           (promo-entry promo-data)]])
 
        (for [[i {:keys [name price coupon-code] :as adjustment}] (map-indexed vector adjustments-including-tax)]
          (when (non-zero-adjustment? adjustment)
@@ -124,11 +129,33 @@
             (if (and freeinstall-line-item-data
                      (= "freeinstall" coupon-code))
               (- 0 (:price freeinstall-line-item-data))
-              price))))
+              price))))]]
 
-       (when (pos? store-credit)
-         (summary-row "Store Credit" (- store-credit)))]]]
-    (summary-total-section data)]))
+     (when (orders/no-applied-promo? order)
+       [:div.h5
+        (promo-entry promo-data)])
+
+     (when-not (orders/freeinstall-applied? order)
+       [:div.flex.py2
+        "✋"
+        [:div.flex.flex-column.px1
+         [:div.purple.h5.medium
+          "Don't miss out on "
+          [:span.bold
+           "free Mayvenn Install"]]
+         [:div.h6
+          "Save 10% & get a free install by a licenced stylist when you purchase 3 or more bundles.*"]
+         [:div.flex.justify-left.py1
+          [:div.col-4 (ui/teal-button {:height-class :small
+                                       :class        "bold"
+                                       :on-click     (utils/send-event-callback events/control-cart-add-freeinstall-coupon)} "add to cart")]
+          [:div.col-4.teal.h7.flex.items-center
+           (ui/button {:class    "inherit-color px4 py1 medium"
+                       :on-click (utils/send-event-callback events/popup-show-adventure-free-install)} "learn more")]]
+         [:div.h8.dark-gray
+          "*Mayvenn Install cannot be combined with other promo codes."]]])]
+    [:div.pt2.px4
+     (summary-total-section data)]]))
 
 (defn query [data]
   (let [order                      (get-in data keypaths/order)
