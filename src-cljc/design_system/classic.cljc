@@ -1,6 +1,8 @@
 (ns design-system.classic
   (:require [catalog.product-details :as product-details]
             [design-system.organisms :as organisms]
+            [design-system.molecules :as molecules]
+            [catalog.ui.molecules :as ui-molecules]
             [catalog.ui.add-to-cart :as add-to-cart]
             [popup.organisms :as popup]
             [storefront.component :as component]
@@ -64,6 +66,21 @@
      :freeinstall-add-to-cart-block/icon        "d7fbb4a1-6ad7-4122-b737-ade7dec8dfd3"
      :freeinstall-add-to-cart-block/show?       true}}])
 
+(def molecules
+  [{:molecule/label     :product-description
+    :molecule/component ui-molecules/product-description
+    :molecule/query
+    #:product-description {:summary                   []
+                           :hair-family               "bundles"
+                           :description               ["Virgin human hair,  machine-wefted and backed by our 30 Day Quality Guarantee,  our sleek straight bundles have no curl,  no wave and are smooth from root to tip."],
+                           :materials                 nil
+                           :colors                    "Natural Black"
+                           :weights                   "3.5oz"
+                           :stylist-exclusives-family nil
+                           :learn-more-nav-event      nil}}])
+
+
+
 (defn component
   [data owner opts]
   (component/create
@@ -72,7 +89,11 @@
     [:section
      [:div.h2 "Organisms"]
      [:section.p4
-      (organisms/demo organisms (:organisms data))]]]))
+      (organisms/demo organisms (:organisms data))]]
+    [:section
+     [:div.h2 "Molecules"]
+     [:section.p4
+      (molecules/demo molecules)]]]))
 
 (defn built-component
   [{:keys [design-system]} opts]
