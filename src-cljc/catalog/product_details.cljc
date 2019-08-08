@@ -37,7 +37,8 @@
             [storefront.platform.reviews :as review-component]
             [storefront.request-keys :as request-keys]
             [storefront.transitions :as transitions]
-            [catalog.ui.add-to-cart :as add-to-cart]))
+            [catalog.ui.add-to-cart :as add-to-cart]
+            [catalog.keypaths :as catalog.keypaths]))
 
 (defn item-price [price]
   (when price
@@ -449,6 +450,7 @@
      :freeinstall-add-to-cart-block/link-target [events/popup-show-adventure-free-install]
      :freeinstall-add-to-cart-block/link-label  "Learn more"
      :freeinstall-add-to-cart-block/icon        "d7fbb4a1-6ad7-4122-b737-ade7dec8dfd3"
+     :freeinstall-add-to-cart-block/show?       (#{"freeinstall" "shop"} (get-in data keypaths/store-slug))
      :quadpay/loaded?                           (get-in data keypaths/loaded-quadpay)
      :quadpay/price                             sku-price
      :ugc                                       ugc

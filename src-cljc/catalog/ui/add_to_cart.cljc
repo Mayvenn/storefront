@@ -17,32 +17,35 @@
      [:div.flex.items-center.justify-center.inherit-color label]) ))
 
 (defn freeinstall-add-to-cart-block
-  [{:freeinstall-add-to-cart-block/keys [message link-label link-target footnote icon]}]
-  [:div.flex.pb1
-   [:div.px3.flex.justify-center.pt1
-    (ui/ucare-img {:width "18"} icon)]
-   [:div.flex.flex-column
-    [:div.h7
-     [:span.mr1 message]
-     [:a.underline.navy
-     (apply utils/send-event-callback link-target)
-      link-label]]
-    [:div.dark-silver.h8 footnote]]])
+  [{:freeinstall-add-to-cart-block/keys [message link-label link-target footnote icon show?]}]
+  (when show?
+    [:div.flex.pb1
+     [:div.px3.flex.justify-center.pt1
+      (ui/ucare-img {:width "18"} icon)]
+     [:div.flex.flex-column
+      [:div.h7
+       [:span.mr1 message]
+       [:a.underline.navy
+        (apply utils/send-event-callback link-target)
+        link-label]]
+      [:div.dark-silver.h8 footnote]]]))
 
 
 ;; ORGANISM
 (defn organism
   "Add to Cart organism"
-  [{:quadpay/keys [loaded? price] :as data} _ _]
+  [data _ _]
   (component/create
-   [:div.bg-fate-white.px3.pt3.pb1
+   [:div.px3.pt3.pb1
+    (when (:freeinstall-add-to-cart-block/show? data)
+      {:class "bg-fate-white"})
     (freeinstall-add-to-cart-block data)
     (cta-molecule data)
     #?(:cljs
        [:div
         (component/build quadpay/component
-                         {:show?       loaded?
-                          :order-total price
+                         {:show?       (:quadpay/loaded? data)
+                          :order-total (:quadpay/price data)
                           :directive   [:div.flex.justify-center.items-center
                                         "Just select"
                                         [:div.mx1 {:style {:width "70px" :height "14px"}}
