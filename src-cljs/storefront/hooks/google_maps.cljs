@@ -68,8 +68,7 @@
         (.removeChild (.-parentNode node) node)))))
 
 (def map-opts
-  {:center                {:lat 40.674, :lng -73.945},
-   :zoom                  13,
+  {:zoom                  13,
    :streetViewControl     false,
    :fullscreenControl     false,
    :mapTypeControlOptions {:mapTypeIds []},
@@ -137,19 +136,19 @@
      :elementType "labels.text.stroke",
      :stylers     [{:color "#ffffff"}]}]})
 
-(def marker-icon {:path "M18.002 0C8.077 0 0 8.17 0 18.216c0 7.363 4.34 13.961
-  11.06 16.808.476.203.846.6 1.017 1.096L17.535 52l6.034-15.801c.184-.48.56-.863
-  1.03-1.051C31.525 32.379 36 25.734 36 18.216 36.005 8.173 27.928 0 18.003 0zm0
-  25.8c-4.134 0-7.495-3.402-7.495-7.583 0-4.184 3.364-7.587 7.495-7.587 4.135 0
-  7.496 3.403 7.496 7.587 0 4.183-3.361 7.584-7.496 7.584z"
-   :fillColor     "#7E006D"
-   :fillOpacity   1.0
-   :strokeOpacity 0.0})
-
 (defn- place-marker
   [lat-long map]
-  (let [marker (google.maps.Marker. (clj->js {:position lat-long
-                                              :icon     (assoc marker-icon :anchor (google.maps.Point. 18 52))}))]
+  (let [position-sprite-element (some-> "position" js/document.getElementById (.cloneNode true))
+        sprite-element-string   (.-outerHTML (doto (js/document.createElement "svg")
+                                               (.setAttribute "xmlns" "http://www.w3.org/2000/svg")
+                                               (.setAttribute "xmlns:xlink" "http://www.w3.org/1999/xlink")
+                                               (.setAttribute "viewBox" (.getAttribute position-sprite-element "viewBox"))
+                                               (aset "innerHTML" (.-innerHTML position-sprite-element))))
+        marker                  (google.maps.Marker.
+                                 (clj->js {:position lat-long
+                                           :icon     {:url  (str "data:image/svg+xml;charset=UTF-8,"
+                                                                 (js/encodeURIComponent sprite-element-string))
+                                                      :size (google.maps.Size. 36 52 "px" "px")}}))]
     (.setMap marker map)))
 
 (defn attach-map
@@ -157,9 +156,7 @@
   (when (.hasOwnProperty js/window "google")
     (let [lat-long {:lat (spice/parse-double latitude)
                     :lng (spice/parse-double longitude)}
-          opts (clj->js (assoc map-opts :center lat-long))
-          elem (.getElementById js/document (name address-elem))
-          map  (google.maps.Map. elem opts)]
-      (place-marker lat-long map)))) 
-
-
+          opts     (clj->js (assoc map-opts :center lat-long))
+          elem     (.getElementById js/document (name address-elem))
+          map      (google.maps.Map. elem opts)]
+      (place-marker lat-long map))))
