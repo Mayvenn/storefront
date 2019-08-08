@@ -122,9 +122,6 @@
   [data]
   (let [shop? (= "shop" (get-in data keypaths/store-slug))]
     (cond
-      (and shop? (experiments/consolidated-cart? data))
-      :shop/freeinstall
-
       shop?
       :shop/freeinstall
 

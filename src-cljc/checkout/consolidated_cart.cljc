@@ -333,7 +333,8 @@
    #?(:cljs (popup/built-component data nil))
 
    (header/built-component data nil)
-   (promo-banner/built-static-organism data nil)
+   (when (zero? (orders/product-quantity (get-in data keypaths/order)))
+     (promo-banner/built-static-organism data nil))
    [:div.relative.flex.flex-column.flex-auto
     (flash/built-component data nil)
 
