@@ -37,7 +37,8 @@
             [storefront.platform.component-utils :as utils]
             [storefront.platform.reviews :as review-component]
             [storefront.request-keys :as request-keys]
-            [storefront.transitions :as transitions]))
+            [storefront.transitions :as transitions]
+            [catalog.ui.add-to-cart :as add-to-cart]))
 
 (defn item-price [price]
   (when price
@@ -88,17 +89,6 @@
                    :disabled?      true
                    :disabled-class "bg-gray"}
                   "Unavailable"))
-
-(defn add-to-bag-button
-  [adding-to-bag? sku quantity]
-  (ui/teal-button {:on-click
-                   (utils/send-event-callback events/control-add-sku-to-bag
-                                              {:sku sku
-                                               :quantity quantity})
-                   :data-test "add-to-bag"
-                   :disabled? (not (:inventory/in-stock? sku))
-                   :spinning? adding-to-bag?}
-                  "Add to bag"))
 
 ;; TODO(jeff, heather): this should be refactored to a sticky-component to be shared with PDP
 (defn sticky-add-component
@@ -322,14 +312,14 @@
              [:div {:item-prop  "offers"
                     :item-scope ""
                     :item-type  "http://schema.org/Offer"}
-              [:div.pb2 (component/build picker/component picker-data opts)]
-              [:div
+              [:div (component/build picker/component picker-data opts)]
+              [:div.bg-light-silver.pt2
                [:div.mt1.mx3
                 (cond
                   unavailable? unavailable-button
                   sold-out?    sold-out-button
-                  :else        (add-to-bag-button adding-to-bag? selected-sku sku-quantity))]]
-              #?(:cljs [:div.mbn4.mx3
+                  :else        (component/build add-to-cart/organism data))]
+               #?(:cljs [:div.mbn4.mx3
                          (component/build quadpay/component
                                           {:show?       loaded-quadpay?
                                            :order-total (:sku/price selected-sku)
@@ -338,7 +328,7 @@
                                                          [:div.mx1 {:style {:width "70px" :height "14px"}}
                                                           ^:inline (svg/quadpay-logo)]
                                                          "at check out."]}
-                                          nil)])
+                                          nil)])]
               (when (products/stylist-only? product)
                 shipping-and-guarantee)]
              (product-description product)
@@ -455,34 +445,46 @@
                                (filter (comp (partial = "approved") :status))
                                (map (comp v2/get-ucare-id-from-url :resizable-url)))
         review-data       (review-component/query data)]
-    {:reviews                            review-data
-     :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
-     :yotpo-reviews-summary/product-id   (some-> review-data :yotpo-data-attributes :data-product-id)
-     :yotpo-reviews-summary/data-url     (some-> review-data :yotpo-data-attributes :data-url)
-     :title/primary                      (:copy/title product)
-     :price-block/primary                (:sku/price selected-sku)
-     :price-block/secondary              "per item"
-     :ugc                                ugc
-     :aladdin?                           (experiments/aladdin-experience? data)
-     :fetching-product?                  (utils/requesting? data (conj request-keys/search-v2-products
-                                                                       (:catalog/product-id product)))
-     :adding-to-bag?                     (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
-     :sku-quantity                       (get-in data keypaths/browse-sku-quantity 1)
-     :options                            options
-     :product                            product
-     :selections                         selections
-     :selected-options                   (get-selected-options selections options)
-     :selected-sku                       selected-sku
-     :facets                             facets
-     :selected-picker                    (get-in data catalog.keypaths/detailed-product-selected-picker)
-     :picker-data                        (picker/query data)
-     :carousel-images                    carousel-images
-     :get-a-free-install-section-data    {:store                 store
-                                          :gallery-ucare-ids     gallery-ucare-ids
-                                          :stylist-portrait      (:portrait store)
-                                          :stylist-name          (:store-nickname store)
-                                          :stylist-gallery-open? (get-in data keypaths/carousel-stylist-gallery-open?)}
-     :loaded-quadpay?                    (get-in data keypaths/loaded-quadpay)}))
+    {:reviews                                   review-data
+     :yotpo-reviews-summary/product-name        (some-> review-data :yotpo-data-attributes :data-name)
+     :yotpo-reviews-summary/product-id          (some-> review-data :yotpo-data-attributes :data-product-id)
+     :yotpo-reviews-summary/data-url            (some-> review-data :yotpo-data-attributes :data-url)
+     :title/primary                             (:copy/title product)
+     :price-block/primary                       (:sku/price selected-sku)
+     :price-block/secondary                     "per item"
+     :cta/id                                    "add-to-bag"
+     :cta/label                                 "Add to Cart"
+     :cta/target                                [events/control-add-sku-to-bag
+                                                 {:sku      selected-sku
+                                                  :quantity (get-in data keypaths/browse-sku-quantity 1)}]
+     :cta/spinning?                             (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
+     :cta/disabled?                             (not (:inventory/in-stock? selected-sku))
+     :freeinstall-add-to-cart-block/message     "Save 10% & get a free Mayvenn Install when you purchase 3 bundles, closure, or frontals.* "
+     :freeinstall-add-to-cart-block/footnote    "*Mayvenn Install cannot be combined with other promo codes."
+     :freeinstall-add-to-cart-block/link-target [events/popup-show-adventure-free-install]
+     :freeinstall-add-to-cart-block/link-label  "Learn more"
+     :freeinstall-add-to-cart-block/icon        "d7fbb4a1-6ad7-4122-b737-ade7dec8dfd3"
+     :ugc                                       ugc
+     :aladdin?                                  (experiments/aladdin-experience? data)
+     :fetching-product?                         (utils/requesting? data (conj request-keys/search-v2-products
+                                                                              (:catalog/product-id product)))
+     :adding-to-bag?                            (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
+     :sku-quantity                              (get-in data keypaths/browse-sku-quantity 1)
+     :options                                   options
+     :product                                   product
+     :selections                                selections
+     :selected-options                          (get-selected-options selections options)
+     :selected-sku                              selected-sku
+     :facets                                    facets
+     :selected-picker                           (get-in data catalog.keypaths/detailed-product-selected-picker)
+     :picker-data                               (picker/query data)
+     :carousel-images                           carousel-images
+     :get-a-free-install-section-data           {:store                 store
+                                                 :gallery-ucare-ids     gallery-ucare-ids
+                                                 :stylist-portrait      (:portrait store)
+                                                 :stylist-name          (:store-nickname store)
+                                                 :stylist-gallery-open? (get-in data keypaths/carousel-stylist-gallery-open?)}
+     :loaded-quadpay?                           (get-in data keypaths/loaded-quadpay)}))
 
 (defn ^:export built-component [data opts]
   (component/build component (query data) opts))
