@@ -158,6 +158,10 @@
     (component/build call-out/component call-out nil)
 
     [:div.clearfix.mxn3
+     [:div.h6.px4.medium.navy
+      [:a.inherit-color (utils/fake-href events/control-open-shop-escape-hatch)
+       (ui/back-caret "Continue Shopping" "12px")]]
+     [:div.hide-on-dt.border-top.border-light-gray.mt2.mb3]
      [:div.col-on-tb-dt.col-6-on-tb-dt.px3
       {:data-test "cart-line-items"}
       (display-adjustable-line-items recently-added-skus
