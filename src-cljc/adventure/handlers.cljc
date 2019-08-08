@@ -26,8 +26,6 @@
     events/navigate-adventure-stylist-results-post-purchase
     events/navigate-adventure-matching-stylist-wait-pre-purchase
     events/navigate-adventure-matching-stylist-wait-post-purchase
-    events/navigate-adventure-find-your-stylist
-    events/navigate-adventure-match-stylist
     events/navigate-adventure-match-success-pre-purchase
     events/navigate-adventure-match-success-post-purchase
     events/navigate-adventure-checkout-wait})
