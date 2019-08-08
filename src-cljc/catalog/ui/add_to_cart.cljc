@@ -1,5 +1,6 @@
 (ns catalog.ui.add-to-cart
-  (:require [storefront.component :as component]
+  (:require #?@(:cljs [[storefront.hooks.quadpay :as quadpay]])
+            [storefront.component :as component]
             [storefront.components.ui :as ui]
             [storefront.components.svg :as svg]
             [storefront.platform.component-utils :as utils]))
@@ -17,21 +18,34 @@
 
 (defn freeinstall-add-to-cart-block
   [{:freeinstall-add-to-cart-block/keys [message link-label link-target footnote icon]}]
-  [:div.flex
-   [:div.col-2.flex.justify-center.items-center
-    (ui/ucare-img {:width "20"} icon)]
-   [:div.flex.flex-column.justify-end
-    [:div.h7 message
+  [:div.flex.pb1
+   [:div.px3.flex.justify-center.pt1
+    (ui/ucare-img {:width "18"} icon)]
+   [:div.flex.flex-column
+    [:div.h7
+     [:span.mr1 message]
      [:a.underline.navy
      (apply utils/send-event-callback link-target)
       link-label]]
-    [:div.dark-gray.h8 footnote]]])
+    [:div.dark-silver.h8 footnote]]])
+
 
 ;; ORGANISM
 (defn organism
   "Add to Cart organism"
-  [data _ _]
+  [{:quadpay/keys [loaded? price] :as data} _ _]
   (component/create
-   [:div.bg-light-silver
+   [:div.bg-fate-white.px3.pt3.pb1
     (freeinstall-add-to-cart-block data)
-    (cta-molecule data)]))
+    (cta-molecule data)
+    #?(:cljs
+       [:div
+        (component/build quadpay/component
+                         {:show?       loaded?
+                          :order-total price
+                          :directive   [:div.flex.justify-center.items-center
+                                        "Just select"
+                                        [:div.mx1 {:style {:width "70px" :height "14px"}}
+                                         ^:inline (svg/quadpay-logo)]
+                                        "at check out."]}
+                         nil)])]))

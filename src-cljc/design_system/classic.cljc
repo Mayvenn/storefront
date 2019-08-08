@@ -34,6 +34,7 @@
                                      :color-kw     :color/teal
                                      :height-class :large
                                      :data-test    "email-input-submit"}}}
+
    {:organism/label     :product-details
     :organism/component product-details/organism
     :organism/query
@@ -43,6 +44,7 @@
      :yotpo-reviews-summary/data-url      "/products/9-brazilian-straight-bundles"
      :price-block/primary                 108
      :price-block/secondary               "per item"}}
+
    {:organism/label     :add-to-cart
     :organism/component add-to-cart/organism
     :organism/query
@@ -53,6 +55,8 @@
                                                                                 :quantity 1}]
      :cta/disabled?                             false
      :cta/spinning?                             false
+     :quadpay/loaded?                           true
+     :quadpay/price                             108
      :freeinstall-add-to-cart-block/message     "Save 10% & get a free Mayvenn Install when you purchase 3 bundles, closure, or frontals.* "
      :freeinstall-add-to-cart-block/footnote    "*Mayvenn Install cannot be combined with other promo codes."
      :freeinstall-add-to-cart-block/link-target [events/popup-show-adventure-free-install]

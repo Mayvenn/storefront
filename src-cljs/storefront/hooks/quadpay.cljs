@@ -44,7 +44,7 @@
 
 (defn component [{:keys [show? order-total directive]} owner opts]
   (component/create
-   [:div
+   [:div.bg-white
     (when show?
       [:div.border.border-blue.rounded.my2.py2.h6.dark-gray.center
        "4 interest free payments of $" [:span {:data-test "quadpay-payment-amount"}

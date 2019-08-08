@@ -8,7 +8,6 @@
                        [storefront.api :as api]
                        [storefront.browser.scroll :as scroll]
                        [storefront.history :as history]
-                       [storefront.hooks.quadpay :as quadpay]
                        [storefront.hooks.reviews :as review-hooks]
                        [storefront.platform.messages :as messages]])
             [catalog.facets :as facets]
@@ -312,23 +311,13 @@
              [:div {:item-prop  "offers"
                     :item-scope ""
                     :item-type  "http://schema.org/Offer"}
-              [:div (component/build picker/component picker-data opts)]
-              [:div.bg-light-silver.pt2
-               [:div.mt1.mx3
-                (cond
-                  unavailable? unavailable-button
-                  sold-out?    sold-out-button
-                  :else        (component/build add-to-cart/organism data))]
-               #?(:cljs [:div.mbn4.mx3
-                         (component/build quadpay/component
-                                          {:show?       loaded-quadpay?
-                                           :order-total (:sku/price selected-sku)
-                                           :directive   [:div.flex.justify-center.items-center
-                                                         "Just select"
-                                                         [:div.mx1 {:style {:width "70px" :height "14px"}}
-                                                          ^:inline (svg/quadpay-logo)]
-                                                         "at check out."]}
-                                          nil)])]
+              [:div.px2
+               (component/build picker/component picker-data opts)]
+              [:div
+               (cond
+                 unavailable? unavailable-button
+                 sold-out?    sold-out-button
+                 :else        (component/build add-to-cart/organism data))]
               (when (products/stylist-only? product)
                 shipping-and-guarantee)]
              (product-description product)
@@ -444,13 +433,14 @@
                                :images
                                (filter (comp (partial = "approved") :status))
                                (map (comp v2/get-ucare-id-from-url :resizable-url)))
+        sku-price         (:sku/price selected-sku)
         review-data       (review-component/query data)]
     {:reviews                                   review-data
      :yotpo-reviews-summary/product-name        (some-> review-data :yotpo-data-attributes :data-name)
      :yotpo-reviews-summary/product-id          (some-> review-data :yotpo-data-attributes :data-product-id)
      :yotpo-reviews-summary/data-url            (some-> review-data :yotpo-data-attributes :data-url)
      :title/primary                             (:copy/title product)
-     :price-block/primary                       (:sku/price selected-sku)
+     :price-block/primary                       sku-price
      :price-block/secondary                     "per item"
      :cta/id                                    "add-to-bag"
      :cta/label                                 "Add to Cart"
@@ -464,6 +454,8 @@
      :freeinstall-add-to-cart-block/link-target [events/popup-show-adventure-free-install]
      :freeinstall-add-to-cart-block/link-label  "Learn more"
      :freeinstall-add-to-cart-block/icon        "d7fbb4a1-6ad7-4122-b737-ade7dec8dfd3"
+     :quadpay/loaded?                           (get-in data keypaths/loaded-quadpay)
+     :quadpay/price                             sku-price
      :ugc                                       ugc
      :aladdin?                                  (experiments/aladdin-experience? data)
      :fetching-product?                         (utils/requesting? data (conj request-keys/search-v2-products
@@ -483,8 +475,7 @@
                                                  :gallery-ucare-ids     gallery-ucare-ids
                                                  :stylist-portrait      (:portrait store)
                                                  :stylist-name          (:store-nickname store)
-                                                 :stylist-gallery-open? (get-in data keypaths/carousel-stylist-gallery-open?)}
-     :loaded-quadpay?                           (get-in data keypaths/loaded-quadpay)}))
+                                                 :stylist-gallery-open? (get-in data keypaths/carousel-stylist-gallery-open?)}}))
 
 (defn ^:export built-component [data opts]
   (component/build component (query data) opts))

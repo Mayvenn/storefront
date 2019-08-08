@@ -8,7 +8,6 @@
                        [storefront.browser.scroll :as scroll]
                        [storefront.effects :as effects]
                        [storefront.history :as history]
-                       [storefront.hooks.quadpay :as quadpay]
                        [storefront.hooks.reviews :as review-hooks]
                        [storefront.platform.messages :as messages]])
             [adventure.components.header :as header]
@@ -23,7 +22,6 @@
             [clojure.string :as string]
             [spice.date :as date]
             [spice.selector :as selector]
-            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.contentful :as contentful]
             [storefront.accessors.skus :as skus]
             [storefront.component :as component]
@@ -39,7 +37,8 @@
             [storefront.platform.component-utils :as utils]
             [storefront.platform.reviews :as review-component]
             [storefront.request-keys :as request-keys]
-            [storefront.transitions :as transitions]))
+            [storefront.transitions :as transitions]
+            [catalog.ui.add-to-cart :as add-to-cart]))
 
 (defn item-price [price]
   (when price
@@ -88,17 +87,6 @@
                    :disabled?      true
                    :disabled-class "bg-gray"}
                   "Unavailable"))
-
-(defn add-to-bag-button
-  [adding-to-bag? sku quantity]
-  (ui/teal-button {:on-click
-                   (utils/send-event-callback events/control-add-sku-to-bag
-                                              {:sku sku
-                                               :quantity quantity})
-                   :data-test "add-to-bag"
-                   :disabled? (not (:inventory/in-stock? sku))
-                   :spinning? adding-to-bag?}
-                  "Add to bag"))
 
 ;; TODO(jeff, heather): this should be refactored to a sticky-component to be shared with PDP
 (defn sticky-add-component
@@ -321,25 +309,15 @@
               [:div {:item-prop  "offers"
                      :item-scope ""
                      :item-type  "http://schema.org/Offer"}
-               [:div.pb2 (component/build picker/component picker-data opts)]
+               [:div.px2
+                (component/build picker/component picker-data opts)]
                (when (products/eligible-for-triple-bundle-discount? product)
                  [:div triple-bundle-upsell])
                [:div
-                [:div.mt1.mx3
-                 (cond
-                   unavailable? unavailable-button
-                   sold-out?    sold-out-button
-                   :else        (add-to-bag-button adding-to-bag? selected-sku sku-quantity))]]
-               #?(:cljs [:div.mbn4
-                         (component/build quadpay/component
-                                          {:show?       loaded-quadpay?
-                                           :order-total (:sku/price selected-sku)
-                                           :directive   [:div.flex.justify-center.items-center
-                                                         "Just select"
-                                                         [:div.mx1 {:style {:width "70px" :height "14px"}}
-                                                          ^:inline (svg/quadpay-logo)]
-                                                         "at check out."]}
-                                          nil)])
+                (cond
+                  unavailable? unavailable-button
+                  sold-out?    sold-out-button
+                  :else        (component/build add-to-cart/organism data))]
                (when (products/stylist-only? product)
                  shipping-and-guarantee)]
               (product-description product)
@@ -451,36 +429,50 @@
 
         stylist-selected? (get-in data adventure.keypaths/adventure-servicing-stylist)
         current-step      (if stylist-selected? 3 2)
+        sku-price (:sku/price selected-sku)
         review-data       (review-component/query data)]
-    {:header-data                        {:progress                progress/product-details
-                                          :title                   [:div.medium "The New You"]
-                                          :subtitle                (str "Step " current-step " of 3")
-                                          :back-navigation-message [events/navigate-adventure-match-stylist]}
-     :reviews                            review-data
-     :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
-     :yotpo-reviews-summary/product-id   (some-> review-data :yotpo-data-attributes :data-product-id)
-     :yotpo-reviews-summary/data-url     (some-> review-data :yotpo-data-attributes :data-url)
-     :title/primary                      (:copy/title product)
-     :price-block/primary                (:sku/price selected-sku)
-     :price-block/secondary              "per item"
-     :ugc                                ugc
-     :adding-to-bag?                     (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
-     :sku-quantity                       (get-in data keypaths/browse-sku-quantity 1)
-     :options                            options
-     :product                            product
-     :selections                         selections
-     :selected-options                   (get-selected-options selections options)
-     :selected-sku                       selected-sku
-     :facets                             facets
-     :selected-picker                    (get-in data catalog.keypaths/detailed-product-selected-picker)
-     :picker-data                        (picker/query data)
-     :carousel-images                    carousel-images
-     :get-a-free-install-section-data    {:store                 store
-                                          :gallery-ucare-ids     gallery-ucare-ids
-                                          :stylist-portrait      (:portrait store)
-                                          :stylist-name          (:store-nickname store)
-                                          :stylist-gallery-open? (get-in data keypaths/carousel-stylist-gallery-open?)}
-     :loaded-quadpay?                    (get-in data keypaths/loaded-quadpay)}))
+    {:header-data                               {:progress                progress/product-details
+                                                 :title                   [:div.medium "The New You"]
+                                                 :subtitle                (str "Step " current-step " of 3")
+                                                 :back-navigation-message [events/navigate-adventure-match-stylist]}
+     :reviews                                   review-data
+     :yotpo-reviews-summary/product-name        (some-> review-data :yotpo-data-attributes :data-name)
+     :yotpo-reviews-summary/product-id          (some-> review-data :yotpo-data-attributes :data-product-id)
+     :yotpo-reviews-summary/data-url            (some-> review-data :yotpo-data-attributes :data-url)
+     :title/primary                             (:copy/title product)
+     :price-block/primary                       sku-price
+     :price-block/secondary                     "per item"
+     :cta/id                                    "add-to-bag"
+     :cta/label                                 "Add to Cart"
+     :cta/target                                [events/control-add-sku-to-bag
+                                                 {:sku      selected-sku
+                                                  :quantity (get-in data keypaths/browse-sku-quantity 1)}]
+     :cta/spinning?                             (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
+     :cta/disabled?                             (not (:inventory/in-stock? selected-sku))
+     :freeinstall-add-to-cart-block/message     "Save 10% & get a free Mayvenn Install when you purchase 3 bundles, closure, or frontals.* "
+     :freeinstall-add-to-cart-block/footnote    "*Mayvenn Install cannot be combined with other promo codes."
+     :freeinstall-add-to-cart-block/link-target [events/popup-show-adventure-free-install]
+     :freeinstall-add-to-cart-block/link-label  "Learn more"
+     :freeinstall-add-to-cart-block/icon        "d7fbb4a1-6ad7-4122-b737-ade7dec8dfd3"
+     :quadpay/loaded?                           (get-in data keypaths/loaded-quadpay)
+     :quadpay/price                             sku-price
+     :ugc                                       ugc
+     :adding-to-bag?                            (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
+     :sku-quantity                              (get-in data keypaths/browse-sku-quantity 1)
+     :options                                   options
+     :product                                   product
+     :selections                                selections
+     :selected-options                          (get-selected-options selections options)
+     :selected-sku                              selected-sku
+     :facets                                    facets
+     :selected-picker                           (get-in data catalog.keypaths/detailed-product-selected-picker)
+     :picker-data                               (picker/query data)
+     :carousel-images                           carousel-images
+     :get-a-free-install-section-data           {:store                 store
+                                                 :gallery-ucare-ids     gallery-ucare-ids
+                                                 :stylist-portrait      (:portrait store)
+                                                 :stylist-name          (:store-nickname store)
+                                                 :stylist-gallery-open? (get-in data keypaths/carousel-stylist-gallery-open?)}}))
 
 (defn ^:export built-component [data opts]
   (component/build component (query data) opts))
