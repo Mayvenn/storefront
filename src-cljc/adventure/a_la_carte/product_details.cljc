@@ -52,7 +52,7 @@
 (defn full-bleed-narrow [body]
   ;; The mxn2 pairs with the p2 of the container, to make the body full width
   ;; on mobile.
-  [:div.mxn2.mt2 body])
+  [:div.mxn2 body])
 
 (defn quantity-and-price-structure [quantity price]
   [:div
@@ -274,7 +274,6 @@
            selections
            options
            picker-data
-           loaded-quadpay?
            ugc] :as data} owner opts]
   (let [unavailable? (not (seq selected-sku))
         sold-out?    (not (:inventory/in-stock? selected-sku))]
