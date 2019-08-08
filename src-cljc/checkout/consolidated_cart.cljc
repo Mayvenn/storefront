@@ -217,11 +217,11 @@
                                 :class     "border-width-2 border-navy"
                                 :spinning? requesting-shared-cart?
                                 :data-test "share-cart"}
-                          [:div.flex.items-center.justify-center.bold
-                           (svg/share-arrow {:class  "stroke-navy mr1 fill-navy"
-                                             :width  "24px"
-                                             :height "24px"})
-                           "Share your bag"])])]]]))
+                               [:div.flex.items-center.justify-center.bold
+                                (svg/share-arrow {:class  "stroke-navy mr1 fill-navy"
+                                                  :width  "24px"
+                                                  :height "24px"})
+                                "Share your bag"])])]]]))
 
 (defn empty-component [{:keys [promotions aladdin?]} owner _]
   (component/create
