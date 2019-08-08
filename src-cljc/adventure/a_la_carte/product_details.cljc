@@ -194,7 +194,7 @@
 (defn product-description
   [{:keys [copy/description copy/colors copy/weights copy/materials copy/summary hair/family] :as product}]
   (when (seq description)
-    [:div.border.border-dark-gray.mt7.p2.rounded
+    [:div.border.border-dark-gray.m3.p2.rounded
      [:h2.h3.medium.navy.shout "Description"]
      [:div {:item-prop "description"}
       (when (or colors weights materials)
