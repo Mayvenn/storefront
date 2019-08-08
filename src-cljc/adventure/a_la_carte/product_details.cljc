@@ -302,23 +302,18 @@
                [:meta {:item-prop "image"
                        :content   (:url (first carousel-images))}]
                (full-bleed-narrow (carousel carousel-images product))]
-
               (component/build organism data)
-
-              [:div {:item-prop  "offers"
-                     :item-scope ""
-                     :item-type  "http://schema.org/Offer"}
-               [:div.px2
-                (component/build picker/component picker-data opts)]
-               (when (products/eligible-for-triple-bundle-discount? product)
-                 [:div triple-bundle-upsell])
-               [:div
-                (cond
-                  unavailable? unavailable-button
-                  sold-out?    sold-out-button
-                  :else        (component/build add-to-cart/organism data))]
-               (when (products/stylist-only? product)
-                 shipping-and-guarantee)]
+              [:div.px2
+               (component/build picker/component picker-data opts)]
+              (when (products/eligible-for-triple-bundle-discount? product)
+                [:div triple-bundle-upsell])
+              [:div
+               (cond
+                 unavailable? unavailable-button
+                 sold-out?    sold-out-button
+                 :else        (component/build add-to-cart/organism data))]
+              (when (products/stylist-only? product)
+                shipping-and-guarantee)
               (product-description product)
               [:div.mxn2.mb3 (component/build ugc/component ugc opts)]])]]
           (when (seq reviews)
