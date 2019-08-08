@@ -160,7 +160,8 @@
   [data owner opts]
   #?(:clj (component/create [:div])
      :cljs
-     (letfn [(handle-scroll [e] (om/set-state! owner :show? (< 75 (.-y (goog.dom/getDocumentScroll)))))
+     (letfn [(header-height-magic-number [] (if (< (.-width (goog.dom/getViewportSize)) 750) 75 180))
+             (handle-scroll [e] (om/set-state! owner :show? (< (header-height-magic-number) (.-y (goog.dom/getDocumentScroll)))))
              (set-height [] (om/set-state! owner :banner-height (some-> owner
                                                                         (om/get-node "banner")
                                                                         goog.style/getSize
