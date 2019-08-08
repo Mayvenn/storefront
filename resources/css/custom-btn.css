@@ -40,7 +40,7 @@
 }
 
 :root {
-  --border-width: 1px;
+  --border-width: 1.5px;
   --bold-font-weight: bold;
   --button-font-family: inherit;
   --button-font-size: inherit;
@@ -49,7 +49,7 @@
   --button-letter-spacing: 0;
   --button-padding-y: 1rem;
   --button-padding-x: 1rem;
-  --button-border-radius: 27px;
+  --button-border-radius: 50px;
 
   --darken-1: rgba(0, 0, 0, .075);
   --darken-3: rgba(0, 0, 0, .375);
