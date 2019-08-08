@@ -256,7 +256,7 @@
   [data _ _]
   (component/create
    [:div.mt3.mx3
-    (catalog.M/title data)
+    (catalog.M/product-title data)
     [:div.flex.justify-between
      (catalog.M/yotpo-reviews-summary data)
      (catalog.M/price-block data)]]))

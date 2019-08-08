@@ -3,11 +3,11 @@
             [storefront.components.money-formatters :as mf]
             [storefront.platform.reviews :as review-component]))
 
-(defn title
+(defn product-title
   "TODO empty state"
   [{:title/keys [id primary secondary]}]
   [:div {:data-test id}
-   [:h3.black.medium.titleize primary]
+   [:h3.black.medium.titleize {:item-prop "name"} primary]
    [:div.medium secondary]])
 
 (defn ^:private item-price
@@ -18,6 +18,9 @@
 (defn price-block
   [{:price-block/keys [primary secondary]}]
   [:div.right-align
+   {:item-prop  "offers"
+    :item-scope ""
+    :item-type  "http://schema.org/Offer"}
    (when-let [primary-formatted (item-price primary)]
      [:div
       [:div.bold primary-formatted]

@@ -263,7 +263,7 @@
   [data _ _]
   (component/create
    [:div.mt3.mx3
-    (catalog.M/title data)
+    (catalog.M/product-title data)
     [:div.flex.justify-between
      (catalog.M/yotpo-reviews-summary data)
      (catalog.M/price-block data)]]))
@@ -305,21 +305,16 @@
               [:meta {:item-prop "image"
                       :content   (:url (first carousel-images))}]
               (full-bleed-narrow (carousel carousel-images product))]
-
              (component/build organism data)
-
-             [:div {:item-prop  "offers"
-                    :item-scope ""
-                    :item-type  "http://schema.org/Offer"}
-              [:div.px2
-               (component/build picker/component picker-data opts)]
-              [:div
-               (cond
-                 unavailable? unavailable-button
-                 sold-out?    sold-out-button
-                 :else        (component/build add-to-cart/organism data))]
-              (when (products/stylist-only? product)
-                shipping-and-guarantee)]
+             [:div.px2
+              (component/build picker/component picker-data opts)]
+             [:div
+              (cond
+                unavailable? unavailable-button
+                sold-out?    sold-out-button
+                :else        (component/build add-to-cart/organism data))]
+             (when (products/stylist-only? product)
+               shipping-and-guarantee)
              (product-description product)
              [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])]]
          (when aladdin?
