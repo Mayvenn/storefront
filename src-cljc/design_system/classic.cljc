@@ -4,6 +4,7 @@
             [design-system.molecules :as molecules]
             [catalog.ui.molecules :as ui-molecules]
             [catalog.ui.add-to-cart :as add-to-cart]
+            [catalog.ui.freeinstall-banner :as freeinstall-banner]
             [popup.organisms :as popup]
             [storefront.component :as component]
             [storefront.effects :as effects]
@@ -64,7 +65,17 @@
      :freeinstall-add-to-cart-block/link-target [events/popup-show-adventure-free-install]
      :freeinstall-add-to-cart-block/link-label  "Learn more"
      :freeinstall-add-to-cart-block/icon        "d7fbb4a1-6ad7-4122-b737-ade7dec8dfd3"
-     :freeinstall-add-to-cart-block/show?       true}}])
+     :freeinstall-add-to-cart-block/show?       true}}
+
+   {:organism/label     :freeinstall-banner
+    :organism/component freeinstall-banner/organism
+    :organism/query
+    {:freeinstall-banner/title          "Buy 3 items and we'll pay for your hair install"
+     :freeinstall-banner/subtitle       [:span "Choose any " [:span.bold "Mayvenn stylist"] " in your area"]
+     :freeinstall-banner/button-copy    "browse stylists"
+     :freeinstall-banner/nav-event      [utils/noop-callback]
+     :freeinstall-banner/image-ucare-id "f4c760b8-c240-4b31-b98d-b953d152eaa5"
+     :freeinstall-banner/show?          true}}])
 
 (def molecules
   [{:molecule/label     :product-description
