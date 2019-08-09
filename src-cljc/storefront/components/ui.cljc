@@ -35,13 +35,16 @@
                        :width  width
                        :style  {:transform "rotate(-90deg)"}}))
 
-(defn back-caret [back-copy width]
-  (component/html
-   [:div.flex.items-center.stroke-dark-gray
-    ^:inline
-    (svg/left-caret {:width  width
-                     :height width})
-    [:div back-copy]]))
+(defn back-caret
+  ([back-copy width]
+   (back-caret back-copy width {}))
+  ([back-copy width style]
+   (component/html
+    [:div.flex.items-center.stroke-dark-gray
+     ^:inline
+     (svg/left-caret (merge style {:width  width
+                                   :height width}))
+     [:div back-copy]])))
 
 (def spinner
   "Spinner that fills line, assuming line-height is 1.5em"

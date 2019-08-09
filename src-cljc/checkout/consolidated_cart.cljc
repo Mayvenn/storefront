@@ -148,7 +148,7 @@
     [:div.clearfix.mxn3
      [:div.h6.px4.medium.navy
       [:a.inherit-color (utils/fake-href events/control-open-shop-escape-hatch)
-       (ui/back-caret "Continue Shopping" "12px")]]
+       (ui/back-caret "Continue Shopping" "12px" {:class "stroke-navy"})]]
      [:div.hide-on-dt.border-top.border-light-gray.mt2.mb3]
      [:div.col-on-tb-dt.col-6-on-tb-dt.px3
       {:data-test "cart-line-items"}
