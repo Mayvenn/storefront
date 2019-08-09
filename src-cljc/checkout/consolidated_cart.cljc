@@ -262,7 +262,7 @@
         line-items  (map (partial add-product-title-and-color-to-line-item products facets)
                          (orders/product-items order))
         variant-ids (map :id line-items)]
-    {:suggestions                (suggestions/query data)
+    {:suggestions                (suggestions/consolidated-query data)
      :order                      order
      :line-items                 line-items
      :skus                       (get-in data keypaths/v2-skus)

@@ -101,6 +101,14 @@
        :data-test "auto-complete"}
       [:div.flex.justify-center (map suggested-bundles suggestions)]])))
 
+(defn query
+  [data]
+  ;; TODO(jeff): refactor this as we are passing data in, as well as things that come off of data
+  (let [skus       (get-in data keypaths/v2-skus)
+        products   (get-in data keypaths/v2-products)
+        line-items (orders/product-items (get-in data keypaths/order))]
+    {:suggestions (suggest-bundles data products skus line-items)}))
+
 (defn image-with-sticker
   [{:cart-icon/keys [ucare-id sku-id sticker-label sticker-id sticker-size highlighted? image-width top-margin left-margin]}]
   #?(:clj
@@ -164,7 +172,7 @@
       (map consolidated-suggested-bundles
            suggestions)])))
 
-(defn query
+(defn consolidated-query
   [data]
   ;; TODO(jeff): refactor this as we are passing data in, as well as things that come off of data
   (let [skus       (get-in data keypaths/v2-skus)
