@@ -131,6 +131,7 @@
                          :color/teal-ghost  "btn-outline border-teal teal"
                          :color/navy-ghost  "btn-outline border-navy navy"
                          :color/facebook    "btn-primary bg-fb-blue white"
+                         :color/purple      "btn-primary bg-purple white"
                          :color/dark-gray   "btn-primary bg-dark-gray white"
                          :color/quadpay     "btn-primary bg-quadpay-blue white"})]
     (assert color (str "Button color " color-kw " has not been defined."))
@@ -159,6 +160,9 @@
 
 (defn teal-button [attrs & content]
   (color-button :color/teal attrs content))
+
+(defn purple-button [attrs & content]
+  (color-button :color/purple attrs content))
 
 (defn white-button [attrs & content]
   (color-button :color/white attrs content))
