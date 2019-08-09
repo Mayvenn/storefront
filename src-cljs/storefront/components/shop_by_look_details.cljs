@@ -37,7 +37,7 @@
             {:data-test "add-to-cart-submit"
              :disabled? (not look)
              :spinning? creating-order?})
-     "Add items to bag")))
+     "Add items to cart")))
 
 (defmethod effects/perform-effects events/control-create-order-from-shared-cart
   [_ event {:keys [look-id shared-cart-id] :as args} _ app-state]
