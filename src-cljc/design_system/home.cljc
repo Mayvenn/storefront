@@ -367,6 +367,7 @@
   [:div.flex.flex-wrap.mxn1.mb4
    (color-swatch "lavender" "af9fc4")
    (color-swatch "light-lavender" "cab6d7")
+   (color-swatch "too-light-lavender" "efebf5")
    (color-gradient-swatch "Lavender-gradient" "cdB8d9" "9a8fb4")
    (color-swatch "lavender-gradient-light" "cdB8d9")
    (color-swatch "lavender-gradient-dark" "9a8fb4")]

@@ -7,6 +7,7 @@
 .bg-lavender                { background-color: var(--lavender); }
 .bg-lavender-gradient-light { background-color: var(--lavender-gradient-light); }
 .bg-lavender-gradient-dark  { background-color: var(--lavender-gradient-dark); }
+.bg-too-light-lavender      { background-color: var(--too-light-lavender); }
 
 .bg-white                  { background-color: var(--white); }
 .bg-fate-white             { background-color: var(--fate-white); }
@@ -48,6 +49,7 @@
     --light-orange:           rgb(255, 248, 229);
     --light-lavender:         rgb(202, 182, 215);
     --lavender:               rgb(175, 159, 196);
+    --too-light-lavender:     #efebf5;
 
     --lavender-gradient-light: rgb(205, 184, 217);
     --lavender-gradient-dark: rgb(154, 143, 180);
