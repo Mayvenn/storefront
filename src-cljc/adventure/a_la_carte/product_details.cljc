@@ -145,7 +145,7 @@
                                    (utils/send-event-callback events/control-add-sku-to-bag
                                                               {:sku      sku
                                                                :quantity quantity})
-                                   :data-test      "add-to-bag"
+                                   :data-test      "add-to-cart"
                                    :disabled?      unpurchasable?
                                    :disabled-class "bg-gray"
                                    :spinning?      adding-to-bag?}
@@ -402,7 +402,7 @@
       :title/primary                             (:copy/title product)
       :price-block/primary                       sku-price
       :price-block/secondary                     "per item"
-      :cta/id                                    "add-to-bag"
+      :cta/id                                    "add-to-cart"
       :cta/label                                 "Add to Cart"
       :cta/target                                [events/control-add-sku-to-bag
                                                   {:sku      selected-sku

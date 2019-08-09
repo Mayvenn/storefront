@@ -52,7 +52,7 @@
     :organism/component add-to-cart/organism
     :organism/query
     {:title/primary                             "Add to cart"
-     :cta/id                                    "add-to-bag"
+     :cta/id                                    "add-to-cart"
      :cta/label                                 "Add to Cart"
      :cta/target                                [events/control-add-sku-to-bag {:sku      "MBW10"
                                                                                 :quantity 1}]
