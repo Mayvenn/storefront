@@ -25,8 +25,9 @@
      [:div.flex.flex-column
       [:div.h7
        [:span.mr1 message]
-       [:a.underline.navy
-        (apply utils/send-event-callback link-target)
+       [:a.underline.navy.pointer
+        {:data-test "freeinstall-add-to-cart-info-link"
+         :on-click  (apply utils/send-event-callback link-target)}
         link-label]]
       [:div.dark-silver.h8 footnote]]]))
 
