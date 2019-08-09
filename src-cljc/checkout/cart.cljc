@@ -227,7 +227,7 @@
   (component/create
    (ui/narrow-container
     [:div.p2
-     [:.center {:data-test "empty-bag"}
+     [:.center {:data-test "empty-cart"}
       [:div.m2 ^:inline (svg/bag {:style {:height "70px" :width "70px"}
                                   :class "fill-black"})]
 
