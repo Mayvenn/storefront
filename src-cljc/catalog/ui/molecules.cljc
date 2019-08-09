@@ -50,7 +50,7 @@
                              learn-more-nav-event]} _ _]
   (component/create
    (when (seq description)
-     [:div.border.border-light-gray.border-width-2.m3.py3.px4.rounded.bg-white ;; TODO: REMOVE bg-white
+     [:div.border.border-light-gray.border-width-2.m3.py3.px4.rounded
       [:div.h4.medium.shout "Description"]
       [:div {:item-prop "description"}
        (when (or colors weights materials)
@@ -60,23 +60,24 @@
                           (filter second))
                ;;This won't work if we have 5 possible attrs
                size (str "col-" (/ 12 (count attrs)))]
-           (into [:div.clearfix.mxn1.my2]
+           (into [:div.clearfix.mxn1.my3]
                  (for [[title value] attrs]
                    [:dl.col.m0.inline-block.dark-gray {:class size}
                     [:dt.mx1.shout.h7 title]
-                    [:dd.mx1.ml0.h5.medium value]]))))
+                    [:dd.mx1.ml0.h5 value]]))))
        (when (seq summary)
          [:div.my2.dark-gray
           [:h3.mbp3.h6 "Includes:"]
           [:ul.list-reset.h5.medium
            (for [[idx item] (map-indexed vector summary)]
              [:li.mbp3 {:key (str "item-" idx)} item])]])
-       [:div.h5.dark-gray
+       [:div.h5.dark-gray.light
         (for [[idx item] (map-indexed vector description)]
           [:div.mt2 {:key (str "product-description-" idx)} item])
-        (when (not (or (contains? hair-family "seamless-clip-ins")
-                       (contains? hair-family "tape-ins")
-                       (contains? stylist-exclusives-family "kits")))
+        (when (and learn-more-nav-event
+                   (not (or (contains? hair-family "seamless-clip-ins")
+                            (contains? hair-family "tape-ins")
+                            (contains? stylist-exclusives-family "kits"))))
           [:a.block.navy.mt2.medium
            (utils/route-to learn-more-nav-event)
            "Learn more about our hair"])]]])))

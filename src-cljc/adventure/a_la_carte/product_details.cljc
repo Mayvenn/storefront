@@ -191,34 +191,6 @@
     [:div.border-top.border-bottom.border-gray.p2.my2.center.navy.shout.medium.h6
      "Free shipping & 30 day guarantee"]))
 
-(defn product-description
-  [{:keys [copy/description copy/colors copy/weights copy/materials copy/summary hair/family] :as product}]
-  (when (seq description)
-    [:div.border.border-dark-gray.m3.p2.rounded
-     [:h2.h3.medium.navy.shout "Description"]
-     [:div {:item-prop "description"}
-      (when (or colors weights materials)
-        (let [attrs (->> [["Color" colors]
-                          ["Weight" weights]
-                          ["Material" materials]]
-                         (filter second))
-              ;;This won't work if we have 5 possible attrs
-              size (str "col-" (/ 12 (count attrs)))]
-          (into [:div.clearfix.mxn1.my2]
-                (for [[title value] attrs]
-                  [:dl.col.m0.inline-block {:class size}
-                   [:dt.mx1.dark-gray.shout.h6 title]
-                   [:dd.mx1.ml0.h5.navy.medium value]]))))
-      (when (seq summary)
-        [:div.my2
-         [:h3.mbp3.h5 "Includes:"]
-         [:ul.list-reset.navy.h5.medium
-          (for [[idx item] (map-indexed vector summary)]
-            [:li.mbp3 {:key (str "item-" idx)} item])]])
-      [:div.h5.dark-gray
-       (for [[idx item] (map-indexed vector description)]
-         [:p.mt2 {:key (str "product-description-" idx)} item])]]]))
-
 (defn image-body [{:keys [filename url alt]}]
   (ui/aspect-ratio
     640 580
@@ -270,8 +242,6 @@
            selected-sku
            sku-quantity
            selected-options
-           get-a-free-install-section-data
-           selections
            options
            picker-data
            ugc] :as data} owner opts]
@@ -314,7 +284,7 @@
                  :else        (component/build add-to-cart/organism data))]
               (when (products/stylist-only? product)
                 shipping-and-guarantee)
-              (product-description product)
+              (component/build catalog.M/product-description data opts)
               [:div.mxn2.mb3 (component/build ugc/component ugc opts)]])]]
           (when (seq reviews)
             [:div.container.px2
@@ -425,49 +395,52 @@
         current-step      (if stylist-selected? 3 2)
         sku-price (:sku/price selected-sku)
         review-data       (review-component/query data)]
-    {:header-data                               {:progress                progress/product-details
-                                                 :title                   [:div.medium "The New You"]
-                                                 :subtitle                (str "Step " current-step " of 3")
-                                                 :back-navigation-message [events/navigate-adventure-match-stylist]}
-     :reviews                                   review-data
-     :yotpo-reviews-summary/product-name        (some-> review-data :yotpo-data-attributes :data-name)
-     :yotpo-reviews-summary/product-id          (some-> review-data :yotpo-data-attributes :data-product-id)
-     :yotpo-reviews-summary/data-url            (some-> review-data :yotpo-data-attributes :data-url)
-     :title/primary                             (:copy/title product)
-     :price-block/primary                       sku-price
-     :price-block/secondary                     "per item"
-     :cta/id                                    "add-to-bag"
-     :cta/label                                 "Add to Cart"
-     :cta/target                                [events/control-add-sku-to-bag
-                                                 {:sku      selected-sku
-                                                  :quantity (get-in data keypaths/browse-sku-quantity 1)}]
-     :cta/spinning?                             (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
-     :cta/disabled?                             (not (:inventory/in-stock? selected-sku))
-     :freeinstall-add-to-cart-block/message     "Save 10% & get a free Mayvenn Install when you purchase 3 bundles, closure, or frontals.* "
-     :freeinstall-add-to-cart-block/footnote    "*Mayvenn Install cannot be combined with other promo codes."
-     :freeinstall-add-to-cart-block/link-target [events/popup-show-adventure-free-install]
-     :freeinstall-add-to-cart-block/link-label  "Learn more"
-     :freeinstall-add-to-cart-block/icon        "d7fbb4a1-6ad7-4122-b737-ade7dec8dfd3"
-     :freeinstall-add-to-cart-block/show?       (#{"freeinstall" "shop"} (get-in data keypaths/store-slug))
-     :quadpay/loaded?                           (get-in data keypaths/loaded-quadpay)
-     :quadpay/price                             sku-price
-     :ugc                                       ugc
-     :adding-to-bag?                            (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
-     :sku-quantity                              (get-in data keypaths/browse-sku-quantity 1)
-     :options                                   options
-     :product                                   product
-     :selections                                selections
-     :selected-options                          (get-selected-options selections options)
-     :selected-sku                              selected-sku
-     :facets                                    facets
-     :selected-picker                           (get-in data catalog.keypaths/detailed-product-selected-picker)
-     :picker-data                               (picker/query data)
-     :carousel-images                           carousel-images
-     :get-a-free-install-section-data           {:store                 store
-                                                 :gallery-ucare-ids     gallery-ucare-ids
-                                                 :stylist-portrait      (:portrait store)
-                                                 :stylist-name          (:store-nickname store)
-                                                 :stylist-gallery-open? (get-in data keypaths/carousel-stylist-gallery-open?)}}))
+    (merge
+     {:header-data                               {:progress                progress/product-details
+                                                  :title                   [:div.medium "The New You"]
+                                                  :subtitle                (str "Step " current-step " of 3")
+                                                  :back-navigation-message [events/navigate-adventure-match-stylist]}
+      :reviews                                   review-data
+      :yotpo-reviews-summary/product-name        (some-> review-data :yotpo-data-attributes :data-name)
+      :yotpo-reviews-summary/product-id          (some-> review-data :yotpo-data-attributes :data-product-id)
+      :yotpo-reviews-summary/data-url            (some-> review-data :yotpo-data-attributes :data-url)
+      :title/primary                             (:copy/title product)
+      :price-block/primary                       sku-price
+      :price-block/secondary                     "per item"
+      :cta/id                                    "add-to-bag"
+      :cta/label                                 "Add to Cart"
+      :cta/target                                [events/control-add-sku-to-bag
+                                                  {:sku      selected-sku
+                                                   :quantity (get-in data keypaths/browse-sku-quantity 1)}]
+      :cta/spinning?                             (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
+      :cta/disabled?                             (not (:inventory/in-stock? selected-sku))
+      :freeinstall-add-to-cart-block/message     "Save 10% & get a free Mayvenn Install when you purchase 3 bundles, closure, or frontals.* "
+      :freeinstall-add-to-cart-block/footnote    "*Mayvenn Install cannot be combined with other promo codes."
+      :freeinstall-add-to-cart-block/link-target [events/popup-show-adventure-free-install]
+      :freeinstall-add-to-cart-block/link-label  "Learn more"
+      :freeinstall-add-to-cart-block/icon        "d7fbb4a1-6ad7-4122-b737-ade7dec8dfd3"
+      :freeinstall-add-to-cart-block/show?       (#{"freeinstall" "shop"} (get-in data keypaths/store-slug))
+      :quadpay/loaded?                           (get-in data keypaths/loaded-quadpay)
+      :quadpay/price                             sku-price
+      :ugc                                       ugc
+      :adding-to-bag?                            (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
+      :sku-quantity                              (get-in data keypaths/browse-sku-quantity 1)
+      :options                                   options
+      :product                                   product
+      :selected-options                          (get-selected-options selections options)
+      :selected-sku                              selected-sku
+      :facets                                    facets
+      :selected-picker                           (get-in data catalog.keypaths/detailed-product-selected-picker)
+      :picker-data                               (picker/query data)
+      :carousel-images                           carousel-images}
+     (let [{:keys [copy/description copy/colors copy/weights copy/materials copy/summary hair/family]} product]
+       #:product-description {:summary                   summary
+                              :hair-family               family
+                              :description               description,
+                              :materials                 materials
+                              :colors                    colors
+                              :weights                   weights
+                              :stylist-exclusives-family (:stylist-exclusives/family product)}))))
 
 (defn ^:export built-component [data opts]
   (component/build component (query data) opts))
