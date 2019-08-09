@@ -38,6 +38,7 @@
             [storefront.request-keys :as request-keys]
             [storefront.transitions :as transitions]
             [catalog.ui.add-to-cart :as add-to-cart]
+            [catalog.ui.freeinstall-banner :as freeinstall-banner]
             [catalog.keypaths :as catalog.keypaths]))
 
 (defn item-price [price]
@@ -282,6 +283,7 @@
              (when (products/stylist-only? product)
                shipping-and-guarantee)
              (component/build catalog.M/product-description data opts)
+             (component/build freeinstall-banner/organism data opts)
              [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])]]
          (when aladdin?
            [:div.py10.bg-transparent-teal.col-on-tb-dt.mt4
@@ -380,16 +382,16 @@
      (keys options))))
 
 (defn query [data]
-  (let [selected-sku      (get-in data catalog.keypaths/detailed-product-selected-sku)
-        selections        (get-in data catalog.keypaths/detailed-product-selections)
-        product           (products/current-product data)
-        product-skus      (products/extract-product-skus data product)
-        facets            (facets/by-slug data)
-        carousel-images   (find-carousel-images product product-skus selected-sku)
-        options           (get-in data catalog.keypaths/detailed-product-options)
-        ugc               (ugc-query product selected-sku data)
-        sku-price         (:sku/price selected-sku)
-        review-data       (review-component/query data)]
+  (let [selected-sku    (get-in data catalog.keypaths/detailed-product-selected-sku)
+        selections      (get-in data catalog.keypaths/detailed-product-selections)
+        product         (products/current-product data)
+        product-skus    (products/extract-product-skus data product)
+        facets          (facets/by-slug data)
+        carousel-images (find-carousel-images product product-skus selected-sku)
+        options         (get-in data catalog.keypaths/detailed-product-options)
+        ugc             (ugc-query product selected-sku data)
+        sku-price       (:sku/price selected-sku)
+        review-data     (review-component/query data)]
     (merge {:reviews                                   review-data
             :yotpo-reviews-summary/product-name        (some-> review-data :yotpo-data-attributes :data-name)
             :yotpo-reviews-summary/product-id          (some-> review-data :yotpo-data-attributes :data-product-id)
@@ -435,7 +437,13 @@
                                     :colors                    colors
                                     :weights                   weights
                                     :stylist-exclusives-family (:stylist-exclusives/family product)
-                                    :learn-more-nav-event      events/navigate-content-our-hair}))))
+                                    :learn-more-nav-event      events/navigate-content-our-hair})
+           #:freeinstall-banner {:title          "Buy 3 items and we'll pay for your hair install"
+                                 :subtitle       [:span "Choose any " [:span.bold "Mayvenn stylist"] " in your area"]
+                                 :button-copy    "browse stylists"
+                                 :nav-event      [events/navigate-adventure-match-stylist]
+                                 :image-ucare-id "f4c760b8-c240-4b31-b98d-b953d152eaa5"
+                                 :show?          (#{"freeinstall" "shop"} (get-in data keypaths/store-slug))})))
 
 (defn ^:export built-component [data opts]
   (component/build component (query data) opts))

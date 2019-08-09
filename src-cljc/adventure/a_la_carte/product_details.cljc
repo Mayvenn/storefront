@@ -38,7 +38,8 @@
             [storefront.platform.reviews :as review-component]
             [storefront.request-keys :as request-keys]
             [storefront.transitions :as transitions]
-            [catalog.ui.add-to-cart :as add-to-cart]))
+            [catalog.ui.add-to-cart :as add-to-cart]
+            [catalog.ui.freeinstall-banner :as freeinstall-banner]))
 
 (defn item-price [price]
   (when price
@@ -285,6 +286,7 @@
               (when (products/stylist-only? product)
                 shipping-and-guarantee)
               (component/build catalog.M/product-description data opts)
+              (component/build freeinstall-banner/organism data opts)
               [:div.mxn2.mb3 (component/build ugc/component ugc opts)]])]]
           (when (seq reviews)
             [:div.container.px2
@@ -386,7 +388,7 @@
         ugc               (ugc-query product selected-sku data)
         stylist-selected? (get-in data adventure.keypaths/adventure-servicing-stylist)
         current-step      (if stylist-selected? 3 2)
-        sku-price (:sku/price selected-sku)
+        sku-price         (:sku/price selected-sku)
         review-data       (review-component/query data)]
     (merge
      {:header-data                               {:progress                progress/product-details
@@ -433,7 +435,13 @@
                               :materials                 materials
                               :colors                    colors
                               :weights                   weights
-                              :stylist-exclusives-family (:stylist-exclusives/family product)}))))
+                              :stylist-exclusives-family (:stylist-exclusives/family product)})
+     #:freeinstall-banner {:title          "Buy 3 items and we'll pay for your hair install"
+                           :subtitle       [:span "Choose any " [:span.bold "Mayvenn stylist"] " in your area"]
+                           :button-copy    "browse stylists"
+                           :nav-event      [events/navigate-adventure-match-stylist]
+                           :image-ucare-id "f4c760b8-c240-4b31-b98d-b953d152eaa5"
+                           :show?          (#{"freeinstall" "shop"} (get-in data keypaths/store-slug))})))
 
 (defn ^:export built-component [data opts]
   (component/build component (query data) opts))
