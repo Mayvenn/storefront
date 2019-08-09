@@ -146,7 +146,7 @@
     (component/build call-out/component call-out nil)
 
     [:div.clearfix.mxn3
-     [:div.h6.px4.medium.navy
+     [:div.h6.px4.medium.navy.py1
       [:a.inherit-color (utils/fake-href events/control-open-shop-escape-hatch)
        (ui/back-caret "Continue Shopping" "12px" {:class "stroke-navy"})]]
      [:div.hide-on-dt.border-top.border-light-gray.mt2.mb3]
