@@ -4,7 +4,6 @@
             [clojure.string :as str]
             [spice.core :as spice]
             [sablono.core :refer [html]]
-            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.images :as images]
             [storefront.accessors.contentful :as contentful]
             [storefront.accessors.products :as products]
@@ -22,7 +21,8 @@
             [storefront.platform.carousel :as carousel]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.reviews :as reviews]
-            [storefront.request-keys :as request-keys]))
+            [storefront.request-keys :as request-keys]
+            [ui.molecules :as ui-molecules]))
 
 (defn add-to-cart-button
   [sold-out? creating-order? look {:keys [number]}]
@@ -113,9 +113,10 @@
                          (images/cart-image sku)
                          [:div.pyp2 "Quantity: " quantity]))))
 
-(defn look-details-body [{:keys [creating-order? sold-out? look shared-cart skus fetching-shared-cart?
-                                 shared-cart-type-copy above-button-copy base-price discounted-price
-                                 quadpay-loaded? discount-text desktop-two-column? yotpo-data-attributes]}]
+(defn look-details-body
+  [{:keys [creating-order? sold-out? look shared-cart skus fetching-shared-cart?
+           shared-cart-type-copy above-button-copy base-price discounted-price
+           quadpay-loaded? discount-text desktop-two-column? yotpo-data-attributes]}]
   [:div.clearfix
    (when look
      [:div
@@ -175,18 +176,14 @@
           (om/build reviews/reviews-component {:yotpo-data-attributes yotpo-data-attributes} nil)])))])
 
 (defn component
-  [{:keys [back back-copy back-event album-keyword] :as look-details} owner opts]
+  [queried-data owner opts]
   (om/component
    (html
     [:div.container.mb4
      [:div.clearfix
-      [:div.col-6-on-tb-dt
-       [:a.p2.px3-on-tb-dt.left.col-12.dark-gray
-        (if (and (not back) back-event)
-          (utils/fake-href back-event)
-          (utils/route-back-or-to back events/navigate-shop-by-look {:album-keyword album-keyword}))
-        (ui/back-caret back-copy "18px")]]]
-     (look-details-body look-details)])))
+      [:div.col-6-on-tb-dt.p2
+       (ui-molecules/return-link queried-data)]]
+     (look-details-body queried-data)])))
 
 (defn adventure-component
   [look-details owner opts]
@@ -243,27 +240,32 @@
         shared-cart-promo (some-> shared-cart-with-skus :promotion-codes first str/lower-case)
         discount          (shared-cart-promo->discount (get-in data keypaths/promotions)
                                                        base-price
-                                                       shared-cart-promo)]
-    (merge {:shared-cart           shared-cart-with-skus
-            :album-keyword         album-keyword
-            :look                  look
-            :creating-order?       (utils/requesting? data request-keys/create-order-from-shared-cart)
-            :skus                  skus
-            :sold-out?             (not-every? :inventory/in-stock? (:line-items shared-cart-with-skus))
-            :fetching-shared-cart? (or (not look) (utils/requesting? data request-keys/fetch-shared-cart))
-            :back                  (first (get-in data keypaths/navigation-undo-stack))
-            :back-event            (:default-back-event album-copy)
-            :back-copy             (:back-copy album-copy)
-            :above-button-copy     (if-not (:discount-text discount)
-                                     "*Discounts applied at check out"
-                                     (:above-button-copy album-copy))
-            :shared-cart-type-copy (:short-name album-copy)
-            :look-detail-price?    (not= album-keyword :deals)
-            :base-price            base-price
-            :discounted-price      (:discounted-price discount)
-            :quadpay-loaded?       (get-in data keypaths/loaded-quadpay)
-            :desktop-two-column?   true
-            :discount-text         (:discount-text discount)}
+                                                       shared-cart-promo)
+        back              (first (get-in data keypaths/navigation-undo-stack))
+        back-event        (:default-back-event album-copy)]
+    (merge {:shared-cart                shared-cart-with-skus
+            :album-keyword              album-keyword
+            :look                       look
+            :creating-order?            (utils/requesting? data request-keys/create-order-from-shared-cart)
+            :skus                       skus
+            :sold-out?                  (not-every? :inventory/in-stock? (:line-items shared-cart-with-skus))
+            :fetching-shared-cart?      (or (not look) (utils/requesting? data request-keys/fetch-shared-cart))
+            :above-button-copy          (if-not (:discount-text discount)
+                                          "*Discounts applied at check out"
+                                          (:above-button-copy album-copy))
+            :shared-cart-type-copy      (:short-name album-copy)
+            :look-detail-price?         (not= album-keyword :deals)
+            :base-price                 base-price
+            :discounted-price           (:discounted-price discount)
+            :quadpay-loaded?            (get-in data keypaths/loaded-quadpay)
+            :desktop-two-column?        true
+            :discount-text              (:discount-text discount)
+
+            :return-link/copy           (:back-copy album-copy)
+            :return-link/event-message (if (and (not back) back-event)
+                                         [back-event]
+                                         [events/navigate-shop-by-look {:album-keyword album-keyword}])
+            :return-link/back          back}
            (reviews/query-look-detail shared-cart-with-skus data))))
 
 (defn adventure-query [data]

@@ -19,16 +19,10 @@
             [storefront.api :as api]
             [clojure.string :as string]
             [spice.core :as spice]
-            cljs.pprint))
+            cljs.pprint
+            [ui.molecules :as ui-molecules]))
 
 ;; TODO Remove handling of underscored keys after storeback has been deployed.
-
-(defn ^:private back-button [back]
-  [:a.col-12.dark-gray.flex.items-center.py3
-   (merge
-     {:data-test "back-link"}
-     (utils/route-back-or-to back events/navigate-v2-stylist-dashboard-orders))
-   (ui/back-caret "Back" "18px")])
 
 (defn ^:private info-block [header content]
   [:div.align-top.pt2.mb2.h6
@@ -110,7 +104,9 @@
          (when popup-visible?
            (popup tooltip-text))]])]))
 
-(defn component [{:keys [sale loading? popup-visible? back]} owner opts]
+(defn component
+  [{:keys [sale loading? popup-visible? back]
+    :as queried-data} owner opts]
   (let [{:keys [order-number
                 placed-at
                 order
@@ -128,7 +124,7 @@
                                               "'type-icon title'"
                                               "'spacer fields'")}}
          [:div {:style {:grid-area "back-btn"}}
-          (back-button back)]
+          [:div.py2.pl (ui-molecules/return-link queried-data)]]
          [:div {:style {:grid-area "type-icon"}}
           ^:inline (svg/box-package {:height 18
                                      :width  25})]
@@ -226,10 +222,13 @@
                                           :shipping-details (shipping/shipping-details shipment))))
         returned-quantities    (orders/returned-quantities (:order sale))
         shipments-with-returns (add-returns (vec shipments-enriched) returned-quantities)]
-    {:sale           (assoc-in sale [:order :shipments] shipments-with-returns)
-     :loading?       (utils/requesting? app-state request-keys/get-stylist-dashboard-sale)
-     :popup-visible? (get-in app-state keypaths/v2-dashboard-balance-transfers-voucher-popup-visible?)
-     :back           (first (get-in app-state keypaths/navigation-undo-stack))}))
+    {:sale                      (assoc-in sale [:order :shipments] shipments-with-returns)
+     :loading?                  (utils/requesting? app-state request-keys/get-stylist-dashboard-sale)
+     :popup-visible?            (get-in app-state keypaths/v2-dashboard-balance-transfers-voucher-popup-visible?)
+     :return-link/back          (first (get-in app-state keypaths/navigation-undo-stack))
+     :return-link/event-message [events/navigate-v2-stylist-dashboard-orders]
+     :return-link/copy          "Back"
+     :return-link/id            "back-link"}))
 
 (defn ^:export built-component [data opts]
   (component/build component (query data) opts))

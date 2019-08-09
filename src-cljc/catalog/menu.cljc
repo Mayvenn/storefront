@@ -8,7 +8,8 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
-            [storefront.transitions :as transitions]))
+            [storefront.transitions :as transitions]
+            [ui.molecules :as ui-molecules]))
 
 ;;NOTE Used by slideout-nav
 (defn major-menu-row [& content]
@@ -16,15 +17,13 @@
    (into [:a.block.inherit-color.flex.items-center] content)])
 
 (defn component
-  [{:keys [nav-root options]}
+  [{:keys [nav-root options] :as queried-data}
    owner
    opts]
   (component/create
    (let [{:keys [selector/electives]} nav-root]
      [:div
-      [:a.dark-gray.block.py1.px3.h6
-       (utils/fake-href events/menu-home)
-       [:span.mr1 (ui/back-caret "Back" "14px")]]
+      [:div.ml2.pl4.pt3 (ui-molecules/return-link queried-data)]
       [:div.px6
        (major-menu-row
         [:div.h2.flex-auto.center "Shop " (:copy/title nav-root)])
@@ -41,10 +40,12 @@
 
 (defn query [data]
   (let [{:keys [selector/essentials] :as nav-root} (categories/current-traverse-nav data)]
-    {:nav-root nav-root
-     :options  (selector/match-all {:selector/strict? true}
-                                   (select-keys nav-root essentials)
-                                   categories/menu-categories)}))
+    {:nav-root                  nav-root
+     :return-link/event-message [events/menu-home]
+     :return-link/copy         "Back"
+     :options                   (selector/match-all {:selector/strict? true}
+                                                    (select-keys nav-root essentials)
+                                                    categories/menu-categories)}))
 
 (defmethod transitions/transition-state events/menu-home
   [_ _ _ app-state]

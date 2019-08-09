@@ -1,12 +1,10 @@
 (ns storefront.components.stylist.balance-transfer-details
-  (:require [spice.date :as date]
-            [checkout.cart :as cart]
+  (:require [checkout.cart :as cart]
+            [ui.molecules :as ui-molecules]
             [storefront.accessors.orders :as orders]
-            [storefront.accessors.experiments :as experiments]
             [storefront.component :as component]
             [storefront.components.formatters :as f]
             [storefront.components.money-formatters :as mf]
-            [storefront.components.order-summary :as summary]
             [storefront.components.stylist.line-items :as line-items]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
@@ -20,13 +18,6 @@
             [storefront.api :as api]))
 
 ;; TODO Remove handling of underscored keys after storeback has been deployed.
-
-(def ^:private back-to-earnings
-  [:a.col-12.dark-gray.flex.items-center.py3
-   (merge
-    {:data-test "back-link"}
-    (utils/route-to events/navigate-v2-stylist-dashboard-payments))
-   (ui/back-caret "Back" "18px")])
 
 (defn ^:private info-block [header content]
   [:div.align-top.mb2
@@ -83,17 +74,19 @@
 
      (summary-row "Total" commissionable-amount)]))
 
-(defn ^:private commission-component [{:keys [balance-transfer fetching? line-items]}]
-  (let [{:keys [id number amount data]} balance-transfer
+
+(defn ^:private commission-component
+  [{:keys [balance-transfer fetching? line-items] :as queried-data}]
+  (let [{:keys [id number amount data]}                       balance-transfer
         {:keys [order commission-date commissionable-amount]} data
-        shipment                        (orders/first-commissioned-shipment order)
-        commission-date                 (or commission-date (:commission_date data))
-        shipped-at                      (:shipped-at shipment)]
+        shipment        (orders/first-commissioned-shipment order)
+        commission-date (or commission-date (:commission_date data))
+        shipped-at      (:shipped-at shipment)]
     (if fetching?
       [:div.my2.h2 ui/spinner]
 
       [:div.container.mb4.px3
-       back-to-earnings
+       [:div.py3 (ui-molecules/return-link queried-data)]
        [:div.col.col-1 (svg/coin-in-slot {:height 14
                                           :width  20})]
        [:div.col.col-11.pl1
@@ -113,7 +106,7 @@
 
         [:div.align-top
          [:span.h6.dark-gray.shout.nowrap "order details"]
-         (component/build line-items/component {:line-items line-items
+         (component/build line-items/component {:line-items  line-items
                                                 :show-price? true}
                           {})]
 
@@ -173,20 +166,21 @@
       "Check"            (check-payout-details date-string payout-method)
       "Venmo"            (venmo-payout-details date-string payout-method))))
 
-(defn ^:private payout-component [{:keys [balance-transfer]}]
+(defn ^:private payout-component
+  [{:keys [balance-transfer] :as queried-data}]
   (let [{:keys [id
                 number
                 amount
-                data]}             balance-transfer
+                data]}    balance-transfer
         {:keys [created-at
                 payout-method
                 payout-method-name
                 by-self]} data]
     [:div.container.mb4.px3
-     back-to-earnings
+     [:div.py3 (ui-molecules/return-link queried-data)]
      [:div
       [:div.col.col-1 (svg/stack-o-cash {:height 14
-                                             :width  20})]
+                                         :width  20})]
       [:div.col.col-11.pl1
        [:div.col.col-9
         [:h4.col-12.left.medium "Money Transfer"]]
@@ -197,11 +191,12 @@
         (f/long-date (or created-at (:transfered_at data)))
         (or payout-method (:payout_method data)))]]]))
 
-(defn ^:private award-component [{:keys [balance-transfer]}]
+(defn ^:private award-component
+  [{:keys [balance-transfer] :as queried-data}]
   (let [{:keys [id transfered-at amount data]} balance-transfer
         {:keys [reason]}                       data]
     [:div.container.mb4.px3
-     back-to-earnings
+     [:div.py3.pl1 (ui-molecules/return-link queried-data)]
      [:div
       [:div.col.col-1.px2 (svg/coin-in-slot {:height 14
                                              :width  20})]
@@ -213,12 +208,13 @@
        [:div.h5.medium.green (mf/as-money amount)]
        [:div.h8.dark-gray "Cash"]]]]))
 
-(defn ^:private voucher-award-component [{:keys [balance-transfer]}]
+(defn ^:private voucher-award-component
+  [{:keys [balance-transfer] :as queried-data}]
   (let [{:keys [id transfered-at amount data]}     balance-transfer
         {:keys [order campaign-name order-number]} data
         client-name                                (orders/first-name-plus-last-name-initial order)]
     [:div.container.mb4.px3
-     back-to-earnings
+     [:div.py3 (ui-molecules/return-link queried-data)]
      [:div
       [:div.col.col-1.px2 (svg/coin-in-slot {:height 14
                                              :width  20})]
@@ -243,14 +239,18 @@
       [:div.col.col-2.mtp1.right-align
        [:div.h5.medium.green (mf/as-money amount)]]]]))
 
+
 (defn query [data]
   (let [balance-transfer-id (get-in data keypaths/stylist-earnings-balance-transfer-details-id)
         balance-transfer    (get-in data (conj keypaths/stylist-earnings-balance-transfers
                                                balance-transfer-id))
         type                (:type balance-transfer)]
     (merge
-     {:balance-transfer balance-transfer
-      :fetching?        (utils/requesting? data request-keys/get-stylist-balance-transfer)}
+     {:return-link/id            "back-link"
+      :return-link/event-message [events/navigate-v2-stylist-dashboard-payments]
+      :return-link/copy          "Back"
+      :balance-transfer          balance-transfer
+      :fetching?                 (utils/requesting? data request-keys/get-stylist-balance-transfer)}
      (when (= type "commission")
        (let [line-items (->> (:order (:data balance-transfer))
                              orders/first-commissioned-shipment

@@ -14,6 +14,7 @@
               [storefront.hooks.quadpay :as quadpay]
               [goog.labs.userAgent.device :as device]])
    [catalog.images :as catalog-images]
+   [ui.molecules :as ui-molecules]
    [checkout.call-out :as call-out]
    [checkout.consolidated-cart.items :as cart-items]
    [checkout.consolidated-cart.summary :as cart-summary]
@@ -138,17 +139,15 @@
                               freeinstall-line-item-data
                               freeinstall-just-added?
                               loaded-quadpay?
-                              cart-summary]} owner _]
+                              cart-summary] :as queried-data} owner _]
   (component/create
    [:div.container.p2
-    (component/build promo-banner/sticky-organism promo-banner nil) 
+    (component/build promo-banner/sticky-organism promo-banner nil)
 
     (component/build call-out/component call-out nil)
 
     [:div.clearfix.mxn3
-     [:div.h6.px4.medium.navy.py1
-      [:a.inherit-color (utils/fake-href events/control-open-shop-escape-hatch)
-       (ui/back-caret "Continue Shopping" "12px" {:class "stroke-navy"})]]
+     [:div.px4 (ui-molecules/return-link queried-data)]
      [:div.hide-on-dt.border-top.border-light-gray.mt2.mb3]
      [:div.col-on-tb-dt.col-6-on-tb-dt.px3
       {:data-test "cart-line-items"}
@@ -288,7 +287,10 @@
      :recently-added-skus        (get-in data keypaths/cart-recently-added-skus)
      :freeinstall-just-added?    (get-in data keypaths/cart-freeinstall-just-added?)
      :stylist-service-menu       (get-in data keypaths/stylist-service-menu)
-     :freeinstall-line-item-data (cart-items/freeinstall-line-item-query data)}))
+     :freeinstall-line-item-data (cart-items/freeinstall-line-item-query data)
+
+     :return-link/copy "Continue Shopping"
+     :return-link/event-message [events/control-open-shop-escape-hatch]}))
 
 (defn empty-cart-query
   [data]
