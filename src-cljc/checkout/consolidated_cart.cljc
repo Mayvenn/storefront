@@ -267,7 +267,8 @@
      :line-items                 line-items
      :skus                       (get-in data keypaths/v2-skus)
      :products                   products
-     :promo-banner               (promo-banner/query data)
+     :promo-banner               (when (zero? (orders/product-quantity order))
+                                   (promo-banner/query data))
      :call-out                   (call-out/query data)
      :updating?                  (update-pending? data)
      :redirecting-to-paypal?     (get-in data keypaths/cart-paypal-redirect)
