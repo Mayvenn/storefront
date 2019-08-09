@@ -384,13 +384,6 @@
         carousel-images   (find-carousel-images product product-skus selected-sku)
         options           (get-in data catalog.keypaths/detailed-product-options)
         ugc               (ugc-query product selected-sku data)
-        store             (marquee/query data)
-        gallery-ucare-ids (->> store
-                               :gallery
-                               :images
-                               (filter (comp (partial = "approved") :status))
-                               (map (comp v2/get-ucare-id-from-url :resizable-url)))
-
         stylist-selected? (get-in data adventure.keypaths/adventure-servicing-stylist)
         current-step      (if stylist-selected? 3 2)
         sku-price (:sku/price selected-sku)
