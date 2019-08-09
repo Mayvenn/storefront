@@ -39,7 +39,7 @@
    [ui.promo-banner :as promo-banner]))
 
 (defn display-adjustable-line-items
-  [recently-added-skus line-items skus update-line-item-requests delete-line-item-requests]
+  [recently-added-skus line-items skus update-line-item-requests delete-line-item-requests suggestions]
   (for [{sku-id :sku variant-id :id :as line-item} line-items
 
         :let [sku                  (get skus sku-id)
@@ -48,32 +48,19 @@
               updating?            (get update-line-item-requests sku-id)
               just-added-to-order? (contains? recently-added-skus sku-id)
               length-circle-value  (-> sku :hair/length first)]]
-    [:div.pt1.pb2 {:key (str sku-id "-" (:quantity line-item))}
-     [:div.left.pr1
-      (when-not length-circle-value
-        {:class "pr3"})
-      (when length-circle-value
-        (css-transitions/transition-background-color
-         just-added-to-order?
-         [:div.right.z1.circle.stacking-context.border.border-light-gray.flex.items-center.justify-center.medium.h5.bg-too-light-teal
-          {:key       (str "length-circle-" sku-id)
-           :data-test (str "line-item-length-" sku-id)
-           :style     {:margin-left "-21px"
-                       :margin-top  "-10px"
-                       :width       "32px"
-                       :height      "32px"}} (str length-circle-value "”")]))
-
-      (css-transitions/transition-background-color
-       just-added-to-order?
-       [:div.flex.items-center.justify-center.ml1
-        {:key       (str "thumbnail-" sku-id)
-         :data-test (str "line-item-img-" (:catalog/sku-id sku))
-         :style     {:width "79px" :height "74px"}}
-        (ui/ucare-img
-         {:width 75}
-         (->> sku (catalog-images/image "cart") :ucare/id))])]
-
-     [:div {:style {:margin-top "-14px"}}
+    [:div.pt1.pb2.flex
+     {:key (str sku-id "-" (:quantity line-item))}
+     (suggestions/image-with-sticker {:cart-icon/ucare-id      (->> sku (catalog-images/image "cart") :ucare/id)
+                                      :cart-icon/sku-id        (:catalog/sku-id sku)
+                                      :cart-icon/sticker-label (when-let [length-circle-value (-> sku :hair/length first)]
+                                                                 (str length-circle-value "”"))
+                                      :cart-icon/sticker-id    (str "line-item-length-" (:catalog/sku-id sku))
+                                      :cart-icon/sticker-size  "28px"
+                                      :cart-icon/image-width   48
+                                      :cart-icon/top-margin    "-8px"
+                                      :cart-icon/left-margin   "-15px"
+                                      :cart-icon/highlighted?  just-added-to-order?})
+     [:div.flex-auto
       [:a.medium.titleize.h5
        {:data-test (str "line-item-title-" sku-id)}
        (or (:product-title line-item)
@@ -102,7 +89,8 @@
                                                               {:variant line-item})
                                    (utils/send-event-callback events/control-cart-line-item-inc
                                                               {:variant line-item}))]
-        [:div.h5 {:data-test (str "line-item-price-ea-" sku-id)} (mf/as-money-without-cents price) " ea"]]]]]))
+        [:div.h5 {:data-test (str "line-item-price-ea-" sku-id)} (mf/as-money-without-cents price) " ea"]]]
+      (component/build suggestions/consolidated-component suggestions nil)]]))
 
 (defn ^:private non-adjustable-line-item
   [freeinstall-just-added? {:keys [removing? id title detail price remove-event thumbnail-image-fn]}]
@@ -168,11 +156,12 @@
                                      line-items
                                      skus
                                      update-line-item-requests
-                                     delete-line-item-requests)
-      (when freeinstall-line-item-data
-        (non-adjustable-line-item freeinstall-just-added? freeinstall-line-item-data))
+                                     delete-line-item-requests
+                                     suggestions)
 
-      (component/build suggestions/component suggestions nil)]
+      ;; TODO does this below stay post consolidation?
+      (when freeinstall-line-item-data
+        (non-adjustable-line-item freeinstall-just-added? freeinstall-line-item-data))]
 
      [:div.col-on-tb-dt.col-6-on-tb-dt
       (component/build cart-summary/component cart-summary nil)

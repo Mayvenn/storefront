@@ -11,7 +11,9 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
-            [storefront.request-keys :as request-keys]))
+            [storefront.request-keys :as request-keys]
+            [storefront.css-transitions :as css-transitions]
+            [catalog.images :as catalog-images]))
 
 (defn suggest-bundles
   [data products skus items]
@@ -99,13 +101,105 @@
        :data-test "auto-complete"}
       [:div.flex.justify-center (map suggested-bundles suggestions)]])))
 
+(defn image-with-sticker
+  [{:cart-icon/keys [ucare-id sku-id sticker-label sticker-id sticker-size highlighted? image-width top-margin left-margin]}]
+  #?(:clj
+     [:div]
+     :cljs
+     [:div.pr1
+      (when-not sticker-label
+        {:class "pr3"})
+      (when sticker-label
+        ;; TODO: highlighting does not work as before
+        [:div.right.z1.circle.stacking-context.border.border-white.flex.items-center.justify-center.medium.h6.bg-too-light-teal
+         {:key       sticker-id
+          :data-test sticker-id
+          :style     {:margin-left left-margin
+                      :margin-top  top-margin
+                      :width       sticker-size
+                      :height      sticker-size}}
+         sticker-label])
+
+      (css-transitions/transition-background-color
+       highlighted?
+       [:div.flex.items-center.justify-center.ml1.p1.rounded
+        {:key       (str "thumbnail-" sku-id)
+         :data-test (str "line-item-img-" sku-id)}
+        (ui/ucare-img {:width image-width
+                       :class "rounded border border-light-gray"} ucare-id)])]))
+
+(defn consolidated-suggested-bundles
+  "TODO Heat needs to be updated to use new dt"
+  [{:suggested-bundles/keys [id images-with-stickers label target cta-id disabled? spinning?]}]
+  [:div.bg-fate-white.mt1.rounded
+   {:data-test id :key id}
+   [:div.flex.justify-between.items-center.p2
+    [:div.flex
+     (image-with-sticker (first images-with-stickers))
+     [:span.pr2 "+"]
+     (image-with-sticker (second images-with-stickers))]
+    [:div
+     (ui/teal-ghost-button {:class        "bold bg-white"
+                            :height-class :small
+                            ;; we don't want to draw attention to the disabling of the other 'Add' button,
+                            ;; but we do want to prevent people from clicking both.
+                            ;; :disabled? (and (not this-is-adding-to-bag?) any-adding-to-bag?)
+                            :on-click     (if disabled?
+                                            utils/noop-callback
+                                            (apply utils/send-event-callback target))
+                            :spinning?    spinning?
+                            :data-test    cta-id}
+                           label)]]])
+
+(defn consolidated-component
+  [{:keys [suggestions ]} _ _]
+  (component/create
+   (when (seq suggestions)
+     [:div {:data-test "auto-complete"}
+      [:div.flex.items-center
+       ^:inline (svg/angle-arrow {:style {:width  "13px"
+                                          :height "13px"}
+                                  :class "teal"})
+       [:div.h6.dark-gray.pl1 "Bundles often bought together"]]
+      (map consolidated-suggested-bundles
+           suggestions)])))
+
 (defn query
   [data]
   ;; TODO(jeff): refactor this as we are passing data in, as well as things that come off of data
   (let [skus       (get-in data keypaths/v2-skus)
         products   (get-in data keypaths/v2-products)
         line-items (orders/product-items (get-in data keypaths/order))]
-    {:suggestions (suggest-bundles data products skus line-items)}))
+    {:suggestions
+     (map (fn [{:keys [position skus initial-sku this-is-adding-to-bag? any-adding-to-bag?]}]
+            (let [[short-sku long-sku] skus]
+              {:suggested-bundles/id                   (str "suggestion-" (map :catalog/sku-id skus) "-" (name position))
+               :suggested-bundles/disabled?            (and (not this-is-adding-to-bag?) any-adding-to-bag?)
+               :suggested-bundles/spinning?            this-is-adding-to-bag?
+               :suggested-bundles/label                "add to cart"
+               :suggested-bundles/target               [events/control-suggested-add-to-bag
+                                                        {:skus        skus
+                                                         :initial-sku initial-sku}]
+               :suggested-bundles/cta-id               (str "add-" (name position))
+               :suggested-bundles/images-with-stickers [{:cart-icon/ucare-id      (->> short-sku (catalog-images/image "cart") :ucare/id)
+                                                         :cart-icon/sku-id        (:catalog/sku-id short-sku)
+                                                         :cart-icon/sticker-label (when-let [length-circle-value (-> short-sku :hair/length first)]
+                                                                                    (str length-circle-value "”"))
+                                                         :cart-icon/sticker-id    (str "line-item-length-" (:catalog/sku-id short-sku))
+                                                         :cart-icon/sticker-size  "28px"
+                                                         :cart-icon/image-width   39
+                                                         :cart-icon/top-margin    "-8px"
+                                                         :cart-icon/left-margin   "-13px"}
+                                                        {:cart-icon/ucare-id      (->> long-sku (catalog-images/image "cart") :ucare/id)
+                                                         :cart-icon/sku-id        (:catalog/sku-id long-sku)
+                                                         :cart-icon/sticker-label (when-let [length-circle-value (-> long-sku :hair/length first)]
+                                                                                    (str length-circle-value "”"))
+                                                         :cart-icon/sticker-id    (str "line-item-length-" (:catalog/sku-id long-sku))
+                                                         :cart-icon/sticker-size  "28px"
+                                                         :cart-icon/image-width   39
+                                                         :cart-icon/top-margin    "-8px"
+                                                         :cart-icon/left-margin   "-13px"}]}))
+          (suggest-bundles data products skus line-items))}))
 
 (defmethod effects/perform-effects events/control-suggested-add-to-bag
   [_ _ {:keys [skus initial-sku]} _ app-state]

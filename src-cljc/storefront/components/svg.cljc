@@ -28,6 +28,11 @@
   (component/html
    [:svg opts (svg-xlink "circled-exclamation")]))
 
+(defn angle-arrow [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "angle-arrow")]))
+
 (defn dropdown-arrow [opts]
   (component/html
    [:svg (maps/deep-merge {:style {:stroke-width "3"}} opts)
