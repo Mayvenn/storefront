@@ -1,5 +1,6 @@
 (ns checkout.header
-  (:require [storefront.accessors.orders :as orders]
+  (:require [storefront.accessors.experiments :as experiments]
+            [storefront.accessors.orders :as orders]
             [storefront.component :as component]
             [storefront.components.header :as storefront-header]
             [storefront.components.svg :as svg]
@@ -25,13 +26,19 @@
                                     :data-test "desktop-header-logo"
                                     :height "60px"})]]]]])
 
-(defn component [{:keys [desktop-header-data item-count back]} _ _]
+(defn component
+  [{:keys [illuminated?
+           desktop-header-data
+           item-count
+           back]} _ _]
   (component/create
    (let [close-cart-route (utils/route-back-or-to back events/navigate-home)]
      [:div
       (desktop-header desktop-header-data)
 
       [:div.max-960.mx-auto.border-bottom.border-light-gray.flex.items-center
+       (when illuminated?
+         {:class "bg-too-light-lavender"})
 
        [:div.col-2.hide-on-mb-tb
         [:a.h5.black.pointer.flex.justify-start.items-center close-cart-route
@@ -54,7 +61,10 @@
 (defn query [data]
   {:item-count          (orders/product-quantity (get-in data keypaths/order))
    :back                (first (get-in data keypaths/navigation-undo-stack))
-   :desktop-header-data (storefront-header/query data)})
+   :desktop-header-data (storefront-header/query data)
+   :illuminated?        (and
+                         (experiments/consolidated-cart? data)
+                         (orders/applied-install-promotion (get-in data keypaths/order)))})
 
 (defn built-component [data opts]
   (component/build component (query data) nil))

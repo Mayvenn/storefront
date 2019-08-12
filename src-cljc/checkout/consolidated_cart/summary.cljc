@@ -135,7 +135,7 @@
        [:div.h5
         (promo-entry promo-data)])
 
-     (when-not (orders/freeinstall-applied? order)
+     (when-not (orders/applied-install-promotion order)
        [:div.flex.py2
         "✋"
         [:div.flex.flex-column.px1
