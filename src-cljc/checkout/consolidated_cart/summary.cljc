@@ -144,7 +144,7 @@
           [:span.bold
            "free Mayvenn Install"]]
          [:div.h6
-          "Save 10% & get a free install by a licenced stylist when you purchase 3 or more bundles.*"]
+          "Save 10% & get a free install by a licensed stylist when you purchase 3 or more bundles.*"]
          [:div.flex.justify-left.py1
           [:div.col-4 (ui/teal-button {:height-class :small
                                        :class        "bold"
