@@ -153,7 +153,7 @@
                                  {:utm-source "shopFooter"})
                 :data-test "freeinstall-footer-link")
          [:span.teal "NEW "]
-         "Get A Free Install"]
+         "Get A Mayvenn Install"]
         (for [link column-1-links]
           (dtc-link link))]
        (for [link-column (partition-all partition-count rest-of-links)]

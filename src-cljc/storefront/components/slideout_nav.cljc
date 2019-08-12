@@ -140,7 +140,7 @@
        [{:link-attrs (utils/fake-href events/initiate-redirect-freeinstall-from-menu {:utm-source "shopHamburger"})
          :data-test  "menu-shop-freeinstall"
          :content    [[:span.teal.pr1 "NEW"]
-                      [:span.medium "Get a Free Install"]]}])
+                      [:span.medium "Get a Mayvenn Install"]]}])
 
      (when-not v2-experience?
        [{:link-attrs (utils/route-to events/navigate-shop-by-look {:album-keyword :deals})

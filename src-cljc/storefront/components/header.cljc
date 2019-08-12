@@ -146,7 +146,7 @@
       (header-menu-link
        (assoc (utils/fake-href events/initiate-redirect-freeinstall-from-menu {:utm-source "shopFlyout"})
               :on-mouse-enter close-shopping)
-       [:span [:span.teal.pr1 "NEW"] "Get a free install"]))
+       [:span [:span.teal.pr1 "NEW"] "Get a Mayvenn Install"]))
 
     (when-not v2-experience?
       (header-menu-link (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :deals})

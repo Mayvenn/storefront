@@ -64,8 +64,8 @@
          :video      (get-in data keypaths/adventure-home-video)}
         {:layer/type             :video-block
          :header/value           "#MayvennFreeInstall"
-         :body/value             [:span "Learn how you can get your "
-                                  [:span.nowrap "FREE install"]]
+         :body/value             [:span "Learn how you can get your free "
+                                  [:span.nowrap "Mayvenn Install"]]
          :cta/value              "Watch Now"
          :cta/navigation-message [(if shop?
                                     events/navigate-home
