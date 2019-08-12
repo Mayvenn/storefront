@@ -135,7 +135,7 @@
                                  {:album-keyword :look
                                   :query-params  {:sha "freeinstall"}})
    :file-name    "free-installation-hero"
-   :alt          "Free install when you buy 3 bundles or more! Use code: FREEINSTALL"
+   :alt          "Free Mayvenn Install when you buy 3 bundles or more! Use code: FREEINSTALL"
    :mobile-uuid  "990f17ce-c786-450b-9556-419858ae43df"
    :desktop-uuid "e7cb3f57-e718-4964-be9f-1e2ec186dc1d"})
 
