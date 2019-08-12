@@ -49,7 +49,7 @@
        [:div.col-1.hide-on-dt
         [:a.h3.pointer.flex.items-center (merge close-cart-route
                                                 {:data-test "cart-close" :title "Close"})
-         (svg/close-x {:class "stroke-dark-gray fill-white"})]]]])))
+         (svg/close-x {:class "stroke-dark-gray fill-none"})]]]])))
 
 (defn query [data]
   {:item-count          (orders/product-quantity (get-in data keypaths/order))

@@ -8,6 +8,7 @@
 .fill-navy         { fill: var(--navy); }
 .fill-orange       { fill: var(--orange); }
 .fill-aqua         { fill: var(--aqua); }
+.fill-none         { fill: none; }
 
 .stroke-white          { stroke: var(--white); }
 .stroke-light-silver   { stroke: var(--light-silver); }
