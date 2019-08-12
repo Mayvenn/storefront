@@ -90,7 +90,7 @@
           [:a.block.ml4.dark-gray
            video-link
            [:div.h4.bold "#MayvennFreeInstall"]
-           [:div.h4.my2 "See why customers love their FREE Install"]
+           [:div.h4.my2 "See why customers love their free Mayvenn Install"]
            [:div.h5.teal.flex.items-center.medium.shout
             "Watch Now"]]]
 
@@ -105,9 +105,9 @@
            video-link
            [:h6.bold.mbnp6 "#MayvennFreeInstall"]
            [:p.pt2.h8
-            [:span {:style {:white-space "nowrap"}} "See why customers love their"]
+            [:span {:style {:white-space "nowrap"}} "See why customers love their free"]
             " "
-            [:span {:style {:white-space "nowrap"}} "FREE Install"]]
+            [:span {:style {:white-space "nowrap"}} "Mayvenn Install"]]
            [:h6.teal.flex.items-center.medium.shout
             "Watch Now"]]]])))))
 
