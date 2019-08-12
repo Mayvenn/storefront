@@ -308,11 +308,18 @@
 (defmethod effects/perform-effects events/navigate-shop-by-look
   [dispatch event {:keys [album-keyword]} _ app-state]
   (let [actual-album-kw (ugc/determine-look-album app-state album-keyword)]
-    (if (and (experiments/aladdin-experience? app-state)
-             (= album-keyword :deals))
+    (cond
+      (and (#{:wavy-curly-looks :straight-looks} album-keyword)
+           (not= (get-in app-state keypaths/store-slug) "shop")
+           (not= "aladdin" (get-in app-state keypaths/store-experience)))
+      (effects/redirect events/navigate-shop-by-look {:album-keyword :look})
+
+      (and (experiments/aladdin-experience? app-state)
+           (= album-keyword :deals))
       (effects/redirect events/navigate-home) ; redirect to home page from /shop/deals for v2-experience
-      (when (= :ugc/unknown-album actual-album-kw)
-        (effects/page-not-found)))))
+
+      (= :ugc/unknown-album actual-album-kw)
+      (effects/page-not-found))))
 
 (defmethod effects/perform-effects events/navigate-shop-by-look-details [_ event {:keys [album-keyword]} _ app-state]
   (if-let [shared-cart-id (contentful/shared-cart-id (contentful/selected-look app-state))]

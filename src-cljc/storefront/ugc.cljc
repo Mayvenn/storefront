@@ -37,7 +37,25 @@
                                 :default-back-event events/navigate-home)
    :email-deals          (assoc shop-by-look-default
                                 :description (str "Grab the latest bundle deal! "
-                                                  "Below you can shop every bundle deal of the week."))})
+                                                  "Below you can shop every bundle deal of the week."))
+   :wavy-curly-looks     {:title             "Choose from these Wavy and Curly looks"
+                          :description       (str "We have an amazing selection of inspo to choose from.")
+                          :button-copy       "View this look"
+                          :back-copy         "back to looks"
+                          :above-button-copy "*Discounts applied at check out"
+                          :short-name        "look"
+                          :seo-title         "Shop Wavy and Curly Looks | Mayvenn"
+                          :og-title          (str "Shop Wavy and Curly Looks - "
+                                                  "Find and Buy your favorite Mayvenn bundles!")}
+   :straight-looks       {:title             "Choose from these Straight looks"
+                          :description       (str "We have an amazing selection of inspo to choose from.")
+                          :button-copy       "View this look"
+                          :back-copy         "back to looks"
+                          :above-button-copy "*Discounts applied at check out"
+                          :short-name        "look"
+                          :seo-title         "Shop Straight Looks | Mayvenn"
+                          :og-title          (str "Shop Straight Looks - "
+                                                  "Find and Buy your favorite Mayvenn bundles!")}})
 (def albums
   #{:sleek-and-straight    ;; Aladdin Home - Straight
     :waves-and-curly       ;; Aladdin Home - Wavy
@@ -46,6 +64,10 @@
     :email-deals
     :aladdin-free-install  ;; rename to free-install "Aladdin shop by look"
     :look                  ;; Shop by Look on classic/non-aladdin
+
+    ;; aladdin/shop looks
+    :wavy-curly-looks
+    :straight-looks
 
     ;; product detail page
     :straight
