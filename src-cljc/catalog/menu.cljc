@@ -17,35 +17,39 @@
    (into [:a.block.inherit-color.flex.items-center] content)])
 
 (defn component
-  [{:keys [nav-root options] :as queried-data}
+  [{:menu/keys [title options] :as queried-data}
    owner
    opts]
   (component/create
-   (let [{:keys [selector/electives]} nav-root]
-     [:div
-      [:div.ml2.pl4.pt3 (ui-molecules/return-link queried-data)]
-      [:div.px6
-       (major-menu-row
-        [:div.h2.flex-auto.center "Shop " (:copy/title nav-root)])
-       [:ul.list-reset
-        (for [{:keys [page/slug] :as category} options]
-          [:li {:key slug}
-           (major-menu-row
-            (assoc (utils/route-to events/navigate-category category)
-                   :data-test (str "menu-step-" slug))
-            [:span.flex-auto.titleize
-             (when (:category/new? category)
-               [:span.teal "NEW "])
-             (:copy/title category)])])]]])))
+   [:div
+    [:div.ml2.pl4.pt3 (ui-molecules/return-link queried-data)]
+    [:div.px6
+     (major-menu-row
+      [:div.h2.flex-auto.center "Shop " title])
+     [:ul.list-reset
+      (for [{:keys [key nav-message new? copy]} options]
+        [:li {:key key}
+         (major-menu-row
+          (assoc (apply utils/route-to nav-message)
+                 :data-test (str "menu-step-" key))
+          [:span.flex-auto.titleize
+           (when new?
+             [:span.teal "NEW "])
+           copy])])]]]))
 
 (defn query [data]
   (let [{:keys [selector/essentials] :as nav-root} (categories/current-traverse-nav data)]
-    {:nav-root                  nav-root
-     :return-link/event-message [events/menu-home]
-     :return-link/copy         "Back"
-     :options                   (selector/match-all {:selector/strict? true}
-                                                    (select-keys nav-root essentials)
-                                                    categories/menu-categories)}))
+    {:return-link/event-message [events/menu-home]
+     :return-link/copy          "Back"
+     :menu/title                (:copy/title nav-root)
+     :menu/options              (->> categories/menu-categories
+                                     (selector/match-all {:selector/strict? true}
+                                                         (select-keys nav-root essentials))
+                                     (map #(assoc %
+                                                  :nav-message [events/navigate-category %]
+                                                  :key (:page/slug %)
+                                                  :new? (:category/new? %)
+                                                  :copy (:copy/title %))))}))
 
 (defmethod transitions/transition-state events/menu-home
   [_ _ _ app-state]
