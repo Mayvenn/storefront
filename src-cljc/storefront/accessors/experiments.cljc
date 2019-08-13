@@ -110,3 +110,7 @@
 (defn consolidated-cart?
   [data]
   (display-feature? data "consolidated-cart"))
+
+(defn shop-by-look-textures?
+  [data]
+  (display-feature? data "shop-by-look-textures"))

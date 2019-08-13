@@ -261,6 +261,7 @@
 (def current-category-id (conj ui :current-category-id))
 (def current-traverse-nav (conj ui :current-traverse-nav))
 (def current-traverse-nav-id (conj current-traverse-nav :id))
+(def current-traverse-nav-menu-type (conj current-traverse-nav :menu-type))
 
 (def stylist-referrals (conj stylist :referrals))
 

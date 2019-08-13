@@ -132,7 +132,7 @@
    [:div.h4.border-bottom.border-gray.py3
     (into [:a.block.inherit-color.flex.items-center (assoc link-attrs :data-test data-test)] content)]])
 
-(defn shopping-rows [{:keys [show-freeinstall-link? v2-experience?]}]
+(defn shopping-rows [{:keys [show-freeinstall-link? v2-experience? shop-by-look-textures?]}]
   (let [^:inline caret (ui/forward-caret {:width  "23px"
                                           :height "20px"})]
     (concat
@@ -147,9 +147,15 @@
          :data-test  "menu-shop-by-deals"
          :content    [[:span.medium "Deals"]]}])
 
-     [{:link-attrs (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
-       :data-test "menu-shop-by-look"
-       :content [[:span.medium "Shop Looks"]]}
+     [(if shop-by-look-textures?
+        {:link-attrs (utils/fake-href events/menu-list
+                                      {:menu-type :shop-looks})
+         :data-test  "menu-shop-by-look"
+         :content    [[:span.medium.flex-auto "Shop Looks"]
+                      caret]}
+        {:link-attrs (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
+         :data-test  "menu-shop-by-look"
+         :content    [[:span.medium "Shop Looks"]]})
 
       {:link-attrs (utils/fake-href events/menu-list
                                     {:page/slug           "virgin-hair"
@@ -260,7 +266,7 @@
   (let [shop?                              (= "shop" (get-in data keypaths/store-slug))
         {:keys [match-eligible] :as store} (marquee/query data)]
     {:signed-in              (auth/signed-in data)
-     :on-taxon?              (get-in data keypaths/current-traverse-nav-id)
+     :on-taxon?              (get-in data keypaths/current-traverse-nav)
      :user                   {:email (get-in data keypaths/user-email)}
      :store                  store
      :show-community?        (and (not match-eligible)
@@ -268,13 +274,17 @@
      :vouchers?              (experiments/dashboard-with-vouchers? data)
      :v2-experience?         (experiments/aladdin-experience? data)
      :show-freeinstall-link? shop?
-     :shopping               {:categories (get-in data keypaths/categories)}}))
+     :shopping               {:categories (get-in data keypaths/categories)}
+     :shop-by-look-textures? (experiments/shop-by-look-textures? data)}))
 
 (defn query [data]
   (-> (basic-query data)
       (assoc-in [:user :store-credit] (get-in data keypaths/user-total-available-store-credit))
       (assoc-in [:cart :quantity]  (orders/product-quantity (get-in data keypaths/order)))
-      (assoc-in [:menu-data] (menu/query data))))
+      (assoc-in [:menu-data] (case (get-in data keypaths/current-traverse-nav-menu-type)
+                               :category   (menu/category-query data)
+                               :shop-looks (menu/shop-looks-query data)
+                               nil))))
 
 (defn built-component [data opts]
   (component/build component (query data) nil))

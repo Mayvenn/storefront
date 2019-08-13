@@ -37,7 +37,7 @@
              [:span.teal "NEW "])
            copy])])]]]))
 
-(defn query [data]
+(defn category-query [data]
   (let [{:keys [selector/essentials] :as nav-root} (categories/current-traverse-nav data)]
     {:return-link/event-message [events/menu-home]
      :return-link/copy          "Back"
@@ -51,13 +51,28 @@
                                                   :new? (:category/new? %)
                                                   :copy (:copy/title %))))}))
 
+(defn shop-looks-query [data]
+  {:return-link/event-message [events/menu-home]
+   :return-link/copy          "Back"
+   :menu/title                "Shop By Look"
+   :menu/options              [{:key "straight"
+                                :nav-message [events/navigate-shop-by-look {:album-keyword :straight-looks}]
+                                :new? false
+                                :copy "Straight Looks"}
+                               {:key "curly"
+                                :nav-message [events/navigate-shop-by-look {:album-keyword :wavy-curly-looks}]
+                                :new? false
+                                :copy "Wavy & Curly Looks"}]})
+
 (defmethod transitions/transition-state events/menu-home
   [_ _ _ app-state]
-  (update-in app-state keypaths/current-traverse-nav dissoc :id))
+  (update-in app-state keypaths/ui dissoc :current-traverse-nav))
 
 (defmethod transitions/transition-state events/menu-list
-  [_ _ {:keys [catalog/category-id]} app-state]
-  (assoc-in app-state keypaths/current-traverse-nav-id category-id))
+  [_ _ {:keys [menu-type catalog/category-id]} app-state]
+  (-> app-state
+      (assoc-in keypaths/current-traverse-nav-menu-type (or menu-type :category))
+      (assoc-in keypaths/current-traverse-nav-id category-id)))
 
 (defmethod effects/perform-effects events/control-menu-expand-hamburger
   [_ _ _ _ _]
