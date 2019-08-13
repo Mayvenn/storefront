@@ -203,7 +203,7 @@
 
 (defn discount-tag [opts]
   (component/html
-   [:svg opts
+   [:svg.fill-orange opts
     ^:inline (svg-xlink "discount-tag")]))
 
 (defn share-arrow [opts]
