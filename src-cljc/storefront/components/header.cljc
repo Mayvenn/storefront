@@ -13,7 +13,8 @@
             [storefront.events :as events]
             [storefront.routes :as routes]
             [storefront.keypaths :as keypaths]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            [storefront.accessors.experiments :as experiments]))
 
 (def hamburger
   (component/html
@@ -130,8 +131,11 @@
     " | "
     [:a.inherit-color (utils/route-to events/navigate-sign-up) "No account? Sign up"]]))
 
-(def open-shop-a-la-carte (utils/expand-menu-callback keypaths/shop-a-la-carte-menu-expanded))
-(def close-shop-a-la-carte (utils/collapse-menus-callback keypaths/header-menus))
+(defn ->flyout-handlers [keypath]
+  {:on-mouse-enter (utils/expand-menu-callback keypath)
+   :on-click       (utils/expand-menu-callback keypath)})
+
+(def close-header-menus (utils/collapse-menus-callback keypaths/header-menus))
 
 (defn header-menu-link [opts text]
   (component/html
@@ -139,34 +143,38 @@
     (merge opts {:style {:padding-left "24px" :padding-right "24px"}})
     text]))
 
-(defn menu [{:keys [show-freeinstall-link? v2-experience?]}]
+(defn menu [{:keys [show-freeinstall-link? v2-experience? shop-by-look-textures?]}]
   (component/html
    [:div.center
     (when show-freeinstall-link?
       (header-menu-link
        (assoc (utils/fake-href events/initiate-redirect-freeinstall-from-menu {:utm-source "shopFlyout"})
-              :on-mouse-enter close-shop-a-la-carte)
+              :on-mouse-enter close-header-menus)
        [:span [:span.teal.pr1 "NEW"] "Get a Mayvenn Install"]))
 
     (when-not v2-experience?
       (header-menu-link (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :deals})
-                               :on-mouse-enter close-shop-a-la-carte)
+                               :on-mouse-enter close-header-menus)
                         "Deals"))
-    (header-menu-link (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
-                             :on-mouse-enter close-shop-a-la-carte)
-                      "Shop looks")
-    (header-menu-link (assoc (utils/route-to events/navigate-home)
-                             :on-mouse-enter open-shop-a-la-carte
-                             :on-click       open-shop-a-la-carte)
+    (if shop-by-look-textures?
+      (header-menu-link (merge (utils/route-to events/navigate-home)
+                               (->flyout-handlers keypaths/shop-looks-menu-expanded))
+                        "Shop looks")
+      (header-menu-link (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
+                               :on-mouse-enter close-header-menus)
+                        "Shop looks"))
+
+    (header-menu-link (merge (utils/route-to events/navigate-home)
+                             (->flyout-handlers keypaths/shop-a-la-carte-menu-expanded))
                       "Shop hair")
     (header-menu-link (assoc (utils/route-to events/navigate-content-guarantee)
-                             :on-mouse-enter close-shop-a-la-carte)
+                             :on-mouse-enter close-header-menus)
                       "Our Guarantee")
     (header-menu-link (assoc (utils/route-to events/navigate-content-our-hair)
-                             :on-mouse-enter close-shop-a-la-carte)
+                             :on-mouse-enter close-header-menus)
                       "Our hair")
     (header-menu-link {:href           slideout-nav/blog-url
-                       :on-mouse-enter close-shop-a-la-carte}
+                       :on-mouse-enter close-header-menus}
                       "Real Beautiful")]))
 
 (defn flyout-column [options col-count]
@@ -174,13 +182,13 @@
   (component/html
    [:ul.list-reset.col.px2
     {:class (str "col-" (/ 12 col-count))}
-    (for [{:flyout-option/keys [key nav-message title new?]} options]
+    (for [{:keys [key nav-message copy new?]} options]
       [:li {:key key}
        [:a.inherit-color.block.pyp2.titleize
         (apply utils/route-to nav-message)
         (when new?
           [:span.teal "NEW "])
-        (string/capitalize title)]])]))
+        (string/capitalize copy)]])]))
 
 (defn flyout [columns expanded?]
   (when expanded?
@@ -194,7 +202,7 @@
   (component/create
    [:div
     [:div.hide-on-mb.relative
-     {:on-mouse-leave close-shop-a-la-carte}
+     {:on-mouse-leave close-header-menus}
      [:div.relative.border-bottom.border-gray {:style {:height "180px"}}
       [:div.max-960.mx-auto
        [:div.left (store-info signed-in store)]
@@ -212,7 +220,9 @@
                                       :height    "60px"})]
         [:div.mb1 (menu data)]]]]
      (flyout (:shop-a-la-carte-menu/columns data)
-             (:shop-a-la-carte-menu/expanded? data))]
+             (:shop-a-la-carte-menu/expanded? data))
+     (flyout (:shop-looks-menu/columns data)
+             (:shop-looks-menu/expanded? data))]
     [:div.hide-on-tb-dt.border-bottom.border-gray.flex.items-center
      hamburger
      [:div.flex-auto.py3 (ui/clickable-logo {:event     events/navigate-home
@@ -234,17 +244,17 @@
         (merge {:event logo-nav-event})))]]))
 
 (defn category->flyout-option [{:as category :keys [:page/slug copy/title category/new?]}]
-  {:flyout-option/key         slug
-   :flyout-option/nav-message (let [{:direct-to-details/keys [id slug sku-id]} category]
-                                (if id
-                                  [events/navigate-product-details
-                                   (merge
-                                    {:catalog/product-id id
-                                     :page/slug          slug}
-                                    (when sku-id {:query-params {:SKU sku-id}}))]
-                                  [events/navigate-category category]))
-   :flyout-option/title       title
-   :flyout-option/new?        new?})
+  {:key         slug
+   :nav-message (let [{:direct-to-details/keys [id slug sku-id]} category]
+                  (if id
+                    [events/navigate-product-details
+                     (merge
+                      {:catalog/product-id id
+                       :page/slug          slug}
+                      (when sku-id {:query-params {:SKU sku-id}}))]
+                    [events/navigate-category category]))
+   :copy        title
+   :new?        new?})
 
 (defn shop-a-la-carte-flyout-query [data]
   {:shop-a-la-carte-menu/columns   (->>  (get-in data keypaths/categories)
@@ -262,10 +272,27 @@
                                          (mapcat (partial partition-all 11)))
    :shop-a-la-carte-menu/expanded? (get-in data keypaths/shop-a-la-carte-menu-expanded)})
 
+(defn shop-looks-query [data]
+  {:shop-looks-menu/columns   [[{:key         "straight"
+                                 :nav-message [events/navigate-shop-by-look {:album-keyword :straight-looks}]
+                                 :new?        false
+                                 :copy        "Straight Looks"}]
+                               [{:key         "curly"
+                                 :nav-message [events/navigate-shop-by-look {:album-keyword :wavy-curly-looks}]
+                                 :new?        false
+                                 :copy        "Wavy & Curly Looks"}]
+                               [{:key         "all"
+                                 :nav-message [events/navigate-shop-by-look {:album-keyword :look}]
+                                 :new?        false
+                                 :copy        "All Looks"}]]
+   :shop-looks-menu/expanded? (get-in data keypaths/shop-looks-menu-expanded)})
+
 (defn query [data]
   (-> (slideout-nav/basic-query data)
+      (assoc :shop-by-look-textures? (experiments/shop-by-look-textures? data))
       (assoc-in [:user :expanded?] (get-in data keypaths/account-menu-expanded))
       (merge (shop-a-la-carte-flyout-query data))
+      (merge (shop-looks-query data))
       (assoc-in [:cart :quantity] (orders/product-quantity (get-in data keypaths/order)))))
 
 (defn built-component [data opts]
@@ -293,8 +320,8 @@
         (svg/back-arrow {:width "24px" :height "24px"})]]
       [:div.col-3])
     [:div.flex-auto.py3.col-6 (ui/clickable-logo
-                         {:data-test "header-logo"
-                          :height    "40px"})]
+                               {:data-test "header-logo"
+                                :height    "40px"})]
     [:div.col-3]]))
 
 (defn adventure-built-component [data opts]

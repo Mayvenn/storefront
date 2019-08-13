@@ -119,9 +119,11 @@
 (def account-menu-expanded (conj ui :account-menu-expanded))
 (def store-info-expanded (conj ui :store-info-expanded))
 (def shop-a-la-carte-menu-expanded (conj ui :shop-a-la-carte-menu-expanded))
+(def shop-looks-menu-expanded (conj ui :shop-looks-menu-expanded))
 (def popup (conj ui :popup))
 (def header-menus #{account-menu-expanded
                     shop-a-la-carte-menu-expanded
+                    shop-looks-menu-expanded
                     store-info-expanded})
 (def menus (conj header-menus menu-expanded))
 (def ui-ugc-category-popup-offset (conj ui :popup-ugc-category-offset))
