@@ -130,8 +130,8 @@
     " | "
     [:a.inherit-color (utils/route-to events/navigate-sign-up) "No account? Sign up"]]))
 
-(def open-shopping (utils/expand-menu-callback keypaths/shop-menu-expanded))
-(def close-shopping (utils/collapse-menus-callback keypaths/header-menus))
+(def open-shop-a-la-carte (utils/expand-menu-callback keypaths/shop-a-la-carte-menu-expanded))
+(def close-shop-a-la-carte (utils/collapse-menus-callback keypaths/header-menus))
 
 (defn header-menu-link [opts text]
   (component/html
@@ -145,73 +145,56 @@
     (when show-freeinstall-link?
       (header-menu-link
        (assoc (utils/fake-href events/initiate-redirect-freeinstall-from-menu {:utm-source "shopFlyout"})
-              :on-mouse-enter close-shopping)
+              :on-mouse-enter close-shop-a-la-carte)
        [:span [:span.teal.pr1 "NEW"] "Get a Mayvenn Install"]))
 
     (when-not v2-experience?
       (header-menu-link (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :deals})
-                               :on-mouse-enter close-shopping)
+                               :on-mouse-enter close-shop-a-la-carte)
                         "Deals"))
     (header-menu-link (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
-                             :on-mouse-enter close-shopping)
+                             :on-mouse-enter close-shop-a-la-carte)
                       "Shop looks")
     (header-menu-link (assoc (utils/route-to events/navigate-home)
-                             :on-mouse-enter open-shopping
-                             :on-click       open-shopping)
+                             :on-mouse-enter open-shop-a-la-carte
+                             :on-click       open-shop-a-la-carte)
                       "Shop hair")
     (header-menu-link (assoc (utils/route-to events/navigate-content-guarantee)
-                             :on-mouse-enter close-shopping)
+                             :on-mouse-enter close-shop-a-la-carte)
                       "Our Guarantee")
     (header-menu-link (assoc (utils/route-to events/navigate-content-our-hair)
-                             :on-mouse-enter close-shopping)
+                             :on-mouse-enter close-shop-a-la-carte)
                       "Our hair")
     (header-menu-link {:href           slideout-nav/blog-url
-                       :on-mouse-enter close-shopping}
+                       :on-mouse-enter close-shop-a-la-carte}
                       "Real Beautiful")]))
 
-(defn shopping-column [items col-count]
+(defn flyout-column [options col-count]
   {:pre [(zero? (mod 12 col-count))]}
   (component/html
    [:ul.list-reset.col.px2
     {:class (str "col-" (/ 12 col-count))}
-    (for [{:keys [page/slug copy/title category/new?] :as category} items]
-      [:li {:key slug}
+    (for [{:flyout-option/keys [key nav-message title new?]} options]
+      [:li {:key key}
        [:a.inherit-color.block.pyp2.titleize
-        (if (:direct-to-details/id category)
-          (utils/route-to events/navigate-product-details
-                          (merge
-                           {:catalog/product-id (:direct-to-details/id category)
-                            :page/slug          (:direct-to-details/slug category)}
-                           (when-let [sku-id (:direct-to-details/sku-id category)]
-                             {:query-params {:SKU sku-id}})))
-          (utils/route-to events/navigate-category category))
+        (apply utils/route-to nav-message)
         (when new?
           [:span.teal "NEW "])
         (string/capitalize title)]])]))
 
-(defn shopping-flyout [signed-in {:keys [expanded? categories]}]
+(defn flyout [columns expanded?]
   (when expanded?
-    (let [show?   (fn [category]
-                    (or (auth/stylist? signed-in)
-                        (not (-> category :catalog/department (contains? "stylist-exclusives")))))
-          columns (->> (filter :header/order categories)
-                       (filter show?)
-                       (sort-by :header/group)
-                       (group-by :header/group)
-                       vals
-                       (map (partial sort-by :header/order))
-                       (mapcat (partial partition-all 11)))]
-      (component/html
-       [:div.absolute.bg-white.col-12.z3.border-bottom.border-gray
-        [:div.mx-auto.clearfix.my6.col-10
-         (for [items columns]
-           (shopping-column items (count columns)))]]))))
+    (component/html
+     [:div.absolute.bg-white.col-12.z3.border-bottom.border-gray
+      [:div.mx-auto.clearfix.my6.col-10
+       (for [items columns]
+         (flyout-column items (count columns)))]])))
 
-(defn component [{:as data :keys [store user cart shopping signed-in vouchers?]} _ _]
+(defn component [{:as data :keys [store user cart signed-in vouchers?]} _ _]
   (component/create
    [:div
     [:div.hide-on-mb.relative
-     {:on-mouse-leave close-shopping}
+     {:on-mouse-leave close-shop-a-la-carte}
      [:div.relative.border-bottom.border-gray {:style {:height "180px"}}
       [:div.max-960.mx-auto
        [:div.left (store-info signed-in store)]
@@ -228,7 +211,8 @@
                                       :data-test "desktop-header-logo"
                                       :height    "60px"})]
         [:div.mb1 (menu data)]]]]
-     (shopping-flyout signed-in shopping)]
+     (flyout (:shop-a-la-carte-menu/columns data)
+             (:shop-a-la-carte-menu/expanded? data))]
     [:div.hide-on-tb-dt.border-bottom.border-gray.flex.items-center
      hamburger
      [:div.flex-auto.py3 (ui/clickable-logo {:event     events/navigate-home
@@ -249,11 +233,40 @@
         logo-nav-event
         (merge {:event logo-nav-event})))]]))
 
+(defn category->flyout-option [{:as category :keys [:page/slug copy/title category/new?]}]
+  {:flyout-option/key         slug
+   :flyout-option/nav-message (let [{:direct-to-details/keys [id slug sku-id]} category]
+                                (if id
+                                  [events/navigate-product-details
+                                   (merge
+                                    {:catalog/product-id id
+                                     :page/slug          slug}
+                                    (when sku-id {:query-params {:SKU sku-id}}))]
+                                  [events/navigate-category category]))
+   :flyout-option/title       title
+   :flyout-option/new?        new?})
+
+(defn shop-a-la-carte-flyout-query [data]
+  {:shop-a-la-carte-menu/columns   (->>  (get-in data keypaths/categories)
+                                         (filter :header/order)
+                                         (filter (fn [category]
+                                                   (or (auth/stylist? (auth/signed-in data))
+                                                       (not (-> category
+                                                                :catalog/department
+                                                                (contains? "stylist-exclusives"))))))
+                                         (sort-by :header/group)
+                                         (group-by :header/group)
+                                         vals
+                                         (map (partial sort-by :header/order))
+                                         (map (partial map category->flyout-option))
+                                         (mapcat (partial partition-all 11)))
+   :shop-a-la-carte-menu/expanded? (get-in data keypaths/shop-a-la-carte-menu-expanded)})
+
 (defn query [data]
   (-> (slideout-nav/basic-query data)
-      (assoc-in [:user :expanded?]     (get-in data keypaths/account-menu-expanded))
-      (assoc-in [:shopping :expanded?] (get-in data keypaths/shop-menu-expanded))
-      (assoc-in [:cart :quantity]      (orders/product-quantity (get-in data keypaths/order)))))
+      (assoc-in [:user :expanded?] (get-in data keypaths/account-menu-expanded))
+      (merge (shop-a-la-carte-flyout-query data))
+      (assoc-in [:cart :quantity] (orders/product-quantity (get-in data keypaths/order)))))
 
 (defn built-component [data opts]
   (component/html

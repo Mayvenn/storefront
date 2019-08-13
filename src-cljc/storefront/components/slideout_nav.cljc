@@ -265,17 +265,16 @@
 (defn basic-query [data]
   (let [shop?                              (= "shop" (get-in data keypaths/store-slug))
         {:keys [match-eligible] :as store} (marquee/query data)]
-    {:signed-in              (auth/signed-in data)
-     :on-taxon?              (get-in data keypaths/current-traverse-nav)
-     :user                   {:email (get-in data keypaths/user-email)}
-     :store                  store
-     :show-community?        (and (not match-eligible)
-                                  (stylists/own-store? data))
-     :vouchers?              (experiments/dashboard-with-vouchers? data)
-     :v2-experience?         (experiments/aladdin-experience? data)
-     :show-freeinstall-link? shop?
-     :shopping               {:categories (get-in data keypaths/categories)}
-     :shop-by-look-textures? (experiments/shop-by-look-textures? data)}))
+    {:signed-in                    (auth/signed-in data)
+     :on-taxon?                    (get-in data keypaths/current-traverse-nav)
+     :user                         {:email (get-in data keypaths/user-email)}
+     :store                        store
+     :show-community?              (and (not match-eligible)
+                                        (stylists/own-store? data))
+     :vouchers?                    (experiments/dashboard-with-vouchers? data)
+     :v2-experience?               (experiments/aladdin-experience? data)
+     :show-freeinstall-link?       shop?
+     :shop-by-look-textures?       (experiments/shop-by-look-textures? data)}))
 
 (defn query [data]
   (-> (basic-query data)
