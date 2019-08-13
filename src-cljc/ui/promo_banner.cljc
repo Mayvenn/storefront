@@ -122,7 +122,8 @@
   [data]
   (let [shop? (= "shop" (get-in data keypaths/store-slug))]
     (cond
-      shop?
+      (and shop?
+           (experiments/consolidated-cart? data))
       :shop/freeinstall
 
       ;; GROT: freeinstall-applied? when adventure orders using freeinstall promo code are no longer relevant

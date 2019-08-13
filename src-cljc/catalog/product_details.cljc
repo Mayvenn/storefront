@@ -382,16 +382,17 @@
      (keys options))))
 
 (defn query [data]
-  (let [selected-sku    (get-in data catalog.keypaths/detailed-product-selected-sku)
-        selections      (get-in data catalog.keypaths/detailed-product-selections)
-        product         (products/current-product data)
-        product-skus    (products/extract-product-skus data product)
-        facets          (facets/by-slug data)
-        carousel-images (find-carousel-images product product-skus selected-sku)
-        options         (get-in data catalog.keypaths/detailed-product-options)
-        ugc             (ugc-query product selected-sku data)
-        sku-price       (:sku/price selected-sku)
-        review-data     (review-component/query data)]
+  (let [selected-sku       (get-in data catalog.keypaths/detailed-product-selected-sku)
+        selections         (get-in data catalog.keypaths/detailed-product-selections)
+        product            (products/current-product data)
+        product-skus       (products/extract-product-skus data product)
+        facets             (facets/by-slug data)
+        carousel-images    (find-carousel-images product product-skus selected-sku)
+        options            (get-in data catalog.keypaths/detailed-product-options)
+        ugc                (ugc-query product selected-sku data)
+        sku-price          (:sku/price selected-sku)
+        review-data        (review-component/query data)
+        consolidated-cart? (experiments/consolidated-cart? data)]
     (merge {:reviews                                   review-data
             :yotpo-reviews-summary/product-name        (some-> review-data :yotpo-data-attributes :data-name)
             :yotpo-reviews-summary/product-id          (some-> review-data :yotpo-data-attributes :data-product-id)
@@ -411,7 +412,8 @@
             :freeinstall-add-to-cart-block/link-target [events/popup-show-adventure-free-install]
             :freeinstall-add-to-cart-block/link-label  "Learn more"
             :freeinstall-add-to-cart-block/icon        "d7fbb4a1-6ad7-4122-b737-ade7dec8dfd3"
-            :freeinstall-add-to-cart-block/show?       (#{"freeinstall" "shop"} (get-in data keypaths/store-slug))
+            :freeinstall-add-to-cart-block/show?       (and (#{"freeinstall" "shop"} (get-in data keypaths/store-slug))
+                                                            consolidated-cart?)
             :quadpay/loaded?                           (get-in data keypaths/loaded-quadpay)
             :quadpay/price                             sku-price
             :ugc                                       ugc
@@ -443,7 +445,8 @@
                                  :button-copy    "browse stylists"
                                  :nav-event      [events/navigate-adventure-match-stylist]
                                  :image-ucare-id "f4c760b8-c240-4b31-b98d-b953d152eaa5"
-                                 :show?          (#{"freeinstall" "shop"} (get-in data keypaths/store-slug))})))
+                                 :show?          (and (#{"freeinstall" "shop"} (get-in data keypaths/store-slug))
+                                                      consolidated-cart?)})))
 
 (defn ^:export built-component [data opts]
   (component/build component (query data) opts))
