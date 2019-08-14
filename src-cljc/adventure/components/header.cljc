@@ -41,13 +41,15 @@
            shopping-bag?
            subtitle
            title
-           logo?]
+           logo?
+           unstick?]
     :or   {shopping-bag? true}} _ _]
   (component/create
    (let [right-corner (cond (seq right-corner) right-corner
                             shopping-bag?      (shopping-bag)
-                            :else              nil)]
-     [:div#header.absolute.top-0.left-0.right-0.center
+                            :else              nil)
+         container (if unstick? :div#header :div#header.absolute.top-0.left-0.right-0.center)]
+     [container
       header-attrs
       [:div.flex.flex-column
        (if progress
