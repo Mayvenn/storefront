@@ -2,6 +2,7 @@
   (:require #?@(:cljs [[storefront.accessors.auth :as auth]
                        [storefront.history :as history]
                        [storefront.api :as api]
+                       [storefront.hooks.exception-handler :as exception-handler]
                        [voucher.components.qr-reader :as qr-reader]
                        [storefront.loader :as loader]
                        ;; we need to load this namespace first for google closure's tree shaking to put this file (from the same module)
@@ -157,7 +158,8 @@
                       (get-in prev-app-state voucher-keypaths/scanned-code)))
        (api/voucher-redemption code (get-in app-state keypaths/user-store-id)))))
 
-(defn ^:private redemption-error [voucherify-error-code]
+(defn ^:private interpret-redemption-error
+  [voucherify-error-code]
   (let [[error-message field-errors] (case voucherify-error-code
                                        "quantity_exceeded"  ["This code has already been used and cannot be used again." nil]
                                        "voucher_expired"    ["This voucher has expired." nil]
@@ -174,7 +176,10 @@
   [_ _ response _ _]
   (if (>= (:status response) 500)
     (messages/handle-message events/api-failure-bad-server-response response)
-    (messages/handle-message events/api-failure-errors (redemption-error (-> response :response :body :key)))))
+    (let [redemption-error (interpret-redemption-error (-> response :response :body :key))]
+      #?(:cljs
+         (exception-handler/report "voucherify-redemption-api-failure" redemption-error))
+      (messages/handle-message events/api-failure-errors redemption-error))))
 
 (defmethod transitions/transition-state events/api-success-voucher-redemption
   [_ event {:keys [date id object result voucher] :as data} app-state]
