@@ -220,14 +220,15 @@
   (let [[event args] nav-message]
     (history/enqueue-redirect event args)))
 
-(defn add-pending-promo-code [app-state {:keys [number token] :as order}]
+(defn add-pending-promo-code [app-state {:keys [number token]}]
   (when-let [pending-promo-code (get-in app-state keypaths/pending-promo-code)]
-    (api/add-promotion-code (= "shop" (get-in app-state keypaths/store-slug))
-                            (get-in app-state keypaths/session-id)
-                            number
-                            token
-                            pending-promo-code
-                            true)))
+    (api/add-promotion-code {:shop?              (= "shop" (get-in app-state keypaths/store-slug))
+                             :session-id         (get-in app-state keypaths/session-id)
+                             :number             number
+                             :token              token
+                             :promo-code         pending-promo-code
+                             :allow-dormant?     true
+                             :consolidated-cart? (experiments/consolidated-cart? app-state)})))
 
 (defmethod effects/perform-effects events/navigate [_ event {:keys [navigate/caused-by query-params nav-stack-item]} prev-app-state app-state]
   (let [freeinstall? (= "freeinstall" (get-in app-state keypaths/store-slug))]
@@ -906,7 +907,7 @@
 (defmethod effects/perform-effects events/api-success-update-order-add-promotion-code [_ _ {allow-dormant? :allow-dormant?} _ app-state]
   (when-not allow-dormant?
     (messages/handle-message events/flash-show-success {:message "The coupon code was successfully applied to your order."
-                                               :scroll? false})
+                                                        :scroll? false})
     (scroll-promo-field-to-top))
   (api/get-promotions (get-in app-state keypaths/api-cache)
                       (first (get-in app-state keypaths/order-promotion-codes))))

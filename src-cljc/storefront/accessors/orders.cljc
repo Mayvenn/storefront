@@ -138,6 +138,10 @@
   [{:as order :keys [promotion-codes]}]
   (some #{"freeinstall" "install"} (all-applied-promo-codes order)))
 
+(defn freeinstall-entered?
+  [{:as order :keys [promotion-codes]}]
+  (= #{"freeinstall"} (set promotion-codes)))
+
 (defn non-store-credit-payment-amount [order]
   (->> order
        :payments

@@ -1,6 +1,6 @@
 (ns checkout.consolidated-cart.items
-  (:require [checkout.accessors.vouchers :as vouchers]
-            [storefront.accessors.experiments :as experiments]
+  (:require [adventure.keypaths :as adventure-keypaths]
+            [checkout.accessors.vouchers :as vouchers]
             [storefront.accessors.orders :as orders]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
@@ -10,8 +10,7 @@
 
 (defn freeinstall-line-item-query [data]
   (let [order (get-in data keypaths/order)]
-    (when (and (experiments/aladdin-experience? data)
-               (orders/freeinstall-applied? order))
+    (when (orders/freeinstall-entered? order)
       (let [store-nickname        (get-in data keypaths/store-nickname)
             highest-value-service (some-> order
                                           orders/product-items
@@ -24,7 +23,7 @@
                                                          (filter #(= (:service/type %) highest-value-service))
                                                          first)
             service-price                           (some-> data
-                                                            (get-in keypaths/store-service-menu)
+                                                            (get-in adventure-keypaths/adventure-servicing-stylist-service-menu)
                                                             (get diva-advertised-type))]
         (when service-price
           {:removing?          (utils/requesting? data request-keys/remove-promotion-code)

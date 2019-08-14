@@ -5,8 +5,7 @@
 (defn organism
   [{:cart-summary/keys [id lines]
     :as query
-    :keys [promo-data
-           freeinstall-informational-data]} owner _]
+    :keys [promo-data]} owner _]
   (component/create
    [:div {:data-test id}
     [:div.py1.bg-fate-white.px4
@@ -18,7 +17,7 @@
      (when promo-data
        [:div.h5 (checkout.M/promo-entry promo-data)])
 
-     (when freeinstall-informational-data
+     (when (:freeinstall-informational/value query)
        checkout.M/freeinstall-informational)]
 
     [:div.pt2.px4

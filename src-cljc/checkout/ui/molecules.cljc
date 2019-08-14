@@ -35,7 +35,8 @@
                   :spinning?   applying?}})])
 
 (defn cart-summary-line-molecule
-  [{:cart-summary-line/keys [id label sublabel icon value action-id action-target action-icon]}]
+  [{:cart-summary-line/keys
+    [id label sublabel icon value action-id action-target action-icon]}]
   (when id
     [:tr.h6.medium
      {:data-test (str "cart-summary-line-" id)}

@@ -4,9 +4,11 @@
             [catalog.images :as catalog-images]
             [checkout.cart.items :as cart-items]
             [checkout.confirmation.summary :as confirmation-summary]
+            [checkout.consolidated-cart.items :as consolidated-cart-items]
             [checkout.templates.item-card :as item-card]
             [spice.core :as spice]
             [spice.maps :as maps]
+            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.stylists :as stylists]
             [storefront.api :as api]
@@ -290,16 +292,20 @@
 
 (defn query
   [data]
-  (let [order                      (get-in data keypaths/order)
-        freeinstall-line-item-data (cart-items/freeinstall-line-item-query data)
-        freeinstall-applied?       (orders/freeinstall-applied? order)
-        selected-quadpay?          (-> (get-in data keypaths/order) :cart-payments :quadpay)]
+  (let [order                                     (get-in data keypaths/order)
+        consolidated-cart?                        (experiments/consolidated-cart? data)
+        freeinstall-line-item-data                (if consolidated-cart?
+                                                    (consolidated-cart-items/freeinstall-line-item-query data)
+                                                    (cart-items/freeinstall-line-item-query data))
+        freeinstall-applied?                      (orders/freeinstall-applied? order)
+        freeinstall-entered-on-consolidated-cart? (and (orders/freeinstall-entered? order) consolidated-cart?)
+        selected-quadpay?                         (-> (get-in data keypaths/order) :cart-payments :quadpay)]
     {:requires-additional-payment?     (requires-additional-payment? data)
      :promo-banner                     (promo-banner/query data)
      :checkout-steps                   (checkout-steps/query data)
      :products                         (get-in data keypaths/v2-products)
      :items                            (cond-> (item-card-query data)
-                                         (and freeinstall-applied? freeinstall-line-item-data)
+                                         (and (or freeinstall-entered-on-consolidated-cart? freeinstall-applied?) freeinstall-line-item-data)
                                          (update
                                           :items conj
                                           (freeinstall-line-item-data->item-card freeinstall-line-item-data)))

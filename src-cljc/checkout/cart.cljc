@@ -271,12 +271,13 @@
   #?(:cljs
      (let [coupon-code (get-in app-state keypaths/cart-coupon-code)]
        (when-not (empty? coupon-code)
-         (api/add-promotion-code (= "shop" (get-in app-state keypaths/store-slug))
-                                 (get-in app-state keypaths/session-id)
-                                 (get-in app-state keypaths/order-number)
-                                 (get-in app-state keypaths/order-token)
-                                 coupon-code
-                                 false)))))
+         (api/add-promotion-code {:shop?              (= "shop" (get-in app-state keypaths/store-slug))
+                                  :session-id         (get-in app-state keypaths/session-id)
+                                  :number             (get-in app-state keypaths/order-number)
+                                  :token              (get-in app-state keypaths/order-token)
+                                  :promo-code         coupon-code
+                                  :allow-dormant?     false
+                                  :consolidated-cart? (experiments/consolidated-cart? app-state)})))))
 
 (defmethod effects/perform-effects events/control-cart-share-show
   [_ _ _ _ app-state]

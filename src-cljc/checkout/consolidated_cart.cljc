@@ -45,12 +45,13 @@
 (defmethod effects/perform-effects events/control-cart-add-freeinstall-coupon
   [_ _ _ _ app-state]
   #?(:cljs
-     (api/add-promotion-code (= "shop" (get-in app-state keypaths/store-slug))
-                             (get-in app-state keypaths/session-id)
-                             (get-in app-state keypaths/order-number)
-                             (get-in app-state keypaths/order-token)
-                             "freeinstall"
-                             false)))
+     (api/add-promotion-code {:shop?              (= "shop" (get-in app-state keypaths/store-slug))
+                              :session-id         (get-in app-state keypaths/session-id)
+                              :number             (get-in app-state keypaths/order-number)
+                              :token              (get-in app-state keypaths/order-token)
+                              :promo-code         "freeinstall"
+                              :allow-dormant?     false
+                              :consolidated-cart? (experiments/consolidated-cart? app-state)})))
 
 (defn display-adjustable-line-items
   [recently-added-skus line-items skus update-line-item-requests delete-line-item-requests suggestions]
@@ -140,7 +141,7 @@
            skus
            promo-banner
            call-out
-           updating?
+           checkout-disabled?
            redirecting-to-paypal?
            share-carts?
            requesting-shared-cart?
@@ -153,7 +154,6 @@
            freeinstall-line-item-data
            freeinstall-just-added?
            loaded-quadpay?] :as queried-data} owner _]
-  (prn (keys queried-data))
   (component/create
    [:div.container.p2
     (component/build promo-banner/sticky-organism promo-banner nil)
@@ -191,7 +191,7 @@
                                             "at check out."]}
                              nil)])
        (ui/teal-button {:spinning? false
-                        :disabled? updating?
+                        :disabled? checkout-disabled?
                         :on-click  (utils/send-event-callback events/control-checkout-cart-submit)
                         :data-test "start-checkout-button"}
                        [:div "Check out"])
@@ -204,7 +204,7 @@
        [:div.pb2
         (ui/aqua-button {:on-click  (utils/send-event-callback events/control-checkout-cart-paypal-setup)
                          :spinning? redirecting-to-paypal?
-                         :disabled? updating?
+                         :disabled? checkout-disabled?
                          :data-test "paypal-checkout"}
                         [:div
                          "Check out with "
@@ -283,15 +283,99 @@
     " more " (ui/pluralize number-of-items-needed "hair item")
     " to calculate total price"]])
 
+(defn summary-query [data]
+  (let [freeinstall-line-item-data      (cart-items/freeinstall-line-item-query data)
+        order                           (get-in data keypaths/order)
+        shipping-item                   (orders/shipping-item order)
+        shipping-cost                   (* (:quantity shipping-item)
+                                           (:unit-price shipping-item))
+        promo-data                      {:coupon-code   (get-in data keypaths/cart-coupon-code)
+                                         :applying?     (utils/requesting? data request-keys/add-promotion-code)
+                                         :focused       (get-in data keypaths/ui-focus)
+                                         :error-message (get-in data keypaths/error-message)
+                                         :field-errors  (get-in data keypaths/field-errors)}
+        subtotal                        (cond-> (orders/products-subtotal order)
+                                          freeinstall-line-item-data
+                                          (+ (spice/parse-double (:price freeinstall-line-item-data))))
+        adjustments                     (:adjustments order)
+        freeinstall-promotion-on-order? (boolean (orders/applied-install-promotion order))
+        freeinstall-entered?            (boolean (orders/freeinstall-entered? order))
+        number-of-items-needed          (- 3 (orders/product-quantity order))
+        order-adjustment-prices         (map :price (orders/all-order-adjustments order))
+        install-discount                (- 0 (or (:price freeinstall-line-item-data) 0)) ;; TODO shop needs the servicing stylist menu
+        total-savings                   (reduce + (conj order-adjustment-prices install-discount))]
+    (merge
+     {:freeinstall-informational/value (not freeinstall-promotion-on-order?)
+      :cart-summary-total-line/id      "total"
+      :cart-summary-total-line/label   (if freeinstall-promotion-on-order?
+                                         "Hair + Install Total"
+                                         "Total")
+      :cart-summary-total-line/value   (cond
+                                         (orders/freeinstall-applied? order)
+                                         [:div
+                                          [:div.bold.h2
+                                           (some-> order :total mf/as-money)]
+                                          [:div.h6.bg-purple.white.px2.nowrap.mb1
+                                           "Includes Mayvenn Install"]
+                                          (when (neg? total-savings)
+                                            [:div.h6.light.dark-gray.pxp1.nowrap.italic
+                                             "You've saved "
+                                             [:span.bold {:data-test "total-savings"}
+                                              (mf/as-money total-savings)]])]
+
+                                         freeinstall-entered?
+                                         [:div.h7.dark-gray.light
+                                          "Add " number-of-items-needed
+                                          " more " (ui/pluralize number-of-items-needed "item")
+                                          " to "
+                                          [:br]
+                                          " calculate total price"]
+
+                                         :else [:div (some-> order :total mf/as-money)])
+
+      :cart-summary/id    "cart-summary"
+      :cart-summary/lines (concat [{:cart-summary-line/id    "subtotal"
+                                    :cart-summary-line/label "Subtotal"
+                                    :cart-summary-line/value (mf/as-money subtotal)}]
+
+                                  (when shipping-cost
+                                    [{:cart-summary-line/id    "shipping"
+                                      :cart-summary-line/label "Shipping"
+                                      :cart-summary-line/value (mf/as-money-or-free shipping-cost)}])
+
+                                  (for [{:keys [name price coupon-code]} (filter (fn non-zero-adjustment? [{:keys [price coupon-code]}]
+                                                                                   (or (not (= price 0))
+                                                                                       (#{"amazon" "freeinstall" "install"} coupon-code)))
+                                                                                 adjustments)
+                                        :let                             [freeinstall-promo? (= "freeinstall" coupon-code)]]
+                                    (cond-> {:cart-summary-line/id    (text->data-test-name name)
+                                             :cart-summary-line/icon  (svg/discount-tag {:class  "mxnp6 fill-gray pr1"
+                                                                                         :height "2em" :width "2em"})
+                                             :cart-summary-line/label (orders/display-adjustment-name name)
+                                             :cart-summary-line/value (mf/as-money-or-free price)}
+
+                                      ;; TODO shop needs the servicing stylist menu
+                                      (and freeinstall-line-item-data freeinstall-promo?)
+                                      (merge {:cart-summary-line/value (mf/as-money-or-free install-discount)})
+
+                                      (and coupon-code (not freeinstall-promo?))
+                                      (merge {:cart-summary-line/action-id     "cart-remove-promo"
+                                              :cart-summary-line/action-icon   (svg/close-x {:class "stroke-white fill-gray"})
+                                              :cart-summary-line/action-target [events/control-checkout-remove-promotion {:code coupon-code}]}))))}
+
+     (when (and (orders/no-applied-promo? order) (not freeinstall-entered?))
+       {:promo-data promo-data}))))
+
 (defn full-cart-query [data]
-  (let [order                      (get-in data keypaths/order)
-        shipping-item              (orders/shipping-item order)
-        products                   (get-in data keypaths/v2-products)
-        facets                     (get-in data keypaths/v2-facets)
-        line-items                 (map (partial add-product-title-and-color-to-line-item products facets)
-                                        (orders/product-items order))
-        variant-ids                (map :id line-items)
-        freeinstall-line-item-data (cart-items/freeinstall-line-item-query data)]
+  (let [order                                (get-in data keypaths/order)
+        products                             (get-in data keypaths/v2-products)
+        facets                               (get-in data keypaths/v2-facets)
+        line-items                           (map (partial add-product-title-and-color-to-line-item products facets)
+                                                  (orders/product-items order))
+        variant-ids                          (map :id line-items)
+        freeinstall-line-item-data           (cart-items/freeinstall-line-item-query data)
+        freeinstall-entered-cart-incomplete? (and (orders/freeinstall-entered? order)
+                                                  (not (orders/freeinstall-applied? order)))]
     (merge {:suggestions                (suggestions/consolidated-query data)
             :order                      order
             :line-items                 line-items
@@ -300,7 +384,8 @@
             :promo-banner               (when (zero? (orders/product-quantity order))
                                           (promo-banner/query data))
             :call-out                   (call-out/query data)
-            :updating?                  (update-pending? data)
+            :checkout-disabled?         (or freeinstall-entered-cart-incomplete?
+                                            (update-pending? data))
             :redirecting-to-paypal?     (get-in data keypaths/cart-paypal-redirect)
             :share-carts?               (stylists/own-store? data)
             :requesting-shared-cart?    (utils/requesting? data request-keys/create-shared-cart)
@@ -322,81 +407,7 @@
             :return-link/copy          "Continue Shopping"
             :return-link/event-message [events/control-open-shop-escape-hatch]}
 
-           (let [{:keys [subtotal shipping-cost adjustments promo-data]} {:freeinstall-line-item-data freeinstall-line-item-data
-                                                                          :order                      order
-                                                                          :shipping-cost              (* (:quantity shipping-item)
-                                                                                                         (:unit-price shipping-item))
-                                                                          :adjustments-including-tax  (orders/all-order-adjustments order)
-                                                                          :promo-data                 {:coupon-code   (get-in data keypaths/cart-coupon-code)
-                                                                                                       :applying?     (utils/requesting? data request-keys/add-promotion-code)
-                                                                                                       :focused       (get-in data keypaths/ui-focus)
-                                                                                                       :error-message (get-in data keypaths/error-message)
-                                                                                                       :field-errors  (get-in data keypaths/field-errors)}
-                                                                          :adv-cart-promo-entry?      (experiments/adv-cart-promo-entry? data)
-                                                                          :subtotal                   (cond-> (orders/products-subtotal order)
-                                                                                                        freeinstall-line-item-data
-                                                                                                        (+ (spice/parse-double (:price freeinstall-line-item-data))))}
-                 freeinstall-promotion-on-order?                         (boolean (orders/applied-install-promotion order))
-                 number-of-items-needed                                  (- 3 (orders/product-quantity order))]
-             (merge
-              {:freeinstall-informational/value freeinstall-promotion-on-order?
-               :cart-summary/id                 "cart-summary"
-               :cart-summary-total-line/id      "total"
-               :cart-summary-total-line/label   (if freeinstall-promotion-on-order?
-                                                  "Hair + Install Total"
-                                                  "Total")
-               :cart-summary-total-line/value   (cond
-                                                  true #_ (orders/freeinstall-applied? order) ;; TODO shop needs the servicing stylist menu
-                                                  [:div
-                                                   [:div.bold.h2
-                                                    (some-> order :total mf/as-money)]
-                                                   [:div.h6.bg-purple.white.px2.nowrap.mb1
-                                                    "Includes Mayvenn Install"]
-                                                   [:div.h6.light.dark-gray.pxp1.nowrap.italic
-                                                    "You've saved "
-                                                    [:span.bold {:data-test "total-savings"}
-                                                     (mf/as-money 100 #_(:total-savings freeinstall-line-item-data))]]]
-
-                                                  freeinstall-promotion-on-order?
-                                                  [:div.h7.dark-gray.light
-                                                   "Add " number-of-items-needed
-                                                   " more " (ui/pluralize number-of-items-needed "item")
-                                                   " to "
-                                                   [:br]
-                                                   " calculate total price"]
-
-                                                  :else (some-> order :total mf/as-money))
-               :cart-summary/lines (concat [{:cart-summary-line/id    "subtotal"
-                                             :cart-summary-line/label "Subtotal"
-                                             :cart-summary-line/value (mf/as-money subtotal)}]
-
-                                           (when shipping-cost
-                                             [{:cart-summary-line/id    "shipping"
-                                               :cart-summary-line/label "Shipping"
-                                               :cart-summary-line/value (mf/as-money-or-free shipping-cost)}])
-
-                                           (for [{:keys [name price coupon-code]} (filter (fn non-zero-adjustment? [{:keys [price coupon-code]}]
-                                                                                            (or (not (= price 0))
-                                                                                                (#{"amazon" "freeinstall" "install"} coupon-code)))
-                                                                                          adjustments)
-                                                 :let                             [freeinstall-promo? (= "freeinstall" coupon-code)]]
-                                             (cond-> {:cart-summary-line/id    (text->data-test-name name)
-                                                      :cart-summary-line/icon  (svg/discount-tag {:class  "mxnp6 fill-gray pr1"
-                                                                                                  :height "2em" :width "2em"})
-                                                      :cart-summary-line/label (orders/display-adjustment-name name)
-                                                      :cart-summary-line/value (mf/as-money-or-free price)}
-
-                                               ;; TODO shop needs the servicing stylist menu
-                                               (and freeinstall-line-item-data freeinstall-promo?)
-                                               (merge {:cart-summary-line/value (mf/as-money-or-free (- 0 (:price freeinstall-line-item-data)))})
-
-                                               (and coupon-code (not freeinstall-promo?))
-                                               (merge {:cart-summary-line/action-id     "cart-remove-promo"
-                                                       :cart-summary-line/action-icon   (svg/close-x {:class "stroke-white fill-gray"})
-                                                       :cart-summary-line/action-target [events/control-checkout-remove-promotion {:code coupon-code}]}))))}
-
-              (when (orders/no-applied-promo? order)
-                {:promo-data promo-data}))))))
+           (summary-query data))))
 
 (defn empty-cart-query
   [data]

@@ -23,6 +23,7 @@
 (def adventure-stylist-gallery-image-index (conj adventure-stylist-gallery :image-index))
 
 (def adventure-servicing-stylist (conj adventure :servicing-stylist))
+(def adventure-servicing-stylist-service-menu (conj adventure-servicing-stylist :service-menu))
 
 (def adventure-geocode-address (conj adventure :geocode-address))
 
