@@ -27,7 +27,7 @@
      " "
      [:span {:data-test (str base-dt "-remaining-quantity")} (- qt returned-qt)]
      ") "
-     [:span.red (str returned-qt " Item" (when (< 1 returned-qt) "s") " Returned")]]))
+     [:span.error (str returned-qt " Item" (when (< 1 returned-qt) "s") " Returned")]]))
 
 (defn ^:private display-line-item
   ([shipment-count line-item] (display-line-item shipment-count line-item true))

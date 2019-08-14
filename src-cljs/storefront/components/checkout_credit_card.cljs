@@ -50,10 +50,10 @@
            [:div#card-element.border.rounded.p2
             {:style {:height "47px"}
              :class (if (seq card-errors)
-                      "border-red red"
+                      "border-error error"
                       "border-gray")}]
            (when (seq card-errors)
-             [:div.h6.my1.red.center.medium {:data-test "payment-form-card-error"}
+             [:div.h6.my1.error.center.medium {:data-test "payment-form-card-error"}
               (:long-message (first card-errors))])])
        (when (and (not guest?) (empty? saved-cards))
           [:div.mb2

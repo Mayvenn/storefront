@@ -26,13 +26,13 @@
 (defn status->appearance [status]
   (case status
     :sale/shipped     [1 ["titleize" "teal"] ]
-    :sale/returned    [2 ["shout"    "red"]]
+    :sale/returned    [2 ["shout"    "error"]]
     :sale/pending     [2 ["shout"    "yellow"]]
-    :sale/unknown     [2 ["shout"    "red"]]
+    :sale/unknown     [2 ["shout"    "error"]]
     :voucher/pending  nil
     :voucher/returned nil
     :voucher/redeemed [1 ["titleize" "teal"]]
-    :voucher/expired  [1 ["titleize" "red"]]
+    :voucher/expired  [1 ["titleize" "error"]]
     :voucher/active   [1 ["titleize" "purple"]]
     :voucher/none     [1 ["titleize" "light" "gray"]]
     nil               nil))

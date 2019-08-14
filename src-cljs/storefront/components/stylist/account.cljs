@@ -39,7 +39,7 @@
      (ui/circle-picture {:width        "96px"
                          :overlay-copy (case status
                                          "pending" [:span.white.medium "Approval Pending"]
-                                         "rejected" [:span.red.bold.h6 "Try a different image"]
+                                         "rejected" [:span.error.bold.h6 "Try a different image"]
                                          nil)}
                         (ui/square-image portrait 96))]]
    "Change Photo"])

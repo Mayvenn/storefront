@@ -353,7 +353,7 @@
   (subheader "Success dialog and error handling")
   [:div.flex.flex-wrap.mxn1.mb4
    (color-swatch "green" "00cc00")
-   (color-swatch "red" "ff0000")]
+   (color-swatch "error" "ff004f")]
 
   (subheader "Flourishes")
   [:div.flex.flex-wrap.mxn1.mb4

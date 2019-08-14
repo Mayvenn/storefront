@@ -8,6 +8,7 @@
 .bg-lavender-gradient-light { background-color: var(--lavender-gradient-light); }
 .bg-lavender-gradient-dark  { background-color: var(--lavender-gradient-dark); }
 .bg-too-light-lavender      { background-color: var(--too-light-lavender); }
+.bg-error                   { background-color: var(--error); }
 
 .bg-white                  { background-color: var(--white); }
 .bg-fate-white             { background-color: var(--fate-white); }
@@ -36,6 +37,7 @@
     --gray:           #666666;
     --dark-gray:      #333333;
     --black:          #000000;
+    --error:          #ff004f;
 
     --transparent-teal:       #40cbac19;
     --light-teal:             #9fe5d5;

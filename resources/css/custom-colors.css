@@ -11,12 +11,15 @@
 .light-teal     { color: var(--light-teal); }
 .light-lavender { color: var(--light-lavender); }
 .lavender       { color: var(--lavender); }
+.error          { color: var(--error); }
 .inherit-color  { color: inherit; }
 
 .placeholder-dark-silver::placeholder { color: var(--dark-silver); }
 
 
 :root {
+
+  --error:          #ff004f;
   --yellow:         #ffc520;
   --white:          #ffffff;
   --fate-white:     #f8f8f8;

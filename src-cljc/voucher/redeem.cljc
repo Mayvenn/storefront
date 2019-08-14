@@ -89,11 +89,11 @@
 
 (def ^:private missing-service-menu
   [:div
-   [:div.col-8.mx-auto.red.bg-red.border.border-red.rounded.light.letter-spacing-1.mt8
+   [:div.col-8.mx-auto.error.bg-error.border.border-error.rounded.light.letter-spacing-1.mt8
     [:div.px2.py1.bg-lighten-5.rounded.center
      "We need a little more information from you before you can use this feature. "
      "Please contact customer service at "
-     (ui/link :link/phone :a.medium.red {} "+1 (888) 562-7952")]]
+     (ui/link :link/phone :a.medium.error {} "+1 (888) 562-7952")]]
    [:div.mt8.center [:a (utils/route-to events/navigate-home) "Back to Home"]]])
 
 (def ^:private spinner

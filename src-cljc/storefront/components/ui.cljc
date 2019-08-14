@@ -229,7 +229,7 @@
 
 (defn field-error-message [error data-test]
   (when error
-    [:div.red.my1.h6.center.medium
+    [:div.error.my1.h6.center.medium
      {:data-test (str data-test "-error")}
      (or (:long-message error) nbsp)]))
 
@@ -246,13 +246,13 @@
     :always      (add-classes "rounded border x-group-item")
     focused?     (add-classes "glow")
     ;; .z1.relative keeps border between adjacent fields red if one of them is in error
-    error?       (add-classes "border-red z1 relative")
+    error?       (add-classes "border-error z1 relative")
     (not error?) (add-classes "border-gray")))
 
 (defn ^:private field-class [{:as base :keys [label]} {:keys [error? value?]}]
   (cond-> base
     true                     (add-classes "floating-label--input rounded border-none")
-    error?                   (add-classes "red")
+    error?                   (add-classes "error")
     (and value? label) (add-classes "has-value")))
 
 (defn text-input [{:keys [id type label keypath value] :as input-attributes}]
@@ -311,7 +311,7 @@
                              input-attributes)
                       status)]
         (when hint? [:div.py1.px2
-                     (when error? {:class "red"})
+                     (when error? {:class "error"})
                      hint])]]])))
 
 (defn hidden-field
