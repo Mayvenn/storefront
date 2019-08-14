@@ -140,8 +140,7 @@
   [{:keys [order
            skus
            promo-banner
-           call-out
-           checkout-disabled?
+           call-out checkout-disabled?
            redirecting-to-paypal?
            share-carts?
            requesting-shared-cart?
@@ -153,7 +152,10 @@
            delete-line-item-requests
            freeinstall-line-item-data
            freeinstall-just-added?
-           loaded-quadpay?] :as queried-data} owner _]
+           number-of-items-needed
+           loaded-quadpay?
+           freeinstall-needs-more-items?
+           remove-freeinstall-event] :as queried-data} owner _]
   (component/create
    [:div.container.p2
     (component/build promo-banner/sticky-organism promo-banner nil)
@@ -196,19 +198,27 @@
                         :data-test "start-checkout-button"}
                        [:div "Check out"])
 
+       (when freeinstall-needs-more-items?
+         [:div.error.h7.center.medium.py1
+          (str "Add " number-of-items-needed " more items")])
+
        [:div.h5.black.center.py1.flex.justify-around.items-center
         [:div.flex-grow-1.border-bottom.border-light-gray]
         [:div.mx2 "or"]
         [:div.flex-grow-1.border-bottom.border-light-gray]]
 
-       [:div.pb2
-        (ui/aqua-button {:on-click  (utils/send-event-callback events/control-checkout-cart-paypal-setup)
-                         :spinning? redirecting-to-paypal?
-                         :disabled? checkout-disabled?
-                         :data-test "paypal-checkout"}
-                        [:div
-                         "Check out with "
-                         [:span.medium.italic "PayPal™"]])]]
+       (if freeinstall-needs-more-items?
+         [:a.teal.medium.center.mt1.mb2
+          (apply utils/fake-href remove-freeinstall-event)
+          "Checkout without a free Mayvenn Install"]
+         [:div.pb2
+          (ui/aqua-button {:on-click  (utils/send-event-callback events/control-checkout-cart-paypal-setup)
+                           :spinning? redirecting-to-paypal?
+                           :disabled? checkout-disabled?
+                           :data-test "paypal-checkout"}
+                          [:div
+                           "Check out with "
+                           [:span.medium.italic "PayPal™"]])])]
 
       #?@(:cljs [(when show-browser-pay? (payment-request-button/built-component nil {}))])
 
@@ -376,7 +386,8 @@
         variant-ids                          (map :id line-items)
         freeinstall-line-item-data           (cart-items/freeinstall-line-item-query data)
         freeinstall-entered-cart-incomplete? (and (orders/freeinstall-entered? order)
-                                                  (not (orders/freeinstall-applied? order)))]
+                                                  (not (orders/freeinstall-applied? order)))
+        number-of-items-needed               (- 3 (orders/product-quantity order))]
     (merge {:suggestions                (suggestions/consolidated-query data)
             :order                      order
             :line-items                 line-items
@@ -405,8 +416,12 @@
             :stylist-service-menu       (get-in data keypaths/stylist-service-menu)
             :freeinstall-line-item-data freeinstall-line-item-data
 
-            :return-link/copy          "Continue Shopping"
-            :return-link/event-message [events/control-open-shop-escape-hatch]}
+            :return-link/copy              "Continue Shopping"
+            :return-link/event-message     [events/control-open-shop-escape-hatch]
+            :number-of-items-needed        number-of-items-needed
+            :freeinstall-needs-more-items? (and (boolean (orders/freeinstall-entered? order))
+                                                (pos? number-of-items-needed))
+            :remove-freeinstall-event      [events/control-checkout-remove-promotion {:code "freeinstall"}]}
 
            (summary-query data))))
 
