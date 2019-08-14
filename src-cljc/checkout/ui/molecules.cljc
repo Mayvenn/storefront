@@ -36,7 +36,7 @@
 
 (defn cart-summary-line-molecule
   [{:cart-summary-line/keys
-    [id label sublabel icon value action-id action-target action-icon]}]
+    [id label sublabel icon value action-id action-target action-icon class]}]
   (when id
     [:tr.h6.medium
      {:data-test (str "cart-summary-line-" id)}
@@ -51,7 +51,9 @@
          (merge {:data-test action-id}
                 (apply utils/fake-href action-target))
          action-icon])]
-     [:td.pyp1.right-align.medium value]]))
+     [:td.pyp1.right-align.medium
+      {:class class}
+      value]]))
 
 (defn cart-summary-total-line
   [{:cart-summary-total-line/keys [id label value]}]

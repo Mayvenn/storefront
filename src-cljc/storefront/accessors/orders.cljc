@@ -171,9 +171,12 @@
       (can-use-store-credit? order user)     (assoc :store-credit {}))))
 
 (defn display-adjustment-name [name]
-  (if (= name "Bundle Discount")
+  (cond
+    (= name "Bundle Discount")
     "10% Bundle Discount"
-    name))
+    (= name "Free Install")
+    "Free Mayvenn Install"
+    :else name))
 
 (defn- line-item-tuples [order]
   (->> (product-items order)

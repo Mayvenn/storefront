@@ -356,7 +356,8 @@
 
                                       ;; TODO shop needs the servicing stylist menu
                                       (and freeinstall-line-item-data freeinstall-promo?)
-                                      (merge {:cart-summary-line/value (mf/as-money-or-free install-discount)})
+                                      (merge {:cart-summary-line/value (mf/as-money-or-free install-discount)
+                                              :cart-summary-line/class "bold purple"})
 
                                       (and coupon-code (not freeinstall-promo?))
                                       (merge {:cart-summary-line/action-id     "cart-remove-promo"
