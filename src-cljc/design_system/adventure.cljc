@@ -41,9 +41,7 @@
                          :circle-portrait/ucare-id   "6a221a42-9a1f-4443-8ecc-595af233ab42"
                          :carousel/items             [{:key            "gallery-image-1"
                                                        :ucare-img-url  "https://ucarecdn.com/41d4fb30-fa4c-45d9-907a-ce83964b7caf/"
-                                                       :target-message [nowhere
-                                                                        {:ucare-img-urls                 ["https://ucarecdn.com/41d4fb30-fa4c-45d9-907a-ce83964b7caf/"]
-                                                                         :initially-selected-image-index 0}]}]
+                                                       :target-message [nowhere]}]
                          :details                    [{:section-details/title   "Detail A"
                                                        :section-details/content "x, y, z"}
                                                       {:section-details/title   "Specialties"

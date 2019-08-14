@@ -1022,12 +1022,15 @@
    {:params  {:stylist-id stylist-id}
     :handler #(messages/handle-message events/api-success-fetch-matched-stylist %)}))
 
-(defn fetch-stylist-details [cache stylist-id]
-  (cache-req
-   cache
-   GET
-   "/v1/stylist/matched-by-id"
-   request-keys/fetch-matched-stylist
-   {:params        {:stylist-id stylist-id}
-    :handler       #(messages/handle-message events/api-success-fetch-stylist-details %)
-    :error-handler #(messages/handle-message events/api-failure-fetch-stylist-details %)}))
+(defn fetch-stylist-details
+  ([cache stylist-id]
+   (fetch-stylist-details cache stylist-id (partial messages/handle-message events/api-success-fetch-stylist-details)))
+  ([cache stylist-id handler]
+   (cache-req
+    cache
+    GET
+    "/v1/stylist/matched-by-id"
+    request-keys/fetch-matched-stylist
+    {:params        {:stylist-id stylist-id}
+     :handler       handler
+     :error-handler #(messages/handle-message events/api-failure-fetch-stylist-details %)})))

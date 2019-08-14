@@ -103,9 +103,10 @@
                                        (map-indexed (fn [j ucare-img-url]
                                                       {:key            (str "gallery-img-" stylist-id "-" j)
                                                        :ucare-img-url  ucare-img-url
-                                                       :target-message [events/control-adventure-stylist-gallery-open
-                                                                        {:ucare-img-urls                 ucare-img-urls
-                                                                         :initially-selected-image-index j}]})
+                                                       :target-message [events/navigate-adventure-stylist-gallery
+                                                                        {:stylist-id   stylist-id
+                                                                         :store-slug   (:store-slug stylist)
+                                                                         :query-params {:offset j}}]})
                                                     ucare-img-urls))
 
        :details [{:section-details/title   "Experience"
@@ -122,17 +123,7 @@
                                                                         "licensed")]))}
                  (when (-> stylist :service-menu :specialty-sew-in-leave-out)
                    {:section-details/title   "Specialties"
-                    :section-details/content (:service-menu stylist)})]
-
-       :gallery-modal-data {:ucare-img-urls                 (get-in data keypaths/adventure-stylist-gallery-image-urls) ;; empty hides the modal
-                            :initially-selected-image-index (get-in data keypaths/adventure-stylist-gallery-image-index)
-                            :close-button                   {:target-message events/control-adventure-stylist-gallery-close}}})))
-
-(defn ^:private gallery-slide
-  [index ucare-img-url]
-  [:div {:key (str "gallery-slide" index)}
-   (ui/aspect-ratio 1 1
-                    (ui/ucare-img {:class "col-12"} ucare-img-url))])
+                    :section-details/content (:service-menu stylist)})]})))
 
 (defn carousel-molecule
   [{:carousel/keys [items]}]
@@ -140,9 +131,9 @@
                    {:slides   (map (fn [{:keys [target-message
                                                 key
                                                 ucare-img-url]}]
-                                     [:div.px1
-                                      {:on-click #(apply messages/handle-message target-message)
-                                       :key key}
+                                     [:a.px1.block
+                                      (merge (apply utils/route-to target-message)
+                                             {:key key})
                                       (ui/aspect-ratio
                                        1 1
                                        [:img {:src   (str ucare-img-url "-/scale_crop/204x204/-/format/auto/")
@@ -155,27 +146,6 @@
                                :slidesToShow 3
                                :infinite     true}}
                    {}))
-
-(defn gallery-modal-component
-  [{:keys [ucare-img-urls initially-selected-image-index close-button] :as gallery-modal} _ _]
-  (component/create
-   [:div
-    (when (seq ucare-img-urls)
-      (let [close-attrs (utils/fake-href (:target-message close-button))]
-        (ui/modal
-         {:close-attrs close-attrs
-          :col-class   "col-12"}
-         [:div.relative.mx-auto
-          {:style {:max-width "750px"}}
-          (component/build carousel/component
-                           {:slides   (map-indexed gallery-slide ucare-img-urls)
-                            :settings {:initialSlide (or initially-selected-image-index 0)
-                                       :slidesToShow 1}}
-                           {})
-          [:div.absolute
-           {:style {:top "1.5rem" :right "1.5rem"}}
-           (ui/modal-close {:class       "stroke-dark-gray fill-gray"
-                            :close-attrs close-attrs})]])))]))
 
 (defn cta-molecule
   [{:cta/keys [id label target]}]
@@ -200,13 +170,12 @@
         (checks-or-x "Frontal" (:specialty-sew-in-frontal content))]])]] )
 
 (defn component
-  [{:keys [header-data google-map-data gallery-modal-data] :as query} owner opts]
+  [{:keys [header-data google-map-data] :as query} owner opts]
   (component/create
    [:div.col-12.bg-white.mb6
     [:div.white (header/built-component header-data nil)]
     [:div {:style {:height "75px"}}]
     [:div.px3 (component/build stylist-profile-card-component query nil)]
-    (component/build gallery-modal-component gallery-modal-data)
 
     #?(:cljs (component/build maps/component google-map-data))
 

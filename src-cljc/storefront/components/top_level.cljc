@@ -28,6 +28,7 @@
             adventure.stylist-matching.match-success-post-purchase
             adventure.stylist-matching.let-mayvenn-match
             adventure.stylist-matching.stylist-profile
+            adventure.stylist-matching.stylist-gallery
 
             [storefront.components.ui :as ui]
             [mayvenn-made.home :as mayvenn-made.home]
@@ -138,6 +139,7 @@
           events/navigate-adventure-checkout-wait                       (ui/lazy-load-component :checkout 'adventure.checkout.wait/built-component events/navigate-adventure-checkout-wait)
           events/navigate-adventure-let-mayvenn-match                   adventure.stylist-matching.let-mayvenn-match/built-component
           events/navigate-adventure-stylist-profile                     adventure.stylist-matching.stylist-profile/built-component
+          events/navigate-adventure-stylist-gallery                     adventure.stylist-matching.stylist-gallery/built-component
           home/built-component)
     (assert (str "Expected main-component to return a component, but did not: " (pr-str nav-event)))))
 
