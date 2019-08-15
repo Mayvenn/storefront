@@ -124,6 +124,8 @@
 
 (defpath navigate-mayvenn-made)
 
+(defpath navigate-plp)
+
 (defpath menu-traverse-root)
 (defpath menu-traverse-ascend)
 (defpath menu-traverse-descend)

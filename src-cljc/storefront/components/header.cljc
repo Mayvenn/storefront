@@ -143,12 +143,14 @@
     (merge opts {:style {:padding-left "24px" :padding-right "24px"}})
     text]))
 
-(defn menu [{:keys [show-freeinstall-link? v2-experience? shop-by-look-textures?]}]
+(defn menu [{:keys [show-freeinstall-link? v2-experience? shop-by-look-textures? plp?]}]
   (component/html
    [:div.center
     (when show-freeinstall-link?
       (header-menu-link
-       (assoc (utils/fake-href events/initiate-redirect-freeinstall-from-menu {:utm-source "shopFlyout"})
+       (assoc (if plp?
+                (utils/route-to events/navigate-plp)
+                (utils/fake-href events/initiate-redirect-freeinstall-from-menu {:utm-source "shopFlyout"}))
               :on-mouse-enter close-header-menus)
        [:span [:span.teal.pr1 "NEW"] "Get a Mayvenn Install"]))
 
@@ -293,7 +295,8 @@
       (assoc-in [:user :expanded?] (get-in data keypaths/account-menu-expanded))
       (merge (shop-a-la-carte-flyout-query data))
       (merge (shop-looks-query data))
-      (assoc-in [:cart :quantity] (orders/product-quantity (get-in data keypaths/order)))))
+      (assoc-in [:cart :quantity] (orders/product-quantity (get-in data keypaths/order)))
+      (assoc :plp? (experiments/plp? data))))
 
 (defn built-component [data opts]
   (component/html

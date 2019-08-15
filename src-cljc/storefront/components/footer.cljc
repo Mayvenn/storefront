@@ -140,7 +140,7 @@
      [:span.teal "NEW "])
    title])
 
-(defn dtc-shop-section [{:keys [categories]} partition-count]
+(defn dtc-shop-section [{:keys [categories plp?]} partition-count]
   (component/html
    (let [links                          (mapv category->link categories)
          [column-1-links rest-of-links] (split-at partition-count links)]
@@ -149,8 +149,10 @@
       [:nav.clearfix {:aria-label "Shop Products"}
        [:div.col.col-6
         [:a.block.py1.dark-gray.light.titleize
-         (assoc (utils/fake-href events/initiate-redirect-freeinstall-from-menu
-                                 {:utm-source "shopFooter"})
+         (assoc (if plp?
+                  (utils/route-to events/navigate-plp)
+                  (utils/fake-href events/initiate-redirect-freeinstall-from-menu
+                                   {:utm-source "shopFooter"}))
                 :data-test "freeinstall-footer-link")
          [:span.teal "NEW "]
          "Get A Mayvenn Install"]
@@ -185,7 +187,8 @@
    :categories (->> (get-in data keypaths/categories)
                     (filter :dtc-footer/order)
                     (filter (partial auth/permitted-category? data))
-                    (sort-by :dtc-footer/order))})
+                    (sort-by :dtc-footer/order))
+   :plp?       (experiments/plp? data)})
 
 (defn built-component
   [data opts]

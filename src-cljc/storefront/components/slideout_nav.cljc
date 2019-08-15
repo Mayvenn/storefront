@@ -132,12 +132,14 @@
    [:div.h4.border-bottom.border-gray.py3
     (into [:a.block.inherit-color.flex.items-center (assoc link-attrs :data-test data-test)] content)]])
 
-(defn shopping-rows [{:keys [show-freeinstall-link? v2-experience? shop-by-look-textures?]}]
+(defn shopping-rows [{:keys [show-freeinstall-link? v2-experience? shop-by-look-textures? plp?]}]
   (let [^:inline caret (ui/forward-caret {:width  "23px"
                                           :height "20px"})]
     (concat
      (when show-freeinstall-link?
-       [{:link-attrs (utils/fake-href events/initiate-redirect-freeinstall-from-menu {:utm-source "shopHamburger"})
+       [{:link-attrs (if plp?
+                       (utils/route-to events/navigate-plp)
+                       (utils/fake-href events/initiate-redirect-freeinstall-from-menu {:utm-source "shopHamburger"}))
          :data-test  "menu-shop-freeinstall"
          :content    [[:span.teal.pr1 "NEW"]
                       [:span.medium "Get a Mayvenn Install"]]}])
@@ -273,6 +275,7 @@
                                         (stylists/own-store? data))
      :vouchers?                    (experiments/dashboard-with-vouchers? data)
      :v2-experience?               (experiments/aladdin-experience? data)
+     :plp?                         (experiments/plp? data)
      :show-freeinstall-link?       shop?
      :shop-by-look-textures?       (experiments/shop-by-look-textures? data)}))
 

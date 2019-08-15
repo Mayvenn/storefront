@@ -29,6 +29,10 @@
    {:organism/label     :basic-promo-banner
     :organism/component promo-banner/component
     :organism/query     {:promo/type :basic-promo-banner
+                         :basic-promo-banner/promo "description"}}
+   {:organism/label     :basic-promo-banner
+    :organism/component promo-banner/component
+    :organism/query     {:promo/type :basic-promo-banner
                          :basic-promo-banner/promo "description"}}])
 
 (defn component
