@@ -114,3 +114,7 @@
 (defn shop-by-look-textures?
   [data]
   (display-feature? data "shop-by-look-textures"))
+
+(defn stylist-profiles?
+  [data]
+  (display-feature? data "stylist-profiles"))

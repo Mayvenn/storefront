@@ -1,24 +1,27 @@
 (ns adventure.stylist-matching.stylist-results
   (:require [adventure.components.card-stack :as card-stack]
             [adventure.components.profile-card :as profile-card]
-            [adventure.components.profile-card-with-gallery :as profile-card-with-gallery]
             [adventure.keypaths :as keypaths]
+            [adventure.progress :as progress]
             [storefront.accessors.experiments :as experiments]
-            [storefront.keypaths]
             [storefront.component :as component]
-            [storefront.events :as events]
-            [storefront.platform.messages :as messages]
             [storefront.effects :as effects]
-            [storefront.transitions :as transitions]
+            [storefront.events :as events]
             [storefront.trackings :as trackings]
-            #?@(:cljs [[storefront.browser.cookie-jar :as cookie-jar]
+            [storefront.transitions :as transitions]
+            #?@(:cljs [[storefront.api :as api]
+                       [storefront.browser.cookie-jar :as cookie-jar]
                        [storefront.history :as history]
                        [storefront.hooks.stringer :as stringer]
-                       [storefront.api :as api]])
-            [adventure.progress :as progress]))
+                       storefront.keypaths
+                       [storefront.platform.messages :as messages]])))
 
 
-(defn ^:private stylist-profile-card-data [target-event index {:keys [gallery-images stylist-id] :as stylist}]
+(defn ^:private stylist-profile-card-data
+  [stylist-profiles?
+   cta-target-event
+   index
+   {:keys [gallery-images stylist-id store-slug] :as stylist}]
   (let [ucare-img-urls (map :resizable-url gallery-images)]
     {:card-data    (profile-card/stylist-profile-card-data stylist)
      :index        index
@@ -28,15 +31,20 @@
                     :items (map-indexed (fn [j ucare-img-url]
                                           {:key            (str "gallery-img-" stylist-id "-" j)
                                            :ucare-img-url  ucare-img-url
-                                           :target-message [events/control-adventure-stylist-gallery-open
-                                                            {:ucare-img-urls                 ucare-img-urls
-                                                             :initially-selected-image-index j}]})
+                                           :target-message (if stylist-profiles?
+                                                             [events/navigate-adventure-stylist-gallery
+                                                              {:store-slug   store-slug
+                                                               :stylist-id   stylist-id
+                                                               :query-params {:offset j}}]
+                                                             [events/control-adventure-stylist-gallery-open
+                                                              {:ucare-img-urls                 ucare-img-urls
+                                                               :initially-selected-image-index j}])})
                                         ucare-img-urls)}
      :button       {:text           "Select"
                     :data-test      (str "select-stylist-" (:store-nickname stylist))
-                    :target-message [target-event {:stylist-id        stylist-id
-                                                   :servicing-stylist stylist
-                                                   :card-index        index}]}}))
+                    :target-message [cta-target-event {:stylist-id        stylist-id
+                                                       :servicing-stylist stylist
+                                                       :card-index        index}]}}))
 
 (defn ^:private insert-at-pos
   [position i coll]
@@ -56,10 +64,11 @@
 
 (defn ^:private query-pre-purchase
   [data]
-  (let [cards-data (->> (get-in data keypaths/adventure-matched-stylists)
-                        (map-indexed (partial stylist-profile-card-data
-                                              events/control-adventure-select-stylist-pre-purchase))
-                        (insert-at-pos 3 recommend-your-stylist-query))]
+  (let [stylist-profiles? (experiments/stylist-profiles? data)
+        cards-data        (->> (get-in data keypaths/adventure-matched-stylists)
+                               (map-indexed (partial stylist-profile-card-data stylist-profiles?
+                                                     events/control-adventure-select-stylist-pre-purchase))
+                               (insert-at-pos 3 recommend-your-stylist-query))]
     {:current-step                  2
      :title                         "Pick your stylist"
      :header-data                   {:title                   "Find Your Stylist"
@@ -76,9 +85,13 @@
 
 (defn ^:private query-post-purchase
   [data]
-  (let [cards-data (->> (get-in data keypaths/adventure-matched-stylists)
-                        (map-indexed (partial stylist-profile-card-data events/control-adventure-select-stylist-post-purchase))
-                        (insert-at-pos 3 recommend-your-stylist-query))]
+  (let [stylist-profiles? (experiments/stylist-profiles? data)
+        cards-data        (->> (get-in data keypaths/adventure-matched-stylists)
+                               (map-indexed
+                                (partial stylist-profile-card-data
+                                         stylist-profiles?
+                                         events/control-adventure-select-stylist-post-purchase))
+                               (insert-at-pos 3 recommend-your-stylist-query))]
     {:current-step                  3
      :title                         "Pick your stylist"
      :header-data                   {:title                   "Find Your Stylist"

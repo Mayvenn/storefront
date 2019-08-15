@@ -3,8 +3,7 @@
             [storefront.component :as component]
             [storefront.components.ui :as ui]
             [storefront.platform.carousel :as carousel]
-            [storefront.platform.component-utils :as utils]
-            [storefront.platform.messages :as messages]))
+            [storefront.platform.component-utils :as utils]))
 
 (defn component
   [{:keys [card-data gallery-data button]} _ _]
@@ -15,13 +14,16 @@
      [:div.h7.dark-gray.bold.left-align.mb1 (:title gallery-data)]
      [:div.mxn1
       (component/build carousel/component
-                       {:slides   (map (fn [gallery-item]
+                       {:slides   (map (fn [{:keys [key target-message ucare-img-url]}]
                                          [:div.px1
-                                          {:on-click #(apply messages/handle-message (:target-message gallery-item))
-                                           :key (:key gallery-item)}
+                                          (merge
+                                           (if (= :navigate (first target-message))
+                                             (apply utils/route-to target-message)
+                                             (apply utils/fake-href target-message))
+                                           {:key key})
                                           (ui/aspect-ratio
                                            1 1
-                                           [:img {:src   (str (:ucare-img-url gallery-item) "-/scale_crop/216x216/-/format/auto/")
+                                           [:img {:src   (str ucare-img-url "-/scale_crop/216x216/-/format/auto/")
                                                   :class "rounded col-12"}])])
                                        (:items gallery-data))
                         :settings {:swipe        true
