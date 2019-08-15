@@ -1,13 +1,7 @@
 (ns adventure.components.header
-  (:require #?@(:cljs [[om.core :as om]])
-            [storefront.assets :as assets]
-            [storefront.component :as component]
-            [storefront.components.svg :as svg]
+  (:require [storefront.component :as component]
             [storefront.components.ui :as ui]
-            [storefront.effects :as effects]
             [storefront.events :as events]
-            [storefront.keypaths :as keypaths]
-            [storefront.components.svg :as svg]
             [storefront.platform.component-utils :as utils]))
 
 (defn calculate-width [number-of-steps]
@@ -48,7 +42,7 @@
    (let [right-corner (cond (seq right-corner) right-corner
                             shopping-bag?      (shopping-bag)
                             :else              nil)
-         container (if unstick? :div#header :div#header.absolute.top-0.left-0.right-0.center)]
+         container    (if unstick? :div#header :div#header.absolute.top-0.left-0.right-0.center)]
      [container
       header-attrs
       [:div.flex.flex-column
