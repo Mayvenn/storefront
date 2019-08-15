@@ -17,9 +17,9 @@
                        {:slides   (map (fn [{:keys [key target-message ucare-img-url]}]
                                          [:div.px1
                                           (merge
-                                           (if (= :navigate (first target-message))
-                                             (apply utils/route-to target-message)
-                                             (apply utils/fake-href target-message))
+                                           (apply (if (->> target-message ffirst (= :navigate))
+                                                    utils/route-to
+                                                    utils/fake-href) target-message)
                                            {:key key})
                                           (ui/aspect-ratio
                                            1 1
