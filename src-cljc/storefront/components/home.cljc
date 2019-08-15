@@ -122,14 +122,6 @@
          [:img.block.col-12 {:src mobile-url
                              :alt alt}]]]])))
 
-(defn legacy-hero [{:keys [route-to-fn mobile-uuid desktop-uuid alt]}]
-  [:h1.h2
-   [:a
-    (assoc route-to-fn :data-test "home-banner")
-    (hero-image {:mobile-url  (str "//ucarecdn.com/" mobile-uuid "/")
-                 :desktop-url (str "//ucarecdn.com/" desktop-uuid "/")
-                 :alt         alt})]])
-
 (def free-installation-hero-data
   {:route-to-fn  (utils/route-to events/navigate-shop-by-look
                                  {:album-keyword :look
