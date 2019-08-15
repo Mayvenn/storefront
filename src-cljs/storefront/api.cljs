@@ -828,31 +828,31 @@
               "You need at least 3 bundles (closures and frontals included) to use promo code \"freeinstall\"")))
 
 (defn add-promotion-code [{:keys [shop? session-id number token promo-code allow-dormant? consolidated-cart?]}]
-  (storeback-api-req
-   POST
-   "/v2/add-promotion-code"
-   request-keys/add-promotion-code
-   {:params        {:session-id    session-id
-                    :number        number
-                    :token         token
-                    :code          promo-code
-                    :allow-dormant allow-dormant?
-                    :add-silently? (and
+  (let [add-silently? (boolean (and consolidated-cart?
                                     shop?
-                                    (= "freeinstall" (str/lower-case promo-code))
-                                    consolidated-cart?)}
-    :handler       #(messages/handle-message events/api-success-update-order-add-promotion-code
-                                             {:order          %
-                                              :promo-code     promo-code
-                                              :allow-dormant? allow-dormant?})
-    :error-handler #(if allow-dormant?
-                      (messages/handle-message events/api-failure-pending-promo-code %)
-                      (let [response-body (get-in % [:response :body])]
-                        (if (and (waiter-style? response-body)
-                                 (= (:error-code response-body) "promotion-not-found"))
-                          (messages/handle-message events/api-failure-errors-invalid-promo-code
-                                                   (assoc (waiter-style->std-error response-body) :promo-code promo-code))
-                          (default-error-handler (alter-shop-freeinstall-promotion-error shop? promo-code %)))))}))
+                                    (= "freeinstall" (some-> promo-code str/trim str/lower-case))))]
+    (storeback-api-req
+     POST
+     "/v2/add-promotion-code"
+     request-keys/add-promotion-code
+     {:params        {:session-id    session-id
+                      :number        number
+                      :token         token
+                      :code          promo-code
+                      :allow-dormant allow-dormant?
+                      :add-silently? add-silently?}
+      :handler       #(messages/handle-message events/api-success-update-order-add-promotion-code
+                                               {:order          %
+                                                :promo-code     promo-code
+                                                :allow-dormant? allow-dormant?})
+      :error-handler #(if allow-dormant?
+                        (messages/handle-message events/api-failure-pending-promo-code %)
+                        (let [response-body (get-in % [:response :body])]
+                          (if (and (waiter-style? response-body)
+                                   (= (:error-code response-body) "promotion-not-found"))
+                            (messages/handle-message events/api-failure-errors-invalid-promo-code
+                                                     (assoc (waiter-style->std-error response-body) :promo-code promo-code))
+                            (default-error-handler (alter-shop-freeinstall-promotion-error shop? promo-code %)))))})))
 
 (defn add-sku-to-bag [session-id {:keys [token number sku] :as params} handler]
   (storeback-api-req
