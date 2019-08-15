@@ -94,7 +94,6 @@
     (map-indexed (fn [ix image-id]
                    (ui/ucare-img {:class    "col-12"
                                   :width    580
-                                  :style    {:min-height "300px"} ; Give scroll-to an estimate of where to scroll before images have loaded
                                   :data-ref (str "offset-" ix)} image-id))
                  gallery)]))
 
@@ -105,7 +104,11 @@
                                 stylist-id
                                 #(do (messages/handle-message events/api-success-fetch-stylist-details %)
                                      (when-let [offset (:offset query-params)]
-                                       (scroll/scroll-selector-to-top (str "[data-ref=offset-" offset "]")))))))
+
+                                       ;; We wait a moment for the images to at least start to load so that we know where to scroll to.
+                                       (js/setTimeout
+                                        (fn [] (scroll/scroll-to-selector (str "[data-ref=offset-" offset "]")))
+                                        500))))))
 
 (defmethod transitions/transition-state events/navigate-adventure-stylist-gallery
   [_ _ {:keys [stylist-id]} app-state]

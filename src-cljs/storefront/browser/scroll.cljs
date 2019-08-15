@@ -70,3 +70,8 @@
   (when-let [el (.querySelector js/document selector)]
     (scroll-elem-to-top el)))
 
+(defn scroll-to-selector
+  [selector]
+  (when-let [el (.querySelector js/document selector)]
+   (scroll-to-elem el)))
+
