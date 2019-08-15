@@ -642,6 +642,8 @@
                                             ["https://shop.mayvenn.com/categories/18-dyed-virgin-frontals"  "0.80"]
                                             ["https://shop.mayvenn.com/categories/21-seamless-clip-ins"     "0.80"]
                                             ["https://shop.mayvenn.com/shop/look"                           "0.80"]
+                                            ["https://shop.mayvenn.com/shop/straight-looks"                 "0.80"]
+                                            ["https://shop.mayvenn.com/shop/wavy-curly-looks"               "0.80"]
                                             ["https://freeinstall.mayvenn.com"                              "0.80"]
                                             ["https://freeinstall.mayvenn.com/how-it-works"                 "0.80"]
                                             ["https://freeinstall.mayvenn.com/certified-stylists"           "0.80"]
