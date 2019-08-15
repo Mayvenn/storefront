@@ -3,6 +3,7 @@
             [checkout.accessors.vouchers :as vouchers]
             [storefront.accessors.orders :as orders]
             [storefront.components.ui :as ui]
+            [storefront.components.svg :as svg]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
@@ -34,6 +35,24 @@
            :total-savings      (orders/total-savings order service-price)
            :remove-event       [events/control-checkout-remove-promotion {:code "freeinstall"}]
            :thumbnail-image    "688ebf23-5e54-45ef-a8bb-7d7480317022"
-           :thumbnail-image-fn (fn [height-width-int]
-                                 (ui/ucare-img {:width height-width-int}
-                                               "688ebf23-5e54-45ef-a8bb-7d7480317022"))})))))
+           :thumbnail-image-fn (fn [^:int diameter]
+                                 (let [diameter              50
+                                       inner-circle-diameter (- diameter 4)]
+                                   [:div.relative
+                                    (when true
+                                      [:div.absolute.z1.col-12.flex.items-center.justify-center
+                                       {:style {:height "100%"}}
+
+                                       [:div {:class "absolute z1 block"
+                                              :style {:background    "#ffffffdd"
+                                                      :width         (str inner-circle-diameter "px")
+                                                      :height        (str inner-circle-diameter "px")
+                                                      :border-radius "50%"}}]
+                                       [:div.absolute.z2.col-12.flex.items-center.justify-center
+                                        {:style {:height "100%"}}
+                                        (svg/lock {:style {:width  "17px"
+                                                           :height "23px"}})]])
+                                    (ui/circle-ucare-img {:class "block"
+                                                          :style {:width  diameter
+                                                                  :margin "auto"}}
+                                                         "688ebf23-5e54-45ef-a8bb-7d7480317022")]))})))))

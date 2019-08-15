@@ -270,3 +270,8 @@
   (component/html
    [:svg opts
     ^:inline (svg-xlink "info")]))
+
+(defn lock [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "lock")]))
