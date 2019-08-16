@@ -197,8 +197,11 @@
     (component/html
      [:div.absolute.bg-white.col-12.z3.border-bottom.border-gray
       [:div.mx-auto.clearfix.my6.col-10
-       (for [items columns]
-         (flyout-column items (count columns)))]])))
+       (let [col-count (count columns)]
+         (for [[items ix] (map vector columns (range))]
+           [:div
+            {:key (str "col-" ix)}
+            (flyout-column items col-count)]))]])))
 
 (defn component [{:as data :keys [store user cart signed-in vouchers?]} _ _]
   (component/create
