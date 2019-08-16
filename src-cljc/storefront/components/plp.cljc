@@ -1,12 +1,11 @@
 (ns storefront.components.plp
-  (:require [storefront.accessors.stylists :as stylists]
-            [storefront.assets :as assets]
+  (:require #?(:cljs [storefront.history :as history])
             [storefront.component :as component]
             [storefront.components.ui :as ui]
+            [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.request-keys :as request-keys]
             [ui.molecules :as ui.M]))
 
 (defn component [{:keys [] :as query-data} owner opts]
@@ -17,17 +16,26 @@
      [:div.purple.h7.medium.mbn1.mt3
       "NEW!"]
      [:div.h1 "Mayvenn Install"]
-     [:div.h5.dark-gray.light.my2.mx5
+     [:div.h5.dark-gray.light.my2.mx6-on-mb.col-8-on-tb-dt.mx-auto-on-tb-dt
+
       "Save 10% on your hair & get a free Mayvenn Install by a licensed stylist when you purchase 3 or more items. "
       [:a.teal.h6.medium
        {:on-click (utils/send-event-callback events/popup-show-adventure-free-install)}
-       "learn more"]]]]))
+       "learn" ui/nbsp "more"]]]]))
 
 (defn query [data]
   {:mob-uuid "4f9bc98f-2834-4e1f-9e9e-4ca680edd81f"
+   :dsk-uuid "b1d0e399-8e62-4f34-aa17-862a9357000b"
    :file-name "plp-hero-image"
    :alt "New Mayvenn Install"
    :opts (utils/scroll-href "mayvenn-free-install-video")})
 
 (defn built-component [data opts]
   (component/build component (query data) nil))
+
+(defmethod effects/perform-effects events/navigate-plp [_ event args _ app-state]
+  #?(:cljs (let [store-experience (get-in app-state keypaths/store-experience)
+                 store-slug       (get-in app-state keypaths/store-slug)]
+             (when-not (or (= "aladdin" store-experience)
+                           (= "shop" store-slug))
+               (history/enqueue-redirect events/navigate-home)))))
