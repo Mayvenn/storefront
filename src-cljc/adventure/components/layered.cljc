@@ -13,7 +13,8 @@
                        goog.dom
                        goog.style
                        goog.events
-                       [storefront.browser.scroll :as scroll]])))
+                       [storefront.browser.scroll :as scroll]])
+            [ui.molecules :as ui.M]))
 
 (defn freeinstall-domain [environment path]
   (let [domain (case environment
@@ -37,45 +38,17 @@
 
 (defmulti layer-view (fn [{:keys [layer/type]} _ _] type))
 
-(defn hero-image [{:keys [desktop-url mobile-url file-name alt off-screen?]}]
-  (component/html
-   (if off-screen?
-     [:picture
-      ;; Tablet/Desktop
-      [:source {:media   "(min-width: 750px)"
-                :src-set (str desktop-url "-/format/auto/-/quality/best/-/resize/720x/" file-name " 1x")}]
-      ;; Mobile
-      [:source {:media   "(min-width: 426px)"
-                :src-set (str mobile-url "-/format/auto/-/quality/lightest/-/resize/425x/" file-name " 1x ")}]
-      [:source {:src-set (str mobile-url "-/format/auto/-/quality/lightest/-/resize/425x/" file-name " 1x ")}]
-      ;; mobile
-      [:img.block.col-12 {:src (str mobile-url "-/format/auto/-/quality/lightest/-/resize/425x/" file-name)
-                          :alt (str alt)}]]
-     [:picture
-      ;; Tablet/Desktop
-      [:source {:media   "(min-width: 750px)"
-                :src-set (str desktop-url "-/format/auto/-/quality/best/-/resize/1440x/" file-name " 1x")}]
-      ;; Mobile
-      [:source {:media   "(min-width: 426px)"
-                :src-set (str mobile-url "-/format/auto/-/quality/lightest/-/resize/2250x/" file-name " 3x, "
-                              mobile-url "-/format/auto/-/quality/lightest/-/resize/1500x/" file-name " 2x, "
-                              mobile-url "-/format/auto/-/quality/normal/-/resize/750x/" file-name " 1x ")}]
-      [:source {:src-set (str mobile-url "-/format/auto/-/quality/lightest/-/resize/1275x/" file-name " 3x, "
-                              mobile-url "-/format/auto/-/quality/lightest/-/resize/850x/" file-name " 2x, "
-                              mobile-url "-/format/auto/-/quality/normal/-/resize/425x/" file-name " 1x ")}]
-      ;; mobile
-      [:img.block.col-12 {:src (str mobile-url "-/format/auto/-/quality/normal/-/resize/750x/" file-name)
-                          :alt (str alt)}]])))
-
 (defmethod layer-view :hero
   [data owner opts]
   (component/create
    [:div.mx-auto.relative {:style {:min-height "300px"}}
     (let [{:photo/keys [mob-uuid dsk-uuid file-name alt]} data]
-      (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
-                   :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
-                   :file-name   file-name
-                   :alt         alt}))
+      (component/build ui.M/hero
+                       {:mob-uuid    mob-uuid
+                        :dsk-uuid    dsk-uuid
+                        :file-name   file-name
+                        :alt         alt}
+                       nil))
     (when-let [buttons (:buttons data)]
       [:div.relative.flex.justify-center
        [:div.absolute.bottom-0.col-6-on-tb-dt.col-12.pb2.mb3-on-dt
@@ -145,8 +118,8 @@
   (component/create
    [:div
     (when server-render?
-      [:noscript (hero-image (merge data {:off-screen? false}))])
-    ^:inline (hero-image (merge data {:off-screen? (not seen?)}))]))
+      [:noscript (component/build ui.M/hero (merge data {:off-screen? false}) nil)])
+    (component/build ui.M/hero (merge data {:off-screen? (not seen?)}) nil)]))
 
 (defmethod layer-view :image-block
   [{:photo/keys [mob-uuid
@@ -157,8 +130,8 @@
    [:div.center.mx-auto
     (ui/screen-aware
       hero-image-component
-      {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
-       :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
+      {:mob-uuid    mob-uuid
+       :dsk-uuid    dsk-uuid
        :file-name   file-name
        :alt         alt}
       nil)]))

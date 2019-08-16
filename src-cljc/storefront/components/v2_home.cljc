@@ -12,42 +12,8 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.platform.carousel :as carousel]))
-
-(defn hero-image [{:keys [desktop-url mobile-url file-name alt]}]
-  (component/build
-   (fn [_ _ _]
-     (component/create
-      [:picture
-       ;; Tablet/Desktop
-       [:source {:media   "(min-width: 750px)"
-                 :src-set (str desktop-url "-/format/auto/-/quality/best/" file-name " 1x")}]
-       [:source {:media   "(min-width: 376px)"
-                 :src-set (str mobile-url "-/format/auto/-/resize/750x/" file-name " 1x,"
-                               mobile-url "-/format/auto/-/resize/1500x/-/quality/lightest/" file-name " 2x")
-                 :alt     alt}]
-       [:source {:src-set (str mobile-url "-/format/auto/-/resize/375x/" file-name " 1x,"
-                               mobile-url "-/format/auto/-/resize/750x/-/quality/lightest/" file-name " 2x")
-                 :alt     alt}]
-       ;; Mobile
-       [:img.block.col-12 {:src (str mobile-url "-/format/auto/-/resize/750x/" file-name)
-                           :alt alt}]]))
-   {:desktop-url desktop-url
-    :mobile-url  mobile-url}))
-
-(defn hero []
-  (component/build
-   (fn [_ _ _]
-     (component/create
-      (let [file-name "free-install-hero"
-            mob-uuid  "841c504e-fce9-404d-9652-a66b0af86057"
-            dsk-uuid  "f423c9d9-1073-4b0c-86a5-dc810e18e505"]
-        [:a.bold.shadow.white.center.bg-light-gray
-         (utils/scroll-href "mayvenn-free-install-video")
-         ^:inline (hero-image {:mobile-url  (str "//ucarecdn.com/" mob-uuid "/")
-                               :desktop-url (str "//ucarecdn.com/" dsk-uuid "/")
-                               :file-name   file-name
-                               :alt         "Use code FREEINSTALL when you buy 3 bundles or more"})])))))
+            [storefront.platform.carousel :as carousel]
+            [ui.molecules :as ui.M]))
 
 (defn free-shipping-banner []
   (component/build
@@ -332,13 +298,14 @@
                          sleek-and-straight-ugc
                          waves-and-curly-ugc
                          free-install-mayvenn-ugc
-                         gallery-ucare-ids]
+                         gallery-ucare-ids
+                         hero-data]
                   :as data}
                  owner
                  opts]
   (component/create
    [:div
-    [:section ^:inline (hero)]
+    [:section (component/build ui.M/hero hero-data nil)]
     [:section ^:inline (free-shipping-banner)]
     [:a {:name "mayvenn-free-install-video"}]
     [:div
@@ -391,7 +358,12 @@
      :free-install-mayvenn-ugc {:images        (contentful/album-kw->homepage-social-cards cms-ugc-collection current-nav-event :free-install-mayvenn)
                                 :album-keyword :free-install-mayvenn}
      :stylist-gallery-open?    (get-in data keypaths/carousel-stylist-gallery-open?)
-     :homepage-data            homepage-data}))
+     :homepage-data            homepage-data
+     :hero-data                {:opts      (utils/scroll-href "mayvenn-free-install-video")
+                                :file-name "free-install-hero"
+                                :mob-uuid  "841c504e-fce9-404d-9652-a66b0af86057"
+                                :dsk-uuid  "f423c9d9-1073-4b0c-86a5-dc810e18e505"
+                                :alt       "Use code FREEINSTALL when you buy 3 bundles or more"}}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))

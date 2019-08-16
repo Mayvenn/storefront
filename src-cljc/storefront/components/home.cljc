@@ -11,7 +11,8 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.routes :as routes]
-            adventure.shop-home))
+            adventure.shop-home
+            [ui.molecules :as ui.M]))
 
 (defn product-image
   [{:keys [resizable_url resizable_filename alt]}]
@@ -69,15 +70,6 @@
                     [:h3.h2.hide-on-mb
                      [:div "Need inspiration?"]
                      [:div "Try shop by look."]]]])]]))
-
-(defn hero-image [{:keys [desktop-url mobile-url file-name alt]}]
-  [:picture
-   ;; Tablet/Desktop
-   [:source {:media   "(min-width: 750px)"
-             :src-set (str desktop-url "-/format/auto/-/quality/best/" file-name " 1x")}]
-   ;; Mobile
-   [:img.block.col-12 {:src (str mobile-url "-/format/auto/" file-name)
-                       :alt alt}]])
 
 (defn hero
   [hero-data]
@@ -335,18 +327,9 @@
                        :src-set (str mobile-url "-/format/auto/-/resize/1500x/-/quality/lightest/" file-name " 2x")
                        :alt     alt}]])
 
-(def talkable-banner
-  (component/html
-   [:a
-    (utils/route-to events/navigate-friend-referrals {:query-params {:traffic_source "homepageBanner"}})
-    (hero-image {:mobile-url  "//ucarecdn.com/762369fb-6680-4e0a-bf99-4e6317f03f1d/"
-                 :desktop-url "//ucarecdn.com/b11d90d3-ed57-4c18-a61b-d91b68e1cccb/"
-                 :file-name   "talkable_banner_25.jpg"
-                 :alt         "refer friends, earn rewards, get 25% off"})]))
-
 (defn component
   [{:component/keys [hero-cms-data features]
-    :keys [signed-in store categories] :as data} _ _]
+    :keys           [signed-in store categories] :as data} _ _]
   (component/create
    [:div.m-auto
     (when hero-cms-data
@@ -356,7 +339,14 @@
     [:section (popular-grid categories)]
     [:section ^:inline (video-autoplay)]
     [:section ^:inline (about-mayvenn)]
-    [:section talkable-banner]]))
+    [:section (component/build ui.M/hero
+                               {:mob-uuid  "762369fb-6680-4e0a-bf99-4e6317f03f1d"
+                                :dsk-uuid  "b11d90d3-ed57-4c18-a61b-d91b68e1cccb"
+                                :file-name "talkable_banner_25.jpg"
+                                :alt       "refer friends, earn rewards, get 25% off"
+                                :opts      (utils/route-to events/navigate-friend-referrals
+                                                           {:query-params {:traffic_source "homepageBanner"}})}
+                               nil)]]))
 
 (defn query
   [data]
