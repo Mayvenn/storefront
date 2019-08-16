@@ -40,17 +40,6 @@
    [:div.pr3]
    (marquee-col right-content)])
 
-(def ^:private social-link :a.inherit-color.h6.underline)
-
-(defn ^:private instagram-link [instagram-account]
-  [social-link
-   {:href (marquee/instagram-url instagram-account)}
-   "Follow"])
-
-(defn ^:private styleseat-link [styleseat-account]
-  [social-link
-   {:href (marquee/styleseat-url styleseat-account)}
-   "Book"])
 (defn ^:private stylist-portrait [{:keys [stylist-portrait]}]
   (let [header-image-size 36
         portrait-status   (:status stylist-portrait)]
