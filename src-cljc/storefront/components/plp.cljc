@@ -12,7 +12,7 @@
 (defn component [{:keys [] :as query-data} owner opts]
   (component/create
    [:div.container
-    (ui.M/hero query-data)
+    (component/build ui.M/hero query-data nil)
     [:div.center.mx2
      [:div.purple.h7.medium.mbn1.mt3
       "NEW!"]
