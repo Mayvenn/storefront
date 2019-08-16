@@ -116,6 +116,8 @@
 
     [:div.border-top.border-gray
      (drop-down-row (utils/route-to events/navigate-stylist-share-your-store) "Share Your store")]
+    [:div.border-top.border-gray
+     (drop-down-row (utils/route-to events/navigate-gallery-edit) "Edit Gallery")]
     (when-not (:match-eligible store)
       [:div.border-top.border-gray
        (drop-down-row community/community-url "Community")])
