@@ -22,7 +22,7 @@
    :back-link          {:navigation-event events/navigate-gallery-edit
                         :back-copy        "back to gallery"}})
 
-(defn built-component [data opts]
+(defn ^:export built-component [data opts]
   (component/build component (query data) nil))
 
 (defmethod effects/perform-effects events/navigate-gallery-image-picker [_ event args _ app-state]
