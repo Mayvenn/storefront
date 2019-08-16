@@ -181,7 +181,7 @@
      [:div.col-on-tb-dt.col-6-on-tb-dt
       (component/build cart-summary/organism queried-data nil)
 
-      [:div.px4
+      [:div.px4.center
        #?@(:cljs
            [(component/build quadpay/component
                              {:show?       loaded-quadpay?
@@ -202,13 +202,13 @@
          [:div.error.h7.center.medium.py1
           (str "Add " number-of-items-needed " more items")])
 
-       [:div.h5.black.center.py1.flex.justify-around.items-center
+       [:div.h5.black.py1.flex.items-center
         [:div.flex-grow-1.border-bottom.border-light-gray]
         [:div.mx2 "or"]
         [:div.flex-grow-1.border-bottom.border-light-gray]]
 
        (if freeinstall-needs-more-items?
-         [:a.teal.medium.center.mt1.mb2
+         [:a.teal.medium.mt1.mb2
           (apply utils/fake-href remove-freeinstall-event)
           "Checkout without a free Mayvenn Install"]
          [:div.pb2
