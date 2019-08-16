@@ -10,7 +10,8 @@
             [storefront.effects :as effects]
             [storefront.events :as events]
             #?(:cljs [storefront.hooks.reviews :as reviews])
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            [ui.molecules :as ui.M]))
 
 (def nowhere events/navigate-design-system-adventure)
 
@@ -88,7 +89,14 @@
                            :colors                    "Natural Black"
                            :weights                   "3.5oz"
                            :stylist-exclusives-family nil
-                           :learn-more-nav-event      nil}}])
+                           :learn-more-nav-event      nil}}
+   {:molecule/label     :hero
+    :molecule/component ui.M/hero
+    :molecule/query     {:opts      {:href "#mayvenn-free-install-video"},
+                         :file-name "free-install-hero",
+                         :mob-uuid  "841c504e-fce9-404d-9652-a66b0af86057",
+                         :dsk-uuid  "f423c9d9-1073-4b0c-86a5-dc810e18e505",
+                         :alt       "Use code FREEINSTALL when you buy 3 bundles or more"}}])
 
 
 
