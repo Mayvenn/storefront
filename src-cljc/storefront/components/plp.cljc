@@ -24,7 +24,7 @@
        "learn more"]]]]))
 
 (defn query [data]
-  {:mob-uuid "41adade2-0987-4f8f-9bed-99d9586fead3"
+  {:mob-uuid "4f9bc98f-2834-4e1f-9e9e-4ca680edd81f"
    :file-name "plp-hero-image"
    :alt "New Mayvenn Install"
    :opts (utils/scroll-href "mayvenn-free-install-video")})
