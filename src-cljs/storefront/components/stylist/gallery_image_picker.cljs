@@ -1,8 +1,11 @@
 (ns storefront.components.stylist.gallery-image-picker
-  (:require [storefront.component :as component]
+  (:require [storefront.accessors.auth :as auth]
+            [storefront.component :as component]
             [storefront.components.image-picker :as image-picker]
             [storefront.events :as events]
-            [storefront.keypaths :as keypaths]))
+            [storefront.keypaths :as keypaths]
+            [storefront.effects :as effects]
+            [storefront.hooks.uploadcare :as uploadcare]))
 
 (defn component [{:keys [loaded-uploadcare?] :as args} owner opts]
   (component/create
@@ -16,8 +19,13 @@
    :on-success         events/uploadcare-api-success-upload-gallery
    ;; :widget-config      {:multiple true}
    :selector           "gallery-photo"
-   :back-link          {:navigation-event events/navigate-gallery
-                        :back-copy "back to gallery"}})
+   :back-link          {:navigation-event events/navigate-gallery-edit
+                        :back-copy        "back to gallery"}})
 
 (defn built-component [data opts]
   (component/build component (query data) nil))
+
+(defmethod effects/perform-effects events/navigate-gallery-image-picker [_ event args _ app-state]
+  (if (auth/stylist? (auth/signed-in app-state))
+    (uploadcare/insert)
+    (effects/redirect events/navigate-store-gallery)))

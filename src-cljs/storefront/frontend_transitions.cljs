@@ -262,7 +262,7 @@
   (when-not (get-in app-state keypaths/user-id)
     (add-return-event app-state)))
 
-(defmethod transition-state events/navigate-gallery [_ event args app-state]
+(defmethod transition-state events/navigate-gallery-edit [_ event args app-state]
   (assoc-in app-state keypaths/editing-gallery? false))
 
 (defmethod transition-state events/control-menu-expand
@@ -332,6 +332,9 @@
   (-> app-state
       (update-in keypaths/app-version #(or % app-version))
       (update-in keypaths/api-requests (partial remove (comp #{request-id} :request-id)))))
+
+(defmethod transitions/transition-state events/api-success-store-gallery-fetch [_ event {:keys [images]} app-state]
+  (assoc-in app-state keypaths/store-gallery-images images))
 
 (defmethod transition-state events/api-success-get-saved-cards [_ event {:keys [cards default-card]} app-state]
   (let [valid-id? (set (conj (map :id cards) "add-new-card"))]

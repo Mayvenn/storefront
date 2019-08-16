@@ -4,6 +4,7 @@
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.stylists :as stylists]
+            [storefront.assets :as assets]
             [storefront.community :as community]
             [storefront.component :as component]
             [storefront.components.marquee :as marquee]
@@ -41,12 +42,6 @@
 
 (def ^:private social-link :a.inherit-color.h6.underline)
 
-(def ^:private gallery-link
-  (component/html
-   [social-link
-    (utils/route-to events/navigate-gallery)
-    "View gallery"]))
-
 (defn ^:private instagram-link [instagram-account]
   [social-link
    {:href (marquee/instagram-url instagram-account)}
@@ -56,6 +51,17 @@
   [social-link
    {:href (marquee/styleseat-url styleseat-account)}
    "Book"])
+(defn ^:private stylist-portrait [{:keys [stylist-portrait]}]
+  (let [header-image-size 36
+        portrait-status   (:status stylist-portrait)]
+    [:div.h6.flex.items-center.left.mr2
+     (if (#{"approved" "pending"} portrait-status)
+       (ui/circle-picture {:class "mx-auto"
+                           :width (str header-image-size "px")}
+                          (ui/square-image stylist-portrait header-image-size))
+       [:a (utils/route-to events/navigate-stylist-account-profile)
+        [:img {:width (str header-image-size "px")
+               :src   (assets/path "/images/icons/stylist-bug-no-pic-fallback.png")}]])]))
 
 (defn ^:private account-info-marquee [signed-in {:keys [email store-credit]}]
   (when (-> signed-in ::auth/at-all)
@@ -238,11 +244,19 @@
                      "Sign out")
     [:div])))
 
+(def ^:private gallery-link
+  (component/html
+   [:a.inherit-color.h6.underline
+    (utils/route-to events/navigate-gallery-edit)
+    "Edit Gallery"]))
+
 (defn ^:private root-menu
   [{:keys [user signed-in show-community? vouchers?] :as data} owner opts]
   (component/create
    [:div
     [:div.px6.border-bottom.border-gray.bg-light-gray.pt3
+     (when (auth/stylist? signed-in)
+       [:div.flex.items-center (stylist-portrait user) gallery-link])
      (account-info-marquee signed-in user)
      [:div.my3.dark-gray
       (actions-marquee signed-in vouchers? show-community?)]]
@@ -265,19 +279,19 @@
       (component/build root-menu data nil))]))
 
 (defn basic-query [data]
-  (let [shop?                              (= "shop" (get-in data keypaths/store-slug))
-        {:keys [match-eligible] :as store} (marquee/query data)]
-    {:signed-in                    (auth/signed-in data)
-     :on-taxon?                    (get-in data keypaths/current-traverse-nav)
-     :user                         {:email (get-in data keypaths/user-email)}
-     :store                        store
-     :show-community?              (and (not match-eligible)
-                                        (stylists/own-store? data))
-     :vouchers?                    (experiments/dashboard-with-vouchers? data)
-     :v2-experience?               (experiments/aladdin-experience? data)
-     :plp?                         (experiments/plp? data)
-     :show-freeinstall-link?       shop?
-     :shop-by-look-textures?       (experiments/shop-by-look-textures? data)}))
+  (let [{:keys [match-eligible] :as store} (marquee/query data)]
+    {:signed-in              (auth/signed-in data)
+     :on-taxon?              (get-in data keypaths/current-traverse-nav)
+     :user                   {:stylist-portrait (get-in data keypaths/user-stylist-portrait)
+                              :email            (get-in data keypaths/user-email)}
+     :store                  store
+     :show-community?        (and (not match-eligible)
+                                  (stylists/own-store? data))
+     :vouchers?              (experiments/dashboard-with-vouchers? data)
+     :v2-experience?         (experiments/aladdin-experience? data)
+     :plp?                   (experiments/plp? data)
+     :show-freeinstall-link? (= "shop" (get-in data keypaths/store-slug))
+     :shop-by-look-textures? (experiments/shop-by-look-textures? data)}))
 
 (defn query [data]
   (-> (basic-query data)

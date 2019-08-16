@@ -36,7 +36,8 @@
 (def get-stylist-referral-program [:get-stylist-referral-program])
 (def cash-out-commit [:cash-out-commit])
 (def cash-out-status [:cash-out-status])
-(def get-gallery [:get-gallery])
+(def get-store-gallery [:get-store-gallery])
+(def get-stylist-gallery [:get-stylist-gallery])
 (def delete-gallery-image [:delete-gallery-image])
 
 (def get-shipping-methods [:shipping-methods])

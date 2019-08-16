@@ -48,7 +48,8 @@
 (defpath navigate-force-set-password)
 (defpath navigate-cart)
 (defpath navigate-shared-cart)
-(defpath navigate-gallery)
+(defpath navigate-store-gallery)
+(defpath navigate-gallery-edit)
 (defpath navigate-gallery-image-picker)
 
 (defpath navigate-content)
@@ -344,7 +345,13 @@
 (defpath api-success-update-order-place-order)
 (defpath api-success-update-order-proceed-to-quadpay)
 (defpath api-success-promotions)
-(defpath api-success-gallery)
+
+(defpath api-success-store-gallery-fetch)
+
+(defpath api-success-stylist-gallery)
+(defpath api-success-stylist-gallery-fetch)
+(defpath api-success-stylist-gallery-append)
+(defpath api-success-stylist-gallery-delete)
 
 (defpath api-success-shipping-methods)
 

@@ -499,17 +499,26 @@
              :user-token user-token
              :urls       gallery-urls}
     :handler
-    #(messages/handle-message events/api-success-gallery %)}))
+    #(messages/handle-message events/api-success-stylist-gallery-append %)}))
 
-(defn get-gallery [params]
+(defn get-stylist-gallery [params]
   (storeback-api-req
    GET
    "/gallery"
-   request-keys/get-gallery
-   {:params
-    (select-keys params [:user-id :user-token :stylist-id])
+   request-keys/get-stylist-gallery
+   {:params (select-keys params [:user-id :user-token])
     :handler
-    #(messages/handle-message events/api-success-gallery %)}))
+    #(messages/handle-message events/api-success-stylist-gallery-fetch %)}))
+
+(defn get-store-gallery [params]
+  (storeback-api-req
+   GET
+   "/gallery"
+   request-keys/get-store-gallery
+   {:params
+    (select-keys params [:stylist-id])
+    :handler
+    #(messages/handle-message events/api-success-store-gallery-fetch %)}))
 
 (defn delete-gallery-image [user-id user-token image-url]
   (storeback-api-req
@@ -521,7 +530,7 @@
      :user-token user-token
      :image-url  image-url}
     :handler
-    #(messages/handle-message events/api-success-gallery %)}))
+    #(messages/handle-message events/api-success-stylist-gallery-delete %)}))
 
 (defn get-stylist-balance-transfer [user-id user-token balance-transfer-id]
   (storeback-api-req

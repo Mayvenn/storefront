@@ -210,7 +210,7 @@
 (defn ^:private gallery-link []
   (component/html
    (drop-down-row
-    (utils/route-to events/navigate-gallery)
+    (utils/route-to events/navigate-store-gallery)
     "View gallery"
     (social-icon (assets/path "/images/share/stylist-gallery-icon.png")))))
 

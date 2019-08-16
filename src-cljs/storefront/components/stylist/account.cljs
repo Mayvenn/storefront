@@ -255,10 +255,6 @@
       (-> (assoc-in keypaths/stylist-manage-account-green-dot-card-selected-id (:last-4 green-dot-payout-attributes))
           (assoc-in keypaths/stylist-manage-account-green-dot-payout-attributes green-dot-payout-attributes)))))
 
-(defmethod transition-state events/api-success-gallery [_ event {:keys [images]} app-state]
-  (-> app-state
-      (assoc-in keypaths/store-gallery-images images)))
-
 (defmethod transition-state events/api-success-stylist-payout-stats
   [_ _ stats app-state]
   (assoc-in app-state keypaths/stylist-payout-stats stats))

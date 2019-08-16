@@ -39,8 +39,9 @@
             [storefront.components.flash :as flash]
             [storefront.components.footer :as footer]
             [storefront.components.forgot-password :as forgot-password]
-            [storefront.components.gallery :as gallery]
             [storefront.components.plp :as plp]
+            [storefront.components.gallery :as gallery]
+            [storefront.components.gallery-edit :as gallery-edit]
             [storefront.components.header :as header]
             [storefront.components.home :as home]
             [ui.promo-banner :as promo-banner]
@@ -110,8 +111,9 @@
           events/navigate-sign-in                 sign-in/built-component
           events/navigate-sign-up                 sign-up/built-component
           events/navigate-forgot-password         forgot-password/built-component
-          events/navigate-gallery                 gallery/built-component
           events/navigate-plp                     plp/built-component
+          events/navigate-store-gallery           gallery/built-component
+          events/navigate-gallery-edit            gallery-edit/built-component
 
           events/navigate-info-certified-stylists adventure.informational.certified-stylists/built-component
           events/navigate-info-about-our-hair     adventure.informational.about-our-hair/built-component

@@ -338,32 +338,6 @@
                 (get-in app-state keypaths/user-store-id)))
     (effects/redirect events/navigate-sign-in)))
 
-(defmethod effects/perform-effects events/navigate-gallery [_ event args _ app-state]
-  (api/get-gallery (if (stylists/own-store? app-state)
-                     {:user-id (get-in app-state keypaths/user-id)
-                      :user-token (get-in app-state keypaths/user-token)}
-                     {:stylist-id (get-in app-state keypaths/store-stylist-id)})))
-
-(defmethod effects/perform-effects events/navigate-gallery-image-picker [_ event args _ app-state]
-  (if (stylists/own-store? app-state)
-    (uploadcare/insert)
-    (effects/redirect events/navigate-gallery)))
-
-(defmethod effects/perform-effects events/control-delete-gallery-image [_ event {:keys [image-url]} _ app-state]
-  (api/delete-gallery-image (get-in app-state keypaths/user-id)
-                            (get-in app-state keypaths/user-token)
-                            image-url))
-
-(defmethod effects/perform-effects events/api-success-gallery [_ event args _ app-state]
-  (cond
-    (not (stylists/gallery? app-state))
-    (effects/page-not-found)
-
-    (and (stylists/own-store? app-state)
-         (routes/exact-page? (get-in app-state keypaths/navigation-message) [events/navigate-gallery])
-         (some (comp #{"pending"} :status) (get-in app-state keypaths/store-gallery-images)))
-    (messages/handle-later events/poll-gallery {} 5000)))
-
 (defmethod effects/perform-effects events/control [_ _ args _ app-state]
   (popup/touch-email-capture-session app-state))
 
@@ -628,7 +602,7 @@
   (let [user-id    (get-in app-state keypaths/user-id)
         user-token (get-in app-state keypaths/user-token)]
     (api/append-stylist-gallery user-id user-token {:gallery-urls [cdnUrl]})
-    (history/enqueue-navigate events/navigate-gallery)))
+    (history/enqueue-navigate events/navigate-gallery-edit)))
 
 (defmethod effects/perform-effects events/control-checkout-update-addresses-submit [_ event args _ app-state]
   (let [guest-checkout? (get-in app-state keypaths/checkout-as-guest)
@@ -743,11 +717,6 @@
   (api/refresh-stylist-portrait (get-in app-state keypaths/user-id)
                                 (get-in app-state keypaths/user-token)
                                 (get-in app-state keypaths/user-store-id)))
-
-(defmethod effects/perform-effects events/poll-gallery [_ event args _ app-state]
-  (when (stylists/own-store? app-state)
-    (api/get-gallery {:user-id    (get-in app-state keypaths/user-id)
-                      :user-token (get-in app-state keypaths/user-token)})))
 
 (defmethod effects/perform-effects events/api-success-stylist-account
   [_ event {:keys [stylist]} previous-app-state app-state]

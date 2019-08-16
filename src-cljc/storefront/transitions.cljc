@@ -39,7 +39,8 @@
                      store-slug
                      stylist-experience
                      token
-                     total-available-store-credit]}]
+                     total-available-store-credit
+                     stylist-portrait]}]
   (-> app-state
       (assoc-in keypaths/user-id id)
       (assoc-in keypaths/user-email email)
@@ -48,6 +49,7 @@
       (assoc-in keypaths/user-store-slug store-slug)
       (assoc-in keypaths/user-store-id store-id)
       (assoc-in keypaths/user-stylist-experience stylist-experience)
+      (assoc-in keypaths/user-stylist-portrait stylist-portrait)
       (assoc-in keypaths/checkout-as-guest false)
       #?(:clj identity
          :cljs (assoc-in keypaths/user-total-available-store-credit (spice/parse-double total-available-store-credit)))))

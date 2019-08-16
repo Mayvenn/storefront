@@ -592,7 +592,7 @@
    events/navigate-content-ugc-usage-terms   generic-server-render
    events/navigate-content-voucher-terms     generic-server-render
    events/navigate-content-program-terms     generic-server-render
-   events/navigate-gallery                   generic-server-render
+   events/navigate-store-gallery             generic-server-render
    events/navigate-checkout-processing       generic-server-render
    events/navigate-mayvenn-made              generic-server-render})
 
