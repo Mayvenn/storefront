@@ -15,7 +15,7 @@
 
 (defn hero
   [{:keys [dsk-uuid mob-uuid file-name alt opts off-screen?]
-    :or   {file-name "hero-image"}}]
+    :or   {file-name "hero-image"}} _ _]
   (let [mobile-url  (str "//ucarecdn.com/" mob-uuid "/-/format/auto/-/")
         desktop-url (str "//ucarecdn.com/" (or dsk-uuid mob-uuid) "/-/format/auto/-/")]
     (component/create
