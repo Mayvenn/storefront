@@ -127,7 +127,7 @@
    [:div.h4.border-bottom.border-gray.py3
     (into [:a.block.inherit-color.flex.items-center (assoc link-attrs :data-test data-test)] content)]])
 
-(defn shopping-rows [{:keys [show-freeinstall-link? v2-experience? shop-by-look-textures? plp?]}]
+(defn shopping-rows [{:keys [show-freeinstall-link? v2-experience? plp?]}]
   (let [^:inline caret (ui/forward-caret {:width  "23px"
                                           :height "20px"})]
     (concat
@@ -144,15 +144,11 @@
          :data-test  "menu-shop-by-deals"
          :content    [[:span.medium "Deals"]]}])
 
-     [(if shop-by-look-textures?
-        {:link-attrs (utils/fake-href events/menu-list
-                                      {:menu-type :shop-looks})
-         :data-test  "menu-shop-by-look"
-         :content    [[:span.medium.flex-auto "Shop Looks"]
-                      caret]}
-        {:link-attrs (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
-         :data-test  "menu-shop-by-look"
-         :content    [[:span.medium "Shop Looks"]]})
+     [{:link-attrs (utils/fake-href events/menu-list
+                                    {:menu-type :shop-looks})
+       :data-test  "menu-shop-by-look"
+       :content    [[:span.medium.flex-auto "Shop Looks"]
+                    caret]}
 
       {:link-attrs (utils/fake-href events/menu-list
                                     {:page/slug           "virgin-hair"
@@ -279,8 +275,7 @@
      :vouchers?              (experiments/dashboard-with-vouchers? data)
      :v2-experience?         (experiments/aladdin-experience? data)
      :plp?                   (experiments/plp? data)
-     :show-freeinstall-link? (= "shop" (get-in data keypaths/store-slug))
-     :shop-by-look-textures? (experiments/shop-by-look-textures? data)}))
+     :show-freeinstall-link? (= "shop" (get-in data keypaths/store-slug))}))
 
 (defn query [data]
   (-> (basic-query data)

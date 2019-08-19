@@ -145,7 +145,7 @@
     (merge opts {:style {:padding-left "24px" :padding-right "24px"}})
     text]))
 
-(defn menu [{:keys [show-freeinstall-link? v2-experience? shop-by-look-textures? plp?]}]
+(defn menu [{:keys [show-freeinstall-link? v2-experience? plp?]}]
   (component/html
    [:div.center
     (when show-freeinstall-link?
@@ -160,13 +160,9 @@
       (header-menu-link (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :deals})
                                :on-mouse-enter close-header-menus)
                         "Deals"))
-    (if shop-by-look-textures?
-      (header-menu-link (merge (utils/route-to events/navigate-home)
-                               (->flyout-handlers keypaths/shop-looks-menu-expanded))
-                        "Shop looks")
-      (header-menu-link (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
-                               :on-mouse-enter close-header-menus)
-                        "Shop looks"))
+    (header-menu-link (merge (utils/route-to events/navigate-home)
+                             (->flyout-handlers keypaths/shop-looks-menu-expanded))
+                      "Shop looks")
 
     (header-menu-link (merge (utils/route-to events/navigate-home)
                              (->flyout-handlers keypaths/shop-a-la-carte-menu-expanded))
@@ -296,7 +292,6 @@
 
 (defn query [data]
   (-> (slideout-nav/basic-query data)
-      (assoc :shop-by-look-textures? (experiments/shop-by-look-textures? data))
       (assoc-in [:user :expanded?] (get-in data keypaths/account-menu-expanded))
       (merge (shop-a-la-carte-flyout-query data))
       (merge (shop-looks-query data))
