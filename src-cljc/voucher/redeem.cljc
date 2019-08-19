@@ -178,7 +178,10 @@
     (messages/handle-message events/api-failure-bad-server-response response)
     (let [redemption-error (interpret-redemption-error (-> response :response :body :key))]
       #?(:cljs
-         (exception-handler/report "voucherify-redemption-api-failure" redemption-error))
+         (try
+           (exception-handler/report "voucherify-redemption-api-failure" redemption-error)
+           (catch :default e ;; ignore error so we don't double report
+             nil)))
       (messages/handle-message events/api-failure-errors redemption-error))))
 
 (defmethod transitions/transition-state events/api-success-voucher-redemption
