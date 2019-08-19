@@ -201,6 +201,11 @@
    [:svg opts
     ^:inline (svg-xlink "trash-can")]))
 
+(defn consolidated-trash-can [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "consolidated-trash-can")]))
+
 (defn discount-tag [opts]
   (component/html
    [:svg.fill-orange opts
