@@ -1,13 +1,8 @@
 (ns checkout.ui.molecules
-  (:require [checkout.consolidated-cart.items :as cart-items]
-            [storefront.accessors.orders :as orders]
-            [storefront.component :as component]
-            [storefront.components.ui :as ui]
-            [storefront.effects :as effects]
+  (:require [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.platform.component-utils :as utils]
-            [storefront.request-keys :as request-keys]))
+            [storefront.platform.component-utils :as utils]))
 
 (defn promo-entry
   [{:keys [focused coupon-code field-errors updating? applying? error-message] :as promo-data}]
