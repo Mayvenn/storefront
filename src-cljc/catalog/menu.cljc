@@ -54,7 +54,7 @@
 (defn shop-looks-query [data]
   {:return-link/event-message [events/menu-home]
    :return-link/copy          "Back"
-   :menu/title                "Shop By Look"
+   :menu/title                "By Look"
    :menu/options              [{:key "all"
                                 :nav-message [events/navigate-shop-by-look {:album-keyword :look}]
                                 :new? false
