@@ -55,18 +55,18 @@
   {:return-link/event-message [events/menu-home]
    :return-link/copy          "Back"
    :menu/title                "Shop By Look"
-   :menu/options              [{:key "straight"
+   :menu/options              [{:key "all"
+                                :nav-message [events/navigate-shop-by-look {:album-keyword :look}]
+                                :new? false
+                                :copy "All Looks"}
+                               {:key "straight"
                                 :nav-message [events/navigate-shop-by-look {:album-keyword :straight-looks}]
                                 :new? false
                                 :copy "Straight Looks"}
                                {:key "curly"
                                 :nav-message [events/navigate-shop-by-look {:album-keyword :wavy-curly-looks}]
                                 :new? false
-                                :copy "Wavy & Curly Looks"}
-                               {:key "all"
-                                :nav-message [events/navigate-shop-by-look {:album-keyword :look}]
-                                :new? false
-                                :copy "All Looks"}]})
+                                :copy "Wavy & Curly Looks"}]})
 
 (defmethod transitions/transition-state events/menu-home
   [_ _ _ app-state]
