@@ -276,18 +276,18 @@
    :shop-a-la-carte-menu/expanded? (get-in data keypaths/shop-a-la-carte-menu-expanded)})
 
 (defn shop-looks-query [data]
-  {:shop-looks-menu/columns   [[{:key         "straight"
+  {:shop-looks-menu/columns   [[{:key         "all"
+                                 :nav-message [events/navigate-shop-by-look {:album-keyword :look}]
+                                 :new?        false
+                                 :copy        "All Looks"}]
+                               [{:key         "straight"
                                  :nav-message [events/navigate-shop-by-look {:album-keyword :straight-looks}]
                                  :new?        false
                                  :copy        "Straight Looks"}]
                                [{:key         "curly"
                                  :nav-message [events/navigate-shop-by-look {:album-keyword :wavy-curly-looks}]
                                  :new?        false
-                                 :copy        "Wavy & Curly Looks"}]
-                               [{:key         "all"
-                                 :nav-message [events/navigate-shop-by-look {:album-keyword :look}]
-                                 :new?        false
-                                 :copy        "All Looks"}]]
+                                 :copy        "Wavy & Curly Looks"}]]
    :shop-looks-menu/expanded? (get-in data keypaths/shop-looks-menu-expanded)})
 
 (defn query [data]
