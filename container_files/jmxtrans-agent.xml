@@ -15,9 +15,9 @@
     <query objectName="java.lang:type=Threading" attribute="ThreadCount" resultAlias="jvm.thread"/>
   </queries>
   <outputWriter class="org.jmxtrans.agent.GraphitePlainTextTcpOutputWriter">
-    <host>172.17.0.1</host>
+    <host>${graphite.host}</host>
     <port>2003</port>
-    <namePrefix>storefront.</namePrefix>
+    <namePrefix>storefront.servers.#hostname#.</namePrefix>
   </outputWriter>
   <collectIntervalInSeconds>60</collectIntervalInSeconds>
 </jmxtrans-agent>
