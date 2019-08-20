@@ -1,29 +1,30 @@
 (ns checkout.consolidated-cart
   (:require
-   #?@(:cljs [[storefront.components.popup :as popup]
-              [storefront.components.order-summary :as summary]
-              [storefront.config :as config]
-              [cemerick.url :refer [url-encode]]
-              [storefront.platform.messages :as messages]
-              [storefront.components.payment-request-button :as payment-request-button]
+   #?@(:cljs [[cemerick.url :refer [url-encode]]
+              [goog.labs.userAgent.device :as device]
+              [storefront.accessors.stylist-urls :as stylist-urls]
               [storefront.api :as api]
+              [storefront.browser.cookie-jar :as cookie-jar]
+              [storefront.components.order-summary :as summary]
+              [storefront.components.payment-request-button :as payment-request-button]
+              [storefront.components.popup :as popup]
+              [storefront.config :as config]
               [storefront.history :as history]
               [storefront.hooks.browser-pay :as browser-pay]
-              [storefront.browser.cookie-jar :as cookie-jar]
-              [storefront.accessors.stylist-urls :as stylist-urls]
               [storefront.hooks.quadpay :as quadpay]
-              [goog.labs.userAgent.device :as device]])
-   [clojure.string :as string]
-   [spice.core :as spice]
+              [storefront.platform.messages :as messages]])
+   [adventure.keypaths :as adventure-keypaths]
+   [catalog.facets :as facets]
    [catalog.images :as catalog-images]
-   [ui.molecules :as ui-molecules]
+   [checkout.accessors.vouchers :as vouchers]
    [checkout.call-out :as call-out]
-   [checkout.consolidated-cart.items :as cart-items]
    [checkout.header :as header]
    [checkout.suggestions :as suggestions]
+   [checkout.ui.cart-item :as cart-item]
    [checkout.ui.cart-summary :as cart-summary]
+   [clojure.string :as string]
+   [spice.core :as spice]
    [storefront.accessors.experiments :as experiments]
-   [catalog.facets :as facets]
    [storefront.accessors.orders :as orders]
    [storefront.accessors.products :as products]
    [storefront.accessors.promos :as promos]
@@ -34,12 +35,12 @@
    [storefront.components.money-formatters :as mf]
    [storefront.components.svg :as svg]
    [storefront.components.ui :as ui]
-   [storefront.css-transitions :as css-transitions]
    [storefront.effects :as effects]
    [storefront.events :as events]
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
    [storefront.request-keys :as request-keys]
+   [ui.molecules :as ui-molecules]
    [ui.promo-banner :as promo-banner]))
 
 (defmethod effects/perform-effects events/control-cart-add-freeinstall-coupon
@@ -61,8 +62,7 @@
               price                (or (:sku/price line-item)         (:unit-price line-item))
               removing?            (get delete-line-item-requests variant-id)
               updating?            (get update-line-item-requests sku-id)
-              just-added-to-order? (contains? recently-added-skus sku-id)
-              length-circle-value  (-> sku :hair/length first)]]
+              just-added-to-order? (contains? recently-added-skus sku-id)]]
     [:div.pt1.pb2.flex
      {:key (str sku-id "-" (:quantity line-item))}
      (suggestions/image-with-sticker {:cart-icon/ucare-id      (->> sku (catalog-images/image "cart") :ucare/id)
@@ -107,35 +107,6 @@
         [:div.h5 {:data-test (str "line-item-price-ea-" sku-id)} (mf/as-money-without-cents price) " ea"]]]
       (component/build suggestions/consolidated-component suggestions nil)]]))
 
-(defn ^:private non-adjustable-line-item
-  [freeinstall-just-added? {:keys [removing? id title detail price remove-event thumbnail-image-fn]}]
-  [:div.pt1.pb2.clearfix
-   [:div.left.ml1.pr3
-    (css-transitions/transition-background-color
-     freeinstall-just-added?
-     [:div.flex.justify-center.items-center
-      {:style {:height "79px"
-               :width  "79px"}}
-      (thumbnail-image-fn 75)])]
-   [:div
-    [:a.medium.titleize.h5
-     {:data-test (str "line-item-title-" id)}
-     title]
-    [:div.h6
-     [:div.flex.justify-between.mt1
-      [:div {:data-test (str "line-item-detail-" id)}
-       detail]
-      [:div.flex.items-center.justify-between
-       (if removing?
-         [:div.h3 {:style {:width "1.2em"}} ui/spinner]
-         [:a.gray.medium
-          (merge {:data-test (str "line-item-remove-" id)}
-                 (apply utils/fake-href remove-event))
-          ^:inline (svg/trash-can {:height "1.1em"
-                                   :width  "1.1em"
-                                   :class  "stroke-dark-gray"})])]]
-     [:div.h5.right {:data-test (str "line-item-price-ea-" id)} (some-> price mf/as-money)]]]])
-
 (defn full-component
   [{:keys [order
            skus
@@ -150,8 +121,8 @@
            show-browser-pay?
            recently-added-skus
            delete-line-item-requests
-           freeinstall-line-item-data
-           freeinstall-just-added?
+           cart-summary
+           cart-items
            number-of-items-needed
            loaded-quadpay?
            freeinstall-needs-more-items?
@@ -174,12 +145,10 @@
                                      delete-line-item-requests
                                      suggestions)
 
-      ;; TODO does this below stay post consolidation?
-      (when freeinstall-line-item-data
-        (non-adjustable-line-item freeinstall-just-added? freeinstall-line-item-data))]
+      (component/build cart-item/organism (first cart-items))]
 
      [:div.col-on-tb-dt.col-6-on-tb-dt
-      (component/build cart-summary/organism queried-data nil)
+      (component/build cart-summary/organism cart-summary nil)
 
       [:div.px4.center
        #?@(:cljs
@@ -293,89 +262,165 @@
     " more " (ui/pluralize number-of-items-needed "hair item")
     " to calculate total price"]])
 
-(defn summary-query [data]
-  (let [freeinstall-line-item-data      (cart-items/freeinstall-line-item-query data)
-        order                           (get-in data keypaths/order)
-        shipping-item                   (orders/shipping-item order)
-        shipping-cost                   (* (:quantity shipping-item)
-                                           (:unit-price shipping-item))
-        promo-data                      {:coupon-code   (get-in data keypaths/cart-coupon-code)
-                                         :applying?     (utils/requesting? data request-keys/add-promotion-code)
-                                         :focused       (get-in data keypaths/ui-focus)
-                                         :error-message (get-in data keypaths/error-message)
-                                         :field-errors  (get-in data keypaths/field-errors)}
-        subtotal                        (cond-> (orders/products-subtotal order)
-                                          freeinstall-line-item-data
-                                          (+ (spice/parse-double (:price freeinstall-line-item-data))))
-        adjustments                     (:adjustments order)
-        freeinstall-promotion-on-order? (boolean (orders/applied-install-promotion order))
-        freeinstall-entered?            (boolean (orders/freeinstall-entered? order))
-        number-of-items-needed          (- 3 (orders/product-quantity order))
-        order-adjustment-prices         (map :price (orders/all-order-adjustments order))
-        install-discount                (- 0 (or (:price freeinstall-line-item-data) 0)) ;; TODO shop needs the servicing stylist menu
-        total-savings                   (reduce + (conj order-adjustment-prices install-discount))]
-    (merge
-     {:freeinstall-informational/value (not freeinstall-promotion-on-order?)
-      :cart-summary-total-line/id      "total"
-      :cart-summary-total-line/label   (if freeinstall-promotion-on-order?
-                                         "Hair + Install Total"
-                                         "Total")
-      :cart-summary-total-line/value   (cond
-                                         (orders/freeinstall-applied? order)
-                                         [:div
-                                          [:div.bold.h2
-                                           (some-> order :total mf/as-money)]
-                                          [:div.h6.bg-purple.white.px2.nowrap.mb1
-                                           "Includes Mayvenn Install"]
-                                          (when (neg? total-savings)
-                                            [:div.h6.light.dark-gray.pxp1.nowrap.italic
-                                             "You've saved "
-                                             [:span.bold {:data-test "total-savings"}
-                                              (mf/as-money total-savings)]])]
+(defn ^:private mayvenn-install
+  "This is the 'Mayvenn Install' model that is used to build queries for views"
+  [app-state]
+  (let [order                       (get-in app-state keypaths/order)
+        freeinstall-entered?        (boolean (orders/freeinstall-entered? order))
+        install-items-required      3
+        items-added-for-install     (->> order
+                                         :shipments
+                                         first
+                                         :line-items
+                                         (filter #(-> %
+                                                      :variant-attrs
+                                                      :bundle-discount-eligible?))
+                                         (map :quantity)
+                                         (apply +)
+                                         (min install-items-required))
+        items-remaining-for-install (- install-items-required items-added-for-install)
+        servicing-stylist           (get-in app-state adventure-keypaths/adventure-servicing-stylist)
+        service-type                (->> (get-in app-state keypaths/environment)
+                                         vouchers/campaign-configuration
+                                         (filter #(= (:service/type %)
+                                                     (some-> (orders/product-items order)
+                                                             vouchers/product-items->highest-value-service)))
+                                         first
+                                         :service/diva-advertised-type)]
+    {:mayvenn-install/entered?           freeinstall-entered?
+     :mayvenn-install/locked?            (and freeinstall-entered?
+                                              (pos? items-remaining-for-install))
+     :mayvenn-install/applied?           (and freeinstall-entered?
+                                              ;; TODO should we consider the following that checks line-items for promos
+                                              ;; (boolean (orders/applied-install-promotion order))
+                                              ;; (orders/freeinstall-applied? order)
+                                              (zero? items-remaining-for-install))
+     :mayvenn-install/quantity-required  install-items-required
+     :mayvenn-install/quantity-remaining (- install-items-required items-added-for-install)
+     :mayvenn-install/quantity-added     items-added-for-install
+     :mayvenn-install/stylist            servicing-stylist
+     :mayvenn-install/service-type       service-type
+     :mayvenn-install/service-discount   (some-> app-state
+                                                 (get-in adventure-keypaths/adventure-servicing-stylist-service-menu)
+                                                 (get service-type)
+                                                 spice/parse-double
+                                                 -)}))
 
-                                         freeinstall-entered?
-                                         [:div.h7.dark-gray.light
-                                          "Add " number-of-items-needed
-                                          " more " (ui/pluralize number-of-items-needed "item")
-                                          " to "
-                                          [:br]
-                                          " calculate total price"]
+(defn cart-items-query
+  [app-state {:mayvenn-install/keys [entered? locked? applied? stylist service-discount quantity-remaining quantity-required quantity-added]}]
+  (cond-> []
+    entered?
+    (conj
+     (cond-> {:react/key                         "freeinstall-line-item-freeinstall"
+              :cart-item-title/id                "line-item-title-freeinstall"
+              :cart-item-title/secondary         "w/ Licensed Mayvenn Stylist"
+              :cart-item-floating-box/id         "line-item-price-freeinstall"
+              :cart-item-floating-box/value      "TODO"
+              :cart-item-thumbnail/highlighted?  (get-in app-state keypaths/cart-freeinstall-just-added?)
+              :cart-item-thumbnail/value         nil
+              :cart-item-thumbnail/ucare-id      "688ebf23-5e54-45ef-a8bb-7d7480317022"
+              :cart-item-remove-action/id        "line-item-remove-freeinstall"
+              :cart-item-remove-action/spinning? (utils/requesting? app-state request-keys/remove-promotion-code)
+              :cart-item-remove-action/target    [events/control-checkout-remove-promotion {:code "freeinstall"}]}
 
-                                         :else [:div (some-> order :total mf/as-money)])
+       ;; Locked basically means the freeinstall coupon code was entered, yet not all the requirements
+       ;; of a free install order to generate a voucher have been satisfied.
+       locked?
+       (merge  {:cart-item-title/primary                   "Mayvenn Install (locked)"
+                :cart-item-copy/value                      (str "Add " quantity-remaining
+                                                                " or more items to receive your free Mayvenn Install")
+                :cart-item-thumbnail/locked?               true
+                :cart-item-steps-to-complete/action-target []
+                :cart-item-steps-to-complete/action-label  "add items"
+                :cart-item-steps-to-complete/steps         (->> quantity-required
+                                                                range
+                                                                (map inc))
+                :cart-item-steps-to-complete/current-step  quantity-added})
 
-      :cart-summary/id    "cart-summary"
-      :cart-summary/lines (concat [{:cart-summary-line/id    "subtotal"
-                                    :cart-summary-line/label "Subtotal"
-                                    :cart-summary-line/value (mf/as-money subtotal)}]
+       applied?
+       (merge {:cart-item-title/primary "Mayvenn Install"})
 
-                                  (when shipping-cost
-                                    [{:cart-summary-line/id    "shipping"
-                                      :cart-summary-line/label "Shipping"
-                                      :cart-summary-line/value (mf/as-money-or-free shipping-cost)}])
+       stylist
+       (merge {:cart-item-title/secondary    (str "w/ " (:store-nickname stylist))
+               :cart-item-floating-box/value (mf/as-money (- service-discount))
+               :cart-item-thumbnail/ucare-id (-> stylist
+                                                 :portrait
+                                                 :resizable-url
+                                                 catalog-images/ucare-uri->ucare-id)})))))
 
-                                  (for [{:keys [name price coupon-code]} (filter (fn non-zero-adjustment? [{:keys [price coupon-code]}]
-                                                                                   (or (not (= price 0))
-                                                                                       (#{"amazon" "freeinstall" "install"} coupon-code)))
-                                                                                 adjustments)
-                                        :let                             [freeinstall-promo? (= "freeinstall" coupon-code)]]
-                                    (cond-> {:cart-summary-line/id    (text->data-test-name name)
-                                             :cart-summary-line/icon  (svg/discount-tag {:class  "mxnp6 fill-gray pr1"
-                                                                                         :height "2em" :width "2em"})
-                                             :cart-summary-line/label (orders/display-adjustment-name name)
-                                             :cart-summary-line/value (mf/as-money-or-free price)}
+(defn cart-summary-query
+  [{:as order :keys [adjustments]} {:mayvenn-install/keys [locked? applied? service-discount quantity-remaining]}]
+  (let [total         (-> order :total)
+        subtotal      (orders/products-subtotal order)
+        shipping      (some->> order
+                               orders/shipping-item
+                               vector
+                               (apply (juxt :quantity :unit-price))
+                               (reduce *))
+        adjustment    (reduce + (map :price (orders/all-order-adjustments order)))
+        total-savings (- adjustment service-discount)]
+    {:cart-summary/id                 "cart-summary"
+     :freeinstall-informational/value (and locked? applied?)
+     :cart-summary-total-line/id      "total"
+     :cart-summary-total-line/label   (if applied? "Hair + Install Total" "Total")
+     :cart-summary-total-line/value   (cond
+                                        applied?
+                                        [:div
+                                         [:div.bold.h2
+                                          (some-> total mf/as-money)]
+                                         [:div.h6.bg-purple.white.px2.nowrap.mb1
+                                          "Includes Mayvenn Install"]
+                                         (when (neg? total-savings)
+                                           [:div.h6.light.dark-gray.pxp1.nowrap.italic
+                                            "You've saved "
+                                            [:span.bold {:data-test "total-savings"}
+                                             (mf/as-money total-savings)]])]
 
-                                      ;; TODO shop needs the servicing stylist menu
-                                      (and freeinstall-line-item-data freeinstall-promo?)
-                                      (merge {:cart-summary-line/value (mf/as-money-or-free install-discount)
-                                              :cart-summary-line/class "bold purple"})
+                                        locked?
+                                        [:div.h7.dark-gray.light
+                                         "Add " quantity-remaining
+                                         " more " (ui/pluralize quantity-remaining "item")
+                                         " to "
+                                         [:br]
+                                         " calculate total price"]
 
-                                      (and coupon-code (not freeinstall-promo?))
-                                      (merge {:cart-summary-line/action-id     "cart-remove-promo"
-                                              :cart-summary-line/action-icon   (svg/close-x {:class "stroke-white fill-gray"})
-                                              :cart-summary-line/action-target [events/control-checkout-remove-promotion {:code coupon-code}]}))))}
+                                        :else
+                                        [:div (some-> total mf/as-money)])
+     :cart-summary/lines (concat [{:cart-summary-line/id    "subtotal"
+                                   :cart-summary-line/label "Subtotal"
+                                   :cart-summary-line/value (mf/as-money (cond-> subtotal
+                                                                           applied?
+                                                                           (- service-discount)))}]
 
-     (when (and (orders/no-applied-promo? order) (not freeinstall-entered?))
-       {:promo-data promo-data}))))
+                                 (when shipping
+                                   [{:cart-summary-line/id    "shipping"
+                                     :cart-summary-line/label "Shipping"
+                                     :cart-summary-line/value (mf/as-money-or-free shipping)}])
+
+                                 (for [{:keys [name price coupon-code]}
+                                       ;; TODO extract
+                                       (filter (fn non-zero-adjustment? [{:keys [price coupon-code]}]
+                                                 (or (not (= price 0))
+                                                     (#{"amazon" "freeinstall" "install"} coupon-code)))
+                                               adjustments)
+                                       :let
+                                       [install-summary-line? (= "freeinstall" coupon-code)
+                                        coupon-summary-line? (and coupon-code
+                                                                  (not install-summary-line?))]]
+                                   (cond-> {:cart-summary-line/id    (text->data-test-name name)
+                                            :cart-summary-line/icon  (svg/discount-tag {:class  "mxnp6 fill-gray pr1"
+                                                                                        :height "2em" :width "2em"})
+                                            :cart-summary-line/label (orders/display-adjustment-name name)
+                                            :cart-summary-line/value (mf/as-money-or-free price)}
+
+                                     install-summary-line?
+                                     (merge {:cart-summary-line/value (mf/as-money-or-free service-discount)
+                                             :cart-summary-line/class "bold purple"})
+
+                                     coupon-summary-line?
+                                     (merge {:cart-summary-line/action-id     "cart-remove-promo"
+                                             :cart-summary-line/action-icon   (svg/close-x {:class "stroke-white fill-gray"})
+                                             :cart-summary-line/action-target [events/control-checkout-remove-promotion {:code coupon-code}]}))))}))
 
 (defn full-cart-query [data]
   (let [order                                (get-in data keypaths/order)
@@ -384,37 +429,34 @@
         line-items                           (map (partial add-product-title-and-color-to-line-item products facets)
                                                   (orders/product-items order))
         variant-ids                          (map :id line-items)
-        freeinstall-line-item-data           (cart-items/freeinstall-line-item-query data)
         freeinstall-entered-cart-incomplete? (and (orders/freeinstall-entered? order)
                                                   (not (orders/freeinstall-applied? order)))
-        number-of-items-needed               (- 3 (orders/product-quantity order))]
-    (merge {:suggestions                (suggestions/consolidated-query data)
-            :order                      order
-            :line-items                 line-items
-            :skus                       (get-in data keypaths/v2-skus)
-            :products                   products
-            :promo-banner               (when (zero? (orders/product-quantity order))
-                                          (promo-banner/query data))
-            :call-out                   (call-out/query data)
-            :checkout-disabled?         (or freeinstall-entered-cart-incomplete?
-                                            (update-pending? data))
-            :redirecting-to-paypal?     (get-in data keypaths/cart-paypal-redirect)
-            :share-carts?               (stylists/own-store? data)
-            :requesting-shared-cart?    (utils/requesting? data request-keys/create-shared-cart)
-            :loaded-quadpay?            (get-in data keypaths/loaded-quadpay)
-            :show-browser-pay?          (and (get-in data keypaths/loaded-stripe)
-                                             (experiments/browser-pay? data)
-                                             (seq (get-in data keypaths/shipping-methods))
-                                             (seq (get-in data keypaths/states)))
-            :update-line-item-requests  (merge-with
-                                         #(or %1 %2)
-                                         (variants-requests data request-keys/add-to-bag (map :sku line-items))
-                                         (variants-requests data request-keys/update-line-item (map :sku line-items)))
-            :delete-line-item-requests  (variants-requests data request-keys/delete-line-item variant-ids)
-            :recently-added-skus        (get-in data keypaths/cart-recently-added-skus)
-            :freeinstall-just-added?    (get-in data keypaths/cart-freeinstall-just-added?)
-            :stylist-service-menu       (get-in data keypaths/stylist-service-menu)
-            :freeinstall-line-item-data freeinstall-line-item-data
+        number-of-items-needed               (- 3 (orders/product-quantity order))
+        mayvenn-install                      (mayvenn-install data)]
+    (merge {:suggestions               (suggestions/consolidated-query data)
+            :order                     order
+            :line-items                line-items
+            :skus                      (get-in data keypaths/v2-skus)
+            :products                  products
+            :promo-banner              (when (zero? (orders/product-quantity order))
+                                         (promo-banner/query data))
+            :call-out                  (call-out/query data)
+            :checkout-disabled?        (or freeinstall-entered-cart-incomplete?
+                                           (update-pending? data))
+            :redirecting-to-paypal?    (get-in data keypaths/cart-paypal-redirect)
+            :share-carts?              (stylists/own-store? data)
+            :requesting-shared-cart?   (utils/requesting? data request-keys/create-shared-cart)
+            :loaded-quadpay?           (get-in data keypaths/loaded-quadpay)
+            :show-browser-pay?         (and (get-in data keypaths/loaded-stripe)
+                                            (experiments/browser-pay? data)
+                                            (seq (get-in data keypaths/shipping-methods))
+                                            (seq (get-in data keypaths/states)))
+            :update-line-item-requests (merge-with
+                                        #(or %1 %2)
+                                        (variants-requests data request-keys/add-to-bag (map :sku line-items))
+                                        (variants-requests data request-keys/update-line-item (map :sku line-items)))
+            :delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)
+            :recently-added-skus       (get-in data keypaths/cart-recently-added-skus)
 
             :return-link/copy              "Continue Shopping"
             :return-link/event-message     [events/control-open-shop-escape-hatch]
@@ -422,8 +464,15 @@
             :freeinstall-needs-more-items? (and (boolean (orders/freeinstall-entered? order))
                                                 (pos? number-of-items-needed))
             :remove-freeinstall-event      [events/control-checkout-remove-promotion {:code "freeinstall"}]}
-
-           (summary-query data))))
+           {:cart-summary (cart-summary-query order mayvenn-install)
+            :cart-items   (cart-items-query data mayvenn-install)}
+           (when (and (orders/no-applied-promo? order)
+                      (not (:entered? mayvenn-install)))
+             {:promo-data {:coupon-code   (get-in data keypaths/cart-coupon-code)
+                           :applying?     (utils/requesting? data request-keys/add-promotion-code)
+                           :focused       (get-in data keypaths/ui-focus)
+                           :error-message (get-in data keypaths/error-message)
+                           :field-errors  (get-in data keypaths/field-errors)}}))))
 
 (defn empty-cart-query
   [data]

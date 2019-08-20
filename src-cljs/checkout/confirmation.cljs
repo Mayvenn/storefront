@@ -4,7 +4,6 @@
             [catalog.images :as catalog-images]
             [checkout.cart.items :as cart-items]
             [checkout.confirmation.summary :as confirmation-summary]
-            [checkout.consolidated-cart.items :as consolidated-cart-items]
             [checkout.templates.item-card :as item-card]
             [spice.core :as spice]
             [spice.maps :as maps]
@@ -295,7 +294,11 @@
   (let [order                                     (get-in data keypaths/order)
         consolidated-cart?                        (experiments/consolidated-cart? data)
         freeinstall-line-item-data                (if consolidated-cart?
-                                                    (consolidated-cart-items/freeinstall-line-item-query data)
+                                                    ;; TODO confirmation page needs to either
+                                                    ;; - use new cart.ui.cart-item organism
+                                                    ;; - create it's own data as a punt
+                                                    ;; Talk to Corey if you have any questions. :)
+                                                    nil #_ (consolidated-cart-items/freeinstall-line-item-query data)
                                                     (cart-items/freeinstall-line-item-query data))
         freeinstall-applied?                      (orders/freeinstall-applied? order)
         freeinstall-entered-on-consolidated-cart? (and (orders/freeinstall-entered? order) consolidated-cart?)
@@ -305,7 +308,9 @@
      :checkout-steps                   (checkout-steps/query data)
      :products                         (get-in data keypaths/v2-products)
      :items                            (cond-> (item-card-query data)
-                                         (and (or freeinstall-entered-on-consolidated-cart? freeinstall-applied?) freeinstall-line-item-data)
+                                         (and (or freeinstall-entered-on-consolidated-cart?
+                                                  freeinstall-applied?)
+                                              freeinstall-line-item-data)
                                          (update
                                           :items conj
                                           (freeinstall-line-item-data->item-card freeinstall-line-item-data)))
@@ -343,7 +348,6 @@
      :servicing-stylist                (get-in data adventure.keypaths/adventure-servicing-stylist)
      :selected-quadpay?                (-> (get-in data keypaths/order) :cart-payments :quadpay)
      :loaded-quadpay?                  (get-in data keypaths/loaded-quadpay)}))
-
 
 (defn ^:private built-non-auth-component [data opts]
   (if (= "freeinstall" (get-in data keypaths/store-slug))
