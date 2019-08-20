@@ -254,6 +254,17 @@
       string/lower-case
       (string/replace #"[^a-z]+" "-")))
 
+(def default-service-menu
+  "Install prices to use when a stylist has not yet been selected."
+  {:advertised-sew-in-360-frontal "225.0"
+   :advertised-sew-in-closure     "175.0"
+   :advertised-sew-in-frontal     "200.0"
+   :advertised-sew-in-leave-out   "150.0"
+   :specialty-sew-in-360-frontal  true
+   :specialty-sew-in-closure      true
+   :specialty-sew-in-frontal      true
+   :specialty-sew-in-leave-out    true})
+
 (defn ^:private mayvenn-install
   "This is the 'Mayvenn Install' model that is used to build queries for views"
   [app-state]
@@ -278,7 +289,9 @@
                                                      (some-> (orders/product-items order)
                                                              vouchers/product-items->highest-value-service)))
                                          first
-                                         :service/diva-advertised-type)]
+                                         :service/diva-advertised-type)
+        service-menu                (or (get-in app-state adventure-keypaths/adventure-servicing-stylist-service-menu)
+                                        default-service-menu)]
     {:mayvenn-install/entered?           freeinstall-entered?
      :mayvenn-install/locked?            (and freeinstall-entered?
                                               (pos? items-remaining-for-install))
@@ -292,8 +305,7 @@
      :mayvenn-install/quantity-added     items-added-for-install
      :mayvenn-install/stylist            servicing-stylist
      :mayvenn-install/service-type       service-type
-     :mayvenn-install/service-discount   (some-> app-state
-                                                 (get-in adventure-keypaths/adventure-servicing-stylist-service-menu)
+     :mayvenn-install/service-discount   (some-> service-menu
                                                  (get service-type)
                                                  spice/parse-double
                                                  -)}))
@@ -307,7 +319,7 @@
               :cart-item-title/id                "line-item-title-freeinstall"
               :cart-item-title/secondary         "w/ Licensed Mayvenn Stylist"
               :cart-item-floating-box/id         "line-item-price-freeinstall"
-              :cart-item-floating-box/value      "TODO"
+              :cart-item-floating-box/value      (mf/as-money (- service-discount))
               :cart-item-thumbnail/highlighted?  (get-in app-state keypaths/cart-freeinstall-just-added?)
               :cart-item-thumbnail/value         nil
               :cart-item-thumbnail/ucare-id      "688ebf23-5e54-45ef-a8bb-7d7480317022"
@@ -334,7 +346,6 @@
 
        stylist
        (merge {:cart-item-title/secondary    (str "w/ " (:store-nickname stylist))
-               :cart-item-floating-box/value (mf/as-money (- service-discount))
                :cart-item-thumbnail/ucare-id (-> stylist
                                                  :portrait
                                                  :resizable-url
