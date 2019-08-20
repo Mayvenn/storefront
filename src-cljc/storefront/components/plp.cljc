@@ -2,7 +2,7 @@
   (:require #?@(:cljs [[storefront.history :as history]
                        [storefront.api :as api]
                        [storefront.platform.messages :as messages]])
-            [catalog.product-card :as product-card]
+            [ui.product-card :as product-card]
             [storefront.component :as component]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
@@ -37,8 +37,7 @@
    :opts              (utils/scroll-href "mayvenn-free-install-video")
    :product-card-data (->> (get-in data keypaths/v2-products)
                            vals
-                           (map #(product-card/query data % {:border?                true
-                                                             :force-color-thumbnail? true}))
+                           (map #(product-card/query data %))
                            #_(group-by (comp first :hair/family)))})
 
 (defn built-component [data opts]
