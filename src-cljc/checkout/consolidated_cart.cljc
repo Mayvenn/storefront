@@ -123,7 +123,8 @@
            delete-line-item-requests
            cart-summary
            cart-items
-           number-of-items-needed
+           locked?
+           quantity-remaining
            loaded-quadpay?
            freeinstall-needs-more-items?
            remove-freeinstall-event] :as queried-data} owner _]
@@ -167,16 +168,16 @@
                         :data-test "start-checkout-button"}
                        [:div "Check out"])
 
-       (when freeinstall-needs-more-items?
+       (when locked?
          [:div.error.h7.center.medium.py1
-          (str "Add " number-of-items-needed " more items")])
+          (str "Add " quantity-remaining (ui/pluralize quantity-remaining " more item"))])
 
        [:div.h5.black.py1.flex.items-center
         [:div.flex-grow-1.border-bottom.border-light-gray]
         [:div.mx2 "or"]
         [:div.flex-grow-1.border-bottom.border-light-gray]]
 
-       (if freeinstall-needs-more-items?
+       (if locked?
          [:a.teal.medium.mt1.mb2
           (apply utils/fake-href remove-freeinstall-event)
           "Checkout without a free Mayvenn Install"]
@@ -252,15 +253,6 @@
       (string/replace #"[0-9]" (comp spice/number->word int))
       string/lower-case
       (string/replace #"[^a-z]+" "-")))
-
-(defn add-more-items-section
-  [number-of-items-needed]
-  [:div.p2.flex.flex-wrap
-   [:div.col-5.h5 "Hair + Install Total"]
-   [:div.col-7.h6.dark-gray.right-align
-    "Add " number-of-items-needed
-    " more " (ui/pluralize number-of-items-needed "hair item")
-    " to calculate total price"]])
 
 (defn ^:private mayvenn-install
   "This is the 'Mayvenn Install' model that is used to build queries for views"
@@ -349,7 +341,7 @@
                                                  catalog-images/ucare-uri->ucare-id)})))))
 
 (defn cart-summary-query
-  [{:as order :keys [adjustments]} {:mayvenn-install/keys [locked? applied? service-discount quantity-remaining]}]
+  [{:as order :keys [adjustments]} {:mayvenn-install/keys [entered? locked? applied? service-discount quantity-remaining]}]
   (let [total         (-> order :total)
         subtotal      (orders/products-subtotal order)
         shipping      (some->> order
@@ -360,7 +352,7 @@
         adjustment    (reduce + (map :price (orders/all-order-adjustments order)))
         total-savings (- adjustment service-discount)]
     {:cart-summary/id                 "cart-summary"
-     :freeinstall-informational/value (and locked? applied?)
+     :freeinstall-informational/value (not entered?)
      :cart-summary-total-line/id      "total"
      :cart-summary-total-line/label   (if applied? "Hair + Install Total" "Total")
      :cart-summary-total-line/value   (cond
@@ -414,7 +406,9 @@
                                             :cart-summary-line/value (mf/as-money-or-free price)}
 
                                      install-summary-line?
-                                     (merge {:cart-summary-line/value (mf/as-money-or-free service-discount)
+                                     (merge {:cart-summary-line/value (if service-discount
+                                                                        (mf/as-money-or-free service-discount)
+                                                                        "TODO")
                                              :cart-summary-line/class "bold purple"})
 
                                      coupon-summary-line?
@@ -431,7 +425,6 @@
         variant-ids                          (map :id line-items)
         freeinstall-entered-cart-incomplete? (and (orders/freeinstall-entered? order)
                                                   (not (orders/freeinstall-applied? order)))
-        number-of-items-needed               (- 3 (orders/product-quantity order))
         mayvenn-install                      (mayvenn-install data)]
     (merge {:suggestions               (suggestions/consolidated-query data)
             :order                     order
@@ -458,21 +451,21 @@
             :delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)
             :recently-added-skus       (get-in data keypaths/cart-recently-added-skus)
 
-            :return-link/copy              "Continue Shopping"
-            :return-link/event-message     [events/control-open-shop-escape-hatch]
-            :number-of-items-needed        number-of-items-needed
-            :freeinstall-needs-more-items? (and (boolean (orders/freeinstall-entered? order))
-                                                (pos? number-of-items-needed))
-            :remove-freeinstall-event      [events/control-checkout-remove-promotion {:code "freeinstall"}]}
-           {:cart-summary (cart-summary-query order mayvenn-install)
-            :cart-items   (cart-items-query data mayvenn-install)}
-           (when (and (orders/no-applied-promo? order)
-                      (not (:entered? mayvenn-install)))
-             {:promo-data {:coupon-code   (get-in data keypaths/cart-coupon-code)
-                           :applying?     (utils/requesting? data request-keys/add-promotion-code)
-                           :focused       (get-in data keypaths/ui-focus)
-                           :error-message (get-in data keypaths/error-message)
-                           :field-errors  (get-in data keypaths/field-errors)}}))))
+            :return-link/copy          "Continue Shopping"
+            :return-link/event-message [events/control-open-shop-escape-hatch]
+            :quantity-remaining        (:mayvenn-install/quantity-remaining mayvenn-install)
+            :locked?                   (:mayvenn-install/locked? mayvenn-install)
+            :remove-freeinstall-event  [events/control-checkout-remove-promotion {:code "freeinstall"}]
+            :cart-summary              (merge
+                                        (cart-summary-query order mayvenn-install)
+                                        (when (and (orders/no-applied-promo? order)
+                                                   (not (:entered? mayvenn-install)))
+                                          {:promo-data {:coupon-code   (get-in data keypaths/cart-coupon-code)
+                                                        :applying?     (utils/requesting? data request-keys/add-promotion-code)
+                                                        :focused       (get-in data keypaths/ui-focus)
+                                                        :error-message (get-in data keypaths/error-message)
+                                                        :field-errors  (get-in data keypaths/field-errors)}}))
+            :cart-items                (cart-items-query data mayvenn-install)})))
 
 (defn empty-cart-query
   [data]
