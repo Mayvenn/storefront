@@ -23,7 +23,12 @@
 (defn eligible-for-triple-bundle-discount?
   [skuer]
   (:promo.triple-bundle/eligible skuer
-                                (is-hair? skuer)))
+                                 (is-hair? skuer)))
+
+(defn eligible-for-mayvenn-install-discount?
+  [skuer]
+  (:promo.mayvenn-install/eligible skuer
+                                   (is-hair? skuer)))
 
 (defn current-product [app-state]
   (product-by-id app-state

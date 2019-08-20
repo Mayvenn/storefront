@@ -18,10 +18,10 @@
        (filter (fn [{:keys [:option/slug]}] (= slug option)))
        first))
 
-(defmulti unconstrained-facet (fn [color-order-map product skus facets facet] facet))
+(defmulti unconstrained-facet (fn [color-order-map product skus facets facet force-color-thumbnail?] facet))
 
 (defmethod unconstrained-facet :hair/length
-  [_color-order-map product skus facets facet]
+  [_color-order-map product skus facets facet force-color-thumbnail?]
   (let [lengths  (->> skus
                       (mapcat #(get % :hair/length))
                       sort)
@@ -48,19 +48,19 @@
        (map :option/image)))
 
 (defmethod unconstrained-facet :hair/color
-  [color-order-map product skus facets facet-slug]
+  [color-order-map product skus facets facet-slug force-color-thumbnail?]
   (let [sorted-product-colors (distinct (->> skus
                                              (mapcat #(get % :hair/color))
                                              (sort-by color-order-map)))]
     [:div
-     (when (> (count sorted-product-colors) 1)
+     (when force-color-thumbnail?
        [:p.h6.dark-gray
         (for [color-url (map #(facet-image facets facet-slug %)
                              sorted-product-colors)]
-          [:img.mx1.border-light-gray
-           {:width  10
-            :height 10
-            :src    (first color-url)}])])]))
+         [:img.mx1.border-light-gray
+          {:width  10
+           :height 10
+           :src    (first color-url)}])])]))
 
 (defn sku-best-matching-selections
   "Find the sku best matching selectors, falling back to trying one facet at a time"
@@ -72,64 +72,73 @@
          {:hair/color (:hair/color selections)}
          {:hair/length (:hair/length selections)}]))
 
-(defn query [data product]
-  (let [selections       (get-in data catalog.keypaths/category-selections)
-        skus             (vals (select-keys (get-in data keypaths/v2-skus)
+(defn query
+  ([data product]
+   (query data product {}))
+  ([data product {:keys [force-color-thumbnail? border?]}]
+   (let [selections      (get-in data catalog.keypaths/category-selections)
+         skus            (vals (select-keys (get-in data keypaths/v2-skus)
                                             (:selector/skus product)))
-        facets           (get-in data keypaths/v2-facets)
-        color-order-map  (facets/color-order-map facets)
-        in-stock-skus    (selector/match-all {}
+         facets          (get-in data keypaths/v2-facets)
+         color-order-map (facets/color-order-map facets)
+         in-stock-skus   (selector/match-all {}
                                              (assoc selections :inventory/in-stock? #{true})
                                              skus)
 
-        ;; in order to fill the product card, we should always have a sku to use for
-        ;; the cheapest-sku and epitome
-        skus-to-search            (or (not-empty in-stock-skus) skus)
-        ;; It is technically possible for the cheapest sku to not be the epitome:
-        ;; If 10'' Black is sold out, 10'' Brown is the cheapest, but 12'' Black is the epitome
-        cheapest-sku              (skus/determine-cheapest color-order-map skus-to-search)
-        ;; Product definition of epitome is the "first" SKU on the product details page where
-        ;; first is when the first of every facet is selected.
-        ;;
-        ;; We're being lazy and sort by color facet + sku price (which implies sort by hair/length)
-        epitome                   (skus/determine-epitome color-order-map skus-to-search)
-        product-detail-selections (get-in data catalog.keypaths/detailed-product-selections)]
-    {:product                          product
-     :skus                             skus
-     :sku-matching-previous-selections (sku-best-matching-selections product-detail-selections
-                                                                     skus
-                                                                     color-order-map)
-     :cheapest-sku                     cheapest-sku
-     :color-order-map                  color-order-map
-     :sold-out?                        (empty? in-stock-skus)
-     :title                            (:copy/title product)
-     :slug                             (:page/slug product)
-     :image                            (->> epitome
-                                            :selector/images
-                                            (filter (comp #{"catalog"} :use-case))
-                                            first)
-     :facets                           facets
-     :selections                       (get-in data catalog.keypaths/category-selections)}))
+         ;; in order to fill the product card, we should always have a sku to use for
+         ;; the cheapest-sku and epitome
+         skus-to-search            (or (not-empty in-stock-skus) skus)
+         ;; It is technically possible for the cheapest sku to not be the epitome:
+         ;; If 10'' Black is sold out, 10'' Brown is the cheapest, but 12'' Black is the epitome
+         cheapest-sku              (skus/determine-cheapest color-order-map skus-to-search)
+         ;; Product definition of epitome is the "first" SKU on the product details page where
+         ;; first is when the first of every facet is selected.
+         ;;
+         ;; We're being lazy and sort by color facet + sku price (which implies sort by hair/length)
+         epitome                   (skus/determine-epitome color-order-map skus-to-search)
+         product-detail-selections (get-in data catalog.keypaths/detailed-product-selections)]
+     {:product                          product
+      :skus                             skus
+      :sku-matching-previous-selections (sku-best-matching-selections product-detail-selections
+                                                                      skus
+                                                                      color-order-map)
+      :cheapest-sku                     cheapest-sku
+      :color-order-map                  color-order-map
+      :sold-out?                        (empty? in-stock-skus)
+      :title                            (:copy/title product)
+      :slug                             (:page/slug product)
+      :image                            (->> epitome
+                                             :selector/images
+                                             (filter (comp #{"catalog"} :use-case))
+                                             first)
+      :facets                           facets
+      :selections                       (get-in data catalog.keypaths/category-selections)
+      :force-color-thumbnail?           force-color-thumbnail?
+      :border?                          border?})))
 
 (defn component
-  [{:keys [product skus cheapest-sku sku-matching-previous-selections sold-out? title slug image facets color-order-map]}]
-  [:div.col.col-6.col-4-on-tb-dt.px1
+  [{:keys [product skus cheapest-sku sku-matching-previous-selections sold-out? title slug image facets color-order-map border? force-color-thumbnail?]}]
+  [:div.col.col-6.col-4-on-tb-dt.p1
    {:key slug}
-   [:a.inherit-color
-    (assoc (utils/route-to events/navigate-product-details
-                           {:catalog/product-id (:catalog/product-id product)
-                            :page/slug          slug
-                            :query-params       {:SKU (:catalog/sku-id sku-matching-previous-selections)}})
-           :data-test (str "product-" slug))
-    [:div.center.relative
-     ;; TODO: when adding aspect ratio, also use srcset/sizes to scale these images.
-     [:img.block.col-12 {:src (str (:url image) "-/format/auto/" (:filename image))
-                         :alt (:alt image)}]
-     [:h2.h4.mt3.mb1 title]
-     (if sold-out?
-       [:p.h6.dark-gray "Out of stock"]
-       [:div
-        (for [selector (reverse (:selector/electives product))]
-          [:div {:key selector}
-           (unconstrained-facet color-order-map product skus facets selector)])
-        [:p.h6.mb4 "Starting at " (mf/as-money-without-cents (:sku/price cheapest-sku 0))]])]]])
+   [:div
+    {:style {:height "100%"}
+     :class (if border? "border border-silver rounded")}
+    [:a.inherit-color
+     (assoc (utils/route-to events/navigate-product-details
+                            {:catalog/product-id (:catalog/product-id product)
+                             :page/slug          slug
+                             :query-params       {:SKU (:catalog/sku-id sku-matching-previous-selections)}})
+            :data-test (str "product-" slug))
+     [:div.center.relative
+      ;; TODO: when adding aspect ratio, also use srcset/sizes to scale these images.
+      [:img.block.col-12 {:style (when border? {:border-radius "5px 5px 0 0"})
+                          :src (str (:url image) "-/format/auto/" (:filename image))
+                          :alt (:alt image)}]
+      [:h2.h5.mt3.mb1.mx1.medium title]
+      (if sold-out?
+        [:p.h6.dark-gray "Out of stock"]
+        [:div
+         (for [selector (reverse (:selector/electives product))]
+           [:div {:key selector}
+            (unconstrained-facet color-order-map product skus facets selector force-color-thumbnail?)])
+         [:p.h6.mb4 "Starting at " (mf/as-money-without-cents (:sku/price cheapest-sku 0))]])]]]])
