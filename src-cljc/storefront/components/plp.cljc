@@ -25,20 +25,35 @@
       [:a.teal.h6.medium
        {:on-click (utils/send-event-callback events/popup-show-adventure-free-install)}
        "learn" ui/nbsp "more"]]]
-    [:div.flex.flex-wrap.px3
-     (for [product product-card-data]
-       (component/build product-card/organism product {}))]]))
+    [:div.px3
+     (for [[texture products] product-card-data]
+       [:div.flex.flex-wrap
+        [:h1.col-12 texture]
+        (for [product products]
+          (component/build product-card/organism product {}))])]]))
+
+(defn category-key->order-rank [texture-facet-options category-key]
+  (->> texture-facet-options
+       (filter #(= category-key (:option/slug %)))
+       first
+       :filter/order))
+
 
 (defn query [data]
-  {:mob-uuid          "4f9bc98f-2834-4e1f-9e9e-4ca680edd81f"
-   :dsk-uuid          "b1d0e399-8e62-4f34-aa17-862a9357000b"
-   :file-name         "plp-hero-image"
-   :alt               "New Mayvenn Install"
-   :opts              (utils/scroll-href "mayvenn-free-install-video")
-   :product-card-data (->> (get-in data keypaths/v2-products)
-                           vals
-                           (map #(product-card/query data %))
-                           #_(group-by (comp first :hair/family)))})
+  (let [texture-facet-options (->> (get-in data keypaths/v2-facets)
+                                  (filter #(= :hair/texture (:facet/slug %)))
+                                  first
+                                  :facet/options)]
+    {:mob-uuid          "4f9bc98f-2834-4e1f-9e9e-4ca680edd81f"
+     :dsk-uuid          "b1d0e399-8e62-4f34-aa17-862a9357000b"
+     :file-name         "plp-hero-image"
+     :alt               "New Mayvenn Install"
+     :opts              (utils/scroll-href "mayvenn-free-install-video")
+     :product-card-data (->> (get-in data keypaths/v2-products)
+                             vals
+                             (group-by (comp first :hair/texture))
+                             (reduce-kv (fn [m fam cat] (assoc m fam (map #(product-card/query data %) cat))) {})
+                             (sort-by #(category-key->order-rank texture-facet-options (first %))))}))
 
 (defn built-component [data opts]
   (component/build component (query data) nil))
