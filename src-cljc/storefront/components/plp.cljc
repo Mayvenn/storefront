@@ -27,7 +27,7 @@
        "learn" ui/nbsp "more"]]]
     [:div.flex.flex-wrap.px3
      (for [product product-card-data]
-       (product-card/organism product))]]))
+       (component/build product-card/organism product {}))]]))
 
 (defn query [data]
   {:mob-uuid          "4f9bc98f-2834-4e1f-9e9e-4ca680edd81f"

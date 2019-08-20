@@ -6,7 +6,8 @@
             [storefront.components.money-formatters :as mf]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            [storefront.component :as component]))
 
 (defn- slug->facet [facet facets]
   (->> facets
@@ -108,20 +109,21 @@
 (defn organism
   [{:as                queried-data
     :product-card/keys [cheapest-sku-price sold-out? title data-test navigation-message]}]
-  [:div.col.col-6.col-4-on-tb-dt.p1
-   {:key data-test}
-   [:div
-    {:style {:height "100%"}
-     :class "border border-silver rounded"}
-    [:a.inherit-color
-     (assoc (apply utils/route-to navigation-message)
-            :data-test data-test)
-     [:div.center.relative
-      (card-image-molecule queried-data)
-      [:h2.h5.mt3.mb1.mx1.medium title]
-      (if sold-out?
-        [:p.h6.dark-gray "Out of stock"]
-        [:div
-         (length-range-molecule queried-data)
-         (color-swatches-molecule queried-data)
-         [:p.h6.mb4 "Starting at " cheapest-sku-price]])]]]])
+  (component/create
+   [:div.col.col-6.col-4-on-tb-dt.p1
+    {:key data-test}
+    [:div
+     {:style {:height "100%"}
+      :class "border border-silver rounded"}
+     [:a.inherit-color
+      (assoc (apply utils/route-to navigation-message)
+             :data-test data-test)
+      [:div.center.relative
+       (card-image-molecule queried-data)
+       [:h2.h5.mt3.mb1.mx1.medium title]
+       (if sold-out?
+         [:p.h6.dark-gray "Out of stock"]
+         [:div
+          (length-range-molecule queried-data)
+          (color-swatches-molecule queried-data)
+          [:p.h6.mb4 "Starting at " cheapest-sku-price]])]]]]))
