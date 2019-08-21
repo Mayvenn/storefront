@@ -3,13 +3,12 @@
             [storefront.css-transitions :as css-transitions]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
-            [storefront.platform.component-utils :as utils]
-            ))
+            [storefront.platform.component-utils :as utils]))
 
 (defn cart-item-floating-box-molecule
   [{:cart-item-floating-box/keys [id value]}]
   (when id
-    [:div.col-2.right.right-align
+    [:div.col-3.right.right-align
      {:data-test id}
      value]))
 
@@ -70,34 +69,66 @@
                                 :width-class :small)
                          action-label))])))
 
+(defn cart-item-square-thumbnail-molecule
+  [{:cart-item-square-thumbnail/keys
+    [id ucare-id sku-id sticker-label highlighted?]}]
+  (when id
+    #?(:clj
+       [:div]
+       :cljs
+       (let [sticker-id (str "line-item-length-" sku-id)]
+         [:div.flex.items-center.justify-center
+          [:div.relative
+           {:style {:width  48
+                    :height 48}}
+           (when sticker-label
+             [:div.absolute.z1.circle.border.border-white.medium.h6.bg-too-light-teal
+              {:key       sticker-id
+               :data-test sticker-id
+               :style     {:right -12
+                           :top   -12}}
+              [:div.flex.items-center.justify-center
+               sticker-label]])
+
+           (css-transitions/transition-background-color
+            highlighted?
+            [:div.absolute.flex.items-center.justify-center.rounded
+             {:style     {:height 46
+                          :width  46}
+              :key       (str "thumbnail-" sku-id)
+              :data-test (str "line-item-img-" sku-id)}
+             (ui/ucare-img {:width 48
+                            :class "rounded border border-light-gray"}
+                           ucare-id)])]]))))
 
 (defn cart-item-thumbnail-molecule
-  [{:cart-item-thumbnail/keys [highlighted? value locked? ucare-id]}]
-  (css-transitions/transition-background-color
-   highlighted?
-   [:div.flex.justify-center.items-center
-    value
-    (let [diameter              50
-          inner-circle-diameter (- diameter 4)]
-      [:div.relative
-       (when locked?
-         [:div.absolute.z1.col-12.flex.items-center.justify-center
-          {:style {:height "100%"}}
+  [{:cart-item-thumbnail/keys [id highlighted? value locked? ucare-id]}]
+  (when id
+    (css-transitions/transition-background-color
+     highlighted?
+     [:div.flex.justify-center.items-center
+      value
+      (let [diameter              50
+            inner-circle-diameter (- diameter 4)]
+        [:div.relative
+         (when locked?
+           [:div.absolute.z1.col-12.flex.items-center.justify-center
+            {:style {:height "100%"}}
 
-          [:div {:class "absolute z1 block"
-                 :style {:background    "#ffffffdd"
-                         :width         (str inner-circle-diameter "px")
-                         :height        (str inner-circle-diameter "px")
-                         :border-radius "50%"}}]
-          [:div.absolute.z2.col-12.flex.items-center.justify-center
-           {:style {:height "100%"}}
-           (svg/lock {:style {:width  "17px"
-                              :height "23px"}})]])
-       (ui/circle-ucare-img {:class "block"
-                             :style {:width  diameter
-                                     :height  diameter
-                                     :margin "auto"}}
-                            ucare-id)])]))
+            [:div {:class "absolute z1 block"
+                   :style {:background    "#ffffffdd"
+                           :width         (str inner-circle-diameter "px")
+                           :height        (str inner-circle-diameter "px")
+                           :border-radius "50%"}}]
+            [:div.absolute.z2.col-12.flex.items-center.justify-center
+             {:style {:height "100%"}}
+             (svg/lock {:style {:width  "17px"
+                                :height "23px"}})]])
+         (ui/circle-ucare-img {:class "block"
+                               :style {:width  diameter
+                                       :height  diameter
+                                       :margin "auto"}}
+                              ucare-id)])])))
 
 (defn cart-item-remove-action-molecule
   [{:cart-item-remove-action/keys [id target spinning?]}]
@@ -111,8 +142,21 @@
      ^:inline (svg/consolidated-trash-can {:width  "16px"
                                            :height "17px"})]))
 
+(defn cart-item-adjustable-quantity-molecule
+  [{:cart-item-adjustable-quantity/keys
+    [id spinning? value id-suffix decrement-target increment-target]}]
+  (when id
+    [:div.h3
+     {:data-test id}
+     (ui/auto-complete-counter {:spinning? spinning?
+                                :data-test id-suffix}
+                               value
+                               (apply utils/send-event-callback decrement-target)
+                               (apply utils/send-event-callback increment-target))]))
+
 (defn organism
-  [{:as cart-item react-key :react/key} _ _]
+  [{:as       cart-item
+    react-key :react/key} _ _]
   (component/create
    [:div
     (when react-key
@@ -120,6 +164,7 @@
        {:key react-key}
        ;; image group
        [:div.mt2.mr2.relative.self-start.col-2
+        (cart-item-square-thumbnail-molecule cart-item)
         (cart-item-thumbnail-molecule cart-item)]
 
        ;; info group
@@ -132,6 +177,7 @@
 
         [:div
          (cart-item-floating-box-molecule cart-item)
-         (cart-item-copy-molecule cart-item)]
+         (cart-item-copy-molecule cart-item)
+         (cart-item-adjustable-quantity-molecule cart-item)]
 
         (cart-item-steps-to-complete-molecule cart-item)]])]))

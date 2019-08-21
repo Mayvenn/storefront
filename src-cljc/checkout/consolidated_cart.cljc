@@ -146,7 +146,8 @@
                                      delete-line-item-requests
                                      suggestions)
 
-      (component/build cart-item/organism (first cart-items))]
+      (for [cart-item cart-items]
+        (component/build cart-item/organism cart-item))]
 
      [:div.col-on-tb-dt.col-6-on-tb-dt
       (component/build cart-summary/organism cart-summary nil)
@@ -311,45 +312,80 @@
                                                  -)}))
 
 (defn cart-items-query
-  [app-state {:mayvenn-install/keys [entered? locked? applied? stylist service-discount quantity-remaining quantity-required quantity-added]}]
-  (cond-> []
-    entered?
-    (conj
-     (cond-> {:react/key                         "freeinstall-line-item-freeinstall"
-              :cart-item-title/id                "line-item-title-freeinstall"
-              :cart-item-title/secondary         "w/ Licensed Mayvenn Stylist"
-              :cart-item-floating-box/id         "line-item-price-freeinstall"
-              :cart-item-floating-box/value      (mf/as-money (- service-discount))
-              :cart-item-thumbnail/highlighted?  (get-in app-state keypaths/cart-freeinstall-just-added?)
-              :cart-item-thumbnail/value         nil
-              :cart-item-thumbnail/ucare-id      "688ebf23-5e54-45ef-a8bb-7d7480317022"
-              :cart-item-remove-action/id        "line-item-remove-freeinstall"
-              :cart-item-remove-action/spinning? (utils/requesting? app-state request-keys/remove-promotion-code)
-              :cart-item-remove-action/target    [events/control-checkout-remove-promotion {:code "freeinstall"}]}
+  [app-state
+   {:mayvenn-install/keys [entered? locked? applied? stylist service-discount quantity-remaining quantity-required quantity-added]}
+   line-items
+   skus]
+  (let [cart-items (for [{sku-id :sku variant-id :id :as line-item} line-items
+                         :let
+                         [sku                  (get skus sku-id)
+                          price                (or (:sku/price line-item)
+                                                   (:unit-price line-item))
+                          qty-adjustment-args {:variant (select-keys line-item [:id :sku])}
+                          removing?            false #_ (get delete-line-item-requests variant-id)
+                          updating?            false #_ (get update-line-item-requests sku-id)
+                          just-added-to-order? false #_ (contains? recently-added-skus sku-id)]]
+                     {:react/key                                      (str sku-id "-" (:quantity line-item)) 
+                      :cart-item-title/id                             (str "line-item-title-" sku-id)
+                      :cart-item-title/primary                        (or (:product-title line-item)
+                                                                          (:product-name line-item))
+                      :cart-item-title/secondary                      (:color-name line-item)
+                      :cart-item-floating-box/id                      (str "line-item-price-ea-" sku-id)
+                      :cart-item-floating-box/value                   (str (mf/as-money-without-cents price) " ea")
+                      :cart-item-square-thumbnail/id                  sku-id
+                      :cart-item-square-thumbnail/sku-id              sku-id
+                      :cart-item-square-thumbnail/highlighted?        (get-in app-state keypaths/cart-freeinstall-just-added?)
+                      :cart-item-square-thumbnail/sticker-label       (when-let [length-circle-value (-> sku :hair/length first)]
+                                                                        (str length-circle-value "”"))
+                      :cart-item-square-thumbnail/ucare-id            (->> sku (catalog-images/image "cart") :ucare/id)
+                      :cart-item-adjustable-quantity/id               (str "line-item-quantity-" sku-id)
+                      :cart-item-adjustable-quantity/spinning?        updating?
+                      :cart-item-adjustable-quantity/value            (:quantity line-item)
+                      :cart-item-adjustable-quantity/id-suffix        sku-id
+                      :cart-item-adjustable-quantity/decrement-target [events/control-cart-line-item-dec qty-adjustment-args]
+                      :cart-item-adjustable-quantity/increment-target [events/control-cart-line-item-inc qty-adjustment-args]
+                      :cart-item-remove-action/id                     "line-item-remove-freeinstall"
+                      :cart-item-remove-action/spinning?              false #_ (utils/requesting? app-state request-keys/remove-promotion-code)
+                      :cart-item-remove-action/target                 [events/control-cart-remove (:id line-item)]})]
+    (cond-> cart-items
+      entered?
+      (concat
+       [(cond-> {:react/key                         "freeinstall-line-item-freeinstall"
+                 :cart-item-title/id                "line-item-title-freeinstall"
+                 :cart-item-title/secondary         "w/ Licensed Mayvenn Stylist"
+                 :cart-item-floating-box/id         "line-item-price-freeinstall"
+                 :cart-item-floating-box/value      (mf/as-money (- service-discount))
+                 :cart-item-thumbnail/id            "freeinstall"
+                 :cart-item-thumbnail/highlighted?  (get-in app-state keypaths/cart-freeinstall-just-added?)
+                 :cart-item-thumbnail/value         nil
+                 :cart-item-thumbnail/ucare-id      "688ebf23-5e54-45ef-a8bb-7d7480317022"
+                 :cart-item-remove-action/id        "line-item-remove-freeinstall"
+                 :cart-item-remove-action/spinning? (utils/requesting? app-state request-keys/remove-promotion-code)
+                 :cart-item-remove-action/target    [events/control-checkout-remove-promotion {:code "freeinstall"}]}
 
-       ;; Locked basically means the freeinstall coupon code was entered, yet not all the requirements
-       ;; of a free install order to generate a voucher have been satisfied.
-       locked?
-       (merge  {:cart-item-title/primary                   "Mayvenn Install (locked)"
-                :cart-item-copy/value                      (str "Add " quantity-remaining
-                                                                " or more items to receive your free Mayvenn Install")
-                :cart-item-thumbnail/locked?               true
-                :cart-item-steps-to-complete/action-target []
-                :cart-item-steps-to-complete/action-label  "add items"
-                :cart-item-steps-to-complete/steps         (->> quantity-required
-                                                                range
-                                                                (map inc))
-                :cart-item-steps-to-complete/current-step  quantity-added})
+          ;; Locked basically means the freeinstall coupon code was entered, yet not all the requirements
+          ;; of a free install order to generate a voucher have been satisfied.
+          locked?
+          (merge  {:cart-item-title/primary                   "Mayvenn Install (locked)"
+                   :cart-item-copy/value                      (str "Add " quantity-remaining
+                                                                   " or more items to receive your free Mayvenn Install")
+                   :cart-item-thumbnail/locked?               true
+                   :cart-item-steps-to-complete/action-target []
+                   :cart-item-steps-to-complete/action-label  "add items"
+                   :cart-item-steps-to-complete/steps         (->> quantity-required
+                                                                   range
+                                                                   (map inc))
+                   :cart-item-steps-to-complete/current-step  quantity-added})
 
-       applied?
-       (merge {:cart-item-title/primary "Mayvenn Install"})
+          applied?
+          (merge {:cart-item-title/primary "Mayvenn Install"})
 
-       stylist
-       (merge {:cart-item-title/secondary    (str "w/ " (:store-nickname stylist))
-               :cart-item-thumbnail/ucare-id (-> stylist
-                                                 :portrait
-                                                 :resizable-url
-                                                 catalog-images/ucare-uri->ucare-id)})))))
+          stylist
+          (merge {:cart-item-title/secondary    (str "w/ " (:store-nickname stylist))
+                  :cart-item-thumbnail/ucare-id (-> stylist
+                                                    :portrait
+                                                    :resizable-url
+                                                    catalog-images/ucare-uri->ucare-id)}))]))))
 
 (defn cart-summary-query
   [{:as order :keys [adjustments]} {:mayvenn-install/keys [entered? locked? applied? service-discount quantity-remaining]}]
@@ -476,7 +512,7 @@
                                                         :focused       (get-in data keypaths/ui-focus)
                                                         :error-message (get-in data keypaths/error-message)
                                                         :field-errors  (get-in data keypaths/field-errors)}}))
-            :cart-items                (cart-items-query data mayvenn-install)})))
+            :cart-items                (cart-items-query data mayvenn-install line-items (get-in data keypaths/v2-skus))})))
 
 (defn empty-cart-query
   [data]
