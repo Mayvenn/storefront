@@ -261,13 +261,15 @@
                           removing?            (get delete-line-item-requests variant-id)
                           updating?            (get update-line-item-requests sku-id)
                           just-added-to-order? false #_ (contains? recently-added-skus sku-id)]]
-                     {:react/key                                      (str sku-id "-" (:quantity line-item)) 
+                     {:react/key                                      (str sku-id "-" (:quantity line-item))
                       :cart-item-title/id                             (str "line-item-title-" sku-id)
                       :cart-item-title/primary                        (or (:product-title line-item)
                                                                           (:product-name line-item))
                       :cart-item-title/secondary                      (:color-name line-item)
                       :cart-item-floating-box/id                      (str "line-item-price-ea-" sku-id)
-                      :cart-item-floating-box/value                   (str (mf/as-money-without-cents price) " ea")
+                      :cart-item-floating-box/value                   [:span.dark-gray
+                                                                       [:span.medium.black (mf/as-money price)]
+                                                                       " ea"]
                       :cart-item-square-thumbnail/id                  sku-id
                       :cart-item-square-thumbnail/sku-id              sku-id
                       :cart-item-square-thumbnail/highlighted?        (get-in app-state keypaths/cart-freeinstall-just-added?)
@@ -288,13 +290,13 @@
       (concat
        [(cond-> {:react/key                         "freeinstall-line-item-freeinstall"
                  :cart-item-title/id                "line-item-title-freeinstall"
-                 :cart-item-title/secondary         "w/ Licensed Mayvenn Stylist"
+                 :cart-item-copy/value              "Congratulations! You're all set for your Mayvenn Install. Select your stylist after checkout."
                  :cart-item-floating-box/id         "line-item-price-freeinstall"
-                 :cart-item-floating-box/value      (mf/as-money (- service-discount))
+                 :cart-item-floating-box/value      [:span.medium (mf/as-money (- service-discount))]
                  :cart-item-thumbnail/id            "freeinstall"
                  :cart-item-thumbnail/highlighted?  (get-in app-state keypaths/cart-freeinstall-just-added?)
                  :cart-item-thumbnail/value         nil
-                 :cart-item-thumbnail/ucare-id      "688ebf23-5e54-45ef-a8bb-7d7480317022"
+                 :cart-item-thumbnail/ucare-id      "bc776b8a-595d-46ef-820e-04915478ffe8"
                  :cart-item-remove-action/id        "line-item-remove-freeinstall"
                  :cart-item-remove-action/spinning? (utils/requesting? app-state request-keys/remove-promotion-code)
                  :cart-item-remove-action/target    [events/control-checkout-remove-promotion {:code "freeinstall"}]}

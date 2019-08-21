@@ -623,6 +623,7 @@
   {:src (get img (keyword (str (name size) "_url")))
    :alt (:alt img)})
 
+;; GROT: Will be rendered useless post consolidated-cart
 (defn ^:private counter-button [spinning? data-test f content]
   [:a.col.inherit-color
    {:href "#"
@@ -642,6 +643,7 @@
    (counter-value spinning? value)
    (counter-button spinning? (str "quantity-inc-" data-test) inc-fn (svg/counter-inc {:title "Increment cart item count"}))])
 
+;; GROT: Will be rendered useless post consolidated-cart
 (defn auto-complete-counter [{:keys [data-test spinning?]} value dec-fn inc-fn]
    [:div.medium
     (counter-button spinning? (str "quantity-dec-" data-test) dec-fn
@@ -651,6 +653,24 @@
     (counter-button spinning? (str "quantity-inc-" data-test) inc-fn
                     (svg/plus-sign {:height "28px"
                                     :width  "30px"}))])
+
+(defn ^:private consolidated-cart-counter-button [spinning? data-test f content]
+  [:a.col.inherit-color.flex.items-center
+   {:href "#"
+    :data-test data-test
+    :disabled spinning?
+    :on-click (if spinning? utils/noop-callback f)}
+   content])
+
+(defn consolidated-cart-auto-complete-counter [{:keys [data-test spinning?]} value dec-fn inc-fn]
+  [:div.medium.flex.items-center
+   (consolidated-cart-counter-button spinning? (str "quantity-dec-" data-test) dec-fn
+                                     (svg/minus-sign {:height "18px"
+                                                      :width  "20px"}))
+   (counter-value spinning? value)
+   (consolidated-cart-counter-button spinning? (str "quantity-inc-" data-test) inc-fn
+                                     (svg/plus-sign {:height "18px"
+                                                     :width  "20px"}))])
 
 (defn note-box [{:keys [color data-test]} contents]
   [:div.border.rounded

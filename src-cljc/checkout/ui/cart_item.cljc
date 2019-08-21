@@ -27,7 +27,7 @@
        {:data-test id}
        primary]]
      [:div
-      [:a.titleize.h6
+      [:a.h6
        secondary]]]))
 
 (defn completed-progress-circle-atom
@@ -144,13 +144,13 @@
   [{:cart-item-adjustable-quantity/keys
     [id spinning? value id-suffix decrement-target increment-target]}]
   (when id
-    [:div.h3
-     {:data-test id}
-     (ui/auto-complete-counter {:spinning? spinning?
-                                :data-test id-suffix}
-                               value
-                               (apply utils/send-event-callback decrement-target)
-                               (apply utils/send-event-callback increment-target))]))
+    [:div {:data-test id}
+     (ui/consolidated-cart-auto-complete-counter
+      {:spinning? spinning?
+       :data-test id-suffix}
+      value
+      (apply utils/send-event-callback decrement-target)
+      (apply utils/send-event-callback increment-target))]))
 
 (defn organism
   [{:keys [cart-item suggestions]} _ _]
