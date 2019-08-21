@@ -73,33 +73,30 @@
   [{:cart-item-square-thumbnail/keys
     [id ucare-id sku-id sticker-label highlighted?]}]
   (when id
-    #?(:clj
-       [:div]
-       :cljs
-       (let [sticker-id (str "line-item-length-" sku-id)]
-         [:div.flex.items-center.justify-center
-          [:div.relative
-           {:style {:width  48
-                    :height 48}}
-           (when sticker-label
-             [:div.absolute.z1.circle.border.border-white.medium.h6.bg-too-light-teal
-              {:key       sticker-id
-               :data-test sticker-id
-               :style     {:right -12
-                           :top   -12}}
-              [:div.flex.items-center.justify-center
-               sticker-label]])
+    (let [sticker-id (str "line-item-length-" sku-id)]
+      [:div.flex.items-center.justify-center
+       [:div.relative
+        {:style {:width  48
+                 :height 48}}
+        (when sticker-label
+          [:div.absolute.z1.circle.border.border-white.medium.h6.bg-too-light-teal
+           {:key       sticker-id
+            :data-test sticker-id
+            :style     {:right -12
+                        :top   -12}}
+           [:div.flex.items-center.justify-center
+            sticker-label]])
 
-           (css-transitions/transition-background-color
-            highlighted?
-            [:div.absolute.flex.items-center.justify-center.rounded
-             {:style     {:height 46
-                          :width  46}
-              :key       (str "thumbnail-" sku-id)
-              :data-test (str "line-item-img-" sku-id)}
-             (ui/ucare-img {:width 48
-                            :class "rounded border border-light-gray"}
-                           ucare-id)])]]))))
+        (css-transitions/transition-background-color
+         highlighted?
+         [:div.absolute.flex.items-center.justify-center.rounded
+          {:style     {:height 46
+                       :width  46}
+           :key       (str "thumbnail-" sku-id)
+           :data-test (str "line-item-img-" sku-id)}
+          (ui/ucare-img {:width 48
+                         :class "rounded border border-light-gray"}
+                        ucare-id)])]])))
 
 (defn cart-item-thumbnail-molecule
   [{:cart-item-thumbnail/keys [id highlighted? value locked? ucare-id]}]
