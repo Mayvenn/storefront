@@ -13,6 +13,16 @@
                        (apply utils/fake-href event args))
     (ui/back-caret copy "12px")]])
 
+(defn stars-rating-molecule
+  [{rating :rating/value}]
+  (when rating
+    (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars rating)]
+      [:div.flex.items-center.line-height-2
+       [:span.orange.bold.mr1 rating]
+       whole-stars
+       partial-star
+       empty-stars])))
+
 (defn hero
   [{:keys [dsk-uuid mob-uuid file-name alt opts off-screen?]
     :or   {file-name "hero-image"}} _ _]

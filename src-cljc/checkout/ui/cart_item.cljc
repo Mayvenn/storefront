@@ -1,10 +1,11 @@
 (ns checkout.ui.cart-item
-  (:require [storefront.component :as component]
-            [storefront.css-transitions :as css-transitions]
+  (:require [checkout.suggestions :as suggestions]
+            [storefront.component :as component]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
+            [storefront.css-transitions :as css-transitions]
             [storefront.platform.component-utils :as utils]
-            [checkout.suggestions :as suggestions]))
+            ui.molecules))
 
 (defn cart-item-floating-box-molecule
   [{:cart-item-floating-box/keys [id value]}]
@@ -173,6 +174,7 @@
         [:div.col-12
          (cart-item-floating-box-molecule cart-item)
          (cart-item-copy-molecule cart-item)
+         (ui.molecules/stars-rating-molecule cart-item)
          (cart-item-adjustable-quantity-molecule cart-item)]
 
         [:div.col-12

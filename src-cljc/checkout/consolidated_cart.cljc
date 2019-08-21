@@ -361,11 +361,14 @@
 
           stylist
           (merge {:cart-item-title/secondary    (str "w/ " (:store-nickname stylist))
-                  :cart-item-copy/value         nil
                   :cart-item-thumbnail/ucare-id (-> stylist
                                                     :portrait
                                                     :resizable-url
-                                                    ui/ucare-img-id)}))]))))
+                                                    ui/ucare-img-id)})
+
+          (and applied? stylist)
+          (merge {:rating/value         (:rating stylist)
+                  :cart-item-copy/value nil}))]))))
 
 (defn cart-summary-query
   [{:as order :keys [adjustments]}
