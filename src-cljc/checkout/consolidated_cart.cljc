@@ -1,8 +1,10 @@
 (ns checkout.consolidated-cart
   (:require
-   #?@(:cljs [[storefront.api :as api]
+   #?@(:cljs [[om.core :as om]
+              [storefront.api :as api]
               [storefront.components.payment-request-button :as payment-request-button]
               [storefront.components.popup :as popup]
+              [storefront.confetti :as confetti]
               [storefront.hooks.quadpay :as quadpay]])
    [adventure.keypaths :as adventure-keypaths]
    [catalog.facets :as facets]
@@ -45,25 +47,57 @@
                               :allow-dormant?     false
                               :consolidated-cart? (experiments/consolidated-cart? app-state)})))
 
+(defn qualified-banner-component
+  [_ owner _]
+  (let [burstable? (atom true)]
+    #?(:clj [:div]
+       :cljs
+       (reify
+         om/IDidMount
+         (did-mount [_]
+           (confetti/burst (om/get-ref owner "qualified-banner-confetti")))
+         om/IRender
+         (render [_]
+           (component/html
+            [:div.flex.items-center.bold
+             {:data-test "qualified-banner"
+              :style     {:height              "246px"
+                          :padding-top         "43px"
+                          :background-size     "cover"
+                          :background-position "center"
+                          :background-image    "url('//ucarecdn.com/97d80a16-1f48-467a-b8e2-fb16b532b75e/-/format/auto/-/quality/normal/aladdinMatchingCelebratoryOverlayImagePurpleR203Lm3x.png')"}
+              :on-click (fn [_]
+                          (when @burstable?
+                            (reset! burstable? false)
+                            (.then (confetti/burst (om/get-ref owner "qualified-banner-confetti"))
+                                   #(reset! burstable? true))))}
+             [:div.col.col-12.center.white
+              [:div.absolute
+               {:ref   "qualified-banner-confetti"
+                :style {:left  "50%"
+                        :right "50%"
+                        :top   "25%"}}]
+              [:div.h5.light "This order qualifies for a"]
+              [:div.h1.shout "free install"]
+              [:div.h5.light "from a Mayvenn Stylist near you"]]]))))))
+
 (defn full-component
-  [{:keys [order
-           skus
-           promo-banner
-           call-out checkout-disabled?
-           redirecting-to-paypal?
-           share-carts?
-           requesting-shared-cart?
-           suggestions
-           line-items
-           show-browser-pay?
-           recently-added-skus
-           cart-summary
+  [{:keys [applied?
+           call-out
            cart-items
-           locked?
-           quantity-remaining
+           cart-summary
+           checkout-disabled?
            loaded-quadpay?
-           freeinstall-needs-more-items?
-           remove-freeinstall-event] :as queried-data} owner _]
+           locked?
+           order
+           promo-banner
+           quantity-remaining
+           redirecting-to-paypal?
+           remove-freeinstall-event
+           requesting-shared-cart?
+           share-carts?
+           show-browser-pay?
+           suggestions] :as queried-data} owner _]
   (component/create
    [:div.container.p2
     (component/build promo-banner/sticky-organism promo-banner nil)
@@ -73,6 +107,11 @@
     [:div.clearfix.mxn3
      [:div.px4 (ui-molecules/return-link queried-data)]
      [:div.hide-on-dt.border-top.border-light-gray.mt2.mb3]
+     (when applied?
+       (list ;; HACK: here until we get a desktop style pass
+        [:div.hide-on-dt.mtn3]
+        [:div.mb3
+         (component/build qualified-banner-component nil nil)]))
      [:div.col-on-tb-dt.col-6-on-tb-dt.px3
       {:data-test "cart-line-items"}
       ;; HACK: have suggestions be paired with appropriate cart item
@@ -446,6 +485,7 @@
      :quantity-remaining        (:mayvenn-install/quantity-remaining mayvenn-install)
      :locked?                   (:mayvenn-install/locked? mayvenn-install)
      :entered?                  entered?
+     :applied?                  (:mayvenn-install/applied? mayvenn-install)
      :remove-freeinstall-event  [events/control-checkout-remove-promotion {:code "freeinstall"}]
      :cart-summary              (merge
                                  (cart-summary-query order mayvenn-install)
