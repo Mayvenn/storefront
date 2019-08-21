@@ -65,7 +65,7 @@
    :illuminated?        (and
                          (experiments/consolidated-cart? data)
                          (= "shop" (get-in data keypaths/store-slug))
-                         (orders/applied-install-promotion (get-in data keypaths/order)))})
+                         (orders/freeinstall-entered? (get-in data keypaths/order)))})
 
 (defn built-component [data opts]
   (component/build component (query data) nil))
