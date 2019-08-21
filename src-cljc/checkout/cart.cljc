@@ -263,7 +263,6 @@
         promo.  A full solution would be implemented in waiter."
      [order]
      (let [{:keys [promotion-codes store-experience]} order]
-       (prn "checking... " promotion-codes store-experience)
        (and (some #(= "freeinstall" %) promotion-codes)
             (= "mayvenn-classic" store-experience)))))
 
