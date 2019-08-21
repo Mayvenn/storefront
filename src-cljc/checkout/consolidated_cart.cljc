@@ -379,7 +379,8 @@
                                                     ui/ucare-img-id)}))]))))
 
 (defn cart-summary-query
-  [{:as order :keys [adjustments]} {:mayvenn-install/keys [entered? locked? applied? service-discount quantity-remaining]}]
+  [{:as order :keys [adjustments]}
+   {:mayvenn-install/keys [entered? locked? applied? service-discount quantity-remaining]}]
   (let [total         (-> order :total)
         subtotal      (orders/products-subtotal order)
         shipping      (some->> order
@@ -427,6 +428,15 @@
                                      :cart-summary-line/label "Shipping"
                                      :cart-summary-line/value (mf/as-money-or-free shipping)}])
 
+                                 (when locked?
+                                   ;; When FREEINSTALL is merely locked (and so not yet an adjustment) we must special case it, so:
+                                   [{:cart-summary-line/id    "freeinstall-locked"
+                                     :cart-summary-line/icon  (svg/discount-tag {:class  "mxnp6 fill-gray pr1"
+                                                                                 :height "2em" :width "2em"})
+                                     :cart-summary-line/label "FREEINSTALL"
+                                     :cart-summary-line/value (mf/as-money-or-free service-discount)
+                                     :cart-summary-line/class "bold purple"}])
+
                                  (for [{:keys [name price coupon-code]}
                                        ;; TODO extract
                                        (filter (fn non-zero-adjustment? [{:keys [price coupon-code]}]
@@ -444,9 +454,7 @@
                                             :cart-summary-line/value (mf/as-money-or-free price)}
 
                                      install-summary-line?
-                                     (merge {:cart-summary-line/value (if service-discount
-                                                                        (mf/as-money-or-free service-discount)
-                                                                        "TODO")
+                                     (merge {:cart-summary-line/value (mf/as-money-or-free service-discount)
                                              :cart-summary-line/class "bold purple"})
 
                                      coupon-summary-line?
@@ -499,7 +507,7 @@
      :cart-summary              (merge
                                  (cart-summary-query order mayvenn-install)
                                  (when (and (orders/no-applied-promo? order)
-                                            (not (:entered? mayvenn-install)))
+                                            (not (:mayvenn-install/entered? mayvenn-install)))
                                    {:promo-data {:coupon-code   (get-in data keypaths/cart-coupon-code)
                                                  :applying?     (utils/requesting? data request-keys/add-promotion-code)
                                                  :focused       (get-in data keypaths/ui-focus)
