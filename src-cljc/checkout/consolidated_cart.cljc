@@ -376,7 +376,7 @@
                   :cart-item-thumbnail/ucare-id (-> stylist
                                                     :portrait
                                                     :resizable-url
-                                                    catalog-images/ucare-uri->ucare-id)}))]))))
+                                                    ui/ucare-img-id)}))]))))
 
 (defn cart-summary-query
   [{:as order :keys [adjustments]} {:mayvenn-install/keys [entered? locked? applied? service-discount quantity-remaining]}]
