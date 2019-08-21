@@ -36,6 +36,7 @@
            subtitle
            title
            logo?
+           cold-load-nav-message
            unstick?]
     :or   {shopping-bag? true}} _ _]
   (component/create
@@ -56,7 +57,9 @@
           (when back-navigation-message
             [:a.block.p3.inherit-color
              (merge {:data-test "adventure-back"}
-                    (utils/route-back {:navigation-message [back-navigation-message]}))
+                    (if cold-load-nav-message
+                      (apply utils/route-to cold-load-nav-message)
+                      (utils/route-back {:navigation-message back-navigation-message})))
              [:div.flex.items-center.justify-center {:style {:height "24px" :width "20px"}}
               (ui/back-arrow {:width "14"})]])]
          [:div

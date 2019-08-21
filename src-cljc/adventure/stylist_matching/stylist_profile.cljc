@@ -13,6 +13,7 @@
             [storefront.platform.carousel :as carousel]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
+            storefront.keypaths
             [storefront.transitions :as transitions]
             [stylist-directory.stylists :as stylists]
             #?@(:cljs
@@ -80,6 +81,8 @@
       {:header-data                  {:subtitle                [:div.mt2.h4.medium
                                                                 (str "More about " (stylists/->display-name stylist))]
                                       :back-navigation-message [events/navigate-adventure-find-your-stylist]
+                                      :cold-load-nav-message   (when (empty? (get-in data storefront.keypaths/navigation-undo-stack))
+                                                                 [events/navigate-adventure-find-your-stylist])
                                       :header-attrs            {:class "bg-light-lavender"}
                                       :shopping-bag?           true}
        :google-map-data              #?(:cljs (maps/map-query data)
