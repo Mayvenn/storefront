@@ -2,6 +2,7 @@
   (:require [storefront.component :as component]
             [ui.promo-banner :as promo-banner]
             [ui.product-card :as product-card]
+            [ui.product-list-header :as product-list-header]
             [design-system.organisms :as organisms]
             [storefront.events :as events]))
 
@@ -43,8 +44,8 @@
                          :product-card/data-test          "product-indian-loose-wave-lace-frontals"
                          :product-card/sold-out?          false
                          :color-swatches/urls             #{"//ucarecdn.com/f7eb2f95-3283-4160-bdf9-38a87be676c2/-/format/auto/dark_blonde.png"
-                                                           "//ucarecdn.com/9e15a581-6e80-401a-8cb2-0608fef474e9/-/format/auto/dark_blonde_dark_roots.png"
-                                                           "//ucarecdn.com/85ede6dd-8e84-4096-ad5c-685d50dd99ec/-/format/auto/blonde.png"
+                                                            "//ucarecdn.com/9e15a581-6e80-401a-8cb2-0608fef474e9/-/format/auto/dark_blonde_dark_roots.png"
+                                                            "//ucarecdn.com/85ede6dd-8e84-4096-ad5c-685d50dd99ec/-/format/auto/blonde.png"
                                                             "//ucarecdn.com/02f4a86c-12fa-47b3-8f50-078568e4f905/-/format/auto/blonde_dark_roots.png"}
                          :length-range/longest            "18″"
                          :product-card/cheapest-sku-price "$159"
@@ -52,7 +53,14 @@
                          :product-card/navigation-message [[:navigate :product :details]
                                                            {:catalog/product-id "1"
                                                             :page/slug          "indian-loose-wave-lace-frontals"
-                                                            :query-params       {:SKU "ILWDBFLC14"}}]}}])
+                                                            :query-params       {:SKU "ILWDBFLC14"}}]}}
+   {:organism/label     :product-list-header
+    :organism/component product-list-header/organism
+    :organism/query     {:product-list-header/slug           "straight"
+                         :product-list-header/image-url      "//ucarecdn.com/805e1245-96b4-4a02-9103-ff907d745019/straight_img.png"
+                         :product-list-header/copy-primary   "Straight"
+                         :product-list-header/copy-secondary "Your go-to for a sleek look with minimal effort."
+                         :product-list-header/copy-position  :right}}])
 
 (defn component
   [data owner opts]
