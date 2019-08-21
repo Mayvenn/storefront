@@ -194,8 +194,8 @@
 
 (defn ^:private query
   [data]
-  (let [category      (categories/current-category data)
-        selections    (get-in data catalog.keypaths/category-selections )
+  (let [category                   (categories/current-category data)
+        selections                 (get-in data catalog.keypaths/category-selections )
         products-matching-category (selector/match-all {:selector/strict? true}
                                                        (skuers/essentials category)
                                                        (vals (get-in data keypaths/v2-products)))
@@ -204,22 +204,22 @@
                                                         (skuers/essentials category)
                                                         selections)
                                                        products-matching-category)
-        subsections                    (->> products-matching-criteria
-                                            (group-by (or (categories/category-id->subsection-fn (:catalog/category-id category))
-                                                          (constantly :no-subsections)))
-                                            (spice.maps/map-values (partial map (partial product-card/query data)))
-                                            (spice.maps/map-values (partial sort-by (comp :sku/price :cheapest-sku)))
-                                            (map (fn [[k cards]]
-                                                   (-> category
-                                                       :subsections
-                                                       (get k)
-                                                       (assoc :product-cards cards))))
-                                            (sort-by :order))
-        product-cards                  (mapcat :product-cards subsections)]
+        subsections                (->> products-matching-criteria
+                                        (group-by (or (categories/category-id->subsection-fn (:catalog/category-id category))
+                                                      (constantly :no-subsections)))
+                                        (spice.maps/map-values (partial map (partial product-card/query data)))
+                                        (spice.maps/map-values (partial sort-by (comp :sku/price :cheapest-sku)))
+                                        (map (fn [[k cards]]
+                                               (-> category
+                                                   :subsections
+                                                   (get k)
+                                                   (assoc :product-cards cards))))
+                                        (sort-by :order))
+        product-cards              (mapcat :product-cards subsections)]
     {:category            category
      :represented-options (->> products-matching-category
-                               (map (fn [skuer]
-                                      (->> (select-keys skuer
+                               (map (fn [product]
+                                      (->> (select-keys product
                                                         (concat (:selector/essentials category)
                                                                 (:selector/electives category)))
                                            (maps/map-values set))))
@@ -274,7 +274,7 @@
 #?(:cljs
    (defmethod effects/perform-effects events/control-category-option
      [_ _ _ _ app-state]
-     (let [{:keys [catalog/category-id page/slug]}   (categories/current-category app-state)]
+     (let [{:keys [catalog/category-id page/slug]} (categories/current-category app-state)]
        (->> (get-in app-state catalog.keypaths/category-selections)
             (maps/map-values (fn [s] (string/join query-param-separator s)))
             (maps/map-keys facet-slugs->query-params)

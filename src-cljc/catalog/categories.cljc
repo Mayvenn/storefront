@@ -441,6 +441,7 @@
                                                                            "these 100% human hair units will be"
                                                                            "your favorite option for a quick,"
                                                                            "convenient switch-up on the go.")}}})])
+
 (def plp
   [{:catalog/category-id "23"
     ;; :footer/order        21  ; TODO?
