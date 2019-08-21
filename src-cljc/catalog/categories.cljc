@@ -3,7 +3,8 @@
             [spice.maps :as maps]
             [spice.core :as spice]
             [storefront.keypaths :as keypaths]
-            [catalog.keypaths]))
+            [catalog.keypaths]
+            [storefront.events :as events]))
 
 (def new-facet?
   ;; [<facet-slug> <option-slug>]
@@ -443,32 +444,32 @@
                                                                            "convenient switch-up on the go.")}}})])
 
 (def plp
-  [{:catalog/category-id "23"
-    ;; :footer/order        21  ; TODO?
-    ;; :dtc-footer/order    8 ; TODO?
-    ;; :header/order        0 ; TODO?
-    ;; :header/group        3 ; TODO?
-
-    ;; :category/new? true
-
-    :copy/title                     "PLP"
-    :page/slug                      "plp"
-    :copy/description               ""
-    :images                         {}
+  [{
+    :catalog/category-id            "23"
     :catalog/department             #{"hair"}
+    :category/new?                  true
+    :copy/description               "Save 10% on your hair & get a free Mayvenn Install by a licensed stylist when you purchase 3 or more items. "
+    :copy/learn-more                [events/popup-show-adventure-free-install]
+    :copy/title                     "Mayvenn Install"
+    :display/doufu?                 true
     :hair/family                    #{"bundles" "closures" "frontals" "360-frontals"}
-    :promo.mayvenn-install/eligible #{true}
-    :selector/essentials            [:catalog/department :promo.mayvenn-install/eligible]
-    :selector/electives             [:hair/texture :hair/family :hair/origin :hair/color]
+    :images                         {:hero {:filename    "mayvenn-install-hero-image",
+                                            :desktop-url "//ucarecdn.com/b1d0e399-8e62-4f34-aa17-862a9357000b/",
+                                            :mobile-url  "//ucarecdn.com/4f9bc98f-2834-4e1f-9e9e-4ca680edd81f/",
+                                            :alt         "New Mayvenn Install"}}
+    :image-url                      "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/"
+    :page/slug                      "mayvenn-install"
     :page/title                     "PLP | Mayvenn"
-    :opengraph/title                (copy "Mayvenn 360 and Lace Frontal Wigs - Free shipping."
-                                          "Free 30 day returns. Made with 100% virgin human hair.")
     :page.meta/description          (copy "Mayvenn’s Natural Lace Front Wigs and 360 Wigs."
                                           "Comes in different variations such as Brazilian and Malaysian, straight, deep wave and loose wave.")
+    :promo.mayvenn-install/eligible #{true}
     :opengraph/description          (copy "100% virgin human hair, machine-wefted and backed by our"
                                           "30 Day Quality Guarantee, our Wigs can be customized to fit"
                                           "your unique look using the built-in combs and adjustable strap.")
-    :image-url                      "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/"
+    :opengraph/title                (copy "Mayvenn 360 and Lace Frontal Wigs - Free shipping."
+                                          "Free 30 day returns. Made with 100% virgin human hair.")
+    :selector/electives             [:hair/texture :hair/family :hair/origin :hair/color]
+    :selector/essentials            [:catalog/department :promo.mayvenn-install/eligible]
     :subsections                    {"bundles"      {:image/mob-url "//ucarecdn.com/08d4158d-633d-4ddd-ab90-7e7f03655998/"
                                                      :image/dsk-url "//ucarecdn.com/4f310c6c-b8a8-46cb-9940-290f57920922/"
                                                      :order         2

@@ -118,7 +118,8 @@
              {:data-test "filters-done"})
       "Done")]]])
 
-(defn hero-section [category]
+(defn hero-section
+  [category]
   (component/html
    [:h1
     (let [{:keys [mobile-url file-name desktop-url alt]} (-> category :images :hero)]
@@ -129,9 +130,27 @@
          [:img.block.col-12 {:src (str mobile-url "-/format/auto/" file-name)
                              :alt alt}]]))]))
 
-(defn copy-section [category]
+(defn doufu-copy-section
+  [category]
   (component/html
-   [:div.mt6.mb2 [:p.py6.max-580.mx-auto.center (:copy/description category)]]))
+   [:div.center.mx2
+    (when (:category/new? category)
+      [:div.purple.h7.medium.mbn1.mt3
+       "NEW!"])
+    [:div.h1 (:copy/title category)]
+    [:div.h5.dark-gray.light.my2.mx6-on-mb.col-8-on-tb-dt.mx-auto-on-tb-dt
+     (:copy/description category)
+     (when-let [learn-more-event (:copy/learn-more category)]
+       [:a.teal.h6.medium
+        {:on-click (apply utils/send-event-callback learn-more-event)}
+        "learn" ui/nbsp "more"])]]))
+
+(defn copy-section
+  [category]
+  (component/html
+   [:div.mt6.mb2
+    [:p.py6.max-580.mx-auto.center
+     (:copy/description category)]]))
 
 (defn product-cards-empty-state [loading?]
   (component/html
@@ -172,7 +191,9 @@
    [:div
     (hero-section category)
     [:div.max-960.col-12.mx-auto.px2-on-mb.px2-on-tb
-     (copy-section category)
+     (if (:display/doufu? category)
+       (doufu-copy-section category)
+       (copy-section category))
      [:div.bg-white.sticky.z1
       ;; The -5px prevents a sliver of the background from being visible above the filters
       ;; (when sticky) on android (and sometimes desktop chrome when using the inspector)
