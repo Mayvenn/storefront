@@ -117,10 +117,8 @@
            requesting-shared-cart?
            suggestions
            line-items
-           update-line-item-requests
            show-browser-pay?
            recently-added-skus
-           delete-line-item-requests
            cart-summary
            cart-items
            locked?
@@ -304,10 +302,13 @@
   [app-state
    {:mayvenn-install/keys [entered? locked? applied? stylist service-discount quantity-remaining quantity-required quantity-added]}
    line-items
-   skus
-   update-line-item-requests
-   delete-line-item-requests]
-  (let [cart-items (for [{sku-id :sku variant-id :id :as line-item} line-items
+   skus]
+  (let [update-line-item-requests (merge-with
+                                   #(or %1 %2)
+                                   (variants-requests app-state request-keys/add-to-bag (map :sku line-items))
+                                   (variants-requests app-state request-keys/update-line-item (map :sku line-items)))
+        delete-line-item-requests (variants-requests app-state request-keys/delete-line-item (map :id line-items))
+        cart-items (for [{sku-id :sku variant-id :id :as line-item} line-items
                          :let
                          [sku                  (get skus sku-id)
                           price                (or (:sku/price line-item)
@@ -468,15 +469,9 @@
         facets                               (get-in data keypaths/v2-facets)
         line-items                           (map (partial add-product-title-and-color-to-line-item products facets)
                                                   (orders/product-items order))
-        variant-ids                          (map :id line-items)
         freeinstall-entered-cart-incomplete? (and (orders/freeinstall-entered? order)
                                                   (not (orders/freeinstall-applied? order)))
-        mayvenn-install                      (mayvenn-install data)
-        update-line-item-requests (merge-with
-                                   #(or %1 %2)
-                                   (variants-requests data request-keys/add-to-bag (map :sku line-items))
-                                   (variants-requests data request-keys/update-line-item (map :sku line-items)))
-        delete-line-item-requests (variants-requests data request-keys/delete-line-item variant-ids)]
+        mayvenn-install                      (mayvenn-install data)]
     {:suggestions               (suggestions/consolidated-query data)
      :order                     order
      :line-items                line-items
@@ -495,8 +490,6 @@
                                      (experiments/browser-pay? data)
                                      (seq (get-in data keypaths/shipping-methods))
                                      (seq (get-in data keypaths/states)))
-     :update-line-item-requests update-line-item-requests
-     :delete-line-item-requests delete-line-item-requests
      :recently-added-skus       (get-in data keypaths/cart-recently-added-skus)
 
      :return-link/copy          "Continue Shopping"
@@ -513,7 +506,7 @@
                                                  :focused       (get-in data keypaths/ui-focus)
                                                  :error-message (get-in data keypaths/error-message)
                                                  :field-errors  (get-in data keypaths/field-errors)}}))
-     :cart-items                (cart-items-query data mayvenn-install line-items (get-in data keypaths/v2-skus) update-line-item-requests delete-line-item-requests)}))
+     :cart-items                (cart-items-query data mayvenn-install line-items (get-in data keypaths/v2-skus))}))
 
 (defn empty-cart-query
   [data]
