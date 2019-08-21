@@ -1,18 +1,9 @@
 (ns checkout.consolidated-cart
   (:require
-   #?@(:cljs [[cemerick.url :refer [url-encode]]
-              [goog.labs.userAgent.device :as device]
-              [storefront.accessors.stylist-urls :as stylist-urls]
-              [storefront.api :as api]
-              [storefront.browser.cookie-jar :as cookie-jar]
-              [storefront.components.order-summary :as summary]
+   #?@(:cljs [[storefront.api :as api]
               [storefront.components.payment-request-button :as payment-request-button]
               [storefront.components.popup :as popup]
-              [storefront.config :as config]
-              [storefront.history :as history]
-              [storefront.hooks.browser-pay :as browser-pay]
-              [storefront.hooks.quadpay :as quadpay]
-              [storefront.platform.messages :as messages]])
+              [storefront.hooks.quadpay :as quadpay]])
    [adventure.keypaths :as adventure-keypaths]
    [catalog.facets :as facets]
    [catalog.images :as catalog-images]
