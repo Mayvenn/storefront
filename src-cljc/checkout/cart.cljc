@@ -261,8 +261,10 @@
    (defn- order-has-inapplicable-freeinstall-promo?
      "A small hack to prevent classic orders from being placed with the freeinstall
         promo.  A full solution would be implemented in waiter."
-     [order]
-     (let [{:keys [promotion-codes store-experience]} order]
+     [app-state]
+     (let [promotion-codes  (-> (get-in app-state keypaths/order)
+                                :promotion-codes)
+           store-experience (get-in app-state keypaths/store-experience)]
        (and (some #(= "freeinstall" %) promotion-codes)
             (= "mayvenn-classic" store-experience)))))
 
@@ -339,7 +341,7 @@
 (defmethod effects/perform-effects events/control-checkout-cart-submit
   [dispatch event args _ app-state]
   #?(:cljs
-     (if (order-has-inapplicable-freeinstall-promo? (get-in app-state keypaths/order))
+     (if (order-has-inapplicable-freeinstall-promo? app-state)
        (reject-inapplicable-freeinstall-promo (get-in app-state keypaths/session-id)
                                               (get-in app-state keypaths/order))
        ;; If logged in, this will send user to checkout-address. If not, this sets
@@ -351,7 +353,7 @@
   [dispatch event args _ app-state]
   #?(:cljs
      (let [order (get-in app-state keypaths/order)]
-       (if (order-has-inapplicable-freeinstall-promo? (get-in app-state keypaths/order))
+       (if (order-has-inapplicable-freeinstall-promo? app-state)
          (reject-inapplicable-freeinstall-promo (get-in app-state keypaths/session-id)
                                                 (get-in app-state keypaths/order))
          ;; If logged in, this will send user to checkout-address. If not, this sets
