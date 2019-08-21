@@ -293,6 +293,7 @@
                                    (variants-requests app-state request-keys/add-to-bag (map :sku line-items))
                                    (variants-requests app-state request-keys/update-line-item (map :sku line-items)))
         delete-line-item-requests (variants-requests app-state request-keys/delete-line-item (map :id line-items))
+
         cart-items (for [{sku-id :sku variant-id :id :as line-item} line-items
                          :let
                          [sku                  (get skus sku-id)
