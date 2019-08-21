@@ -237,7 +237,9 @@
      :mayvenn-install/stylist            servicing-stylist
      :mayvenn-install/service-type       service-type
      :mayvenn-install/service-discount   (some-> service-menu
-                                                 (get service-type)
+                                                 ;; If the menu does not provide the service matching the
+                                                 ;; cart contents, use the leave out price
+                                                 (get service-type (:advertised-sew-in-leave-out service-menu))
                                                  spice/parse-double
                                                  -)}))
 
@@ -417,36 +419,38 @@
                                                   (orders/product-items order))
         freeinstall-entered-cart-incomplete? (and (orders/freeinstall-entered? order)
                                                   (not (orders/freeinstall-applied? order)))
-        mayvenn-install                      (mayvenn-install data)]
-    {:suggestions               (suggestions/consolidated-query data)
-     :order                     order
-     :line-items                line-items
-     :skus                      (get-in data keypaths/v2-skus)
-     :products                  products
-     :promo-banner              (when (zero? (orders/product-quantity order))
-                                  (promo-banner/query data))
-     :call-out                  (call-out/query data)
-     :checkout-disabled?        (or freeinstall-entered-cart-incomplete?
-                                    (update-pending? data))
-     :redirecting-to-paypal?    (get-in data keypaths/cart-paypal-redirect)
-     :share-carts?              (stylists/own-store? data)
-     :requesting-shared-cart?   (utils/requesting? data request-keys/create-shared-cart)
-     :loaded-quadpay?           (get-in data keypaths/loaded-quadpay)
-     :show-browser-pay?         (and (get-in data keypaths/loaded-stripe)
-                                     (experiments/browser-pay? data)
-                                     (seq (get-in data keypaths/shipping-methods))
-                                     (seq (get-in data keypaths/states)))
-     :recently-added-skus       (get-in data keypaths/cart-recently-added-skus)
+        mayvenn-install                      (mayvenn-install data)
+        entered?                             (:mayvenn-install/entered? mayvenn-install)]
+    {:suggestions             (suggestions/consolidated-query data)
+     :order                   order
+     :line-items              line-items
+     :skus                    (get-in data keypaths/v2-skus)
+     :products                products
+     :promo-banner            (when (zero? (orders/product-quantity order))
+                                (promo-banner/query data))
+     :call-out                (call-out/query data)
+     :checkout-disabled?      (or freeinstall-entered-cart-incomplete?
+                                  (update-pending? data))
+     :redirecting-to-paypal?  (get-in data keypaths/cart-paypal-redirect)
+     :share-carts?            (stylists/own-store? data)
+     :requesting-shared-cart? (utils/requesting? data request-keys/create-shared-cart)
+     :loaded-quadpay?         (get-in data keypaths/loaded-quadpay)
+     :show-browser-pay?       (and (get-in data keypaths/loaded-stripe)
+                                   (experiments/browser-pay? data)
+                                   (seq (get-in data keypaths/shipping-methods))
+                                   (seq (get-in data keypaths/states)))
+     :recently-added-skus     (get-in data keypaths/cart-recently-added-skus)
 
      :return-link/copy          "Continue Shopping"
      :return-link/event-message [events/control-open-shop-escape-hatch]
      :quantity-remaining        (:mayvenn-install/quantity-remaining mayvenn-install)
      :locked?                   (:mayvenn-install/locked? mayvenn-install)
+     :entered?                  entered?
      :remove-freeinstall-event  [events/control-checkout-remove-promotion {:code "freeinstall"}]
      :cart-summary              (merge
                                  (cart-summary-query order mayvenn-install)
                                  (when (and (orders/no-applied-promo? order)
-                                            (not (:mayvenn-install/entered? mayvenn-install)))
+                                            (not entered?))
                                    {:promo-data {:coupon-code   (get-in data keypaths/cart-coupon-code)
                                                  :applying?     (utils/requesting? data request-keys/add-promotion-code)
                                                  :focused       (get-in data keypaths/ui-focus)
@@ -468,7 +472,8 @@
    (if fetching-order?
      [:div.py3.h2 ui/spinner]
      [:div.col-7-on-dt.mx-auto
-      (if (zero? item-count)
+      (if (and (zero? item-count)
+               (not (:entered? full-cart)))
         (component/build empty-component empty-cart opts)
         (component/build full-component full-cart opts))])))
 
