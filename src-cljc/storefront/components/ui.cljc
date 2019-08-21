@@ -570,6 +570,10 @@
 (defn square-image [{:keys [resizable-url]} size]
   (some-> resizable-url (str "-/scale_crop/" size "x" size "/center/")))
 
+(defn scale-crop-ucare-id [size ucare-id]
+  (some-> ucare-id
+          (str "/-/scale_crop/" size "x" size "/center/")))
+
 (defn ucare-img-id [url-or-image-id]
   (if (string/includes? (str url-or-image-id) "ucarecdn.com")
     (last (butlast (string/split url-or-image-id #"/" 5)))

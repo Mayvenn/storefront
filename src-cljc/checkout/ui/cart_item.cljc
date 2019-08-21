@@ -122,11 +122,9 @@
              {:style {:height "100%"}}
              (svg/lock {:style {:width  "17px"
                                 :height "23px"}})]])
-         (ui/circle-ucare-img {:class "block"
-                               :style {:width  diameter
-                                       :height  diameter
-                                       :margin "auto"}}
-                              ucare-id)])])))
+         (ui/circle-picture
+          {:width diameter}
+          (str "//ucarecdn.com/" (ui/scale-crop-ucare-id diameter ucare-id)))])])))
 
 (defn cart-item-remove-action-molecule
   [{:cart-item-remove-action/keys [id target spinning?]}]
