@@ -331,7 +331,6 @@
       (concat
        [(cond-> {:react/key                         "freeinstall-line-item-freeinstall"
                  :cart-item-title/id                "line-item-title-freeinstall"
-                 :cart-item-copy/value              "Congratulations! You're all set for your Mayvenn Install. Select your stylist after checkout."
                  :cart-item-floating-box/id         "line-item-price-freeinstall"
                  :cart-item-floating-box/value      [:span.medium (mf/as-money (- service-discount))]
                  :cart-item-thumbnail/id            "freeinstall"
@@ -357,10 +356,12 @@
                    :cart-item-steps-to-complete/current-step  quantity-added})
 
           applied?
-          (merge {:cart-item-title/primary "Mayvenn Install"})
+          (merge {:cart-item-title/primary "Mayvenn Install"
+                  :cart-item-copy/value    "Congratulations! You're all set for your Mayvenn Install. Select your stylist after checkout."})
 
           stylist
           (merge {:cart-item-title/secondary    (str "w/ " (:store-nickname stylist))
+                  :cart-item-copy/value         nil
                   :cart-item-thumbnail/ucare-id (-> stylist
                                                     :portrait
                                                     :resizable-url
