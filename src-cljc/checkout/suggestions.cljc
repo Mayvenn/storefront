@@ -103,7 +103,6 @@
 
 (defn query
   [data]
-  ;; TODO(jeff): refactor this as we are passing data in, as well as things that come off of data
   (let [skus       (get-in data keypaths/v2-skus)
         products   (get-in data keypaths/v2-products)
         line-items (orders/product-items (get-in data keypaths/order))]
@@ -147,8 +146,7 @@
        (image-with-sticker first-image)
        [:span.pr2 "+"]
        (image-with-sticker second-image)])
-    [:div
-     ; TODO: Fix sizing when button starts spinning
+    [:div.col-4
      (ui/teal-ghost-button {:class        "bold bg-white"
                             :height-class :small
                             ;; we don't want to draw attention to the disabling of the other 'Add' button,
