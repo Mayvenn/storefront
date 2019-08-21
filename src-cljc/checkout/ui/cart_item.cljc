@@ -3,7 +3,8 @@
             [storefront.css-transitions :as css-transitions]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            [checkout.suggestions :as suggestions]))
 
 (defn cart-item-floating-box-molecule
   [{:cart-item-floating-box/keys [id value]}]
@@ -152,11 +153,10 @@
                                (apply utils/send-event-callback increment-target))]))
 
 (defn organism
-  [{:as       cart-item
-    react-key :react/key} _ _]
+  [{:keys [cart-item suggestions]} _ _]
   (component/create
    [:div
-    (when react-key
+    (when-let [react-key (:react/key cart-item)]
       [:div.pt1.pb2.flex.items-center.col-12
        {:key react-key}
        ;; image group
@@ -172,9 +172,13 @@
 
         (cart-item-title-molecule cart-item)
 
-        [:div
+        [:div.col-12
          (cart-item-floating-box-molecule cart-item)
          (cart-item-copy-molecule cart-item)
          (cart-item-adjustable-quantity-molecule cart-item)]
 
-        (cart-item-steps-to-complete-molecule cart-item)]])]))
+        [:div.col-12
+         (cart-item-steps-to-complete-molecule cart-item)]
+
+        [:div.col-12.col
+         (component/build suggestions/consolidated-component suggestions nil)]]])]))

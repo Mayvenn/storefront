@@ -54,59 +54,6 @@
                               :allow-dormant?     false
                               :consolidated-cart? (experiments/consolidated-cart? app-state)})))
 
-(defn display-adjustable-line-items
-  [recently-added-skus line-items skus update-line-item-requests delete-line-item-requests suggestions]
-  (for [{sku-id :sku variant-id :id :as line-item} line-items
-
-        :let [sku                  (get skus sku-id)
-              price                (or (:sku/price line-item)         (:unit-price line-item))
-              removing?            (get delete-line-item-requests variant-id)
-              updating?            (get update-line-item-requests sku-id)
-              just-added-to-order? (contains? recently-added-skus sku-id)]]
-    [:div.pt1.pb2.flex
-     {:key (str sku-id "-" (:quantity line-item))}
-     (suggestions/image-with-sticker {:cart-icon/ucare-id      (->> sku (catalog-images/image "cart") :ucare/id)
-                                      :cart-icon/sku-id        (:catalog/sku-id sku)
-                                      :cart-icon/sticker-label (when-let [length-circle-value (-> sku :hair/length first)]
-                                                                 (str length-circle-value "”"))
-                                      :cart-icon/sticker-id    (str "line-item-length-" (:catalog/sku-id sku))
-                                      :cart-icon/sticker-size  "28px"
-                                      :cart-icon/image-width   48
-                                      :cart-icon/top-margin    "-8px"
-                                      :cart-icon/left-margin   "-15px"
-                                      :cart-icon/highlighted?  just-added-to-order?})
-     [:div.flex-auto
-      [:a.medium.titleize.h5
-       {:data-test (str "line-item-title-" sku-id)}
-       (or (:product-title line-item)
-           (:product-name line-item))]
-      [:div.h6
-       [:div.flex.justify-between.mt1
-        [:div
-         {:data-test (str "line-item-color-" sku-id)}
-         (:color-name line-item)]
-        [:div.flex.items-center.justify-between
-         (if removing?
-           [:div.h3 {:style {:width "1.2em"}} ui/spinner]
-           [:a.gray.medium
-            (merge {:data-test (str "line-item-remove-" sku-id)}
-                   (utils/fake-href events/control-cart-remove (:id line-item)))
-            ^:inline (svg/trash-can {:height "1.1em"
-                                     :width  "1.1em"
-                                     :class  "stroke-dark-gray"})])]]
-       [:div.flex.justify-between.mt1
-        [:div.h3
-         {:data-test (str "line-item-quantity-" sku-id)}
-         (ui/auto-complete-counter {:spinning? updating?
-                                    :data-test sku-id}
-                                   (:quantity line-item)
-                                   (utils/send-event-callback events/control-cart-line-item-dec
-                                                              {:variant line-item})
-                                   (utils/send-event-callback events/control-cart-line-item-inc
-                                                              {:variant line-item}))]
-        [:div.h5 {:data-test (str "line-item-price-ea-" sku-id)} (mf/as-money-without-cents price) " ea"]]]
-      (component/build suggestions/consolidated-component suggestions nil)]]))
-
 (defn full-component
   [{:keys [order
            skus
@@ -137,8 +84,13 @@
      [:div.hide-on-dt.border-top.border-light-gray.mt2.mb3]
      [:div.col-on-tb-dt.col-6-on-tb-dt.px3
       {:data-test "cart-line-items"}
-      (for [cart-item cart-items]
-        (component/build cart-item/organism cart-item))]
+      ;; HACK: have suggestions be paired with appropriate cart item
+      (map-indexed
+       (fn [index cart-item]
+         (component/build cart-item/organism {:cart-item cart-item
+                                              :suggestions (when (zero? index)
+                                                             suggestions)}))
+       cart-items)]
 
      [:div.col-on-tb-dt.col-6-on-tb-dt
       (component/build cart-summary/organism cart-summary nil)
@@ -298,6 +250,7 @@
                                                  spice/parse-double
                                                  -)}))
 
+;; TODO: suggestions should be paired with appropriate cart item here
 (defn cart-items-query
   [app-state
    {:mayvenn-install/keys [entered? locked? applied? stylist service-discount quantity-remaining quantity-required quantity-added]}

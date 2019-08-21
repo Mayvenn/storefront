@@ -136,17 +136,19 @@
         (ui/ucare-img {:width image-width
                        :class "rounded border border-light-gray"} ucare-id)])]))
 
-(defn consolidated-suggested-bundles
+(defn ->consolidated-suggested-bundles
   "TODO Heat needs to be updated to use new dt"
   [{:suggested-bundles/keys [id images-with-stickers label target cta-id disabled? spinning?]}]
   [:div.bg-fate-white.mt1.rounded
    {:data-test id :key id}
    [:div.flex.justify-between.items-center.p2
-    [:div.flex
-     (image-with-sticker (first images-with-stickers))
-     [:span.pr2 "+"]
-     (image-with-sticker (second images-with-stickers))]
+    (let [[first-image second-image] images-with-stickers]
+      [:div.flex.items-center
+       (image-with-sticker first-image)
+       [:span.pr2 "+"]
+       (image-with-sticker second-image)])
     [:div
+     ; TODO: Fix sizing when button starts spinning
      (ui/teal-ghost-button {:class        "bold bg-white"
                             :height-class :small
                             ;; we don't want to draw attention to the disabling of the other 'Add' button,
@@ -160,7 +162,7 @@
                            label)]]])
 
 (defn consolidated-component
-  [{:keys [suggestions ]} _ _]
+  [{:keys [suggestions]} _ _]
   (component/create
    (when (seq suggestions)
      [:div {:data-test "auto-complete"}
@@ -169,12 +171,10 @@
                                           :height "13px"}
                                   :class "teal"})
        [:div.h6.dark-gray.pl1 "Bundles often bought together"]]
-      (map consolidated-suggested-bundles
-           suggestions)])))
+      (map ->consolidated-suggested-bundles suggestions)])))
 
 (defn consolidated-query
   [data]
-  ;; TODO(jeff): refactor this as we are passing data in, as well as things that come off of data
   (let [skus       (get-in data keypaths/v2-skus)
         products   (get-in data keypaths/v2-products)
         line-items (orders/product-items (get-in data keypaths/order))]
