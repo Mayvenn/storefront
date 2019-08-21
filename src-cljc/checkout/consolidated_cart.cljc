@@ -139,13 +139,6 @@
      [:div.hide-on-dt.border-top.border-light-gray.mt2.mb3]
      [:div.col-on-tb-dt.col-6-on-tb-dt.px3
       {:data-test "cart-line-items"}
-      (display-adjustable-line-items recently-added-skus
-                                     line-items
-                                     skus
-                                     update-line-item-requests
-                                     delete-line-item-requests
-                                     suggestions)
-
       (for [cart-item cart-items]
         (component/build cart-item/organism cart-item))]
 
