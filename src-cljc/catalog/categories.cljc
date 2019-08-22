@@ -389,7 +389,8 @@
                          "//ucarecdn.com/128b68e2-bf3a-4d72-8e39-0c71662f9c86/"))])
 
 (def category-id->subsection-fn
-  {"13" (comp first :hair/family)})
+  {"13" (comp first :hair/family)
+   "23" (comp first :hair/texture)})
 
 (def wigs
   [(merge {:catalog/category-id "13"
@@ -443,7 +444,7 @@
                                                                            "your favorite option for a quick,"
                                                                            "convenient switch-up on the go.")}}})])
 
-(def plp
+(def mayvenn-install-eligible
   [{
     :catalog/category-id            "23"
     :catalog/department             #{"hair"}
@@ -459,7 +460,7 @@
                                             :alt         "New Mayvenn Install"}}
     :image-url                      "//ucarecdn.com/5269d7ef-b5c7-4475-9e9c-d16d7cbbdda3/"
     :page/slug                      "mayvenn-install"
-    :page/title                     "PLP | Mayvenn"
+    :page/title                     "Mayvenn Install Eligible | Mayvenn"
     :page.meta/description          (copy "Mayvenn’s Natural Lace Front Wigs and 360 Wigs."
                                           "Comes in different variations such as Brazilian and Malaysian, straight, deep wave and loose wave.")
     :promo.mayvenn-install/eligible #{true}
@@ -470,31 +471,61 @@
                                           "Free 30 day returns. Made with 100% virgin human hair.")
     :selector/electives             [:hair/texture :hair/family :hair/origin :hair/color]
     :selector/essentials            [:catalog/department :promo.mayvenn-install/eligible]
-    :subsections                    {"bundles"      {:image/mob-url "//ucarecdn.com/08d4158d-633d-4ddd-ab90-7e7f03655998/"
-                                                     :image/dsk-url "//ucarecdn.com/4f310c6c-b8a8-46cb-9940-290f57920922/"
-                                                     :order         2
-                                                     :copy          (copy "Complete with a lace perimeter and made from 100% virgin hair,"
-                                                                          "our 360 wigs are fully customizable to fit your unique look.")}
-                                     "closures"     {:image/mob-url "//ucarecdn.com/3d906164-8a1e-413e-9e10-dd5b35d6532e/"
-                                                     :image/dsk-url "//ucarecdn.com/203051d7-0138-4276-8e1b-310d4ee84254/"
-                                                     :order         1
-                                                     :copy          (copy "Crafted with 13x4 inches of frontal parting space,"
-                                                                          "these 100% virgin hair units offer the perfect balance"
-                                                                          "between natural density and style versatility.")}
-                                     "frontals"     {:image/mob-url "//ucarecdn.com/56063a5e-7b29-43c8-9a2c-5d9d97682f11/"
-                                                     :image/dsk-url "//ucarecdn.com/00b52b51-897d-4aa9-a35f-07cf59e919fc/"
-                                                     :order         0
-                                                     :copy          (copy "Available in a variety of styles,"
-                                                                          "these 100% human hair units will be"
-                                                                          "your favorite option for a quick,"
-                                                                          "convenient switch-up on the go.")}
-                                     "360-frontals" {:image/mob-url "//ucarecdn.com/56063a5e-7b29-43c8-9a2c-5d9d97682f11/"
-                                                     :image/dsk-url "//ucarecdn.com/00b52b51-897d-4aa9-a35f-07cf59e919fc/"
-                                                     :order         0
-                                                     :copy          (copy "Available in a variety of styles,"
-                                                                          "these 100% human hair units will be"
-                                                                          "your favorite option for a quick,"
-                                                                          "convenient switch-up on the go.")}}}])
+    :subsections                    {"straight"
+                                     {:image/mob-url ""
+                                      :image/dsk-url ""
+                                      :title/primary "Straight"
+                                      :order         1
+                                      :copy          ""}
+
+                                     "yaki-straight"
+                                     {:image/mob-url ""
+                                      :image/dsk-url ""
+                                      :title/primary "Yaki Straight"
+                                      :order         2
+                                      :copy          ""}
+
+                                     "kinky-straight"
+                                     {:image/mob-url ""
+                                      :image/dsk-url ""
+                                      :title/primary "Kinky Straight"
+                                      :order         3
+                                      :copy          ""}
+
+                                     "body-wave"
+                                     {:image/mob-url ""
+                                      :image/dsk-url ""
+                                      :title/primary "Body Wave"
+                                      :order         4
+                                      :copy          ""}
+
+                                     "loose-wave"
+                                     {:image/mob-url ""
+                                      :image/dsk-url ""
+                                      :title/primary "Loose Wave"
+                                      :order         5
+                                      :copy          ""}
+
+                                     "water-wave"
+                                     {:image/mob-url ""
+                                      :image/dsk-url ""
+                                      :title/primary "Water Wave"
+                                      :order         6
+                                      :copy          ""}
+
+                                     "deep-wave"
+                                     {:image/mob-url ""
+                                      :image/dsk-url ""
+                                      :title/primary "Deep Wave"
+                                      :order         7
+                                      :copy          ""}
+
+                                     "curly"
+                                     {:image/mob-url ""
+                                      :image/dsk-url ""
+                                      :title/primary "Curly"
+                                      :order         8
+                                      :copy          ""}}}])
 
 (def stylist-exclusives
   [(merge {:catalog/category-id       "14"
@@ -645,7 +676,7 @@
 
 (def initial-categories
   (concat wigs
-          plp
+          mayvenn-install-eligible
           stylist-exclusives
           dyed-hair-nav-roots
           menu-categories
