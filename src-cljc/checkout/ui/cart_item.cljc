@@ -101,7 +101,7 @@
                         ucare-id)])]])))
 
 (defn cart-item-thumbnail-molecule
-  [{:cart-item-thumbnail/keys [id highlighted? value locked? ucare-id]}]
+  [{:cart-item-thumbnail/keys [id highlighted? value locked? image-url]}]
   (when id
     (css-transitions/transition-background-color
      highlighted?
@@ -125,7 +125,9 @@
                                 :height "23px"}})]])
          (ui/circle-picture
           {:width diameter}
-          (str "//ucarecdn.com/" (ui/scale-crop-ucare-id diameter ucare-id)))])])))
+          ;; Note: We are not using ucare-id because stylist portraits may have
+          ;; ucarecdn crop parameters saved into the url
+          (ui/square-image {:resizable-url image-url} diameter))])])))
 
 (defn cart-item-remove-action-molecule
   [{:cart-item-remove-action/keys [id target spinning?]}]
