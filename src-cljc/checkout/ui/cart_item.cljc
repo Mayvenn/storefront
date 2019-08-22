@@ -129,15 +129,25 @@
 
 (defn cart-item-remove-action-molecule
   [{:cart-item-remove-action/keys [id target spinning?]}]
-  (if spinning?
-    [:div.h3
-     {:style {:width "1.2em"}}
-     ui/spinner]
+  (when target
+    (if spinning?
+      [:div.h3
+       {:style {:width "1.2em"}}
+       ui/spinner]
+      [:a.gray.medium.m1
+       (merge {:data-test (str "line-item-remove-" id)}
+              (apply utils/fake-href target))
+       ^:inline (svg/consolidated-trash-can {:width  "16px"
+                                             :height "17px"})])))
+
+(defn cart-item-swap-action-molecule
+  [{:cart-item-swap-action/keys [target]}]
+  (when target
     [:a.gray.medium.m1
-     (merge {:data-test (str "line-item-remove-" id)}
-            (apply utils/fake-href target))
-     ^:inline (svg/consolidated-trash-can {:width  "16px"
-                                           :height "17px"})]))
+     (merge {:data-test "stylist-swap"}
+            (apply utils/route-to target))
+     ^:inline (svg/swap-person {:width  "16px"
+                                :height "19px"})]))
 
 (defn cart-item-adjustable-quantity-molecule
   [{:cart-item-adjustable-quantity/keys
@@ -167,7 +177,8 @@
        [:div.h6.mt1.col-10
 
         [:div.right.col-2.right-align
-         (cart-item-remove-action-molecule cart-item)]
+         (cart-item-remove-action-molecule cart-item)
+         (cart-item-swap-action-molecule cart-item)]
 
         (cart-item-title-molecule cart-item)
 

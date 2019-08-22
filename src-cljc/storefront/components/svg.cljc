@@ -280,3 +280,8 @@
   (component/html
    [:svg opts
     ^:inline (svg-xlink "lock")]))
+
+(defn swap-person [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "swap-person")]))

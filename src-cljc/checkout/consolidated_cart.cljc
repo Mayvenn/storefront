@@ -368,8 +368,10 @@
                                                     ui/ucare-img-id)})
 
           (and applied? stylist)
-          (merge {:rating/value         (:rating stylist)
-                  :cart-item-copy/value nil}))]))))
+          (merge {:rating/value                   (:rating stylist)
+                  :cart-item-copy/value           nil
+                  :cart-item-swap-action/target   [events/navigate-adventure-find-your-stylist]
+                  :cart-item-remove-action/target nil}))]))))
 
 (defn cart-summary-query
   [{:as order :keys [adjustments]}
