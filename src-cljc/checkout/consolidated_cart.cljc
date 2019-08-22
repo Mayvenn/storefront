@@ -17,12 +17,14 @@
    [checkout.ui.cart-summary :as cart-summary]
    [clojure.string :as string]
    [spice.core :as spice]
+   [spice.date :as date]
    [storefront.accessors.experiments :as experiments]
    [storefront.accessors.orders :as orders]
    [storefront.accessors.products :as products]
    [storefront.accessors.promos :as promos]
    [storefront.accessors.stylists :as stylists]
    [storefront.component :as component]
+   [storefront.components.checkout-delivery :as checkout-delivery]
    [storefront.components.flash :as flash]
    [storefront.components.footer :as storefront.footer]
    [storefront.components.money-formatters :as mf]
@@ -81,12 +83,19 @@
               [:div.h1.shout "free install"]
               [:div.h5.light "from a Mayvenn Stylist near you"]]]))))))
 
+(def or-separator
+  [:div.h5.black.py1.flex.items-center
+   [:div.flex-grow-1.border-bottom.border-light-gray]
+   [:div.mx2 "or"]
+   [:div.flex-grow-1.border-bottom.border-light-gray]])
+
 (defn full-component
   [{:keys [applied?
            call-out
            cart-items
            cart-summary
            checkout-disabled?
+           entered?
            loaded-quadpay?
            locked?
            order
@@ -125,7 +134,7 @@
      [:div.col-on-tb-dt.col-6-on-tb-dt
       (component/build cart-summary/organism cart-summary nil)
 
-      [:div.px4.center
+      [:div.px4.center ; Checkout buttons
        #?@(:cljs
            [(component/build quadpay/component
                              {:show?       loaded-quadpay?
@@ -136,35 +145,39 @@
                                              ^:inline (svg/quadpay-logo)]
                                             "at check out."]}
                              nil)])
-       (ui/teal-button {:spinning? false
-                        :disabled? checkout-disabled?
-                        :on-click  (utils/send-event-callback events/control-checkout-cart-submit)
-                        :data-test "start-checkout-button"}
-                       [:div "Check out"])
+       [:div.bg-too-light-teal.p2
+        (ui/teal-button {:spinning? false
+                         :disabled? checkout-disabled?
+                         :on-click  (utils/send-event-callback events/control-checkout-cart-submit)
+                         :data-test "start-checkout-button"}
+                        [:div "Check out"])
 
-       (when locked?
-         [:div.error.h7.center.medium.py1
-          (str "Add " quantity-remaining (ui/pluralize quantity-remaining " more item"))])
+        (when locked?
+          [:div.error.h7.center.medium.py1
+           (str "Add " quantity-remaining (ui/pluralize quantity-remaining " more item"))])
 
-       [:div.h5.black.py1.flex.items-center
-        [:div.flex-grow-1.border-bottom.border-light-gray]
-        [:div.mx2 "or"]
-        [:div.flex-grow-1.border-bottom.border-light-gray]]
+        (when-not locked?
+          [:div
+           [:div.h5.black.py1.flex.items-center
+            [:div.flex-grow-1.border-bottom.border-light-gray]
+            [:div.mx2 "or"]
+            [:div.flex-grow-1.border-bottom.border-light-gray]]
 
-       (if locked?
-         [:a.teal.medium.mt1.mb2
+           [:div
+            (ui/aqua-button {:on-click  (utils/send-event-callback events/control-checkout-cart-paypal-setup)
+                             :spinning? redirecting-to-paypal?
+                             :disabled? checkout-disabled?
+                             :data-test "paypal-checkout"}
+                            [:div
+                             "Check out with "
+                             [:span.medium.italic "PayPal™"]])]])
+        #?@(:cljs [(when show-browser-pay? (payment-request-button/built-component nil {}))])]]
+
+      (when entered?
+        [:div.mt3.center
+         [:a.h5.teal.medium
           (apply utils/fake-href remove-freeinstall-event)
-          "Checkout without a free Mayvenn Install"]
-         [:div.pb2
-          (ui/aqua-button {:on-click  (utils/send-event-callback events/control-checkout-cart-paypal-setup)
-                           :spinning? redirecting-to-paypal?
-                           :disabled? checkout-disabled?
-                           :data-test "paypal-checkout"}
-                          [:div
-                           "Check out with "
-                           [:span.medium.italic "PayPal™"]])])]
-
-      #?@(:cljs [(when show-browser-pay? (payment-request-button/built-component nil {}))])
+          "Checkout without a free Mayvenn Install"]])
 
       (when share-carts?
         [:div.py2
@@ -373,15 +386,18 @@
 (defn cart-summary-query
   [{:as order :keys [adjustments]}
    {:mayvenn-install/keys [entered? locked? applied? service-discount quantity-remaining]}]
-  (let [total         (-> order :total)
-        subtotal      (orders/products-subtotal order)
-        shipping      (some->> order
-                               orders/shipping-item
-                               vector
-                               (apply (juxt :quantity :unit-price))
-                               (reduce *))
-        adjustment    (reduce + (map :price (orders/all-order-adjustments order)))
-        total-savings (- adjustment service-discount)]
+  (let [total              (-> order :total)
+        subtotal           (orders/products-subtotal order)
+        shipping           (orders/shipping-item order)
+        shipping-cost      (some->> shipping
+                                    vector
+                                    (apply (juxt :quantity :unit-price))
+                                    (reduce *))
+        shipping-timeframe (->> shipping
+                                (checkout-delivery/enrich-shipping-method (date/now))
+                                :copy/timeframe)
+        adjustment         (reduce + (map :price (orders/all-order-adjustments order)))
+        total-savings      (- (+ adjustment service-discount))]
     {:cart-summary/id                 "cart-summary"
      :freeinstall-informational/value (not entered?)
      :cart-summary-total-line/id      "total"
@@ -393,10 +409,10 @@
                                           (some-> total mf/as-money)]
                                          [:div.h6.bg-purple.white.px2.nowrap.mb1
                                           "Includes Mayvenn Install"]
-                                         (when (neg? total-savings)
+                                         (when (pos? total-savings)
                                            [:div.h6.light.dark-gray.pxp1.nowrap.italic
                                             "You've saved "
-                                            [:span.bold {:data-test "total-savings"}
+                                            [:span.bold.purple {:data-test "total-savings"}
                                              (mf/as-money total-savings)]])]
 
                                         locked?
@@ -416,9 +432,10 @@
                                                                            (- service-discount)))}]
 
                                  (when shipping
-                                   [{:cart-summary-line/id    "shipping"
-                                     :cart-summary-line/label "Shipping"
-                                     :cart-summary-line/value (mf/as-money-or-free shipping)}])
+                                   [{:cart-summary-line/id       "shipping"
+                                     :cart-summary-line/label    "Shipping"
+                                     :cart-summary-line/sublabel shipping-timeframe
+                                     :cart-summary-line/value    (mf/as-money-or-free shipping-cost)}])
 
                                  (when locked?
                                    ;; When FREEINSTALL is merely locked (and so not yet an adjustment) we must special case it, so:
@@ -427,7 +444,7 @@
                                                                                  :height "2em" :width "2em"})
                                      :cart-summary-line/label "FREEINSTALL"
                                      :cart-summary-line/value (mf/as-money-or-free service-discount)
-                                     :cart-summary-line/class "bold purple"}])
+                                     :cart-summary-line/class "purple"}])
 
                                  (for [{:keys [name price coupon-code]}
                                        ;; TODO extract
@@ -443,11 +460,12 @@
                                             :cart-summary-line/icon  (svg/discount-tag {:class  "mxnp6 fill-gray pr1"
                                                                                         :height "2em" :width "2em"})
                                             :cart-summary-line/label (orders/display-adjustment-name name)
+                                            :cart-summary-line/class "purple"
                                             :cart-summary-line/value (mf/as-money-or-free price)}
 
                                      install-summary-line?
                                      (merge {:cart-summary-line/value (mf/as-money-or-free service-discount)
-                                             :cart-summary-line/class "bold purple"})
+                                             :cart-summary-line/class "purple"})
 
                                      coupon-summary-line?
                                      (merge {:cart-summary-line/action-id     "cart-remove-promo"
