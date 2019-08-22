@@ -20,7 +20,8 @@
    [spice.maps :as maps]
    [spice.selector :as selector]
    [clojure.set :as set]
-   [clojure.string :as string]))
+   [clojure.string :as string]
+   [ui.product-card :as prod-card]))
 
 (def ^:private query-param-separator "~")
 
@@ -164,7 +165,7 @@
         [:a.teal (utils/fake-href events/control-category-option-clear) "Clear all filters"]
         " to see more hair."]])]))
 
-(defn render-subsection [loading? {:keys [product-cards image/mob-url image/dsk-url copy]}]
+(defn render-subsection [category loading? {:keys [product-cards image/mob-url image/dsk-url copy]}]
   (component/html
    [:div
     {:key mob-url}
@@ -176,7 +177,9 @@
         [:img.col.col-12 {:src mob-url}]]
        [:div.mx-auto.col.col-11.h5.dark-gray.center.pt2 copy]])
     [:div.flex.flex-wrap
-     (map product-card/component product-cards)]]))
+     (map (if (:display/doufu? category)
+            #(component/build prod-card/organism %)
+            product-card/component) product-cards)]]))
 
 (defn ^:private component
   [{:keys [category
@@ -211,7 +214,7 @@
      [:div.flex.flex-wrap
       (if (empty? all-product-cards)
         (product-cards-empty-state loading-products?)
-        (map (partial render-subsection loading-products?) subsections))]]]))
+        (map (partial render-subsection category loading-products?) subsections))]]]))
 
 (defn ^:private query
   [data]
@@ -234,7 +237,9 @@
                                                (-> category
                                                    :subsections
                                                    (get k)
-                                                   (assoc :product-cards cards))))
+                                                   (assoc :product-cards (cond->> cards
+                                                                           (:display/doufu? category)
+                                                                           (map prod-card/requery))))))
                                         (sort-by :order))
         product-cards              (mapcat :product-cards subsections)]
     {:category            category

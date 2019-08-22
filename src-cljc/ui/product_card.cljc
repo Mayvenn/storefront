@@ -82,6 +82,41 @@
      :card-image/alt                  (:alt image)
      :color-swatches/urls             product-color-swatch-urls}))
 
+(defn requery
+  [{:keys [cheapest-sku sold-out? title slug product image facets
+           color-order-map skus sku-id-matching-previous-selections]}]
+  (let [length-facet-options      (->> facets (slug->facet :hair/length) :facet/options)
+        all-color-options         (->> facets
+                                       (filter #(= :hair/color (:facet/slug %)))
+                                       first
+                                       :facet/options)
+        lengths                   (->> skus
+                                       (mapcat #(get % :hair/length))
+                                       sort)
+        product-colors            (set (->> skus
+                                            (mapcat #(get % :hair/color))))
+        product-color-swatch-urls (->> all-color-options
+                                       (filter #(product-colors (:option/slug %)))
+                                       (sort-by color-order-map)
+                                       (map :option/circle-swatch))]
+    {:product-card/cheapest-sku-price (:sku/price cheapest-sku)
+     :product-card/sold-out?          sold-out?
+     :product-card/title              title
+     :product-card/data-test          (str "product-" slug)
+     :product-card/navigation-message [events/navigate-product-details
+                                       {:catalog/product-id (:catalog/product-id product)
+                                        :page/slug          slug
+                                        :query-params       {:SKU sku-id-matching-previous-selections}}]
+     :length-range/shortest           (->> length-facet-options
+                                           (slug->option (first lengths))
+                                           :option/name)
+     :length-range/longest            (->> length-facet-options
+                                           (slug->option (last lengths))
+                                           :option/name)
+     :card-image/src                  (str (:url image) "-/format/auto/" (:filename image))
+     :card-image/alt                  (:alt image)
+     :color-swatches/urls             product-color-swatch-urls}))
+
 (defn length-range-molecule [{:length-range/keys [shortest longest]}]
   [:p.h6.dark-gray
    "in "
