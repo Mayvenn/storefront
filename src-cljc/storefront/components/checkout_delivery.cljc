@@ -4,7 +4,6 @@
             [storefront.accessors.shipping :as shipping]
             [storefront.components.formatters :as f]
             [storefront.components.money-formatters :as mf]
-            [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
