@@ -94,6 +94,7 @@
            call-out
            cart-items
            cart-summary
+           checkout-caption-copy
            checkout-disabled?
            entered?
            loaded-quadpay?
@@ -104,6 +105,7 @@
            redirecting-to-paypal?
            remove-freeinstall-event
            requesting-shared-cart?
+           servicing-stylist-portrait-url
            share-carts?
            show-browser-pay?
            suggestions] :as queried-data} owner _]
@@ -126,7 +128,7 @@
       ;; HACK: have suggestions be paired with appropriate cart item
       (map-indexed
        (fn [index cart-item]
-         (component/build cart-item/organism {:cart-item cart-item
+         (component/build cart-item/organism {:cart-item   cart-item
                                               :suggestions (when (zero? index)
                                                              suggestions)}))
        cart-items)]
@@ -145,7 +147,21 @@
                                              ^:inline (svg/quadpay-logo)]
                                             "at check out."]}
                              nil)])
+
        [:div.bg-too-light-teal.p2
+        (when checkout-caption-copy
+          (prn servicing-stylist-portrait-url)
+          [:div.flex.h6.pt1.pr3.pb2
+
+           [:div
+            (ui/circle-picture
+             {:width 50}
+             ;; Note: We are not using ucare-id because stylist portraits may have
+             ;; ucarecdn crop parameters saved into the url
+             (ui/square-image {:resizable-url servicing-stylist-portrait-url} 50))]
+
+           [:div.left-align.pl2 checkout-caption-copy]])
+
         (ui/teal-button {:spinning? false
                          :disabled? checkout-disabled?
                          :on-click  (utils/send-event-callback events/control-checkout-cart-submit)
@@ -481,44 +497,53 @@
         freeinstall-entered-cart-incomplete? (and (orders/freeinstall-entered? order)
                                                   (not (orders/freeinstall-applied? order)))
         mayvenn-install                      (mayvenn-install data)
-        entered?                             (:mayvenn-install/entered? mayvenn-install)]
-    {:suggestions             (suggestions/consolidated-query data)
-     :order                   order
-     :line-items              line-items
-     :skus                    (get-in data keypaths/v2-skus)
-     :products                products
-     :promo-banner            (when (zero? (orders/product-quantity order))
-                                (promo-banner/query data))
-     :call-out                (call-out/query data)
-     :checkout-disabled?      (or freeinstall-entered-cart-incomplete?
-                                  (update-pending? data))
-     :redirecting-to-paypal?  (get-in data keypaths/cart-paypal-redirect)
-     :share-carts?            (stylists/own-store? data)
-     :requesting-shared-cart? (utils/requesting? data request-keys/create-shared-cart)
-     :loaded-quadpay?         (get-in data keypaths/loaded-quadpay)
-     :show-browser-pay?       (and (get-in data keypaths/loaded-stripe)
-                                   (experiments/browser-pay? data)
-                                   (seq (get-in data keypaths/shipping-methods))
-                                   (seq (get-in data keypaths/states)))
-     :recently-added-skus     (get-in data keypaths/cart-recently-added-skus)
+        entered?                             (:mayvenn-install/entered? mayvenn-install)
+        servicing-stylist (:mayvenn-install/stylist mayvenn-install)]
+    (cond-> {:suggestions             (suggestions/consolidated-query data)
+             :order                   order
+             :line-items              line-items
+             :skus                    (get-in data keypaths/v2-skus)
+             :products                products
+             :promo-banner            (when (zero? (orders/product-quantity order))
+                                        (promo-banner/query data))
+             :call-out                (call-out/query data)
+             :checkout-disabled?      (or freeinstall-entered-cart-incomplete?
+                                          (update-pending? data))
+             :redirecting-to-paypal?  (get-in data keypaths/cart-paypal-redirect)
+             :share-carts?            (stylists/own-store? data)
+             :requesting-shared-cart? (utils/requesting? data request-keys/create-shared-cart)
+             :loaded-quadpay?         (get-in data keypaths/loaded-quadpay)
+             :show-browser-pay?       (and (get-in data keypaths/loaded-stripe)
+                                           (experiments/browser-pay? data)
+                                           (seq (get-in data keypaths/shipping-methods))
+                                           (seq (get-in data keypaths/states)))
+             :recently-added-skus     (get-in data keypaths/cart-recently-added-skus)
 
-     :return-link/copy          "Continue Shopping"
-     :return-link/event-message [events/control-open-shop-escape-hatch]
-     :quantity-remaining        (:mayvenn-install/quantity-remaining mayvenn-install)
-     :locked?                   (:mayvenn-install/locked? mayvenn-install)
-     :entered?                  entered?
-     :applied?                  (:mayvenn-install/applied? mayvenn-install)
-     :remove-freeinstall-event  [events/control-checkout-remove-promotion {:code "freeinstall"}]
-     :cart-summary              (merge
-                                 (cart-summary-query order mayvenn-install)
-                                 (when (and (orders/no-applied-promo? order)
-                                            (not entered?))
-                                   {:promo-data {:coupon-code   (get-in data keypaths/cart-coupon-code)
-                                                 :applying?     (utils/requesting? data request-keys/add-promotion-code)
-                                                 :focused       (get-in data keypaths/ui-focus)
-                                                 :error-message (get-in data keypaths/error-message)
-                                                 :field-errors  (get-in data keypaths/field-errors)}}))
-     :cart-items                (cart-items-query data mayvenn-install line-items (get-in data keypaths/v2-skus))}))
+             :return-link/copy               "Continue Shopping"
+             :return-link/event-message      [events/control-open-shop-escape-hatch]
+             :quantity-remaining             (:mayvenn-install/quantity-remaining mayvenn-install)
+             :locked?                        (:mayvenn-install/locked? mayvenn-install)
+             :entered?                       entered?
+             :applied?                       (:mayvenn-install/applied? mayvenn-install)
+             :remove-freeinstall-event       [events/control-checkout-remove-promotion {:code "freeinstall"}]
+             :cart-summary                   (merge
+                                              (cart-summary-query order mayvenn-install)
+                                              (when (and (orders/no-applied-promo? order)
+                                                         (not entered?))
+                                                {:promo-data {:coupon-code   (get-in data keypaths/cart-coupon-code)
+                                                              :applying?     (utils/requesting? data request-keys/add-promotion-code)
+                                                              :focused       (get-in data keypaths/ui-focus)
+                                                              :error-message (get-in data keypaths/error-message)
+                                                              :field-errors  (get-in data keypaths/field-errors)}}))
+             :cart-items                     (cart-items-query data mayvenn-install line-items (get-in data keypaths/v2-skus))}
+
+      entered?
+      (merge {:checkout-caption-copy          "You'll be able to select your Mayvenn Certified Stylist after checkout."
+              :servicing-stylist-portrait-url "//ucarecdn.com/bc776b8a-595d-46ef-820e-04915478ffe8/"})
+
+      (and entered? servicing-stylist)
+      (merge {:checkout-caption-copy          (str "You'll be connected with " (stylists/->display-name servicing-stylist) " after checkout.")
+              :servicing-stylist-portrait-url (-> servicing-stylist :portrait :resizable-url)}))))
 
 (defn empty-cart-query
   [data]
