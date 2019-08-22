@@ -165,10 +165,12 @@
         [:a.teal (utils/fake-href events/control-category-option-clear) "Clear all filters"]
         " to see more hair."]])]))
 
-(defn render-subsection [category loading? {:keys [product-cards image/mob-url image/dsk-url copy]}]
+(defn render-doufu-subsection
+  [category loading? {:keys [product-cards image/mob-url image/dsk-url copy order] primary-title :title/primary}]
   (component/html
    [:div
-    {:key mob-url}
+    {:key (str order mob-url)}
+    primary-title
     (when (and mob-url dsk-url copy)
       [:div.pb6.flex.flex-column
        [:div.hide-on-mb-tb.mx1
@@ -177,9 +179,22 @@
         [:img.col.col-12 {:src mob-url}]]
        [:div.mx-auto.col.col-11.h5.dark-gray.center.pt2 copy]])
     [:div.flex.flex-wrap
-     (map (if (:display/doufu? category)
-            #(component/build prod-card/organism %)
-            product-card/component) product-cards)]]))
+     (map prod-card/organism product-cards)]]))
+
+(defn render-subsection
+  [category loading? {:keys [product-cards image/mob-url image/dsk-url copy order]}]
+  (component/html
+   [:div
+    {:key (str order mob-url)}
+    (when (and mob-url dsk-url copy)
+      [:div.pb6.flex.flex-column
+       [:div.hide-on-mb-tb.mx1
+        [:img.col.col-12 {:src dsk-url}]]
+       [:div.mxn2.hide-on-dt
+        [:img.col.col-12 {:src mob-url}]]
+       [:div.mx-auto.col.col-11.h5.dark-gray.center.pt2 copy]])
+    [:div.flex.flex-wrap
+     (map product-card/component product-cards)]]))
 
 (defn ^:private component
   [{:keys [category
@@ -214,7 +229,12 @@
      [:div.flex.flex-wrap
       (if (empty? all-product-cards)
         (product-cards-empty-state loading-products?)
-        (map (partial render-subsection category loading-products?) subsections))]]]))
+        (map (partial (if (:display/doufu? category)
+                        render-doufu-subsection
+                        render-subsection)
+                      category
+                      loading-products?)
+             subsections))]]]))
 
 (defn ^:private query
   [data]
