@@ -60,18 +60,18 @@
 (def freeinstall-informational
   [:div.flex.py2
    "✋"
-   [:div.flex.flex-column.px1
+   [:div.flex.flex-column.pl1
     [:div.purple.h5.medium
      "Don't miss out on "
      [:span.bold
       "free Mayvenn Install"]]
     [:div.h6
-     "Save 10% & get a free install by a licensed stylist when you purchase 3 or more bundles.*"]
+     "Save 10% & get a free install by a licensed stylist when you add a Mayvenn Install to your cart below."]
     [:div.flex.justify-left.py1
-     [:div.col-4 (ui/teal-button {:height-class :small
+     [:div (ui/teal-button {:height-class :small
                                   :class        "bold"
-                                  :on-click     (utils/send-event-callback events/control-cart-add-freeinstall-coupon)} "add to cart")]
-     [:div.col-4.teal.h7.flex.items-center
+                                  :on-click     (utils/send-event-callback events/control-cart-add-freeinstall-coupon)} "Add Mayvenn Install")]
+     [:div.teal.h7.flex.items-center
       (ui/button {:class    "inherit-color px4 py1 medium"
                   :on-click (utils/send-event-callback events/popup-show-adventure-free-install)} "learn more")]]
     [:div.h8.dark-gray
