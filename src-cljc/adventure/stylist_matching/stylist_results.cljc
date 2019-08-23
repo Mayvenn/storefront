@@ -81,7 +81,7 @@
      :cards-data                    cards-data
      :escape-hatch/navigation-event [events/navigate-category
                                      {:page/slug           "mayvenn-install"
-                                      :catalog/category-id "23"} ]
+                                      :catalog/category-id "23"}]
      :escape-hatch/copy             "Shop hair"
      :escape-hatch/data-test        "shop-hair"}))
 
