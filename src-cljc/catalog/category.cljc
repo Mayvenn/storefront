@@ -320,6 +320,12 @@
        ;; Some pages may disable scrolling on the body, e.g.: product detail page
        ;; and it must be re-enabled for this page
        (scroll/enable-body-scrolling)
+       (let [store-experience (get-in app-state keypaths/store-experience)]
+         (when (and (= "mayvenn-classic"
+                       store-experience)
+                    (contains? (:experience/exclude category)
+                               "mayvenn-classic"))
+           (effects/redirect events/navigate-home)))
        (if (auth/permitted-category? app-state category)
          (api/search-v2-products (get-in app-state keypaths/api-cache)
                                  (skuers/essentials category)

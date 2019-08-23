@@ -445,8 +445,8 @@
                                                                            "convenient switch-up on the go.")}}})])
 
 (def mayvenn-install-eligible
-  [{
-    :catalog/category-id            "23"
+  [{:catalog/category-id            "23"
+    :experience/exclude             #{"mayvenn-classic"}
     :catalog/department             #{"hair"}
     :category/new?                  true
     :copy/description               "Save 10% on your hair & get a free Mayvenn Install by a licensed stylist when you purchase 3 or more items. "
