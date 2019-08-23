@@ -116,7 +116,8 @@
   [data opts]
   (component/build card-stack/component (query-post-purchase data) opts))
 
-(defmethod transitions/transition-state events/control-adventure-stylist-gallery-open [_ _event {:keys [ucare-img-urls initially-selected-image-index]} app-state]
+(defmethod transitions/transition-state events/control-adventure-stylist-gallery-open
+  [_ _event {:keys [ucare-img-urls initially-selected-image-index]} app-state]
   (-> app-state
       (assoc-in keypaths/adventure-stylist-gallery-image-urls ucare-img-urls)
       (assoc-in keypaths/adventure-stylist-gallery-image-index initially-selected-image-index)))
