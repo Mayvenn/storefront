@@ -69,4 +69,4 @@
           [:div.h6.dark-gray.mt3.pb4
            [:div.col-7-on-tb-dt.col-9.mx-auto.mb1
             "Not ready to pick a stylist? Let a Mayvenn expert find one for you after you buy hair."]
-           [:a.teal.medium (merge {:data-test data-test} (utils/route-to navigation-event)) copy]])]]])))
+           [:a.teal.medium (merge {:data-test data-test} (apply utils/route-to navigation-event)) copy]])]]])))

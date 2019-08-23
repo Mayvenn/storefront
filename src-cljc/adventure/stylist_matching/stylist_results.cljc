@@ -79,7 +79,9 @@
                                      :initially-selected-image-index (get-in data keypaths/adventure-stylist-gallery-image-index)
                                      :close-button                   {:target-message events/control-adventure-stylist-gallery-close}}
      :cards-data                    cards-data
-     :escape-hatch/navigation-event events/navigate-adventure-shop-hair
+     :escape-hatch/navigation-event [events/navigate-category
+                                     {:page/slug           "mayvenn-install"
+                                      :catalog/category-id "23"} ]
      :escape-hatch/copy             "Shop hair"
      :escape-hatch/data-test        "shop-hair"}))
 
@@ -102,7 +104,7 @@
                                      :initially-selected-image-index (get-in data keypaths/adventure-stylist-gallery-image-index)
                                      :close-button                   {:target-message events/control-adventure-stylist-gallery-close}}
      :cards-data                    cards-data
-     :escape-hatch/navigation-event events/navigate-adventure-let-mayvenn-match
+     :escape-hatch/navigation-event [events/navigate-adventure-let-mayvenn-match]
      :escape-hatch/copy             "Let Mayvenn Match"
      :escape-hatch/data-test        "let-mayvenn-match"}))
 
