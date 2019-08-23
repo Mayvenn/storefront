@@ -110,10 +110,13 @@
   (component/html
    [:svg opts ^:inline (svg-xlink "simple-x")]))
 
-(defn quadpay-logo []
-  (component/html
-   [:svg.container-size
-    ^:inline (svg-xlink "quadpay-logo")]))
+(defn quadpay-logo
+  ([] (quadpay-logo {}))
+  ([opts]
+   (component/html
+    [:svg.container-size
+     opts
+     ^:inline (svg-xlink "quadpay-logo")])))
 
 ;; Social
 (defn instagram []
