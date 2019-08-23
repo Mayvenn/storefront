@@ -1,4 +1,4 @@
-(ns ui.product-card
+(ns catalog.ui.product-card
   (:require catalog.keypaths
             [catalog.facets :as facets]
             [spice.selector :as selector]

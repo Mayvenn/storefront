@@ -1,7 +1,7 @@
 (ns design-system.ui
   (:require [storefront.component :as component]
             [ui.promo-banner :as promo-banner]
-            [ui.product-card :as product-card]
+            [catalog.ui.product-card :as product-card]
             [ui.product-list-header :as product-list-header]
             [design-system.organisms :as organisms]
             [storefront.events :as events]))

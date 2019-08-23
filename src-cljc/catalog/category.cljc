@@ -21,7 +21,7 @@
    [spice.selector :as selector]
    [clojure.set :as set]
    [clojure.string :as string]
-   [ui.product-card :as prod-card]))
+   [catalog.ui.product-card :as prod-card]))
 
 (def ^:private query-param-separator "~")
 
