@@ -166,18 +166,39 @@
         " to see more hair."]])]))
 
 (defn render-doufu-subsection
-  [category loading? {:keys [product-cards image/mob-url image/dsk-url copy order] primary-title :title/primary}]
+  [category
+   loading?
+   {:keys         [product-cards image/mob-url image/dsk-url copy order]
+    primary-title :title/primary
+    title-side    :title/side}]
   (component/html
    [:div
     {:key (str order mob-url)}
-    primary-title
     (when (and mob-url dsk-url copy)
       [:div.pb6.flex.flex-column
        [:div.hide-on-mb-tb.mx1
-        [:img.col.col-12 {:src dsk-url}]]
-       [:div.mxn2.hide-on-dt
-        [:img.col.col-12 {:src mob-url}]]
-       [:div.mx-auto.col.col-11.h5.dark-gray.center.pt2 copy]])
+        [:div.col.col-12.relative
+         [:div.absolute.container-size
+          [:div.container-height.col-6.flex.items-center
+           {:class (str (case title-side
+                          "right" "justify-start"
+                          "left" "justify-end"
+                          "justify-start")
+                        " "
+                        title-side)}
+           [:div.p3.col-10
+            [:div.h2.mb1.bold primary-title]
+            [:div.h7 copy]]]]
+         [:img.col-12 {:src dsk-url}]]]
+       [:div.mxn2.hide-on-dt.p3
+        [:div.col.col-12.relative
+         [:div.absolute.container-size
+          [:div.container-height.col-6.flex.items-center.justify-center
+           {:class title-side}
+           [:div.p3
+            [:div.h3.mb1.bold primary-title]
+            [:div.h7 copy]]]]
+         [:img.col-12 {:src mob-url}]]]])
     [:div.flex.flex-wrap
      (map prod-card/organism product-cards)]]))
 
