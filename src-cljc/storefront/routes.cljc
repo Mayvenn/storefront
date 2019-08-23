@@ -139,7 +139,6 @@
               "/share"                                    (edn->bidi events/navigate-friend-referrals)
               "/freeinstall-share"                        (edn->bidi events/navigate-friend-referrals-freeinstall)
               "/mayvenn-made"                             (edn->bidi events/navigate-mayvenn-made)
-              "/plp"                                      (edn->bidi events/navigate-plp)
               "/gallery"                                  (edn->bidi events/navigate-store-gallery)
               "/gallery/edit"                             (edn->bidi events/navigate-gallery-edit)
               "/gallery/add"                              (edn->bidi events/navigate-gallery-image-picker)

@@ -116,7 +116,3 @@
   [data]
   (display-feature? data "stylist-profiles"))
 
-(defn plp?
-  [data]
-  (display-feature? data "plp"))
-

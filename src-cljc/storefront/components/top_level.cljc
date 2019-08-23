@@ -39,7 +39,6 @@
             [storefront.components.flash :as flash]
             [storefront.components.footer :as footer]
             [storefront.components.forgot-password :as forgot-password]
-            [storefront.components.plp :as plp]
             [storefront.components.gallery :as gallery]
             [storefront.components.gallery-edit :as gallery-edit]
             [storefront.components.header :as header]
@@ -111,7 +110,6 @@
           events/navigate-sign-in                 sign-in/built-component
           events/navigate-sign-up                 sign-up/built-component
           events/navigate-forgot-password         forgot-password/built-component
-          events/navigate-plp                     plp/built-component
           events/navigate-store-gallery           gallery/built-component
           events/navigate-gallery-edit            gallery-edit/built-component
 
