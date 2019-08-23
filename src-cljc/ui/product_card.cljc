@@ -160,4 +160,4 @@
         [:div
          (length-range-molecule queried-data)
          (color-swatches-molecule queried-data)
-         [:p.h6.mb4 "Starting at " cheapest-sku-price]])]]]])
+         [:p.h6.mb4 "Starting at $" cheapest-sku-price]])]]]])
