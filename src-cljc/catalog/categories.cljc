@@ -472,60 +472,68 @@
     :selector/electives             [:hair/texture :hair/family :hair/origin :hair/color]
     :selector/essentials            [:catalog/department :promo.mayvenn-install/eligible]
     :subsections                    {"straight"
-                                     {:image/mob-url ""
-                                      :image/dsk-url ""
+                                     {:image/mob-url "//ucarecdn.com/805e1245-96b4-4a02-9103-ff907d745019/"
+                                      :image/dsk-url "//ucarecdn.com/be427d17-7fd6-4786-83a4-ec3656fef5f9/"
                                       :title/primary "Straight"
+                                      :title/side    "right"
                                       :order         1
-                                      :copy          ""}
+                                      :copy          "Your go-to for a sleek look with minimal effort."}
 
                                      "yaki-straight"
-                                     {:image/mob-url ""
-                                      :image/dsk-url ""
+                                     {:image/mob-url "//ucarecdn.com/ce1dec79-1974-4837-9d5a-af2b0c64bd19/"
+                                      :image/dsk-url "//ucarecdn.com/acda1e7b-c8a4-46e0-a258-cd6a89456c39/"
                                       :title/primary "Yaki Straight"
+                                      :title/side    "left"
                                       :order         2
-                                      :copy          ""}
+                                      :copy          "The perfect textured straight look; Yaki Straight hair mimics a fresh press."}
 
                                      "kinky-straight"
-                                     {:image/mob-url ""
-                                      :image/dsk-url ""
+                                     {:image/mob-url "//ucarecdn.com/a336ed7d-9bd6-40b8-af2d-ba031312dd7c/"
+                                      :image/dsk-url "//ucarecdn.com/eee21775-1a1a-46e3-b6a6-e843d4ebd269/"
                                       :title/primary "Kinky Straight"
+                                      :title/side    "right"
                                       :order         3
-                                      :copy          ""}
+                                      :copy          "A full-bodied blow out that blends beautifully with natural strands."}
 
                                      "body-wave"
-                                     {:image/mob-url ""
-                                      :image/dsk-url ""
+                                     {:image/mob-url "//ucarecdn.com/40076225-9170-4fa5-a97e-6c4a6d694454/"
+                                      :image/dsk-url "//ucarecdn.com/ead939bc-f926-4369-9831-7216a3237e22/"
                                       :title/primary "Body Wave"
+                                      :title/side    "left"
                                       :order         4
-                                      :copy          ""}
+                                      :copy          "Glamorous S-shaped waves that can be straightened or curled with ease."}
 
                                      "loose-wave"
-                                     {:image/mob-url ""
-                                      :image/dsk-url ""
+                                     {:image/mob-url "//ucarecdn.com/25949b33-7b36-473a-9af6-9f6288c9de7e/"
+                                      :image/dsk-url "//ucarecdn.com/ecdb2f1b-3010-475e-a938-eaaeef79b491/"
                                       :title/primary "Loose Wave"
+                                      :title/side    "right"
                                       :order         5
-                                      :copy          ""}
+                                      :copy          "Flirty waves that can be worn naturally, straightened, or curled."}
 
                                      "water-wave"
-                                     {:image/mob-url ""
-                                      :image/dsk-url ""
+                                     {:image/mob-url "//ucarecdn.com/80acc6c7-d118-4ede-8db7-0109c5a3c843/"
+                                      :image/dsk-url "//ucarecdn.com/7a74fc25-e832-48aa-9b89-0c0d2fcd95f9/"
                                       :title/primary "Water Wave"
+                                      :title/side    "left"
                                       :order         6
-                                      :copy          ""}
+                                      :copy          "The quintessential carefree curl, Water Wave hair flows from the beach to the office."}
 
                                      "deep-wave"
-                                     {:image/mob-url ""
-                                      :image/dsk-url ""
+                                     {:image/mob-url "//ucarecdn.com/3c5c15e5-008e-4fd5-bd38-69813a3ceb2c/"
+                                      :image/dsk-url "//ucarecdn.com/eb2bddd9-4398-4934-9ca8-e929d19b129c/"
                                       :title/primary "Deep Wave"
+                                      :title/side    "right"
                                       :order         7
-                                      :copy          ""}
+                                      :copy          "Soft, spiral waves that are full of body and bounce."}
 
                                      "curly"
-                                     {:image/mob-url ""
-                                      :image/dsk-url ""
+                                     {:image/mob-url "//ucarecdn.com/bd929423-7f3a-46a0-bb13-8d86993e835a/"
+                                      :image/dsk-url "//ucarecdn.com/53d20ad6-cb28-446f-9623-45ec76e64b71/"
                                       :title/primary "Curly"
+                                      :title/side    "left"
                                       :order         8
-                                      :copy          ""}}}])
+                                      :copy          "Kinky, coily curls that blend with natural 3C-4A textures."}}}])
 
 (def stylist-exclusives
   [(merge {:catalog/category-id       "14"
