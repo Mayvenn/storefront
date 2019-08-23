@@ -148,7 +148,7 @@
    {:key data-test}
    [:div
     {:style {:height "100%"}
-     :class "border border-silver rounded"}
+     :class "border border-light-silver rounded"}
     [:a.inherit-color
      (assoc (apply utils/route-to navigation-message)
             :data-test data-test)
