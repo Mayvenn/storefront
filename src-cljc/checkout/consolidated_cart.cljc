@@ -409,9 +409,9 @@
                                     vector
                                     (apply (juxt :quantity :unit-price))
                                     (reduce *))
-        shipping-timeframe (->> shipping
-                                (checkout-delivery/enrich-shipping-method (date/now))
-                                :copy/timeframe)
+        shipping-timeframe (some->> shipping
+                                    (checkout-delivery/enrich-shipping-method (date/now))
+                                    :copy/timeframe)
         adjustment         (reduce + (map :price (orders/all-order-adjustments order)))
         total-savings      (- (+ adjustment service-discount))]
     {:cart-summary/id                 "cart-summary"
