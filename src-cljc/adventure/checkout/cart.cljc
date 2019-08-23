@@ -203,13 +203,9 @@
 
          #?@(:cljs
              [(component/build quadpay/component
-                               {:show?       loaded-quadpay?
-                                :order-total (:total order)
-                                :directive   [:div.flex.items-center.justify-center
-                                              "Just select"
-                                              [:div.mx1 {:style {:width "70px" :height "14px"}}
-                                               ^:inline (svg/quadpay-logo)]
-                                              "at check out."]}
+                               {:quadpay/show?       loaded-quadpay?
+                                :quadpay/order-total (:total order)
+                                :quadpay/directive   :just-select}
                                nil)])
 
          (if add-more-hair?

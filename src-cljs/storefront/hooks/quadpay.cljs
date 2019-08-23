@@ -2,6 +2,7 @@
   (:require [storefront.browser.tags :as tags]
             [storefront.browser.events :as browser.events]
             [storefront.component :as component]
+            [storefront.components.svg :as svg]
             [storefront.platform.messages :refer [handle-message]]
             [storefront.events :as events]
             [sablono.core :refer [html]]
@@ -42,19 +43,26 @@
       (html
        [:quadpay-widget {:amount full-amount}]))))
 
-(defn component [{:keys [show? order-total directive]} owner opts]
+(defn component [{:quadpay/keys [show? order-total directive]} owner opts]
   (component/create
    [:div.bg-white
     (when show?
-      [:div.border.border-blue.rounded.my2.py2.h6.dark-gray.center
-       "4 interest free payments of $" [:span {:data-test "quadpay-payment-amount"}
-                                        (calc-installment-amount order-total)]
-       [:div.flex.justify-center.items-center
-        directive
-        [:a.blue.mx1 {:href      "#"
-                      :data-test "quadpay-learn-more"
-                      :on-click  (fn [e]
-                                   (.preventDefault e)
-                                   (show-modal))}
-         "Learn more."]]
-       [:div.hide (component/build widget-component {:full-amount order-total} nil)]])]))
+      (let [qp-logo            ^:inline (svg/quadpay-logo {:class "mbnp3"
+                                                           :style {:width "70px" :height "14px"}})
+            expanded-directive ({:no-total      [:span "Split payment into 4 interest free" [:br] "installments with " qp-logo]
+                                 :just-select   [:span [:br] "Just select " qp-logo " at check out."]
+                                 :continue-with [:span [:br] "Continue with " qp-logo " below."]}
+                                directive)]
+        [:div.border.border-blue.rounded.my2.p2.h6.dark-gray.center
+         (when order-total
+           [:span
+            "4 interest free payments of $" [:span {:data-test "quadpay-payment-amount"}
+                                             (calc-installment-amount order-total)]])
+         expanded-directive
+         [:a.blue.mx1 {:href      "#"
+                       :data-test "quadpay-learn-more"
+                       :on-click  (fn [e]
+                                    (.preventDefault e)
+                                    (show-modal))}
+          "Learn more."]
+         [:div.hide (component/build widget-component {:full-amount order-total} nil)]]))]))

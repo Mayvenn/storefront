@@ -157,13 +157,9 @@
                                          :use-store-credit?      (not install-or-free-install-applied?)
                                          :available-store-credit available-store-credit}))
        (component/build quadpay/component
-                        {:show?       (and selected-quadpay? loaded-quadpay?)
-                         :order-total (:total order)
-                         :directive   [:div.flex.justify-center.items-center
-                                       "Continue with"
-                                       [:div.mx1 {:style {:width "70px" :height "14px"}}
-                                        ^:inline (svg/quadpay-logo)]
-                                       "below."]}
+                        {:quadpay/show?       (and selected-quadpay? loaded-quadpay?)
+                         :quadpay/order-total (:total order)
+                         :quadpay/directive   :continue-with}
                         nil)
 
        [:div.col-12.col-6-on-tb-dt.mx-auto
@@ -257,13 +253,9 @@
                                            :available-store-credit available-store-credit}))
 
          (component/build quadpay/component
-                          {:show?       (and selected-quadpay? loaded-quadpay?)
-                           :order-total (:total order)
-                           :directive   [:div.flex.justify-center.items-center
-                                         "Continue with"
-                                         [:div.mx1 {:style {:width "70px" :height "14px"}}
-                                          ^:inline (svg/quadpay-logo)]
-                                         "below."]}
+                          {:quadpay/show?       (and selected-quadpay? loaded-quadpay?)
+                           :quadpay/order-total (:total order)
+                           :quadpay/directive   :continue-with}
                           nil)
 
          [:div.h5.my4.center.col-10.mx-auto.line-height-3

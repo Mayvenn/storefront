@@ -45,11 +45,7 @@
     #?(:cljs
        [:div
         (component/build quadpay/component
-                         {:show?       (:quadpay/loaded? data)
-                          :order-total (:quadpay/price data)
-                          :directive   [:div.flex.justify-center.items-center
-                                        "Just select"
-                                        [:div.mx1 {:style {:width "70px" :height "14px"}}
-                                         ^:inline (svg/quadpay-logo)]
-                                        "at check out."]}
+                         {:quadpay/show?       (:quadpay/loaded? data)
+                          :quadpay/order-total (:quadpay/price data)
+                          :quadpay/directive   :just-select}
                          nil)])]))

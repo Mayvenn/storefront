@@ -165,13 +165,9 @@
           [:div.mt2.col-11.mx-auto
            (add-to-cart-button sold-out? creating-order? look shared-cart)]
           (component/build quadpay/component
-                           {:show?       quadpay-loaded?
-                            :order-total discounted-price
-                            :directive   [:div.flex.justify-center.items-center
-                                          "Just select"
-                                          [:div.mx1 {:style {:width "70px" :height "14px"}}
-                                           ^:inline (svg/quadpay-logo)]
-                                          "at check out."]}
+                           {:quadpay/show?       quadpay-loaded?
+                            :quadpay/order-total discounted-price
+                            :quadpay/directive   :just-select}
                            nil)
           (om/build reviews/reviews-component {:yotpo-data-attributes yotpo-data-attributes} nil)])))])
 
