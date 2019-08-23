@@ -150,16 +150,13 @@
 
        [:div.bg-too-light-teal.p2
         (when checkout-caption-copy
-          (prn servicing-stylist-portrait-url)
           [:div.flex.h6.pt1.pr3.pb2
-
            [:div
             (ui/circle-picture
              {:width 50}
              ;; Note: We are not using ucare-id because stylist portraits may have
              ;; ucarecdn crop parameters saved into the url
              (ui/square-image {:resizable-url servicing-stylist-portrait-url} 50))]
-
            [:div.left-align.pl2 checkout-caption-copy]])
 
         (ui/teal-button {:spinning? false
