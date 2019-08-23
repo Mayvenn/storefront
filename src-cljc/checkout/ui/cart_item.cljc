@@ -32,17 +32,19 @@
        secondary]]]))
 
 (defn completed-progress-circle-atom
-  [_]
+  [i _]
   [:div.bg-purple.flex.justify-center.items-center.white.bold.h5
-   {:style {:height 21
+   {:key (str "complete-" i)
+    :style {:height 21
             :width  21
             :border-radius "50%"}}
    "✓"])
 
 (defn incomplete-progress-circle-atom
-  [content]
+  [i content]
   [:div.bg-light-gray.flex.justify-center.items-center.dark-silver.bold
-   {:style {:height 21
+   {:key (str "incomplete-" i)
+    :style {:height 21
             :width  21
             :border-radius "50%"}}
    content])
@@ -61,10 +63,10 @@
                          {:class "mx1"
                           :style {:width "11px"}})
                    (concat
-                    (map completed-progress-circle-atom
-                         completed)
-                    (map incomplete-progress-circle-atom
-                         uncompleted)))]
+                    (map-indexed completed-progress-circle-atom
+                                 completed)
+                    (map-indexed incomplete-progress-circle-atom
+                                 uncompleted)))]
        (when (and action-target action-label)
          (ui/teal-button (assoc (apply utils/route-to action-target)
                                 :height-class :small
