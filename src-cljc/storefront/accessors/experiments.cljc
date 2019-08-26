@@ -109,7 +109,6 @@
 
 (defn consolidated-cart?
   [data]
-  true #_
   (display-feature? data "consolidated-cart"))
 
 (defn stylist-profiles?
