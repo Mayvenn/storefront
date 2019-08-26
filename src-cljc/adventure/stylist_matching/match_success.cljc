@@ -1,5 +1,6 @@
 (ns adventure.stylist-matching.match-success
-  (:require [storefront.accessors.stylists :as stylists]
+  (:require [adventure.stylist-matching.organisms.match-success :as shop-match-success]
+            [storefront.accessors.stylists :as stylists]
             [storefront.events :as events]
             [storefront.accessors.orders :as orders]
             [storefront.component :as component]
@@ -39,7 +40,9 @@
 
 (defn built-component
   [data opts]
-  (component/build basic-prompt/component (query data) opts))
+  (if (= "freeinstall" (get-in data storefront-keypaths/store-slug))
+    (component/build basic-prompt/component (query data) opts)
+    (shop-match-success/built-organism data)))
 
 (defmethod transitions/transition-state events/api-success-assign-servicing-stylist-pre-purchase
   [_ _ {:keys [order]} app-state]
