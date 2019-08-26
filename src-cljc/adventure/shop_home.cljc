@@ -33,17 +33,23 @@
                             :environment        environment}]
     (letfn [(-route-or-redirect [nav-args event utm-source]
               (layered/cta-route-to-or-redirect-to-freeinstall
-               (merge nav-args {:navigation-event event
-                                :navigation-arg   (when shop? {:query-params (merge default-utm-params
-                                                                                    {:utm_source utm-source})})})))]
+               (merge nav-args {:shop?              shop?
+                                :environment        environment
+                                :adventure-on-shop? adventure-on-shop?
+                                :navigation-event   event
+                                :navigation-arg     (when shop? {:query-params (merge default-utm-params
+                                                                                      {:utm_source utm-source})})})))]
       {:layers
        [(merge {:layer/type      :hero
                 :photo/file-name "free-install-hero"
                 :buttons         [[(merge (layered/route-to-or-redirect-to-freeinstall
                                            (merge nav-args
-                                                  {:navigation-event events/navigate-adventure-match-stylist
-                                                   :navigation-arg   (when shop? {:query-params (merge default-utm-params
-                                                                                                       {:utm_source "toadventurehomepagehero"})})}))
+                                                  {:shop?              shop?
+                                                   :environment        environment
+                                                   :adventure-on-shop? adventure-on-shop?
+                                                   :navigation-event   events/navigate-adventure-match-stylist
+                                                   :navigation-arg     (when shop? {:query-params (merge default-utm-params
+                                                                                                         {:utm_source "toadventurehomepagehero"})})}))
                                           {:data-test    "adventure-home-choice-get-started"
                                            :height-class "py2"})
                                    "Browse Stylists"]]}
