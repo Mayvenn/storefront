@@ -65,35 +65,12 @@
        (some #{"aladdin-homepage"})
        boolean))
 
-;; Promo bar experiments
-;; +------------------------------+--------------+----------------+--------+
-;; | experiment                   | control page | pdp & category | sticky |
-;; |------------------------------+--------------+----------------+--------|
-;; | default                      | ✓            | -              | -      |
-;; | category-pdp-promo-bar?      | ✓            | ✓              | -      |
-;; +------------------------------+--------------+----------------+--------+
-
-;; Control set of pages that have the promo-bar + category & pdp page
-(defn category-pdp-promo-bar? [data]
-  (display-feature? data "category-pdp-promo-bar"))
-
-(defn email-capture-35-percent-got-bundles? [data]
-  (display-feature? data "email-capture-35-percent-got-bundles"))
-
 (defn dashboard-with-vouchers? [data]
   (= "aladdin" (get-in data keypaths/user-stylist-experience)))
-
-(defn phone-capture? [data]
-  (display-feature? data "phone-capture"))
 
 (defn browser-pay?
   [data]
   (display-feature? data "browser-pay"))
-
-(defn freeinstall-pdp-looks?
-  "Used for UGC of PDP page to enable/disable 'view this look' button for freeinstall"
-  [data]
-  (display-feature? data "freeinstall-pdp-looks?"))
 
 (defn adv-cart-promo-entry?
   [data]
