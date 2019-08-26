@@ -7,13 +7,13 @@
             [storefront.component :as component]
             [storefront.effects :as effects]
             [storefront.events :as events]
+            storefront.keypaths
             [storefront.trackings :as trackings]
             [storefront.transitions :as transitions]
             #?@(:cljs [[storefront.api :as api]
                        [storefront.browser.cookie-jar :as cookie-jar]
                        [storefront.history :as history]
                        [storefront.hooks.stringer :as stringer]
-                       storefront.keypaths
                        [storefront.platform.messages :as messages]])))
 
 
@@ -64,11 +64,16 @@
 
 (defn ^:private query-pre-purchase
   [data]
-  (let [stylist-profiles? (experiments/stylist-profiles? data)
-        cards-data        (->> (get-in data keypaths/adventure-matched-stylists)
-                               (map-indexed (partial stylist-profile-card-data stylist-profiles?
-                                                     events/control-adventure-select-stylist-pre-purchase))
-                               (insert-at-pos 3 recommend-your-stylist-query))]
+  (let [stylist-profiles?      (experiments/stylist-profiles? data)
+        cards-data             (->> (get-in data keypaths/adventure-matched-stylists)
+                                    (map-indexed (partial stylist-profile-card-data stylist-profiles?
+                                                          events/control-adventure-select-stylist-pre-purchase))
+                                    (insert-at-pos 3 recommend-your-stylist-query))
+        escape-hatch-nav-event (if (= "freeinstall" (get-in data storefront.keypaths/store-slug))
+                                 [events/navigate-adventure-shop-hair {}]
+                                 [events/navigate-category
+                                  {:page/slug           "mayvenn-install"
+                                   :catalog/category-id "23"}])]
     {:current-step                  2
      :title                         "Pick your stylist"
      :header-data                   {:title                   "Find Your Stylist"
@@ -79,9 +84,7 @@
                                      :initially-selected-image-index (get-in data keypaths/adventure-stylist-gallery-image-index)
                                      :close-button                   {:target-message events/control-adventure-stylist-gallery-close}}
      :cards-data                    cards-data
-     :escape-hatch/navigation-event [events/navigate-category
-                                     {:page/slug           "mayvenn-install"
-                                      :catalog/category-id "23"}]
+     :escape-hatch/navigation-event escape-hatch-nav-event
      :escape-hatch/copy             "Shop hair"
      :escape-hatch/data-test        "shop-hair"}))
 
