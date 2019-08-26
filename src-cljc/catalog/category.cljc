@@ -257,6 +257,25 @@
                       loading-products?)
              subsections))]]]))
 
+(defn subsections-query
+  [{:keys [display/doufu? catalog/category-id subsections]}
+   products-matching-criteria
+   data]
+  (let [card-query-fn (if doufu?
+                        prod-card/query
+                        product-card/query)
+        sort-fn       (if doufu? :sort/value (comp :sku/price :cheapest-sku))]
+    (->> products-matching-criteria
+         (group-by (or (categories/category-id->subsection-fn category-id)
+                       (constantly :no-subsections)))
+         (sequence
+          (comp
+           (map (fn [[subsection-key products]] (assoc (get subsections subsection-key) :products products)))
+           (map #(update % :products (partial map (partial card-query-fn data))))
+           (map #(set/rename-keys % {:products :product-cards}))
+           (map #(update % :product-cards (partial sort-by sort-fn)))))
+         (sort-by :order))))
+
 (defn ^:private query
   [data]
   (let [category                   (categories/current-category data)
@@ -269,20 +288,10 @@
                                                         (skuers/essentials category)
                                                         selections)
                                                        products-matching-category)
-        subsections                (->> products-matching-criteria
-                                        (group-by (or (categories/category-id->subsection-fn (:catalog/category-id category))
-                                                      (constantly :no-subsections)))
-                                        (spice.maps/map-values (partial map (partial product-card/query data)))
-                                        (spice.maps/map-values (partial sort-by (comp :sku/price :cheapest-sku)))
-                                        (map (fn [[k cards]]
-                                               (-> category
-                                                   :subsections
-                                                   (get k)
-                                                   (assoc :product-cards (cond->> cards
-                                                                           (:display/doufu? category)
-                                                                           (map prod-card/requery))))))
-                                        (sort-by :order))
-        product-cards              (mapcat :product-cards subsections)]
+        subsections                (subsections-query category
+                                                      products-matching-criteria
+                                                      data)
+        product-cards (mapcat :product-cards subsections)]
     {:category            category
      :represented-options (->> products-matching-category
                                (map (fn [product]

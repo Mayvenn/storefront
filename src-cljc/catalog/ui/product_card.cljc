@@ -7,7 +7,8 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.component :as component]))
+            [storefront.component :as component]
+            [catalog.product-card :as product-card]))
 
 (defn- slug->facet [facet facets]
   (->> facets
@@ -29,100 +30,80 @@
          {:hair/color (:hair/color selections)}
          {:hair/length (:hair/length selections)}]))
 
+(defn product-options
+  [facets skus facet-slug]
+  (let [facet-options (->> facets (slug->facet facet-slug) :facet/options)]
+    (->> skus
+         (mapcat #(get % facet-slug))
+         set
+         (map #(slug->option % facet-options))
+         (sort-by (juxt :option/order :option/slug)))))
+
 (defn query
   [data product]
-  (let [selections      (get-in data catalog.keypaths/category-selections)
-        skus            (vals (select-keys (get-in data keypaths/v2-skus)
-                                           (:selector/skus product)))
-        facets          (get-in data keypaths/v2-facets)
+  (let [skus       (vals (select-keys (get-in data keypaths/v2-skus)
+                                      (:selector/skus product)))
+        facets     (get-in data keypaths/v2-facets)
+        selections (get-in data catalog.keypaths/category-selections)
+
         color-order-map (facets/color-order-map facets)
         in-stock-skus   (selector/match-all {}
                                             (assoc selections :inventory/in-stock? #{true})
                                             skus)
 
-        skus-to-search                      (or (not-empty in-stock-skus) skus)
-        epitome                             (skus/determine-epitome color-order-map skus-to-search)
-        product-detail-selections           (get-in data catalog.keypaths/detailed-product-selections)
-        lengths                             (->> skus
-                                                 (mapcat #(get % :hair/length))
-                                                 sort)
-        length-facet-options                (->> facets (slug->facet :hair/length) :facet/options)
-        image                               (->> epitome
-                                                 :selector/images
-                                                 (filter (comp #{"catalog"} :use-case))
-                                                 first)
-        product-colors                      (set (->> skus
-                                                      (mapcat #(get % :hair/color))))
-        all-color-options                   (->> facets
-                                                 (filter #(= :hair/color (:facet/slug %)))
-                                                 first
-                                                 :facet/options)
-        product-color-swatch-urls           (->> all-color-options
-                                                 (filter #(product-colors (:option/slug %)))
-                                                 (sort-by color-order-map)
-                                                 (map :option/circle-swatch))
-        sku-id-matching-previous-selections (:catalog/sku-id (sku-best-matching-selections product-detail-selections
-                                                                                           skus
-                                                                                           color-order-map))
-        slug                                (:page/slug product)]
-    {:product-card/cheapest-sku-price (mf/as-money-without-cents (:sku/price (skus/determine-cheapest color-order-map skus-to-search) 0))
-     :product-card/sold-out?          (empty? in-stock-skus)
-     :product-card/title              (:copy/title product)
-     :product-card/data-test          (str "product-" slug)
-     :product-card/navigation-message [events/navigate-product-details {:catalog/product-id (:catalog/product-id product)
-                                                                        :page/slug          slug
-                                                                        :query-params       {:SKU sku-id-matching-previous-selections}}]
-     :length-range/shortest           (->> length-facet-options
-                                           (slug->option (first lengths))
-                                           :option/name)
-     :length-range/longest            (->> length-facet-options
-                                           (slug->option (last lengths))
-                                           :option/name)
-     :card-image/src                  (str (:url image) "-/format/auto/" (:filename image))
-     :card-image/alt                  (:alt image)
-     :color-swatches/urls             product-color-swatch-urls}))
+        ;; in order to fill the product card, we should always have a sku to use for
+        ;; the cheapest-sku and epitome
+        skus-to-search            (or (not-empty in-stock-skus) skus)
+        ;; It is technically possible for the cheapest sku to not be the epitome:
+        ;; If 10'' Black is sold out, 10'' Brown is the cheapest, but 12'' Black is the epitome
+        cheapest-sku              (skus/determine-cheapest color-order-map skus-to-search)
+        ;; Product definition of epitome is the "first" SKU on the product details page where
+        ;; first is when the first of every facet is selected.
+        ;;
+        ;; We're being lazy and sort by color facet + sku price (which implies sort by hair/length)
+        product-detail-selections (get-in data catalog.keypaths/detailed-product-selections)
 
-(defn requery
-  [{:keys [cheapest-sku sold-out? title slug product image facets
-           color-order-map skus sku-id-matching-previous-selections]}]
-  (let [length-facet-options      (->> facets (slug->facet :hair/length) :facet/options)
-        all-color-options         (->> facets
-                                       (filter #(= :hair/color (:facet/slug %)))
-                                       first
-                                       :facet/options)
-        lengths                   (->> skus
-                                       (mapcat #(get % :hair/length))
-                                       sort)
-        product-colors            (set (->> skus
-                                            (mapcat #(get % :hair/color))))
-        product-color-swatch-urls (->> all-color-options
-                                       (filter #(product-colors (:option/slug %)))
-                                       (sort-by color-order-map)
-                                       (map :option/circle-swatch))]
-    {:product-card/cheapest-sku-price (:sku/price cheapest-sku)
-     :product-card/sold-out?          sold-out?
-     :product-card/title              title
-     :product-card/data-test          (str "product-" slug)
-     :product-card/navigation-message [events/navigate-product-details
-                                       {:catalog/product-id (:catalog/product-id product)
-                                        :page/slug          slug
-                                        :query-params       {:SKU sku-id-matching-previous-selections}}]
-     :length-range/shortest           (->> length-facet-options
-                                           (slug->option (first lengths))
-                                           :option/name)
-     :length-range/longest            (->> length-facet-options
-                                           (slug->option (last lengths))
-                                           :option/name)
-     :card-image/src                  (str (:url image) "-/format/auto/" (:filename image))
-     :card-image/alt                  (:alt image)
-     :color-swatches/urls             product-color-swatch-urls}))
+        product-color-swatch-urls (->> (product-options facets skus :hair/color)
+                                       (mapv :option/circle-swatch))
+        [shortest longest]        (->> (product-options facets skus :hair/length)
+                                       ((juxt first last))
+                                       (mapv :option/name))
 
-(defn length-range-molecule [{:length-range/keys [shortest longest]}]
-  [:p.h6.dark-gray
-   "in "
-   (if (= shortest longest)
-     shortest
-     [:span shortest " - " longest])])
+        slug (:page/slug product)
+
+        epitome (skus/determine-epitome color-order-map skus-to-search)
+        image   (->> epitome
+                     :selector/images
+                     (filter (comp #{"catalog"} :use-case))
+                     first)]
+    {:sort/value                   (:sku/price cheapest-sku)
+     :react/key                    (str "product-" slug)
+     :product-card-title/id        (str "product-card-title-" slug)
+     :product-card-title/primary   (:copy/title product)
+     :product-card/target          [events/navigate-product-details
+                                    {:catalog/product-id (:catalog/product-id product)
+                                     :page/slug          slug
+                                     :query-params       {:SKU (:catalog/sku-id
+                                                                (product-card/sku-best-matching-selections product-detail-selections
+                                                                                                           skus
+                                                                                                           color-order-map))}}]
+     :product-card-details/id      (str "product-card-details-" slug)
+     :product-card-details/content (if (empty? in-stock-skus)
+                                     ["Out of stock"]
+                                     [(str "in "
+                                           (if (= shortest longest)
+                                             shortest
+                                             (str shortest " - " longest)))
+                                      [:div
+                                       (for [color-url product-color-swatch-urls]
+                                         [:img.mx1.border-light-gray
+                                          {:key    (str "product-card-details-" slug "-" color-url)
+                                           :width  10
+                                           :height 10
+                                           :src    color-url}])]
+                                      (str "Starting at $" (:sku/price cheapest-sku))])
+     :card-image/src               (str (:url image) "-/format/auto/" (:filename image))
+     :card-image/alt               (:alt image)}))
 
 (defn card-image-molecule
   [{:card-image/keys [src alt]}]
@@ -131,33 +112,30 @@
                       :src   src
                       :alt   alt}])
 
-(defn color-swatches-molecule
-  [{:color-swatches/keys [urls]}]
-  [:div
-   [:p.h6.dark-gray
-    (for [color-url urls]
-      [:img.mx1.border-light-gray
-       {:width  10
-        :height 10
-        :src    color-url}])]])
+(defn product-card-title-molecule
+  [{:product-card-title/keys [id primary]}]
+  (when id
+    (component/html
+     [:h2.h5.mt3.mb1.mx1.medium
+      primary])))
+
+(defn product-card-details-molecule
+  [{:product-card-details/keys [id content]}]
+  (when id
+    [:div.h6.dark-gray.mb4
+     (for [[idx item] (map-indexed vector content)]
+       [:div {:key (str id "-" idx)}
+        item])]))
 
 (defn organism
-  [{:as                queried-data
-    :product-card/keys [cheapest-sku-price sold-out? title data-test navigation-message]}]
-  [:div.col.col-6.col-4-on-tb-dt.p1
-   {:key data-test}
-   [:div
-    {:style {:height "100%"}
-     :class "border border-light-silver rounded"}
-    [:a.inherit-color
-     (assoc (apply utils/route-to navigation-message)
-            :data-test data-test)
-     [:div.center.relative
-      (card-image-molecule queried-data)
-      [:h2.h5.mt3.mb1.mx1.medium title]
-      (if sold-out?
-        [:p.h6.dark-gray "Out of stock"]
-        [:div
-         (length-range-molecule queried-data)
-         (color-swatches-molecule queried-data)
-         [:p.h6.mb4 "Starting at $" cheapest-sku-price]])]]]])
+  [{:as data react-key :react/key :product-card/keys [target]}]
+  (component/html
+   [:a.inherit-color.col.col-6.col-4-on-tb-dt.p1
+    (merge (apply utils/route-to target)
+           {:key       react-key
+            :data-test react-key})
+    [:div.border.border-light-silver.rounded.container-height.center
+     (card-image-molecule data)
+     (product-card-title-molecule data)
+     (product-card-details-molecule data)]]))
+
