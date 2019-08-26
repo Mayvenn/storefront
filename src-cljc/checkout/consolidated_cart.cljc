@@ -257,13 +257,16 @@
   (let [order                       (get-in app-state keypaths/order)
         freeinstall-entered?        (boolean (orders/freeinstall-entered? order))
         install-items-required      3
+        sku-catalog                 (get-in app-state keypaths/v2-skus)
         items-added-for-install     (->> order
                                          :shipments
                                          first
                                          :line-items
-                                         (filter #(-> %
-                                                      :variant-attrs
-                                                      :bundle-discount-eligible?))
+                                         (filter #(->> %
+                                                       :sku
+                                                       (get sku-catalog)
+                                                       :promo.mayvenn-install/eligible
+                                                       first))
                                          (map :quantity)
                                          (apply +)
                                          (min install-items-required))
