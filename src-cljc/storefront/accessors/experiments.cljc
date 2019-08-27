@@ -70,10 +70,7 @@
 (defn on-dev?
   "Useful for developing against a feature flag such that it won't break acceptance if it gets accidentally committed."
   [data]
-  (string/includes? (-> data
-                        (get-in keypaths/navigation-uri)
-                        :host)
-                    "localhost"))
+  (= (get-in data keypaths/environment) "development"))
 
 (defn browser-pay?
   [data]
@@ -93,7 +90,8 @@
 
 (defn consolidated-cart?
   [data]
-  (display-feature? data "consolidated-cart"))
+  (display-feature? data "consolidated-cart")
+  (on-dev? data))
 
 (defn stylist-profiles?
   [data]
