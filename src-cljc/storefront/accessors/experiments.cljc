@@ -1,6 +1,5 @@
 (ns storefront.accessors.experiments
-  (:require [clojure.string :as string]
-            [storefront.keypaths :as keypaths]))
+  (:require [storefront.keypaths :as keypaths]))
 
 #_ (defn bucketing-example
   [data]
