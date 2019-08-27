@@ -114,14 +114,14 @@
     (component/build call-out/component call-out nil)
 
     [:div.clearfix.mxn3
-     [:div.px4 (ui-molecules/return-link queried-data)]
-     [:div.hide-on-dt.border-top.border-light-gray.mt2.mb3]
+     [:div.hide-on-dt]
      (when applied?
        (list ;; HACK: here until we get a desktop style pass
         [:div.hide-on-dt.mtn3]
         [:div.mb3
          (component/build qualified-banner-component nil nil)]))
-     [:div.col-on-tb-dt.col-6-on-tb-dt.px3
+     [:div.px4.my3 (ui-molecules/return-link queried-data)]
+     [:div.col-on-tb-dt.col-6-on-tb-dt.px3.border-top.border-light-gray
       {:data-test "cart-line-items"}
       ;; HACK: have suggestions be paired with appropriate cart item
       (map-indexed
