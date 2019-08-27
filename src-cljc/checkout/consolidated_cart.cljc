@@ -304,9 +304,11 @@
 ;; TODO: suggestions should be paired with appropriate cart item here
 (defn cart-items-query
   [app-state
-   {:mayvenn-install/keys [entered? locked? applied? stylist service-discount quantity-remaining quantity-required quantity-added]}
+   {:mayvenn-install/keys
+    [entered? locked? applied? stylist service-discount quantity-remaining quantity-required quantity-added]}
    line-items
-   skus]
+   skus
+   add-items-action]
   (let [update-line-item-requests (merge-with
                                    #(or %1 %2)
                                    (variants-requests app-state request-keys/add-to-bag (map :sku line-items))
@@ -368,7 +370,7 @@
                    :cart-item-copy/value                      (str "Add " quantity-remaining
                                                                    " or more items to receive your free Mayvenn Install")
                    :cart-item-thumbnail/locked?               true
-                   :cart-item-steps-to-complete/action-target []
+                   :cart-item-steps-to-complete/action-target add-items-action
                    :cart-item-steps-to-complete/action-label  "add items"
                    :cart-item-steps-to-complete/steps         (->> quantity-required
                                                                    range
@@ -496,7 +498,13 @@
                                                   last
                                                   (get skus)
                                                   :hair/texture
-                                                  first)]
+                                                  first)
+        add-items-action [events/navigate-category
+                          (merge
+                           {:page/slug          "mayvenn-install"
+                            :catalog/category-id "23"}
+                           (when last-texture-added
+                             {:query-params {:texture last-texture-added}}))]]
     (cond-> {:suggestions               (suggestions/consolidated-query data)
              :line-items                line-items
              :skus                      skus
@@ -515,12 +523,7 @@
                                              (seq (get-in data keypaths/states)))
              :recently-added-skus       recently-added-sku-ids
              :return-link/copy          "Continue Shopping"
-             :return-link/event-message [events/navigate-category
-                                         (merge
-                                          {:page/slug          "mayvenn-install"
-                                          :catalog/category-id "23"}
-                                          (when last-texture-added
-                                            {:query-params {:texture last-texture-added}}))]
+             :return-link/event-message add-items-action
              :quantity-remaining        (:mayvenn-install/quantity-remaining mayvenn-install)
              :locked?                   locked?
              :entered?                  entered?
@@ -535,7 +538,7 @@
                                                          :focused       (get-in data keypaths/ui-focus)
                                                          :error-message (get-in data keypaths/error-message)
                                                          :field-errors  (get-in data keypaths/field-errors)}}))
-             :cart-items                (cart-items-query data mayvenn-install line-items skus)
+             :cart-items                (cart-items-query data mayvenn-install line-items skus add-items-action)
              :quadpay/show?             (get-in data keypaths/loaded-quadpay)
              :quadpay/order-total       (when-not locked? (:total order))
              :quadpay/directive         (if locked? :no-total :just-select)}
