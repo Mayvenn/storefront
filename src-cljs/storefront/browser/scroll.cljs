@@ -53,6 +53,11 @@
 
 (def scroll-padding 35.0)
 ;; TODO: rename
+
+;; ATTN: Having trouble scrolling to an element right on page load -- probably on a
+;; page with a lot of images? Use ui/aspect-ratio on image containers to let the
+;; browser calculate the height of the page!
+
 (defn scroll-to-elem [el]
   (let [scroll-top (.. (scroll-target) -scrollTop)
          el-bottom (object/get (.getBoundingClientRect el) "bottom")
@@ -60,7 +65,6 @@
      (when (> el-bottom window-height)
        (scroll-to (- (+ scroll-top el-bottom scroll-padding)
                      window-height)))))
-
 (defn scroll-elem-to-top [el]
   (let [el-top (object/get (.getBoundingClientRect el) "top")
         scroll-top     (.. (scroll-target) -scrollTop)]
@@ -75,3 +79,4 @@
   (when-let [el (.querySelector js/document selector)]
    (scroll-to-elem el)))
 
+;; END ATTN:
