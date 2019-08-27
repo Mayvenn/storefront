@@ -2,18 +2,17 @@
   (:require
    #?@(:cljs [[storefront.browser.scroll :as scroll]
               [storefront.api :as api]
+              [storefront.effects :as effects]
+              [storefront.accessors.auth :as auth]
               [storefront.history :as history]])
    [storefront.component :as component]
    [catalog.categories :as categories]
-   [catalog.product-card :as product-card]
    [storefront.components.ui :as ui]
    [storefront.events :as events]
    [storefront.transitions :as transitions]
-   [storefront.effects :as effects]
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
    [storefront.platform.messages :as messages]
-   [storefront.accessors.auth :as auth]
    [storefront.request-keys :as request-keys]
    [catalog.keypaths]
    [catalog.skuers :as skuers]
@@ -21,7 +20,7 @@
    [spice.selector :as selector]
    [clojure.set :as set]
    [clojure.string :as string]
-   [catalog.ui.product-card :as prod-card]))
+   [catalog.ui.product-card :as product-card]))
 
 (def ^:private query-param-separator "~")
 
@@ -131,27 +130,21 @@
          [:img.block.col-12 {:src (str mobile-url "-/format/auto/" file-name)
                              :alt alt}]]))]))
 
-(defn doufu-copy-section
+(defn copy-section
   [category]
   (component/html
-   [:div.center.mx2
-    (when (:category/new? category)
-      [:div.purple.h7.medium.mbn1.mt3
-       "NEW!"])
-    [:div.h1 (:copy/title category)]
+   [:div.center.mx2.pt3
+    (when (:category/show-title? category)
+      [:div
+       (when (:category/new? category)
+         [:div.purple.h7.medium.mbn1 "NEW!"])
+       [:div.h1 (:copy/title category)]])
     [:div.h5.dark-gray.light.my2.mx6-on-mb.col-8-on-tb-dt.mx-auto-on-tb-dt
      (:copy/description category)
      (when-let [learn-more-event (:copy/learn-more category)]
        [:a.teal.h6.medium
         {:on-click (apply utils/send-event-callback learn-more-event)}
         "learn" ui/nbsp "more"])]]))
-
-(defn copy-section
-  [category]
-  (component/html
-   [:div.mt6.mb2
-    [:p.py6.max-580.mx-auto.center
-     (:copy/description category)]]))
 
 (defn product-cards-empty-state [loading?]
   (component/html
@@ -165,7 +158,7 @@
         [:a.teal (utils/fake-href events/control-category-option-clear) "Clear all filters"]
         " to see more hair."]])]))
 
-(defn render-doufu-subsection
+(defn render-subsection
   [category
    loading?
    {:keys         [product-cards image/mob-url image/dsk-url copy order]
@@ -175,47 +168,39 @@
    [:div
     {:key (str order mob-url)}
     (when (and mob-url dsk-url copy)
-      [:div.pb6.flex.flex-column
-       [:div.hide-on-mb-tb.mx1
-        [:div.col.col-12.relative
-         [:div.absolute.container-size
-          [:div.container-height.col-6.flex.items-center
-           {:class (str (case title-side
-                          "right" "justify-start"
-                          "left" "justify-end"
-                          "justify-start")
-                        " "
-                        title-side)}
-           [:div.p3.col-10
-            [:div.h2.mb1.bold primary-title]
-            [:div.h7 copy]]]]
-         [:img.col-12 {:src dsk-url}]]]
-       [:div.mxn2.hide-on-dt.p3
-        [:div.col.col-12.relative
-         [:div.absolute.container-size
-          [:div.container-height.col-6.flex.items-center.justify-center
-           {:class title-side}
-           [:div.p3
-            [:div.h3.mb1.bold primary-title]
-            [:div.h7 copy]]]]
-         [:img.col-12 {:src mob-url}]]]])
+      (if (= "bottom" title-side)
+        [:div.pb6.flex.flex-column
+         [:div.hide-on-mb-tb.mx1
+          [:img.col.col-12 {:src dsk-url}]]
+         [:div.mxn2.hide-on-dt
+          [:img.col.col-12 {:src mob-url}]]
+         [:div.mx-auto.col.col-11.h5.dark-gray.center.pt2 copy]]
+        [:div.pb6.flex.flex-column
+         [:div.hide-on-mb-tb.mx1
+          [:div.col.col-12.relative
+           [:div.absolute.container-size
+            [:div.container-height.col-6.flex.items-center
+             {:class (str (case title-side
+                            "right" "justify-start"
+                            "left" "justify-end"
+                            "justify-start")
+                          " "
+                          title-side)}
+             [:div.p3.col-10
+              [:div.h2.mb1.bold primary-title]
+              [:div.h7 copy]]]]
+           [:img.col-12 {:src dsk-url}]]]
+         [:div.mxn2.hide-on-dt.p3
+          [:div.col.col-12.relative
+           [:div.absolute.container-size
+            [:div.container-height.col-6.flex.items-center.justify-center
+             {:class title-side}
+             [:div.p3
+              [:div.h3.mb1.bold primary-title]
+              [:div.h7 copy]]]]
+           [:img.col-12 {:src mob-url}]]]]))
     [:div.flex.flex-wrap
-     (map prod-card/organism product-cards)]]))
-
-(defn render-subsection
-  [category loading? {:keys [product-cards image/mob-url image/dsk-url copy order]}]
-  (component/html
-   [:div
-    {:key (str order mob-url)}
-    (when (and mob-url dsk-url copy)
-      [:div.pb6.flex.flex-column
-       [:div.hide-on-mb-tb.mx1
-        [:img.col.col-12 {:src dsk-url}]]
-       [:div.mxn2.hide-on-dt
-        [:img.col.col-12 {:src mob-url}]]
-       [:div.mx-auto.col.col-11.h5.dark-gray.center.pt2 copy]])
-    [:div.flex.flex-wrap
-     (map product-card/component product-cards)]]))
+     (map product-card/organism product-cards)]]))
 
 (defn ^:private component
   [{:keys [category
@@ -230,9 +215,7 @@
    [:div
     (hero-section category)
     [:div.max-960.col-12.mx-auto.px2-on-mb.px2-on-tb
-     (if (:display/doufu? category)
-       (doufu-copy-section category)
-       (copy-section category))
+     (copy-section category)
      [:div.bg-white.sticky.z1
       ;; The -5px prevents a sliver of the background from being visible above the filters
       ;; (when sticky) on android (and sometimes desktop chrome when using the inspector)
@@ -250,31 +233,25 @@
      [:div.flex.flex-wrap
       (if (empty? all-product-cards)
         (product-cards-empty-state loading-products?)
-        (map (partial (if (:display/doufu? category)
-                        render-doufu-subsection
-                        render-subsection)
+        (map (partial render-subsection
                       category
                       loading-products?)
              subsections))]]]))
 
 (defn subsections-query
-  [{:keys [display/doufu? catalog/category-id subsections]}
+  [{:keys [catalog/category-id subsections]}
    products-matching-criteria
    data]
-  (let [card-query-fn (if doufu?
-                        prod-card/query
-                        product-card/query)
-        sort-fn       (if doufu? :sort/value (comp :sku/price :cheapest-sku))]
-    (->> products-matching-criteria
-         (group-by (or (categories/category-id->subsection-fn category-id)
-                       (constantly :no-subsections)))
-         (sequence
-          (comp
-           (map (fn [[subsection-key products]] (assoc (get subsections subsection-key) :products products)))
-           (map #(update % :products (partial map (partial card-query-fn data))))
-           (map #(set/rename-keys % {:products :product-cards}))
-           (map #(update % :product-cards (partial sort-by sort-fn)))))
-         (sort-by :order))))
+  (->> products-matching-criteria
+       (group-by (or (categories/category-id->subsection-fn category-id)
+                     (constantly :no-subsections)))
+       (sequence
+        (comp
+         (map (fn [[subsection-key products]] (assoc (get subsections subsection-key) :products products)))
+         (map #(update % :products (partial map (partial product-card/query data))))
+         (map #(set/rename-keys % {:products :product-cards}))
+         (map #(update % :product-cards (partial sort-by :sort/value)))))
+       (sort-by :order)))
 
 (defn ^:private query
   [data]

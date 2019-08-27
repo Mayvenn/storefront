@@ -401,12 +401,12 @@
 
            :category/new? true
 
-           :copy/title            "Wigs"
-           :page/slug             "wigs"
-           :copy/description      (copy "These units will be your go-to protective style"
-                                        "for achieving a brand new look."
-                                        "With options ranging from 360 to Ready to Wear,"
-                                        "there’s a wig available for each of your alter egos.")
+           :copy/title       "Wigs"
+           :page/slug        "wigs"
+           :copy/description (copy "These units will be your go-to protective style"
+                                   "for achieving a brand new look."
+                                   "With options ranging from 360 to Ready to Wear,"
+                                   "there’s a wig available for each of your alter egos.")
 
            :images                {:hero {:filename    "Wigs.jpg"
                                           :desktop-url "//ucarecdn.com/c17d9942-4cec-4f32-814c-ed5141efef59/"
@@ -428,17 +428,20 @@
            :subsections           {"360-wigs"        {:image/mob-url "//ucarecdn.com/08d4158d-633d-4ddd-ab90-7e7f03655998/"
                                                       :image/dsk-url "//ucarecdn.com/4f310c6c-b8a8-46cb-9940-290f57920922/"
                                                       :order         2
+                                                      :title/side    "bottom"
                                                       :copy          (copy "Complete with a lace perimeter and made from 100% virgin hair,"
                                                                            "our 360 wigs are fully customizable to fit your unique look.")}
                                    "lace-front-wigs" {:image/mob-url "//ucarecdn.com/3d906164-8a1e-413e-9e10-dd5b35d6532e/"
                                                       :image/dsk-url "//ucarecdn.com/203051d7-0138-4276-8e1b-310d4ee84254/"
                                                       :order         1
+                                                      :title/side    "bottom"
                                                       :copy          (copy "Crafted with 13x4 inches of frontal parting space,"
                                                                            "these 100% virgin hair units offer the perfect balance"
                                                                            "between natural density and style versatility.")}
                                    "ready-wigs"      {:image/mob-url "//ucarecdn.com/56063a5e-7b29-43c8-9a2c-5d9d97682f11/"
                                                       :image/dsk-url "//ucarecdn.com/00b52b51-897d-4aa9-a35f-07cf59e919fc/"
                                                       :order         0
+                                                      :title/side    "bottom"
                                                       :copy          (copy "Available in a variety of styles,"
                                                                            "these 100% human hair units will be"
                                                                            "your favorite option for a quick,"
@@ -448,11 +451,11 @@
   [{:catalog/category-id            "23"
     :experience/exclude             #{"mayvenn-classic"}
     :catalog/department             #{"hair"}
+    :category/show-title?           true
     :category/new?                  true
     :copy/description               "Save 10% on your hair & get a free Mayvenn Install by a licensed stylist when you purchase 3 or more items. "
     :copy/learn-more                [events/popup-show-adventure-free-install]
     :copy/title                     "Mayvenn Install"
-    :display/doufu?                 true
     :hair/family                    #{"bundles" "closures" "frontals" "360-frontals"}
     :images                         {:hero {:filename    "mayvenn-install-hero-image",
                                             :desktop-url "//ucarecdn.com/b1d0e399-8e62-4f34-aa17-862a9357000b/",

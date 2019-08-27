@@ -7,8 +7,7 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.component :as component]
-            [catalog.product-card :as product-card]))
+            [storefront.component :as component]))
 
 (defn- slug->facet [facet facets]
   (->> facets
@@ -74,7 +73,7 @@
                                     {:catalog/product-id (:catalog/product-id product)
                                      :page/slug          product-slug
                                      :query-params       {:SKU (:catalog/sku-id
-                                                                (product-card/sku-best-matching-selections product-detail-selections
+                                                                (sku-best-matching-selections product-detail-selections
                                                                                                            skus
                                                                                                            color-order-map))}}]
      :product-card-details/id      (str "product-card-details-" product-slug)
