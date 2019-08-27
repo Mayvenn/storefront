@@ -1,7 +1,6 @@
 (ns storefront.accessors.experiments
-  (:require [storefront.keypaths :as keypaths]
-            [storefront.config :as config]
-            [spice.date :as date]))
+  (:require [clojure.string :as string]
+            [storefront.keypaths :as keypaths]))
 
 #_ (defn bucketing-example
   [data]
@@ -67,6 +66,14 @@
 
 (defn dashboard-with-vouchers? [data]
   (= "aladdin" (get-in data keypaths/user-stylist-experience)))
+
+(defn on-dev?
+  "Useful for developing against a feature flag such that it won't break acceptance if it gets accidentally committed."
+  [data]
+  (string/includes? (-> data
+                        (get-in keypaths/navigation-uri)
+                        :host)
+                    "localhost"))
 
 (defn browser-pay?
   [data]
