@@ -12,7 +12,6 @@
        (maps/index-by :facet/slug)))
 
 (defn color-order-map
-  "FIXME what kind of 'facets' does this deal with, not sure"
   [facets]
   (->> facets
        (filter #(= (:facet/slug %) :hair/color))
@@ -24,7 +23,6 @@
        (into {})))
 
 (defn get-color
-  "FIXME what kind of 'facets' does this deal with, not sure"
   [color-slug facets]
   (->> facets
        (filter (fn [facet] (= (:facet/slug facet) :hair/color)))
