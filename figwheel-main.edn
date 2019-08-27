@@ -1,5 +1,5 @@
 {:target-dir        "resources/"
  :watch-dirs        ["src-cljc" "src-cljs"]
  :css-dirs          ["resources/public/css"]
- :open-url          "http://shop.storefront.localhost/_style"
+ :open-url          false
  :repl-eval-timeout 30000}
