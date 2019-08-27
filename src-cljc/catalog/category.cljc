@@ -127,8 +127,10 @@
         [:picture
          [:source {:media   "(min-width: 750px)"
                    :src-set (str desktop-url "-/format/auto/" file-name " 1x")}]
-         [:img.block.col-12 {:src (str mobile-url "-/format/auto/" file-name)
-                             :alt alt}]]))]))
+         (ui/aspect-ratio 375 204
+                          [:img.container-height.block.col-12
+                           {:src (str mobile-url "-/format/auto/" file-name)
+                            :alt alt}])]))]))
 
 (defn copy-section
   [category]
@@ -161,46 +163,52 @@
 (defn render-subsection
   [category
    loading?
-   {:keys         [product-cards image/mob-url image/dsk-url copy order]
+   {:keys         [product-cards image/mob-url image/dsk-url copy order subsection-key]
     primary-title :title/primary
     title-side    :title/side}]
   (component/html
-   [:div
-    {:key (str order mob-url)}
-    (when (and mob-url dsk-url copy)
-      (if (= "bottom" title-side)
-        [:div.pb6.flex.flex-column
-         [:div.hide-on-mb-tb.mx1
-          [:img.col.col-12 {:src dsk-url}]]
-         [:div.mxn2.hide-on-dt
-          [:img.col.col-12 {:src mob-url}]]
-         [:div.mx-auto.col.col-11.h5.dark-gray.center.pt2 copy]]
-        [:div.pb6.flex.flex-column
-         [:div.hide-on-mb-tb.mx1
-          [:div.col.col-12.relative
-           [:div.absolute.container-size
-            [:div.container-height.col-6.flex.items-center
-             {:class (str (case title-side
-                            "right" "justify-start"
-                            "left" "justify-end"
-                            "justify-start")
-                          " "
-                          title-side)}
-             [:div.p3.col-10
-              [:div.h2.mb1.bold primary-title]
-              [:div.h7 copy]]]]
-           [:img.col-12 {:src dsk-url}]]]
-         [:div.mxn2.hide-on-dt.p3
-          [:div.col.col-12.relative
-           [:div.absolute.container-size
-            [:div.container-height.col-6.flex.items-center.justify-center
-             {:class title-side}
-             [:div.p3
-              [:div.h3.mb1.bold primary-title]
-              [:div.h7 copy]]]]
-           [:img.col-12 {:src mob-url}]]]]))
-    [:div.flex.flex-wrap
-     (map product-card/organism product-cards)]]))
+   (let [subsection-id (str "subsection-" subsection-key)]
+     [:div
+      {:key subsection-id
+       :id  subsection-id}
+      (when (and mob-url dsk-url copy)
+        (if (= "bottom" title-side)
+          [:div.pb6.flex.flex-column
+           [:div.hide-on-mb-tb.mx1
+            [:img.col.col-12.container-height {:src dsk-url}]]
+           [:div.mxn2.hide-on-dt
+            [:img.col.col-12 {:src mob-url}]]
+           [:div.mx-auto.col.col-11.h5.dark-gray.center.pt2 copy]]
+          [:div.flex.flex-column
+           [:div.hide-on-mb-tb.pb6.mx1 ;; dt
+            (ui/aspect-ratio
+             950 223.7
+             [:div.col.col-12.relative
+              [:div.absolute.container-size
+               [:div.container-height.col-6.flex.items-center
+                {:class (str (case title-side
+                               "right" "justify-start"
+                               "left"  "justify-end"
+                               "justify-start")
+                             " "
+                             title-side)}
+                [:div.p3.col-10
+                 [:div.h2.mb1.bold primary-title]
+                 [:div.h7 copy]]]]
+              [:img.col-12.container-height {:src dsk-url}]])]
+           [:div.mxn2.hide-on-dt.pt3.px3.pb1 ;; mb, tb
+            (ui/aspect-ratio
+             345 200
+             [:div.col.col-12.relative
+              [:div.absolute.container-size
+               [:div.container-height.col-6.flex.items-center.justify-center
+                {:class title-side}
+                [:div.p3
+                 [:div.h3.mb1.bold primary-title]
+                 [:div.h7 copy]]]]
+              [:img.col-12.container-height {:src mob-url}]])]]))
+      [:div.flex.flex-wrap
+       (map product-card/organism product-cards)]])))
 
 (defn ^:private component
   [{:keys [category
@@ -247,7 +255,9 @@
                      (constantly :no-subsections)))
        (sequence
         (comp
-         (map (fn [[subsection-key products]] (assoc (get subsections subsection-key) :products products)))
+         (map (fn [[subsection-key products]] (assoc (get subsections subsection-key)
+                                                     :products products
+                                                     :subsection-key subsection-key)))
          (map #(update % :products (partial map (partial product-card/query data))))
          (map #(set/rename-keys % {:products :product-cards}))
          (map #(update % :product-cards (partial sort-by :sort/value)))))
@@ -299,7 +309,7 @@
 
 #?(:cljs
    (defmethod effects/perform-effects events/navigate-category
-     [_ event {:keys [catalog/category-id slug]} _ app-state]
+     [_ event {:keys [catalog/category-id slug query-params]} _ app-state]
      (let [category   (categories/current-category app-state)
            success-fn #(messages/handle-message events/api-success-v2-products-for-browse
                                                 (assoc % :category-id category-id))]
@@ -316,7 +326,9 @@
          (api/search-v2-products (get-in app-state keypaths/api-cache)
                                  (skuers/essentials category)
                                  success-fn)
-         (effects/redirect events/navigate-home)))))
+         (effects/redirect events/navigate-home))
+       (when-let [texture (:texture query-params)]
+         (js/setTimeout (partial scroll/scroll-selector-to-top (str "#subsection-" texture)) 0)))))
 
 (defmethod transitions/transition-state events/control-category-panel-open
   [_ _ {:keys [selected]} app-state]

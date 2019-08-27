@@ -489,10 +489,17 @@
         mayvenn-install                      (mayvenn-install data)
         entered?                             (:mayvenn-install/entered? mayvenn-install)
         servicing-stylist                    (:mayvenn-install/stylist mayvenn-install)
-        locked?                              (:mayvenn-install/locked? mayvenn-install)]
+        locked?                              (:mayvenn-install/locked? mayvenn-install)
+        skus                                 (get-in data keypaths/v2-skus)
+        recently-added-sku-ids               (get-in data keypaths/cart-recently-added-skus)
+        last-texture-added                   (->> recently-added-sku-ids
+                                                  last
+                                                  (get skus)
+                                                  :hair/texture
+                                                  first)]
     (cond-> {:suggestions               (suggestions/consolidated-query data)
              :line-items                line-items
-             :skus                      (get-in data keypaths/v2-skus)
+             :skus                      skus
              :products                  products
              :promo-banner              (when (zero? (orders/product-quantity order))
                                           (promo-banner/query data))
@@ -506,9 +513,14 @@
                                              (experiments/browser-pay? data)
                                              (seq (get-in data keypaths/shipping-methods))
                                              (seq (get-in data keypaths/states)))
-             :recently-added-skus       (get-in data keypaths/cart-recently-added-skus)
+             :recently-added-skus       recently-added-sku-ids
              :return-link/copy          "Continue Shopping"
-             :return-link/event-message [events/control-open-shop-escape-hatch]
+             :return-link/event-message [events/navigate-category
+                                         (merge
+                                          {:page/slug          "mayvenn-install"
+                                          :catalog/category-id "23"}
+                                          (when last-texture-added
+                                            {:query-params {:texture last-texture-added}}))]
              :quantity-remaining        (:mayvenn-install/quantity-remaining mayvenn-install)
              :locked?                   locked?
              :entered?                  entered?
@@ -523,7 +535,7 @@
                                                          :focused       (get-in data keypaths/ui-focus)
                                                          :error-message (get-in data keypaths/error-message)
                                                          :field-errors  (get-in data keypaths/field-errors)}}))
-             :cart-items                (cart-items-query data mayvenn-install line-items (get-in data keypaths/v2-skus))
+             :cart-items                (cart-items-query data mayvenn-install line-items skus)
              :quadpay/show?             (get-in data keypaths/loaded-quadpay)
              :quadpay/order-total       (when-not locked? (:total order))
              :quadpay/directive         (if locked? :no-total :just-select)}

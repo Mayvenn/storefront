@@ -7,7 +7,8 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.component :as component]))
+            [storefront.component :as component]
+            [storefront.components.ui :as ui]))
 
 (defn- slug->facet [facet facets]
   (->> facets
@@ -100,9 +101,11 @@
 (defn card-image-molecule
   [{:card-image/keys [src alt]}]
   ;; TODO: when adding aspect ratio, also use srcset/sizes to scale these images.
-  [:img.block.col-12 {:style {:border-radius "5px 5px 0 0"}
-                      :src   src
-                      :alt   alt}])
+  (ui/aspect-ratio 1 1
+                   [:img.block.col-12.container-height
+                    {:style {:border-radius "5px 5px 0 0"}
+                       :src   src
+                       :alt   alt}]))
 
 (defn product-card-title-molecule
   [{:product-card-title/keys [id primary]}]
