@@ -17,7 +17,7 @@
            :class     "my1"
            :key       data-test
            :data-test data-test}
-          (apply utils/fake-href nav-message))
+          (apply utils/route-to nav-message))
    [:div.flex.items-center.justify-start
     [:img {:src   image-url
            :style {:height "60px"}}]
@@ -59,15 +59,17 @@
                                  [:div "How would you like to shop your hair?"]]
      :buttons/buttons           [{:button/image-url   "http://place-puppy.com/120x120"
                                   :button/copy        "Shop by look"
-                                  :button/nav-message [:bar {}]
+                                  :button/nav-message [events/navigate-shop-by-look {:album-keyword :look}]
                                   :button/data-test   "button-looks"}
                                  {:button/image-url   "http://place-puppy.com/121x121"
                                   :button/copy        "Choose individual bundles"
-                                  :button/nav-message [:bar {}]
+                                  :button/nav-message [events/navigate-category
+                                                       {:page/slug           "mayvenn-install"
+                                                        :catalog/category-id "23"}]
                                   :button/data-test   "button-a-la-carte"}
                                  {:button/image-url   "http://place-puppy.com/122x122"
                                   :button/copy        "Pre-made bundle sets"
-                                  :button/nav-message [:bar {}]
+                                  :button/nav-message [events/navigate-shop-by-look {:album-keyword :deals}]
                                   :button/data-test   "button-bundle-sets"}]
      :header-data               {:back-navigation-message [events/navigate-adventure-stylist-results-pre-purchase]}}))
 
