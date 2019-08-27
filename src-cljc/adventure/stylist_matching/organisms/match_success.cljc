@@ -8,7 +8,7 @@
             [storefront.platform.component-utils :as utils]))
 
 (defn image-and-text-button-molecule
-  [{:button/keys [image-url
+  [{:button/keys [image-id
                   copy
                   nav-message
                   data-test]}]
@@ -19,8 +19,7 @@
            :data-test data-test}
           (apply utils/route-to nav-message))
    [:div.flex.items-center.justify-start
-    [:img {:src   image-url
-           :style {:height "60px"}}]
+    (ui/ucare-img {:width "60"} image-id)
     [:div.px4 copy]]))
 
 (defn buttons-molecule
@@ -57,17 +56,17 @@
      :match-success/mini-prompt [:div
                                  [:div "Now for the fun part!"]
                                  [:div "How would you like to shop your hair?"]]
-     :buttons/buttons           [{:button/image-url   "http://place-puppy.com/120x120"
+     :buttons/buttons           [{:button/image-id   "a9009728-efd3-4917-9541-b4514b8e4776"
                                   :button/copy        "Shop by look"
                                   :button/nav-message [events/navigate-shop-by-look {:album-keyword :look}]
                                   :button/data-test   "button-looks"}
-                                 {:button/image-url   "http://place-puppy.com/121x121"
+                                 {:button/image-id   "6c39cd72-6fde-4ec2-823c-5e39412a6d54"
                                   :button/copy        "Choose individual bundles"
                                   :button/nav-message [events/navigate-category
                                                        {:page/slug           "mayvenn-install"
                                                         :catalog/category-id "23"}]
                                   :button/data-test   "button-a-la-carte"}
-                                 {:button/image-url   "http://place-puppy.com/122x122"
+                                 {:button/image-id   "87b46db7-4c70-4d3a-8fd0-6e99e78d3c96"
                                   :button/copy        "Pre-made bundle sets"
                                   :button/nav-message [events/navigate-shop-by-look {:album-keyword :deals}]
                                   :button/data-test   "button-bundle-sets"}]
