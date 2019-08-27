@@ -90,8 +90,9 @@
 
 (defn consolidated-cart?
   [data]
-  (display-feature? data "consolidated-cart")
-  (on-dev? data))
+  (or
+   (display-feature? data "consolidated-cart")
+   (on-dev? data)))
 
 (defn stylist-profiles?
   [data]
