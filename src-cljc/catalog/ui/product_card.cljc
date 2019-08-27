@@ -46,62 +46,55 @@
         facets     (get-in data keypaths/v2-facets)
         selections (get-in data catalog.keypaths/category-selections)
 
-        color-order-map (facets/color-order-map facets)
-        in-stock-skus   (selector/match-all {}
-                                            (assoc selections :inventory/in-stock? #{true})
-                                            skus)
-
-        ;; in order to fill the product card, we should always have a sku to use for
-        ;; the cheapest-sku and epitome
+        color-order-map           (facets/color-order-map facets)
+        in-stock-skus             (selector/match-all {}
+                                                      (assoc selections :inventory/in-stock? #{true})
+                                                      skus)
         skus-to-search            (or (not-empty in-stock-skus) skus)
-        ;; It is technically possible for the cheapest sku to not be the epitome:
-        ;; If 10'' Black is sold out, 10'' Brown is the cheapest, but 12'' Black is the epitome
-        cheapest-sku              (skus/determine-cheapest color-order-map skus-to-search)
-        ;; Product definition of epitome is the "first" SKU on the product details page where
-        ;; first is when the first of every facet is selected.
-        ;;
-        ;; We're being lazy and sort by color facet + sku price (which implies sort by hair/length)
         product-detail-selections (get-in data catalog.keypaths/detailed-product-selections)
 
-        product-color-swatch-urls (->> (product-options facets skus :hair/color)
-                                       (mapv :option/circle-swatch))
-        [shortest longest]        (->> (product-options facets skus :hair/length)
-                                       ((juxt first last))
-                                       (mapv :option/name))
+        product-slug       (:page/slug product)
+        product-colors     (product-options facets skus :hair/color)
+        [shortest longest] (->> (product-options facets skus :hair/length)
+                                ((juxt first last))
+                                (mapv :option/name))
 
-        slug (:page/slug product)
+        cheapest-sku (skus/determine-cheapest color-order-map skus-to-search)
+        epitome      (skus/determine-epitome color-order-map skus-to-search)
 
-        epitome (skus/determine-epitome color-order-map skus-to-search)
-        image   (->> epitome
-                     :selector/images
-                     (filter (comp #{"catalog"} :use-case))
-                     first)]
+        image (->> epitome
+                   :selector/images
+                   (filter (comp #{"catalog"} :use-case))
+                   first)]
     {:sort/value                   (:sku/price cheapest-sku)
-     :react/key                    (str "product-" slug)
-     :product-card-title/id        (str "product-card-title-" slug)
+     :react/key                    (str "product-" product-slug)
+     :product-card-title/id        (str "product-card-title-" product-slug)
      :product-card-title/primary   (:copy/title product)
      :product-card/target          [events/navigate-product-details
                                     {:catalog/product-id (:catalog/product-id product)
-                                     :page/slug          slug
+                                     :page/slug          product-slug
                                      :query-params       {:SKU (:catalog/sku-id
                                                                 (product-card/sku-best-matching-selections product-detail-selections
                                                                                                            skus
                                                                                                            color-order-map))}}]
-     :product-card-details/id      (str "product-card-details-" slug)
+     :product-card-details/id      (str "product-card-details-" product-slug)
      :product-card-details/content (if (empty? in-stock-skus)
                                      ["Out of stock"]
                                      [(str "in "
                                            (if (= shortest longest)
                                              shortest
                                              (str shortest " - " longest)))
-                                      [:div
-                                       (for [color-url product-color-swatch-urls]
-                                         [:img.mx1.border-light-gray
-                                          {:key    (str "product-card-details-" slug "-" color-url)
-                                           :width  10
-                                           :height 10
-                                           :src    color-url}])]
-                                      (str "Starting at $" (:sku/price cheapest-sku))])
+                                      (if (= 1 (count product-colors))
+                                        (:option/name (first product-colors))
+                                        (for [{option-slug  :option/slug
+                                               :option/keys [circle-swatch]} product-colors]
+                                          [:img.mx1.border-light-gray
+                                           {:key    (str "product-card-details-" product-slug "-" option-slug)
+                                            :width  10
+                                            :height 10
+                                            :src    circle-swatch}]))
+                                      [:div.black
+                                       (str "Starting at $" (:sku/price cheapest-sku))]])
      :card-image/src               (str (:url image) "-/format/auto/" (:filename image))
      :card-image/alt               (:alt image)}))
 
