@@ -29,8 +29,8 @@
                                                 v])
                                              content)])))
 
-(defn forward-caret [{:keys [height width]}]
-  (svg/dropdown-arrow {:class  "stroke-black"
+(defn forward-caret [{:keys [height width color]}]
+  (svg/dropdown-arrow {:class  (if color (str "stroke-" color) "stroke-black")
                        :height height
                        :width  width
                        :style  {:transform "rotate(-90deg)"}}))
