@@ -18,6 +18,13 @@
    "with Frontal" "Free Install - Frontal"
    "Leave Out"    "Free Install - Leave Out"})
 
+(def default-service-menu
+  "Install prices to use when a stylist has not yet been selected."
+  {:advertised-sew-in-360-frontal "225.0"
+   :advertised-sew-in-closure     "175.0"
+   :advertised-sew-in-frontal     "200.0"
+   :advertised-sew-in-leave-out   "150.0"})
+
 (defn discount->campaign-name [discount]
   (some->> discount :unit_type parse-type unit-type->campaign-name))
 

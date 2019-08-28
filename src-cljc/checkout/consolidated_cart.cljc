@@ -37,7 +37,8 @@
    [storefront.platform.component-utils :as utils]
    [storefront.request-keys :as request-keys]
    [ui.molecules :as ui-molecules]
-   [ui.promo-banner :as promo-banner]))
+   [ui.promo-banner :as promo-banner]
+   [storefront.accessors.service-menu :as service-menu]))
 
 (defmethod effects/perform-effects events/control-cart-add-freeinstall-coupon
   [_ _ _ _ app-state]
@@ -245,13 +246,6 @@
       string/lower-case
       (string/replace #"[^a-z]+" "-")))
 
-(def default-service-menu
-  "Install prices to use when a stylist has not yet been selected."
-  {:advertised-sew-in-360-frontal "225.0"
-   :advertised-sew-in-closure     "175.0"
-   :advertised-sew-in-frontal     "200.0"
-   :advertised-sew-in-leave-out   "150.0"})
-
 (defn ^:private mayvenn-install
   "This is the 'Mayvenn Install' model that is used to build queries for views"
   [app-state]
@@ -281,7 +275,7 @@
                                          first
                                          :service/diva-advertised-type)
         service-menu                (or (get-in app-state adventure-keypaths/adventure-servicing-stylist-service-menu)
-                                        default-service-menu)]
+                                        service-menu/default-service-menu)]
     {:mayvenn-install/entered?           freeinstall-entered?
      :mayvenn-install/locked?            (and freeinstall-entered?
                                               (pos? items-remaining-for-install))
