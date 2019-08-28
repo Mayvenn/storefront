@@ -6,10 +6,8 @@
               [storefront.components.popup :as popup]
               [storefront.confetti :as confetti]
               [storefront.hooks.quadpay :as quadpay]])
-   [adventure.keypaths :as adventure-keypaths]
    [catalog.facets :as facets]
    [catalog.images :as catalog-images]
-   [checkout.accessors.vouchers :as vouchers]
    [checkout.call-out :as call-out]
    [checkout.header :as header]
    [checkout.suggestions :as suggestions]
@@ -19,6 +17,7 @@
    [spice.core :as spice]
    [spice.date :as date]
    [storefront.accessors.adjustments :as adjustments]
+   [storefront.accessors.mayvenn-install :as mayvenn-install]
    [storefront.accessors.experiments :as experiments]
    [storefront.accessors.orders :as orders]
    [storefront.accessors.products :as products]
@@ -37,8 +36,7 @@
    [storefront.platform.component-utils :as utils]
    [storefront.request-keys :as request-keys]
    [ui.molecules :as ui-molecules]
-   [ui.promo-banner :as promo-banner]
-   [storefront.accessors.service-menu :as service-menu]))
+   [ui.promo-banner :as promo-banner]))
 
 (defmethod effects/perform-effects events/control-cart-add-freeinstall-coupon
   [_ _ _ _ app-state]
@@ -246,55 +244,7 @@
       string/lower-case
       (string/replace #"[^a-z]+" "-")))
 
-(defn ^:private mayvenn-install
-  "This is the 'Mayvenn Install' model that is used to build queries for views"
-  [app-state]
-  (let [order                       (get-in app-state keypaths/order)
-        freeinstall-entered?        (boolean (orders/freeinstall-entered? order))
-        install-items-required      3
-        sku-catalog                 (get-in app-state keypaths/v2-skus)
-        items-added-for-install     (->> order
-                                         :shipments
-                                         first
-                                         :line-items
-                                         (filter #(->> %
-                                                       :sku
-                                                       (get sku-catalog)
-                                                       :promo.mayvenn-install/eligible
-                                                       first))
-                                         (map :quantity)
-                                         (apply +)
-                                         (min install-items-required))
-        items-remaining-for-install (- install-items-required items-added-for-install)
-        servicing-stylist           (get-in app-state adventure-keypaths/adventure-servicing-stylist)
-        service-type                (->> (get-in app-state keypaths/environment)
-                                         vouchers/campaign-configuration
-                                         (filter #(= (:service/type %)
-                                                     (some-> (orders/product-items order)
-                                                             vouchers/product-items->highest-value-service)))
-                                         first
-                                         :service/diva-advertised-type)
-        service-menu                (or (get-in app-state adventure-keypaths/adventure-servicing-stylist-service-menu)
-                                        service-menu/default-service-menu)]
-    {:mayvenn-install/entered?           freeinstall-entered?
-     :mayvenn-install/locked?            (and freeinstall-entered?
-                                              (pos? items-remaining-for-install))
-     :mayvenn-install/applied?           (and freeinstall-entered?
-                                              ;; TODO should we consider the following that checks line-items for promos
-                                              ;; (boolean (orders/applied-install-promotion order))
-                                              ;; (orders/freeinstall-applied? order)
-                                              (zero? items-remaining-for-install))
-     :mayvenn-install/quantity-required  install-items-required
-     :mayvenn-install/quantity-remaining (- install-items-required items-added-for-install)
-     :mayvenn-install/quantity-added     items-added-for-install
-     :mayvenn-install/stylist            servicing-stylist
-     :mayvenn-install/service-type       service-type
-     :mayvenn-install/service-discount   (some-> service-menu
-                                                 ;; If the menu does not provide the service matching the
-                                                 ;; cart contents, use the leave out price
-                                                 (get service-type (:advertised-sew-in-leave-out service-menu))
-                                                 spice/parse-double
-                                                 -)}))
+
 
 ;; TODO: suggestions should be paired with appropriate cart item here
 (defn cart-items-query
@@ -481,7 +431,7 @@
                                                   (orders/product-items order))
         freeinstall-entered-cart-incomplete? (and (orders/freeinstall-entered? order)
                                                   (not (orders/freeinstall-applied? order)))
-        mayvenn-install                      (mayvenn-install data)
+        mayvenn-install                      (mayvenn-install/mayvenn-install data)
         entered?                             (:mayvenn-install/entered? mayvenn-install)
         servicing-stylist                    (:mayvenn-install/stylist mayvenn-install)
         locked?                              (:mayvenn-install/locked? mayvenn-install)
