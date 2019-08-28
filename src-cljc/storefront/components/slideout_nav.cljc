@@ -268,8 +268,8 @@
      :on-taxon?              (get-in data keypaths/current-traverse-nav)
      :user                   {:stylist-portrait (get-in data keypaths/user-stylist-portrait)
                               :email            (get-in data keypaths/user-email)}
-     :hide-deals-link?       (and (or shop? (experiments/aladdin-experience? data))
-                                  (experiments/shop-by-bundle-sets? data))
+     :hide-deals-link?       (or (and shop? (experiments/shop-by-bundle-sets? data))
+                                 (experiments/aladdin-experience? data))
      :store                  store
      :show-community?        (and (not match-eligible)
                                   (stylists/own-store? data))
