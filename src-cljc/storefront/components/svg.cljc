@@ -52,6 +52,7 @@
   (component/html
    [:svg opts
     ^:inline (svg-xlink "thick-left-arrow")]))
+
 ;; Stylist Dashboard
 
 (defn box-package [opts]
