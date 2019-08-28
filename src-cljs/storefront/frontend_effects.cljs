@@ -120,8 +120,19 @@
   (browser-events/unattach-capture-late-readystatechange-callbacks)
   (browser-events/detach-esc-key-listener))
 
+(defn redirect-from-deals-page? [app-state]
+  (let [[current-nav-event current-nav-args] (get-in app-state keypaths/navigation-message)
+        shop-or-aladdin?                     (or (= "shop" (get-in app-state keypaths/store-slug))
+                                                 (experiments/aladdin-experience? app-state))
+        on-deals-page?                       (= [events/navigate-shop-by-look {:album-keyword :deals}]
+                                                [current-nav-event (select-keys current-nav-args [:album-keyword])])]
+    (and shop-or-aladdin? on-deals-page?
+         (experiments/shop-by-bundle-sets? app-state))))
+
 (defmethod effects/perform-effects events/enable-feature [_ event {:keys [feature]} _ app-state]
-  (messages/handle-message events/determine-and-show-popup))
+  (messages/handle-message events/determine-and-show-popup)
+  (when (redirect-from-deals-page? app-state)
+    (effects/redirect events/navigate-shop-by-look {:album-keyword :all-bundle-sets})))
 
 (def popup-dismiss-events
   {:email-capture-quadpay  events/control-email-captured-dismiss
@@ -314,6 +325,9 @@
            (not= (get-in app-state keypaths/store-slug) "shop")
            (not= "aladdin" (get-in app-state keypaths/store-experience)))
       (effects/redirect events/navigate-shop-by-look {:album-keyword :look})
+
+      (redirect-from-deals-page? app-state)
+      (effects/redirect events/navigate-shop-by-look {:album-keyword :all-bundle-sets})
 
       (and (experiments/aladdin-experience? app-state)
            (= album-keyword :deals))
