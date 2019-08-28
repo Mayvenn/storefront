@@ -327,8 +327,8 @@
                                  (skuers/essentials category)
                                  success-fn)
          (effects/redirect events/navigate-home))
-       (when-let [texture (:texture query-params)]
-         (js/setTimeout (partial scroll/scroll-selector-to-top (str "#subsection-" texture)) 0)))))
+       (when-let [subsection-key (:subsection query-params)]
+         (js/setTimeout (partial scroll/scroll-selector-to-top (str "#subsection-" subsection-key)) 0)))))
 
 (defmethod transitions/transition-state events/control-category-panel-open
   [_ _ {:keys [selected]} app-state]

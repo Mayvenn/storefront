@@ -506,7 +506,7 @@
                            {:page/slug          "mayvenn-install"
                             :catalog/category-id "23"}
                            (when last-texture-added
-                             {:query-params {:texture last-texture-added}}))]]
+                             {:query-params {:subsection last-texture-added}}))]]
     (cond-> {:suggestions               (suggestions/consolidated-query data)
              :line-items                line-items
              :skus                      skus
