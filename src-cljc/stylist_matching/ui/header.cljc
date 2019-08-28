@@ -9,7 +9,7 @@
   [{:header.back-navigation/keys [id target]}]
   (when id
     (component/html
-     [:a.block.p3.inherit-color
+     [:a.block.p3
       (merge {:data-test id}
              (utils/route-back {:navigation-message target}))
       [:div.flex.items-center.justify-center
