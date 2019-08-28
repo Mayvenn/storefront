@@ -127,7 +127,8 @@
    [:div.h4.border-bottom.border-gray.py3
     (into [:a.block.inherit-color.flex.items-center (assoc link-attrs :data-test data-test)] content)]])
 
-(defn shopping-rows [{:keys [show-freeinstall-link? hide-deals-link?]}]
+(defn shopping-rows
+  [{:keys [show-freeinstall-link? hide-deals-link? show-bundle-sets-link?]}]
   (let [^:inline caret (ui/forward-caret {:width  "23px"
                                           :height "20px"})]
     (concat
@@ -146,9 +147,15 @@
                                     {:menu-type :shop-looks})
        :data-test  "menu-shop-by-look"
        :content    [[:span.medium.flex-auto "Shop Looks"]
-                    caret]}
+                    caret]}]
 
-      {:link-attrs (utils/fake-href events/menu-list
+     (when show-bundle-sets-link?
+       [{:link-attrs (utils/fake-href events/menu-list {:menu-type :shop-bundle-sets})
+         :data-test  "menu-shop-by-bundle-sets"
+         :content    [[:span.medium.flex-auto "Shop Bundle Sets"]
+                      caret]}])
+
+      [{:link-attrs (utils/fake-href events/menu-list
                                     {:page/slug           "virgin-hair"
                                      :catalog/category-id "15"})
        :data-test  "menu-shop-virgin-hair"
@@ -263,16 +270,20 @@
 
 (defn basic-query [data]
   (let [{:keys [match-eligible] :as store} (marquee/query data)
-        shop?                              (= "shop" (get-in data keypaths/store-slug))]
+        shop?                              (= "shop" (get-in data keypaths/store-slug))
+        aladdin?                           (experiments/aladdin-experience? data)
+        shop-by-bundle-sets?               (experiments/shop-by-bundle-sets? data)]
     {:signed-in              (auth/signed-in data)
      :on-taxon?              (get-in data keypaths/current-traverse-nav)
      :user                   {:stylist-portrait (get-in data keypaths/user-stylist-portrait)
                               :email            (get-in data keypaths/user-email)}
-     :hide-deals-link?       (or (and shop? (experiments/shop-by-bundle-sets? data))
-                                 (experiments/aladdin-experience? data))
+     :hide-deals-link?       (or (and shop? shop-by-bundle-sets?)
+                                 aladdin?)
      :store                  store
      :show-community?        (and (not match-eligible)
                                   (stylists/own-store? data))
+     :show-bundle-sets-link? (and (or aladdin? shop?)
+                                  shop-by-bundle-sets?)
      :vouchers?              (experiments/dashboard-with-vouchers? data)
      :show-freeinstall-link? shop?}))
 
@@ -281,8 +292,9 @@
       (assoc-in [:user :store-credit] (get-in data keypaths/user-total-available-store-credit))
       (assoc-in [:cart :quantity]  (orders/product-quantity (get-in data keypaths/order)))
       (assoc-in [:menu-data] (case (get-in data keypaths/current-traverse-nav-menu-type)
-                               :category   (menu/category-query data)
-                               :shop-looks (menu/shop-looks-query data)
+                               :category         (menu/category-query data)
+                               :shop-looks       (menu/shop-looks-query data)
+                               :shop-bundle-sets (menu/shop-bundle-sets-query data)
                                nil))))
 
 (defn built-component [data opts]

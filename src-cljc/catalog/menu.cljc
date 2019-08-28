@@ -68,6 +68,23 @@
                                 :new? false
                                 :copy "Wavy & Curly Looks"}]})
 
+(defn shop-bundle-sets-query [data]
+  {:return-link/event-message [events/menu-home]
+   :return-link/copy          "Back"
+   :menu/title                "By Bundle Sets"
+   :menu/options              [{:key "all"
+                                :nav-message [events/navigate-shop-by-look {:album-keyword :all-bundle-sets}]
+                                :new? false
+                                :copy "All Bundle Sets"}
+                               {:key "straight"
+                                :nav-message [events/navigate-shop-by-look {:album-keyword :straight-bundle-sets}]
+                                :new? false
+                                :copy "Straight Bundle Sets"}
+                               {:key "curly"
+                                :nav-message [events/navigate-shop-by-look {:album-keyword :wavy-curly-bundle-sets}]
+                                :new? false
+                                :copy "Wavy & Curly Bundle Sets"}]})
+
 (defmethod transitions/transition-state events/menu-home
   [_ _ _ app-state]
   (update-in app-state keypaths/ui dissoc :current-traverse-nav))

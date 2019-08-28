@@ -145,7 +145,8 @@
     (merge opts {:style {:padding-left "24px" :padding-right "24px"}})
     text]))
 
-(defn menu [{:keys [show-freeinstall-link? hide-deals-link?]}]
+(defn menu
+  [{:keys [show-freeinstall-link? hide-deals-link? show-bundle-sets-link?]}]
   (component/html
    [:div.center
     (when show-freeinstall-link?
@@ -158,9 +159,15 @@
       (header-menu-link (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :deals})
                                :on-mouse-enter close-header-menus)
                         "Deals"))
+
     (header-menu-link (merge (utils/route-to events/navigate-home)
                              (->flyout-handlers keypaths/shop-looks-menu-expanded))
                       "Shop looks")
+
+    (when show-bundle-sets-link?
+      (header-menu-link (merge (utils/route-to events/navigate-home)
+                               (->flyout-handlers keypaths/shop-bundle-sets-menu-expanded))
+                        "Shop bundle sets"))
 
     (header-menu-link (merge (utils/route-to events/navigate-home)
                              (->flyout-handlers keypaths/shop-a-la-carte-menu-expanded))
@@ -223,7 +230,9 @@
      (flyout (:shop-a-la-carte-menu/columns data)
              (:shop-a-la-carte-menu/expanded? data))
      (flyout (:shop-looks-menu/columns data)
-             (:shop-looks-menu/expanded? data))]
+             (:shop-looks-menu/expanded? data))
+     (flyout (:shop-bundle-sets-menu/columns data)
+             (:shop-bundle-sets-menu/expanded? data))]
     [:div.hide-on-tb-dt.border-bottom.border-gray.flex.items-center
      hamburger
      [:div.flex-auto.py3 (ui/clickable-logo {:event     events/navigate-home
@@ -288,11 +297,27 @@
                                  :copy        "Wavy & Curly Looks"}]]
    :shop-looks-menu/expanded? (get-in data keypaths/shop-looks-menu-expanded)})
 
+(defn shop-bundle-sets-query [data]
+  {:shop-bundle-sets-menu/columns   [[{:key         "all"
+                                       :nav-message [events/navigate-shop-by-look {:album-keyword :all-bundle-sets}]
+                                       :new?        false
+                                       :copy        "All Bundle Sets"}]
+                                     [{:key         "straight"
+                                       :nav-message [events/navigate-shop-by-look {:album-keyword :straight-bundle-sets}]
+                                       :new?        false
+                                       :copy        "Straight Bundle Sets"}]
+                                     [{:key         "curly"
+                                       :nav-message [events/navigate-shop-by-look {:album-keyword :wavy-curly-bundle-sets}]
+                                       :new?        false
+                                       :copy        "Wavy & Curly Bundle Sets"}]]
+   :shop-bundle-sets-menu/expanded? (get-in data keypaths/shop-bundle-sets-menu-expanded)})
+
 (defn query [data]
   (-> (slideout-nav/basic-query data)
       (assoc-in [:user :expanded?] (get-in data keypaths/account-menu-expanded))
       (merge (shop-a-la-carte-flyout-query data))
       (merge (shop-looks-query data))
+      (merge (shop-bundle-sets-query data))
       (assoc-in [:cart :quantity] (orders/product-quantity (get-in data keypaths/order)))))
 
 (defn built-component [data opts]
