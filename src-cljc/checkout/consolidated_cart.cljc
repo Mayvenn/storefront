@@ -404,7 +404,9 @@
         shipping-timeframe (some->> shipping
                                     (checkout-delivery/enrich-shipping-method (date/now))
                                     :copy/timeframe)
-        adjustment         (reduce + (map :price (orders/all-order-adjustments order)))
+
+        adjustment         (->> order :adjustments (map :price) (reduce + 0))
+
         total-savings      (- (+ adjustment service-discount))]
     {:cart-summary/id                 "cart-summary"
      :freeinstall-informational/value (not entered?)
