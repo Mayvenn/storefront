@@ -34,7 +34,8 @@
     [id label sublabel icon value action-id action-target action-icon class]}]
   (when id
     [:tr.h6.medium
-     {:data-test (str "cart-summary-line-" id)}
+     {:data-test (str "cart-summary-line-" id)
+      :key       (str "cart-summary-line-" id)}
      [:td.pyp1.flex.items-center.align-middle
       icon
       label
