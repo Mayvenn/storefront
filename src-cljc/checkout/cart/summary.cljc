@@ -2,6 +2,7 @@
   (:require [checkout.cart.items :as cart-items]
             [clojure.string :as string]
             [spice.core :as spice]
+            [storefront.accessors.adjustments :as adjustments]
             [storefront.accessors.orders :as orders]
             [storefront.component :as component]
             [storefront.components.money-formatters :as mf]
@@ -55,10 +56,6 @@
                   :disabled?   updating?
                   :spinning?   applying?}})])
 
-(defn non-zero-adjustment? [{:keys [price coupon-code]}]
-  (or (not (= price 0))
-      (#{"amazon" "freeinstall" "install"} coupon-code)))
-
 (defn order-total-title [freeinstall-line-item-data]
   (if freeinstall-line-item-data
     "Hair + Install Total"
@@ -106,7 +103,7 @@
            (promo-entry promo-data)]])
 
        (for [[i {:keys [name price coupon-code] :as adjustment}] (map-indexed vector adjustments-including-tax)]
-         (when (non-zero-adjustment? adjustment)
+         (when (adjustments/non-zero-adjustment? adjustment)
            (summary-row
             {:key       (str i "-" name)
              :data-test (text->data-test-name name)}

@@ -19,10 +19,6 @@
     "Hair + Install Total"
     "Total"))
 
-(defn non-zero-adjustment? [{:keys [price coupon-code]}]
-  (or (not (= price 0))
-      (#{"amazon" "freeinstall" "install"} coupon-code)))
-
 (defn ^:private summary-row
   ([name amount] (summary-row {} name amount))
   ([row-attrs name amount]
@@ -78,7 +74,7 @@
        (summary-row {:data-test "subtotal"} "Subtotal" subtotal)
 
        (for [{:keys [name price coupon-code] :as adjustment} adjustments-including-tax]
-         (when (non-zero-adjustment? adjustment)
+         (when (orders/non-zero-adjustment? adjustment)
            (summary-row
             {:key       name
              :data-test (text->data-test-name name)}

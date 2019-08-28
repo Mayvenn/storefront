@@ -1,5 +1,6 @@
 (ns storefront.components.order-summary
-  (:require [storefront.accessors.orders :as orders]
+  (:require [storefront.accessors.adjustments :as adjustments]
+            [storefront.accessors.orders :as orders]
             [storefront.components.money-formatters :as mf]
             [storefront.events :as events]
             [storefront.platform.component-utils :as utils]
@@ -36,9 +37,8 @@
       [:table.col-12
        [:tbody
         (summary-row "Subtotal" (orders/products-subtotal order))
-        (for [{:keys [name price coupon-code]} adjustments-including-tax]
-          (when (or (not (= price 0))
-                    (#{"amazon" "freeinstall" "install"} coupon-code))
+        (for [{:keys [name price coupon-code] :as adjustment} adjustments-including-tax]
+          (when (adjustments/non-zero-adjustment? adjustment)
             (summary-row
              {:key name}
              [:div {:data-test (text->data-test-name name)}

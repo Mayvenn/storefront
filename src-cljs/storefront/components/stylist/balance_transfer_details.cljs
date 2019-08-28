@@ -1,6 +1,7 @@
 (ns storefront.components.stylist.balance-transfer-details
   (:require [checkout.cart :as cart]
             [ui.molecules :as ui-molecules]
+            [storefront.accessors.adjustments :as adjustments]
             [storefront.accessors.orders :as orders]
             [storefront.component :as component]
             [storefront.components.formatters :as f]
@@ -62,8 +63,7 @@
      (summary-row "Subtotal" subtotal)
 
      (for [{:keys [name price coupon-code]} adjustments]
-       (when (or (not (= price 0))
-                 (#{"amazon" "freeinstall" "install"} coupon-code))
+       (when (adjustments/non-zero-adjustment? coupon-code)
          (summary-row {:key name} [:div (orders/display-adjustment-name name)] price)))
 
      (when (pos? store-credit-used)

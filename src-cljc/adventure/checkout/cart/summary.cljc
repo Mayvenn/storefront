@@ -2,6 +2,7 @@
   (:require [adventure.checkout.cart.items :as cart-items]
             [clojure.string :as string]
             [spice.core :as spice]
+            [storefront.accessors.adjustments :as adjustments]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.component :as component]
@@ -56,10 +57,6 @@
                   :disabled?   updating?
                   :spinning?   applying?}})])
 
-(defn non-zero-adjustment? [{:keys [price coupon-code]}]
-  (or (not (= price 0))
-      (#{"amazon" "freeinstall" "install"} coupon-code)))
-
 (defn summary-total-section [{:keys [freeinstall-line-item-data order]}]
   [:div.py2.h2
    [:div.flex
@@ -109,7 +106,7 @@
            {:col-span "2"}
            (promo-entry promo-data)]])
        (for [[i {:keys [name price coupon-code] :as adjustment}] (map-indexed vector adjustments-including-tax)]
-         (when (non-zero-adjustment? adjustment)
+         (when (adjustments/non-zero-adjustment? adjustment)
            (summary-row
             {:key       (str i "-" name)
              :data-test (text->data-test-name name)}

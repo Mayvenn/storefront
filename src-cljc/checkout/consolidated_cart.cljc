@@ -18,6 +18,7 @@
    [clojure.string :as string]
    [spice.core :as spice]
    [spice.date :as date]
+   [storefront.accessors.adjustments :as adjustments]
    [storefront.accessors.experiments :as experiments]
    [storefront.accessors.orders :as orders]
    [storefront.accessors.products :as products]
@@ -457,11 +458,7 @@
                                      :cart-summary-line/class "purple"}])
 
                                  (for [{:keys [name price coupon-code]}
-                                       ;; TODO extract
-                                       (filter (fn non-zero-adjustment? [{:keys [price coupon-code]}]
-                                                 (or (not (= price 0))
-                                                     (#{"amazon" "freeinstall" "install"} coupon-code)))
-                                               adjustments)
+                                       (filter adjustments/non-zero-adjustment? adjustments)
                                        :let
                                        [install-summary-line? (= "freeinstall" coupon-code)
                                         coupon-summary-line? (and coupon-code
