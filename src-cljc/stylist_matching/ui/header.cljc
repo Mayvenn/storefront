@@ -17,16 +17,19 @@
        (svg/thick-left-arrow {})]])))
 
 (defn header-cart-molecule
-  [{:header.cart/keys [id]}]
+  [{:header.cart/keys [id value color]}]
   (when id
     (component/html
-     [:div
-      [:a.block.p3
-       (merge {:data-test id}
-              (apply utils/route-to [events/navigate-cart]))
-       (ui/ucare-img
-        {:width "20"}
-        "02f9e7fb-510f-458e-8be7-090399aad4de")]])))
+     [:a.block.p3
+      (merge {:data-test id}
+             (apply utils/route-to [events/navigate-cart]))
+      [:div.relative.flex.items-center.justify-center
+       (svg/bag {:class (str "fill-" color)})
+       (when value
+         [:div.absolute.top-0.left-0.right-0.bottom-0.flex.items-end.justify-center.h7
+          {:data-test (str id "-populated")
+           :class     color}
+          value])]])))
 
 (defn header-title-molecule
   [{:header.title/keys [id primary]}]
