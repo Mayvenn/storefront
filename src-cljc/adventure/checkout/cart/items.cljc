@@ -7,7 +7,8 @@
    [storefront.components.ui :as ui]
    [storefront.events :as events]
    [storefront.keypaths :as keypaths]
-   [storefront.platform.component-utils :as utils]))
+   [storefront.platform.component-utils :as utils]
+   [storefront.accessors.service-menu :as service-menu]))
 
 (defn ^:private line-item-detail [on-confirmation-page? need-more-hair? servicing-stylist-name]
   (let [need-servicing-stylist? (empty? servicing-stylist-name)]
@@ -43,10 +44,10 @@
                                     (filter #(= (:service/type %) highest-value-service))
                                     first
                                     :service/diva-advertised-type)
-        service-price          (some-> (or (get-in data adv-keypaths/adventure-servicing-stylist)
-                                           (get-in data keypaths/store))
-                                       :service-menu
-                                       (get diva-advertised-type ))
+        service-menu           (or (get-in data adv-keypaths/adventure-servicing-stylist-service-menu)
+                                   (get-in data keypaths/store-service-menu) ; Aladdin
+                                   service-menu/default-service-menu)        ; Shop
+        service-price          (get service-menu diva-advertised-type)
         number-of-items-needed (- 3 (orders/product-quantity order))
         servicing-stylist      (get-in data adv-keypaths/adventure-servicing-stylist)
         add-more-hair?         (< 0 number-of-items-needed)]

@@ -284,71 +284,50 @@
 (defn query
   [data]
   (let [order                                     (get-in data keypaths/order)
-        consolidated-cart?                        (experiments/consolidated-cart? data)
-        freeinstall-line-item-data                (if consolidated-cart?
-                                                    ;; TODO confirmation page needs to either
-                                                    ;; - use new cart.ui.cart-item organism
-                                                    ;; - create it's own data as a punt
-                                                    ;; Talk to Corey if you have any questions. :)
-                                                    nil #_ (consolidated-cart-items/freeinstall-line-item-query data)
-                                                    (cart-items/freeinstall-line-item-query data))
+        selected-quadpay?                         (-> (get-in data keypaths/order) :cart-payments :quadpay)
         freeinstall-applied?                      (orders/freeinstall-applied? order)
-        freeinstall-entered-on-consolidated-cart? (and (orders/freeinstall-entered? order) consolidated-cart?)
-        selected-quadpay?                         (-> (get-in data keypaths/order) :cart-payments :quadpay)]
-    {:requires-additional-payment?     (requires-additional-payment? data)
-     :promo-banner                     (promo-banner/query data)
-     :checkout-steps                   (checkout-steps/query data)
-     :products                         (get-in data keypaths/v2-products)
-     :items                            (cond-> (item-card-query data)
-                                         (and (or freeinstall-entered-on-consolidated-cart?
-                                                  freeinstall-applied?)
-                                              freeinstall-line-item-data)
-                                         (update
-                                          :items conj
-                                          (freeinstall-line-item-data->item-card freeinstall-line-item-data)))
-     :order                            order
-     :payment                          (checkout-credit-card/query data)
-     :delivery                         (checkout-delivery/query data)
-     :install-or-free-install-applied? freeinstall-applied?
-     :available-store-credit           (when-not selected-quadpay?
-                                         (get-in data keypaths/user-total-available-store-credit))
-     :selected-quadpay?                selected-quadpay?
-     :checkout-button-data             (checkout-button-query data)
-     :confirmation-summary             (confirmation-summary/query data)
-     :store-slug                       (get-in data keypaths/store-slug)
-     :loaded-quadpay?                  (get-in data keypaths/loaded-quadpay)}))
-
-(defn adventure-query
-  [data]
-  (let [order                      (get-in data keypaths/order)
-        freeinstall-line-item-data (adventure-cart-items/freeinstall-line-item-query data)]
-    {:requires-additional-payment?     (requires-additional-payment? data)
-     :promo-banner                     (promo-banner/query data)
-     :checkout-steps                   (checkout-steps/query data)
-     :products                         (get-in data keypaths/v2-products)
-     :items                            (update (item-card-query data)
-                                               :items conj
-                                               (freeinstall-line-item-data->item-card freeinstall-line-item-data))
-     :order                            order
-     :payment                          (checkout-credit-card/query data)
-     :delivery                         (checkout-delivery/query data)
-     :install-or-free-install-applied? (orders/freeinstall-applied? order)
-     :available-store-credit           (get-in data keypaths/user-total-available-store-credit)
-     :checkout-button-data             (checkout-button-query data)
-     :confirmation-summary             (confirmation-summary/query data)
-     :store-slug                       (get-in data keypaths/store-slug)
-     :servicing-stylist                (get-in data adventure.keypaths/adventure-servicing-stylist)
-     :selected-quadpay?                (-> (get-in data keypaths/order) :cart-payments :quadpay)
-     :loaded-quadpay?                  (get-in data keypaths/loaded-quadpay)}))
+        freeinstall-entered-on-consolidated-cart? (and (orders/freeinstall-entered? order)
+                                                       (experiments/consolidated-cart? data))
+        adventure?                                (#{"freeinstall"} (get-in data keypaths/store-slug))
+        freeinstall-line-item-data                (if adventure?
+                                                    (adventure-cart-items/freeinstall-line-item-query data)
+                                                    (cart-items/freeinstall-line-item-query data))]
+    (merge
+     {:order                           order
+      :store-slug                      (get-in data keypaths/store-slug)
+      :requires-additional-payment?    (requires-additional-payment? data)
+      :promo-banner                    (promo-banner/query data)
+      :checkout-steps                  (checkout-steps/query data)
+      :products                        (get-in data keypaths/v2-products)
+      :payment                         (checkout-credit-card/query data)
+      :delivery                        (checkout-delivery/query data)
+      :install-or-freeinstall-applied? (orders/freeinstall-applied? order)
+      :checkout-button-data            (checkout-button-query data)
+      :selected-quadpay?               selected-quadpay?
+      :loaded-quadpay?                 (get-in data keypaths/loaded-quadpay)
+      :confirmation-summary            (confirmation-summary/query data)
+      :adventure?                      adventure?}
+     (if adventure?
+       {:items                  (update (item-card-query data)
+                                        :items conj
+                                        (freeinstall-line-item-data->item-card freeinstall-line-item-data))
+        :available-store-credit (get-in data keypaths/user-total-available-store-credit)
+        :servicing-stylist      (get-in data adventure.keypaths/adventure-servicing-stylist)}
+       {:items                  (cond-> (item-card-query data)
+                                  (and (or freeinstall-entered-on-consolidated-cart?
+                                           freeinstall-applied?)
+                                       freeinstall-line-item-data)
+                                  (update
+                                   :items conj
+                                   (freeinstall-line-item-data->item-card freeinstall-line-item-data)))
+        :available-store-credit (when-not selected-quadpay?
+                                  (get-in data keypaths/user-total-available-store-credit))}))))
 
 (defn ^:private built-non-auth-component [data opts]
-  (if (= "freeinstall" (get-in data keypaths/store-slug))
-    (component/build adventure-component
-                     (adventure-query data)
-                     opts)
-    (component/build component
-                     (query data)
-                     opts)))
+  (let [queried-data (query data)]
+    (if (:adventure? queried-data)
+      (component/build adventure-component queried-data opts)
+      (component/build component queried-data opts))))
 
 (defn ^:export built-component
   [data opts]
