@@ -38,24 +38,56 @@
    :email-deals          (assoc shop-by-look-default
                                 :description (str "Grab the latest bundle deal! "
                                                   "Below you can shop every bundle deal of the week."))
-   :wavy-curly-looks     {:title             "Choose from these Wavy and Curly looks"
-                          :description       (str "We have an amazing selection of inspo to choose from.")
-                          :button-copy       "View this look"
-                          :back-copy         "back to looks"
+
+   :wavy-curly-looks {:title             "Choose from these Wavy and Curly looks"
+                      :description       (str "We have an amazing selection of inspo to choose from.")
+                      :button-copy       "View this look"
+                      :back-copy         "back to looks"
+                      :above-button-copy "*Discounts applied at check out"
+                      :short-name        "look"
+                      :seo-title         "Shop Wavy and Curly Looks | Mayvenn"
+                      :og-title          (str "Shop Wavy and Curly Looks - "
+                                              "Find and Buy your favorite Mayvenn bundles!")}
+
+   :straight-looks {:title             "Choose from these Straight looks"
+                    :description       (str "We have an amazing selection of inspo to choose from.")
+                    :button-copy       "View this look"
+                    :back-copy         "back to looks"
+                    :above-button-copy "*Discounts applied at check out"
+                    :short-name        "look"
+                    :seo-title         "Shop Straight Looks | Mayvenn"
+                    :og-title          (str "Shop Straight Looks - "
+                                            "Find and Buy your favorite Mayvenn bundles!")}
+
+   :straight-bundle-sets {:title             "Our fave Straight Bundle Sets"
+                          :description       "The best combinations, period"
+                          :button-copy       "View this Bundle Set"
+                          :back-copy         "back to bundle sets"
                           :above-button-copy "*Discounts applied at check out"
-                          :short-name        "look"
-                          :seo-title         "Shop Wavy and Curly Looks | Mayvenn"
-                          :og-title          (str "Shop Wavy and Curly Looks - "
+                          :short-name        "bundle set"
+                          :seo-title         "Shop Straight Bundle Sets | Mayvenn"
+                          :og-title          (str "Shop Straight Bundle Sets - "
                                                   "Find and Buy your favorite Mayvenn bundles!")}
-   :straight-looks       {:title             "Choose from these Straight looks"
-                          :description       (str "We have an amazing selection of inspo to choose from.")
-                          :button-copy       "View this look"
-                          :back-copy         "back to looks"
-                          :above-button-copy "*Discounts applied at check out"
-                          :short-name        "look"
-                          :seo-title         "Shop Straight Looks | Mayvenn"
-                          :og-title          (str "Shop Straight Looks - "
-                                                  "Find and Buy your favorite Mayvenn bundles!")}})
+
+   :wavy-curly-bundle-sets {:title             "Our fave Wavy and Curly Bundle Sets"
+                            :description       "The best combinations, period"
+                            :button-copy       "View this Bundle Set"
+                            :back-copy         "back to bundle sets"
+                            :above-button-copy "*Discounts applied at check out"
+                            :short-name        "bundle set"
+                            :seo-title         "Shop Wavy and Curly Bundle Sets | Mayvenn"
+                            :og-title          (str "Shop Wavy and Curly Bundle Sets - "
+                                                    "Find and Buy your favorite Mayvenn bundles!")}
+
+   :all-bundle-sets {:title             "Our fave Bundle Sets"
+                     :description       "The best combinations, period"
+                     :button-copy       "View this Bundle Set"
+                     :back-copy         "back to bundle sets"
+                     :above-button-copy "*Discounts applied at check out"
+                     :short-name        "bundle set"
+                     :seo-title         "Shop Wavy and Curly Bundle Sets | Mayvenn"
+                     :og-title          (str "Shop Wavy and Curly Bundle Sets - "
+                                             "Find and Buy your favorite Mayvenn bundles!")}})
 (def albums
   #{:sleek-and-straight    ;; Aladdin Home - Straight
     :waves-and-curly       ;; Aladdin Home - Wavy
@@ -95,7 +127,12 @@
     :bundle-sets-body-wave
     :bundle-sets-deep-wave
     :bundle-sets-water-wave
-    :bundle-sets-curly})
+    :bundle-sets-curly
+
+    ;; Shop bundle sets
+    :all-bundle-sets
+    :straight-bundle-sets
+    :wavy-curly-bundle-sets})
 
 (defn determine-look-album
   [data target-album-keyword]
