@@ -14,7 +14,7 @@
              (utils/route-back {:navigation-message target}))
       [:div.flex.items-center.justify-center
        {:style {:height "24px" :width "20px"}}
-       (svg/thick-left-arrow)]])))
+       (svg/thick-left-arrow {})]])))
 
 (defn header-cart-molecule
   [{:header.cart/keys [id]}]
