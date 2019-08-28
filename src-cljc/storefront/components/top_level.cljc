@@ -30,6 +30,8 @@
             adventure.stylist-matching.stylist-profile
             adventure.stylist-matching.stylist-gallery
 
+            stylist-matching.match-success
+
             [storefront.components.ui :as ui]
             [mayvenn-made.home :as mayvenn-made.home]
             [checkout.cart :as cart]
@@ -53,7 +55,7 @@
             [storefront.routes :as routes]
             [checkout.consolidated-cart :as consolidated-cart]))
 
-(defn main-component [nav-event]
+(defn main-component [nav-event consolidated?]
   (doto (condp = nav-event
           #?@(:cljs
               [events/navigate-reset-password                             reset-password/built-component
@@ -136,7 +138,9 @@
           events/navigate-adventure-stylist-results-pre-purchase        adventure.stylist-matching.stylist-results/built-component-pre-purchase
           events/navigate-adventure-stylist-results-post-purchase       adventure.stylist-matching.stylist-results/built-component-post-purchase
           events/navigate-adventure-out-of-area                         adventure.stylist-matching.out-of-area/built-component
-          events/navigate-adventure-match-success-pre-purchase          adventure.stylist-matching.match-success/built-component
+          events/navigate-adventure-match-success-pre-purchase          (if consolidated?
+                                                                          stylist-matching.match-success/page
+                                                                          adventure.stylist-matching.match-success/built-component)
           events/navigate-adventure-match-success-post-purchase         adventure.stylist-matching.match-success-post-purchase/built-component
           events/navigate-adventure-checkout-wait                       (ui/lazy-load-component :checkout 'adventure.checkout.wait/built-component events/navigate-adventure-checkout-wait)
           events/navigate-adventure-let-mayvenn-match                   adventure.stylist-matching.let-mayvenn-match/built-component
@@ -179,7 +183,7 @@
                                   ;; Hack: See above hack
                                   (when silver-background?
                                     {:class "bg-light-silver"}))
-        ((main-component nav-event) data nil)]
+        ((main-component nav-event false) data nil)]
 
        [:footer (footer/built-component data nil)]]])))
 
@@ -198,7 +202,7 @@
     (flash/built-component data nil)
 
     [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
-     ((main-component nav-event) data nil)]
+     ((main-component nav-event false) data nil)]
     [:footer
      (footer/built-component data nil)]]])
 
@@ -245,7 +249,7 @@
                    :margin-bottom "-30px"}}
           (when-not (= nav-event events/navigate-adventure-home)
             {:class "max-580 mx-auto relative"}))
-         ((main-component nav-event) data nil)]]
+         ((main-component nav-event (not freeinstall?)) data nil)]]
 
        :else
        (main-layout data nav-event)))))
