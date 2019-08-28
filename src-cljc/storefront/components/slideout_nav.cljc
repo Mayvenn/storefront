@@ -127,7 +127,7 @@
    [:div.h4.border-bottom.border-gray.py3
     (into [:a.block.inherit-color.flex.items-center (assoc link-attrs :data-test data-test)] content)]])
 
-(defn shopping-rows [{:keys [show-freeinstall-link? v2-experience?]}]
+(defn shopping-rows [{:keys [show-freeinstall-link? hide-deals-link?]}]
   (let [^:inline caret (ui/forward-caret {:width  "23px"
                                           :height "20px"})]
     (concat
@@ -137,7 +137,7 @@
          :content    [[:span.teal.pr1 "NEW"]
                       [:span.medium "Get a Mayvenn Install"]]}])
 
-     (when-not v2-experience?
+     (when-not hide-deals-link?
        [{:link-attrs (utils/route-to events/navigate-shop-by-look {:album-keyword :deals})
          :data-test  "menu-shop-by-deals"
          :content    [[:span.medium "Deals"]]}])
@@ -262,17 +262,19 @@
       (component/build root-menu data nil))]))
 
 (defn basic-query [data]
-  (let [{:keys [match-eligible] :as store} (marquee/query data)]
+  (let [{:keys [match-eligible] :as store} (marquee/query data)
+        shop?                              (= "shop" (get-in data keypaths/store-slug))]
     {:signed-in              (auth/signed-in data)
      :on-taxon?              (get-in data keypaths/current-traverse-nav)
      :user                   {:stylist-portrait (get-in data keypaths/user-stylist-portrait)
                               :email            (get-in data keypaths/user-email)}
+     :hide-deals-link?       (and (or shop? (experiments/aladdin-experience? data))
+                                  (experiments/shop-by-bundle-sets? data))
      :store                  store
      :show-community?        (and (not match-eligible)
                                   (stylists/own-store? data))
      :vouchers?              (experiments/dashboard-with-vouchers? data)
-     :v2-experience?         (experiments/aladdin-experience? data)
-     :show-freeinstall-link? (= "shop" (get-in data keypaths/store-slug))}))
+     :show-freeinstall-link? shop?}))
 
 (defn query [data]
   (-> (basic-query data)

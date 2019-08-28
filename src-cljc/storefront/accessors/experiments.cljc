@@ -97,3 +97,5 @@
   [data]
   (display-feature? data "stylist-profiles"))
 
+(defn shop-by-bundle-sets? [data]
+  (display-feature? data "shop-by-bundle-sets"))

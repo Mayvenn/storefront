@@ -145,7 +145,7 @@
     (merge opts {:style {:padding-left "24px" :padding-right "24px"}})
     text]))
 
-(defn menu [{:keys [show-freeinstall-link? v2-experience?]}]
+(defn menu [{:keys [show-freeinstall-link? hide-deals-link?]}]
   (component/html
    [:div.center
     (when show-freeinstall-link?
@@ -154,7 +154,7 @@
               :on-mouse-enter close-header-menus)
        [:span [:span.teal.pr1 "NEW"] "Get a Mayvenn Install"]))
 
-    (when-not v2-experience?
+    (when-not hide-deals-link?
       (header-menu-link (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :deals})
                                :on-mouse-enter close-header-menus)
                         "Deals"))
