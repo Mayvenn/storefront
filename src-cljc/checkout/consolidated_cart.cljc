@@ -108,19 +108,15 @@
            show-browser-pay?
            suggestions] :as queried-data} owner _]
   (component/create
-   [:div.container.p2
+   [:div.container.px2
     (component/build promo-banner/sticky-organism promo-banner nil)
 
     (component/build call-out/component call-out nil)
 
     [:div.clearfix.mxn3
-     [:div.hide-on-dt]
      (when applied?
-       (list ;; HACK: here until we get a desktop style pass
-        [:div.mtn3]
-        [:div.mb3
-         (component/build qualified-banner-component nil nil)]))
-     [:div.px4.my3 (ui-molecules/return-link queried-data)]
+       (component/build qualified-banner-component nil nil))
+     [:div.px4.my1 (ui-molecules/return-link queried-data)]
      [:div.col-on-tb-dt.col-6-on-tb-dt.px3.border-top.border-light-gray
       {:data-test "cart-line-items"}
       ;; HACK: have suggestions be paired with appropriate cart item
@@ -219,7 +215,7 @@
    (ui/narrow-container
     [:div
      [:div.center {:data-test "empty-cart"}
-      [:div.px4.my2 (ui-molecules/return-link queried-data)]
+      [:div.px4.my1 (ui-molecules/return-link queried-data)]
 
       [:div.col-12.border-bottom.border-light-silver.mb4]
 
