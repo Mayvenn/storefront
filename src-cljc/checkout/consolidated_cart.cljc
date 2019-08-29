@@ -367,6 +367,11 @@
           (merge {:rating/value         (:rating stylist)
                   :cart-item-copy/value nil}))]))))
 
+(defn coupon-code->remove-promo-action [coupon-code]
+  {:cart-summary-line/action-id     "cart-remove-promo"
+   :cart-summary-line/action-icon   (svg/close-x {:class "stroke-white fill-gray"})
+   :cart-summary-line/action-target [events/control-checkout-remove-promotion {:code coupon-code}]} )
+
 (defn cart-summary-query
   [{:as order :keys [adjustments]}
    {:mayvenn-install/keys [entered? locked? applied? service-discount quantity-remaining]}]
@@ -381,9 +386,9 @@
                                     (checkout-delivery/enrich-shipping-method (date/now))
                                     :copy/timeframe)
 
-        adjustment         (->> order :adjustments (map :price) (reduce + 0))
+        adjustment (->> order :adjustments (map :price) (reduce + 0))
 
-        total-savings      (- (+ adjustment service-discount))]
+        total-savings (- (+ adjustment service-discount))]
     {:cart-summary/id                 "cart-summary"
      :freeinstall-informational/value (not entered?)
      :cart-summary-total-line/id      "total"
@@ -426,19 +431,22 @@
 
                                  (when locked?
                                    ;; When FREEINSTALL is merely locked (and so not yet an adjustment) we must special case it, so:
-                                   [{:cart-summary-line/id    "freeinstall-locked"
-                                     :cart-summary-line/icon  (svg/discount-tag {:class  "mxnp6 fill-gray pr1"
-                                                                                 :height "2em" :width "2em"})
-                                     :cart-summary-line/label "FREEINSTALL"
-                                     :cart-summary-line/value (mf/as-money-or-free service-discount)
-                                     :cart-summary-line/class "purple"}])
+                                   [(merge
+                                     {:cart-summary-line/id    "freeinstall-locked"
+                                      :cart-summary-line/icon  (svg/discount-tag {:class  "mxnp6 fill-gray pr1"
+                                                                                  :height "2em" :width "2em"})
+                                      :cart-summary-line/label "FREEINSTALL"
+                                      :cart-summary-line/value (mf/as-money-or-free service-discount)
+                                      :cart-summary-line/class "purple"}
+                                     (coupon-code->remove-promo-action "freeinstall"))
+
+                                    {:cart-summary-line/action-id     "cart-remove-promo"
+                                     :cart-summary-line/action-icon   (svg/close-x {:class "stroke-white fill-gray"})
+                                     :cart-summary-line/action-target [events/control-checkout-remove-promotion {:code "freeinstall"}]}])
 
                                  (for [{:keys [name price coupon-code]}
                                        (filter adjustments/non-zero-adjustment? adjustments)
-                                       :let
-                                       [install-summary-line? (= "freeinstall" coupon-code)
-                                        coupon-summary-line? (and coupon-code
-                                                                  (not install-summary-line?))]]
+                                       :let [install-summary-line? (= "freeinstall" coupon-code)]]
                                    (cond-> {:cart-summary-line/id    (text->data-test-name name)
                                             :cart-summary-line/icon  (svg/discount-tag {:class  "mxnp6 fill-gray pr1"
                                                                                         :height "2em" :width "2em"})
@@ -450,10 +458,8 @@
                                      (merge {:cart-summary-line/value (mf/as-money-or-free service-discount)
                                              :cart-summary-line/class "purple"})
 
-                                     coupon-summary-line?
-                                     (merge {:cart-summary-line/action-id     "cart-remove-promo"
-                                             :cart-summary-line/action-icon   (svg/close-x {:class "stroke-white fill-gray"})
-                                             :cart-summary-line/action-target [events/control-checkout-remove-promotion {:code coupon-code}]}))))}))
+                                     coupon-code
+                                     (merge (coupon-code->remove-promo-action coupon-code)))))}))
 
 (defn full-cart-query [data]
   (let [order                                (get-in data keypaths/order)
