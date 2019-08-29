@@ -1,6 +1,5 @@
 (ns stylist-matching.ui.header
   (:require [storefront.component :as component]
-            [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.platform.component-utils :as utils]
             [storefront.components.svg :as svg]))
