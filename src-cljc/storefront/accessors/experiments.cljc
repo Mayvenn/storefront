@@ -79,10 +79,6 @@
   [data]
   (display-feature? data "adv-cart-promo-entry"))
 
-(defn email-capture-quadpay-new?
-  [data]
-  (display-feature? data "email-capture-quadpay-new"))
-
 (defn adventure-on-shop?
   [data]
   (display-feature? data "adventure-on-shop"))

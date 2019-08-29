@@ -74,7 +74,6 @@
         focused (get-in app-state keypaths/ui-focus)
         email   (get-in app-state keypaths/captured-email)]
     {:modal-close/event                  events/control-email-captured-dismiss
-     :capture/email-capture-quadpay-new? (experiments/email-capture-quadpay-new? app-state) ;; ns?
      :pre-title/content                  (ui/ucare-img {:width "24px"} ;; Mayvenn logo
                                                        "6620eab6-ca9b-4400-b8e5-d6ec00654dd3")
      :monstrous-title/copy               ["Buy Now," "Pay Later."]
@@ -103,29 +102,5 @@
                                           :data-test    "email-input-submit"}}))
 
 (defmethod popup/component :email-capture-quadpay
-  [{:as                     query-data
-    :capture/keys           [email-capture-quadpay-new?]
-    :single-field-form/keys [callback field-data]} _ _]
-  (if email-capture-quadpay-new?
-    (popup.organisms/organism query-data _ _)
-    (component/create
-     (ui/modal
-      {:close-attrs close-dialog-href
-       :col-class   "col-11 col-5-on-tb col-4-on-dt flex justify-center"}
-      [:div.flex.flex-column.bg-cover.bg-top.bg-email-capture
-       {:style {:max-width "400px"}}
-       [:div.flex.justify-end
-        (ui/big-x {:data-test "dismiss-email-capture"
-                   :attrs     close-dialog-href})]
-       [:div {:style {:height "200px"}}]
-       [:div.px4.pt1.py3.m4
-        [:form.col-12.flex.flex-column.items-center {:on-submit (utils/send-event-callback callback)}
-         [:div.col-12.mx-auto
-          (ui/text-field (merge {:required true
-                                 :class    "col-12 center bold"}
-                                field-data))
-          (ui/submit-button "Sign Up Now"
-                            {:color-kw     :color/quadpay
-                             :height-class "py1"
-                             :class        "h6 bold mt1"
-                             :data-test    "email-input-submit"})]]]]))))
+  [query-data _ _]
+  (popup.organisms/organism query-data _ _))
