@@ -3,6 +3,7 @@
             [adventure.checkout.cart.items :as adv-cart-items]
             [clojure.string :as string]
             [spice.core :as spice]
+            [storefront.accessors.adjustments :as adjustments]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.experiments :as experiments]
             [storefront.component :as component]
@@ -74,7 +75,7 @@
        (summary-row {:data-test "subtotal"} "Subtotal" subtotal)
 
        (for [{:keys [name price coupon-code] :as adjustment} adjustments-including-tax]
-         (when (orders/non-zero-adjustment? adjustment)
+         (when (adjustments/non-zero-adjustment? adjustment)
            (summary-row
             {:key       name
              :data-test (text->data-test-name name)}
