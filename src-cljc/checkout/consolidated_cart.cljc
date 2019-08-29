@@ -383,7 +383,8 @@
      :cart-summary/lines (concat [{:cart-summary-line/id    "subtotal"
                                    :cart-summary-line/label "Subtotal"
                                    :cart-summary-line/value (mf/as-money (cond-> subtotal
-                                                                           applied?
+                                                                           (or locked? applied?)
+                                                                           ;; Add the service discount to the subtotal
                                                                            (- service-discount)))}]
 
                                  (when shipping
