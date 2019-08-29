@@ -121,16 +121,14 @@
 (defn hero-section
   [category]
   (component/html
-   [:h1
+   [:h1 {:style {:min-height "180px"}} ; To aid scroll-to estimation
     (let [{:keys [mobile-url file-name desktop-url alt]} (-> category :images :hero)]
       (when (and mobile-url desktop-url)
         [:picture
          [:source {:media   "(min-width: 750px)"
                    :src-set (str desktop-url "-/format/auto/" file-name " 1x")}]
-         (ui/aspect-ratio 375 204
-                          [:img.container-height.block.col-12
-                           {:src (str mobile-url "-/format/auto/" file-name)
-                            :alt alt}])]))]))
+         [:img.block.col-12 {:src   (str mobile-url "-/format/auto/" file-name)
+                             :alt   alt}]]))]))
 
 (defn copy-section
   [category]
