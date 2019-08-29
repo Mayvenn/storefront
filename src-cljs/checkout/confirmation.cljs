@@ -107,63 +107,72 @@
 
 (defn component
   [{:keys [available-store-credit
-           checkout-steps
-           payment
-           delivery
-           order
-           items
-           requires-additional-payment?
-           promo-banner
-           install-or-free-install-applied?
-           confirmation-summary
            checkout-button-data
+           checkout-steps
+           confirmation-summary
+           delivery
+           free-install-applied?
+           items
+           loaded-quadpay?
+           order
+           payment
+           promo-banner
+           requires-additional-payment?
            selected-quadpay?
-           loaded-quadpay?]}
+           servicing-stylist]}
    owner]
   (component/create
    [:div.container.p2
     (component/build promo-banner/sticky-organism promo-banner nil)
     (component/build checkout-steps/component checkout-steps nil)
+    (if order
+      [:form
+       {:on-submit
+        (when-not (or (:disabled? checkout-button-data) (:spinning? checkout-button-data))
+          (if selected-quadpay?
+            (utils/send-event-callback events/control-checkout-quadpay-confirmation-submit)
+            (utils/send-event-callback events/control-checkout-confirmation-submit
+                                       {:place-order? requires-additional-payment?})))}
+       [:.clearfix.mxn3
+        [:.col-on-tb-dt.col-6-on-tb-dt.px3
+         [:.h3.left-align "Order Summary"]
 
-    [:form
-     {:on-submit
-      (if selected-quadpay?
-        (utils/send-event-callback events/control-checkout-quadpay-confirmation-submit)
-        (utils/send-event-callback events/control-checkout-confirmation-submit
-                                   {:place-order? requires-additional-payment?}))}
+         [:div.my2
+          {:data-test "confirmation-line-items"}
+          (component/build item-card/component items nil)]]
 
-     [:.clearfix.mxn3
-      [:.col-on-tb-dt.col-6-on-tb-dt.px3
-       [:.h3.left-align "Order Summary"]
+        [:.col-on-tb-dt.col-6-on-tb-dt.px3
+         (component/build checkout-delivery/component delivery nil)
+         (when requires-additional-payment?
+           [:div
+            (ui/note-box
+             {:color     "teal"
+              :data-test "additional-payment-required-note"}
+             [:.p2.navy
+              "Please enter an additional payment method below for the remaining total on your order."])
+            (component/build checkout-credit-card/component payment nil)])
+         (if confirmation-summary
+           (component/build confirmation-summary/component confirmation-summary {})
+           (summary/display-order-summary order
+                                          {:read-only?             true
+                                           :use-store-credit?      (not free-install-applied?)
+                                           :available-store-credit available-store-credit}))
+         (component/build quadpay/component
+                          {:quadpay/show?       (and selected-quadpay? loaded-quadpay?)
+                           :quadpay/order-total (:total order)
+                           :quadpay/directive   :continue-with}
+                          nil)
 
-       [:div.my2
-        {:data-test "confirmation-line-items"}
-        (component/build item-card/component items nil)]]
-
-      [:.col-on-tb-dt.col-6-on-tb-dt.px3
-       (component/build checkout-delivery/component delivery nil)
-       (when requires-additional-payment?
-         [:div
-          (ui/note-box
-           {:color     "teal"
-            :data-test "additional-payment-required-note"}
-           [:.p2.navy
-            "Please enter an additional payment method below for the remaining total on your order."])
-          (component/build checkout-credit-card/component payment nil)])
-       (if confirmation-summary
-         (component/build confirmation-summary/component confirmation-summary {})
-         (summary/display-order-summary order
-                                        {:read-only?             true
-                                         :use-store-credit?      (not install-or-free-install-applied?)
-                                         :available-store-credit available-store-credit}))
-       (component/build quadpay/component
-                        {:quadpay/show?       (and selected-quadpay? loaded-quadpay?)
-                         :quadpay/order-total (:total order)
-                         :quadpay/directive   :continue-with}
-                        nil)
-
-       [:div.col-12.col-6-on-tb-dt.mx-auto
-        (checkout-button selected-quadpay? checkout-button-data)]]]]]))
+         (when free-install-applied?
+           [:div.h5.my4.center.col-10.mx-auto.line-height-3
+            (if-let [servicing-stylist-name (stylists/->display-name servicing-stylist)]
+              (str "You’ll be connected with " servicing-stylist-name " after checkout.")
+              "You’ll be able to select your Certified Mayvenn Stylist after checkout.")])
+         [:div.col-12.col-6-on-tb-dt.mx-auto
+          (checkout-button selected-quadpay? checkout-button-data)]]]]
+      [:div.py6.h2
+       [:div.py4 (ui/large-spinner {:style {:height "6em"}})]
+       [:h2.center.navy "Processing your order..."]])]))
 
 (defn item-card-query
   [data]
@@ -198,76 +207,6 @@
                        :detail-bottom-left/value  (str "Qty " (:quantity line-item))}))
                   (orders/product-items order))}))
 
-(defn adventure-component
-  [{:keys [available-store-credit
-           items
-           checkout-steps
-           payment delivery order
-           requires-additional-payment?
-           promo-banner
-           install-or-free-install-applied?
-           confirmation-summary
-           checkout-button-data
-           servicing-stylist
-           selected-quadpay?
-           loaded-quadpay?
-           order]}
-   owner]
-  (component/create
-   [:div.container.p2
-    (component/build promo-banner/sticky-organism promo-banner nil)
-    (component/build checkout-steps/component checkout-steps nil)
-
-    (if order
-      [:form
-       {:on-submit
-        (when-not (or (:disabled? checkout-button-data) (:spinning? checkout-button-data))
-          (if selected-quadpay?
-            (utils/send-event-callback events/control-checkout-quadpay-confirmation-submit)
-            (utils/send-event-callback events/control-checkout-confirmation-submit
-                                       {:place-order? requires-additional-payment?})))}
-
-       [:.clearfix.mxn3
-        [:.col-on-tb-dt.col-6-on-tb-dt.px3
-         [:.h3.left-align "Order Summary"]
-
-         [:div.my2
-          {:data-test "confirmation-line-items"}
-          (component/build item-card/component items nil)]]
-
-        [:.col-on-tb-dt.col-6-on-tb-dt.px3
-         (component/build checkout-delivery/component delivery nil)
-         (when requires-additional-payment?
-           [:div
-            (ui/note-box
-             {:color     "teal"
-              :data-test "additional-payment-required-note"}
-             [:.p2.navy
-              "Please enter an additional payment method below for the remaining total on your order."])
-            (component/build checkout-credit-card/component payment nil)])
-         (if confirmation-summary
-           (component/build confirmation-summary/component confirmation-summary {})
-           (summary/display-order-summary order
-                                          {:read-only?             true
-                                           :use-store-credit?      (not install-or-free-install-applied?)
-                                           :available-store-credit available-store-credit}))
-
-         (component/build quadpay/component
-                          {:quadpay/show?       (and selected-quadpay? loaded-quadpay?)
-                           :quadpay/order-total (:total order)
-                           :quadpay/directive   :continue-with}
-                          nil)
-
-         [:div.h5.my4.center.col-10.mx-auto.line-height-3
-          (if-let [servicing-stylist-name (stylists/->display-name servicing-stylist)]
-            (str "You’ll be connected with " servicing-stylist-name " after checkout.")
-            "You’ll be able to select your Certified Mayvenn Stylist after checkout.")]
-         [:div.col-12.col-6-on-tb-dt.mx-auto
-          (checkout-button selected-quadpay? checkout-button-data)]]]]
-      [:div.py6.h2
-       [:div.py4 (ui/large-spinner {:style {:height "6em"}})]
-       [:h2.center.navy "Processing your order..."]])]))
-
 (defn ^:private freeinstall-line-item-data->item-card
   [{:keys [id title detail thumbnail-image price]}]
   {:react/key              (str "freeinstall-line-item-" id)
@@ -283,51 +222,39 @@
 
 (defn query
   [data]
-  (let [order                                     (get-in data keypaths/order)
-        selected-quadpay?                         (-> (get-in data keypaths/order) :cart-payments :quadpay)
-        freeinstall-applied?                      (orders/freeinstall-applied? order)
-        freeinstall-entered-on-consolidated-cart? (and (orders/freeinstall-entered? order)
-                                                       (experiments/consolidated-cart? data))
-        adventure?                                (#{"freeinstall"} (get-in data keypaths/store-slug))
-        freeinstall-line-item-data                (if adventure?
-                                                    (adventure-cart-items/freeinstall-line-item-query data)
-                                                    (cart-items/freeinstall-line-item-query data))]
-    (merge
-     {:order                           order
-      :store-slug                      (get-in data keypaths/store-slug)
-      :requires-additional-payment?    (requires-additional-payment? data)
-      :promo-banner                    (promo-banner/query data)
-      :checkout-steps                  (checkout-steps/query data)
-      :products                        (get-in data keypaths/v2-products)
-      :payment                         (checkout-credit-card/query data)
-      :delivery                        (checkout-delivery/query data)
-      :install-or-freeinstall-applied? (orders/freeinstall-applied? order)
-      :checkout-button-data            (checkout-button-query data)
-      :selected-quadpay?               selected-quadpay?
-      :loaded-quadpay?                 (get-in data keypaths/loaded-quadpay)
-      :confirmation-summary            (confirmation-summary/query data)
-      :adventure?                      adventure?}
-     (if adventure?
-       {:items                  (update (item-card-query data)
-                                        :items conj
-                                        (freeinstall-line-item-data->item-card freeinstall-line-item-data))
-        :available-store-credit (get-in data keypaths/user-total-available-store-credit)
-        :servicing-stylist      (get-in data adventure.keypaths/adventure-servicing-stylist)}
-       {:items                  (cond-> (item-card-query data)
-                                  (and (or freeinstall-entered-on-consolidated-cart?
-                                           freeinstall-applied?)
-                                       freeinstall-line-item-data)
-                                  (update
-                                   :items conj
-                                   (freeinstall-line-item-data->item-card freeinstall-line-item-data)))
-        :available-store-credit (when-not selected-quadpay?
-                                  (get-in data keypaths/user-total-available-store-credit))}))))
+  (let [order                      (get-in data keypaths/order)
+        selected-quadpay?          (-> (get-in data keypaths/order) :cart-payments :quadpay)
+        freeinstall-applied?       (orders/freeinstall-applied? order)
+        adventure?                 (#{"freeinstall"} (get-in data keypaths/store-slug))
+        shop?                      (#{"shop"} (get-in data keypaths/store-slug))
+        freeinstall-line-item-data (if (or adventure? shop?)
+                                     (adventure-cart-items/freeinstall-line-item-query data)
+                                     (cart-items/freeinstall-line-item-query data))]
+    {:order                        order
+     :store-slug                   (get-in data keypaths/store-slug)
+     :requires-additional-payment? (requires-additional-payment? data)
+     :promo-banner                 (promo-banner/query data)
+     :checkout-steps               (checkout-steps/query data)
+     :products                     (get-in data keypaths/v2-products)
+     :payment                      (checkout-credit-card/query data)
+     :delivery                     (checkout-delivery/query data)
+     :free-install-applied?        freeinstall-applied?
+     :checkout-button-data         (checkout-button-query data)
+     :selected-quadpay?            selected-quadpay?
+     :loaded-quadpay?              (get-in data keypaths/loaded-quadpay)
+     :confirmation-summary         (confirmation-summary/query data)
+     :servicing-stylist            (get-in data adventure.keypaths/adventure-servicing-stylist)
+     :items                        (cond-> (item-card-query data)
+                                     (and freeinstall-applied? freeinstall-line-item-data)
+                                     (update :items conj
+                                             (freeinstall-line-item-data->item-card freeinstall-line-item-data)))
+     :available-store-credit       (if adventure?
+                                     (get-in data keypaths/user-total-available-store-credit)
+                                     (when-not selected-quadpay?
+                                       (get-in data keypaths/user-total-available-store-credit)))}))
 
 (defn ^:private built-non-auth-component [data opts]
-  (let [queried-data (query data)]
-    (if (:adventure? queried-data)
-      (component/build adventure-component queried-data opts)
-      (component/build component queried-data opts))))
+  (component/build component (query data) opts))
 
 (defn ^:export built-component
   [data opts]
