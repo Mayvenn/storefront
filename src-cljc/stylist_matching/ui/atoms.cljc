@@ -1,6 +1,6 @@
 (ns stylist-matching.ui.atoms)
 
-(def bottom-right-party-background-atom
+(def bottom-right-party-background
   {:style {:background-size     "100px"
            :background-position "right 22px bottom 21px"
            :background-repeat   "no-repeat"

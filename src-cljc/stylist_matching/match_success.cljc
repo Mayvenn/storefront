@@ -49,7 +49,7 @@
   [{:keys [header shopping-method-choice]} _ _]
   (component/create
    [:div.bg-lavender.white.center.flex.flex-auto.flex-column
-    stylist-matching.A/bottom-right-party-background-atom
+    stylist-matching.A/bottom-right-party-background
     (component/build header/organism header nil)
     (component/build shopping-method-choice/organism shopping-method-choice nil)]))
 
