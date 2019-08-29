@@ -30,6 +30,7 @@
   [{:keys [illuminated?
            desktop-header-data
            item-count
+           hide-back-to-shopping-link?
            back]} _ _]
   (component/create
    (let [close-cart-route (utils/route-back-or-to back events/navigate-home)]
@@ -41,9 +42,10 @@
          {:class "bg-too-light-lavender"})
 
        [:div.col-2.hide-on-mb-tb
-        [:a.h5.black.pointer.flex.justify-start.items-center close-cart-route
-         (svg/left-caret {:class "stroke-dark-gray"
-                          :height "18px" :width "18px"}) "Back to Shopping"]]
+        (when-not hide-back-to-shopping-link?
+          [:a.h5.black.pointer.flex.justify-start.items-center close-cart-route
+           (svg/left-caret {:class "stroke-dark-gray"
+                            :height "18px" :width "18px"}) "Back to Shopping"])]
 
        [:div.col-1.hide-on-dt]
 
@@ -59,13 +61,16 @@
          (svg/close-x {:class "stroke-dark-gray fill-none"})]]]])))
 
 (defn query [data]
-  {:item-count          (orders/product-quantity (get-in data keypaths/order))
-   :back                (first (get-in data keypaths/navigation-undo-stack))
-   :desktop-header-data (storefront-header/query data)
-   :illuminated?        (and
-                         (experiments/consolidated-cart? data)
-                         (= "shop" (get-in data keypaths/store-slug))
-                         (orders/freeinstall-entered? (get-in data keypaths/order)))})
+  (let [consolidated-cart? (experiments/consolidated-cart? data)
+        shop?              (= "shop" (get-in data keypaths/store-slug))]
+    {:item-count                  (orders/product-quantity (get-in data keypaths/order))
+     :back                        (first (get-in data keypaths/navigation-undo-stack))
+     :desktop-header-data         (storefront-header/query data)
+     :hide-back-to-shopping-link? (and shop? consolidated-cart?)
+     :illuminated?                (and
+                                   consolidated-cart?
+                                   shop?
+                                   (orders/freeinstall-entered? (get-in data keypaths/order)))}))
 
 (defn built-component [data opts]
   (component/build component (query data) nil))
