@@ -358,14 +358,14 @@
                   :cart-item-copy/value    "Congratulations! You're all set for your Mayvenn Install. Select your stylist after checkout."})
 
           stylist
-          (merge {:cart-item-title/secondary     (str "w/ " (:store-nickname stylist))
-                  :cart-item-thumbnail/image-url (some-> stylist :portrait :resizable-url)})
+          (merge {:cart-item-title/secondary      (str "w/ " (:store-nickname stylist))
+                  :cart-item-thumbnail/image-url  (some-> stylist :portrait :resizable-url)
+                  :cart-item-swap-action/target   [events/navigate-adventure-find-your-stylist]
+                  :cart-item-remove-action/target nil})
 
           (and applied? stylist)
-          (merge {:rating/value                   (:rating stylist)
-                  :cart-item-copy/value           nil
-                  :cart-item-swap-action/target   [events/navigate-adventure-find-your-stylist]
-                  :cart-item-remove-action/target nil}))]))))
+          (merge {:rating/value         (:rating stylist)
+                  :cart-item-copy/value nil}))]))))
 
 (defn cart-summary-query
   [{:as order :keys [adjustments]}
