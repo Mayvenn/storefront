@@ -117,7 +117,7 @@
      [:div.hide-on-dt]
      (when applied?
        (list ;; HACK: here until we get a desktop style pass
-        [:div.hide-on-dt.mtn3]
+        [:div.mtn3]
         [:div.mb3
          (component/build qualified-banner-component nil nil)]))
      [:div.px4.my3 (ui-molecules/return-link queried-data)]
