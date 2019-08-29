@@ -1,6 +1,5 @@
 (ns checkout.confirmation.summary
   (:require [checkout.cart.items :as cart-items]
-            [adventure.checkout.cart.items :as adv-cart-items]
             [clojure.string :as string]
             [spice.core :as spice]
             [storefront.accessors.adjustments :as adjustments]
@@ -9,8 +8,6 @@
             [storefront.component :as component]
             [storefront.components.money-formatters :as mf]
             [storefront.components.svg :as svg]
-            [storefront.components.ui :as ui]
-            [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]))
@@ -98,9 +95,7 @@
 
 (defn query [data]
   (let [order                      (get-in data keypaths/order)
-        user                       (get-in data keypaths/user)
         shipping-item              (orders/shipping-item order)
-        adventure?                 (= "freeinstall" (get-in data keypaths/store-slug))
         freeinstall-line-item-data (cart-items/freeinstall-line-item-query data)]
     (when (and (experiments/aladdin-experience? data)
                (or (orders/freeinstall-applied? order)
