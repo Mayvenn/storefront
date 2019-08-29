@@ -9,9 +9,9 @@
             [stylist-matching.ui.shopping-method-choice :as shopping-method-choice]))
 
 (defn header-query
-  [current-order]
+  [{:order.items/keys [quantity]}]
   {:header.cart/id                "adventure-cart"
-   :header.cart/value             (:order.items/quantity current-order)
+   :header.cart/value             quantity
    :header.cart/color             "white"
    :header.title/id               "adventure-title"
    :header.title/primary          "Meet Your Certified Stylist"
