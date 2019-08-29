@@ -30,6 +30,7 @@
             adventure.stylist-matching.stylist-profile
             adventure.stylist-matching.stylist-gallery
 
+            stylist-matching.match-stylist
             stylist-matching.match-success
 
             [storefront.components.ui :as ui]
@@ -131,7 +132,9 @@
           events/navigate-adventure-select-new-look                     (ui/lazy-load-component :catalog 'adventure.select-new-look/built-component events/navigate-adventure-select-new-look)
           events/navigate-adventure-look-detail                         (ui/lazy-load-component :catalog 'adventure.look-detail/built-component events/navigate-adventure-look-detail)
           events/navigate-adventure-select-bundle-set                   (ui/lazy-load-component :catalog 'adventure.select-new-look/built-component events/navigate-adventure-select-bundle-set)
-          events/navigate-adventure-match-stylist                       adventure.stylist-matching.match-stylist/built-component
+          events/navigate-adventure-match-stylist                       (if consolidated?
+                                                                          stylist-matching.match-stylist/page
+                                                                          adventure.stylist-matching.match-stylist/built-component)
           events/navigate-adventure-find-your-stylist                   adventure.stylist-matching.find-your-stylist/built-component
           events/navigate-adventure-matching-stylist-wait-pre-purchase  adventure.stylist-matching.matching-stylist-wait/built-component
           events/navigate-adventure-matching-stylist-wait-post-purchase adventure.stylist-matching.matching-stylist-wait/built-component
