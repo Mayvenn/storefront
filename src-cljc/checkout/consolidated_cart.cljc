@@ -195,24 +195,55 @@
                                                   :height "24px"})
                                 "Share your bag"])])]]]))
 
-(defn empty-component [{:keys [promotions aladdin?]} owner _]
+
+(defn empty-cta-molecule
+  [{:cta/keys [id label target]}]
+  (when (and id label target)
+    (ui/teal-button
+     (merge {:data-test id} (apply utils/fake-href target))
+     [:div.flex.items-center.justify-center.inherit-color label]) ))
+
+(defn empty-cart-body-molecule
+  [{:empty-cart-body/keys [id primary secondary image-id]}]
+  (when id
+    [:div
+     [:div.col-12.flex.justify-center
+      (ui/ucare-img {:width "185"} image-id)]
+
+     [:p.m2.h2.light primary]
+     [:div.col-10.mx-auto.m2.mb3.h5.dark-gray
+      secondary]]))
+
+(defn empty-component [queried-data _ _]
   (component/create
    (ui/narrow-container
-    [:div.p2
-     [:.center {:data-test "empty-cart"}
-      [:div.m2 ^:inline (svg/bag {:style {:height "70px" :width "70px"}
-                                  :class "fill-black"})]
+    [:div
+     [:div.center {:data-test "empty-cart"}
+      [:div.px4.my2 (ui-molecules/return-link queried-data)]
 
-      [:p.m2.h2.light "Your bag is empty."]
+      [:div.col-12.border-bottom.border-light-silver.mb4]
 
-      [:div.m2
-       (let [promo (promos/default-advertised-promotion promotions)]
-         (cond aladdin? promos/freeinstall-description
-               promo    (:description promo)
-               :else    promos/bundle-discount-description))]]
+      (empty-cart-body-molecule queried-data)
 
-     (ui/teal-button (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
-                     "Shop Our Looks")])))
+     [:div.col-9.mx-auto
+      (empty-cta-molecule queried-data)]]])))
+
+(defn empty-cart-query
+  [data]
+  {:return-link/id            "start-shopping"
+   :return-link/copy          "Start Shopping"
+   :return-link/event-message [events/navigate-category
+                               {:catalog/category-id "23"
+                                :page/slug           "mayvenn-install"}]
+
+   :cta/id                    "browse-stylists"
+   :cta/label                 "Browse Mayvenn Stylists"
+   :cta/target                [events/navigate-adventure-find-your-stylist]
+   :empty-cart-body/id        "empty-cart-body"
+   :empty-cart-body/primary   "Your cart is empty"
+   :empty-cart-body/secondary (str "Did you know that you'd qualify for a free"
+                                   " Mayvenn Install when you purchase 3 or more items?")
+   :empty-cart-body/image-id  "6146f2fe-27ed-4278-87b0-7dc46f344c8c"})
 
 (defn ^:private variants-requests [data request-key variant-ids]
   (->> variant-ids
@@ -494,11 +525,6 @@
       (and entered? servicing-stylist)
       (merge {:checkout-caption-copy          (str "You'll be connected with " (stylists/->display-name servicing-stylist) " after checkout.")
               :servicing-stylist-portrait-url (-> servicing-stylist :portrait :resizable-url)}))))
-
-(defn empty-cart-query
-  [data]
-  {:promotions (get-in data keypaths/promotions)
-   :aladdin?   (experiments/aladdin-experience? data)})
 
 (defn component
   [{:keys [fetching-order?
