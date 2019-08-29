@@ -101,9 +101,7 @@
         user                       (get-in data keypaths/user)
         shipping-item              (orders/shipping-item order)
         adventure?                 (= "freeinstall" (get-in data keypaths/store-slug))
-        freeinstall-line-item-data (if adventure?
-                                     (adv-cart-items/freeinstall-line-item-query data)
-                                     (cart-items/freeinstall-line-item-query data))]
+        freeinstall-line-item-data (cart-items/freeinstall-line-item-query data)]
     (when (and (experiments/aladdin-experience? data)
                (or (orders/freeinstall-applied? order)
                    (orders/freeinstall-included? order)))
