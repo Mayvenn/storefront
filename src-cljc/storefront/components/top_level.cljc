@@ -31,6 +31,7 @@
             adventure.stylist-matching.stylist-gallery
 
             stylist-matching.match-stylist
+            stylist-matching.find-your-stylist
             stylist-matching.match-success
 
             [storefront.components.ui :as ui]
@@ -135,7 +136,9 @@
           events/navigate-adventure-match-stylist                       (if consolidated?
                                                                           stylist-matching.match-stylist/page
                                                                           adventure.stylist-matching.match-stylist/built-component)
-          events/navigate-adventure-find-your-stylist                   adventure.stylist-matching.find-your-stylist/built-component
+          events/navigate-adventure-find-your-stylist                   (if consolidated?
+                                                                          stylist-matching.find-your-stylist/page
+                                                                          adventure.stylist-matching.find-your-stylist/built-component)
           events/navigate-adventure-matching-stylist-wait-pre-purchase  adventure.stylist-matching.matching-stylist-wait/built-component
           events/navigate-adventure-matching-stylist-wait-post-purchase adventure.stylist-matching.matching-stylist-wait/built-component
           events/navigate-adventure-stylist-results-pre-purchase        adventure.stylist-matching.stylist-results/built-component-pre-purchase

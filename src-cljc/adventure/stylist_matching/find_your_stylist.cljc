@@ -117,8 +117,9 @@
      (reify
        om/IDidMount
        (did-mount [this]
-         (messages/handle-message events/adventure-address-component-mounted {:address-elem    "stylist-match-address"
-                                                                              :address-keypath keypaths/adventure-stylist-match-location}))
+         (messages/handle-message events/adventure-address-component-mounted
+                                  {:address-elem    "stylist-match-address"
+                                   :address-keypath keypaths/adventure-stylist-match-location}))
        om/IRender
        (render [_]
          (sablono/html (places-component-inner data))))))
@@ -142,9 +143,10 @@
       [:div.col-12.mx-auto
        #?(:cljs
           (if google-maps-loaded?
-            (om/build places-component-outer {:value             stylist-match-address
-                                              :current-step      current-step
-                                              :selected-location selected-location})
+            (om/build places-component-outer
+                      {:value             stylist-match-address
+                       :current-step      current-step
+                       :selected-location selected-location})
 
             [:div.flex.items-center.justify-center.h1.mt3
              ui/spinner]))]]]]))
