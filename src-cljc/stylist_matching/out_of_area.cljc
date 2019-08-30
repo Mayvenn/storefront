@@ -16,9 +16,11 @@
    :header.back-navigation/target [events/navigate-adventure-stylist-results-pre-purchase]})
 
 (def shopping-method-choice-query
-  {:shopping-method-choice.title/id        "stylist-matching-shopping-method-choice"
-   :shopping-method-choice.title/primary   "We need some time to find you the perfect stylist!"
-   :shopping-method-choice.title/secondary "A Mayvenn representative will contact you soon to help select a Certified Mayvenn Stylist. In the meantime…"
+  {:shopping-method-choice.error-title/id        "stylist-matching-shopping-method-choice"
+   :shopping-method-choice.error-title/primary   "We need some time to find you the perfect stylist!"
+   :shopping-method-choice.error-title/secondary (str
+                                                  "A Mayvenn representative will contact you soon "
+                                                  "to help select a Certified Mayvenn Stylist. In the meantime…")
    :list/buttons
    [{:shopping-method-choice.button/id       "button-looks"
      :shopping-method-choice.button/label    "Shop by look"

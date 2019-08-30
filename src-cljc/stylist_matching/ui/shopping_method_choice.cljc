@@ -26,6 +26,14 @@
       (for [button buttons]
         (shopping-method-choice-button-molecule button))])))
 
+(defn shopping-method-choice-error-title-molecule
+  [{:shopping-method-choice.error-title/keys [id primary secondary]}]
+  (when id
+    (component/html
+     [:div.center.flex.flex-column.items-center
+      [:div.h2.my2.light.col-10.purple primary]
+      [:div.h5.my2.light.col-10.dark-gray secondary]])))
+
 (defn shopping-method-choice-title-molecule
   [{:shopping-method-choice.title/keys [id primary secondary]}]
   (when id
@@ -39,4 +47,5 @@
   (component/create
    [:div.m5
     (shopping-method-choice-title-molecule data)
+    (shopping-method-choice-error-title-molecule data)
     (buttons-list-molecule data)]))
