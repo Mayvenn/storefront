@@ -1,0 +1,8 @@
+.pac-container {
+    margin-top: -4px;
+    box-shadow: none;
+    border-top: 0px none;
+    font-family: inherit !important;
+    border-radius: 0 0 5px 5px;
+    box-sizing: content-box !important;
+}

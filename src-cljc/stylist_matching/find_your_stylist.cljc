@@ -4,9 +4,9 @@
             adventure.keypaths
             storefront.keypaths
             api.orders
-            [stylist-matching.ui.atoms :as stylist-matching.A]
             [stylist-matching.ui.header :as header]
-            [stylist-matching.ui.stylist-search :as stylist-search]))
+            [stylist-matching.ui.stylist-search :as stylist-search]
+            [stylist-matching.ui.spinner :as spinner]))
 
 (defn spinner-query
   [app-state]
@@ -26,7 +26,8 @@
      :stylist-search.location-search-box/value       (str input-location)
      :stylist-search.location-search-box/clear?      selected-location?
 
-     :stylist-search.button/disabled? selected-location?
+     :stylist-search.button/id        "stylist-match-address-submit"
+     :stylist-search.button/disabled? (not selected-location?)
      :stylist-search.button/target    [events/control-adventure-location-submit {}]
      :stylist-search.button/label     "Search"}))
 
@@ -46,7 +47,7 @@
    [:div.bg-lavender.white.center.flex.flex-auto.flex-column
     (component/build header/organism header nil)
     (if (seq spinner)
-      [:div (prn-str spinner)]
+      (component/build spinner/organism spinner nil)
       (component/build stylist-search/organism stylist-search nil))]))
 
 (defn page

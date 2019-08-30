@@ -7,26 +7,24 @@
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]))
 
-#?(:clj
-   (def ^:private change-state (constantly nil))
-   :cljs
-   (defn ^:private change-state
-     [selected-location ^js/Event e]
-     (when selected-location
-       (messages/handle-message events/clear-selected-location))
-     (->> {:keypath adventure.keypaths/adventure-stylist-match-address
-           :value (.. e -target -value)}
-          (messages/handle-message events/control-change-state))))
+(defn ^:private change-state
+  [selected-location #?(:cljs ^js/Event e :clj e)]
+  (when selected-location
+    (messages/handle-message events/clear-selected-location))
+  (->> {:keypath adventure.keypaths/adventure-stylist-match-address
+        :value (.. e -target -value)}
+       (messages/handle-message events/control-change-state)))
 
 (defn stylist-search-location-search-box
   [{:stylist-search.location-search-box/keys
     [id placeholder value clear?]}]
-  (component/html
-   (when id
+  (when id
+    (component/html
      (let [handler (partial change-state clear?)]
        [:div
         [:input.col-12.h4.rounded.border.border-white.p2
-         {:value       value
+         {:style       {:margin-right 10}
+          :value       value
           :id          id
           :data-test   id
           :autoFocus   true
@@ -35,12 +33,14 @@
           :on-change   handler}]]))))
 
 (defn stylist-search-button
-  [{:stylist-search.button/keys [disabled? target label]}]
-  (ui/teal-button (merge {:disabled       disabled?
-                          :disabled-class "bg-light-gray gray"
-                          :data-test      "stylist-match-address-submit"}
-                         (apply utils/fake-href target))
-                  label))
+  [{:stylist-search.button/keys [id disabled? target label]}]
+  (when id
+    (component/html
+     (ui/teal-button (merge {:disabled?      disabled?
+                             :disabled-class "bg-light-gray gray"
+                             :data-test      "stylist-match-address-submit"}
+                            (apply utils/fake-href target))
+                     label))))
 
 (defn stylist-search-title-molecule
   [{:stylist-search.title/keys [id primary secondary]}]
@@ -50,9 +50,11 @@
       [:div.h1.my2.light primary]
       [:div.h5.my2.light secondary]])))
 
-(defn wrap-event-on-mount
+(defn ^:private wrap-event-on-mount
   [target data component]
-  #?(:cljs
+  #?(:clj
+     (component/html component)
+     :cljs
      (reify
        om/IDidMount
        (did-mount [this]
