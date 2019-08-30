@@ -21,11 +21,9 @@
 
 (defn- section-element
   [expanded? index title paragraphs section-click-event]
-  [:div.h5.py3.border-gray
-   (merge
-    {:key (str "accordion-" index)}
-    (when-not (zero? index)
-      {:class "border-top"}))
+  [:div.h5.py1.border-gray
+   {:key   (str "accordion-" index)
+    :class "border-bottom"}
    [:div.pointer.col-12.h5.py2.flex.items-center.justify-center
     (merge (utils/fake-href section-click-event {:index index})
            {:data-test (str "accordion-" index)})

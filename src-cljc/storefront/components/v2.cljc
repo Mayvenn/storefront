@@ -183,7 +183,7 @@
   (component/build
    (fn [_ _ _]
      (component/create
-      [:div.px6.mx-auto
+      [:div.px6.mx-auto.mb6
        (when (not modal?)
          {:class "col-5-on-dt"})
        [:h2.center "Frequently Asked Questions"]

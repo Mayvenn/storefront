@@ -178,7 +178,7 @@
   (let [video-link (apply utils/route-to (:cta/navigation-message data))]
     (component/create
      [:div.col-11.mx-auto
-      [:div.hide-on-mb-tb.flex.justify-center.py3
+      [:div.hide-on-mb-tb.flex.justify-center.my3
        [:a.block.relative
         video-link
         (ui/ucare-img {:alt "" :width "212"}
@@ -283,7 +283,7 @@
 (defmethod layer-view :faq
   [{:keys [expanded-index sections]} owner opts]
   (component/create
-   [:div.px6.mx-auto.col-6-on-dt
+   [:div.px6.mx-auto.col-6-on-dt.mb8
     [:h2.center "Frequently Asked Questions"]
     (component/build
      accordion/component

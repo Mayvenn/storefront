@@ -331,7 +331,6 @@
     [:section ^:inline (free-install-mayvenn-grid free-install-mayvenn-ugc)]
     [:hr.hide-on-mb-tb.border-top.border-silver.col-9.mx-auto.mb6]
     [:section (v2/faq faq-data)]
-    [:hr.border-top.border-silver.col-9.mx-auto.my6]
     [:section ^:inline (our-story)]]))
 
 (defn query [data]
