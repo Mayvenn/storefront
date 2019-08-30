@@ -213,7 +213,7 @@
                 [:div.right.pt2.pr2.pointer
                  (svg/simple-x
                   (merge (utils/fake-href events/control-consolidated-cart-free-install-dismiss)
-                         {:data-test "consolidated-cart-free-install-popup-dismiss" ;; TODO data test
+                         {:data-test "consolidated-cart-free-install-popup-dismiss"
                           :height    "20px"
                           :width     "20px"
                           :class     "white"}))]
