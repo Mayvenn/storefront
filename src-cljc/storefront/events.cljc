@@ -540,6 +540,9 @@
 (defpath popup-show-adventure-emailcapture)
 (defpath control-adventure-free-install-dismiss)
 
+(defpath popup-show-consolidated-cart-free-install)
+(defpath control-consolidated-cart-free-install-dismiss)
+
 (defpath api-success-fetch-matched-stylist)
 (defpath api-success-fetch-stylist-details)
 (defpath api-failure-fetch-stylist-details)

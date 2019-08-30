@@ -66,7 +66,7 @@
   [_ _ _]
   (component/create
    [:a.block.white.p2.bg-lavender.flex.justify-center
-    {:on-click  (utils/send-event-callback events/popup-show-adventure-free-install)
+    {:on-click  (utils/send-event-callback events/popup-show-consolidated-cart-free-install)
      :data-test "shop-freeinstall-promo-banner"}
     (svg/info {:height "14px"
                :width  "14px"

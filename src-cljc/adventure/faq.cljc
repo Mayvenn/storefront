@@ -27,7 +27,7 @@
 (defn component [{:keys [expanded-index sections modal?]}]
   [:div.px6.mx-auto
    {:style {:class (if modal? "col-12" "col-6-on-dt")}}
-   [:h2.center "Frequently Asked Questions"]
+   [:h1.center "Frequently Asked Questions"]
    (component/build
     accordion/component
     {:expanded-indices #{expanded-index}

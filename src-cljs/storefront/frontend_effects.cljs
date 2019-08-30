@@ -135,13 +135,14 @@
     (effects/redirect events/navigate-shop-by-look {:album-keyword :all-bundle-sets})))
 
 (def popup-dismiss-events
-  {:email-capture-quadpay  events/control-email-captured-dismiss
-   :email-capture          events/control-email-captured-dismiss
-   :adv-email-capture      events/control-email-captured-dismiss
-   :adventure-free-install events/control-adventure-free-install-dismiss
-   :v2-homepage            events/control-v2-homepage-popup-dismiss
-   :share-cart             events/control-popup-hide
-   :design-system          events/control-design-system-popup-dismiss})
+  {:email-capture-quadpay          events/control-email-captured-dismiss
+   :email-capture                  events/control-email-captured-dismiss
+   :adv-email-capture              events/control-email-captured-dismiss
+   :adventure-free-install         events/control-adventure-free-install-dismiss
+   :consolidated-cart-free-install events/control-consolidated-cart-free-install-dismiss
+   :v2-homepage                    events/control-v2-homepage-popup-dismiss
+   :share-cart                     events/control-popup-hide
+   :design-system                  events/control-design-system-popup-dismiss})
 
 (defmethod effects/perform-effects events/escape-key-pressed [_ event args _ app-state]
   (when-let [message-to-handle (get popup-dismiss-events (get-in app-state keypaths/popup))]

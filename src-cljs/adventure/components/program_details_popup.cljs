@@ -1,10 +1,7 @@
 (ns adventure.components.program-details-popup
   (:require [sablono.core :refer [html]]
-            [storefront.api :as api]
             [storefront.component :as component]
             [adventure.faq :as faq]
-            [storefront.component :as component]
-            [storefront.components.accordion :as accordion]
             [storefront.components.footer-modal :as footer-modal]
             [storefront.components.popup :as popup]
             [storefront.components.svg :as svg]
@@ -14,7 +11,8 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.transitions :as transitions]
-            [storefront.browser.scroll :as scroll]))
+            [storefront.browser.scroll :as scroll]
+            [adventure.organisms.call-out-center :as call-out-center]))
 
 (def get-a-free-install
   (let [step (fn [{:keys [icon-uuid icon-width title description]}]
@@ -128,3 +126,137 @@
 
 (defmethod transitions/transition-state events/popup-show-adventure-free-install [_ event args app-state]
   (assoc-in app-state keypaths/popup :adventure-free-install))
+
+;;; Consolidated cart
+
+(def get-a-mayvenn-install
+  (let [step (fn [{:keys        [icon/uuid icon/width]
+                   header-value :header/value
+                   body-value   :body/value}]
+               [:div.col-12.mt2.center
+                [:div.flex.justify-center.items-end.mb2
+                 {:style {:height "39px"}}
+                 (ui/ucare-img {:alt header-value :width width} uuid)]
+                [:div.h5.medium header-value]
+                [:p.h6.col-8.col-9-on-dt.mx-auto.dark-gray
+                 body-value]])]
+
+    [:div.col-12
+     [:div.mt2.flex.flex-column.items-center
+      [:h1 "Get a FREE Install"]
+      [:div.h5.dark-gray "In three easy steps"]]
+
+     [:div.col-8-on-dt.mx-auto.flex.flex-wrap
+      (map step
+           [{:icon/uuid    "3d2b326c-7773-4672-827e-f13dedfae15a"
+             :icon/width   "22"
+             :header/value "1. Choose a Mayvenn Certified Stylist"
+             :body/value   "We’ve partnered with thousands of top stylists around the nation. Choose one in your local area and we’ll pay the stylist to do your install."}
+            {:icon/uuid    "08e9d3d8-6f3d-4b3c-bc46-3590175a9a4d"
+             :icon/width   "24"
+             :header/value "2. Buy Any 3 Items or More"
+             :body/value   "Purchase 3 or more bundles, closures or frontals. Rest easy - your 100% virgin hair purchase is backed by our 30 day guarantee."}
+            {:icon/uuid    "3fb9c2bf-c30e-4bee-957c-f273b1b5a233"
+             :icon/width   "27"
+             :header/value "3. Schedule Your Appointment"
+             :body/value   "We’ll connect you to your Mayvenn Certified Stylist and book an install appointment that’s convenient for you."}])]]))
+
+(def mayvenn-is-more-than-a-hair-company
+  (let [entry (fn [{:keys [icon-uuid icon-width title description]}]
+                [:div.col-12.my2.flex.flex-column.items-center.items-end
+                 [:div.flex.justify-center.items-end.mb1
+                  {:style {:height "35px"}}
+                  (ui/ucare-img {:alt title :width icon-width} icon-uuid)]
+                 [:div.h5.medium.my2 title]
+                 [:p.h6.col-8.center.dark-gray description]])]
+
+    [:div.col-12.bg-transparent-teal.mt3.py8.px4
+     [:div.col-11-on-dt.justify-center.flex.flex-wrap.mx-auto.pb2
+
+      [:div.my2.flex.flex-column.items-center.col-12
+       [:h1.titleize.center "Mayvenn is more than a hair company"]
+       [:div.h5.mt2.dark-gray "It's a movement"]]
+
+      (entry {:icon-uuid   "ab1d2ed4-ff93-40e6-978a-721133ca88a7"
+              :icon-width  "21"
+              :title       "Top Notch Customer Service"
+              :description "Our team is made up of hair experts ready to help you by phone, text, and email."})
+      (entry {:icon-uuid   "8787e30c-2879-4a43-8d01-9d6790575084"
+              :icon-width  "41"
+              :title       "30 Day Guarantee"
+              :description "Wear it, dye it, even cut it! If you're not satisfied we'll exchange it within 30 days."})
+      (entry {:icon-uuid   "e02561dd-c294-43b7-bb33-c40bfabea518"
+              :icon-width  "30"
+              :title       "100% Virgin Hair"
+              :description "Our hair is gently steam processed and can last up to a year. Available in 8 textures and 8 shades."})
+      (entry {:icon-uuid   "6f63157c-dc3a-4bbb-abcf-e03b08d6e102"
+              :icon-width  "31"
+              :title       "Certified Stylists"
+              :description "Our stylists are chosen because of their industry-leading standards. Both our hair and service are quality guaranteed."})]]))
+
+(defn ^:private cta-molecule
+  [{:cta/keys [id label target]}]
+  (when (and id label target)
+    (-> (merge {:data-test id} (utils/fake-href target))
+        (ui/teal-button [:div.flex.items-center.justify-center.inherit-color label]))))
+
+(defmethod popup/component :consolidated-cart-free-install
+  [{:keys [footer-data faq-data] :as queried-data} owner _]
+  (component/create
+   (html
+    (ui/modal {:col-class   "col-12 col-6-on-tb col-6-on-dt my8-on-tb-dt flex justify-center"
+               :close-attrs (utils/fake-href events/control-consolidated-cart-free-install-dismiss)
+               :bg-class    "bg-darken-4"}
+              [:div.bg-white
+               {:style {:max-width "400px"}}
+               [:div.col-12.clearfix.pt1.pk2.bg-lavender.white
+                [:div.right.pt2.pr2.pointer
+                 (svg/simple-x
+                  (merge (utils/fake-href events/control-consolidated-cart-free-install-dismiss)
+                         {:data-test "consolidated-cart-free-install-popup-dismiss" ;; TODO data test
+                          :height    "20px"
+                          :width     "20px"
+                          :class     "white"}))]
+                [:div.py2.center.col-8.bold.mx-auto
+                 "Buy 3 items and receive your free Mayvenn Install"]]
+
+               [:div.flex.flex-column
+                [:div.mt10.mb6
+                 get-a-mayvenn-install
+
+                 [:div.col-8.mx-auto.mt5
+                  (cta-molecule queried-data)]]
+
+                mayvenn-is-more-than-a-hair-company
+                [:div.my8
+                 (faq/component (assoc faq-data :modal? true))]
+
+                (component/build call-out-center/organism queried-data nil)
+
+                [:div.hide-on-tb-dt ;; Footer
+                 (component/build footer-modal/component footer-data nil)]]]))))
+
+(defmethod transitions/transition-state events/popup-show-consolidated-cart-free-install
+  [_ event args app-state]
+  (assoc-in app-state keypaths/popup :consolidated-cart-free-install))
+
+(defmethod transitions/transition-state events/control-consolidated-cart-free-install-dismiss
+  [_ event args app-state]
+  (assoc-in app-state keypaths/popup nil))
+
+(defmethod effects/perform-effects events/control-consolidated-cart-free-install-dismiss
+  [_ event args previous-app-state app-state]
+  (scroll/enable-body-scrolling))
+
+(defmethod popup/query :consolidated-cart-free-install
+  [data]
+  {:faq-data                     (faq/free-install-query data)
+   :footer-data                  (footer-modal/query data)
+   :call-out-center/bg-class     "bg-lavender"
+   :call-out-center/bg-ucare-id "6a221a42-9a1f-4443-8ecc-595af233ab42"
+   :call-out-center/title       "We can't wait to pay for your install!"
+   :call-out-center/subtitle    "" ;; For spacing
+   :cta/id                      "browse-stylists"
+   :cta/target                  events/navigate-adventure-find-your-stylist
+   :cta/label                   "Browse Stylists"
+   :react/key                   "browse-stylists"})

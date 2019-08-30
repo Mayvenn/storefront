@@ -74,6 +74,6 @@
                                   :on-click     (utils/send-event-callback events/control-cart-add-freeinstall-coupon)} "Add Mayvenn Install")]
      [:div.teal.h7.flex.items-center
       (ui/button {:class    "inherit-color px4 py1 medium"
-                  :on-click (utils/send-event-callback events/popup-show-adventure-free-install)} "learn more")]]
+                  :on-click (utils/send-event-callback events/popup-show-consolidated-cart-free-install)} "learn more")]]
     [:div.h8.dark-gray
      "*Mayvenn Install cannot be combined with other promo codes."]]])
