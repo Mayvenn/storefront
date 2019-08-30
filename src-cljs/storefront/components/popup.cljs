@@ -9,8 +9,7 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.browser.scroll :as scroll]
-            [storefront.routes :as routes]))
+            [storefront.browser.scroll :as scroll]))
 
 (defn email-capture-session
   [app-state]
@@ -65,11 +64,6 @@
     (cond
       is-design-system?
       nil ;; never show popup for style guide
-
-      (and email-capture-showable?
-           (contains? #{events/navigate-adventure-match-stylist}
-                      navigation-event))
-      (messages/handle-message events/popup-show-adventure-emailcapture)
 
       signed-in?
       (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) "signed-in")
