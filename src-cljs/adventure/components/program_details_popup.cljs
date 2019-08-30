@@ -197,7 +197,7 @@
 (defn ^:private cta-molecule
   [{:cta/keys [id label target]}]
   (when (and id label target)
-    (-> (merge {:data-test id} (utils/fake-href target))
+    (-> (merge {:data-test id} (apply utils/route-to target))
         (ui/teal-button [:div.flex.items-center.justify-center.inherit-color label]))))
 
 (defmethod popup/component :consolidated-cart-free-install
@@ -250,13 +250,13 @@
 
 (defmethod popup/query :consolidated-cart-free-install
   [data]
-  {:faq-data                     (faq/free-install-query data)
-   :footer-data                  (footer-modal/query data)
-   :call-out-center/bg-class     "bg-lavender"
+  {:faq-data                    (faq/free-install-query data)
+   :footer-data                 (footer-modal/query data)
+   :call-out-center/bg-class    "bg-lavender"
    :call-out-center/bg-ucare-id "6a221a42-9a1f-4443-8ecc-595af233ab42"
    :call-out-center/title       "We can't wait to pay for your install!"
    :call-out-center/subtitle    "" ;; For spacing
    :cta/id                      "browse-stylists"
-   :cta/target                  events/navigate-adventure-find-your-stylist
+   :cta/target                  [events/navigate-adventure-find-your-stylist]
    :cta/label                   "Browse Stylists"
    :react/key                   "browse-stylists"})

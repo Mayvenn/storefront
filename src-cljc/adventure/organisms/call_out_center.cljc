@@ -6,9 +6,13 @@
 
 (defn ^:private cta-molecule
   [{:cta/keys [id label target]}]
-  (when (and id label target)
-    (-> (merge {:data-test id} (utils/fake-href target))
-        (ui/teal-button [:div.flex.items-center.justify-center.inherit-color label]))))
+  (let [[event] target]
+    (when (and id label target)
+      (-> (merge {:data-test id}
+                 (if (= :navigate (first event))
+                   (apply utils/route-to target)
+                   (apply utils/fake-href target)))
+          (ui/teal-button [:div.flex.items-center.justify-center.inherit-color label])))))
 
 (defn organism
   [{:call-out-center/keys [bg-class bg-ucare-id title subtitle] react-key :react/key :as query} _ _]

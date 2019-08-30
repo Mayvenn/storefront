@@ -57,7 +57,7 @@
    :call-out-center/title       "Want to book with your own stylist?"
    :call-out-center/subtitle    "Recommend them to become Mayvenn Certified"
    :cta/id                      "recommend-stylist"
-   :cta/target                  events/external-redirect-typeform-recommend-stylist
+   :cta/target                  [events/external-redirect-typeform-recommend-stylist]
    :cta/label                   "Submit Your Stylist"
    :card/type                   :recommend-stylist
    :react/key                   :recommend-stylist})
