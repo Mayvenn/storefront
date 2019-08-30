@@ -51,7 +51,7 @@
 
        [:div.flex-auto.py3.center.dark-gray
         {:data-test "mobile-cart"}
-        "Shopping Bag - " (ui/pluralize-with-amount item-count "item")]
+        "Shopping Cart - " (ui/pluralize-with-amount item-count "item")]
 
        [:div.col-2.hide-on-mb-tb]
 
