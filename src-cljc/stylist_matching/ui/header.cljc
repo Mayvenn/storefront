@@ -42,7 +42,7 @@
   [data _ _]
   (component/create
    [:div#header
-    [:div.flex.items-center.justify-between.bg-lavender-dark
+    [:div.flex.items-center.justify-between.bg-lavender-dark.white
      (header-back-navigation-molecule data)
      (header-title-molecule data)
      (header-cart-molecule data)]]))
