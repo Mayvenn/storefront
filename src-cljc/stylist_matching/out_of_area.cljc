@@ -1,10 +1,7 @@
 (ns stylist-matching.out-of-area
   (:require [storefront.component :as component]
             [storefront.events :as events]
-            adventure.keypaths
             api.orders
-            [stylist-directory.stylists :as stylists]
-            [stylist-matching.ui.atoms :as stylist-matching.A]
             [stylist-matching.ui.header :as header]
             [stylist-matching.ui.shopping-method-choice :as shopping-method-choice]))
 
