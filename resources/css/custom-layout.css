@@ -16,5 +16,30 @@
 
 .max-580 { max-width: 580px; }
 
+@media (--over-max-580) {
+    .max-580 {
+        border-left: 1px var(--light-gray) solid;
+        border-right: 1px var(--light-gray) solid;
+    }
+}
+
 @custom-media --on-tablet  (min-width: 750px) and (max-width: 999px);
 @custom-media --on-desktop (min-width: 1000px);
+@custom-media --over-max-580 (min-width: 580px);
+
+:root {
+    --error:          #ff004f;
+    --yellow:         #ffc520;
+    --white:          #ffffff;
+    --fate-white:     #f8f8f8;
+    --light-silver:   #f2f2f2;
+    --silver:         #dadada;
+    --dark-silver:    #aaaaaa;
+    --light-gray:     #b4b4b4;
+    --gray:           #666666;
+    --dark-gray:      #333333;
+    --black:          #000000;
+    --light-teal:     #9fe5d5;
+    --light-lavender: rgb(202, 182, 215);
+    --lavender:       rgb(175, 159, 196);
+}
