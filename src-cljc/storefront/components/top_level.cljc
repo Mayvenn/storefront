@@ -33,6 +33,7 @@
             stylist-matching.match-stylist
             stylist-matching.find-your-stylist
             stylist-matching.match-success
+            stylist-matching.out-of-area
 
             [storefront.components.ui :as ui]
             [mayvenn-made.home :as mayvenn-made.home]
@@ -143,7 +144,9 @@
           events/navigate-adventure-matching-stylist-wait-post-purchase adventure.stylist-matching.matching-stylist-wait/built-component
           events/navigate-adventure-stylist-results-pre-purchase        adventure.stylist-matching.stylist-results/built-component-pre-purchase
           events/navigate-adventure-stylist-results-post-purchase       adventure.stylist-matching.stylist-results/built-component-post-purchase
-          events/navigate-adventure-out-of-area                         adventure.stylist-matching.out-of-area/built-component
+          events/navigate-adventure-out-of-area                         (if consolidated?
+                                                                          stylist-matching.out-of-area/page
+                                                                          adventure.stylist-matching.out-of-area/built-component)
           events/navigate-adventure-match-success-pre-purchase          (if consolidated?
                                                                           stylist-matching.match-success/page
                                                                           adventure.stylist-matching.match-success/built-component)
