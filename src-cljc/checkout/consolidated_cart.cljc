@@ -137,6 +137,7 @@
        [:div.bg-too-light-teal.p2
         (when checkout-caption-copy
           [:div.flex.h6.pt1.pr3.pb2
+           {:data-test "checkout-caption"}
            [:div
             (ui/circle-picture
              {:width 50}
@@ -499,6 +500,7 @@
                                              (seq (get-in data keypaths/shipping-methods))
                                              (seq (get-in data keypaths/states)))
              :recently-added-skus       recently-added-sku-ids
+             :return-link/id            "continue-shopping"
              :return-link/copy          "Continue Shopping"
              :return-link/event-message add-items-action
              :quantity-remaining        (:mayvenn-install/quantity-remaining mayvenn-install)
