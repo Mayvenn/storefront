@@ -107,10 +107,14 @@
   (when id
     (css-transitions/transition-background-color
      highlighted?
-     [:div.flex.justify-center.items-center
-      value
-      (let [diameter              50
-            inner-circle-diameter (- diameter 4)]
+     (let [diameter                  50             ; Stylist portrait / Generic stylist image
+           lock-circle-diameter      (- diameter 4) ; Overlay lock scrim
+           highlight-circle-diameter (+ diameter 6)] ; highlight
+       [:div.flex.justify-center.items-center
+        {:style {:border-radius "50%"
+                 :width         (str highlight-circle-diameter "px")
+                 :height        (str highlight-circle-diameter "px")}}
+        value
         [:div.relative
          (when locked?
            [:div.absolute.z1.col-12.flex.items-center.justify-center
@@ -118,8 +122,8 @@
 
             [:div {:class "absolute z1 block"
                    :style {:background    "#ffffffdd"
-                           :width         (str inner-circle-diameter "px")
-                           :height        (str inner-circle-diameter "px")
+                           :width         (str lock-circle-diameter "px")
+                           :height        (str lock-circle-diameter "px")
                            :border-radius "50%"}}]
             [:div.absolute.z2.col-12.flex.items-center.justify-center
              {:style {:height "100%"}}
@@ -129,7 +133,7 @@
           {:width diameter}
           ;; Note: We are not using ucare-id because stylist portraits may have
           ;; ucarecdn crop parameters saved into the url
-          (ui/square-image {:resizable-url image-url} diameter))])])))
+          (ui/square-image {:resizable-url image-url} diameter))]]))))
 
 (defn cart-item-remove-action-molecule
   [{:cart-item-remove-action/keys [id target spinning?]}]
