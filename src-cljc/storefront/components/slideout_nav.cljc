@@ -128,7 +128,7 @@
     (into [:a.block.inherit-color.flex.items-center (assoc link-attrs :data-test data-test)] content)]])
 
 (defn shopping-rows
-  [{:keys [show-freeinstall-link? hide-deals-link? show-bundle-sets-link?]}]
+  [{:keys [show-freeinstall-link? show-bundle-sets-and-hide-deals?]}]
   (let [^:inline caret (ui/forward-caret {:width  "23px"
                                           :height "20px"})]
     (concat
@@ -138,7 +138,7 @@
          :content    [[:span.teal.pr1 "NEW"]
                       [:span.medium "Get a Mayvenn Install"]]}])
 
-     (when-not hide-deals-link?
+     (when-not show-bundle-sets-and-hide-deals?
        [{:link-attrs (utils/route-to events/navigate-shop-by-look {:album-keyword :deals})
          :data-test  "menu-shop-by-deals"
          :content    [[:span.medium "Deals"]]}])
@@ -149,7 +149,7 @@
        :content    [[:span.medium.flex-auto "Shop Looks"]
                     caret]}]
 
-     (when show-bundle-sets-link?
+     (when show-bundle-sets-and-hide-deals?
        [{:link-attrs (utils/fake-href events/menu-list {:menu-type :shop-bundle-sets})
          :data-test  "menu-shop-by-bundle-sets"
          :content    [[:span.medium.flex-auto "Shop Bundle Sets"]
@@ -271,21 +271,17 @@
 (defn basic-query [data]
   (let [{:keys [match-eligible] :as store} (marquee/query data)
         shop?                              (= "shop" (get-in data keypaths/store-slug))
-        aladdin?                           (experiments/aladdin-experience? data)
-        shop-by-bundle-sets?               (experiments/shop-by-bundle-sets? data)]
-    {:signed-in              (auth/signed-in data)
-     :on-taxon?              (get-in data keypaths/current-traverse-nav)
-     :user                   {:stylist-portrait (get-in data keypaths/user-stylist-portrait)
-                              :email            (get-in data keypaths/user-email)}
-     :hide-deals-link?       (or (and shop? shop-by-bundle-sets?)
-                                 aladdin?)
-     :store                  store
-     :show-community?        (and (not match-eligible)
-                                  (stylists/own-store? data))
-     :show-bundle-sets-link? (and (or aladdin? shop?)
-                                  shop-by-bundle-sets?)
-     :vouchers?              (experiments/dashboard-with-vouchers? data)
-     :show-freeinstall-link? shop?}))
+        aladdin?                           (experiments/aladdin-experience? data)]
+    {:signed-in                        (auth/signed-in data)
+     :on-taxon?                        (get-in data keypaths/current-traverse-nav)
+     :user                             {:stylist-portrait (get-in data keypaths/user-stylist-portrait)
+                                        :email            (get-in data keypaths/user-email)}
+     :store                            store
+     :show-community?                  (and (not match-eligible)
+                                            (stylists/own-store? data))
+     :show-bundle-sets-and-hide-deals? (or aladdin? shop?)
+     :vouchers?                        (experiments/dashboard-with-vouchers? data)
+     :show-freeinstall-link?           shop?}))
 
 (defn query [data]
   (-> (basic-query data)

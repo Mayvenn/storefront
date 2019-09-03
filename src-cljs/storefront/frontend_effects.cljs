@@ -126,8 +126,7 @@
                                                  (experiments/aladdin-experience? app-state))
         on-deals-page?                       (= [events/navigate-shop-by-look {:album-keyword :deals}]
                                                 [current-nav-event (select-keys current-nav-args [:album-keyword])])]
-    (and shop-or-aladdin? on-deals-page?
-         (experiments/shop-by-bundle-sets? app-state))))
+    (and shop-or-aladdin? on-deals-page?)))
 
 (defmethod effects/perform-effects events/enable-feature [_ event {:keys [feature]} _ app-state]
   (messages/handle-message events/determine-and-show-popup)
