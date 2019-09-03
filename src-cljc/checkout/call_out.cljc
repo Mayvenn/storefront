@@ -37,7 +37,8 @@
 (defn query
   [data]
   (let [order (get-in data keypaths/order)]
-    {:v2-experience?     (experiments/aladdin-experience? data)
+    {:v2-experience?     (and (experiments/aladdin-experience? data)
+                              (not (contains? (set (:promotion-codes order)) "CUSTOM")))
      :show-green-banner? (orders/freeinstall-applied? order)}))
 
 (defn built-component
