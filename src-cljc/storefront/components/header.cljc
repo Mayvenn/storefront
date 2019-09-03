@@ -146,7 +146,7 @@
     text]))
 
 (defn menu
-  [{:keys [show-freeinstall-link? hide-deals-link? show-bundle-sets-link?]}]
+  [{:keys [show-freeinstall-link? show-bundle-sets-and-hide-deals?]}]
   (component/html
    [:div.center
     (when show-freeinstall-link?
@@ -155,7 +155,7 @@
               :on-mouse-enter close-header-menus)
        [:span [:span.teal.pr1 "NEW"] "Get a Mayvenn Install"]))
 
-    (when-not hide-deals-link?
+    (when-not show-bundle-sets-and-hide-deals?
       (header-menu-link (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :deals})
                                :on-mouse-enter close-header-menus)
                         "Deals"))
@@ -164,7 +164,7 @@
                              (->flyout-handlers keypaths/shop-looks-menu-expanded))
                       "Shop looks")
 
-    (when show-bundle-sets-link?
+    (when show-bundle-sets-and-hide-deals?
       (header-menu-link (merge (utils/route-to events/navigate-home)
                                (->flyout-handlers keypaths/shop-bundle-sets-menu-expanded))
                         "Shop bundle sets"))
