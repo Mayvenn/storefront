@@ -17,10 +17,6 @@
             [storefront.platform.messages :as messages]
             [storefront.effects :as effects]))
 
-(def ^:private default-utm-params
-  {:utm_medium "referral"
-   :utm_term   "fi_shoptofreeinstall"})
-
 (defn query
   [data]
   (let [shop?              (= "shop" (get-in data storefront.keypaths/store-slug))
@@ -36,9 +32,7 @@
                (merge nav-args {:shop?              shop?
                                 :environment        environment
                                 :adventure-on-shop? adventure-on-shop?
-                                :navigation-event   event
-                                :navigation-arg     (when shop? {:query-params (merge default-utm-params
-                                                                                      {:utm_source utm-source})})})))]
+                                :navigation-event   event})))]
       {:layers
        [(merge {:layer/type      :hero
                 :photo/file-name "free-install-hero"
@@ -47,9 +41,7 @@
                                                   {:shop?              shop?
                                                    :environment        environment
                                                    :adventure-on-shop? adventure-on-shop?
-                                                   :navigation-event   events/navigate-adventure-match-stylist
-                                                   :navigation-arg     (when shop? {:query-params (merge default-utm-params
-                                                                                                         {:utm_source "toadventurehomepagehero"})})}))
+                                                   :navigation-event   events/navigate-adventure-match-stylist}))
                                           {:data-test    "adventure-home-choice-get-started"
                                            :height-class "py2"})
                                    "Browse Stylists"]]}
@@ -151,7 +143,7 @@
         {:layer/type :contact}
         (merge
          {:layer/type :sticky-footer}
-         (-route-or-redirect nav-args events/navigate-adventure-match-stylist "toadventurehomepagestickybar"))]})))
+         (-route-or-redirect nav-args events/navigate-adventure-match-stylist nil))]})))
 
 (defn built-component
   [data opts]

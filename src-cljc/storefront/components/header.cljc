@@ -151,7 +151,7 @@
    [:div.center
     (when show-freeinstall-link?
       (header-menu-link
-       (assoc (utils/fake-href events/initiate-redirect-freeinstall-from-menu {:utm-source "shopFlyout"})
+       (assoc (utils/route-to events/external-redirect-freeinstall)
               :on-mouse-enter close-header-menus)
        [:span [:span.teal.pr1 "NEW"] "Get a Mayvenn Install"]))
 

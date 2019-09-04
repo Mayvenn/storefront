@@ -181,14 +181,6 @@
                      :query query-string)
               str))))
 
-(defmethod effects/perform-effects events/initiate-redirect-freeinstall-from-menu
-  [_ event {:keys [utm-source]} _ app-state]
-  (messages/handle-message events/external-redirect-freeinstall
-                  {:query-string (string/join "&"
-                                              ["utm_campaign=ShoptoFreeInstall"
-                                               "utm_medium=referral"
-                                               (str "utm_source=" utm-source)])}))
-
 (defmethod effects/perform-effects events/external-redirect-sms [_ event {:keys [sms-message number]} _ app-state]
   (set! (.-location js/window) (share-links/sms-link sms-message number)))
 

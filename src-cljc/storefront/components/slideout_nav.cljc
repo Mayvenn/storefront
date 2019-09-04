@@ -133,7 +133,7 @@
                                           :height "20px"})]
     (concat
      (when show-freeinstall-link?
-       [{:link-attrs (utils/fake-href events/initiate-redirect-freeinstall-from-menu {:utm-source "shopHamburger"})
+       [{:link-attrs (utils/route-to events/external-redirect-freeinstall)
          :data-test  "menu-shop-freeinstall"
          :content    [[:span.teal.pr1 "NEW"]
                       [:span.medium "Get a Mayvenn Install"]]}])
