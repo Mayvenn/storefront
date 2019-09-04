@@ -23,9 +23,9 @@
                  "freeinstall.storefront.localhost")]
     (str "//" domain path)))
 
-(defn route-to-or-redirect-to-freeinstall [{:keys [shop? adventure-on-shop? environment navigation-event navigation-arg]}]
+(defn route-to-or-redirect-to-freeinstall [{:keys [shop? consolidated-cart? environment navigation-event navigation-arg]}]
   (let [navigation-message [navigation-event navigation-arg]]
-    (if adventure-on-shop?
+    (if consolidated-cart?
       {:navigation-message navigation-message}
       (merge (when-not shop?
                {:navigation-message navigation-message})

@@ -79,10 +79,6 @@
   [data]
   (display-feature? data "adv-cart-promo-entry"))
 
-(defn adventure-on-shop?
-  [data]
-  (display-feature? data "adventure-on-shop"))
-
 (defn consolidated-cart?
   [data]
   (or

@@ -169,7 +169,7 @@
   (cookie-jar/save-from-shop-to-freeinstall (get-in app-state keypaths/cookie))
   (let [on-homepage? (= events/navigate-home
                         (get-in app-state keypaths/navigation-event))
-        host         (if (experiments/adventure-on-shop? app-state)
+        host         (if (experiments/consolidated-cart? app-state)
                        "shop."
                        "freeinstall.")]
     (set! (.-location js/window)

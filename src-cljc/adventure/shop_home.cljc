@@ -20,18 +20,18 @@
 (defn query
   [data]
   (let [shop?              (= "shop" (get-in data storefront.keypaths/store-slug))
-        adventure-on-shop? (experiments/adventure-on-shop? data)
+        consolidated-cart? (experiments/consolidated-cart? data)
         environment        (get-in data storefront.keypaths/environment)
         cms-ugc-collection (get-in data storefront.keypaths/cms-ugc-collection)
         current-nav-event  (get-in data storefront.keypaths/navigation-event)
         nav-args           {:shop?              shop?
-                            :adventure-on-shop? adventure-on-shop?
+                            :consolidated-cart? consolidated-cart?
                             :environment        environment}]
     (letfn [(-route-or-redirect [nav-args event utm-source]
               (layered/cta-route-to-or-redirect-to-freeinstall
                (merge nav-args {:shop?              shop?
                                 :environment        environment
-                                :adventure-on-shop? adventure-on-shop?
+                                :consolidated-cart? consolidated-cart?
                                 :navigation-event   event})))]
       {:layers
        [(merge {:layer/type      :hero
@@ -40,7 +40,7 @@
                                            (merge nav-args
                                                   {:shop?              shop?
                                                    :environment        environment
-                                                   :adventure-on-shop? adventure-on-shop?
+                                                   :consolidated-cart? consolidated-cart?
                                                    :navigation-event   events/navigate-adventure-match-stylist}))
                                           {:data-test    "adventure-home-choice-get-started"
                                            :height-class "py2"})
