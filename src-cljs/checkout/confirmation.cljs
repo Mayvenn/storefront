@@ -248,6 +248,7 @@
                                      (and freeinstall-applied? freeinstall-line-item-data)
                                      (update :items conj
                                              (freeinstall-line-item-data->item-card freeinstall-line-item-data)))
+     ;; TODO Is it right that store credit can be used on freeinstall?
      :available-store-credit       (if adventure?
                                      (get-in data keypaths/user-total-available-store-credit)
                                      (when-not selected-quadpay?

@@ -314,6 +314,7 @@
 (defn random-number-generator [seed]
   (rng/mulberry32 (hash seed)))
 
+;; TODO: Remove after consolidation goes 100% (we're not going to randomize buttons)
 (defmethod transition-state events/stringer-distinct-id-available
   [_ event {:keys [stringer-distinct-id]} app-state]
   (if (and (= "freeinstall" (get-in app-state keypaths/store-slug))

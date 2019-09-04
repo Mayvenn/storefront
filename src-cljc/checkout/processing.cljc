@@ -83,6 +83,8 @@
   #?(:cljs
      (let [order                                (get-in app-state keypaths/order)
            {:keys [state number cart-payments]} order
+
+           ;; TODO: Is freeinstall-domain? actually used, or just threaded through?
            freeinstall-domain?                  (= "freeinstall"
                                                    (get-in app-state keypaths/store-slug))]
        (cond

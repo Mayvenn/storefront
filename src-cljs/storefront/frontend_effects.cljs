@@ -259,6 +259,7 @@
           ;; Otherwise give the screen some time to render before trying to restore scroll
           (messages/handle-later events/snap {:top restore-scroll-top} 100))))
 
+    ;; TODO: Possibly remove post cart consolidation
     (when-not freeinstall?
       (when-let [pending-promo-code (:sha query-params)]
         (cookie-jar/save-pending-promo-code
@@ -394,6 +395,7 @@
   (google-maps/insert)
   (let [have-cart? (get-in app-state keypaths/order-number)]
     (cond
+      ;; TODO remove post cart consolidation
       (and (not have-cart?)
            (= "freeinstall" (get-in app-state keypaths/store-slug))) (effects/redirect events/navigate-adventure-home)
 
