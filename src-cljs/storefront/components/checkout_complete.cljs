@@ -137,11 +137,11 @@
 
 (defn query
   [data]
-  (let [freeinstall?      (= "freeinstall" (get-in data keypaths/store-slug))
-        servicing-stylist (get-in data adv-keypaths/adventure-servicing-stylist)]
+  (let [freeinstall-or-shop? (#{"freeinstall" "shop"} (get-in data keypaths/store-slug))
+        servicing-stylist    (get-in data adv-keypaths/adventure-servicing-stylist)]
     {:guest?               (not (get-in data keypaths/user-id))
-     :freeinstall?         freeinstall?
-     :need-match?          (and freeinstall?
+     :freeinstall-or-shop? freeinstall-or-shop?
+     :need-match?          (and freeinstall-or-shop?
                                 (empty? servicing-stylist))
      :matched-stylists     (get-in data adv-keypaths/adventure-matched-stylists)
      :sign-up-data         (sign-up/query data)
@@ -152,7 +152,7 @@
                                :phone)}))
 
 (defn ^:export built-component [data opts]
-  (let [{:as queried-data :keys [freeinstall?]} (query data)]
-    (if freeinstall?
+  (let [{:as queried-data :keys [freeinstall-or-shop?]} (query data)]
+    (if freeinstall-or-shop?
       (component/build adventure-component queried-data opts)
       (component/build component queried-data opts))))

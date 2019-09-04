@@ -764,7 +764,7 @@
 (defmethod effects/perform-effects events/api-success-update-order-place-order [_ event {:keys [order]} _ app-state]
   ;; TODO: rather than branching behavior within a single event handler, consider
   ;;       firing seperate events (with and without matching stylists).
-  (if (= "freeinstall" (get-in app-state keypaths/store-slug))
+  (if (#{"freeinstall" "shop"} (get-in app-state keypaths/store-slug))
     (history/enqueue-navigate events/navigate-adventure-checkout-wait)
     (history/enqueue-navigate events/navigate-order-complete order))
   (messages/handle-message events/order-completed order)
@@ -774,12 +774,12 @@
   (cookie-jar/save-completed-order (get-in app-state keypaths/cookie)
                                    (get-in app-state keypaths/completed-order))
   (messages/handle-message events/clear-order)
-  (let [freeinstall? (= "freeinstall" (get-in app-state keypaths/store-slug))]
-    (when (or (not freeinstall?)
+  (let [freeinstall-or-shop? (#{"freeinstall" "shop"} (get-in app-state keypaths/store-slug))]
+    (when (or (not freeinstall-or-shop?)
               (:servicing-stylist-id order))
       (talkable/show-pending-offer app-state))
 
-    (when (and freeinstall?
+    (when (and freeinstall-or-shop?
                (:servicing-stylist-id order))
       (api/fetch-matched-stylist (get-in app-state keypaths/api-cache)
                                  (:servicing-stylist-id order)))))
