@@ -293,3 +293,8 @@
   (component/html
    [:svg opts
     ^:inline (svg-xlink "swap-person")]))
+
+(defn forward-arrow [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "forward-arrow")]))
