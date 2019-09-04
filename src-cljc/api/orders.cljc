@@ -73,5 +73,5 @@
     (merge
      mayvenn-install
      {:waiter/order         waiter-order
-      :order.items/quantity (+ (when (:mayvenn-install/applied? mayvenn-install) 1)
+      :order.items/quantity (+ #_ (when (:mayvenn-install/applied? mayvenn-install) 1)
                                (accessors/product-quantity waiter-order))})))
