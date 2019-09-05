@@ -454,7 +454,7 @@
     :category/show-title?           true
     :category/new?                  true
     :copy/description               "Save 10% on your hair & get a free Mayvenn Install by a licensed stylist when you purchase 3 or more items. "
-    :copy/learn-more                [events/popup-show-adventure-free-install]
+    :copy/learn-more                [events/popup-show-consolidated-cart-free-install]
     :copy/title                     "Mayvenn Install"
     :hair/family                    #{"bundles" "closures" "frontals" "360-frontals"}
     :images                         {:hero {:filename    "mayvenn-install-hero-image",
