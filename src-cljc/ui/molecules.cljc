@@ -1,7 +1,8 @@
 (ns ui.molecules
-  (:require [storefront.components.ui :as ui]
-            [storefront.platform.component-utils :as utils]
-            [storefront.component :as component]))
+  (:require [storefront.component :as component]
+            [storefront.components.svg :as svg]
+            [storefront.components.ui :as ui]
+            [storefront.platform.component-utils :as utils]))
 
 (defn return-link
   [{:return-link/keys [copy id back]
@@ -60,3 +61,39 @@
          ;; mobile
          [:img.block.col-12 {:src (str mobile-url "quality/normal/-/resize/750x/" file-name)
                              :alt (str alt)}]])])))
+
+(defn labeled-input-molecule
+  [{:labeled-input/keys [id label value on-change]}]
+  [:input.h5.border-none.px2.bg-white.placeholder-dark-silver.flex-grow-1
+   {:key         id
+    :label       label
+    :data-test   (str id "-input")
+    :name        id
+    :id          (str id "-input")
+    :type        "text"
+    :value       (or value "")
+    :placeholder label
+    :on-submit   on-change
+    :on-change   on-change}])
+
+(defn submit-button-molecule
+  [{:submit-button/keys [id contents target classes disabled?]}]
+  (ui/teal-button
+   (merge {:style          {:width   "40px"
+                            :height  "40px"
+                            :padding "0"}
+           :width          :small
+           :disabled?      disabled?
+           :disabled-class "bg-light-gray gray"
+           :data-test      id
+           :class          "dark-gray flex medium not-rounded items-center justify-center"}
+          (utils/fake-href target))
+   (svg/forward-arrow {:disabled? disabled?
+                       :style     {:width  "14px"
+                                   :height "14px"}})))
+
+(defn input-group-field-and-button-molecule
+  [data]
+  [:div.bg-white.border.border-light-gray.rounded.overflow-hidden.table.flex.col-12
+   (labeled-input-molecule data)
+   (submit-button-molecule data)])

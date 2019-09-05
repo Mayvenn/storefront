@@ -34,6 +34,7 @@
    [storefront.events :as events]
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
+   [storefront.platform.messages :as messages]
    [storefront.request-keys :as request-keys]
    [ui.molecules :as ui-molecules]
    [ui.promo-banner :as promo-banner]))
@@ -458,6 +459,20 @@
                                      coupon-code
                                      (merge (coupon-code->remove-promo-action coupon-code)))))}))
 
+(defn promo-input-query
+  [data]
+  (let [keypath keypaths/cart-coupon-code
+        value   (get-in data keypath)]
+    {:labeled-input/label     "enter promocode"
+     :labeled-input/value     value
+     :labeled-input/on-change #?(:clj (fn [_e] nil)
+                                 :cljs (fn [^js/Event e]
+                                         (messages/handle-message events/control-change-state
+                                                                  {:keypath keypath
+                                                                   :value   (.. e -target -value)})))
+     :submit-button/disabled? (empty? value)
+     :submit-button/target    events/control-cart-update-coupon}))
+
 (defn full-cart-query [data]
   (let [order                                (get-in data keypaths/order)
         products                             (get-in data keypaths/v2-products)
@@ -512,11 +527,7 @@
                                          (cart-summary-query order mayvenn-install)
                                          (when (and (orders/no-applied-promo? order)
                                                     (not entered?))
-                                           {:promo-data {:coupon-code   (get-in data keypaths/cart-coupon-code)
-                                                         :applying?     (utils/requesting? data request-keys/add-promotion-code)
-                                                         :focused       (get-in data keypaths/ui-focus)
-                                                         :error-message (get-in data keypaths/error-message)
-                                                         :field-errors  (get-in data keypaths/field-errors)}}))
+                                           {:promo-field-data (promo-input-query data)}))
              :cart-items                (cart-items-query data mayvenn-install line-items skus add-items-action)
              :quadpay/show?             (get-in data keypaths/loaded-quadpay)
              :quadpay/order-total       (when-not locked? (:total order))

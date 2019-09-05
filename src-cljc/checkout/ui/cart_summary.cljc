@@ -1,11 +1,12 @@
 (ns checkout.ui.cart-summary
   (:require [storefront.component :as component]
-            [checkout.ui.molecules :as checkout.M]))
+            [checkout.ui.molecules :as checkout.M]
+            [ui.molecules :as ui.M]))
 
 (defn organism
   [{:cart-summary/keys [id lines]
     :as query
-    :keys [promo-data]} owner _]
+    :keys [promo-field-data]} owner _]
   (component/create
    [:div {:data-test id}
     [:div.py1.bg-fate-white.px4
@@ -14,8 +15,9 @@
        (for [line lines]
          (checkout.M/cart-summary-line-molecule line))]]
 
-     (when promo-data
-       [:div.h5 (checkout.M/promo-entry promo-data)])
+     (when promo-field-data
+       [:div.my2
+        (ui.M/input-group-field-and-button-molecule promo-field-data)])
 
      (when (:freeinstall-informational/value query)
        checkout.M/freeinstall-informational)]
