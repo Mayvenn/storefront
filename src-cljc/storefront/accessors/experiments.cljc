@@ -91,5 +91,4 @@
 
 (defn line-items-discounts?
   [data]
-  true
-  #_(display-feature? data "line-items-discounts"))
+  (display-feature? data "line-items-discounts"))
