@@ -88,3 +88,8 @@
 (defn stylist-profiles?
   [data]
   (display-feature? data "stylist-profiles"))
+
+(defn line-items-discounts?
+  [data]
+  true
+  #_(display-feature? data "line-items-discounts"))

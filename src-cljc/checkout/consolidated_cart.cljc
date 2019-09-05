@@ -19,6 +19,7 @@
    [storefront.accessors.adjustments :as adjustments]
    [storefront.accessors.mayvenn-install :as mayvenn-install]
    [storefront.accessors.experiments :as experiments]
+   [storefront.accessors.line-items :as line-items]
    [storefront.accessors.orders :as orders]
    [storefront.accessors.products :as products]
    [storefront.accessors.promos :as promos]
@@ -283,7 +284,8 @@
    line-items
    skus
    add-items-action]
-  (let [update-line-item-requests (merge-with
+  (let [line-items-discounts?     (experiments/line-items-discounts? app-state)
+        update-line-item-requests (merge-with
                                    #(or %1 %2)
                                    (variants-requests app-state request-keys/add-to-bag (map :sku line-items))
                                    (variants-requests app-state request-keys/update-line-item (map :sku line-items)))
@@ -297,38 +299,51 @@
                           qty-adjustment-args {:variant (select-keys line-item [:id :sku])}
                           removing?            (get delete-line-item-requests variant-id)
                           updating?            (get update-line-item-requests sku-id)
-                          just-added-to-order? false #_ (contains? recently-added-skus sku-id)]]
-                     {:react/key                                      (str sku-id "-" (:quantity line-item))
-                      :cart-item-title/id                             (str "line-item-title-" sku-id)
-                      :cart-item-title/primary                        (or (:product-title line-item)
-                                                                          (:product-name line-item))
-                      :cart-item-title/secondary                      (:color-name line-item)
-                      :cart-item-floating-box/id                      (str "line-item-price-ea-" sku-id)
-                      :cart-item-floating-box/value                   [:span.dark-gray
-                                                                       [:span.medium.black (mf/as-money price)]
-                                                                       " ea"]
-                      :cart-item-square-thumbnail/id                  sku-id
-                      :cart-item-square-thumbnail/sku-id              sku-id
-                      :cart-item-square-thumbnail/highlighted?        (get-in app-state keypaths/cart-freeinstall-just-added?)
-                      :cart-item-square-thumbnail/sticker-label       (when-let [length-circle-value (-> sku :hair/length first)]
-                                                                        (str length-circle-value "”"))
-                      :cart-item-square-thumbnail/ucare-id            (->> sku (catalog-images/image "cart") :ucare/id)
-                      :cart-item-adjustable-quantity/id               (str "line-item-quantity-" sku-id)
-                      :cart-item-adjustable-quantity/spinning?        updating?
-                      :cart-item-adjustable-quantity/value            (:quantity line-item)
-                      :cart-item-adjustable-quantity/id-suffix        sku-id
-                      :cart-item-adjustable-quantity/decrement-target [events/control-cart-line-item-dec qty-adjustment-args]
-                      :cart-item-adjustable-quantity/increment-target [events/control-cart-line-item-inc qty-adjustment-args]
-                      :cart-item-remove-action/id                     "line-item-remove-freeinstall"
-                      :cart-item-remove-action/spinning?              removing?
-                      :cart-item-remove-action/target                 [events/control-cart-remove (:id line-item)]})]
+                          just-added-to-order? false #_ (contains? recently-added-skus sku-id)
+                          discount-price       (line-items/discounted-unit-price line-item)]]
+                     (cond-> {:react/key                                      (str sku-id "-" (:quantity line-item))
+                              :cart-item-title/id                             (str "line-item-title-" sku-id)
+                              :cart-item-title/primary                        (or (:product-title line-item)
+                                                                                  (:product-name line-item))
+                              :cart-item-title/secondary                      (:color-name line-item)
+                              :cart-item-floating-box/id                      (str "line-item-price-ea-" sku-id)
+                              :cart-item-floating-box/value                   [:span.dark-gray
+                                                                               [:span.medium.black {:data-test (str "line-item-price-ea-" sku-id)}
+                                                                                (mf/as-money price)]
+                                                                               " each"]
+                              :cart-item-square-thumbnail/id                  sku-id
+                              :cart-item-square-thumbnail/sku-id              sku-id
+                              :cart-item-square-thumbnail/highlighted?        (get-in app-state keypaths/cart-freeinstall-just-added?)
+                              :cart-item-square-thumbnail/sticker-label       (when-let [length-circle-value (-> sku :hair/length first)]
+                                                                                (str length-circle-value "”"))
+                              :cart-item-square-thumbnail/ucare-id            (->> sku (catalog-images/image "cart") :ucare/id)
+                              :cart-item-adjustable-quantity/id               (str "line-item-quantity-" sku-id)
+                              :cart-item-adjustable-quantity/spinning?        updating?
+                              :cart-item-adjustable-quantity/value            (:quantity line-item)
+                              :cart-item-adjustable-quantity/id-suffix        sku-id
+                              :cart-item-adjustable-quantity/decrement-target [events/control-cart-line-item-dec qty-adjustment-args]
+                              :cart-item-adjustable-quantity/increment-target [events/control-cart-line-item-inc qty-adjustment-args]
+                              :cart-item-remove-action/id                     "line-item-remove-freeinstall"
+                              :cart-item-remove-action/spinning?              removing?
+                              :cart-item-remove-action/target                 [events/control-cart-remove (:id line-item)]}
+                       (and line-items-discounts?
+                            (not= discount-price price))
+                       (merge { :cart-item-floating-box/id    (str "line-item-price-ea-" sku-id)
+
+                                :cart-item-floating-box/value [:div.mr1
+                                                               [:div.strike {:data-test (str "line-item-price-ea-" sku-id)} (mf/as-money price)]
+                                                               [:div.purple {:data-test (str "line-item-discounted-price-ea-" sku-id)} (mf/as-money discount-price)]
+                                                               [:div.dark-gray.right-align "each"]]})))]
+
     (cond-> cart-items
       entered?
       (concat
        [(cond-> {:react/key                         "freeinstall-line-item-freeinstall"
                  :cart-item-title/id                "line-item-title-freeinstall"
                  :cart-item-floating-box/id         "line-item-price-freeinstall"
-                 :cart-item-floating-box/value      [:span.medium (mf/as-money (- service-discount))]
+                 :cart-item-floating-box/value     [:div.right
+                                                    [:div.h5.strike {:data-test (str "line-item-freeinstall-price")} (some-> service-discount mf/as-money)]
+                                                    [:div.h5.right-align.purple "FREE"]]
                  :cart-item-thumbnail/id            "freeinstall"
                  :cart-item-thumbnail/highlighted?  (get-in app-state keypaths/cart-freeinstall-just-added?)
                  :cart-item-thumbnail/value         nil

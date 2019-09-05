@@ -20,6 +20,7 @@
    [storefront.accessors.experiments :as experiments]
    [catalog.facets :as facets]
    [storefront.accessors.images :as images]
+   [storefront.accessors.line-items :as line-items]
    [storefront.accessors.orders :as orders]
    [storefront.accessors.products :as products]
    [storefront.accessors.promos :as promos]
@@ -42,7 +43,7 @@
    [checkout.consolidated-cart :as consolidated-cart]))
 
 (defn display-adjustable-line-items
-  [recently-added-skus line-items skus update-line-item-requests delete-line-item-requests]
+  [line-items-discounts? recently-added-skus line-items skus update-line-item-requests delete-line-item-requests]
   (for [{sku-id :sku variant-id :id :as line-item} line-items
 
         :let [sku                  (get skus sku-id)
@@ -51,7 +52,11 @@
               removing?            (get delete-line-item-requests variant-id)
               updating?            (get update-line-item-requests sku-id)
               just-added-to-order? (contains? recently-added-skus sku-id)
-              length-circle-value  (-> sku :hair/length first)]]
+              length-circle-value  (-> sku :hair/length first)
+              discount-price       (line-items/discounted-unit-price line-item)
+              money-formatter      (if line-items-discounts?
+                                     mf/as-money
+                                     mf/as-money-without-cents)]]
     [:div.pt1.pb2 {:key (str sku-id "-" (:quantity line-item))}
      [:div.left.pr1
       (when-not length-circle-value
@@ -106,10 +111,24 @@
                                                               {:variant line-item})
                                    (utils/send-event-callback events/control-cart-line-item-inc
                                                               {:variant line-item}))]
-        [:div.h5 {:data-test (str "line-item-price-ea-" sku-id)} (mf/as-money-without-cents price) " ea"]]]]]))
+        (cond
+          (and line-items-discounts?
+               (not= discount-price price))
+          [:div.right
+           [:div.h5.strike {:data-test (str "line-item-price-ea-" sku-id)} (money-formatter price)]
+           [:div.h5.teal {:data-test (str "line-item-discounted-price-ea-" sku-id)} (money-formatter discount-price)]
+           [:div.dark-gray.right-align "each"]]
+
+          line-items-discounts?
+          [:div.right
+           [:div.h5 {:data-test (str "line-item-price-ea-" sku-id)} (money-formatter price)]
+           [:div.dark-gray.right-align "each"]]
+
+          :else
+          [:div.h5.right {:data-test (str "line-item-price-ea-" sku-id)} (money-formatter price) " each"])]]]]))
 
 (defn ^:private non-adjustable-line-item
-  [freeinstall-just-added? {:keys [removing? id title detail price remove-event thumbnail-image-fn]}]
+  [line-items-discounts? freeinstall-just-added? {:keys [removing? id title detail price remove-event thumbnail-image-fn]}]
   [:div.pt1.pb2.clearfix
    [:div.left.ml1.pr3
     (css-transitions/transition-background-color
@@ -135,7 +154,11 @@
           ^:inline (svg/trash-can {:height "1.1em"
                                    :width  "1.1em"
                                    :class  "stroke-dark-gray"})])]]
-     [:div.h5.right {:data-test (str "line-item-price-ea-" id)} (some-> price mf/as-money)]]]])
+     (if line-items-discounts?
+       [:div.right
+        [:div.h5.strike {:data-test (str "line-item-price-ea-" id)} (some-> price mf/as-money)]
+        [:div.h5.right-align.teal "FREE"]]
+       [:div.h5.right {:data-test (str "line-item-price-ea-" id)} (some-> price mf/as-money)])]]])
 
 (defn full-component [{:keys [order
                               skus
@@ -154,6 +177,7 @@
                               freeinstall-line-item-data
                               freeinstall-just-added?
                               loaded-quadpay?
+                              line-items-discounts?
                               cart-summary]} owner _]
   (component/create
    [:div.container.p2
@@ -164,13 +188,14 @@
     [:div.clearfix.mxn3
      [:div.col-on-tb-dt.col-6-on-tb-dt.px3
       {:data-test "cart-line-items"}
-      (display-adjustable-line-items recently-added-skus
+      (display-adjustable-line-items line-items-discounts?
+                                     recently-added-skus
                                      line-items
                                      skus
                                      update-line-item-requests
                                      delete-line-item-requests)
       (when freeinstall-line-item-data
-        (non-adjustable-line-item freeinstall-just-added? freeinstall-line-item-data))
+        (non-adjustable-line-item line-items-discounts? freeinstall-just-added? freeinstall-line-item-data))
 
       (component/build suggestions/component suggestions nil)]
 
@@ -411,7 +436,8 @@
      :recently-added-skus        (get-in data keypaths/cart-recently-added-skus)
      :freeinstall-just-added?    (get-in data keypaths/cart-freeinstall-just-added?)
      :stylist-service-menu       (get-in data keypaths/stylist-service-menu)
-     :freeinstall-line-item-data (cart-items/freeinstall-line-item-query data)}))
+     :freeinstall-line-item-data (cart-items/freeinstall-line-item-query data)
+     :line-items-discounts?      (experiments/line-items-discounts? data)}))
 
 (defn empty-cart-query
   [data]

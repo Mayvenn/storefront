@@ -1,6 +1,7 @@
 (ns checkout.ui.cart-item
   (:require [checkout.suggestions :as suggestions]
             [storefront.component :as component]
+            [storefront.components.money-formatters :as mf]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.css-transitions :as css-transitions]
@@ -10,8 +11,8 @@
 (defn cart-item-floating-box-molecule
   [{:cart-item-floating-box/keys [id value]}]
   (when id
-    [:div.col-3.right.right-align
-     {:data-test id}
+    [:div.right.right-align
+     {:key id}
      value]))
 
 (defn cart-item-copy-molecule
@@ -186,12 +187,17 @@
 
         [:div.right.col-2.right-align
          (cart-item-remove-action-molecule cart-item)
-         (cart-item-swap-action-molecule cart-item)]
+         (cart-item-swap-action-molecule cart-item)
+         (cart-item-floating-box-molecule cart-item)
+         #_[:div.mr1.right-align.right
+          [:div.medium.strike (mf/as-money 55)]
+          [:div.medium.purple (mf/as-money 41.5)]
+          [:div.dark-gray "each"]]]
 
         (cart-item-title-molecule cart-item)
 
         [:div.col-12
-         (cart-item-floating-box-molecule cart-item)
+
          (cart-item-copy-molecule cart-item)
          (ui.molecules/stars-rating-molecule cart-item)
          (cart-item-adjustable-quantity-molecule cart-item)]

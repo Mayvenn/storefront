@@ -9,6 +9,7 @@
             [catalog.images :as catalog-images]
             [checkout.suggestions :as suggestions]
             [storefront.accessors.experiments :as experiments]
+            [storefront.accessors.line-items :as line-items]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.products :as products]
             [storefront.accessors.stylists :as stylists]
@@ -25,14 +26,18 @@
             [storefront.request-keys :as request-keys]))
 
 (defn display-adjustable-line-items
-  [recently-added-skus line-items skus update-line-item-requests delete-line-item-requests]
+  [line-items-discounts? recently-added-skus line-items skus update-line-item-requests delete-line-item-requests]
   (for [{sku-id :sku variant-id :id :as line-item} line-items
         :let [sku                  (get skus sku-id)
               price                (or (:sku/price line-item) (:unit-price line-item))
               removing?            (get delete-line-item-requests variant-id)
               updating?            (get update-line-item-requests sku-id)
               just-added-to-order? (contains? recently-added-skus sku-id)
-              length-circle-value  (-> sku :hair/length first)]]
+              length-circle-value  (-> sku :hair/length first)
+              discount-price       (line-items/discounted-unit-price line-item)
+              money-formatter      (if line-items-discounts?
+                                     mf/as-money
+                                     mf/as-money-without-cents)]]
     [:div.pt1.pb2 {:key (str sku-id "-" (:quantity line-item))}
      [:div.left.pr1
       (when-not length-circle-value
@@ -87,10 +92,24 @@
                                                               {:variant line-item})
                                    (utils/send-event-callback events/control-cart-line-item-inc
                                                               {:variant line-item}))]
-        [:div.h5 {:data-test (str "line-item-price-ea-" sku-id)} (mf/as-money-without-cents price) " ea"]]]]]))
+        (cond
+          (and line-items-discounts?
+               (not= discount-price price))
+          [:div.right
+           [:div.h5.strike {:data-test (str "line-item-price-ea-" sku-id)} (money-formatter price)]
+           [:div.h5.purple {:data-test (str "line-item-discounted-price-ea-" sku-id)} (money-formatter discount-price)]
+           [:div.dark-gray.right-align "each"]]
+
+          line-items-discounts?
+          [:div.right
+           [:div.h5 {:data-test (str "line-item-price-ea-" sku-id)} (money-formatter price)]
+           [:div.dark-gray.right-align "each"]]
+
+          :else
+          [:div.h5.right {:data-test (str "line-item-price-ea-" sku-id)} (money-formatter price) " each"])]]]]))
 
 (defn ^:private freeinstall-line-item
-  [freeinstall-just-added? {:keys [id title detail price thumbnail-image-fn]}]
+  [line-items-discounts? freeinstall-just-added? {:keys [id title detail price thumbnail-image-fn]}]
   [:div.pt1.pb2.clearfix
    [:div.left.ml1.pr3.mtp4
     (css-transitions/transition-background-color
@@ -108,7 +127,11 @@
      [:div.flex.justify-between.mt1
       [:div {:data-test (str "line-item-detail-" id)}
        detail]]
-     [:div.h5.right {:data-test (str "line-item-price-ea-" id)} (some-> price mf/as-money)]]]])
+     (if line-items-discounts?
+       [:div.right
+        [:div.h5.strike {:data-test (str "line-item-price-ea-" id)} (some-> price mf/as-money)]
+        [:div.h5.right-align.purple "FREE"]]
+       [:div.h5.right {:data-test (str "line-item-price-ea-" id)} (some-> price mf/as-money)])]]])
 
 (defn qualified-banner-component
   [_ owner _]
@@ -177,6 +200,7 @@
                               how-shop-choice
                               add-more-hair-navigation-event
                               loaded-quadpay?
+                              line-items-discounts?
                               cart-summary]} owner opts]
   (component/create
    (let [{:keys [number-of-items-needed add-more-hair?]} freeinstall-line-item-data]
@@ -188,7 +212,8 @@
        [:div.clearfix.mxn3
         [:div.px3.pt2
          {:data-test "cart-line-items"}
-         (display-adjustable-line-items recently-added-skus
+         (display-adjustable-line-items line-items-discounts?
+                                        recently-added-skus
                                         line-items
                                         skus
                                         update-line-item-requests
@@ -196,7 +221,7 @@
          [:div.px2
           (component/build suggestions/component suggestions nil)]
 
-         (freeinstall-line-item freeinstall-just-added? freeinstall-line-item-data)]
+         (freeinstall-line-item line-items-discounts? freeinstall-just-added? freeinstall-line-item-data)]
 
         [:div.px3
          (component/build adventure-cart-summary/component cart-summary nil)
@@ -261,13 +286,13 @@
                                        :option/name)}))
 
 (defn ^:private full-cart-query [data]
-  (let [order                (get-in data keypaths/order)
-        products             (get-in data keypaths/v2-products)
-        facets               (get-in data keypaths/v2-facets)
-        line-items           (map (partial add-product-title-and-color-to-line-item products facets)
-                                  (orders/product-items order))
-        variant-ids          (map :id line-items)
-        how-shop-choice      (get-in data adventure.keypaths/adventure-choices-how-shop)]
+  (let [order           (get-in data keypaths/order)
+        products        (get-in data keypaths/v2-products)
+        facets          (get-in data keypaths/v2-facets)
+        line-items      (map (partial add-product-title-and-color-to-line-item products facets)
+                             (orders/product-items order))
+        variant-ids     (map :id line-items)
+        how-shop-choice (get-in data adventure.keypaths/adventure-choices-how-shop)]
     {:suggestions                    (suggestions/query data)
      :order                          order
      :servicing-stylist              (get-in data adventure.keypaths/adventure-servicing-stylist)
@@ -288,7 +313,8 @@
      :recently-added-skus            (get-in data keypaths/cart-recently-added-skus)
      :freeinstall-just-added?        (get-in data keypaths/cart-freeinstall-just-added?)
      :freeinstall-line-item-data     (adventure-cart-items/freeinstall-line-item-query data)
-     :loaded-quadpay?                (get-in data keypaths/loaded-quadpay)}))
+     :loaded-quadpay?                (get-in data keypaths/loaded-quadpay)
+     :line-items-discounts?          (experiments/line-items-discounts? data)}))
 
 (defn component
   [{:keys [fetching-order? full-cart]} owner opts]
