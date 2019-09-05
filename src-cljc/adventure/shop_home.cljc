@@ -85,13 +85,15 @@
                              :icon/width   "27"
                              :header/value "3. Schedule Your Appointment"
                              :body/value   "We’ll connect you to your Mayvenn Certified Stylist and book an install appointment that’s convenient for you."}]
-          :cta/value       "Learn more"}
+          :cta/value       "Learn more"
+          :cta/id          "info-how-it-works"}
          (-route-or-redirect nav-args events/navigate-info-how-it-works "toadventurelearnmore"))
         (merge
          {:layer/type   :text-block
           :header/value "Who's doing my hair?"
           :body/value   "Our Certified Stylists are the best in your area. They're chosen because of their top-rated reviews, professionalism, and amazing work."
-          :cta/value    "Learn more"}
+          :cta/value    "Learn more"
+          :cta/id       "info-certified-stylists"}
          (-route-or-redirect nav-args events/navigate-info-certified-stylists "toadventurelearnmore"))
         {:layer/type      :image-block
          :photo/mob-uuid  "a6a607e6-aeb4-4b61-8bc7-60fd17d15abe"
@@ -101,7 +103,8 @@
          {:layer/type   :text-block
           :header/value "Quality-Guaranteed Virgin Hair"
           :body/value   "Our bundles, closures, and frontals are crafted with the highest industry standards and come in a variety of textures and colors."
-          :cta/value    "Learn more"}
+          :cta/value    "Learn more"
+          :cta/id       "info-about-our-hair"}
          (-route-or-redirect nav-args events/navigate-info-about-our-hair "toadventurelearnmore"))
         {:layer/type      :image-block
          :photo/mob-uuid  "e994076c-b21f-4925-b72b-f804b7408599"

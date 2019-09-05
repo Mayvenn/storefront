@@ -72,7 +72,7 @@
       "FREE standard shipping"]]]))
 
 (defn ^:private cta-with-chevron
-  [{:cta/keys [navigation-message href value]}]
+  [{:cta/keys [navigation-message href value id]}]
   (component/html
    (when (or navigation-message href)
      [:a.block.h4.medium.teal.my2
@@ -80,7 +80,9 @@
        (when href
          {:href href})
        (when navigation-message
-         (apply utils/route-to navigation-message)))
+         (apply utils/route-to navigation-message))
+       (when id
+         {:data-test id}))
       value
       ^:inline (svg/dropdown-arrow {:class  "stroke-teal ml2"
                                     :style  {:stroke-width "3px"
