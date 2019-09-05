@@ -10,6 +10,7 @@
             [storefront.transitions :as transitions]
             #?(:cljs [storefront.history :as history])
             [adventure.progress :as progress]
+            api.orders
             [storefront.accessors.experiments :as experiments]))
 
 (defn ^:private query [data]
@@ -55,7 +56,14 @@
 
 #?(:cljs
    (defmethod effects/perform-effects events/api-success-assign-servicing-stylist-pre-purchase [_ _ _ _ app-state]
-     (history/enqueue-navigate events/navigate-adventure-match-success-pre-purchase)))
+     (let [consolidated-cart?                         (experiments/consolidated-cart? app-state)
+           cart-contains-a-freeinstall-eligible-item? (-> app-state
+                                                          api.orders/current
+                                                          :mayvenn-install/quantity-added
+                                                          (> 0))]
+       (if (and cart-contains-a-freeinstall-eligible-item? consolidated-cart?)
+         (history/enqueue-navigate events/navigate-cart)
+         (history/enqueue-navigate events/navigate-adventure-match-success-pre-purchase)))))
 
 #?(:cljs
    (defmethod effects/perform-effects events/api-success-assign-servicing-stylist-post-purchase [_ _ _ _ app-state]
