@@ -58,7 +58,10 @@
    ["/stylist/" [#"\d+" :stylist-id] "-" :store-slug] (edn->bidi events/navigate-adventure-stylist-profile)
    ["/stylist/"
     [#"\d+" :stylist-id] "-" :store-slug
-    "/gallery"]                                       (edn->bidi events/navigate-adventure-stylist-gallery)})
+    "/gallery"]                                       (edn->bidi events/navigate-adventure-stylist-gallery)
+   "/certified-stylists"                              (edn->bidi events/navigate-info-certified-stylists)
+   "/about-our-hair"                                  (edn->bidi events/navigate-info-about-our-hair)
+   "/how-it-works"                                    (edn->bidi events/navigate-info-how-it-works)})
 
 (def freeinstall-routes
   {{:subdomain freeinstall?}
@@ -73,10 +76,7 @@
      ["/adv/shop/bundle-sets-texture"]                          (edn->bidi events/navigate-adventure-bundlesets-hair-texture)
      ["/adv/shop/" :album-keyword]                              (edn->bidi events/navigate-adventure-select-new-look)
      ["/adv/shop/" :album-keyword "/texture"]                   (edn->bidi events/navigate-adventure-hair-texture)
-     ["/adv/shop/" :album-keyword "/" :look-id]                 (edn->bidi events/navigate-adventure-look-detail)
-     "/certified-stylists"                                      (edn->bidi events/navigate-info-certified-stylists)
-     "/about-our-hair"                                          (edn->bidi events/navigate-info-about-our-hair)
-     "/how-it-works"                                            (edn->bidi events/navigate-info-how-it-works)}
+     ["/adv/shop/" :album-keyword "/" :look-id]                 (edn->bidi events/navigate-adventure-look-detail)}
     stylist-matching-routes)})
 
 (def catalog-routes
