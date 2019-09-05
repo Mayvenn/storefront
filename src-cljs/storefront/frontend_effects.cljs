@@ -894,11 +894,9 @@
       nil
 
       :else
-      (do
-        (messages/handle-message events/flash-show-success
-                                 {:message "The coupon code was successfully applied to your order."
-                                  :scroll? false})
-        (scroll-promo-field-to-top)))
+      (messages/handle-message events/flash-show-success
+                               {:message "The coupon code was successfully applied to your order."
+                                :scroll? false}))
     (api/get-promotions (get-in app-state keypaths/api-cache)
                         (first (get-in app-state keypaths/order-promotion-codes)))))
 
