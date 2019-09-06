@@ -18,7 +18,7 @@
   [{rating :rating/value}]
   (when rating
     (let [{:keys [whole-stars partial-star empty-stars]} (ui/rating->stars rating)]
-      [:div.flex.items-center.line-height-2
+      [:div.h5.flex.items-center.line-height-2
        [:span.orange.bold.mr1 rating]
        whole-stars
        partial-star
