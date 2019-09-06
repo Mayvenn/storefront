@@ -298,3 +298,23 @@
   (component/html
    [:svg opts
     ^:inline (svg-xlink "forward-arrow")]))
+
+(defn empty-star [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "empty-star")]))
+
+(defn half-star [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "half-star")]))
+
+(defn three-quarter-star [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "three-quarter-star")]))
+
+(defn whole-star [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "whole-star")]))
