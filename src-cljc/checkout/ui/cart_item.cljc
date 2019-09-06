@@ -58,8 +58,9 @@
     [steps current-step action-label action-target]}]
   (when (and steps current-step)
     (let [[completed uncompleted] (split-at current-step steps)]
-      [:div.flex.items-center
-       [:div.flex.items-center.mr2
+      [:div
+       [:div.items-center.mr2.my2
+        {:style {:display "inline-flex"}}
         (interpose (conj steps-hyphen-seperator-atom
                          {:class "mx1"
                           :style {:width "11px"}})
@@ -79,29 +80,28 @@
     [id ucare-id sku-id sticker-label highlighted?]}]
   (when id
     (let [sticker-id (str "line-item-length-" sku-id)]
-      [:div.flex.items-center.justify-center
-       [:div.relative
-        {:style {:width  48
-                 :height 48}}
-        (when sticker-label
-          [:div.absolute.z1.circle.border.border-white.medium.h6.bg-too-light-teal
-           {:key       sticker-id
-            :data-test sticker-id
-            :style     {:right -12
-                        :top   -12}}
-           [:div.flex.items-center.justify-center
-            sticker-label]])
+      [:div.relative
+       {:style {:width  48
+                :height 48}}
+       (when sticker-label
+         [:div.absolute.z1.circle.border.border-white.medium.h6.bg-too-light-teal
+          {:key       sticker-id
+           :data-test sticker-id
+           :style     {:right -12
+                       :top   -12}}
+          [:div.flex.items-center.justify-center
+           sticker-label]])
 
-        (css-transitions/transition-background-color
-         highlighted?
-         [:div.absolute.flex.items-center.justify-center.rounded
-          {:style     {:height 46
-                       :width  46}
-           :key       (str "thumbnail-" sku-id)
-           :data-test (str "line-item-img-" sku-id)}
-          (ui/ucare-img {:width 48
-                         :class "rounded border border-light-gray"}
-                        ucare-id)])]])))
+       (css-transitions/transition-background-color
+        highlighted?
+        [:div.absolute.flex.items-center.justify-center.rounded
+         {:style     {:height 46
+                      :width  46}
+          :key       (str "thumbnail-" sku-id)
+          :data-test (str "line-item-img-" sku-id)}
+         (ui/ucare-img {:width 48
+                        :class "rounded border border-light-gray"}
+                       ucare-id)])])))
 
 (defn cart-item-thumbnail-molecule
   [{:cart-item-thumbnail/keys [id highlighted? value locked? image-url]}]
@@ -143,20 +143,22 @@
       [:div.h3
        {:style {:width "1.2em"}}
        ui/spinner]
-      [:a.gray.medium.m1
-       (merge {:data-test (str "line-item-remove-" id)}
-              (apply utils/fake-href target))
-       ^:inline (svg/consolidated-trash-can {:width  "16px"
-                                             :height "17px"})])))
+      [:div 
+       [:a.gray.medium.m1
+        (merge {:data-test (str "line-item-remove-" id)}
+               (apply utils/fake-href target))
+        (svg/consolidated-trash-can {:width  "16px"
+                                     :height "17px"})]])))
 
 (defn cart-item-swap-action-molecule
   [{:cart-item-swap-action/keys [target]}]
   (when target
-    [:a.gray.medium.m1
-     (merge {:data-test "stylist-swap"}
-            (apply utils/route-to target))
-     ^:inline (svg/swap-person {:width  "16px"
-                                :height "19px"})]))
+    [:div
+     [:a.gray.medium.m1
+      (merge {:data-test "stylist-swap"}
+             (apply utils/route-to target))
+      (svg/swap-person {:width  "16px"
+                        :height "19px"})]]))
 
 (defn cart-item-adjustable-quantity-molecule
   [{:cart-item-adjustable-quantity/keys
@@ -175,35 +177,32 @@
   (component/create
    [:div
     (when-let [react-key (:react/key cart-item)]
-      [:div.pt1.pb2.flex.items-center.col-12
+      [:div.pt1.pb2.ml2.flex
        {:key react-key}
        ;; image group
-       [:div.mt2.mr2.relative.self-start.col-2
+       [:div.relative.justify-middle.pt3
+        {:style {:min-width "78px"}}
         (cart-item-square-thumbnail-molecule cart-item)
         (cart-item-thumbnail-molecule cart-item)]
 
        ;; info group
-       [:div.h6.mt1.col-10
-
-        [:div.right.col-2.right-align
-         (cart-item-remove-action-molecule cart-item)
-         (cart-item-swap-action-molecule cart-item)
-         (cart-item-floating-box-molecule cart-item)
-         #_[:div.mr1.right-align.right
-          [:div.medium.strike (mf/as-money 55)]
-          [:div.medium.purple (mf/as-money 41.5)]
-          [:div.dark-gray "each"]]]
-
+       [:div.flex-grow-1
         (cart-item-title-molecule cart-item)
 
-        [:div.col-12
-
+        [:div
          (cart-item-copy-molecule cart-item)
          (ui.molecules/stars-rating-molecule cart-item)
          (cart-item-adjustable-quantity-molecule cart-item)]
 
-        [:div.col-12
+        [:div
          (cart-item-steps-to-complete-molecule cart-item)]
 
-        [:div.col-12.col
-         (component/build suggestions/consolidated-component suggestions nil)]]])]))
+        [:div
+         (component/build suggestions/consolidated-component suggestions nil)]]
+
+       ;; price group
+       [:div.right.right-align.h6.pt1
+        {:style {:min-width "67px"}}
+        (cart-item-remove-action-molecule cart-item)
+        (cart-item-swap-action-molecule cart-item)
+        (cart-item-floating-box-molecule cart-item)]])]))

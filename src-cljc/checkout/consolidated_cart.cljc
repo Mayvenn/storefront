@@ -307,8 +307,8 @@
                                                                                   (:product-name line-item))
                               :cart-item-title/secondary                      (:color-name line-item)
                               :cart-item-floating-box/id                      (str "line-item-price-ea-" sku-id)
-                              :cart-item-floating-box/value                   [:span.dark-gray
-                                                                               [:span.medium.black {:data-test (str "line-item-price-ea-" sku-id)}
+                              :cart-item-floating-box/value                   [:div.gray
+                                                                               [:div.medium.black {:data-test (str "line-item-price-ea-" sku-id)}
                                                                                 (mf/as-money price)]
                                                                                " each"]
                               :cart-item-square-thumbnail/id                  sku-id
@@ -323,7 +323,7 @@
                               :cart-item-adjustable-quantity/id-suffix        sku-id
                               :cart-item-adjustable-quantity/decrement-target [events/control-cart-line-item-dec qty-adjustment-args]
                               :cart-item-adjustable-quantity/increment-target [events/control-cart-line-item-inc qty-adjustment-args]
-                              :cart-item-remove-action/id                     "line-item-remove-freeinstall"
+                              :cart-item-remove-action/id                     (str "line-item-remove-" sku-id)
                               :cart-item-remove-action/spinning?              removing?
                               :cart-item-remove-action/target                 [events/control-cart-remove (:id line-item)]}
                        (and line-items-discounts?
@@ -331,9 +331,9 @@
                        (merge { :cart-item-floating-box/id    (str "line-item-price-ea-" sku-id)
 
                                 :cart-item-floating-box/value [:div.mr1
-                                                               [:div.strike {:data-test (str "line-item-price-ea-" sku-id)} (mf/as-money price)]
-                                                               [:div.purple {:data-test (str "line-item-discounted-price-ea-" sku-id)} (mf/as-money discount-price)]
-                                                               [:div.dark-gray.right-align "each"]]})))]
+                                                               [:div.strike.medium {:data-test (str "line-item-price-ea-" sku-id)} (mf/as-money price)]
+                                                               [:div.purple.medium {:data-test (str "line-item-discounted-price-ea-" sku-id)} (mf/as-money discount-price)]
+                                                               [:div.gray.right-align "each"]]})))]
 
     (cond-> cart-items
       entered?
@@ -341,9 +341,9 @@
        [(cond-> {:react/key                         "freeinstall-line-item-freeinstall"
                  :cart-item-title/id                "line-item-title-freeinstall"
                  :cart-item-floating-box/id         "line-item-price-freeinstall"
-                 :cart-item-floating-box/value     [:div.right
-                                                    [:div.h5.strike {:data-test (str "line-item-freeinstall-price")} (some-> service-discount mf/as-money)]
-                                                    [:div.h5.right-align.purple "FREE"]]
+                 :cart-item-floating-box/value     [:div.right.medium
+                                                    [:div.h6.strike {:data-test (str "line-item-freeinstall-price")} (some-> service-discount mf/as-money)]
+                                                    [:div.h6.right-align.purple "FREE"]]
                  :cart-item-thumbnail/id            "freeinstall"
                  :cart-item-thumbnail/highlighted?  (get-in app-state keypaths/cart-freeinstall-just-added?)
                  :cart-item-thumbnail/value         nil
