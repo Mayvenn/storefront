@@ -20,6 +20,7 @@
       :transitionAppearTimeout 1300
       :transitionAppear        true
       :transitionEnter         true
-      :transitionEnterTimeout  1300}
+      :transitionEnterTimeout  1300
+      :transitionLeaveTimeout  1300}
      content)
     content))
