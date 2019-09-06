@@ -67,14 +67,14 @@
    [:div.py4.h3.bold
     "Chat with your Stylist"]
    [:div.h5.line-height-3.center
-    "A group text message will be sent to "
+    "After your order ships, a group SMS will be sent to "
     (if phone-number
       [:span.bold.nowrap (formatters/phone-number phone-number)]
       "you")
     " and your stylist, "
     [:span.nowrap {:data-test "servicing-stylist-name"}
      (stylists/->display-name servicing-stylist)]
-    "."]
+    ", to make an appointment."]
    [:div.bg-white.px1.my4.mxn2.rounded.p3
     (component/build profile-card/component (profile-card/stylist-profile-card-data servicing-stylist) nil)]])
 

@@ -553,7 +553,7 @@
               :servicing-stylist-portrait-url "//ucarecdn.com/bc776b8a-595d-46ef-820e-04915478ffe8/"})
 
       (and entered? servicing-stylist)
-      (merge {:checkout-caption-copy          (str "You'll be connected with " (stylists/->display-name servicing-stylist) " after checkout.")
+      (merge {:checkout-caption-copy          (str "After your order ships, you'll be connected with " (stylists/->display-name servicing-stylist) " over SMS to make an appointment.")
               :servicing-stylist-portrait-url (-> servicing-stylist :portrait :resizable-url)}))))
 
 (defn component

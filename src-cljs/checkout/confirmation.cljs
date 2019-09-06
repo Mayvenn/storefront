@@ -166,7 +166,7 @@
          (when free-install-applied?
            [:div.h5.my4.center.col-10.mx-auto.line-height-3
             (if-let [servicing-stylist-name (stylists/->display-name servicing-stylist)]
-              (str "You’ll be connected with " servicing-stylist-name " after checkout.")
+              (str "After your order ships, you’ll be connected with " servicing-stylist-name " over SMS to make an appointment.")
               "You’ll be able to select your Certified Mayvenn Stylist after checkout.")])
          [:div.col-12.col-6-on-tb-dt.mx-auto
           (checkout-button selected-quadpay? checkout-button-data)]]]]
