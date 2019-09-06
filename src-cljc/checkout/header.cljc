@@ -9,12 +9,11 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]))
 
-(defn desktop-header [{:keys [store user cart shopping signed-in vouchers?]}]
+(defn desktop-header [{:keys [store user cart signed-in vouchers?]}]
   [:div.hide-on-mb.relative
    [:div.relative.border-bottom.border-light-gray {:style {:height "125px"}}
     [:div.max-960.mx-auto
      [:div.left (storefront-header/store-info signed-in store)]
-
      [:div.right
       [:div.h6.my2.flex.items-center
        (storefront-header/account-info signed-in user vouchers?)
@@ -37,11 +36,11 @@
      [:div
       (desktop-header desktop-header-data)
 
-      [:div.max-960.mx-auto.border-bottom.border-light-gray.flex.items-center
+      [:div.col-7-on-dt.container.mx-auto.border-bottom.border-light-gray.flex.items-center
        (when illuminated?
          {:class "bg-too-light-lavender"})
 
-       [:div.col-2.hide-on-mb-tb
+       [:div.col-3.hide-on-mb-tb
         (when-not hide-back-to-shopping-link?
           [:a.h5.black.pointer.flex.justify-start.items-center close-cart-route
            (svg/left-caret {:class "stroke-dark-gray"
