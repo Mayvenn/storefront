@@ -373,15 +373,6 @@
       (assoc-in keypaths/stylist-referrals [state/empty-referral])
       (assoc-in keypaths/popup :refer-stylist-thanks)))
 
-(defn contains-freeinstall? [order]
-  (->> (:adjustments order)
-       (map :coupon-code)
-       (some #(= "freeinstall" %))) )
-
-(defn freeinstall-new-to-order? [previous-order order]
-  (and (not (contains-freeinstall? previous-order))
-       (contains-freeinstall? order)))
-
 (defmethod transition-state events/save-order [_ event {:keys [order]} app-state]
   (if (orders/incomplete? order)
     (let [previous-order          (get-in app-state keypaths/order)
@@ -390,7 +381,8 @@
                                     (orders/newly-added-sku-ids previous-order order))
           freeinstall-just-added? (if (= order previous-order)
                                     (get-in app-state keypaths/cart-freeinstall-just-added?)
-                                    (freeinstall-new-to-order? previous-order order))]
+                                    (and (not (orders/freeinstall-entered? previous-order))
+                                         (orders/freeinstall-entered? order)))]
       (-> app-state
           (assoc-in keypaths/order order)
           (assoc-in keypaths/cart-recently-added-skus newly-added-sku-ids)
