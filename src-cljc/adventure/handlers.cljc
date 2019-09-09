@@ -61,13 +61,20 @@
   #?(:cljs
      (do
        (let [adventure-choices         (get-in app-state keypaths/adventure-choices)
-             from-shop-to-freeinstall? (get-in app-state keypaths/adventure-from-shop-to-freeinstall?)]
-         (when (and (events-not-to-direct-load event)
-                    (empty? adventure-choices)
-                    (not (and (= events/navigate-adventure-match-stylist event)
-                              (or from-shop-to-freeinstall?
-                                  (some-> query-params :utm_source (string/includes? "toadventure"))))))
-           (history/enqueue-navigate events/navigate-adventure-home nil))
+             from-shop-to-freeinstall? (get-in app-state keypaths/adventure-from-shop-to-freeinstall?)
+             shop?                     (= "shop" (get-in  app-state storefront.keypaths/store-slug))]
+         (cond
+           (and (events-not-to-direct-load event)   ;; Freeinstall/Adventure  Direct loading
+                (empty? adventure-choices)
+                (not (and (= events/navigate-adventure-match-stylist event)
+                          (or from-shop-to-freeinstall?
+                              (some-> query-params :utm_source (string/includes? "toadventure"))))))
+           (history/enqueue-navigate events/navigate-adventure-home nil)
+
+
+           (and shop? (events-not-to-direct-load event))
+           (history/enqueue-navigate events/navigate-home nil))
+
          (when (boolean (:em_hash query-params))
            (messages/handle-message events/adventure-visitor-identified))))))
 
