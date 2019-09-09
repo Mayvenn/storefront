@@ -43,7 +43,7 @@
 
 (defn incomplete-progress-circle-atom
   [i content]
-  [:div.bg-light-gray.flex.justify-center.items-center.dark-silver.bold
+  [:div.bg-light-gray.flex.justify-center.items-center.dark-silver.bold.h6
    {:key (str "incomplete-" i)
     :style {:height 21
             :width  21
@@ -59,8 +59,7 @@
   (when (and steps current-step)
     (let [[completed uncompleted] (split-at current-step steps)]
       [:div
-       [:div.items-center.mr2.my2
-        {:style {:display "inline-flex"}}
+       [:div.items-center.mr2.my2.flex
         (interpose (conj steps-hyphen-seperator-atom
                          {:class "mx1"
                           :style {:width "11px"}})
@@ -68,12 +67,13 @@
                     (map-indexed completed-progress-circle-atom
                                  completed)
                     (map-indexed incomplete-progress-circle-atom
-                                 uncompleted)))]
-       (when (and action-target action-label)
-         (ui/teal-button (assoc (apply utils/route-to action-target)
-                                :height-class :small
-                                :width-class :small)
-                         action-label))])))
+                                 uncompleted)))
+        (when (and action-target action-label)
+          [:div.ml3
+           (ui/teal-button (assoc (apply utils/route-to action-target)
+                                  :height-class :small
+                                  :width-class :small)
+                           action-label)])]])))
 
 (defn cart-item-square-thumbnail-molecule
   [{:cart-item-square-thumbnail/keys
@@ -187,22 +187,22 @@
 
        ;; info group
        [:div.flex-grow-1
-        (cart-item-title-molecule cart-item)
+        [:div.flex
+         [:div.flex-grow-1
+          (cart-item-title-molecule cart-item)
 
-        [:div
-         (cart-item-copy-molecule cart-item)
-         (ui.molecules/stars-rating-molecule cart-item)
-         (cart-item-adjustable-quantity-molecule cart-item)]
+          [:div
+           (cart-item-copy-molecule cart-item)
+           (ui.molecules/stars-rating-molecule cart-item)
+           (cart-item-adjustable-quantity-molecule cart-item)]]
 
-        [:div
-         (cart-item-steps-to-complete-molecule cart-item)]
+         ;; price group
+         [:div.right.right-align.h6.pt1
+          {:style {:min-width "67px"}}
+          (cart-item-remove-action-molecule cart-item)
+          (cart-item-swap-action-molecule cart-item)
+          (cart-item-floating-box-molecule cart-item)]]
 
-        [:div
-         (component/build suggestions/consolidated-component suggestions nil)]]
+        (cart-item-steps-to-complete-molecule cart-item)
 
-       ;; price group
-       [:div.right.right-align.h6.pt1
-        {:style {:min-width "67px"}}
-        (cart-item-remove-action-molecule cart-item)
-        (cart-item-swap-action-molecule cart-item)
-        (cart-item-floating-box-molecule cart-item)]])]))
+        (component/build suggestions/consolidated-component suggestions nil)]])]))

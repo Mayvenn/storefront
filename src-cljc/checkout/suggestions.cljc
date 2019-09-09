@@ -113,7 +113,7 @@
   #?(:clj
      [:div]
      :cljs
-     [:div.pr1
+     [:div.pr1.pt2
       (when-not sticker-label
         {:class "pr3"})
       (when sticker-label
@@ -129,7 +129,7 @@
 
       (css-transitions/transition-background-color
        highlighted?
-       [:div.flex.items-center.justify-center.ml1.p1.rounded
+       [:div.flex.items-center.justify-center.p1.rounded
         {:key       (str "thumbnail-" sku-id)
          :data-test (str "line-item-img-" sku-id)}
         (ui/ucare-img {:width image-width
@@ -140,13 +140,13 @@
   [{:suggested-bundles/keys [id images-with-stickers label target cta-id disabled? spinning?]}]
   [:div.bg-fate-white.mt1.rounded
    {:data-test id :key id}
-   [:div.flex.justify-between.items-center.p2
+   [:div.flex.justify-between.items-center.px2
     (let [[first-image second-image] images-with-stickers]
       [:div.flex.items-center
        (image-with-sticker first-image)
        [:span.pr2 "+"]
        (image-with-sticker second-image)])
-    [:div.col-4
+    [:div.col-4.my1
      (ui/teal-ghost-button {:class        "bold bg-white"
                             :height-class :small
                             ;; we don't want to draw attention to the disabling of the other 'Add' button,
