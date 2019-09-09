@@ -143,7 +143,7 @@
 (defn organism
   [data _ _]
   (component/create
-   [:div.flex.flex-column.left-align.rounded.border.border-light-gray.m3.bg-white.p0
+   [:div.flex.flex-column.left-align.rounded.border.border-light-gray.mx3.my3.bg-white
     {:key (:react/key data)}
     (stylist-card-header-molecule data)
     [:div.col-12

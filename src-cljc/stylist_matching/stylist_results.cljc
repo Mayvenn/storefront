@@ -88,7 +88,7 @@
 
 (defn stylist-cards-query
   [stylist-profiles? navigation-event stylists]
-  {:list/stylist-cards (map-indexed (partial stylist-card-query stylist-profiles? navigation-event) stylists)})
+  (map-indexed (partial stylist-card-query stylist-profiles? navigation-event) stylists))
 
 (def call-out-query
   {:call-out-center/bg-class    "bg-lavender"
@@ -115,13 +115,14 @@
       (component/build component item nil))))
 
 (defn template
-  [{:keys [header gallery-modal list/results]} _ _]
+  [{:keys [header list/results]} _ _]
   (component/create
    [:div.bg-fate-white.black.center.flex.flex-auto.flex-column
     (component/build header/organism header nil)
-    (display-list {:call-out     call-out-center/organism
-                   :stylist-card stylist-cards/organism}
-                  results)]))
+    [:div
+     (display-list {:call-out     call-out-center/organism
+                    :stylist-card stylist-cards/organism}
+                   results)]]))
 
 (defn page
   [app-state]
