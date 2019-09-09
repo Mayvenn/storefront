@@ -2,7 +2,8 @@
   (:require [adventure.components.profile-card :as profile-card]
             [storefront.component :as component]
             [storefront.components.ui :as ui]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            [storefront.events :as events]))
 
 (defn component [{:keys [title
                          subtitle
@@ -18,7 +19,8 @@
     [:div.border-bottom.border-gray.flex.items-center
      [:div.bg-white.flex-auto.py3 (ui/clickable-logo
                                    {:data-test "header-logo"
-                                    :height    "40px"})]]
+                                    :height    "40px"
+                                    :event events/navigate-home})]]
     [:div.center
      [:div.col-10.mx-auto.py4
       [:div {:data-test data-test}
