@@ -3,6 +3,7 @@
             [adventure.components.profile-card :as profile-card]
             [adventure.keypaths :as keypaths]
             [adventure.progress :as progress]
+            api.orders
             [storefront.accessors.experiments :as experiments]
             [storefront.component :as component]
             [storefront.effects :as effects]
@@ -65,6 +66,7 @@
 (defn ^:private query-pre-purchase
   [data]
   (let [stylist-profiles?      (experiments/stylist-profiles? data)
+        current-order          (api.orders/current data)
         cards-data             (->> (get-in data keypaths/adventure-matched-stylists)
                                     (map-indexed (partial stylist-profile-card-data stylist-profiles?
                                                           events/control-adventure-select-stylist-pre-purchase))
@@ -73,16 +75,25 @@
                                  [events/navigate-adventure-shop-hair {}]
                                  [events/navigate-category
                                   {:page/slug           "mayvenn-install"
-                                   :catalog/category-id "23"}])]
+                                   :catalog/category-id "23"}])
+        header-org-data        {:header.cart/id                "adventure-cart"
+                                :header.cart/value             (:order.items/quantity current-order)
+                                :header.cart/color             "white"
+                                :header.title/id               "adventure-title"
+                                :header.title/primary          "Meet Your Certified Stylist"
+                                :header.back-navigation/id     "adventure-back"
+                                :header.back-navigation/target [events/navigate-adventure-stylist-results-pre-purchase]}]
     {:current-step                  2
      :title                         "Pick your stylist"
-     :header-data                   {:title                   "Find Your Stylist"
-                                     :progress                progress/stylist-results
-                                     :back-navigation-message [events/navigate-adventure-find-your-stylist]
-                                     :subtitle                "Step 2 of 3"}
+     :header-data                   (merge {:title                   "Find Your Stylist"
+                                            :progress                progress/stylist-results
+                                            :back-navigation-message [events/navigate-adventure-find-your-stylist]
+                                            :subtitle                "Step 2 of 3"}
+                                           header-org-data)
      :gallery-modal-data            {:ucare-img-urls                 (get-in data keypaths/adventure-stylist-gallery-image-urls) ;; empty hides the modal
                                      :initially-selected-image-index (get-in data keypaths/adventure-stylist-gallery-image-index)
                                      :close-button                   {:target-message events/control-adventure-stylist-gallery-close}}
+     :shop?                         (= "shop" (get-in data storefront.keypaths/store-slug))
      :cards-data                    cards-data
      :escape-hatch/navigation-event escape-hatch-nav-event
      :escape-hatch/copy             "Shop hair"
@@ -91,18 +102,28 @@
 (defn ^:private query-post-purchase
   [data]
   (let [stylist-profiles? (experiments/stylist-profiles? data)
+        current-order     (api.orders/current data)
         cards-data        (->> (get-in data keypaths/adventure-matched-stylists)
                                (map-indexed
                                 (partial stylist-profile-card-data
                                          stylist-profiles?
                                          events/control-adventure-select-stylist-post-purchase))
-                               (insert-at-pos 3 recommend-your-stylist-query))]
+                               (insert-at-pos 3 recommend-your-stylist-query))
+        header-org-data   {:header.cart/id                "adventure-cart"
+                           :header.cart/value             (:order.items/quantity current-order)
+                           :header.cart/color             "white"
+                           :header.title/id               "adventure-title"
+                           :header.title/primary          "Meet Your Certified Stylist"
+                           :header.back-navigation/id     "adventure-back"
+                           :header.back-navigation/target [events/navigate-adventure-stylist-results-post-purchase]}]
     {:current-step                  3
      :title                         "Pick your stylist"
-     :header-data                   {:title                   "Find Your Stylist"
-                                     :back-navigation-message [events/navigate-adventure-find-your-stylist]
-                                     :shopping-bag?           false
-                                     :subtitle                "Step 3 of 3"}
+     :header-data                   (merge {:title                   "Find Your Stylist"
+                                            :back-navigation-message [events/navigate-adventure-find-your-stylist]
+                                            :shopping-bag?           false
+                                            :subtitle                "Step 3 of 3"}
+                                           header-org-data)
+     :shop?                         (= "shop" (get-in data storefront.keypaths/store-slug))
      :gallery-modal-data            {:ucare-img-urls                 (get-in data keypaths/adventure-stylist-gallery-image-urls) ;; empty hides the modal
                                      :initially-selected-image-index (get-in data keypaths/adventure-stylist-gallery-image-index)
                                      :close-button                   {:target-message events/control-adventure-stylist-gallery-close}}

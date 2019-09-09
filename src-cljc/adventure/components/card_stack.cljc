@@ -1,5 +1,6 @@
 (ns adventure.components.card-stack
   (:require [adventure.components.header :as header]
+            [stylist-matching.ui.header :as header-org]
             [adventure.components.profile-card-with-gallery :as profile-card-with-gallery]
             [adventure.organisms.call-out-center :as call-out-center]
             [storefront.events :as events]
@@ -44,17 +45,19 @@
            "https://mayvenn.typeform.com/to/J2Y1cC")))
 
 (defn component
-  [{:keys [header-data gallery-modal-data cards-data title] :as data} _ _]
+  [{:keys [header-data gallery-modal-data cards-data title shop?] :as data} _ _]
   (component/create
    (when (seq cards-data)
      [:div.center.flex-auto.bg-light-lavender
       (component/build gallery-modal-component gallery-modal-data nil)
       [:div.white
        (when header-data
-         (header/built-component header-data nil))]
+         (if shop?
+           (component/build header-org/organism header-data nil)
+           [:div.flex.items-center.bold.bg-light-lavender
+            {:style {:height "75px"}}
+            (header/built-component header-data nil)]))]
       [:div
-       [:div.flex.items-center.bold.bg-light-lavender
-        {:style {:height "75px"}}]
        [:div.bg-white
         [:div.flex.flex-auto.justify-center.pt6
          [:div.h3.bold.purple title]]
