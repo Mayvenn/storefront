@@ -32,8 +32,9 @@
 
             stylist-matching.match-stylist
             stylist-matching.find-your-stylist
-            stylist-matching.match-success
             stylist-matching.out-of-area
+            stylist-matching.stylist-results
+            stylist-matching.match-success
 
             [storefront.components.ui :as ui]
             [mayvenn-made.home :as mayvenn-made.home]
@@ -58,7 +59,8 @@
             [storefront.routes :as routes]
             [checkout.consolidated-cart :as consolidated-cart]))
 
-(defn main-component [nav-event consolidated?]
+(defn main-component [nav-event {:keys [consolidated-cart?
+                                        stylist-results-updated?]}]
   (doto (condp = nav-event
           #?@(:cljs
               [events/navigate-reset-password                             reset-password/built-component
@@ -134,20 +136,23 @@
           events/navigate-adventure-select-new-look                     (ui/lazy-load-component :catalog 'adventure.select-new-look/built-component events/navigate-adventure-select-new-look)
           events/navigate-adventure-look-detail                         (ui/lazy-load-component :catalog 'adventure.look-detail/built-component events/navigate-adventure-look-detail)
           events/navigate-adventure-select-bundle-set                   (ui/lazy-load-component :catalog 'adventure.select-new-look/built-component events/navigate-adventure-select-bundle-set)
-          events/navigate-adventure-match-stylist                       (if consolidated?
+          events/navigate-adventure-match-stylist                       (if consolidated-cart?
                                                                           stylist-matching.match-stylist/page
                                                                           adventure.stylist-matching.match-stylist/built-component)
-          events/navigate-adventure-find-your-stylist                   (if consolidated?
+          events/navigate-adventure-find-your-stylist                   (if consolidated-cart?
                                                                           stylist-matching.find-your-stylist/page
                                                                           adventure.stylist-matching.find-your-stylist/built-component)
           events/navigate-adventure-matching-stylist-wait-pre-purchase  adventure.stylist-matching.matching-stylist-wait/built-component
           events/navigate-adventure-matching-stylist-wait-post-purchase adventure.stylist-matching.matching-stylist-wait/built-component
-          events/navigate-adventure-stylist-results-pre-purchase        adventure.stylist-matching.stylist-results/built-component-pre-purchase
+          events/navigate-adventure-stylist-results-pre-purchase        (if (and consolidated-cart?
+                                                                                 stylist-results-updated?)
+                                                                          stylist-matching.stylist-results/page
+                                                                          adventure.stylist-matching.stylist-results/built-component-pre-purchase)
           events/navigate-adventure-stylist-results-post-purchase       adventure.stylist-matching.stylist-results/built-component-post-purchase
-          events/navigate-adventure-out-of-area                         (if consolidated?
+          events/navigate-adventure-out-of-area                         (if consolidated-cart?
                                                                           stylist-matching.out-of-area/page
                                                                           adventure.stylist-matching.out-of-area/built-component)
-          events/navigate-adventure-match-success-pre-purchase          (if consolidated?
+          events/navigate-adventure-match-success-pre-purchase          (if consolidated-cart?
                                                                           stylist-matching.match-success/page
                                                                           adventure.stylist-matching.match-success/built-component)
           events/navigate-adventure-match-success-post-purchase         adventure.stylist-matching.match-success-post-purchase/built-component
@@ -192,7 +197,7 @@
                                   ;; Hack: See above hack
                                   (when silver-background?
                                     {:class "bg-light-silver"}))
-        ((main-component nav-event false) data nil)]
+        ((main-component nav-event {}) data nil)]
 
        [:footer (footer/built-component data nil)]]])))
 
@@ -211,43 +216,45 @@
     (flash/built-component data nil)
 
     [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
-     ((main-component nav-event false) data nil)]
+     ((main-component nav-event {}) data nil)]
     [:footer
      (footer/built-component data nil)]]])
 
 (defn top-level-component [data owner opts]
-  (let [nav-event    (get-in data keypaths/navigation-event)
-        freeinstall? (= "freeinstall" (get-in data keypaths/store-slug))
-        shop?        (= "shop" (get-in data keypaths/store-slug))]
+  (let [nav-event                (get-in data keypaths/navigation-event)
+        freeinstall?             (= "freeinstall" (get-in data keypaths/store-slug))
+        shop?                    (= "shop" (get-in data keypaths/store-slug))
+        consolidated-cart?       (and shop? (experiments/consolidated-cart? data))
+        stylist-results-updated? (experiments/stylist-results-updated? data)]
     (component/create
-     (cond
+     (cond ; Design System
        (routes/sub-page? [nav-event] [events/navigate-design-system])
        #?(:clj
           (design-system.home/top-level data nil)
           :cljs
-           ((ui/lazy-load-component :design-system
-                                    'design-system.home/top-level
-                                    (get-in data keypaths/navigation-event))
-            data nil))
+          ((ui/lazy-load-component :design-system
+                                   'design-system.home/top-level
+                                   (get-in data keypaths/navigation-event))
+           data nil))
 
-       (get-in data keypaths/menu-expanded)
+       (get-in data keypaths/menu-expanded) ; Slideout nav
        (slideout-nav/built-component data nil)
 
-       (routes/sub-page? [nav-event] [events/navigate-cart])
+       (routes/sub-page? [nav-event] [events/navigate-cart]) ; Cart pages
        (cond
-         (and (experiments/consolidated-cart? data) shop?) (consolidated-cart/layout data nav-event)
-         freeinstall?                                      (adventure-cart/layout data nav-event)
-         :else                                             (cart/layout data nav-event))
+         consolidated-cart? (consolidated-cart/layout data nav-event)
+         freeinstall?       (adventure-cart/layout data nav-event)
+         :else              (cart/layout data nav-event))
 
-       (and freeinstall?
+       (and freeinstall? ; Freeinstall checkout
             (or (routes/sub-page? [nav-event] [events/navigate-checkout])
                 (routes/sub-page? [nav-event] [events/navigate-order-complete])
                 (routes/sub-page? [nav-event] [events/navigate-need-match-order-complete])
                 (routes/sub-page? [nav-event] [events/navigate-adventure-let-mayvenn-match])))
        (adventure-checkout-layout data nav-event)
 
-       (or (routes/sub-page? [nav-event] [events/navigate-adventure])
-           (and freeinstall?
+       (or (routes/sub-page? [nav-event] [events/navigate-adventure]) ; Constrained adventure/stylist matching flow
+           (and freeinstall? ; Free Install + Static content pages
                 (routes/sub-page? [nav-event] [events/navigate-content])))
        [:div {:data-test (keypaths/->component-str nav-event)}
         [:div {:key "popup"}
@@ -258,7 +265,8 @@
                    :margin-bottom "-30px"}}
           (when-not (= nav-event events/navigate-adventure-home)
             {:class "max-580 mx-auto relative"}))
-         ((main-component nav-event (not freeinstall?)) data nil)]]
+         ((main-component nav-event {:consolidated-cart?       consolidated-cart?
+                                     :stylist-results-updated? stylist-results-updated?}) data nil)]]
 
        :else
        (main-layout data nav-event)))))

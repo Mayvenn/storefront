@@ -92,3 +92,7 @@
 (defn line-items-discounts?
   [data]
   (display-feature? data "line-items-discounts"))
+
+(defn stylist-results-updated?
+  [data]
+  (display-feature? data "stylist-results-updated"))
