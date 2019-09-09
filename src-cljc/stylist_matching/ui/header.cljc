@@ -5,12 +5,12 @@
             [storefront.components.svg :as svg]))
 
 (defn header-back-navigation-molecule
-  [{:header.back-navigation/keys [id target]}]
+  [{:header.back-navigation/keys [id back target]}]
   (when id
     (component/html
      [:a.block.p3
       (merge {:data-test id}
-             (utils/route-back {:navigation-message target}))
+             (apply utils/route-back-or-to back target))
       [:div.flex.items-center.justify-center
        {:style {:height "24px" :width "20px"}}
        (svg/thick-left-arrow {})]])))

@@ -13,14 +13,18 @@
             [storefront.keypaths :as storefront.keypaths]))
 
 (defn header-query
-  [{:order.items/keys [quantity]}]
+  [{:order.items/keys [quantity]}
+   back]
   {:header.cart/id                "adventure-cart"
    :header.cart/value             quantity
    :header.cart/color             "white"
    :header.title/id               "adventure-title"
    :header.title/primary          "Meet Your Certified Stylist"
    :header.back-navigation/id     "adventure-back"
-   :header.back-navigation/target [events/navigate-adventure-stylist-results-pre-purchase]})
+   :header.back-navigation/back   back
+   ;; TODO / NOTE(justin, andres): This page should not load directly. You should be redirected back to
+   ;; find your stylist or the complete-need-match page
+   :header.back-navigation/target [events/navigate-home]})
 
 (defn stylist-card-query
   [stylist-profiles?
@@ -130,7 +134,7 @@
         stylist-search-results (get-in app-state adventure.keypaths/adventure-matched-stylists)
         navigation-event       (get-in app-state storefront.keypaths/navigation-event)]
     (component/build template
-                     {:header       (header-query current-order)
+                     {:header       (header-query current-order (first (get-in app-state storefront.keypaths/navigation-undo-stack)))
                       :list/results (insert-at-pos 3
                                                    call-out-query
                                                    (stylist-cards-query (experiments/stylist-profiles? app-state)

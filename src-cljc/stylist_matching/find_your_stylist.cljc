@@ -39,7 +39,7 @@
    :header.title/id               "adventure-title"
    :header.title/primary          "Meet Your Certified Stylist"
    :header.back-navigation/id     "adventure-back"
-   :header.back-navigation/target [events/navigate-adventure-stylist-results-pre-purchase]})
+   :header.back-navigation/target [events/navigate-adventure-match-stylist]})
 
 (defn template
   [{:keys [header stylist-search spinner]} _ _]

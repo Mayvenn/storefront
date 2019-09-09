@@ -82,7 +82,7 @@
                                 :header.title/id               "adventure-title"
                                 :header.title/primary          "Meet Your Certified Stylist"
                                 :header.back-navigation/id     "adventure-back"
-                                :header.back-navigation/target [events/navigate-adventure-stylist-results-pre-purchase]}]
+                                :header.back-navigation/target [events/navigate-adventure-find-your-stylist]}]
     {:current-step                  2
      :title                         "Pick your stylist"
      :header-data                   (merge {:title                   "Find Your Stylist"
@@ -115,11 +115,11 @@
                            :header.title/id               "adventure-title"
                            :header.title/primary          "Meet Your Certified Stylist"
                            :header.back-navigation/id     "adventure-back"
-                           :header.back-navigation/target [events/navigate-adventure-stylist-results-post-purchase]}]
+                           :header.back-navigation/target [events/navigate-need-match-order-complete {:number (get-in data storefront.keypaths/completed-order-number)}]}]
     {:current-step                  3
      :title                         "Pick your stylist"
      :header-data                   (merge {:title                   "Find Your Stylist"
-                                            :back-navigation-message [events/navigate-adventure-find-your-stylist]
+                                            :back-navigation-message [events/navigate-need-match-order-complete {:number (get-in data storefront.keypaths/completed-order-number)}]
                                             :shopping-bag?           false
                                             :subtitle                "Step 3 of 3"}
                                            header-org-data)
