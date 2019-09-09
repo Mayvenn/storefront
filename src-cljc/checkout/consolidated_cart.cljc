@@ -484,6 +484,7 @@
   (let [keypath keypaths/cart-coupon-code
         value   (get-in data keypath)]
     {:labeled-input/label     "enter promocode"
+     :labeled-input/id        "promo-code"
      :labeled-input/value     value
      :labeled-input/on-change #?(:clj (fn [_e] nil)
                                  :cljs (fn [^js/Event e]
@@ -491,6 +492,7 @@
                                                                   {:keypath keypath
                                                                    :value   (.. e -target -value)})))
      :submit-button/disabled? (empty? value)
+     :submit-button/id        "cart-apply-promo"
      :submit-button/target    events/control-cart-update-coupon}))
 
 (defn full-cart-query [data]

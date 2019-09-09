@@ -64,17 +64,18 @@
 
 (defn labeled-input-molecule
   [{:labeled-input/keys [id label value on-change]}]
-  [:input.h5.border-none.px2.bg-white.placeholder-dark-silver.flex-grow-1
-   {:key         id
-    :label       label
-    :data-test   (str id "-input")
-    :name        id
-    :id          (str id "-input")
-    :type        "text"
-    :value       (or value "")
-    :placeholder label
-    :on-submit   on-change
-    :on-change   on-change}])
+  (when id
+    [:input.h5.border-none.px2.bg-white.placeholder-dark-silver.flex-grow-1
+     {:key         id
+      :data-test   id
+      :name        id
+      :id          id
+      :type        "text"
+      :value       (or value "")
+      :label       label
+      :placeholder label
+      :on-submit   on-change
+      :on-change   on-change}]))
 
 (defn submit-button-molecule
   [{:submit-button/keys [id contents target classes disabled?]}]
