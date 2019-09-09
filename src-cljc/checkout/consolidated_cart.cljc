@@ -176,7 +176,7 @@
         #?@(:cljs [(when show-browser-pay? (payment-request-button/built-component nil {}))])]]
 
       (when entered?
-        [:div.mt3.center
+        [:div.my4.center
          [:a.h5.teal.medium
           (apply utils/fake-href remove-freeinstall-event)
           "Checkout without a free Mayvenn Install"]])
