@@ -59,9 +59,13 @@
   [{:stylist-card.address-marker/keys [id value]}]
   (when id
     (component/html
-     [:div.h7.col-12.nowrap.overflow-hidden.dark-gray
-      {:style {:text-overflow "ellipsis"}}
-      value])))
+     [:div.h7.col-12.flex.items-center
+      (svg/position {:width "10px"
+                     :height "13px"
+                     :class "flex-none mr1"})
+      [:span.overflow-hidden.nowrap.dark-gray
+       {:style {:text-overflow "ellipsis"}}
+       value]])))
 
 (defn stylist-card-stars-rating-molecule
   [{:rating/keys [value]}]
