@@ -74,6 +74,7 @@
   (when id
     (component/html
      [:div.h4.navy.line-height-1
+      {:data-test id}
       primary])))
 
 (defn stylist-card-gallery-item-molecule
@@ -125,7 +126,7 @@
   [{:stylist-card/keys [target id] :as data}]
   (when id
     [:div.col-12.flex.items-start.p2
-     (apply utils/route-to target)
+     (assoc (apply utils/route-to target) :data-test id)
      [:div.flex.justify-center.items-center.col-3
       (stylist-card-thumbnail-molecule data)]
      [:div.col-9.medium.px2

@@ -35,11 +35,11 @@
 
              :stylist-card/target             [events/navigate-adventure-stylist-profile {:stylist-id stylist-id
                                                                                           :store-slug store-slug}]
-             :stylist-card/id                 (str "stylist-card-profile-" store-slug)
+             :stylist-card/id                 (str "stylist-card-" store-slug)
              :stylist-card.thumbnail/id       (str "stylist-card-thumbnail-" store-slug)
              :stylist-card.thumbnail/ucare-id (-> stylist :portrait :resizable-url)
 
-             :stylist-card.title/id             (str "stylist-card-title-" store-slug)
+             :stylist-card.title/id             "stylist-name"
              :stylist-card.title/primary        (stylists/->display-name stylist)
              :rating/value                      (:rating stylist)
              :stylist-card.address-marker/id    (str "stylist-card-address-" store-slug)
@@ -55,7 +55,7 @@
                                                  (stylist-cards/checks-or-x-atom "360° Frontal"
                                                                                  (boolean specialty-sew-in-360-frontal))
                                                  (stylist-cards/checks-or-x-atom "Frontal" (boolean specialty-sew-in-frontal))]
-             :stylist-card.cta/id               (str "stylist-card-cta-" store-slug)
+             :stylist-card.cta/id               (str "select-stylist-" store-slug)
              :stylist-card.cta/label            "Select"
              :stylist-card.cta/target           [events/control-adventure-select-stylist-pre-purchase
                                                  {:stylist-id        stylist-id
