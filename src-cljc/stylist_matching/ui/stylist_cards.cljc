@@ -40,7 +40,7 @@
   [:div.inline-block
    [:div.mr2.flex.items-center
     [:span.mr1
-     (if true
+     (if value?
        (ui/ucare-img {:width 10}
                      "2560cee9-9ac7-4706-ade4-2f92d127b565")
        (svg/simple-x {:class "dark-silver"
