@@ -32,6 +32,10 @@
                 specialty-sew-in-frontal]}               service-menu]
     (cond-> {:react/key                       (str "stylist-card-" store-slug)
              :element/type                    :stylist-card
+
+             :stylist-card/target             [events/navigate-adventure-stylist-profile {:stylist-id stylist-id
+                                                                                          :store-slug store-slug}]
+             :stylist-card/id                 (str "stylist-card-profile-" store-slug)
              :stylist-card.thumbnail/id       (str "stylist-card-thumbnail-" store-slug)
              :stylist-card.thumbnail/ucare-id (-> stylist :portrait :resizable-url)
 

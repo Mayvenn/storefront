@@ -121,13 +121,11 @@
      (ui/circle-picture {:width "72px"}
                         (ui/square-image {:resizable-url ucare-id}
                                          72)))))
-
-(defn organism
-  [data _ _]
-  (component/create
-   [:div.flex.flex-column.left-align.rounded.border.border-light-gray.m3.bg-white.p0
-    {:key (:react/key data)}
+(defn stylist-card-header-molecule
+  [{:stylist-card/keys [target id] :as data}]
+  (when id
     [:div.col-12.flex.items-start.p2
+     (apply utils/route-to target)
      [:div.flex.justify-center.items-center.col-3
       (stylist-card-thumbnail-molecule data)]
      [:div.col-9.medium.px2
@@ -135,7 +133,14 @@
       [:span.h7.flex.items-center
        (stylist-card-stars-rating-molecule data)]
       (stylist-card-address-marker-molecule data)
-      (stylist-card-services-list-molecule data)]]
+      (stylist-card-services-list-molecule data)]]))
+
+(defn organism
+  [data _ _]
+  (component/create
+   [:div.flex.flex-column.left-align.rounded.border.border-light-gray.m3.bg-white.p0
+    {:key (:react/key data)}
+    (stylist-card-header-molecule data)
     [:div.col-12
      (stylist-card-gallery-molecule data)]
     [:div.col-12.p2
