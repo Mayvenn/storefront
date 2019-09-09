@@ -9,7 +9,8 @@
             [stylist-matching.ui.header :as header]
             [stylist-matching.ui.stylist-cards :as stylist-cards]
             [stylist-matching.ui.gallery-modal :as gallery-modal]
-            [adventure.organisms.call-out-center :as call-out-center]))
+            [adventure.organisms.call-out-center :as call-out-center]
+            [storefront.keypaths :as storefront.keypaths]))
 
 (defn header-query
   [{:order.items/keys [quantity]}]
@@ -23,13 +24,17 @@
 
 (defn stylist-card-query
   [stylist-profiles?
+   navigation-event
    idx
    {:keys [salon service-menu gallery-images store-slug stylist-id] :as stylist}]
   (let [{:keys [address-1 address-2 city state zipcode]} salon
         {:keys [specialty-sew-in-leave-out
                 specialty-sew-in-closure
                 specialty-sew-in-360-frontal
-                specialty-sew-in-frontal]}               service-menu]
+                specialty-sew-in-frontal]}               service-menu
+        cta-event (if (= events/navigate-adventure-stylist-results-pre-purchase navigation-event)
+                     events/control-adventure-select-stylist-pre-purchase
+                     events/control-adventure-select-stylist-post-purchase)]
     (cond-> {:react/key                       (str "stylist-card-" store-slug)
              :element/type                    :stylist-card
 
@@ -57,7 +62,7 @@
                                                  (stylist-cards/checks-or-x-atom "Frontal" (boolean specialty-sew-in-frontal))]
              :stylist-card.cta/id               (str "select-stylist-" store-slug)
              :stylist-card.cta/label            "Select"
-             :stylist-card.cta/target           [events/control-adventure-select-stylist-pre-purchase
+             :stylist-card.cta/target           [cta-event
                                                  {:stylist-id        stylist-id
                                                   :servicing-stylist stylist
                                                   :card-index        idx}]
@@ -82,8 +87,8 @@
       (merge {}))))
 
 (defn stylist-cards-query
-  [stylist-profiles? stylists]
-  {:list/stylist-cards (map-indexed (partial stylist-card-query stylist-profiles?) stylists)})
+  [stylist-profiles? navigation-event stylists]
+  {:list/stylist-cards (map-indexed (partial stylist-card-query stylist-profiles? navigation-event) stylists)})
 
 (def call-out-query
   {:call-out-center/bg-class    "bg-lavender"
@@ -121,10 +126,12 @@
 (defn page
   [app-state]
   (let [current-order          (api.orders/current app-state)
-        stylist-search-results (get-in app-state adventure.keypaths/adventure-matched-stylists)]
+        stylist-search-results (get-in app-state adventure.keypaths/adventure-matched-stylists)
+        navigation-event       (get-in app-state storefront.keypaths/navigation-event)]
     (component/build template
-                     {:header        (header-query current-order)
-                      :list/results  (insert-at-pos 3
-                                                    call-out-query
-                                                    (stylist-cards-query (experiments/stylist-profiles? app-state)
-                                                                         stylist-search-results))})))
+                     {:header       (header-query current-order)
+                      :list/results (insert-at-pos 3
+                                                   call-out-query
+                                                   (stylist-cards-query (experiments/stylist-profiles? app-state)
+                                                                        navigation-event
+                                                                        stylist-search-results))})))

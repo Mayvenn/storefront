@@ -148,7 +148,10 @@
                                                                                  stylist-results-updated?)
                                                                           stylist-matching.stylist-results/page
                                                                           adventure.stylist-matching.stylist-results/built-component-pre-purchase)
-          events/navigate-adventure-stylist-results-post-purchase       adventure.stylist-matching.stylist-results/built-component-post-purchase
+          events/navigate-adventure-stylist-results-post-purchase       (if (and consolidated-cart?
+                                                                                 stylist-results-updated?)
+                                                                          stylist-matching.stylist-results/page
+                                                                          adventure.stylist-matching.stylist-results/built-component-post-purchase)
           events/navigate-adventure-out-of-area                         (if consolidated-cart?
                                                                           stylist-matching.out-of-area/page
                                                                           adventure.stylist-matching.out-of-area/built-component)
