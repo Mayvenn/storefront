@@ -1,7 +1,12 @@
 (ns adventure.stylist-matching.stylist-profile
   "This organism is a stylist profile that includes a map and gallery."
-  (:require [adventure.components.header :as header]
+  (:require #?@(:cljs
+                [[storefront.api :as api]
+                 [storefront.hooks.google-maps :as google-maps]
+                 [storefront.platform.maps :as maps]])
+            [adventure.components.header :as header]
             [adventure.keypaths :as keypaths]
+            api.orders
             [clojure.string :as string]
             [spice.date :as date]
             [storefront.component :as component]
@@ -12,15 +17,11 @@
             [storefront.events :as events]
             [storefront.platform.carousel :as carousel]
             [storefront.platform.component-utils :as utils]
-            [storefront.platform.messages :as messages]
             storefront.keypaths
             [storefront.transitions :as transitions]
             [stylist-directory.stylists :as stylists]
-            #?@(:cljs
-                [[storefront.api :as api]
-                 [storefront.hooks.google-maps :as google-maps]
-                 [storefront.platform.maps :as maps]])
-            [spice.core :as spice]))
+            [spice.core :as spice]
+            [stylist-matching.ui.header :as header-org]))
 
 (defn transposed-title-molecule
   [{:transposed-title/keys [id primary secondary]}]
@@ -75,16 +76,30 @@
 
 (defn query
   [data]
-  (let [stylist-id (get-in data keypaths/stylist-profile-id)
-        stylist    (stylists/stylist-by-id data stylist-id)]
+  (let [stylist-id      (get-in data keypaths/stylist-profile-id)
+        stylist         (stylists/stylist-by-id data stylist-id)
+        stylist-name    (stylists/->display-name stylist)
+        current-order   (api.orders/current data)
+        shop?           (= "shop" (get-in data storefront.keypaths/store-slug))
+        undo-history    (get-in data storefront.keypaths/navigation-undo-stack)
+        header-org-data {:header.cart/id                "adventure-cart"
+                         :header.cart/value             (:order.items/quantity current-order)
+                         :header.cart/color             "white"
+                         :header.title/id               "adventure-title"
+                         :header.title/primary          (str "More about " stylist-name)
+                         :header.back-navigation/id     "adventure-back"
+                         :header.back-navigation/back   undo-history
+                         :header.back-navigation/target [events/navigate-home]}]
     (when stylist
-      {:header-data                  {:subtitle                [:div.mt2.h4.medium
-                                                                (str "More about " (stylists/->display-name stylist))]
-                                      :back-navigation-message [events/navigate-adventure-find-your-stylist]
-                                      :cold-load-nav-message   (when (empty? (get-in data storefront.keypaths/navigation-undo-stack))
-                                                                 [events/navigate-adventure-find-your-stylist])
-                                      :header-attrs            {:class "bg-light-lavender"}
-                                      :shopping-bag?           true}
+      {:header-data                  (merge {:subtitle                [:div.mt2.h4.medium
+                                                                       (str "More about " stylist-name)]
+                                             :back-navigation-message [events/navigate-adventure-find-your-stylist]
+                                             :cold-load-nav-message   (when (empty? undo-history)
+                                                                        [events/navigate-adventure-find-your-stylist])
+                                             :header-attrs            {:class "bg-light-lavender"}
+                                             :shopping-bag?           true}
+                                            header-org-data)
+       :shop?                        shop?
        :google-map-data              #?(:cljs (maps/map-query data)
                                         :clj  nil)
        :cta/id                       "select-stylist"
@@ -92,9 +107,9 @@
                                       {:stylist-id        (:stylist-id stylist)
                                        :servicing-stylist stylist
                                        :card-index        0}]
-       :cta/label                    (str "Select " (stylists/->display-name stylist))
+       :cta/label                    (str "Select " stylist-name)
        :transposed-title/id          "stylist-name"
-       :transposed-title/primary     (stylists/->display-name stylist)
+       :transposed-title/primary     stylist-name
        :transposed-title/secondary   (-> stylist :salon :name)
        :rating/value                 (:rating stylist)
        :phone-link/target            [events/control-adventure-stylist-phone-clicked
@@ -173,11 +188,13 @@
         (checks-or-x "Frontal" (:specialty-sew-in-frontal content))]])]] )
 
 (defn component
-  [{:keys [header-data google-map-data] :as query} owner opts]
+  [{:keys [header-data google-map-data shop?] :as query} owner opts]
   (component/create
    [:div.col-12.bg-white.mb6
-    [:div.white (header/built-component header-data nil)]
-    [:div {:style {:height "75px"}}]
+    [:div.white (if shop?
+                  (component/build header-org/organism header-data nil)
+                  [:div {:style {:height "75px"}}
+                   (header/built-component header-data nil)])]
     [:div.px3 (component/build stylist-profile-card-component query nil)]
 
     #?(:cljs (component/build maps/component google-map-data))
