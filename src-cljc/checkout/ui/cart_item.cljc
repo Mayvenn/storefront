@@ -81,23 +81,24 @@
   (when id
     (let [sticker-id (str "line-item-length-" sku-id)]
       [:div.relative
-       {:style {:width  48
-                :height 48}}
+       {:style {:height "49px"
+                :width  "52px"}}
        (when sticker-label
-         [:div.absolute.z1.circle.border.border-white.medium.h6.bg-too-light-teal
-          {:key       sticker-id
-           :data-test sticker-id
-           :style     {:right -12
-                       :top   -12}}
-          [:div.flex.items-center.justify-center
-           sticker-label]])
-
+         (css-transitions/transition-background-color
+          highlighted?
+          [:div.absolute.z1.circle.border.border-white.medium.h6.bg-too-light-teal
+           {:key       sticker-id
+            :data-test sticker-id
+            :style     {:right -12
+                        :top   -12}}
+           [:div.flex.items-center.justify-center
+            sticker-label]]))
        (css-transitions/transition-background-color
         highlighted?
-        [:div.absolute.flex.items-center.justify-center.rounded
-         {:style     {:height 46
-                      :width  46}
-          :key       (str "thumbnail-" sku-id)
+        [:div.flex.items-center.justify-center.rounded
+         {:style     {:height "49px"
+                      :width  "52px"}
+          :key       (str "cart-item-square-thumbnail-" sku-id)
           :data-test (str "line-item-img-" sku-id)}
          (ui/ucare-img {:width 48
                         :class "rounded border border-light-gray"}

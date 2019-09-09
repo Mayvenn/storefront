@@ -299,7 +299,7 @@
                           qty-adjustment-args {:variant (select-keys line-item [:id :sku])}
                           removing?            (get delete-line-item-requests variant-id)
                           updating?            (get update-line-item-requests sku-id)
-                          just-added-to-order? false #_ (contains? recently-added-skus sku-id)
+                          just-added-to-order? (some #(= sku-id %) (get-in app-state keypaths/cart-recently-added-skus))
                           discount-price       (line-items/discounted-unit-price line-item)]]
                      (cond-> {:react/key                                      (str sku-id "-" (:quantity line-item))
                               :cart-item-title/id                             (str "line-item-title-" sku-id)
@@ -313,7 +313,7 @@
                                                                                " each"]
                               :cart-item-square-thumbnail/id                  sku-id
                               :cart-item-square-thumbnail/sku-id              sku-id
-                              :cart-item-square-thumbnail/highlighted?        (get-in app-state keypaths/cart-freeinstall-just-added?)
+                              :cart-item-square-thumbnail/highlighted?        just-added-to-order?
                               :cart-item-square-thumbnail/sticker-label       (when-let [length-circle-value (-> sku :hair/length first)]
                                                                                 (str length-circle-value "”"))
                               :cart-item-square-thumbnail/ucare-id            (->> sku (catalog-images/image "cart") :ucare/id)
@@ -326,14 +326,19 @@
                               :cart-item-remove-action/id                     (str "line-item-remove-" sku-id)
                               :cart-item-remove-action/spinning?              removing?
                               :cart-item-remove-action/target                 [events/control-cart-remove (:id line-item)]}
+
                        (and line-items-discounts?
                             (not= discount-price price))
-                       (merge { :cart-item-floating-box/id    (str "line-item-price-ea-" sku-id)
-
-                                :cart-item-floating-box/value [:div.mr1
-                                                               [:div.strike.medium {:data-test (str "line-item-price-ea-" sku-id)} (mf/as-money price)]
-                                                               [:div.purple.medium {:data-test (str "line-item-discounted-price-ea-" sku-id)} (mf/as-money discount-price)]
-                                                               [:div.gray.right-align "each"]]})))]
+                       (merge
+                        {:cart-item-floating-box/id    (str "line-item-price-ea-" sku-id)
+                         :cart-item-floating-box/value [:div.mr1
+                                                        [:div.strike.medium
+                                                         {:data-test (str "line-item-price-ea-" sku-id)}
+                                                         (mf/as-money price)]
+                                                        [:div.purple.medium
+                                                         {:data-test (str "line-item-discounted-price-ea-" sku-id)}
+                                                         (mf/as-money discount-price)]
+                                                        [:div.gray.right-align "each"]]})))]
 
     (cond-> cart-items
       entered?
