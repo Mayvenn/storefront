@@ -390,6 +390,7 @@
 
 (defpath convert)
 (defpath enable-feature)
+(defpath clear-features)
 (defpath bucketed-for)
 
 (defpath reviews)
