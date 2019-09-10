@@ -358,3 +358,53 @@
        (is (= 302 (:status resp)))
        (is (= "https://shop.mayvenn.com"
               (get-in resp [:headers "Location"])))))))
+
+(deftest redirects-stylist-profile-to-correct-store-slug-in-url
+  (let [stylist-not-found-handler (GET "/v1/stylist/matched-by-id" req
+                                       {:status 404
+                                        :body   (generate-string {})})
+        stylist-found-handler     (GET "/v1/stylist/matched-by-id" req
+                                       {:status 200
+                                        :body   (generate-string {:stylist {:stylist-id "9"
+                                                                            :store-slug "thebestmatch"}})})]
+    (testing "when loading the stylist profile page"
+      (testing "when the stylist is found"
+        (let [[_ storeback-handler]
+              (with-requests-chan (routes common/default-storeback-handler stylist-found-handler))]
+          (with-services {:storeback-handler storeback-handler}
+            (with-handler handler
+              (let [resp (handler (mock/request :get "https://shop.mayvenn.com/stylist/9-foo"))]
+                (is (= 302 (:status resp)) (pr-str resp))
+                (is (= "/stylist/9-thebestmatch"
+                       (get-in resp [:headers "Location"]))))))))
+
+      (testing "when the stylist is not found"
+        (let [[_ storeback-handler]
+              (with-requests-chan (routes common/default-storeback-handler stylist-not-found-handler))]
+          (with-services {:storeback-handler storeback-handler}
+            (with-handler handler
+              (let [resp (handler (mock/request :get "https://shop.mayvenn.com/stylist/9-foo"))]
+                (is (= 302 (:status resp)) (pr-str resp))
+                (is (= "https://shop.mayvenn.com/"
+                       (get-in resp [:headers "Location"])))))))))
+
+    (testing "when loading the stylist profile gallery page"
+      (testing "when the stylist is found"
+        (let [[_ storeback-handler]
+              (with-requests-chan (routes common/default-storeback-handler stylist-found-handler))]
+          (with-services {:storeback-handler storeback-handler}
+            (with-handler handler
+              (let [resp (handler (mock/request :get "https://shop.mayvenn.com/stylist/9-foo/gallery"))]
+                (is (= 302 (:status resp)) (pr-str resp))
+                (is (= "/stylist/9-thebestmatch/gallery"
+                       (get-in resp [:headers "Location"]))))))))
+
+      (testing "when the stylist is not found"
+        (let [[_ storeback-handler]
+              (with-requests-chan (routes common/default-storeback-handler stylist-not-found-handler))]
+          (with-services {:storeback-handler storeback-handler}
+            (with-handler handler
+              (let [resp (handler (mock/request :get "https://shop.mayvenn.com/stylist/9-foo/gallery"))]
+                (is (= 302 (:status resp)) (pr-str resp))
+                (is (= "https://shop.mayvenn.com/"
+                       (get-in resp [:headers "Location"])))))))))) )

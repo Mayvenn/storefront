@@ -758,6 +758,20 @@
              (cookies/set (:environment ctx) :number (:number order) cookie-options)
              (cookies/set (:environment ctx) :token (:token order) cookie-options)))))
 
+(defn wrap-fetch-stylist-profile [h ctx]
+  (fn [{:keys [subdomains uri query-params] :as req}]
+    (let [[event {:keys [stylist-id store-slug]}] (routes/navigation-message-for uri query-params (first subdomains))]
+      (if (#{events/navigate-adventure-stylist-gallery
+             events/navigate-adventure-stylist-profile} event)
+        (if-let [stylist (api/get-servicing-stylist (:storeback-config ctx) stylist-id)]
+          (if (not= (:store-slug stylist) store-slug)
+            (util.response/redirect ;; Correct stylist slug
+             (path-for req event {:stylist-id (:stylist-id stylist)
+                                  :store-slug (:store-slug stylist)}))
+            (h req)) ;; No correction needed
+          (redirect-to-home (:environment ctx) req :found)) ;; Stylist not found redirect home
+        (h req))))) ;; not on the stylist profile or gallery page
+
 (defn routes-with-orders [ctx]
   (-> (routes (paypal-routes ctx)
               (quadpay-routes ctx)
@@ -765,6 +779,7 @@
                           (shared-cart-routes ctx))
                   (wrap-state ctx)
                   (wrap-site-routes ctx)))
+      (wrap-fetch-stylist-profile ctx)
       (wrap-fetch-servicing-stylist-for-order (:storeback-config ctx))
       (wrap-fetch-order (:storeback-config ctx))
       (wrap-fetch-completed-order (:storeback-config ctx))
