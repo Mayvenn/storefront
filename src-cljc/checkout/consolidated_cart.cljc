@@ -350,14 +350,11 @@
        [(cond-> {:react/key                         "freeinstall-line-item-freeinstall"
                  :cart-item-title/id                "line-item-title-freeinstall"
                  :cart-item-floating-box/id         "line-item-price-freeinstall"
-                 :cart-item-floating-box/value     (if line-items-discounts?
-                                                     [:div.right.medium
-                                                      [:div.h6.strike {:data-test (str "line-item-freeinstall-price")}
-                                                       (some-> service-discount mf/as-money)]
-                                                      [:div.h6.right-align.purple "FREE"]]
-                                                     [:div.right.medium
-                                                      [:div.h6 {:data-test (str "line-item-freeinstall-price")}
-                                                       (some-> service-discount mf/as-money)]])
+                 :cart-item-floating-box/value     [:div.right.medium
+                                                    [:div.h6.strike {:class (when line-items-discounts? "strike")
+                                                                     :data-test (str "line-item-freeinstall-price")}
+                                                     (some-> service-discount - mf/as-money)]
+                                                    (when line-items-discounts? [:div.h6.right-align.purple "FREE"])]
                  :cart-item-thumbnail/id            "freeinstall"
                  :cart-item-thumbnail/highlighted?  (get-in app-state keypaths/cart-freeinstall-just-added?)
                  :cart-item-thumbnail/value         nil
