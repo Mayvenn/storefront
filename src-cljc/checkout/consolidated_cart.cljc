@@ -312,7 +312,7 @@
                               :cart-item-title/secondary                      (:color-name line-item)
                               :cart-item-floating-box/id                      (str "line-item-price-ea-" sku-id)
                               :cart-item-floating-box/value                   [:div.gray
-                                                                               [:div.medium.black {:data-test (str "line-item-price-ea-" sku-id)}
+                                                                               [:div.medium.black {:data-test (str "line-item-discounted-price-ea-" sku-id)}
                                                                                 (mf/as-money price)]
                                                                                " each"]
                               :cart-item-square-thumbnail/id                  sku-id
