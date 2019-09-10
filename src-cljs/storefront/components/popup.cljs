@@ -48,17 +48,9 @@
         seen-freeinstall-offer?     (get-in app-state keypaths/dismissed-free-install)
         signed-in?                  (get-in app-state keypaths/user-id)
         classic-experience?         (not v2-experience?)
-        on-shop?                    (= "shop" (get-in app-state keypaths/store-slug))
-        on-homepage?                (= events/navigate-home navigation-event)
-        nav-history-length          (count (get-in app-state keypaths/navigation-undo-stack))
         email-capture-showable?     (and (not signed-in?)
                                          (not seen-email-capture?)
-                                         on-non-minimal-footer-page?
-                                         (not (and on-shop? on-homepage?))
-                                         (or
-                                          (not on-shop?)
-                                          (and (not on-homepage?)
-                                               (= 1 nav-history-length))))
+                                         on-non-minimal-footer-page?)
         is-design-system?           (= events/navigate-design-system
                                        (take (count events/navigate-design-system) navigation-event))]
     (cond
