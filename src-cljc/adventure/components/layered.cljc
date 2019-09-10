@@ -321,12 +321,12 @@
       "Live Chat"
       "Text: 346-49")
      (contact-us-block
-      (ui/phone-url "1-310-733-0284")
+      (ui/phone-url "1 (888) 562-7952")
       (svg/icon-call {:class  "bg-white fill-black stroke-black circle"
                       :height 57
                       :width  57})
       "Call Us"
-      "1-310-733-0284")
+      "1 (888) 562-7952")
      (contact-us-block
       (ui/email-url "help@mayvenn.com")
       (svg/icon-email {:height 39
