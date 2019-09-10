@@ -114,10 +114,14 @@
         (cond
           (and line-items-discounts?
                (not= discount-price price))
-          [:div.right
-           [:div.h5.strike {:data-test (str "line-item-price-ea-" sku-id)} (money-formatter price)]
-           [:div.h5.teal {:data-test (str "line-item-discounted-price-ea-" sku-id)} (money-formatter discount-price)]
-           [:div.dark-gray.right-align "each"]]
+          [:div.right-align
+           [:div.h5.strike
+            {:data-test (str "line-item-price-ea-" sku-id)}
+            (money-formatter price)]
+           [:div.h5.teal
+            {:data-test (str "line-item-discounted-price-ea-" sku-id)}
+            (money-formatter discount-price)]
+           [:div.dark-gray "each"]]
 
           line-items-discounts?
           [:div.right
