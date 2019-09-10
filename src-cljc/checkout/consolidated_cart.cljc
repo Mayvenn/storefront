@@ -351,8 +351,8 @@
                  :cart-item-title/id                "line-item-title-freeinstall"
                  :cart-item-floating-box/id         "line-item-price-freeinstall"
                  :cart-item-floating-box/value     [:div.right.medium
-                                                    [:div.h6.strike {:class (when line-items-discounts? "strike")
-                                                                     :data-test (str "line-item-freeinstall-price")}
+                                                    [:div.h6 {:class     (when line-items-discounts? "strike")
+                                                              :data-test (str "line-item-freeinstall-price")}
                                                      (some-> service-discount - mf/as-money)]
                                                     (when line-items-discounts? [:div.h6.right-align.purple "FREE"])]
                  :cart-item-thumbnail/id            "freeinstall"
