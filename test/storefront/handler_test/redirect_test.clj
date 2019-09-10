@@ -385,7 +385,7 @@
             (with-handler handler
               (let [resp (handler (mock/request :get "https://shop.mayvenn.com/stylist/9-foo"))]
                 (is (= 302 (:status resp)) (pr-str resp))
-                (is (= "https://shop.mayvenn.com/"
+                (is (= "/adv/find-your-stylist"
                        (get-in resp [:headers "Location"])))))))))
 
     (testing "when loading the stylist profile gallery page"
@@ -406,5 +406,5 @@
             (with-handler handler
               (let [resp (handler (mock/request :get "https://shop.mayvenn.com/stylist/9-foo/gallery"))]
                 (is (= 302 (:status resp)) (pr-str resp))
-                (is (= "https://shop.mayvenn.com/"
+                (is (= "/adv/find-your-stylist"
                        (get-in resp [:headers "Location"])))))))))) )

@@ -765,12 +765,13 @@
              events/navigate-adventure-stylist-profile} event)
         (if-let [stylist (api/get-servicing-stylist (:storeback-config ctx) stylist-id)]
           (if (not= (:store-slug stylist) store-slug)
-            (util.response/redirect ;; Correct stylist slug
+            (util.response/redirect ; Correct stylist slug
              (path-for req event {:stylist-id (:stylist-id stylist)
                                   :store-slug (:store-slug stylist)}))
-            (h req)) ;; No correction needed
-          (redirect-to-home (:environment ctx) req :found)) ;; Stylist not found redirect home
-        (h req))))) ;; not on the stylist profile or gallery page
+            (h req)) ; No correction needed
+          (util.response/redirect ; Correct stylist slug
+           (path-for req events/navigate-adventure-find-your-stylist))) ; redirect to find your stylist
+        (h req))))) ; not on the stylist profile or gallery page
 
 (defn routes-with-orders [ctx]
   (-> (routes (paypal-routes ctx)
