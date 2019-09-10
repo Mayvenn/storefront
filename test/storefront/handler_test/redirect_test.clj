@@ -408,3 +408,27 @@
                 (is (= 302 (:status resp)) (pr-str resp))
                 (is (= "/adv/find-your-stylist"
                        (get-in resp [:headers "Location"])))))))))) )
+
+(defn is-redirected-from-freeinstall-to-shop [source-path dest-path]
+  (with-handler handler
+    (let [source-path source-path
+          resp        (handler (mock/request :get (str "https://freeinstall.mayvenn.com" source-path)))
+          dest-path   dest-path]
+      (testing (format "should redirect from freeinstall %s to shop %s" source-path dest-path)
+        (is (= 302 (:status resp)))
+        (is (= (str "https://shop.mayvenn.com" dest-path)
+               (-> resp :headers (get "Location"))))))))
+
+(deftest freeinstall-redirects
+  (is-redirected-from-freeinstall-to-shop "/" "/")
+  (is-redirected-from-freeinstall-to-shop "/adv/match-stylist" "/adv/match-stylist")
+  (is-redirected-from-freeinstall-to-shop "/adv/find-your-stylist" "/adv/find-your-stylist")
+  (is-redirected-from-freeinstall-to-shop "/adv/stylist-results" "/adv/stylist-results")
+  (is-redirected-from-freeinstall-to-shop "/adv/match-success" "/")
+  (is-redirected-from-freeinstall-to-shop "/adv/shop-hair" "/categories/23-mayvenn-install")
+  (is-redirected-from-freeinstall-to-shop "/adv/how-shop-hair" "/categories/23-mayvenn-install")
+  (is-redirected-from-freeinstall-to-shop "/adv/shop-a-la-carte/foo" "/categories/23-mayvenn-install")
+  (is-redirected-from-freeinstall-to-shop "/adv/shop/bundle-sets-foo" "/shop/all-bundle-sets")
+  (is-redirected-from-freeinstall-to-shop "/adv/shop/shop-by-look/foo" "/shop/look")
+  (is-redirected-from-freeinstall-to-shop "/cart" "/cart")
+  (is-redirected-from-freeinstall-to-shop "/all-other/pages/on-freeinstall" "/"))

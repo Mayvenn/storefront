@@ -787,6 +787,25 @@
       (wrap-adventure-route-params)
       (wrap-cookies (storefront-site-defaults (:environment ctx)))))
 
+(defn wrap-redirect-legacy-routes
+  [h {:keys [environment]}]
+  (fn [{:keys [subdomains] :as req}]
+    (if (= "freeinstall" (first subdomains))
+      (let [redirects {"/adv/match-stylist"         "/adv/match-stylist"
+                       "/adv/find-your-stylist"     "/adv/find-your-stylist"
+                       "/adv/stylist-results"       "/adv/stylist-results"
+                       "/adv/shop-hair"             "/categories/23-mayvenn-install"
+                       "/adv/how-shop-hair"         "/categories/23-mayvenn-install"
+                       "/adv/shop-a-la-carte/foo"   "/categories/23-mayvenn-install"
+                       "/adv/shop/bundle-sets-foo"  "/shop/all-bundle-sets"
+                       "/adv/shop/shop-by-look/foo" "/shop/look"
+                       "/cart"                      "/cart"}]
+        (util.response/redirect (store-url "shop"
+                                           environment
+                                           (update req
+                                                   :uri redirects "/"))))
+      (h req))))
+
 (defn create-handler
   ([] (create-handler {}))
   ([{:keys [logger exception-handler environment contentful] :as ctx}]
@@ -816,6 +835,7 @@
                            (route/not-found views/not-found))
                    (wrap-resource "public")
                    (wrap-content-type)))
+       (wrap-redirect-legacy-routes ctx)
        (wrap-add-nav-message)
        (wrap-add-domains)
        (wrap-logging logger)
