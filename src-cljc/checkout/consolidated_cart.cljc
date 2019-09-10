@@ -122,12 +122,16 @@
      [:div.col-on-tb-dt.col-6-on-tb-dt.px3.border-top.border-light-gray
       {:data-test "cart-line-items"}
       ;; HACK: have suggestions be paired with appropriate cart item
-      (map-indexed
-       (fn [index cart-item]
-         (component/build cart-item/organism {:cart-item   cart-item
-                                              :suggestions (when (zero? index)
-                                                             suggestions)}))
-       cart-items)]
+      (interpose
+       [:div.flex
+        [:div.ml2 {:style {:width "78px"}}]
+        [:div.flex-grow-1.border-bottom.border-light-gray.ml-auto]]
+       (map-indexed
+        (fn [index cart-item]
+          (component/build cart-item/organism {:cart-item   cart-item
+                                               :suggestions (when (zero? index)
+                                                              suggestions)}))
+        cart-items))]
 
      [:div.col-on-tb-dt.col-6-on-tb-dt
       (component/build cart-summary/organism cart-summary nil)
