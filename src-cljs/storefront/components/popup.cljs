@@ -2,14 +2,15 @@
   (:require [storefront.accessors.experiments :as experiments]
             [storefront.accessors.nav :as nav]
             [storefront.browser.cookie-jar :as cookie-jar]
+            [storefront.browser.scroll :as scroll]
             [storefront.component :as component]
-            [storefront.platform.messages :as messages]
-            [storefront.transitions :as transitions]
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.browser.scroll :as scroll]))
+            [storefront.platform.messages :as messages]
+            [storefront.routes :as routes]
+            [storefront.transitions :as transitions]))
 
 (defn email-capture-session
   [app-state]
@@ -44,6 +45,7 @@
         v2-experience?              (experiments/aladdin-experience? app-state)
         on-non-minimal-footer-page? (not (nav/show-minimal-footer? navigation-event))
         freeinstall-store?          (= "freeinstall" (get-in app-state keypaths/store-slug))
+        shop?                       (= "shop" (get-in app-state keypaths/store-slug))
         seen-email-capture?         (email-capture-session app-state)
         seen-freeinstall-offer?     (get-in app-state keypaths/dismissed-free-install)
         signed-in?                  (get-in app-state keypaths/user-id)
@@ -59,6 +61,11 @@
 
       signed-in?
       (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) "signed-in")
+
+      (and email-capture-showable?
+           shop?
+           (routes/sub-page? [navigation-event] [events/navigate-adventure]))
+      (messages/handle-message events/popup-show-pick-a-stylist-email-capture)
 
       (and email-capture-showable?
            (not freeinstall-store?)

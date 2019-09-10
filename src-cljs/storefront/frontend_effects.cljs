@@ -270,6 +270,9 @@
       (cookie-jar/save-affiliate-stylist-id (get-in app-state keypaths/cookie)
                                             {:affiliate-stylist-id affiliate-stylist-id}))
 
+    (when (boolean (:em_hash query-params))
+      (messages/handle-message events/adventure-visitor-identified))
+
     (messages/handle-message events/determine-and-show-popup)
 
     (let [utm-params (some-> query-params

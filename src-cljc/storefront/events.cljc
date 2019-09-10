@@ -524,7 +524,8 @@
 (defpath control-adventure-select-stylist)
 (defpath control-adventure-select-stylist-pre-purchase)
 (defpath control-adventure-select-stylist-post-purchase)
-(defpath control-adventure-emailcapture-submit)
+
+(defpath control-pick-a-stylist-email-capture-submit)
 
 (defpath adventure-address-component-mounted)
 (defpath control-adventure-stylist-salon-address-clicked)
@@ -537,7 +538,8 @@
 (defpath control-open-shop-escape-hatch)
 
 (defpath popup-show-adventure-free-install)
-(defpath popup-show-adventure-emailcapture)
+
+(defpath popup-show-pick-a-stylist-email-capture)
 (defpath control-adventure-free-install-dismiss)
 
 (defpath popup-show-consolidated-cart-free-install)
