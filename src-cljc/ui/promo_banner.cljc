@@ -55,13 +55,6 @@
     [:div.pointer "CONGRATS — Your next install is FREE! "
      [:span.underline "More info"]]]))
 
-(defmethod component :shop/hardcoded-freeinstall
-  [_ _ _]
-  (component/create
-   [:div.white.center.pp5.bg-teal.h5.bold
-    {:data-test "promo-banner"}
-    "PAY $0 ON YOUR NEXT INSTALL - USE PROMO CODE: FREEINSTALL"]))
-
 (defmethod component :shop/freeinstall
   [_ _ _]
   (component/create
@@ -104,7 +97,7 @@
   "Promo code banner should only show on these nav-events
 
    Depending on experiments, this whitelist may be modified"
-  [no-promotions? consolidated-cart? promo-type]
+  [no-applied-promos? on-shop? promo-type]
   (cond-> #{events/navigate-home
             events/navigate-cart
             events/navigate-shop-by-look
@@ -120,7 +113,9 @@
           events/navigate-checkout-payment
           events/navigate-checkout-confirmation)
 
-    (and (not no-promotions?) (not consolidated-cart?))
+    ;; TODO SPEC classic or aladdin. Needs product verification
+    (and (not no-applied-promos?)
+         (not on-shop?))
     (disj events/navigate-cart)))
 
 (defn ^:private promo-type*
@@ -129,11 +124,8 @@
   [data]
   (let [shop? (= "shop" (get-in data keypaths/store-slug))]
     (cond
-      (and shop? (experiments/consolidated-cart? data))
-      :shop/freeinstall
-
       shop?
-      :shop/hardcoded-freeinstall
+      :shop/freeinstall
 
       ;; GROT: freeinstall-applied? when adventure orders using freeinstall promo code are no longer relevant
       (and
@@ -154,12 +146,12 @@
 
 (defn query
   [data]
-  (let [no-applied-promo?  (orders/no-applied-promo? (get-in data keypaths/order))
-        consolidated-cart? (experiments/consolidated-cart? data)
-        nav-event          (get-in data keypaths/navigation-event)
-        promo-type         (promo-type* data)]
+  (let [no-applied-promo? (orders/no-applied-promo? (get-in data keypaths/order))
+        on-shop?          (= "shop" (get-in data keypaths/store-slug))
+        nav-event         (get-in data keypaths/navigation-event)
+        promo-type        (promo-type* data)]
     (cond-> {:promo (promotion-to-advertise data)}
-      (contains? (nav-whitelist-for no-applied-promo? consolidated-cart? promo-type) nav-event)
+      (contains? (nav-whitelist-for no-applied-promo? on-shop? promo-type) nav-event)
       (assoc :promo/type promo-type))))
 
 (defn static-organism
