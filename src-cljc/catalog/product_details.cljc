@@ -381,56 +381,61 @@
      {}
      (keys options))))
 
+(defn add-to-cart-query
+  [data selected-sku sku-price]
+  (cond-> {:cta/id          "add-to-cart"
+           :cta/label       "Add to Cart"
+           :cta/target      [events/control-add-sku-to-bag
+                             {:sku      selected-sku
+                              :quantity (get-in data keypaths/browse-sku-quantity 1)}]
+           :cta/spinning?   (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
+           :cta/disabled?   (not (:inventory/in-stock? selected-sku))
+           :quadpay/loaded? (get-in data keypaths/loaded-quadpay)
+           :quadpay/price   sku-price}
+
+    (= "shop" (get-in data keypaths/store-slug))
+    (merge {:add-to-cart.background/color            "bg-fate-white"
+            :add-to-cart.incentive-block/id          "add-to-cart-incentive-block"
+            :add-to-cart.incentive-block/footnote    "*Mayvenn Install cannot be combined with other promo codes."
+            :add-to-cart.incentive-block/icon        "d7fbb4a1-6ad7-4122-b737-ade7dec8dfd3"
+            :add-to-cart.incentive-block/link-label  "Learn more"
+            :add-to-cart.incentive-block/link-target [events/popup-show-consolidated-cart-free-install]
+            :add-to-cart.incentive-block/message     "Save 10% & get a free Mayvenn Install when you purchase 3 bundles, closure, or frontals.* "})))
+
 (defn query [data]
-  (let [selected-sku       (get-in data catalog.keypaths/detailed-product-selected-sku)
-        selections         (get-in data catalog.keypaths/detailed-product-selections)
-        product            (products/current-product data)
-        product-skus       (products/extract-product-skus data product)
-        facets             (facets/by-slug data)
-        carousel-images    (find-carousel-images product product-skus selected-sku)
-        options            (get-in data catalog.keypaths/detailed-product-options)
-        ugc                (ugc-query product selected-sku data)
-        sku-price          (:sku/price selected-sku)
-        review-data        (review-component/query data)
-        consolidated-cart? (experiments/consolidated-cart? data)]
-    (merge {:reviews                                   review-data
-            :yotpo-reviews-summary/product-name        (some-> review-data :yotpo-data-attributes :data-name)
-            :yotpo-reviews-summary/product-id          (some-> review-data :yotpo-data-attributes :data-product-id)
-            :yotpo-reviews-summary/data-url            (some-> review-data :yotpo-data-attributes :data-url)
-            :title/primary                             (:copy/title product)
-            :price-block/primary                       sku-price
-            :price-block/secondary                     "per item"
-            :cta/id                                    "add-to-cart"
-            :cta/label                                 "Add to Cart"
-            :cta/target                                [events/control-add-sku-to-bag
-                                                        {:sku      selected-sku
-                                                         :quantity (get-in data keypaths/browse-sku-quantity 1)}]
-            :cta/spinning?                             (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
-            :cta/disabled?                             (not (:inventory/in-stock? selected-sku))
-            :freeinstall-add-to-cart-block/message     "Save 10% & get a free Mayvenn Install when you purchase 3 bundles, closure, or frontals.* "
-            :freeinstall-add-to-cart-block/footnote    "*Mayvenn Install cannot be combined with other promo codes."
-            :freeinstall-add-to-cart-block/link-target [events/popup-show-consolidated-cart-free-install]
-            :freeinstall-add-to-cart-block/link-label  "Learn more"
-            :freeinstall-add-to-cart-block/icon        "d7fbb4a1-6ad7-4122-b737-ade7dec8dfd3"
-            :freeinstall-add-to-cart-block/show?       (and (#{"freeinstall" "shop"} (get-in data keypaths/store-slug))
-                                                            consolidated-cart?)
-            :quadpay/loaded?                           (get-in data keypaths/loaded-quadpay)
-            :quadpay/price                             sku-price
-            :ugc                                       ugc
-            :aladdin?                                  (experiments/aladdin-experience? data)
-            :fetching-product?                         (utils/requesting? data (conj request-keys/search-v2-products
-                                                                                     (:catalog/product-id product)))
-            :adding-to-bag?                            (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
-            :sku-quantity                              (get-in data keypaths/browse-sku-quantity 1)
-            :options                                   options
-            :product                                   product
-            :selections                                selections
-            :selected-options                          (get-selected-options selections options)
-            :selected-sku                              selected-sku
-            :facets                                    facets
-            :selected-picker                           (get-in data catalog.keypaths/detailed-product-selected-picker)
-            :picker-data                               (picker/query data)
-            :carousel-images                           carousel-images}
+  (let [selected-sku    (get-in data catalog.keypaths/detailed-product-selected-sku)
+        selections      (get-in data catalog.keypaths/detailed-product-selections)
+        product         (products/current-product data)
+        product-skus    (products/extract-product-skus data product)
+        facets          (facets/by-slug data)
+        carousel-images (find-carousel-images product product-skus selected-sku)
+        options         (get-in data catalog.keypaths/detailed-product-options)
+        ugc             (ugc-query product selected-sku data)
+        sku-price       (:sku/price selected-sku)
+        review-data     (review-component/query data)]
+    (merge {:reviews                            review-data
+            :yotpo-reviews-summary/product-name (some-> review-data :yotpo-data-attributes :data-name)
+            :yotpo-reviews-summary/product-id   (some-> review-data :yotpo-data-attributes :data-product-id)
+            :yotpo-reviews-summary/data-url     (some-> review-data :yotpo-data-attributes :data-url)
+            :title/primary                      (:copy/title product)
+            :price-block/primary                sku-price
+            :price-block/secondary              "per item"
+            :ugc                                ugc
+            :aladdin?                           (experiments/aladdin-experience? data)
+            :fetching-product?                  (utils/requesting? data (conj request-keys/search-v2-products
+                                                                              (:catalog/product-id product)))
+            :adding-to-bag?                     (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
+            :sku-quantity                       (get-in data keypaths/browse-sku-quantity 1)
+            :options                            options
+            :product                            product
+            :selections                         selections
+            :selected-options                   (get-selected-options selections options)
+            :selected-sku                       selected-sku
+            :facets                             facets
+            :selected-picker                    (get-in data catalog.keypaths/detailed-product-selected-picker)
+            :picker-data                        (picker/query data)
+            :carousel-images                    carousel-images}
+           (add-to-cart-query data selected-sku sku-price)
            (let [{:keys [copy/description copy/colors copy/weights copy/materials copy/summary hair/family]} product]
              #:product-description {:summary                   summary
                                     :hair-family               family
@@ -445,8 +450,7 @@
                                  :button-copy    "browse stylists"
                                  :nav-event      [events/navigate-adventure-match-stylist]
                                  :image-ucare-id "f4c760b8-c240-4b31-b98d-b953d152eaa5"
-                                 :show?          (and (#{"freeinstall" "shop"} (get-in data keypaths/store-slug))
-                                                      consolidated-cart?)})))
+                                 :show?          (= "shop" (get-in data keypaths/store-slug))})))
 
 (defn ^:export built-component [data opts]
   (component/build component (query data) opts))
