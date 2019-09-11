@@ -136,14 +136,8 @@
           events/navigate-adventure-find-your-stylist                   stylist-matching.find-your-stylist/page
           events/navigate-adventure-matching-stylist-wait-pre-purchase  adventure.stylist-matching.matching-stylist-wait/built-component
           events/navigate-adventure-matching-stylist-wait-post-purchase adventure.stylist-matching.matching-stylist-wait/built-component
-          events/navigate-adventure-stylist-results-pre-purchase        (if (and consolidated-cart?
-                                                                                 stylist-results-updated?)
-                                                                          stylist-matching.stylist-results/page
-                                                                          adventure.stylist-matching.stylist-results/built-component-pre-purchase)
-          events/navigate-adventure-stylist-results-post-purchase       (if (and consolidated-cart?
-                                                                                 stylist-results-updated?)
-                                                                          stylist-matching.stylist-results/page
-                                                                          adventure.stylist-matching.stylist-results/built-component-post-purchase)
+          events/navigate-adventure-stylist-results-pre-purchase        stylist-matching.stylist-results/page
+          events/navigate-adventure-stylist-results-post-purchase       stylist-matching.stylist-results/page
           events/navigate-adventure-out-of-area                         stylist-matching.out-of-area/page
           events/navigate-adventure-match-success-pre-purchase          stylist-matching.match-success/page
           events/navigate-adventure-match-success-post-purchase         adventure.stylist-matching.match-success-post-purchase/built-component
