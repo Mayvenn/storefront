@@ -230,8 +230,7 @@
                              :number             number
                              :token              token
                              :promo-code         pending-promo-code
-                             :allow-dormant?     true
-                             :consolidated-cart? (experiments/consolidated-cart? app-state)})))
+                             :allow-dormant?     true})))
 
 (defmethod effects/perform-effects events/navigate [_ event {:keys [navigate/caused-by query-params nav-stack-item]} prev-app-state app-state]
   (let [freeinstall? (= "freeinstall" (get-in app-state keypaths/store-slug))]

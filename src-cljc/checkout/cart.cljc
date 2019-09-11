@@ -320,8 +320,7 @@
                                   :number             (get-in app-state keypaths/order-number)
                                   :token              (get-in app-state keypaths/order-token)
                                   :promo-code         coupon-code
-                                  :allow-dormant?     false
-                                  :consolidated-cart? (experiments/consolidated-cart? app-state)})))))
+                                  :allow-dormant?     false})))))
 
 (defmethod effects/perform-effects events/control-cart-share-show
   [_ _ _ _ app-state]

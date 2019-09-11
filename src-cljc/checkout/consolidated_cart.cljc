@@ -48,8 +48,7 @@
                               :number             (get-in app-state keypaths/order-number)
                               :token              (get-in app-state keypaths/order-token)
                               :promo-code         "freeinstall"
-                              :allow-dormant?     false
-                              :consolidated-cart? (experiments/consolidated-cart? app-state)})))
+                              :allow-dormant?     false})))
 
 (defn qualified-banner-component
   [_ owner _]

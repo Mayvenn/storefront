@@ -836,10 +836,10 @@
     (assoc-in [:response :body :error-message]
               "You need at least 3 bundles (closures and frontals included) to use promo code \"freeinstall\"")))
 
-(defn add-promotion-code [{:keys [shop? session-id number token promo-code allow-dormant? consolidated-cart?]}]
-  (let [add-silently? (boolean (and consolidated-cart?
-                                    shop?
-                                    (= "freeinstall" (some-> promo-code str/trim str/lower-case))))]
+(defn add-promotion-code
+  [{:keys [shop? session-id number token promo-code allow-dormant?]}]
+  (let [freeinstall-promo?         (= "freeinstall" (some-> promo-code str/trim str/lower-case))
+        allow-without-eligibility? (boolean (and shop? freeinstall-promo?))]
     (storeback-api-req
      POST
      "/v2/add-promotion-code"
@@ -849,7 +849,7 @@
                       :token         token
                       :code          promo-code
                       :allow-dormant allow-dormant?
-                      :add-silently? add-silently?}
+                      :add-silently? allow-without-eligibility?}
       :handler       #(messages/handle-message events/api-success-update-order-add-promotion-code
                                                {:order          %
                                                 :promo-code     promo-code
