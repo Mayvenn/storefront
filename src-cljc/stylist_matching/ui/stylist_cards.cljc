@@ -67,6 +67,13 @@
        {:style {:text-overflow "ellipsis"}}
        value]])))
 
+(defn control-stylist-card-address-marker-molecule
+  [{:stylist-card.address-marker/keys [id value]}]
+  (when id
+    (component/html
+     [:div.h7.col-12.flex.items-center
+      value])))
+
 (defn stylist-card-stars-rating-molecule
   [{:rating/keys [value]}]
   (component/html
@@ -78,6 +85,14 @@
   (when id
     (component/html
      [:div.h4.navy.line-height-1
+      {:data-test id}
+      primary])))
+
+(defn control-stylist-card-title-molecule
+  [{:stylist-card.title/keys [id primary]}]
+  (when id
+    (component/html
+     [:div.h3.line-height-1.light
       {:data-test id}
       primary])))
 
@@ -109,11 +124,49 @@
                                    :infinite     true}}
                        {})])))
 
+(defn control-stylist-card-gallery-item-molecule
+  [{:stylist-card.gallery-item/keys [id target ucare-id]}]
+  (prn target ucare-id id "corey")
+  (component/html
+   [:div.px1
+    (merge
+     (apply utils/fake-href target)
+     {:key id})
+    (ui/aspect-ratio
+     1 1
+     [:img {:src   (str ucare-id "-/scale_crop/216x216/-/format/auto/")
+            :class "rounded col-12"}])]))
+
+(defn control-stylist-card-gallery-molecule
+  [{:stylist-card.gallery/keys [id title items]}]
+  (when id
+    (component/html
+     [:div
+      [:h7.dark-gray.bold.left-align.mb2.ml1 title]
+      (component/build carousel/component
+                       {:slides   (map control-stylist-card-gallery-item-molecule items)
+                        :settings {:swipe        true
+                                   :initialSlide 0
+                                   :arrows       true
+                                   :dots         false
+                                   :slidesToShow 3
+                                   :infinite     true}}
+                       {})])))
+
 (defn stylist-card-cta-molecule
   [{:stylist-card.cta/keys [id label target]}]
   (when id
     (component/html
      (ui/underline-button
+      (merge {:data-test id}
+             (apply utils/fake-href target))
+      label))))
+
+(defn control-stylist-card-cta-molecule
+  [{:stylist-card.cta/keys [id label target]}]
+  (when id
+    (component/html
+     (ui/teal-button
       (merge {:data-test id}
              (apply utils/fake-href target))
       label))))
@@ -126,6 +179,16 @@
      (ui/circle-picture {:width "72px"}
                         (ui/square-image {:resizable-url ucare-id}
                                          72)))))
+
+(defn control-stylist-card-thumbnail-molecule
+  "We want ucare-ids here but we do not have them"
+  [{:stylist-card.thumbnail/keys [id ucare-id]}]
+  (when id
+    (component/html
+     (ui/circle-picture {:width "104"}
+                        (ui/square-image {:resizable-url ucare-id}
+                                         72)))))
+
 (defn stylist-card-header-molecule
   [{:stylist-card/keys [target id] :as data}]
   (when id
@@ -140,7 +203,31 @@
       (stylist-card-address-marker-molecule data)
       (stylist-card-services-list-molecule data)]]))
 
-(defn organism
+(defn control-stylist-card-header-molecule
+  [{:stylist-card/keys [target id] :as data}]
+  (when id
+    [:div.col-12.flex.items-start.p2
+     (assoc (apply utils/route-to target) :data-test id)
+     [:div.flex.justify-center.items-center.col-3
+      (control-stylist-card-thumbnail-molecule data)]
+     [:div.col-9.medium.px2
+      (control-stylist-card-title-molecule data)
+      [:span.h7.flex.items-center.pyp2
+       (stylist-card-stars-rating-molecule data)]
+      (control-stylist-card-address-marker-molecule data)]]))
+
+(defn control-organism
+  [data _ _]
+  (component/create
+   [:div.flex.flex-column.left-align.mx3.my3
+    {:key (:react/key data)}
+    (control-stylist-card-header-molecule data)
+    [:div.col-12
+     (control-stylist-card-gallery-molecule data)]
+    [:div.col-12.p2
+     (control-stylist-card-cta-molecule data)]]))
+
+(defn experiment-organism
   [data _ _]
   (component/create
    [:div.flex.flex-column.left-align.rounded.border.border-light-gray.mx3.my3.bg-white
