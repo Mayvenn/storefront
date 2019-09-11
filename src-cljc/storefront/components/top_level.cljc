@@ -24,7 +24,6 @@
             adventure.stylist-matching.matching-stylist-wait
             adventure.stylist-matching.stylist-results
             adventure.stylist-matching.out-of-area
-            adventure.stylist-matching.match-success
             adventure.stylist-matching.match-success-post-purchase
             adventure.stylist-matching.let-mayvenn-match
             adventure.stylist-matching.stylist-profile
@@ -155,9 +154,7 @@
           events/navigate-adventure-out-of-area                         (if consolidated-cart?
                                                                           stylist-matching.out-of-area/page
                                                                           adventure.stylist-matching.out-of-area/built-component)
-          events/navigate-adventure-match-success-pre-purchase          (if consolidated-cart?
-                                                                          stylist-matching.match-success/page
-                                                                          adventure.stylist-matching.match-success/built-component)
+          events/navigate-adventure-match-success-pre-purchase          stylist-matching.match-success/page
           events/navigate-adventure-match-success-post-purchase         adventure.stylist-matching.match-success-post-purchase/built-component
           events/navigate-adventure-checkout-wait                       (ui/lazy-load-component :checkout 'adventure.checkout.wait/built-component events/navigate-adventure-checkout-wait)
           events/navigate-adventure-let-mayvenn-match                   adventure.stylist-matching.let-mayvenn-match/built-component
