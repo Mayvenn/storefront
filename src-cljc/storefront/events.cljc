@@ -526,6 +526,7 @@
 (defpath control-adventure-select-stylist-post-purchase)
 
 (defpath control-pick-a-stylist-email-capture-submit)
+(defpath control-pick-a-stylist-email-capture-dismiss)
 
 (defpath adventure-address-component-mounted)
 (defpath control-adventure-stylist-salon-address-clicked)

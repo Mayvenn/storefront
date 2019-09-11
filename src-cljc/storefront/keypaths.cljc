@@ -294,6 +294,7 @@
 (def facebook-email-denied (conj ui :facebook-email-denied))
 
 (def email-capture-session (conj ui :email-capture-session))
+(def dismissed-pick-a-stylist-email-capture (conj ui :dismissed-pick-a-stylist-email-capture))
 (def dismissed-free-install (conj ui :dismissed-free-install))
 
 (def experiments [:experiments])

@@ -144,34 +144,34 @@
           :popup                          nil
 
           :expanded-commission-order-id #{nil}
-          :email-capture-session
-          (cookie-jar/retrieve-email-capture-session cookie)
-          :phone-capture-session
-          (cookie-jar/get-phone-capture-session cookie)
-          :dismissed-free-install
-          (cookie-jar/get-dismissed-free-install cookie)
-          :sign-in                      {:email    ""
-                                         :password ""}
-          :sign-up                      {:email    ""
-                                         :password ""}
-          :forgot-password              {:email ""}
-          :reset-password               {:password ""
-                                         :token    ""}
-          :manage-account               {:email    ""
-                                         :password ""}
-          :cart                         initial-cart-state
-          :checkout                     initial-checkout-state
-          :flash                        {:now   {:success {:message nil}
-                                                 :failure {:message nil}}
-                                         :later {:success {:message nil}
-                                                 :failure {:message nil}}}
-          :review-components-count      0
-          :static                       nil
-          :loaded                       {:reviews  false
-                                         :stripe   false
-                                         :facebook false
-                                         :places   false
-                                         :talkable false}}
+
+          :email-capture-session  (cookie-jar/retrieve-email-capture-session cookie)
+          :phone-capture-session  (cookie-jar/get-phone-capture-session cookie)
+          :dismissed-free-install (cookie-jar/get-dismissed-free-install cookie)
+
+          :dismissed-pick-a-stylist-email-capture (cookie-jar/retrieve-dismissed-pick-a-stylist-email-capture cookie)
+          :sign-in                                {:email    ""
+                                                   :password ""}
+          :sign-up                                {:email    ""
+                                                   :password ""}
+          :forgot-password                        {:email ""}
+          :reset-password                         {:password ""
+                                                   :token    ""}
+          :manage-account                         {:email    ""
+                                                   :password ""}
+          :cart                                   initial-cart-state
+          :checkout                               initial-checkout-state
+          :flash                                  {:now   {:success {:message nil}
+                                                           :failure {:message nil}}
+                                                   :later {:success {:message nil}
+                                                           :failure {:message nil}}}
+          :review-components-count                0
+          :static                                 nil
+          :loaded                                 {:reviews  false
+                                                   :stripe   false
+                                                   :facebook false
+                                                   :places   false
+                                                   :talkable false}}
 
      :v2 {:ui {:dashboard initial-dashboard-state}
           :db {}}}))

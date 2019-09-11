@@ -9,7 +9,8 @@
   (when id
     (component/html
      [:a.mt2.mr4
-      (utils/route-to events/navigate-home)
+      (merge (utils/route-to events/navigate-home)
+             {:data-test id})
       (ui/ucare-img {:width "140"} "1970d88b-3798-4914-8a91-74288b09cc77")])))
 
 (defn organism

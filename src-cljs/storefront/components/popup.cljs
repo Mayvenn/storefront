@@ -43,31 +43,39 @@
   [_ _ args _ app-state]
   (let [navigation-event            (get-in app-state keypaths/navigation-event)
         v2-experience?              (experiments/aladdin-experience? app-state)
-        on-non-minimal-footer-page? (not (nav/show-minimal-footer? navigation-event))
+        on-minimal-footer-page?     (nav/show-minimal-footer? navigation-event)
         freeinstall-store?          (= "freeinstall" (get-in app-state keypaths/store-slug))
         shop?                       (= "shop" (get-in app-state keypaths/store-slug))
-        seen-email-capture?         (email-capture-session app-state)
+        email-capture-state         (email-capture-session app-state)
         seen-freeinstall-offer?     (get-in app-state keypaths/dismissed-free-install)
         signed-in?                  (get-in app-state keypaths/user-id)
         classic-experience?         (not v2-experience?)
-        email-capture-showable?     (and (not signed-in?)
-                                         (not seen-email-capture?)
-                                         on-non-minimal-footer-page?)
-        is-design-system?           (= events/navigate-design-system
-                                       (take (count events/navigate-design-system) navigation-event))]
-    (cond
-      is-design-system?
-      nil ;; never show popup for style guide
 
+        dismissed-pick-a-stylist-email-capture? (get-in app-state keypaths/dismissed-pick-a-stylist-email-capture)
+        pick-a-stylist-page?                    (routes/sub-page? [navigation-event] [events/navigate-adventure])]
+    (cond
+      ;; never show popup for style guide
+      (routes/sub-page? [navigation-event] [events/navigate-design-system])
+      nil
+
+      ;; TODO: This probably belongs in navigate or auth success?
       signed-in?
       (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) "signed-in")
 
-      (and email-capture-showable?
+      ;; pick-a-stylist
+      (and (not signed-in?)
+           (not dismissed-pick-a-stylist-email-capture?)
+           (not= "opted-in" email-capture-state)
+           (not on-minimal-footer-page?)
            shop?
-           (routes/sub-page? [navigation-event] [events/navigate-adventure]))
+           pick-a-stylist-page?)
       (messages/handle-message events/popup-show-pick-a-stylist-email-capture)
 
-      (and email-capture-showable?
+      ;; Standard
+      (and (not signed-in?)
+           (not dismissed-pick-a-stylist-email-capture?)
+           (nil? email-capture-state)
+           (not on-minimal-footer-page?)
            (not freeinstall-store?)
            (or seen-freeinstall-offer?
                classic-experience?

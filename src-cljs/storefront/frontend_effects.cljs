@@ -136,7 +136,7 @@
 (def popup-dismiss-events
   {:email-capture-quadpay          events/control-email-captured-dismiss
    :email-capture                  events/control-email-captured-dismiss
-   :adv-email-capture              events/control-email-captured-dismiss
+   :pick-a-stylist-email-capture   events/control-pick-a-stylist-email-capture-dismiss
    :adventure-free-install         events/control-adventure-free-install-dismiss
    :consolidated-cart-free-install events/control-consolidated-cart-free-install-dismiss
    :v2-homepage                    events/control-v2-homepage-popup-dismiss

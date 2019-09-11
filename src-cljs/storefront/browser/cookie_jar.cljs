@@ -14,6 +14,7 @@
            (string/join ".")
            (str "."))))
 
+(def thirty-minutes (* 60 30))
 (def one-day (* 60 60 24))
 (def three-days (* 3 one-day))
 (def week (* 7 one-day))
@@ -63,6 +64,12 @@
    :max-age       nil ;; determined dynamically
    :optional-keys []
    :required-keys [:popup-session]})
+
+(def dismissed-pick-a-stylist-email-capture
+  {:domain        nil
+   :max-age       thirty-minutes
+   :optional-keys []
+   :required-keys [:dismissed-pick-a-stylist-email-capture]})
 
 (def telligent-session
   {:domain        (root-domain)
@@ -136,6 +143,10 @@
 
 (def retrieve-email-capture-session (comp :popup-session (partial retrieve email-capture-session)))
 
+(def retrieve-dismissed-pick-a-stylist-email-capture
+  (comp :dismissed-pick-a-stylist-email-capture
+        (partial retrieve dismissed-pick-a-stylist-email-capture)))
+
 (def retrieve-from-shop-to-freeinstall (partial retrieve from-shop-to-freeinstall))
 
 (def ^:private session-id-length 24)
@@ -162,7 +173,7 @@
   (save-cookie completed-order
                cookie
                (set/rename-keys order {:number :completed-order-number
-                                   :token  :completed-order-token})))
+                                       :token  :completed-order-token})))
 
 (defn save-email-capture-session [cookie value]
   (let [max-age (condp = value
@@ -170,6 +181,12 @@
                   "opted-in"  (* 200 one-year)
                   "dismissed" (* 60 30))]
     (.set cookie :popup-session value max-age "/" (:domain email-capture-session) config/secure?)))
+
+(defn save-dismissed-pick-a-stylist-email-capture
+  [cookie]
+  (save-cookie dismissed-pick-a-stylist-email-capture
+               cookie
+               {:dismissed-pick-a-stylist-email-capture "1"}))
 
 (defn save-phone-capture-session [cookie]
   (.set cookie "phone-popup-session" "opted-in" (* 200 one-year) "/" nil config/secure?))

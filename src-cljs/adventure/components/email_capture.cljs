@@ -3,6 +3,7 @@
             [clojure.string :as string]
             [storefront.accessors.experiments :as experiments]
             [storefront.browser.scroll :as scroll]
+            [storefront.browser.cookie-jar :as cookie-jar]
             [storefront.component :as component]
             [storefront.components.popup :as popup]
             [storefront.components.svg :as svg]
@@ -42,7 +43,7 @@
      :title-image-alt      "Mayvenn"
      :header-data          {:header-attrs nil
                             :right-corner {:id    "dismiss-email-capture"
-                                           :opts  (utils/fake-href events/control-email-captured-dismiss)
+                                           :opts  (utils/fake-href events/control-pick-a-stylist-email-capture-dismiss)
                                            :value (svg/simple-x {:class "white"
                                                                  :style {:width  "20px"
                                                                          :height "20px"
@@ -62,6 +63,17 @@
   [_ _ args _ app-state]
   (scroll/enable-body-scrolling)
   (messages/handle-message events/adventure-visitor-identified))
+
+(defmethod effects/perform-effects events/control-pick-a-stylist-email-capture-dismiss
+  [_ _ args _ app-state]
+  (scroll/enable-body-scrolling)
+  (cookie-jar/save-dismissed-pick-a-stylist-email-capture (get-in app-state storefront.keypaths/cookie)))
+
+(defmethod transitions/transition-state events/control-pick-a-stylist-email-capture-dismiss
+  [_ event args app-state]
+  (-> app-state
+      (assoc-in storefront.keypaths/dismissed-pick-a-stylist-email-capture "1")
+      (assoc-in storefront.keypaths/popup nil)))
 
 (defmethod transitions/transition-state events/popup-show-pick-a-stylist-email-capture
   [_ event args app-state]
