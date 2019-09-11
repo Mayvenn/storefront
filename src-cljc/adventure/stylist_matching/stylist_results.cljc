@@ -109,19 +109,24 @@
                                          stylist-profiles?
                                          events/control-adventure-select-stylist-post-purchase))
                                (insert-at-pos 3 recommend-your-stylist-query))
-        header-org-data   {:header.cart/id                "adventure-cart"
-                           :header.cart/value             (:order.items/quantity current-order)
-                           :header.cart/color             "white"
-                           :header.title/id               "adventure-title"
-                           :header.title/primary          "Meet Your Certified Stylist"
-                           :header.back-navigation/id     "adventure-back"
-                           :header.back-navigation/target [events/navigate-need-match-order-complete {:number (get-in data storefront.keypaths/completed-order-number)}]}]
+
+        completed-order-number (get-in data storefront.keypaths/completed-order-number)
+
+        header-org-data (merge {:header.cart/id       "adventure-cart"
+                                :header.cart/value    (:order.items/quantity current-order)
+                                :header.cart/color    "white"
+                                :header.title/id      "adventure-title"
+                                :header.title/primary "Meet Your Certified Stylist"}
+                               (when completed-order-number
+                                 {:header.back-navigation/id     "adventure-back"
+                                  :header.back-navigation/target [events/navigate-need-match-order-complete {:number completed-order-number}]}))]
     {:current-step                  3
      :title                         "Pick your stylist"
-     :header-data                   (merge {:title                   "Find Your Stylist"
-                                            :back-navigation-message [events/navigate-need-match-order-complete {:number (get-in data storefront.keypaths/completed-order-number)}]
-                                            :shopping-bag?           false
-                                            :subtitle                "Step 3 of 3"}
+     :header-data                   (merge {:title         "Find Your Stylist"
+                                            :shopping-bag? false
+                                            :subtitle      "Step 3 of 3"}
+                                           (when completed-order-number
+                                             {:back-navigation-message [events/navigate-need-match-order-complete {:number completed-order-number}]})
                                            header-org-data)
      :shop?                         (= "shop" (get-in data storefront.keypaths/store-slug))
      :gallery-modal-data            {:ucare-img-urls                 (get-in data keypaths/adventure-stylist-gallery-image-urls) ;; empty hides the modal
@@ -159,16 +164,25 @@
   #?(:cljs
      (let [{:keys [latitude longitude]} (get-in app-state (conj keypaths/adventure-choices :location))
            matched-stylists             (get-in app-state keypaths/adventure-matched-stylists)]
-       (when (and latitude longitude (empty? matched-stylists))
-         (messages/handle-message events/api-fetch-stylists-within-radius-pre-purchase))
-       (messages/handle-message events/adventure-stylist-search-results-displayed))))
+       (if (and latitude longitude)
+         (do
+           (when (empty? matched-stylists)
+             (messages/handle-message events/api-fetch-stylists-within-radius-pre-purchase))
+           (messages/handle-message events/adventure-stylist-search-results-displayed))
+         (history/enqueue-redirect events/navigate-adventure-find-your-stylist)))))
+
 
 (defmethod effects/perform-effects events/navigate-adventure-stylist-results-post-purchase
   [_ _ args _ app-state]
   #?(:cljs
-     (let [matched-stylists (get-in app-state keypaths/adventure-matched-stylists)]
-       (when (empty? matched-stylists) (messages/handle-message events/api-fetch-stylists-within-radius-post-purchase))
-       (messages/handle-message events/adventure-stylist-search-results-post-purchase-displayed))))
+     (let [matched-stylists (get-in app-state keypaths/adventure-matched-stylists)
+           completed-order-number  (get-in app-state storefront.keypaths/completed-order-number)]
+       (if completed-order-number
+         (do
+           (when (empty? matched-stylists)
+             (messages/handle-message events/api-fetch-stylists-within-radius-post-purchase))
+           (messages/handle-message events/adventure-stylist-search-results-post-purchase-displayed))
+         (history/enqueue-redirect events/navigate-adventure-find-your-stylist)))))
 
 (defmethod effects/perform-effects events/control-adventure-select-stylist-pre-purchase
   [_ _ {:keys [stylist-id card-index servicing-stylist]} _ app-state]

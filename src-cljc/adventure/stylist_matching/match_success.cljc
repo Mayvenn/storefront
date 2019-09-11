@@ -66,5 +66,12 @@
          (history/enqueue-navigate events/navigate-adventure-match-success-pre-purchase)))))
 
 #?(:cljs
+   (defmethod effects/perform-effects events/navigate-adventure-match-success
+     [_ event {:keys [query-params]} app-state-before app-state]
+     (let [adventure-choices (get-in app-state keypaths/adventure-choices)]
+       (when (nil? (get-in app-state adventure.keypaths/adventure-servicing-stylist))
+         (history/enqueue-redirect events/navigate-adventure-find-your-stylist)))))
+
+#?(:cljs
    (defmethod effects/perform-effects events/api-success-assign-servicing-stylist-post-purchase [_ _ _ _ app-state]
      (history/enqueue-navigate events/navigate-adventure-match-success-post-purchase)))
