@@ -868,22 +868,20 @@
 
 (defmethod effects/perform-effects events/api-success-update-order-add-promotion-code
   [_ _ {:keys [promo-code allow-dormant?]} _ app-state]
-  (let [freeinstall-added-on-consolidated-cart? (and (experiments/consolidated-cart? app-state)
-                                                     (= "shop" (get-in app-state keypaths/store-slug))
-                                                     (= "freeinstall" (-> promo-code str string/lower-case)))]
-    (cond
-      freeinstall-added-on-consolidated-cart?
-      (messages/handle-message events/flash-dismiss)
+  (cond
+    (and (= "shop" (get-in app-state keypaths/store-slug))
+         (= "freeinstall" (-> promo-code str string/lower-case)))
+    (messages/handle-message events/flash-dismiss)
 
-      allow-dormant?
-      nil
+    allow-dormant?
+    nil
 
-      :else
-      (messages/handle-message events/flash-show-success
-                               {:message "The coupon code was successfully applied to your order."
-                                :scroll? false}))
-    (api/get-promotions (get-in app-state keypaths/api-cache)
-                        (first (get-in app-state keypaths/order-promotion-codes)))))
+    :else
+    (messages/handle-message events/flash-show-success
+                             {:message "The coupon code was successfully applied to your order."
+                              :scroll? false}))
+  (api/get-promotions (get-in app-state keypaths/api-cache)
+                      (first (get-in app-state keypaths/order-promotion-codes))))
 
 (defmethod effects/perform-effects events/inserted-talkable [_ event args _ app-state]
   (talkable/show-pending-offer app-state)
