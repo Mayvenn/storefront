@@ -135,9 +135,7 @@
           events/navigate-adventure-select-new-look                     (ui/lazy-load-component :catalog 'adventure.select-new-look/built-component events/navigate-adventure-select-new-look)
           events/navigate-adventure-look-detail                         (ui/lazy-load-component :catalog 'adventure.look-detail/built-component events/navigate-adventure-look-detail)
           events/navigate-adventure-select-bundle-set                   (ui/lazy-load-component :catalog 'adventure.select-new-look/built-component events/navigate-adventure-select-bundle-set)
-          events/navigate-adventure-match-stylist                       (if consolidated-cart?
-                                                                          stylist-matching.match-stylist/page
-                                                                          adventure.stylist-matching.match-stylist/built-component)
+          events/navigate-adventure-match-stylist                       stylist-matching.match-stylist/page
           events/navigate-adventure-find-your-stylist                   (if consolidated-cart?
                                                                           stylist-matching.find-your-stylist/page
                                                                           adventure.stylist-matching.find-your-stylist/built-component)
