@@ -97,7 +97,7 @@
 (def call-out-query
   {:call-out-center/bg-class    "bg-lavender"
    :call-out-center/bg-ucare-id "6a221a42-9a1f-4443-8ecc-595af233ab42"
-   :call-out-center/title       "Want to book with your ownstylist?"
+   :call-out-center/title       "Want to book with your own stylist?"
    :call-out-center/subtitle    "Recommend them to become Mayvenn Certified"
    :cta/id                      "recommend-stylist"
    :cta/target                  [events/external-redirect-typeform-recommend-stylist]
