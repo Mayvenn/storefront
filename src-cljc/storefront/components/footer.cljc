@@ -149,7 +149,7 @@
       [:nav.clearfix {:aria-label "Shop Products"}
        [:div.col.col-6
         [:a.block.py1.dark-gray.light.titleize
-         (assoc (utils/route-to events/external-redirect-freeinstall)
+         (assoc (utils/route-to events/navigate-adventure-match-stylist)
                 :data-test "freeinstall-footer-link")
          [:span.teal "NEW "]
          "Mayvenn Install"]

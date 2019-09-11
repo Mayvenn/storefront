@@ -133,7 +133,7 @@
                                           :height "20px"})]
     (concat
      (when show-freeinstall-link?
-       [{:link-attrs (utils/route-to events/external-redirect-freeinstall)
+       [{:link-attrs (utils/route-to events/navigate-adventure-match-stylist)
          :data-test  "menu-shop-freeinstall"
          :content    [[:span.teal.pr1 "NEW"]
                       [:span.medium "Get a Mayvenn Install"]]}])

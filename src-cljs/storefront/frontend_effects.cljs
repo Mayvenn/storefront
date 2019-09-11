@@ -164,23 +164,6 @@
 (defmethod effects/perform-effects events/external-redirect-welcome [_ event args _ app-state]
   (set! (.-location js/window) (get-in app-state keypaths/welcome-url)))
 
-(defmethod effects/perform-effects events/external-redirect-freeinstall
-  [_ event {:keys [query-string path]} _ app-state]
-  (cookie-jar/save-from-shop-to-freeinstall (get-in app-state keypaths/cookie))
-  (let [on-homepage? (= events/navigate-home
-                        (get-in app-state keypaths/navigation-event))
-        host         (if (experiments/consolidated-cart? app-state)
-                       "shop."
-                       "freeinstall.")]
-    (set! (.-location js/window)
-          (-> (.-location js/window)
-              uri/uri
-              (assoc :host (str host (routes/environment->hostname (get-in app-state keypaths/environment)))
-                     :path (or path
-                               (if on-homepage? "/adv/match-stylist" "/"))
-                     :query query-string)
-              str))))
-
 (defmethod effects/perform-effects events/external-redirect-sms [_ event {:keys [sms-message number]} _ app-state]
   (set! (.-location js/window) (share-links/sms-link sms-message number)))
 

@@ -151,7 +151,7 @@
    [:div.center
     (when show-freeinstall-link?
       (header-menu-link
-       (assoc (utils/route-to events/external-redirect-freeinstall)
+       (assoc (utils/route-to events/navigate-adventure-match-stylist)
               :on-mouse-enter close-header-menus)
        [:span [:span.teal.pr1 "NEW"] "Get a Mayvenn Install"]))
 
