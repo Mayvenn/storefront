@@ -44,7 +44,7 @@
       [:form.col-12.block.mx-auto.mt4.pt2
        {:on-submit (apply utils/send-event-callback on-submit)}
        [:div.col-9.mx-auto
-        (ui/text-input {:id        id
+        (ui/text-input {:id        (str id desktop-header-dt)
                         :label     label
                         :keypath   on-change-keypath
                         :value     value
@@ -53,7 +53,7 @@
                         :autoFocus true})]
        [:div.pt3.col-9.col-7-on-tb-dt.mx-auto
         (ui/submit-button "Get Started"
-                          {:data-test (str id "-answer-submit")})]])]))
+                          {:data-test (str id "-input-submit" desktop-header-dt)})]])]))
 
 (defn component
   [{:keys [input-data header-data prompt-image prompt-desktop-image prompt mini-prompt on-submit] :as data} owner _]
