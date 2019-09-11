@@ -273,6 +273,12 @@
     (when (boolean (:em_hash query-params))
       (messages/handle-message events/adventure-visitor-identified))
 
+    (when-not (= caused-by :module-load)
+      (when (get-in app-state keypaths/popup)
+        (messages/handle-message events/popup-hide))
+
+      (quadpay/hide-modal))
+
     (messages/handle-message events/determine-and-show-popup)
 
     (let [utm-params (some-> query-params
@@ -291,12 +297,6 @@
     (when (and (get-in app-state keypaths/user-must-set-password)
                (not= event events/navigate-force-set-password))
       (effects/redirect events/navigate-force-set-password))
-
-    (when-not (= caused-by :module-load)
-      (when (get-in app-state keypaths/popup)
-        (messages/handle-message events/popup-hide))
-
-      (quadpay/hide-modal))
 
     (exception-handler/refresh)
 
