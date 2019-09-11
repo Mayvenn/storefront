@@ -21,7 +21,6 @@
             adventure.informational.how-it-works
             adventure.stylist-matching.matching-stylist-wait
             adventure.stylist-matching.stylist-results
-            adventure.stylist-matching.out-of-area
             adventure.stylist-matching.match-success-post-purchase
             adventure.stylist-matching.let-mayvenn-match
             adventure.stylist-matching.stylist-profile
@@ -145,9 +144,7 @@
                                                                                  stylist-results-updated?)
                                                                           stylist-matching.stylist-results/page
                                                                           adventure.stylist-matching.stylist-results/built-component-post-purchase)
-          events/navigate-adventure-out-of-area                         (if consolidated-cart?
-                                                                          stylist-matching.out-of-area/page
-                                                                          adventure.stylist-matching.out-of-area/built-component)
+          events/navigate-adventure-out-of-area                         stylist-matching.out-of-area/page
           events/navigate-adventure-match-success-pre-purchase          stylist-matching.match-success/page
           events/navigate-adventure-match-success-post-purchase         adventure.stylist-matching.match-success-post-purchase/built-component
           events/navigate-adventure-checkout-wait                       (ui/lazy-load-component :checkout 'adventure.checkout.wait/built-component events/navigate-adventure-checkout-wait)
