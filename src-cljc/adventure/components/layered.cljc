@@ -6,8 +6,6 @@
             [storefront.components.video :as video]
             [storefront.events :as events]
             [storefront.platform.component-utils :as utils]
-            [storefront.routes :as routes]
-            [clojure.set :as set]
             #?@(:cljs [[om.core :as om]
                        [goog.events.EventType :as EventType]
                        goog.dom
@@ -15,26 +13,6 @@
                        goog.events
                        [storefront.browser.scroll :as scroll]])
             [ui.molecules :as ui.M]))
-
-(defn freeinstall-domain [environment path]
-  (let [domain (case environment
-                 "production" "freeinstall.mayvenn.com"
-                 "acceptance" "freeinstall.diva-acceptance.com"
-                 "freeinstall.storefront.localhost")]
-    (str "//" domain path)))
-
-(defn route-to-or-redirect-to-freeinstall [{:keys [shop? consolidated-cart? environment navigation-event navigation-arg]}]
-  (let [navigation-message [navigation-event navigation-arg]]
-    (if consolidated-cart?
-      {:navigation-message navigation-message}
-      (merge (when-not shop?
-               {:navigation-message navigation-message})
-             {:href (freeinstall-domain environment (apply routes/path-for navigation-message))}))))
-
-(defn cta-route-to-or-redirect-to-freeinstall [nav-args]
-  (set/rename-keys (route-to-or-redirect-to-freeinstall nav-args)
-                   {:href               :cta/href
-                    :navigation-message :cta/navigation-message}))
 
 (defmulti layer-view (fn [{:keys [layer/type]} _ _] type))
 
