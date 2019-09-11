@@ -19,8 +19,6 @@
             adventure.informational.about-our-hair
             adventure.informational.certified-stylists
             adventure.informational.how-it-works
-            adventure.stylist-matching.match-stylist
-            adventure.stylist-matching.find-your-stylist
             adventure.stylist-matching.matching-stylist-wait
             adventure.stylist-matching.stylist-results
             adventure.stylist-matching.out-of-area
@@ -136,9 +134,7 @@
           events/navigate-adventure-look-detail                         (ui/lazy-load-component :catalog 'adventure.look-detail/built-component events/navigate-adventure-look-detail)
           events/navigate-adventure-select-bundle-set                   (ui/lazy-load-component :catalog 'adventure.select-new-look/built-component events/navigate-adventure-select-bundle-set)
           events/navigate-adventure-match-stylist                       stylist-matching.match-stylist/page
-          events/navigate-adventure-find-your-stylist                   (if consolidated-cart?
-                                                                          stylist-matching.find-your-stylist/page
-                                                                          adventure.stylist-matching.find-your-stylist/built-component)
+          events/navigate-adventure-find-your-stylist                   stylist-matching.find-your-stylist/page
           events/navigate-adventure-matching-stylist-wait-pre-purchase  adventure.stylist-matching.matching-stylist-wait/built-component
           events/navigate-adventure-matching-stylist-wait-post-purchase adventure.stylist-matching.matching-stylist-wait/built-component
           events/navigate-adventure-stylist-results-pre-purchase        (if (and consolidated-cart?
