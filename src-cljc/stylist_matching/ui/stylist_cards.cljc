@@ -126,7 +126,6 @@
 
 (defn control-stylist-card-gallery-item-molecule
   [{:stylist-card.gallery-item/keys [id target ucare-id]}]
-  (prn target ucare-id id "corey")
   (component/html
    [:div.px1
     (merge
