@@ -65,6 +65,12 @@
       is-design-system?
       nil ;; never show popup for style guide
 
+      (and email-capture-showable?
+           freeinstall-store?
+           (contains? #{events/navigate-adventure-match-stylist}
+                      navigation-event))
+      (messages/handle-message events/popup-show-adventure-emailcapture)
+
       signed-in?
       (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) "signed-in")
 
