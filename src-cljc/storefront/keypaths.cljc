@@ -48,13 +48,10 @@
 (def order-shipping-address (conj order :shipping-address))
 (def order-token (conj order :token))
 (def order-number (conj order :number))
+(def order-servicing-stylist-id (conj order :servicing-stylist-id))
 (def order-user (conj order :user))
 (def order-user-id (conj order-user :id))
 (def order-user-email (conj order-user :email))
-
-;; ADVENTURE
-(def order-servicing-stylist-id (conj order :servicing-stylist-id))
-;; END ADVENTURE
 
 (def stripe-card-element [:stripe :card-element])
 
