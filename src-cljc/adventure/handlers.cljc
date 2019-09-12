@@ -13,7 +13,8 @@
             [adventure.keypaths :as keypaths]
             [storefront.trackings :as trackings]
             [storefront.transitions :as transitions]
-            [catalog.products :as products]))
+            [catalog.products :as products]
+            [storefront.accessors.orders :as orders]))
 
 (def default-adventure-hair-family
   #{"bundles" "closures" "frontals" "360-frontals"})
@@ -71,6 +72,16 @@
          (when (boolean (:em_hash query-params))
            (messages/handle-message events/adventure-visitor-identified))))))
 
+(defmethod transitions/transition-state events/api-success-fetch-stylists-within-radius
+  [_ _ {:keys [stylists query]} app-state]
+  (cond->
+      (assoc-in app-state adventure.keypaths/adventure-matched-stylists stylists)
+
+    (seq query)
+    (assoc-in adventure.keypaths/adventure-stylist-match-location
+              {:latitude  (:latitude query)
+               :longitude (:longitude query)
+               :radius    (:radius query)})))
 
 (defmethod effects/perform-effects events/adventure-visitor-identified
   [_ _ _ _ app-state]
@@ -157,7 +168,17 @@
      (assoc-in app-state storefront.keypaths/pending-talkable-order (talkable/completed-order completed-order))))
 
 (defmethod effects/perform-effects events/navigate-adventure-match-success-post-purchase [_ _ _ _ app-state]
-  #?@(:cljs
-      [(talkable/show-pending-offer app-state)
-       (api/fetch-matched-stylist (get-in app-state storefront.keypaths/api-cache)
-                                  (get-in app-state keypaths/adventure-choices-selected-stylist-id))]))
+  #?(:cljs
+     (let [completed-order      (get-in app-state storefront.keypaths/completed-order)
+           freeinstall-applied? (orders/freeinstall-applied? completed-order)
+           servicing-stylist-id (:servicing-stylist-id completed-order)]
+       (if (and freeinstall-applied? servicing-stylist-id)
+         (do
+           (talkable/show-pending-offer app-state)
+           (api/fetch-matched-stylist (get-in app-state storefront.keypaths/api-cache)
+                                      servicing-stylist-id))
+         (history/enqueue-navigate events/navigate-home)))))
+
+(defmethod transitions/transition-state events/api-success-fetch-matched-stylist
+  [_ event {:keys [stylist] :as args} app-state]
+  (assoc-in app-state adventure.keypaths/adventure-servicing-stylist stylist))

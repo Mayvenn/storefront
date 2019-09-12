@@ -27,7 +27,8 @@
                     [:span.nowrap {:data-test "servicing-stylist-name"}
                      (-> servicing-stylist :address :firstname)]
                     "."]
-     :card-data    (profile-card/stylist-profile-card-data servicing-stylist)
+     :card-data    (when servicing-stylist
+                     (profile-card/stylist-profile-card-data servicing-stylist))
      :cta-title    "In the meantime…"
      :cta-subtitle "Get inspired for your appointment"
      :button       {:href "https://www.instagram.com/explore/tags/mayvennfreeinstall/"

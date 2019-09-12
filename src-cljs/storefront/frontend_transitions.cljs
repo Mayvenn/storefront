@@ -634,18 +634,6 @@
   (cond-> app-state
     menu (assoc-in keypaths/user-stylist-service-menu menu)))
 
-(defmethod transition-state events/api-success-fetch-stylists-within-radius
-  [_ _ {:keys [stylists query]} app-state]
-  (cond->
-      (assoc-in app-state adventure.keypaths/adventure-matched-stylists stylists)
-
-    (seq query)
-    (assoc-in adventure.keypaths/adventure-stylist-match-location
-              {:latitude  (:latitude query)
-               :longitude (:longitude query)
-               :radius    (:radius query)})))
-
-
 (defmethod transition-state events/module-loaded [_ _ {:keys [module-name]} app-state]
   (when module-name
     (update app-state :modules (fnil conj #{}) module-name)))

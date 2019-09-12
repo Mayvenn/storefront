@@ -506,7 +506,6 @@
 (defpath navigate-adventure-matching-stylist-wait-pre-purchase)
 (defpath navigate-adventure-matching-stylist-wait-post-purchase)
 (defpath navigate-adventure-select-bundle-set)
-(defpath navigate-adventure-stylist-results)
 (defpath navigate-adventure-stylist-results-pre-purchase)
 (defpath navigate-adventure-stylist-results-post-purchase)
 (defpath navigate-adventure-stylist-gallery)
