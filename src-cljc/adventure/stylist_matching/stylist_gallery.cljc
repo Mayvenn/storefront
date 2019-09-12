@@ -24,7 +24,7 @@
 (defn query
   [data]
   (let [stylist-id (get-in data keypaths/stylist-profile-id)
-        stylist    (stylists/stylist-by-id data stylist-id)
+        stylist    (stylists/by-id data stylist-id)
         back       (first (get-in data storefront.keypaths/navigation-undo-stack))]
     (when stylist
       {:header-data {:subtitle     [:div.mt2.h4.medium

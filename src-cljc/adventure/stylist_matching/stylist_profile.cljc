@@ -77,7 +77,7 @@
 (defn query
   [data]
   (let [stylist-id      (get-in data keypaths/stylist-profile-id)
-        stylist         (stylists/stylist-by-id data stylist-id)
+        stylist         (stylists/by-id data stylist-id)
         stylist-name    (stylists/->display-name stylist)
         current-order   (api.orders/current data)
         shop?           (= "shop" (get-in data storefront.keypaths/store-slug))

@@ -1,10 +1,9 @@
 (ns stylist-directory.stylists
   (:require [stylist-directory.keypaths :as keypaths]))
 
-(defn stylist-by-id
+(defn by-id
   [app-state stylist-id]
-  (->> (conj keypaths/stylists stylist-id)
-       (get-in app-state)))
+  (get-in app-state (conj keypaths/stylists stylist-id)))
 
 (defn ->display-name
   [{:keys [store-nickname address] :as stylist}]

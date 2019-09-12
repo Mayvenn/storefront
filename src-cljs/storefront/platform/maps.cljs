@@ -13,7 +13,7 @@
 (defn map-query [data]
   (let [loaded-google-maps? (get-in data storefront.keypaths/loaded-google-maps)
         salon          (->> (get-in data adventure.keypaths/stylist-profile-id)
-                            (stylists/stylist-by-id data)
+                            (stylists/by-id data)
                             :salon)
         latitude       (:latitude salon)
         longitude      (:longitude salon)]
