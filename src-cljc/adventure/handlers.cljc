@@ -162,21 +162,14 @@
   #?(:cljs
      (messages/handle-message events/save-order {:order order})))
 
-(defmethod transitions/transition-state events/navigate-adventure-match-success-post-purchase
-  [_ _ _ {:keys [completed-order] :as app-state}]
-  #?(:cljs
-     (assoc-in app-state storefront.keypaths/pending-talkable-order (talkable/completed-order completed-order))))
-
 (defmethod effects/perform-effects events/navigate-adventure-match-success-post-purchase [_ _ _ _ app-state]
   #?(:cljs
      (let [completed-order      (get-in app-state storefront.keypaths/completed-order)
            freeinstall-applied? (orders/freeinstall-applied? completed-order)
            servicing-stylist-id (:servicing-stylist-id completed-order)]
        (if (and freeinstall-applied? servicing-stylist-id)
-         (do
-           (talkable/show-pending-offer app-state)
-           (api/fetch-matched-stylist (get-in app-state storefront.keypaths/api-cache)
-                                      servicing-stylist-id))
+         (api/fetch-matched-stylist (get-in app-state storefront.keypaths/api-cache)
+                                    servicing-stylist-id)
          (history/enqueue-navigate events/navigate-home)))))
 
 (defmethod transitions/transition-state events/api-success-fetch-matched-stylist
