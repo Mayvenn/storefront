@@ -47,7 +47,7 @@
                               (get-in app-state keypaths/user-id)
                               (get-in app-state keypaths/user-token)
                               (get-in app-state keypaths/store-stylist-id)
-                              (get-in app-state adv-keypaths/adventure-choices-selected-stylist-id)))
+                              (get-in app-state keypaths/order-servicing-stylist-id)))
 
 (defn carousel [imgs]
   (om/build carousel/component
