@@ -66,8 +66,7 @@
              :stylist-card.cta/id               (str "select-stylist-" store-slug)
              :stylist-card.cta/label            "Select"
              :stylist-card.cta/target           [cta-event
-                                                 {:stylist-id        stylist-id
-                                                  :servicing-stylist stylist
+                                                 {:servicing-stylist stylist
                                                   :card-index        idx}]
 
              :stylist-card.gallery/id           (str "stylist-card-gallery-" store-slug)}

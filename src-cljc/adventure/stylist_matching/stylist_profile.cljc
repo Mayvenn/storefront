@@ -104,8 +104,7 @@
                                         :clj  nil)
        :cta/id                       "select-stylist"
        :cta/target                   [events/control-adventure-select-stylist-pre-purchase
-                                      {:stylist-id        (:stylist-id stylist)
-                                       :servicing-stylist stylist
+                                      {:servicing-stylist stylist
                                        :card-index        0}]
        :cta/label                    (str "Select " stylist-name)
        :transposed-title/id          "stylist-name"

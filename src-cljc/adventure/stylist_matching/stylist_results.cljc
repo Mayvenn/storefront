@@ -37,7 +37,7 @@
            (messages/handle-message events/adventure-stylist-search-results-displayed))
          (history/enqueue-redirect events/navigate-adventure-find-your-stylist)))))
 
-
+;; DONOW: Should be oriented around stylist directory & completed order
 (defmethod effects/perform-effects events/navigate-adventure-stylist-results-post-purchase
   [_ _ args _ app-state]
   #?(:cljs
@@ -51,12 +51,12 @@
          (history/enqueue-redirect events/navigate-adventure-find-your-stylist)))))
 
 (defmethod effects/perform-effects events/control-adventure-select-stylist-pre-purchase
-  [_ _ {:keys [stylist-id card-index servicing-stylist]} _ app-state]
+  [_ _ {:keys [card-index servicing-stylist]} _ app-state]
   #?(:cljs
      (let [{:keys [number token]} (get-in app-state storefront.keypaths/order)]
        (cookie-jar/save-adventure (get-in app-state storefront.keypaths/cookie)
                                   (get-in app-state adventure.keypaths/adventure))
-       (api/assign-servicing-stylist stylist-id
+       (api/assign-servicing-stylist (:stylist-id servicing-stylist)
                                      (get-in app-state storefront.keypaths/store-stylist-id)
                                      number
                                      token
@@ -67,12 +67,12 @@
                                                                  :card-index        card-index}))))))
 
 (defmethod effects/perform-effects events/control-adventure-select-stylist-post-purchase
-  [_ _ {:keys [stylist-id card-index servicing-stylist]} _ app-state]
+  [_ _ {:keys [card-index servicing-stylist]} _ app-state]
   #?(:cljs
      (let [{:keys [number token]} (get-in app-state storefront.keypaths/completed-order)]
        (cookie-jar/save-adventure (get-in app-state storefront.keypaths/cookie)
                                   (get-in app-state adventure.keypaths/adventure))
-       (api/assign-servicing-stylist stylist-id
+       (api/assign-servicing-stylist (:stylist-id servicing-stylist)
                                      (get-in app-state storefront.keypaths/store-stylist-id)
                                      number
                                      token
