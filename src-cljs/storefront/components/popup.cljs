@@ -52,7 +52,14 @@
         classic-experience?         (not v2-experience?)
 
         dismissed-pick-a-stylist-email-capture? (get-in app-state keypaths/dismissed-pick-a-stylist-email-capture)
-        pick-a-stylist-page?                    (routes/sub-page? [navigation-event] [events/navigate-adventure])]
+        pick-a-stylist-page?                    (and (routes/sub-page? [navigation-event] [events/navigate-adventure])
+                                                     ;; Don't show on post purchase pages
+                                                     (not (contains?
+                                                           #{events/navigate-adventure-matching-stylist-wait-post-purchase
+                                                             events/navigate-adventure-stylist-results-post-purchase
+                                                             events/navigate-adventure-match-success-post-purchase
+                                                             events/control-adventure-select-stylist-post-purchase}
+                                                           navigation-event)))]
     (cond
       ;; never show popup for style guide
       (routes/sub-page? [navigation-event] [events/navigate-design-system])
