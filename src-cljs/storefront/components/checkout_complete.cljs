@@ -135,7 +135,7 @@
   [data]
   (let [{install-applied?  :mayvenn-install/applied?
          dtc?              :order/dtc?
-         servicing-stylist :mayvenn-install/stylist} (api.orders/completed-order data)
+         servicing-stylist :mayvenn-install/stylist} (api.orders/completed data)
         show-match-component?                        (and install-applied? dtc?)]
     {:guest?                (not (get-in data keypaths/user-id))
      :show-match-component? show-match-component?

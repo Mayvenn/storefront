@@ -71,7 +71,7 @@
       :order.items/quantity (+ #_ (when (:mayvenn-install/applied? mayvenn-install) 1)
                                (accessors/product-quantity waiter-order))})))
 
-(defn completed-order
+(defn completed
   [app-state]
   (->order app-state (get-in app-state storefront.keypaths/completed-order)))
 
