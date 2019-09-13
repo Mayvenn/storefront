@@ -24,12 +24,8 @@
     events/navigate-adventure-a-la-carte-product-list
     events/navigate-adventure-out-of-area
     events/navigate-adventure-stylist-results-pre-purchase
-    events/navigate-adventure-stylist-results-post-purchase
     events/navigate-adventure-matching-stylist-wait-pre-purchase
-    events/navigate-adventure-matching-stylist-wait-post-purchase
-    events/navigate-adventure-match-success-pre-purchase
-    events/navigate-adventure-match-success-post-purchase
-    events/navigate-adventure-checkout-wait})
+    events/navigate-adventure-match-success-pre-purchase})
 
 (defmethod transitions/transition-state events/control-adventure-choice
   [_ event {:keys [choice]} app-state]
