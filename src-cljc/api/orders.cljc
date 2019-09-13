@@ -40,21 +40,22 @@
                                          :service/diva-advertised-type)
         service-menu                (or (:servicing-menu servicing-stylist)
                                         default-service-menu)]
-    {:mayvenn-install/entered?           freeinstall-entered?
-     :mayvenn-install/locked?            (and freeinstall-entered?
-                                              (pos? items-remaining-for-install))
-     :mayvenn-install/applied?           (accessors/freeinstall-applied? order)
-     :mayvenn-install/quantity-required  install-items-required
-     :mayvenn-install/quantity-remaining (- install-items-required items-added-for-install)
-     :mayvenn-install/quantity-added     items-added-for-install
-     :mayvenn-install/stylist            servicing-stylist
-     :mayvenn-install/service-type       service-type
-     :mayvenn-install/service-discount   (some-> service-menu
-                                                 ;; If the menu does not provide the service matching the
-                                                 ;; cart contents, use the leave out price
-                                                 (get service-type (:advertised-sew-in-leave-out service-menu))
-                                                 spice/parse-double
-                                                 -)}))
+    (when freeinstall-entered?
+      {:mayvenn-install/entered?           freeinstall-entered?
+       :mayvenn-install/locked?            (and freeinstall-entered?
+                                                (pos? items-remaining-for-install))
+       :mayvenn-install/applied?           (accessors/freeinstall-applied? order)
+       :mayvenn-install/quantity-required  install-items-required
+       :mayvenn-install/quantity-remaining (- install-items-required items-added-for-install)
+       :mayvenn-install/quantity-added     items-added-for-install
+       :mayvenn-install/stylist            servicing-stylist
+       :mayvenn-install/service-type       service-type
+       :mayvenn-install/service-discount   (some-> service-menu
+                                                   ;; If the menu does not provide the service matching the
+                                                   ;; cart contents, use the leave out price
+                                                   (get service-type (:advertised-sew-in-leave-out service-menu))
+                                                   spice/parse-double
+                                                   -)})))
 
 (defn ->order
   [app-state order]
