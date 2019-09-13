@@ -762,15 +762,15 @@
   (cookie-jar/save-completed-order (get-in app-state keypaths/cookie)
                                    (get-in app-state keypaths/completed-order))
   (messages/handle-message events/clear-order)
-  (let [freeinstall-or-shop? (#{"freeinstall" "shop"} (get-in app-state keypaths/store-slug))]
-    (when (or (not freeinstall-or-shop?)
-              (:servicing-stylist-id order))
+  (let [{install-applied? :mayvenn-install/applied?
+         dtc?             :order/dtc?
+         stylist          :mayvenn-install/stylist} (api.orders/->order app-state order) ;GROT
+        servicing-stylist-id               (-> order :servicing-stylist-id)]
+    (when-not (and install-applied? servicing-stylist-id)
       (talkable/show-pending-offer app-state))
 
-    (when (and freeinstall-or-shop?
-               (:servicing-stylist-id order))
-      (api/fetch-matched-stylist (get-in app-state keypaths/api-cache)
-                                 (:servicing-stylist-id order)))))
+    (when (and install-applied? servicing-stylist-id)
+      (api/fetch-matched-stylist (get-in app-state keypaths/api-cache) servicing-stylist-id))))
 
 (defmethod effects/perform-effects events/api-success-update-order-update-cart-payments [_ event {:keys [order place-order?]} _ app-state]
   (when place-order?
