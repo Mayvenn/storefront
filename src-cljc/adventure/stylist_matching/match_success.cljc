@@ -23,10 +23,10 @@
 #?(:cljs
    (defmethod effects/perform-effects events/api-success-assign-servicing-stylist-pre-purchase [_ _ _ _ app-state]
      (let [consolidated-cart?                         (experiments/consolidated-cart? app-state)
-           cart-contains-a-freeinstall-eligible-item? (-> app-state
-                                                          api.orders/current
-                                                          :mayvenn-install/quantity-added
-                                                          (> 0))]
+           cart-contains-a-freeinstall-eligible-item? (some-> app-state
+                                                              api.orders/current
+                                                              :mayvenn-install/quantity-added
+                                                              (> 0))]
        (if (and cart-contains-a-freeinstall-eligible-item? consolidated-cart?)
          (history/enqueue-navigate events/navigate-cart)
          (history/enqueue-navigate events/navigate-adventure-match-success-pre-purchase)))))
