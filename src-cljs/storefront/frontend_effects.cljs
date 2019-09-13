@@ -1,5 +1,6 @@
 (ns storefront.frontend-effects
   (:require [ajax.core :as ajax]
+            api.orders
             [storefront.accessors.contentful :as contentful]
             [clojure.set :as set]
             [clojure.string :as string]
@@ -749,9 +750,11 @@
 (defmethod effects/perform-effects events/api-success-update-order-place-order [_ event {:keys [order]} _ app-state]
   ;; TODO: rather than branching behavior within a single event handler, consider
   ;;       firing seperate events (with and without matching stylists).
-  (if (#{"freeinstall" "shop"} (get-in app-state keypaths/store-slug))
-    (history/enqueue-navigate events/navigate-adventure-checkout-wait)
-    (history/enqueue-navigate events/navigate-order-complete order))
+  (let [{install-applied? :mayvenn-install/applied?
+         dtc?             :order/dtc?} (api.orders/->order app-state order)]
+    (if (and install-applied? dtc?)
+      (history/enqueue-navigate events/navigate-adventure-checkout-wait)
+      (history/enqueue-navigate events/navigate-order-complete order)))
   (messages/handle-message events/order-completed order)
   (messages/handle-message events/order-placed order))
 

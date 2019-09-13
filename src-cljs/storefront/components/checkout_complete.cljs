@@ -17,6 +17,7 @@
             [storefront.platform.messages :refer [handle-message]]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.stylists :as stylists]
+            [storefront.accessors.orders :as orders]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]
@@ -132,22 +133,24 @@
 
 (defn query
   [data]
-  (let [freeinstall-or-shop? (#{"freeinstall" "shop"} (get-in data keypaths/store-slug))
-        servicing-stylist    (get-in data adv-keypaths/adventure-servicing-stylist)]
-    {:guest?               (not (get-in data keypaths/user-id))
-     :freeinstall-or-shop? freeinstall-or-shop?
-     :need-match?          (and freeinstall-or-shop?
-                                (empty? servicing-stylist))
-     :matched-stylists     (get-in data adv-keypaths/adventure-matched-stylists)
-     :sign-up-data         (sign-up/query data)
-     :servicing-stylist    servicing-stylist
-     :phone-number         (-> data
-                               (get-in keypaths/completed-order)
-                               :shipping-address
-                               :phone)}))
+  (let [{install-applied?  :mayvenn-install/applied?
+         dtc?              :order/dtc?
+         servicing-stylist :mayvenn-install/stylist} (api.orders/completed-order data)
+        show-match-component?                        (and install-applied? dtc?)]
+    {:guest?                (not (get-in data keypaths/user-id))
+     :show-match-component? show-match-component?
+     :need-match?           (and show-match-component?
+                                 (empty? servicing-stylist))
+     :matched-stylists      (get-in data adv-keypaths/adventure-matched-stylists)
+     :sign-up-data          (sign-up/query data)
+     :servicing-stylist     servicing-stylist
+     :phone-number          (-> data
+                                (get-in keypaths/completed-order)
+                                :shipping-address
+                                :phone)}))
 
 (defn ^:export built-component [data opts]
-  (let [{:as queried-data :keys [freeinstall-or-shop?]} (query data)]
-    (if freeinstall-or-shop?
+  (let [{:as queried-data :keys [show-match-component?]} (query data)]
+    (if show-match-component?
       (component/build adventure-component queried-data opts)
       (component/build component queried-data opts))))
