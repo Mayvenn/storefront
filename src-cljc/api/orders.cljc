@@ -60,18 +60,25 @@
                                                  spice/parse-double
                                                  -)}))
 
-(defn current
-  [app-state]
-  (let [waiter-order      (get-in app-state storefront.keypaths/order)
+(defn ->order
+  [app-state order]
+  (let [waiter-order      order
         servicing-stylist (get-in app-state adventure.keypaths/adventure-servicing-stylist)
         sku-catalog       (get-in app-state storefront.keypaths/v2-skus)
         environment       (get-in app-state storefront.keypaths/environment)
-        mayvenn-install   (mayvenn-install waiter-order
-                                           servicing-stylist
-                                           sku-catalog
-                                           environment)]
+        store-slug        (get-in app-state storefront.keypaths/store-slug)
+        mayvenn-install   (mayvenn-install waiter-order servicing-stylist sku-catalog environment)]
     (merge
      mayvenn-install
      {:waiter/order         waiter-order
+      :order/dtc?           (contains? #{"shop" "freeinstall"} store-slug)
       :order.items/quantity (+ #_ (when (:mayvenn-install/applied? mayvenn-install) 1)
                                (accessors/product-quantity waiter-order))})))
+
+(defn completed-order
+  [app-state]
+  (->order app-state (get-in app-state storefront.keypaths/completed-order)))
+
+(defn current
+  [app-state]
+  (->order app-state (get-in app-state storefront.keypaths/order)))
