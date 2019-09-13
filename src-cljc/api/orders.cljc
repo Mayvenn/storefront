@@ -43,11 +43,7 @@
     {:mayvenn-install/entered?           freeinstall-entered?
      :mayvenn-install/locked?            (and freeinstall-entered?
                                               (pos? items-remaining-for-install))
-     :mayvenn-install/applied?           (and freeinstall-entered?
-                                              ;; TODO should we consider the following that checks line-items for promos
-                                              ;; (boolean (orders/applied-install-promotion order))
-                                              ;; (orders/freeinstall-applied? order)
-                                              (zero? items-remaining-for-install))
+     :mayvenn-install/applied?           (accessors/freeinstall-applied? order)
      :mayvenn-install/quantity-required  install-items-required
      :mayvenn-install/quantity-remaining (- install-items-required items-added-for-install)
      :mayvenn-install/quantity-added     items-added-for-install
