@@ -762,11 +762,11 @@
   (cookie-jar/save-completed-order (get-in app-state keypaths/cookie)
                                    (get-in app-state keypaths/completed-order))
   (messages/handle-message events/clear-order)
-  (let [{install-applied? :mayvenn-install/applied?
-         dtc?             :order/dtc?
-         stylist          :mayvenn-install/stylist} (api.orders/->order app-state order) ;GROT
-        servicing-stylist-id               (-> order :servicing-stylist-id)]
-    (when-not (and install-applied? servicing-stylist-id)
+
+  (let [{install-applied? :mayvenn-install/applied?} (api.orders/->order app-state order)
+        servicing-stylist-id                         (-> order :servicing-stylist-id)]
+    (when (or (not install-applied?)
+              servicing-stylist-id)
       (talkable/show-pending-offer app-state))
 
     (when (and install-applied? servicing-stylist-id)

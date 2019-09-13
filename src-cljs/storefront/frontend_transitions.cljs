@@ -485,16 +485,12 @@
         (assoc-in keypaths/cart-recently-added-skus (orders/newly-added-sku-ids previous-order order)))))
 
 (defmethod transition-state events/order-completed [_ event order app-state]
-  (cond-> (-> app-state
-              (assoc-in keypaths/sign-up-email (get-in app-state keypaths/checkout-guest-email))
-              (assoc-in keypaths/checkout state/initial-checkout-state)
-              (assoc-in keypaths/cart state/initial-cart-state)
-              (assoc-in keypaths/completed-order order))
-
-    ;; No talkable if post purchase matching required
-    (not (and (orders/freeinstall-applied? order)
-              (nil? (:servicing-stylist-id order))))
-    (assoc-in keypaths/pending-talkable-order (talkable/completed-order order))))
+  (-> app-state
+      (assoc-in keypaths/sign-up-email (get-in app-state keypaths/checkout-guest-email))
+      (assoc-in keypaths/checkout state/initial-checkout-state)
+      (assoc-in keypaths/cart state/initial-cart-state)
+      (assoc-in keypaths/completed-order order)
+      (assoc-in keypaths/pending-talkable-order (talkable/completed-order order))))
 
 (defmethod transition-state events/api-success-promotions [_ event {promotions :promotions} app-state]
   (update-in app-state keypaths/promotions #(-> (concat % promotions) set vec)))
