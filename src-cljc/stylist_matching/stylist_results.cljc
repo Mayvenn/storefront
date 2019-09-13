@@ -26,8 +26,6 @@
    :header.title/primary          "Meet Your Certified Stylist"
    :header.back-navigation/id     "adventure-back"
    :header.back-navigation/back   back
-   ;; TODO / NOTE(justin, andres): This page should not load directly. You should be redirected back to
-   ;; find your stylist or the complete-need-match page
    :header.back-navigation/target [events/navigate-home]})
 
 (defn stylist-card-query
