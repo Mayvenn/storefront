@@ -371,6 +371,7 @@
                    :cart-item-thumbnail/locked?               true
                    :cart-item-steps-to-complete/action-target add-items-action
                    :cart-item-steps-to-complete/action-label  "add items"
+                   :cart-item-steps-to-complete/id            "add-items"
                    :cart-item-steps-to-complete/steps         (->> quantity-required
                                                                    range
                                                                    (map inc))

@@ -55,7 +55,7 @@
 
 (defn cart-item-steps-to-complete-molecule
   [{:cart-item-steps-to-complete/keys
-    [steps current-step action-label action-target]}]
+    [steps current-step action-label action-target id]}]
   (when (and steps current-step)
     (let [[completed uncompleted] (split-at current-step steps)]
       [:div
@@ -72,7 +72,8 @@
           [:div.ml3
            (ui/teal-button (assoc (apply utils/route-to action-target)
                                   :height-class :small
-                                  :width-class :small)
+                                  :width-class :small
+                                  :data-test id)
                            action-label)])]])))
 
 (defn cart-item-square-thumbnail-molecule
