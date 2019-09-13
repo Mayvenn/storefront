@@ -84,6 +84,7 @@
 (defmethod effects/perform-effects events/api-success-fetch-stylists-within-radius-post-purchase [_ event _ _ app-state]
   #?(:cljs
      (let [completed-order (get-in app-state keypaths/completed-order)]
-       (when (not= events/navigate-adventure-match-success-post-purchase
-                   (get-in app-state keypaths/navigation-event))
+       (when-not (contains? #{events/navigate-adventure-match-success-post-purchase
+                              events/navigate-adventure-stylist-results-post-purchase}
+                            (get-in app-state keypaths/navigation-event))
          (history/enqueue-redirect events/navigate-need-match-order-complete completed-order)))))
