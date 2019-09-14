@@ -20,6 +20,7 @@
             adventure.informational.certified-stylists
             adventure.informational.how-it-works
             adventure.stylist-matching.matching-stylist-wait
+            ;; TODO GROT should be included in new designs
             adventure.stylist-matching.stylist-results
             adventure.stylist-matching.match-success-post-purchase
             adventure.stylist-matching.let-mayvenn-match
@@ -35,6 +36,7 @@
             [storefront.components.ui :as ui]
             [mayvenn-made.home :as mayvenn-made.home]
             [checkout.cart :as cart]
+            ;; TODO GROT was specifically for unconsolidated freeinstall domain
             [adventure.checkout.cart :as adventure-cart]
             [storefront.accessors.experiments :as experiments]
             [storefront.components.content :as content]
@@ -49,14 +51,12 @@
             [storefront.components.sign-in :as sign-in]
             [storefront.components.sign-up :as sign-up]
             [storefront.components.slideout-nav :as slideout-nav]
-            [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
             [checkout.consolidated-cart :as consolidated-cart]))
 
-(defn main-component [nav-event {:keys [consolidated-cart?
-                                        stylist-results-updated?]}]
+(defn main-component [nav-event _]
   (doto (condp = nav-event
           #?@(:cljs
               [events/navigate-reset-password                             reset-password/built-component
@@ -153,7 +153,8 @@
   (when-not (= events/navigate-category (get-in data keypaths/navigation-event))
     (component/build promo-banner/sticky-organism (promo-banner/query data) nil)))
 
-(defn main-layout [data nav-event]
+(defn main-layout
+  [data nav-event]
   (component/html
    (let [silver-background? (#{events/navigate-voucher-redeem events/navigate-voucher-redeemed} nav-event)
          v2-home?           (and (experiments/v2-homepage? data)
@@ -186,31 +187,37 @@
 
        [:footer (footer/built-component data nil)]]])))
 
-(defn adventure-checkout-layout [data nav-event]
-  [:div.flex.flex-column {:style {:min-height    "100vh"
-                                  :margin-bottom "-60px"}}
-   [:div
-    (promo-banner/built-static-organism data nil)
-    (sticky-promo-bar data)]
+(defn classic-site
+  [data owner opts]
+  (let [nav-event (get-in data keypaths/navigation-event)]
+    (component/create
+     (cond
+       (get-in data keypaths/menu-expanded) ; Slideout nav
+       (slideout-nav/built-component data nil)
 
-   [:div {:key "popup"}
-    #?(:cljs (popup/built-component data nil))]
+       (routes/sub-page? [nav-event] [events/navigate-cart]) ; Cart pages
+       (cart/layout data nav-event)
 
-   (header/adventure-built-component data nil)
-   [:div.relative.flex.flex-column.flex-auto
-    (flash/built-component data nil)
+       :else
+       (main-layout data nav-event)))))
 
-    [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
-     ((main-component nav-event {}) data nil)]
-    [:footer
-     (footer/built-component data nil)]]])
+(defn aladdin-site
+  [data owner opts]
+  (let [nav-event (get-in data keypaths/navigation-event)]
+    (component/create
+     (cond
+       (get-in data keypaths/menu-expanded) ; Slideout nav
+       (slideout-nav/built-component data nil)
 
-(defn top-level-component [data owner opts]
-  (let [nav-event                (get-in data keypaths/navigation-event)
-        freeinstall?             (= "freeinstall" (get-in data keypaths/store-slug))
-        shop?                    (= "shop" (get-in data keypaths/store-slug))
-        consolidated-cart?       (and shop? (experiments/consolidated-cart? data))
-        stylist-results-updated? (experiments/stylist-results-updated? data)]
+       (routes/sub-page? [nav-event] [events/navigate-cart]) ; Cart pages
+       (cart/layout data nav-event)
+
+       :else
+       (main-layout data nav-event)))))
+
+(defn shop-site
+  [data owner opts]
+  (let [nav-event (get-in data keypaths/navigation-event)]
     (component/create
      (cond ; Design System
        (routes/sub-page? [nav-event] [events/navigate-design-system])
@@ -226,21 +233,10 @@
        (slideout-nav/built-component data nil)
 
        (routes/sub-page? [nav-event] [events/navigate-cart]) ; Cart pages
-       (cond
-         consolidated-cart? (consolidated-cart/layout data nav-event)
-         freeinstall?       (adventure-cart/layout data nav-event)
-         :else              (cart/layout data nav-event))
+       (consolidated-cart/layout data nav-event)
 
-       (and freeinstall? ; Freeinstall checkout
-            (or (routes/sub-page? [nav-event] [events/navigate-checkout])
-                (routes/sub-page? [nav-event] [events/navigate-order-complete])
-                (routes/sub-page? [nav-event] [events/navigate-need-match-order-complete])
-                (routes/sub-page? [nav-event] [events/navigate-adventure-let-mayvenn-match])))
-       (adventure-checkout-layout data nav-event)
-
-       (or (routes/sub-page? [nav-event] [events/navigate-adventure]) ; Constrained adventure/stylist matching flow
-           (and freeinstall? ; Free Install + Static content pages
-                (routes/sub-page? [nav-event] [events/navigate-content])))
+       ;; TODO this should be moved into the UI domain of stylist-matching
+       (routes/sub-page? [nav-event] [events/navigate-adventure])
        [:div {:data-test (keypaths/->component-str nav-event)}
         [:div {:key "popup"}
          #?(:cljs (popup/built-component data nil))]
@@ -250,8 +246,19 @@
                    :margin-bottom "-30px"}}
           (when-not (= nav-event events/navigate-adventure-home)
             {:class "max-580 mx-auto relative"}))
-         ((main-component nav-event {:consolidated-cart?       consolidated-cart?
-                                     :stylist-results-updated? stylist-results-updated?}) data nil)]]
+         ((main-component nav-event {}) data nil)]]
 
        :else
-       (main-layout data nav-event)))))
+       (main-layout data nav-event)))) )
+
+(defn top-level-component
+  [data owner opts]
+  (cond
+    (= "shop" (get-in data keypaths/store-slug))
+    (shop-site data owner opts)
+
+    (= "aladdin" (get-in data keypaths/store-experience))
+    (aladdin-site data owner opts)
+
+    :else
+    (classic-site data owner opts)))
