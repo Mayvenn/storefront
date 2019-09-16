@@ -812,6 +812,8 @@
    (-> (routes (GET "/healthcheck" [] "cool beans")
                (GET "/robots.txt" req (-> (robots req) util.response/response (util.response/content-type "text/plain")))
                (GET "/sitemap.xml" req (sitemap ctx req))
+               (GET "/blog" req (util.response/redirect (store-url "shop" environment (assoc req :uri "/blog/"))))
+               (GET "/blog/" req (util.response/redirect (store-url "shop" environment req)))
                (GET "/stylist/edit" [] (util.response/redirect "/stylist/account/profile" :moved-permanently))
                (GET "/stylist/account" [] (util.response/redirect "/stylist/account/profile" :moved-permanently))
                (GET "/stylist/commissions" [] (util.response/redirect "/stylist/earnings" :moved-permanently))
