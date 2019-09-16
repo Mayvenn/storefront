@@ -97,3 +97,7 @@
 (defn stylist-results-updated?
   [data]
   (display-feature? data "stylist-results-updated"))
+
+(defn blog?
+  [data]
+  (display-feature? data "blog"))

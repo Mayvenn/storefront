@@ -17,6 +17,9 @@
 
 (def blog-url "https://blog.mayvenn.com")
 
+;; TODO: Make this the main blog-url when blog experiment is 100%
+(def new-blog-url "https://shop.mayvenn.com/blog/")
+
 (defn burger-header [cart]
   (component/html
    [:div.bg-white.flex.items-center.border-bottom.border-gray
@@ -197,16 +200,20 @@
    :data-test "menu-stylist-products"
    :content [[:span.medium.flex-auto "Stylist Exclusives"]]})
 
-(def content-rows
+(defn content-rows [{:keys [blog?]}]
   [{:link-attrs (utils/route-to events/navigate-content-guarantee)
     :data-test  "content-guarantee"
     :content    ["Our Guarantee"]}
    {:link-attrs (utils/route-to events/navigate-content-our-hair)
     :data-test  "content-our-hair"
     :content    ["Our Hair"]}
-   {:link-attrs {:href blog-url}
-    :data-test  "content-blog"
-    :content    ["Real Beautiful blog"]}
+   (if blog?
+     {:link-attrs {:href new-blog-url}
+      :data-test  "content-blog"
+      :content    ["Blog"]}
+     {:link-attrs {:href blog-url}
+      :data-test  "content-blog"
+      :content    ["Real Beautiful blog"]})
    {:link-attrs (utils/route-to events/navigate-content-about-us)
     :data-test  "content-about-us"
     :content    ["About Us"]}
@@ -223,7 +230,7 @@
      (menu-row row))
    (when (-> signed-in ::auth/as (= :stylist))
      (menu-row stylist-exclusive-row))
-   (for [row content-rows]
+   (for [row (content-rows data)]
      (menu-row row))])
 
 (def ^:private sign-out-area
@@ -281,7 +288,8 @@
                                             (stylists/own-store? data))
      :show-bundle-sets-and-hide-deals? (or aladdin? shop?)
      :vouchers?                        (experiments/dashboard-with-vouchers? data)
-     :show-freeinstall-link?           shop?}))
+     :show-freeinstall-link?           shop?
+     :blog?                            (experiments/blog? data)}))
 
 (defn query [data]
   (-> (basic-query data)

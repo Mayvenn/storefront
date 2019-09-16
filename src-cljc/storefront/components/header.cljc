@@ -146,7 +146,7 @@
     text]))
 
 (defn menu
-  [{:keys [show-freeinstall-link? show-bundle-sets-and-hide-deals?]}]
+  [{:keys [show-freeinstall-link? show-bundle-sets-and-hide-deals? blog?]}]
   (component/html
    [:div.center
     (when show-freeinstall-link?
@@ -178,9 +178,13 @@
     (header-menu-link (assoc (utils/route-to events/navigate-content-our-hair)
                              :on-mouse-enter close-header-menus)
                       "Our hair")
-    (header-menu-link {:href           slideout-nav/blog-url
-                       :on-mouse-enter close-header-menus}
-                      "Real Beautiful")]))
+    (if blog?
+      (header-menu-link {:href           slideout-nav/new-blog-url
+                         :on-mouse-enter close-header-menus}
+                        "Blog")
+      (header-menu-link {:href           slideout-nav/blog-url
+                         :on-mouse-enter close-header-menus}
+                        "Real Beautiful"))]))
 
 (defn flyout-column [options col-count]
   {:pre [(zero? (mod 12 col-count))]}
