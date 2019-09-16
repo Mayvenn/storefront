@@ -56,7 +56,7 @@
             [storefront.routes :as routes]
             [checkout.consolidated-cart :as consolidated-cart]))
 
-(defn main-component [nav-event _]
+(defn main-component [nav-event]
   (doto (condp = nav-event
           #?@(:cljs
               [events/navigate-reset-password                             reset-password/built-component
@@ -183,7 +183,7 @@
                                   ;; Hack: See above hack
                                   (when silver-background?
                                     {:class "bg-light-silver"}))
-        ((main-component nav-event {}) data nil)]
+        ((main-component nav-event) data nil)]
 
        [:footer (footer/built-component data nil)]]])))
 
@@ -246,7 +246,7 @@
                    :margin-bottom "-30px"}}
           (when-not (= nav-event events/navigate-adventure-home)
             {:class "max-580 mx-auto relative"}))
-         ((main-component nav-event {}) data nil)]]
+         ((main-component nav-event) data nil)]]
 
        :else
        (main-layout data nav-event)))) )
