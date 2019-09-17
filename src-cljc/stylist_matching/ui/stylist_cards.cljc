@@ -207,9 +207,9 @@
   (when id
     [:div.col-12.flex.items-start.p2
      (assoc (apply utils/route-to target) :data-test id)
-     [:div.flex.justify-center.items-center.col-3
+     [:div.flex.justify-center.items-center
       (control-stylist-card-thumbnail-molecule data)]
-     [:div.col-9.medium.px2
+     [:div.medium.px2
       (control-stylist-card-title-molecule data)
       [:span.h7.flex.items-center.pyp2
        (stylist-card-stars-rating-molecule data)]
