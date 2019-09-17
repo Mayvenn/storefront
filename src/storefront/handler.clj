@@ -790,21 +790,24 @@
 (defn wrap-redirect-legacy-routes
   [h {:keys [environment]}]
   (fn [{:keys [subdomains] :as req}]
-    (if (= "freeinstall" (first subdomains))
-      (let [redirects {"/adv/match-stylist"         "/adv/match-stylist"
-                       "/adv/find-your-stylist"     "/adv/find-your-stylist"
-                       "/adv/stylist-results"       "/adv/stylist-results"
-                       "/adv/shop-hair"             "/categories/23-mayvenn-install"
-                       "/adv/how-shop-hair"         "/categories/23-mayvenn-install"
-                       "/adv/shop-a-la-carte/foo"   "/categories/23-mayvenn-install"
-                       "/adv/shop/bundle-sets-foo"  "/shop/all-bundle-sets"
-                       "/adv/shop/shop-by-look/foo" "/shop/look"
-                       "/cart"                      "/cart"}]
+    (letfn [(freeinstall-redirects [uri]
+              (condp (fn [substr s] (string/starts-with? s substr)) (str uri)
+                "/adv/match-stylist"     "/adv/match-stylist"
+                "/adv/find-your-stylist" "/adv/find-your-stylist"
+                "/adv/stylist-results"   "/adv/stylist-results"
+                "/adv/shop-hair"         "/categories/23-mayvenn-install"
+                "/adv/how-shop-hair"     "/categories/23-mayvenn-install"
+                "/adv/shop-a-la-carte"   "/categories/23-mayvenn-install"
+                "/adv/shop/bundle-sets"  "/shop/all-bundle-sets"
+                "/adv/shop/shop-by-look" "/shop/look"
+                "/cart"                  "/cart"
+                "/"))]
+      (if (= "freeinstall" (first subdomains))
         (util.response/redirect (store-url "shop"
                                            environment
-                                           (update req
-                                                   :uri redirects "/"))))
-      (h req))))
+                                           (update req :uri freeinstall-redirects))
+                                :moved-permanently)
+        (h req)))))
 
 (defn create-handler
   ([] (create-handler {}))
