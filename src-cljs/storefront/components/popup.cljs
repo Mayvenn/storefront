@@ -39,56 +39,63 @@
                    (query-with-popup-type data)
                    {:opts {:close-attrs (utils/fake-href events/control-popup-hide)}}))
 
+(defn determine-site
+  [app-state]
+  (cond
+    (= "classic" (get-in app-state keypaths/store-experience)) :classic
+    (= "aladdin" (get-in app-state keypaths/store-experience)) :aladdin
+    (= "shop" (get-in app-state keypaths/store-slug))          :shop))
+
 (defmethod effects/perform-effects events/determine-and-show-popup
   [_ _ args _ app-state]
-  (let [navigation-event        (get-in app-state keypaths/navigation-event)
-        v2-experience?          (experiments/aladdin-experience? app-state)
-        on-minimal-footer-page? (nav/show-minimal-footer? navigation-event)
-        freeinstall-store?      (= "freeinstall" (get-in app-state keypaths/store-slug))
-        shop?                   (= "shop" (get-in app-state keypaths/store-slug))
-        email-capture-state     (email-capture-session app-state)
-        seen-freeinstall-offer? (get-in app-state keypaths/dismissed-free-install)
-        signed-in?              (get-in app-state keypaths/user-id)
-        classic-experience?     (not v2-experience?)
-
-        dismissed-pick-a-stylist-email-capture? (get-in app-state keypaths/dismissed-pick-a-stylist-email-capture)
-        pick-a-stylist-page?                    (and (routes/sub-page? [navigation-event] [events/navigate-adventure])
-                                                     ;; Don't show on post purchase pages
-                                                     (not (contains?
-                                                           #{events/navigate-adventure-matching-stylist-wait-post-purchase
-                                                             events/navigate-adventure-stylist-results-post-purchase
-                                                             events/navigate-adventure-match-success-post-purchase
-                                                             events/control-adventure-select-stylist-post-purchase
-                                                             events/navigate-adventure-checkout-wait}
-                                                           navigation-event)))]
-    (cond
-      ;; never show popup for style guide
-      (routes/sub-page? [navigation-event] [events/navigate-design-system])
-      nil
-
+  (let [navigation-event    (get-in app-state keypaths/navigation-event)
+        signed-in?          (get-in app-state keypaths/user-id)
+        generally-showable? (not (or signed-in?
+                                     (nav/show-minimal-footer? navigation-event)
+                                     (routes/sub-page? [navigation-event]
+                                                       [events/navigate-design-system])))
+        email-capture-state (email-capture-session app-state)]
+    (when signed-in?
       ;; TODO: This probably belongs in navigate or auth success?
-      signed-in?
-      (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) "signed-in")
+      (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) "signed-in"))
 
-      ;; pick-a-stylist
-      (and (not signed-in?)
-           (not dismissed-pick-a-stylist-email-capture?)
-           (not= "opted-in" email-capture-state)
-           (not on-minimal-footer-page?)
-           shop?
-           pick-a-stylist-page?)
-      (messages/handle-message events/popup-show-pick-a-stylist-email-capture)
+    ;; Resist the urge to merge, it is better to explicitly enumerate the sites
+    (case (determine-site app-state)
+      :classic
+      (when (and generally-showable? (nil? email-capture-state))
+        (messages/handle-message events/popup-show-email-capture))
 
-      ;; Standard
-      (and (not signed-in?)
-           (not dismissed-pick-a-stylist-email-capture?)
-           (nil? email-capture-state)
-           (not on-minimal-footer-page?)
-           (not freeinstall-store?)
-           (or seen-freeinstall-offer?
-               classic-experience?
-               v2-experience?))
-      (messages/handle-message events/popup-show-email-capture))))
+      :aladdin
+      (when (and generally-showable? (nil? email-capture-state))
+        (messages/handle-message events/popup-show-email-capture))
+
+      :shop
+      (let [dismissed-pick-a-stylist-email-capture?
+            (get-in app-state keypaths/dismissed-pick-a-stylist-email-capture)
+
+            pick-a-stylist-page?
+            (and (routes/sub-page? [navigation-event] [events/navigate-adventure])
+                 ;; Don't show on post purchase pages
+                 (not (contains?
+                       #{events/navigate-adventure-matching-stylist-wait-post-purchase
+                         events/navigate-adventure-stylist-results-post-purchase
+                         events/navigate-adventure-match-success-post-purchase
+                         events/control-adventure-select-stylist-post-purchase
+                         events/navigate-adventure-checkout-wait}
+                       navigation-event)))]
+
+        ;; Caveat, show pick-a-stylist capture after regular capture
+        ;; however, never show regular capture after pick-a-stylist capture (i.e. direct load)
+        (when (and generally-showable? (not dismissed-pick-a-stylist-email-capture?))
+          (cond
+            ;; pick-a-stylist
+            (and pick-a-stylist-page?
+                 (not= "opted-in" email-capture-state))
+            (messages/handle-message events/popup-show-pick-a-stylist-email-capture)
+
+            ;; Standard
+            (nil? email-capture-state)
+            (messages/handle-message events/popup-show-email-capture)))))))
 
 (defmethod effects/perform-effects events/control-popup-hide
   [_ _ _ _ _]
