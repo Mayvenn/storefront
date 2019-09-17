@@ -1,10 +1,15 @@
 (ns storefront.platform.carousel
   (:require [sablono.core :refer [html]]
+            [storefront.component :as component :refer [defdynamic-component]]
             react-slick
             [om.core :as om]))
 
 (def custom-dots (constantly (html [:a [:div.circle]])))
 
+(defdynamic-component inner-component [{:keys [now slides settings]} owner _]
+  [:div "TODO"])
+
+#_
 (defn inner-component [{:keys [now slides settings]} owner _]
   (om/component
    (if-not (seq slides)
@@ -32,6 +37,32 @@
 (defn override-autoplay [original autoplay-override]
   (update original :autoplay #(and % autoplay-override)))
 
+(defdynamic-component component [{:keys [slides] :as data} owner _]
+  (constructor [_ props]
+               {:autoplay true})
+  (render [_ {:keys [autoplay]}]
+          (html
+           [:div.stacking-context
+            ;; Cancel autoplay on interaction
+            {:on-mouse-down  #(cancel-autoplay owner)
+             :on-touch-start #(cancel-autoplay owner)}
+            (component/build inner-component
+                             (cond-> data
+                               (= (count slides) 1)
+                               (update-in [:settings] merge {:arrows false
+                                                             :dots   false
+                                                             :swipe  false})
+                               :always
+                               (update-in [:settings] override-autoplay autoplay)
+                               :always
+                               (update-in [:settings :responsive]
+                                          (fn [responsive]
+                                            (map
+                                             (fn [breakpoint]
+                                               (update breakpoint :settings override-autoplay autoplay))
+                                             responsive)))))])))
+
+#_
 (defn component [{:keys [slides] :as data} owner _]
   (reify
     om/IInitState

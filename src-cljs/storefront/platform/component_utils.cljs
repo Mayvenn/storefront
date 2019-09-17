@@ -7,7 +7,43 @@
             [storefront.routes :as routes]
             [storefront.utils.query :as query]
             [storefront.browser.scroll :as scroll]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [goog.object :as gobj]
+            ["react" :as react]))
+
+(defn create-class [super-class init-fn static-properties method-names]
+  (let [ctor (fn ^void constructor [props]
+               (this-as this
+                 ;; auto-bind methods
+                 (doseq [[method f] method-names
+                         :when f]
+                   (gobj/set this (munge method) (partial (.bind f this) this)))
+
+                 ;; move props.options -> this.options instead of props
+                 (gobj/set this "options" (gobj/get this "options"))
+                 (gobj/remove this "options")
+
+                 ;; call super()
+                 (.call super-class this props)
+
+                 (when init-fn
+                   (set! (.-state this) #js {:state ((.bind init-fn this) this props)}))
+                 this))]
+    ;; set static properties on prototype
+    (goog/inherits ctor super-class)
+    (doseq [[k v] static-properties]
+      (gobj/set ctor k v))
+    ctor))
+
+(defn create-component [init-fn static-properties method-names]
+  (create-class react/Component init-fn static-properties method-names))
+
+(defn create-pure-component [init-fn static-properties method-names]
+  (create-class react/PureComponent init-fn static-properties method-names))
+
+(def create-context
+  "Just react/createContext"
+  react/createContext)
 
 (defn position [pred coll]
   (first (keep-indexed #(when (pred %2) %1)
@@ -134,3 +170,4 @@
       (do
         (set! (.-selectionStart el) 0)
         (set! (.-selectionEnd el) length)))))
+

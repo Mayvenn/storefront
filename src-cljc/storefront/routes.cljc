@@ -133,7 +133,7 @@
               ["/orders/" :number "/complete-need-match"] (edn->bidi events/navigate-need-match-order-complete)})])
 
 ;; TODO(jeff,corey): history/path-for should support domains like navigation-message-for
-(defn path-for [navigation-event & [args]]
+(defn path-for* [navigation-event & [args]]
   (let [query-params (:query-params args)
         args         (dissoc args :query-params)
         path         (apply bidi/path-for
@@ -142,6 +142,8 @@
                             (apply concat (seq args)))]
     (when path
       (uri/set-query-string path query-params))))
+
+(def path-for (memoize path-for*))
 
 (defn current-path [app-state]
   (apply path-for (get-in app-state keypaths/navigation-message)))

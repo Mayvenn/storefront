@@ -2,7 +2,7 @@
   (:require [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.nav :as nav]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.footer-links :as footer-links]
             [storefront.components.footer-minimal :as footer-minimal]
             [storefront.components.svg :as svg]
@@ -129,14 +129,15 @@
                     (sort-by :footer/order))})
 
 (defn dtc-link [{:keys [title new-category? nav-message slug]}]
-  [:a.block.py1.dark-gray.light.titleize
-   (merge {:key (str "footer-link-" slug)}
-          (apply utils/route-to nav-message))
-   (when new-category?
-     [:span.teal "NEW "])
-   title])
+  (component/html
+   [:a.block.py1.dark-gray.light.titleize
+    (merge {:key (str "footer-link-" slug)}
+           (apply utils/route-to nav-message))
+    (when new-category?
+      [:span.teal "NEW "])
+    (str title)]))
 
-(defn dtc-shop-section [{:keys [categories]} partition-count]
+(defn dtc-shop-section [categories partition-count]
   (component/html
    (let [links                          (mapv category->link categories)
          [column-1-links rest-of-links] (split-at partition-count links)]
@@ -156,30 +157,30 @@
           (for [link link-column]
             (dtc-link link))])]])))
 
-(defn dtc-full-component
-  [{:keys [contacts] :as data} owner opts]
-  (component/create
-   [:div.h5.border-top.border-gray.bg-light-gray
-    [:div.container
-     [:div.col-12.clearfix
-      [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
-       ^:inline (dtc-shop-section data 5)]
-      [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
-       ^:inline (contacts-section contacts)]
-      [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
-       ^:inline (social-section)]]]
+(defcomponent dtc-full-component
+  [{:keys [contacts categories]} owner opts]
+  [:div.h5.border-top.border-gray.bg-light-gray
+   [:div.container
+    [:div.col-12.clearfix
+     [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
+      ^:inline (dtc-shop-section categories 5)]
+     [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
+      ^:inline (contacts-section contacts)]
+     [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
+      ^:inline (social-section)]]]
 
-    [:div.mt3.bg-dark-gray.white.py1.px3.clearfix.h8
-     [:div
-      {:style {:margin-bottom "90px"}}
-      (component/build footer-links/component {:minimal? false} nil)]]]))
+   [:div.mt3.bg-dark-gray.white.py1.px3.clearfix.h8
+    [:div
+     {:style {:margin-bottom "90px"}}
+     (component/build footer-links/component {:minimal? false} nil)]]])
 
 (defn dtc-query
   [data]
   {:contacts   (contacts-query data)
    :categories (->> (get-in data keypaths/categories)
-                    (filter :dtc-footer/order)
-                    (filter (partial auth/permitted-category? data))
+                    (into []
+                          (comp (filter :dtc-footer/order)
+                                (filter (partial auth/permitted-category? data))))
                     (sort-by :dtc-footer/order))})
 
 (defn built-component
@@ -193,7 +194,7 @@
       [:div {:style {:height "85px"}}]
 
       (= (get-in data keypaths/store-slug) "shop")
-      (component/build dtc-full-component (dtc-query data) nil)
+      (component/build dtc-full-component (dtc-query data) {:key "dtc-full-footer"})
 
       :else
       (component/build full-component (query data) nil))))

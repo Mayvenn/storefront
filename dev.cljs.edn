@@ -16,6 +16,7 @@
                     :checkout      {:output-to  "resources/public/js/out/checkout.js"
                                     :entries    #{checkout.core}
                                     :depends-on #{:catalog}}}
+ :optimizations    :none ;; see https://github.com/bhauman/lein-figwheel/issues/592
  :pretty-print     true
  :infer-externs    false
  :static-fns       true

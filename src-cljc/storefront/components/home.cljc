@@ -3,7 +3,7 @@
             [storefront.accessors.auth :as auth]
             [storefront.accessors.experiments :as experiments]
             [storefront.assets :as assets]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.marquee :as marquee]
             [storefront.components.v2-home :as v2-home]
             [storefront.components.ui :as ui]
@@ -327,27 +327,26 @@
                        :src-set (str mobile-url "-/format/auto/-/resize/1500x/-/quality/lightest/" file-name " 2x")
                        :alt     alt}]])
 
-(defn component
+(defcomponent component
   [{:component/keys [hero-cms-data features]
     :keys           [signed-in store categories] :as data} _ _]
-  (component/create
-   [:div.m-auto
-    (when hero-cms-data
-      [:section (hero hero-cms-data)])
-    [:section.hide-on-tb-dt (store-info signed-in store)]
-    (feature-blocks features)
-    [:section (popular-grid categories)]
-    [:section ^:inline (video-autoplay)]
-    [:section ^:inline (about-mayvenn)]
-    [:section (component/build ui.M/hero
-                               {:mob-uuid  "762369fb-6680-4e0a-bf99-4e6317f03f1d"
-                                :dsk-uuid  "b11d90d3-ed57-4c18-a61b-d91b68e1cccb"
-                                :file-name "talkable_banner_25.jpg"
-                                :alt       "refer friends, earn rewards, get 25% off"
-                                :opts      (utils/route-to events/navigate-friend-referrals
-                                                           {:query-params {:campaign_tags  "25-off"
-                                                                           :traffic_source "homepageBanner"}})}
-                               nil)]]))
+  [:div.m-auto
+   (when hero-cms-data
+     [:section (hero hero-cms-data)])
+   [:section.hide-on-tb-dt (store-info signed-in store)]
+   (feature-blocks features)
+   [:section (popular-grid categories)]
+   [:section ^:inline (video-autoplay)]
+   [:section ^:inline (about-mayvenn)]
+   [:section (component/build ui.M/hero
+                              {:mob-uuid  "762369fb-6680-4e0a-bf99-4e6317f03f1d"
+                               :dsk-uuid  "b11d90d3-ed57-4c18-a61b-d91b68e1cccb"
+                               :file-name "talkable_banner_25.jpg"
+                               :alt       "refer friends, earn rewards, get 25% off"
+                               :opts      (utils/route-to events/navigate-friend-referrals
+                                                          {:query-params {:campaign_tags  "25-off"
+                                                                          :traffic_source "homepageBanner"}})}
+                              nil)]])
 
 (defn query
   [data]

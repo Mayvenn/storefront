@@ -4,6 +4,7 @@
             [storefront.state :as state]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
+            [storefront.component :as component]
             [storefront.components.top-level :refer [top-level-component]]
             [storefront.history :as history]
             [storefront.hooks.exception-handler :as exception-handler]
@@ -15,6 +16,9 @@
             [storefront.trackings :refer [perform-track]]
             [storefront.frontend-trackings]
             [clojure.string :as string]
+            [goog.object :as gobj]
+            ["react" :as react]
+            ["react-dom" :as react-dom]
             [om.core :as om]
             [clojure.data :refer [diff]]
             [cognitect.transit :as transit]))
@@ -79,7 +83,8 @@
    (let [message [event args]]
      (try
        (let [app-state-before @app-state]
-         (om/transact! (om/root-cursor app-state) #(msg-transition % message))
+         (swap! app-state #(msg-transition % message))
+         #_(om/transact! (om/root-cursor app-state) #(msg-transition % message))
          (effects app-state-before @app-state message))
        (track @app-state message)
        (catch :default e
@@ -93,7 +98,10 @@
                                         :current-user-id            (get-in state keypaths/user-id)
                                         :current-store-id           (get-in state keypaths/store-stylist-id)})))))))
 
+(declare app-template)
 (defn reload-app [app-state]
+  (let [element (.getElementById js/document "content")]
+    (react-dom/render (react/createElement (partial app-template app-state)) element))
   (set! messages/handle-message (partial handle-message app-state)) ;; in case it has changed
   (handle-message app-state events/app-start)
   (history/set-current-page true)
@@ -105,13 +113,37 @@
     (f)
     (.addEventListener js/document "DOMContentLoaded" f)))
 
+;; Delay in msec to call React.render() after the app-state changes
+;;
+;; Choosen by anecdotally to try and minimize the number of time we tell react
+;; to render. There isn't any reason to have react do a lot of work when we know
+;; our application tends to churn through app state in quick succession.
+(def ^:private render-delay 5)
+
+;; timer until React.render is called used in the function below
+(def ^:private render-timer)
+
+(defn- app-template [app-state]
+  ;; NOTE: this function is not affected by figwheel's reload
+  (let [tup             (react/useState #js{:state @app-state})
+        app-state-value (gobj/get (aget tup 0) "state")
+        setter          (aget tup 1)
+        template        (component/build top-level-component app-state-value)
+        state-ref (react/useRef 0)]
+    (react/useEffect
+     (fn []
+       (add-watch app-state :renderer (fn [key ref old-value new-value]
+                                        (when (not= old-value new-value)
+                                          (when render-timer
+                                            (js/clearTimeout render-timer))
+                                          (set! render-timer (js/setTimeout #(setter #js{:state new-value})
+                                                                            render-delay)))))
+       js/undefined))
+    template))
+
 (defn main- [app-state]
   (set! messages/handle-message (partial handle-message app-state))
   (history/start-history)
-  (set! (.-root_owner js/window)
-        (om/root top-level-component
-                 app-state
-                 {:target (.getElementById js/document "content")}))
   (reload-app app-state))
 
 (defn deep-merge
