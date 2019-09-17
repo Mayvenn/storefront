@@ -2,7 +2,7 @@
   (:require [storefront.components.modal-gallery :as modal-gallery]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.transitions :as transitions]
@@ -179,20 +179,16 @@
                          " All orders are eligible for free shipping and backed by our 30 Day"
                          " Guarantee."])]))
 
-(defn faq [{:keys [expanded-index modal?] :as data}]
-  (component/build
-   (fn [_ _ _]
-     (component/create
-      [:div.px6.mx-auto.mb6
-       (when (not modal?)
-         {:class "col-5-on-dt"})
-       [:h2.center "Frequently Asked Questions"]
-       (component/build
-        accordion/component
-        {:expanded-indices #{expanded-index}
-         :sections         faq-section-copy}
-        {:opts {:section-click-event events/faq-section-selected}})]))
-   data))
+(defcomponent faq [{:keys [expanded-index modal?] :as data} _ _]
+  [:div.px6.mx-auto.mb6
+   (when (not modal?)
+     {:class "col-5-on-dt"})
+   [:h2.center "Frequently Asked Questions"]
+   (component/build
+    accordion/component
+    {:expanded-indices #{expanded-index}
+     :sections         faq-section-copy}
+    {:opts {:section-click-event events/faq-section-selected}})])
 
 (defn get-ucare-id-from-url
   [ucare-url]

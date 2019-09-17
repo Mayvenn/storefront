@@ -14,13 +14,8 @@
   (transition-group (assoc options :component first-child) element))
 
 (defn transition-background-color [run-transition? & content]
-  (if run-transition?
-    (transition-element
-     {:transitionName          "line-item-fade"
-      :transitionAppearTimeout 1300
-      :transitionAppear        true
-      :transitionEnter         true
-      :transitionEnterTimeout  1300
-      :transitionLeaveTimeout  1300}
-     content)
-    content))
+  (transition-element
+   {:in run-transition?
+    :classNames              "line-item-fade"
+    :timeout 1300}
+   content))

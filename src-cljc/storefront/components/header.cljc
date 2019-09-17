@@ -5,7 +5,7 @@
             [storefront.accessors.orders :as orders]
             [storefront.assets :as assets]
             [storefront.community :as community]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.marquee :as marquee]
             [storefront.components.slideout-nav :as slideout-nav]
             [storefront.components.ui :as ui]
@@ -210,41 +210,41 @@
             {:key (str "col-" ix)}
             (flyout-column items col-count)]))]])))
 
-(defn component [{:as data :keys [store user cart signed-in vouchers?]} _ _]
-  (component/create
-   [:div
-    [:div.hide-on-mb.relative
-     {:on-mouse-leave close-header-menus}
-     [:div.relative.border-bottom.border-gray {:style {:height "180px"}}
-      [:div.max-960.mx-auto
-       [:div.left (store-info signed-in store)]
-       [:div.right
-        [:div.h6.my2.flex.items-center
-         (account-info signed-in user vouchers? store)
-         [:div.pl2
-          (ui/shopping-bag {:style     {:height (str ui/header-image-size "px")
-                                        :width  "28px"}
-                            :data-test "desktop-cart"}
-                           cart)]]]
-       [:div.absolute.bottom-0.left-0.right-0
-        [:div.mb4 (ui/clickable-logo {:event     events/navigate-home
-                                      :data-test "desktop-header-logo"
-                                      :height    "60px"})]
-        [:div.mb1 (menu data)]]]]
-     (flyout (:shop-a-la-carte-menu/columns data)
-             (:shop-a-la-carte-menu/expanded? data))
-     (flyout (:shop-looks-menu/columns data)
-             (:shop-looks-menu/expanded? data))
-     (flyout (:shop-bundle-sets-menu/columns data)
-             (:shop-bundle-sets-menu/expanded? data))]
-    [:div.hide-on-tb-dt.border-bottom.border-gray.flex.items-center
-     hamburger
-     [:div.flex-auto.py3 (ui/clickable-logo {:event     events/navigate-home
-                                             :data-test "header-logo"
-                                             :height    "40px"})]
-     (ui/shopping-bag {:style     {:height "70px" :width "70px"}
-                       :data-test "mobile-cart"}
-                      cart)]]))
+(defcomponent component [{:as data :keys [store user cart signed-in vouchers?]} _ _]
+  [:div
+   [:div.hide-on-mb.relative
+    {:on-mouse-leave close-header-menus}
+    [:div.relative.border-bottom.border-gray {:style {:height "180px"}}
+     [:div.max-960.mx-auto
+      [:div.left {:key "store-info"} (store-info signed-in store)]
+      [:div.right {:key "account-info"}
+       [:div.h6.my2.flex.items-center
+        (account-info signed-in user vouchers? store)
+        [:div.pl2
+         (ui/shopping-bag {:style     {:height (str ui/header-image-size "px")
+                                       :width  "28px"}
+                           :data-test "desktop-cart"}
+                          cart)]]]
+      [:div.absolute.bottom-0.left-0.right-0
+       {:key "logo"}
+       [:div.mb4 (ui/clickable-logo {:event     events/navigate-home
+                                     :data-test "desktop-header-logo"
+                                     :height    "60px"})]
+       [:div.mb1 (menu data)]]]]
+    (flyout (:shop-a-la-carte-menu/columns data)
+            (:shop-a-la-carte-menu/expanded? data))
+    (flyout (:shop-looks-menu/columns data)
+            (:shop-looks-menu/expanded? data))
+    (flyout (:shop-bundle-sets-menu/columns data)
+            (:shop-bundle-sets-menu/expanded? data))]
+   [:div.hide-on-tb-dt.border-bottom.border-gray.flex.items-center
+    hamburger
+    [:div.flex-auto.py3 (ui/clickable-logo {:event     events/navigate-home
+                                            :data-test "header-logo"
+                                            :height    "40px"})]
+    (ui/shopping-bag {:style     {:height "70px" :width "70px"}
+                      :data-test "mobile-cart"}
+                     cart)]])
 
 (defn minimal-component
   [logo-nav-event]

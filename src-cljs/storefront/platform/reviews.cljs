@@ -2,6 +2,7 @@
   (:require [catalog.products :as products]
             [om.core :as om]
             [sablono.core :refer [html]]
+            [storefront.component :as component :refer [defcomponent defdynamic-component]]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.messages :refer [handle-message]]
@@ -9,72 +10,55 @@
 
 (defn ^:private reviews-component-inner
   [{:keys [loaded? yotpo-data-attributes]} owner opts]
-  (reify
-    om/IDidMount
-    (did-mount [_] (handle-message events/reviews-component-mounted))
-    om/IWillUnmount
-    (will-unmount [_] (handle-message events/reviews-component-will-unmount))
-    om/IRender
-    (render [_]
-      (html
-       [:div
-        [:.mx-auto.mb3
-         [:.yotpo.yotpo-main-widget yotpo-data-attributes]]]))))
+  (component/create-dynamic
+   "reviews-component-inner"
+   (did-mount [_] (handle-message events/reviews-component-mounted))
+   (will-unmount [_] (handle-message events/reviews-component-will-unmount))
+   (render [_]
+           (html
+            [:div
+             [:.mx-auto.mb3
+              [:.yotpo.yotpo-main-widget yotpo-data-attributes]]]))))
 
-(defn reviews-component
+(defcomponent reviews-component
   "The fully expanded reviews component using yotpo"
   [{:keys [yotpo-data-attributes] :as queried-data} owner opts]
-  (om/component
-   (html
-    [:div {:key (str "reviews-" (:data-product-id yotpo-data-attributes))}
-     (om/build reviews-component-inner queried-data opts)])))
+  [:div {:key (str "reviews-" (:data-product-id yotpo-data-attributes))}
+   (component/build reviews-component-inner queried-data opts)])
 
-(defn ^:private reviews-summary-component-inner
+(defdynamic-component ^:private reviews-summary-component-inner
   [{:keys [loaded? yotpo-data-attributes]} owner opts]
-  (reify
-    om/IDidMount
-    (did-mount [_] (handle-message events/reviews-component-mounted))
-    om/IWillUnmount
-    (will-unmount [_] (handle-message events/reviews-component-will-unmount))
-    om/IRender
-    (render [_]
-      (html
-       [:div
-        [:.px3.clearfix.pyp3
-         [:.yotpo.bottomLine.mr2 yotpo-data-attributes]
-         [:.yotpo.QABottomLine yotpo-data-attributes]]]))))
+  (did-mount [_] (handle-message events/reviews-component-mounted))
+  (will-unmount [_] (handle-message events/reviews-component-will-unmount))
+  (render [_]
+          (component/html
+           [:div
+            [:div.px3.clearfix.pyp3
+             [:div.yotpo.bottomLine.mr2 yotpo-data-attributes]
+             [:div.yotpo.QABottomLine yotpo-data-attributes]]])))
 
-(defn reviews-summary-component
+(defcomponent reviews-summary-component
   "Yotpo summary reviews component"
   [{:keys [yotpo-data-attributes] :as queried-data} owner opts]
-  (om/component
-   (html
-    [:div {:key (str "reviews-summary-" (:data-product-id yotpo-data-attributes))}
-     (om/build reviews-summary-component-inner queried-data opts)])))
+  [:div {:key (str "reviews-summary-" (:data-product-id yotpo-data-attributes))}
+   (component/build reviews-summary-component-inner queried-data opts)])
 
 
-(defn ^:private reviews-summary-component-dropdown-experiment-inner
+(defdynamic-component ^:private reviews-summary-component-dropdown-experiment-inner
   [{:keys [loaded? yotpo-data-attributes]} owner opts]
-  (reify
-    om/IDidMount
-    (did-mount [_] (handle-message events/reviews-component-mounted))
-    om/IWillUnmount
-    (will-unmount [_] (handle-message events/reviews-component-will-unmount))
-    om/IRender
-    (render [_]
-      (html
-       [:div
-        [:div.clearfix.flex.justify-start.flex-wrap.my1
-         [:.yotpo.bottomLine.mr2 yotpo-data-attributes]
-         [:.yotpo.QABottomLine yotpo-data-attributes]]]))))
+  (did-mount [_] (handle-message events/reviews-component-mounted))
+  (will-unmount [_] (handle-message events/reviews-component-will-unmount))
+  (render [_]
+          [:div
+           [:div.clearfix.flex.justify-start.flex-wrap.my1
+            [:.yotpo.bottomLine.mr2 yotpo-data-attributes]
+            [:.yotpo.QABottomLine yotpo-data-attributes]]]))
 
-(defn reviews-summary-dropdown-experiment-component
+(defcomponent reviews-summary-dropdown-experiment-component
   "Yotpo summary reviews component"
   [{:keys [yotpo-data-attributes] :as queried-data} owner opts]
-  (om/component
-   (html
-    [:div {:key (str "reviews-summary-" (:data-product-id yotpo-data-attributes))}
-     (om/build reviews-summary-component-dropdown-experiment-inner queried-data opts)])))
+  [:div {:key (str "reviews-summary-" (:data-product-id yotpo-data-attributes))}
+   (component/build reviews-summary-component-dropdown-experiment-inner queried-data opts)])
 
 (defn- yotpo-data-attributes
   "Uses the first Sku from a Product to determine Yotpo data- attributes"

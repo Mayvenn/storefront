@@ -1,11 +1,11 @@
 (ns storefront.components.ui
   (:require #?@(:cljs [[storefront.loader :as loader]
-                       [om.core :as om]
-                       goog.events])
+                       goog.events
+                       [goog.object :as gobj]])
             [cemerick.url :as url]
             [clojure.string :as string]
             [storefront.assets :as assets]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.money-formatters :as mf]
             [storefront.components.svg :as svg]
             [storefront.events :as events]
@@ -212,10 +212,10 @@
        :value title
        :disabled (boolean disabled?)}])))
 
-(def ^:inline nbsp (component/html [:span {:dangerouslySetInnerHTML {:__html "&nbsp;"}}]))
-(def ^:inline rarr (component/html [:span {:dangerouslySetInnerHTML {:__html " &rarr;"}}]))
-(def ^:inline times (component/html [:span {:dangerouslySetInnerHTML {:__html " &times;"}}]))
-(def ^:inline new-flag
+(def nbsp (component/html [:span {:dangerouslySetInnerHTML {:__html "&nbsp;"}}]))
+(def rarr (component/html [:span {:dangerouslySetInnerHTML {:__html " &rarr;"}}]))
+(def times (component/html [:span {:dangerouslySetInnerHTML {:__html " &times;"}}]))
+(def new-flag
   (component/html
    [:div.right
     [:div.border.border-navy.navy.pp2.h8.line-height-1.medium "NEW"]]))
@@ -784,20 +784,24 @@
   (->> (map (partial build-src-set-url url format) src-set)
        (string/join ", ")))
 
+;; TODO(jeff): GROT
 (defn source
   "For contentful only."
-  [url {:as attrs :keys [src-set type]}]
+  [url {:as attrs :keys [src-set type media]}]
   (assert (contains? contentful-type->mime type)
           (str "[ui/source] Invalid contentful format:" type
                "; must be one of:" (keys contentful-type->mime)))
   (component/build
    (fn [_ _ _]
      (component/create
+      "source"
       [:source (merge attrs
-                      {:src-set (build-src-set url type src-set)
+                      {:key     (str media ":" url)
+                       :src-set (build-src-set url type src-set)
                        :type    (contentful-type->mime type)})]))
    {:url   url
-    :attrs attrs}))
+    :attrs attrs}
+   {:key (str media ":" url)}))
 
 (defn option
   [{:keys [key disabled? height on-click]} & content]
@@ -953,15 +957,67 @@
      empty-stars
      [:span.mlp2 rating]]))
 
-(defn ^:private screen-aware-component [{:screen/keys [root-margin] :as data} owner {:keys [embed opts]}]
-  #?(:clj (component/create [:div
-                             (component/build embed
-                                                   (assoc data
-                                                          :screen/seen? nil
-                                                          :screen/visible? nil)
-                                                   opts)])
-     :cljs (reify
-             om/IInitState
+(def ^:private screen-aware-component
+  #?(:clj (fn [data owner {:keys [embed opts]}]
+            (component/create [:div
+                               (component/build embed
+                                                (assoc data
+                                                       :screen/seen? nil
+                                                       :screen/visible? nil)
+                                                opts)]))
+     :cljs (component/create-dynamic
+            "screen-aware-component"
+            (constructor [this props]
+                         (component/create-ref! this "trigger")
+                         {:seen?    false
+                          :visible? nil})
+            (should-update [this next-props next-state]
+                           (not= (component/get-state this) (.-state next-state)))
+            (did-mount [this]
+                       (if (.hasOwnProperty js/window "IntersectionObserver")
+                         (when-let [ref (component/get-ref this "trigger")]
+                           (let [{:screen/keys [root-margin]} (component/get-opts this)
+                                 observer                     (js/IntersectionObserver.
+                                                               (fn [entries observer]
+                                                                 (doseq [entry entries]
+                                                                   (when (= (.-target entry)
+                                                                            ref)
+                                                                     (if (.-isIntersecting entry)
+                                                                       (do
+                                                                         (component/set-state! this
+                                                                                               :seen? true
+                                                                                               #_#_:visible? true))
+                                                                       #_(component/set-state! this :visible? false)))))
+                                                               #js {:delay      100
+                                                                    :rootMargin (or root-margin "25px")})]
+                             (gobj/set this "observer" observer)
+                             (.observe observer ref)))
+                         (do
+                           ;; No API, lie about it
+                           (component/set-state! this
+                                                 :seen? true
+                                                 :visible? true))))
+            (will-unmount [this]
+                          (let [observer (gobj/get this "observer")
+                                element  (component/get-ref this "trigger")]
+                            (when (and observer element)
+                              (.unobserve observer element)
+                              (.disconnect observer))))
+            (render [this]
+                    (let [trigger                            (component/use-ref this "trigger")
+                          {:keys [seen? visible?] :as state} (component/get-state this)
+                          data                               (component/get-props this)
+                          {:keys [embed opts]}               (component/get-opts this)]
+                      (component/html
+                       [:div {:ref trigger}
+                        (when-not seen? nbsp)  ; When the content has no height, isIntersecting is always false.
+                        (component/build embed
+                                         (assoc data
+                                                :screen/seen? seen?
+                                                :screen/visible? visible?)
+                                         (merge {:key "embed"} opts))]))))
+     #_(reify
+         om/IInitState
              (init-state [this]
                {:seen?    false
                 :visible? nil})
@@ -994,9 +1050,9 @@
                    (.unobserve observer element)
                    (.disconnect observer))))
              om/IRenderState
-             (render-state [this {:keys [seen? visible?]}]
-               (component/html [:div {:ref "trigger"}
-                                (when-not seen? nbsp)  ; When the content has no height, isIntersecting is always false.
+         (render-state [this {:keys [seen? visible?]}]
+           (component/html [:div {:ref "trigger"}
+                            (when-not seen? nbsp)  ; When the content has no height, isIntersecting is always false.
                                 (component/build embed
                                                  (assoc data
                                                         :screen/seen? seen?
@@ -1027,6 +1083,7 @@
    (component/build
     screen-aware-component
     data
+<<<<<<< HEAD
     {:opts {:embed component
             :opts  opts}})))
 
@@ -1036,6 +1093,31 @@
      (cond
        seen? (ucare-img attrs id)
        :else [:div placeholder-attrs]))))
+||||||| merged common ancestors
+    {:opts {:embed component
+            :opts  opts}})))
+
+(defn ^:private defer-ucare-img-component [{:screen/keys [seen? server-render?] :keys [id attrs]} owner opts]
+  (component/create
+   (let [placeholder-attrs (select-keys attrs [:class :width :height])]
+     (cond
+       server-render? [:noscript placeholder-attrs (ucare-img attrs id)]
+       seen? (ucare-img attrs id)
+       :else [:div placeholder-attrs]))))
+=======
+    (merge
+     (when (:key opts)
+       {:key (:key opts)})
+     {:opts {:embed component
+             :opts  opts}}))))
+
+(defcomponent ^:private defer-ucare-img-component [{:screen/keys [seen? server-render?] :keys [id attrs]} owner opts]
+  (let [placeholder-attrs (select-keys attrs [:class :width :height])]
+    (cond
+      server-render? [:noscript placeholder-attrs (ucare-img attrs id)]
+      seen? (ucare-img attrs id)
+      :else [:div placeholder-attrs])))
+>>>>>>> WIP: Upgrade some pages to React 16
 
 (defn defer-ucare-img
   "A particular instance of screen-aware that only loads the image when the
@@ -1049,4 +1131,5 @@
            default-quality "normal"}}
    image-id]
   (screen-aware defer-ucare-img-component {:attrs img-attrs
-                                           :id    image-id}))
+                                           :id    image-id}
+                {:key image-id}))

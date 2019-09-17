@@ -6,7 +6,7 @@
             [storefront.accessors.stylists :as stylists]
             [storefront.assets :as assets]
             [storefront.community :as community]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.marquee :as marquee]
             [storefront.components.money-formatters :refer [as-money]]
             [storefront.components.ui :as ui]
@@ -250,21 +250,20 @@
     (utils/route-to events/navigate-gallery-edit)
     "Edit Gallery"]))
 
-(defn ^:private root-menu
+(defcomponent ^:private root-menu
   [{:keys [user signed-in show-community? vouchers?] :as data} owner opts]
-  (component/create
-   [:div
-    [:div.px6.border-bottom.border-gray.bg-light-gray.pt3
-     (when (auth/stylist? signed-in)
-       [:div.flex.items-center (stylist-portrait user) gallery-link])
-     (account-info-marquee signed-in user)
-     [:div.my3.dark-gray
-      (actions-marquee signed-in vouchers? show-community?)]]
-    [:div.px6
-     (menu-area data)]
-    (when (-> signed-in ::auth/at-all)
-      [:div.px6.border-top.border-gray
-       sign-out-area])]))
+  [:div
+   [:div.px6.border-bottom.border-gray.bg-light-gray.pt3
+    (when (auth/stylist? signed-in)
+      [:div.flex.items-center (stylist-portrait user) gallery-link])
+    (account-info-marquee signed-in user)
+    [:div.my3.dark-gray
+     (actions-marquee signed-in vouchers? show-community?)]]
+   [:div.px6
+    (menu-area data)]
+   (when (-> signed-in ::auth/at-all)
+     [:div.px6.border-top.border-gray
+      sign-out-area])])
 
 (defn component
   [{:keys [cart on-taxon? menu-data] :as data}

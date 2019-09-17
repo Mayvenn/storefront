@@ -3,6 +3,7 @@
                        [goog.events]
                        [goog.events.EventType :as EventType]
                        [goog.style]
+                       ["react" :as react]
                        [om.core :as om]])
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
@@ -21,11 +22,12 @@
 
 (defmethod component :none
   [_ _ _]
-  (component/create [:div]))
+  (component/create "component_none" [:div]))
 
 (defmethod component :adventure-freeinstall/applied
   [_ _ _]
   (component/create
+   "component_adventure-freeinstall/applied"
    [:a.white.center.p2.bg-teal.mbnp5.h6.bold.flex.items-center.justify-center
     {:on-click  (utils/send-event-callback events/popup-show-adventure-free-install)
      :data-test "adventure-promo-banner"}
@@ -38,6 +40,7 @@
 (defmethod component :v2-freeinstall/eligible
   [_ _ _]
   (component/create
+   "component_v2-freeinstall/eligible"
    [:a {:on-click  (utils/send-event-callback events/popup-show-v2-homepage)
         :data-test "v2-free-install-promo-banner"}
     [:div.white.center.pp5.bg-teal.h5.bold.pointer
@@ -46,6 +49,7 @@
 (defmethod component :v2-freeinstall/applied
   [_ _ _]
   (component/create
+   "component_v2-freeinstall/applied"
    [:a.white.center.p2.bg-teal.mbnp5.h6.bold.flex.items-center.justify-center
     {:on-click  (utils/send-event-callback events/popup-show-v2-homepage)
      :data-test "v2-free-install-promo-banner"}
@@ -58,6 +62,7 @@
 (defmethod component :shop/freeinstall
   [_ _ _]
   (component/create
+   "component_shop/freeinstall"
    [:a.block.white.p2.bg-lavender.flex.justify-center
     {:on-click  (utils/send-event-callback events/popup-show-consolidated-cart-free-install)
      :data-test "shop-freeinstall-promo-banner"}
@@ -71,6 +76,7 @@
 (defmethod component :basic
   [{:keys [promo]} _ _]
   (component/create
+   "component_basic"
    [:div.white.center.pp5.bg-teal.h5.bold
     {:data-test "promo-banner"}
     (:description promo)]))
@@ -158,16 +164,49 @@
   [data owner opts]
   (component data opts))
 
-(defn sticky-organism
-  [data owner opts]
-  #?(:clj (component/create [:div])
+(def sticky-organism
+  #?(:clj (fn [data owner opts] (component/create [:div]))
      :cljs
      (letfn [(header-height-magic-number [] (if (< (.-width (goog.dom/getViewportSize)) 750) 75 180))
-             (handle-scroll [e] (om/set-state! owner :show? (< (header-height-magic-number) (.-y (goog.dom/getDocumentScroll)))))
-             (set-height [] (om/set-state! owner :banner-height (some-> owner
-                                                                        (om/get-node "banner")
-                                                                        goog.style/getSize
-                                                                        .-height)))]
+             (handle-scroll [e]
+               (this-as this
+                 (component/set-state! this :show? (< (header-height-magic-number) (.-y (goog.dom/getDocumentScroll))))))
+             (set-height []
+               (this-as this
+                 (component/set-state! this :banner-height (some-> (.-banner this)
+                                                                   .-current
+                                                                   goog.style/getSize
+                                                                   .-height))))]
+       (component/create-dynamic
+        "sticky-organism"
+        (constructor [this props]
+                     (set! (.-banner this) (react/createRef))
+                     (set! (.-handle-scroll this) (.bind handle-scroll this))
+                     (set! (.-set-height this) (.bind set-height this))
+                     {:show?              false
+                      :description-length (count (:description (:promo (component/get-props this))))})
+        (did-mount [this]
+                   (component/set-state! this :banner-height (some-> (.-banner this)
+                                                                     .-current
+                                                                     goog.style/getSize
+                                                                     .-height))
+                   (goog.events/listen js/window EventType/SCROLL (.-handle-scroll this)))
+        (will-unmount [this]
+                      (goog.events/unlisten js/window EventType/SCROLL (.-handle-scroll this)))
+        (render [this]
+                (component/html
+                 (let [{:keys [show? banner-height]} (component/get-state this)
+                       data                          (component/get-props this)
+                       opts                          (component/get-opts this)]
+                   [:div.fixed.z4.top-0.left-0.right-0
+                    (if show?
+                      {:style {:margin-top "0"}
+                       :class "transition-2"}
+                      {:class "hide"
+                       :style {:margin-top (str "-" banner-height "px")}})
+                    [:div {:ref "banner"}
+                     (component/build component data opts)]]))))
+       #_
        (reify
          om/IInitState
          (init-state [this]
@@ -202,5 +241,4 @@
 
 (defn built-static-organism
   [app-state opts]
-  [:div
-   (component/build component (query app-state) opts)])
+  (component/build component (query app-state) opts))
