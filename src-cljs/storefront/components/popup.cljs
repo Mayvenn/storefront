@@ -41,15 +41,15 @@
 
 (defmethod effects/perform-effects events/determine-and-show-popup
   [_ _ args _ app-state]
-  (let [navigation-event            (get-in app-state keypaths/navigation-event)
-        v2-experience?              (experiments/aladdin-experience? app-state)
-        on-minimal-footer-page?     (nav/show-minimal-footer? navigation-event)
-        freeinstall-store?          (= "freeinstall" (get-in app-state keypaths/store-slug))
-        shop?                       (= "shop" (get-in app-state keypaths/store-slug))
-        email-capture-state         (email-capture-session app-state)
-        seen-freeinstall-offer?     (get-in app-state keypaths/dismissed-free-install)
-        signed-in?                  (get-in app-state keypaths/user-id)
-        classic-experience?         (not v2-experience?)
+  (let [navigation-event        (get-in app-state keypaths/navigation-event)
+        v2-experience?          (experiments/aladdin-experience? app-state)
+        on-minimal-footer-page? (nav/show-minimal-footer? navigation-event)
+        freeinstall-store?      (= "freeinstall" (get-in app-state keypaths/store-slug))
+        shop?                   (= "shop" (get-in app-state keypaths/store-slug))
+        email-capture-state     (email-capture-session app-state)
+        seen-freeinstall-offer? (get-in app-state keypaths/dismissed-free-install)
+        signed-in?              (get-in app-state keypaths/user-id)
+        classic-experience?     (not v2-experience?)
 
         dismissed-pick-a-stylist-email-capture? (get-in app-state keypaths/dismissed-pick-a-stylist-email-capture)
         pick-a-stylist-page?                    (and (routes/sub-page? [navigation-event] [events/navigate-adventure])
@@ -58,7 +58,8 @@
                                                            #{events/navigate-adventure-matching-stylist-wait-post-purchase
                                                              events/navigate-adventure-stylist-results-post-purchase
                                                              events/navigate-adventure-match-success-post-purchase
-                                                             events/control-adventure-select-stylist-post-purchase}
+                                                             events/control-adventure-select-stylist-post-purchase
+                                                             events/navigate-adventure-checkout-wait}
                                                            navigation-event)))]
     (cond
       ;; never show popup for style guide
