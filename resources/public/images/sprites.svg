@@ -1,12 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg">
   <symbol id="circled-check" viewBox="0 0 14 14">
-    <g fill="none" stroke-width=".5" stroke-linecap="round">
+    <g fill="none" stroke-linecap="round">
       <path d="M9.61 5.17L5.7 8.83 4.39 7.52"></path>
       <circle r="6" cx="7" cy="7"></circle>
     </g>
   </symbol>
   <symbol id="check" viewBox="0 0 14 14">
-    <g fill="none" stroke-width=".5" stroke-linecap="round">
+    <g fill="none" stroke-linecap="round">
       <path d="M9.61 5.17L5.7 8.83 4.39 7.52"></path>
     </g>
   </symbol>

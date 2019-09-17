@@ -79,13 +79,17 @@
 
 ;;
 
-(defn circled-check [svg-options]
+(defn circled-check [opts]
   (component/html
-   [:svg svg-options ^:inline (svg-xlink "circled-check")]))
+   [:svg
+    (maps/deep-merge {:style {:stroke-width "0.5"}} opts)
+    ^:inline (svg-xlink "circled-check")]))
 
-(defn check [svg-options]
+(defn check [opts]
   (component/html
-   [:svg svg-options ^:inline (svg-xlink "check")]))
+   [:svg
+    (maps/deep-merge {:style {:stroke-width "0.5"}} opts)
+    ^:inline (svg-xlink "check")]))
 
 (defn bag [opts]
   (component/html
