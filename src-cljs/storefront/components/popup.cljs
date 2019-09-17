@@ -95,7 +95,8 @@
 
             ;; Standard
             (nil? email-capture-state)
-            (messages/handle-message events/popup-show-email-capture)))))))
+            (messages/handle-message events/popup-show-email-capture))))
+      nil)))
 
 (defmethod effects/perform-effects events/control-popup-hide
   [_ _ _ _ _]
