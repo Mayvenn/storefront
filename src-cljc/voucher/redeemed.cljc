@@ -10,46 +10,145 @@
             [storefront.platform.component-utils :as utils]
             [voucher.keypaths :as voucher-keypaths]
             [storefront.keypaths :as keypaths]
-            [storefront.effects :as effects]
-            [storefront.request-keys :as request-keys]
-            [storefront.accessors.experiments :as experiments]))
+            [storefront.request-keys :as request-keys]))
+
+(def unit-type->menu-kw-suffix
+  {"with Closure" "sew-in-closure"
+   "with 360"     "sew-in-360-frontal"
+   "with Frontal" "sew-in-frontal"
+   "Leave Out"    "sew-in-leave-out"})
+
+(def unit-type->display-name
+  {"with Closure" "Closure Install"
+   "with 360"     "360 Frontal Install"
+   "with Frontal" "Frontal Install"
+   "Leave Out"    "Leave Out Install"})
+
+(defn fine-print-molecule
+  [{:fine-print/keys [id copy]}]
+  (when id
+    [:div.h8.mt6.line-height-3
+     {:key       id
+      :data-test id}
+     [:span.purple "*"]
+     copy]))
+
+(defn notification-molecule
+  [{:notification/keys [id content]}]
+  (when id
+    [:div.mb2.h6.flex-wrap.flex.items-center.justify-center.border.border-width-2.border-light-teal.bg-too-light-teal.rounded.teal.p1.medium.col-12
+     {:key       id
+      :data-test id}
+     ^:inline (svg/check {:class  "stroke-teal"
+                          :height "32px"
+                          :width  "32px"
+                          :style  {:stroke-width "1"}})
+     content]))
+
+(def icon-molecule
+  [:div.purple.my2
+   (svg/circled-check {:height "87px"
+                       :width  "87px"
+                       :class  "stroke-purple"
+                       :style  {:stroke-width "0.75"}})])
+
+(defn ^:private informational-molecule
+  [{:informational/keys [primary-id primary secondary-id secondary]}]
+  (when primary-id
+    [:div {:key primary-id}
+     [:div.h5.purple.bold {:data-test primary-id}
+      primary]
+     (when secondary-id
+       (into [:div.h8.center
+              {:data-test secondary-id}] secondary))]) )
+
+(defn cta-with-secondary-molecule
+  [{:cta/keys [id copy target
+               secondary-target
+               secondary-id
+               secondary-copy]}]
+  [:div.center
+   (ui/teal-button (assoc (apply utils/route-to target)
+                          :data-test id
+                          :class "mb3")
+                   copy)
+   [:a.medium.h6.navy
+    (merge
+     (apply utils/route-to secondary-target)
+     {:data-test secondary-id})
+    secondary-copy]])
+
+(defn spinner-molecule [_ _ _]
+  (component/create
+   [:div.mt8
+    (ui/large-spinner {:style {:height "6em"}})]))
 
 (defn ^:private component
-  [{:keys [spinning? voucher service-menu]} owner opts]
+  [queried-data owner opts]
   (component/create
-   [:div
-    (if spinning?
-      [:div.mt8
-       (ui/large-spinner {:style {:height "6em"}})]
-      [:div.flex.flex-column.items-center
-       [:div.mt4.mb10.h6.flex.items-center.justify-center
-        ^:inline (svg/check {:class  "stroke-black"
-                             :height "3em"
-                             :width  "3em"})
-        "Voucher Redeemed:"
-        [:span.pl1.bold (-> voucher :discount :unit_type)]]
-       [:div.h00.teal.bold {:data-test "redemption-amount"}
-        (service-menu/display-voucher-amount service-menu voucher)]
-       [:div.h4 "has been added to your earnings"]
-       [:div.pb4.my8.col-6
-        (let [earnings-page-event events/navigate-v2-stylist-dashboard-payments]
-          (ui/underline-button (assoc (utils/route-to earnings-page-event)
-                                      :data-test "view-earnings") "View Earnings"))]
-       [:a.pt4.my8.medium.h6.border-bottom.border-teal.border-width-2.black
-        (utils/route-to events/navigate-voucher-redeem) "Redeem Another Voucher"]])]))
+   [:div.flex.flex-column.items-center.m4
+    (notification-molecule queried-data)
+
+    icon-molecule
+
+    (informational-molecule queried-data)
+
+    [:div.mt6
+     (cta-with-secondary-molecule queried-data)]
+
+    (fine-print-molecule queried-data)]))
 
 (defn ^:private query [app-state]
-  {:voucher       (get-in app-state voucher-keypaths/voucher-response)
-   :spinning?     (utils/requesting? app-state request-keys/fetch-user-stylist-service-menu)
-   :service-menu  (get-in app-state keypaths/user-stylist-service-menu)})
+  (let [voucher                   (get-in app-state voucher-keypaths/voucher-response)
+        service-menu              (get-in app-state keypaths/user-stylist-service-menu)
+        parsed-install-type       (-> voucher :discount :unit_type service-menu/parse-type)
+        kw-suffix                 (get unit-type->menu-kw-suffix parsed-install-type)
+        payout-amount             (-> service-menu
+                                      (get (keyword (str "install-" kw-suffix)))
+                                      mf/as-money-without-cents)
+        advertised-amount         (-> service-menu
+                                      (get (keyword (str "advertised-" kw-suffix)))
+                                      mf/as-money-without-cents)
+        install-type-display-name (get unit-type->display-name parsed-install-type)
+        payout-equals-advertised? (= payout-amount advertised-amount)]
+    (cond->
+      {:spinning?                (utils/requesting? app-state request-keys/fetch-user-stylist-service-menu)
+       :notification/id          (str "voucher-redeemed-" install-type-display-name)
+       :notification/content     [:div "Voucher Redeemed:" [:span.pl1.bold install-type-display-name]]
+       :cta/id                   "view-earnings"
+       :cta/target               [events/navigate-v2-stylist-dashboard-payments]
+       :cta/copy                 [:span.bold "View Earnings"]
+       :cta/secondary-id         "redeem-voucher"
+       :cta/secondary-target     [events/navigate-voucher-redeem]
+       :cta/secondary-copy       "Redeem Another Voucher"
+       :informational/primary-id "redemption-amount"
+       :informational/primary    (str payout-amount " has been added to your earnings")}
+
+      (not payout-equals-advertised?)
+      (merge {:fine-print/id              "fine-print"
+              :fine-print/copy            (str
+                                           "The advertised price is the price that we display publicly to"
+                                           " customers and should match your salon’s service prices. Your actual"
+                                           " payout amount was set between you and Mayvenn at the start of your"
+                                           " program. Charging customers for the difference between the advertised"
+                                           " price and your payout amount will result in your removal from the"
+                                           " program.")
+              :informational/secondary-id "redemption-payout-and-advertised-amounts"
+              :informational/secondary    (list
+                                           [:div "Your " install-type-display-name " Payout Amount: "
+                                            [:span.bold payout-amount]]
+                                           [:div install-type-display-name " Advertised Price: "
+                                            [:span.bold advertised-amount]
+                                            [:span.purple "*"]])}))))
 
 (defn ^:export built-component
   [data opts]
-  (component/build component (query data) opts))
+  (let [queried-data (query data)]
+    (if (:spinning? queried-data)
+      (component/build spinner-molecule nil nil)
+      (component/build component queried-data opts))))
 
 (defmethod effects/perform-effects events/navigate-voucher-redeemed [_ _ _ _ app-state]
   #?(:cljs
      (when-not (-> (get-in app-state voucher-keypaths/voucher-response) :discount :type)
        (history/enqueue-redirect events/navigate-home))))
-
-

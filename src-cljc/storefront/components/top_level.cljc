@@ -172,17 +172,17 @@
          ^:inline (sticky-promo-bar data)])
 
       [:div.relative.flex.flex-column.flex-auto
-       ;; Hack: one page does not have a white background, nor enough
+       ;; HACK: one page does not have a white background, nor enough
        ;; content to fill its inner div.
        (when silver-background?
-         {:class "bg-light-silver"})
+         {:class "bg-fate-white"})
        ^:inline (flash/built-component data nil)
 
        [:main.bg-white.flex-auto (merge
                                   {:data-test (keypaths/->component-str nav-event)}
-                                  ;; Hack: See above hack
+                                  ;; HACK: See above hack
                                   (when silver-background?
-                                    {:class "bg-light-silver"}))
+                                    {:class "bg-fate-white"}))
         ((main-component nav-event) data nil)]
 
        [:footer (footer/built-component data nil)]]])))
