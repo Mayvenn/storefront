@@ -159,13 +159,21 @@
   #?(:cljs
      (messages/handle-message events/save-order {:order order})))
 
+(defmethod transitions/transition-state events/navigate-adventure-match-success-post-purchase
+     [_ _ _ {:keys [completed-order] :as app-state}]
+     #?(:cljs
+              (assoc-in app-state storefront.keypaths/pending-talkable-order (talkable/completed-order completed-order))))
+
 (defmethod effects/perform-effects events/navigate-adventure-match-success-post-purchase [_ _ _ _ app-state]
   #?(:cljs
      (let [{install-applied? :mayvenn-install/applied?
             completed-order  :waiter/order} (api.orders/completed app-state)
            servicing-stylist-id             (:servicing-stylist-id completed-order)]
        (if (and install-applied? servicing-stylist-id)
-         (api/fetch-matched-stylist (get-in app-state storefront.keypaths/api-cache) servicing-stylist-id)
+         (do
+           (talkable/show-pending-offer app-state)
+           (api/fetch-matched-stylist (get-in app-state storefront.keypaths/api-cache)
+                                      servicing-stylist-id))
          (history/enqueue-navigate events/navigate-home)))))
 
 (defmethod transitions/transition-state events/api-success-fetch-matched-stylist
