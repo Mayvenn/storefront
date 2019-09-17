@@ -2,6 +2,7 @@
 .stroke-navy   { stroke: var(--navy); }
 .stroke-orange { stroke: var(--orange); }
 .stroke-aqua   { stroke: var(--aqua); }
+.stroke-purple { stroke: var(--purple); }
 
 .fill-twitter-blue { fill: var(--twitter-blue); }
 .fill-teal         { fill: var(--teal); }
@@ -34,6 +35,7 @@
   --navy:         #175674;
   --orange:       #FFC520;
   --aqua:         #49BBF0;
+  --purple:       #931280;
 
   --white:        #ffffff;
   --light-silver: #f2f2f2;
