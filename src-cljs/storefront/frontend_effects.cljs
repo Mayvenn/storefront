@@ -758,19 +758,34 @@
   (messages/handle-message events/order-completed order)
   (messages/handle-message events/order-placed order))
 
-(defmethod effects/perform-effects events/order-completed [dispatch event order _ app-state]
-  (cookie-jar/save-completed-order (get-in app-state keypaths/cookie)
-                                   (get-in app-state keypaths/completed-order))
-  (messages/handle-message events/clear-order)
+(defn determine-site
+  [app-state]
+  (cond
+    (= "classic" (get-in app-state keypaths/store-experience)) :classic
+    (= "aladdin" (get-in app-state keypaths/store-experience)) :aladdin
+    (= "shop" (get-in app-state keypaths/store-slug))          :shop))
 
-  (let [{install-applied? :mayvenn-install/applied?} (api.orders/->order app-state order)
-        servicing-stylist-id                         (-> order :servicing-stylist-id)]
-    (when (or (not install-applied?)
-              servicing-stylist-id)
+(defmethod effects/perform-effects events/order-completed
+  [_ _ order _ app-state]
+  (let [site (determine-site app-state)]
+    (cookie-jar/save-completed-order (get-in app-state keypaths/cookie)
+                                     (get-in app-state keypaths/completed-order))
+    (messages/handle-message events/clear-order)
+
+    (if (= :shop site)
+      (let [{install-applied? :mayvenn-install/applied?} (api.orders/->order app-state order)
+            servicing-stylist-id                         (-> order :servicing-stylist-id)]
+        (when (or (not install-applied?)
+                  servicing-stylist-id)
+          (talkable/show-pending-offer app-state)))
       (talkable/show-pending-offer app-state))
 
-    (when (and install-applied? servicing-stylist-id)
-      (api/fetch-matched-stylist (get-in app-state keypaths/api-cache) servicing-stylist-id))))
+    (when (= :shop site)
+      (let [{install-applied? :mayvenn-install/applied?} (api.orders/->order app-state order)
+            servicing-stylist-id                         (-> order :servicing-stylist-id)]
+        (when (and install-applied?
+                   servicing-stylist-id)
+          (api/fetch-matched-stylist (get-in app-state keypaths/api-cache) servicing-stylist-id))))))
 
 (defmethod effects/perform-effects events/api-success-update-order-update-cart-payments [_ event {:keys [order place-order?]} _ app-state]
   (when place-order?
