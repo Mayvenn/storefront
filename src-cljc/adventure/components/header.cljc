@@ -21,7 +21,7 @@
              :height "6px"}}]])
 
 (defn shopping-bag []
-  {:id    "adventure-cart"
+  {:id    "mobile-cart"
    :opts  (utils/route-to events/navigate-cart)
    :value (ui/ucare-img
            {:width "20"}

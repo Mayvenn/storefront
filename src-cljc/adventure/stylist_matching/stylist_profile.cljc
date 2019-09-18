@@ -82,7 +82,7 @@
         current-order   (api.orders/current data)
         shop?           (= "shop" (get-in data storefront.keypaths/store-slug))
         undo-history    (get-in data storefront.keypaths/navigation-undo-stack)
-        header-org-data {:header.cart/id                "adventure-cart"
+        header-org-data {:header.cart/id                "mobile-cart"
                          :header.cart/value             (:order.items/quantity current-order)
                          :header.cart/color             "white"
                          :header.title/id               "adventure-title"

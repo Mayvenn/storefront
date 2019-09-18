@@ -19,7 +19,7 @@
 (defn header-query
   [{:order.items/keys [quantity]}
    back]
-  {:header.cart/id                "adventure-cart"
+  {:header.cart/id                "mobile-cart"
    :header.cart/value             quantity
    :header.cart/color             "white"
    :header.title/id               "adventure-title"
