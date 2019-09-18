@@ -955,3 +955,7 @@
 (defmethod effects/perform-effects events/visitor-identified
   [_ _ _ _ app-state]
   (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) "opted-in"))
+
+(defmethod effects/perform-effects events/external-redirect-typeform-recommend-stylist
+  [_ _ _ _ _ _]
+  (set! (.-location js/window) "https://mayvenn.typeform.com/to/J2Y1cC"))

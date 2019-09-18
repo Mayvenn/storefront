@@ -38,12 +38,6 @@
            (ui/modal-close {:class       "stroke-dark-gray fill-gray"
                             :close-attrs close-attrs})]])))]))
 
-(defmethod effects/perform-effects events/external-redirect-typeform-recommend-stylist
-  [_ _ _ _ _ _]
-  #?(:cljs
-     (set! (.-location js/window)
-           "https://mayvenn.typeform.com/to/J2Y1cC")))
-
 (defn component
   [{:keys [header-data gallery-modal-data cards-data title shop?] :as data} _ _]
   (component/create
