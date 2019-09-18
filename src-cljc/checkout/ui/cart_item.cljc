@@ -174,6 +174,17 @@
       (apply utils/send-event-callback decrement-target)
       (apply utils/send-event-callback increment-target))]))
 
+(defn cart-item-pick-stylist-molecule
+  [{:cart-item-pick-stylist/keys [id target content]}]
+  (when id
+    [:div
+     (ui/teal-ghost-button (merge {:height-class :small
+                                   :width-class  "col-6"
+                                   :class        "teal bold mt1"
+                                   :data-test    id}
+                                  (apply utils/route-to target))
+                           content)]))
+
 (defn organism
   [{:keys [cart-item suggestions]} _ _]
   (component/create
@@ -196,7 +207,8 @@
           [:div
            (cart-item-copy-molecule cart-item)
            (ui.molecules/stars-rating-molecule cart-item)
-           (cart-item-adjustable-quantity-molecule cart-item)]]
+           (cart-item-adjustable-quantity-molecule cart-item)
+           (cart-item-pick-stylist-molecule cart-item)]]
 
          ;; price group
          [:div.right.right-align.h6.pt1

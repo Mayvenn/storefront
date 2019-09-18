@@ -377,9 +377,14 @@
                                                                    (map inc))
                    :cart-item-steps-to-complete/current-step  quantity-added})
 
+          (and applied? (not stylist))
+          (merge {:cart-item-pick-stylist/id      "pick-a-stylist"
+                  :cart-item-pick-stylist/target  [events/navigate-adventure-match-stylist]
+                  :cart-item-pick-stylist/content "pick stylist"})
+
           applied?
           (merge {:cart-item-title/primary "Mayvenn Install"
-                  :cart-item-copy/value    "Congratulations! You're all set for your Mayvenn Install. Select your stylist after checkout."})
+                  :cart-item-copy/value    "Congratulations! You're all set for your Mayvenn Install. Click the button below to pick your stylist."})
 
           stylist
           (merge {:cart-item-title/secondary      (str "w/ " (:store-nickname stylist))
