@@ -1,12 +1,11 @@
 (ns adventure.stylist-matching.match-success
-  (:require [storefront.events :as events]
+  (:require #?@(:cljs [api.orders
+                       [storefront.history :as history]])
+            [storefront.effects :as effects]
+            [storefront.events :as events]
             storefront.keypaths
             adventure.keypaths
-            [storefront.effects :as effects]
-            [storefront.transitions :as transitions]
-            #?(:cljs [storefront.history :as history])
-            api.orders
-            [storefront.accessors.experiments :as experiments]))
+            [storefront.transitions :as transitions]))
 
 (defmethod transitions/transition-state events/api-success-assign-servicing-stylist-pre-purchase
   [_ _ {:keys [order]} app-state]
@@ -20,23 +19,21 @@
   [_ _ {:keys [servicing-stylist]} app-state]
   (assoc-in app-state adventure.keypaths/adventure-servicing-stylist servicing-stylist))
 
-#?(:cljs
-   (defmethod effects/perform-effects events/api-success-assign-servicing-stylist-pre-purchase [_ _ _ _ app-state]
-     (let [consolidated-cart?                         (experiments/consolidated-cart? app-state)
-           cart-contains-a-freeinstall-eligible-item? (some-> app-state
+(defmethod effects/perform-effects events/api-success-assign-servicing-stylist-pre-purchase [_ _ _ _ app-state]
+  #?(:cljs
+     (let [cart-contains-a-freeinstall-eligible-item? (some-> app-state
                                                               api.orders/current
                                                               :mayvenn-install/quantity-added
                                                               (> 0))]
-       (if (and cart-contains-a-freeinstall-eligible-item? consolidated-cart?)
+       (if cart-contains-a-freeinstall-eligible-item?
          (history/enqueue-navigate events/navigate-cart)
          (history/enqueue-navigate events/navigate-adventure-match-success-pre-purchase)))))
 
-#?(:cljs
-   (defmethod effects/perform-effects events/navigate-adventure-match-success-pre-purchase
-     [_ event _ app-state-before app-state]
+(defmethod effects/perform-effects events/navigate-adventure-match-success-pre-purchase
+  [_ _ _ _ app-state]
+  #?(:cljs
      (when (nil? (get-in app-state adventure.keypaths/adventure-servicing-stylist))
        (history/enqueue-redirect events/navigate-adventure-find-your-stylist))))
 
-#?(:cljs
-   (defmethod effects/perform-effects events/api-success-assign-servicing-stylist-post-purchase [_ _ _ _ app-state]
-     (history/enqueue-navigate events/navigate-adventure-match-success-post-purchase)))
+(defmethod effects/perform-effects events/api-success-assign-servicing-stylist-post-purchase [_ _ _ _ app-state]
+  #?(:cljs (history/enqueue-navigate events/navigate-adventure-match-success-post-purchase)))

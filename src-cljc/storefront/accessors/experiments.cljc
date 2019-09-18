@@ -79,12 +79,6 @@
   [data]
   (display-feature? data "adv-cart-promo-entry"))
 
-(defn consolidated-cart?
-  [data]
-  (or
-   (display-feature? data "consolidated-cart")
-   (on-dev? data)))
-
 (defn stylist-profiles?
   [data]
   (display-feature? data "stylist-profiles"))

@@ -60,14 +60,12 @@
          (svg/close-x {:class "stroke-dark-gray fill-none"})]]]])))
 
 (defn query [data]
-  (let [consolidated-cart? (experiments/consolidated-cart? data)
-        shop?              (= "shop" (get-in data keypaths/store-slug))]
+  (let [shop? (= "shop" (get-in data keypaths/store-slug))]
     {:item-count                  (orders/product-quantity (get-in data keypaths/order))
      :back                        (first (get-in data keypaths/navigation-undo-stack))
      :desktop-header-data         (storefront-header/query data)
-     :hide-back-to-shopping-link? (and shop? consolidated-cart?)
+     :hide-back-to-shopping-link? shop?
      :illuminated?                (and
-                                   consolidated-cart?
                                    shop?
                                    (orders/freeinstall-entered? (get-in data keypaths/order)))}))
 
