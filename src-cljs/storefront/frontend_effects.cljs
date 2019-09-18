@@ -761,9 +761,9 @@
 (defn determine-site
   [app-state]
   (cond
-    (= "classic" (get-in app-state keypaths/store-experience)) :classic
-    (= "aladdin" (get-in app-state keypaths/store-experience)) :aladdin
-    (= "shop" (get-in app-state keypaths/store-slug))          :shop))
+    (= "mayvenn-classic" (get-in app-state keypaths/store-experience)) :classic
+    (= "aladdin" (get-in app-state keypaths/store-experience))         :aladdin
+    (= "shop" (get-in app-state keypaths/store-slug))                  :shop))
 
 (defmethod effects/perform-effects events/order-completed
   [_ _ order _ app-state]
