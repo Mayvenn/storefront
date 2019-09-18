@@ -5,14 +5,13 @@
             [storefront.css-transitions :as css-transitions]))
 
 (defn- slide-down [content]
-  content
-  #_
   (css-transitions/transition-group
    {:classNames "slide-down"
-    :in         true
+    :in         (not (empty? content))
     :timeout    300}
-   (component/html
-    content)))
+   (if content
+     (component/html content)
+     (component/html [:div]))))
 
 (defn section
   "A data constructor for convenience"
