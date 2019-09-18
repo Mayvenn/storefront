@@ -12,7 +12,7 @@
             ["react" :as react]))
 
 (defn create-class [super-class init-fn static-properties method-names]
-  (let [ctor (fn ^void constructor [props]
+  (let [ctor (fn constructor [props]
                (this-as this
                  ;; auto-bind methods
                  (doseq [[method f] method-names
