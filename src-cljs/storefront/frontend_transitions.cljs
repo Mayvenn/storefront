@@ -638,4 +638,7 @@
   (when module-name
     (update app-state :modules (fnil conj #{}) module-name)))
 
+(defmethod transition-state events/visitor-identified
+  [_ _ args app-state]
+  (assoc-in app-state keypaths/email-capture-session "opted-in"))
 

@@ -951,3 +951,7 @@
     (when (and (not already-loaded-module?)
                (= for-navigation-event evt))
       (messages/handle-message evt (assoc args :navigate/caused-by :module-load)))))
+
+(defmethod effects/perform-effects events/visitor-identified
+  [_ _ _ _ app-state]
+  (cookie-jar/save-email-capture-session (get-in app-state keypaths/cookie) "opted-in"))

@@ -31,9 +31,16 @@
 (defn track-page [store-experience]
   (track-event "pageview" {:store-experience store-experience}))
 
-(defn identify [{:keys [id email]}]
-  (when (.hasOwnProperty js/window "stringer")
-    (.identify js/stringer email id)))
+(defn identify
+  ([args]
+   (identify args nil ))
+  ([{:keys [id email]} callback-event]
+   (when (.hasOwnProperty js/window "stringer")
+     (.identify js/stringer email id)
+     (when callback-event
+       (handle-message callback-event
+                       {:stringer.identify/id    id
+                        :stringer.identify/email email})))))
 
 (defn track-clear []
   (when (.hasOwnProperty js/window "stringer")

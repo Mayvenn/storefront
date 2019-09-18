@@ -58,7 +58,8 @@
 
 (defmethod perform-track events/app-start [_ event args app-state]
   (when (get-in app-state keypaths/user-id)
-    (stringer/identify (get-in app-state keypaths/user))))
+    (stringer/identify (get-in app-state keypaths/user)
+                       events/visitor-identified)))
 
 (defn- nav-was-selecting-bundle-option? [app-state]
   (when-let [prev-nav-message (:navigation-message (first (get-in app-state keypaths/navigation-undo-stack)))]
@@ -254,7 +255,8 @@
 
 (defmethod perform-track events/order-placed [_ event order app-state]
   (stringer/identify {:id    (-> order :user :id)
-                      :email (-> order :user :email)})
+                      :email (-> order :user :email)}
+                     events/visitor-identified)
   (stringer/track-event "checkout-complete" (stringer-order-completed order))
   (let [order-total      (:total order)
 
@@ -297,7 +299,8 @@
     (google-analytics/track-event "orders" "placed_total_minus_store_credit" nil (int (orders/non-store-credit-payment-amount order)))))
 
 (defmethod perform-track events/api-success-auth [_ event args app-state]
-  (stringer/identify (get-in app-state keypaths/user)))
+  (stringer/identify (get-in app-state keypaths/user)
+                     events/visitor-identified))
 
 (defmethod perform-track events/api-success-auth-sign-in [_ event {:keys [flow user] :as args} app-state]
   (stringer/track-event "sign_in" {:type flow})
@@ -315,7 +318,8 @@
                                              :variation feature}))
 
 (defn track-email-capture-capture [app-state {:keys [email]}]
-  (stringer/identify {:email email})
+  (stringer/identify {:email email}
+                     events/visitor-identified)
   (stringer/track-event "email_capture-capture"
                         {:email            email
                          :test-variations  (get-in app-state keypaths/features)
@@ -357,7 +361,8 @@
   (convert/track-conversion "paypal-checkout"))
 
 (defmethod perform-track events/api-success-update-order-update-guest-address [_ event {:keys [order]} app-state]
-  (stringer/identify (:user order))
+  (stringer/identify (:user order)
+                     events/visitor-identified)
   (stringer/track-event "checkout-identify_guest")
   (stringer/track-event "checkout-address_enter" {:order_number (:number order)}))
 

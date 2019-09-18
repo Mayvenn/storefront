@@ -551,6 +551,7 @@
 (defpath adventure-stylist-search-results-displayed)
 (defpath adventure-stylist-search-results-post-purchase-displayed)
 
+(defpath visitor-identified)
 (defpath adventure-visitor-identified)
 
 (defpath adventure-fetch-matched-skus)

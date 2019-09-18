@@ -1,6 +1,5 @@
 (ns storefront.components.popup
-  (:require [storefront.accessors.experiments :as experiments]
-            [storefront.accessors.nav :as nav]
+  (:require [storefront.accessors.nav :as nav]
             [storefront.browser.cookie-jar :as cookie-jar]
             [storefront.browser.scroll :as scroll]
             [storefront.component :as component]
@@ -74,15 +73,7 @@
             (get-in app-state keypaths/dismissed-pick-a-stylist-email-capture)
 
             pick-a-stylist-page?
-            (and (routes/sub-page? [navigation-event] [events/navigate-adventure])
-                 ;; Don't show on post purchase pages
-                 (not (contains?
-                       #{events/navigate-adventure-matching-stylist-wait-post-purchase
-                         events/navigate-adventure-stylist-results-post-purchase
-                         events/navigate-adventure-match-success-post-purchase
-                         events/control-adventure-select-stylist-post-purchase
-                         events/navigate-adventure-checkout-wait}
-                       navigation-event)))]
+            (routes/sub-page? [navigation-event] [events/navigate-adventure])]
 
         ;; Caveat, show pick-a-stylist capture after regular capture
         ;; however, never show regular capture after pick-a-stylist capture (i.e. direct load)
