@@ -667,13 +667,25 @@
 
 (defmethod effects/perform-effects events/save-order
   [_ _ {:keys [order]} _ app-state]
-  (if (and order (orders/incomplete? order))
-    (do
-      (when-let [sku-ids (->> order orders/product-items (map :sku) seq)]
-        (messages/handle-message events/ensure-sku-ids {:sku-ids sku-ids}))
-      (cookie-jar/save-order (get-in app-state keypaths/cookie) order)
-      (add-pending-promo-code app-state order))
-    (messages/handle-message events/clear-order)))
+  (let [servicing-stylist-id          (:servicing-stylist-id order)
+        incomplete-order?             (and order (orders/incomplete? order))
+        servicing-stylist-not-loaded? (and servicing-stylist-id
+                                           (not=
+                                            servicing-stylist-id
+                                            (-> app-state
+                                                (get-in adventure.keypaths/adventure-servicing-stylist)
+                                                :stylist-id)))]
+      (if incomplete-order?
+        (do
+          (when-let [sku-ids (->> order orders/product-items (map :sku) seq)]
+            (messages/handle-message events/ensure-sku-ids {:sku-ids sku-ids}))
+
+          (when servicing-stylist-not-loaded?
+            (api/fetch-matched-stylist (get-in app-state keypaths/api-cache) servicing-stylist-id))
+
+          (cookie-jar/save-order (get-in app-state keypaths/cookie) order)
+          (add-pending-promo-code app-state order))
+        (messages/handle-message events/clear-order))))
 
 (defmethod effects/perform-effects events/clear-order [_ _ _ _ app-state]
   (cookie-jar/clear-order (get-in app-state keypaths/cookie)))

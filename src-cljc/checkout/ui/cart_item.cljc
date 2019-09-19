@@ -16,9 +16,9 @@
      value]))
 
 (defn cart-item-copy-molecule
-  [{:cart-item-copy/keys [value]}]
+  [{:cart-item-copy/keys [id value]}]
   (when value
-    [:div.h7.dark-gray value]))
+    [:div.h7.dark-gray {:data-test id} value]))
 
 (defn cart-item-title-molecule
   [{:cart-item-title/keys [id primary secondary]}]

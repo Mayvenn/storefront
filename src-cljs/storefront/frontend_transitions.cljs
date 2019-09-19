@@ -382,17 +382,21 @@
           freeinstall-just-added? (if (= order previous-order)
                                     (get-in app-state keypaths/cart-freeinstall-just-added?)
                                     (and (not (orders/freeinstall-entered? previous-order))
-                                         (orders/freeinstall-entered? order)))]
-      (-> app-state
-          (assoc-in keypaths/order order)
-          (assoc-in keypaths/cart-recently-added-skus newly-added-sku-ids)
-          (assoc-in keypaths/cart-freeinstall-just-added? freeinstall-just-added?)
-          (update-in keypaths/checkout-billing-address merge (:billing-address order))
-          (update-in keypaths/checkout-shipping-address merge (:shipping-address order))
-          (assoc-in keypaths/checkout-selected-shipping-method
-                    (merge (first (get-in app-state keypaths/shipping-methods))
-                           (orders/shipping-item order)))
-          prefill-guest-email-address))
+                                         (orders/freeinstall-entered? order)))
+          no-servicing-stylist?   (nil? (:servicing-stylist-id order))]
+
+      (cond-> (-> app-state
+                  (assoc-in keypaths/order order)
+                  (assoc-in keypaths/cart-recently-added-skus newly-added-sku-ids)
+                  (assoc-in keypaths/cart-freeinstall-just-added? freeinstall-just-added?)
+                  (update-in keypaths/checkout-billing-address merge (:billing-address order))
+                  (update-in keypaths/checkout-shipping-address merge (:shipping-address order))
+                  (assoc-in keypaths/checkout-selected-shipping-method
+                            (merge (first (get-in app-state keypaths/shipping-methods))
+                                   (orders/shipping-item order)))
+                  prefill-guest-email-address)
+        no-servicing-stylist?
+        (assoc-in adventure.keypaths/adventure-servicing-stylist nil)))
     (assoc-in app-state keypaths/order nil)))
 
 (defmethod transition-state events/clear-order [_ event _ app-state]
@@ -490,6 +494,7 @@
       (assoc-in keypaths/checkout state/initial-checkout-state)
       (assoc-in keypaths/cart state/initial-cart-state)
       (assoc-in keypaths/completed-order order)
+      (assoc-in adventure.keypaths/adventure-servicing-stylist nil)
       (assoc-in keypaths/pending-talkable-order (talkable/completed-order order))))
 
 (defmethod transition-state events/api-success-promotions [_ event {promotions :promotions} app-state]
