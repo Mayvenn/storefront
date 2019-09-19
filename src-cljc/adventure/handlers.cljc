@@ -162,7 +162,7 @@
 (defmethod transitions/transition-state events/navigate-adventure-match-success-post-purchase
      [_ _ _ {:keys [completed-order] :as app-state}]
      #?(:cljs
-              (assoc-in app-state storefront.keypaths/pending-talkable-order (talkable/completed-order completed-order))))
+        (assoc-in app-state storefront.keypaths/pending-talkable-order (talkable/completed-order completed-order))))
 
 (defmethod effects/perform-effects events/navigate-adventure-match-success-post-purchase [_ _ _ _ app-state]
   #?(:cljs
