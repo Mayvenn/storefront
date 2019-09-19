@@ -95,3 +95,7 @@
 (defn blog?
   [data]
   (display-feature? data "blog"))
+
+(defn pick-stylist?
+  [data]
+  (display-feature? data "pick-stylist"))

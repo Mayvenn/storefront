@@ -377,7 +377,7 @@
                                                                    (map inc))
                    :cart-item-steps-to-complete/current-step  quantity-added})
 
-          (and applied? (not stylist))
+          (and applied? (not stylist) (experiments/pick-stylist? app-state))
           (merge {:cart-item-pick-stylist/id      "pick-a-stylist"
                   :cart-item-pick-stylist/target  [events/navigate-adventure-match-stylist]
                   :cart-item-pick-stylist/content "pick stylist"})
