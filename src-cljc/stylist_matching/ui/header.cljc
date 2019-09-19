@@ -19,7 +19,7 @@
   [{:header.cart/keys [id value color]}]
   (when id
     (component/html
-     [:a.block.p3
+     [:a.block
       (merge {:data-test id}
              (apply utils/route-to [events/navigate-cart]))
       [:div.relative.flex.items-center.justify-center
@@ -47,6 +47,6 @@
       (header-back-navigation-molecule data)]
      [:div
       (header-title-molecule data)]
-     [:div.col-1
+     [:div.col-1.mr2
       (header-cart-molecule data)]]]))
 
