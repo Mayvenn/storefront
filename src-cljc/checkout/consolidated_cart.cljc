@@ -387,7 +387,7 @@
           (merge {:cart-item-title/primary "Mayvenn Install"
                   :cart-item-copy/value    (if (experiments/pick-stylist? app-state)
                                              "Congratulations! You're all set for your Mayvenn Install. Click the button below to pick your stylist."
-                                             "Congratulations! You're all set for your Mayvenn Install. Select your stylist after checkout.")})
+                                             "Congratulations! You're all set for your Mayvenn Install. Select your stylist after checkout.")
                   :cart-item-copy/id       "congratulations"})
 
           stylist
