@@ -29,7 +29,7 @@
 
     (not submitted?)
     (merge {:header.back-navigation/target [events/navigate-adventure-stylist-results-pre-purchase]
-            :header.cart/id                "adventure-cart"
+            :header.cart/id                "mobile-cart"
             :header.cart/value             quantity
             :header.cart/color             "white"})))
 
