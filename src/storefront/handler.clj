@@ -796,6 +796,7 @@
               (condp (fn [substr s] (string/starts-with? s substr)) (str uri)
                 "/adv/match-stylist"     "/adv/match-stylist"
                 "/adv/find-your-stylist" "/adv/find-your-stylist"
+                "/stylist/"              uri
                 "/adv/stylist-results"   "/adv/stylist-results"
                 "/adv/shop-hair"         "/categories/23-mayvenn-install"
                 "/adv/how-shop-hair"     "/categories/23-mayvenn-install"
