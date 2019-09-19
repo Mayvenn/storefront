@@ -132,6 +132,7 @@
           events/navigate-adventure-select-new-look                     (ui/lazy-load-component :catalog 'adventure.select-new-look/built-component events/navigate-adventure-select-new-look)
           events/navigate-adventure-look-detail                         (ui/lazy-load-component :catalog 'adventure.look-detail/built-component events/navigate-adventure-look-detail)
           events/navigate-adventure-select-bundle-set                   (ui/lazy-load-component :catalog 'adventure.select-new-look/built-component events/navigate-adventure-select-bundle-set)
+
           events/navigate-adventure-match-stylist                       stylist-matching.match-stylist/page
           events/navigate-adventure-find-your-stylist                   stylist-matching.find-your-stylist/page
           events/navigate-adventure-matching-stylist-wait-pre-purchase  adventure.stylist-matching.matching-stylist-wait/built-component
@@ -140,7 +141,9 @@
           events/navigate-adventure-stylist-results-post-purchase       stylist-matching.stylist-results/page
           events/navigate-adventure-out-of-area                         stylist-matching.out-of-area/page
           events/navigate-adventure-match-success-pre-purchase          stylist-matching.match-success/page
-          events/navigate-adventure-match-success-post-purchase         adventure.stylist-matching.match-success-post-purchase/built-component
+          events/navigate-adventure-match-success-post-purchase
+           stylist-matching.match-success/page
+         #_ adventure.stylist-matching.match-success-post-purchase/built-component
           events/navigate-adventure-checkout-wait                       (ui/lazy-load-component :checkout 'adventure.checkout.wait/built-component events/navigate-adventure-checkout-wait)
           events/navigate-adventure-let-mayvenn-match                   adventure.stylist-matching.let-mayvenn-match/built-component
           events/navigate-adventure-stylist-profile                     adventure.stylist-matching.stylist-profile/built-component

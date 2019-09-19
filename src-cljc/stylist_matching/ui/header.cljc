@@ -43,7 +43,10 @@
   (component/create
    [:div#header
     [:div.flex.items-center.justify-between.bg-lavender-dark.white
-     (header-back-navigation-molecule data)
-     (header-title-molecule data)
-     (header-cart-molecule data)]]))
+     [:div.col-1
+      (header-back-navigation-molecule data)]
+     [:div
+      (header-title-molecule data)]
+     [:div.col-1
+      (header-cart-molecule data)]]]))
 

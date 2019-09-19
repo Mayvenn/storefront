@@ -1,11 +1,9 @@
 (ns stylist-matching.ui.stylist-cards
   (:require [storefront.component :as component]
+            [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.platform.carousel :as carousel]
-            [storefront.platform.component-utils :as utils]
-            [storefront.components.svg :as svg]
-            [adventure.organisms.call-out-center :as call-out-center]
-            [storefront.events :as events]))
+            [storefront.platform.component-utils :as utils]))
 
 (defn ^:private star [index type]
   [:span.mrp1

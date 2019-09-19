@@ -69,6 +69,8 @@
      mayvenn-install
      {:waiter/order         waiter-order
       :order/dtc?           (contains? #{"shop" "freeinstall"} store-slug)
+      :order/submitted?     (= "submitted" (:state order))
+      :order.shipping/phone (get-in waiter-order [:shipping-address :phone])
       :order.items/quantity (+ #_ (when (:mayvenn-install/applied? mayvenn-install) 1)
                                (accessors/product-quantity waiter-order))})))
 
