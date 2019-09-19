@@ -167,10 +167,9 @@
                                                  :catalog/category-id "23"}]
        :shopping-method-choice.button/ucare-id "6c39cd72-6fde-4ec2-823c-5e39412a6d54"}]}))
 
-(def pre-purchase? #{events/navigate-adventure-stylist-results-pre-purchase
-                     events/navigate-adventure-match-success-pre-purchase})
+(def pre-purchase? #{events/navigate-adventure-match-success-pre-purchase})
 
-(def post-purchase? #{events/navigate-adventure-stylist-profile-post-purchase})
+(def post-purchase? #{events/navigate-adventure-match-success-post-purchase})
 
 (defn template
   [{:keys [header shopping-method-choice matched-stylist]} _ _]
