@@ -18,19 +18,20 @@
 
 (defn header-query
   [{:order.items/keys [quantity]}
-   back]
-  {:header.cart/id                "mobile-cart"
-   :header.cart/value             quantity
-   :header.cart/color             "white"
-   :header.title/id               "adventure-title"
-   :header.title/primary          "Meet Your Certified Stylist"
-   :header.back-navigation/id     "adventure-back"
-   :header.back-navigation/back   back
-   :header.back-navigation/target [events/navigate-home]})
+   back post-purchase?]
+  (cond-> {:header.title/id               "adventure-title"
+           :header.title/primary          "Meet Your Certified Stylist"
+           :header.back-navigation/id     "adventure-back"
+           :header.back-navigation/back   back
+           :header.back-navigation/target [events/navigate-home]}
+    (not post-purchase?)
+    (merge {:header.cart/id    "mobile-cart"
+            :header.cart/value quantity
+            :header.cart/color "white"})))
 
 (defn stylist-card-query
   [stylist-profiles?
-   navigation-event
+   post-purchase?
    idx
    {:keys [salon service-menu gallery-images store-slug stylist-id] :as stylist}]
   (let [{salon-name :name :keys [address-1 address-2 city state zipcode]} salon
@@ -39,13 +40,16 @@
                 specialty-sew-in-closure
                 specialty-sew-in-360-frontal
                 specialty-sew-in-frontal]} service-menu
-        cta-event                          (if (= events/navigate-adventure-stylist-results-pre-purchase navigation-event)
-                                             events/control-adventure-select-stylist-pre-purchase
-                                             events/control-adventure-select-stylist-post-purchase)]
+        cta-event                          (if post-purchase?
+                                             events/control-adventure-select-stylist-post-purchase
+                                             events/control-adventure-select-stylist-pre-purchase)]
     (cond-> {:react/key                       (str "stylist-card-" store-slug)
 
-             :stylist-card/target             [events/navigate-adventure-stylist-profile {:stylist-id stylist-id
-                                                                                          :store-slug store-slug}]
+             :stylist-card/target             (if post-purchase?
+                                                [events/navigate-adventure-stylist-profile-post-purchase {:stylist-id stylist-id
+                                                                                                          :store-slug store-slug}]
+                                                [events/navigate-adventure-stylist-profile {:stylist-id stylist-id
+                                                                                           :store-slug store-slug}])
              :stylist-card/id                 (str "stylist-card-" store-slug)
              :stylist-card.thumbnail/id       (str "stylist-card-thumbnail-" store-slug)
              :stylist-card.thumbnail/ucare-id (-> stylist :portrait :resizable-url)
@@ -193,16 +197,21 @@
                     :experiment-stylist-card stylist-cards/experiment-organism}
                    results)]]))
 
+(def post-purchase? #{events/navigate-adventure-stylist-results-post-purchase})
+
 (defn page
   [app-state]
   (let [current-order          (api.orders/current app-state)
         stylist-search-results (get-in app-state adventure.keypaths/adventure-matched-stylists)
-        navigation-event       (get-in app-state storefront.keypaths/navigation-event)]
+        nav-event              (get-in app-state storefront.keypaths/navigation-event)
+        post-purchase?         (post-purchase? nav-event) ]
     (component/build template
                      {:gallery-modal (gallery-modal-query app-state)
-                      :header        (header-query current-order (first (get-in app-state storefront.keypaths/navigation-undo-stack)))
+                      :header        (header-query current-order
+                                                   (first (get-in app-state storefront.keypaths/navigation-undo-stack))
+                                                   post-purchase?)
                       :list/results  (insert-at-pos 3
                                                     call-out-query
                                                     (stylist-cards-query (experiments/stylist-profiles? app-state)
-                                                                         navigation-event
+                                                                         post-purchase?
                                                                          stylist-search-results))})))

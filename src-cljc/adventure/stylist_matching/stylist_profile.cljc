@@ -74,6 +74,8 @@
                     :style {:width "12px" :height "12px"}}))
    specialty])
 
+(def post-purchase? #{events/navigate-adventure-stylist-profile-post-purchase})
+
 (defn query
   [data]
   (let [stylist-id      (get-in data keypaths/stylist-profile-id)
@@ -81,15 +83,17 @@
         stylist-name    (stylists/->display-name stylist)
         current-order   (api.orders/current data)
         shop?           (= "shop" (get-in data storefront.keypaths/store-slug))
+        post-purchase?  (post-purchase? (get-in data storefront.keypaths/navigation-event))
         undo-history    (get-in data storefront.keypaths/navigation-undo-stack)
-        header-org-data {:header.cart/id                "mobile-cart"
-                         :header.cart/value             (:order.items/quantity current-order)
-                         :header.cart/color             "white"
-                         :header.title/id               "adventure-title"
-                         :header.title/primary          (str "More about " stylist-name)
-                         :header.back-navigation/id     "adventure-back"
-                         :header.back-navigation/back   undo-history
-                         :header.back-navigation/target [events/navigate-home]}]
+        header-org-data (cond-> {:header.title/id               "adventure-title"
+                                 :header.title/primary          (str "More about " stylist-name)
+                                 :header.back-navigation/id     "adventure-back"
+                                 :header.back-navigation/back   undo-history
+                                 :header.back-navigation/target [events/navigate-home]}
+                          (not post-purchase?)
+                          (merge {:header.cart/id    "mobile-cart"
+                                  :header.cart/value (:order.items/quantity current-order)
+                                  :header.cart/color "white"}))]
     (when stylist
       {:header-data                  (merge {:subtitle                [:div.mt2.h4.medium
                                                                        (str "More about " stylist-name)]
@@ -219,5 +223,15 @@
        (api/fetch-stylist-details (get-in app-state storefront.keypaths/api-cache) stylist-id)]))
 
 (defmethod transitions/transition-state events/navigate-adventure-stylist-profile
+  [_ _ {:keys [stylist-id]} app-state]
+  (assoc-in app-state keypaths/stylist-profile-id (spice/parse-int stylist-id)))
+
+(defmethod effects/perform-effects events/navigate-adventure-stylist-profile-post-purchase
+  [dispatch event {:keys [stylist-id]} prev-app-state app-state]
+  #?@(:cljs
+      [(google-maps/insert)
+       (api/fetch-stylist-details (get-in app-state storefront.keypaths/api-cache) stylist-id)]))
+
+(defmethod transitions/transition-state events/navigate-adventure-stylist-profile-post-purchase
   [_ _ {:keys [stylist-id]} app-state]
   (assoc-in app-state keypaths/stylist-profile-id (spice/parse-int stylist-id)))

@@ -141,12 +141,12 @@
           events/navigate-adventure-stylist-results-post-purchase       stylist-matching.stylist-results/page
           events/navigate-adventure-out-of-area                         stylist-matching.out-of-area/page
           events/navigate-adventure-match-success-pre-purchase          stylist-matching.match-success/page
-          events/navigate-adventure-match-success-post-purchase
-           stylist-matching.match-success/page
+          events/navigate-adventure-match-success-post-purchase         stylist-matching.match-success/page
          #_ adventure.stylist-matching.match-success-post-purchase/built-component
           events/navigate-adventure-checkout-wait                       (ui/lazy-load-component :checkout 'adventure.checkout.wait/built-component events/navigate-adventure-checkout-wait)
           events/navigate-adventure-let-mayvenn-match                   adventure.stylist-matching.let-mayvenn-match/built-component
           events/navigate-adventure-stylist-profile                     adventure.stylist-matching.stylist-profile/built-component
+          events/navigate-adventure-stylist-profile-post-purchase       adventure.stylist-matching.stylist-profile/built-component
           events/navigate-adventure-stylist-gallery                     adventure.stylist-matching.stylist-gallery/built-component
           home/built-component)
     (assert (str "Expected main-component to return a component, but did not: " (pr-str nav-event)))))

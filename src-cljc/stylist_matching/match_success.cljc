@@ -34,7 +34,7 @@
             :header.cart/color             "white"})))
 
 (defn stylist-card-query
-  [stylist-profiles? {:keys [salon service-menu store-slug stylist-id] :as stylist}]
+  [stylist-profiles? {:keys [salon service-menu store-slug stylist-id] :as stylist} post-purchase?]
   (let [{salon-name :name
          :keys      [address-1 address-2 city state zipcode]} salon
         {:keys [specialty-sew-in-leave-out
@@ -42,8 +42,11 @@
                 specialty-sew-in-360-frontal
                 specialty-sew-in-frontal]}                    service-menu]
     (cond-> {:react/key                        (str "stylist-card-" store-slug)
-             :stylist-card/target              [events/navigate-adventure-stylist-profile {:stylist-id stylist-id
-                                                                                           :store-slug store-slug}]
+             :stylist-card/target              (if post-purchase?
+                                                 [events/navigate-adventure-stylist-profile-post-purchase {:stylist-id stylist-id
+                                                                                                           :store-slug store-slug}]
+                                                 [events/navigate-adventure-stylist-profile {:stylist-id stylist-id
+                                                                                             :store-slug store-slug}])
              :stylist-card/id                  (str "stylist-card-" store-slug)
              :stylist-card.thumbnail/id        (str "stylist-card-thumbnail-" store-slug)
              :stylist-card.thumbnail/ucare-id  (-> stylist :portrait :resizable-url)
@@ -116,7 +119,7 @@
                                                                zipcode ])}))))
 
 (defn matched-stylist-query
-  [servicing-stylist {:order/keys [submitted?] :order.shipping/keys [phone]}]
+  [servicing-stylist {:order/keys [submitted?] :order.shipping/keys [phone]} post-purchase?]
   (when submitted?
     (merge {:matched-stylist.title/id            "matched-with-stylist"
             :matched-stylist.title/primary       "Chat with your Stylist"
@@ -134,7 +137,7 @@
             :matched-stylist.cta-title/primary   "In the meantime…"
             :matched-stylist.cta-title/secondary "Get inspired for your appointment"
             :matched-stylist.cta-title/target    ["https://www.instagram.com/explore/tags/mayvennfreeinstall/"]}
-           (stylist-card-query false servicing-stylist))))
+           (stylist-card-query false servicing-stylist post-purchase?))))
 
 (defn shopping-method-choice-query
   [servicing-stylist {:order/keys [submitted?]}]
@@ -167,6 +170,8 @@
 (def pre-purchase? #{events/navigate-adventure-stylist-results-pre-purchase
                      events/navigate-adventure-match-success-pre-purchase})
 
+(def post-purchase? #{events/navigate-adventure-stylist-profile-post-purchase})
+
 (defn template
   [{:keys [header shopping-method-choice matched-stylist]} _ _]
   (component/create
@@ -179,7 +184,9 @@
 (defn page
   [app-state]
   (let [servicing-stylist (get-in app-state adventure.keypaths/adventure-servicing-stylist)
-        order             (if (pre-purchase? (get-in app-state storefront.keypaths/navigation-event))
+        nav-event         (get-in app-state storefront.keypaths/navigation-event)
+        post-purchase?    (post-purchase? nav-event)
+        order             (if (pre-purchase? nav-event)
                             (api.orders/current app-state)
                             (api.orders/completed app-state))]
     (component/build template
@@ -187,4 +194,5 @@
                       :shopping-method-choice (shopping-method-choice-query servicing-stylist
                                                                             order)
                       :matched-stylist        (matched-stylist-query servicing-stylist
-                                                                     order)})))
+                                                                     order
+                                                                     post-purchase?)})))
