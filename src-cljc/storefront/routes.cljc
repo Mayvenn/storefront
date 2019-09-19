@@ -44,24 +44,23 @@
 (def freeinstall? (partial contains? #{"freeinstall"}))
 
 (def stylist-matching-routes
-  {"/adv/match-stylist"                               (edn->bidi events/navigate-adventure-match-stylist)
-   "/adv/find-your-stylist"                           (edn->bidi events/navigate-adventure-find-your-stylist)
-   "/adv/matching-stylist-wait"                       (edn->bidi events/navigate-adventure-matching-stylist-wait-pre-purchase)
-   "/adv/matching-stylist-wait-post-purchase"         (edn->bidi events/navigate-adventure-matching-stylist-wait-post-purchase)
-   "/adv/stylist-results"                             (edn->bidi events/navigate-adventure-stylist-results-pre-purchase)
-   "/adv/stylist-results-post-purchase"               (edn->bidi events/navigate-adventure-stylist-results-post-purchase)
-   "/adv/out-of-area"                                 (edn->bidi events/navigate-adventure-out-of-area)
-   "/adv/match-success"                               (edn->bidi events/navigate-adventure-match-success-pre-purchase)
-   "/adv/match-success-post-purchase"                 (edn->bidi events/navigate-adventure-match-success-post-purchase)
-   "/adv/checkout-wait"                               (edn->bidi events/navigate-adventure-checkout-wait)
-   "/adv/let-mayvenn-match"                           (edn->bidi events/navigate-adventure-let-mayvenn-match)
-   ["/stylist/" [#"\d+" :stylist-id] "-" :store-slug] (edn->bidi events/navigate-adventure-stylist-profile)
-   ["/stylist/"
-    [#"\d+" :stylist-id] "-" :store-slug
-    "/gallery"]                                       (edn->bidi events/navigate-adventure-stylist-gallery)
-   "/certified-stylists"                              (edn->bidi events/navigate-info-certified-stylists)
-   "/about-our-hair"                                  (edn->bidi events/navigate-info-about-our-hair)
-   "/how-it-works"                                    (edn->bidi events/navigate-info-how-it-works)})
+  {"/adv/match-stylist"                                                (edn->bidi events/navigate-adventure-match-stylist)
+   "/adv/find-your-stylist"                                            (edn->bidi events/navigate-adventure-find-your-stylist)
+   "/adv/matching-stylist-wait"                                        (edn->bidi events/navigate-adventure-matching-stylist-wait-pre-purchase)
+   "/adv/matching-stylist-wait-post-purchase"                          (edn->bidi events/navigate-adventure-matching-stylist-wait-post-purchase)
+   "/adv/stylist-results"                                              (edn->bidi events/navigate-adventure-stylist-results-pre-purchase)
+   "/adv/stylist-results-post-purchase"                                (edn->bidi events/navigate-adventure-stylist-results-post-purchase)
+   "/adv/out-of-area"                                                  (edn->bidi events/navigate-adventure-out-of-area)
+   "/adv/match-success"                                                (edn->bidi events/navigate-adventure-match-success-pre-purchase)
+   "/adv/match-success-post-purchase"                                  (edn->bidi events/navigate-adventure-match-success-post-purchase)
+   "/adv/checkout-wait"                                                (edn->bidi events/navigate-adventure-checkout-wait)
+   "/adv/let-mayvenn-match"                                            (edn->bidi events/navigate-adventure-let-mayvenn-match)
+   ["/stylist/" [#"\d+" :stylist-id] "-" :store-slug]                  (edn->bidi events/navigate-adventure-stylist-profile)
+   ["/stylist/" [#"\d+" :stylist-id] "-" :store-slug "-post-purchase"] (edn->bidi events/navigate-adventure-stylist-profile-post-purchase)
+   ["/stylist/" [#"\d+" :stylist-id] "-" :store-slug "/gallery"]       (edn->bidi events/navigate-adventure-stylist-gallery)
+   "/certified-stylists"                                               (edn->bidi events/navigate-info-certified-stylists)
+   "/about-our-hair"                                                   (edn->bidi events/navigate-info-about-our-hair)
+   "/how-it-works"                                                     (edn->bidi events/navigate-info-how-it-works)})
 
 (def freeinstall-routes
   {{:subdomain freeinstall?}
