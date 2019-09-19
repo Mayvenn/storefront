@@ -3,6 +3,7 @@
             [adventure.keypaths :as adv-keypaths]
             [adventure.components.profile-card :as profile-card]
             [adventure.components.card-stack :as card-stack]
+            api.orders
             [storefront.assets :as assets]
             [storefront.transitions :as transitions]
             [storefront.events :as events]
