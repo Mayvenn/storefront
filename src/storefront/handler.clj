@@ -1,10 +1,10 @@
 (ns storefront.handler
   (:require [bidi.bidi :as bidi]
             [catalog.categories :as categories]
+            catalog.keypaths
             [catalog.product-details :as product-details]
             [catalog.products :as products]
             [catalog.skuers :as skuers]
-            [clj-time.core :as clj-time.core]
             [cheshire.core :as json]
             [clojure.java.io :as io]
             [clojure.set :as set]
@@ -46,7 +46,7 @@
 (defn ^:private path-for
   "Like routes/path-for, but preserves query params."
   ([req navigation-event] (path-for req navigation-event nil))
-  ([req navigation-event args] (routes/path-for navigation-event (merge args {:query-params (:query-params req)}))))
+  ([req navigation-event args] (routes/path-for navigation-event (merge {:query-params (:query-params req)} args))))
 
 (defn ^:private str->int [s]
   (try
@@ -766,11 +766,12 @@
         (if-let [stylist (api/get-servicing-stylist (:storeback-config ctx) stylist-id)]
           (if (not= (:store-slug stylist) store-slug)
             (util.response/redirect ; Correct stylist slug
-             (path-for req event {:stylist-id (:stylist-id stylist)
-                                  :store-slug (:store-slug stylist)}))
+             (path-for req event {:stylist-id   (:stylist-id stylist)
+                                  :store-slug   (:store-slug stylist)}))
             (h req)) ; No correction needed
-          (util.response/redirect ; Correct stylist slug
-           (path-for req events/navigate-adventure-find-your-stylist))) ; redirect to find your stylist
+          (-> req ; redirect to find your stylist
+              (path-for events/navigate-adventure-find-your-stylist {:query-params {:error "stylist-not-found"}})
+              util.response/redirect))
         (h req))))) ; not on the stylist profile or gallery page
 
 (defn routes-with-orders [ctx]

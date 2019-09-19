@@ -47,9 +47,22 @@
   [_ event _ app-state]
   (assoc-in app-state adventure.keypaths/adventure-stylist-match-address nil))
 
+(def find-your-stylist-error-codes
+  {"stylist-not-found"
+   (str
+    "The stylist you are looking for is not available."
+    " Please search for another stylist in your area below.")})
+
 #?(:cljs
-   (defmethod effects/perform-effects events/navigate-adventure-find-your-stylist [_ _ _ _ app-state]
-     (google-maps/insert)))
+   (defmethod effects/perform-effects events/navigate-adventure-find-your-stylist
+     [_ current-nav-event {:keys [query-params] :as args} _ _]
+     (if-let [error-message (-> query-params :error find-your-stylist-error-codes)]
+       (do
+         (messages/handle-message events/redirect {:nav-message
+                                                   [current-nav-event
+                                                    (update-in args [:query-params] dissoc :error)]})
+         (messages/handle-message events/flash-later-show-failure {:message error-message}))
+       (google-maps/insert))))
 
 (defmethod trackings/perform-track events/control-adventure-location-submit
   [_ event {:keys [current-step]} app-state]

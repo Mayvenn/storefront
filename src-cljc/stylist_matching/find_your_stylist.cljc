@@ -6,7 +6,8 @@
             api.orders
             [stylist-matching.ui.header :as header]
             [stylist-matching.ui.stylist-search :as stylist-search]
-            [stylist-matching.ui.spinner :as spinner]))
+            [stylist-matching.ui.spinner :as spinner]
+            [storefront.components.flash :as flash]))
 
 (defn spinner-query
   [app-state]
@@ -42,10 +43,11 @@
    :header.back-navigation/target [events/navigate-adventure-match-stylist]})
 
 (defn template
-  [{:keys [header stylist-search spinner]} _ _]
+  [{:keys [flash header stylist-search spinner]} _ _]
   (component/create
    [:div.bg-lavender.white.center.flex.flex-auto.flex-column
     (component/build header/organism header nil)
+    (component/build flash/component flash nil)
     (if (seq spinner)
       (component/build spinner/organism spinner nil)
       (component/build stylist-search/organism stylist-search nil))]))
@@ -55,5 +57,6 @@
   (let [current-order (api.orders/current app-state)]
     (component/build template
                      {:stylist-search (stylist-search-query app-state)
+                      :flash          (flash/query app-state)
                       :spinner        (spinner-query app-state)
                       :header         (header-query current-order)})))
