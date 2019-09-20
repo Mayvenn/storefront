@@ -1,6 +1,5 @@
 (ns adventure.components.card-stack
-  (:require [adventure.components.header :as header]
-            [stylist-matching.ui.header :as header-org]
+  (:require [stylist-matching.ui.header :as header-org]
             [adventure.components.profile-card-with-gallery :as profile-card-with-gallery]
             [adventure.organisms.call-out-center :as call-out-center]
             [storefront.events :as events]
@@ -39,18 +38,14 @@
                             :close-attrs close-attrs})]])))]))
 
 (defn component
-  [{:keys [header-data gallery-modal-data cards-data title shop?] :as data} _ _]
+  [{:keys [header-data gallery-modal-data cards-data title] :as data} _ _]
   (component/create
    (when (seq cards-data)
      [:div.center.flex-auto.bg-light-lavender
       (component/build gallery-modal-component gallery-modal-data nil)
       [:div.white
        (when header-data
-         (if shop?
-           (component/build header-org/organism header-data nil)
-           [:div.flex.items-center.bold.bg-light-lavender
-            {:style {:height "75px"}}
-            (header/built-component header-data nil)]))]
+         (component/build header-org/organism header-data nil))]
       [:div
        [:div.bg-white
         [:div.flex.flex-auto.justify-center.pt6

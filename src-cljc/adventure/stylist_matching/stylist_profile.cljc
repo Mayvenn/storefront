@@ -4,7 +4,6 @@
                 [[storefront.api :as api]
                  [storefront.hooks.google-maps :as google-maps]
                  [storefront.platform.maps :as maps]])
-            [adventure.components.header :as header]
             [adventure.keypaths :as keypaths]
             api.orders
             [clojure.string :as string]
@@ -78,32 +77,22 @@
 
 (defn query
   [data]
-  (let [stylist-id      (get-in data keypaths/stylist-profile-id)
-        stylist         (stylists/by-id data stylist-id)
-        stylist-name    (stylists/->display-name stylist)
-        current-order   (api.orders/current data)
-        shop?           (= "shop" (get-in data storefront.keypaths/store-slug))
-        post-purchase?  (post-purchase? (get-in data storefront.keypaths/navigation-event))
-        undo-history    (get-in data storefront.keypaths/navigation-undo-stack)
-        header-org-data (cond-> {:header.title/id               "adventure-title"
-                                 :header.title/primary          (str "More about " stylist-name)
-                                 :header.back-navigation/id     "adventure-back"
-                                 :header.back-navigation/back   undo-history
-                                 :header.back-navigation/target [events/navigate-home]}
-                          (not post-purchase?)
-                          (merge {:header.cart/id    "mobile-cart"
-                                  :header.cart/value (:order.items/quantity current-order)
-                                  :header.cart/color "white"}))]
+  (let [stylist-id     (get-in data keypaths/stylist-profile-id)
+        stylist        (stylists/by-id data stylist-id)
+        stylist-name   (stylists/->display-name stylist)
+        current-order  (api.orders/current data)
+        post-purchase? (post-purchase? (get-in data storefront.keypaths/navigation-event))
+        undo-history   (get-in data storefront.keypaths/navigation-undo-stack)]
     (when stylist
-      {:header-data                  (merge {:subtitle                [:div.mt2.h4.medium
-                                                                       (str "More about " stylist-name)]
-                                             :back-navigation-message [events/navigate-adventure-find-your-stylist]
-                                             :cold-load-nav-message   (when (empty? undo-history)
-                                                                        [events/navigate-adventure-find-your-stylist])
-                                             :header-attrs            {:class "bg-light-lavender"}
-                                             :shopping-bag?           true}
-                                            header-org-data)
-       :shop?                        shop?
+      {:header-data                  (cond-> {:header.title/id               "adventure-title"
+                                              :header.title/primary          (str "More about " stylist-name)
+                                              :header.back-navigation/id     "adventure-back"
+                                              :header.back-navigation/back   undo-history
+                                              :header.back-navigation/target [events/navigate-home]}
+                                       (not post-purchase?)
+                                       (merge {:header.cart/id    "mobile-cart"
+                                               :header.cart/value (:order.items/quantity current-order)
+                                               :header.cart/color "white"}))
        :google-map-data              #?(:cljs (maps/map-query data)
                                         :clj  nil)
        :cta/id                       "select-stylist"
@@ -191,13 +180,10 @@
         (checks-or-x "Frontal" (:specialty-sew-in-frontal content))]])]] )
 
 (defn component
-  [{:keys [header-data google-map-data shop?] :as query} owner opts]
+  [{:keys [header-data google-map-data] :as query} owner opts]
   (component/create
    [:div.col-12.bg-white.mb6
-    [:div.white (if shop?
-                  (component/build header-org/organism header-data nil)
-                  [:div {:style {:height "75px"}}
-                   (header/built-component header-data nil)])]
+    [:div.white (component/build header-org/organism header-data nil)]
     [:div.px3 (component/build stylist-profile-card-component query nil)]
 
     #?(:cljs (component/build maps/component google-map-data))
