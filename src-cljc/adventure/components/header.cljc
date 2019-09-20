@@ -1,3 +1,4 @@
+;; GROT: Replace with new header stylist-matching.ui.header
 (ns adventure.components.header
   (:require [storefront.component :as component]
             [storefront.components.ui :as ui]

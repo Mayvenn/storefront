@@ -1,3 +1,4 @@
+;; GROT: Unused
 (ns adventure.progress)
 
 ;; Here lies all the step progress increments for easy reference and adjustments

@@ -1,3 +1,4 @@
+;; GROT
 (ns adventure.select-new-look
   (:require #?(:cljs [storefront.components.ugc :as ugc])
             [storefront.accessors.contentful :as contentful]
