@@ -13,7 +13,7 @@
    :header.title/id               "adventure-title"
    :header.title/primary          "Meet Your Certified Stylist"
    :header.back-navigation/id     "adventure-back"
-   :header.back-navigation/target [events/navigate-adventure-stylist-results-pre-purchase]})
+   :header.back-navigation/target [events/navigate-adventure-find-your-stylist]})
 
 (def shopping-method-choice-query
   {:shopping-method-choice.error-title/id        "stylist-matching-shopping-method-choice"
