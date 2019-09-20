@@ -46,34 +46,34 @@
          container    (if unstick? :div#header :div#header.absolute.top-0.left-0.right-0.center)]
      [container
       header-attrs
-      [:div.flex.flex-column
-       (if progress
-         (progress-bar (dec progress))
-         [:div {:style {:height "6px"}}])
-       [:div.relative.mt1
-        {:style {:height "59px"}}
-        [:div.absolute.left-0.right-0.top-0.flex.items-center.justify-between ;; Buttons (cart and back)
-         [:div
-          (when back-navigation-message
+      (if progress
+        (progress-bar (dec progress))
+        [:div {:style {:height "6px"}}])
+      [:div.flex.items-center.justify-between ;; Buttons (cart and back)
+       {:style {:height "66px"}}
+       [:div
+        (if back-navigation-message
             [:a.block.p3.inherit-color
              (merge {:data-test "adventure-back"}
                     (if cold-load-nav-message
                       (apply utils/route-to cold-load-nav-message)
                       (utils/route-back {:navigation-message back-navigation-message})))
              [:div.flex.items-center.justify-center {:style {:height "24px" :width "20px"}}
-              (ui/back-arrow {:width "14"})]])]
-         [:div
-          (when-let [{:keys [id opts value]} right-corner]
-            [:a.block.p3
+              (ui/back-arrow {:width "14"})]]
+            [:div {:style {:width "50px"}}])]
+       (if logo?
+         [:div.mx-auto
+          (ui/ucare-img {:width "140"} "1970d88b-3798-4914-8a91-74288b09cc77")]
+         [:div.mx-auto
+          [:div.h6.medium title]
+          [:div.h8 subtitle]])
+       [:div
+        (if right-corner
+          (let [{:keys [id opts value]} right-corner]
+            [:a.block.p3.flex.items-center
              (merge {:data-test id} opts)
-             (when id value)])]]
-        [:div.flex
-         (if logo?
-           [:div.mr4.mx-auto
-            (ui/ucare-img {:width "140"} "1970d88b-3798-4914-8a91-74288b09cc77")]
-           [:div.mt1.mx-auto
-            [:div.h6.medium title]
-            [:div.h8 subtitle]])]]]])))
+             (when id value)])
+          [:div {:style {:width "50px"}}])]]])))
 
 (defn built-component
   [data opts]

@@ -27,7 +27,8 @@
         stylist    (stylists/by-id data stylist-id)
         back       (first (get-in data storefront.keypaths/navigation-undo-stack))]
     (when stylist
-      {:header-data {:subtitle     [:div.mt2.h4.medium
+      ;; TODO: Use new header
+      {:header-data {:subtitle     [:div.h4.medium
                                     (str (stylists/->display-name stylist) "'s Recent work" )]
                      :header-attrs {:class "bg-too-light-lavender black"}
                      :right-corner {:id    "close-stylist-gallery"
