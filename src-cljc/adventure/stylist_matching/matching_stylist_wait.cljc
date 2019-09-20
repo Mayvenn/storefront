@@ -12,11 +12,8 @@
             [storefront.component :as component]
             [storefront.keypaths :as keypaths]
             [adventure.keypaths :as adventure-keypaths]
-            [spice.date :as date]))
-
-(defmethod transitions/transition-state events/navigate-adventure-matching-stylist-wait [_ _ _ app-state]
-  (-> app-state
-      (assoc-in adventure-keypaths/adventure-matching-stylists-timer (date/add-delta (date/now) {:seconds 3}))))
+            [spice.date :as date]
+            [adventure.keypaths :as adventure.keypaths]))
 
 (defn ^:private ms-to-wait [app-state]
   (max 0
@@ -24,13 +21,6 @@
           (date/to-millis (date/now)))))
 
 ;; PRE-PURCHASE FLOW
-
-(defmethod effects/perform-effects events/navigate-adventure-matching-stylist-wait-pre-purchase [_ _ _ _ app-state]
-  #?(:cljs
-     (let [{:keys [latitude longitude]} (get-in app-state adventure-keypaths/adventure-stylist-match-location)]
-       (if-not (and latitude longitude)
-         (history/enqueue-redirect events/navigate-adventure-home)
-         (handle-message events/api-fetch-stylists-within-radius-pre-purchase)))))
 
 (defmethod effects/perform-effects events/api-fetch-stylists-within-radius-pre-purchase [_ event _ _ app-state]
   #?(:cljs
@@ -47,11 +37,8 @@
 
 (defmethod effects/perform-effects events/api-success-fetch-stylists-within-radius-pre-purchase [_ event _ _ app-state]
   #?(:cljs
-     (let [matched-stylists (get-in app-state adventure-keypaths/adventure-matched-stylists)
-           nav-event        (if (empty? matched-stylists)
-                              events/navigate-adventure-out-of-area
-                              events/navigate-adventure-stylist-results-pre-purchase)]
-       (history/enqueue-redirect nav-event {:timeout (ms-to-wait app-state)}))))
+     (when-not (get-in app-state adventure.keypaths/adventure-stylist-results-delaying?)
+               (handle-message events/adventure-stylist-results-wait-resolved))))
 
 ;; POST-PURCHASE FLOW
 

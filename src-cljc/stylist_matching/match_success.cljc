@@ -19,16 +19,20 @@
 
 (defn header-query
   [{:order.items/keys [quantity]
-    :order/keys       [submitted?]}]
+    :order/keys       [submitted?]}
+   browser-history]
   (cond-> {:header.title/id           "adventure-title"
            :header.title/primary      "Meet Your Certified Stylist"
            :header.back-navigation/id "adventure-back"}
+
+    (seq browser-history)
+    (merge {:header.back-navigation/back (first browser-history)})
 
     submitted?
     (merge {:header.back-navigation/target [events/navigate-adventure-stylist-results-post-purchase]})
 
     (not submitted?)
-    (merge {:header.back-navigation/target [events/navigate-adventure-stylist-results-pre-purchase]
+    (merge {:header.back-navigation/target [events/navigate-adventure-find-your-stylist]
             :header.cart/id                "mobile-cart"
             :header.cart/value             quantity
             :header.cart/color             "white"})))
@@ -187,9 +191,11 @@
         post-purchase?    (post-purchase? nav-event)
         order             (if (pre-purchase? nav-event)
                             (api.orders/current app-state)
-                            (api.orders/completed app-state))]
+                            (api.orders/completed app-state))
+        browser-history   (get-in app-state storefront.keypaths/navigation-undo-stack)]
     (component/build template
-                     {:header                 (header-query order)
+                     {:header                 (header-query order
+                                                            browser-history)
                       :shopping-method-choice (shopping-method-choice-query servicing-stylist
                                                                             order)
                       :matched-stylist        (matched-stylist-query servicing-stylist

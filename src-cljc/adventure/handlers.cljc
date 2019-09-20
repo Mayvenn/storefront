@@ -24,8 +24,6 @@
   #{events/navigate-adventure-a-la-carte-hair-color
     events/navigate-adventure-a-la-carte-product-list
     events/navigate-adventure-out-of-area
-    events/navigate-adventure-stylist-results-pre-purchase
-    events/navigate-adventure-matching-stylist-wait-pre-purchase
     events/navigate-adventure-match-success-pre-purchase})
 
 (defmethod transitions/transition-state events/control-adventure-choice

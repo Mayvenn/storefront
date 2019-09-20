@@ -15,6 +15,7 @@
 (def adventure-stylist-match-address (conj adventure :stylist-match-address))
 (def adventure-stylist-match-location (conj adventure-choices :location))
 (def adventure-matching-stylists-timer (conj adventure-choices :matching-stylists-timer))
+(def adventure-stylist-results-delaying? (conj adventure :stylist-results-delaying?))
 
 (def adventure-matching-skus-color (conj adventure :matching-skus-color))
 

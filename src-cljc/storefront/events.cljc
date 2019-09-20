@@ -503,7 +503,6 @@
 (defpath navigate-adventure-select-new-look)
 (defpath navigate-adventure-look-detail)
 (defpath navigate-adventure-matching-stylist-wait)
-(defpath navigate-adventure-matching-stylist-wait-pre-purchase)
 (defpath navigate-adventure-matching-stylist-wait-post-purchase)
 (defpath navigate-adventure-select-bundle-set)
 (defpath navigate-adventure-stylist-results-pre-purchase)
@@ -551,6 +550,8 @@
 (defpath api-failure-fetch-stylist-details)
 (defpath adventure-stylist-search-results-displayed)
 (defpath adventure-stylist-search-results-post-purchase-displayed)
+(defpath adventure-stylist-results-delay-completed)
+(defpath adventure-stylist-results-wait-resolved)
 
 (defpath visitor-identified)
 (defpath adventure-visitor-identified)

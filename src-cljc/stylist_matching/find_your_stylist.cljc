@@ -17,8 +17,8 @@
 (defn stylist-search-query
   [app-state] ;; TODO ui model/api?
   (let [input-location     (get-in app-state adventure.keypaths/adventure-stylist-match-address)
-        selected-location? (boolean
-                            (get-in app-state adventure.keypaths/adventure-stylist-match-location))]
+        selected-location (get-in app-state adventure.keypaths/adventure-stylist-match-location)
+        selected-location? (boolean selected-location)]
     {:stylist-search.title/id      "find-your-stylist-stylist-search-title"
      :stylist-search.title/primary "Where do you want to get your hair done?"
 
@@ -29,7 +29,8 @@
 
      :stylist-search.button/id        "stylist-match-address-submit"
      :stylist-search.button/disabled? (not selected-location?)
-     :stylist-search.button/target    [events/control-adventure-location-submit {}]
+     :stylist-search.button/target    [events/control-adventure-location-submit {:query-params {:long (:longitude selected-location)
+                                                                                                :lat  (:latitude selected-location)}}]
      :stylist-search.button/label     "Search"}))
 
 (defn header-query

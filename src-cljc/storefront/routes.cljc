@@ -46,7 +46,6 @@
 (def stylist-matching-routes
   {"/adv/match-stylist"                                                (edn->bidi events/navigate-adventure-match-stylist)
    "/adv/find-your-stylist"                                            (edn->bidi events/navigate-adventure-find-your-stylist)
-   "/adv/matching-stylist-wait"                                        (edn->bidi events/navigate-adventure-matching-stylist-wait-pre-purchase)
    "/adv/matching-stylist-wait-post-purchase"                          (edn->bidi events/navigate-adventure-matching-stylist-wait-post-purchase)
    "/adv/stylist-results"                                              (edn->bidi events/navigate-adventure-stylist-results-pre-purchase)
    "/adv/stylist-results-post-purchase"                                (edn->bidi events/navigate-adventure-stylist-results-post-purchase)

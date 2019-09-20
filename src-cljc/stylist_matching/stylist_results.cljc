@@ -1,5 +1,6 @@
 (ns stylist-matching.stylist-results
-  (:require adventure.keypaths
+  (:require [adventure.components.wait-spinner :as wait-spinner]
+            adventure.keypaths
             api.orders
             [clojure.string :as string]
             [storefront.accessors.experiments :as experiments]
@@ -150,8 +151,8 @@
                                                                zipcode ])}))))
 
 (defn stylist-cards-query
-  [stylist-profiles? navigation-event stylists]
-  (map-indexed (partial stylist-card-query stylist-profiles? navigation-event) stylists))
+  [stylist-profiles? post-purchase? stylists]
+  (map-indexed (partial stylist-card-query stylist-profiles? post-purchase?) stylists))
 
 (def call-out-query
   {:call-out-center/bg-class    "bg-lavender"
@@ -204,14 +205,16 @@
   (let [current-order          (api.orders/current app-state)
         stylist-search-results (get-in app-state adventure.keypaths/adventure-matched-stylists)
         nav-event              (get-in app-state storefront.keypaths/navigation-event)
-        post-purchase?         (post-purchase? nav-event) ]
-    (component/build template
-                     {:gallery-modal (gallery-modal-query app-state)
-                      :header        (header-query current-order
-                                                   (first (get-in app-state storefront.keypaths/navigation-undo-stack))
-                                                   post-purchase?)
-                      :list/results  (insert-at-pos 3
-                                                    call-out-query
-                                                    (stylist-cards-query (experiments/stylist-profiles? app-state)
-                                                                         post-purchase?
-                                                                         stylist-search-results))})))
+        post-purchase?         (post-purchase? nav-event)
+        spinning?              (or (get-in app-state adventure.keypaths/adventure-stylist-results-delaying?)
+                                   (empty? stylist-search-results))]
+    (if spinning?
+            (component/build wait-spinner/component app-state)
+            (component/build template
+                             {:gallery-modal (gallery-modal-query app-state)
+                              :header        (header-query current-order (first (get-in app-state storefront.keypaths/navigation-undo-stack)) post-purchase?)
+                              :list/results  (insert-at-pos 3
+                                                            call-out-query
+                                                            (stylist-cards-query (experiments/stylist-profiles? app-state)
+                                                                                 post-purchase?
+                                                                                 stylist-search-results))}))))

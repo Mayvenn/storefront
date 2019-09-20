@@ -31,9 +31,10 @@
 #?(:cljs
   (defmethod transitions/transition-state events/control-adventure-location-submit
     [_ event _ app-state]
-    (assoc-in app-state
-              adventure.keypaths/adventure-stylist-match-address
-              (.-value (.getElementById js/document "stylist-match-address")))))
+    (-> app-state
+        (assoc-in adventure.keypaths/adventure-matched-stylists nil)
+        (assoc-in adventure.keypaths/adventure-stylist-match-address
+                  (.-value (.getElementById js/document "stylist-match-address"))))))
 
 #?(:cljs
    (defmethod effects/perform-effects events/control-adventure-location-submit
@@ -41,7 +42,7 @@
      (let [cookie    (get-in app-state storefront.keypaths/cookie)
            adventure (get-in app-state adventure.keypaths/adventure)]
        (cookie/save-adventure cookie adventure)
-       (history/enqueue-navigate events/navigate-adventure-matching-stylist-wait-pre-purchase))))
+       (history/enqueue-navigate events/navigate-adventure-stylist-results-pre-purchase args))))
 
 (defmethod transitions/transition-state events/navigate-adventure-find-your-stylist
   [_ event _ app-state]

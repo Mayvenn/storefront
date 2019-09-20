@@ -135,7 +135,6 @@
 
           events/navigate-adventure-match-stylist                       stylist-matching.match-stylist/page
           events/navigate-adventure-find-your-stylist                   stylist-matching.find-your-stylist/page
-          events/navigate-adventure-matching-stylist-wait-pre-purchase  adventure.stylist-matching.matching-stylist-wait/built-component
           events/navigate-adventure-matching-stylist-wait-post-purchase adventure.stylist-matching.matching-stylist-wait/built-component
           events/navigate-adventure-stylist-results-pre-purchase        stylist-matching.stylist-results/page
           events/navigate-adventure-stylist-results-post-purchase       stylist-matching.stylist-results/page
