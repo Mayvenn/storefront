@@ -179,7 +179,7 @@
   ;; The URL has already changed. Save scroll position on the page they are
   ;; leaving, and handle the nav message.
   (messages/handle-message events/navigation-save (-> (get-in app-state keypaths/navigation-stashed-stack-item)
-                                                      (assoc :final-scroll js/document.body.scrollTop)))
+                                                      (assoc :final-scroll js/window.scrollY)))
   (apply messages/handle-message navigation-message))
 
 (defmethod effects/perform-effects events/browser-navigate [_ _ {:keys [navigation-message]} _ app-state]
@@ -187,7 +187,7 @@
   ;; simulates the back button (utils/route-back). The browser already knows
   ;; about the URL, so all we have to do is manipulate the undo/redo stacks and
   ;; handle the nav message.
-  (let [leaving-stack-item {:final-scroll js/document.body.scrollTop}
+  (let [leaving-stack-item {:final-scroll js/window.scrollY}
         back               (first (get-in app-state keypaths/navigation-undo-stack))
         forward            (first (get-in app-state keypaths/navigation-redo-stack))]
     (condp routes/exact-page? navigation-message
@@ -217,7 +217,11 @@
                              :allow-dormant?     true})))
 
 (defmethod effects/perform-effects events/navigate [_ event {:keys [navigate/caused-by query-params nav-stack-item]} prev-app-state app-state]
-  (let [freeinstall? (= "freeinstall" (get-in app-state keypaths/store-slug))]
+  (let [freeinstall?      (= "freeinstall" (get-in app-state keypaths/store-slug))
+        new-nav-event?    (not= (get-in prev-app-state keypaths/navigation-event)
+                                (get-in app-state keypaths/navigation-event))
+        new-query-params? (not= (not-empty (dissoc (get-in prev-app-state keypaths/navigation-args) :query-params))
+                                (not-empty (dissoc (get-in app-state keypaths/navigation-args) :query-params)))]
 
     (messages/handle-message events/control-menu-collapse-all)
     (messages/handle-message events/save-order {:order (get-in app-state keypaths/order)})
@@ -231,10 +235,7 @@
                          (get-in app-state keypaths/pending-promo-code)))
 
     (seo/set-tags app-state)
-    (when (or (not= (get-in prev-app-state keypaths/navigation-event)
-                    (get-in app-state keypaths/navigation-event))
-              (not= (not-empty (dissoc (get-in prev-app-state keypaths/navigation-args) :query-params))
-                    (not-empty (dissoc (get-in app-state keypaths/navigation-args) :query-params))))
+    (when (or new-nav-event? new-query-params?)
       (let [restore-scroll-top (:final-scroll nav-stack-item 0)]
         (if (zero? restore-scroll-top)
           ;; We can always snap to 0, so just do it immediately. (HEAT is unhappy if the page is scrolling underneath it.)
