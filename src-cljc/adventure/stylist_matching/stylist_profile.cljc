@@ -40,15 +40,14 @@
 (defn stylist-phone-molecule
   [{:phone-link/keys [target phone-number]}]
   (when (and target phone-number)
-    [:div.mt1
-     (ui/link :link/phone
-              :a.dark-gray
-              {:data-test "stylist-phone"
-               :on-click  (apply utils/send-event-callback target)}
-              (svg/phone {:style {:width          "7px"
-                                  :height         "13px"
-                                  :vertical-align "bottom"}
-                          :class "mr1"}) phone-number)]))
+    (ui/link :link/phone
+             :a.dark-gray
+             {:data-test "stylist-phone"
+              :class     "block mt1 flex items-center"
+              :on-click  (apply utils/send-event-callback target)}
+             (svg/phone {:style {:width  "7px"
+                                 :height "13px"}
+                         :class "mr1"}) phone-number)))
 
 (defn circle-portrait-molecule  [{:circle-portrait/keys [portrait-url]}]
   [:div.mr2 (ui/circle-picture {:width "72px"} portrait-url)])
