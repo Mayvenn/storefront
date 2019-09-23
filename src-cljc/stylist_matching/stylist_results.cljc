@@ -24,7 +24,7 @@
            :header.title/primary          "Meet Your Certified Stylist"
            :header.back-navigation/id     "adventure-back"
            :header.back-navigation/back   back
-           :header.back-navigation/target [events/navigate-home]}
+           :header.back-navigation/target [events/navigate-adventure-find-your-stylist]}
     (not post-purchase?)
     (merge {:header.cart/id    "mobile-cart"
             :header.cart/value quantity
