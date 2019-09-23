@@ -22,7 +22,7 @@
     (component/html
      (let [handler (partial change-state clear?)]
        [:div
-        [:input.col-12.h4.rounded.border.border-white.p2
+        [:input.col-12.h4.rounded.border.border-white.p3
          {:style       {:margin-right 10}
           :value       value
           :id          id
