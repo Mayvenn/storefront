@@ -47,11 +47,9 @@
      (let [location         (get-in app-state adventure.keypaths/adventure-stylist-match-location)
            matched-stylists (get-in app-state adventure.keypaths/adventure-matched-stylists)]
               (if location
-                (do
-                  (when (nil? matched-stylists)
-                    (messages/handle-later events/adventure-stylist-results-delay-completed {} 3000)
-                    (messages/handle-message events/api-fetch-stylists-within-radius-pre-purchase location))
-                  (messages/handle-message events/adventure-stylist-search-results-displayed))
+                (when (nil? matched-stylists)
+                  (messages/handle-later events/adventure-stylist-results-delay-completed {} 3000)
+                  (messages/handle-message events/api-fetch-stylists-within-radius-pre-purchase location))
                 (history/enqueue-redirect events/navigate-adventure-find-your-stylist)))))
 
 (defmethod transitions/transition-state events/adventure-stylist-results-delay-completed
@@ -67,9 +65,10 @@
 
 (defmethod effects/perform-effects events/adventure-stylist-results-wait-resolved
   [_ _ args _ app-state]
-  #?(:cljs
-     (when (empty? (get-in app-state adventure.keypaths/adventure-matched-stylists))
-       (effects/redirect events/navigate-adventure-out-of-area))))
+  #?@(:cljs
+      [(messages/handle-message events/adventure-stylist-search-results-displayed)
+       (when (empty? (get-in app-state adventure.keypaths/adventure-matched-stylists))
+         (effects/redirect events/navigate-adventure-out-of-area))]))
 
 (defmethod effects/perform-effects events/navigate-adventure-stylist-results-post-purchase
   [_ _ args _ app-state]
