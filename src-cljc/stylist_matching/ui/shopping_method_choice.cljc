@@ -9,14 +9,14 @@
     (component/html
      (ui/white-button
       (merge {:style     {:border-radius "3px"}
-              :class     "my1"
+              :class     "my1 px3"
               :key       id
               :data-test id}
              (apply utils/route-to target))
       [:div.flex.items-center.justify-between
        (ui/ucare-img {:width 60} ucare-id)
        [:div.flex-auto.left-align.p3 label]
-       [:div.p2 (ui/forward-caret {:width 16 :height 16 :color "gray"})]]))))
+       [:div.flex.p2 (ui/forward-caret {:width 16 :height 16 :color "gray"})]]))))
 
 (defn buttons-list-molecule
   [{:list/keys [buttons]}]
