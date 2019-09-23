@@ -21,9 +21,7 @@
   #{"bundles" "closures" "frontals" "360-frontals"})
 
 (def events-not-to-direct-load
-  #{events/navigate-adventure-a-la-carte-hair-color
-    events/navigate-adventure-a-la-carte-product-list
-    events/navigate-adventure-out-of-area
+  #{events/navigate-adventure-out-of-area
     events/navigate-adventure-match-success-pre-purchase})
 
 (defmethod transitions/transition-state events/control-adventure-choice
@@ -56,14 +54,12 @@
   [_ event {:keys [query-params]} app-state-before app-state]
   #?(:cljs
      (do
-       (let [adventure-choices         (get-in app-state keypaths/adventure-choices)
-             from-shop-to-freeinstall? (get-in app-state keypaths/adventure-from-shop-to-freeinstall?)]
+       (let [adventure-choices (get-in app-state keypaths/adventure-choices)]
          (when (and (events-not-to-direct-load event)
                     (empty? adventure-choices)
                     (not (and (= events/navigate-adventure-match-stylist event)
-                              (or from-shop-to-freeinstall?
-                                  (some-> query-params :utm_source (string/includes? "toadventure"))))))
-           (history/enqueue-navigate events/navigate-adventure-home nil))
+                              (some-> query-params :utm_source (string/includes? "toadventure")))))
+           (history/enqueue-navigate events/navigate-home nil))
          (when (boolean (:em_hash query-params))
            (messages/handle-message events/adventure-visitor-identified))))))
 
@@ -90,22 +86,6 @@
 (def ^:private slug->video
   {"we-are-mayvenn" {:youtube-id "hWJjyy5POTE"}
    "free-install"   {:youtube-id "oR1keQ-31yc"}})
-
-;; Perhaps there is a better way to "start" the flow in the app-state
-;;   e.g. {:flow/version 1}
-;; Perhaps the basic_prompt and multi_prompt could both do control-adventure
-(defmethod transitions/transition-state events/navigate-adventure-home
-  [_ event {:keys [query-params]} app-state]
-  (-> app-state
-      (assoc-in keypaths/adventure-choices {:adventure :started})
-      (assoc-in keypaths/adventure-home-video (slug->video (:video query-params)))))
-
-
-(defmethod effects/perform-effects events/navigate-adventure-home
-  [_ _ args prev-app-state app-state]
-  #?(:cljs (let [cookie    (get-in app-state storefront.keypaths/cookie)
-                 adventure (get-in app-state keypaths/adventure)]
-             (cookie/save-adventure cookie adventure))))
 
 (defn ^:private adventure-choices->criteria
   [choices]

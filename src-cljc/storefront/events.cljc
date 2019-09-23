@@ -150,9 +150,6 @@
 (defpath control-stylist-gallery-open)
 (defpath control-stylist-gallery-close)
 
-(defpath control-freeinstall-ugc-modal-open)
-(defpath control-freeinstall-ugc-modal-close)
-
 (defpath control)
 (defpath control-change-state)
 (defpath control-focus)
@@ -164,9 +161,6 @@
 
 (defpath control-design-system-popup-show)
 (defpath control-design-system-popup-dismiss)
-
-(defpath control-free-install)
-(defpath control-free-install-shop-looks)
 
 (defpath control-install-landing-page-look-back)
 (defpath control-install-landing-page-toggle-accordion)
@@ -490,7 +484,6 @@
 
 ;; ADVENTURE
 (defpath navigate-adventure)
-(defpath navigate-adventure-home)
 (defpath navigate-adventure-match-stylist)
 (defpath navigate-adventure-find-your-stylist)
 (defpath navigate-adventure-shop-hair)
@@ -504,7 +497,6 @@
 (defpath navigate-adventure-look-detail)
 (defpath navigate-adventure-matching-stylist-wait)
 (defpath navigate-adventure-matching-stylist-wait-post-purchase)
-(defpath navigate-adventure-select-bundle-set)
 (defpath navigate-adventure-stylist-results-pre-purchase)
 (defpath navigate-adventure-stylist-results-post-purchase)
 (defpath navigate-adventure-stylist-gallery)

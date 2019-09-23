@@ -3,18 +3,15 @@
             [storefront.accessors.auth :as auth]
             [storefront.accessors.nav :as nav]
             [storefront.accessors.orders :as orders]
-            [storefront.community :as community]
             [storefront.assets :as assets]
+            [storefront.community :as community]
             [storefront.component :as component]
             [storefront.components.marquee :as marquee]
             [storefront.components.slideout-nav :as slideout-nav]
-            [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
-            [storefront.routes :as routes]
             [storefront.keypaths :as keypaths]
-            [storefront.platform.component-utils :as utils]
-            [storefront.accessors.experiments :as experiments]))
+            [storefront.platform.component-utils :as utils]))
 
 (def hamburger
   (component/html
@@ -329,37 +326,7 @@
    [:header.stacking-context.z4
     (when (get-in data keypaths/hide-header?)
       {:class "hide-on-mb-tb"})
-    (let [nav-event              (get-in data keypaths/navigation-event)
-          freeinstall-subdomain? (= "freeinstall" (get-in data keypaths/store-slug))
-          info-page?             (routes/sub-page? [nav-event] [events/navigate-info])]
-      (if (nav/show-minimal-header? nav-event freeinstall-subdomain?)
-        (minimal-component (cond info-page?                   events/navigate-adventure-home
-                                 (not freeinstall-subdomain?) events/navigate-home
-                                 :else                        nil))
-        (component/build component (query data) nil)))]))
-
-(defn adventure-minimal-component [sign-in?]
-  (component/html
-   [:div.border-bottom.border-gray.flex.items-center.flex-wrap
-    (if sign-in?
-      [:a.block.inherit-color.col-3.flex.items.center
-       (merge {:data-test "adventure-back-to-checkout"}
-              (utils/route-back {:navigation-message [events/navigate-checkout-returning-or-guest]}))
-       [:div.flex.items-center.justify-center {:style {:height "60px" :width "60px"}}
-        (svg/back-arrow {:width "24px" :height "24px"})]]
-      [:div.col-3])
-    [:div.flex-auto.py3.col-6 (ui/clickable-logo
-                               {:data-test "header-logo"
-                                :height    "40px"})]
-    [:div.col-3]]))
-
-(defn adventure-built-component [data opts]
-  (component/html
-   [:header.stacking-context.z4
-    (when (get-in data keypaths/hide-header?)
-      {:class "hide-on-mb-tb"})
-    (let [navigation-event (get-in data keypaths/navigation-event)
-          sign-in?         (#{events/navigate-checkout-sign-in} navigation-event)]
-      (if (nav/show-minimal-header? navigation-event true)
-        (adventure-minimal-component sign-in?)
+    (let [nav-event (get-in data keypaths/navigation-event)]
+      (if (nav/show-minimal-header? nav-event)
+        (minimal-component events/navigate-home)
         (component/build component (query data) nil)))]))

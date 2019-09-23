@@ -100,5 +100,5 @@
 (defn show-blank-footer? [event]
   (contains? blank-footer-events event))
 
-(defn show-minimal-header? [event adventure?]
-  (contains? (set/union minimal-header-events (when adventure? order-complete-events)) event))
+(defn show-minimal-header? [event]
+  (contains? minimal-header-events event))

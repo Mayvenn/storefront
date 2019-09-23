@@ -1,6 +1,5 @@
 (ns storefront.accessors.contentful
-  (:require adventure.albums
-            [lambdaisland.uri :as uri]
+  (:require [lambdaisland.uri :as uri]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]))
@@ -46,34 +45,20 @@
             texture
             description
             social-media-platform]}]
-   (let [color-detail     (get color-details (color-name->color-slug color))
-         on-adventure?    (routes/sub-page? [current-nav-event] [events/navigate-adventure])
-         adventure-album? (boolean (adventure.albums/by-keyword album-keyword))
-         cta-nav-message
-         (cond
-           (and on-adventure? adventure-album?)
-           [events/navigate-adventure-look-detail {:album-keyword album-keyword
-                                                   :look-id       id}]
-
-           (and on-adventure? (not adventure-album?))
-           nil
-
-           :else
-           [events/navigate-shop-by-look-details {:album-keyword (or (#{:deals} album-keyword) :look)
-                                                  :look-id       id}])]
-     (merge
-      {:id             id
-       :image-url      photo-url
-       :overlay        texture
-       :description    description
-       :desktop-aware? true
-       :social-service social-media-platform
-       :icon-url       (:option/rectangle-swatch color-detail)
-       :title          (or (:option/name color-detail)
-                           "Check this out!")}
-      (when cta-nav-message
-        {:cta/button-type        :underline-button
-         :cta/navigation-message cta-nav-message})))) )
+   (let [color-detail (get color-details (color-name->color-slug color))]
+     {:id                     id
+      :image-url              photo-url
+      :overlay                texture
+      :description            description
+      :desktop-aware?         true
+      :social-service         social-media-platform
+      :icon-url               (:option/rectangle-swatch color-detail)
+      :title                  (or (:option/name color-detail)
+                                  "Check this out!")
+      :cta/button-type        :underline-button
+      :cta/navigation-message [events/navigate-shop-by-look-details
+                               {:album-keyword (or (#{:deals} album-keyword) :look)
+                                :look-id       id}]})) )
 
 (defn look->look-detail-social-card
   ([nav-event album-keyword look]

@@ -381,12 +381,8 @@
 (defmethod effects/perform-effects events/navigate-checkout [_ event args _ app-state]
   (google-maps/insert)
   (let [have-cart? (get-in app-state keypaths/order-number)]
-    (cond
-      ;; TODO remove post cart consolidation
-      (and (not have-cart?)
-           (= "freeinstall" (get-in app-state keypaths/store-slug))) (effects/redirect events/navigate-adventure-home)
-
-      (not have-cart?)                                               (effects/redirect events/navigate-cart))
+    (when (not have-cart?)
+      (effects/redirect events/navigate-cart))
 
     (when (and have-cart?
                (not (auth/signed-in-or-initiated-guest-checkout? app-state))
@@ -942,10 +938,6 @@
                 (stringer/browser-id)
                 (get-in app-state-before keypaths/user-id)
                 (get-in app-state-before keypaths/user-token)))
-
-(defmethod effects/perform-effects events/browser-fullscreen-exit [_ event args app-state-before app-state]
-  (when (= events/navigate-adventure-home (get-in app-state keypaths/navigation-event))
-    (history/enqueue-navigate events/navigate-adventure-home {:query-params {:video "0"}})))
 
 (defmethod effects/perform-effects events/navigate-voucher [_ event args app-state-before app-state]
   (api/fetch-user-stylist-service-menu (get-in app-state keypaths/api-cache)

@@ -61,22 +61,6 @@
    "/about-our-hair"                                                   (edn->bidi events/navigate-info-about-our-hair)
    "/how-it-works"                                                     (edn->bidi events/navigate-info-how-it-works)})
 
-(def freeinstall-routes
-  {{:subdomain freeinstall?}
-   (merge
-    {"/"                                                        (edn->bidi events/navigate-adventure-home)
-     "/adv/shop-a-la-carte/texture"                             (edn->bidi events/navigate-adventure-a-la-carte-hair-texture)
-     "/adv/shop-a-la-carte/color"                               (edn->bidi events/navigate-adventure-a-la-carte-hair-color)
-     "/adv/shop-a-la-carte/product-list"                        (edn->bidi events/navigate-adventure-a-la-carte-product-list)
-     "/adv/shop-hair"                                           (edn->bidi events/navigate-adventure-shop-hair)
-     "/adv/how-shop-hair"                                       (edn->bidi events/navigate-adventure-how-shop-hair)
-     ["/products/" [#"\d+" :catalog/product-id] "-" :page/slug] (edn->bidi events/navigate-adventure-product-details)
-     ["/adv/shop/bundle-sets-texture"]                          (edn->bidi events/navigate-adventure-bundlesets-hair-texture)
-     ["/adv/shop/" :album-keyword]                              (edn->bidi events/navigate-adventure-select-new-look)
-     ["/adv/shop/" :album-keyword "/texture"]                   (edn->bidi events/navigate-adventure-hair-texture)
-     ["/adv/shop/" :album-keyword "/" :look-id]                 (edn->bidi events/navigate-adventure-look-detail)}
-    stylist-matching-routes)})
-
 (def catalog-routes
   {["/categories/" [#"\d+" :catalog/category-id] "-" :page/slug]
    (edn->bidi events/navigate-category)
@@ -97,9 +81,8 @@
 (def app-routes
   ["" (merge static-page-routes
              design-system-routes
-             freeinstall-routes
-             {{:subdomain (complement freeinstall?)}
-              (merge catalog-routes {"/" (edn->bidi events/navigate-home)})}
+             catalog-routes
+             {"/" (edn->bidi events/navigate-home)}
              {{:subdomain shop?} stylist-matching-routes}
              {"/login"                                            (edn->bidi events/navigate-sign-in)
               "/logout"                                           (edn->bidi events/navigate-sign-out)

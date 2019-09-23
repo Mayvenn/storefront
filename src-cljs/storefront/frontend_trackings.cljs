@@ -92,10 +92,6 @@
                         {:filter_name     (pr-str facet)
                          :selected_option option}))
 
-(defmethod perform-track events/control-free-install-shop-looks
-  [_ event {:keys [facet option]} app-state]
-  (stringer/track-event "free_install-accept" {}))
-
 (defmethod perform-track events/viewed-sku [_ event {:keys [sku]} app-state]
   (when sku
     (facebook-analytics/track-event "ViewContent" {:content_type "product"
@@ -103,7 +99,7 @@
 
 (defn track-select-bundle-option [selection value]
   (stringer/track-event "select_bundle_option" {:option_name  (name selection)
-                                                :option_value value}) )
+                                                :option_value value}))
 
 (defmethod perform-track events/control-product-detail-picker-option-select
   [_ event {:keys [selection value]} app-state]
@@ -199,7 +195,7 @@
                                                      :variant_ids    (->> line-item-skuers (map :legacy/variant-id) (string/join ","))
                                                      :context        {:cart-items cart-items}}
                                                     (when look-id
-                                                        {:look_id look-id})))))
+                                                      {:look_id look-id})))))
 
 (defmethod perform-track events/control-cart-share-show [_ event args app-state]
   (google-analytics/track-page (str (routes/current-path app-state) "/Share_cart")))
@@ -208,7 +204,7 @@
   (google-analytics/set-dimension "dimension2" (count (get-in app-state keypaths/checkout-credit-card-existing-cards))))
 
 (def interesting-payment-methods
-  #{"apple-pay" "paypal" "quadpay"} )
+  #{"apple-pay" "paypal" "quadpay"})
 
 (defn payment-flow [{:keys [payments]}]
   (or (some interesting-payment-methods (map :payment-type payments))

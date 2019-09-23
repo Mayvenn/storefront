@@ -15,14 +15,12 @@
                        storefront.components.v2-homepage-popup])
             #?@(:clj
                 [[design-system.home :as design-system]])
-            adventure.home
             adventure.informational.about-our-hair
             adventure.informational.certified-stylists
             adventure.informational.how-it-works
             adventure.stylist-matching.matching-stylist-wait
             ;; TODO GROT should be included in new designs
             adventure.stylist-matching.stylist-results
-            adventure.stylist-matching.match-success-post-purchase
             adventure.stylist-matching.let-mayvenn-match
             adventure.stylist-matching.stylist-profile
             adventure.stylist-matching.stylist-gallery
@@ -36,8 +34,6 @@
             [storefront.components.ui :as ui]
             [mayvenn-made.home :as mayvenn-made.home]
             [checkout.cart :as cart]
-            ;; TODO GROT was specifically for unconsolidated freeinstall domain
-            [adventure.checkout.cart :as adventure-cart]
             [storefront.accessors.experiments :as experiments]
             [storefront.components.content :as content]
             [storefront.components.flash :as flash]
@@ -120,18 +116,7 @@
           events/navigate-info-about-our-hair     adventure.informational.about-our-hair/built-component
           events/navigate-info-how-it-works       adventure.informational.how-it-works/built-component
 
-          events/navigate-adventure-home                                adventure.home/built-component
-          events/navigate-adventure-shop-hair                           (ui/lazy-load-component :catalog 'adventure.shop-hair/built-component events/navigate-adventure-shop-hair)
-          events/navigate-adventure-how-shop-hair                       (ui/lazy-load-component :catalog 'adventure.how-shop-hair/built-component events/navigate-adventure-how-shop-hair)
-          events/navigate-adventure-hair-texture                        (ui/lazy-load-component :catalog 'adventure.hair-texture/built-component events/navigate-adventure-hair-texture)
-          events/navigate-adventure-bundlesets-hair-texture             (ui/lazy-load-component :catalog 'adventure.bundlesets.hair-texture/built-component events/navigate-adventure-bundlesets-hair-texture)
-          events/navigate-adventure-a-la-carte-hair-texture             (ui/lazy-load-component :catalog 'adventure.a-la-carte.hair-texture/built-component events/navigate-adventure-a-la-carte-hair-texture)
-          events/navigate-adventure-a-la-carte-hair-color               (ui/lazy-load-component :catalog 'adventure.a-la-carte.hair-color/built-component events/navigate-adventure-a-la-carte-hair-color)
-          events/navigate-adventure-a-la-carte-product-list             (ui/lazy-load-component :catalog 'adventure.a-la-carte.product-list/built-component events/navigate-adventure-a-la-carte-product-list)
           events/navigate-adventure-product-details                     (ui/lazy-load-component :catalog 'adventure.a-la-carte.product-details/built-component events/navigate-adventure-product-details)
-          events/navigate-adventure-select-new-look                     (ui/lazy-load-component :catalog 'adventure.select-new-look/built-component events/navigate-adventure-select-new-look)
-          events/navigate-adventure-look-detail                         (ui/lazy-load-component :catalog 'adventure.look-detail/built-component events/navigate-adventure-look-detail)
-          events/navigate-adventure-select-bundle-set                   (ui/lazy-load-component :catalog 'adventure.select-new-look/built-component events/navigate-adventure-select-bundle-set)
 
           events/navigate-adventure-match-stylist                       stylist-matching.match-stylist/page
           events/navigate-adventure-find-your-stylist                   stylist-matching.find-your-stylist/page
@@ -141,7 +126,6 @@
           events/navigate-adventure-out-of-area                         stylist-matching.out-of-area/page
           events/navigate-adventure-match-success-pre-purchase          stylist-matching.match-success/page
           events/navigate-adventure-match-success-post-purchase         stylist-matching.match-success/page
-         #_ adventure.stylist-matching.match-success-post-purchase/built-component
           events/navigate-adventure-checkout-wait                       (ui/lazy-load-component :checkout 'adventure.checkout.wait/built-component events/navigate-adventure-checkout-wait)
           events/navigate-adventure-let-mayvenn-match                   adventure.stylist-matching.let-mayvenn-match/built-component
           events/navigate-adventure-stylist-profile                     adventure.stylist-matching.stylist-profile/built-component
@@ -243,15 +227,13 @@
         [:div {:key "popup"}
          #?(:cljs (popup/built-component data nil))]
         [:div.flex.content-stretch
-         (merge
-          {:style {:min-height    "100vh"
-                   :margin-bottom "-30px"}}
-          (when-not (= nav-event events/navigate-adventure-home)
-            {:class "max-580 mx-auto relative"}))
+         {:style {:min-height    "100vh"
+                  :margin-bottom "-30px"}
+          :class "max-580 mx-auto relative"}
          ((main-component nav-event) data nil)]]
 
        :else
-       (main-layout data nav-event)))) )
+       (main-layout data nav-event)))))
 
 (defn top-level-component
   [data owner opts]

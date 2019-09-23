@@ -146,16 +146,6 @@
 
        events/navigate-category            (category-tags data)
        events/navigate-product-details     (product-details-tags data)
-       events/navigate-adventure-home [[:title {} "Mayvenn Free Install - Free Sew-Ins from Mayvenn"]
-                                       [:meta {:property "og:title"
-                                               :content  "Mayvenn Free Install - Mayvenn will pay for your sew-in from a local, certified stylist."}]
-                                       [:meta {:name    "description"
-                                               :content "Every free install includes a shampoo, condition, braid down, and style. You purchase the hair & Mayvenn pays for the sew-in, simple as that! Quality-guaranteed virgin hair bundles, closures, frontals."}]
-                                       [:meta {:property "og:type"
-                                               :content  "website"}]
-                                       [:meta {:property "og:description"
-                                               :content  "Every free install includes a shampoo, condition, braid down, and style. You purchase the hair & Mayvenn pays for the sew-in, simple as that! Quality-guaranteed virgin hair bundles, closures, frontals."}]]
-
        default-tags)
      (concat constant-tags (canonical-link-tag data))
      add-seo-tag-class)))

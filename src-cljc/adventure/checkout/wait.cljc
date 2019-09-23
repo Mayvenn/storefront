@@ -32,7 +32,7 @@
        (cond
          has-servicing-stylist? (history/enqueue-redirect events/navigate-order-complete completed-order)
          completed-order        (messages/handle-message events/api-shipping-address-geo-lookup)
-         :direct-load           (history/enqueue-redirect events/navigate-adventure-home)))))
+         :direct-load           (history/enqueue-redirect events/navigate-home)))))
 
 (defmethod effects/perform-effects events/api-shipping-address-geo-lookup [_ event _ _ app-state]
   #?(:cljs

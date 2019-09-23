@@ -48,9 +48,7 @@
        :body/value             [:span "Learn how you can get your free "
                                 [:span.nowrap "Mayvenn Install"]]
        :cta/value              "Watch Now"
-       :cta/navigation-message [(if shop?
-                                  events/navigate-home
-                                  events/navigate-adventure-home)
+       :cta/navigation-message [events/navigate-home
                                 {:query-params {:video "free-install"}}]}
       {:layer/type             :bulleted-explainer
        :header/value           "How it Works"
@@ -119,9 +117,7 @@
                           :header/value "Certified Stylists"
                           :body/value   "Our stylists are chosen because of their industry-leading standards. Both our hair and service are quality guaranteed."}]}
       {:layer/type             :homepage-were-changing-the-game
-       :cta/navigation-message [(if shop?
-                                  events/navigate-home
-                                  events/navigate-adventure-home)
+       :cta/navigation-message [events/navigate-home
                                 {:query-params {:video "we-are-mayvenn"}}]}
       {:layer/type :contact}
       {:layer/type             :sticky-footer
