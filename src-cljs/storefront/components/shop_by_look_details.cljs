@@ -159,7 +159,7 @@
               discount-text])
            (when-not (= discounted-price base-price)
              [:div.strike.dark-gray.h6 (mf/as-money base-price)])
-           [:div.h2.medium (mf/as-money discounted-price)]]
+           [:div.h2.bold (mf/as-money discounted-price)]]
           (when above-button-copy
             [:div.center.teal.medium.mt2 above-button-copy])
           [:div.mt2.col-11.mx-auto
