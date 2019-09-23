@@ -101,7 +101,7 @@
    (marquee-row
     (ui/underline-button (assoc (utils/route-to events/navigate-account-manage)
                                 :data-test "account-settings")
-                         "Account settings")
+                         "Account")
     (ui/underline-button (utils/route-to events/navigate-account-referrals)
                          "Refer a friend"))))
 

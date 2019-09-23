@@ -90,10 +90,10 @@
    keypaths/account-menu-expanded
    [:a.inherit-color.h6
     "Signed in with: " [:span.teal email]
-    " | Account settings" [:span.ml1 (ui/expand-icon expanded?)]]
+    " | Account" [:span.ml1 (ui/expand-icon expanded?)]]
    [:div.bg-white.absolute.right-0.top-lit
     [:div
-     (drop-down-row (utils/route-to events/navigate-account-manage) "Account settings")]
+     (drop-down-row (utils/route-to events/navigate-account-manage) "Account")]
     [:div.border-top.border-gray
      (drop-down-row (utils/route-to events/navigate-account-referrals) "Refer a friend")]
     [:div.border-top.border-gray
