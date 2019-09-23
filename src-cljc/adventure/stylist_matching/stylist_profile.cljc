@@ -88,7 +88,7 @@
                                               :header.title/primary          (str "More about " stylist-name)
                                               :header.back-navigation/id     "adventure-back"
                                               :header.back-navigation/back   undo-history
-                                              :header.back-navigation/target [events/navigate-home]}
+                                              :header.back-navigation/target [events/navigate-adventure-find-your-stylist]}
                                        (not post-purchase?)
                                        (merge {:header.cart/id    "mobile-cart"
                                                :header.cart/value (:order.items/quantity current-order)
