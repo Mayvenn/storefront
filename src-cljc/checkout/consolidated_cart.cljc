@@ -117,7 +117,7 @@
     [:div.clearfix.mxn3
      (when applied?
        (component/build qualified-banner-component nil nil))
-     [:div.px4.my1 (ui-molecules/return-link queried-data)]
+     [:div.px4.my2 (ui-molecules/return-link queried-data)]
      [:div.col-on-tb-dt.col-6-on-tb-dt.px3.border-top.border-light-gray
       {:data-test "cart-line-items"}
       ;; HACK: have suggestions be paired with appropriate cart item
@@ -221,7 +221,7 @@
    (ui/narrow-container
     [:div
      [:div.center {:data-test "empty-cart"}
-      [:div.px4.my1 (ui-molecules/return-link queried-data)]
+      [:div.px4.my2 (ui-molecules/return-link queried-data)]
 
       [:div.col-12.border-bottom.border-light-silver.mb4]
 

@@ -14,13 +14,15 @@
 
 .btn-primary:disabled,
 .btn-primary.is-disabled {
+    color: var(--dark-silver);
     background-color: var(--light-gray);
 }
 
 :root {
   --blue:                 #0074d9;
-  --silver:               #ebebeb;
   --light-gray:           #b4b4b4;
+  --silver:               #ebebeb;
+  --dark-silver:          #aaaaaa;
   --hover-only-teal-gray: #e5eeec;
 
   --darken-1: rgba(0, 0, 0, .075);

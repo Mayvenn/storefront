@@ -53,7 +53,7 @@
                                  :just-select   [:span [:br] "Just select " qp-logo " at check out."]
                                  :continue-with [:span [:br] "Continue with " qp-logo " below."]}
                                 directive)]
-        [:div.border.border-blue.rounded.my2.p2.h6.dark-gray.center
+        [:div.border.border-blue.rounded.my2.p2.h6.dark-gray.center.medium
          (when order-total
            [:span
             "4 interest free payments of $" [:span {:data-test "quadpay-payment-amount"}

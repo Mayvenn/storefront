@@ -45,7 +45,7 @@
 
 (defn left-caret [opts]
   (component/html
-   [:svg opts
+   [:svg.mtp1 opts
     ^:inline (svg-xlink "left-caret")]))
 
 (defn thick-left-arrow [opts]

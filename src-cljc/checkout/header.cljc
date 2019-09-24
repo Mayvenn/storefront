@@ -48,7 +48,7 @@
 
        [:div.col-1.hide-on-dt]
 
-       [:div.flex-auto.py3.center.dark-gray
+       [:div.flex-auto.py4.center.dark-gray
         {:data-test "mobile-cart"}
         "Shopping Cart - " (ui/pluralize-with-amount item-count "item")]
 
