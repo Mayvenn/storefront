@@ -157,8 +157,14 @@
 
 (defn can-use-store-credit? [order user]
   (let [user-is-stylist? (-> user :store-slug boolean)]
-    (and (pos? (:total-available-store-credit user))
+    (and (-> order :cart-payments :quadpay not)
+         (pos? (:total-available-store-credit user))
          (not (and (:install-type order) user-is-stylist?)))))
+
+(defn available-store-credit [order user]
+  (if (can-use-store-credit? order user)
+    (:total-available-store-credit user)
+    0))
 
 (defn form-payment-methods [order user]
   (let [order-total       (:total order)

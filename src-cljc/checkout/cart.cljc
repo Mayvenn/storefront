@@ -1,7 +1,6 @@
 (ns checkout.cart
   (:require
    #?@(:cljs [[storefront.components.popup :as popup]
-              [storefront.components.order-summary :as summary]
               [storefront.components.payment-request-button :as payment-request-button]
               [storefront.api :as api]
               [storefront.history :as history]

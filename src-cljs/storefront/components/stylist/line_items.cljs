@@ -1,23 +1,6 @@
 (ns storefront.components.stylist.line-items
-  (:require [spice.date :as date]
-            [checkout.cart :as cart]
-            [storefront.accessors.orders :as orders]
-            [storefront.accessors.sales :as sales]
-            [storefront.accessors.experiments :as experiments]
-            [storefront.component :as component]
-            [storefront.components.formatters :as f]
-            [storefront.components.money-formatters :as mf]
-            [storefront.components.order-summary :as summary]
-            [storefront.components.svg :as svg]
-            [storefront.components.ui :as ui]
-            [storefront.events :as events]
-            [storefront.keypaths :as keypaths]
-            [storefront.platform.component-utils :as utils]
-            [storefront.platform.messages :as messages]
-            [storefront.transitions :as transitions]
-            [storefront.effects :as effects]
-            [storefront.request-keys :as request-keys]
-            [storefront.api :as api]))
+  (:require [storefront.component :as component]
+            [storefront.components.money-formatters :as mf]))
 
 (defn ^:private returned-quantity-element [shipment-count sku qt returned-qt]
   (let [base-dt (str "shipment-" shipment-count "-line-item-" sku)]

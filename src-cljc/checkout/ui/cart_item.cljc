@@ -12,7 +12,8 @@
   [{:cart-item-floating-box/keys [id value]}]
   (when id
     [:div.right.right-align
-     {:key id}
+     {:key   id
+      :style {:height "100%"}}
      value]))
 
 (defn cart-item-copy-molecule

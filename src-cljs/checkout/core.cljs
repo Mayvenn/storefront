@@ -10,7 +10,6 @@
             storefront.components.checkout-complete
             adventure.handlers
             adventure.checkout.wait
-            checkout.confirmation.summary
             checkout.confirmation
             checkout.processing))
 

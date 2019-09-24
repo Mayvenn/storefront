@@ -1,13 +1,13 @@
 (ns checkout.confirmation
-  (:require [adventure.checkout.cart.items :as adventure-cart-items]
-            [adventure.keypaths]
-            [catalog.images :as catalog-images]
-            [checkout.cart.items :as cart-items]
-            [checkout.confirmation.summary :as confirmation-summary]
+  (:require [catalog.images :as catalog-images]
             [checkout.templates.item-card :as item-card]
+            [checkout.ui.cart-item :as cart-item]
+            [checkout.ui.cart-summary :as cart-summary]
+            [clojure.string :as string]
             [spice.core :as spice]
             [spice.maps :as maps]
-            [storefront.accessors.experiments :as experiments]
+            [storefront.accessors.adjustments :as adjustments]
+            [storefront.accessors.mayvenn-install :as mayvenn-install]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.stylists :as stylists]
             [storefront.api :as api]
@@ -19,7 +19,6 @@
             [storefront.components.checkout-returning-or-guest :as checkout-returning-or-guest]
             [storefront.components.checkout-steps :as checkout-steps]
             [storefront.components.money-formatters :as mf]
-            [storefront.components.order-summary :as summary]
             [ui.promo-banner :as promo-banner]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
@@ -31,7 +30,8 @@
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]
             [storefront.effects :as effects]
-            [storefront.platform.messages :as messages]))
+            [storefront.platform.messages :as messages]
+            [spice.date :as date]))
 
 (defn requires-additional-payment?
   [data]
@@ -106,10 +106,9 @@
                           {:quadpay-redirect-url redirect-url})))
 
 (defn component
-  [{:keys [available-store-credit
-           checkout-button-data
+  [{:keys [checkout-button-data
            checkout-steps
-           confirmation-summary
+           cart-summary
            delivery
            free-install-applied?
            items
@@ -119,7 +118,8 @@
            promo-banner
            requires-additional-payment?
            selected-quadpay?
-           servicing-stylist]}
+           servicing-stylist
+           freeinstall-cart-item]}
    owner]
   (component/create
    [:div.container.p2
@@ -139,9 +139,11 @@
 
          [:div.my2
           {:data-test "confirmation-line-items"}
-          (component/build item-card/component items nil)]]
+          (component/build item-card/component items nil)
+          (when freeinstall-cart-item
+            (component/build cart-item/organism freeinstall-cart-item nil))]]
 
-        [:.col-on-tb-dt.col-6-on-tb-dt.px3
+        [:div.col-on-tb-dt.col-6-on-tb-dt.px3
          (component/build checkout-delivery/component delivery nil)
          (when requires-additional-payment?
            [:div
@@ -150,25 +152,22 @@
               :data-test "additional-payment-required-note"}
              [:.p2.navy
               "Please enter an additional payment method below for the remaining total on your order."])
-            (component/build checkout-credit-card/component payment nil)])
-         (if confirmation-summary
-           (component/build confirmation-summary/component confirmation-summary {})
-           (summary/display-order-summary order
-                                          {:read-only?             true
-                                           :use-store-credit?      (not free-install-applied?)
-                                           :available-store-credit available-store-credit}))
+            (component/build checkout-credit-card/component payment nil)])]
+
+        (component/build cart-summary/organism cart-summary nil)
+
+        [:div.col-on-tb-dt.col-6-on-tb-dt.px3
          (component/build quadpay/component
                           {:quadpay/show?       (and selected-quadpay? loaded-quadpay?)
                            :quadpay/order-total (:total order)
                            :quadpay/directive   :continue-with}
                           nil)
-
          (when free-install-applied?
            [:div.h5.my4.center.col-10.mx-auto.line-height-3
             (if-let [servicing-stylist-name (stylists/->display-name servicing-stylist)]
               (str "After your order ships, you’ll be connected with " servicing-stylist-name " over SMS to make an appointment.")
               "You’ll be able to select your Certified Mayvenn Stylist after checkout.")])
-         [:div.col-12.col-6-on-tb-dt.mx-auto
+         [:div.col-12.col-6-on-tb-dt.mx-auto.mt4
           (checkout-button selected-quadpay? checkout-button-data)]]]]
       [:div.py6.h2
        [:div.py4 (ui/large-spinner {:style {:height "6em"}})]
@@ -220,39 +219,131 @@
    :detail-top-right/opts  {:class "flex items-end justify-end"}
    :detail-top-right/value (mf/as-money-without-cents price)})
 
+(defn ^:private text->data-test-name [name]
+  (-> name
+      (string/replace #"[0-9]" (comp spice/number->word int))
+      string/lower-case
+      (string/replace #"[^a-z]+" "-")))
+
+(defn cart-summary-query
+  [{:as order :keys [adjustments]}
+   {:mayvenn-install/keys [locked? applied? service-discount]}
+   available-store-credit]
+  (let [total              (-> order :total)
+        subtotal           (orders/products-subtotal order)
+        shipping           (orders/shipping-item order)
+        shipping-cost      (some->> shipping
+                                    vector
+                                    (apply (juxt :quantity :unit-price))
+                                    (reduce *))
+        shipping-timeframe (some->> shipping
+                                    (checkout-delivery/enrich-shipping-method (date/now))
+                                    :copy/timeframe)
+
+        adjustment (->> order :adjustments (map :price) (reduce + 0))
+
+        total-savings (- (+ adjustment service-discount))]
+    {:cart-summary/id               "cart-summary"
+     :cart-summary-total-line/id    "total"
+     :cart-summary-total-line/label (if applied? "Hair + Install Total" "Total")
+     :cart-summary-total-line/value (cond
+                                      applied?
+                                      [:div
+                                       [:div.bold.h2
+                                        (some-> total (- available-store-credit) (max 0) mf/as-money)]
+                                       [:div.h6.bg-purple.white.px2.nowrap.mb1
+                                        "Includes Mayvenn Install"]
+                                       (when (pos? total-savings)
+                                         [:div.h6.light.dark-gray.pxp1.nowrap.italic
+                                          "You've saved "
+                                          [:span.bold.purple {:data-test "total-savings"}
+                                           (mf/as-money total-savings)]])]
+
+                                      :else
+                                      [:div (some-> total (- available-store-credit) (max 0) mf/as-money)])
+     :cart-summary/lines (concat [{:cart-summary-line/id    "subtotal"
+                                   :cart-summary-line/label "Subtotal"
+                                   :cart-summary-line/value (mf/as-money (cond-> subtotal
+                                                                           (or locked? applied?)
+                                                                           ;; Add the service discount to the subtotal
+                                                                           (- service-discount)))}
+                                  {:cart-summary-line/id       "shipping"
+                                   :cart-summary-line/label    "Shipping"
+                                   :cart-summary-line/sublabel shipping-timeframe
+                                   :cart-summary-line/value    (mf/as-money-or-free shipping-cost)}]
+                                 (for [{:keys [name price coupon-code]}
+                                       (filter adjustments/non-zero-adjustment? adjustments)
+                                       :let [install-summary-line? (= "freeinstall" coupon-code)]]
+                                   (cond-> {:cart-summary-line/id    (text->data-test-name name)
+                                            :cart-summary-line/icon  (svg/discount-tag {:class  "mxnp6 fill-gray pr1"
+                                                                                        :height "2em" :width "2em"})
+                                            :cart-summary-line/label (orders/display-adjustment-name name)
+                                            :cart-summary-line/class "purple"
+                                            :cart-summary-line/value (mf/as-money-or-free price)}
+
+                                     install-summary-line?
+                                     (merge {:cart-summary-line/value (mf/as-money-or-free service-discount)
+                                             :cart-summary-line/class "purple"})))
+                                 (when (pos? available-store-credit)
+                                   [{:cart-summary-line/id    "store-credit"
+                                     :cart-summary-line/label "Store Credit"
+                                     :cart-summary-line/class "purple"
+                                     :cart-summary-line/value (mf/as-money (- available-store-credit))}]))}))
+
 (defn query
   [data]
-  (let [order                      (get-in data keypaths/order)
-        selected-quadpay?          (-> (get-in data keypaths/order) :cart-payments :quadpay)
-        freeinstall-applied?       (orders/freeinstall-applied? order)
-        adventure?                 (#{"freeinstall"} (get-in data keypaths/store-slug))
-        shop?                      (#{"shop"} (get-in data keypaths/store-slug))
-        freeinstall-line-item-data (if (or adventure? shop?)
-                                     (adventure-cart-items/freeinstall-line-item-query data)
-                                     (cart-items/freeinstall-line-item-query data))]
-    {:order                        order
-     :store-slug                   (get-in data keypaths/store-slug)
-     :requires-additional-payment? (requires-additional-payment? data)
-     :promo-banner                 (promo-banner/query data)
-     :checkout-steps               (checkout-steps/query data)
-     :products                     (get-in data keypaths/v2-products)
-     :payment                      (checkout-credit-card/query data)
-     :delivery                     (checkout-delivery/query data)
-     :free-install-applied?        freeinstall-applied?
-     :checkout-button-data         (checkout-button-query data)
-     :selected-quadpay?            selected-quadpay?
-     :loaded-quadpay?              (get-in data keypaths/loaded-quadpay)
-     :confirmation-summary         (confirmation-summary/query data)
-     :servicing-stylist            (get-in data adventure.keypaths/adventure-servicing-stylist)
-     :items                        (cond-> (item-card-query data)
-                                     (and freeinstall-applied? freeinstall-line-item-data)
-                                     (update :items conj
-                                             (freeinstall-line-item-data->item-card freeinstall-line-item-data)))
-     ;; TODO Is it right that store credit can be used on freeinstall?
-     :available-store-credit       (if adventure?
-                                     (get-in data keypaths/user-total-available-store-credit)
-                                     (when-not selected-quadpay?
-                                       (get-in data keypaths/user-total-available-store-credit)))}))
+  (let [order                                   (get-in data keypaths/order)
+        selected-quadpay?                       (-> (get-in data keypaths/order) :cart-payments :quadpay)
+        {:mayvenn-install/keys [service-discount
+                                applied?
+                                stylist]
+         :as                   mayvenn-install} (mayvenn-install/mayvenn-install data)
+        user                                    (get-in data keypaths/user)]
+    (cond->
+        {:order                        order
+         :store-slug                   (get-in data keypaths/store-slug)
+         :requires-additional-payment? (requires-additional-payment? data)
+         :promo-banner                 (promo-banner/query data)
+         :checkout-steps               (checkout-steps/query data)
+         :products                     (get-in data keypaths/v2-products)
+         :payment                      (checkout-credit-card/query data)
+         :delivery                     (checkout-delivery/query data)
+         :free-install-applied?        applied?
+         :checkout-button-data         (checkout-button-query data)
+         :selected-quadpay?            selected-quadpay?
+         :loaded-quadpay?              (get-in data keypaths/loaded-quadpay)
+         :servicing-stylist            stylist
+         :items                        (item-card-query data)
+         :cart-summary                 (cart-summary-query order mayvenn-install (orders/available-store-credit order user))}
+
+      applied?
+      (spice.maps/deep-merge {:freeinstall-cart-item
+                              {:cart-item
+                               {:react/key                    "freeinstall-line-item-freeinstall"
+                                :cart-item-title/id           "line-item-title-freeinstall"
+                                :cart-item-floating-box/id    "line-item-price-freeinstall"
+                                :cart-item-floating-box/value [:div.right.medium.my-auto.flex.items-center
+                                                               {:style {:height "100%"}}
+                                                               [:div.h6 {:data-test "line-item-freeinstall-price"}
+                                                                (some-> service-discount - mf/as-money)]]
+                                :cart-item-thumbnail/id       "freeinstall"
+                                :cart-item-thumbnail/value    nil}}})
+
+      (and applied? stylist)
+      (spice.maps/deep-merge  {:freeinstall-cart-item
+                               {:cart-item
+                                {:cart-item-thumbnail/image-url (some-> stylist :portrait :resizable-url)
+                                 :cart-item-title/primary       "Mayvenn Install"
+                                 :cart-item-copy/id             "congratulations"
+                                 :cart-item-title/secondary     (str "w/ " (:store-nickname stylist))
+                                 :rating/value                  (:rating stylist)}}})
+
+      (and applied? (not stylist))
+      (spice.maps/deep-merge {:freeinstall-cart-item
+                              {:cart-item {:cart-item-thumbnail/image-url "//ucarecdn.com/bc776b8a-595d-46ef-820e-04915478ffe8/"
+                                           :cart-item-title/primary       "Mayvenn Install"
+                                           :cart-item-copy/id             "congratulations"
+                                           :cart-item-copy/value          "Congratulations! You're all set for your Mayvenn Install. Select your stylist after checkout."}}}))))
 
 (defn ^:private built-non-auth-component [data opts]
   (component/build component (query data) opts))
