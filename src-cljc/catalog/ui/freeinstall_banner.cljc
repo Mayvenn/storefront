@@ -17,10 +17,10 @@
              (apply utils/route-to nav-event))
       [:div.flex.bg-too-light-lavender.rounded.absolute.bottom-0.left-0.right-0
        {:style {:height "200px"}}
-       [:div.p3
-        [:div.bold.col-6 title]
+       [:div.p4
+        [:div.bold.h3.col-6 title]
         [:div.h7.dark-gray.col-6 subtitle]
-        [:div.h7.bold.my1.col-4
+        [:div.h7.bold.my1.col-5
          (ui/purple-button {:height-class :small} button-copy)]]]
       [:div.z5.absolute.bottom-0
        {:style {:right "-15px"}}

@@ -138,15 +138,18 @@
     color))
 
 (def ^:private predefined-height-classes
-  {:small  "py1 h7"
+  {:small  "py1 h7 bold letter-spacing-half"
    :medium "py2"
    :large  "py3"})
+
+(def ^:private predefined-width-classes
+  {:small "px3"})
 
 (defn button-class [color-kw {:keys [height-class width-class class]
                               :or   {width-class "col-12" height-class "py3"}}]
   (string/join " "
                ["btn h5"
-                width-class
+                (predefined-width-classes width-class width-class)
                 (predefined-height-classes height-class height-class)
                 (button-colors color-kw)
                 class]))
