@@ -133,7 +133,7 @@
 (defn copy-section
   [category]
   (component/html
-   [:div.center.mx2.pt3
+   [:div.center.mx2.pt6
     (when (:category/show-title? category)
       [:div
        (when (:category/new? category)
@@ -176,7 +176,7 @@
             [:img.col.col-12 {:src mob-url}]]
            [:div.mx-auto.col.col-11.h5.dark-gray.center.pt2 copy]]
           [:div.flex.flex-column
-           [:div.hide-on-mb-tb.pb6.mx1 ;; dt
+           [:div.hide-on-mb-tb.mx1 ;; dt
             (ui/aspect-ratio
              950 223.7
              [:div.col.col-12.relative
@@ -190,7 +190,7 @@
                              title-side)}
                 [:div.p3.col-10
                  [:div.h2.mb1.bold primary-title]
-                 [:div.h7 copy]]]]
+                 [:div.h5 copy]]]]
               [:img.col-12.container-height {:src dsk-url}]])]
            [:div.mxn2.hide-on-dt.pt3.px3.pb1 ;; mb, tb
             (ui/aspect-ratio
@@ -233,7 +233,10 @@
           (filter-tabs category facets all-product-cards selections open-panel)
           (filter-panel facets represented-options selections open-panel)]]
         [:div
-         (filter-tabs category facets all-product-cards selections open-panel)])]
+         [:div.hide-on-dt
+          (filter-tabs category facets all-product-cards selections open-panel)]
+         [:div.hide-on-mb-tb.pb6
+          (filter-tabs category facets all-product-cards selections open-panel)]])]
      [:div.flex.flex-wrap
       (if (empty? all-product-cards)
         (product-cards-empty-state loading-products?)
