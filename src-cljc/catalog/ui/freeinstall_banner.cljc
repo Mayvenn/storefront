@@ -1,6 +1,5 @@
 (ns catalog.ui.freeinstall-banner
-  (:require #?@(:cljs [[storefront.hooks.quadpay :as quadpay]])
-            [storefront.component :as component]
+  (:require [storefront.component :as component]
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]))
 

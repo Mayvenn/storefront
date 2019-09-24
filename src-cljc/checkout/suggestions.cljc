@@ -146,8 +146,8 @@
        (image-with-sticker first-image)
        [:span.pr2 "+"]
        (image-with-sticker second-image)])
-    [:div.col-4.my1
-     (ui/teal-ghost-button {:class        "bold bg-white"
+    [:div.my1.col-5
+     (ui/teal-ghost-button {:class        "bg-white"
                             :height-class :small
                             ;; we don't want to draw attention to the disabling of the other 'Add' button,
                             ;; but we do want to prevent people from clicking both.
@@ -195,7 +195,7 @@
                                                          :cart-icon/sticker-size  "28px"
                                                          :cart-icon/image-width   39
                                                          :cart-icon/top-margin    "-8px"
-                                                         :cart-icon/left-margin   "-13px"}
+                                                         :cart-icon/left-margin   "-17px"}
                                                         {:cart-icon/ucare-id      (->> long-sku (catalog-images/image "cart") :ucare/id)
                                                          :cart-icon/sku-id        (:catalog/sku-id long-sku)
                                                          :cart-icon/sticker-label (when-let [length-circle-value (-> long-sku :hair/length first)]
@@ -204,7 +204,7 @@
                                                          :cart-icon/sticker-size  "28px"
                                                          :cart-icon/image-width   39
                                                          :cart-icon/top-margin    "-8px"
-                                                         :cart-icon/left-margin   "-13px"}]}))
+                                                         :cart-icon/left-margin   "-17px"}]}))
           (suggest-bundles data products skus line-items))}))
 
 (defmethod effects/perform-effects events/control-suggested-add-to-bag
