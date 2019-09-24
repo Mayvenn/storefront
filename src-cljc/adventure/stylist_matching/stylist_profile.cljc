@@ -84,7 +84,7 @@
         undo-history                 (get-in data storefront.keypaths/navigation-undo-stack)
         direct-load?                 (zero? (count undo-history))
         {:keys [latitude longitude]} (:salon stylist)
-        footer-cta-event             (if direct-load?
+        footer-cta-target            (if direct-load?
                                        [(if post-purchase?
                                           events/navigate-adventure-stylist-results-post-purchase
                                           events/navigate-adventure-stylist-results-pre-purchase)
@@ -105,7 +105,7 @@
                      :footer/id   "meet-more-stylists"
                      :cta/id      "browse-stylists"
                      :cta/label   "Browse Stylists"
-                     :cta/target  footer-cta-event}
+                     :cta/target  footer-cta-target}
 
        :google-map-data #?(:cljs (maps/map-query data)
                            :clj  nil)
