@@ -158,10 +158,8 @@
         [:a.teal (utils/fake-href events/control-category-option-clear) "Clear all filters"]
         " to see more hair."]])]))
 
-(defn render-subsection
-  [category
-   loading?
-   {:keys         [product-cards image/mob-url image/dsk-url copy order subsection-key]
+(defn ^:private subsection-component
+  [{:keys         [product-cards image/mob-url image/dsk-url copy subsection-key]
     primary-title :title/primary
     title-side    :title/side}]
   (component/html
@@ -239,10 +237,7 @@
      [:div.flex.flex-wrap
       (if (empty? all-product-cards)
         (product-cards-empty-state loading-products?)
-        (map (partial render-subsection
-                      category
-                      loading-products?)
-             subsections))]]]))
+        (map subsection-component subsections))]]]))
 
 (defn subsections-query
   [{:keys [catalog/category-id subsections]}
