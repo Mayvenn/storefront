@@ -76,13 +76,19 @@
 
 (defn query
   [data]
-  (let [stylist-id                   (get-in data keypaths/stylist-profile-id)
-        stylist                      (stylists/by-id data stylist-id)
-        stylist-name                 (stylists/->display-name stylist)
-        current-order                (api.orders/current data)
-        post-purchase?               (post-purchase? (get-in data storefront.keypaths/navigation-event))
-        undo-history                 (get-in data storefront.keypaths/navigation-undo-stack)
-        direct-load?                 (zero? (count undo-history))
+  (let [stylist-id     (get-in data keypaths/stylist-profile-id)
+        stylist        (stylists/by-id data stylist-id)
+        stylist-name   (stylists/->display-name stylist)
+        current-order  (api.orders/current data)
+        post-purchase? (post-purchase? (get-in data storefront.keypaths/navigation-event))
+        undo-history   (get-in data storefront.keypaths/navigation-undo-stack)
+        direct-load?   (zero? (count undo-history))
+
+        main-cta-target              [(if post-purchase?
+                                        events/control-adventure-select-stylist-post-purchase
+                                        events/control-adventure-select-stylist-pre-purchase)
+                                      {:servicing-stylist stylist
+                                       :card-index        0}]
         {:keys [latitude longitude]} (:salon stylist)
         footer-cta-target            (if direct-load?
                                        [(if post-purchase?
@@ -110,9 +116,7 @@
        :google-map-data #?(:cljs (maps/map-query data)
                            :clj  nil)
        :cta/id          "select-stylist"
-       :cta/target      [events/control-adventure-select-stylist-pre-purchase
-                         {:servicing-stylist stylist
-                          :card-index        0}]
+       :cta/target      main-cta-target
        :cta/label       (str "Select " stylist-name)
 
        :transposed-title/id          "stylist-name"
