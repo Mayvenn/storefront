@@ -964,3 +964,7 @@
 (defmethod effects/perform-effects events/external-redirect-typeform-recommend-stylist
   [_ _ _ _ _ _]
   (set! (.-location js/window) "https://mayvenn.typeform.com/to/J2Y1cC"))
+
+(defmethod effects/perform-effects events/browser-back
+  [_ _ _ _ _ _]
+  (js/history.back))

@@ -76,29 +76,45 @@
 
 (defn query
   [data]
-  (let [stylist-id     (get-in data keypaths/stylist-profile-id)
-        stylist        (stylists/by-id data stylist-id)
-        stylist-name   (stylists/->display-name stylist)
-        current-order  (api.orders/current data)
-        post-purchase? (post-purchase? (get-in data storefront.keypaths/navigation-event))
-        undo-history   (get-in data storefront.keypaths/navigation-undo-stack)]
+  (let [stylist-id                   (get-in data keypaths/stylist-profile-id)
+        stylist                      (stylists/by-id data stylist-id)
+        stylist-name                 (stylists/->display-name stylist)
+        current-order                (api.orders/current data)
+        post-purchase?               (post-purchase? (get-in data storefront.keypaths/navigation-event))
+        undo-history                 (get-in data storefront.keypaths/navigation-undo-stack)
+        direct-load?                 (zero? (count undo-history))
+        {:keys [latitude longitude]} (:salon stylist)
+        footer-cta-event             (if direct-load?
+                                       [(if post-purchase?
+                                          events/navigate-adventure-stylist-results-post-purchase
+                                          events/navigate-adventure-stylist-results-pre-purchase)
+                                        {:query-params {:lat latitude :long longitude}}]
+                                       [events/browser-back])]
     (when stylist
-      {:header-data                  (cond-> {:header.title/id               "adventure-title"
-                                              :header.title/primary          (str "More about " stylist-name)
-                                              :header.back-navigation/id     "adventure-back"
-                                              :header.back-navigation/back   undo-history
-                                              :header.back-navigation/target [events/navigate-adventure-find-your-stylist]}
-                                       (not post-purchase?)
-                                       (merge {:header.cart/id    "mobile-cart"
-                                               :header.cart/value (:order.items/quantity current-order)
-                                               :header.cart/color "white"}))
-       :google-map-data              #?(:cljs (maps/map-query data)
-                                        :clj  nil)
-       :cta/id                       "select-stylist"
-       :cta/target                   [events/control-adventure-select-stylist-pre-purchase
-                                      {:servicing-stylist stylist
-                                       :card-index        0}]
-       :cta/label                    (str "Select " stylist-name)
+      {:header-data (cond-> {:header.title/id               "adventure-title"
+                             :header.title/primary          (str "More about " stylist-name)
+                             :header.back-navigation/id     "adventure-back"
+                             :header.back-navigation/back   undo-history
+                             :header.back-navigation/target [events/navigate-adventure-find-your-stylist]}
+                      (not post-purchase?)
+                      (merge {:header.cart/id    "mobile-cart"
+                              :header.cart/value (:order.items/quantity current-order)
+                              :header.cart/color "white"}))
+
+       :footer-data {:footer/copy "Meet more stylists in your area"
+                     :footer/id   "meet-more-stylists"
+                     :cta/id      "browse-stylists"
+                     :cta/label   "Browse Stylists"
+                     :cta/target  footer-cta-event}
+
+       :google-map-data #?(:cljs (maps/map-query data)
+                           :clj  nil)
+       :cta/id          "select-stylist"
+       :cta/target      [events/control-adventure-select-stylist-pre-purchase
+                         {:servicing-stylist stylist
+                          :card-index        0}]
+       :cta/label       (str "Select " stylist-name)
+
        :transposed-title/id          "stylist-name"
        :transposed-title/primary     stylist-name
        :transposed-title/secondary   (-> stylist :salon :name)
@@ -178,24 +194,57 @@
         (checks-or-x "Closure" (:specialty-sew-in-closure content))
         (checks-or-x "Frontal" (:specialty-sew-in-frontal content))]])]] )
 
-(defn component
-  [{:keys [header-data google-map-data] :as query} owner opts]
+(defn footer-body-molecule
+  [{:footer/keys [copy id]}]
+  (when id
+    [:div.dark-gray.h5.mb2
+     {:data-test id}
+     copy]) )
+
+(defn footer-cta-molecule
+  [{:cta/keys [id label]
+    [event :as target]
+    :cta/target}]
+  (when id
+    [:div.col-7.mx-auto
+     (ui/ghost-button
+      (merge {:height-class "py2"
+              :data-test    id}
+             (if (= :navigate (first event))
+               (apply utils/route-to target)
+               (apply utils/fake-href target)))
+      [:span.medium.dark-gray.border-bottom.border-gray label])]) )
+
+(defn footer [data _ _]
   (component/create
-   [:div.col-12.bg-white.mb6
+   (when (seq data)
+     [:div.mt6.border-top.border-fate-white.border-width-2
+      [:div.py5.center
+       (footer-body-molecule data)
+       (footer-cta-molecule data)]])))
+
+(defn component
+  [{:keys [header-data footer-data google-map-data] :as query} owner opts]
+  (component/create
+   [:div.col-12.bg-white.mb6 {:style {:min-height    "100vh"
+                                      :margin-bottom "-1px"}}
     [:div.white (component/build header-org/organism header-data nil)]
-    [:div.px3 (component/build stylist-profile-card-component query nil)]
+    [:main
+     [:div.px3 (component/build stylist-profile-card-component query nil)]
 
-    #?(:cljs (component/build maps/component google-map-data))
+     #?(:cljs (component/build maps/component google-map-data))
 
 
-    [:div.my2.m1-on-tb-dt.mb2-on-tb-dt.px3
-     [:div.mb3 (cta-molecule query)]
+     [:div.my2.m1-on-tb-dt.mb2-on-tb-dt.px3
+      [:div.mb3 (cta-molecule query)]
 
-     (carousel-molecule query)
+      (carousel-molecule query)
 
-     (for [section-details (:details query)]
-       (section-details-molecule section-details))]
-    [:div.clearfix]]))
+      (for [section-details (:details query)]
+        (section-details-molecule section-details))]
+     [:div.clearfix]]
+
+    [:footer (component/build footer footer-data nil)]]))
 
 (defn built-component
   [data opts]

@@ -138,6 +138,7 @@
 (defpath stash-nav-stack-item)
 (defpath control-navigate)
 (defpath browser-navigate)
+(defpath browser-back)
 
 (defpath stripe)
 (defpath stripe-success-create-token)

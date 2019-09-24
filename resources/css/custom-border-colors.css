@@ -3,6 +3,7 @@
 .border-silver        { border-color: var(--silver); }
 .border-dark-silver   { border-color: var(--dark-silver); }
 .border-light-gray    { border-color: var(--light-gray); }
+.border-fate-white    { border-color: var(--fate-white); }
 .border-gray          { border-color: var(--gray); }
 .border-dark-gray     { border-color: var(--dark-gray); }
 .border-black         { border-color: var(--black); }
@@ -15,6 +16,7 @@
 
 :root {
   --white:         #ffffff;
+  --fate-white:    #f8f8f8;
   --light-silver:  #f2f2f2;
   --silver:        #ebebeb;
   --dark-silver:   #dadada;
