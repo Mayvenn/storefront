@@ -43,21 +43,28 @@
 (defmethod effects/perform-effects events/navigate-adventure-stylist-results-pre-purchase
   [_ _ {:keys [query-params]} _ app-state]
   #?(:cljs
-     (let [{stylist-ids :s} query-params
-           location         (get-in app-state adventure.keypaths/adventure-stylist-match-location)
-           matched-stylists (get-in app-state adventure.keypaths/adventure-matched-stylists)]
+     (let [{stylist-ids :s}                          query-params
+           {:keys [latitude longitude] :as location} (get-in app-state adventure.keypaths/adventure-stylist-match-location)
+           matched-stylists                          (get-in app-state adventure.keypaths/adventure-matched-stylists)
+           api-cache                                 (get-in app-state storefront.keypaths/api-cache)]
        (cond
          (seq stylist-ids)
          (do
            (messages/handle-later events/adventure-stylist-results-delay-completed {} 3000)
-           (api/fetch-matched-stylists (get-in app-state storefront.keypaths/api-cache)
+           (api/fetch-matched-stylists api-cache
                                        stylist-ids
                                        #(messages/handle-message events/api-success-fetch-matched-stylists %)))
 
          (and location (nil? matched-stylists))
-         (do
+         (let [query {:latitude  latitude
+                      :longitude longitude
+                      :radius    "100mi"
+                      :choices   (get-in app-state adventure.keypaths/adventure-choices)}] ; For trackings purposes only
            (messages/handle-later events/adventure-stylist-results-delay-completed {} 3000)
-           (messages/handle-message events/api-fetch-stylists-within-radius-pre-purchase location))
+           (api/fetch-stylists-within-radius api-cache
+                                             query
+                                             #(messages/handle-message events/api-success-fetch-stylists-within-radius-pre-purchase
+                                                                       (merge {:query query} %))))
 
          :else
          (history/enqueue-redirect events/navigate-adventure-find-your-stylist)))))

@@ -22,19 +22,6 @@
 
 ;; PRE-PURCHASE FLOW
 
-(defmethod effects/perform-effects events/api-fetch-stylists-within-radius-pre-purchase [_ event _ _ app-state]
-  #?(:cljs
-     (let [{:keys [latitude longitude]} (get-in app-state adventure.keypaths/adventure-stylist-match-location)
-           choices (get-in app-state adventure.keypaths/adventure-choices)
-           query   {:latitude     latitude
-                    :longitude    longitude
-                    :radius       "100mi"
-                    :choices      choices}] ; For trackings purposes only
-       (api/fetch-stylists-within-radius (get-in app-state keypaths/api-cache)
-                                         query
-                                         #(handle-message events/api-success-fetch-stylists-within-radius-pre-purchase
-                                                          (merge {:query query} %))))))
-
 (defmethod effects/perform-effects events/api-success-fetch-stylists-within-radius-pre-purchase [_ event _ _ app-state]
   #?(:cljs
      (when-not (get-in app-state adventure.keypaths/adventure-stylist-results-delaying?)

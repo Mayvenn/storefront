@@ -302,7 +302,6 @@
 
 (defpath api-success-fetch-geocode)
 (defpath api-failure-fetch-geocode)
-(defpath api-fetch-stylists-within-radius-pre-purchase)
 (defpath api-fetch-stylists-within-radius-post-purchase)
 (defpath api-success-fetch-stylists-within-radius)
 (defpath api-success-fetch-stylists-within-radius-pre-purchase)
