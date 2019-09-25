@@ -539,6 +539,7 @@
 (defpath control-consolidated-cart-free-install-dismiss)
 
 (defpath api-success-fetch-matched-stylist)
+(defpath api-success-fetch-matched-stylists)
 (defpath api-success-fetch-stylist-details)
 (defpath api-failure-fetch-stylist-details)
 (defpath adventure-stylist-search-results-displayed)

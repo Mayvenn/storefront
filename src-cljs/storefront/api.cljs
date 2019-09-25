@@ -1031,6 +1031,15 @@
    {:params  {:stylist-id stylist-id}
     :handler #(messages/handle-message events/api-success-fetch-matched-stylist %)}))
 
+(defn fetch-matched-stylists [cache stylist-ids handler]
+  (cache-req
+   cache
+   GET
+   "/v1/stylist/matched-by-ids"
+   request-keys/fetch-matched-stylist
+   {:params  {:stylist-ids stylist-ids}
+    :handler handler}))
+
 (defn fetch-stylist-details
   ([cache stylist-id]
    (fetch-stylist-details cache stylist-id (partial messages/handle-message events/api-success-fetch-stylist-details)))

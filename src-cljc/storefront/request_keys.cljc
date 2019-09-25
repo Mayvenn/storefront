@@ -72,3 +72,4 @@
 (def fetch-stylists-within-radius [:fetch-stylists-within-radius])
 
 (def fetch-matched-stylist [:fetch-matched-stylist])
+(def fetch-matched-stylists [:fetch-matched-stylists])

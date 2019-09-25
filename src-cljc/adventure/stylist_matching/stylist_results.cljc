@@ -14,7 +14,8 @@
             [storefront.keypaths :as storefront.keypaths]
             [storefront.accessors.orders :as orders]
             ;; Requires multimethods from this namespace
-            adventure.checkout.wait))
+            adventure.checkout.wait
+            [adventure.keypaths :as adventure.keypaths]))
 
 (defmethod transitions/transition-state events/control-adventure-stylist-gallery-open
   [_ _event {:keys [ucare-img-urls initially-selected-image-index]} app-state]
@@ -42,15 +43,26 @@
           (assoc-in adventure.keypaths/adventure-stylist-results-delaying? true))))
 
 (defmethod effects/perform-effects events/navigate-adventure-stylist-results-pre-purchase
-  [_ _ args _ app-state]
+  [_ _ {:keys [query-params]} _ app-state]
   #?(:cljs
-     (let [location         (get-in app-state adventure.keypaths/adventure-stylist-match-location)
+     (let [{stylist-ids :s} query-params
+           location         (get-in app-state adventure.keypaths/adventure-stylist-match-location)
            matched-stylists (get-in app-state adventure.keypaths/adventure-matched-stylists)]
-              (if location
-                (when (nil? matched-stylists)
-                  (messages/handle-later events/adventure-stylist-results-delay-completed {} 3000)
-                  (messages/handle-message events/api-fetch-stylists-within-radius-pre-purchase location))
-                (history/enqueue-redirect events/navigate-adventure-find-your-stylist)))))
+       (cond
+         (seq stylist-ids)
+         (do
+           (messages/handle-later events/adventure-stylist-results-delay-completed {} 3000)
+           (api/fetch-matched-stylists (get-in app-state storefront.keypaths/api-cache)
+                                       stylist-ids
+                                       #(messages/handle-message events/api-success-fetch-matched-stylists %)))
+
+         (and location (nil? matched-stylists))
+         (do
+           (messages/handle-later events/adventure-stylist-results-delay-completed {} 3000)
+           (messages/handle-message events/api-fetch-stylists-within-radius-pre-purchase location))
+
+         :else
+         (history/enqueue-redirect events/navigate-adventure-find-your-stylist)))))
 
 (defmethod transitions/transition-state events/adventure-stylist-results-delay-completed
   [_ _ _ app-state]
