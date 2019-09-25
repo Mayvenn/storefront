@@ -217,7 +217,7 @@
              (if (= :navigate (first event))
                (apply utils/route-to target)
                (apply utils/fake-href target)))
-      [:span.medium.dark-gray.border-bottom.border-gray label])]) )
+      [:span.medium.dark-gray.border-bottom.border-teal label])]) )
 
 (defn footer [data _ _]
   (component/create
