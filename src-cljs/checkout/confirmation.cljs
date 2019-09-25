@@ -152,11 +152,8 @@
               :data-test "additional-payment-required-note"}
              [:.p2.navy
               "Please enter an additional payment method below for the remaining total on your order."])
-            (component/build checkout-credit-card/component payment nil)])]
-
-        (component/build cart-summary/organism cart-summary nil)
-
-        [:div.col-on-tb-dt.col-6-on-tb-dt.px3
+            (component/build checkout-credit-card/component payment nil)])
+         (component/build cart-summary/organism cart-summary nil)
          (component/build quadpay/component
                           {:quadpay/show?       (and selected-quadpay? loaded-quadpay?)
                            :quadpay/order-total (:total order)
@@ -167,7 +164,7 @@
             (if-let [servicing-stylist-name (stylists/->display-name servicing-stylist)]
               (str "After your order ships, you’ll be connected with " servicing-stylist-name " over SMS to make an appointment.")
               "You’ll be able to select your Certified Mayvenn Stylist after checkout.")])
-         [:div.col-12.col-6-on-tb-dt.mx-auto.mt4
+         [:div.col-12.mx-auto.mt4
           (checkout-button selected-quadpay? checkout-button-data)]]]]
       [:div.py6.h2
        [:div.py4 (ui/large-spinner {:style {:height "6em"}})]
