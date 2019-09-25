@@ -11,11 +11,9 @@
                        [storefront.history :as history]
                        [storefront.hooks.stringer :as stringer]
                        [storefront.platform.messages :as messages]])
-            [storefront.keypaths :as storefront.keypaths]
             [storefront.accessors.orders :as orders]
             ;; Requires multimethods from this namespace
-            adventure.checkout.wait
-            [adventure.keypaths :as adventure.keypaths]))
+            adventure.checkout.wait))
 
 (defmethod transitions/transition-state events/control-adventure-stylist-gallery-open
   [_ _event {:keys [ucare-img-urls initially-selected-image-index]} app-state]

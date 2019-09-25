@@ -71,7 +71,8 @@
 (defmethod effects/perform-effects events/api-success-fetch-matched-stylists
   [_ event _ _ app-state]
   #?(:cljs
-     (messages/handle-message events/adventure-stylist-results-wait-resolved)))
+     (when-not (get-in app-state adventure.keypaths/adventure-stylist-results-delaying?)
+       (messages/handle-message events/adventure-stylist-results-wait-resolved))))
 
 (defmethod transitions/transition-state events/api-success-fetch-stylists-within-radius
   [_ _ {:keys [stylists query]} app-state]
