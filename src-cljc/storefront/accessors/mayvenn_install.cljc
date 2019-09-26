@@ -5,7 +5,8 @@
    [storefront.accessors.orders :as orders]
    [storefront.keypaths :as keypaths]
    [storefront.accessors.service-menu :as service-menu]
-   [spice.core :as spice]))
+   [spice.core :as spice]
+   [storefront.keypaths :as storefront.keypaths]))
 
 (defn mayvenn-install
   "This is the 'Mayvenn Install' model that is used to build queries for views"
@@ -27,7 +28,9 @@
                                          (apply +)
                                          (min install-items-required))
         items-remaining-for-install (- install-items-required items-added-for-install)
-        servicing-stylist           (get-in app-state adventure-keypaths/adventure-servicing-stylist)
+        servicing-stylist           (if (= "aladdin" (get-in app-state storefront.keypaths/store-experience))
+                                      (get-in app-state storefront.keypaths/store)
+                                      (get-in app-state adventure-keypaths/adventure-servicing-stylist))
         service-type                (->> (get-in app-state keypaths/environment)
                                          vouchers/campaign-configuration
                                          (filter #(= (:service/type %)
@@ -35,7 +38,7 @@
                                                              vouchers/product-items->highest-value-service)))
                                          first
                                          :service/diva-advertised-type)
-        service-menu                (or (get-in app-state adventure-keypaths/adventure-servicing-stylist-service-menu)
+        service-menu                (or (:service-menu servicing-stylist)
                                         service-menu/default-service-menu)]
     {:mayvenn-install/entered?           freeinstall-entered?
      :mayvenn-install/locked?            (and freeinstall-entered?
