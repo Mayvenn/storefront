@@ -838,7 +838,7 @@
 
 (defn add-promotion-code
   [{:keys [shop? session-id number token promo-code allow-dormant?]}]
-  (let [freeinstall-promo?         (= "freeinstall" (some-> promo-code str/trim str/lower-case))
+  (let [freeinstall-promo?         (= "freeinstall" (some-> promo-code str str/trim str/lower-case))
         allow-without-eligibility? (boolean (and shop? freeinstall-promo?))]
     (storeback-api-req
      POST
