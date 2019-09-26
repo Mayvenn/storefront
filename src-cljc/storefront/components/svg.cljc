@@ -322,3 +322,8 @@
   (component/html
    [:svg opts
     ^:inline (svg-xlink "whole-star")]))
+
+(defn chat-bubble [opts]
+  (component/html
+   [:svg opts
+    ^:inline (svg-xlink "chat-bubble")]))

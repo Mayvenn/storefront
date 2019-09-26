@@ -98,3 +98,36 @@
   [:div.bg-white.border.border-light-gray.rounded.overflow-hidden.table.flex.col-12
    (labeled-input-molecule data)
    (submit-button-molecule data)])
+
+(defn ^:private star [index type]
+  [:span.mrp1
+   {:key (str (name type) "-" index)}
+   (case type
+     :whole         (svg/whole-star         {:height "13px" :width "13px"})
+     :three-quarter (svg/three-quarter-star {:height "13px" :width "13px"})
+     :half          (svg/half-star          {:height "13px" :width "13px"})
+     :empty         (svg/empty-star         {:height "13px" :width "13px"})
+     nil)])
+
+(defn ^:private rating->stars
+  [rating full-rating]
+  (when (pos? full-rating)
+    (conj
+     (rating->stars (dec rating) (dec full-rating))
+     (condp <= rating
+       1    :whole
+       0.75 :three-quarter
+       0.50 :half-star
+       :empty))))
+
+(defn svg-star-rating
+  [rating]
+  [:div.flex.items-center
+   [:span.mrp2 rating]
+   (map-indexed star (rating->stars rating 5))])
+
+(defn svg-star-rating-molecule
+  [{:rating/keys [value]}]
+  (component/html
+   [:div.h6.orange
+    (svg-star-rating value)]))
