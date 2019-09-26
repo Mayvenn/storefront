@@ -165,6 +165,8 @@
                                        "voucher_expired"    ["This voucher has expired." nil]
                                        "resource_not_found" [(str "This is not a valid code. "
                                                                   "Please try again or contact customer service.") nil]
+                                       "voucher_disabled"   [(str "There was an error in processing your code. "
+                                                                  "Please try again or contact customer service.") nil]
                                        [nil [{:long-message (str "There was an error in processing your code. "
                                                                  "Please try again or contact customer service.")
                                               :path         ["voucher-code"]}]])]
@@ -178,10 +180,11 @@
     (messages/handle-message events/api-failure-bad-server-response response)
     (let [redemption-error (interpret-redemption-error (-> response :response :body :key))]
       #?(:cljs
-         (try
-           (exception-handler/report "voucherify-redemption-api-failure" redemption-error)
-           (catch :default e ;; ignore error so we don't double report
-             nil)))
+         (when-not (:error-message redemption-error)
+           (try
+             (exception-handler/report "voucherify-redemption-api-failure" redemption-error)
+             (catch :default e ;; ignore error so we don't double report
+               nil))))
       (messages/handle-message events/api-failure-errors redemption-error))))
 
 (defmethod transitions/transition-state events/api-success-voucher-redemption
