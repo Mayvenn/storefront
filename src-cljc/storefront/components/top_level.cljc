@@ -50,7 +50,7 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
-            [checkout.consolidated-cart :as consolidated-cart]))
+            [checkout.shop.cart :as shop-cart]))
 
 (defn main-component [nav-event]
   (doto (condp = nav-event
@@ -219,7 +219,7 @@
        (slideout-nav/built-component data nil)
 
        (routes/sub-page? [nav-event] [events/navigate-cart]) ; Cart pages
-       (consolidated-cart/layout data nav-event)
+       (shop-cart/page data nav-event)
 
        ;; TODO this should be moved into the UI domain of stylist-matching
        (routes/sub-page? [nav-event] [events/navigate-adventure])

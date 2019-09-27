@@ -1,4 +1,4 @@
-(ns checkout.consolidated-cart
+(ns checkout.shop.cart
   (:require
    #?@(:cljs [[om.core :as om]
               [storefront.api :as api]
@@ -578,7 +578,7 @@
       (merge {:checkout-caption-copy          (str "After your order ships, you'll be connected with " (stylists/->display-name servicing-stylist) " over SMS to make an appointment.")
               :servicing-stylist-portrait-url (-> servicing-stylist :portrait :resizable-url)}))))
 
-(defn component
+(defn cart-component
   [{:keys [fetching-order?
            item-count
            empty-cart
@@ -598,23 +598,35 @@
    :empty-cart      (empty-cart-query data)
    :full-cart       (full-cart-query data)})
 
-(defn built-component [data opts]
-  (component/build component (query data) opts))
+(defn template
+  [{:keys [header footer popup promo-banner flash cart data nav-event]}]
+   (component/create
+    [:div.flex.flex-column {:style {:min-height    "100vh"
+                                    :margin-bottom "-1px"}}
+     #?(:cljs (popup/built-component popup nil))
 
-(defn layout [data nav-event]
-  [:div.flex.flex-column {:style {:min-height    "100vh"
-                                  :margin-bottom "-1px"}}
-   #?(:cljs (popup/built-component data nil))
+     (header/built-component header nil)
+     (when promo-banner
+       (promo-banner/built-static-organism promo-banner nil))
+     [:div.relative.flex.flex-column.flex-auto
+      (flash/built-component flash nil)
 
-   (header/built-component data nil)
-   (when (and (zero? (orders/product-quantity (get-in data keypaths/order)))
-              (-> data mayvenn-install/mayvenn-install :mayvenn-install/entered? not))
-     (promo-banner/built-static-organism data nil))
-   [:div.relative.flex.flex-column.flex-auto
-    (flash/built-component data nil)
+      [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
+       (component/build cart-component cart nil)]
 
-    [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
-     (built-component data nil)]
+      [:footer
+       (storefront.footer/built-component footer nil)]]]))
 
-    [:footer
-     (storefront.footer/built-component data nil)]]])
+(defn page
+  [app-state nav-event]
+  (component/build template
+                   (merge
+                    (when (and (zero? (orders/product-quantity (get-in app-state keypaths/order)))
+                               (-> app-state mayvenn-install/mayvenn-install :mayvenn-install/entered? not))
+                      {:promo-banner app-state})
+                    {:cart      (query app-state)
+                     :header    app-state
+                     :popup     app-state
+                     :flash     app-state
+                     :data      app-state
+                     :nav-event nav-event})))
