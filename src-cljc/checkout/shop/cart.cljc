@@ -626,6 +626,7 @@
                       {:promo-banner app-state})
                     {:cart      (query app-state)
                      :header    app-state
+                     :footer    app-state
                      :popup     app-state
                      :flash     app-state
                      :data      app-state
