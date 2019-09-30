@@ -7,6 +7,7 @@
             [storefront.assets :as assets]
             [storefront.component :as component]
             [storefront.components.top-level :refer [top-level-component]]
+            [storefront.components.ui :as ui]
             [storefront.config :as config]
             [storefront.keypaths :as keypaths]
             [storefront.platform.asset-mappings :as asset-mappings]
@@ -183,8 +184,8 @@
            [:div.col-9-on-tb-dt.mx-auto.px2.flex.flex-column.items-center
             {:style "min-height: 100vh;"}
             [:img.py2 {:src (assets/path "/images/header_logo.svg")}]
-            [:img.mx-auto.block {:src (assets/path "/images/not_found_head.png")
-                                 :style "max-width: 80%"}]
+            (ui/ucare-img {:class "mx-auto block"
+                           :style "max-width: 80%"} "2c16b22e-2a8c-4ac6-83c8-78e8aff1d558")
             [:div.h3.mt3.mb2.center "We can't seem to find the page you're looking for."]
             [:a.mx-auto.btn.btn-primary.col-10
              {:href "/"}

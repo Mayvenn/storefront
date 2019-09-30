@@ -594,9 +594,9 @@
     [:picture {:key image-id}
      [:source {:src-set (str retina-url " 2x,"
                              default-url " 1x")}]
-     [:img.block (-> img-attrs
-                     (dissoc :width :retina-quality :default-quality)
-                     (assoc :src default-url))]]))
+     [:img (-> img-attrs
+               (dissoc :width :retina-quality :default-quality)
+               (assoc :src default-url))]]))
 
 (defn circle-ucare-img
   [{:keys [width] :as attrs :or {width "4em"}} image-id]

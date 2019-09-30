@@ -17,8 +17,7 @@
 
 (def title
   [:div.p2.center
-   [:h2 [:img {:style {:height "50px"}
-                  :src (assets/path "/images/icons/gallery-profile.png")}]]
+   (ui/ucare-img {:style {:height "50px"}}  "4a0e6e66-c448-47e0-8341-bc92b91138ef")
    [:h1 "Your Gallery"]
    [:p "Show off your best work to your clients by uploading images of your #MayvennMade hairstyles."]])
 

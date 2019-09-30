@@ -31,9 +31,9 @@
    (ui/narrow-container
     [:div.p3
      [:section.mx4-on-tb-dt.center
-      [:img {:src    (assets/path "/images/icons/success.png")
-             :height "55px"
-             :width  "55px"}]
+      (ui/ucare-img {:class "mx-auto"
+                     :height "55px"
+                     :width  "55px"} "a0520c74-b76d-4c4e-97f5-791c9e4ae213")
       [:h1
        {:data-test "checkout-success-message"}
        "Thank you for your order!"]
@@ -43,9 +43,9 @@
      (when guest?
        [:div.mt3
         [:section.center
-         [:img {:src    (assets/path "/images/icons/profile.png")
-                :height "55px"
-                :width  "55px"}]
+         (ui/ucare-img {:class "mx-auto"
+                        :height "55px"
+                        :width  "55px"} "962e39be-3d22-4f23-a9b3-d1623ac7c1d7")
          [:h1
           "Create an account"]
          [:p.h5

@@ -55,22 +55,22 @@ Thanks,
                   [:a.h6.col-12.btn.btn-primary.bg-fb-blue
                    {:href   (facebook-link utm-url)
                     :target "_blank"}
-                   [:img.align-middle.mr1 {:style {:height "18px"}
-                                           :src   (assets/path "/images/share/fb.png")}]
+                   (ui/ucare-img {:class "align-middle mr1"
+                                  :style {:height "18px"}} "975698f3-3eda-411c-83ad-6a2750e0e59d")
                    "Share"]]
                  [:div.p1.col.col-6.col-12-on-dt
                   [:a.h6.col-12.btn.btn-primary.bg-twitter-blue
                    {:href   (twitter-link utm-url)
                     :target "_blank"}
-                   [:img.align-middle.mr1 {:style {:height "18px"}
-                                           :src   (assets/path "/images/share/twitter.png")}]
+                   (ui/ucare-img {:class "align-middle mr1"
+                                  :style {:height "18px"}} "287fcd79-c45d-453d-94e2-48f0ef6fc35c")
                    "Tweet"]]
                  [:div.p1.col.col-6.col-12-on-dt.hide-on-dt
                   [:a.h6.col-12.btn.btn-primary.bg-sms-green
                    {:href (sms-link utm-url)
                     :target "_blank"}
-                   [:img.align-middle.mr1 {:style {:height "18px"}
-                                           :src   (assets/path "/images/share/sms.png")}]
+                   (ui/ucare-img {:class "align-middle mr1"
+                                  :style {:height "18px"}} "7e992996-0495-4707-998b-f04ea56c7c73")
                    "SMS"]]
                  [:div.p1.col.col-6.col-12-on-dt
                   [:a.h6.col-12.btn.btn-primary.bg-dark-gray

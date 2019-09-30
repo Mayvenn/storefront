@@ -29,29 +29,28 @@
              (assoc-in [:style :height] "39px"))]
         content))
 
-(defn social-icon [path]
-  (component/html
-   [:img.ml2 {:style {:height "20px"}
-              :src   path}]) )
+(defn social-icon [ucare-uuid]
+  (ui/ucare-img {:class "ml2"
+                 :style {:height "20px"}} ucare-uuid))
 
 (def ^:private gallery-link
   (component/html
    (drop-down-row
     (utils/route-to events/navigate-store-gallery)
     "View gallery"
-    (social-icon (assets/path "/images/share/stylist-gallery-icon.png")))))
+    (social-icon "fa4eefff-7856-4a1b-8cdb-c8b228b62967"))))
 
 (defn ^:private instagram-link [instagram-account]
   (drop-down-row
    {:href (marquee/instagram-url instagram-account)}
    "Follow on"
-   (social-icon (assets/path "/images/share/instagram-icon.png"))))
+   (social-icon "1a4a3bd5-0fda-45f2-9bb4-3739b911390f")))
 
 (defn ^:private styleseat-link [styleseat-account]
   (drop-down-row
    {:href (marquee/styleseat-url styleseat-account)}
    "Book on"
-   (social-icon (assets/path "/images/share/styleseat-logotype.png"))))
+   (social-icon "c8f0a4b8-24f7-4de8-9c20-c6634b865bc1")))
 
 (defn store-welcome [signed-in {:keys [store-nickname portrait expanded?]} expandable?]
   (component/html

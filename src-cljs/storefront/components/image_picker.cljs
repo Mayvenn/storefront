@@ -26,8 +26,9 @@
         [:div.p2
          [:a.dark-gray.block.mb2
           (utils/route-to (:navigation-event back-link))
-          [:img.px1.mbnp4 {:style {:height "1.25rem"}
-                           :src   (assets/path "/images/icons/caret-left.png")}]
+          (ui/ucare-img {:class "px1 mbnp4"
+                         :style {:height  "1.25rem"
+                                 :display "inline"}} "942d4023-ae6b-4228-8394-00293229e895")
           (:back-copy back-link)]
          [:h1.center "Select a source below"]]
         [:div {:id selector} ui/nbsp]]))))

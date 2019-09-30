@@ -28,13 +28,7 @@
 
 (def frontend-assets
   "Asset mappings to send to the frontend"
-  #{"/images/icons/success.png"
-    "/images/icons/profile.png"
-    "/images/share/fb.png"
-    "/images/share/twitter.png"
-    "/images/share/sms.png"
-    "/images/sprites.svg"
-    "/images/icons/caret-left.png"
+  #{"/images/sprites.svg"
     "/css/app.css"
     "/images/share/stylist-gallery-icon.png"
     "/images/share/instagram-icon.png"
@@ -42,7 +36,6 @@
     "/images/icons/collapse.png"
     "/images/icons/expand.png"
     "/images/header_logo.svg"
-    "/images/icons/gallery-profile.png"
     "/images/icons/stylist-bug-no-pic-fallback.png"})
 
 (defn development? [environment]
