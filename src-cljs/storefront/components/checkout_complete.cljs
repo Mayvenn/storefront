@@ -146,10 +146,17 @@
   [:div.bg-too-light-lavender.rounded.px4.py3
    {:data-test "matched-with-stylist"}
    (matched-component-message-molecule queried-data)
-   [:div.my2 (servicing-stylist-card-molecule queried-data)]])
+   [:div.my2 (servicing-stylist-card-molecule queried-data)]
+   (let [{:matched-component.cta/keys [id label target]} queried-data]
+     (when id
+       [:div.col-10.my2.mx-auto
+        (ui/teal-button
+         (merge (apply utils/route-to target)
+                {:data-test id}) label)]))])
+
 
 (defn adventure-component
-  [{:keys              [servicing-stylist matched-stylists phone-number need-match? sign-up-data guest?] :as data
+  [{:keys              [sign-up-data guest?] :as data
     matched-component? :matched-component.message/id} _ _]
   (component/create
    (ui/narrow-container
@@ -162,10 +169,9 @@
 
      [:div.py2.mx-auto.white.border-bottom
       {:style {:border-width "0.5px"}}]
-     (cond matched-component? (matched-with-servicing-stylist-component data)
-           need-match?        (need-match matched-stylists)
-           :else              get-inspired-cta)
-
+     (if matched-component?
+       (matched-with-servicing-stylist-component data)
+       get-inspired-cta)
      (when guest?
        [:div.mt3
         [:section.center
@@ -187,8 +193,10 @@
          (sign-up/form sign-up-data
                        {:sign-up-text "Create my account"})]])])))
 
+
 (defn query
   [data]
+
   (let [{install-applied?  :mayvenn-install/applied?
          dtc?              :order/dtc?
          servicing-stylist :mayvenn-install/stylist} (api.orders/completed data)
@@ -198,7 +206,9 @@
         customer-phone                               (-> data
                                                          (get-in keypaths/completed-order)
                                                          :shipping-address
-                                                         :phone)]
+                                                         :phone)
+        matched-stylists                             (get-in data adv-keypaths/adventure-matched-stylists)
+        match-via-web?                               (seq matched-stylists)]
     (cond-> {:guest?                (not (get-in data keypaths/user-id))
              :show-match-component? show-match-component?
              :need-match?           need-match?
@@ -232,9 +242,25 @@
           :stylist-card.title/id           "stylist-name"
           :stylist-card.title/primary      stylist-display-name
           :stylist-card.title/secondary    (-> servicing-stylist :salon :name)
-          :phone-link/phone-number         (some-> servicing-stylist :address :phone formatters/phone-number-parens ) })))))
+          :phone-link/phone-number         (some-> servicing-stylist :address :phone formatters/phone-number-parens)}))
 
-
+      (and show-match-component? need-match?)
+      (merge
+       {:matched-component.message/id    (str "to-be-matched" (if match-via-web? "-via-web" "-via-phone"))
+        :matched-component.message/title [:span.flex.items-center.justify-center
+                                          (svg/chat-bubble {:height "14px"
+                                                            :class  "mr1"
+                                                            :width  "15px"})
+                                          "Let's match you with a stylist!"]
+        :matched-component.message/body  [:div.flex.justify-center.col-12
+                                          (into [:ul.h6.list-img-purple-checkmark.left-align]
+                                                (map (fn [txt] [:li.pl1.mb1 txt]))
+                                                ["Licensed Salon Stylist"
+                                                 "Mayvenn Certified"
+                                                 "In your area"])]
+        :matched-component.cta/id        (when match-via-web? "pick-a-stylist")
+        :matched-component.cta/label     "Pick a Stylist"
+        :matched-component.cta/target    [events/navigate-adventure-matching-stylist-wait-post-purchase]}))))
 
 (defn ^:export built-component [data opts]
   (let [{:as queried-data :keys [show-match-component?]} (query data)]
