@@ -117,15 +117,6 @@
         service-menu           (get-in data
                                        keypaths/user-stylist-service-menu
                                        ::missing)]
-    #?(:cljs
-       (when (= 247662 (get-in data keypaths/user-id))
-         (try
-           (exception-handler/report
-            "service-menu-mystery-stylist"
-            {:service-menu           (get-in data keypaths/user-stylist-service-menu)
-             :service-menu-required? service-menu-required?
-             :fetching?              (utils/requesting? data request-keys/fetch-user-stylist-service-menu)})
-           (catch :default e nil))))
     {:code                   (get-in data voucher-keypaths/eight-digit-code)
      :scanning?              (get-in data voucher-keypaths/scanning?)
      :service-menu-fetching? (and service-menu-required?

@@ -8,7 +8,6 @@
             [storefront.accessors.orders :as orders]
             [storefront.config :as config]
             [storefront.events :as events]
-            [storefront.hooks.exception-handler :as exception-handler]
             [storefront.hooks.talkable :as talkable]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
@@ -636,11 +635,7 @@
       (assoc-in app-state keypaths/faq-expanded-section nil)
       (assoc-in app-state keypaths/faq-expanded-section index))))
 
-(defmethod transition-state events/api-success-user-stylist-service-menu-fetch [_ event {:keys [menu] :as resp} app-state]
-  (when (= 247662 (get-in app-state keypaths/user-id))
-    (try
-      (exception-handler/report "service-menu-mystery-stylist-fetched" resp)
-      (catch :default e nil)))
+(defmethod transition-state events/api-success-user-stylist-service-menu-fetch [_ event {:keys [menu]} app-state]
   (cond-> app-state
     menu (assoc-in keypaths/user-stylist-service-menu menu)))
 
