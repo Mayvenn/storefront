@@ -817,8 +817,8 @@
   (component/html
    [:img {:style {:width "8px"}
           :src   (if expanded?
-                   (assets/path "/images/icons/collapse.png")
-                   (assets/path "/images/icons/expand.png"))}]))
+                   "//ucarecdn.com/6cfa1b3c-ed89-4e71-b702-b6fdfba72c0a/-/format/auto/collapse"
+                   "//ucarecdn.com/dbdcce35-e6da-4247-be57-22991d086fc1/-/format/auto/expand")}]))
 
 (defn back-arrow [attrs]
   (ucare-img (merge {:width "24"}

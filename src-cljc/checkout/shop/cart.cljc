@@ -68,7 +68,7 @@
                           :padding-top         "43px"
                           :background-size     "cover"
                           :background-position "center 30%"
-                          :background-image    "url('//ucarecdn.com/97d80a16-1f48-467a-b8e2-fb16b532b75e/-/format/auto/-/quality/normal/aladdinMatchingCelebratoryOverlayImagePurpleR203Lm3x.png')"}
+                          :background-image    "url('//ucarecdn.com/97d80a16-1f48-467a-b8e2-fb16b532b75e/-/format/auto/-/quality/normal/aladdinMatchingCelebratoryOverlayImagePurpleR203Lm3x')"}
               :on-click (fn [_]
                           (when @burstable?
                             (reset! burstable? false)

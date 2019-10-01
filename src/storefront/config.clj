@@ -30,13 +30,13 @@
   "Asset mappings to send to the frontend"
   #{"/images/sprites.svg"
     "/css/app.css"
-    "/images/share/stylist-gallery-icon.png"
-    "/images/share/instagram-icon.png"
-    "/images/share/styleseat-logotype.png"
-    "/images/icons/collapse.png"
-    "/images/icons/expand.png"
+    "//ucarecdn.com/fa4eefff-7856-4a1b-8cdb-c8b228b62967/-/format/auto/stylist-gallery-icon"
+    "//ucarecdn.com/1a4a3bd5-0fda-45f2-9bb4-3739b911390f/-/format/auto/instagram-icon"
+    "//ucarecdn.com/c8f0a4b8-24f7-4de8-9c20-c6634b865bc1/-/format/auto/styleseat-logotype"
+    "//ucarecdn.com/6cfa1b3c-ed89-4e71-b702-b6fdfba72c0a/-/format/auto/collapse"
+    "//ucarecdn.com/dbdcce35-e6da-4247-be57-22991d086fc1/-/format/auto/expand"
     "/images/header_logo.svg"
-    "/images/icons/stylist-bug-no-pic-fallback.png"})
+    "//ucarecdn.com/81bd063f-56ba-4e9c-9aef-19a1207fd422/-/format/auto/stylist-bug-no-pic-fallback"})
 
 (defn development? [environment]
   {:pre [(#{"development" "test" "acceptance" "production"} environment)]}

@@ -53,7 +53,7 @@
                           (ui/square-image stylist-portrait header-image-size))
        [:a (utils/route-to events/navigate-stylist-account-profile)
         [:img {:width (str header-image-size "px")
-               :src   (assets/path "/images/icons/stylist-bug-no-pic-fallback.png")}]])]))
+               :src   "//ucarecdn.com/81bd063f-56ba-4e9c-9aef-19a1207fd422/-/format/auto/stylist-bug-no-pic-fallback"}]])]))
 
 (defn ^:private account-info-marquee [signed-in {:keys [email store-credit]}]
   (when (-> signed-in ::auth/at-all)

@@ -1,22 +1,22 @@
 .bg-full { background-size: 100%; }
 
-.img-share-icon        { background-image: url('/images/icons/share.png'); }
-.img-shop-by-look-icon { background-image: url('/images/icons/shop-by-look@2x.png') }
-.img-shop-by-bundle-deal-icon { background-image: url('/images/icons/icon-bundle-deals@2x.png') }
+.img-share-icon        { background-image: url('//ucarecdn.com/4f5958e3-002b-4e91-b7f9-c68ca1c8d52d/share_icon'); }
+.img-shop-by-look-icon { background-image: url('//ucarecdn.com/ca886241-496e-495c-85ed-664d4640bd5f/shop-by-look') }
+.img-shop-by-bundle-deal-icon { background-image: url('//ucarecdn.com/6752cf60-e197-40af-9cef-97ffee11bf3e/icon_bundle_deals') }
 .img-spinner           { background-image: url('/images/spinner.svg'); }
 .img-large-spinner     { background-image: url('/images/large-spinner.svg'); }
 
 .img-logo { background-image: url('/images/header_logo.svg'); }
 
-.list-img-purple-checkmark { list-style-image: url('https://ucarecdn.com/2560cee9-9ac7-4706-ade4-2f92d127b565/-/resize/12x/-/format/png/iconCheckmark.png'); }
+.list-img-purple-checkmark { list-style-image: url('//ucarecdn.com/2560cee9-9ac7-4706-ade4-2f92d127b565/-/resize/12x/-/format/auto/iconCheckmark'); }
 
 
 .bg-email-capture {
-    background-image: url('//ucarecdn.com/5a322f42-fcdc-4302-8fef-06c27968ec98/-/format/auto/quadpaymodalRecovered.png');
+    background-image: url('//ucarecdn.com/5a322f42-fcdc-4302-8fef-06c27968ec98/-/format/auto/quadpaymodalRecovered');
 }
 
 .bg-celebrate {
-    background-image:  url('//ucarecdn.com/7cc2e3fc-f06a-4673-bc3a-ad3ea2cc4219/-/format/auto/-/resize/120x/patterncelebrate.png');
+    background-image:  url('//ucarecdn.com/7cc2e3fc-f06a-4673-bc3a-ad3ea2cc4219/-/format/auto/-/resize/120x/patterncelebrate');
     background-repeat: "repeat";
 }
 
@@ -27,14 +27,14 @@
 }
 
 .bg-adventure-match-stylist {
-    background-image: url('//ucarecdn.com/fac7963f-499d-4d46-9d3e-29d548194a60/-/format/auto/-/quality/lightest/bg.png');
+    background-image: url('//ucarecdn.com/fac7963f-499d-4d46-9d3e-29d548194a60/-/format/auto/-/quality/lightest/bg');
     background-repeat:   no-repeat;
     background-position: bottom center;
     background-size: 80%;
 }
 
 .bg-adventure-shop-hair {
-    background: url(//ucarecdn.com/20636e0b-60ff-405a-88a4-94c9a3bb3e8a/-/format/auto/-/quality/lightest/bg.png)
+    background: url(//ucarecdn.com/20636e0b-60ff-405a-88a4-94c9a3bb3e8a/-/format/auto/-/quality/lightest/bg)
                    center
                    bottom/90%
                    no-repeat,

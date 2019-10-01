@@ -650,7 +650,7 @@
     :opengraph/title       "Mayvenn Clip-In Hair Extensions - Free shipping. Free 30 day returns. Made with 100% human hair extensions."
     :opengraph/description "Blending flawlessly with your own hair and backed by our 30 Day Quality Guarantee, our seamless clip-in extensions are the best quality products on the market and ships free!"
 
-    :images {:hero {:filename    "categories-header-clip.png"
+    :images {:hero {:filename    "categories-header-clip"
                     :desktop-url "//ucarecdn.com/96b65a4b-34d5-4b45-b5a7-cf4156d355c0/"
                     :mobile-url  "//ucarecdn.com/be8b83db-370f-45f9-bc37-4f674abbd718/"
                     :alt         "Clip-Ins"}}

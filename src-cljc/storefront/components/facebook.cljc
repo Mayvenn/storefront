@@ -10,17 +10,18 @@
       :data-test "facebook-button"}
      [:div.mx-auto
       [:div.flex.items-center.justify-center
-       [:img {:src "/images/FacebookWhite.png" :width 20 :height 20}]
+       (ui/ucare-img {:width 20} "975698f3-3eda-411c-83ad-6a2750e0e59d")
        [:span.ml1 "Sign in"]]])))
 
 (defn- wide-button [loaded? click-event]
   (if loaded?
     (ui/facebook-button
-     {:on-click (utils/send-event-callback click-event)
+     {:on-click  (utils/send-event-callback click-event)
       :data-test "facebook-button"}
      [:div.flex.items-center.justify-center
       [:span "Sign in with Facebook"]
-      [:img.ml2 {:src "/images/FacebookWhite.png" :width 20 :height 20}]])
+      (ui/ucare-img {:width 20
+                     :class "ml2"} "975698f3-3eda-411c-83ad-6a2750e0e59d")])
     [:div {:style {:height "2.6666em"}}]))
 
 (defn sign-in-button [loaded?]

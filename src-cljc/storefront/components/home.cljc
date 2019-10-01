@@ -258,7 +258,7 @@
     [:h1.line-length.mx-auto.pb4 "Why people love Mayvenn"]
     [:div.clearfix.h5.center
      [:div.col-on-tb-dt.col-4-on-tb-dt.p3
-      [:img.mb1 {:src    "//ucarecdn.com/83a8e87b-a16f-4d22-b294-e11616088ced/-/format/auto/iconstylistreco.png"
+      [:img.mb1 {:src    "//ucarecdn.com/83a8e87b-a16f-4d22-b294-e11616088ced/-/format/auto/iconstylistreco"
                  :width  "48px"
                  :height "70px"}]
       [:h3.h2 "Stylist Recommended"]
@@ -268,7 +268,7 @@
        "Shop our looks"]]
 
      [:div.col-on-tb-dt.col-4-on-tb-dt.p3
-      [:img.mb1 {:src    "//ucarecdn.com/a16d80a5-7bcf-4ec9-a5fc-5f8642d1542d/-/format/auto/icon30dayguarantee.png"
+      [:img.mb1 {:src    "//ucarecdn.com/a16d80a5-7bcf-4ec9-a5fc-5f8642d1542d/-/format/auto/icon30dayguarantee"
                  :width  "48px"
                  :height "70px"}]
       [:h3.h2 "30 Day Guarantee"]
@@ -279,7 +279,7 @@
 
      [:div.col-on-tb-dt.col-4-on-tb-dt.p3
       [:div.flex.justify-center {:style {:height "80px"}}
-       [:img.self-center {:src    "//ucarecdn.com/647b33d9-a175-406c-82e0-3723c6767757/-/format/auto/iconfastfreeshipping.png"
+       [:img.self-center {:src    "//ucarecdn.com/647b33d9-a175-406c-82e0-3723c6767757/-/format/auto/iconfastfreeshipping"
                           :height "44px"}]]
       [:h3.h2 "Fast Free Shipping"]
       [:p.h5 "Mayvenn offers free standard shipping on all orders, no minimum necessary. In a hurry? Expedited shipping options are available for those who just can’t wait."]
@@ -289,7 +289,7 @@
 
 (defn video-autoplay []
   (let [video-src  "https://embedwistia-a.akamaihd.net/deliveries/e88ed4645e104735c3bdcd095c370e5ccb1e1ef4/file.mp4"
-        image-src  "https://ucarecdn.com/17256a9e-78ef-4762-a5bd-7096bb9181c9/-/format/auto/testimonialpostervideoplay.jpg"
+        image-src  "https://ucarecdn.com/17256a9e-78ef-4762-a5bd-7096bb9181c9/-/format/auto/testimonialpostervideoplay"
         video-html (str "<video onClick=\"this.play();\" loop muted poster=\""
                         image-src
                         "\" preload=\"none\" playsinline controls class=\"col-12\"><source src=\""

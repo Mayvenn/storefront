@@ -175,7 +175,7 @@
      (when guest?
        [:div.mt3
         [:section.center
-         [:img {:src    (assets/path "/images/icons/profile.png")
+         [:img {:src    "//ucarecdn.com/962e39be-3d22-4f23-a9b3-d1623ac7c1d7/-/format/auto/profile"
                 :height "55px"
                 :width  "55px"}]
          [:h1
