@@ -26,7 +26,7 @@
 (defmethod query :default [_] nil)
 
 (defmulti component (fn [query-data _ _] (:popup-type query-data)))
-(defmethod component :default [_ _ _] (component/create nil))
+(defmethod component :default [_ _ _] (component/create [:div]))
 
 (defn query-with-popup-type [data]
   (assoc (query data)

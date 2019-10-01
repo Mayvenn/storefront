@@ -48,7 +48,7 @@
     pre-title-content :pre-title/content
     modal-close-event :modal-close/event
     description-copy  :description/copy} _ _]
-  (component/create
+  [:div
    (ui/modal
     {:close-attrs (utils/fake-href modal-close-event)
      :col-class   "col-11 col-5-on-tb col-4-on-dt flex justify-center"}
@@ -63,4 +63,4 @@
       (subtitle query)
       description-copy]
      [:div {:style {:height "30px"}}]
-     (single-field-form query)])))
+     (single-field-form query)])])
