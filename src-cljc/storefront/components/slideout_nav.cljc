@@ -131,7 +131,7 @@
     (into [:a.block.inherit-color.flex.items-center (assoc link-attrs :data-test data-test)] content)]])
 
 (defn shopping-rows
-  [{:keys [show-freeinstall-link? show-bundle-sets-and-hide-deals?]}]
+  [{:keys [show-freeinstall-link? show-bundle-sets-and-hide-deals? site]}]
   (let [^:inline caret (ui/forward-caret {:width 16 :height 16 :color "gray"})]
     (concat
      (when show-freeinstall-link?
@@ -145,11 +145,15 @@
          :data-test  "menu-shop-by-deals"
          :content    [[:span.medium "Deals"]]}])
 
-     [{:link-attrs (utils/fake-href events/menu-list
-                                    {:menu-type :shop-looks})
-       :data-test  "menu-shop-by-look"
-       :content    [[:span.medium.flex-auto "Shop Looks"]
-                    caret]}]
+     (if (= :classic site)
+       [{:link-attrs (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
+         :data-test  "menu-shop-by-look"
+         :content    [[:span.medium "Shop Looks"]]}]
+       [{:link-attrs (utils/fake-href events/menu-list
+                                      {:menu-type :shop-looks})
+         :data-test  "menu-shop-by-look"
+         :content    [[:span.medium.flex-auto "Shop Looks"]
+                      caret]}])
 
      (when show-bundle-sets-and-hide-deals?
        [{:link-attrs (utils/fake-href events/menu-list {:menu-type :shop-bundle-sets})
@@ -274,6 +278,13 @@
       (component/build menu/component menu-data nil)
       (component/build root-menu data nil))]))
 
+(defn determine-site
+  [app-state]
+  (cond
+    (= "mayvenn-classic" (get-in app-state keypaths/store-experience)) :classic
+    (= "aladdin" (get-in app-state keypaths/store-experience))         :aladdin
+    (= "shop" (get-in app-state keypaths/store-slug))                  :shop))
+
 (defn basic-query [data]
   (let [{:keys [match-eligible] :as store} (marquee/query data)
         shop?                              (= "shop" (get-in data keypaths/store-slug))
@@ -288,7 +299,8 @@
      :show-bundle-sets-and-hide-deals? (or aladdin? shop?)
      :vouchers?                        (experiments/dashboard-with-vouchers? data)
      :show-freeinstall-link?           shop?
-     :blog?                            (experiments/blog? data)}))
+     :blog?                            (experiments/blog? data)
+     :site                             (determine-site data)}))
 
 (defn query [data]
   (-> (basic-query data)

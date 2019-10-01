@@ -142,7 +142,7 @@
     text]))
 
 (defn menu
-  [{:keys [show-freeinstall-link? show-bundle-sets-and-hide-deals? blog?]}]
+  [{:keys [show-freeinstall-link? show-bundle-sets-and-hide-deals? site blog?]}]
   (component/html
    [:div.center
     (when show-freeinstall-link?
@@ -156,9 +156,13 @@
                                :on-mouse-enter close-header-menus)
                         "Deals"))
 
-    (header-menu-link (merge (utils/route-to events/navigate-home)
-                             (->flyout-handlers keypaths/shop-looks-menu-expanded))
-                      "Shop looks")
+    (if (= :classic site)
+      (header-menu-link (assoc (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
+                               :on-mouse-enter close-header-menus)
+                        "Shop looks")
+      (header-menu-link (merge (utils/route-to events/navigate-home)
+                               (->flyout-handlers keypaths/shop-looks-menu-expanded))
+                        "Shop looks"))
 
     (when show-bundle-sets-and-hide-deals?
       (header-menu-link (merge (utils/route-to events/navigate-home)
@@ -312,13 +316,21 @@
                                        :copy        "Wavy & Curly Bundle Sets"}]]
    :shop-bundle-sets-menu/expanded? (get-in data keypaths/shop-bundle-sets-menu-expanded)})
 
+(defn determine-site
+  [app-state]
+  (cond
+    (= "mayvenn-classic" (get-in app-state keypaths/store-experience)) :classic
+    (= "aladdin" (get-in app-state keypaths/store-experience))         :aladdin
+    (= "shop" (get-in app-state keypaths/store-slug))                  :shop))
+
 (defn query [data]
   (-> (slideout-nav/basic-query data)
       (assoc-in [:user :expanded?] (get-in data keypaths/account-menu-expanded))
       (merge (shop-a-la-carte-flyout-query data))
       (merge (shop-looks-query data))
       (merge (shop-bundle-sets-query data))
-      (assoc-in [:cart :quantity] (orders/product-quantity (get-in data keypaths/order)))))
+      (assoc-in [:cart :quantity] (orders/product-quantity (get-in data keypaths/order)))
+      (assoc :site (determine-site data))))
 
 (defn built-component [data opts]
   (component/html
