@@ -111,28 +111,6 @@
      [:div.h6.dark-gray.center.my2.px2
       body]]))
 
-(defn need-match
-  [matched-stylists]
-  (let [match-via-web? (seq matched-stylists)]
-    [:div
-     [:div.py4.h3.bold
-      "Let's match you with a Certified Mayvenn Stylist!"]
-     [:div.h5.line-height-3
-      {:data-test (str "to-be-matched" (if match-via-web? "-via-web" "-via-phone"))}
-      (if match-via-web?
-        "If you don’t love the install, we’ll pay for you to get it taken down and redone. It’s a win-win!"
-        (copy "A Mayvenn representative will contact you soon to help select a"
-              "Certified Mayvenn Stylist with the following criteria:"))]
-     [:div
-      [:ul.col-10.h6.list-img-purple-checkmark.py4.left-align.mx6
-       (mapv (fn [txt] [:li.pl1.mb1 txt])
-             ["Licensed Salon Stylist"
-              "Mayvenn Certified"
-              "In your area"])]]
-     (when match-via-web?
-       (ui/teal-button (merge (utils/route-to events/navigate-adventure-matching-stylist-wait-post-purchase)
-                              {:data-test "pick-a-stylist"}) "Pick a stylist"))]))
-
 (def get-inspired-cta
   [:div.py2
    [:h3.bold "In the meantime…"]
