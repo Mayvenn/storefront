@@ -377,7 +377,7 @@
            teal-play-video-desktop]]]]]]]))
 
 (def sticky-footer
-  #?(:clj (component/create "sticky-footer" [:div])
+  #?(:clj (fn [_ _ _] (component/create "sticky-footer" [:div]))
      :cljs
      (component/create-dynamic
       "sticky-footer"
