@@ -436,21 +436,21 @@
 
 (defn layer-view [{:keys [layer/type] :as view-data} opts]
   (case type
-    :image-block                     (component/build image-block view-data opts)
-    :hero                            (component/build layer-hero view-data opts)
-    :free-standard-shipping-bar      (component/build free-standard-shipping-bar view-data opts)
-    :text-block                      (component/build text-block view-data opts)
-    :escape-hatch                    (component/build escape-hatch view-data opts)
-    :checklist                       (component/build checklist view-data opts)
-    :video-overlay                   (component/build video-overlay view-data opts)
-    :video-block                     (component/build video-block view-data opts)
-    :find-out-more                   (component/build find-out-more view-data opts)
-    :bulleted-explainer              (component/build bulleted-explainer view-data opts)
-    :ugc                             (component/build ugc view-data opts)
-    :faq                             (component/build faq view-data opts)
-    :contact                         (component/build contact view-data opts)
+    :image-block                     (component/build image-block                     view-data opts)
+    :hero                            (component/build layer-hero                      view-data opts)
+    :free-standard-shipping-bar      (component/build free-standard-shipping-bar      view-data opts)
+    :text-block                      (component/build text-block                      view-data opts)
+    :escape-hatch                    (component/build escape-hatch                    view-data opts)
+    :checklist                       (component/build checklist                       view-data opts)
+    :video-overlay                   (component/build video-overlay                   view-data opts)
+    :video-block                     (component/build video-block                     view-data opts)
+    :find-out-more                   (component/build find-out-more                   view-data opts)
+    :bulleted-explainer              (component/build bulleted-explainer              view-data opts)
+    :ugc                             (component/build ugc                             view-data opts)
+    :faq                             (component/build faq                             view-data opts)
+    :contact                         (component/build contact                         view-data opts)
     :homepage-were-changing-the-game (component/build homepage-were-changing-the-game view-data opts)
-    :sticky-footer                   (component/build sticky-footer view-data opts)))
+    :sticky-footer                   (component/build sticky-footer                   view-data opts)))
 
 (defcomponent component [{:keys [layers]} owner opts]
   [:div
