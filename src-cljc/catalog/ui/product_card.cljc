@@ -101,11 +101,11 @@
 (defn card-image-molecule
   [{:card-image/keys [src alt]}]
   ;; TODO: when adding aspect ratio, also use srcset/sizes to scale these images.
-  (ui/aspect-ratio 1 1
-                   [:img.block.col-12.container-height
-                    {:style {:border-radius "5px 5px 0 0"}
-                       :src   src
-                       :alt   alt}]))
+  (ui/aspect-ratio 1 1 (ui/defer-ucare-img
+                         {:class "block col-12 container-height"
+                          :style {:border-radius "5px 5px 0 0"}
+                          :alt   alt}
+                         src)))
 
 (defn product-card-title-molecule
   [{:product-card-title/keys [id primary]}]
