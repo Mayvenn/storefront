@@ -171,15 +171,16 @@
         (if (= "bottom" title-side)
           [:div.pb6.flex.flex-column
            [:div.hide-on-mb-tb.mx1
-            [:img.col.col-12.container-height {:src dsk-url}]]
+            (ui/defer-ucare-img {:class "col col-12 container-height"} dsk-url)]
            [:div.mxn2.hide-on-dt
-            [:img.col.col-12 {:src mob-url}]]
+            (ui/defer-ucare-img {:class "col col-12"} mob-url)]
            [:div.mx-auto.col.col-11.h5.dark-gray.center.pt2 copy]]
           [:div.flex.flex-column
            [:div.hide-on-mb-tb.mx1 ;; dt
             (ui/aspect-ratio
              950 223.7
              [:div.col.col-12.relative
+              {:style {:min-height "223.7px"}}
               [:div.absolute.container-size
                [:div.container-height.col-6.flex.items-center
                 {:class (str (case title-side
@@ -191,18 +192,19 @@
                 [:div.p3.col-10
                  [:div.h2.mb1.bold primary-title]
                  [:div.h5 copy]]]]
-              [:img.col-12.container-height {:src dsk-url}]])]
+              (ui/defer-ucare-img {:class "col-12 container-height"} dsk-url)])]
            [:div.mxn2.hide-on-dt.pt3.px3.pb1 ;; mb, tb
             (ui/aspect-ratio
              345 200
              [:div.col.col-12.relative
+              {:style {:min-height "200px"}}
               [:div.absolute.container-size
                [:div.container-height.col-6.flex.items-center.justify-center
                 {:class title-side}
                 [:div.p3
                  [:div.h3.mb1.bold primary-title]
                  [:div.h7 copy]]]]
-              [:img.col-12.container-height {:src mob-url}]])]]))
+              (ui/defer-ucare-img {:class "col-12 container-height"} mob-url)])]]))
       [:div.flex.flex-wrap
        (map product-card/organism product-cards)]])))
 
