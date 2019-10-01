@@ -216,7 +216,7 @@
           :stylist-card/id                 "stylist-card"
           :stylist-card.thumbnail/id       "portrait"
           :stylist-card.thumbnail/ucare-id (-> servicing-stylist :portrait :resizable-url)
-          :rating/value                    (-> servicing-stylist :rating spice/parse-double)
+          :rating/value                    (:rating servicing-stylist)
           :stylist-card.title/id           "stylist-name"
           :stylist-card.title/primary      stylist-display-name
           :stylist-card.title/secondary    (-> servicing-stylist :salon :name)
