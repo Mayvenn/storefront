@@ -811,6 +811,13 @@
                                 :moved-permanently)
         (h req)))))
 
+(defn wrap-redirect-inconsistent-subdomain-bundle-sets-routes
+  [h]
+  (fn [{:keys [subdomains uri] :as req}]
+    (if (= ["shop" "/shop/deals"] [(first subdomains) uri])
+      (util.response/redirect "/shop/all-bundle-sets")
+      (h req))))
+
 (defn create-handler
   ([] (create-handler {}))
   ([{:keys [logger exception-handler environment contentful] :as ctx}]
@@ -843,6 +850,7 @@
                    (wrap-resource "public")
                    (wrap-content-type)))
        (wrap-redirect-legacy-routes ctx)
+       (wrap-redirect-inconsistent-subdomain-bundle-sets-routes)
        (wrap-add-nav-message)
        (wrap-add-domains)
        (wrap-logging logger)

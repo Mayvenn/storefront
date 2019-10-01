@@ -419,6 +419,16 @@
         (is (= (str "https://shop.mayvenn.com" dest-path)
                (-> resp :headers (get "Location"))))))))
 
+(deftest redirects-inconsistent-subdomain-bundle-sets
+  (testing "When a request comes for an invalid combination of subdomain and bundle set"
+    (let [[_ storeback-handler]
+          (with-requests-chan (routes common/default-storeback-handler))]
+      (with-services {:storeback-handler storeback-handler}
+        (with-handler handler
+          (let [resp (handler (mock/request :get "https://shop.mayvenn.com/shop/deals"))]
+            (is (= 302 (:status resp)) (pr-str resp))
+            (is (= "/shop/all-bundle-sets" (get-in resp [:headers "Location"])))))))))
+
 (deftest freeinstall-redirects
   (is-redirected-from-freeinstall-to-shop "/" "/")
   (is-redirected-from-freeinstall-to-shop "/adv/match-stylist" "/adv/match-stylist")
