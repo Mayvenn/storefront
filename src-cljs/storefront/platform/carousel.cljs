@@ -1,7 +1,7 @@
 (ns storefront.platform.carousel
   (:require [sablono.core :refer [html]]
             [storefront.component :as component :refer [defdynamic-component]]
-            react-slick
+            ;;react-slick
             [om.core :as om]))
 
 (def custom-dots (constantly (html [:a [:div.circle]])))
