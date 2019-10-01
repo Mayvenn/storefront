@@ -120,6 +120,62 @@
           [:link {:rel "dns-prefetch" :href "https://ucarecdn.com"}]
           [:link {:rel "preload" :href (assets/path "/images/sprites.svg") :as "image" :type "image/svg+xml"}]
           [:script {:type "text/javascript"} (raw prefetch-script)]
+          ;; Stringer
+          [:script {:type "text/javascript"}
+           (raw (str "(function(d,e){function g(a){return function(){var b=Array.prototype.slice.call(arguments);b.unshift(a);c.push(b);return d.stringer}}var c=d.stringer=d.stringer||[],a=[\"init\",\"track\",\"identify\",\"clear\"];if(!c.snippetRan&&!c.loaded){c.snippetRan=!0;for(var b=0;b<a.length;b++){var f=a[b];c[f]=g(f)}a=e.createElement(\"script\");a.type=\"text/javascript\";a.async=!0;a.src=\"https://d6w7wdcyyr51t.cloudfront.net/cdn/stringer/stringer-dd6db0a.js\";a.onload=function(){storefront.core.external_message(['inserted', 'stringer'], {})};b=e.getElementsByTagName(\"script\")[0];b.parentNode.insertBefore(a,b);c.init({environment:\"" environment "\",sourceSite:\"storefront\"})}})(window,document);"))]
+          ;; Facebook Pixel
+          [:script {:type "text/javascript"}
+           (let [facebook-pixel-id (case environment
+                                     "production" "721931104522825"
+                                     "139664856621138")]
+             (raw (str
+                   "!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '" facebook-pixel-id "');")))]
+          ;; Google Analytics
+          [:script {:type "text/javascript"}
+
+           (let [google-analytics-property (case environment
+                                             "production" "UA-36226630-1"
+                                             "UA-36226630-2")]
+             (raw (str "(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+ (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+ m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+ })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', '" google-analytics-property "', 'auto');
+ga('require', 'displayfeatures');")))]
+
+          ;; Google Tag Manager
+          [:script {:type "text/javascript"}
+           (raw "(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-TLS2JL');")]
+          ;; Twitter Pixel
+          [:script {:type "text/javascript"}
+           (let [twitter-pixel-id (case environment
+                                    "production" "o1tn1"
+                                    "TEST")]
+             (raw
+              (str
+               "!function(e,t,n,s,u,a){e.twq||(s=e.twq=function(){s.exe?s.exe.apply(s,arguments):s.queue.push(arguments);
+},s.version='1.1',s.queue=[],u=t.createElement(n),u.async=!0,u.src='//static.ads-twitter.com/uwt.js',
+a=t.getElementsByTagName(n)[0],a.parentNode.insertBefore(u,a))}(window,document,'script');
+twq('init','" twitter-pixel-id "');")))]
+          ;; Pinterest
+          [:script {:type "text/javascript"}
+           (let [pinterest-tag-id (case environment
+                                    "production" 2617847432239
+                                    2612961581995)]
+             (raw (str "!function(e){if(!window.pintrk){window.pintrk=function(){window.pintrk.queue.push(Array.prototype.slice.call(arguments))};var n=window.pintrk;n.queue=[],n.version='3.0';var t=document.createElement('script');t.async=!0,t.src=e;var r=document.getElementsByTagName('script')[0];r.parentNode.insertBefore(t,r)}}('https://s.pinimg.com/ct/core.js');pintrk('load','" pinterest-tag-id "');pintrk('page');")))]
+
+
+          ;; Storefront server-side data
           [:script {:type "text/javascript"}
            (raw (str "var assetManifest=" (generate-string (select-keys asset-mappings/image-manifest (map #(subs % 1) config/frontend-assets))) ";"
                      "var cdnHost=" (generate-string asset-mappings/cdn-host) ";"

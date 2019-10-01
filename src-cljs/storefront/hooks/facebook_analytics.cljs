@@ -3,6 +3,7 @@
             [storefront.config :as config]))
 
 (defn insert-tracking []
+  #_
   (insert-tag-with-text
    (str
     "!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -14,8 +15,10 @@ fbq('init', '" config/facebook-pixel-id "');")
    "fb-pixel"))
 
 (defn remove-tracking []
+  #_
   (remove-tags-by-class "fb-pixel")
   ;; fb inserts more tags (as expected); remove them to help prevent so many additional ones in development
+  #_
   (remove-tag-by-src "//connect.facebook.net/en_US/fbevents.js"))
 
 (defn track-event

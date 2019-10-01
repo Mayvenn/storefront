@@ -3,6 +3,7 @@
             [storefront.config :as config]))
 
 (defn insert-tracking []
+  #_
   (insert-tag-with-text
    (str "(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -12,6 +13,7 @@
 ga('create', '" config/google-analytics-property "', 'auto');
 ga('require', 'displayfeatures');")
    "analytics")
+  #_
   (insert-tag-with-text
    "(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -21,10 +23,14 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
    "tag-manager"))
 
 (defn remove-tracking []
+  #_
   (remove-tags-by-class "analytics")
+  #_
   (remove-tags-by-class "tag-manager")
   ;; ga inserts more tags (as expected); remove them to help prevent so many additional ones in development
+  #_
   (remove-tag-by-src "//www.google-analytics.com/analytics.js")
+  #_
   (remove-tag-by-src "//www.googletagmanager.com/gtm.js?id=GTM-TLS2JL"))
 
 (defn track-event [category action & [label value]]

@@ -3,6 +3,7 @@
             [storefront.config :as config]))
 
 (defn insert-tracking []
+  #_
   (insert-tag-with-text
    (str
     "!function(e,t,n,s,u,a){e.twq||(s=e.twq=function(){s.exe?s.exe.apply(s,arguments):s.queue.push(arguments);
@@ -12,6 +13,7 @@ twq('init','" config/twitter-pixel-id "');")
    "twitter-pixel"))
 
 (defn remove-tracking []
+  #_
   (remove-tags-by-class "twitter-pixel"))
 
 (defn track-event
