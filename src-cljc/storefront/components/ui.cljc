@@ -957,7 +957,6 @@
   #?(:clj (component/create [:div
                              (component/build embed
                                                    (assoc data
-                                                          :screen/server-render? true
                                                           :screen/seen? nil
                                                           :screen/visible? nil)
                                                    opts)])
@@ -1000,7 +999,6 @@
                                 (when-not seen? nbsp)  ; When the content has no height, isIntersecting is always false.
                                 (component/build embed
                                                  (assoc data
-                                                        :screen/server-render? false
                                                         :screen/seen? seen?
                                                         :screen/visible? visible?)
                                                  opts)])))))
@@ -1032,11 +1030,10 @@
     {:opts {:embed component
             :opts  opts}})))
 
-(defn ^:private defer-ucare-img-component [{:screen/keys [seen? server-render?] :keys [id attrs]} owner opts]
+(defn ^:private defer-ucare-img-component [{:screen/keys [seen?] :keys [id attrs]} owner opts]
   (component/create
    (let [placeholder-attrs (select-keys attrs [:class :width :height])]
      (cond
-       server-render? [:noscript placeholder-attrs (ucare-img attrs id)]
        seen? (ucare-img attrs id)
        :else [:div placeholder-attrs]))))
 

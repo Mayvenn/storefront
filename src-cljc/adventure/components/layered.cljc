@@ -94,12 +94,9 @@
                                     :height "14px"
                                     :width  "14px"})]]]))
 
-(defn hero-image-component [{:screen/keys [server-render? seen?] :as data} owner opts]
+(defn hero-image-component [{:screen/keys [seen?] :as data} owner opts]
   (component/create
-   [:div
-    (when server-render?
-      [:noscript (component/build ui.M/hero (merge data {:off-screen? false}) nil)])
-    (component/build ui.M/hero (merge data {:off-screen? (not seen?)}) nil)]))
+   [:div (component/build ui.M/hero (merge data {:off-screen? (not seen?)}) nil)]))
 
 (defmethod layer-view :image-block
   [{:photo/keys [mob-uuid
@@ -174,8 +171,8 @@
       [:div.hide-on-dt.flex.justify-center.pb10.px4
        [:a.block.relative
         video-link
-        (ui/ucare-img {:alt "" :width "152"}
-                      "1b58b859-842a-44b1-885c-eac965eeaa0f")
+        (ui/defer-ucare-img {:alt "" :width "152"}
+          "1b58b859-842a-44b1-885c-eac965eeaa0f")
         [:div.absolute.top-0.bottom-0.left-0.right-0.flex.items-center.justify-center.bg-darken-3
          teal-play-video-mobile]]
        [:a.block.ml2.dark-gray
@@ -231,14 +228,11 @@
       [:div.center.pt3
        (cta-with-chevron data)]])))
 
-(defn ^:private ugc-image [{:screen/keys [seen? server-render?] :keys [image-url]} owner opts]
+(defn ^:private ugc-image [{:screen/keys [seen?] :keys [image-url]} owner opts]
   (component/create
    (ui/aspect-ratio
     1 1
     (cond
-      server-render? [:noscript
-                      [:img {:class "col-12"
-                             :src   image-url}]]
       seen?          [:img {:class "col-12"
                             :src   image-url}]
       :else          [:div.col-12 " "]))))
