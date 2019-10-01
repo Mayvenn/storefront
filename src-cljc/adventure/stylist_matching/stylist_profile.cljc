@@ -89,13 +89,7 @@
                                         events/control-adventure-select-stylist-pre-purchase)
                                       {:servicing-stylist stylist
                                        :card-index        0}]
-        {:keys [latitude longitude]} (:salon stylist)
-        footer-cta-target            (if direct-load?
-                                       [(if post-purchase?
-                                          events/navigate-adventure-stylist-results-post-purchase
-                                          events/navigate-adventure-stylist-results-pre-purchase)
-                                        {:query-params {:lat latitude :long longitude}}]
-                                       [events/browser-back])]
+        {:keys [latitude longitude]} (:salon stylist)]
     (when stylist
       {:header-data (cond-> {:header.title/id               "adventure-title"
                              :header.title/primary          (str "More about " stylist-name)
@@ -111,7 +105,7 @@
                      :footer/id   "meet-more-stylists"
                      :cta/id      "browse-stylists"
                      :cta/label   "Browse Stylists"
-                     :cta/target  footer-cta-target}
+                     :cta/target  [events/navigate-adventure-find-your-stylist]}
 
        :google-map-data #?(:cljs (maps/map-query data)
                            :clj  nil)
