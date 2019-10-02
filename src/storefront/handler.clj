@@ -611,7 +611,9 @@
     (if-let [launched-products (->> (api/fetch-v2-products storeback-config {})
                                     :products
                                     (filter :catalog/launched-at)
-                                    (remove :catalog/discontinued-at))]
+                                    (remove :catalog/discontinued-at)
+                                    (remove :stylist-exclusives/experience)
+                                    (remove :stylist-exclusives/family))]
       (letfn [(url-xml-elem [[location priority]]
                 {:tag :url :content (cond-> [{:tag :loc :content [(str location)]}]
                                       priority (conj {:tag :priority :content [(str priority)]}))})]
