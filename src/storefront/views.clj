@@ -112,12 +112,32 @@
           (into '() (seo/tags-for-page data))
 
           favicon-links
+          (when asset-mappings/cdn-host [:link {:rel "preconnect" :href (str "https://" asset-mappings/cdn-host)}])
           [:link {:rel "preconnect" :href (:endpoint storeback-config)}]
           [:link {:rel "preconnect" :href "https://ucarecdn.com"}]
-          (when asset-mappings/cdn-host [:link {:rel "preconnect" :href (str "https://" asset-mappings/cdn-host)}])
-          (when asset-mappings/cdn-host [:link {:rel "dns-prefetch" :href (str "https://" asset-mappings/cdn-host)}])
-          [:link {:rel "dns-prefetch" :href (:endpoint storeback-config)}]
-          [:link {:rel "dns-prefetch" :href "https://ucarecdn.com"}]
+          [:link {:rel "preconnect" :href "https://www.facebook.com"}]
+          [:link {:rel "preconnect" :href "https://analytics.twitter..com"}]
+          [:link {:rel "preconnect" :href "https://t.co"}]
+          [:link {:rel "preconnect" :href "https://stats.g.doubleclick.net"}]
+          [:link {:rel "preconnect" :href "https://static.ads-twitter.com"}]
+          [:link {:rel "preconnect" :href "https://c.riskified.com"}]
+          [:link {:rel "preconnect" :href "https://www.googleadservices.com"}]
+          [:link {:rel "preconnect" :href "https://img.riskified.com"}]
+          [:link {:rel "preconnect" :href "https://cdn-3.convertexperiments.com"}]
+          [:link {:rel "preconnect" :href "https://t.mayvenn.com"}]
+          [:link {:rel "preconnect" :href "https://widgets.quadpay.com"}]
+          [:link {:rel "preconnect" :href "https://www.google.com"}]
+          [:link {:rel "preconnect" :href "https://settings.luckyorange.net"}]
+          [:link {:rel "preconnect" :href "https://beacon.riskified.com"}]
+          [:link {:rel "preconnect" :href "https://www.googletagmanager.com"}]
+          [:link {:rel "preconnect" :href "https://bat.bing.com"}]
+          [:link {:rel "preconnect" :href "https://connect.facebook.net"}]
+          [:link {:rel "preconnect" :href "https://cx.atdmt.com"}]
+          [:link {:rel "preconnect" :href "https://d2jjzw81hqbuqv.cloudfront.net"}] ;; talkable
+          [:link {:rel "preconnect" :href "https://s.pinimg.com"}]
+          [:link {:rel "preconnect" :href "https://googleads.g.doubleclick.net"}]
+          [:link {:rel "preconnect" :href "https://www.google-analytics.com"}]
+
           [:script {:type "text/javascript"} (raw prefetch-script)]
           ;; Stringer
           [:script {:type "text/javascript"}
