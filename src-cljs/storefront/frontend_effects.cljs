@@ -87,6 +87,7 @@
                     js/JSON.parse
                     (js->clj :keywordize-keys true))]
     (messages/handle-message events/control-adventure-choice {:choice {:value choices}}))
+  (quadpay/insert)
   (svg/insert-sprite)
   (stringer/insert-tracking (get-in app-state keypaths/store-slug))
   (google-analytics/insert-tracking)
