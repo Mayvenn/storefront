@@ -160,6 +160,15 @@
                              "https://d2jjzw81hqbuqv.cloudfront.net/integration/clients/mayvenn-staging.min.js")
                     :defer true}]
 
+          ;; Convert
+          #_[:script {:type  "text/javascript"} (raw (str "window._conv_q=window._conv_q||[]"))] ; GROT
+          [:script {:type  "text/javascript"
+                    :src   (str "https://cdn-3.convertexperiments.com/js/"
+                                (case environment
+                                  "production" "10003995-10005092"
+                                  "10003995-10005089")
+                                ".js" )}]
+
           ;; Storefront server-side data
           [:script {:type "text/javascript"}
            (raw (str "var assetManifest=" (generate-string (select-keys asset-mappings/image-manifest (map #(subs % 1) config/frontend-assets))) ";"

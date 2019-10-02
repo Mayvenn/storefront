@@ -89,7 +89,6 @@
     (messages/handle-message events/control-adventure-choice {:choice {:value choices}}))
   (svg/insert-sprite)
   #_(google-analytics/insert-tracking)
-  (convert/insert-tracking)
   (riskified/insert-tracking (get-in app-state keypaths/session-id))
   (stringer/fetch-browser-id)
   #_(facebook-analytics/insert-tracking)
@@ -105,7 +104,6 @@
     (messages/handle-message events/enable-feature {:feature feature})))
 
 (defmethod effects/perform-effects events/app-stop [_ event args _ app-state]
-  (convert/remove-tracking)
   (riskified/remove-tracking)
   (google-analytics/remove-tracking)
   (facebook-analytics/remove-tracking)

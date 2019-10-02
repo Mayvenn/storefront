@@ -537,9 +537,6 @@
 (defmethod transition-state events/clear-features [_ event _ app-state]
   (assoc-in app-state keypaths/features []))
 
-(defmethod transition-state events/inserted-convert [_ event args app-state]
-  (assoc-in app-state keypaths/loaded-convert true))
-
 (defmethod transition-state events/inserted-google-maps [_ event args app-state]
   (assoc-in app-state keypaths/loaded-google-maps true))
 
