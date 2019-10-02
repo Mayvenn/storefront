@@ -112,6 +112,12 @@
           (into '() (seo/tags-for-page data))
 
           favicon-links
+
+          [:link {:rel "preload" :as "style" :href (assets/path "/css/app.css")}]
+          (when-not (config/development? environment)
+            (for [n js-files]
+              [:link {:rel "preload" :as "script" :href (assets/path (str "/js/out/" n))}]))
+
           (when asset-mappings/cdn-host [:link {:rel "preconnect" :href (str "https://" asset-mappings/cdn-host)}])
           [:link {:rel "preconnect" :href (:endpoint storeback-config)}]
           (case environment
@@ -141,10 +147,6 @@
           [:link {:rel "preconnect" :href "https://googleads.g.doubleclick.net"}]
           [:link {:rel "preconnect" :href "https://www.google-analytics.com"}]
           [:link {:rel "preconnect" :href "https://d10lpsik1i8c69.cloudfront.net"}] ;; luckyorange
-
-          (when-not (config/development? environment)
-            (for [n js-files]
-              [:link {:rel "preload" :as "script" :href (assets/path (str "/js/out/" n))}]))
 
           [:script {:type "text/javascript"} (raw prefetch-script)]
 
@@ -233,8 +235,10 @@ twq('init','" twitter-pixel-id "');")))]
 
 
 
+          (page/include-css (assets/path "/css/app.css"))
           ;; inline styles in production because our css file is so small and it avoids another round
           ;; trip request. At time of writing this greatly includes our pagespeed score
+          #_
           (if (#{"development" "test"} environment)
             (page/include-css (assets/path "/css/app.css"))
             [:style (raw (css-styles))])]
