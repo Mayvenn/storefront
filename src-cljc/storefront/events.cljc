@@ -401,7 +401,6 @@
 (defpath inserted-pixlee)
 (defpath inserted-google-maps)
 (defpath inserted-stripe)
-(defpath inserted-talkable)
 (defpath inserted-uploadcare)
 
 (defpath stringer-distinct-id-available)

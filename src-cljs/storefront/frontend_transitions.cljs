@@ -562,9 +562,6 @@
 (defmethod transition-state events/inserted-facebook [_ event args app-state]
   (assoc-in app-state keypaths/loaded-facebook true))
 
-(defmethod transition-state events/inserted-talkable [_ event args app-state]
-  (assoc-in app-state keypaths/loaded-talkable true))
-
 (defmethod transitions/transition-state events/inserted-pixlee [_ event args app-state]
   (assoc-in app-state keypaths/loaded-pixlee true))
 

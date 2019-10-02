@@ -170,8 +170,7 @@
           :loaded                                 {:reviews  false
                                                    :stripe   false
                                                    :facebook false
-                                                   :places   false
-                                                   :talkable false}}
+                                                   :places   false}}
 
      :v2 {:ui {:dashboard initial-dashboard-state}
           :db {}}}))

@@ -284,7 +284,6 @@
 (def loaded-pixlee (conj loaded :pixlee))
 (def loaded-google-maps (conj loaded :google-maps))
 (def loaded-stripe (conj loaded :stripe))
-(def loaded-talkable (conj loaded :talkable))
 (def loaded-uploadcare (conj loaded :uploadcare))
 
 (def facebook-email-denied (conj ui :facebook-email-denied))

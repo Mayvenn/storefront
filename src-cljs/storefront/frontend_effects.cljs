@@ -88,14 +88,13 @@
                     (js->clj :keywordize-keys true))]
     (messages/handle-message events/control-adventure-choice {:choice {:value choices}}))
   (svg/insert-sprite)
-  (stringer/insert-tracking (get-in app-state keypaths/store-slug))
-  (google-analytics/insert-tracking)
+  #_(stringer/insert-tracking (get-in app-state keypaths/store-slug))
+  #_(google-analytics/insert-tracking)
   (convert/insert-tracking)
   (riskified/insert-tracking (get-in app-state keypaths/session-id))
-  (facebook-analytics/insert-tracking)
-  (twitter-analytics/insert-tracking)
-  (pinterest/insert-tracking)
-  (talkable/insert)
+  #_(facebook-analytics/insert-tracking)
+  #_(twitter-analytics/insert-tracking)
+  #_(pinterest/insert-tracking)
   (refresh-account app-state)
   (browser-events/attach-global-listeners)
   (browser-events/attach-esc-key-listener)
@@ -906,12 +905,6 @@
                               :scroll? false}))
   (api/get-promotions (get-in app-state keypaths/api-cache)
                       (first (get-in app-state keypaths/order-promotion-codes))))
-
-(defmethod effects/perform-effects events/inserted-talkable [_ event args _ app-state]
-  (talkable/show-pending-offer app-state)
-  (let [nav-event (get-in app-state keypaths/navigation-event)]
-    (when (#{events/navigate-friend-referrals events/navigate-account-referrals} nav-event)
-      (talkable/show-referrals app-state))))
 
 (defmethod effects/perform-effects events/control-email-captured [_ event args _ app-state]
   (scroll/enable-body-scrolling))
