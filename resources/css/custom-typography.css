@@ -38,32 +38,7 @@ h1, h2, h3, h4, h5, h6 { font-weight: var(--heading-font-weight); }
 
 .font-style-normal { font-style: normal; }
 
-@font-face {
-  font-family: 'Roboto';
-  font-display: swap;
-  src: url('/fonts/Roboto-Light-webfont.woff') format('woff');
-  font-weight:  300;
-  font-style:   normal;
-  font-stretch: normal;
-}
-
-@font-face {
-  font-family: 'Roboto';
-  font-display: swap;
-  src: url('/fonts/Roboto-Regular-webfont.woff') format('woff');
-  font-weight:  400;
-  font-style:   normal;
-  font-stretch: normal;
-}
-
-@font-face {
-  font-family: 'Roboto';
-  font-display: swap;
-  src: url('/fonts/Roboto-Bold-webfont.woff') format('woff');
-  font-weight:  700;
-  font-style:   normal;
-  font-stretch: normal;
-}
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,700&display=swap');
 
 :root {
     --serif: serif;

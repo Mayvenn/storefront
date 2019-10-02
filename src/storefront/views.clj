@@ -186,19 +186,7 @@ twq('init','" twitter-pixel-id "');")))]
                      (format "var data = %s;" (data->transit data))
                      "var environment=\"" environment "\";"
                      "var clientVersion=\"" client-version "\";"
-                     "var apiUrl=\"" (:endpoint storeback-config) "\";"
-                     "if (window.FontFace) {
-                    robotoLight = new FontFace('Roboto',
-                                               \"" (assets/css-url (assets/path "/fonts/Roboto-Light-webfont.woff")) " format('woff')\",
-                                               {style: 'normal', weight: 300, stretch: 'normal'});
-                    robotoRegular = new FontFace('Roboto',
-                                               \"" (assets/css-url (assets/path "/fonts/Roboto-Regular-webfont.woff")) " format('woff')\",
-                                               {style: 'normal', weight: 400, stretch: 'normal'});
-                    Promise.all([robotoLight.load(), robotoRegular.load()]).then(function(){
-                        document.fonts.add(robotoLight);
-                        document.fonts.add(robotoRegular);
-                    });
-                }"))]
+                     "var apiUrl=\"" (:endpoint storeback-config) "\";"))]
           (when-not (config/development? environment)
             (for [n js-files]
               [:script {:src   (assets/path (str "/js/out/" n))
