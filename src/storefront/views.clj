@@ -142,6 +142,9 @@
           [:link {:rel "preconnect" :href "https://www.google-analytics.com"}]
           [:link {:rel "preconnect" :href "https://d10lpsik1i8c69.cloudfront.net"}] ;; luckyorange
 
+          (when-not (config/development? environment)
+            (for [n js-files]
+              [:link {:rel "preload" :as "script" :href (assets/path (str "/js/out/" n))}]))
 
           [:script {:type "text/javascript"} (raw prefetch-script)]
 
