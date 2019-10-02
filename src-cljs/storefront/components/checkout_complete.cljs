@@ -120,9 +120,9 @@
                      :class "bold"}
                     "View #MayvennFreeInstall")]])
 
-(defn matched-with-servicing-stylist-component [queried-data]
+(defn matched-with-servicing-stylist-component [{:matched-component.message/keys [id] :as queried-data}]
   [:div.bg-too-light-lavender.rounded.px4.py3
-   {:data-test "matched-with-stylist"}
+   {:data-test id}
    (matched-component-message-molecule queried-data)
    [:div.my2 (servicing-stylist-card-molecule queried-data)]
    (let [{:matched-component.cta/keys [id label target]} queried-data]
