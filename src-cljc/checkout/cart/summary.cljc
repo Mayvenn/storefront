@@ -24,8 +24,7 @@
   ([row-attrs content amount]
    [:tr.h5
     (merge
-     (when-not (pos? amount)
-       {:class "teal"})
+     {:class "purple"}
      row-attrs)
     [:td.pyp1 content]
     [:td.pyp1.right-align.medium
@@ -86,13 +85,15 @@
            adjustments-including-tax
            promo-data
            subtotal] :as data} owner _]
+
   (component/create
    [:div {:data-test "cart-order-summary"}
     [:div.hide-on-dt.border-top.border-light-gray]
     [:div.py1.border-bottom.border-light-gray
      [:table.col-12
       [:tbody
-       (summary-row {:data-test "subtotal"} "Subtotal" subtotal)
+       (summary-row {:class     "black"
+                     :data-test "subtotal"} "Subtotal" subtotal)
        (when shipping-cost
          (summary-row {:class "black"} "Shipping" shipping-cost))
 
