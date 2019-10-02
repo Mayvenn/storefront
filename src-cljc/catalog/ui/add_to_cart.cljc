@@ -46,7 +46,6 @@
     #?(:cljs
        [:div
         (component/build quadpay/component
-                         {:quadpay/show?       (:quadpay/loaded? data)
-                          :quadpay/order-total (:quadpay/price data)
+                         {:quadpay/order-total (:quadpay/price data)
                           :quadpay/directive   :just-select}
                          nil)])]))

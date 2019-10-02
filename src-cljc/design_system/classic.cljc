@@ -59,7 +59,6 @@
                                                                                 :quantity 1}]
      :cta/disabled?                             false
      :cta/spinning?                             false
-     :quadpay/loaded?                           true
      :quadpay/price                             108
      :freeinstall-add-to-cart-block/message     "Save 10% & get a free Mayvenn Install when you purchase 3 bundles, closure, or frontals.* "
      :freeinstall-add-to-cart-block/footnote    "*Mayvenn Install cannot be combined with other promo codes."

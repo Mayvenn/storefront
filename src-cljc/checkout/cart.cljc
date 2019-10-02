@@ -178,7 +178,6 @@
                               delete-line-item-requests
                               freeinstall-line-item-data
                               freeinstall-just-added?
-                              loaded-quadpay?
                               line-items-discounts?
                               cart-summary]} owner _]
   (component/create
@@ -207,8 +206,7 @@
 
       #?@(:cljs
           [(component/build quadpay/component
-                            {:quadpay/show?       loaded-quadpay?
-                             :quadpay/order-total (:total order)
+                            {:quadpay/order-total (:total order)
                              :quadpay/directive   :just-select}
                             nil)])
       (ui/teal-button {:spinning? false
@@ -423,7 +421,6 @@
      :redirecting-to-paypal?     (get-in data keypaths/cart-paypal-redirect)
      :share-carts?               (stylists/own-store? data)
      :requesting-shared-cart?    (utils/requesting? data request-keys/create-shared-cart)
-     :loaded-quadpay?            (get-in data keypaths/loaded-quadpay)
      :show-browser-pay?          (and (get-in data keypaths/loaded-stripe)
                                       (experiments/browser-pay? data)
                                       (seq (get-in data keypaths/shipping-methods))

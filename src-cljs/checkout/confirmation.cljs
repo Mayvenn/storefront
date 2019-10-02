@@ -112,7 +112,6 @@
            delivery
            free-install-applied?
            items
-           loaded-quadpay?
            order
            payment
            promo-banner
@@ -154,11 +153,11 @@
               "Please enter an additional payment method below for the remaining total on your order."])
             (component/build checkout-credit-card/component payment nil)])
          (component/build cart-summary/organism cart-summary nil)
-         (component/build quadpay/component
-                          {:quadpay/show?       (and selected-quadpay? loaded-quadpay?)
-                           :quadpay/order-total (:total order)
-                           :quadpay/directive   :continue-with}
-                          nil)
+         (when selected-quadpay?
+           (component/build quadpay/component
+                            {:quadpay/order-total (:total order)
+                             :quadpay/directive   :continue-with}
+                            nil))
          (when free-install-applied?
            [:div.h5.my4.center.col-10.mx-auto.line-height-3
             (if-let [servicing-stylist-name (stylists/->display-name servicing-stylist)]
@@ -308,7 +307,6 @@
          :free-install-applied?        applied?
          :checkout-button-data         (checkout-button-query data)
          :selected-quadpay?            selected-quadpay?
-         :loaded-quadpay?              (get-in data keypaths/loaded-quadpay)
          :servicing-stylist            stylist
          :items                        (item-card-query data)
          :cart-summary                 (cart-summary-query order mayvenn-install (orders/available-store-credit order user))}

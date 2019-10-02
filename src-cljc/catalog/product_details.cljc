@@ -390,7 +390,6 @@
                               :quantity (get-in data keypaths/browse-sku-quantity 1)}]
            :cta/spinning?   (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
            :cta/disabled?   (not (:inventory/in-stock? selected-sku))
-           :quadpay/loaded? (get-in data keypaths/loaded-quadpay)
            :quadpay/price   sku-price}
 
     (= "shop" (get-in data keypaths/store-slug))

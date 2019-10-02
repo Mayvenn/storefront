@@ -400,7 +400,6 @@
 (defpath inserted-facebook)
 (defpath inserted-pixlee)
 (defpath inserted-google-maps)
-(defpath inserted-quadpay)
 (defpath inserted-stripe)
 (defpath inserted-talkable)
 (defpath inserted-uploadcare)

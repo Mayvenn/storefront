@@ -283,7 +283,6 @@
 (def loaded-facebook (conj loaded :facebook))
 (def loaded-pixlee (conj loaded :pixlee))
 (def loaded-google-maps (conj loaded :google-maps))
-(def loaded-quadpay (conj loaded :quadpay))
 (def loaded-stripe (conj loaded :stripe))
 (def loaded-talkable (conj loaded :talkable))
 (def loaded-uploadcare (conj loaded :uploadcare))

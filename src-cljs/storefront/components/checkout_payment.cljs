@@ -58,7 +58,6 @@
 (defn component
   [{:keys [step-bar
            saving?
-           loaded-quadpay?
            disabled?
            loaded-stripe?
            store-credit
@@ -155,8 +154,7 @@
                                             (.preventDefault e)
                                             (quadpay/show-modal))}
                  "Learn more."]
-                (when loaded-quadpay?
-                  [:div.hide (component/build quadpay/widget-component {} nil)])]])
+                [:div.hide (component/build quadpay/widget-component {} nil)]]])
 
              (when selected-quadpay?
                [:div.h6.px2.ml5.dark-gray
@@ -180,7 +178,6 @@
            selected-payment-methods
            applied-install-promotion
            can-use-store-credit?
-           loaded-quadpay?
            promo-banner]}
    owner]
   (om/component
@@ -268,8 +265,7 @@
                                             (.preventDefault e)
                                             (quadpay/show-modal))}
                  "Learn more."]
-                (when loaded-quadpay?
-                  [:div.hide (component/build quadpay/widget-component {} nil)])]])
+                [:div.hide (component/build quadpay/widget-component {} nil)]]])
 
              (when selected-quadpay?
                [:div.h6.px2.ml5.dark-gray
@@ -309,8 +305,7 @@
       :loaded-stripe?           (get-in data keypaths/loaded-stripe)
       :step-bar                 (checkout-steps/query data)
       :field-errors             (:field-errors (get-in data keypaths/errors))
-      :selected-payment-methods selected-payment-methods
-      :loaded-quadpay?          (get-in data keypaths/loaded-quadpay)}
+      :selected-payment-methods selected-payment-methods}
      (cc/query data))))
 
 (defn ^:private built-non-auth-component [data opts]

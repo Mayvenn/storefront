@@ -139,9 +139,35 @@
           [:link {:rel "preconnect" :href "https://www.google-analytics.com"}]
 
           [:script {:type "text/javascript"} (raw prefetch-script)]
+
+          ;; Quadpay Widget -- TODO: can we move this below our app scripts in prod?
+          [:script {:type  "text/javascript"
+                    :src   "https://widgets.quadpay.com/mayvenn/quadpay-widget-2.2.1.js"
+                    :defer true}]
+
+          ;; Storefront server-side data
+          [:script {:type "text/javascript"}
+           (raw (str "var assetManifest=" (generate-string (select-keys asset-mappings/image-manifest (map #(subs % 1) config/frontend-assets))) ";"
+                     "var cdnHost=" (generate-string asset-mappings/cdn-host) ";"
+                     (when-not (config/development? environment)
+                       ;; Use CDN urls when not in dev, otherwise let figwheel control the compiled modules
+                       (str "var COMPILED_MODULE_URIS=" (json/generate-string (config/frontend-modules)) ";"))
+                     ;; need to make sure the edn which has double quotes is validly escaped as
+                     ;; json as it goes into the JS file
+                     (format "var data = %s;" (data->transit data))
+                     "var environment=\"" environment "\";"
+                     "var clientVersion=\"" client-version "\";"
+                     "var apiUrl=\"" (:endpoint storeback-config) "\";"))]
+          (when-not (config/development? environment)
+            (for [n js-files]
+              [:script {:src   (assets/path (str "/js/out/" n))
+                        :defer true}]))
+
+          ;;;;;;;;; "Third party" libraries
           ;; Stringer
           [:script {:type "text/javascript"}
            (raw (str "(function(d,e){function g(a){return function(){var b=Array.prototype.slice.call(arguments);b.unshift(a);c.push(b);return d.stringer}}var c=d.stringer=d.stringer||[],a=[\"init\",\"track\",\"identify\",\"clear\"];if(!c.snippetRan&&!c.loaded){c.snippetRan=!0;for(var b=0;b<a.length;b++){var f=a[b];c[f]=g(f)}a=e.createElement(\"script\");a.type=\"text/javascript\";a.async=!0;a.src=\"https://d6w7wdcyyr51t.cloudfront.net/cdn/stringer/stringer-dd6db0a.js\";a.onload=function(){storefront.core.external_message(['inserted', 'stringer'], {})};b=e.getElementsByTagName(\"script\")[0];b.parentNode.insertBefore(a,b);c.init({environment:\"" environment "\",sourceSite:\"storefront\"})}})(window,document);"))]
+
           ;; Facebook Pixel
           [:script {:type "text/javascript"}
            (let [facebook-pixel-id (case environment
@@ -186,6 +212,7 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 },s.version='1.1',s.queue=[],u=t.createElement(n),u.async=!0,u.src='//static.ads-twitter.com/uwt.js',
 a=t.getElementsByTagName(n)[0],a.parentNode.insertBefore(u,a))}(window,document,'script');
 twq('init','" twitter-pixel-id "');")))]
+
           ;; Pinterest
           [:script {:type "text/javascript"}
            (let [pinterest-tag-id (case environment
@@ -193,24 +220,10 @@ twq('init','" twitter-pixel-id "');")))]
                                     2612961581995)]
              (raw (str "!function(e){if(!window.pintrk){window.pintrk=function(){window.pintrk.queue.push(Array.prototype.slice.call(arguments))};var n=window.pintrk;n.queue=[],n.version='3.0';var t=document.createElement('script');t.async=!0,t.src=e;var r=document.getElementsByTagName('script')[0];r.parentNode.insertBefore(t,r)}}('https://s.pinimg.com/ct/core.js');pintrk('load','" pinterest-tag-id "');pintrk('page');")))]
 
+          ;;;;;;;;;;;;
 
-          ;; Storefront server-side data
-          [:script {:type "text/javascript"}
-           (raw (str "var assetManifest=" (generate-string (select-keys asset-mappings/image-manifest (map #(subs % 1) config/frontend-assets))) ";"
-                     "var cdnHost=" (generate-string asset-mappings/cdn-host) ";"
-                     (when-not (config/development? environment)
-                       ;; Use CDN urls when not in dev, otherwise let figwheel control the compiled modules
-                       (str "var COMPILED_MODULE_URIS=" (json/generate-string (config/frontend-modules)) ";"))
-                     ;; need to make sure the edn which has double quotes is validly escaped as
-                     ;; json as it goes into the JS file
-                     (format "var data = %s;" (data->transit data))
-                     "var environment=\"" environment "\";"
-                     "var clientVersion=\"" client-version "\";"
-                     "var apiUrl=\"" (:endpoint storeback-config) "\";"))]
-          (when-not (config/development? environment)
-            (for [n js-files]
-              [:script {:src   (assets/path (str "/js/out/" n))
-                        :defer true}]))
+
+
           ;; inline styles in production because our css file is so small and it avoids another round
           ;; trip request. At time of writing this greatly includes our pagespeed score
           (if (#{"development" "test"} environment)

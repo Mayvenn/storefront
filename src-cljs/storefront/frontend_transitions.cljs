@@ -553,9 +553,6 @@
 (defmethod transition-state events/inserted-google-maps [_ event args app-state]
   (assoc-in app-state keypaths/loaded-google-maps true))
 
-(defmethod transition-state events/inserted-quadpay [_ event _ app-state]
-  (assoc-in app-state keypaths/loaded-quadpay true))
-
 (defmethod transition-state events/inserted-stripe [_ event _ app-state]
   (assoc-in app-state keypaths/loaded-stripe true))
 

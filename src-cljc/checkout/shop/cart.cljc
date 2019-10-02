@@ -566,7 +566,6 @@
                                                     (not entered?))
                                            {:promo-field-data (promo-input-query data)}))
              :cart-items                (cart-items-query data mayvenn-install line-items skus add-items-action)
-             :quadpay/show?             (get-in data keypaths/loaded-quadpay)
              :quadpay/order-total       (when-not locked? (:total order))
              :quadpay/directive         (if locked? :no-total :just-select)}
 
