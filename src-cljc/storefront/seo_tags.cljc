@@ -63,11 +63,10 @@
 
 (defn canonical-uri
   [{:as data :keys [store]}]
-  (when-not (#{"shop" "freeinstall"} (:store-slug store))
-    (some-> (get-in data keypaths/navigation-uri)
-            (update :host string/replace #"^[^.]+" "shop")
-            (assoc :scheme (get-in data keypaths/scheme))
-            str)))
+  (some-> (get-in data keypaths/navigation-uri)
+          (update :host string/replace #"^[^.]+" "shop")
+          (assoc :scheme (get-in data keypaths/scheme))
+          str))
 
 (defn canonical-link-tag [data]
   (when-let [canonical-href (canonical-uri data)]
