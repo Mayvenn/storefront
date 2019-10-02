@@ -200,6 +200,7 @@
 (defn get-dismissed-free-install [cookie]
   (.get cookie "dismissed-free-install"))
 
+;; GROT
 (defn get-stringer-distinct-id [cookie]
   (.get cookie "stringer.distinct_id"))
 

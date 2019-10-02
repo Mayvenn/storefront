@@ -101,6 +101,7 @@
 
 (def api-requests (conj ui :api-requests))
 (def redirecting? (conj ui :redirecting?))
+(def stringer-browser-id (conj ui :stringer-browser-id))
 (def return-navigation-message (conj ui :return-navigation-message))
 (def navigation-uri (conj ui :navigation-uri))
 (def navigation-message (conj ui :navigation-message))

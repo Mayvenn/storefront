@@ -21,6 +21,7 @@
 (defpath external-redirect-phone)
 (defpath external-redirect-typeform-recommend-stylist)
 
+(defpath stringer-browser-identified)
 (defpath module-loaded)
 
 (defpath redirect)
@@ -402,8 +403,6 @@
 (defpath inserted-google-maps)
 (defpath inserted-stripe)
 (defpath inserted-uploadcare)
-
-(defpath stringer-distinct-id-available)
 
 (defpath autocomplete-update-address)
 

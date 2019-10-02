@@ -88,10 +88,10 @@
                     (js->clj :keywordize-keys true))]
     (messages/handle-message events/control-adventure-choice {:choice {:value choices}}))
   (svg/insert-sprite)
-  #_(stringer/insert-tracking (get-in app-state keypaths/store-slug))
   #_(google-analytics/insert-tracking)
   (convert/insert-tracking)
   (riskified/insert-tracking (get-in app-state keypaths/session-id))
+  (stringer/fetch-browser-id)
   #_(facebook-analytics/insert-tracking)
   #_(twitter-analytics/insert-tracking)
   #_(pinterest/insert-tracking)
@@ -100,8 +100,6 @@
   (browser-events/attach-esc-key-listener)
   (browser-events/attach-capture-late-readystatechange-callbacks)
   (lucky-orange/track-store-experience (get-in app-state keypaths/store-experience))
-  (when-let [stringer-distinct-id (cookie-jar/get-stringer-distinct-id (get-in app-state keypaths/cookie))]
-    (messages/handle-message events/stringer-distinct-id-available {:stringer-distinct-id stringer-distinct-id}))
   (doseq [feature (get-in app-state keypaths/features)]
     ;; trigger GA analytics, even though feature is already enabled
     (messages/handle-message events/enable-feature {:feature feature})))
@@ -109,7 +107,6 @@
 (defmethod effects/perform-effects events/app-stop [_ event args _ app-state]
   (convert/remove-tracking)
   (riskified/remove-tracking)
-  (stringer/remove-tracking)
   (google-analytics/remove-tracking)
   (facebook-analytics/remove-tracking)
   (twitter-analytics/remove-tracking)
@@ -493,7 +490,7 @@
 
 (defmethod effects/perform-effects events/control-sign-in-submit [_ event args _ app-state]
   (api/sign-in (get-in app-state keypaths/session-id)
-               (stringer/browser-id)
+               (get-in app-state keypaths/stringer-browser-id)
                (get-in app-state keypaths/sign-in-email)
                (get-in app-state keypaths/sign-in-password)
                (get-in app-state keypaths/store-stylist-id)
@@ -504,7 +501,7 @@
   (let [{:keys [number token]} (or (get-in app-state keypaths/order)
                                    (get-in app-state keypaths/completed-order))]
     (api/sign-up (get-in app-state keypaths/session-id)
-                 (stringer/browser-id)
+                 (get-in app-state keypaths/stringer-browser-id)
                  (get-in app-state keypaths/sign-up-email)
                  (get-in app-state keypaths/sign-up-password)
                  (get-in app-state keypaths/store-stylist-id)
@@ -521,7 +518,7 @@
   (let [{:keys [number token]} (or (get-in app-state keypaths/order)
                                    (get-in app-state keypaths/completed-order))]
     (api/facebook-sign-in (get-in app-state keypaths/session-id)
-                          (stringer/browser-id)
+                          (get-in app-state keypaths/stringer-browser-id)
                           (:userID authResponse)
                           (:accessToken authResponse)
                           (get-in app-state keypaths/store-stylist-id)
@@ -568,7 +565,7 @@
   (if (empty? (get-in app-state keypaths/reset-password-password))
     (messages/handle-message events/flash-show-failure {:message "Your password cannot be blank."})
     (api/reset-password (get-in app-state keypaths/session-id)
-                        (stringer/browser-id)
+                        (get-in app-state keypaths/stringer-browser-id)
                         (get-in app-state keypaths/reset-password-password)
                         (get-in app-state keypaths/reset-password-token)
                         (get-in app-state keypaths/order-number)
@@ -577,7 +574,7 @@
 
 (defmethod effects/perform-effects events/facebook-success-reset [_ event facebook-response _ app-state]
   (api/facebook-reset-password (get-in app-state keypaths/session-id)
-                               (stringer/browser-id)
+                               (get-in app-state keypaths/stringer-browser-id)
                                (-> facebook-response :authResponse :userID)
                                (-> facebook-response :authResponse :accessToken)
                                (get-in app-state keypaths/reset-password-token)
@@ -925,7 +922,7 @@
       (history/enqueue-navigate events/navigate-home)
       (messages/handle-message events/flash-later-show-success {:message "Logged out successfully"})))
   (api/sign-out (get-in app-state keypaths/session-id)
-                (stringer/browser-id)
+                (get-in app-state keypaths/stringer-browser-id)
                 (get-in app-state-before keypaths/user-id)
                 (get-in app-state-before keypaths/user-token)))
 
@@ -935,9 +932,7 @@
                                         :user-token (get-in app-state keypaths/user-token)
                                         :stylist-id (get-in app-state keypaths/user-store-id)}))
 
-(defmethod effects/perform-effects events/inserted-stringer
-  [_ event args app-state-before app-state]
-  (messages/handle-message events/stringer-distinct-id-available {:stringer-distinct-id (stringer/browser-id)}))
+
 
 (defmethod effects/perform-effects events/module-loaded [_ _ {:keys [module-name for-navigation-event]} app-state-before app-state]
   (let [already-loaded-module? (= (get-in app-state-before keypaths/modules)

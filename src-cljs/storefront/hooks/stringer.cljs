@@ -1,22 +1,6 @@
 (ns storefront.hooks.stringer
-  (:require [storefront.browser.tags :refer [insert-tag-with-text remove-tags-by-class remove-tag-by-src]]
-            [storefront.config :as config]
+  (:require [storefront.events :as events]
             [storefront.platform.messages :refer [handle-message]]))
-
-(def stringer-src "//d6w7wdcyyr51t.cloudfront.net/cdn/stringer/stringer-dd6db0a.js")
-
-(defn insert-tracking [subdomain]
-  nil
-  #_(let [onload-cb-text ""]
-    (insert-tag-with-text
-     (str "(function(d,e){function g(a){return function(){var b=Array.prototype.slice.call(arguments);b.unshift(a);c.push(b);return d.stringer}}var c=d.stringer=d.stringer||[],a=[\"init\",\"track\",\"identify\",\"clear\"];if(!c.snippetRan&&!c.loaded){c.snippetRan=!0;for(var b=0;b<a.length;b++){var f=a[b];c[f]=g(f)}a=e.createElement(\"script\");a.type=\"text/javascript\";a.async=!0;a.src=\"" stringer-src "\";a.onload=function(){storefront.core.external_message(['inserted', 'stringer'], {})};b=e.getElementsByTagName(\"script\")[0];b.parentNode.insertBefore(a,b);c.init({environment:\"" config/environment "\",sourceSite:\"storefront\"})}})(window,document);")
-     "stringer")))
-
-(defn remove-tracking []
-  #_
-  (remove-tags-by-class "stringer")
-  #_
-  (remove-tag-by-src stringer-src))
 
 (defn track-event
   ([event-name] (track-event event-name {} nil))
@@ -47,7 +31,5 @@
     (.clear js/stringer)
     (.track js/stringer "clear_identify")))
 
-(defn browser-id []
-  (when (and (.hasOwnProperty js/window "stringer")
-             js/stringer.loaded)
-    (.getBrowserId js/stringer)))
+(defn fetch-browser-id []
+  (.getBrowserId js/stringer #(handle-message events/stringer-browser-identified {:id %})))

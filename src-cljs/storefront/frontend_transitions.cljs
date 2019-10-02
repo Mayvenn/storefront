@@ -314,16 +314,6 @@
 (defn random-number-generator [seed]
   (rng/mulberry32 (hash seed)))
 
-;; TODO: Remove after consolidation goes 100% (we're not going to randomize buttons)
-(defmethod transition-state events/stringer-distinct-id-available
-  [_ event {:keys [stringer-distinct-id]} app-state]
-  (if (and (= "freeinstall" (get-in app-state keypaths/store-slug))
-           (nil? (get-in app-state adventure.keypaths/adventure-random-sequence)))
-    (assoc-in app-state adventure.keypaths/adventure-random-sequence
-              (map #(Math/floor (* 100000 %))
-                   (take 30 (repeatedly (random-number-generator stringer-distinct-id)))))
-    app-state))
-
 (defmethod transition-state events/api-start
   [_ event request app-state]
   (update-in app-state keypaths/api-requests conj request))
@@ -632,6 +622,10 @@
 (defmethod transition-state events/api-success-user-stylist-service-menu-fetch [_ event {:keys [menu]} app-state]
   (cond-> app-state
     menu (assoc-in keypaths/user-stylist-service-menu menu)))
+
+(defmethod transition-state events/stringer-browser-identified
+  [_ _ {:keys [id]} app-state]
+  (assoc-in app-state keypaths/stringer-browser-id id))
 
 (defmethod transition-state events/module-loaded [_ _ {:keys [module-name]} app-state]
   (when module-name
