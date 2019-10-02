@@ -118,7 +118,6 @@
           (when asset-mappings/cdn-host [:link {:rel "dns-prefetch" :href (str "https://" asset-mappings/cdn-host)}])
           [:link {:rel "dns-prefetch" :href (:endpoint storeback-config)}]
           [:link {:rel "dns-prefetch" :href "https://ucarecdn.com"}]
-          [:link {:rel "preload" :href (assets/path "/images/sprites.svg") :as "image" :type "image/svg+xml"}]
           [:script {:type "text/javascript"} (raw prefetch-script)]
           ;; Stringer
           [:script {:type "text/javascript"}
