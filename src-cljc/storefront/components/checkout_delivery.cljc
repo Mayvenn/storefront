@@ -30,7 +30,7 @@
                 :data-test-id sku
                 :on-click     (select-shipping-method shipping-method)}
                (when (= selected-sku sku) {:checked "checked"}))
-        [:.right.ml1.medium {:class (if (pos? price) "navy" "teal")} (mf/as-money-without-cents-or-free price)]
+        [:.right.ml1.medium {:class "navy"} (mf/as-money-without-cents-or-free price)]
         [:.overflow-hidden
          [:div (when (= selected-sku sku) {:data-test "selected-shipping-method"}) name]
          [:.h6 (or (shipping/timeframe sku) "")]]))]]))
