@@ -116,7 +116,7 @@
           [:link {:rel "preconnect" :href (:endpoint storeback-config)}]
           [:link {:rel "preconnect" :href "https://ucarecdn.com"}]
           [:link {:rel "preconnect" :href "https://www.facebook.com"}]
-          [:link {:rel "preconnect" :href "https://analytics.twitter..com"}]
+          [:link {:rel "preconnect" :href "https://analytics.twitter.com"}]
           [:link {:rel "preconnect" :href "https://t.co"}]
           [:link {:rel "preconnect" :href "https://stats.g.doubleclick.net"}]
           [:link {:rel "preconnect" :href "https://static.ads-twitter.com"}]
