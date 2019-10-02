@@ -99,11 +99,11 @@
         highlighted?
         [:div.flex.items-center.justify-center.rounded
          {:style     {:height "49px"
-                      :width  "52px"}
+                      :width  "54px"}
           :key       (str "cart-item-square-thumbnail-" sku-id)
           :data-test (str "line-item-img-" sku-id)}
          (ui/ucare-img {:width 48
-                        :class "rounded border border-light-gray"}
+                        :class "mt1 rounded border border-light-gray"}
                        ucare-id)])])))
 
 (defn cart-item-thumbnail-molecule
