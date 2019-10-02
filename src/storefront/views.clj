@@ -114,6 +114,11 @@
           favicon-links
           (when asset-mappings/cdn-host [:link {:rel "preconnect" :href (str "https://" asset-mappings/cdn-host)}])
           [:link {:rel "preconnect" :href (:endpoint storeback-config)}]
+          (case environment
+            "production" [:link {:rel "preconnect" :href "https://t.mayvenn.com"}]
+            "acceptance" [:link {:rel "preconnect" :href "https://t.diva-acceptance.com"}]
+            [:link {:rel "preconnect" :href "http://byliner.localhost"}])
+          [:link {:rel "preconnect" :href "https://t.mayvenn.com"}]
           [:link {:rel "preconnect" :href "https://ucarecdn.com"}]
           [:link {:rel "preconnect" :href "https://www.facebook.com"}]
           [:link {:rel "preconnect" :href "https://analytics.twitter.com"}]
@@ -124,19 +129,19 @@
           [:link {:rel "preconnect" :href "https://www.googleadservices.com"}]
           [:link {:rel "preconnect" :href "https://img.riskified.com"}]
           [:link {:rel "preconnect" :href "https://cdn-3.convertexperiments.com"}]
-          [:link {:rel "preconnect" :href "https://t.mayvenn.com"}]
           [:link {:rel "preconnect" :href "https://widgets.quadpay.com"}]
           [:link {:rel "preconnect" :href "https://www.google.com"}]
           [:link {:rel "preconnect" :href "https://settings.luckyorange.net"}]
           [:link {:rel "preconnect" :href "https://beacon.riskified.com"}]
           [:link {:rel "preconnect" :href "https://www.googletagmanager.com"}]
-          [:link {:rel "preconnect" :href "https://bat.bing.com"}]
           [:link {:rel "preconnect" :href "https://connect.facebook.net"}]
           [:link {:rel "preconnect" :href "https://cx.atdmt.com"}]
           [:link {:rel "preconnect" :href "https://d2jjzw81hqbuqv.cloudfront.net"}] ;; talkable
           [:link {:rel "preconnect" :href "https://s.pinimg.com"}]
           [:link {:rel "preconnect" :href "https://googleads.g.doubleclick.net"}]
           [:link {:rel "preconnect" :href "https://www.google-analytics.com"}]
+          [:link {:rel "preconnect" :href "https://d10lpsik1i8c69.cloudfront.net"}] ;; luckyorange
+
 
           [:script {:type "text/javascript"} (raw prefetch-script)]
 
@@ -158,6 +163,7 @@
                      "var environment=\"" environment "\";"
                      "var clientVersion=\"" client-version "\";"
                      "var apiUrl=\"" (:endpoint storeback-config) "\";"))]
+
           (when-not (config/development? environment)
             (for [n js-files]
               [:script {:src   (assets/path (str "/js/out/" n))
