@@ -160,15 +160,6 @@
                              "https://d2jjzw81hqbuqv.cloudfront.net/integration/clients/mayvenn-staging.min.js")
                     :defer true}]
 
-          ;; Convert
-          #_[:script {:type  "text/javascript"} (raw (str "window._conv_q=window._conv_q||[]"))] ; GROT
-          [:script {:type  "text/javascript"
-                    :src   (str "https://cdn-3.convertexperiments.com/js/"
-                                (case environment
-                                  "production" "10003995-10005092"
-                                  "10003995-10005089")
-                                ".js" )}]
-
           ;; Storefront server-side data
           [:script {:type "text/javascript"}
            (raw (str "var assetManifest=" (generate-string (select-keys asset-mappings/image-manifest (map #(subs % 1) config/frontend-assets))) ";"
@@ -245,9 +236,16 @@ twq('init','" twitter-pixel-id "');")))]
                                     2612961581995)]
              (raw (str "!function(e){if(!window.pintrk){window.pintrk=function(){window.pintrk.queue.push(Array.prototype.slice.call(arguments))};var n=window.pintrk;n.queue=[],n.version='3.0';var t=document.createElement('script');t.async=!0,t.src=e;var r=document.getElementsByTagName('script')[0];r.parentNode.insertBefore(t,r)}}('https://s.pinimg.com/ct/core.js');pintrk('load','" pinterest-tag-id "');pintrk('page');")))]
 
+          ;; Convert
+          #_[:script {:type  "text/javascript"} (raw (str "window._conv_q=window._conv_q||[]"))] ; GROT
+          [:script {:type  "text/javascript"
+                    :src   (str "https://cdn-3.convertexperiments.com/js/"
+                                (case environment
+                                  "production" "10003995-10005092"
+                                  "10003995-10005089")
+                                ".js" )}]
+
           ;;;;;;;;;;;;
-
-
 
           ;; inline styles in production because our css file is so small and it avoids another round
           ;; trip request. At time of writing this greatly includes our pagespeed score
