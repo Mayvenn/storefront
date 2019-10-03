@@ -98,12 +98,12 @@
        (css-transitions/transition-background-color
         highlighted?
         [:div.flex.items-center.justify-center.rounded
-         {:style     {:height "49px"
+         {:style     {:height "50px"
                       :width  "54px"}
           :key       (str "cart-item-square-thumbnail-" sku-id)
           :data-test (str "line-item-img-" sku-id)}
          (ui/ucare-img {:width 48
-                        :class "mt1 rounded border border-light-gray"}
+                        :class "block rounded border border-light-gray"}
                        ucare-id)])])))
 
 (defn cart-item-thumbnail-molecule
