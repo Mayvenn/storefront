@@ -529,12 +529,12 @@
                                                   (get skus)
                                                   :hair/texture
                                                   first)
-        add-items-action [events/navigate-category
-                          (merge
-                           {:page/slug          "mayvenn-install"
-                            :catalog/category-id "23"}
-                           (when last-texture-added
-                             {:query-params {:subsection last-texture-added}}))]]
+        add-items-action                     [events/navigate-category
+                                              (merge
+                                               {:page/slug           "mayvenn-install"
+                                                :catalog/category-id "23"}
+                                               (when last-texture-added
+                                                 {:query-params {:subsection last-texture-added}}))]]
     (cond-> {:suggestions               (suggestions/consolidated-query data)
              :line-items                line-items
              :skus                      skus
@@ -567,6 +567,7 @@
                                            {:promo-field-data (promo-input-query data)}))
              :cart-items                (cart-items-query data mayvenn-install line-items skus add-items-action)
              :quadpay/order-total       (when-not locked? (:total order))
+             :quadpay/show?             (get-in data keypaths/loaded-quadpay)
              :quadpay/directive         (if locked? :no-total :just-select)}
 
       entered?

@@ -116,7 +116,7 @@
 (defn look-details-body
   [{:keys [creating-order? sold-out? look shared-cart skus fetching-shared-cart?
            shared-cart-type-copy above-button-copy base-price discounted-price
-           discount-text desktop-two-column? yotpo-data-attributes]}]
+           quadpay-loaded? discount-text desktop-two-column? yotpo-data-attributes]}]
   [:div.clearfix
    (when look
      [:div
@@ -127,8 +127,8 @@
        [:div.flex.items-center
         [:div.flex-auto.medium {:style {:word-break "break-all"}}
          (:title look)]
-        [:div.ml1.line-height-1 {:style {:width   "21px"
-                                         :height  "21px"}}
+        [:div.ml1.line-height-1 {:style {:width  "21px"
+                                         :height "21px"}}
          ^:inline (svg/instagram)]]]
       (when yotpo-data-attributes
         [:div (om/build reviews/reviews-summary-component {:yotpo-data-attributes yotpo-data-attributes} nil)])
@@ -165,7 +165,8 @@
           [:div.mt2.col-11.mx-auto
            (add-to-cart-button sold-out? creating-order? look shared-cart)]
           (component/build quadpay/component
-                           {:quadpay/order-total discounted-price
+                           {:quadpay/show?       quadpay-loaded?
+                            :quadpay/order-total discounted-price
                             :quadpay/directive   :just-select}
                            nil)
           (om/build reviews/reviews-component {:yotpo-data-attributes yotpo-data-attributes} nil)])))])
@@ -252,6 +253,7 @@
             :look-detail-price?         (not= album-keyword :deals)
             :base-price                 base-price
             :discounted-price           (:discounted-price discount)
+            :quadpay-loaded?            (get-in data keypaths/loaded-quadpay)
             :desktop-two-column?        true
             :discount-text              (:discount-text discount)
 
@@ -292,6 +294,7 @@
                                      "look")
             :base-price            base-price
             :discounted-price      (* 0.90 base-price)
+            :quadpay-loaded?       (get-in data keypaths/loaded-quadpay)
             :desktop-two-column?   false
             :discount-text         "10% OFF + FREE Install"}
            (reviews/query-look-detail shared-cart-with-skus data))))

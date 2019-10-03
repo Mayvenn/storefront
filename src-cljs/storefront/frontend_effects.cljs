@@ -87,6 +87,7 @@
                     js/JSON.parse
                     (js->clj :keywordize-keys true))]
     (messages/handle-message events/control-adventure-choice {:choice {:value choices}}))
+  (quadpay/insert)
   (svg/insert-sprite)
   #_(google-analytics/insert-tracking)
   (riskified/insert-tracking (get-in app-state keypaths/session-id))
@@ -253,7 +254,6 @@
     (when-not (= caused-by :module-load)
       (when (get-in app-state keypaths/popup)
         (messages/handle-message events/popup-hide))
-
       (quadpay/hide-modal))
 
     (messages/handle-message events/determine-and-show-popup)
@@ -359,6 +359,7 @@
   (api/get-states (get-in app-state keypaths/api-cache))
   (google-maps/insert) ;; for address screen on the next page
   (stripe/insert)
+  (quadpay/insert)
   (refresh-current-order app-state)
   (when-let [error-msg (-> args :query-params :error cart-error-codes)]
     (messages/handle-message events/flash-show-failure {:message error-msg})))
@@ -407,7 +408,8 @@
   (when (empty? (get-in app-state keypaths/order-shipping-address))
     (effects/redirect events/navigate-checkout-address))
   (fetch-saved-cards app-state)
-  (stripe/insert))
+  (stripe/insert)
+  (quadpay/insert))
 
 (defmethod effects/perform-effects events/navigate-checkout-confirmation [_ event args _ app-state]
   ;; TODO: get the credit card component to function correctly on direct page load

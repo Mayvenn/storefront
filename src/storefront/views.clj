@@ -149,7 +149,7 @@
           [:script {:type "text/javascript"} (raw prefetch-script)]
 
           ;; Quadpay Widget -- TODO: can we move this below our app scripts in prod?
-          [:script {:type  "text/javascript"
+         #_ [:script {:type  "text/javascript"
                     :src   "https://widgets.quadpay.com/mayvenn/quadpay-widget-2.2.1.js"
                     :defer true}]
 

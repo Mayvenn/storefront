@@ -47,5 +47,6 @@
        [:div
         (component/build quadpay/component
                          {:quadpay/order-total (:quadpay/price data)
+                          :quadpay/show?       (:quadpay/loaded? data)
                           :quadpay/directive   :just-select}
                          nil)])]))
