@@ -23,7 +23,8 @@
                                 category-name
                                 "are the best quality products on the market and ships free!")
    ;; TODO make this a proper image and place under :selector/images
-   :category/image-url    image-url})
+   :category/image-url    image-url
+   :seo/sitemap           true})
 
 (def closures
   [(merge {:catalog/category-id      "0"
@@ -558,7 +559,8 @@
            :opengraph/title           (copy "Stylist Exclusives - Free shipping."
                                             "Free 30 day returns. Made with 100% virgin human hair.")
            :page.meta/description     (copy "")
-           :opengraph/description     (copy "")})])
+           :opengraph/description     (copy "")
+           :seo/sitemap               false})])
 
 (def dyed-hair-nav-roots
   [(merge {:catalog/category-id   "15"
@@ -581,7 +583,8 @@
            :page/title            ""
            :opengraph/title       (copy "" "")
            :page.meta/description (copy "")
-           :opengraph/description (copy "")})
+           :opengraph/description (copy "")
+           :seo/sitemap           true})
    (merge {:catalog/category-id "16"
            :copy/title          "Dyed Virgin Hair"
            :page/slug           "dyed-virgin-hair"
@@ -624,7 +627,8 @@
                                       "off with the ultimate tool in protective weave"
                                       "styling. Our collection of closures and frontals blend"
                                       "seamlessly with our bundles and can be customized"
-                                      "to fit your unique look.")})])
+                                      "to fit your unique look.")
+           :seo/sitemap         true})])
 
 (def seamless-clip-ins-category
   [{:catalog/category-id "21"
@@ -658,7 +662,8 @@
     :footer/order     40
     :dtc-footer/order 8
     :header/group     2
-    :header/order     4}])
+    :header/order     4
+    :seo/sitemap      true}])
 
 (def tape-ins-category
   [{:catalog/category-id "22"
@@ -679,7 +684,8 @@
     :footer/order     50
     :dtc-footer/order 9
     :header/group     2
-    :header/order     5}])
+    :header/order     5
+    :seo/sitemap      true}])
 
 (def menu-categories
   (concat virgin-hair

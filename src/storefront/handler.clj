@@ -636,7 +636,8 @@
                                             ["https://shop.mayvenn.com/certified-stylists"                  "0.80"]]
 
                                            (concat
-                                            (for [{:keys [catalog/category-id page/slug]} categories/initial-categories]
+                                            (for [{:keys [catalog/category-id page/slug seo/sitemap]} categories/initial-categories
+                                                  :when                                               sitemap]
                                               [(str "https://shop.mayvenn.com/categories/" category-id "-" slug) "0.80"])
 
                                             (for [{:keys [catalog/product-id page/slug]} launched-products]
