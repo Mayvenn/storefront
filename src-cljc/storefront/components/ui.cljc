@@ -1083,41 +1083,17 @@
    (component/build
     screen-aware-component
     data
-<<<<<<< HEAD
-    {:opts {:embed component
-            :opts  opts}})))
-
-(defn ^:private defer-ucare-img-component [{:screen/keys [seen?] :keys [id attrs]} owner opts]
-  (component/create
-   (let [placeholder-attrs (select-keys attrs [:class :width :height])]
-     (cond
-       seen? (ucare-img attrs id)
-       :else [:div placeholder-attrs]))))
-||||||| merged common ancestors
-    {:opts {:embed component
-            :opts  opts}})))
-
-(defn ^:private defer-ucare-img-component [{:screen/keys [seen? server-render?] :keys [id attrs]} owner opts]
-  (component/create
-   (let [placeholder-attrs (select-keys attrs [:class :width :height])]
-     (cond
-       server-render? [:noscript placeholder-attrs (ucare-img attrs id)]
-       seen? (ucare-img attrs id)
-       :else [:div placeholder-attrs]))))
-=======
     (merge
      (when (:key opts)
        {:key (:key opts)})
      {:opts {:embed component
              :opts  opts}}))))
 
-(defcomponent ^:private defer-ucare-img-component [{:screen/keys [seen? server-render?] :keys [id attrs]} owner opts]
+(defcomponent ^:private defer-ucare-img-component [{:screen/keys [seen?] :keys [id attrs]} owner opts]
   (let [placeholder-attrs (select-keys attrs [:class :width :height])]
     (cond
-      server-render? [:noscript placeholder-attrs (ucare-img attrs id)]
       seen? (ucare-img attrs id)
       :else [:div placeholder-attrs])))
->>>>>>> WIP: Upgrade some pages to React 16
 
 (defn defer-ucare-img
   "A particular instance of screen-aware that only loads the image when the
