@@ -24,7 +24,6 @@
             [storefront.hooks.exception-handler :as exception-handler]
             [storefront.hooks.facebook :as facebook]
             [storefront.hooks.facebook-analytics :as facebook-analytics]
-            [storefront.hooks.google-analytics :as google-analytics]
             [storefront.hooks.lucky-orange :as lucky-orange]
             [storefront.hooks.pinterest :as pinterest]
             [storefront.hooks.pixlee :as pixlee]
@@ -89,7 +88,6 @@
     (messages/handle-message events/control-adventure-choice {:choice {:value choices}}))
   (quadpay/insert)
   (svg/insert-sprite)
-  #_(google-analytics/insert-tracking)
   (riskified/insert-tracking (get-in app-state keypaths/session-id))
   (stringer/fetch-browser-id)
   #_(facebook-analytics/insert-tracking)
@@ -106,7 +104,6 @@
 
 (defmethod effects/perform-effects events/app-stop [_ event args _ app-state]
   (riskified/remove-tracking)
-  (google-analytics/remove-tracking)
   (facebook-analytics/remove-tracking)
   (twitter-analytics/remove-tracking)
   (pinterest/remove-tracking)

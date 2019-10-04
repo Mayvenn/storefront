@@ -70,10 +70,6 @@
      "checkout"            "100017132"
      "paypal-checkout"     "100017133"}))
 
-(def google-analytics-property (case js/environment
-                                 "production" "UA-36226630-1"
-                                 "UA-36226630-2"))
-
 (def facebook-pixel-id (case js/environment
                          "production" "721931104522825"
                          "139664856621138"))

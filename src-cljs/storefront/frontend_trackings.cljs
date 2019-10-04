@@ -7,7 +7,6 @@
             [storefront.events :as events]
             [storefront.hooks.convert :as convert]
             [storefront.hooks.facebook-analytics :as facebook-analytics]
-            [storefront.hooks.google-analytics :as google-analytics]
             [storefront.hooks.pinterest :as pinterest]
             [storefront.hooks.riskified :as riskified]
             [storefront.hooks.stringer :as stringer]
@@ -73,7 +72,6 @@
 (defmethod perform-track events/navigate [_ event {:keys [navigate/caused-by] :as args} app-state]
   (when (not (#{:module-load} caused-by))
     (let [path (routes/current-path app-state)]
-      (google-analytics/track-page path)
       (when (not (nav-was-selecting-bundle-option? app-state))
         (pinterest/track-page)
         (riskified/track-page path)
@@ -118,7 +116,6 @@
   (facebook-analytics/track-event "AddToCart" {:content_type "product"
                                                :content_ids  [(:catalog/sku-id sku)]
                                                :num_items    quantity})
-  (google-analytics/track-page (str (routes/current-path app-state) "/add_to_bag"))
   (let [order      (get-in app-state keypaths/order)
         store-slug (get-in app-state keypaths/store-slug)]
     (pinterest/track-event "AddToCart" {:product_id       (:legacy/variant-id sku)
@@ -196,12 +193,6 @@
                                                      :context        {:cart-items cart-items}}
                                                     (when look-id
                                                       {:look_id look-id})))))
-
-(defmethod perform-track events/control-cart-share-show [_ event args app-state]
-  (google-analytics/track-page (str (routes/current-path app-state) "/Share_cart")))
-
-(defmethod perform-track events/api-success-get-saved-cards [_ event args app-state]
-  (google-analytics/set-dimension "dimension2" (count (get-in app-state keypaths/checkout-credit-card-existing-cards))))
 
 (def interesting-payment-methods
   #{"apple-pay" "paypal" "quadpay"})
@@ -290,9 +281,7 @@
                                               :line_items     (mapv line-item-skuer->pinterest-line-item line-item-skuers)}))
 
     (convert/track-conversion "place-order")
-    (convert/track-revenue (convert-revenue order))
-    (google-analytics/track-event "orders" "placed_total" nil (int order-total))
-    (google-analytics/track-event "orders" "placed_total_minus_store_credit" nil (int (orders/non-store-credit-payment-amount order)))))
+    (convert/track-revenue (convert-revenue order))))
 
 (defmethod perform-track events/api-success-auth [_ event args app-state]
   (stringer/identify (get-in app-state keypaths/user)
@@ -309,7 +298,6 @@
   (stringer/track-event "reset_password" {:type flow}))
 
 (defmethod perform-track events/enable-feature [_ event {:keys [feature experiment]} app-state]
-  (google-analytics/track-event "experiment_join" feature)
   (stringer/track-event "experiment-joined" {:name experiment
                                              :variation feature}))
 
@@ -345,7 +333,6 @@
 (defn- checkout-initiate [app-state flow]
   (stringer/track-event "checkout-initiate" {:flow flow
                                              :order_number (get-in app-state keypaths/order-number)})
-  (google-analytics/track-event "orders" "initiate_checkout")
   (facebook-analytics/track-event "InitiateCheckout"))
 
 (defmethod perform-track events/control-checkout-cart-submit [_ event args app-state]

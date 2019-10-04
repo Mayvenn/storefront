@@ -139,7 +139,6 @@
           [:link {:rel "preconnect" :href "https://d2jjzw81hqbuqv.cloudfront.net"}] ;; talkable
           [:link {:rel "preconnect" :href "https://s.pinimg.com"}]
           [:link {:rel "preconnect" :href "https://googleads.g.doubleclick.net"}]
-          [:link {:rel "preconnect" :href "https://www.google-analytics.com"}]
           [:link {:rel "preconnect" :href "https://d10lpsik1i8c69.cloudfront.net"}] ;; luckyorange
 
           (when-not (config/development? environment)
@@ -196,19 +195,6 @@ n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
 t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
 document,'script','https://connect.facebook.net/en_US/fbevents.js');
 fbq('init', '" facebook-pixel-id "');")))]
-          ;; Google Analytics
-          [:script {:type "text/javascript"}
-
-           (let [google-analytics-property (case environment
-                                             "production" "UA-36226630-1"
-                                             "UA-36226630-2")]
-             (raw (str "(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
- (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
- m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
- })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-ga('create', '" google-analytics-property "', 'auto');
-ga('require', 'displayfeatures');")))]
 
           ;; Google Tag Manager
           [:script {:type "text/javascript"}
