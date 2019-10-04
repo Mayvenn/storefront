@@ -136,12 +136,22 @@
              (when ^boolean goog/DEBUG
                (assert (not (has-fn? data))
                        (str "building " (:file debug-data) ":" (:line debug-data) " includes a function which is not recommended because it reforces constant rerenders")))
-             (if (gobj/get component "isNewStyleComponent" false)
+             (cond
+               (gobj/get component "isNewStyleComponent" false)
                (react/createElement component
                                     #js{:props               data
                                         :options             (:opts opts)
                                         :key                 (:key opts)
                                         :isNewStyleComponent true})
+
+               (gobj/get component "displayName" false) ;; secondary legacy
+               (react/createElement component
+                                    (let [props #js{:props data}]
+                                      (when-let [k (:key opts)]
+                                        (gobj/set props "key" (str k "@" (:file debug-data) ":" (:line debug-data))))
+                                      props))
+
+               :else
                (react/createElement (component data nil (:opts opts))
                                     (let [props #js{:props data}]
                                       (when-let [k (:key opts)]
