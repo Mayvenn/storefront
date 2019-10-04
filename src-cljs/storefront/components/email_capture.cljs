@@ -104,5 +104,6 @@
 (defmethod popup/component :email-capture-quadpay
   [query-data _ _]
   (component/create
-   [:div
+   "popup.component:email-capture-quadpay"
+   [:div.quadpay-popup
     (component/build popup.organisms/organism query-data _)]))

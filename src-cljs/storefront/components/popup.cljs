@@ -34,9 +34,12 @@
 
 (defn built-component
   [data _]
-  (component/build component
-                   (query-with-popup-type data)
-                   {:opts {:close-attrs (utils/fake-href events/control-popup-hide)}}))
+  (let [query-data (query-with-popup-type data)]
+    (component/build
+     (component query-data
+                nil
+                {:opts {:close-attrs (utils/fake-href events/control-popup-hide)}})
+     {:opts {:close-attrs (utils/fake-href events/control-popup-hide)}})))
 
 (defn determine-site
   [app-state]

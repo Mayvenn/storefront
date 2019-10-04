@@ -43,7 +43,7 @@
 
 ;; ORGANISM
 
-(defn organism
+(defcomponent organism
   [{:as               query
     pre-title-content :pre-title/content
     modal-close-event :modal-close/event
