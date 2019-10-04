@@ -16,41 +16,6 @@
 
 (defcomponent layer-hero
   [data owner opts]
-<<<<<<< HEAD
-  (component/create
-   [:div.mx-auto.relative {:style {:min-height "300px"}}
-    (let [{:photo/keys [mob-uuid dsk-uuid file-name alt]} data]
-      (component/build ui.M/hero
-                       {:mob-uuid    mob-uuid
-                        :dsk-uuid    dsk-uuid
-                        :file-name   file-name
-                        :alt         alt}
-                       {:opts {:link-attrs {:style {:min-height "300px"}}}}))
-    (when-let [buttons (:buttons data)]
-      [:div.relative.flex.justify-center
-       [:div.absolute.bottom-0.col-6-on-tb-dt.col-12.pb2.mb3-on-dt
-        [:div.col.col-12.flex.justify-center
-         (let [num-buttons (count buttons)]
-           (for [button buttons]
-             [:div.px2 {:class (str "col-" (if (= num-buttons 1) 9 6))} (apply ui/teal-button button)]))]]])]))
-||||||| merged common ancestors
-  (component/create
-   [:div.mx-auto.relative {:style {:min-height "300px"}}
-    (let [{:photo/keys [mob-uuid dsk-uuid file-name alt]} data]
-      (component/build ui.M/hero
-                       {:mob-uuid    mob-uuid
-                        :dsk-uuid    dsk-uuid
-                        :file-name   file-name
-                        :alt         alt}
-                       nil))
-    (when-let [buttons (:buttons data)]
-      [:div.relative.flex.justify-center
-       [:div.absolute.bottom-0.col-6-on-tb-dt.col-12.pb2.mb3-on-dt
-        [:div.col.col-12.flex.justify-center
-         (let [num-buttons (count buttons)]
-           (for [button buttons]
-             [:div.px2 {:class (str "col-" (if (= num-buttons 1) 9 6))} (apply ui/teal-button button)]))]]])]))
-=======
   [:div.mx-auto.relative {:style {:min-height "300px"}}
    (let [{:photo/keys [mob-uuid dsk-uuid file-name alt]} data]
      (component/build ui.M/hero
@@ -66,7 +31,6 @@
         (let [num-buttons (count buttons)]
           (for [button buttons]
             [:div.px2 {:class (str "col-" (if (= num-buttons 1) 9 6))} (apply ui/teal-button button)]))]]])])
->>>>>>> WIP: Upgrade some pages to React 16
 
 (defcomponent free-standard-shipping-bar
   [_ _ _]
