@@ -91,8 +91,7 @@
                    :disabled-class "bg-gray"}
                   "Unavailable"))
 
-;; TODO(jeff, heather): this should be refactored to a sticky-component to be shared with PDP
-(defn sticky-add-component
+(defn ^:private sticky-add-component
   [{:keys [selected-options sold-out? unavailable? adding-to-bag? sku quantity image]} owner opts]
   (let [unpurchasable? (or sold-out? unavailable?)
         text-style     (if unpurchasable? {:class "gray"} {})]
