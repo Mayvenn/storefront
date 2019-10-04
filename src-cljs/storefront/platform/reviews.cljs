@@ -6,7 +6,9 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.messages :refer [handle-message]]
-            [storefront.routes :as routes]))
+            [storefront.routes :as routes]
+            [storefront.component :as component :refer [defcomponent]]
+            ))
 
 (defn ^:private reviews-component-inner
   [{:keys [loaded? yotpo-data-attributes]} owner opts]

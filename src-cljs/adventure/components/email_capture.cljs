@@ -4,7 +4,7 @@
             [storefront.accessors.experiments :as experiments]
             [storefront.browser.scroll :as scroll]
             [storefront.browser.cookie-jar :as cookie-jar]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.popup :as popup]
             [storefront.components.svg :as svg]
             [storefront.effects :as effects]

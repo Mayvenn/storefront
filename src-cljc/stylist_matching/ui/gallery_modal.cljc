@@ -1,18 +1,19 @@
 (ns stylist-matching.ui.gallery-modal
-  (:require [storefront.component :as component]
+  (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ui :as ui]
             [storefront.platform.carousel :as carousel]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            
+            ))
 
 (defn ^:private gallery-slide [index ucare-img-url]
   [:div {:key (str "gallery-slide" index)}
    (ui/aspect-ratio 1 1
                     (ui/ucare-img {:class "col-12"} ucare-img-url))])
 
-(defn organism
+(defcomponent organism
   [{:gallery-modal/keys [target ucare-image-urls initial-index]} _ _]
-  (component/create
-   [:div
+  [:div
     (when (seq ucare-image-urls)
       (ui/modal
        {:close-attrs (apply utils/fake-href target)
@@ -26,4 +27,4 @@
         [:div.absolute
          {:style {:top "1.5rem" :right "1.5rem"}}
          (ui/modal-close {:class       "stroke-dark-gray fill-gray"
-                          :close-attrs (apply utils/fake-href target)})]]))]))
+                          :close-attrs (apply utils/fake-href target)})]]))])

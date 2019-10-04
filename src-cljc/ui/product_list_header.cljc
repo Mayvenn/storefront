@@ -1,10 +1,11 @@
 (ns ui.product-list-header
-  (:require [storefront.component :as component]))
+  (:require [storefront.component :as component :refer [defcomponent]]
+            
+            ))
 
-(defn organism
-  [{:product-list-header/keys [slug copy-primary copy-secondary image-url copy-position]}]
-  (component/create
-   [:div
+(defcomponent organism
+  [{:product-list-header/keys [slug copy-primary copy-secondary image-url copy-position]} _ _]
+  [:div
     {:key (str "header-" slug)
      :style {:background-image (str "url('" image-url  ")")
              :background-size "cover"
@@ -19,4 +20,4 @@
       :style {:height "100%"}}
      [:div
       [:h2.h3.bold copy-primary]
-      [:p.h7 copy-secondary]]]]))
+      [:p.h7 copy-secondary]]]])

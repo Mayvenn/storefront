@@ -1,8 +1,10 @@
 (ns catalog.ui.add-to-cart
   (:require #?@(:cljs [[storefront.hooks.quadpay :as quadpay]])
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ui :as ui]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            
+            ))
 
 (defn cta-molecule
   [{:cta/keys [id label target spinning? disabled?]}]
@@ -35,11 +37,10 @@
   (when color
     {:class color}))
 
-(defn organism
+(defcomponent organism
   "Add to Cart organism"
   [data _ _]
-  (component/create
-   [:div.px3.pt3.pb1
+  [:div.px3.pt3.pb1
     (add-to-cart-background-atom (:add-to-cart.background/color data))
     (add-to-cart-incentive-block-molecule data)
     (cta-molecule data)
@@ -49,4 +50,4 @@
                          {:quadpay/order-total (:quadpay/price data)
                           :quadpay/show?       (:quadpay/loaded? data)
                           :quadpay/directive   :just-select}
-                         nil)])]))
+                         nil)])])

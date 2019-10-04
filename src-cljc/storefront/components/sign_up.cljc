@@ -1,10 +1,14 @@
 (ns storefront.components.sign-up
-  (:require [storefront.component :as component]
+  (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.components.facebook :as facebook]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
 (defn form
   [{:keys [focused
@@ -46,9 +50,8 @@
     (ui/submit-button sign-up-text
                       {:data-test "user-submit"})]])
 
-(defn component [{:keys [facebook-loaded?] :as data} _ _]
-  (component/create
-   (ui/narrow-container
+(defcomponent component [{:keys [facebook-loaded?] :as data} _ _]
+  (ui/narrow-container
     [:div.p2
      [:h1.h2.center.mt2.mb3.navy "Sign up for an account"]
 
@@ -61,7 +64,7 @@
       (form data {:sign-up-text "Sign Up"})]
 
      [:div.center.dark-gray.mt2.mb2 "Already have an account? "
-      [:a.teal (utils/route-to events/navigate-sign-in) "Log In"]]])))
+      [:a.teal (utils/route-to events/navigate-sign-in) "Log In"]]]))
 
 (defn query [data]
   {:email            (get-in data keypaths/sign-up-email)

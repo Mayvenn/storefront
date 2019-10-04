@@ -1,19 +1,20 @@
 (ns storefront.components.stylist.account.social
-  (:require [storefront.component :as component]
+  (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.request-keys :as request-keys]))
+            [storefront.request-keys :as request-keys]
+            
+            ))
 
-(defn component [{:keys [focused
+(defcomponent component [{:keys [focused
                          saving?
                          instagram-account
                          styleseat-account
                          field-errors]} owner opts]
-  (component/create
-   [:form {:on-submit
+  [:form {:on-submit
            (utils/send-event-callback events/control-stylist-account-social-submit)}
 
     [:h1.h3.light.my3.center.col.col-12.col-6-on-tb-dt "Connect your social"]
@@ -56,7 +57,7 @@
      [:div.border-light-gray.border-top.hide-on-mb.mb3]
      [:div.col-12.col-5-on-tb-dt.mx-auto
       (ui/submit-button "Update" {:spinning? saving?
-                                  :data-test "account-form-submit"})]]]))
+                                  :data-test "account-form-submit"})]]])
 
 (defn query [data]
   {:saving?           (utils/requesting? data request-keys/update-stylist-account)

@@ -1,14 +1,18 @@
 (ns mayvenn-made.home
   (:require #?@(:cljs [[storefront.hooks.pixlee :as pixlee]
                        [om.core :as om]])
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.components.ui :as ui]
             [storefront.keypaths :as keypaths]
             [storefront.transitions :as transitions]
             [storefront.platform.messages :as messages]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
 
 (defn hero-image
@@ -37,14 +41,13 @@
              (did-mount [this]
                (messages/handle-message events/mayvenn-made-gallery-displayed)))))
 
-(defn component [{:keys [image/hero]} owner opts]
-  (component/create
-   [:div
+(defcomponent component [{:keys [image/hero]} owner opts]
+  [:div
     [:section (hero-image hero)]
     [:section [:h1.p8.bold.shout.center "Recently submitted looks"]]
     [:section
      [:div#pixlee_container]
-     #?(:cljs (om/build simple-widget-component {}))]]))
+     #?(:cljs (component/build simple-widget-component {}))]])
 
 
 (defn query

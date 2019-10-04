@@ -1,7 +1,9 @@
 (ns stylist-matching.ui.shopping-method-choice
-  (:require [storefront.component :as component]
+  (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ui :as ui]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            
+            ))
 
 (defn shopping-method-choice-button-molecule
   [{:shopping-method-choice.button/keys [id target ucare-id label]}]
@@ -42,10 +44,9 @@
       [:div.h1.my2.light primary]
       [:div.h5.my2.light secondary]])))
 
-(defn organism
+(defcomponent organism
   [data _ _]
-  (component/create
-   [:div.m5
+  [:div.m5
     (shopping-method-choice-title-molecule data)
     (shopping-method-choice-error-title-molecule data)
-    (buttons-list-molecule data)]))
+    (buttons-list-molecule data)])

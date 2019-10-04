@@ -1,18 +1,21 @@
 (ns storefront.components.sign-in
-  (:require [storefront.component :as component]
+  (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.components.facebook :as facebook]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
-(defn password-component [{:keys [email
+(defcomponent password-component [{:keys [email
                                   password
                                   focused
                                   show-password?
                                   field-errors]} _ _]
-  (component/create
-   [:form.col-12.flex.flex-column.items-center
+  [:form.col-12.flex.flex-column.items-center
     {:on-submit (utils/send-event-callback events/control-sign-in-submit)}
 
     (ui/text-field {:data-test  "user-email"
@@ -48,12 +51,11 @@
               (utils/route-to events/navigate-forgot-password)) "Forgot Password?"]]]
     [:div.col-12.col-6-on-tb-dt
      (ui/submit-button "Sign In"
-                       {:data-test "user-submit"})]]))
+                       {:data-test "user-submit"})]])
 
-(defn form-component
+(defcomponent form-component
   [{:keys [facebook-loaded?] :as data} _ _]
-  (component/create
-   [:div.flex.flex-column.items-center.dark-gray.col-12.mt1
+  [:div.flex.flex-column.items-center.dark-gray.col-12.mt1
 
     [:div.col-12.col-6-on-tb-dt (facebook/sign-in-button facebook-loaded?)]
     [:div.h5.dark-gray.light.my2 "OR"]
@@ -61,14 +63,13 @@
     (component/build password-component data nil)
 
     [:div.clearfix.center.dark-gray.my2 "Don't have an account? "
-     [:a.teal (utils/route-to events/navigate-sign-up) "Register Here"]]]))
+     [:a.teal (utils/route-to events/navigate-sign-up) "Register Here"]]])
 
-(defn component [form-data owner opts]
-  (component/create
-   (ui/narrow-container
+(defcomponent component [form-data owner opts]
+  (ui/narrow-container
     [:div.p2
      [:h1.h2.center.my2.mb3.navy "Sign in to your account"]
-     (component/build form-component form-data nil)])))
+     (component/build form-component form-data nil)]))
 
 (defn query [data]
   {:email                   (get-in data keypaths/sign-in-email)

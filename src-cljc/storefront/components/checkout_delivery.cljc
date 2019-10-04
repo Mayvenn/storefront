@@ -8,17 +8,18 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.component :as component]))
+            [storefront.component :as component :refer [defcomponent]]
+            
+            ))
 
 (defn ^:private select-shipping-method
   [shipping-method]
   (utils/send-event-callback events/control-checkout-shipping-method-select
                              shipping-method))
 
-(defn component
-  [{:keys [shipping-methods selected-sku]} owner]
-  (component/create
-   [:div
+(defcomponent component
+  [{:keys [shipping-methods selected-sku]} owner _]
+  [:div
     [:.h3 "Shipping Method"]
     [:.py1
      (for [{:keys [sku name price] :as shipping-method} shipping-methods]
@@ -33,7 +34,7 @@
         [:.right.ml1.medium {:class (if (pos? price) "black" "purple")} (mf/as-money-without-cents-or-free price)]
         [:.overflow-hidden
          [:div (when (= selected-sku sku) {:data-test "selected-shipping-method"}) name]
-         [:.h6 (or (shipping/timeframe sku) "")]]))]]))
+         [:.h6 (or (shipping/timeframe sku) "")]]))]])
 
 (defn day-with-month
   [date]

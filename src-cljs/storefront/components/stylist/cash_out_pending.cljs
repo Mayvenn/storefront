@@ -10,21 +10,23 @@
             [storefront.api :as api]
             [storefront.effects :as effects]
             [storefront.platform.messages :as messages]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            [storefront.component :as component :refer [defcomponent]]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]))
 
-(defn component [_ owner opts]
-  (om/component
-   (html
-    [:div.container.p4.center
+(defcomponent component [_ owner opts]
+  [:div.container.p4.center
      (ui/large-spinner {:style {:height "6em"}})
      [:h2.my3 "Transfer in progress"]
-     [:p "We are currently transferring your funds. Please stay on this page until the transfer completes."]])))
+     [:p "We are currently transferring your funds. Please stay on this page until the transfer completes."]])
 
 (defn query [data]
   {})
 
 (defn ^:export built-component [data opts]
-  (om/build component {} opts))
+  (component/build component {} opts))
 
 (defn- poll-status [user-id user-token status-id stylist-id]
   (js/setTimeout (fn [] (api/cash-out-status user-id user-token status-id stylist-id))

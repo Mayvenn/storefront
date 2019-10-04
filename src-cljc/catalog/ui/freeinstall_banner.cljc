@@ -1,15 +1,16 @@
 (ns catalog.ui.freeinstall-banner
-  (:require [storefront.component :as component]
+  (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ui :as ui]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            
+            ))
 
 ;; MOLECULES
 
 ;; ORGANISM
-(defn organism
+(defcomponent organism
   [{:freeinstall-banner/keys [show? title subtitle image-ucare-id button-id button-copy nav-event]} _ _]
-  (component/create
-   (when show?
+  (when show?
      [:a.block.sticky.m3.black.pointer
       (merge {:data-test button-id
               :style {:height "245px"}}
@@ -23,4 +24,4 @@
          (ui/purple-button {:height-class :small} button-copy)]]]
       [:div.z5.absolute.bottom-0
        {:style {:right "-15px"}}
-       (ui/ucare-img {:width "192"} image-ucare-id)]])))
+       (ui/ucare-img {:width "192"} image-ucare-id)]]))

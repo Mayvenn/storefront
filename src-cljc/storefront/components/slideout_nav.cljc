@@ -13,7 +13,11 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.platform.messages :as messages]))
+            [storefront.platform.messages :as messages]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
 (def blog-url "https://blog.mayvenn.com")
 
@@ -265,17 +269,16 @@
      [:div.px6.border-top.border-gray
       sign-out-area])])
 
-(defn component
+(defcomponent component
   [{:keys [cart on-taxon? menu-data] :as data}
    owner
    opts]
-  (component/create
-   [:div
+  [:div
     [:div.top-0.sticky.z4
      (burger-header cart)]
     (if on-taxon?
       (component/build menu/component menu-data nil)
-      (component/build root-menu data nil))]))
+      (component/build root-menu data nil))])
 
 (defn determine-site
   [app-state]

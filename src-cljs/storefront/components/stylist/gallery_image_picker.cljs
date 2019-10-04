@@ -1,17 +1,20 @@
 (ns storefront.components.stylist.gallery-image-picker
   (:require [storefront.accessors.auth :as auth]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.image-picker :as image-picker]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.effects :as effects]
-            [storefront.hooks.uploadcare :as uploadcare]))
+            [storefront.hooks.uploadcare :as uploadcare]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
-(defn component [{:keys [loaded-uploadcare?] :as args} owner opts]
-  (component/create
-   [:div
+(defcomponent component [{:keys [loaded-uploadcare?] :as args} owner opts]
+  [:div
     (when loaded-uploadcare?
-      (component/build image-picker/component args opts))]))
+      (component/build image-picker/component args opts))])
 
 (defn query [data]
   {:loaded-uploadcare? (get-in data keypaths/loaded-uploadcare)

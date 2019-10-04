@@ -1,9 +1,11 @@
 (ns adventure.components.basic-prompt
   (:require [adventure.components.header :as header]
             [spice.maps :as maps]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ui :as ui]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            
+            ))
 
 (def rect-button-attrs
   {:height-class "py6"
@@ -15,7 +17,7 @@
 (defn white-rect-button [attrs & content]
   (ui/white-button (maps/deep-merge rect-button-attrs attrs) content))
 
-(defn component
+(defcomponent component
   [{:keys [background-overrides
            show-logo?
            prompt
@@ -25,8 +27,7 @@
   (let [button-component (if (= :teal (:color button))
                            teal-rect-button
                            white-rect-button)]
-    (component/create
-     [:div.bg-lavender.white.center.flex.flex-auto.flex-column
+    [:div.bg-lavender.white.center.flex.flex-auto.flex-column
       (maps/deep-merge
        {:class "bg-adventure-basic-prompt"}  ;; By not using .notation this allows override
        background-overrides)
@@ -49,6 +50,6 @@
         (button-component (merge {:data-test (:data-test button)
                                   :key       (:data-test button)}
                                  (apply utils/route-to (:target-message button)))
-                          (:text button))]]])))
+                          (:text button))]]]))
 
 ;; Pages that use this component: Welcome/Home, find your stylist, shop-hair, match-stylist

@@ -3,7 +3,7 @@
                        [storefront.api :as api]])
             [storefront.accessors.auth :as auth]
             [storefront.assets :as assets]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
             [storefront.events :as events]
@@ -12,7 +12,11 @@
             [storefront.platform.messages :as messages]
             [storefront.request-keys :as request-keys]
             [storefront.routes :as routes]
-            [storefront.transitions :as transitions]))
+            [storefront.transitions :as transitions]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
 
 (def title
@@ -59,12 +63,11 @@
                                [:img.col-12 {:src resizable-url}]
                                pending-approval))]])))
 
-(defn component [{:keys [editing? adding-photo? gallery]} owner opts]
-  (component/create
-   [:div.container
+(defcomponent component [{:keys [editing? adding-photo? gallery]} owner opts]
+  [:div.container
     title
     (manage-section gallery editing? adding-photo?)
-    (images editing? gallery)]))
+    (images editing? gallery)])
 
 (defn query [data]
   {:editing?      (get-in data keypaths/editing-gallery?)

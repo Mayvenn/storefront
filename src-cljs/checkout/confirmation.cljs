@@ -13,7 +13,7 @@
             [storefront.api :as api]
             [storefront.config :as config]
             [storefront.browser.cookie-jar :as cookie-jar]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.checkout-credit-card :as checkout-credit-card]
             [storefront.components.checkout-delivery :as checkout-delivery]
             [storefront.components.checkout-returning-or-guest :as checkout-returning-or-guest]
@@ -31,7 +31,11 @@
             [storefront.request-keys :as request-keys]
             [storefront.effects :as effects]
             [storefront.platform.messages :as messages]
-            [spice.date :as date]))
+            [spice.date :as date]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
 (defn requires-additional-payment?
   [data]
@@ -105,7 +109,7 @@
                           events/external-redirect-quadpay-checkout
                           {:quadpay-redirect-url redirect-url})))
 
-(defn component
+(defcomponent component
   [{:keys [checkout-button-data
            checkout-steps
            cart-summary
@@ -120,9 +124,8 @@
            selected-quadpay?
            servicing-stylist
            freeinstall-cart-item]}
-   owner]
-  (component/create
-   [:div.container.p2
+   owner _]
+  [:div.container.p2
     (component/build promo-banner/sticky-organism promo-banner nil)
     (component/build checkout-steps/component checkout-steps nil)
     (if order
@@ -168,7 +171,7 @@
           (checkout-button selected-quadpay? checkout-button-data)]]]]
       [:div.py6.h2
        [:div.py4 (ui/large-spinner {:style {:height "6em"}})]
-       [:h2.center.navy "Processing your order..."]])]))
+       [:h2.center.navy "Processing your order..."]])])
 
 (defn item-card-query
   [data]

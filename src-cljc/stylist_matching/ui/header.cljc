@@ -1,8 +1,10 @@
 (ns stylist-matching.ui.header
-  (:require [storefront.component :as component]
+  (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.events :as events]
             [storefront.platform.component-utils :as utils]
-            [storefront.components.svg :as svg]))
+            [storefront.components.svg :as svg]
+            
+            ))
 
 (defn header-back-navigation-molecule
   [{:header.back-navigation/keys [id back target]}]
@@ -38,15 +40,14 @@
       {:data-test id}
       primary])))
 
-(defn organism
+(defcomponent organism
   [data _ _]
-  (component/create
-   [:div#header
+  [:div#header
     [:div.flex.items-center.justify-between.bg-lavender-dark.white
      [:div.col-1
       (header-back-navigation-molecule data)]
      [:div
       (header-title-molecule data)]
      [:div.col-1.mr2
-      (header-cart-molecule data)]]]))
+      (header-cart-molecule data)]]])
 

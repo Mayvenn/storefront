@@ -1,5 +1,5 @@
 (ns adventure.faq
-  (:require [storefront.component :as component]
+  (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.components.accordion :as accordion]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]))

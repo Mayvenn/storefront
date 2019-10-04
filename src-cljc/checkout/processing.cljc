@@ -4,20 +4,23 @@
                        [storefront.browser.cookie-jar :as cookie-jar]
                        [storefront.api :as api]
                        [storefront.history :as history]])
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.keypaths :as keypaths]
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.platform.messages :as messages]
-            [storefront.accessors.stylists :as stylists]))
+            [storefront.accessors.stylists :as stylists]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
-(defn component
+(defcomponent component
   [{:keys []} _ _]
-  (component/create
-   (ui/narrow-container
+  (ui/narrow-container
     [:div.py6.h2
      [:div.py4 (ui/large-spinner {:style {:height "6em"}})]
-     [:h2.center.navy "Processing your order..."]])))
+     [:h2.center.navy "Processing your order..."]]))
 
 (defn query [data] {})
 

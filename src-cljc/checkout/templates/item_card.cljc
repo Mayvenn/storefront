@@ -1,12 +1,13 @@
 (ns checkout.templates.item-card
-  (:require [storefront.component :as component]
+  (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ui :as ui]
-            [storefront.css-transitions :as css-transitions]))
+            [storefront.css-transitions :as css-transitions]
+            
+            ))
 
-(defn component
+(defcomponent component
   [{:keys [items]} _ _]
-  (component/create
-   [:div
+  [:div
     (for [{:as       item
            react-key :react/key} items]
       [:div.pt1.pb2.flex.items-center.col-12 {:key react-key}
@@ -72,4 +73,4 @@
         (let [{:detail-bottom-right/keys [id value opts]} item]
           [:div.col-6.right-align
            (when id (merge {:data-test id} opts))
-           (when id value)])]])]))
+           (when id value)])]])])

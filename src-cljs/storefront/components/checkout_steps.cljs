@@ -3,17 +3,17 @@
             [sablono.core :refer [html]]
             [storefront.platform.component-utils :refer [route-to]]
             [storefront.events :as events]
-            [storefront.keypaths :as keypaths]))
+            [storefront.keypaths :as keypaths]
+            [storefront.component :as component :refer [defcomponent]]
+            ))
 
 (def ^:private steps
   [{:step-index 1 :events [events/navigate-checkout-address events/navigate-checkout-returning-or-guest] :name "your details" :id "address"}
    {:step-index 2 :events [events/navigate-checkout-payment] :name "payment" :id "payment"}
    {:step-index 3 :events [events/navigate-checkout-confirmation] :name "review & pay" :id "confirm"}])
 
-(defn component [{:keys [current-navigation-event]} owner]
-  (om/component
-   (html
-    (let [current-step  (->> steps
+(defcomponent component [{:keys [current-navigation-event]} owner _]
+  (let [current-step  (->> steps
                              (filter #(contains? (set (:events %)) current-navigation-event))
                              first)
           current-index (:step-index current-step)]
@@ -30,7 +30,7 @@
               [:.bg-navy.circle.absolute {:style {:width "12px" :height "12px"}}]
               (when (> step-index current-index)
                 [:.bg-white.circle.absolute {:style {:top "1px" :left "1px" :width "10px" :height "10px"}}])]]
-            [:.mt2 name]]])]]))))
+            [:.mt2 name]]])]]))
 
 (defn query [data]
   {:current-navigation-event (get-in data keypaths/navigation-event)})

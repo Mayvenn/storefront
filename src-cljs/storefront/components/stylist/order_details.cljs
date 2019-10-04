@@ -4,7 +4,7 @@
             [storefront.accessors.sales :as sales]
             [storefront.accessors.shipping :as shipping]
             [storefront.accessors.experiments :as experiments]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.formatters :as f]
             [storefront.components.stylist.line-items :as line-items]
             [storefront.components.svg :as svg]
@@ -20,7 +20,11 @@
             [clojure.string :as string]
             [spice.core :as spice]
             cljs.pprint
-            [ui.molecules :as ui-molecules]))
+            [ui.molecules :as ui-molecules]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
 ;; TODO Remove handling of underscored keys after storeback has been deployed.
 
@@ -104,7 +108,7 @@
          (when popup-visible?
            (popup tooltip-text))]])]))
 
-(defn component
+(defcomponent component
   [{:keys [sale loading? popup-visible? back]
     :as queried-data} owner opts]
   (let [{:keys [order-number
@@ -114,8 +118,7 @@
                 balance-transfer-id]} sale
         shipments                     (-> sale :order :shipments reverse)
         shipment-count                (-> shipments count fmt-with-leading-zero)]
-    (component/create
-      (if (or (not order-number) loading?)
+    (if (or (not order-number) loading?)
         [:div.my6.h2 ui/spinner]
         [:div.container.mb4.px3
          {:style {:display               :grid
@@ -151,7 +154,7 @@
                 [:span nth-shipment
                  " of "
                  shipment-count]
-                (shipment-details shipment nth-shipment)]))]]]))))
+                (shipment-details shipment nth-shipment)]))]]])))
 
 (defn initialize-shipments-for-returns [shipments]
   (for [shipment shipments]

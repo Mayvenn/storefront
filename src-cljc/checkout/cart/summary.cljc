@@ -4,14 +4,16 @@
             [spice.core :as spice]
             [storefront.accessors.adjustments :as adjustments]
             [storefront.accessors.orders :as orders]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.money-formatters :as mf]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.request-keys :as request-keys]))
+            [storefront.request-keys :as request-keys]
+            
+            ))
 
 (defn ^:private text->data-test-name [name]
   (-> name
@@ -77,7 +79,7 @@
         [:span.bold {:data-test "total-savings"}
          (mf/as-money (:total-savings freeinstall-line-item-data))]]]])])
 
-(defn component
+(defcomponent component
   [{:keys [freeinstall-line-item-data
            order
            store-credit
@@ -86,8 +88,7 @@
            promo-data
            subtotal] :as data} owner _]
 
-  (component/create
-   [:div {:data-test "cart-order-summary"}
+  [:div {:data-test "cart-order-summary"}
     [:div.hide-on-dt.border-top.border-light-gray]
     [:div.py1.border-bottom.border-light-gray
      [:table.col-12
@@ -126,7 +127,7 @@
 
        (when (pos? store-credit)
          (summary-row "Store Credit" (- store-credit)))]]]
-    (summary-total-section data)]))
+    (summary-total-section data)])
 
 (defn query [data]
   (let [order                      (get-in data keypaths/order)

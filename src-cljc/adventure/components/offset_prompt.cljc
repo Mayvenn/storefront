@@ -1,19 +1,20 @@
 (ns adventure.components.offset-prompt
   (:require #?@(:cljs [[om.core :as om]])
             [storefront.assets :as assets]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.svg :as svg]
             [adventure.components.header :as header]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            
+            ))
 
-(defn component
+(defcomponent component
   [{:keys [prompt mini-prompt header-data background-image background-position button]} _ _]
-  (component/create
-   [:div.bg-aqua.white.center.flex.flex-auto.flex-column
+  [:div.bg-aqua.white.center.flex.flex-auto.flex-column
     (when header-data
       (header/built-component header-data nil))
     [:div.px2.flex.flex-column.items-center.justify-center
@@ -31,4 +32,4 @@
                (utils/route-to (-> button :target :event)
                                (-> button :target :args))
                (utils/route-to (:target button))))
-      (:text button))]]))
+      (:text button))]])

@@ -1,7 +1,7 @@
 (ns storefront.components.marquee
   (:require [storefront.accessors.stylists :as stylists]
             [storefront.assets :as assets]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]

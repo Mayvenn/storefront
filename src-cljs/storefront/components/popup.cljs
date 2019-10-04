@@ -2,7 +2,7 @@
   (:require [storefront.accessors.nav :as nav]
             [storefront.browser.cookie-jar :as cookie-jar]
             [storefront.browser.scroll :as scroll]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]

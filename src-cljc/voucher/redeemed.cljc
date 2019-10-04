@@ -1,6 +1,6 @@
 (ns ^:figwheel-load voucher.redeemed
   (:require #?@(:cljs [[storefront.history :as history]])
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.money-formatters :as mf]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
@@ -10,7 +10,9 @@
             [storefront.platform.component-utils :as utils]
             [voucher.keypaths :as voucher-keypaths]
             [storefront.keypaths :as keypaths]
-            [storefront.request-keys :as request-keys]))
+            [storefront.request-keys :as request-keys]
+            
+            ))
 
 (def unit-type->menu-kw-suffix
   {"with Closure" "sew-in-closure"
@@ -78,15 +80,13 @@
      {:data-test secondary-id})
     secondary-copy]])
 
-(defn spinner-molecule [_ _ _]
-  (component/create
-   [:div.mt8
-    (ui/large-spinner {:style {:height "6em"}})]))
+(defcomponent spinner-molecule [_ _ _]
+  [:div.mt8
+    (ui/large-spinner {:style {:height "6em"}})])
 
-(defn ^:private component
+(defcomponent ^:private component
   [queried-data owner opts]
-  (component/create
-   [:div.flex.flex-column.items-center.m4
+  [:div.flex.flex-column.items-center.m4
     (notification-molecule queried-data)
 
     icon-molecule
@@ -96,7 +96,7 @@
     [:div.mt6
      (cta-with-secondary-molecule queried-data)]
 
-    (fine-print-molecule queried-data)]))
+    (fine-print-molecule queried-data)])
 
 (defn ^:private query [app-state]
   (let [voucher                   (get-in app-state voucher-keypaths/voucher-response)

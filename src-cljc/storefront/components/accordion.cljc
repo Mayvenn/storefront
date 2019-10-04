@@ -2,7 +2,9 @@
   (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.platform.component-utils :as utils]
             [storefront.components.svg :as svg]
-            [storefront.css-transitions :as css-transitions]))
+            [storefront.css-transitions :as css-transitions]
+            
+            ))
 
 (defn- slide-down [content]
   (css-transitions/transition-group

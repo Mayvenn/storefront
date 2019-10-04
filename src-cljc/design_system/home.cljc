@@ -2,7 +2,7 @@
   (:require [design-system.adventure :as adventure]
             [design-system.classic :as classic]
             [design-system.ui :as common]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             #?@(:cljs
                 [[storefront.components.tabs :as tabs]
                  [storefront.loader :as loader]])
@@ -14,7 +14,11 @@
             [storefront.events :as events]
             [clojure.string :as string]
             [storefront.components.svg :as svg]
-            [storefront.components.picker.picker :as picker]))
+            [storefront.components.picker.picker :as picker]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
 (defn- header [name]
   [:h2.h3.py1.my3.shout.medium.border-bottom [:a {:name (string/lower-case name)} name]])
@@ -500,9 +504,8 @@
    (header "Form Fields")
    (form data)])
 
-(defn ^:private navigation [data _ _]
-  (component/create
-   [:section
+(defcomponent ^:private navigation [data _ _]
+  [:section
     (header "Navigation")
     [:.dark-gray
      [:div.bg-light-gray
@@ -514,11 +517,10 @@
                                    :labels   ["One" "Two" "Three"]
                                    :tabs     [events/navigate-design-system-navigation-tab1
                                               events/navigate-design-system-navigation
-                                              events/navigate-design-system-navigation-tab3]}}))]]]]))
+                                              events/navigate-design-system-navigation-tab3]}}))]]]])
 
-(defn ^:private progress [data _ _]
-  (component/create
-   [:section
+(defcomponent ^:private progress [data _ _]
+  [:section
     (header "Progress Indicator")
     [:.dark-gray
      [:div.bg-white
@@ -526,11 +528,10 @@
        (ui/progress-indicator {:value 0 :maximum 100})
        (ui/progress-indicator {:value 50 :maximum 100})
        (ui/progress-indicator {:value 5 :maximum 7})
-       (ui/progress-indicator {:value 100 :maximum 100})]]]]))
+       (ui/progress-indicator {:value 100 :maximum 100})]]]])
 
-(defn ^:private carousel [data _ _]
-  (component/create
-   [:section
+(defcomponent ^:private carousel [data _ _]
+  [:section
     (header "Carousels")
     [:div.flex.items-center.col-12
      [:div.col-4
@@ -569,7 +570,7 @@
                                   :slidesToShow 3
                                   :arrows true
                                   :dots true}}
-                      {})]]))
+                      {})]])
 
 (def model-img
   "http://ucarecdn.com/1a3ce0a2-d8a4-4c72-b20b-62b5ff445096/-/format/auto/-/resize/110x/")
@@ -657,9 +658,8 @@
       :selected? false
       :sold-out? true})]])
 
-(defn component [data owner opts]
-  (component/create
-   [:div
+(defcomponent component [data owner opts]
+  [:div
     [:div.mx3
      [:div.container
       [:div {:style {:margin "50px 0"}}
@@ -689,7 +689,7 @@
           events/navigate-design-system-navigation-tab1 (component/build navigation data opts)
           events/navigate-design-system-navigation-tab3 (component/build navigation data opts)
           events/navigate-design-system-progress        (component/build progress data opts)
-          events/navigate-design-system-carousel        (component/build carousel data opts))]]]))
+          events/navigate-design-system-carousel        (component/build carousel data opts))]]])
 
 (defn ^:export built-component [data opts]
   (component/build component data opts))

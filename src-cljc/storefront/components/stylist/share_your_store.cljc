@@ -1,10 +1,14 @@
 (ns storefront.components.stylist.share-your-store
   (:require [cemerick.url :as url]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.share-links :as share-links]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.routes :as routes]))
+            [storefront.routes :as routes]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
 (defn facebook-link [share-url]
   (share-links/facebook-link (share-links/with-utm-medium share-url "facebook")))
@@ -41,9 +45,8 @@
               :src   img-url}]
    content])
 
-(defn component [{:keys [store-slug host utm-campaign]} _ _]
-  (component/create
-   (let [store-link        (str store-slug "." host)
+(defcomponent component [{:keys [store-slug host utm-campaign]} _ _]
+  (let [store-link        (str store-slug "." host)
          share-url         (-> (url/url (str "https://" store-link))
                                (assoc :query {:utm_campaign utm-campaign}))
          phone-image-width "336px"]
@@ -87,7 +90,7 @@
         {:type     "text"
          :value    store-link
          :on-click utils/select-all-text
-         :data-test "store-link"}]]])))
+         :data-test "store-link"}]]]))
 
 (defn query [data]
   {:host         (routes/environment->hostname (get-in data keypaths/environment))

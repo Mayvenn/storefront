@@ -3,7 +3,7 @@
             [ui.molecules :as ui-molecules]
             [storefront.accessors.adjustments :as adjustments]
             [storefront.accessors.orders :as orders]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.formatters :as f]
             [storefront.components.money-formatters :as mf]
             [storefront.components.stylist.line-items :as line-items]
@@ -16,7 +16,11 @@
             [storefront.transitions :as transitions]
             [storefront.effects :as effects]
             [storefront.request-keys :as request-keys]
-            [storefront.api :as api]))
+            [storefront.api :as api]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
 ;; TODO Remove handling of underscored keys after storeback has been deployed.
 
@@ -260,16 +264,15 @@
                                      (get-in data keypaths/v2-facets))
                             line-items)})))))
 
-(defn component [{:keys [fetching? balance-transfer] :as data} owner opts]
-  (component/create
-   (if (and fetching? (not balance-transfer))
+(defcomponent component [{:keys [fetching? balance-transfer] :as data} owner opts]
+  (if (and fetching? (not balance-transfer))
      [:div.my2.h2 ui/spinner]
      (when balance-transfer
        (case (:type balance-transfer)
          "payout"        (payout-component data)
          "commission"    (commission-component data)
          "award"         (award-component data)
-         "voucher_award" (voucher-award-component data))))))
+         "voucher_award" (voucher-award-component data)))))
 
 (defn ^:export built-component [data opts]
   (component/build component (query data) opts))

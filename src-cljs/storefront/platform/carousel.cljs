@@ -76,7 +76,7 @@
         ;; Cancel autoplay on interaction
         {:on-mouse-down  #(cancel-autoplay owner)
          :on-touch-start #(cancel-autoplay owner)}
-        (om/build inner-component
+        (component/build inner-component
                   (cond-> data
                     (= (count slides) 1)
                     (update-in [:settings] merge {:arrows false

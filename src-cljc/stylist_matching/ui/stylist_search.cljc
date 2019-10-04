@@ -2,7 +2,7 @@
   (:require #?(:cljs [om.core :as om])
             [storefront.events :as events]
             adventure.keypaths
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.platform.messages :as messages]
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]))

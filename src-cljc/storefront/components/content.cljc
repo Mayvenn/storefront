@@ -1,10 +1,13 @@
 (ns storefront.components.content
-  (:require [storefront.component :as component]
-            [storefront.keypaths :as keypaths]))
+  (:require [storefront.component :as component :refer [defcomponent]]
+            [storefront.keypaths :as keypaths]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
-(defn component [{:keys [content]} owner opts]
-  (component/create
-   [:div {:dangerouslySetInnerHTML {:__html content}}]))
+(defcomponent component [{:keys [content]} owner opts]
+  [:div {:dangerouslySetInnerHTML {:__html content}}])
 
 (defn query [data]
   (let [sms-number (get-in data keypaths/sms-number)]

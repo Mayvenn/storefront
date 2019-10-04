@@ -10,7 +10,9 @@
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :refer [handle-message]]
             [storefront.transitions :as transitions]
-            [storefront.effects :as effects]))
+            [storefront.effects :as effects]
+            [storefront.component :as component :refer [defcomponent]]
+            ))
 
 
 (defmethod effects/perform-effects events/stripe-payment-request-button-inserted
@@ -39,4 +41,4 @@
   data)
 
 (defn built-component [data opts]
-  (om/build component (query data) opts))
+  (component/build component (query data) opts))

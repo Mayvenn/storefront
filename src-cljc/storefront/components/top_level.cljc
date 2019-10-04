@@ -50,7 +50,9 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
-            [checkout.shop.cart :as shop-cart]))
+            [checkout.shop.cart :as shop-cart]
+            
+            ))
 
 (defn main-component [nav-event]
   (doto (condp = nav-event

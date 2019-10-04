@@ -1,7 +1,7 @@
 (ns checkout.suggestions
   (:require #?(:cljs [storefront.api :as api])
             [spice.selector :as selector]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.accessors.images :as images]
             [storefront.accessors.orders :as orders]
             [storefront.components.svg :as svg]
@@ -13,7 +13,9 @@
             [storefront.platform.messages :as messages]
             [storefront.request-keys :as request-keys]
             [storefront.css-transitions :as css-transitions]
-            [catalog.images :as catalog-images]))
+            [catalog.images :as catalog-images]
+            
+            ))
 
 (defn suggest-bundles
   [data products skus items]
@@ -92,14 +94,13 @@
                         :style        {:margin-top "-10px"}}
                        "Add")]]]))
 
-(defn component
+(defcomponent component
   [{:keys [suggestions]} _ _]
-  (component/create
-   (when (seq suggestions)
+  (when (seq suggestions)
      [:div.mb4.px1.col-12.mx-auto.bg-light-orange
       {:style     {:height "135px"}
        :data-test "auto-complete"}
-      [:div.flex.justify-center (map suggested-bundles suggestions)]])))
+      [:div.flex.justify-center (map suggested-bundles suggestions)]]))
 
 (defn query
   [data]
@@ -159,17 +160,16 @@
                             :data-test    cta-id}
                            label)]]])
 
-(defn consolidated-component
+(defcomponent consolidated-component
   [{:keys [suggestions]} _ _]
-  (component/create
-   (when (seq suggestions)
+  (when (seq suggestions)
      [:div {:data-test "auto-complete"}
       [:div.flex.items-center
        ^:inline (svg/angle-arrow {:style {:width  "13px"
                                           :height "13px"}
                                   :class "teal"})
        [:div.h6.dark-gray.pl1 "Bundles often bought together"]]
-      (map ->consolidated-suggested-bundles suggestions)])))
+      (map ->consolidated-suggested-bundles suggestions)]))
 
 (defn consolidated-query
   [data]

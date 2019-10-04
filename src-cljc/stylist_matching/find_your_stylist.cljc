@@ -1,5 +1,5 @@
 (ns stylist-matching.find-your-stylist
-  (:require [storefront.component :as component]
+  (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.events :as events]
             adventure.keypaths
             storefront.keypaths
@@ -7,7 +7,9 @@
             [stylist-matching.ui.header :as header]
             [stylist-matching.ui.stylist-search :as stylist-search]
             [stylist-matching.ui.spinner :as spinner]
-            [storefront.components.flash :as flash]))
+            [storefront.components.flash :as flash]
+            
+            ))
 
 (defn spinner-query
   [app-state]
@@ -45,15 +47,14 @@
    :header.back-navigation/id     "adventure-back"
    :header.back-navigation/target [events/navigate-adventure-match-stylist]})
 
-(defn template
+(defcomponent template
   [{:keys [flash header stylist-search spinner]} _ _]
-  (component/create
-   [:div.bg-lavender.white.center.flex.flex-auto.flex-column
+  [:div.bg-lavender.white.center.flex.flex-auto.flex-column
     (component/build header/organism header nil)
     (component/build flash/component flash nil)
     (if (seq spinner)
       (component/build spinner/organism spinner nil)
-      (component/build stylist-search/organism stylist-search nil))]))
+      (component/build stylist-search/organism stylist-search nil))])
 
 (defn page
   [app-state]

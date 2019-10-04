@@ -1,12 +1,14 @@
 (ns storefront.hooks.quadpay
   (:require [storefront.browser.tags :as tags]
             [storefront.browser.events :as browser.events]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.svg :as svg]
             [storefront.platform.messages :refer [handle-message]]
             [storefront.events :as events]
             [sablono.core :refer [html]]
-            [om.core :as om]))
+            [om.core :as om]
+            
+            ))
 
 (def uri "https://widgets.quadpay.com/mayvenn/quadpay-widget-2.2.1.js")
 
@@ -43,9 +45,8 @@
       (html
        [:quadpay-widget {:amount full-amount}]))))
 
-(defn component [{:quadpay/keys [show? order-total directive]} owner opts]
-  (component/create
-   [:div.bg-white
+(defcomponent component [{:quadpay/keys [show? order-total directive]} owner opts]
+  [:div.bg-white
     (when show?
       (let [qp-logo            ^:inline (svg/quadpay-logo {:class "mbnp3"
                                                            :style {:width "70px" :height "14px"}})
@@ -65,4 +66,4 @@
                                     (.preventDefault e)
                                     (show-modal))}
           "Learn more."]
-         [:div.hide (component/build widget-component {:full-amount order-total} nil)]]))]))
+         [:div.hide (component/build widget-component {:full-amount order-total} nil)]]))])

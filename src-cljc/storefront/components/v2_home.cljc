@@ -1,7 +1,7 @@
 (ns storefront.components.v2-home
   (:require [storefront.accessors.auth :as auth]
             [storefront.accessors.contentful :as contentful]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.marquee :as marquee]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
@@ -13,7 +13,11 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.carousel :as carousel]
-            [ui.molecules :as ui.M]))
+            [ui.molecules :as ui.M]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
 (defn free-shipping-banner []
   (component/build
@@ -288,7 +292,7 @@
              [:div.absolute.overlay.flex.items-center.justify-center.bg-darken-3
               ^:inline (teal-play-video-desktop)]]]]]])))))
 
-(defn component [{:keys [signed-in
+(defcomponent component [{:keys [signed-in
                          homepage-data
                          store
                          categories
@@ -303,8 +307,7 @@
                   :as data}
                  owner
                  opts]
-  (component/create
-   [:div
+  [:div
     [:section (component/build ui.M/hero hero-data nil)]
     [:section ^:inline (free-shipping-banner)]
     [:a {:name "mayvenn-free-install-video"}]
@@ -331,7 +334,7 @@
     [:section ^:inline (free-install-mayvenn-grid free-install-mayvenn-ugc)]
     [:hr.hide-on-mb-tb.border-top.border-silver.col-9.mx-auto.mb6]
     [:section (v2/faq faq-data)]
-    [:section ^:inline (our-story)]]))
+    [:section ^:inline (our-story)]])
 
 (defn query [data]
   (let [homepage-data      (get-in data keypaths/cms-homepage)

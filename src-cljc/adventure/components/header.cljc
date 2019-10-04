@@ -1,9 +1,13 @@
 ;; GROT: Replace with new header stylist-matching.ui.header
 (ns adventure.components.header
-  (:require [storefront.component :as component]
+  (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
 (defn calculate-width [number-of-steps]
   (reduce
@@ -28,7 +32,7 @@
            {:width "20"}
            "02f9e7fb-510f-458e-8be7-090399aad4de")})
 
-(defn component
+(defcomponent component
   [{:keys [back-navigation-message
            header-attrs
            progress
@@ -40,8 +44,7 @@
            cold-load-nav-message
            unstick?]
     :or   {shopping-bag? true}} _ _]
-  (component/create
-   (let [right-corner (cond (seq right-corner) right-corner
+  (let [right-corner (cond (seq right-corner) right-corner
                             shopping-bag?      (shopping-bag)
                             :else              nil)
          container    (if unstick? :div#header :div#header.absolute.top-0.left-0.right-0.center)]
@@ -74,7 +77,7 @@
             [:a.block.p3.flex.items-center
              (merge {:data-test id} opts)
              (when id value)])
-          [:div {:style {:width "50px"}}])]]])))
+          [:div {:style {:width "50px"}}])]]]))
 
 (defn built-component
   [data opts]

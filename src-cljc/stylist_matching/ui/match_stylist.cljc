@@ -1,7 +1,9 @@
 (ns stylist-matching.ui.match-stylist
-  (:require [storefront.component :as component]
+  (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ui :as ui]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            
+            ))
 
 (defn match-stylist-button-molecule
   [{:match-stylist.button/keys [id label target]}]
@@ -26,11 +28,10 @@
       [:div.h1.mb2.mt1.light primary]
       [:div.h5.my2.light secondary]])))
 
-(defn organism
+(defcomponent organism
   [data _ _]
-  (component/create
-   [:div.m5.flex.flex-column.flex-auto.items-center.justify-between.mt6
+  [:div.m5.flex.flex-column.flex-auto.items-center.justify-between.mt6
     [:div.col-10
      (match-stylist-title-molecule data)]
     [:div.col-12
-     (match-stylist-button-molecule data)]]))
+     (match-stylist-button-molecule data)]])

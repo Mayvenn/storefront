@@ -1,9 +1,11 @@
 (ns stylist-matching.out-of-area
-  (:require [storefront.component :as component]
+  (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.events :as events]
             api.orders
             [stylist-matching.ui.header :as header]
-            [stylist-matching.ui.shopping-method-choice :as shopping-method-choice]))
+            [stylist-matching.ui.shopping-method-choice :as shopping-method-choice]
+            
+            ))
 
 (defn header-query
   [{:order.items/keys [quantity]}]
@@ -39,12 +41,11 @@
                                                :catalog/category-id "23"}]
      :shopping-method-choice.button/ucare-id "6c39cd72-6fde-4ec2-823c-5e39412a6d54"}]})
 
-(defn template
+(defcomponent template
   [{:keys [header shopping-method-choice]} _ _]
-  (component/create
-   [:div.dark-gray.bg-white.center.flex.flex-auto.flex-column
+  [:div.dark-gray.bg-white.center.flex.flex-auto.flex-column
     (component/build header/organism header nil)
-    (component/build shopping-method-choice/organism shopping-method-choice nil)]))
+    (component/build shopping-method-choice/organism shopping-method-choice nil)])
 
 (defn page
   [app-state]

@@ -1,8 +1,10 @@
 (ns catalog.ui.molecules
-  (:require [storefront.component :as component]
+  (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.components.money-formatters :as mf]
             [storefront.platform.reviews :as review-component]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            
+            ))
 
 (defn product-title
   "TODO empty state"
@@ -39,7 +41,7 @@
                          :data-product-id product-id
                          :data-url        data-url}})])])
 
-(defn product-description [{:product-description/keys
+(defcomponent product-description [{:product-description/keys
                             [description
                              colors
                              weights
@@ -48,8 +50,7 @@
                              stylist-exclusives-family
                              hair-family
                              learn-more-nav-event]} _ _]
-  (component/create
-   (when (seq description)
+  (when (seq description)
      [:div.border.border-light-gray.border-width-2.m3.py3.px4.rounded
       [:div.h4.medium.shout "Description"]
       [:div {:item-prop "description"}
@@ -80,4 +81,4 @@
                             (contains? stylist-exclusives-family "kits"))))
           [:a.block.navy.mt2.medium
            (utils/route-to learn-more-nav-event)
-           "Learn more about our hair"])]]])))
+           "Learn more about our hair"])]]]))

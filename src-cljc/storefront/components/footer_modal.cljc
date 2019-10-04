@@ -1,13 +1,16 @@
 (ns storefront.components.footer-modal
-  (:require [storefront.component :as component]
+  (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ui :as ui]
             [storefront.keypaths :as keypaths]
-            [storefront.components.footer-links :as footer-links]))
+            [storefront.components.footer-links :as footer-links]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
-(defn component
+(defcomponent component
   [{:keys [call-number]} owner opts]
-  (component/create
-   [:div.border-top.border-gray.bg-white
+  [:div.border-top.border-gray.bg-white
     [:div.container
      [:div.center.px3.my2
       [:div.my1.medium.dark-gray "Have Questions?"]
@@ -16,7 +19,7 @@
         (ui/link :link/phone :a.dark-gray {} call-number)]
        [:span.hide-on-mb
         (ui/link :link/phone :a.dark-gray {} call-number)]
-       " | 8am-5pm PST M-F"]]]]))
+       " | 8am-5pm PST M-F"]]]])
 
 (defn query
   [data]

@@ -1,18 +1,21 @@
 (ns storefront.components.force-set-password
   (:require [storefront.api :as api]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
-            [storefront.transitions :as transitions]))
+            [storefront.transitions :as transitions]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
-(defn component
+(defcomponent component
   [{:keys [focused password show-password? loaded-facebook? field-errors]} owner _]
-  (component/create
-   (ui/narrow-container
+  (ui/narrow-container
     [:div.p2
      [:h2.center.my2.navy.mb3
       "Please set your password"]
@@ -36,7 +39,7 @@
 
       [:div.col-12.col-6-on-tb-dt.mx-auto
        (ui/submit-button "Save & Continue"
-                         {:data-test "force-set-password-submit"})]]])))
+                         {:data-test "force-set-password-submit"})]]]))
 
 (defn query
   [data]

@@ -3,12 +3,14 @@
             [clojure.string :as string]
             [om.core :as om]
             [sablono.core :as sablono]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.svg :as svg]
             [storefront.hooks.google-maps :as maps]
             [storefront.keypaths]
             [storefront.components.ui :as ui]
-            [stylist-directory.stylists :as stylists]))
+            [stylist-directory.stylists :as stylists]
+            
+            ))
 
 (defn map-query [data]
   (let [loaded-google-maps? (get-in data storefront.keypaths/loaded-google-maps)
@@ -35,10 +37,9 @@
        [:div {:id    "stylist-profile-map"
               :style {:height "250px"}}]))))
 
-(defn component
+(defcomponent component
   [{:keys [loaded? salon] :as data} owner opts]
-  (component/create
-   [:div.mb3
+  [:div.mb3
     (if loaded?
       (component/build inner-component data)
       [:div.flex.items-center {:style {:height "250px"}} ui/spinner])
@@ -51,4 +52,4 @@
          (string/join ", " (filter identity [address-1 address-2 city state zipcode]))]]
        [:a.self-center.navy.h6.medium
         {:href (str "https://www.google.com/maps/dir/?api=1&destination=" latitude "," longitude)}
-        "DIRECTIONS"]])]))
+        "DIRECTIONS"]])])

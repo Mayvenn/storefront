@@ -1,12 +1,16 @@
 (ns catalog.product-details-ugc
   (:require #?@(:cljs [[goog.string]])
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ugc :as ugc]
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as util]
             [storefront.events :as events]
             [storefront.platform.carousel :as carousel]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
 (defn ^:private carousel-slide
   [destination-event product-id page-slug sku-id dt-prefix idx
@@ -40,9 +44,8 @@
                    {:opts {:copy {:back-copy (str "back to " (->title-case long-name))
                                   :button-copy "View this look"}}}))
 
-(defn component [{{:keys [social-cards product-id page-slug sku-id destination-event]} :carousel-data} owner opts]
-  (component/create
-   (when (seq social-cards)
+(defcomponent component [{{:keys [social-cards product-id page-slug sku-id destination-event]} :carousel-data} owner opts]
+  (when (seq social-cards)
      [:div.center.mt4
       [:div.h2.medium.dark-gray.crush.m2 "#MayvennMade"]
       (component/build carousel/component
@@ -61,13 +64,11 @@
                        opts)
       [:p.center.dark-gray.m2
        "Want to show up on our homepage? "
-       "Tag your best pictures wearing Mayvenn with " [:span.bold "#MayvennMade"]]])))
+       "Tag your best pictures wearing Mayvenn with " [:span.bold "#MayvennMade"]]]))
 
-(defn popup-component [{:keys [now carousel-data offset close-message]} owner opts]
+(defcomponent popup-component [{:keys [now carousel-data offset close-message]} owner opts]
   (let [close-attrs (apply util/route-to close-message)]
-    (component/create
-     ;; NOTE(jeff,corey): events/navigate-product-details should be the current
-     ;; navigation event of the PDP page (freeinstall and classic have different events)
+    ;; navigation event of the PDP page (freeinstall and classic have different events)
      (ui/modal
       {:close-attrs close-attrs}
       [:div.relative
@@ -81,4 +82,4 @@
        [:div.absolute
         {:style {:top "1.5rem" :right "1.5rem"}}
         (ui/modal-close {:class       "stroke-dark-gray fill-gray"
-                         :close-attrs close-attrs})]]))))
+                         :close-attrs close-attrs})]])))

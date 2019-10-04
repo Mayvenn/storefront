@@ -5,7 +5,7 @@
               [storefront.effects :as effects]
               [storefront.accessors.auth :as auth]
               [storefront.history :as history]])
-   [storefront.component :as component]
+   [storefront.component :as component :refer [defcomponent]]
    [catalog.categories :as categories]
    [storefront.components.ui :as ui]
    [storefront.events :as events]
@@ -20,7 +20,11 @@
    [spice.selector :as selector]
    [clojure.set :as set]
    [clojure.string :as string]
-   [catalog.ui.product-card :as product-card]))
+   [catalog.ui.product-card :as product-card]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
 (def ^:private query-param-separator "~")
 
@@ -208,7 +212,7 @@
       [:div.flex.flex-wrap
        (map product-card/organism product-cards)]])))
 
-(defn ^:private component
+(defcomponent ^:private component
   [{:keys [category
            facets
            loading-products?
@@ -217,8 +221,7 @@
            open-panel
            all-product-cards
            subsections]} owner opts]
-  (component/create
-   [:div
+  [:div
     (hero-section category)
     [:div.max-960.col-12.mx-auto.px2-on-mb.px2-on-tb
      (copy-section category)
@@ -242,7 +245,7 @@
      [:div.flex.flex-wrap
       (if (empty? all-product-cards)
         (product-cards-empty-state loading-products?)
-        (map subsection-component subsections))]]]))
+        (map subsection-component subsections))]]])
 
 (defn subsections-query
   [{:keys [catalog/category-id subsections]}

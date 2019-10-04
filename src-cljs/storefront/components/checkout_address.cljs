@@ -1,7 +1,7 @@
 (ns storefront.components.checkout-address
   (:require [om.core :as om]
             [sablono.core :refer [html]]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.checkout-steps :as checkout-steps]
             [storefront.components.ui :as ui]
             [ui.promo-banner :as promo-banner]
@@ -9,7 +9,11 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.messages :refer [handle-message]]
-            [storefront.request-keys :as request-keys]))
+            [storefront.request-keys :as request-keys]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
 (defn ^:private places-component [{:keys [focused id address-keypath keypath value data-test errors]} owner]
   (reify
@@ -32,11 +36,9 @@
                        :type        "text"
                        :value       value})))))
 
-(defn ^:private shipping-address-component
-  [{:keys [focused shipping-address states email become-guest? google-maps-loaded? field-errors]} owner]
-  (om/component
-   (html
-    [:.flex.flex-column.items-center.col-12
+(defcomponent ^:private shipping-address-component
+  [{:keys [focused shipping-address states email become-guest? google-maps-loaded? field-errors]} owner _]
+  [:.flex.flex-column.items-center.col-12
      [:.h4.col-12.my1 "Shipping Address"]
      [:.col-12
       (ui/text-field-group
@@ -87,7 +89,7 @@
                      :value     (:phone shipping-address)})
 
      (when google-maps-loaded?
-       (om/build places-component {:id              :shipping-address1
+       (component/build places-component {:id              :shipping-address1
                                    :data-test       "shipping-address1"
                                    :address-keypath keypaths/checkout-shipping-address
                                    :keypath         keypaths/checkout-shipping-address-address1
@@ -145,13 +147,11 @@
                         :options     states
                         :placeholder "State"
                         :required    true
-                        :value       (:state shipping-address)})]])))
+                        :value       (:state shipping-address)})]])
 
-(defn ^:private billing-address-component
-  [{:keys [focused billing-address states bill-to-shipping-address? google-maps-loaded? field-errors]} owner]
-  (om/component
-   (html
-    [:.flex.flex-column.items-center.col-12
+(defcomponent ^:private billing-address-component
+  [{:keys [focused billing-address states bill-to-shipping-address? google-maps-loaded? field-errors]} owner _]
+  [:.flex.flex-column.items-center.col-12
      [:.h4.col-12.my1 "Billing Address"]
      [:.col-12.my1
       [:label.h6.dark-gray.py1
@@ -202,7 +202,7 @@
                         :value     (:phone billing-address)})
 
         (when google-maps-loaded?
-          (om/build places-component {:id              :billing-address1
+          (component/build places-component {:id              :billing-address1
                                       :data-test       "billing-address1"
                                       :address-keypath keypaths/checkout-billing-address
                                       :keypath         keypaths/checkout-billing-address-address1
@@ -260,15 +260,13 @@
                            :options     states
                            :placeholder "State"
                            :required    true
-                           :value       (:state billing-address)})]])])))
+                           :value       (:state billing-address)})]])])
 
-(defn component
-  [{:keys [saving? step-bar billing-address-data shipping-address-data promo-banner]} owner]
-  (om/component
-   (html
-    [:div.container
+(defcomponent component
+  [{:keys [saving? step-bar billing-address-data shipping-address-data promo-banner]} owner _]
+  [:div.container
      (component/build promo-banner/sticky-organism promo-banner nil) 
-     (om/build checkout-steps/component step-bar)
+     (component/build checkout-steps/component step-bar)
 
      [:div.m-auto.col-8-on-tb-dt
       [:div.p2
@@ -277,12 +275,12 @@
                                                {:become-guest? (:become-guest? shipping-address-data)})
          :data-test "address-form"}
 
-        (om/build shipping-address-component shipping-address-data)
-        (om/build billing-address-component billing-address-data)
+        (component/build shipping-address-component shipping-address-data)
+        (component/build billing-address-component billing-address-data)
 
         [:div.my2.col-12.col-6-on-tb-dt.mx-auto
          (ui/submit-button "Continue to Payment" {:spinning? saving?
-                                                  :data-test "address-form-submit"})]]]]])))
+                                                  :data-test "address-form-submit"})]]]]])
 
 (defn query [data]
   (let [google-maps-loaded? (get-in data keypaths/loaded-google-maps)
@@ -306,4 +304,4 @@
                              :focused             (get-in data keypaths/ui-focus)}}))
 
 (defn ^:export built-component [data opts]
-  (om/build component (query data)))
+  (component/build component (query data)))

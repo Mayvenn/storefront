@@ -11,7 +11,7 @@
             [adventure.components.header :as header]
             [adventure.keypaths :as keypaths]
             [spice.core :as spice]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
@@ -19,7 +19,11 @@
             storefront.keypaths
             [storefront.platform.component-utils :as utils]
             [storefront.transitions :as transitions]
-            [stylist-directory.stylists :as stylists]))
+            [stylist-directory.stylists :as stylists]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
 (defn query
   [data]
@@ -72,12 +76,11 @@
                {:class "hide"
                 :style {:margin-top (str "-" component-height "px")}})
              [:div.col-12 {:ref ref}
-              (om/build child data nil)]]))))))
+              (component/build child data nil)]]))))))
 
-(defn component
+(defcomponent component
   [{:keys [header-data gallery]} owner opts]
-  (component/create
-   [:div.col-12.bg-white.mb6
+  [:div.col-12.bg-white.mb6
     (when header-data
       [:div
        (header/built-component header-data nil)])
@@ -96,7 +99,7 @@
                    (ui/ucare-img {:class    "col-12"
                                   :width    580
                                   :data-ref (str "offset-" ix)} image-id))
-                 gallery)]))
+                 gallery)])
 
 (defmethod effects/perform-effects events/navigate-adventure-stylist-gallery
   [dispatch event {:keys [stylist-id query-params] :as args} prev-app-state app-state]

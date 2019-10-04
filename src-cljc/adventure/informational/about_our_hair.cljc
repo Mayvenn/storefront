@@ -1,11 +1,13 @@
 (ns adventure.informational.about-our-hair
   (:require storefront.keypaths
             [storefront.accessors.contentful :as contentful]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.effects :as effects]
             [storefront.events :as events]
             [adventure.components.layered :as layered]
-            [adventure.faq :as faq]))
+            [adventure.faq :as faq]
+            
+            ))
 
 (defn query
   [data]

@@ -1,6 +1,6 @@
 (ns adventure.components.program-details-popup
   (:require [sablono.core :refer [html]]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [adventure.faq :as faq]
             [storefront.components.footer-modal :as footer-modal]
             [storefront.components.popup :as popup]

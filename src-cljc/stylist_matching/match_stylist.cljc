@@ -1,9 +1,13 @@
 (ns stylist-matching.match-stylist
-  (:require [storefront.component :as component]
+  (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.events :as events]
             [stylist-matching.ui.atoms :as stylist-matching.A]
             [stylist-matching.ui.logo-header :as logo-header]
-            [stylist-matching.ui.match-stylist :as match-stylist]))
+            [stylist-matching.ui.match-stylist :as match-stylist]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
 (def logo-header-query
   {:logo-header.logo/id "adventure-logo"})
@@ -16,13 +20,12 @@
    :match-stylist.button/label    "Next"
    :match-stylist.button/target   [events/navigate-adventure-find-your-stylist]})
 
-(defn template
+(defcomponent template
   [{:keys [logo-header match-stylist]} _ _]
-  (component/create
-   [:div.bg-lavender.white.center.flex.flex-column
+  [:div.bg-lavender.white.center.flex.flex-column
     stylist-matching.A/woman-in-yellow-background
     (component/build logo-header/organism logo-header nil)
-    (component/build match-stylist/organism match-stylist nil)]))
+    (component/build match-stylist/organism match-stylist nil)])
 
 (defn page
   [app-state]

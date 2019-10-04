@@ -3,7 +3,7 @@
             [storefront.api :as api]
             [storefront.browser.cookie-jar :as cookie-jar]
             [storefront.browser.scroll :as scroll]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.v2 :as v2]
             [storefront.components.footer-modal :as footer-modal]
             [storefront.components.popup :as popup]

@@ -2,16 +2,17 @@
   (:require  [storefront.platform.component-utils :as util]
              [storefront.components.ui :as ui]
              [storefront.components.svg :as svg]
-             [storefront.component :as component]
-             #?@(:cljs [[goog.string]])))
+             [storefront.component :as component :refer [defcomponent]]
+             #?@(:cljs [[goog.string]])
+            
+            ))
 
-(defn adventure-social-image-card-component
+(defcomponent adventure-social-image-card-component
   [{:keys                [id image-url overlay description social-service icon-url title]
     [nav-event nav-args] :cta/navigation-message}
    owner
    {:keys [copy]}]
-  (component/create
-   [:div.mb2.px2-on-tb-dt.col-12.left-align
+  [:div.mb2.px2-on-tb-dt.col-12.left-align
     (merge
      {:key       (str "small-" id)
       :data-test "adventure-look"}
@@ -46,9 +47,9 @@
         [:div.m1.self-start {:style {:width "21px"
                                      :height "21px"}}
          ^:inline (svg/instagram)]]
-       [:div.mt2 (ui/underline-button {:height-class "py2"} "Shop Look")]]]]]))
+       [:div.mt2 (ui/underline-button {:height-class "py2"} "Shop Look")]]]]])
 
-(defn social-image-card-component
+(defcomponent social-image-card-component
   [{:keys                [desktop-aware?
                           id image-url overlay description social-service icon-url title]
     [nav-event nav-args] :cta/navigation-message
@@ -58,8 +59,7 @@
   (let [cta-button-fn (case button-type
                         :teal-button      ui/teal-button
                         :underline-button ui/underline-button)]
-    (component/create
-     [:div.pb2.px1-on-tb-dt.col-12
+    [:div.pb2.px1-on-tb-dt.col-12
       (merge {:key (str "small-" id)}
              (when desktop-aware?
                {:class "col-6-on-tb col-4-on-dt"}))
@@ -97,5 +97,5 @@
            (util/route-to nav-event nav-args {:back-copy  (:back-copy copy)
                                               :short-name (:short-name copy)})
            {:data-test (str "look-" id)})
-          [:span.bold (:button-copy copy)]))]])))
+          [:span.bold (:button-copy copy)]))]]))
 

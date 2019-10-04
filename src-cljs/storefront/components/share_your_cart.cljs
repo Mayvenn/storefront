@@ -1,7 +1,7 @@
 (ns storefront.components.share-your-cart
   (:require [cemerick.url :as url]
             [storefront.assets :as assets]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.share-links :as share-links]
             [storefront.components.popup :as popup]
             [storefront.components.svg :as svg]

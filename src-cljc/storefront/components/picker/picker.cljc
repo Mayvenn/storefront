@@ -4,7 +4,7 @@
             [catalog.products :as products]
             [clojure.string :as string]
             [spice.core :as spice]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.css-transitions :as css-transitions]
@@ -12,7 +12,9 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
-            [storefront.accessors.experiments :as experiments]))
+            [storefront.accessors.experiments :as experiments]
+            
+            ))
 
 (defn simple-selected-layer []
   [:div.absolute.border.border-width-3.rounded-0.border-light-teal.overlay.flex
@@ -317,7 +319,7 @@
       [:div.h6 lead-in]
       [:div.h4.medium.mt2 [:a.teal.underline link-attrs link-text]]])])
 
-(defn component
+(defcomponent component
   [{:keys [navigation-event
            selected-picker
            facets
@@ -326,8 +328,7 @@
            sku-quantity
            product-alternative]
     :as   data} owner _]
-  (component/create
-   [:div {:key "picker-body"}
+  [:div {:key "picker-body"}
     (slide-animate
      (when (seq options)
        (condp = selected-picker
@@ -366,7 +367,7 @@
                                         :product-alternative product-alternative})
          nil)))
     (when (seq options)
-      (picker-rows data))]))
+      (picker-rows data))])
 
 (defn query
   [data]

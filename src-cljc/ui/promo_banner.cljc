@@ -8,12 +8,14 @@
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.promos :as promos]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.svg :as svg]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.components.ui :as ui]))
+            [storefront.components.ui :as ui]
+            
+            ))
 
 (defmulti component
   "Display a different component based on type of promotion"
@@ -232,7 +234,7 @@
                {:class "hide"
                 :style {:margin-top (str "-" banner-height "px")}})
              [:div {:ref "banner"}
-              (om/build component data opts)]]))))))
+              (component/build component data opts)]]))))))
 
 (defn built-sticky-organism
   [app-state opts]

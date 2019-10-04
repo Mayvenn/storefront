@@ -1,12 +1,16 @@
 (ns storefront.components.gallery
   (:require #?@(:cljs [[storefront.api :as api]])
             [storefront.assets :as assets]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.transitions :as transitions]
-            [storefront.keypaths :as keypaths]))
+            [storefront.keypaths :as keypaths]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
 (defn title [{:keys [store-nickname]}]
   [:div.p2.center
@@ -32,11 +36,10 @@
                                [:img.col-12 {:src resizable-url}]
                                pending-approval))]])))
 
-(defn component [{:keys [store]} owner opts]
-  (component/create
-   [:div.container
+(defcomponent component [{:keys [store]} owner opts]
+  [:div.container
     (title store)
-    (images store)]))
+    (images store)])
 
 (defn query [data]
   {:store (get-in data keypaths/store)})

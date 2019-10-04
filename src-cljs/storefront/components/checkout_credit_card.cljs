@@ -8,7 +8,11 @@
             [storefront.request-keys :as request-keys]
             [storefront.hooks.stripe :as stripe]
             [storefront.events :as events]
-            [storefront.platform.messages :as messages]))
+            [storefront.platform.messages :as messages]
+            [storefront.component :as component :refer [defcomponent]]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]))
 
 (defn saving-card? [data]
   (or (utils/requesting? data request-keys/stripe-create-token)
@@ -63,7 +67,7 @@
                                 :data-test "payment-form-save-credit-card"})]
             "Save my card for easier checkouts."]])]))))
 
-(defn component
+(defcomponent component
   [{{:keys [focused
             selected-saved-card-id
             saved-cards
@@ -71,9 +75,7 @@
             loaded-stripe?] :as credit-card} :credit-card
     :as data}
    owner opts]
-  (om/component
-   (html
-    [:div
+  [:div
      (if fetching-saved-cards?
        (ui/large-spinner {:style {:height "4em"}})
        [:div.my2
@@ -92,7 +94,7 @@
         (when (and loaded-stripe?
                    (or (empty? saved-cards)
                        (= selected-saved-card-id "add-new-card")))
-          (om/build new-card-component data opts))])])))
+          (component/build new-card-component data opts))])])
 
 (defn query [data]
   (let [saved-cards (get-in data keypaths/checkout-credit-card-existing-cards)]
@@ -107,4 +109,4 @@
                    :loaded-stripe?         (get-in data keypaths/loaded-stripe)}}))
 
 (defn built-component [data opts]
-  (om/build component (query data) opts))
+  (component/build component (query data) opts))

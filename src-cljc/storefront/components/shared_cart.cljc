@@ -2,7 +2,7 @@
   (:require #?(:cljs [storefront.api :as api])
             [catalog.products :as products]
             [storefront.accessors.promos :as promos]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
@@ -10,14 +10,17 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]
-            [storefront.transitions :as transitions]))
+            [storefront.transitions :as transitions]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
-(defn component
+(defcomponent component
   [{:keys [shared-cart-id shared-cart-promotion store fetching-products? creating-cart? advertised-promo]}
    owner
    opts]
-  (component/create
-    (let [{:keys [portrait store-nickname]} store]
+  (let [{:keys [portrait store-nickname]} store]
       [:div.container.p4
        [:div.pb3
         (when (:resizable-url portrait)
@@ -44,7 +47,7 @@
                            :spinning? (or fetching-products?
                                           creating-cart?)
                            :disabled? (or fetching-products?
-                                          creating-cart?)})]])))
+                                          creating-cart?)})]]))
 
 (defn shared-cart-promotion
   [data]
