@@ -222,20 +222,9 @@ twq('init','" twitter-pixel-id "');")))]
                                     2612961581995)]
              (raw (str "!function(e){if(!window.pintrk){window.pintrk=function(){window.pintrk.queue.push(Array.prototype.slice.call(arguments))};var n=window.pintrk;n.queue=[],n.version='3.0';var t=document.createElement('script');t.async=!0,t.src=e;var r=document.getElementsByTagName('script')[0];r.parentNode.insertBefore(t,r)}}('https://s.pinimg.com/ct/core.js');pintrk('load','" pinterest-tag-id "');pintrk('page');")))]
 
-          ;; Convert
-          [:style {:id "convert_hide_body" :type "text/css"}
-           (raw "body {position:relative;left:-10000px;background-image:none !important;background-color:#fff !important;}")]
-          [:script {:type  "text/javascript"}
-           (raw "setTimeout(function(){var c_h = document.getElementById('convert_hide_body'); if(c_h) c_h.outerHTML='';}, 5000)")]
-          [:script {:type  "text/javascript"
-                    :async true
-                    :src   (str "https://cdn-3.convertexperiments.com/js/"
-                                (case environment
-                                  "production" "10003995-10005092"
-                                  "10003995-10005089")
-                                ".js" )}]
-
           ;;;;;;;;;;;;
+
+
 
           ;; inline styles in production because our css file is so small and it avoids another round
           ;; trip request. At time of writing this greatly includes our pagespeed score
