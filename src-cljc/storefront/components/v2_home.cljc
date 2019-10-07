@@ -303,35 +303,33 @@
                   :as data}
                  owner
                  opts]
-  (component/create
+   [:section (component/build ui.M/hero hero-data nil)]
+   [:section ^:inline (free-shipping-banner)]
+   [:a {:name "mayvenn-free-install-video"}]
    [:div
-    [:section (component/build ui.M/hero hero-data nil)]
-    [:section ^:inline (free-shipping-banner)]
-    [:a {:name "mayvenn-free-install-video"}]
-    [:div
-     ^:inline
-     (when video
-            (component/build video/component
-                             video
-                             ;; NOTE(jeff): we use an invalid video slug to preserve back behavior. There probably should be
-                             ;;             an investigation to why history is replaced when doing A -> B -> A navigation
-                             ;;             (B is removed from history).
-                             {:opts {:close-attrs (utils/route-to events/navigate-home {:query-params {:video "0"}})}}))
-     [:section ^:inline (what-our-customers-are-saying)]]
-    [:section.py10.bg-transparent-teal
-     ^:inline (v2/get-a-free-install {:store                 store
-                                      :gallery-ucare-ids     gallery-ucare-ids
-                                      :stylist-portrait      (:portrait store)
-                                      :stylist-name          (:store-nickname store)
-                                      :stylist-gallery-open? stylist-gallery-open?})]
-    [:section ^:inline (an-amazing-deal)]
-    [:hr.border-top.border-silver.col-9.mx-auto.my6]
-    [:section ^:inline (most-popular-looks sleek-and-straight-ugc waves-and-curly-ugc)]
-    [:section [:div (v2/why-mayvenn-is-right-for-you)]]
-    [:section ^:inline (free-install-mayvenn-grid free-install-mayvenn-ugc)]
-    [:hr.hide-on-mb-tb.border-top.border-silver.col-9.mx-auto.mb6]
-    [:section (v2/faq faq-data)]
-    [:section ^:inline (our-story)]]))
+    ^:inline
+    (when video
+      (component/build video/component
+                       video
+                       ;; NOTE(jeff): we use an invalid video slug to preserve back behavior. There probably should be
+                       ;;             an investigation to why history is replaced when doing A -> B -> A navigation
+                       ;;             (B is removed from history).
+                       {:opts {:close-attrs (utils/route-to events/navigate-home {:query-params {:video "0"}})}}))
+    [:section ^:inline (what-our-customers-are-saying)]]
+   [:section.py10.bg-transparent-teal
+    ^:inline (v2/get-a-free-install {:store                 store
+                                     :gallery-ucare-ids     gallery-ucare-ids
+                                     :stylist-portrait      (:portrait store)
+                                     :stylist-name          (:store-nickname store)
+                                     :stylist-gallery-open? stylist-gallery-open?})]
+   [:section ^:inline (an-amazing-deal)]
+   [:hr.border-top.border-silver.col-9.mx-auto.my6]
+   [:section ^:inline (most-popular-looks sleek-and-straight-ugc waves-and-curly-ugc)]
+   [:section [:div (v2/why-mayvenn-is-right-for-you)]]
+   [:section ^:inline (free-install-mayvenn-grid free-install-mayvenn-ugc)]
+   [:hr.hide-on-mb-tb.border-top.border-silver.col-9.mx-auto.mb6]
+   [:section (component/build v2/faq faq-data)]
+   [:section ^:inline (our-story)]])
 
 (defn query [data]
   (let [homepage-data      (get-in data keypaths/cms-homepage)

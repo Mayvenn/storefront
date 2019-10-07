@@ -73,7 +73,7 @@
                    [:span.h6 "Shop"])]]]
 
                [:div.mt10
-                (v2/faq (assoc faq-data :modal? true))]
+                (component/build v2/faq (assoc faq-data :modal? true))]
 
                [:div.hide-on-tb-dt.pt3 ;; Footer
                 (component/build footer-modal/component footer-data nil)]]])))
