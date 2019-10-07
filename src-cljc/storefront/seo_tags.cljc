@@ -7,7 +7,9 @@
             [catalog.products :as products]
             [spice.selector :as selector]
             [storefront.ugc :as ugc]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            #?@(:clj [[cheshire.core :as json]
+                      [storefront.safe-hiccup :as safe-hiccup]])))
 
 (defn- use-case-then-order-key [img]
   [(condp = (:use-case img)
@@ -114,7 +116,7 @@
                                           [:meta {:property "og:type"
                                                   :content  "website"}]
                                           [:meta {:property "og:image"
-                                                  :content og-image-url}]
+                                                  :content  og-image-url}]
                                           [:meta {:property "og:description"
                                                   :content  "Wear it, dye it, even flat iron it. If you do not love your Mayvenn hair we will exchange it within 30 days of purchase."}]]
 
@@ -126,9 +128,22 @@
                                          [:meta {:property "og:type"
                                                  :content  "website"}]
                                          [:meta {:property "og:image"
-                                                 :content og-image-url}]
+                                                 :content  og-image-url}]
                                          [:meta {:property "og:description"
-                                                 :content  "Mayvenn's story starts with a Toyota Corolla filled with bundles of hair to now having over 50,000 stylists selling Mayvenn hair and increasing their incomes. Learn more about us!"}]]
+                                                 :content  "Mayvenn's story starts with a Toyota Corolla filled with bundles of hair to now having over 50,000 stylists selling Mayvenn hair and increasing their incomes. Learn more about us!"}]
+                                         [:script {:type "application/ld+json"}
+                                          (#?(:clj (comp safe-hiccup/raw json/generate-string)
+                                              :cljs (comp js/JSON.stringify clj->js))
+                                           {:url             "https://shop.mayvenn.com/about-us"
+                                            (symbol "@type") "Corporation"
+                                            :name            "Mayvenn Hair"
+                                            :logo            "https://d6w7wdcyyr51t.cloudfront.net/cdn/images/header_logo.e8e0ffc6.svg"
+                                            :sameAs          ["https://www.facebook.com/MayvennHair"
+                                                              "http://instagram.com/mayvennhair"
+                                                              "https://twitter.com/MayvennHair"
+                                                              "http://www.pinterest.com/mayvennhair/"]
+                                            :founder         {(symbol "@type") "Person"
+                                                              :name            "Diishan Imira"}})]]
 
        events/navigate-shop-by-look (let [album-keyword (get-in data keypaths/selected-album-keyword)]
                                       [[:title {} (-> ugc/album-copy album-keyword :seo-title)]
@@ -139,12 +154,12 @@
                                        [:meta {:property "og:type"
                                                :content  "website"}]
                                        [:meta {:property "og:image"
-                                               :content og-image-url}]
+                                               :content  og-image-url}]
                                        [:meta {:property "og:description"
                                                :content  "Find your favorite Mayvenn hairstyle on social media and shop the exact look directly from our website."}]])
 
-       events/navigate-category            (category-tags data)
-       events/navigate-product-details     (product-details-tags data)
+       events/navigate-category        (category-tags data)
+       events/navigate-product-details (product-details-tags data)
        default-tags)
      (concat constant-tags (canonical-link-tag data))
      add-seo-tag-class)))
