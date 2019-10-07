@@ -83,20 +83,16 @@
     [:div.medium.border-bottom.border-gray
      [:div.hide-on-mb ui/nbsp]]
     [:div.border-bottom.border-gray.p1.flex.items-center.justify-around.py2
-     [:a.block {:item-prop "sameAs"
-                :href "https://www.facebook.com/MayvennHair"}
+     [:a.block {:href "https://www.facebook.com/MayvennHair"}
       [:div {:style {:width "22px" :height "22px"}}
        ^:inline (svg/mayvenn-on-facebook)]]
-     [:a.block {:item-prop "sameAs"
-                :href "http://instagram.com/mayvennhair"}
+     [:a.block {:href "http://instagram.com/mayvennhair"}
       [:div {:style {:width "22px" :height "22px"}}
        ^:inline (svg/mayvenn-on-instagram)]]
-     [:a.block {:item-prop "sameAs"
-                :href "https://twitter.com/MayvennHair"}
+     [:a.block {:href "https://twitter.com/MayvennHair"}
       [:div {:style {:width "22px" :height "22px"}}
        ^:inline (svg/mayvenn-on-twitter)]]
-     [:a.block {:item-prop "sameAs"
-                :href "http://www.pinterest.com/mayvennhair/"}
+     [:a.block {:href "http://www.pinterest.com/mayvennhair/"}
       [:div {:style {:width "22px" :height "22px"}}
        ^:inline (svg/mayvenn-on-pinterest)]]]]))
 

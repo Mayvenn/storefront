@@ -849,7 +849,6 @@
   [:a.block.img-logo.bg-no-repeat.bg-center.bg-contain.teal
    (merge {:style     {:height height}
            :title     "Mayvenn"
-           :item-prop "logo"
            :content   (assets/path "/images/header_logo.svg")}
           (when event (utils/route-to event))
           (dissoc attrs :height :event))])

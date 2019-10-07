@@ -42,8 +42,6 @@
            (when-not minimal?
              " - "
              [:span
-              {:item-prop "name"
-               :content "Mayvenn Hair"}
               " ©" (date/year (date/now)) " " "Mayvenn"])]))) )
 
 (defn query
