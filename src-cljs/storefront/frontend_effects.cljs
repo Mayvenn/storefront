@@ -46,7 +46,8 @@
             [storefront.routes :as routes]
             [storefront.components.share-links :as share-links]
             [storefront.components.popup :as popup]
-            [spice.core :as spice]))
+            [spice.core :as spice]
+            [cljs-bean.core :refer [->clj]]))
 
 (defn changed? [previous-app-state app-state keypath]
   (not= (get-in previous-app-state keypath)
@@ -84,7 +85,7 @@
                     :choices
                     js/decodeURIComponent
                     js/JSON.parse
-                    (js->clj :keywordize-keys true))]
+                    ->clj)]
     (messages/handle-message events/control-adventure-choice {:choice {:value choices}}))
   (quadpay/insert)
   (svg/insert-sprite)
