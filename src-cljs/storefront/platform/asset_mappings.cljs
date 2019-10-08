@@ -1,6 +1,5 @@
-(ns storefront.platform.asset-mappings
-  (:require [cljs-bean.core :refer [->clj]]))
+(ns storefront.platform.asset-mappings)
 
 (def cdn-host js/cdnHost)
 
-(def manifest (->clj js/assetManifest))
+(def manifest (js->clj js/assetManifest))

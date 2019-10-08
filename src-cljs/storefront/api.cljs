@@ -12,8 +12,7 @@
             [spice.maps :as maps]
             [spice.core :as spice]
             [clojure.set :as set]
-            [storefront.effects :as effects]
-            [cljs-bean.core :refer [->clj]]))
+            [storefront.effects :as effects]))
 
 (defn is-rails-style? [resp]
   (or (seq (:error resp))
@@ -89,27 +88,17 @@
   (let [default (ajax/json-response-format config)
         read-json (:read default)]
     (assoc default :read (fn [xhrio]
-                           {:body (->clj (read-json xhrio))
+                           {:body (read-json xhrio)
                             :app-version (app-version xhrio)}))))
 
 (defn json-response-format [config]
   (let [default (ajax/json-response-format config)
         read-json (:read default)]
     (assoc default :read (fn [xhrio]
-                           {:body (->clj (read-json xhrio))}))))
+                           {:body (read-json xhrio)}))))
 
-(def default-req-opts
-  {:format :json
-   :response-format (json-response-format-with-app-version
-                     ;; We're handling all the post-JSON.parse processing since
-                     ;; we can get a significant performance improvement by
-                     ;; using cljs-bean over js->clj
-                     ;;
-                     ;; :keywords? false => ~3x perf improvement over js->clj
-                     ;; :raw true        => ~5x perf improvement over :keywords? false
-                     ;;                  -> ~27x perf improvement over js->clj
-                     {:keywords? false
-                      :raw true})})
+(def default-req-opts {:format :json
+                       :response-format (json-response-format-with-app-version {:keywords? true})})
 
 (defn- wrap-api-end [req-key req-id handler]
   (fn [response]
