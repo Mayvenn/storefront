@@ -7,6 +7,7 @@
             [storefront.events :as events]
             [storefront.hooks.convert :as convert]
             [storefront.hooks.facebook-analytics :as facebook-analytics]
+            [storefront.hooks.google-tag-manager :as google-tag-manager]
             [storefront.hooks.pinterest :as pinterest]
             [storefront.hooks.riskified :as riskified]
             [storefront.hooks.stringer :as stringer]
@@ -281,7 +282,8 @@
                                               :line_items     (mapv line-item-skuer->pinterest-line-item line-item-skuers)}))
 
     (convert/track-conversion "place-order")
-    (convert/track-revenue (convert-revenue order))))
+    (convert/track-revenue (convert-revenue order))
+    (google-tag-manager/track-placed-order order)))
 
 (defmethod perform-track events/api-success-auth [_ event args app-state]
   (stringer/identify (get-in app-state keypaths/user)
