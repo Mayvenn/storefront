@@ -231,7 +231,7 @@ twq('init','" twitter-pixel-id "');")))]
           (if (#{"development" "test"} environment)
             (page/include-css (assets/path "/css/app.css"))
             [:style (raw (css-styles))])]
-         [:body {:itemscope "itemscope" :itemtype "http://schema.org/Corporation"}
+         [:body
           [:div#content initial-content]
           (when (config/development? environment)
             ;; in development, figwheel uses document.write which can't be done asynchronously
@@ -277,7 +277,6 @@ twq('init','" twitter-pixel-id "');")))]
           [:meta {:http-equiv "Content-type" :content "text/html;charset=UTF-8"}]
           [:title "Something went wrong | Mayvenn"]]
          [:body
-          {:itemscope "itemscope" :itemtype "http://schema.org/Corporation"}
           [:h3.h4 "Mayvenn Will Be Back Soon"]
           [:h4.h5 "We apologize for the inconvenience and appreciate your patience. Please check back soon."]
           (when debug?
