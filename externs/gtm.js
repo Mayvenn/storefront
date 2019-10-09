@@ -1,2 +1,3 @@
-dataLayer = {};
+var dataLayer = {};
+
 dataLayer.push = function () {};
