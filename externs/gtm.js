@@ -1,0 +1,2 @@
+dataLayer = {};
+dataLayer.push = function () {};
