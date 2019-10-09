@@ -3,6 +3,6 @@
 (defn track-placed-order
   [{:keys [total number]}]
   (when (.hasOwnProperty js/window "dataLayer")
-    (.push js/window.dataLayer (clj->js {:event "orderPlaced"
-                                         :transactionTotal total
-                                         :transactionId number}))))
+    (.push js/dataLayer (clj->js {:event            "orderPlaced"
+                                  :transactionTotal total
+                                  :transactionId    number}))))
