@@ -36,7 +36,6 @@
             [storefront.hooks.stripe :as stripe]
             [storefront.hooks.svg :as svg]
             [storefront.hooks.talkable :as talkable]
-            [storefront.hooks.twitter-analytics :as twitter-analytics]
             [storefront.hooks.uploadcare :as uploadcare]
             [storefront.hooks.spreedly :as spreedly]
             [storefront.hooks.wistia :as wistia]
@@ -93,7 +92,6 @@
   (riskified/insert-tracking (get-in app-state keypaths/session-id))
   (stringer/fetch-browser-id)
   #_(facebook-analytics/insert-tracking)
-  #_(twitter-analytics/insert-tracking)
   #_(pinterest/insert-tracking)
   (refresh-account app-state)
   (browser-events/attach-global-listeners)
@@ -108,7 +106,6 @@
   (convert/remove-tracking)
   (riskified/remove-tracking)
   (facebook-analytics/remove-tracking)
-  (twitter-analytics/remove-tracking)
   (pinterest/remove-tracking)
   (lucky-orange/remove-tracking)
   (pixlee/remove-tracking)

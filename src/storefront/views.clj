@@ -124,7 +124,6 @@
           [:link {:rel "preconnect" :href "https://analytics.twitter.com"}]
           [:link {:rel "preconnect" :href "https://t.co"}]
           [:link {:rel "preconnect" :href "https://stats.g.doubleclick.net"}]
-          [:link {:rel "preconnect" :href "https://static.ads-twitter.com"}]
           [:link {:rel "preconnect" :href "https://c.riskified.com"}]
           [:link {:rel "preconnect" :href "https://www.googleadservices.com"}]
           [:link {:rel "preconnect" :href "https://img.riskified.com"}]
@@ -203,18 +202,6 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer','GTM-TLS2JL');")]
-          ;; Twitter Pixel
-          [:script {:type "text/javascript"}
-           (let [twitter-pixel-id (case environment
-                                    "production" "o1tn1"
-                                    "TEST")]
-             (raw
-              (str
-               "!function(e,t,n,s,u,a){e.twq||(s=e.twq=function(){s.exe?s.exe.apply(s,arguments):s.queue.push(arguments);
-},s.version='1.1',s.queue=[],u=t.createElement(n),u.async=!0,u.src='//static.ads-twitter.com/uwt.js',
-a=t.getElementsByTagName(n)[0],a.parentNode.insertBefore(u,a))}(window,document,'script');
-twq('init','" twitter-pixel-id "');")))]
-
           ;; Pinterest
           [:script {:type "text/javascript"}
            (let [pinterest-tag-id (case environment

@@ -11,7 +11,6 @@
             [storefront.hooks.pinterest :as pinterest]
             [storefront.hooks.riskified :as riskified]
             [storefront.hooks.stringer :as stringer]
-            [storefront.hooks.twitter-analytics :as twitter-analytics]
             [storefront.hooks.pandora :as pandora]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
@@ -77,8 +76,7 @@
         (pinterest/track-page)
         (riskified/track-page path)
         (stringer/track-page (get-in app-state keypaths/store-experience))
-        (facebook-analytics/track-page path)
-        (twitter-analytics/track-page path)))))
+        (facebook-analytics/track-page path)))))
 
 (defmethod perform-track events/control-category-panel-open
   [_ event {:keys [selected]} app-state]
