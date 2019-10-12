@@ -11,7 +11,6 @@
             [storefront.hooks.pinterest :as pinterest]
             [storefront.hooks.riskified :as riskified]
             [storefront.hooks.stringer :as stringer]
-            [storefront.hooks.pandora :as pandora]
             [storefront.keypaths :as keypaths]
             [storefront.routes :as routes]
             [storefront.trackings :refer [perform-track]]
@@ -309,8 +308,7 @@
                          :test-variations  (get-in app-state keypaths/features)
                          :store-slug       (get-in app-state keypaths/store-slug)
                          :store-experience (get-in app-state keypaths/store-experience)})
-  (pinterest/track-event "Signup")
-  (pandora/track-signup))
+  (pinterest/track-event "Signup"))
 
 (defmethod perform-track events/control-email-captured-submit [_ event _ app-state]
   (when (empty? (get-in app-state keypaths/errors))
