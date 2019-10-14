@@ -30,9 +30,6 @@
 (def telligent-community-secured?
   (= "production" js/environment))
 
-(def disable-email-capture?
-  (= "acceptance" js/environment))
-
 (def api-base-url js/apiUrl)
 
 (def review-tag-url (case js/environment
