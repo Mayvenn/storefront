@@ -1,5 +1,6 @@
 (ns storefront.components.popup
   (:require [storefront.accessors.nav :as nav]
+            [storefront.config :as config]
             [storefront.browser.cookie-jar :as cookie-jar]
             [storefront.browser.scroll :as scroll]
             [storefront.component :as component]
@@ -50,6 +51,9 @@
   (let [navigation-event    (get-in app-state keypaths/navigation-event)
         signed-in?          (get-in app-state keypaths/user-id)
         generally-showable? (not (or signed-in?
+                                     ;; TEMP(jeff): this is an experiment to verify SEO / pagespeed impact of email capture
+                                     config/disable-email-capture?
+                                     ;; END
                                      (nav/show-minimal-footer? navigation-event)
                                      (routes/sub-page? [navigation-event]
                                                        [events/navigate-design-system])))
