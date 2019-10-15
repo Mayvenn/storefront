@@ -599,15 +599,6 @@
         (update-in keypaths/v2-products merge (products/index-products products))
         (update-in keypaths/v2-skus merge (products/index-skus skus)))))
 
-;;TODO Move to wrap set catalog
-;;TODO join queries!!!
-(defn- assoc-product-details-route-data [data storeback-config params]
-  (let [{:keys [skus products]} (api/fetch-v2-products storeback-config (:catalog/product-id params))
-        {:keys [facets]}        (api/fetch-v2-facets storeback-config)]
-    (-> data
-        (update-in keypaths/v2-products merge (products/index-products products))
-        (update-in keypaths/v2-skus merge (products/index-skus skus)))))
-
 (defn- transition [app-state [event args]]
   (reduce (fn [app-state dispatch]
             (or (transitions/transition-state dispatch event args app-state)
@@ -615,7 +606,7 @@
           app-state
           (reductions conj [] event)))
 
-(defn frontend-routes [{:keys [contentful storeback-config environment client-version] :as ctx}]
+(defn frontend-routes [{:keys [storeback-config environment client-version] :as ctx}]
   (fn [{:keys [state] :as req}]
     (let [nav-message        (get-in-req-state req keypaths/navigation-message)
           [nav-event params] nav-message]
@@ -624,10 +615,6 @@
               data       (cond-> state
                            (= events/navigate-category nav-event)
                            (assoc-category-route-data storeback-config params)
-
-                           (#{events/navigate-product-details
-                              events/navigate-adventure-product-details} nav-event)
-                           (assoc-product-details-route-data storeback-config params)
 
                            (#{events/navigate-shop-by-look-details events/navigate-shop-by-look} nav-event)
                            (transition nav-message)
