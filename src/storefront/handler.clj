@@ -288,9 +288,82 @@
          (= "affiliate" experience)
          (assoc-in-req-state keypaths/return-navigation-message [events/navigate-stylist-account-profile {}])))))
 
-(defn wrap-set-cms-cache [h contentful]
+;; Home - UGC, homepage, advertisedPromo
+;; Look - UGC, advertisedPromo
+;; look-detail - UGC, advertisedPromo
+;; PDP - UGC, advertisedPromo (use keyword determined by pdp query)
+;; MayvennMade - MayvennMadePage, UGC?, advertisedPromo
+
+(defn wrap-set-cms-cache
+  [h contentful]
   (fn [req]
-    (h (assoc-in-req-state req keypaths/cms @(:cache contentful)))))
+    (let [shop?                                 (= "shop" (get-in-req-state req keypaths/store-slug))
+          aladdin?                              (= "aladdin" (get-in-req-state req keypaths/store-experience))
+          [nav-event
+           {album-keyword :album-keyword
+            product-id    :catalog/product-id}] (:nav-message req)
+          cms-data                              @(:cache contentful)]
+      (h (update-in-req-state req keypaths/cms merge (select-keys cms-data [:advertisedPromo])
+                              (cond shop?
+                                    (cond (= events/navigate-mayvenn-made nav-event)
+                                          (select-keys cms-data [:mayvennMadePage])
+
+                                          (= events/navigate-home nav-event)
+                                          (-> (select-keys cms-data [:homepage :ugc-collection])
+                                              (update :ugc-collection select-keys [:free-install-mayvenn]))
+
+                                          (contains? #{events/navigate-shop-by-look events/navigate-shop-by-look-details} nav-event)
+                                          (-> (select-keys cms-data [:ugc-collection])
+                                              (update :ugc-collection select-keys [(if (= :look album-keyword) :aladdin-free-install album-keyword)]))
+
+                                          (= events/navigate-product-details nav-event)
+                                          (-> (select-keys cms-data [:ugc-collection])
+                                              (update :ugc-collection select-keys (some->> (conj keypaths/v2-products product-id :legacy/named-search-slug)
+                                                                                           (get-in-req-state req)
+                                                                                           keyword
+                                                                                           vector)))
+                                          :else nil)
+
+                                    aladdin?
+                                    (cond (= events/navigate-mayvenn-made nav-event)
+                                          (select-keys cms-data [:mayvennMadePage])
+
+                                          (= events/navigate-home nav-event)
+                                          (-> (select-keys cms-data [:homepage :ugc-collection])
+                                              (update :ugc-collection select-keys [:sleek-and-straight
+                                                                                   :waves-and-curly
+                                                                                   :free-install-mayvenn]))
+
+                                          (contains? #{events/navigate-shop-by-look events/navigate-shop-by-look-details} nav-event)
+                                          (-> (select-keys cms-data [:ugc-collection])
+                                              (update :ugc-collection select-keys [(if (= :look album-keyword) :aladdin-free-install album-keyword)]))
+
+                                          (= events/navigate-product-details nav-event)
+                                          (-> (select-keys cms-data [:ugc-collection])
+                                              (update :ugc-collection select-keys (some->> (conj keypaths/v2-products product-id :legacy/named-search-slug)
+                                                                                           (get-in-req-state req)
+                                                                                           keyword
+                                                                                           vector)))
+                                          :else nil)
+
+                                    :else
+                                    (cond (= events/navigate-mayvenn-made nav-event)
+                                          (select-keys cms-data [:mayvennMadePage])
+
+                                          (= events/navigate-home nav-event)
+                                          (select-keys cms-data [:homepage])
+
+                                          (contains? #{events/navigate-shop-by-look events/navigate-shop-by-look-details} nav-event)
+                                          (-> (select-keys cms-data [:ugc-collection])
+                                              (update :ugc-collection select-keys [album-keyword]))
+
+                                          (= events/navigate-product-details nav-event)
+                                          (-> (select-keys cms-data [:ugc-collection])
+                                              (update :ugc-collection select-keys (some->> (conj keypaths/v2-products product-id :legacy/named-search-slug)
+                                                                                           (get-in-req-state req)
+                                                                                           keyword
+                                                                                           vector)))
+                                          :else nil)))))))
 
 (defn wrap-set-welcome-url [h welcome-config]
   (fn [req]
@@ -345,21 +418,26 @@
            album-keyword (assoc-in-req-state keypaths/selected-album-keyword album-keyword)
            look-id       (assoc-in-req-state keypaths/selected-look-id look-id))))))
 
+;; TODO: Add joining ability to v2 product queries
 (defn wrap-fetch-catalog [h storeback-config]
   (fn [req]
-    (let [order                   (get-in-req-state req keypaths/order)
-          skus-on-order           (mapv :sku (orders/product-items order))
-          skus-we-have            (keys (get-in-req-state req keypaths/v2-skus))
-          needed-skus             (set/difference (set skus-on-order) (set skus-we-have))
-          {:keys [skus products]} (when (seq needed-skus)
-                                    (api/fetch-v2-products storeback-config {:selector/sku-ids needed-skus}))
-          {:keys [facets]}        (when-not (get-in-req-state req keypaths/v2-facets)
-                                    (api/fetch-v2-facets storeback-config))]
+    (let [order                      (get-in-req-state req keypaths/order)
+          skus-on-order              (mapv :sku (orders/product-items order))
+          skus-we-have               (keys (get-in-req-state req keypaths/v2-skus))
+          needed-skus                (set/difference (set skus-on-order) (set skus-we-have))
+          {order-skus     :skus
+           order-products :products} (when (seq needed-skus)
+                                       (api/fetch-v2-products storeback-config {:selector/sku-ids needed-skus}))
+          {pdp-skus     :skus
+           pdp-products :products}   (when-let [product-id (-> req :nav-message second :catalog/product-id)]
+                                       (api/fetch-v2-products storeback-config {:catalog/product-id product-id}))
+          {:keys [facets]}           (when-not (get-in-req-state req keypaths/v2-facets)
+                                       (api/fetch-v2-facets storeback-config))]
       (h (-> req
-           (update-in-req-state keypaths/v2-products merge (products/index-products products))
-           (update-in-req-state keypaths/v2-skus merge (products/index-skus skus))
-           (assoc-in-req-state keypaths/v2-facets (map #(update % :facet/slug keyword) facets))
-           (assoc-in-req-state keypaths/categories categories/initial-categories))))))
+             (update-in-req-state keypaths/v2-products merge (products/index-products (concat order-products pdp-products)))
+             (update-in-req-state keypaths/v2-skus merge (products/index-skus (concat order-skus pdp-skus)))
+             (assoc-in-req-state keypaths/v2-facets (map #(update % :facet/slug keyword) facets))
+             (assoc-in-req-state keypaths/categories categories/initial-categories))))))
 
 (defn wrap-set-user [h]
   (fn [req]
@@ -374,10 +452,10 @@
 ;;TODO Have all of these middleswarez perform event transitions, just like the frontend
 (defn wrap-state [routes {:keys [storeback-config welcome-config contentful environment]}]
   (-> routes
+      (wrap-set-cms-cache contentful)
       (wrap-fetch-catalog storeback-config)
       (wrap-set-user)
       (wrap-set-welcome-url welcome-config)
-      (wrap-set-cms-cache contentful)
       wrap-affiliate-initial-login-landing-navigation-message
       (wrap-set-initial-state environment)))
 
