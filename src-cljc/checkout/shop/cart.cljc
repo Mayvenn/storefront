@@ -408,7 +408,8 @@
 (defn cart-summary-query
   [{:as order :keys [adjustments]}
    {:mayvenn-install/keys [entered? locked? applied? service-discount quantity-remaining]}]
-  (let [total              (-> order :total)
+  (let [total              (:total order)
+        tax                (:tax-total order)
         subtotal           (orders/products-subtotal order)
         shipping           (orders/shipping-item order)
         shipping-cost      (some->> shipping
@@ -490,9 +491,13 @@
                                      install-summary-line?
                                      (merge {:cart-summary-line/value (mf/as-money-or-free service-discount)
                                              :cart-summary-line/class "purple"})
-
                                      coupon-code
-                                     (merge (coupon-code->remove-promo-action coupon-code)))))}))
+                                     (merge (coupon-code->remove-promo-action coupon-code))))
+
+                                 (when (pos? tax)
+                                   [{:cart-summary-line/id    "tax"
+                                     :cart-summary-line/label "Tax"
+                                     :cart-summary-line/value (mf/as-money tax)}]))}))
 
 (defn promo-input-query
   [data]
