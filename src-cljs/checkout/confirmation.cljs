@@ -227,6 +227,7 @@
    {:mayvenn-install/keys [locked? applied? service-discount]}
    available-store-credit]
   (let [total              (-> order :total)
+        tax                (:tax-total order)
         subtotal           (orders/products-subtotal order)
         shipping           (orders/shipping-item order)
         shipping-cost      (some->> shipping
@@ -281,11 +282,15 @@
                                      install-summary-line?
                                      (merge {:cart-summary-line/value (mf/as-money-or-free service-discount)
                                              :cart-summary-line/class "purple"})))
+                                 (when (pos? tax)
+                                   [{:cart-summary-line/id       "tax"
+                                     :cart-summary-line/label    "Tax"
+                                     :cart-summary-line/value    (mf/as-money tax)}])
                                  (when (pos? available-store-credit)
                                    [{:cart-summary-line/id    "store-credit"
                                      :cart-summary-line/label "Store Credit"
                                      :cart-summary-line/class "purple"
-                                     :cart-summary-line/value (mf/as-money (- available-store-credit))}]))}))
+                                     :cart-summary-line/value (mf/as-money (- (min available-store-credit total)))}]))}))
 
 (defn query
   [data]
