@@ -301,7 +301,7 @@
              keypath
              (get-in cms-data keypath))))
 
-;; TODO contentful namspace
+;; TODO contentful namespace
 (defn derive-all-looks [cms-data]
   (assoc-in cms-data [:ugc-collection :all-looks]
             (->> (:ugc-collection cms-data)

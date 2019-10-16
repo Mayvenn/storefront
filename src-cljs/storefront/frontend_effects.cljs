@@ -295,8 +295,10 @@
       :ugc-collections [:sleek-and-straight
                         :waves-and-curly
                         :free-install-mayvenn]})
+
     :classic
-    nil))
+    (api/fetch-cms-data
+     {:slices [:advertisedPromo :homepage]})))
 
 (defmethod effects/perform-effects events/navigate-content [_ [_ _ & static-content-id :as event] _ _ app-state]
   (when-not (= static-content-id
