@@ -345,7 +345,8 @@
                                 :file-name "talkable_banner_25.jpg"
                                 :alt       "refer friends, earn rewards, get 25% off"
                                 :opts      (utils/route-to events/navigate-friend-referrals
-                                                           {:query-params {:traffic_source "homepageBanner"}})}
+                                                           {:query-params {:campaign_tags  "25-off"
+                                                                           :traffic_source "homepageBanner"}})}
                                nil)]]))
 
 (defn query
