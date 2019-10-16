@@ -19,7 +19,6 @@
             [storefront.api :as api]
             [clojure.string :as string]
             [spice.core :as spice]
-            cljs.pprint
             [ui.molecules :as ui-molecules]))
 
 ;; TODO Remove handling of underscored keys after storeback has been deployed.
@@ -42,7 +41,7 @@
   "takes number and formats it prepending zero (if n < 10)
   examples: 1 => \"01\"  31 => \"31\""
   [n]
-  (cljs.pprint/cl-format nil "~2,'0D" n))
+  (str (when (< n 10) \0) n))
 
 (defn shipment-status-field [shipping-details shipment-count]
   (if (= "shipped" (:state shipping-details))
