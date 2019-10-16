@@ -420,7 +420,7 @@
       (assoc-in keypaths/popup :share-cart)))
 
 (defmethod transition-state events/api-success-fetch-cms-data [_ event cms-data app-state]
-  (assoc-in app-state keypaths/cms cms-data))
+  (update-in app-state keypaths/cms merge cms-data))
 
 (defmethod transition-state events/control-cancel-editing-gallery [_ event args app-state]
   (assoc-in app-state keypaths/editing-gallery? false))

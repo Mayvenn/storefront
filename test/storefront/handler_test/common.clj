@@ -245,6 +245,18 @@
        component/stop
        ~@body)))
 
+(defmacro with-handler-and-cms-data
+  "Override storefront handler and cms data atom"
+  [handler cms-overrides & body]
+  `(let [unstarted-system# (create-system test-overrides)]
+     (with-resource [sys# (component/start unstarted-system#)
+                     ~handler  (-> sys# :app-handler :handler)]
+
+       component/stop
+       (do
+         (-> sys# :contentful :cache spice.core/spy (reset! ~cms-overrides))
+         ~@body))))
+
 (defn assert-request [req storeback-resp asserter]
   (with-services {:storeback-handler (constantly storeback-resp)}
     (with-handler handler

@@ -47,6 +47,13 @@
             [storefront.components.popup :as popup]
             [spice.core :as spice]))
 
+(defn determine-site
+  [app-state]
+  (cond
+    (= "mayvenn-classic" (get-in app-state keypaths/store-experience)) :classic
+    (= "aladdin" (get-in app-state keypaths/store-experience))         :aladdin
+    (= "shop" (get-in app-state keypaths/store-slug))                  :shop))
+
 (defn changed? [previous-app-state app-state keypath]
   (not= (get-in previous-app-state keypath)
         (get-in app-state keypath)))
@@ -277,7 +284,19 @@
     (popup/touch-email-capture-session app-state)))
 
 (defmethod effects/perform-effects events/navigate-home [_ _ _ _ app-state]
-  (api/fetch-cms-data))
+  (case (determine-site app-state)
+    :shop
+    (api/fetch-cms-data
+     {:slices          [:advertisedPromo :homepage]
+      :ugc-collections [:free-install-mayvenn]})
+    :aladdin
+    (api/fetch-cms-data
+     {:slices          [:advertisedPromo :homepage]
+      :ugc-collections [:sleek-and-straight
+                        :waves-and-curly
+                        :free-install-mayvenn]})
+    :classic
+    nil))
 
 (defmethod effects/perform-effects events/navigate-content [_ [_ _ & static-content-id :as event] _ _ app-state]
   (when-not (= static-content-id
@@ -304,14 +323,19 @@
       (effects/redirect events/navigate-home) ; redirect to home page from /shop/deals for v2-experience
 
       (= :ugc/unknown-album actual-album-kw)
-      (effects/page-not-found))))
+      (effects/page-not-found)
+
+      :else
+      (api/fetch-cms-data {:ugc-collections [actual-album-kw]}))))
 
 (defmethod effects/perform-effects events/navigate-shop-by-look-details [_ event {:keys [album-keyword]} _ app-state]
-  (if-let [shared-cart-id (contentful/shared-cart-id (contentful/selected-look app-state))]
-    (do
-      (reviews/insert-reviews)
-      (api/fetch-shared-cart shared-cart-id))
-    (effects/redirect events/navigate-shop-by-look {:album-keyword album-keyword})))
+  (let [actual-album-kw (ugc/determine-look-album app-state album-keyword)]
+    (if-let [shared-cart-id (contentful/shared-cart-id (contentful/selected-look app-state))]
+      (do
+        (api/fetch-cms-data {:ugc-collections [actual-album-kw]})
+        (reviews/insert-reviews)
+        (api/fetch-shared-cart shared-cart-id))
+      (effects/redirect events/navigate-shop-by-look {:album-keyword album-keyword}))))
 
 (defmethod effects/perform-effects events/navigate-account [_ event args _ app-state]
   (when-not (get-in app-state keypaths/user-token)
@@ -756,13 +780,6 @@
       (history/enqueue-navigate events/navigate-order-complete order)))
   (messages/handle-message events/order-completed order)
   (messages/handle-message events/order-placed order))
-
-(defn determine-site
-  [app-state]
-  (cond
-    (= "mayvenn-classic" (get-in app-state keypaths/store-experience)) :classic
-    (= "aladdin" (get-in app-state keypaths/store-experience))         :aladdin
-    (= "shop" (get-in app-state keypaths/store-slug))                  :shop))
 
 (defmethod effects/perform-effects events/order-completed
   [_ _ order _ app-state]

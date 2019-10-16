@@ -294,6 +294,21 @@
 ;; PDP - UGC, advertisedPromo (use keyword determined by pdp query)
 ;; MayvennMade - MayvennMadePage, UGC?, advertisedPromo
 
+(defn copy-cms-to-data
+  ([cms-data data] data)
+  ([cms-data data keypath]
+   (assoc-in data
+             keypath
+             (get-in cms-data keypath))))
+
+;; TODO contentful namspace
+(defn derive-all-looks [cms-data]
+  (assoc-in cms-data [:ugc-collection :all-looks]
+            (->> (:ugc-collection cms-data)
+                 vals
+                 (mapcat :looks)
+                 (maps/index-by (comp keyword :content/id)))))
+
 (defn wrap-set-cms-cache
   [h contentful]
   (fn [req]
@@ -302,67 +317,81 @@
           [nav-event
            {album-keyword :album-keyword
             product-id    :catalog/product-id}] (:nav-message req)
-          cms-data                              @(:cache contentful)]
-      (h (update-in-req-state req keypaths/cms merge (select-keys cms-data [:advertisedPromo])
+          update-data                           (partial copy-cms-to-data @(:cache contentful))]
+      (h (update-in-req-state req keypaths/cms merge
+                              (update-data {} [:advertisedPromo])
                               (cond shop?
                                     (cond (= events/navigate-mayvenn-made nav-event)
-                                          (select-keys cms-data [:mayvennMadePage])
+                                          (-> {}
+                                              (update-data [:mayvennMadePage]))
 
                                           (= events/navigate-home nav-event)
-                                          (-> (select-keys cms-data [:homepage :ugc-collection])
-                                              (update :ugc-collection select-keys [:free-install-mayvenn]))
+                                          (-> {}
+                                              (update-data [:homepage])
+                                              (update-data [:ugc-collection :free-install-mayvenn])
+                                              derive-all-looks)
 
                                           (contains? #{events/navigate-shop-by-look events/navigate-shop-by-look-details} nav-event)
-                                          (-> (select-keys cms-data [:ugc-collection])
-                                              (update :ugc-collection select-keys [(if (= :look album-keyword) :aladdin-free-install album-keyword)]))
+                                          (-> {}
+                                              (update-data [:ugc-collection (if (= :look album-keyword)
+                                                                              :aladdin-free-install
+                                                                              album-keyword)])
+                                              derive-all-looks)
 
                                           (= events/navigate-product-details nav-event)
-                                          (-> (select-keys cms-data [:ugc-collection])
-                                              (update :ugc-collection select-keys (some->> (conj keypaths/v2-products product-id :legacy/named-search-slug)
-                                                                                           (get-in-req-state req)
-                                                                                           keyword
-                                                                                           vector)))
+                                          (-> {}
+                                              (update-data [:ugc-collection (some->> (conj keypaths/v2-products product-id :legacy/named-search-slug)
+                                                                                     (get-in-req-state req)
+                                                                                     keyword)])
+                                              derive-all-looks)
                                           :else nil)
 
                                     aladdin?
                                     (cond (= events/navigate-mayvenn-made nav-event)
-                                          (select-keys cms-data [:mayvennMadePage])
+                                          (-> {}
+                                              (update-data [:mayvennMadePage]))
 
                                           (= events/navigate-home nav-event)
-                                          (-> (select-keys cms-data [:homepage :ugc-collection])
-                                              (update :ugc-collection select-keys [:sleek-and-straight
-                                                                                   :waves-and-curly
-                                                                                   :free-install-mayvenn]))
+                                          (-> {}
+                                              (update-data [:homepage])
+                                              (update-data [:ugc-collection :sleek-and-straight])
+                                              (update-data [:ugc-collection :waves-and-curly])
+                                              (update-data [:ugc-collection :free-install-mayvenn])
+                                              derive-all-looks)
 
                                           (contains? #{events/navigate-shop-by-look events/navigate-shop-by-look-details} nav-event)
-                                          (-> (select-keys cms-data [:ugc-collection])
-                                              (update :ugc-collection select-keys [(if (= :look album-keyword) :aladdin-free-install album-keyword)]))
+                                          (-> {}
+                                              (update-data [:ugc-collection (if (= :look album-keyword)
+                                                                              :aladdin-free-install
+                                                                              album-keyword)])
+                                              derive-all-looks)
 
                                           (= events/navigate-product-details nav-event)
-                                          (-> (select-keys cms-data [:ugc-collection])
-                                              (update :ugc-collection select-keys (some->> (conj keypaths/v2-products product-id :legacy/named-search-slug)
-                                                                                           (get-in-req-state req)
-                                                                                           keyword
-                                                                                           vector)))
+                                          (-> {}
+                                              (update-data [:ugc-collection (some->> (conj keypaths/v2-products product-id :legacy/named-search-slug)
+                                                                                     (get-in-req-state req)
+                                                                                     keyword)])
+                                              derive-all-looks)
                                           :else nil)
 
                                     :else
                                     (cond (= events/navigate-mayvenn-made nav-event)
-                                          (select-keys cms-data [:mayvennMadePage])
+                                          (-> {}
+                                              (update-data [:mayvennMadePage]))
 
                                           (= events/navigate-home nav-event)
-                                          (select-keys cms-data [:homepage])
+                                          (-> {}
+                                              (update-data [:homepage]))
 
                                           (contains? #{events/navigate-shop-by-look events/navigate-shop-by-look-details} nav-event)
-                                          (-> (select-keys cms-data [:ugc-collection])
-                                              (update :ugc-collection select-keys [album-keyword]))
+                                          (-> {}
+                                              (update-data [:ugc-collection album-keyword]))
 
                                           (= events/navigate-product-details nav-event)
-                                          (-> (select-keys cms-data [:ugc-collection])
-                                              (update :ugc-collection select-keys (some->> (conj keypaths/v2-products product-id :legacy/named-search-slug)
-                                                                                           (get-in-req-state req)
-                                                                                           keyword
-                                                                                           vector)))
+                                          (-> {}
+                                              (update-data [:ugc-collection (some->> (conj keypaths/v2-products product-id :legacy/named-search-slug)
+                                                                                     (get-in-req-state req)
+                                                                                     keyword)]))
                                           :else nil)))))))
 
 (defn wrap-set-welcome-url [h welcome-config]
@@ -873,6 +902,27 @@
       (util.response/redirect "/shop/all-bundle-sets")
       (h req))))
 
+(defn prepare-cms-query-params [query-params]
+  (maps/map-values
+   (fn [v] (mapv keyword
+                 (if (and (coll? v)
+                          (not (string? v)))
+                   v
+                   (vector v))))
+   (maps/map-keys keyword query-params)))
+
+(defn prepare-cms-data [cms-data slices ugc-collections]
+  (if (or slices ugc-collections)
+    (cond-> {}
+      (seq slices)
+      (merge (select-keys cms-data slices))
+
+      (seq ugc-collections)
+      (merge (-> (select-keys cms-data [:ugc-collection])
+                 (update :ugc-collection select-keys ugc-collections)
+                 derive-all-looks)))
+    cms-data))
+
 (defn create-handler
   ([] (create-handler {}))
   ([{:keys [logger exception-handler environment contentful] :as ctx}]
@@ -892,11 +942,13 @@
                (GET "/install" req (util.response/redirect (store-homepage "freeinstall" environment req)))
                (GET "/adv/home" req (util.response/redirect (store-homepage "freeinstall" environment req) :moved-permanently))
                (GET "/cms" req
-                 (-> contentful
-                     contentful/read-cache
-                     json/generate-string
-                     util.response/response
-                     (util.response/content-type "application/json")))
+                 (let [{:keys [slices ugc-collections]}
+                       (prepare-cms-query-params (:query-params req))
+                       cms-data (contentful/read-cache contentful)]
+                   (-> (prepare-cms-data cms-data slices ugc-collections)
+                       json/generate-string
+                       util.response/response
+                       (util.response/content-type "application/json"))))
                (GET "/marketing-site" req
                  (contentful/marketing-site-redirect req))
                (-> (routes (static-routes ctx)

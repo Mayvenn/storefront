@@ -18,7 +18,8 @@
              [with-handler with-services]]
             [ajax.json :as json]
             [storefront.routes :as routes]
-            [storefront.events :as events]))
+            [storefront.events :as events]
+            [com.stuartsierra.component :as component]))
 
 (defn set-cookies [req cookies]
   (update req :headers assoc "cookie" (string/join "; " (map (fn [[k v]] (str k "=" v)) cookies))))
@@ -460,6 +461,21 @@
                   requests  (txfm-requests contentful-requests identity)]
               (is (every? #(= 200 (:status %)) responses))
               (is (= (* 2 number-of-contentful-entities-to-fetch) (count requests))))))))))
+
+(deftest slices-of-cms-data-can-be-fetched
+  (testing "fetching subslices of cms data"
+    (common/with-handler-and-cms-data handler {:mayvennMadePage {}
+                                               :homepage        {}
+                                               :advertisedPromo {}
+                                               :ugc-collection  {:deals {}
+                                                                 :curly {}
+                                                                 :look  {}}}
+      (is (= {:mayvennMadePage {} :ugc-collection {:all-looks {} :deals {} :curly {}}}
+           (-> (mock/request :get "https://bob.mayvenn.com/cms?slices=mayvennMadePage&ugc-collections=deals&ugc-collections=curly")
+               handler
+               :body
+               (parse-string true)))))))
+
 
 (deftest we-do-not-ask-waiter-more-than-once-for-the-order
   (testing "Fetching normal pages fetches order once"

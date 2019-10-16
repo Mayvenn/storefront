@@ -1,5 +1,6 @@
 (ns mayvenn-made.home
   (:require #?@(:cljs [[storefront.hooks.pixlee :as pixlee]
+                       [storefront.api :as api]
                        [om.core :as om]])
             [storefront.component :as component]
             [storefront.effects :as effects]
@@ -61,7 +62,10 @@
 
 (defmethod effects/perform-effects events/navigate-mayvenn-made
   [_ _ _ _ _]
-  #?(:cljs (pixlee/insert)))
+  #?(:cljs
+     (do
+       (api/fetch-cms-data {:slices [:mayvennMadePage]})
+       (pixlee/insert))))
 
 (defmethod effects/perform-effects events/mayvenn-made-gallery-displayed
   [_ _ _ _ _]

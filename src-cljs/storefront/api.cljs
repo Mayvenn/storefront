@@ -142,9 +142,12 @@
 (defn storeback-api-req [method path req-key request-opts]
   (api-request method (str api-base-url path) req-key request-opts))
 
-(defn fetch-cms-data []
+(defn fetch-cms-data
+  [{:keys [slices ugc-collections]}]
   (api-request GET "/cms" request-keys/fetch-cms-data
-               {:handler #(messages/handle-message events/api-success-fetch-cms-data %)}))
+               {:params    {:slices          slices
+                            :ugc-collections ugc-collections}
+                :handler #(messages/handle-message events/api-success-fetch-cms-data %)}))
 
 (defn cache-req
   [cache method path req-key {:keys [handler params] :as request-opts}]
