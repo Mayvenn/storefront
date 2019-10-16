@@ -66,6 +66,9 @@
                                              #(messages/handle-message events/api-success-fetch-stylists-within-radius-pre-purchase
                                                                        (merge {:query query} %))))
 
+         (seq matched-stylists)
+         nil
+
          :else
          (history/enqueue-redirect events/navigate-adventure-find-your-stylist)))))
 
