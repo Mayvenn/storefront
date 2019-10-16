@@ -10,9 +10,7 @@
             [storefront.platform.messages :as messages]
             [storefront.request-keys :as request-keys]
             [spice.maps :as maps]
-            [spice.core :as spice]
-            [clojure.set :as set]
-            [storefront.effects :as effects]))
+            [clojure.set :as set]))
 
 (defn is-rails-style? [resp]
   (or (seq (:error resp))

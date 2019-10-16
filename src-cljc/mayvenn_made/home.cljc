@@ -61,10 +61,10 @@
   #?(:cljs (pixlee/open-uploader)))
 
 (defmethod effects/perform-effects events/navigate-mayvenn-made
-  [_ _ _ _ _]
+  [_ _ _ _ app-state]
   #?(:cljs
      (do
-       (api/fetch-cms-data {:slices [:mayvennMadePage]})
+       (effects/fetch-cms-data app-state {:slices [:mayvennMadePage]})
        (pixlee/insert))))
 
 (defmethod effects/perform-effects events/mayvenn-made-gallery-displayed

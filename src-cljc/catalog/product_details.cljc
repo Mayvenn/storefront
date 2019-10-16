@@ -616,7 +616,10 @@
                             :page/slug          slug
                             :query-params       {:SKU (:catalog/sku-id selected-sku)}})
          (do
-           (api/fetch-cms-data {:ugc-collection (some->> (conj keypaths/v2-products product-id :legacy/named-search-slug)
+           (effects/fetch-cms-data app-state
+                                   {:ugc-collection (some->> (conj keypaths/v2-products
+                                                                   product-id
+                                                                   :legacy/named-search-slug)
                                                          (get-in app-state)
                                                          keyword)})
            (fetch-product-details app-state product-id))))))

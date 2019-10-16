@@ -283,22 +283,17 @@
 
     (popup/touch-email-capture-session app-state)))
 
-(defmethod effects/perform-effects events/navigate-home [_ _ _ _ app-state]
-  (case (determine-site app-state)
-    :shop
-    (api/fetch-cms-data
-     {:slices          [:advertisedPromo :homepage]
-      :ugc-collections [:free-install-mayvenn]})
-    :aladdin
-    (api/fetch-cms-data
-     {:slices          [:advertisedPromo :homepage]
-      :ugc-collections [:sleek-and-straight
-                        :waves-and-curly
-                        :free-install-mayvenn]})
-
-    :classic
-    (api/fetch-cms-data
-     {:slices [:advertisedPromo :homepage]})))
+(defmethod effects/perform-effects events/navigate-home
+  [_ _ _ _ app-state]
+  (effects/fetch-cms-data app-state
+   (case (determine-site app-state)
+     :shop    {:slices          [:advertisedPromo :homepage]
+               :ugc-collections [:free-install-mayvenn]}
+     :aladdin {:slices          [:advertisedPromo :homepage]
+               :ugc-collections [:sleek-and-straight
+                                 :waves-and-curly
+                                 :free-install-mayvenn]}
+     :classic {:slices [:advertisedPromo :homepage]})))
 
 (defmethod effects/perform-effects events/navigate-content [_ [_ _ & static-content-id :as event] _ _ app-state]
   (when-not (= static-content-id
@@ -328,13 +323,13 @@
       (effects/page-not-found)
 
       :else
-      (api/fetch-cms-data {:ugc-collections [actual-album-kw]}))))
+      (effects/fetch-cms-data app-state {:ugc-collections [actual-album-kw]}))))
 
 (defmethod effects/perform-effects events/navigate-shop-by-look-details [_ event {:keys [album-keyword]} _ app-state]
   (let [actual-album-kw (ugc/determine-look-album app-state album-keyword)]
     (if-let [shared-cart-id (contentful/shared-cart-id (contentful/selected-look app-state))]
       (do
-        (api/fetch-cms-data {:ugc-collections [actual-album-kw]})
+        (effects/fetch-cms-data app-state {:ugc-collections [actual-album-kw]})
         (reviews/insert-reviews)
         (api/fetch-shared-cart shared-cart-id))
       (effects/redirect events/navigate-shop-by-look {:album-keyword album-keyword}))))
