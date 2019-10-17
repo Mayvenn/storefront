@@ -1,7 +1,7 @@
 (ns storefront.effects
-  (:require [storefront.platform.messages :as messages]
+  (:require #?@(:cljs [[storefront.api :as api]])
+            [storefront.platform.messages :as messages]
             [storefront.keypaths :as keypaths]
-            [storefront.api :as api]
             [storefront.events :as events]))
 
 (defmulti perform-effects
@@ -40,7 +40,7 @@
         s   (filter (comp c? vector) slices)
         u   (filter (comp c? ugc) ugc-collections)]
     (when (or (seq s) (seq u))
-      (api/fetch-cms-data
-       (merge
-        (when (seq s) {:slices s})
-        (when (seq u) {:ugc-collections u}))))))
+      #?(:cljs (api/fetch-cms-data
+                (merge
+                 (when (seq s) {:slices s})
+                 (when (seq u) {:ugc-collections u})))))))
