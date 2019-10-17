@@ -295,7 +295,8 @@
                                  :free-install-mayvenn]}
      :classic {:slices [:advertisedPromo :homepage]})))
 
-(defmethod effects/perform-effects events/navigate-content [_ [_ _ & static-content-id :as event] _ _ app-state]
+(defmethod effects/perform-effects events/navigate-content
+  [_ [_ _ & static-content-id :as event] _ _ app-state]
   (when-not (= static-content-id
                (get-in app-state keypaths/static-id))
     (api/get-static-content event)))
