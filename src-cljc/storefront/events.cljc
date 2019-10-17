@@ -418,8 +418,6 @@
 
 (defpath uploadcare-api-failure)
 
-(defpath mayvenn-made-gallery-displayed)
-
 (defpath video-component-mounted)
 (defpath video-component-unmounted)
 
