@@ -424,16 +424,28 @@
       (h (cond-> req
            (and order-number
                 order-token
-                (= :adventure (second nav-event)) ;; Only used for stylist matching
+                (or (= :adventure (second nav-event)) ;; for stylist matching
+                    (= events/navigate-order-complete nav-event)) ;; for stylist-matched checkout complete
                 (not (get-in-req-state req keypaths/completed-order)))
            (assoc-in-req-state keypaths/completed-order (api/get-order storeback-config order-number order-token)))))))
 
 (defn wrap-fetch-servicing-stylist-for-order
   [h storeback-config]
-  (fn [{:as req :keys [nav-message]}]
-    (let [{:as order :keys [servicing-stylist-id]} (get-in-req-state req keypaths/order)]
+  (fn [req]
+    (let [{:keys [servicing-stylist-id]} (get-in-req-state req keypaths/order)]
       (h (cond-> req
            servicing-stylist-id
+           (assoc-in-req-state adventure.keypaths/adventure-servicing-stylist
+                               (api/get-servicing-stylist storeback-config
+                                                          servicing-stylist-id)))))))
+
+(defn wrap-fetch-servicing-stylist-for-completed-order
+  [h storeback-config]
+  (fn [req]
+    (let [servicing-stylist-id (get-in-req-state req keypaths/completed-order-servicing-stylist-id)]
+      (h (cond-> req
+           (and servicing-stylist-id
+                (= events/navigate-order-complete (-> req :nav-message first)))
            (assoc-in-req-state adventure.keypaths/adventure-servicing-stylist
                                (api/get-servicing-stylist storeback-config
                                                           servicing-stylist-id)))))))
@@ -869,6 +881,7 @@
       (wrap-fetch-servicing-stylist-for-order (:storeback-config ctx))
       (wrap-fetch-order (:storeback-config ctx))
       (wrap-fetch-completed-order (:storeback-config ctx))
+      (wrap-fetch-servicing-stylist-for-completed-order (:storeback-config ctx))
       (wrap-adventure-route-params)
       (wrap-cookies (storefront-site-defaults (:environment ctx)))))
 
