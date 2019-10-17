@@ -26,8 +26,7 @@
                                     :height "60px"})]]]]])
 
 (defn component
-  [{:keys [illuminated?
-           desktop-header-data
+  [{:keys [desktop-header-data
            item-count
            hide-back-to-shopping-link?
            back]} _ _]
@@ -37,9 +36,6 @@
       (desktop-header desktop-header-data)
 
       [:div.col-7-on-dt.container.mx-auto.border-bottom.border-light-gray.flex.items-center
-       (when illuminated?
-         {:class "bg-too-light-lavender"})
-
        [:div.col-3.hide-on-mb-tb
         (when-not hide-back-to-shopping-link?
           [:a.h5.black.pointer.flex.justify-start.items-center close-cart-route
@@ -64,10 +60,7 @@
     {:item-count                  (orders/product-quantity (get-in data keypaths/order))
      :back                        (first (get-in data keypaths/navigation-undo-stack))
      :desktop-header-data         (storefront-header/query data)
-     :hide-back-to-shopping-link? shop?
-     :illuminated?                (and
-                                   shop?
-                                   (orders/freeinstall-entered? (get-in data keypaths/order)))}))
+     :hide-back-to-shopping-link? shop?}))
 
 (defn built-component [data opts]
   (component/build component (query data) nil))
