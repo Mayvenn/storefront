@@ -342,7 +342,7 @@
 
       (and applied? (not stylist))
       (spice.maps/deep-merge {:freeinstall-cart-item
-                              {:cart-item {:cart-item-thumbnail/image-url "//ucarecdn.com/bc776b8a-595d-46ef-820e-04915478ffe8/"
+                              {:cart-item {:cart-item-thumbnail/image-url "//ucarecdn.com/3a25c870-fac1-4809-b575-2b130625d22a/"
                                            :cart-item-title/primary       "Mayvenn Install"
                                            :cart-item-copy/id             "congratulations"
                                            :cart-item-copy/value          "Congratulations! You're all set for your Mayvenn Install. Select your stylist after checkout."}}}))))

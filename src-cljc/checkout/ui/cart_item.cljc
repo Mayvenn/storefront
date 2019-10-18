@@ -106,8 +106,23 @@
                         :class "block rounded border border-light-gray"}
                        ucare-id)])])))
 
+(defn ^:private locked-thumbnail-overlay
+  [lock-circle-diameter opts]
+  [:div.absolute.z1.col-12.flex.items-center.justify-center
+   (merge {:style {:height "100%"}} opts)
+
+   [:div.absolute
+    {:style {:background    "#ffffffdd"
+             :width         (str lock-circle-diameter "px")
+             :height        (str lock-circle-diameter "px")
+             :border-radius "50%"}}]
+   [:div.absolute.z2.col-12.flex.items-center.justify-center
+    {:style {:height "100%"}}
+    (svg/lock {:style {:width  "17px"
+                       :height "23px"}})]])
+
 (defn cart-item-thumbnail-molecule
-  [{:cart-item-thumbnail/keys [id highlighted? value locked? image-url]}]
+  [{:cart-item-thumbnail/keys [id highlighted? value locked? circle? image-url]}]
   (when id
     (css-transitions/transition-background-color
      highlighted?
@@ -120,24 +135,15 @@
                  :height        (str highlight-circle-diameter "px")}}
         value
         [:div.relative
-         (when locked?
-           [:div.absolute.z1.col-12.flex.items-center.justify-center
-            {:style {:height "100%"}}
-
-            [:div {:class "absolute z1 block"
-                   :style {:background    "#ffffffdd"
-                           :width         (str lock-circle-diameter "px")
-                           :height        (str lock-circle-diameter "px")
-                           :border-radius "50%"}}]
-            [:div.absolute.z2.col-12.flex.items-center.justify-center
-             {:style {:height "100%"}}
-             (svg/lock {:style {:width  "17px"
-                                :height "23px"}})]])
-         (ui/circle-picture
-          {:width diameter}
-          ;; Note: We are not using ucare-id because stylist portraits may have
-          ;; ucarecdn crop parameters saved into the url
-          (ui/square-image {:resizable-url image-url} diameter))]]))))
+         (when locked? (locked-thumbnail-overlay lock-circle-diameter
+                                                 (when-not circle? {:class "pb1"})))
+         (if circle?
+           (ui/circle-picture
+            {:width diameter}
+            ;; Note: We are not using ucare-id because stylist portraits may have
+            ;; ucarecdn crop parameters saved into the url
+            (ui/square-image {:resizable-url image-url} diameter))
+           (ui/ucare-img {:width diameter} image-url))]]))))
 
 (defn cart-item-remove-action-molecule
   [{:cart-item-remove-action/keys [id target spinning?]}]
@@ -146,7 +152,7 @@
       [:div.h3
        {:style {:width "1.2em"}}
        ui/spinner]
-      [:div 
+      [:div
        [:a.gray.medium.m1
         (merge {:data-test (str "line-item-remove-" id)}
                (apply utils/fake-href target))
