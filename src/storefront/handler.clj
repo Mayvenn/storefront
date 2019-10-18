@@ -875,8 +875,8 @@
       (wrap-fetch-stylist-profile ctx)
       (wrap-fetch-servicing-stylist-for-order (:storeback-config ctx))
       (wrap-fetch-order (:storeback-config ctx))
-      (wrap-fetch-completed-order (:storeback-config ctx))
       (wrap-fetch-servicing-stylist-for-completed-order (:storeback-config ctx))
+      (wrap-fetch-completed-order (:storeback-config ctx))
       (wrap-adventure-route-params)
       (wrap-cookies (storefront-site-defaults (:environment ctx)))))
 
