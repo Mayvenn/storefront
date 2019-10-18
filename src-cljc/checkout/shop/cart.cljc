@@ -315,12 +315,12 @@
                                                                                [:div.medium.black {:data-test (str "line-item-price-ea-" sku-id)}
                                                                                 (mf/as-money price)]
                                                                                " each"]
-                              :cart-item-square-thumbnail/id                  sku-id
-                              :cart-item-square-thumbnail/sku-id              sku-id
-                              :cart-item-square-thumbnail/highlighted?        just-added-to-order?
-                              :cart-item-square-thumbnail/sticker-label       (when-let [length-circle-value (-> sku :hair/length first)]
+                              :cart-item-squircle-thumbnail/id                  sku-id
+                              :cart-item-squircle-thumbnail/sku-id              sku-id
+                              :cart-item-squircle-thumbnail/highlighted?        just-added-to-order?
+                              :cart-item-squircle-thumbnail/sticker-label       (when-let [length-circle-value (-> sku :hair/length first)]
                                                                                 (str length-circle-value "”"))
-                              :cart-item-square-thumbnail/ucare-id            (->> sku (catalog-images/image "cart") :ucare/id)
+                              :cart-item-squircle-thumbnail/ucare-id            (->> sku (catalog-images/image "cart") :ucare/id)
                               :cart-item-adjustable-quantity/id               (str "line-item-quantity-" sku-id)
                               :cart-item-adjustable-quantity/spinning?        updating?
                               :cart-item-adjustable-quantity/value            (:quantity line-item)
