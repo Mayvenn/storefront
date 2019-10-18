@@ -308,7 +308,7 @@
 (defpath api-success-fetch-stylists-within-radius-pre-purchase)
 (defpath api-success-fetch-stylists-within-radius-post-purchase)
 
-(defpath api-success-fetch-cms-data)
+(defpath api-success-fetch-cms-keypath)
 
 (defpath api-success-add-to-bag)
 (defpath api-success-add-sku-to-bag)

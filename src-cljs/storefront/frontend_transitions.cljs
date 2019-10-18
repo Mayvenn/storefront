@@ -4,6 +4,7 @@
             [clojure.string :as string]
             [rng :as rng]
             [spice.core :as spice]
+            [spice.maps :as maps]
             [storefront.accessors.nav :as nav]
             [storefront.accessors.orders :as orders]
             [storefront.config :as config]
@@ -419,8 +420,25 @@
       (assoc-in keypaths/shared-cart-url (str (.-protocol js/location) "//" (.-host js/location) "/c/" (:number cart)))
       (assoc-in keypaths/popup :share-cart)))
 
-(defmethod transition-state events/api-success-fetch-cms-data [_ event cms-data app-state]
-  (update-in app-state keypaths/cms merge cms-data))
+(defn derive-all-looks
+  [cms-data]
+  (assoc-in cms-data [:ugc-collection :all-looks]
+            (->> (:ugc-collection cms-data)
+                 vals
+                 (mapcat :looks)
+                 (maps/index-by (comp keyword :content/id)))))
+
+(defmethod transition-state events/api-success-fetch-cms-keypath
+  [_ event more-cms-data app-state]
+  (let [existing-cms-data (get-in app-state keypaths/cms)
+        combined-cms-data (maps/deep-merge existing-cms-data more-cms-data)]
+    (assoc-in app-state
+              keypaths/cms
+              (assoc-in combined-cms-data
+                        [:ugc-collection :all-looks]
+                        (maps/index-by (comp keyword :content/id)
+                                       (mapcat :looks
+                                               (vals (:ugc-collection combined-cms-data))))))))
 
 (defmethod transition-state events/control-cancel-editing-gallery [_ event args app-state]
   (assoc-in app-state keypaths/editing-gallery? false))

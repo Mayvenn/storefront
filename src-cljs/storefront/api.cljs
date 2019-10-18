@@ -140,12 +140,12 @@
 (defn storeback-api-req [method path req-key request-opts]
   (api-request method (str api-base-url path) req-key request-opts))
 
-(defn fetch-cms-data
-  [{:keys [slices ugc-collections]}]
-  (api-request GET "/cms" request-keys/fetch-cms-data
-               {:params    {:slices          slices
-                            :ugc-collections ugc-collections}
-                :handler #(messages/handle-message events/api-success-fetch-cms-data %)}))
+(defn fetch-cms-keypath
+  [keypath]
+  (let [uri-path (str "/cms/" (clojure.string/join "/" (map name keypath)))]
+    (api-request GET uri-path
+                 request-keys/fetch-cms-keypath
+                 {:handler #(messages/handle-message events/api-success-fetch-cms-keypath %)})))
 
 (defn cache-req
   [cache method path req-key {:keys [handler params] :as request-opts}]

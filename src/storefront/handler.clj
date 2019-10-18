@@ -288,12 +288,6 @@
          (= "affiliate" experience)
          (assoc-in-req-state keypaths/return-navigation-message [events/navigate-stylist-account-profile {}])))))
 
-;; Home - UGC, homepage, advertisedPromo
-;; Look - UGC, advertisedPromo
-;; look-detail - UGC, advertisedPromo
-;; PDP - UGC, advertisedPromo (use keyword determined by pdp query)
-;; MayvennMade - MayvennMadePage, UGC?, advertisedPromo
-
 (defn copy-cms-to-data
   ([cms-data data] data)
   ([cms-data data keypath]
@@ -954,6 +948,14 @@
                (GET "/products/:id-and-slug/:sku" req (redirect-to-product-details environment req))
                (GET "/install" req (util.response/redirect (store-homepage "freeinstall" environment req)))
                (GET "/adv/home" req (util.response/redirect (store-homepage "freeinstall" environment req) :moved-permanently))
+               (GET "/cms/*" {uri :uri}
+                    (let [keypath (->> #"/" (clojure.string/split uri) (drop 2) (map keyword))]
+                      (-> (contentful/read-cache contentful)
+                          (get-in keypath)
+                          ((partial assoc-in {} keypath))
+                          json/generate-string
+                          util.response/response
+                          (util.response/content-type "application/json"))))
                (GET "/cms" req
                  (let [{:keys [slices ugc-collections]}
                        (prepare-cms-query-params (:query-params req))

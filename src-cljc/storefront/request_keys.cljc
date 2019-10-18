@@ -66,7 +66,7 @@
 
 (def login-telligent [:login-telligent])
 
-(def fetch-cms-data [:fetch-cms-data])
+(def fetch-cms-keypath [:fetch-cms-keypath])
 (def voucher-redemption [:voucher-redemption])
 (def fetch-user-stylist-service-menu [:fetch-user-stylist-service-menu])
 (def fetch-stylists-within-radius [:fetch-stylists-within-radius])

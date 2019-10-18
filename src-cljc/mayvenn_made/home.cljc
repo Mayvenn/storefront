@@ -45,7 +45,7 @@
   [_ _ _ _ app-state]
   #?(:cljs
      (do
-       (effects/fetch-cms-data app-state {:slices [:mayvennMadePage]})
+       (effects/fetch-cms-keypath app-state [:mayvennMadePage])
        (pixlee/insert))))
 
 (defmethod effects/perform-effects events/inserted-pixlee
