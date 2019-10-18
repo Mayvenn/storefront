@@ -584,6 +584,7 @@
            :opengraph/title       (copy "" "")
            :page.meta/description (copy "")
            :opengraph/description (copy "")
+           :page/redirect?        true
            :seo/sitemap           false})
    (merge {:catalog/category-id "16"
            :copy/title          "Dyed Virgin Hair"
@@ -628,6 +629,7 @@
                                       "styling. Our collection of closures and frontals blend"
                                       "seamlessly with our bundles and can be customized"
                                       "to fit your unique look.")
+           :page/redirect?      true
            :seo/sitemap         false})])
 
 (def seamless-clip-ins-category
@@ -685,6 +687,7 @@
     :dtc-footer/order 9
     :header/group     2
     :header/order     5
+    :page/redirect?   true
     :seo/sitemap      false}])
 
 (def menu-categories

@@ -573,13 +573,14 @@
     (util.response/redirect (path-for req events/navigate-home) :moved-permanently)
     (let [categories (get-in data keypaths/categories)]
       (when-let [category (categories/id->category category-id categories)]
-        (if (not= slug (:page/slug category))
-          (-> (path-for req events/navigate-category category)
-              (util.response/redirect :moved-permanently))
-          (->> (assoc-in data
-                         keypaths/current-category-id
-                         (:catalog/category-id category))
-               (html-response render-ctx)))))))
+        (cond
+          (not= slug (:page/slug category)) (-> (path-for req events/navigate-category category)
+                                                (util.response/redirect :moved-permanently))
+          (:page/redirect? category)        (util.response/redirect (path-for req events/navigate-home) :moved-permanently)
+          :else                             (->> (assoc-in data
+                                                           keypaths/current-category-id
+                                                           (:catalog/category-id category))
+                                                 (html-response render-ctx)))))))
 
 (defn render-product-details [{:keys [environment] :as render-ctx}
                               data
