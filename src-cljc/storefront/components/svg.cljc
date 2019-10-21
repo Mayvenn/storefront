@@ -38,11 +38,6 @@
    [:svg (maps/deep-merge {:style {:stroke-width "3"}} opts)
     ^:inline (svg-xlink "dropdown-arrow")]))
 
-(defn back-arrow [opts]
-  (component/html
-   [:svg opts
-    ^:inline (svg-xlink "back-arrow")]))
-
 (defn left-caret [opts]
   (component/html
    [:svg.mtp1 opts
@@ -233,11 +228,6 @@
    [:svg opts
     ^:inline (svg-xlink "celebration-horn")]))
 
-(defn coin-stack [opts]
-  (component/html
-   [:svg opts
-    ^:inline (svg-xlink "coin-stack")]))
-
 (defn coin-in-slot [opts]
   (component/html
    [:svg opts
@@ -247,11 +237,6 @@
   (component/html
    [:svg opts
     ^:inline (svg-xlink "stack-o-cash")]))
-
-(defn certified-ribbon [opts]
-  (component/html
-   [:svg opts
-    ^:inline (svg-xlink "certified-ribbon")]))
 
 (defn icon-sms [opts]
   (component/html
@@ -267,11 +252,6 @@
   (component/html
    [:svg opts
     ^:inline (svg-xlink "icon-email")]))
-
-(defn cascade [opts]
-  (component/html
-   [:svg opts
-    ^:inline (svg-xlink "cascade")]))
 
 (defn phone [opts]
   (component/html
