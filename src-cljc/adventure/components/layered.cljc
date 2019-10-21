@@ -22,11 +22,11 @@
    [:div.mx-auto.relative {:style {:min-height "300px"}}
     (let [{:photo/keys [mob-uuid dsk-uuid file-name alt]} data]
       (component/build ui.M/hero
-                       {:mob-uuid    mob-uuid
-                        :dsk-uuid    dsk-uuid
-                        :file-name   file-name
-                        :alt         alt}
-                       {:opts {:style {:min-height "300px"}}}))
+                       {:mob-uuid  mob-uuid
+                        :dsk-uuid  dsk-uuid
+                        :file-name file-name
+                        :alt       alt
+                        :opts      {:style {:min-height "300px"}}}))
     (when-let [buttons (:buttons data)]
       [:div.relative.flex.justify-center
        [:div.absolute.bottom-0.col-6-on-tb-dt.col-12.pb2.mb3-on-dt
