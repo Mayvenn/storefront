@@ -210,7 +210,7 @@
    `(create* ~(str *ns* "/" (name class-name)) (fn [] (or (html ~body)
                                                           (html [:div.component-empty]))))))
 
-(defmacro ^{:style/indent [1 :form]} create-dynamic
+(defmacro ^{:style/indent [1 :defn]} create-dynamic
   "Creates a React.Component (on the client) / simple html rendering (on the server)"
   [component-name & methods]
   (let [m               (into {} (map (juxt first #(conj % 'fn))) methods)
