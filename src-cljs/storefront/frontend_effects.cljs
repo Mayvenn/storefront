@@ -219,7 +219,8 @@
         new-nav-event?    (not= (get-in prev-app-state keypaths/navigation-event)
                                 (get-in app-state keypaths/navigation-event))
         new-query-params? (not= (not-empty (dissoc (get-in prev-app-state keypaths/navigation-args) :query-params))
-                                (not-empty (dissoc (get-in app-state keypaths/navigation-args) :query-params)))]
+                                (not-empty (dissoc (get-in app-state keypaths/navigation-args) :query-params)))
+        module-load?      (= caused-by :module-load)]
 
     (messages/handle-message events/control-menu-collapse-all)
     (messages/handle-message events/save-order {:order (get-in app-state keypaths/order)})
@@ -227,10 +228,12 @@
     (cookie-jar/save-user (get-in app-state keypaths/cookie)
                           (get-in app-state keypaths/user))
     (refresh-account app-state)
-    (api/get-promotions (get-in app-state keypaths/api-cache)
-                        (or
-                         (first (get-in app-state keypaths/order-promotion-codes))
-                         (get-in app-state keypaths/pending-promo-code)))
+
+    (when-not module-load?
+      (api/get-promotions (get-in app-state keypaths/api-cache)
+                          (or
+                           (first (get-in app-state keypaths/order-promotion-codes))
+                           (get-in app-state keypaths/pending-promo-code))))
 
     (seo/set-tags app-state)
     (when (or new-nav-event? new-query-params?)
@@ -255,7 +258,7 @@
     (when (boolean (:em_hash query-params))
       (messages/handle-message events/adventure-visitor-identified))
 
-    (when-not (= caused-by :module-load)
+    (when-not module-load?
       (when (get-in app-state keypaths/popup)
         (messages/handle-message events/popup-hide))
       (quadpay/hide-modal))
