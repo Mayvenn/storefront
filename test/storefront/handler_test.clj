@@ -264,7 +264,7 @@
                                                                            :promo.triple-bundle/eligible true}]})})))]
       (with-services {:storeback-handler storeback-handler}
         (with-handler handler
-          (has-canonized-link handler "//bob.mayvenn.com/products/67-peruvian-water-wave-lace-closures?SKU=PWWLC10")
+          (has-canonized-link handler "//bob.mayvenn.com/products/67-peruvian-water-wave-lace-closures")
           (has-canonized-link handler "//bob.mayvenn.com/categories/10-virgin-360-frontals")
           (has-canonized-link handler "//bob.mayvenn.com/our-hair")
           (has-canonized-link handler "//bob.mayvenn.com/"))))))
