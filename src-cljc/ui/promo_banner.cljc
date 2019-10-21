@@ -8,7 +8,7 @@
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.promos :as promos]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent defdynamic-component]]
             [storefront.components.svg :as svg]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
@@ -177,62 +177,34 @@
                                                                    .-current
                                                                    goog.style/getSize
                                                                    .-height))))]
-       (component/create-dynamic
-        "sticky-organism"
-        (constructor [this props]
-                     (set! (.-banner this) (react/createRef))
-                     (set! (.-handle-scroll this) (.bind handle-scroll this))
-                     (set! (.-set-height this) (.bind set-height this))
-                     {:show?              false
-                      :description-length (count (:description (:promo (component/get-props this))))})
-        (did-mount [this]
-                   (component/set-state! this :banner-height (some-> (.-banner this)
-                                                                     .-current
-                                                                     goog.style/getSize
-                                                                     .-height))
-                   (goog.events/listen js/window EventType/SCROLL (.-handle-scroll this)))
-        (will-unmount [this]
-                      (goog.events/unlisten js/window EventType/SCROLL (.-handle-scroll this)))
-        (render [this]
-                (component/html
-                 (let [{:keys [show? banner-height]} (component/get-state this)
-                       data                          (component/get-props this)
-                       opts                          (component/get-opts this)]
-                   [:div.fixed.z4.top-0.left-0.right-0
-                    (if show?
-                      {:style {:margin-top "0"}
-                       :class "transition-2"}
-                      {:class "hide"
-                       :style {:margin-top (str "-" banner-height "px")}})
-                    [:div {:ref "banner"}
-                     (component/build component data opts)]]))))
-       #_
-       (reify
-         om/IInitState
-         (init-state [this]
-           {:show? false})
-         om/IDidMount
+       (component/create-dynamic "sticky-organism"
+         (constructor [this props]
+           (set! (.-banner this) (react/createRef))
+           (set! (.-handle-scroll this) (.bind handle-scroll this))
+           (set! (.-set-height this) (.bind set-height this))
+           {:show?              false
+            :description-length (count (:description (:promo (component/get-props this))))})
          (did-mount [this]
-           (om/set-state! owner :description-length (count (:description (:promo data))))
-           (set-height)
-           (goog.events/listen js/window EventType/SCROLL handle-scroll))
-         om/IWillUnmount
+           (component/set-state! this :banner-height (some-> (.-banner this)
+                                                             .-current
+                                                             goog.style/getSize
+                                                             .-height))
+           (goog.events/listen js/window EventType/SCROLL (.-handle-scroll this)))
          (will-unmount [this]
-           (goog.events/unlisten js/window EventType/SCROLL handle-scroll))
-         om/IWillReceiveProps
-         (will-receive-props [this next-props]
-           (set-height))
-         om/IRenderState
-         (render-state [this {:keys [show? banner-height]}]
+           (goog.events/unlisten js/window EventType/SCROLL (.-handle-scroll this)))
+         (render [this]
            (component/html
-            [:div.fixed.z4.top-0.left-0.right-0
-             (if show?
-               {:style {:margin-top "0"}
-                :class "transition-2"}
-               {:class "hide"
-                :style {:margin-top (str "-" banner-height "px")}})
-             [:div {:ref "banner"}
-              (om/build component data opts)]]))))))
+            (let [{:keys [show? banner-height]} (component/get-state this)
+                  data                          (component/get-props this)
+                  opts                          (component/get-opts this)]
+              [:div.fixed.z4.top-0.left-0.right-0
+               (if show?
+                 {:style {:margin-top "0"}
+                  :class "transition-2"}
+                 {:class "hide"
+                  :style {:margin-top (str "-" banner-height "px")}})
+               [:div {:ref "banner"}
+                (component/build component data opts)]])))))))
 
 (defn built-sticky-organism
   [app-state opts]
