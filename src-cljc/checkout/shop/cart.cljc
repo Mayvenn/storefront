@@ -358,7 +358,7 @@
                  :cart-item-thumbnail/id            "freeinstall"
                  :cart-item-thumbnail/highlighted?  (get-in app-state keypaths/cart-freeinstall-just-added?)
                  :cart-item-thumbnail/value         nil
-                 :cart-item-thumbnail/image-url      "//ucarecdn.com/3a25c870-fac1-4809-b575-2b130625d22a/"
+                 :cart-item-thumbnail/image-url      "//ucarecdn.com/bc776b8a-595d-46ef-820e-04915478ffe8/"
                  :cart-item-remove-action/id        "line-item-remove-freeinstall"
                  :cart-item-remove-action/spinning? (utils/requesting? app-state request-keys/remove-promotion-code)
                  :cart-item-remove-action/target    [events/control-checkout-remove-promotion {:code "freeinstall"}]}
@@ -393,7 +393,6 @@
           stylist
           (merge {:cart-item-title/secondary      (str "w/ " (:store-nickname stylist))
                   :cart-item-thumbnail/image-url  (some-> stylist :portrait :resizable-url)
-                  :cart-item-thumbnail/circle?    true
                   :cart-item-swap-action/target   [events/navigate-adventure-find-your-stylist]
                   :cart-item-remove-action/target nil})
 
