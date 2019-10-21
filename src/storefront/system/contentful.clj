@@ -3,6 +3,7 @@
             [com.stuartsierra.component :as component]
             [lambdaisland.uri :as uri]
             [overtone.at-at :as at-at]
+            [storefront.utils :as utils]
             [ring.util.response :as util.response]
             [spice.date :as date]
             [spice.maps :as maps]
@@ -155,11 +156,6 @@
 (defprotocol CMSCache
   (read-cache [_] "Returns a map representing the CMS cache"))
 
-(defn ?update [m k & args]
-  (if (k m)
-    (apply update m k args)
-    m))
-
 (defrecord ContentfulContext [logger exception-handler environment cache-timeout api-key space-id endpoint]
   component/Lifecycle
   (start [c]
@@ -191,7 +187,7 @@
                                                    (let [u' (if production?
                                                               (dissoc u :acceptance-looks)
                                                               (set/rename-keys u {:acceptance-looks :looks}))]
-                                                     (?update u' :looks (partial remove :sys))))
+                                                     (utils/?update u' :looks (partial remove :sys))))
                                :collection-tx-fn (fn [m]
                                                    (->> (vals m)
                                                         (mapcat :looks)

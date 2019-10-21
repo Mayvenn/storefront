@@ -7,6 +7,7 @@
             [catalog.products :as products]
             [spice.selector :as selector]
             [storefront.ugc :as ugc]
+            [storefront.utils :as utils]
             [clojure.string :as string]
             #?@(:clj [[cheshire.core :as json]
                       [storefront.safe-hiccup :as safe-hiccup]])))
@@ -81,7 +82,7 @@
   [data]
   (let [nav-event (get-in data keypaths/navigation-event)]
     (some-> (get-in data keypaths/navigation-uri)
-            (update :query (partial filter-seo-query-params nav-event))
+            (utils/?update :query (partial filter-seo-query-params nav-event))
             (update :host string/replace #"^[^.]+" "shop")
             (assoc :scheme (get-in data keypaths/scheme))
             str)))
