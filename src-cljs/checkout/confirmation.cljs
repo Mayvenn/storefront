@@ -335,6 +335,7 @@
       (spice.maps/deep-merge  {:freeinstall-cart-item
                                {:cart-item
                                 {:cart-item-thumbnail/image-url (some-> stylist :portrait :resizable-url)
+                                 :cart-item-thumbnail/circle?   true
                                  :cart-item-title/primary       "Mayvenn Install"
                                  :cart-item-copy/id             "congratulations"
                                  :cart-item-title/secondary     (str "w/ " (:store-nickname stylist))
