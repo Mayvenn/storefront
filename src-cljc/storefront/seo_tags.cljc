@@ -63,12 +63,28 @@
      [:meta {:property "og:image" :content (str "http:" (:url image))}]
      [:meta {:property "og:description" :content (:opengraph/description product)}]]))
 
+(def allowed-category-page-query-params
+  #{"base-material"
+    "family"
+    "origin"
+    "weight"
+    "texture"
+    "color"})
+
+(defn filter-seo-query-params
+  [nav-event query-params]
+  (if (= events/navigate-category nav-event)
+    (select-keys query-params allowed-category-page-query-params)
+    {}))
+
 (defn canonical-uri
-  [{:as data :keys [store]}]
-  (some-> (get-in data keypaths/navigation-uri)
-          (update :host string/replace #"^[^.]+" "shop")
-          (assoc :scheme (get-in data keypaths/scheme))
-          str))
+  [data]
+  (let [nav-event (get-in data keypaths/navigation-event)]
+    (some-> (get-in data keypaths/navigation-uri)
+            (update :query (partial filter-seo-query-params nav-event))
+            (update :host string/replace #"^[^.]+" "shop")
+            (assoc :scheme (get-in data keypaths/scheme))
+            str)))
 
 (defn canonical-link-tag [data]
   (when-let [canonical-href (canonical-uri data)]
