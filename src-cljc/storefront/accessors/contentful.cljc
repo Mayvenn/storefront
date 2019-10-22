@@ -57,7 +57,7 @@
                                   "Check this out!")
       :cta/button-type        :underline-button
       :cta/navigation-message [events/navigate-shop-by-look-details
-                               {:album-keyword (or (#{:deals} album-keyword) :look)
+                               {:album-keyword album-keyword
                                 :look-id       id}]})) )
 
 (defn look->look-detail-social-card
