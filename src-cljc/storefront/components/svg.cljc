@@ -188,11 +188,6 @@
   (component/html
    [:svg opts ^:inline (svg-xlink "play-video")]))
 
-(defn guarantee [opts]
-  (component/html
-   [:svg opts
-    ^:inline (svg-xlink "guarantee")]))
-
 (defn minus-sign [opts]
   (component/html
    [:svg opts
