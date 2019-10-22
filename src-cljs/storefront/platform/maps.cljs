@@ -1,8 +1,6 @@
 (ns storefront.platform.maps
   (:require [adventure.keypaths]
             [clojure.string :as string]
-            [om.core :as om]
-            [sablono.core :as sablono]
             [storefront.component :as component :refer [defcomponent defdynamic-component]]
             [storefront.components.svg :as svg]
             [storefront.hooks.google-maps :as maps]
