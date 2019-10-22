@@ -332,13 +332,13 @@
       (and applied? stylist)
       (spice.maps/deep-merge  {:freeinstall-cart-item
                                {:cart-item
-                                {:cart-item-matched-stylist-thumbnail/image-url (some-> stylist :portrait :resizable-url)
-                                 :cart-item-matched-stylist-thumbnail/id        "freeinstall"
-                                 :cart-item-matched-stylist-thumbnail/value     nil
-                                 :cart-item-title/primary   "Mayvenn Install"
-                                 :cart-item-copy/id         "congratulations"
-                                 :cart-item-title/secondary (str "w/ " (:store-nickname stylist))
-                                 :rating/value                                  (:rating stylist)}}})
+                                {:cart-item-stylist-thumbnail/image-url (some-> stylist :portrait :resizable-url)
+                                 :cart-item-stylist-thumbnail/id        "freeinstall"
+                                 :cart-item-stylist-thumbnail/value     nil
+                                 :cart-item-title/primary               "Mayvenn Install"
+                                 :cart-item-copy/id                     "congratulations"
+                                 :cart-item-title/secondary             (str "w/ " (:store-nickname stylist))
+                                 :rating/value                          (:rating stylist)}}})
 
       (and applied? (not stylist))
       (spice.maps/deep-merge {:freeinstall-cart-item
