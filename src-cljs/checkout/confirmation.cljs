@@ -321,34 +321,30 @@
       applied?
       (spice.maps/deep-merge {:freeinstall-cart-item
                               {:cart-item
-                               {:react/key                    "freeinstall-line-item-freeinstall"
-                                :cart-item-title/id           "line-item-title-freeinstall"
-                                :cart-item-floating-box/id    "line-item-price-freeinstall"
-                                :cart-item-floating-box/value [:div.right.medium.my-auto.flex.items-center
-                                                               {:style {:height "100%"}}
-                                                               [:div.h6 {:data-test "line-item-freeinstall-price"}
-                                                                (some-> service-discount - mf/as-money)]]}}})
+                               {:react/key                         "freeinstall-line-item-freeinstall"
+                                :cart-item-stylist-thumbnail/id    "freeinstall"
+                                :cart-item-stylist-thumbnail/value nil
+                                :cart-item-title/id                "line-item-title-freeinstall"
+                                :cart-item-floating-box/id         "line-item-price-freeinstall"
+                                :cart-item-floating-box/value      [:div.right.medium.my-auto.flex.items-center
+                                                                    {:style {:height "100%"}}
+                                                                    [:div.h6 {:data-test "line-item-freeinstall-price"}
+                                                                     (some-> service-discount - mf/as-money)]]}}})
 
       (and applied? stylist)
       (spice.maps/deep-merge  {:freeinstall-cart-item
                                {:cart-item
-                                {:cart-item-stylist-thumbnail/image-url (some-> stylist :portrait :resizable-url)
-                                 :cart-item-stylist-thumbnail/id        "freeinstall"
-                                 :cart-item-stylist-thumbnail/value     nil
-                                 :cart-item-title/primary               "Mayvenn Install"
-                                 :cart-item-copy/id                     "congratulations"
-                                 :cart-item-title/secondary             (str "w/ " (:store-nickname stylist))
-                                 :rating/value                          (:rating stylist)}}})
+                                {:cart-item-title/primary   "Mayvenn Install"
+                                 :cart-item-copy/id         "congratulations"
+                                 :cart-item-title/secondary (str "w/ " (:store-nickname stylist))
+                                 :rating/value              (:rating stylist)}}})
 
       (and applied? (not stylist))
       (spice.maps/deep-merge {:freeinstall-cart-item
                               {:cart-item
-                               {:cart-item-unmatched-stylist-thumbnail/id        "freeinstall"
-                                :cart-item-unmatched-stylist-thumbnail/value     nil
-                                :cart-item-unmatched-stylist-thumbnail/image-url "//ucarecdn.com/3a25c870-fac1-4809-b575-2b130625d22a/"
-                                :cart-item-title/primary                         "Mayvenn Install"
-                                :cart-item-copy/id                               "congratulations"
-                                :cart-item-copy/value                            "Congratulations! You're all set for your Mayvenn Install. Select your stylist after checkout."}}}))))
+                               {:cart-item-title/primary "Mayvenn Install"
+                                :cart-item-copy/id       "congratulations"
+                                :cart-item-copy/value    "Congratulations! You're all set for your Mayvenn Install. Select your stylist after checkout."}}}))))
 
 (defn ^:private built-non-auth-component [data opts]
   (component/build component (query data) opts))

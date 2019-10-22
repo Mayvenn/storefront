@@ -138,7 +138,7 @@
       [:div.h3
        {:style {:width "1.2em"}}
        ui/spinner]
-      [:div 
+      [:div
        [:a.gray.medium.m1
         (merge {:data-test (str "line-item-remove-" id)}
                (apply utils/fake-href target))
