@@ -10,7 +10,9 @@
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :refer [handle-message]]
             [storefront.transitions :as transitions]
-            [storefront.effects :as effects]))
+            [storefront.effects :as effects]
+            [storefront.component :as component :refer [defcomponent defdynamic-component]]
+            ))
 
 
 (defmethod effects/perform-effects events/stripe-payment-request-button-inserted
@@ -21,22 +23,15 @@
                                (get-in app-state keypaths/states)
                                (get-in app-state keypaths/shipping-methods)))
 
-(defn component [{:keys []} owner opts]
-  (reify
-    om/IDidMount
-    (did-mount [_]
-      (handle-message events/stripe-payment-request-button-inserted))
-    om/IWillUnmount
-    (will-unmount [_]
-      (handle-message events/stripe-payment-request-button-removed))
-    om/IRender
-    (render [_]
-      (html
-       [:div.pb2
-        [:div#request-payment-button-container]]))))
+(defdynamic-component component [data owner opts]
+  (constructor [_ _] {})
+  (did-mount [_] (handle-message events/stripe-payment-request-button-inserted))
+  (will-unmount [_] (handle-message events/stripe-payment-request-button-removed))
+  (render [_] (component/html [:div.pb2
+                               [:div#request-payment-button-container]])))
 
 (defn query [data]
   data)
 
 (defn built-component [data opts]
-  (om/build component (query data) opts))
+  (component/build component (query data) opts))
