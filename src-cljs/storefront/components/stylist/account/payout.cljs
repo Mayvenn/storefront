@@ -2,7 +2,7 @@
   (:require [om.core :as om]
             [sablono.core :refer-macros [html]]
             [storefront.accessors.credit-cards :as cc]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent defdynamic-component]]
             [storefront.components.ui :as ui]
             [storefront.hooks.spreedly :as spreedly]
             [storefront.accessors.experiments :as experiments]
