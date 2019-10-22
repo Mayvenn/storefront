@@ -319,7 +319,7 @@
                               :cart-item-squircle-thumbnail/sku-id              sku-id
                               :cart-item-squircle-thumbnail/highlighted?        just-added-to-order?
                               :cart-item-squircle-thumbnail/sticker-label       (when-let [length-circle-value (-> sku :hair/length first)]
-                                                                                (str length-circle-value "”"))
+                                                                                  (str length-circle-value "”"))
                               :cart-item-squircle-thumbnail/ucare-id            (->> sku (catalog-images/image "cart") :ucare/id)
                               :cart-item-adjustable-quantity/id               (str "line-item-quantity-" sku-id)
                               :cart-item-adjustable-quantity/spinning?        updating?
@@ -342,7 +342,8 @@
                                                         [:div.purple.medium
                                                          {:data-test (str "line-item-discounted-price-ea-" sku-id)}
                                                          (mf/as-money discount-price)]
-                                                        [:div.gray.right-align "each"]]})))]
+                                                        [:div.gray.right-align "each"]]})))
+        matched? (boolean stylist)]
 
     (cond-> cart-items
       entered?
@@ -355,13 +356,24 @@
                                                               :data-test (str "line-item-freeinstall-price")}
                                                      (some-> service-discount - mf/as-money)]
                                                     (when line-items-discounts? [:div.h6.right-align.purple "FREE"])]
-                 :cart-item-thumbnail/id            "freeinstall"
-                 :cart-item-thumbnail/highlighted?  (get-in app-state keypaths/cart-freeinstall-just-added?)
-                 :cart-item-thumbnail/value         nil
-                 :cart-item-thumbnail/image-url      "//ucarecdn.com/bc776b8a-595d-46ef-820e-04915478ffe8/"
                  :cart-item-remove-action/id        "line-item-remove-freeinstall"
                  :cart-item-remove-action/spinning? (utils/requesting? app-state request-keys/remove-promotion-code)
                  :cart-item-remove-action/target    [events/control-checkout-remove-promotion {:code "freeinstall"}]}
+
+          (not matched?)
+          (merge {:cart-item-unmatched-stylist-thumbnail/id                  "freeinstall"
+                  :cart-item-unmatched-stylist-thumbnail/highlighted?        (get-in app-state keypaths/cart-freeinstall-just-added?)
+                  :cart-item-unmatched-stylist-thumbnail/value               nil
+                  :cart-item-unmatched-stylist-thumbnail/image-url           "//ucarecdn.com/3a25c870-fac1-4809-b575-2b130625d22a/"})
+
+          matched?
+          (merge {:cart-item-matched-stylist-thumbnail/id           "freeinstall"
+                  :cart-item-matched-stylist-thumbnail/highlighted? (get-in app-state keypaths/cart-freeinstall-just-added?)
+                  :cart-item-matched-stylist-thumbnail/value        nil
+                  :cart-item-title/secondary                        (str "w/ " (:store-nickname stylist))
+                  :cart-item-matched-stylist-thumbnail/image-url    (some-> stylist :portrait :resizable-url)
+                  :cart-item-swap-action/target                     [events/navigate-adventure-find-your-stylist]
+                  :cart-item-remove-action/target                   nil})
 
           ;; Locked basically means the freeinstall coupon code was entered, yet not all the requirements
           ;; of a free install order to generate a voucher have been satisfied.
@@ -369,7 +381,6 @@
           (merge  {:cart-item-title/primary                   "Mayvenn Install (locked)"
                    :cart-item-copy/value                      (str "Add " quantity-remaining
                                                                    " or more items to receive your free Mayvenn Install")
-                   :cart-item-thumbnail/locked?               true
                    :cart-item-steps-to-complete/action-target add-items-action
                    :cart-item-steps-to-complete/action-label  "add items"
                    :cart-item-steps-to-complete/id            "add-items"
@@ -378,7 +389,13 @@
                                                                    (map inc))
                    :cart-item-steps-to-complete/current-step  quantity-added})
 
-          (and applied? (not stylist) pick-stylist?)
+          (and locked? matched?)
+          (merge {:cart-item-matched-stylist-thumbnail/locked? true})
+
+          (and locked? (not matched?))
+          (merge {:cart-item-unmatched-stylist-thumbnail/locked? true})
+
+          (and applied? (not matched?) pick-stylist?)
           (merge {:cart-item-pick-stylist/id      "pick-a-stylist"
                   :cart-item-pick-stylist/target  [events/navigate-adventure-match-stylist]
                   :cart-item-pick-stylist/content "pick stylist"})
@@ -390,13 +407,7 @@
                                              "Congratulations! You're all set for your Mayvenn Install. Select your stylist after checkout.")
                   :cart-item-copy/id       "congratulations"})
 
-          stylist
-          (merge {:cart-item-title/secondary      (str "w/ " (:store-nickname stylist))
-                  :cart-item-thumbnail/image-url  (some-> stylist :portrait :resizable-url)
-                  :cart-item-swap-action/target   [events/navigate-adventure-find-your-stylist]
-                  :cart-item-remove-action/target nil})
-
-          (and applied? stylist)
+          (and applied? matched?)
           (merge {:rating/value         (:rating stylist)
                   :cart-item-copy/value nil}))]))))
 

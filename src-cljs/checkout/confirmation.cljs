@@ -327,25 +327,28 @@
                                 :cart-item-floating-box/value [:div.right.medium.my-auto.flex.items-center
                                                                {:style {:height "100%"}}
                                                                [:div.h6 {:data-test "line-item-freeinstall-price"}
-                                                                (some-> service-discount - mf/as-money)]]
-                                :cart-item-thumbnail/id       "freeinstall"
-                                :cart-item-thumbnail/value    nil}}})
+                                                                (some-> service-discount - mf/as-money)]]}}})
 
       (and applied? stylist)
       (spice.maps/deep-merge  {:freeinstall-cart-item
                                {:cart-item
-                                {:cart-item-thumbnail/image-url (some-> stylist :portrait :resizable-url)
-                                 :cart-item-title/primary       "Mayvenn Install"
-                                 :cart-item-copy/id             "congratulations"
-                                 :cart-item-title/secondary     (str "w/ " (:store-nickname stylist))
-                                 :rating/value                  (:rating stylist)}}})
+                                {:cart-item-matched-stylist-thumbnail/image-url (some-> stylist :portrait :resizable-url)
+                                 :cart-item-matched-stylist-thumbnail/id        "freeinstall"
+                                 :cart-item-matched-stylist-thumbnail/value     nil
+                                 :cart-item-title/primary   "Mayvenn Install"
+                                 :cart-item-copy/id         "congratulations"
+                                 :cart-item-title/secondary (str "w/ " (:store-nickname stylist))
+                                 :rating/value                                  (:rating stylist)}}})
 
       (and applied? (not stylist))
       (spice.maps/deep-merge {:freeinstall-cart-item
-                              {:cart-item {:cart-item-thumbnail/image-url "//ucarecdn.com/bc776b8a-595d-46ef-820e-04915478ffe8/"
-                                           :cart-item-title/primary       "Mayvenn Install"
-                                           :cart-item-copy/id             "congratulations"
-                                           :cart-item-copy/value          "Congratulations! You're all set for your Mayvenn Install. Select your stylist after checkout."}}}))))
+                              {:cart-item
+                               {:cart-item-unmatched-stylist-thumbnail/id        "freeinstall"
+                                :cart-item-unmatched-stylist-thumbnail/value     nil
+                                :cart-item-unmatched-stylist-thumbnail/image-url "//ucarecdn.com/3a25c870-fac1-4809-b575-2b130625d22a/"
+                                :cart-item-title/primary                         "Mayvenn Install"
+                                :cart-item-copy/id                               "congratulations"
+                                :cart-item-copy/value                            "Congratulations! You're all set for your Mayvenn Install. Select your stylist after checkout."}}}))))
 
 (defn ^:private built-non-auth-component [data opts]
   (component/build component (query data) opts))
