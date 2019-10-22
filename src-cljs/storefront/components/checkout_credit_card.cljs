@@ -8,62 +8,60 @@
             [storefront.request-keys :as request-keys]
             [storefront.hooks.stripe :as stripe]
             [storefront.events :as events]
-            [storefront.platform.messages :as messages]))
+            [storefront.platform.messages :as messages]
+            [storefront.component :as component :refer [defcomponent defdynamic-component]]
+            ))
 
 (defn saving-card? [data]
   (or (utils/requesting? data request-keys/stripe-create-token)
       (utils/requesting? data request-keys/update-cart-payments)))
 
-(defn ^:private new-card-component
-  [{{:keys [focused
-            guest?
-            name
-            save-credit-card?
-            saved-cards]} :credit-card
-    :keys [field-errors]}
-   owner opts]
-  (reify
-    om/IDidMount
-    (did-mount [_]
-      (messages/handle-message events/stripe-component-mounted
-                               {:card-element (stripe/card-element "#card-element")}))
-    om/IWillUnmount
-    (will-unmount [_]
-      (messages/handle-message events/stripe-component-will-unmount))
-    om/IRender
-    (render [_]
-      (html
-       [:div
-        (ui/text-field {:errors    (get field-errors ["cardholder-name"])
-                        :data-test "payment-form-name"
-                        :keypath   keypaths/checkout-credit-card-name
-                        :focused   focused
-                        :label     "Cardholder's Name"
-                        :name      "name"
-                        :required  true
-                        :value     name})
-        (let [card-errors (mapcat (partial get field-errors) [["card-number"]
-                                                              ["card-expiration"]
-                                                              ["security-code"]
-                                                              ["card-error"]])]
+(defdynamic-component ^:private new-card-component
+  [data owner opts]
+  (did-mount [_]
+    (messages/handle-message events/stripe-component-mounted
+                             {:card-element (stripe/card-element "#card-element")}))
+  (will-unmount [_]
+    (messages/handle-message events/stripe-component-will-unmount))
+  (render [this]
+    (let [{{:keys [focused
+                    guest?
+                    name
+                    save-credit-card?
+                    saved-cards]} :credit-card
+            field-errors          :field-errors} (component/get-props this)]
+      (component/html
+        [:div
+         (ui/text-field {:errors    (get field-errors ["cardholder-name"])
+                         :data-test "payment-form-name"
+                         :keypath   keypaths/checkout-credit-card-name
+                         :focused   focused
+                         :label     "Cardholder's Name"
+                         :name      "name"
+                         :required  true
+                         :value     name})
+         (let [card-errors (mapcat (partial get field-errors) [["card-number"]
+                                                               ["card-expiration"]
+                                                               ["security-code"]
+                                                               ["card-error"]])]
           [:div
-           [:div#card-element.border.rounded.p2
-            {:style {:height "47px"}
-             :class (if (seq card-errors)
-                      "border-error error"
-                      "border-gray")}]
-           (when (seq card-errors)
-             [:div.h6.my1.error.center.medium {:data-test "payment-form-card-error"}
+            [:div#card-element.border.rounded.p2
+             {:style  {:height "47px"}
+              :class (if (seq card-errors)
+                       "border-error error"
+                       "border-gray")}]
+            (when (seq card-errors)
+              [:div.h6.my1.error.center.medium {:data-test "payment-form-card-error"}
               (:long-message (first card-errors))])])
-       (when (and (not guest?) (empty? saved-cards))
+        (when (and (not guest?) (empty? saved-cards))
           [:div.mb2
-           [:label.dark-gray
+            [:label.dark-gray
             [:input.mr1 (merge (utils/toggle-checkbox keypaths/checkout-credit-card-save save-credit-card?)
-                               {:type      "checkbox"
+                               {:type     "checkbox"
                                 :data-test "payment-form-save-credit-card"})]
             "Save my card for easier checkouts."]])]))))
 
-(defn component
+(defcomponent component
   [{{:keys [focused
             selected-saved-card-id
             saved-cards
@@ -71,9 +69,7 @@
             loaded-stripe?] :as credit-card} :credit-card
     :as data}
    owner opts]
-  (om/component
-   (html
-    [:div
+  [:div
      (if fetching-saved-cards?
        (ui/large-spinner {:style {:height "4em"}})
        [:div.my2
@@ -92,7 +88,7 @@
         (when (and loaded-stripe?
                    (or (empty? saved-cards)
                        (= selected-saved-card-id "add-new-card")))
-          (om/build new-card-component data opts))])])))
+          (component/build new-card-component data opts))])])
 
 (defn query [data]
   (let [saved-cards (get-in data keypaths/checkout-credit-card-existing-cards)]
@@ -107,4 +103,4 @@
                    :loaded-stripe?         (get-in data keypaths/loaded-stripe)}}))
 
 (defn built-component [data opts]
-  (om/build component (query data) opts))
+  (component/build component (query data) opts))
