@@ -3,12 +3,13 @@
             [clojure.string :as string]
             [om.core :as om]
             [sablono.core :as sablono]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent defdynamic-component]]
             [storefront.components.svg :as svg]
             [storefront.hooks.google-maps :as maps]
             [storefront.keypaths]
             [storefront.components.ui :as ui]
-            [stylist-directory.stylists :as stylists]))
+            [stylist-directory.stylists :as stylists]
+            ))
 
 (defn map-query [data]
   (let [loaded-google-maps? (get-in data storefront.keypaths/loaded-google-maps)
@@ -24,16 +25,15 @@
                      (some? latitude)
                      (some? longitude))}))
 
-(defn inner-component
-  [{:keys [latitude longitude]} owner opts]
-  (reify
-    om/IDidMount
-    (did-mount [_] (maps/attach-map latitude longitude "stylist-profile-map"))
-    om/IRender
-    (render [_]
-      (sablono/html
-       [:div {:id    "stylist-profile-map"
-              :style {:height "250px"}}]))))
+(defdynamic-component inner-component
+  [data owner opts]
+  (did-mount [this]
+    (let [{:keys [latitude longitude]} (component/get-props this)]
+      (maps/attach-map latitude longitude "stylist-profile-map")))
+  (render [_]
+    (component/html
+      [:div {:id    "stylist-profile-map"
+            :style {:height "250px"}}])))
 
 (defn component
   [{:keys [loaded? salon] :as data} owner opts]
