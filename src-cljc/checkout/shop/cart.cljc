@@ -50,45 +50,26 @@
                               :promo-code         "freeinstall"
                               :allow-dormant?     false})))
 
-(defn qualified-banner-component
-  [_ owner _]
-  (let [burstable? (atom true)]
-    #?(:clj [:div]
-       :cljs
-       (reify
-         om/IDidMount
-         (did-mount [_]
-           (confetti/burst (om/get-ref owner "qualified-banner-confetti")))
-         om/IRender
-         (render [_]
-           (component/html
-            [:div.flex.items-center.bold
-             {:data-test "qualified-banner"
-              :style     {:height              "246px"
-                          :padding-top         "43px"
-                          :background-size     "cover"
-                          :background-position "center 30%"
-                          :background-image    "url('//ucarecdn.com/97d80a16-1f48-467a-b8e2-fb16b532b75e/-/format/auto/-/quality/normal/aladdinMatchingCelebratoryOverlayImagePurpleR203Lm3x')"}
-              :on-click (fn [_]
-                          (when @burstable?
-                            (reset! burstable? false)
-                            (.then (confetti/burst (om/get-ref owner "qualified-banner-confetti"))
-                                   #(reset! burstable? true))))}
-             [:div.col.col-12.center.white
-              [:div.absolute
-               {:ref   "qualified-banner-confetti"
-                :style {:left  "50%"
-                        :right "50%"
-                        :top   "25%"}}]
-              [:div.h5.light "This order qualifies for a"]
-              [:div.h1.shout "free install"]
-              [:div.h5.light "from a Mayvenn Stylist near you"]]]))))))
-
 (def or-separator
   [:div.h5.black.py1.flex.items-center
    [:div.flex-grow-1.border-bottom.border-light-gray]
    [:div.mx2 "or"]
    [:div.flex-grow-1.border-bottom.border-light-gray]])
+
+(defn servicing-stylist-banner-component
+  [{:servicing-stylist-banner/keys [name image-url rating]}]
+  (when name
+    [:div.flex.bg-too-light-lavender.pl5.pr3.py2.items-center
+     (ui/circle-picture {:width 50} (ui/square-image {:resizable-url image-url} 50))
+     [:div.flex-grow-1.ml5.line-height-1.medium
+      [:div.h7 "Your Certified Mayvenn Stylist"]
+      [:div name]
+      [:div.mt1 (ui.molecules/stars-rating-molecule rating)]]
+     [:a.block.gray.medium.m1
+      (merge {:data-test "stylist-swap"}
+             (utils/route-to events/navigate-adventure-find-your-stylist))
+      (svg/swap-person {:width  "20px"
+                        :height "21px"})]]))
 
 (defn full-component
   [{:keys [applied?
@@ -115,9 +96,11 @@
     (component/build call-out/component call-out nil)
 
     [:div.clearfix.mxn3
-     (when applied?
+     #_(when applied?
        (component/build qualified-banner-component nil nil))
      [:div.px4.my2 (ui-molecules/return-link queried-data)]
+
+     (servicing-stylist-banner-component queried-data)
      [:div.col-on-tb-dt.col-6-on-tb-dt.px3.border-top.border-light-gray
       {:data-test "cart-line-items"}
       ;; HACK: have suggestions be paired with appropriate cart item
@@ -358,22 +341,10 @@
                                                     (when line-items-discounts? [:div.h6.right-align.purple "FREE"])]
                  :cart-item-remove-action/id        "line-item-remove-freeinstall"
                  :cart-item-remove-action/spinning? (utils/requesting? app-state request-keys/remove-promotion-code)
-                 :cart-item-remove-action/target    [events/control-checkout-remove-promotion {:code "freeinstall"}]}
-
-          (not matched?)
-          (merge {:cart-item-unmatched-stylist-thumbnail/id                  "freeinstall"
-                  :cart-item-unmatched-stylist-thumbnail/highlighted?        (get-in app-state keypaths/cart-freeinstall-just-added?)
-                  :cart-item-unmatched-stylist-thumbnail/value               nil
-                  :cart-item-unmatched-stylist-thumbnail/image-url           "//ucarecdn.com/3a25c870-fac1-4809-b575-2b130625d22a/"})
-
-          matched?
-          (merge {:cart-item-matched-stylist-thumbnail/id           "freeinstall"
-                  :cart-item-matched-stylist-thumbnail/highlighted? (get-in app-state keypaths/cart-freeinstall-just-added?)
-                  :cart-item-matched-stylist-thumbnail/value        nil
-                  :cart-item-title/secondary                        (str "w/ " (:store-nickname stylist))
-                  :cart-item-matched-stylist-thumbnail/image-url    (some-> stylist :portrait :resizable-url)
-                  :cart-item-swap-action/target                     [events/navigate-adventure-find-your-stylist]
-                  :cart-item-remove-action/target                   nil})
+                 :cart-item-remove-action/target    [events/control-checkout-remove-promotion {:code "freeinstall"}]
+                 :cart-item-stylist-thumbnail/id           "freeinstall"
+                 :cart-item-stylist-thumbnail/image-url           "//ucarecdn.com/3a25c870-fac1-4809-b575-2b130625d22a/"
+                 :cart-item-stylist-thumbnail/highlighted? (get-in app-state keypaths/cart-freeinstall-just-added?)}
 
           ;; Locked basically means the freeinstall coupon code was entered, yet not all the requirements
           ;; of a free install order to generate a voucher have been satisfied.
@@ -387,13 +358,8 @@
                    :cart-item-steps-to-complete/steps         (->> quantity-required
                                                                    range
                                                                    (map inc))
-                   :cart-item-steps-to-complete/current-step  quantity-added})
-
-          (and locked? matched?)
-          (merge {:cart-item-matched-stylist-thumbnail/locked? true})
-
-          (and locked? (not matched?))
-          (merge {:cart-item-unmatched-stylist-thumbnail/locked? true})
+                   :cart-item-steps-to-complete/current-step  quantity-added
+                   :cart-item-stylist-thumbnail/locked?       true})
 
           (and applied? (not matched?) pick-stylist?)
           (merge {:cart-item-pick-stylist/id      "pick-a-stylist"
@@ -408,8 +374,7 @@
                   :cart-item-copy/id       "congratulations"})
 
           (and applied? matched?)
-          (merge {:rating/value         (:rating stylist)
-                  :cart-item-copy/value nil}))]))))
+          (merge {:cart-item-copy/value "Congratulations! You're all set for your Mayvenn Install."}))]))))
 
 (defn coupon-code->remove-promo-action [coupon-code]
   {:cart-summary-line/action-id     "cart-remove-promo"
@@ -551,48 +516,51 @@
                                                 :catalog/category-id "23"}
                                                (when last-texture-added
                                                  {:query-params {:subsection last-texture-added}}))]]
-    (cond-> {:suggestions               (suggestions/consolidated-query data)
-             :line-items                line-items
-             :skus                      skus
-             :products                  products
-             :promo-banner              (when (zero? (orders/product-quantity order))
-                                          (promo-banner/query data))
-             :call-out                  (call-out/query data)
-             :checkout-disabled?        (or freeinstall-entered-cart-incomplete?
-                                            (update-pending? data))
-             :redirecting-to-paypal?    (get-in data keypaths/cart-paypal-redirect)
-             :share-carts?              (stylists/own-store? data)
-             :requesting-shared-cart?   (utils/requesting? data request-keys/create-shared-cart)
-             :show-browser-pay?         (and (get-in data keypaths/loaded-stripe)
-                                             (experiments/browser-pay? data)
-                                             (seq (get-in data keypaths/shipping-methods))
-                                             (seq (get-in data keypaths/states)))
-             :recently-added-skus       recently-added-sku-ids
-             :return-link/id            "continue-shopping"
-             :return-link/copy          "Continue Shopping"
-             :return-link/event-message add-items-action
-             :quantity-remaining        (:mayvenn-install/quantity-remaining mayvenn-install)
-             :locked?                   locked?
-             :entered?                  entered?
-             :applied?                  (:mayvenn-install/applied? mayvenn-install)
-             :remove-freeinstall-event  [events/control-checkout-remove-promotion {:code "freeinstall"}]
-             :cart-summary              (merge
-                                         (cart-summary-query order mayvenn-install)
-                                         (when (and (orders/no-applied-promo? order)
-                                                    (not entered?))
-                                           {:promo-field-data (promo-input-query data)}))
-             :cart-items                (cart-items-query data mayvenn-install line-items skus add-items-action)
-             :quadpay/order-total       (when-not locked? (:total order))
-             :quadpay/show?             (get-in data keypaths/loaded-quadpay)
-             :quadpay/directive         (if locked? :no-total :just-select)}
+        (cond-> {:suggestions                        (suggestions/consolidated-query data)
+                 :line-items                         line-items
+                 :skus                               skus
+                 :products                           products
+                 :promo-banner                       (when (zero? (orders/product-quantity order))
+                                                       (promo-banner/query data))
+                 :call-out                           (call-out/query data)
+                 :checkout-disabled?                 (or freeinstall-entered-cart-incomplete?
+                                                         (update-pending? data))
+                 :redirecting-to-paypal?             (get-in data keypaths/cart-paypal-redirect)
+                 :share-carts?                       (stylists/own-store? data)
+                 :requesting-shared-cart?            (utils/requesting? data request-keys/create-shared-cart)
+                 :show-browser-pay?                  (and (get-in data keypaths/loaded-stripe)
+                                                          (experiments/browser-pay? data)
+                                                          (seq (get-in data keypaths/shipping-methods))
+                                                          (seq (get-in data keypaths/states)))
+                 :recently-added-skus                recently-added-sku-ids
+                 :return-link/id                     "continue-shopping"
+                 :return-link/copy                   "Continue Shopping"
+                 :return-link/event-message          add-items-action
+                 :quantity-remaining                 (:mayvenn-install/quantity-remaining mayvenn-install)
+                 :locked?                            locked?
+                 :entered?                           entered?
+                 :applied?                           (:mayvenn-install/applied? mayvenn-install)
+                 :remove-freeinstall-event           [events/control-checkout-remove-promotion {:code "freeinstall"}]
+                 :cart-summary                       (merge
+                                                      (cart-summary-query order mayvenn-install)
+                                                      (when (and (orders/no-applied-promo? order)
+                                                                 (not entered?))
+                                                        {:promo-field-data (promo-input-query data)}))
+                 :cart-items                         (cart-items-query data mayvenn-install line-items skus add-items-action)
+                 :quadpay/order-total                (when-not locked? (:total order))
+                 :quadpay/show?                      (get-in data keypaths/loaded-quadpay)
+                 :quadpay/directive                  (if locked? :no-total :just-select)
+                 :servicing-stylist-banner/name      (:store-nickname servicing-stylist)
+                 :servicing-stylist-banner/rating    {:rating/value (:rating servicing-stylist)}
+                 :servicing-stylist-banner/image-url (some-> servicing-stylist :portrait :resizable-url)}
 
-      entered?
-      (merge {:checkout-caption-copy          "You'll be able to select your Mayvenn Certified Stylist after checkout."
-              :servicing-stylist-portrait-url "//ucarecdn.com/bc776b8a-595d-46ef-820e-04915478ffe8/"})
+          entered?
+          (merge {:checkout-caption-copy          "You'll be able to select your Mayvenn Certified Stylist after checkout."
+                  :servicing-stylist-portrait-url "//ucarecdn.com/bc776b8a-595d-46ef-820e-04915478ffe8/"})
 
-      (and entered? servicing-stylist)
-      (merge {:checkout-caption-copy          (str "After your order ships, you'll be connected with " (stylists/->display-name servicing-stylist) " over SMS to make an appointment.")
-              :servicing-stylist-portrait-url (-> servicing-stylist :portrait :resizable-url)}))))
+          (and entered? servicing-stylist)
+          (merge {:checkout-caption-copy          (str "After your order ships, you'll be connected with " (stylists/->display-name servicing-stylist) " over SMS to make an appointment.")
+                  :servicing-stylist-portrait-url (-> servicing-stylist :portrait :resizable-url)}))))
 
 (defn cart-component
   [{:keys [fetching-order?

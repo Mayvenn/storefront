@@ -106,62 +106,30 @@
                         :class "block rounded border border-light-gray"}
                        ucare-id)])])))
 
-(defn cart-item-matched-stylist-thumbnail-molecule
-  [{:cart-item-matched-stylist-thumbnail/keys [id highlighted? value locked? image-url]}]
-  (when id
-    (css-transitions/transition-background-color
-     highlighted?
-     (let [diameter                  50             ; Stylist portrait / Generic stylist image
-           lock-circle-diameter      (- diameter 4) ; Overlay lock scrim
-           highlight-circle-diameter (+ diameter 6)] ; highlight
-       [:div.flex.justify-center.items-center
+(defn cart-item-stylist-thumbnail-molecule
+  [{:cart-item-stylist-thumbnail/keys [id highlighted? value locked?]}]
+  (let [image-url "//ucarecdn.com/3a25c870-fac1-4809-b575-2b130625d22a/"]
+    (when id
+      (css-transitions/transition-background-color
+       highlighted?
+       [:div.flex.justify-center.mtn2
         {:style {:border-radius "50%"
-                 :width         (str highlight-circle-diameter "px")
-                 :height        (str highlight-circle-diameter "px")}}
+                 :width         "56px"
+                 :height        "56px"}}
         value
         [:div.relative
-         (when locked?
-           [:div.absolute.z1.col-12.flex.items-center.justify-center
-            {:style {:height "100%"}}
-
-            [:div {:class "absolute z1 block"
-                   :style {:background    "#ffffffdd"
-                           :width         (str diameter "px")
-                           :height        (str diameter "px")
-                           :border-radius "50%"}}]
-            [:div.absolute.z2.col-12.flex.items-center.justify-center
+         (if locked?
+           [:div
+            [:div.absolute.z1.col-12.flex.items-center.justify-center
              {:style {:height "100%"}}
-             (svg/lock {:style {:width  "17px"
-                                :height "23px"}})]])
-         (ui/circle-picture
-          {:width diameter}
-          ;; Note: We are not using ucare-id because stylist portraits may have
-          ;; ucarecdn crop parameters saved into the url
-          (ui/square-image {:resizable-url image-url} diameter))]]))))
-
-(defn cart-item-unmatched-stylist-thumbnail-molecule
-  [{:cart-item-unmatched-stylist-thumbnail/keys [id highlighted? value locked? image-url]}]
-  (when id
-    (css-transitions/transition-background-color
-     highlighted?
-     [:div.flex.justify-center
-      {:style {:border-radius "50%"
-               :width         "56px"
-               :height        "56px"}}
-      value
-      [:div.relative
-       (if locked?
-         [:div
-          [:div.absolute.z1.col-12.flex.items-center.justify-center
-           {:style {:height "100%"}}
-                [:div.absolute.z2.col-12.flex.items-center.justify-center
-                 {:style {:height "100%"}}
-                 (svg/lock {:style {:width   "17px"
-                                    :height  "23px"
-                                    :opacity ".75"}})]]
-          (ui/ucare-img {:width "50px"
-                         :style {:filter "contrast(0.1) brightness(1.75)"}}  image-url)]
-         (ui/ucare-img {:width "50px"}  image-url))]])))
+             [:div.absolute.z2.col-12.flex.items-center.justify-center
+              {:style {:height "100%"}}
+              (svg/lock {:style {:width   "17px"
+                                 :height  "23px"
+                                 :opacity ".75"}})]]
+            (ui/ucare-img {:width "50px"
+                           :style {:filter "contrast(0.1) brightness(1.75)"}}  image-url)]
+           (ui/ucare-img {:width "50px"}  image-url))]]))))
 
 (defn cart-item-remove-action-molecule
   [{:cart-item-remove-action/keys [id target spinning?]}]
@@ -218,11 +186,10 @@
       [:div.pt1.pb2.ml2.flex
        {:key react-key}
        ;; image group
-       [:div.relative.justify-middle.pt3
+       [:div.relative.pt3
         {:style {:min-width "78px"}}
         (cart-item-squircle-thumbnail-molecule cart-item)
-        (cart-item-unmatched-stylist-thumbnail-molecule cart-item)
-        (cart-item-matched-stylist-thumbnail-molecule cart-item)]
+        (cart-item-stylist-thumbnail-molecule cart-item)]
 
        ;; info group
        [:div.flex-grow-1
