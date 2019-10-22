@@ -179,7 +179,8 @@
                                                                    .-height))))]
        (component/create-dynamic "sticky-organism"
          (constructor [this props]
-           (set! (.-banner this) (react/createRef))
+           (component/create-ref! this "banner")
+           (set! (.-banner this) (component/use-ref this "banner"))
            (set! (.-handle-scroll this) (.bind handle-scroll this))
            (set! (.-set-height this) (.bind set-height this))
            {:show?              false
@@ -203,7 +204,7 @@
                   :class "transition-2"}
                  {:class "hide"
                   :style {:margin-top (str "-" banner-height "px")}})
-               [:div {:ref "banner"}
+               [:div {:ref (.-banner this)}
                 (component/build component data opts)]])))))))
 
 (defn built-sticky-organism
