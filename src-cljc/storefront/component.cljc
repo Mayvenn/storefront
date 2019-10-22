@@ -279,9 +279,5 @@
              args docstring?]
          `(defn ~name ~args (create ~name ~@body))))))
 
-(defmacro ^{:style/indent :defn} defdynamic-component [name docstring? args & methods]
-  (if (string? docstring?)
-    `(defn ~name ~docstring? ~args (create-dynamic ~name ~@methods))
-    (let [methods (conj methods args)
-          args    docstring?]
-      `(defn ~name ~args (create-dynamic ~name ~@methods)))))
+(defmacro ^{:style/indent :defn} defdynamic-component [name args & methods]
+  `(def ~name (create-dynamic ~name ~@methods)))
