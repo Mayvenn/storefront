@@ -1,7 +1,7 @@
 (ns storefront.hooks.quadpay
   (:require [storefront.browser.tags :as tags]
             [storefront.browser.events :as browser.events]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent defdynamic-component]]
             [storefront.components.svg :as svg]
             [storefront.platform.messages :refer [handle-message]]
             [storefront.events :as events]
@@ -33,15 +33,12 @@
 (defn calc-installment-amount [full-amount]
   (.toFixed (/ full-amount 4) 2))
 
-(defn widget-component
-  [{:keys [full-amount]} owner opts]
-  (reify
-    om/IDidMount
-    (did-mount [_] (browser.events/invoke-late-ready-state-listeners))
-    om/IRender
-    (render [_]
-      (html
-       [:quadpay-widget {:amount full-amount}]))))
+(defdynamic-component widget-component
+  [_ owner opts]
+  (did-mount [_] (browser.events/invoke-late-ready-state-listeners))
+  (render [this] (let [{:keys [full-amount]} (component/get-props this)]
+                   (component/html
+                    [:quadpay-widget {:amount full-amount}]))))
 
 (defn component [{:quadpay/keys [show? order-total directive]} owner opts]
   (component/create
