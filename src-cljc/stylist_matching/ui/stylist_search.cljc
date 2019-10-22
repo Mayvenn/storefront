@@ -2,7 +2,7 @@
   (:require #?(:cljs [om.core :as om])
             [storefront.events :as events]
             adventure.keypaths
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent defdynamic-component]]
             [storefront.platform.messages :as messages]
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]))
@@ -50,30 +50,19 @@
       [:div.h1.my2.light primary]
       [:div.h5.my2.light secondary]])))
 
-(defn ^:private wrap-event-on-mount
-  [target data component]
-  #?(:clj
-     (component/html component)
-     :cljs
-     (reify
-       om/IDidMount
-       (did-mount [this]
-         (apply messages/handle-message target))
-       om/IRender
-       (render [_]
-         (component/html component)))))
-
-(defn organism
+(defdynamic-component organism
   [data _ _]
-  (wrap-event-on-mount
-   [events/adventure-address-component-mounted
-    {:address-elem    "stylist-match-address"
-     :address-keypath adventure.keypaths/adventure-stylist-match-location}]
-   data
-   [:div.m5
-    [:div.mb4
-     (stylist-search-title-molecule data)]
-    [:div.mb3
-     (stylist-search-location-search-box data)]
-    [:div
-     (stylist-search-button data)]]))
+  (did-mount [_]
+   (messages/handle-message events/adventure-address-component-mounted
+                            {:address-elem    "stylist-match-address"
+                             :address-keypath adventure.keypaths/adventure-stylist-match-location}))
+  (render [this]
+    (let [data (component/get-props this)]
+      (component/html
+        [:div.m5
+        [:div.mb4
+          (stylist-search-title-molecule data)]
+        [:div.mb3
+          (stylist-search-location-search-box data)]
+        [:div
+          (stylist-search-button data)]]))))

@@ -1,7 +1,7 @@
 (ns storefront.components.checkout-address
   (:require [om.core :as om]
             [sablono.core :refer [html]]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent defdynamic-component]]
             [storefront.components.checkout-steps :as checkout-steps]
             [storefront.components.ui :as ui]
             [ui.promo-banner :as promo-banner]
@@ -11,26 +11,26 @@
             [storefront.platform.messages :refer [handle-message]]
             [storefront.request-keys :as request-keys]))
 
-(defn ^:private places-component [{:keys [focused id address-keypath keypath value data-test errors]} owner]
-  (reify
-    om/IDidMount
-    (did-mount [this]
+(defdynamic-component ^:private places-component
+  [data owner opts]
+  (did-mount [this]
+    (let [{:keys [address-keypath id]} (component/get-props this)]
       (handle-message events/checkout-address-component-mounted {:address-elem    id
-                                                                 :address-keypath address-keypath}))
-    om/IRender
-    (render [_]
-      (html
-       (ui/text-field {:data-test   data-test
-                       :errors      errors
-                       :id          id
-                       :keypath     keypath
-                       :focused     focused
-                       :label       "Address"
-                       :name        id
-                       :on-key-down utils/suppress-return-key
-                       :required    true
-                       :type        "text"
-                       :value       value})))))
+                                                                 :address-keypath address-keypath})))
+  (render [this]
+    (let [{:keys [focused id keypath value data-test errors]} (component/get-props this)]
+      (component/html
+        (ui/text-field {:data-test   data-test
+                        :errors      errors
+                        :id          id
+                        :keypath     keypath
+                        :focused     focused
+                        :label       "Address"
+                        :name        id
+                        :on-key-down utils/suppress-return-key
+                        :required    true
+                        :type        "text"
+                        :value       value})))))
 
 (defn ^:private shipping-address-component
   [{:keys [focused shipping-address states email become-guest? google-maps-loaded? field-errors]} owner]
@@ -87,7 +87,7 @@
                      :value     (:phone shipping-address)})
 
      (when google-maps-loaded?
-       (om/build places-component {:id              :shipping-address1
+       (component/build places-component {:id              :shipping-address1
                                    :data-test       "shipping-address1"
                                    :address-keypath keypaths/checkout-shipping-address
                                    :keypath         keypaths/checkout-shipping-address-address1
@@ -202,14 +202,14 @@
                         :value     (:phone billing-address)})
 
         (when google-maps-loaded?
-          (om/build places-component {:id              :billing-address1
-                                      :data-test       "billing-address1"
-                                      :address-keypath keypaths/checkout-billing-address
-                                      :keypath         keypaths/checkout-billing-address-address1
-                                      :focused         focused
-                                      :errors          (get field-errors ["billing-address" "address1"])
-                                      :auto-complete   "billing address-line1"
-                                      :value           (:address1 billing-address)}))
+          (component/build places-component {:id              :billing-address1
+                                             :data-test       "billing-address1"
+                                             :address-keypath keypaths/checkout-billing-address
+                                             :keypath         keypaths/checkout-billing-address-address1
+                                             :focused         focused
+                                             :errors          (get field-errors ["billing-address" "address1"])
+                                             :auto-complete   "billing address-line1"
+                                             :value           (:address1 billing-address)} nil))
 
         [:.flex.flex-column.items-center.col-12
          [:.col-12
