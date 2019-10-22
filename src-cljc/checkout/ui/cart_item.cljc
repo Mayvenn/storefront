@@ -126,8 +126,8 @@
 
             [:div {:class "absolute z1 block"
                    :style {:background    "#ffffffdd"
-                           :width         (str lock-circle-diameter "px")
-                           :height        (str lock-circle-diameter "px")
+                           :width         (str diameter "px")
+                           :height        (str diameter "px")
                            :border-radius "50%"}}]
             [:div.absolute.z2.col-12.flex.items-center.justify-center
              {:style {:height "100%"}}
