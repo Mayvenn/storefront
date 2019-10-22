@@ -184,7 +184,7 @@
              ;; in dev mode: assert proper usage
              (when ^boolean goog/DEBUG
                (assert (methods "render")
-                       (str "render method missing for " name)))
+                       (str "render method missing for " name (pr-str (keys methods)))))
              (utils/create-component
               ctor
               {"displayName"         name
