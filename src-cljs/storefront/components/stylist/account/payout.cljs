@@ -34,27 +34,21 @@
   [_ event {:keys [frame]} app-state]
   (assoc-in app-state keypaths/spreedly-frame frame))
 
-(defn credit-card-fields [data owner opts]
-  (reify
-    om/IInitState
-    (init-state [_] {:ready? false})
-    om/IDidMount
-    (did-mount [_] (handle-message events/spreedly-did-mount))
-    om/IWillUnmount
-    (will-unmount [_] (handle-message events/spreedly-did-unmount))
-    om/IWillReceiveProps
-    (will-receive-props [this {:keys [ready?]}]
-      (om/set-state! owner :ready? ready?))
-    om/IRenderState
-    (render-state [_ {:keys [ready?]}]
-      (html
-       [:div.clearfix
-        [:div#green-dot-card-number.col.col-8.h4.line-height-1.rounded-left.rounded.border.x-group-item.border-gray.p2.mb2
-         {:style {:height "43px"}
-          :class (when-not ready? "bg-light-gray")}]
-        [:div#green-dot-cvv.col.col-4.h4.line-height-1.rounded.rounded-right.border.x-group-item.border-gray.p2.mb2
-         {:style {:height "43px"}
-          :class (when-not ready? "bg-light-gray")}]]))))
+(defdynamic-component credit-card-fields
+  [data owner opts]
+  (constructor [_ props] {:ready? false})
+  (did-mount [_] (handle-message events/spreedly-did-mount))
+  (will-unmount [_] (handle-message events/spreedly-did-unmount))
+  (render [this]
+   (let [{:keys [ready?]} (component/get-props this)]
+     (component/html
+      [:div.clearfix
+       [:div#green-dot-card-number.col.col-8.h4.line-height-1.rounded-left.rounded.border.x-group-item.border-gray.p2.mb2
+        {:style {:height "43px"}
+         :class (when-not ready? "bg-light-gray")}]
+       [:div#green-dot-cvv.col.col-4.h4.line-height-1.rounded.rounded-right.border.x-group-item.border-gray.p2.mb2
+        {:style {:height "43px"}
+         :class (when-not ready? "bg-light-gray")}]]))))
 
 (def green-dot-keypath (partial conj keypaths/stylist-manage-account-green-dot-payout-attributes))
 
