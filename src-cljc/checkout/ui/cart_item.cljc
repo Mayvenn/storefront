@@ -1,7 +1,6 @@
 (ns checkout.ui.cart-item
   (:require [checkout.suggestions :as suggestions]
             [storefront.component :as component]
-            [storefront.components.money-formatters :as mf]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.css-transitions :as css-transitions]
@@ -106,30 +105,28 @@
                         :class "block rounded border border-light-gray"}
                        ucare-id)])])))
 
-(defn cart-item-stylist-thumbnail-molecule
-  [{:cart-item-stylist-thumbnail/keys [id highlighted? value locked?]}]
-  (let [image-url "//ucarecdn.com/3a25c870-fac1-4809-b575-2b130625d22a/"]
-    (when id
-      (css-transitions/transition-background-color
-       highlighted?
-       [:div.flex.justify-center.mtn2
-        {:style {:border-radius "50%"
-                 :width         "56px"
-                 :height        "56px"}}
-        value
-        [:div.relative
-         (if locked?
-           [:div
-            [:div.absolute.z1.col-12.flex.items-center.justify-center
-             {:style {:height "100%"}}
-             [:div.absolute.z2.col-12.flex.items-center.justify-center
-              {:style {:height "100%"}}
-              (svg/lock {:style {:width   "17px"
-                                 :height  "23px"
-                                 :opacity ".75"}})]]
-            (ui/ucare-img {:width "50px"
-                           :style {:filter "contrast(0.1) brightness(1.75)"}}  image-url)]
-           (ui/ucare-img {:width "50px"}  image-url))]]))))
+(defn cart-item-service-thumbnail-molecule
+  [{:cart-item-service-thumbnail/keys [id highlighted? image-url locked?]}]
+  (when id
+    (css-transitions/transition-background-color
+     highlighted?
+     [:div.flex.justify-center.mtn2
+      {:style {:border-radius "50%"
+               :width         "56px"
+               :height        "56px"}}
+      [:div.relative
+       (if locked?
+         [:div
+          [:div.absolute.z1.col-12.flex.items-center.justify-center
+           {:style {:height "100%"}}
+           [:div.absolute.z2.col-12.flex.items-center.justify-center
+            {:style {:height "100%"}}
+            (svg/lock {:style {:width   "17px"
+                               :height  "23px"
+                               :opacity ".75"}})]]
+          (ui/ucare-img {:width "50px"
+                         :style {:filter "contrast(0.1) brightness(1.75)"}} image-url)]
+         (ui/ucare-img {:width "50px"} image-url))]])))
 
 (defn cart-item-remove-action-molecule
   [{:cart-item-remove-action/keys [id target spinning?]}]
@@ -189,7 +186,7 @@
        [:div.relative.pt3
         {:style {:min-width "78px"}}
         (cart-item-squircle-thumbnail-molecule cart-item)
-        (cart-item-stylist-thumbnail-molecule cart-item)]
+        (cart-item-service-thumbnail-molecule cart-item)]
 
        ;; info group
        [:div.flex-grow-1

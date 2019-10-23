@@ -57,9 +57,9 @@
    [:div.flex-grow-1.border-bottom.border-light-gray]])
 
 (defn servicing-stylist-banner-component
-  [{:servicing-stylist-banner/keys [name image-url rating]}]
-  (when name
-    [:div.flex.bg-too-light-lavender.pl5.pr3.py2.items-center
+  [{:servicing-stylist-banner/keys [id name image-url rating]}]
+  (when id
+    [:div.flex.bg-too-light-lavender.pl5.pr3.py2.items-center {:data-test id}
      (ui/circle-picture {:width 50} (ui/square-image {:resizable-url image-url} 50))
      [:div.flex-grow-1.ml5.line-height-1.medium
       [:div.h7 "Your Certified Mayvenn Stylist"]
@@ -331,20 +331,20 @@
     (cond-> cart-items
       entered?
       (concat
-       [(cond-> {:react/key                         "freeinstall-line-item-freeinstall"
-                 :cart-item-title/id                "line-item-title-freeinstall"
-                 :cart-item-floating-box/id         "line-item-price-freeinstall"
-                 :cart-item-floating-box/value     [:div.right.medium
-                                                    [:div.h6 {:class     (when line-items-discounts? "strike")
-                                                              :data-test (str "line-item-freeinstall-price")}
-                                                     (some-> service-discount - mf/as-money)]
-                                                    (when line-items-discounts? [:div.h6.right-align.purple "FREE"])]
-                 :cart-item-remove-action/id        "line-item-remove-freeinstall"
-                 :cart-item-remove-action/spinning? (utils/requesting? app-state request-keys/remove-promotion-code)
-                 :cart-item-remove-action/target    [events/control-checkout-remove-promotion {:code "freeinstall"}]
-                 :cart-item-stylist-thumbnail/id           "freeinstall"
-                 :cart-item-stylist-thumbnail/image-url           "//ucarecdn.com/3a25c870-fac1-4809-b575-2b130625d22a/"
-                 :cart-item-stylist-thumbnail/highlighted? (get-in app-state keypaths/cart-freeinstall-just-added?)}
+       [(cond-> {:react/key                                "freeinstall-line-item-freeinstall"
+                 :cart-item-title/id                       "line-item-title-freeinstall"
+                 :cart-item-floating-box/id                "line-item-price-freeinstall"
+                 :cart-item-floating-box/value             [:div.right.medium
+                                                             [:div.h6 {:class     (when line-items-discounts? "strike")
+                                                                       :data-test (str "line-item-freeinstall-price")}
+                                                             (some-> service-discount - mf/as-money)]
+                                                             (when line-items-discounts? [:div.h6.right-align.purple "FREE"])]
+                 :cart-item-remove-action/id               "line-item-remove-freeinstall"
+                 :cart-item-remove-action/spinning?        (utils/requesting? app-state request-keys/remove-promotion-code)
+                 :cart-item-remove-action/target           [events/control-checkout-remove-promotion {:code "freeinstall"}]
+                 :cart-item-service-thumbnail/id           "freeinstall"
+                 :cart-item-service-thumbnail/image-url    "//ucarecdn.com/3a25c870-fac1-4809-b575-2b130625d22a/"
+                 :cart-item-service-thumbnail/highlighted? (get-in app-state keypaths/cart-freeinstall-just-added?)}
 
           ;; Locked basically means the freeinstall coupon code was entered, yet not all the requirements
           ;; of a free install order to generate a voucher have been satisfied.
@@ -359,7 +359,7 @@
                                                                    range
                                                                    (map inc))
                    :cart-item-steps-to-complete/current-step  quantity-added
-                   :cart-item-stylist-thumbnail/locked?       true})
+                   :cart-item-service-thumbnail/locked?       true})
 
           (and applied? (not matched?) pick-stylist?)
           (merge {:cart-item-pick-stylist/id      "pick-a-stylist"
@@ -550,6 +550,7 @@
                  :quadpay/order-total                (when-not locked? (:total order))
                  :quadpay/show?                      (get-in data keypaths/loaded-quadpay)
                  :quadpay/directive                  (if locked? :no-total :just-select)
+                 :servicing-stylist-banner/id        "servicing-stylist-banner"
                  :servicing-stylist-banner/name      (:store-nickname servicing-stylist)
                  :servicing-stylist-banner/rating    {:rating/value (:rating servicing-stylist)}
                  :servicing-stylist-banner/image-url (some-> servicing-stylist :portrait :resizable-url)}

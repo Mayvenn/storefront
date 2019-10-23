@@ -321,15 +321,15 @@
       applied?
       (spice.maps/deep-merge {:freeinstall-cart-item
                               {:cart-item
-                               {:react/key                         "freeinstall-line-item-freeinstall"
-                                :cart-item-stylist-thumbnail/id    "freeinstall"
-                                :cart-item-stylist-thumbnail/value nil
-                                :cart-item-title/id                "line-item-title-freeinstall"
-                                :cart-item-floating-box/id         "line-item-price-freeinstall"
-                                :cart-item-floating-box/value      [:div.right.medium.my-auto.flex.items-center
-                                                                    {:style {:height "100%"}}
-                                                                    [:div.h6 {:data-test "line-item-freeinstall-price"}
-                                                                     (some-> service-discount - mf/as-money)]]}}})
+                               {:react/key                             "freeinstall-line-item-freeinstall"
+                                :cart-item-service-thumbnail/id        "freeinstall"
+                                :cart-item-service-thumbnail/image-url "//ucarecdn.com/3a25c870-fac1-4809-b575-2b130625d22a/"
+                                :cart-item-title/id                    "line-item-title-freeinstall"
+                                :cart-item-floating-box/id             "line-item-price-freeinstall"
+                                :cart-item-floating-box/value          [:div.right.medium.my-auto.flex.items-center
+                                                                        {:style {:height "100%"}}
+                                                                        [:div.h6 {:data-test "line-item-freeinstall-price"}
+                                                                         (some-> service-discount - mf/as-money)]]}}})
 
       (and applied? stylist)
       (spice.maps/deep-merge  {:freeinstall-cart-item
