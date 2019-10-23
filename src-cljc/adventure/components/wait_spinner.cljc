@@ -11,5 +11,5 @@
             :width "90px"}]]
     [:div.col-8.h3.my2.medium.center "Matching you with a" [:br] " Mayvenn Certified Stylist..."]
     [:ul.col-7.h6.list-img-purple-checkmark
-     (mapv (fn [%] [:li.mb1 %])
            ["Licensed Salon Stylist" "Mayvenn Certified" "In your area"])]]))
+     (mapv (fn [%] [:li.mb1 {:key %} %])
