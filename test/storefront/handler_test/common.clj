@@ -209,6 +209,8 @@
 (def default-storeback-handler
   (routes
    (GET "/store" req storeback-stylist-response)
+   (GET "/v2/products" req {:status 200
+                            :body   "{}"})
    (GET "/v2/facets" req {:status 200
                           :body   "{}"})))
 
