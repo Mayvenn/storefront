@@ -190,7 +190,6 @@
   (testing "when the product exists"
     (let [[_ storeback-handler]
           (with-requests-chan (routes
-                               common/default-storeback-handler
                                (GET "/v2/orders/:number" req {:status 404
                                                               :body   "{}"})
                                (GET "/v2/products" req
@@ -259,7 +258,8 @@
                                                                            :legacy/product-name          "A balloon"
                                                                            :legacy/product-id            133
                                                                            :legacy/variant-id            641
-                                                                           :promo.triple-bundle/eligible true}]})})))]
+                                                                           :promo.triple-bundle/eligible true}]})})
+                               common/default-storeback-handler))]
       (with-services {:storeback-handler storeback-handler}
         (with-handler handler
           (has-canonized-link handler "//bob.mayvenn.com/products/67-peruvian-water-wave-lace-closures")
