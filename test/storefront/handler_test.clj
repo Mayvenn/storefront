@@ -8,6 +8,7 @@
             [ring.mock.request :as mock]
             [ring.util.codec :as codec]
             [ring.util.response :refer [content-type response status]]
+            [spice.maps :as maps]
             [standalone-test-server.core
              :refer
              [txfm-request txfm-requests with-requests-chan]]
@@ -15,11 +16,7 @@
              :as
              common
              :refer
-             [with-handler with-services]]
-            [ajax.json :as json]
-            [storefront.routes :as routes]
-            [storefront.events :as events]
-            [com.stuartsierra.component :as component]))
+             [with-handler with-services]]))
 
 (defn set-cookies [req cookies]
   (update req :headers assoc "cookie" (string/join "; " (map (fn [[k v]] (str k "=" v)) cookies))))
@@ -137,22 +134,6 @@
      (is (= 200 (:status resp)))
      (is (.contains (first (get-in resp [:headers "Set-Cookie"])) "preferred-store-slug=bob;")))))
 
-(defmacro has-canonized-link [handler url]
-  `(let [handler#       ~handler
-         url#           ~url
-         canonized-url# (-> (uri/uri url#)
-                            (assoc :host "shop.mayvenn.com"
-                                   :scheme "https"))
-         link-url#      (some->> (mock/request :get (str "https:" url#))
-                             handler#
-                             :body
-                             (re-find #"<link[^>]+rel=\"canonical[^>]+>")
-                             (re-find #"href=\"[^\"]+\"")
-                             (re-find #"\"[^\"]+\"")
-                             (re-find #"[^\"]+")
-                             uri/uri)]
-     (is (= canonized-url# link-url#))))
-
 (deftest server-properly-encodes-data
   (testing "properly encoding query-params as edn without error"
     (with-services {}
@@ -163,6 +144,22 @@
           (is (edn/read-string (parse-string data-edn))
               (format "Invalid EDN read-string: " (pr-str data-edn)))
           (is (= 200 (:status resp))))))))
+
+(defmacro has-canonized-link [handler url]
+  `(let [handler#       ~handler
+         url#           ~url
+         canonized-url# (-> (uri/uri url#)
+                            (assoc :host "shop.mayvenn.com"
+                                   :scheme "https"))
+         link-url#      (some->> (mock/request :get (str "https:" url#))
+                                 handler#
+                                 :body
+                                 (re-find #"<link[^>]+rel=\"canonical[^>]+>")
+                                 (re-find #"href=\"[^\"]+\"")
+                                 (re-find #"\"[^\"]+\"")
+                                 (re-find #"[^\"]+")
+                                 uri/uri)]
+     (is (= canonized-url# link-url#))))
 
 (deftest server-side-renders-product-details-page
   (testing "when the product does not exist storefront returns 404"
@@ -498,3 +495,54 @@
             (is (= 200 (:status resp))
                 (get-in resp [:headers "Location"]))
             (is (= 1 (count (txfm-requests storeback-requests identity))))))))))
+
+(defn parse-canonical-uri
+  [body]
+  (some->> body
+           (re-find #"<link[^>]+rel=\"canonical[^>]+>")
+           (re-find #"href=\"[^\"]+\"")
+           (re-find #"\"[^\"]+\"")
+           (re-find #"[^\"]+")
+           (#(string/replace % #"&amp;" "&"))
+           uri/uri))
+
+(defn decode-query-string [query-string]
+  (if (empty? query-string)
+    {}
+    (codec/form-decode query-string)))
+
+(defn response->query-param-map
+  [resp]
+  (->> (:body resp)
+       parse-canonical-uri
+       :query
+       decode-query-string
+       (maps/map-keys keyword)))
+
+(deftest canonical-uris-query-params
+  (with-services {}
+    (with-handler handler
+      (testing "fetching category page with allowed and extraneous query params"
+        (let [resp (->> "https://shop.mayvenn.com/categories/7-Virgin-water-wave?base-material=lace&origin=peruvian&foo=bar"
+                        (mock/request :get)
+                        handler)]
+          (is (= 200 (:status resp)))
+          (is (= {:origin "peruvian" :base-material "lace"} (response->query-param-map resp)))))
+      (testing "fetching category page with no query params"
+        (let [resp (->> "https://shop.mayvenn.com/categories/7-Virgin-water-wave"
+                        (mock/request :get)
+                        handler)]
+          (is (= 200 (:status resp)))
+          (is (= {} (response->query-param-map resp)))))
+      (testing "fetching non-category page with no query params"
+        (let [resp (->> "https://shop.mayvenn.com"
+                        (mock/request :get)
+                        handler)]
+          (is (= 200 (:status resp)))
+          (is (= {} (response->query-param-map resp)))))
+      (testing "fetching non-category page with query params"
+        (let [resp (->> "https://shop.mayvenn.com?utm_something=deal_with_it"
+                        (mock/request :get)
+                        handler)]
+          (is (= 200 (:status resp)))
+          (is (= {} (response->query-param-map resp))))))))

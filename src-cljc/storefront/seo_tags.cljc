@@ -73,15 +73,15 @@
     "color"})
 
 (defn filter-seo-query-params
-  [nav-event query-params]
-  (if (= events/navigate-category nav-event)
-    (->> (clojure.string/split "base-material=lace&origin=peruvian&foo=bar" #"&")
+  [nav-event query-string]
+  (when (= events/navigate-category nav-event)
+    (->> (clojure.string/split query-string #"&")
          (map #(clojure.string/split % #"="))
          (into {})
          (#(select-keys % allowed-category-page-query-params))
          (map #(clojure.string/join "=" %))
-         (clojure.string/join "&"))
-    {}))
+         (clojure.string/join "&")
+         not-empty)))
 
 (defn canonical-uri
   [data]
