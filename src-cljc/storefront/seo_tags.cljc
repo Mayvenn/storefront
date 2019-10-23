@@ -75,7 +75,12 @@
 (defn filter-seo-query-params
   [nav-event query-params]
   (if (= events/navigate-category nav-event)
-    (select-keys query-params allowed-category-page-query-params)
+    (->> (clojure.string/split "base-material=lace&origin=peruvian&foo=bar" #"&")
+         (map #(clojure.string/split % #"="))
+         (into {})
+         (#(select-keys % allowed-category-page-query-params))
+         (map #(clojure.string/join "=" %))
+         (clojure.string/join "&"))
     {}))
 
 (defn canonical-uri
