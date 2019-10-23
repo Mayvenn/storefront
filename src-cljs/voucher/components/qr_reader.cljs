@@ -2,6 +2,7 @@
   (:require [sablono.core :refer [html]]
             jsQR
             [om.core :as om]
+            [storefront.component :as component :refer [defdynamic-component]]
             [storefront.events :as events]
             [storefront.platform.messages :as messages]))
 
@@ -130,30 +131,26 @@
 (defn camera-permission-denied []
   (messages/handle-message events/voucher-camera-permission-denied))
 
-(defn component [{:keys [] :as data} owner _]
-  (reify
-    om/IInitState
-    (init-state [_]
-      {:control (atom {})
-       :stream  (atom nil)})
-    om.core/IDidMount
-    (did-mount [this]
-      (let [video        (js/document.createElement "video")
-            canvas       (om/get-ref owner "qr-canvas")
-            control      (:control (om/get-state owner))
-            state-stream (:stream (om/get-state owner))]
-        (.then (js/navigator.mediaDevices.getUserMedia (clj->js {:video {:facingMode "environment"}}))
-               (fn [stream]
-                 (reset! state-stream stream)
-                 (start-render-loop video canvas control stream))
-               camera-permission-denied)))
-    om/IWillUnmount
-    (will-unmount [_]
-      (when-let [stream @(:stream (om/get-state owner))]
-        (doseq [track (.getTracks stream)]
-          (.stop track)))
-      (swap! (:control (om/get-state owner)) assoc :stop true))
-    om/IRender
-    (render [_]
-      (html
-       [:canvas {:ref "qr-canvas"}]))))
+(defdynamic-component component
+  [data owner _]
+  (constructor [this props]
+              {:control (atom {})
+               :stream  (atom nil)})
+  (did-mount [this]
+             (let [video        (js/document.createElement "video")
+                   canvas       (component/get-ref this "qr-canvas")
+                   control      (:control (component/get-state this))
+                   state-stream (:stream (component/get-state this))]
+               (.then (js/navigator.mediaDevices.getUserMedia (clj->js {:video {:facingMode "environment"}}))
+                      (fn [stream]
+                        (reset! state-stream stream)
+                        (start-render-loop video canvas control stream))
+                      camera-permission-denied)))
+  (will-unmount [this]
+                (when-let [stream @(:stream (component/get-state this))]
+                  (doseq [track (.getTracks stream)]
+                    (.stop track)))
+                (swap! (:control (component/get-state this)) assoc :stop true))
+  (render [_]
+          (component/html
+           [:canvas {:ref "qr-canvas"}])))
