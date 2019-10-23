@@ -134,6 +134,8 @@
 (defdynamic-component component
   [data owner _]
   (constructor [this props]
+               (component/create-ref! this "qr-canvas")
+               (set! (.-qr-canvas this) (component/use-ref this "qr-canvas"))
               {:control (atom {})
                :stream  (atom nil)})
   (did-mount [this]
@@ -151,6 +153,6 @@
                   (doseq [track (.getTracks stream)]
                     (.stop track)))
                 (swap! (:control (component/get-state this)) assoc :stop true))
-  (render [_]
+  (render [this]
           (component/html
-           [:canvas {:ref "qr-canvas"}])))
+           [:canvas {:ref (.-qr-canvas this)}])))
