@@ -1,6 +1,7 @@
 (ns storefront.handler-test
   (:require [cheshire.core :refer [generate-string parse-string]]
             [clojure.edn :as edn]
+            [cemerick.url :as cemerick-url]
             [clojure.string :as string]
             [clojure.test :refer [are deftest is testing]]
             [compojure.core :refer [GET POST routes]]
@@ -506,43 +507,46 @@
            (#(string/replace % #"&amp;" "&"))
            uri/uri))
 
-(defn decode-query-string [query-string]
-  (if (empty? query-string)
-    {}
-    (codec/form-decode query-string)))
-
 (defn response->query-param-map
   [resp]
   (->> (:body resp)
        parse-canonical-uri
        :query
-       decode-query-string
+       cemerick-url/query->map
        (maps/map-keys keyword)))
 
 (deftest canonical-uris-query-params
   (with-services {}
     (with-handler handler
-      (testing "fetching category page with allowed and extraneous query params"
-        (let [resp (->> "https://shop.mayvenn.com/categories/7-Virgin-water-wave?base-material=lace&origin=peruvian&foo=bar"
-                        (mock/request :get)
-                        handler)]
-          (is (= 200 (:status resp)))
-          (is (= {:origin "peruvian" :base-material "lace"} (response->query-param-map resp)))))
-      (testing "fetching category page with no query params"
-        (let [resp (->> "https://shop.mayvenn.com/categories/7-Virgin-water-wave"
-                        (mock/request :get)
-                        handler)]
-          (is (= 200 (:status resp)))
-          (is (= {} (response->query-param-map resp)))))
-      (testing "fetching non-category page with no query params"
-        (let [resp (->> "https://shop.mayvenn.com"
-                        (mock/request :get)
-                        handler)]
-          (is (= 200 (:status resp)))
-          (is (= {} (response->query-param-map resp)))))
-      (testing "fetching non-category page with query params"
-        (let [resp (->> "https://shop.mayvenn.com?utm_something=deal_with_it"
-                        (mock/request :get)
-                        handler)]
-          (is (= 200 (:status resp)))
-          (is (= {} (response->query-param-map resp))))))))
+      (testing "category page"
+        (testing "with allowed and extraneous query params"
+          (let [resp (->> "https://shop.mayvenn.com/categories/7-Virgin-water-wave?base-material=lace&origin=peruvian&foo=bar"
+                          (mock/request :get)
+                          handler)]
+            (is (= 200 (:status resp)))
+            (is (= {:origin "peruvian" :base-material "lace"} (response->query-param-map resp)))))
+        (testing "with one query param"
+          (let [resp (->> "https://shop.mayvenn.com/categories/7-Virgin-water-wave?origin=peruvian"
+                          (mock/request :get)
+                          handler)]
+            (is (= 200 (:status resp)))
+            (is (= {:origin "peruvian"} (response->query-param-map resp)))))
+        (testing "without query params"
+          (let [resp (->> "https://shop.mayvenn.com/categories/7-Virgin-water-wave"
+                          (mock/request :get)
+                          handler)]
+            (is (= 200 (:status resp)))
+            (is (= {} (response->query-param-map resp))))))
+      (testing "non category page"
+        (testing "without query params"
+          (let [resp (->> "https://shop.mayvenn.com"
+                          (mock/request :get)
+                          handler)]
+            (is (= 200 (:status resp)))
+            (is (= {} (response->query-param-map resp)))))
+        (testing "with query params"
+          (let [resp (->> "https://shop.mayvenn.com?utm_something=deal_with_it"
+                          (mock/request :get)
+                          handler)]
+            (is (= 200 (:status resp)))
+            (is (= {} (response->query-param-map resp)))))))))

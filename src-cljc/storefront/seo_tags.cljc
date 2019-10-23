@@ -1,6 +1,7 @@
 (ns storefront.seo-tags
   (:require [storefront.assets :as assets]
             [storefront.keypaths :as keypaths]
+            [cemerick.url :as cemerick-url]
             [catalog.keypaths :as k]
             [storefront.events :as events]
             [catalog.categories :as categories]
@@ -75,13 +76,10 @@
 (defn filter-seo-query-params
   [nav-event query-string]
   (when (= events/navigate-category nav-event)
-    (->> (clojure.string/split query-string #"&")
-         (map #(clojure.string/split % #"="))
-         (into {})
-         (#(select-keys % allowed-category-page-query-params))
-         (map #(clojure.string/join "=" %))
-         (clojure.string/join "&")
-         not-empty)))
+    (-> (cemerick-url/query->map query-string)
+        (select-keys allowed-category-page-query-params)
+        cemerick-url/map->query
+        not-empty)))
 
 (defn canonical-uri
   [data]
