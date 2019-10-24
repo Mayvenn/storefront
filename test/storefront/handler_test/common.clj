@@ -256,7 +256,7 @@
 
        component/stop
        (do
-         (-> sys# :contentful :cache spice.core/spy (reset! ~cms-overrides))
+         (-> sys# :contentful :cache (reset! ~cms-overrides))
          ~@body))))
 
 (defn assert-request [req storeback-resp asserter]
