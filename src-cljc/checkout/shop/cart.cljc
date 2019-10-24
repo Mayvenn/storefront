@@ -5,7 +5,8 @@
               [storefront.components.payment-request-button :as payment-request-button]
               [storefront.components.popup :as popup]
               [storefront.confetti :as confetti]
-              [storefront.hooks.quadpay :as quadpay]])
+              [storefront.hooks.quadpay :as quadpay]
+              [storefront.platform.messages :as messages]])
    [catalog.facets :as facets]
    [catalog.images :as catalog-images]
    [checkout.call-out :as call-out]
@@ -22,7 +23,6 @@
    [storefront.accessors.line-items :as line-items]
    [storefront.accessors.orders :as orders]
    [storefront.accessors.products :as products]
-   [storefront.accessors.promos :as promos]
    [storefront.accessors.stylists :as stylists]
    [storefront.component :as component]
    [storefront.components.checkout-delivery :as checkout-delivery]
@@ -35,7 +35,6 @@
    [storefront.events :as events]
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
-   [storefront.platform.messages :as messages]
    [storefront.request-keys :as request-keys]
    [ui.molecules :as ui-molecules]
    [ui.promo-banner :as promo-banner]))
