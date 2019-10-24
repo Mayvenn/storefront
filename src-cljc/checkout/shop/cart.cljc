@@ -55,7 +55,7 @@
    [:div.mx2 "or"]
    [:div.flex-grow-1.border-bottom.border-light-gray]])
 
-(defn servicing-stylist-banner-component
+(defn ^:private servicing-stylist-banner-component
   [{:servicing-stylist-banner/keys [id name image-url rating]}]
   (when id
     [:div.flex.bg-too-light-lavender.pl5.pr3.py2.items-center {:data-test id}
