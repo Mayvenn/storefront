@@ -558,7 +558,7 @@
           (and entered? servicing-stylist)
           (merge {:checkout-caption-copy              (str "After your order ships, you'll be connected with " (stylists/->display-name servicing-stylist) " over SMS to make an appointment.")
                   :servicing-stylist-banner/id        "servicing-stylist-banner"
-                  :servicing-stylist-banner/name      (:store-nickname servicing-stylist)
+                  :servicing-stylist-banner/name      (stylists/->display-name servicing-stylist)
                   :servicing-stylist-banner/rating    {:rating/value (:rating servicing-stylist)}
                   :servicing-stylist-banner/image-url (some-> servicing-stylist :portrait :resizable-url)
                   :servicing-stylist-portrait-url     (-> servicing-stylist :portrait :resizable-url)}))))
