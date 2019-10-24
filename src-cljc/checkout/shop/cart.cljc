@@ -549,19 +549,19 @@
                  :cart-items                         (cart-items-query data mayvenn-install line-items skus add-items-action)
                  :quadpay/order-total                (when-not locked? (:total order))
                  :quadpay/show?                      (get-in data keypaths/loaded-quadpay)
-                 :quadpay/directive                  (if locked? :no-total :just-select)
-                 :servicing-stylist-banner/id        "servicing-stylist-banner"
-                 :servicing-stylist-banner/name      (:store-nickname servicing-stylist)
-                 :servicing-stylist-banner/rating    {:rating/value (:rating servicing-stylist)}
-                 :servicing-stylist-banner/image-url (some-> servicing-stylist :portrait :resizable-url)}
+                 :quadpay/directive                  (if locked? :no-total :just-select)}
 
           entered?
           (merge {:checkout-caption-copy          "You'll be able to select your Mayvenn Certified Stylist after checkout."
                   :servicing-stylist-portrait-url "//ucarecdn.com/bc776b8a-595d-46ef-820e-04915478ffe8/"})
 
           (and entered? servicing-stylist)
-          (merge {:checkout-caption-copy          (str "After your order ships, you'll be connected with " (stylists/->display-name servicing-stylist) " over SMS to make an appointment.")
-                  :servicing-stylist-portrait-url (-> servicing-stylist :portrait :resizable-url)}))))
+          (merge {:checkout-caption-copy              (str "After your order ships, you'll be connected with " (stylists/->display-name servicing-stylist) " over SMS to make an appointment.")
+                  :servicing-stylist-banner/id        "servicing-stylist-banner"
+                  :servicing-stylist-banner/name      (:store-nickname servicing-stylist)
+                  :servicing-stylist-banner/rating    {:rating/value (:rating servicing-stylist)}
+                  :servicing-stylist-banner/image-url (some-> servicing-stylist :portrait :resizable-url)
+                  :servicing-stylist-portrait-url     (-> servicing-stylist :portrait :resizable-url)}))))
 
 (defn cart-component
   [{:keys [fetching-order?
