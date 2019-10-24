@@ -24,13 +24,10 @@
   [{:cart-item-title/keys [id primary secondary]}]
   (when (and id primary)
     [:div
-     [:div
-      [:a.medium.titleize.h5
-       {:data-test id}
-       primary]]
-     [:div
-      [:a.h6
-       secondary]]]))
+     [:div.medium.titleize.h5
+      {:data-test id}
+      primary]
+     [:div.h6 secondary]]))
 
 (defn completed-progress-circle-atom
   [i _]
