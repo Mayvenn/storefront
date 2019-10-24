@@ -319,32 +319,21 @@
          :cart-summary                 (cart-summary-query order mayvenn-install (orders/available-store-credit order user))}
 
       applied?
-      (spice.maps/deep-merge {:freeinstall-cart-item
-                              {:cart-item
-                               {:react/key                             "freeinstall-line-item-freeinstall"
-                                :cart-item-service-thumbnail/id        "freeinstall"
-                                :cart-item-service-thumbnail/image-url "//ucarecdn.com/3a25c870-fac1-4809-b575-2b130625d22a/"
-                                :cart-item-title/id                    "line-item-title-freeinstall"
-                                :cart-item-floating-box/id             "line-item-price-freeinstall"
-                                :cart-item-floating-box/value          [:div.right.medium.my-auto.flex.items-center
-                                                                        {:style {:height "100%"}}
-                                                                        [:div.h6 {:data-test "line-item-freeinstall-price"}
-                                                                         (some-> service-discount - mf/as-money)]]}}})
-
-      (and applied? stylist)
-      (spice.maps/deep-merge  {:freeinstall-cart-item
-                               {:cart-item
-                                {:cart-item-title/primary   "Mayvenn Install"
-                                 :cart-item-copy/id         "congratulations"
-                                 :cart-item-title/secondary (str "w/ " (:store-nickname stylist))
-                                 :rating/value              (:rating stylist)}}})
-
-      (and applied? (not stylist))
-      (spice.maps/deep-merge {:freeinstall-cart-item
-                              {:cart-item
-                               {:cart-item-title/primary "Mayvenn Install"
-                                :cart-item-copy/id       "congratulations"
-                                :cart-item-copy/value    "Congratulations! You're all set for your Mayvenn Install. Select your stylist after checkout."}}}))))
+      (spice.maps/deep-merge
+       {:freeinstall-cart-item
+        {:cart-item
+         {:react/key                             "freeinstall-line-item-freeinstall"
+          :cart-item-service-thumbnail/id        "freeinstall"
+          :cart-item-service-thumbnail/image-url "//ucarecdn.com/3a25c870-fac1-4809-b575-2b130625d22a/"
+          :cart-item-floating-box/id             "line-item-price-freeinstall"
+          :cart-item-floating-box/value          [:div.right.medium.my-auto.flex.items-center
+                                                  {:style {:height "100%"}}
+                                                  [:div.h6 {:data-test "line-item-freeinstall-price"}
+                                                   (some-> service-discount - mf/as-money)]]
+          :cart-item-title/id                    "line-item-title-freeinstall"
+          :cart-item-title/primary               "Mayvenn Install"
+          :cart-item-title/secondary             [:div.line-height-3
+                                                  "Shampoo, condition, braid down, Sew-in and style included."]}}}))))
 
 (defn ^:private built-non-auth-component [data opts]
   (component/build component (query data) opts))
