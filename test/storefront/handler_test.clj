@@ -492,10 +492,13 @@
                          (set-cookies {"number"  "W123456"
                                        "token"   "order-token"
                                        "expires" "Sat, 03 May 2025 17:44:22 GMT"})
-                         handler)]
-            (is (= 200 (:status resp))
-                (get-in resp [:headers "Location"]))
-            (is (= 1 (count (txfm-requests storeback-requests identity))))))))))
+                         handler)
+                requests (txfm-requests storeback-requests
+                                        (comp
+                                         (map :uri)
+                                         (filter #(string/starts-with? % "/v2/orders"))))]
+            (is (= 200 (:status resp)) (get-in resp [:headers "Location"]))
+            (is (= 1 (count requests)))))))))
 
 (defn parse-canonical-uri
   [body]

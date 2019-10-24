@@ -487,13 +487,11 @@
 (defn wrap-fetch-promotions
   [h storeback-config]
   (fn [req]
-    (h (assoc-in-req-state
-        req keypaths/promotions
-        (api/get-promotions
-         storeback-config
-         (or
-          (first (get-in-req-state req keypaths/order-promotion-codes))
-          (get-in-req-state req keypaths/pending-promo-code)))))))
+    (h (assoc-in-req-state req keypaths/promotions
+                           (api/get-promotions
+                            storeback-config
+                            (or (first (get-in-req-state req keypaths/order-promotion-codes))
+                                (get-in-req-state req keypaths/pending-promo-code)))))))
 
 ;;TODO Have all of these middleswarez perform event transitions, just like the frontend
 (defn wrap-state [routes {:keys [storeback-config welcome-config contentful environment]}]
