@@ -19,7 +19,6 @@
             [storefront.components.checkout-returning-or-guest :as checkout-returning-or-guest]
             [storefront.components.checkout-steps :as checkout-steps]
             [storefront.components.money-formatters :as mf]
-            [ui.promo-banner :as promo-banner]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
@@ -31,7 +30,9 @@
             [storefront.request-keys :as request-keys]
             [storefront.effects :as effects]
             [storefront.platform.messages :as messages]
-            [spice.date :as date]))
+            [spice.date :as date]
+            [ui.promo-banner :as promo-banner]
+            [ui.molecules :as ui-molecules]))
 
 (defn requires-additional-payment?
   [data]
@@ -105,8 +106,22 @@
                           events/external-redirect-quadpay-checkout
                           {:quadpay-redirect-url redirect-url})))
 
+(defn ^:private servicing-stylist-banner-component
+  [{:servicing-stylist-banner/keys [id heading title subtitle image-url rating]}]
+  (when id
+    [:div.px3
+     [:div.h3.mb2 heading]
+     [:div.flex.items-center.ml1.mb2 {:data-test id}
+      [:div.mr4
+       (ui/circle-picture {:width 50} (ui/square-image {:resizable-url image-url} 50))]
+      [:div.flex-grow-1.line-height-1
+       [:div.h5.medium.mbn1 title]
+       [:div.h6 subtitle]
+       [:div (ui.molecules/stars-rating-molecule rating)]]]]))
+
 (defn component
-  [{:keys [checkout-button-data
+  [{:as   queried-data
+    :keys [checkout-button-data
            checkout-steps
            cart-summary
            delivery
@@ -134,6 +149,7 @@
             (utils/send-event-callback events/control-checkout-confirmation-submit
                                        {:place-order? requires-additional-payment?})))}
        [:.clearfix.mxn3
+        (servicing-stylist-banner-component queried-data)
         [:.col-on-tb-dt.col-6-on-tb-dt.px3
          [:.h3.left-align "Order Summary"]
 
@@ -333,7 +349,13 @@
           :cart-item-title/id                    "line-item-title-freeinstall"
           :cart-item-title/primary               "Mayvenn Install"
           :cart-item-title/secondary             [:div.line-height-3
-                                                  "Shampoo, condition, braid down, Sew-in and style included."]}}}))))
+                                                  "Shampoo, condition, braid down, Sew-in and style included."]}}
+        :servicing-stylist-banner/id        "servicing-stylist-banner"
+        :servicing-stylist-banner/heading   "Your Mayvenn Certified Stylist"
+        :servicing-stylist-banner/title     (stylists/->display-name stylist)
+        :servicing-stylist-banner/subtitle  (-> stylist :salon :name)
+        :servicing-stylist-banner/rating    {:rating/value (:rating stylist)}
+        :servicing-stylist-banner/image-url (some-> stylist :portrait :resizable-url)}))))
 
 (defn ^:private built-non-auth-component [data opts]
   (component/build component (query data) opts))
