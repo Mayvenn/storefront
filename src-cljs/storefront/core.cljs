@@ -96,7 +96,7 @@
 (defn reload-app [app-state]
   (set! messages/handle-message (partial handle-message app-state)) ;; in case it has changed
   (handle-message app-state events/app-start)
-  (history/set-current-page true)
+  (history/set-current-page (atom true) true)
   (some-> js/window .-root_owner .forceUpdate))
 
 (defn dom-ready [f]

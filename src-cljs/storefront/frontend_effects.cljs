@@ -180,7 +180,8 @@
                                                       (assoc :final-scroll js/window.scrollY)))
   (apply messages/handle-message navigation-message))
 
-(defmethod effects/perform-effects events/browser-navigate [_ _ {:keys [navigation-message]} _ app-state]
+(defmethod effects/perform-effects events/browser-navigate
+  [_ _ {:keys [navigation-message]} _ app-state]
   ;; A user has clicked the forward/back button, or maybe a special link that
   ;; simulates the back button (utils/route-back). The browser already knows
   ;; about the URL, so all we have to do is manipulate the undo/redo stacks and
@@ -214,7 +215,8 @@
                              :promo-code         pending-promo-code
                              :allow-dormant?     true})))
 
-(defmethod effects/perform-effects events/navigate [_ event {:keys [navigate/caused-by query-params nav-stack-item]} prev-app-state app-state]
+(defmethod effects/perform-effects events/navigate
+  [_ event {:keys [navigate/caused-by query-params nav-stack-item]} prev-app-state app-state]
   (let [freeinstall?      (= "freeinstall" (get-in app-state keypaths/store-slug))
         new-nav-event?    (not= (get-in prev-app-state keypaths/navigation-event)
                                 (get-in app-state keypaths/navigation-event))
@@ -229,7 +231,7 @@
                           (get-in app-state keypaths/user))
     (refresh-account app-state)
 
-    (when-not module-load?
+    (when-not (or module-load? (#{:first-nav} caused-by))
       (api/get-promotions (get-in app-state keypaths/api-cache)
                           (or
                            (first (get-in app-state keypaths/order-promotion-codes))

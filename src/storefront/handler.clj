@@ -484,10 +484,22 @@
            (assoc-in-req-state keypaths/user-stylist-experience (cookies/get req "stylist-experience"))
            (assoc-in-req-state keypaths/user-email (cookies/get-and-attempt-parsing-poorly-encoded req "email"))))))
 
+(defn wrap-fetch-promotions
+  [h storeback-config]
+  (fn [req]
+    (h (assoc-in-req-state
+        req keypaths/promotions
+        (api/get-promotions
+         storeback-config
+         (or
+          (first (get-in-req-state req keypaths/order-promotion-codes))
+          (get-in-req-state req keypaths/pending-promo-code)))))))
+
 ;;TODO Have all of these middleswarez perform event transitions, just like the frontend
 (defn wrap-state [routes {:keys [storeback-config welcome-config contentful environment]}]
   (-> routes
       (wrap-set-cms-cache contentful)
+      (wrap-fetch-promotions storeback-config)
       (wrap-fetch-catalog storeback-config)
       (wrap-set-user)
       (wrap-set-welcome-url welcome-config)
