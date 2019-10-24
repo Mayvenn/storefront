@@ -71,8 +71,7 @@
                         :height "21px"})]]))
 
 (defn full-component
-  [{:keys [applied?
-           call-out
+  [{:keys [call-out
            cart-items
            cart-summary
            checkout-caption-copy
@@ -95,8 +94,6 @@
     (component/build call-out/component call-out nil)
 
     [:div.clearfix.mxn3
-     #_(when applied?
-       (component/build qualified-banner-component nil nil))
      [:div.px4.my2 (ui-molecules/return-link queried-data)]
 
      (servicing-stylist-banner-component queried-data)
