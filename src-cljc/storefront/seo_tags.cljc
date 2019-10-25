@@ -74,12 +74,16 @@
     "color"})
 
 (defn filter-seo-query-params
-  [nav-event query-string]
+  [nav-event query]
   (when (= events/navigate-category nav-event)
-    (-> (cemerick-url/query->map query-string)
-        (select-keys allowed-category-page-query-params)
-        cemerick-url/map->query
-        not-empty)))
+    #?(:clj (-> query ;; string in clj
+                cemerick-url/query->map
+                (select-keys allowed-category-page-query-params)
+                cemerick-url/map->query
+                not-empty)
+       :cljs (-> query ;; map in cljs
+                 (select-keys allowed-category-page-query-params)
+                 not-empty))))
 
 (defn canonical-uri
   [data]
