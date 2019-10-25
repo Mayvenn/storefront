@@ -521,12 +521,6 @@
      :submit-button/id        "cart-apply-promo"
      :submit-button/target    events/control-cart-update-coupon}))
 
-(defn confetti-handler
-  [mode]
-  (when (= mode "ready")
-    (messages/handle-message events/set-confetti-mode {:mode "firing"})))
-
-
 (defn full-cart-query [data]
   (let [order                                (get-in data keypaths/order)
         products                             (get-in data keypaths/v2-products)
