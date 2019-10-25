@@ -656,3 +656,6 @@
   [_ _ args app-state]
   (assoc-in app-state keypaths/email-capture-session "opted-in"))
 
+(defmethod transition-state events/set-confetti-mode
+  [_ _ {mode :mode} app-state]
+  (assoc-in app-state keypaths/confetti-mode mode))

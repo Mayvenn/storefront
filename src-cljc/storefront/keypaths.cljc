@@ -337,6 +337,8 @@
 
 (def accordion (conj ui :accordion))
 
+(def confetti-mode (conj ui :confetti-mode))
+
 (def faq (conj ui :faq))
 (def faq-expanded-section (conj faq :expanded-section))
 

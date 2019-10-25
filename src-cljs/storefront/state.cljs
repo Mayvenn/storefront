@@ -170,7 +170,8 @@
           :loaded                                 {:reviews  false
                                                    :stripe   false
                                                    :facebook false
-                                                   :places   false}}
+                                                   :places   false}
+          :confetti-mode                          "ready"}
 
      :v2 {:ui {:dashboard initial-dashboard-state}
           :db {}}}))

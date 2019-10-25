@@ -70,6 +70,33 @@
       (svg/swap-person {:width  "20px"
                         :height "21px"})]]))
 
+(defn ^:private confetti-spout
+  [{:confetti-spout/keys [id mode]} owner _]
+  #?(:clj (component/create
+           (component/html
+            [:div]))
+     :cljs
+     (reify
+       om/IDidMount
+       (did-mount [_]
+         (confetti/burst (om/get-ref owner "confetti-spout")))
+       om/IDidUpdate
+       (did-update [_ _ _]
+         (when (= mode "firing")
+           (messages/handle-message events/set-confetti-mode {:mode "fired"})
+           (.then (confetti/burst (om/get-ref owner "confetti-spout"))
+                  #(messages/handle-message events/set-confetti-mode {:mode "ready"}))))
+       om/IWillUnmount
+       (will-unmount [_]
+         (messages/handle-message events/set-confetti-mode {:mode "ready"}))
+       om/IRender
+       (render [_]
+         (component/html
+          [:div#confetti-spout.fixed.top-0.mx-auto
+           {:style {:right "50%"} }
+           [:div.mx-auto {:style {:width "100%"}
+                          :ref   "confetti-spout"}]])))))
+
 (defn full-component
   [{:keys [call-out
            cart-items
@@ -89,6 +116,12 @@
            suggestions] :as queried-data} owner _]
   (component/create
    [:div.container.px2
+
+    (when (:confetti-spout/id queried-data)
+      ;; Moving this check to the inside of the component breaks lifecycle
+      ;; methods
+      (component/build confetti-spout queried-data nil))
+
     (component/build promo-banner/sticky-organism promo-banner nil)
 
     (component/build call-out/component call-out nil)
@@ -331,16 +364,17 @@
                  :cart-item-title/id                       "line-item-title-freeinstall"
                  :cart-item-floating-box/id                "line-item-price-freeinstall"
                  :cart-item-floating-box/value             [:div.right.medium
-                                                             [:div.h6 {:class     (when line-items-discounts? "strike")
-                                                                       :data-test (str "line-item-freeinstall-price")}
+                                                            [:div.h6 {:class     (when line-items-discounts? "strike")
+                                                                      :data-test (str "line-item-freeinstall-price")}
                                                              (some-> service-discount - mf/as-money)]
-                                                             (when line-items-discounts? [:div.h6.right-align.purple "FREE"])]
+                                                            (when line-items-discounts? [:div.h6.right-align.purple "FREE"])]
                  :cart-item-remove-action/id               "line-item-remove-freeinstall"
                  :cart-item-remove-action/spinning?        (utils/requesting? app-state request-keys/remove-promotion-code)
                  :cart-item-remove-action/target           [events/control-checkout-remove-promotion {:code "freeinstall"}]
                  :cart-item-service-thumbnail/id           "freeinstall"
                  :cart-item-service-thumbnail/image-url    "//ucarecdn.com/3a25c870-fac1-4809-b575-2b130625d22a/"
-                 :cart-item-service-thumbnail/highlighted? (get-in app-state keypaths/cart-freeinstall-just-added?)}
+                 :cart-item-service-thumbnail/highlighted? (get-in app-state keypaths/cart-freeinstall-just-added?)
+                 :confetti-mode                            (get-in app-state keypaths/confetti-mode)}
 
           ;; Locked basically means the freeinstall coupon code was entered, yet not all the requirements
           ;; of a free install order to generate a voucher have been satisfied.
@@ -487,6 +521,12 @@
      :submit-button/id        "cart-apply-promo"
      :submit-button/target    events/control-cart-update-coupon}))
 
+(defn confetti-handler
+  [mode]
+  (when (= mode "ready")
+    (messages/handle-message events/set-confetti-mode {:mode "firing"})))
+
+
 (defn full-cart-query [data]
   (let [order                                (get-in data keypaths/order)
         products                             (get-in data keypaths/v2-products)
@@ -497,6 +537,7 @@
                                                   (not (orders/freeinstall-applied? order)))
         mayvenn-install                      (mayvenn-install/mayvenn-install data)
         entered?                             (:mayvenn-install/entered? mayvenn-install)
+        applied?                             (:mayvenn-install/applied? mayvenn-install)
         servicing-stylist                    (:mayvenn-install/stylist mayvenn-install)
         locked?                              (:mayvenn-install/locked? mayvenn-install)
         skus                                 (get-in data keypaths/v2-skus)
@@ -557,7 +598,11 @@
                   :servicing-stylist-banner/name      (stylists/->display-name servicing-stylist)
                   :servicing-stylist-banner/rating    {:rating/value (:rating servicing-stylist)}
                   :servicing-stylist-banner/image-url (some-> servicing-stylist :portrait :resizable-url)
-                  :servicing-stylist-portrait-url     (-> servicing-stylist :portrait :resizable-url)}))))
+                  :servicing-stylist-portrait-url     (-> servicing-stylist :portrait :resizable-url)})
+
+          applied?
+          (merge {:confetti-spout/mode (get-in data keypaths/confetti-mode)
+                  :confetti-spout/id   "confetti-spout"}))))
 
 (defn cart-component
   [{:keys [fetching-order?

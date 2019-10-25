@@ -1,11 +1,13 @@
 (ns checkout.ui.cart-item
   (:require [checkout.suggestions :as suggestions]
             [storefront.component :as component]
+            [storefront.events :as events]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.css-transitions :as css-transitions]
             [storefront.platform.component-utils :as utils]
-            ui.molecules))
+            ui.molecules
+            [storefront.platform.messages :as messages]))
 
 (defn cart-item-floating-box-molecule
   [{:cart-item-floating-box/keys [id value]}]
@@ -102,16 +104,25 @@
                         :class "block rounded border border-light-gray"}
                        ucare-id)])])))
 
+(defn confetti-handler
+  [mode]
+  (when (= mode "ready")
+    (messages/handle-message events/set-confetti-mode {:mode "firing"})))
+
 (defn cart-item-service-thumbnail-molecule
-  [{:cart-item-service-thumbnail/keys [id highlighted? image-url locked?]}]
+  [{confetti-mode :confetti-mode
+    :cart-item-service-thumbnail/keys [id highlighted? image-url locked?]}]
   (when id
     (css-transitions/transition-background-color
      highlighted?
      [:div.flex.justify-center.mtn2
       {:style {:border-radius "50%"
                :width         "56px"
-               :height        "56px"}}
+               :height        "56px"}
+       :on-click #(confetti-handler confetti-mode) }
+
       [:div.relative
+
        (if locked?
          [:div
           [:div.absolute.z1.col-12.flex.items-center.justify-center

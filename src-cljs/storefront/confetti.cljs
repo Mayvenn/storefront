@@ -9,6 +9,7 @@
    (fn [i]
      (let [color   (nth colors (mod i (count colors)))
            element (js/document.createElement "div")]
+       (set! element.style.z-index "5")
        (set! element.style.width width)
        (set! element.style.backgroundColor color)
        (set! element.style.height height)
@@ -93,12 +94,13 @@
                  angle spread start-velocity duration
                  drag-friction delay]
           :or   {element-count  100
-                 colors         ["#40CBAC" "#7E006D" "#FFC0C6"]
+                 colors         ["#EFEBF5" "#AF9FC4" "#7E006D"]
                  width          "8px"
                  height         "10px"
-                 angle          90
-                 spread         40
-                 start-velocity 50
+                 angle          270
+                 spread         180
+
+                 start-velocity 15
                  drag-friction  0.1
                  duration       4000
                  delay          0}}]
