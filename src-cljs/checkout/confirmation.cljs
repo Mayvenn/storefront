@@ -349,8 +349,11 @@
           :cart-item-title/id                    "line-item-title-freeinstall"
           :cart-item-title/primary               "Mayvenn Install"
           :cart-item-title/secondary             [:div.line-height-3
-                                                  "Shampoo, condition, braid down, Sew-in and style included."]}}
-        :servicing-stylist-banner/id        "servicing-stylist-banner"
+                                                  "Shampoo, condition, braid down, Sew-in and style included."]}}})
+
+      (and applied? stylist)
+      (merge
+       {:servicing-stylist-banner/id        "servicing-stylist-banner"
         :servicing-stylist-banner/heading   "Your Mayvenn Certified Stylist"
         :servicing-stylist-banner/title     (stylists/->display-name stylist)
         :servicing-stylist-banner/subtitle  (-> stylist :salon :name)
