@@ -25,6 +25,11 @@
   (track {:event        "emailCapture"
           :emailAddress email}))
 
+(defn track-checkout-initiate
+  [{:keys [number]}]
+  (track {:event       "checkoutInitiate"
+          :orderNumber number}))
+
 (defn track-add-to-cart
   [{:keys [number line-item-skuers]}]
   (track {:event       "addToCart"

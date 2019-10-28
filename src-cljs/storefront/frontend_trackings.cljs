@@ -335,9 +335,11 @@
   (stringer/track-event "email_capture-dismiss" {}))
 
 (defn- checkout-initiate [app-state flow]
-  (stringer/track-event "checkout-initiate" {:flow flow
-                                             :order_number (get-in app-state keypaths/order-number)})
-  (facebook-analytics/track-event "InitiateCheckout"))
+  (let [order-number (get-in app-state keypaths/order-number)]
+    (stringer/track-event "checkout-initiate" {:flow flow
+                                               :order_number order-number})
+    (google-tag-manager/track-checkout-initiate {:number order-number})
+    (facebook-analytics/track-event "InitiateCheckout")))
 
 (defmethod perform-track events/control-checkout-cart-submit [_ event args app-state]
   (checkout-initiate app-state "mayvenn")
