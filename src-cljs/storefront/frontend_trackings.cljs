@@ -308,6 +308,7 @@
                          :test-variations  (get-in app-state keypaths/features)
                          :store-slug       (get-in app-state keypaths/store-slug)
                          :store-experience (get-in app-state keypaths/store-experience)})
+  (google-tag-manager/track-email-capture-capture {:email email})
   (pinterest/track-event "Signup"))
 
 (defmethod perform-track events/control-email-captured-submit [_ event _ app-state]
