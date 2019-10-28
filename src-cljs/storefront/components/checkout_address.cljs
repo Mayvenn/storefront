@@ -45,6 +45,7 @@
         :keypath       keypaths/checkout-shipping-address-first-name
         :focused       focused
         :value         (:first-name shipping-address)
+        :max-length    24
         :errors        (get field-errors ["shipping-address" "first-name"])
         :name          "shipping-first-name"
         :data-test     "shipping-first-name"
@@ -56,6 +57,7 @@
         :keypath       keypaths/checkout-shipping-address-last-name
         :focused       focused
         :value         (:last-name shipping-address)
+        :max-length    25
         :errors        (get field-errors ["shipping-address" "last-name"])
         :name          "shipping-last-name"
         :id            "shipping-last-name"
@@ -94,7 +96,8 @@
                                    :focused         focused
                                    :errors          (get field-errors ["shipping-address" "address1"])
                                    :auto-complete   "shipping address-line1"
-                                   :value           (:address1 shipping-address)}))
+                                   :value           (:address1 shipping-address)
+                                   :max-length      100}))
 
      [:.flex.flex-column.items-center.col-12
       [:.col-12
@@ -108,7 +111,8 @@
          :name          "shipping-address2"
          :type          "text"
          :auto-complete "shipping address-line2"
-         :value         (:address2 shipping-address)}
+         :value         (:address2 shipping-address)
+         :max-length    100}
         {:data-test     "shipping-zip"
          :errors        (get field-errors ["shipping-address" "zipcode"])
          :id            "shipping-zip"
