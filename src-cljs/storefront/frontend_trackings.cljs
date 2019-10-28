@@ -137,6 +137,10 @@
 (defmethod perform-track events/api-success-add-sku-to-bag
   [_ _ {:keys [quantity sku order] :as args} app-state]
   (when sku
+    (google-tag-manager/track-add-to-cart {:number           (:number order)
+                                           :line-item-skuers [{:catalog/sku-id (:catalog/sku-id sku)
+                                                               :item/quantity  quantity
+                                                               :sku/price      (:sku/price sku)}]} )
     (let [line-item-skuers (waiter-line-items->line-item-skuer
                             (get-in app-state keypaths/v2-skus)
                             (orders/product-items order))
@@ -181,6 +185,8 @@
     (facebook-analytics/track-event "AddToCart" {:content_type "product"
                                                  :content_ids  (map :catalog/sku-id line-item-skuers)
                                                  :num_items    (->> line-item-skuers (map :item/quantity) (reduce + 0))})
+    (google-tag-manager/track-add-to-cart {:number           (:number order)
+                                           :line-item-skuers line-item-skuers} )
     (stringer/track-event "bulk_add_to_cart" (merge {:shared_cart_id shared-cart-id
                                                      :store_experience (get-in app-state keypaths/store-experience)
                                                      :order_number   (:number order)
