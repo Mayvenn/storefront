@@ -286,7 +286,9 @@
 
     (convert/track-conversion "place-order")
     (convert/track-revenue (convert-revenue order))
-    (google-tag-manager/track-placed-order order)))
+    (google-tag-manager/track-placed-order {:total            (:total order)
+                                            :number           (:number order)
+                                            :line-item-skuers line-item-skuers})))
 
 (defmethod perform-track events/api-success-auth [_ event args app-state]
   (stringer/identify (get-in app-state keypaths/user)

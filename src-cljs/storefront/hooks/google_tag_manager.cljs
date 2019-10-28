@@ -6,10 +6,19 @@
     (.push js/dataLayer (clj->js data))))
 
 (defn track-placed-order
-  [{:keys [total number]}]
-  (track {:event            "orderPlaced"
-          :transactionTotal total
-          :transactionId    number}))
+  [{:keys [total number line-item-skuers]}]
+  (track {:event               "orderPlaced"
+          :transactionTotal    total
+          :transactionId       number
+          :transactionProducts (for [{:keys [legacy/product-name
+                                             sku/title
+                                             catalog/sku-id
+                                             item/quantity
+                                             sku/price]} line-item-skuers]
+                                 {:name     (or product-name title)
+                                  :sku      sku-id,
+                                  :quantity quantity,
+                                  :price    price})}))
 
 (defn track-email-capture-capture
   [{:keys [email]}]
