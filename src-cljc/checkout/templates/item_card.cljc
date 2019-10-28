@@ -17,29 +17,29 @@
         ;; circle over image
         (let [{:circle/keys [id value highlight?]} item]
           (when id
-            (css-transitions/transition-background-color
-             highlight?
-             [:div.medium.h5
-              {:key (str react-key "-image")}
-              [:div.absolute.z1.circle.stacking-context.border.border-light-gray.bg-too-light-teal.flex.items-center.justify-center
-               {:data-test id
-                :style     {:right  "-5px"
-                            :top    "-12px"
-                            :width  "32px"
-                            :height "32px"}}
-               value]])))
+            [:div.medium.h5
+             (css-transitions/background-fade
+              highlight?
+              {:key (str react-key "-image")})
+             [:div.absolute.z1.circle.stacking-context.border.border-light-gray.bg-too-light-teal.flex.items-center.justify-center
+              {:data-test id
+               :style     {:right  "-5px"
+                           :top    "-12px"
+                           :width  "32px"
+                           :height "32px"}}
+              value]]))
 
         ;; actual image
         (let [{:image/keys [id value highlight?]} item]
           (when id
-            (css-transitions/transition-background-color
-             highlight?
-             [:div.flex.items-center.justify-center.ml1
+            [:div.flex.items-center.justify-center.ml1
+             (css-transitions/background-fade
+              highlight?
               {:key       (str react-key "-actual-image")
                :data-test id
-               :style     {:width "79px" :height "74px"}}
-              [:div.pp1
-               (ui/ucare-img {:width 75} value)]])))]
+               :style     {:width "79px" :height "74px"}})
+             [:div.pp1
+              (ui/ucare-img {:width 75} value)]]))]
 
        ;; info group
        [:div.h6.flex.flex-wrap.flex-auto.justify-between.mt1

@@ -60,25 +60,26 @@
       (when-not length-circle-value
         {:class "pr3"})
       (when length-circle-value
-        (css-transitions/transition-background-color
-         just-added-to-order?
-         [:div.right.z1.circle.stacking-context.border.border-light-gray.flex.items-center.justify-center.medium.h5.bg-too-light-teal
+        [:div.right.z1.circle.stacking-context.border.border-light-gray.flex.items-center.justify-center.medium.h5.bg-too-light-teal
+         (css-transitions/background-fade
+          just-added-to-order?
           {:key       (str "length-circle-" sku-id)
            :data-test (str "line-item-length-" sku-id)
            :style     {:margin-left "-21px"
                        :margin-top  "-10px"
                        :width       "32px"
-                       :height      "32px"}} (str length-circle-value "”")]))
+                       :height      "32px"}})
+         (str length-circle-value "”")])
 
-      (css-transitions/transition-background-color
-       just-added-to-order?
-       [:div.flex.items-center.justify-center.ml1
+      [:div.flex.items-center.justify-center.ml1
+       (css-transitions/background-fade
+        just-added-to-order?
         {:key       (str "thumbnail-" sku-id)
          :data-test (str "line-item-img-" (:catalog/sku-id sku))
-         :style     {:width "79px" :height "74px"}}
-        (ui/ucare-img
-         {:width 75}
-         (->> sku (catalog-images/image "cart") :ucare/id))])]
+         :style     {:width "79px" :height "74px"}})
+       (ui/ucare-img
+        {:width 75}
+        (->> sku (catalog-images/image "cart") :ucare/id))]]
 
      [:div {:style {:margin-top "-14px"}}
       [:a.medium.titleize.h5
@@ -133,12 +134,12 @@
   [line-items-discounts? freeinstall-just-added? {:keys [removing? id title detail price remove-event thumbnail-image-fn]}]
   [:div.pt1.pb2.clearfix
    [:div.left.ml1.pr3
-    (css-transitions/transition-background-color
-     freeinstall-just-added?
-     [:div.flex.justify-center.items-center
+    [:div.flex.justify-center.items-center
+     (css-transitions/background-fade
+      freeinstall-just-added?
       {:style {:height "79px"
-               :width  "79px"}}
-      (thumbnail-image-fn 75)])]
+               :width  "79px"}})
+     (thumbnail-image-fn 75)]]
    [:div
     [:a.medium.titleize.h5
      {:data-test (str "line-item-title-" id)}

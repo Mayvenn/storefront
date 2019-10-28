@@ -20,3 +20,9 @@
     :classNames "line-item-fade"
     :timeout    1300}
    content))
+
+(defn background-fade
+  [run-transition? style]
+  (merge style
+         (when run-transition?
+           {:class "background-fade"})))

@@ -127,13 +127,13 @@
                       :height      sticker-size}}
          sticker-label])
 
-      (css-transitions/transition-background-color
-       highlighted?
-       [:div.flex.items-center.justify-center.p1.rounded
+      [:div.flex.items-center.justify-center.p1.rounded
+       (css-transitions/background-fade
+        highlighted?
         {:key       (str "thumbnail-" sku-id)
-         :data-test (str "line-item-img-" sku-id)}
-        (ui/ucare-img {:width image-width
-                       :class "rounded border border-light-gray"} ucare-id)])]))
+         :data-test (str "line-item-img-" sku-id)})
+       (ui/ucare-img {:width image-width
+                      :class "rounded border border-light-gray"} ucare-id)]]))
 
 (defn ->consolidated-suggested-bundles
   "TODO Heat needs to be updated to use new dt"

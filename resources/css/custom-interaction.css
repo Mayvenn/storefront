@@ -27,8 +27,7 @@
     }
 }
 
-.line-item-fade-enter.line-item-fade-enter-active,
-.line-item-fade-appear.line-item-fade-appear-active {
+.background-fade {
     animation-name: lineItemGlow;
     animation-duration: 1300ms;
 }

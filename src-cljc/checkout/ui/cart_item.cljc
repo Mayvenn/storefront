@@ -86,58 +86,58 @@
        {:style {:height "49px"
                 :width  "52px"}}
        (when sticker-label
-         (css-transitions/transition-background-color
-          highlighted?
-          [:div.absolute.z1.circle.border.border-white.medium.h6.bg-too-light-teal
+         [:div.absolute.z1.circle.border.border-white.medium.h6.bg-too-light-teal
+          (css-transitions/background-fade
+           highlighted?
            {:key       sticker-id
             :data-test sticker-id
             :style     {:right -12
-                        :top   -12}}
-           [:div.flex.items-center.justify-center
-            sticker-label]]))
-       (css-transitions/transition-background-color
-        highlighted?
-        [:div.flex.items-center.justify-center.rounded
+                        :top   -12}})
+          [:div.flex.items-center.justify-center
+           sticker-label]])
+       [:div.flex.items-center.justify-center.rounded
+        (css-transitions/background-fade
+         highlighted?
          {:style     {:height "50px"
                       :width  "54px"}
           :key       (str "cart-item-square-thumbnail-" sku-id)
-          :data-test (str "line-item-img-" sku-id)}
-         (ui/ucare-img {:width 48
-                        :class "block rounded border border-light-gray"}
-                       ucare-id)])])))
+          :data-test (str "line-item-img-" sku-id)})
+        (ui/ucare-img {:width 48
+                       :class "block rounded border border-light-gray"}
+                      ucare-id)]])))
 
 (defn cart-item-thumbnail-molecule
   [{:cart-item-thumbnail/keys [id highlighted? value locked? image-url]}]
   (when id
-    (css-transitions/transition-background-color
-     highlighted?
-     (let [diameter                  50             ; Stylist portrait / Generic stylist image
-           lock-circle-diameter      (- diameter 4) ; Overlay lock scrim
-           highlight-circle-diameter (+ diameter 6)] ; highlight
-       [:div.flex.justify-center.items-center
+    (let [diameter                  50             ; Stylist portrait / Generic stylist image
+          lock-circle-diameter      (- diameter 4) ; Overlay lock scrim
+          highlight-circle-diameter (+ diameter 6)] ; highlight
+      [:div.flex.justify-center.items-center
+       (css-transitions/background-fade
+        highlighted?
         {:style {:border-radius "50%"
                  :width         (str highlight-circle-diameter "px")
-                 :height        (str highlight-circle-diameter "px")}}
-        value
-        [:div.relative
-         (when locked?
-           [:div.absolute.z1.col-12.flex.items-center.justify-center
-            {:style {:height "100%"}}
+                 :height        (str highlight-circle-diameter "px")}})
+       value
+       [:div.relative
+        (when locked?
+          [:div.absolute.z1.col-12.flex.items-center.justify-center
+           {:style {:height "100%"}}
 
-            [:div {:class "absolute z1 block"
-                   :style {:background    "#ffffffdd"
-                           :width         (str lock-circle-diameter "px")
-                           :height        (str lock-circle-diameter "px")
-                           :border-radius "50%"}}]
-            [:div.absolute.z2.col-12.flex.items-center.justify-center
-             {:style {:height "100%"}}
-             (svg/lock {:style {:width  "17px"
-                                :height "23px"}})]])
-         (ui/circle-picture
-          {:width diameter}
-          ;; Note: We are not using ucare-id because stylist portraits may have
-          ;; ucarecdn crop parameters saved into the url
-          (ui/square-image {:resizable-url image-url} diameter))]]))))
+           [:div {:class "absolute z1 block"
+                  :style {:background    "#ffffffdd"
+                          :width         (str lock-circle-diameter "px")
+                          :height        (str lock-circle-diameter "px")
+                          :border-radius "50%"}}]
+           [:div.absolute.z2.col-12.flex.items-center.justify-center
+            {:style {:height "100%"}}
+            (svg/lock {:style {:width  "17px"
+                               :height "23px"}})]])
+        (ui/circle-picture
+         {:width diameter}
+         ;; Note: We are not using ucare-id because stylist portraits may have
+         ;; ucarecdn crop parameters saved into the url
+         (ui/square-image {:resizable-url image-url} diameter))]])))
 
 (defn cart-item-remove-action-molecule
   [{:cart-item-remove-action/keys [id target spinning?]}]
