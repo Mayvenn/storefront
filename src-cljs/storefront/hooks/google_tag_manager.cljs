@@ -1,14 +1,17 @@
 (ns storefront.hooks.google-tag-manager)
 
+(defn ^:private track
+  [data]
+  (when (.hasOwnProperty js/window "dataLayer")
+    (.push js/dataLayer (clj->js data))))
+
 (defn track-placed-order
   [{:keys [total number]}]
-  (when (.hasOwnProperty js/window "dataLayer")
-    (.push js/dataLayer (clj->js {:event            "orderPlaced"
-                                  :transactionTotal total
-                                  :transactionId    number}))))
+  (track {:event            "orderPlaced"
+          :transactionTotal total
+          :transactionId    number}))
 
 (defn track-email-capture-capture
   [{:keys [email]}]
-  (when (.hasOwnProperty js/window "dataLayer")
-    (.push js/dataLayer (clj->js {:event        "emailCapture"
-                                  :emailAddress email}))))
+  (track {:event        "emailCapture"
+          :emailAddress email}))
