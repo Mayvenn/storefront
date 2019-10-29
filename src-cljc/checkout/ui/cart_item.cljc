@@ -12,9 +12,10 @@
 (defn cart-item-floating-box-molecule
   [{:cart-item-floating-box/keys [id value]}]
   (when id
-    [:div.right.right-align
-     {:key   id
-      :style {:height "100%"}}
+    [:div.right.right-align.medium.h6
+     {:key       id
+      :data-test id
+      :style     {:height "100%"}}
      value]))
 
 (defn cart-item-copy-molecule
@@ -209,7 +210,7 @@
            (cart-item-pick-stylist-molecule cart-item)]]
 
          ;; price group
-         [:div.right.right-align.h6.pt1
+         [:div.right.right-align.h6.pt1.flex.flex-column
           {:style {:min-width "67px"}}
           (cart-item-remove-action-molecule cart-item)
           (cart-item-swap-action-molecule cart-item)

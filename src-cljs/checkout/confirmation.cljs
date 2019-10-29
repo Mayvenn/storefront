@@ -341,11 +341,10 @@
          {:react/key                             "freeinstall-line-item-freeinstall"
           :cart-item-service-thumbnail/id        "freeinstall"
           :cart-item-service-thumbnail/image-url "//ucarecdn.com/3a25c870-fac1-4809-b575-2b130625d22a/"
-          :cart-item-floating-box/id             "line-item-price-freeinstall"
-          :cart-item-floating-box/value          [:div.right.medium.my-auto.flex.items-center
+          :cart-item-floating-box/id             "line-item-freeinstall-price"
+          :cart-item-floating-box/value          [:div.flex.flex-column.justify-end
                                                   {:style {:height "100%"}}
-                                                  [:div.h6 {:data-test "line-item-freeinstall-price"}
-                                                   (some-> service-discount - mf/as-money)]]
+                                                  (some-> service-discount - mf/as-money)]
           :cart-item-title/id                    "line-item-title-freeinstall"
           :cart-item-title/primary               "Mayvenn Install"
           :cart-item-title/secondary             [:div.line-height-3

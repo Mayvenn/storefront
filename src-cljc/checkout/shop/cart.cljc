@@ -299,8 +299,7 @@
    line-items
    skus
    add-items-action]
-  (let [line-items-discounts?     (experiments/line-items-discounts? app-state)
-        update-line-item-requests (merge-with
+  (let [update-line-item-requests (merge-with
                                    #(or %1 %2)
                                    (variants-requests app-state request-keys/add-to-bag (map :sku line-items))
                                    (variants-requests app-state request-keys/update-line-item (map :sku line-items)))
@@ -314,59 +313,41 @@
                           qty-adjustment-args {:variant (select-keys line-item [:id :sku])}
                           removing?            (get delete-line-item-requests variant-id)
                           updating?            (get update-line-item-requests sku-id)
-                          just-added-to-order? (some #(= sku-id %) (get-in app-state keypaths/cart-recently-added-skus))
-                          discount-price       (line-items/discounted-unit-price line-item)]]
-                     (cond-> {:react/key                                      (str sku-id "-" (:quantity line-item))
-                              :cart-item-title/id                             (str "line-item-title-" sku-id)
-                              :cart-item-title/primary                        (or (:product-title line-item)
-                                                                                  (:product-name line-item))
-                              :cart-item-title/secondary                      (:color-name line-item)
-                              :cart-item-floating-box/id                      (str "line-item-price-ea-" sku-id)
-                              :cart-item-floating-box/value                   [:div.gray
-                                                                               [:div.medium.black {:data-test (str "line-item-price-ea-" sku-id)}
-                                                                                (mf/as-money price)]
-                                                                               " each"]
-                              :cart-item-squircle-thumbnail/id                  sku-id
-                              :cart-item-squircle-thumbnail/sku-id              sku-id
-                              :cart-item-squircle-thumbnail/highlighted?        just-added-to-order?
-                              :cart-item-squircle-thumbnail/sticker-label       (when-let [length-circle-value (-> sku :hair/length first)]
-                                                                                  (str length-circle-value "”"))
-                              :cart-item-squircle-thumbnail/ucare-id            (->> sku (catalog-images/image "cart") :ucare/id)
-                              :cart-item-adjustable-quantity/id               (str "line-item-quantity-" sku-id)
-                              :cart-item-adjustable-quantity/spinning?        updating?
-                              :cart-item-adjustable-quantity/value            (:quantity line-item)
-                              :cart-item-adjustable-quantity/id-suffix        sku-id
-                              :cart-item-adjustable-quantity/decrement-target [events/control-cart-line-item-dec qty-adjustment-args]
-                              :cart-item-adjustable-quantity/increment-target [events/control-cart-line-item-inc qty-adjustment-args]
-                              :cart-item-remove-action/id                     (str "line-item-remove-" sku-id)
-                              :cart-item-remove-action/spinning?              removing?
-                              :cart-item-remove-action/target                 [events/control-cart-remove (:id line-item)]}
-
-                       (and line-items-discounts?
-                            (not= discount-price price))
-                       (merge
-                        {:cart-item-floating-box/id    (str "line-item-price-ea-" sku-id)
-                         :cart-item-floating-box/value [:div.mr1
-                                                        [:div.strike.medium
-                                                         {:data-test (str "line-item-price-ea-" sku-id)}
-                                                         (mf/as-money price)]
-                                                        [:div.purple.medium
-                                                         {:data-test (str "line-item-discounted-price-ea-" sku-id)}
-                                                         (mf/as-money discount-price)]
-                                                        [:div.gray.right-align "each"]]})))
-        matched? (boolean stylist)]
+                          just-added-to-order? (some #(= sku-id %) (get-in app-state keypaths/cart-recently-added-skus))]]
+                     {:react/key                                      (str sku-id "-" (:quantity line-item))
+                      :cart-item-title/id                             (str "line-item-title-" sku-id)
+                      :cart-item-title/primary                        (or (:product-title line-item)
+                                                                          (:product-name line-item))
+                      :cart-item-title/secondary                      (:color-name line-item)
+                      :cart-item-floating-box/id                      (str "line-item-price-ea-with-label-" sku-id)
+                      :cart-item-floating-box/value                   [:div.gray
+                                                                       [:div.medium.black {:data-test (str "line-item-price-ea-" sku-id)}
+                                                                        (mf/as-money price)]
+                                                                       " each"]
+                      :cart-item-squircle-thumbnail/id                sku-id
+                      :cart-item-squircle-thumbnail/sku-id            sku-id
+                      :cart-item-squircle-thumbnail/highlighted?      just-added-to-order?
+                      :cart-item-squircle-thumbnail/sticker-label     (when-let [length-circle-value (-> sku :hair/length first)]
+                                                                        (str length-circle-value "”"))
+                      :cart-item-squircle-thumbnail/ucare-id          (->> sku (catalog-images/image "cart") :ucare/id)
+                      :cart-item-adjustable-quantity/id               (str "line-item-quantity-" sku-id)
+                      :cart-item-adjustable-quantity/spinning?        updating?
+                      :cart-item-adjustable-quantity/value            (:quantity line-item)
+                      :cart-item-adjustable-quantity/id-suffix        sku-id
+                      :cart-item-adjustable-quantity/decrement-target [events/control-cart-line-item-dec qty-adjustment-args]
+                      :cart-item-adjustable-quantity/increment-target [events/control-cart-line-item-inc qty-adjustment-args]
+                      :cart-item-remove-action/id                     (str "line-item-remove-" sku-id)
+                      :cart-item-remove-action/spinning?              removing?
+                      :cart-item-remove-action/target                 [events/control-cart-remove (:id line-item)]})
+        matched?   (boolean stylist)]
 
     (cond-> cart-items
       entered?
       (concat
        [(cond-> {:react/key                                "freeinstall-line-item-freeinstall"
                  :cart-item-title/id                       "line-item-title-freeinstall"
-                 :cart-item-floating-box/id                "line-item-price-freeinstall"
-                 :cart-item-floating-box/value             [:div.right.medium
-                                                            [:div.h6 {:class     (when line-items-discounts? "strike")
-                                                                      :data-test (str "line-item-freeinstall-price")}
-                                                             (some-> service-discount - mf/as-money)]
-                                                            (when line-items-discounts? [:div.h6.right-align.purple "FREE"])]
+                 :cart-item-floating-box/id                "line-item-freeinstall-price"
+                 :cart-item-floating-box/value             (some-> service-discount - mf/as-money)
                  :cart-item-remove-action/id               "line-item-remove-freeinstall"
                  :cart-item-remove-action/spinning?        (utils/requesting? app-state request-keys/remove-promotion-code)
                  :cart-item-remove-action/target           [events/control-checkout-remove-promotion {:code "freeinstall"}]
