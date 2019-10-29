@@ -64,11 +64,21 @@
     (when (and user-id user-token)
       (api/get-account user-id user-token))))
 
+(defn refresh-servicing-stylist [app-state]
+  (let [order                (get-in app-state keypaths/order)
+        servicing-stylist-id (:servicing-stylist-id order)]
+    (api/fetch-matched-stylist {}
+                               servicing-stylist-id
+                               #(do (api/remove-servicing-stylist servicing-stylist-id
+                                                                  (:number order)
+                                                                  (:token order))
+                                    (messages/handle-message events/flash-show-failure
+                                                             {:message "Your previously selected stylist selected is no longer eligible for Mayvenn Install and has been removed from your order."})))))
+
 (defn refresh-current-order [app-state]
   (let [user-id      (get-in app-state keypaths/user-id)
         user-token   (get-in app-state keypaths/user-token)
         stylist-id   (get-in app-state keypaths/store-stylist-id)
-        order        (get-in app-state keypaths/order)
         order-number (get-in app-state keypaths/order-number)
         order-token  (get-in app-state keypaths/order-token)]
     (cond
@@ -386,6 +396,7 @@
   (stripe/insert)
   (quadpay/insert)
   (refresh-current-order app-state)
+  (refresh-servicing-stylist app-state)
   (when-let [error-msg (-> args :query-params :error cart-error-codes)]
     (messages/handle-message events/flash-show-failure {:message error-msg})))
 
@@ -696,13 +707,7 @@
             (messages/handle-message events/ensure-sku-ids {:sku-ids sku-ids}))
 
           (when servicing-stylist-not-loaded?
-            (api/fetch-matched-stylist (get-in app-state keypaths/api-cache)
-                                       servicing-stylist-id
-                                       #((api/remove-servicing-stylist servicing-stylist-id
-                                                                       (:number order)
-                                                                       (:token order))
-                                         (messages/handle-message events/flash-show-failure
-                                                                  {:message "Your previously selected stylist selected is no longer eligible for Mayvenn Install and has been removed from your order."}))))
+            (api/fetch-matched-stylist (get-in app-state keypaths/api-cache) servicing-stylist-id))
           (cookie-jar/save-order (get-in app-state keypaths/cookie) order)
           (add-pending-promo-code app-state order))
         (messages/handle-message events/clear-order))))
