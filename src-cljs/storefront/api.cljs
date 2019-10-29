@@ -953,7 +953,7 @@
     :handler handler}))
 
 (defn remove-servicing-stylist
-  [servicing-stylist-id number token handler]
+  [servicing-stylist-id number token]
   (storeback-api-req
    POST
    "/v2/remove-servicing-stylist"
@@ -961,7 +961,9 @@
    {:params {:servicing-stylist-id servicing-stylist-id
              :number               number
              :token                token}
-    :handler handler}))
+    :handler  #(messages/handle-message
+                events/api-success-adventure-cleared-servicing-stylist
+                {:order %})}))
 
 (defn- static-content-req [method path req-key {:keys [handler] :as request-opts}]
   (let [req-id       (str (random-uuid))
@@ -1023,14 +1025,18 @@
    {:params  params
     :handler handler}))
 
-(defn fetch-matched-stylist [cache stylist-id]
-  (cache-req
-   cache
-   GET
-   "/v1/stylist/matched-by-id"
-   request-keys/fetch-matched-stylist
-   {:params  {:stylist-id stylist-id}
-    :handler #(messages/handle-message events/api-success-fetch-matched-stylist %)}))
+(defn fetch-matched-stylist
+  ([cache stylist-id]
+   (fetch-matched-stylist cache stylist-id nil))
+  ([cache stylist-id error-handler]
+   (cache-req
+    cache
+    GET
+    "/v1/stylist/matched-by-id"
+    request-keys/fetch-matched-stylist
+    {:params        {:stylist-id stylist-id}
+     :handler       #(messages/handle-message events/api-success-fetch-matched-stylist %)
+     :error-handler error-handler})))
 
 (defn fetch-matched-stylists [cache stylist-ids handler]
   (cache-req

@@ -136,8 +136,7 @@
        (when-let [servicing-stylist-id (:servicing-stylist-id order)]
          (api/remove-servicing-stylist servicing-stylist-id
                                        (:number order)
-                                       (:token order)
-                                       #(messages/handle-message events/api-success-adventure-cleared-servicing-stylist {:order %}))))))
+                                       (:token order))))))
 
 (defmethod transitions/transition-state events/api-success-adventure-cleared-servicing-stylist [_ _ {:keys [order]} app-state]
   (-> app-state

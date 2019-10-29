@@ -696,8 +696,13 @@
             (messages/handle-message events/ensure-sku-ids {:sku-ids sku-ids}))
 
           (when servicing-stylist-not-loaded?
-            (api/fetch-matched-stylist (get-in app-state keypaths/api-cache) servicing-stylist-id))
-
+            (api/fetch-matched-stylist (get-in app-state keypaths/api-cache)
+                                       servicing-stylist-id
+                                       #((api/remove-servicing-stylist servicing-stylist-id
+                                                                       (:number order)
+                                                                       (:token order))
+                                         (messages/handle-message events/flash-show-failure
+                                                                  {:message "Your previously selected stylist selected is no longer eligible for Mayvenn Install and has been removed from your order."}))))
           (cookie-jar/save-order (get-in app-state keypaths/cookie) order)
           (add-pending-promo-code app-state order))
         (messages/handle-message events/clear-order))))
