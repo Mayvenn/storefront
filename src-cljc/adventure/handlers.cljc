@@ -130,14 +130,6 @@
                                        (assoc :catalog/department "hair"))
                                    #(messages/handle-message events/api-success-v2-products %))))
 
-(defmethod effects/perform-effects events/adventure-clear-servicing-stylist [_ _ _ _ app-state]
-  #?(:cljs
-     (let [order (get-in app-state storefront.keypaths/order)]
-       (when-let [servicing-stylist-id (:servicing-stylist-id order)]
-         (api/remove-servicing-stylist servicing-stylist-id
-                                       (:number order)
-                                       (:token order))))))
-
 (defmethod transitions/transition-state events/api-success-adventure-cleared-servicing-stylist [_ _ {:keys [order]} app-state]
   (-> app-state
       (assoc-in keypaths/adventure-choices-selected-stylist-id nil)
