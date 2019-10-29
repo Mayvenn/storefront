@@ -11,7 +11,7 @@
             [storefront.platform.messages :refer [handle-message]]
             [storefront.request-keys :as request-keys]))
 
-(defn ^:private places-component [{:keys [focused id address-keypath keypath value data-test errors]} owner]
+(defn ^:private places-component [{:keys [focused id address-keypath keypath value data-test errors max-length]} owner]
   (reify
     om/IDidMount
     (did-mount [this]
@@ -30,6 +30,7 @@
                        :on-key-down utils/suppress-return-key
                        :required    true
                        :type        "text"
+                       :max-length  max-length
                        :value       value})))))
 
 (defn ^:private shipping-address-component
