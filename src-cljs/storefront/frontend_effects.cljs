@@ -64,16 +64,22 @@
     (when (and user-id user-token)
       (api/get-account user-id user-token))))
 
+(def ^:private unavailable-servicing-stylist-msg
+  "Your previously selected stylist selected is no longer eligible for Mayvenn Install and has been removed from your order.")
+
 (defn refresh-servicing-stylist [app-state]
   (let [order                (get-in app-state keypaths/order)
         servicing-stylist-id (:servicing-stylist-id order)]
-    (api/fetch-matched-stylist {}
-                               servicing-stylist-id
-                               #(do (api/remove-servicing-stylist servicing-stylist-id
-                                                                  (:number order)
-                                                                  (:token order))
-                                    (messages/handle-message events/flash-show-failure
-                                                             {:message "Your previously selected stylist selected is no longer eligible for Mayvenn Install and has been removed from your order."})))))
+
+    (api/fetch-matched-stylist
+     (get-in app-state keypaths/api-cache)
+     servicing-stylist-id
+     {:error-handler #(do (api/remove-servicing-stylist servicing-stylist-id
+                                                        (:number order)
+                                                        (:token order))
+                          (messages/handle-message events/flash-show-failure
+                                                   {:message unavailable-servicing-stylist-msg}))
+      :cache/bypass? true})))
 
 (defn refresh-current-order [app-state]
   (let [user-id      (get-in app-state keypaths/user-id)

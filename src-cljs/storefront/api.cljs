@@ -148,19 +148,19 @@
                  {:handler #(messages/handle-message events/api-success-fetch-cms-keypath %)})))
 
 (defn cache-req
-  [cache method path req-key {:keys [handler params] :as request-opts}]
+  [cache method path req-key {:keys [handler params cache/bypass?] :as request-opts}]
   (let [key (c/cache-key [path params])
         res (cache key)]
-    (if res
+    (if (and res (not bypass?))
       (handler res)
       (storeback-api-req method
-               path
-               req-key
-               (merge request-opts
-                      {:handler
-                       (fn [result]
-                         (messages/handle-message events/api-success-cache {key result})
-                         (handler result))})))))
+                         path
+                         req-key
+                         (merge request-opts
+                                {:handler
+                                 (fn [result]
+                                   (messages/handle-message events/api-success-cache {key result})
+                                   (handler result))})))))
 
 (defn get-promotions [cache promo-code]
   (cache-req
@@ -1028,7 +1028,7 @@
 (defn fetch-matched-stylist
   ([cache stylist-id]
    (fetch-matched-stylist cache stylist-id nil))
-  ([cache stylist-id error-handler]
+  ([cache stylist-id {:keys [error-handler cache/bypass?]}]
    (cache-req
     cache
     GET
@@ -1036,7 +1036,8 @@
     request-keys/fetch-matched-stylist
     {:params        {:stylist-id stylist-id}
      :handler       #(messages/handle-message events/api-success-fetch-matched-stylist %)
-     :error-handler error-handler})))
+     :error-handler error-handler
+     :cache/bypass? bypass?})))
 
 (defn fetch-matched-stylists [cache stylist-ids handler]
   (cache-req
