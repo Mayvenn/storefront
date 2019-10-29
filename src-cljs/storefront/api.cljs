@@ -962,7 +962,7 @@
              :number               number
              :token                token}
     :handler  #(messages/handle-message
-                events/api-success-adventure-cleared-servicing-stylist
+                events/api-success-remove-servicing-stylist
                 {:order %})}))
 
 (defn- static-content-req [method path req-key {:keys [handler] :as request-opts}]

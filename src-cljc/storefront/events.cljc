@@ -552,7 +552,7 @@
 (defpath adventure-fetch-matched-products)
 (defpath api-success-adventure-fetch-products)
 
-(defpath api-success-adventure-cleared-servicing-stylist)
+(defpath api-success-remove-servicing-stylist)
 
 (defpath api-shipping-address-geo-lookup)
 (defpath api-success-shipping-address-geo-lookup)
