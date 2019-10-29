@@ -9,7 +9,6 @@
                            "shop your favorite looks from the #MayvennMade community.")
    :back-copy         "back to shop by look"
    :button-copy       "Shop Look"
-   :above-button-copy nil
    :short-name        "look"
    :seo-title         "Shop by Look | Mayvenn"
    :og-title          "Shop by Look - Find and Buy your favorite Mayvenn bundles!"})
@@ -22,7 +21,6 @@
                                                   "packaged bundle deals so you can shop with ease.")
                           :button-copy       "View this deal"
                           :back-copy         "back to deals"
-                          :above-button-copy "*Discounts applied at check out"
                           :short-name        "deal"
                           :seo-title         "Shop Deals | Mayvenn"
                           :og-title          (str "Shop Deals - "
@@ -43,7 +41,6 @@
                       :description       (str "We have an amazing selection of inspo to choose from.")
                       :button-copy       "View this look"
                       :back-copy         "back to looks"
-                      :above-button-copy "*Discounts applied at check out"
                       :short-name        "look"
                       :seo-title         "Shop Wavy and Curly Looks | Mayvenn"
                       :og-title          (str "Shop Wavy and Curly Looks - "
@@ -53,7 +50,6 @@
                     :description       (str "We have an amazing selection of inspo to choose from.")
                     :button-copy       "View this look"
                     :back-copy         "back to looks"
-                    :above-button-copy "*Discounts applied at check out"
                     :short-name        "look"
                     :seo-title         "Shop Straight Looks | Mayvenn"
                     :og-title          (str "Shop Straight Looks - "
@@ -63,7 +59,6 @@
                           :description       "The best combinations, period"
                           :button-copy       "View this Bundle Set"
                           :back-copy         "back to bundle sets"
-                          :above-button-copy "*Discounts applied at check out"
                           :short-name        "bundle set"
                           :seo-title         "Shop Straight Bundle Sets | Mayvenn"
                           :og-title          (str "Shop Straight Bundle Sets - "
@@ -73,7 +68,6 @@
                             :description       "The best combinations, period"
                             :button-copy       "View this Bundle Set"
                             :back-copy         "back to bundle sets"
-                            :above-button-copy "*Discounts applied at check out"
                             :short-name        "bundle set"
                             :seo-title         "Shop Wavy and Curly Bundle Sets | Mayvenn"
                             :og-title          (str "Shop Wavy and Curly Bundle Sets - "
@@ -83,7 +77,6 @@
                      :description       "The best combinations, period"
                      :button-copy       "View this Bundle Set"
                      :back-copy         "back to bundle sets"
-                     :above-button-copy "*Discounts applied at check out"
                      :short-name        "bundle set"
                      :seo-title         "Shop Wavy and Curly Bundle Sets | Mayvenn"
                      :og-title          (str "Shop Wavy and Curly Bundle Sets - "
