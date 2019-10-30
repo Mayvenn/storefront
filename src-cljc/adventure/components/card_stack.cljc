@@ -36,7 +36,7 @@
           [:div.absolute
            {:style {:top "1.5rem" :right "1.5rem"}}
            (ui/modal-close {:class       "stroke-dark-gray fill-gray"
-                            :close-attrs close-attrs})]])))])
+                            :close-attrs close-attrs})]])))]))
 
 (defcomponent component
   [{:keys [header-data gallery-modal-data cards-data title] :as data} _ _]

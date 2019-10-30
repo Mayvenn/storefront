@@ -54,6 +54,7 @@
                    {:slides   imgs
                     :settings {:nav         true
                                :edgePadding 0
+                               :controls    true
                                :items       1}}))
 
 (defn distinct-product-imgs [{:keys [line-items]}]
@@ -63,11 +64,7 @@
        (map (fn [img] [:img.col-12 img]))))
 
 (defn imgs [look shared-cart]
-  (cons (ui/aspect-ratio
-         1 1
-         {:class "bg-black"}
-         [:div.container-size.bg-cover.bg-no-repeat.bg-center
-          {:style {:background-image (str "url(" (:image-url look) ")")}}])
+  (cons [:img.col-12 {:src (str (:image-url look)) :alt ""}]
         (distinct-product-imgs shared-cart)))
 
 (defn display-line-item
@@ -132,7 +129,7 @@
                                          :height "21px"}}
          ^:inline (svg/instagram)]]]
       (when yotpo-data-attributes
-        [:div (om/build reviews/reviews-summary-component {:yotpo-data-attributes yotpo-data-attributes} nil)])
+        [:div (component/build reviews/reviews-summary-component {:yotpo-data-attributes yotpo-data-attributes} nil)])
       (when-not (str/blank? (:description look))
         [:p.h7.px3.pb1.dark-gray.bg-white.clearfix (:description look)])])
    (if fetching-shared-cart?
