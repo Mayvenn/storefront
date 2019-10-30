@@ -22,7 +22,10 @@
         {:style {:max-width "750px"}}
         (component/build carousel/component
                          {:slides   slides
-                          :settings {:slidesToShow 1}}
+                          :settings {:controls    true
+                                     :nav         false
+                                     :edgePadding 0
+                                     :items       1}}
                          {})
         [:div.absolute
          {:style {:top "1.5rem" :right "1.5rem"}}

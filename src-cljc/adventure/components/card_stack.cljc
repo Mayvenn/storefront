@@ -4,7 +4,7 @@
             [adventure.organisms.call-out-center :as call-out-center]
             [storefront.events :as events]
             [storefront.effects :as effects]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ui :as ui]
             [storefront.platform.carousel :as carousel]
             [storefront.platform.component-utils :as utils]
@@ -29,18 +29,18 @@
           {:style {:max-width "750px"}}
           (component/build carousel/component
                            {:slides   (map-indexed gallery-slide ucare-img-urls)
-                            :settings {:initialSlide (or initially-selected-image-index 0)
-                                       :slidesToShow 1}}
+                            :settings {:startIndex  (or initially-selected-image-index 0)
+                                       :edgePadding 0
+                                       :items       1}}
                            {})
           [:div.absolute
            {:style {:top "1.5rem" :right "1.5rem"}}
            (ui/modal-close {:class       "stroke-dark-gray fill-gray"
-                            :close-attrs close-attrs})]])))]))
+                            :close-attrs close-attrs})]])))])
 
-(defn component
+(defcomponent component
   [{:keys [header-data gallery-modal-data cards-data title] :as data} _ _]
-  (component/create
-   (when (seq cards-data)
+  (when (seq cards-data)
      [:div.center.flex-auto.bg-light-lavender
       (component/build gallery-modal-component gallery-modal-data nil)
       [:div.white
@@ -61,4 +61,4 @@
           [:div.h6.dark-gray.mt3.pb4
            [:div.col-7-on-tb-dt.col-9.mx-auto.mb1
             "Not ready to pick a stylist? Let a Mayvenn expert find one for you after you buy hair."]
-           [:a.teal.medium (merge {:data-test data-test} (apply utils/route-to navigation-event)) copy]])]]])))
+           [:a.teal.medium (merge {:data-test data-test} (apply utils/route-to navigation-event)) copy]])]]]))

@@ -1,7 +1,7 @@
 (ns storefront.components.v2-home
   (:require [storefront.accessors.auth :as auth]
             [storefront.accessors.contentful :as contentful]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.marquee :as marquee]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
@@ -111,9 +111,9 @@
 (defn ^:private style-carousel-component [images]
   (component/build carousel/component
                    {:slides   (mapv carousel-slide images)
-                    :settings {:slidesToShow 2
-                               :swipe        true
-                               :arrows       true}}
+                    :settings {:items    2
+                               :controls false
+                               :nav      false}}
                    {}))
 
 (defn style-carousel [styles treatments origins link-text {:as ugc :keys [album-keyword]} album-first?]

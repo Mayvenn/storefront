@@ -12,10 +12,8 @@
   (this-as this
            (set! (.-carousel this)
                  (js/tns
-                  (clj->js (merge {:container        (component/get-ref this "container")
-                                   :prevButton       (component/get-ref this "prev-button")
-                                   :nextButton       (component/get-ref this "next-button")
-                                   :edgePadding      30
+                  (clj->js (merge {:container (component/get-ref this "container")
+                                   :edgePadding     30
                                    :items            3
                                    :loop             true
                                    :controlsPosition "bottom"
@@ -23,6 +21,9 @@
                                    :touch            true
                                    :mouseDrag        true
                                    :autoplay         false}
+                                  (when (:controls settings)
+                                    {:prevButton (component/get-ref this "prev-button")
+                                     :nextButton (component/get-ref this "next-button")})
                                   settings))))))
 
 ;; TODO: Make this work nicely when the slides change
@@ -55,12 +56,16 @@
   (render [this]
           (prn "inner render")
     (component/html
-     (let [{:keys [slides]} (component/get-props this)]
+     (let [{:keys [slides settings]} (component/get-props this)]
        (if-not (seq slides)
          [:div]
          [:div
-          [:div.z2.slick-prev {:style {:height "50px" :width "50px"} :ref (component/use-ref this "prev-button")}]
-          [:div.z2.slick-next {:style {:height "50px" :width "50px"} :ref (component/use-ref this "next-button")}]
+          (when (:controls settings)
+            [:div.z2.slick-prev {:style {:height "50px" :width "50px"}
+                                 :ref (component/use-ref this "prev-button")}])
+          (when (:controls settings)
+            [:div.z2.slick-next {:style {:height "50px" :width "50px"}
+                                 :ref (component/use-ref this "next-button")}])
           [:div {:ref (component/use-ref this "container")}
            (for [[idx slide] (map-indexed vector slides)]
              ;; Wrapping div allows slider.js to attach
