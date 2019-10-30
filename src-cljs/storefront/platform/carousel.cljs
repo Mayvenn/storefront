@@ -2,92 +2,94 @@
   (:require [sablono.core :refer [html]]
             [storefront.component :as component :refer [defdynamic-component]]
             ;;react-slick
-            [om.core :as om]))
+            ))
 
-(def custom-dots (constantly (html [:a [:div.circle]])))
+(defn safely-destroy [carousel]
+  (when (some-> carousel .-destroy fn?)
+    (.destroy carousel)))
 
-(defdynamic-component inner-component [{:keys [now slides settings]} owner _]
-  [:div "TODO"])
+(defn build-carousel [settings]
+  (this-as this
+           (set! (.-carousel this)
+                 (js/tns
+                  (clj->js (merge {:container        (component/get-ref this "container")
+                                   :prevButton       (component/get-ref this "prev-button")
+                                   :nextButton       (component/get-ref this "next-button")
+                                   :edgePadding      30
+                                   :items            3
+                                   :loop             true
+                                   :controlsPosition "bottom"
+                                   :navPosition      "bottom"
+                                   :touch            true
+                                   :mouseDrag        true
+                                   :autoplay         false}
+                                  settings))))))
 
-#_
-(defn inner-component [{:keys [now slides settings]} owner _]
-  (om/component
-   (if-not (seq slides)
-     (html [:div])
-     (js/React.createElement js/Slider
-                             (clj->js (merge {:pauseOnHover true
-                                              :customPaging custom-dots
-                                              :dotsClass    "carousel-dots"
-                                              ;; :waitForAnimate true
-                                              ;; TODO: figure out why onMouseUp always
-                                              ;; triggers navigation to link in slide,
-                                              ;; while onTouchEnd doesn't. This prevents
-                                              ;; us from allowing drag on desktop.
-                                              :draggable    false
-                                              :now          now}
-                                             settings))
-                             (html (for [[idx slide] (map-indexed vector slides)]
-                                     ;; Wrapping div allows slider.js to attach
-                                     ;; click handlers without overwriting ours
-                                     [:div {:key idx} slide]))))))
+;; TODO: Make this work nicely when the slides change
+(defdynamic-component inner-component
+  [_ _ _]
+  (constructor [this _]
+    (component/create-ref! this "container")
+    (component/create-ref! this "prev-button")
+    (component/create-ref! this "next-button")
+    (set! (.-build-carousel this) (.bind build-carousel this)))
+  (did-mount [this]
+             (prn "inner mount")
+             (let [{:keys [settings]} (component/get-props this)]
+               (.build-carousel this settings)))
+  (will-unmount [this]
+                (prn "inner unmount")
+                (safely-destroy (.-carousel this)))
 
-(defn cancel-autoplay [owner]
-  (om/set-state! owner {:autoplay false}))
+  (did-update [this prev-props]
+              (prn "inner did update")
+              #_(let [{:keys [slides settings]} (component/get-props this)
+                    {prev-settings :settings
+                     prev-slides   :slides}   (.-props prev-props)]
+                (when (or (not= prev-slides slides)
+                          (not= prev-settings settings))
+                  (safely-destroy (.-carousel this))
+                  (set! (.-carousel this) nil)
+                  (.build-carousel this settings))))
 
-(defn override-autoplay [original autoplay-override]
-  (update original :autoplay #(and % autoplay-override)))
+  (render [this]
+          (prn "inner render")
+    (component/html
+     (let [{:keys [slides]} (component/get-props this)]
+       (if-not (seq slides)
+         [:div]
+         [:div
+          [:div.z2.slick-prev {:style {:height "50px" :width "50px"} :ref (component/use-ref this "prev-button")}]
+          [:div.z2.slick-next {:style {:height "50px" :width "50px"} :ref (component/use-ref this "next-button")}]
+          [:div {:ref (component/use-ref this "container")}
+           (for [[idx slide] (map-indexed vector slides)]
+             ;; Wrapping div allows slider.js to attach
+             ;; click handlers without overwriting ours
+             [:div {:key idx} slide])]])))))
 
-(defdynamic-component component [{:keys [slides] :as data} owner _]
-  (constructor [_ props]
-               {:autoplay true})
-  (render [_ {:keys [autoplay]}]
-          (html
-           [:div.stacking-context
-            ;; Cancel autoplay on interaction
-            {:on-mouse-down  #(cancel-autoplay owner)
-             :on-touch-start #(cancel-autoplay owner)}
+(defdynamic-component component [_ owner _]
+  (did-mount [_]
+             (prn "outer mount"))
+  (will-unmount [_]
+             (prn "outer unmount"))
+  (did-update [this prev-props]
+              (prn "outer did update")
+              #_(let [{:keys [slides settings]} (component/get-props this)
+                    {prev-settings :settings
+                     prev-slides   :slides}   (.-props prev-props)]
+                (when (or (not= prev-slides slides)
+                          (not= prev-settings settings))
+                  (prn "force update")
+                  (.forceUpdate this))))
+  (render [this]
+          (prn "outer render")
+          (let [{:keys [slides] :as data} (component/get-props this)]
             (component/build inner-component
-                             (cond-> data
+                             (cond-> (assoc-in data [:settings :autoplay] false)
+
                                (= (count slides) 1)
-                               (update-in [:settings] merge {:arrows false
-                                                             :dots   false
-                                                             :swipe  false})
-                               :always
-                               (update-in [:settings] override-autoplay autoplay)
-                               :always
-                               (update-in [:settings :responsive]
-                                          (fn [responsive]
-                                            (map
-                                             (fn [breakpoint]
-                                               (update breakpoint :settings override-autoplay autoplay))
-                                             responsive)))))])))
-
-#_
-(defn component [{:keys [slides] :as data} owner _]
-  (reify
-    om/IInitState
-    (init-state [_]
-      {:autoplay true})
-
-    om/IRenderState
-    (render-state [_ {:keys [autoplay]}]
-      (html
-       [:div.stacking-context
-        ;; Cancel autoplay on interaction
-        {:on-mouse-down  #(cancel-autoplay owner)
-         :on-touch-start #(cancel-autoplay owner)}
-        (om/build inner-component
-                  (cond-> data
-                    (= (count slides) 1)
-                    (update-in [:settings] merge {:arrows false
-                                                  :dots   false
-                                                  :swipe  false})
-                    :always
-                    (update-in [:settings] override-autoplay autoplay)
-                    :always
-                    (update-in [:settings :responsive]
-                               (fn [responsive]
-                                 (map
-                                  (fn [breakpoint]
-                                    (update breakpoint :settings override-autoplay autoplay))
-                                  responsive)))))]))))
+                               (update-in [:settings] merge {:arrows    false
+                                                             :nav       false
+                                                             :touch     false
+                                                             :controls  false
+                                                             :mouseDrag false}))))))

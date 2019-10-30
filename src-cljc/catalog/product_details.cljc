@@ -22,7 +22,7 @@
             [storefront.accessors.contentful :as contentful]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.skus :as skus]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.marquee :as marquee]
             [storefront.components.money-formatters :refer [as-money-without-cents as-money]]
             [storefront.components.picker.picker :as picker]
@@ -208,8 +208,9 @@
                        :body (image-body image)})
                     images)]
     (component/build carousel/component
-                     {:slides (map :body items)
-                      :settings {:dots true}}
+                     {:slides   (map :body items)
+                      :settings {:edgePadding 0
+                                 :items       1}}
                      {:react-key (apply str "category-swiper-" slug (interpose "-" (map :id items)))})))
 
 (defn reviews-summary [reviews opts]

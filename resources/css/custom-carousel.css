@@ -1,3 +1,24 @@
+.tns-outer {
+    position: relative;
+}
+.tns-nav {
+    position: absolute;
+    bottom: 5%;
+    text-align: center;
+    width: 100%;
+}
+.tns-nav > [aria-controls] {
+    width: 9px;
+    height: 9px;
+    padding: 0;
+    margin: 0 5px;
+    border-radius: 50%;
+    background: #ddd;
+    border: 0;
+    opacity: 0.623529;
+}
+.tns-nav > .tns-nav-active { background: #999; }
+
 /* Taken from slick.css */
 
 .faded-inactive-slides-carousel .slick-slide {
@@ -57,6 +78,8 @@
 }
 
 /* Carousel Arrows */
+
+/* TODO: genericize away from slick names */
 
 .slick-prev { left: 0; z-index: 2; }
 .slick-next { right: 0; }

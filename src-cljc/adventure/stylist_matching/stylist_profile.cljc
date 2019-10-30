@@ -8,7 +8,7 @@
             api.orders
             [clojure.string :as string]
             [spice.date :as date]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.formatters :as formatters]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
@@ -148,27 +148,27 @@
                    {:section-details/title   "Specialties"
                     :section-details/content (:service-menu stylist)})]})))
 
+;; TODO: determine if this should cycle (new carousel doesn't by default)
 (defn carousel-molecule
   [{:carousel/keys [items]}]
-  (component/build carousel/component
-                   {:slides   (map (fn [{:keys [target-message
-                                                key
-                                                ucare-img-url]}]
-                                     [:a.px1.block
-                                      (merge (apply utils/route-to target-message)
-                                             {:key key})
-                                      (ui/aspect-ratio
-                                       1 1
-                                       [:img {:src   (str ucare-img-url "-/scale_crop/204x204/-/format/auto/")
-                                              :class "rounded col-12"}])])
-                                   items)
-                    :settings {:swipe        true
-                               :initialSlide 0
-                               :arrows       true
-                               :dots         false
-                               :slidesToShow 3
-                               :infinite     true}}
-                   {}))
+  (when (seq items)
+    (component/build
+     carousel/component
+     {:slides   (map (fn [{:keys [target-message
+                                  key
+                                  ucare-img-url]}]
+                       [:a.px1.block
+                        (merge (apply utils/route-to target-message)
+                               {:key key})
+                        (ui/aspect-ratio
+                         1 1
+                         [:img {:src   (str ucare-img-url "-/scale_crop/204x204/-/format/auto/")
+                                :class "rounded col-12"}])])
+                     items)
+      :settings {:controls true
+                 :nav      false
+                 :items    3}}
+     {})))
 
 (defn cta-molecule
   [{:cta/keys [id label target]}]

@@ -1,6 +1,6 @@
 (ns catalog.product-details-ugc
   (:require #?@(:cljs [[goog.string]])
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ugc :as ugc]
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as util]
@@ -40,45 +40,43 @@
                    {:opts {:copy {:back-copy (str "back to " (->title-case long-name))
                                   :button-copy "View this look"}}}))
 
-(defn component [{{:keys [social-cards product-id page-slug sku-id destination-event]} :carousel-data} owner opts]
-  (component/create
-   (when (seq social-cards)
+(defcomponent component
+  [{{:keys [social-cards product-id page-slug sku-id destination-event]} :carousel-data} owner opts]
+  (when (seq social-cards)
      [:div.center.mt4
       [:div.h2.medium.dark-gray.crush.m2 "#MayvennMade"]
-      (component/build carousel/component
-                       {:slides   (map-indexed (partial carousel-slide destination-event product-id page-slug sku-id "mayvenn-made-slide-")
-                                               social-cards)
-                        :settings {:centerMode    true
-                            ;; must be in px, because it gets parseInt'd for
-                            ;; the slide width calculation
-                                   :centerPadding "36px"
-                            ;; The breakpoints are mobile-last. That is, the
-                            ;; default values apply to the largest screens, and
-                            ;; 1000 means 1000 and below.
-                                   :slidesToShow  3
-                                   :responsive    [{:breakpoint 1000
-                                                    :settings   {:slidesToShow 2}}]}}
-                       opts)
+      (component/build
+       carousel/component
+       {:slides   (map-indexed
+                   (partial carousel-slide destination-event product-id page-slug sku-id "mayvenn-made-slide-")
+                   social-cards)
+        :settings {:nav        false
+                   ;; The breakpoints are mobile-first. That is, the
+                   ;; default values apply to the smallest screens, and
+                   ;; 1000 means 1000 and above.
+                   :items      2
+                   :responsive {1000 {:items  3
+                                      :center true}}}}
+       opts)
       [:p.center.dark-gray.m2
        "Want to show up on our homepage? "
-       "Tag your best pictures wearing Mayvenn with " [:span.bold "#MayvennMade"]]])))
+       "Tag your best pictures wearing Mayvenn with " [:span.bold "#MayvennMade"]]]))
 
-(defn popup-component [{:keys [now carousel-data offset close-message]} owner opts]
+(defcomponent popup-component [{:keys [carousel-data offset close-message]} owner opts]
   (let [close-attrs (apply util/route-to close-message)]
-    (component/create
-     ;; NOTE(jeff,corey): events/navigate-product-details should be the current
-     ;; navigation event of the PDP page (freeinstall and classic have different events)
+    ;; navigation event of the PDP page (freeinstall and classic have different events)
      (ui/modal
       {:close-attrs close-attrs}
       [:div.relative
        (component/build carousel/component
                         {:slides   (map (partial popup-slide (:product-name carousel-data))
                                         (:social-cards carousel-data))
-                         :settings {:slidesToShow 1
-                                    :initialSlide (parse-int offset)}
-                         :now      now}
+                         :settings {:items       1
+                                    :edgePadding 0
+                                    :nav         false
+                                    :startIndex  (parse-int offset)}}
                         {})
        [:div.absolute
         {:style {:top "1.5rem" :right "1.5rem"}}
         (ui/modal-close {:class       "stroke-dark-gray fill-gray"
-                         :close-attrs close-attrs})]]))))
+                         :close-attrs close-attrs})]])))

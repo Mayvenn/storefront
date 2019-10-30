@@ -10,7 +10,7 @@
             [storefront.components.money-formatters :as mf]
             [storefront.components.ui :as ui]
             [storefront.components.svg :as svg]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.effects :as effects]
             [storefront.api :as api]
             [adventure.keypaths :as adv-keypaths]
@@ -50,10 +50,12 @@
                               (get-in app-state keypaths/order-servicing-stylist-id)))
 
 (defn carousel [imgs]
-  (om/build carousel/component
-            {:slides   imgs
-             :settings {:dots true}}
-            {:react-key "look-carousel"}))
+  (spice.core/spy imgs)
+  (component/build carousel/component
+                   {:slides   imgs
+                    :settings {:nav         true
+                               :edgePadding 0
+                               :items       1}}))
 
 (defn distinct-product-imgs [{:keys [line-items]}]
   (->> (map (partial images/image-by-use-case "carousel") line-items)
