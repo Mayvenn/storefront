@@ -173,21 +173,18 @@
                  (component/set-state! this :show? (< (header-height-magic-number) (.-y (goog.dom/getDocumentScroll))))))
              (set-height []
                (this-as this
-                 (component/set-state! this :banner-height (some-> (.-banner this)
-                                                                   .-current
+                 (component/set-state! this :banner-height (some-> (component/get-ref this "banner")
                                                                    goog.style/getSize
                                                                    .-height))))]
        (component/create-dynamic "sticky-organism"
          (constructor [this props]
            (component/create-ref! this "banner")
-           (set! (.-banner this) (component/use-ref this "banner"))
            (set! (.-handle-scroll this) (.bind handle-scroll this))
            (set! (.-set-height this) (.bind set-height this))
            {:show?              false
-            :description-length (count (:description (:promo (component/get-props this))))})
+            :description-length (-> this component/get-props :promo :description count)})
          (did-mount [this]
-           (component/set-state! this :banner-height (some-> (.-banner this)
-                                                             .-current
+           (component/set-state! this :banner-height (some-> (component/get-ref this "banner")
                                                              goog.style/getSize
                                                              .-height))
            (goog.events/listen js/window EventType/SCROLL (.-handle-scroll this)))
@@ -204,7 +201,7 @@
                   :class "transition-2"}
                  {:class "hide"
                   :style {:margin-top (str "-" banner-height "px")}})
-               [:div {:ref (.-banner this)}
+               [:div {:ref (component/use-ref this "banner")}
                 (component/build component data opts)]])))))))
 
 (defn built-sticky-organism
