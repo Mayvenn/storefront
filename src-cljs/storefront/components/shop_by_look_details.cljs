@@ -50,7 +50,6 @@
                               (get-in app-state keypaths/order-servicing-stylist-id)))
 
 (defn carousel [imgs]
-  (spice.core/spy imgs)
   (component/build carousel/component
                    {:slides   imgs
                     :settings {:nav         true
