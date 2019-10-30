@@ -75,11 +75,12 @@
       (api/fetch-matched-stylist
        (get-in app-state keypaths/api-cache)
        servicing-stylist-id
-       {:error-handler #(do (api/remove-servicing-stylist servicing-stylist-id
-                                                          (:number order)
-                                                          (:token order))
-                            (messages/handle-message events/flash-show-failure
-                                                     {:message unavailable-servicing-stylist-msg}))
+       {:error-handler #(when (<= 400 (:status %) 499)
+                          (api/remove-servicing-stylist servicing-stylist-id
+                                                        (:number order)
+                                                        (:token order))
+                          (messages/handle-message events/flash-show-failure
+                                                   {:message unavailable-servicing-stylist-msg}))
         :cache/bypass? true}))))
 
 (defn refresh-current-order [app-state]
