@@ -1,24 +1,24 @@
 (ns storefront.platform.reviews
   (:require [catalog.products :as products]
             [om.core :as om]
-            [sablono.core :refer [html]]
             [storefront.component :as component :refer [defcomponent defdynamic-component]]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.messages :refer [handle-message]]
-            [storefront.routes :as routes]))
+            [storefront.routes :as routes]
+            ))
 
-(defn ^:private reviews-component-inner
+(defdynamic-component ^:private reviews-component-inner
   [{:keys [loaded? yotpo-data-attributes]} owner opts]
-  (component/create-dynamic
-   "reviews-component-inner"
-   (did-mount [_] (handle-message events/reviews-component-mounted))
-   (will-unmount [_] (handle-message events/reviews-component-will-unmount))
-   (render [_]
-           (html
-            [:div
-             [:.mx-auto.mb3
-              [:.yotpo.yotpo-main-widget yotpo-data-attributes]]]))))
+  (did-mount [_] (handle-message events/reviews-component-mounted))
+  (will-unmount [_] (handle-message events/reviews-component-will-unmount))
+  (render [this]
+    (let [{:keys [yotpo-data-attributes loaded?]} (component/get-props this)]
+      (component/html
+       [:div
+        (when loaded?
+          [:.mx-auto.mb3
+           [:.yotpo.yotpo-main-widget yotpo-data-attributes]])]))))
 
 (defcomponent reviews-component
   "The fully expanded reviews component using yotpo"
@@ -30,12 +30,14 @@
   [{:keys [loaded? yotpo-data-attributes]} owner opts]
   (did-mount [_] (handle-message events/reviews-component-mounted))
   (will-unmount [_] (handle-message events/reviews-component-will-unmount))
-  (render [_]
-          (component/html
-           [:div
-            [:div.px3.clearfix.pyp3
-             [:div.yotpo.bottomLine.mr2 yotpo-data-attributes]
-             [:div.yotpo.QABottomLine yotpo-data-attributes]]])))
+  (render [this]
+    (let [{:keys [yotpo-data-attributes loaded?]} (component/get-props this)]
+      (component/html
+        [:div
+        (when loaded?
+          [:div.px3.clearfix.pyp3
+            [:div.yotpo.bottomLine.mr2 yotpo-data-attributes]
+            [:div.yotpo.QABottomLine yotpo-data-attributes]])]))))
 
 (defcomponent reviews-summary-component
   "Yotpo summary reviews component"
@@ -48,11 +50,13 @@
   [{:keys [loaded? yotpo-data-attributes]} owner opts]
   (did-mount [_] (handle-message events/reviews-component-mounted))
   (will-unmount [_] (handle-message events/reviews-component-will-unmount))
-  (render [_]
-          [:div
-           [:div.clearfix.flex.justify-start.flex-wrap.my1
-            [:.yotpo.bottomLine.mr2 yotpo-data-attributes]
-            [:.yotpo.QABottomLine yotpo-data-attributes]]]))
+  (render [this]
+    (let [{:keys [yotpo-data-attributes loaded?]} (component/get-props this)]
+      [:div
+      (when loaded?
+        [:div.clearfix.flex.justify-start.flex-wrap.my1
+          [:.yotpo.bottomLine.mr2 yotpo-data-attributes]
+          [:.yotpo.QABottomLine yotpo-data-attributes]])])))
 
 (defcomponent reviews-summary-dropdown-experiment-component
   "Yotpo summary reviews component"
