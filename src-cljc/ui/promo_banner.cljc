@@ -196,7 +196,7 @@
                   {:class "hide"
                    :style {:margin-top (str "-" banner-height "px")}})
                 [:div {:ref (component/use-ref this "banner")}
-                 (component/build component data opts)]])))))
+                 (component data opts)]])))))
 
 (defn built-sticky-organism
   [app-state opts]
