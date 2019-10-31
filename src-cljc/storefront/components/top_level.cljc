@@ -23,6 +23,7 @@
             adventure.stylist-matching.stylist-results
             adventure.stylist-matching.let-mayvenn-match
             adventure.stylist-matching.stylist-profile
+            adventure.stylist-matching.stylist-gallery
 
             stylist-matching.match-stylist
             stylist-matching.find-your-stylist
@@ -129,6 +130,7 @@
           events/navigate-adventure-let-mayvenn-match                   adventure.stylist-matching.let-mayvenn-match/built-component
           events/navigate-adventure-stylist-profile                     adventure.stylist-matching.stylist-profile/built-component
           events/navigate-adventure-stylist-profile-post-purchase       adventure.stylist-matching.stylist-profile/built-component
+          events/navigate-adventure-stylist-gallery                     adventure.stylist-matching.stylist-gallery/built-component
           home/built-component)
     (assert (str "Expected main-component to return a component, but did not: " (pr-str nav-event)))))
 
