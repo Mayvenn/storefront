@@ -2,7 +2,6 @@
   (:require [adventure.stylist-matching.stylist-results :as stylist-results]
             [adventure.keypaths :as adv-keypaths]
             [adventure.components.profile-card :as profile-card]
-            [adventure.components.card-stack :as card-stack]
             [storefront.components.svg :as svg]
             api.orders
             [spice.core :as spice]
