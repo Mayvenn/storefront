@@ -98,7 +98,7 @@
   [{:stylist-card.gallery-item/keys [id target ucare-id]}]
   (when id
     (component/html
-     [:div.px1
+     [:a.block.px1
       (merge
        (apply utils/route-to target)
        {:key id})
@@ -114,12 +114,8 @@
      [:div.px2
       (component/build carousel/component
                        {:slides   (map stylist-card-gallery-item-molecule items)
-                        :settings {:swipe        true
-                                   :initialSlide 0
-                                   :arrows       true
-                                   :dots         false
-                                   :slidesToShow 3
-                                   :infinite     true}}
+                        :settings {:nav       false
+                                   :items     3}}
                        {})])))
 
 (defn control-stylist-card-gallery-item-molecule
@@ -139,15 +135,11 @@
   (when id
     (component/html
      [:div
-      [:h7.dark-gray.bold.left-align.mb2.ml1 title]
+      [:h6.dark-gray.bold.left-align.mb2.ml1.h7 title]
       (component/build carousel/component
                        {:slides   (map control-stylist-card-gallery-item-molecule items)
-                        :settings {:swipe        true
-                                   :initialSlide 0
-                                   :arrows       true
-                                   :dots         false
-                                   :slidesToShow 3
-                                   :infinite     true}}
+                        :settings {:nav   false
+                                   :items 3}}
                        {})])))
 
 (defn stylist-card-cta-molecule
