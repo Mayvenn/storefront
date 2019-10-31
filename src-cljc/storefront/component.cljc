@@ -172,8 +172,10 @@
      :cljs (utils/create-component
             nil
             {"displayName" name}
-            {"render" (fn render [this] (f))
-             "shouldComponentUpdate" should-update})))
+            {"render"                (fn render [this] (f))
+             "shouldComponentUpdate" should-update
+             "componentDidCatch"     (fn [this error error-info]
+                                       (js/console.log "Failed when rendering: " name error error-info))})))
 
 (defn create-dynamic* [name ctor methods]
   #?(:clj [:div {:data-type "dynamic"}]
@@ -186,11 +188,20 @@
               ctor
               {"displayName"         name
                "isNewStyleComponent" true}
-              methods))))
+              (merge {"componentDidCatch" (fn [this error error-info]
+                                            (js/console.log "Failed when rendering: " name error error-info))}
+                     methods)))))
 
 (defmacro html [content]
   `(if-cljs
-     (sablono.core/html ~content)
+       (let [c# (sablono.core/html (or ~content [:span]))]
+         (when ^boolean goog/DEBUG
+           (assert (js/React.isValidElement c#)
+                   (str "Did not receive a valid element "
+                        ~(:file (meta &form))
+                        ":"
+                        ~(:line (meta &form)))))
+         c#)
      ~content))
 
 (defmacro create
@@ -250,7 +261,6 @@
    (defn- defcomponent-clj [component-name meta docstring body-fn]
      `(defn ~component-name ~@docstring [data# owner# opts#]
         (~body-fn data# owner# opts#))))
-
 
 #?(:clj
    (defmacro ^{:style/indent :defn} defcomponent
