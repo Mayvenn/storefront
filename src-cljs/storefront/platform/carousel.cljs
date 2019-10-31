@@ -21,7 +21,7 @@
                             :touch            true
                             :mouseDrag        true
                             :autoplay         false}
-                           (when (:controls settings)
+                           (when (:controls settings true)
                              {:prevButton (component/get-ref this "prev-button")
                               :nextButton (component/get-ref this "next-button")})
                            settings))))))
@@ -41,12 +41,13 @@
                 (safely-destroy (.-carousel this)))
   (render [this]
     (component/html
-     (let [{:keys [slides settings]} (component/get-props this)]
+     (let [{:keys [slides settings]} (component/get-props this)
+           {:keys [controls] :or {controls true}} settings]
        [:div.relative
-        (when (:controls settings)
+        (when controls
           [:div.z2.slick-prev {:style {:height "50px" :width "50px"}
                                :ref   (component/use-ref this "prev-button")}])
-        (when (:controls settings)
+        (when controls
           [:div.z2.slick-next {:style {:height "50px" :width "50px"}
                                :ref   (component/use-ref this "next-button")}])
         [:div.slides {:ref (component/use-ref this "container")}
