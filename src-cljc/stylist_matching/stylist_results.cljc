@@ -176,7 +176,7 @@
   [dispatches items & fall-back]
   (for [{:keys [element/type] :as item} items]
     (when-let [component (get dispatches type fall-back)]
-      (component/build component item nil))))
+      (ui/screen-aware component item))))
 
 (defn gallery-modal-query
   [app-state]
