@@ -182,7 +182,7 @@
   [{:stylist-card.thumbnail/keys [id ucare-id]}]
   (when id
     (component/html
-     (ui/circle-picture {:width "104"}
+     (ui/circle-picture {:width "104px"}
                         (ui/square-image {:resizable-url ucare-id}
                                          72)))))
 
