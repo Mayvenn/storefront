@@ -30,13 +30,13 @@
 #?(:cljs (defn set-state! [component-instance & key-values]
            ;; NOTE: using gobj/get for react properies, and .- for our own
            ;; TODO(jeff): EXTERNS
-           (.setState component-instance (fn [s] #js {:state (apply assoc (.-state s) key-values)})))
+           (.setState component-instance (fn [s] #js {:state (apply assoc (when s (.-state s)) key-values)})))
    :clj (defn set-state! [component-instance key value]))
 
 #?(:cljs (defn get-state [component-instance]
            ;; NOTE: using gobj/get for react properies, and .- for our own
            ;; TODO(jeff): EXTERNS
-           (-> component-instance (gobj/get "state") .-state))
+           (some-> component-instance (gobj/get "state") .-state))
    :clj (defn get-state [component-instance]))
 
 #?(:cljs (defn create-ref! [component-instance name]
@@ -45,7 +45,7 @@
 
 #?(:cljs (defn use-ref [component-instance name]
            (-> component-instance
-                   (gobj/get (str "_ref_" name))))
+               (gobj/get (str "_ref_" name))))
    :clj (defn use-ref [component-instance key value]))
 
 #?(:cljs (defn get-ref [component-instance name]
@@ -125,9 +125,7 @@
          (sequential? f)
          (not-empty (remove false? (map-indexed #(has-fn? problems (conj (vec path) %1) %2) f)))
 
-         :else (do
-                 (println "EVAL: " f)
-                 (fn? f)))))
+         :else (fn? f))))
 
 (defn build* [component data opts debug-data]
   #?(:clj (component data nil (:opts opts))
@@ -152,11 +150,10 @@
                                       props))
 
                :else
-               (react/createElement (component data nil (:opts opts))
-                                    (let [props #js{:props data}]
-                                      (when-let [k (:key opts)]
-                                        (gobj/set props "key" (str k "@" (:file debug-data) ":" (:line debug-data))))
-                                      props))))))
+               (do
+                 (js/console.error "Cannot build a non-component:" component data (:opts opts))
+                 (js/console.error (str "At " (:file debug-data) ":" (:line debug-data)))
+                 (throw (str "Cannot build a non-component at " (:file debug-data) ":" (:line debug-data))))))))
 
 (defn should-update [this next-props next-state]
   #?(:cljs
