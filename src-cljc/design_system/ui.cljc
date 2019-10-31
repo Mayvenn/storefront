@@ -62,15 +62,14 @@
                          :product-list-header/copy-secondary "Your go-to for a sleek look with minimal effort."
                          :product-list-header/copy-position  :right}}])
 
-(defn component
+(defcomponent component
   [data owner opts]
-  (component/create
-   [:div.py3
+  [:div.py3
     [:div.h1 "Common UI"]
     [:section
      [:div.h2 "Organisms"]
      [:section
-      (organisms/demo organisms)]]]))
+      (organisms/demo organisms)]]])
 
 (defn built-component
   [data opts]
