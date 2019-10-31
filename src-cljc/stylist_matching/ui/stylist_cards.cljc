@@ -121,7 +121,7 @@
 (defn control-stylist-card-gallery-item-molecule
   [{:stylist-card.gallery-item/keys [id target ucare-id]}]
   (component/html
-   [:div.px1
+   [:a.block.px1
     (merge
      (apply utils/fake-href target)
      {:key id})

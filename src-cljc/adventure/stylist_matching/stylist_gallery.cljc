@@ -11,7 +11,7 @@
             [adventure.components.header :as header]
             [adventure.keypaths :as keypaths]
             [spice.core :as spice]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent defdynamic-component]]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
@@ -49,7 +49,7 @@
 
 (defn ^:private handle-scroll [component event]
   #?(:cljs
-     (let [{:keys [mobile-overhead desktop-overhead]} (component/get-opts component)]
+     (let [{:component/keys [mobile-overhead desktop-overhead]} (component/get-opts component)]
        (component/set-state! component
                              :show? (< (component-overhead-magic-number mobile-overhead desktop-overhead)
                                        (.-y (goog.dom/getDocumentScroll)))))))
@@ -58,55 +58,18 @@
   #?(:cljs
      (component/set-state! component :component-height (some-> dom-node goog.style/getSize .-height))))
 
-(defdynamic-component sticky-organism
-  (constructor [this]
-               (component/create-ref! this "header")
-               {:show? false :component-height 0})
-  (did-mount [this]
-             (set-height this (component/get-ref this "header"))
-             #?(:cljs
-                (goog.events/listen js/window EventType/SCROLL (partial handle-scroll this))))
-
-  (will-unmount [this]
-                #?(:cljs
-                   (goog.events/unlisten js/window EventType/SCROLL (partial handle-scroll this))))
-  ;; (did-update [this _ _ _] (set-height this (component/get-ref this "header")))
-  (render [this]
-          (let [{:keys [child data]}             (component/get-opts this)
-                {:keys [show? component-height]} (component/get-state this)]
-            (component/html
-             [:div.fixed.z4.top-0.left-0.right-0
-              (if show?
-                {:style {:margin-top "0px"}
-                 :class "transition-2"}
-                {:class "hide"
-                 :style {:margin-top (str "-" component-height "px")}})
-              [:div.col-12 {:ref (component/use-ref this "header")}
-               (component/build child data nil)]]))))
-
-(defn component
+(defcomponent component
   [{:keys [header-data gallery]} owner opts]
-  (component/create
-   [:div.col-12.bg-white.mb6
+  [:div.col-12.bg-white
     (when header-data
-      [:div
+      [:div.fixed.z4.top-0.left-0.right-0
        (header/built-component header-data nil)])
     [:div {:style {:height "72px"}}]
-    (when header-data
-      [:div
-       (component/build sticky-organism
-                        (-> header-data
-                            (update-in [:header-attrs :class] str " mx-auto max-580")
-                            (assoc :unstick? true))
-                        {:opts {:component/mobile-overhead  70
-                                :component/desktop-overhead 70
-                                :component/ref              "header"
-                                :component/child            header/component}})])
     (map-indexed (fn [ix image-id]
-                   (ui/ucare-img {:class    "col-12"
+                   (ui/ucare-img {:class    "col-12 block"
                                   :width    580
                                   :data-ref (str "offset-" ix)} image-id))
-                 gallery)]))
+                 gallery)])
 
 (defmethod effects/perform-effects events/navigate-adventure-stylist-gallery
   [dispatch event {:keys [stylist-id query-params] :as args} prev-app-state app-state]
