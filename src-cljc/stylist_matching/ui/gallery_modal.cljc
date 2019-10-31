@@ -21,8 +21,9 @@
         {:style {:max-width "750px"}}
         (component/build carousel/component
                          {:slides   (map-indexed gallery-slide ucare-image-urls)
-                          :settings {:initialSlide (or initial-index 0)
-                                     :slidesToShow 1}})
+                          :settings {:startIndex (or initial-index 0)
+                                     :nav        false
+                                     :items      1}})
         [:div.absolute
          {:style {:top "1.5rem" :right "1.5rem"}}
          (ui/modal-close {:class       "stroke-dark-gray fill-gray"

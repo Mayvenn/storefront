@@ -41,38 +41,48 @@
                                                                   :height "20px"}})}}
        :gallery     (map (comp ui/ucare-img-id :resizable-url) (:gallery-images stylist))})))
 
-(defn sticky-organism
-  [data owner {:component/keys [child ref mobile-overhead desktop-overhead] :as opts}]
-  #?(:clj (component/create [:div])
-     :cljs
-     (letfn [(component-overhead-magic-number [] (if (< (.-width (goog.dom/getViewportSize)) 750) mobile-overhead desktop-overhead))
-             (handle-scroll [e] (om/set-state! owner :show? (< (component-overhead-magic-number) (.-y (goog.dom/getDocumentScroll)))))
-             (set-height [] (om/set-state! owner :component-height (some-> owner (om/get-node ref) goog.style/getSize .-height)))]
-       (reify
-         om/IInitState
-         (init-state [this]
-           {:show? false})
-         om/IDidMount
-         (did-mount [this]
-           (set-height)
-           (goog.events/listen js/window EventType/SCROLL handle-scroll))
-         om/IWillUnmount
-         (will-unmount [this]
-           (goog.events/unlisten js/window EventType/SCROLL handle-scroll))
-         om/IWillReceiveProps
-         (will-receive-props [this next-props]
-           (set-height))
-         om/IRenderState
-         (render-state [this {:keys [show? component-height]}]
-           (component/html
-            [:div.fixed.z4.top-0.left-0.right-0
-             (if show?
-               {:style {:margin-top "0px"}
-                :class "transition-2"}
-               {:class "hide"
-                :style {:margin-top (str "-" component-height "px")}})
-             [:div.col-12 {:ref ref}
-              (om/build child data nil)]]))))))
+(defn ^:private component-overhead-magic-number [mobile-overhead desktop-overhead]
+  #?(:cljs
+     (if (< (.-width (goog.dom/getViewportSize)) 750)
+       mobile-overhead
+       desktop-overhead)))
+
+(defn ^:private handle-scroll [component event]
+  #?(:cljs
+     (let [{:keys [mobile-overhead desktop-overhead]} (component/get-opts component)]
+       (component/set-state! component
+                             :show? (< (component-overhead-magic-number mobile-overhead desktop-overhead)
+                                       (.-y (goog.dom/getDocumentScroll)))))))
+
+(defn ^:private set-height [component dom-node]
+  #?(:cljs
+     (component/set-state! component :component-height (some-> dom-node goog.style/getSize .-height))))
+
+(defdynamic-component sticky-organism
+  (constructor [this]
+               (component/create-ref! this "header")
+               {:show? false :component-height 0})
+  (did-mount [this]
+             (set-height this (component/get-ref this "header"))
+             #?(:cljs
+                (goog.events/listen js/window EventType/SCROLL (partial handle-scroll this))))
+
+  (will-unmount [this]
+                #?(:cljs
+                   (goog.events/unlisten js/window EventType/SCROLL (partial handle-scroll this))))
+  ;; (did-update [this _ _ _] (set-height this (component/get-ref this "header")))
+  (render [this]
+          (let [{:keys [child data]}             (component/get-opts this)
+                {:keys [show? component-height]} (component/get-state this)]
+            (component/html
+             [:div.fixed.z4.top-0.left-0.right-0
+              (if show?
+                {:style {:margin-top "0px"}
+                 :class "transition-2"}
+                {:class "hide"
+                 :style {:margin-top (str "-" component-height "px")}})
+              [:div.col-12 {:ref (component/use-ref this "header")}
+               (component/build child data nil)]]))))
 
 (defn component
   [{:keys [header-data gallery]} owner opts]
