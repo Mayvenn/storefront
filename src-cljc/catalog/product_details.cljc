@@ -3,7 +3,6 @@
                        [goog.events.EventType :as EventType]
                        [goog.events]
                        [goog.style]
-                       [om.core :as om]
                        [storefront.accessors.auth :as auth]
                        [storefront.api :as api]
                        [storefront.browser.scroll :as scroll]
@@ -22,7 +21,7 @@
             [storefront.accessors.contentful :as contentful]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.skus :as skus]
-            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent defdynamic-component]]
             [storefront.components.marquee :as marquee]
             [storefront.components.money-formatters :refer [as-money-without-cents as-money]]
             [storefront.components.picker.picker :as picker]
@@ -91,69 +90,64 @@
                    :disabled-class "bg-gray"}
                   "Unavailable"))
 
-(defn ^:private sticky-add-component
-  [{:keys [selected-options sold-out? unavailable? adding-to-bag? sku quantity image]} owner opts]
-  (let [unpurchasable? (or sold-out? unavailable?)
-        text-style     (if unpurchasable? {:class "gray"} {})]
-    #?(:clj (component/create [:div])
-       :cljs
-       (letfn [(handle-scroll [e] (om/set-state! owner :show? (< 866 (.-y (goog.dom/getDocumentScroll)))))
-               (set-height [] (om/set-state! owner :add-button-height (some-> owner
-                                                                              (om/get-node "add-button")
-                                                                              goog.style/getSize
-                                                                              .-height)))]
-         (reify
-           om/IInitState
-           (init-state [this]
-             ;; Treat show? as a trinary state:
-             ;; nil = we need to hide the element, but still be available for height calculations
-             ;; true = show the element (set margin-bottom to 0)
-             ;; false = hide the element (set margin-bottom to computed height calculations)
-             {:show? nil})
-           om/IDidMount
-           (did-mount [this]
-             (set-height)
-             (handle-scroll nil) ;; manually fire once on load incase the page already scrolled
-             (goog.events/listen js/window EventType/SCROLL handle-scroll))
-           om/IWillUnmount
-           (will-unmount [this]
-             (goog.events/unlisten js/window EventType/SCROLL handle-scroll))
-           om/IWillReceiveProps
-           (will-receive-props [this next-props]
-             (set-height))
-           om/IRenderState
-           (render-state [this {:keys [show? add-button-height]}]
-             (component/html
-              [:div.fixed.z4.bottom-0.left-0.right-0.transition-2
-               (cond
-                 (nil? show?) {:style {:visibility "hidden"}}
-                 show?        {:style {:margin-bottom "0"}}
-                 :else        {:style {:margin-bottom (str "-" add-button-height "px")}})
-               [:div {:ref "add-button"}
-                [:div.p3.flex.justify-center.items-center.bg-white.border-top.border-light-gray
-                 [:div.col-8
-                  [:a.inherit-color
-                   {:on-click #(scroll/scroll-selector-to-top "body")}
-                   [:div.flex.items-center
-                    [:img.border.border-gray.rounded-0
-                     {:height "33px"
-                      :width  "65px"
-                      :src    (:option/rectangle-swatch (:hair/color selected-options))}]
-                    [:span.ml2 "Length: " [:span text-style (:option/name (:hair/length selected-options))]]
-                    [:span.ml2 "Qty: " [:span text-style quantity]]]]]
-                 [:div.col-4
-                  (ui/teal-button {:on-click
-                                   (utils/send-event-callback events/control-add-sku-to-bag
-                                                              {:sku      sku
-                                                               :quantity quantity})
-                                   :data-test      "add-to-cart"
-                                   :disabled?      unpurchasable?
-                                   :disabled-class "bg-gray"
-                                   :spinning?      adding-to-bag?}
-                                  (cond
-                                    unavailable? "Unavailable"
-                                    sold-out?    "Sold Out"
-                                    :default     "Add"))]]]])))))))
+(letfn [(handle-scroll [this e] #?(:cljs (component/set-state! this :show? (< 866 (.-y (goog.dom/getDocumentScroll))))))
+        (set-height [this] #?(:cljs (component/set-state! this :add-button-height (some-> (component/get-ref this "add-button")
+                                                                                          goog.style/getSize
+                                                                                          .-height))))]
+  (defdynamic-component ^:private sticky-add-component
+    [_ owner opts]
+    (constructor [this props]
+                 (component/create-ref! this "add-button")
+                 ;; Treat show? as a trinary state:
+                 ;; nil = we need to hide the element, but still be available for height calculations
+                 ;; true = show the element (set margin-bottom to 0)
+                 ;; false = hide the element (set margin-bottom to computed height calculations)
+                 {:show? nil})
+    (did-mount [this]
+               #?(:cljs
+                  (do
+                    (set-height this)
+                    (handle-scroll this nil) ;; manually fire once on load incase the page already scrolled
+                    (goog.events/listen js/window EventType/SCROLL (partial handle-scroll this)))))
+    (will-unmount [this]
+                  #?(:cljs
+                     (goog.events/unlisten js/window EventType/SCROLL (partial handle-scroll this))))
+    (render [this]
+            (let [{:keys [show? add-button-height]}                                             (component/get-state this)
+                  {:keys [selected-options sold-out? unavailable? adding-to-bag? sku quantity]} (component/get-props this)
+                  unpurchasable?                                                                (or sold-out? unavailable?)
+                  text-style                                                                    (if unpurchasable? {:class "gray"} {})]
+              (component/html
+               [:div.fixed.z4.bottom-0.left-0.right-0.transition-2
+                (cond
+                  (nil? show?) {:style {:visibility "hidden"}}
+                  show?        {:style {:margin-bottom "0"}}
+                  :else        {:style {:margin-bottom (str "-" add-button-height "px")}})
+                [:div {:ref (component/use-ref this "add-button")}
+                 [:div.p3.flex.justify-center.items-center.bg-white.border-top.border-light-gray
+                  [:div.col-8
+                   [:a.inherit-color
+                    #?(:cljs {:on-click #(scroll/scroll-selector-to-top "body")})
+                    [:div.flex.items-center
+                     [:img.border.border-gray.rounded-0
+                      {:height "33px"
+                       :width  "65px"
+                       :src    (:option/rectangle-swatch (:hair/color selected-options))}]
+                     [:span.ml2 "Length: " [:span text-style (:option/name (:hair/length selected-options))]]
+                     [:span.ml2 "Qty: " [:span text-style quantity]]]]]
+                  [:div.col-4
+                   (ui/teal-button {:on-click
+                                    (utils/send-event-callback events/control-add-sku-to-bag
+                                                               {:sku      sku
+                                                                :quantity quantity})
+                                    :data-test      "add-to-cart"
+                                    :disabled?      unpurchasable?
+                                    :disabled-class "bg-gray"
+                                    :spinning?      adding-to-bag?}
+                                   (cond
+                                     unavailable? "Unavailable"
+                                     sold-out?    "Sold Out"
+                                     :default     "Add"))]]]])))))
 
 (def checkout-button
   (component/html
@@ -287,7 +281,7 @@
              [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])]]
          (when aladdin?
            [:div.py10.bg-transparent-teal.col-on-tb-dt.mt4
-            (v2/get-a-free-install get-a-free-install-section-data)])
+            (component/build v2/get-a-free-install get-a-free-install-section-data)])
          (when (seq reviews)
            [:div.container.col-7-on-tb-dt.px2
             (component/build review-component/reviews-component reviews opts)])

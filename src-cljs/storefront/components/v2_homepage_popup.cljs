@@ -43,12 +43,12 @@
                   [:br]
                   "buy 3 bundles or more"]]]
                [:div.my10
-                (v2/get-a-free-install {:store                 store
-                                        :gallery-ucare-ids     gallery-ucare-ids
-                                        :stylist-portrait      (:portrait store)
-                                        :stylist-name          (:store-nickname store)
-                                        :modal?                true
-                                        :stylist-gallery-open? stylist-gallery-open?})]
+                (component/build v2/get-a-free-install {:store                 store
+                                                        :gallery-ucare-ids     gallery-ucare-ids
+                                                        :stylist-portrait      (:portrait store)
+                                                        :stylist-name          (:store-nickname store)
+                                                        :modal?                true
+                                                        :stylist-gallery-open? stylist-gallery-open?})]
                [:div.mb3.px2
 
                 [:h6.bold.col-12.center.mb2 "Just check out with promo code: FREEINSTALL"]

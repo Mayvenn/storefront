@@ -78,7 +78,7 @@
            overlay
            cta/navigation-message]}]
   [:div
-   [:div.relative.m1
+   [:a.block.relative.m1
     (when (seq navigation-message)
       (apply utils/route-to navigation-message))
     (ui/aspect-ratio
