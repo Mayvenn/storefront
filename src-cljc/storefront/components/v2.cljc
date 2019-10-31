@@ -7,87 +7,92 @@
             [storefront.keypaths :as keypaths]
             [storefront.transitions :as transitions]
             [storefront.platform.component-utils :as utils]
-            [storefront.components.accordion :as accordion]))
+            [storefront.components.accordion :as accordion]
+            
+            
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
-(defn get-a-free-install
+(defcomponent get-a-free-install
   [{:keys [store
            gallery-ucare-ids
            stylist-portrait
            stylist-name
            modal?
            stylist-gallery-open?]
-    :as data}]
-  (component/build
-   (fn [_ _ _]
-     (component/create
-      (let [step (fn [{:keys [icon-uuid icon-width title description]}]
-                   [:div.col-12.mt2.center
-                    (when (not modal?)
-                      {:class "col-4-on-dt"})
-                    [:div.flex.justify-center.items-end.mb2
-                     {:style {:height "39px"}}
-                     (ui/ucare-img {:alt title :width icon-width} icon-uuid)]
-                    [:div.h5.teal.medium title]
-                    [:p.h6.col-10.col-9-on-dt.mx-auto description]])]
+    :as data}
+   _ _]
+  (let [step (fn [{:keys [icon-uuid icon-width title description]}]
+               [:div.col-12.mt2.center
+                (when (not modal?)
+                  {:class "col-4-on-dt"})
+                [:div.flex.justify-center.items-end.mb2
+                 {:style {:height "39px"}}
+                 (ui/ucare-img {:alt title :width icon-width} icon-uuid)]
+                [:div.h5.teal.medium title]
+                [:p.h6.col-10.col-9-on-dt.mx-auto description]])]
 
-        [:div.col-12
-         [:div.mt2.flex.flex-column.items-center
-          [:h2 "Get a FREE Install"]
-          [:div.h6.dark-gray "In three easy steps"]]
+    [:div.col-12
+     [:div.mt2.flex.flex-column.items-center
+      [:h2 "Get a FREE Install"]
+      [:div.h6.dark-gray "In three easy steps"]]
 
-         [:div.col-8-on-dt.mx-auto.flex.flex-wrap
-          (step {:icon-uuid   "e90526f9-546f-4a6d-a05a-3bea94aedc21"
-                 :icon-width  "28"
-                 :title       "Buy Any 3 Bundles or More"
-                 :description "Including closures and frontals! Rest easy - your 100% virgin hair purchase is backed by our 30 day guarantee."})
-          (step {:icon-uuid   "cddd38e0-f598-4aca-90fc-4350dd4469fb"
-                 :icon-width  "35"
-                 :title       "Get Your Voucher"
-                 :description "We’ll send you a free install voucher via SMS and email after your order ships."})
-          (step {:icon-uuid   "7712537c-3805-4d92-90b5-a899748a21c5"
-                 :icon-width  "35"
-                 :title       "Show Your Stylist The Voucher"
-                 :description (if (contains? #{"store" "shop"}
-                                             (:store-slug store))
-                                (str "Redeem the voucher at your appointment with a Mayvenn stylist. "
-                                     "Check out some of our certified stylists below:")
-                                "Redeem the voucher when you go in for your appointment with: ")})]
+     [:div.col-8-on-dt.mx-auto.flex.flex-wrap
+      (step {:icon-uuid   "e90526f9-546f-4a6d-a05a-3bea94aedc21"
+             :icon-width  "28"
+             :title       "Buy Any 3 Bundles or More"
+             :description "Including closures and frontals! Rest easy - your 100% virgin hair purchase is backed by our 30 day guarantee."})
+      (step {:icon-uuid   "cddd38e0-f598-4aca-90fc-4350dd4469fb"
+             :icon-width  "35"
+             :title       "Get Your Voucher"
+             :description "We’ll send you a free install voucher via SMS and email after your order ships."})
+      (step {:icon-uuid   "7712537c-3805-4d92-90b5-a899748a21c5"
+             :icon-width  "35"
+             :title       "Show Your Stylist The Voucher"
+             :description (if (contains? #{"store" "shop"}
+                                         (:store-slug store))
+                            (str "Redeem the voucher at your appointment with a Mayvenn stylist. "
+                                 "Check out some of our certified stylists below:")
+                            "Redeem the voucher when you go in for your appointment with: ")})]
 
-         [:div.mt2.flex.flex-column.items-center
-          [:div.h6.my1.dark-gray "Your Stylist"]
-          [:div.circle.hide-on-mb-tb
-           (if (:resizable-url stylist-portrait)
-             (ui/circle-picture {:width "100"} (ui/square-image stylist-portrait 100))
-             (ui/circle-ucare-img {:width "100"} "23440740-c1ed-48a9-9816-7fc01f92ad2c"))]
-          [:div.circle.hide-on-dt
-           (if (:resizable-url stylist-portrait)
-             (ui/circle-picture (ui/square-image stylist-portrait 70))
-             (ui/circle-ucare-img {:width "70"} "23440740-c1ed-48a9-9816-7fc01f92ad2c"))]
-          [:div.h5.bold stylist-name]
-          [:div.h6
-           (when (:licensed store)
-             [:div.flex.items-center.dark-gray {:style {:height "1.5em"}}
-              ^:inline (svg/check {:class "stroke-teal" :height "2em" :width "2em"}) "Licensed"])
-           [:div.flex.items-center.dark-gray {:style {:height "1.5em"}}
-            (ui/ucare-img {:width "7" :class "pr2"} "bd307d38-277d-465b-8360-ac8717aedb03")
-            (let [salon-city    (-> store :salon :city not-empty)
-                  salon-state   (-> store :salon :state not-empty)
-                  stylist-city  (-> store :location :city)
-                  stylist-state (-> store :location :state-abbr)]
-              (if (and salon-city salon-state)
-                (str salon-city ", " salon-state)
-                (str stylist-city ", " stylist-state)))]]
-          (when (seq gallery-ucare-ids)
-            [:div.h6.pt1.flex.items-center
-             (ui/ucare-img {:width "25"} "18ced560-296f-4b6c-9c82-79a4e8c15d95")
-             [:a.ml1.teal.medium
-              (utils/fake-href events/control-stylist-gallery-open)
-              "Hair Gallery"]
-             (modal-gallery/simple
-              {:slides      (map modal-gallery/ucare-img-slide gallery-ucare-ids)
-               :open?       stylist-gallery-open?
-               :close-event events/control-stylist-gallery-close})])]])))
-   data))
+     [:div.mt2.flex.flex-column.items-center
+      [:div.h6.my1.dark-gray "Your Stylist"]
+      [:div.circle.hide-on-mb-tb
+       (if (:resizable-url stylist-portrait)
+         (ui/circle-picture {:width "100"} (ui/square-image stylist-portrait 100))
+         (ui/circle-ucare-img {:width "100"} "23440740-c1ed-48a9-9816-7fc01f92ad2c"))]
+      [:div.circle.hide-on-dt
+       (if (:resizable-url stylist-portrait)
+         (ui/circle-picture (ui/square-image stylist-portrait 70))
+         (ui/circle-ucare-img {:width "70"} "23440740-c1ed-48a9-9816-7fc01f92ad2c"))]
+      [:div.h5.bold stylist-name]
+      [:div.h6
+       (when (:licensed store)
+         [:div.flex.items-center.dark-gray {:style {:height "1.5em"}}
+          ^:inline (svg/check {:class "stroke-teal" :height "2em" :width "2em"}) "Licensed"])
+       [:div.flex.items-center.dark-gray {:style {:height "1.5em"}}
+        (ui/ucare-img {:width "7" :class "pr2"} "bd307d38-277d-465b-8360-ac8717aedb03")
+        (let [salon-city    (-> store :salon :city not-empty)
+              salon-state   (-> store :salon :state not-empty)
+              stylist-city  (-> store :location :city)
+              stylist-state (-> store :location :state-abbr)]
+          (if (and salon-city salon-state)
+            (str salon-city ", " salon-state)
+            (str stylist-city ", " stylist-state)))]]
+      (when (seq gallery-ucare-ids)
+        [:div.h6.pt1.flex.items-center
+         (ui/ucare-img {:width "25"} "18ced560-296f-4b6c-9c82-79a4e8c15d95")
+         [:a.ml1.teal.medium
+          (utils/fake-href events/control-stylist-gallery-open)
+          "Hair Gallery"]
+         (modal-gallery/simple
+          {:slides      (map modal-gallery/ucare-img-slide gallery-ucare-ids)
+           :open?       stylist-gallery-open?
+           :close-event events/control-stylist-gallery-close})])]]))
 
 (defmethod transitions/transition-state events/control-stylist-gallery-open [_ _ _ app-state]
   (assoc-in app-state keypaths/carousel-stylist-gallery-open? true))
