@@ -65,5 +65,4 @@
                                                    :nav       false
                                                    :touch     false
                                                    :controls  false
-                                                   :mouseDrag false}))
-                   {:key (str (.getTime (js/Date.)))}))
+                                                   :mouseDrag false}))))
