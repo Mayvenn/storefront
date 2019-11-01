@@ -195,8 +195,7 @@
                                 (svg/share-arrow {:class  "stroke-navy mr1 fill-navy"
                                                   :width  "24px"
                                                   :height "24px"})
-                                "Share your bag"])])]]]))
-
+                                "Share your bag"])])]]])
 
 (defn empty-cta-molecule
   [{:cta/keys [id label target]}]

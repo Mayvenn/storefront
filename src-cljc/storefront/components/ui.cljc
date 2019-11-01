@@ -717,18 +717,14 @@
     :maximum maximum}))
 
 (defn shopping-bag [opts {:keys [quantity]}]
-  (component/build
-   (fn [_ _ _]
-     (component/create
-      [:a.relative.pointer.block (merge (utils/route-to events/navigate-cart)
-                                        opts)
-       ^:inline (svg/bag {:class (str "absolute overlay m-auto "
-                                      (if (pos? quantity) "fill-navy" "fill-black"))})
-       (when (pos? quantity)
-         [:div.absolute.overlay.m-auto {:style {:height "9px"}}
-          [:div.center.navy.h6.line-height-1 {:data-test (-> opts :data-test (str  "-populated"))} quantity]])]))
-   {:opts     opts
-    :quantity quantity}))
+  (component/html
+   [:a.relative.pointer.block (merge (utils/route-to events/navigate-cart)
+                                     opts)
+    ^:inline (svg/bag {:class (str "absolute overlay m-auto "
+                                   (if (pos? quantity) "fill-navy" "fill-black"))})
+    (when (pos? quantity)
+      [:div.absolute.overlay.m-auto {:style {:height "9px"}}
+       [:div.center.navy.h6.line-height-1 {:data-test (-> opts :data-test (str  "-populated"))} quantity]])]))
 
 (defn lqip
   "Generates a Low Quality Image Placeholder.
