@@ -3,11 +3,11 @@
             [storefront.platform.component-utils :as utils]))
 
 
-(defn tab-link [event ref label]
+(defn tab-link [event id ref label]
   [:a.dark-gray.center.pt2
-   (merge (utils/route-to event) {:key ref})
+   (merge (utils/route-to event) {:key id})
    [:.py1 {:ref ref
-           :data-test (str "nav-" ref)}
+           :data-test (str "nav-" id)}
     label]])
 
 (defcomponent sliding-indicator [{:keys [selected-tab tab-bounds]} owner {:keys [tabs]}]
@@ -25,41 +25,38 @@
        :width (.-width rect)})
     {:left 0 :width 0}))
 
-(defn component [{:keys [selected-tab]} owner {:keys [tab-refs tabs labels]}]
-  (letfn [(tab-bounds []
-            (let [{parent-left :left} (get-x-dimension (component/get-ref owner "tabs"))]
-              (vec (for [tab-ref tab-refs]
-                     (let [{:keys [left width]} (get-x-dimension (component/get-ref owner tab-ref))]
-                       {:left  (- left parent-left)
-                        :width width})))))
-          (cache-tab-bounds [] (component/set-state! owner {:tab-bounds (tab-bounds)}))
-          (handle-resize-event [e] (cache-tab-bounds))]
-    (component/create-dynamic
-     "tabs-component"
-     (constructor [this props]
-                  (set! (.-tab-bounds this) (fn []
-                                              (let [{parent-left :left} (get-x-dimension (component/get-ref this "tabs"))]
-                                                (vec (for [tab-ref tab-refs]
-                                                       (let [{:keys [left width]} (get-x-dimension (component/get-ref this tab-ref))]
-                                                         {:left  (- left parent-left)
-                                                          :width width}))))))
-                  (set! (.-cache-tab-bounds this) (fn cache-tab-bounds
-                                                    ([] (component/set-state! this {:tab-bounds (tab-bounds)}))
-                                                    ([e] (cache-tab-bounds))))
-                  nil)
-     (did-mount [this]
-                (js/window.addEventListener "resize" handle-resize-event)
-                (.cache-tab-bounds this))
-     (will-unmount [this]
-                   (js/window.removeEventListener "resize" handle-resize-event))
-     (render [this]
-             (let [{:keys [tab-bounds]} (component/get-state this)]
-               (component/html
-                [:nav.sticky.z1.top-0
-                 [:div.flex.justify-around {:ref "tabs"}
-                  (for [[event ref label] (map vector tabs tab-refs labels)]
-                    (tab-link event ref label))]
-                 (component/build sliding-indicator
-                                  {:selected-tab selected-tab
-                                   :tab-bounds   tab-bounds}
-                                  {:opts {:tabs tabs}})]))))))
+(letfn [(tab-bounds [c]
+          (let [{parent-left :left} (get-x-dimension (component/get-ref c "tabs"))]
+            (vec (for [tab-ref (:tab-refs (component/get-opts c))]
+                   (let [{:keys [left width]} (get-x-dimension (component/get-ref c tab-ref))]
+                     {:left  (- left parent-left)
+                      :width width})))))
+        (cache-tab-bounds [c] (component/set-state! c :tab-bounds (tab-bounds c)))
+        (handle-resize-event [c e] (cache-tab-bounds c))]
+  (defdynamic-component component [_ _ _]
+    (constructor [this props]
+                 (component/create-ref! this "tabs")
+                 (let [{:keys [tab-refs]} (component/get-opts this)]
+                   (doseq [tab-ref tab-refs]
+                     (component/create-ref! this tab-ref)))
+                 (set! (.-tab-bounds this) (partial tab-bounds this))
+                 (set! (.-cache-tab-bounds this) (partial cache-tab-bounds this))
+                 nil)
+    (did-mount [this]
+               (js/window.addEventListener "resize" (partial handle-resize-event this))
+               (.cache-tab-bounds this))
+    (will-unmount [this]
+                  (js/window.removeEventListener "resize" (partial handle-resize-event this)))
+    (render [this]
+            (let [{:keys [selected-tab]}         (component/get-props this)
+                  {:keys [tab-bounds]}           (component/get-state this)
+                  {:keys [tabs tab-refs labels]} (component/get-opts this)]
+              (component/html
+               [:nav.sticky.z1.top-0
+                [:div.flex.justify-around {:ref (component/use-ref this "tabs")}
+                 (for [[event ref label] (map vector tabs tab-refs labels)]
+                   (tab-link event ref (component/use-ref this ref) label))]
+                (component/build sliding-indicator
+                                 {:selected-tab selected-tab
+                                  :tab-bounds   tab-bounds}
+                                 {:opts {:tabs tabs}})])))))

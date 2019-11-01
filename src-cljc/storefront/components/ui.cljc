@@ -680,38 +680,31 @@
     contents]])
 
 (defn big-money [amount]
-  (component/build
-   (fn [_ _ _]
-     (component/create
-      [:div.flex.justify-center.line-height-1
-       (mf/as-money-without-cents amount)
-       [:span.h5 {:style {:margin "5px 3px"}} (mf/as-money-cents-only amount)]]))
-   {:amount amount}))
+  (component/html
+   [:div.flex.justify-center.line-height-1
+    (mf/as-money-without-cents amount)
+    [:span.h5 {:style {:margin "5px 3px"}} (mf/as-money-cents-only amount)]]))
 
 ;; To be deprecated
 (defn progress-indicator [{:keys [value maximum]}]
-  (component/build
-   (fn [_ _ _]
-     (component/create
-      (let [bar-value (-> value (/ maximum) (* 100.0) (min 100))
-            bar-width (str (numbers/round bar-value) "%")
-            bar-style {:padding-top "0.3em" :padding-bottom "0.15em" :height "20px"}]
-        [:div.flex.items-center
-         [:div.my2.border.border-dark-gray.capped.h4.flex-auto
-          (cond
-            (zero? value)     [:div.px2.capped {:style bar-style}]
-            (= value maximum) [:div.bg-teal.px2.capped {:style bar-style}]
-            :else             [:div.bg-teal.px2.capped {:style (merge bar-style {:width bar-width})}])]
-         (if (= value maximum)
-           ^:inline (svg/circled-check {:class "stroke-teal"
-                                        :style {:width        "3rem" :height "3rem"
-                                                :margin-left  "0.4rem"
-                                                :margin-right "-0.2rem"}})
-           [:div.border.circle.border-dark-gray.h6.center.ml1
-            {:style {:height "2.66667rem" :width "2.66667rem" :line-height "2.666667rem"}}
-            bar-width])])))
-   {:value   value
-    :maximum maximum}))
+  (component/html
+   (let [bar-value (-> value (/ maximum) (* 100.0) (min 100))
+         bar-width (str (numbers/round bar-value) "%")
+         bar-style {:padding-top "0.3em" :padding-bottom "0.15em" :height "20px"}]
+     [:div.flex.items-center
+      [:div.my2.border.border-dark-gray.capped.h4.flex-auto
+       (cond
+         (zero? value)     [:div.px2.capped {:style bar-style}]
+         (= value maximum) [:div.bg-teal.px2.capped {:style bar-style}]
+         :else             [:div.bg-teal.px2.capped {:style (merge bar-style {:width bar-width})}])]
+      (if (= value maximum)
+        ^:inline (svg/circled-check {:class "stroke-teal"
+                                     :style {:width        "3rem" :height "3rem"
+                                             :margin-left  "0.4rem"
+                                             :margin-right "-0.2rem"}})
+        [:div.border.circle.border-dark-gray.h6.center.ml1
+         {:style {:height "2.66667rem" :width "2.66667rem" :line-height "2.666667rem"}}
+         bar-width])])))
 
 (defn shopping-bag [opts {:keys [quantity]}]
   (component/html
@@ -784,17 +777,11 @@
   (assert (contains? contentful-type->mime type)
           (str "[ui/source] Invalid contentful format:" type
                "; must be one of:" (keys contentful-type->mime)))
-  (component/build
-   (fn [_ _ _]
-     (component/create
-      "source"
-      [:source (merge attrs
-                      {:key     (str media ":" url)
-                       :src-set (build-src-set url type src-set)
-                       :type    (contentful-type->mime type)})]))
-   {:url   url
-    :attrs attrs}
-   {:key (str media ":" url)}))
+  (component/html
+   [:source (merge attrs
+                   {:key     (str media ":" url ":" type)
+                    :src-set (build-src-set url type src-set)
+                    :type    (contentful-type->mime type)})]))
 
 (defn option
   [{:keys [key disabled? height on-click]} & content]
