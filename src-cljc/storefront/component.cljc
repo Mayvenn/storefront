@@ -29,8 +29,11 @@
 #?(:cljs (defn set-state! [component-instance & key-values]
            ;; NOTE: using gobj/get for react properies, and .- for our own
            ;; TODO(jeff): EXTERNS
+           (when ^boolean goog.DEBUG
+             (assert (even? (count key-values)) "Expected key value pairs"))
            (.setState component-instance (fn [s] #js {:state (apply assoc (when s (.-state s)) key-values)})))
-   :clj (defn set-state! [component-instance key value]))
+   :clj (defn set-state! [component-instance & key-values]
+          (assert (even? (count key-values)))))
 
 #?(:cljs (defn get-state [component-instance]
            ;; NOTE: using gobj/get for react properies, and .- for our own
