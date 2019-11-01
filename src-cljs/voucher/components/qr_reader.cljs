@@ -1,7 +1,5 @@
 (ns voucher.components.qr-reader
-  (:require [sablono.core :refer [html]]
-            jsQR
-            [om.core :as om]
+  (:require jsQR
             [storefront.component :as component :refer [defdynamic-component]]
             [storefront.events :as events]
             [storefront.platform.messages :as messages]))

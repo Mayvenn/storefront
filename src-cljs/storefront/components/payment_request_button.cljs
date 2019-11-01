@@ -1,7 +1,5 @@
 (ns storefront.components.payment-request-button
-  (:require [om.core :as om]
-            [sablono.core :refer [html]]
-            [storefront.hooks.browser-pay :as browser-pay]
+  (:require [storefront.hooks.browser-pay :as browser-pay]
             [storefront.browser.cookie-jar :as cookie-jar]
             [storefront.components.ui :as ui]
             [storefront.keypaths :as keypaths]

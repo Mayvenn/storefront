@@ -5,9 +5,7 @@
             [storefront.keypaths :as storefront.keypaths]
             [adventure.keypaths :as keypaths]
             [adventure.faq :as faq]
-            #?@(:cljs [[om.core :as om]
-                       [goog.events.EventType :as EventType]
-                       goog.dom
+            #?@(:cljs [goog.dom
                        goog.style
                        goog.events
                        [storefront.browser.scroll :as scroll]])

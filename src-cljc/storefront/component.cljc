@@ -3,7 +3,6 @@
             [clojure.set :as set]
             #?@(:cljs [[cljsjs.react]
                        [goog]
-                       [om.core]
                        [goog.object :as gobj]
                        [sablono.core :as sablono :refer-macros [html]]
                        ["react" :as react]

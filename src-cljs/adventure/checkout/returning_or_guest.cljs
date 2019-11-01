@@ -1,8 +1,6 @@
 (ns adventure.checkout.returning-or-guest
-  (:require [om.core :as om]
-            [sablono.core :refer [html]]
-            [storefront.accessors.auth :as auth]
-            [storefront.component :as component]
+  (:require [storefront.accessors.auth :as auth]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.checkout-address :as checkout-address]
             [storefront.components.facebook :as facebook]
             [ui.promo-banner :as promo-banner]

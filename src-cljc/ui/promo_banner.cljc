@@ -3,8 +3,7 @@
                        [goog.events]
                        [goog.events.EventType :as EventType]
                        [goog.style]
-                       ["react" :as react]
-                       [om.core :as om]])
+                       ["react" :as react]])
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.accessors.promos :as promos]

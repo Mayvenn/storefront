@@ -1,7 +1,6 @@
 (ns adventure.components.offset-prompt
-  (:require #?@(:cljs [[om.core :as om]])
-            [storefront.assets :as assets]
-            [storefront.component :as component]
+  (:require [storefront.assets :as assets]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.svg :as svg]
             [adventure.components.header :as header]
             [storefront.components.ui :as ui]
