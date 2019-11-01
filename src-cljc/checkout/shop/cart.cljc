@@ -50,39 +50,39 @@
                               :promo-code         "freeinstall"
                               :allow-dormant?     false})))
 
-(defn qualified-banner-component
-  [_ owner _]
-  (let [burstable? (atom true)]
-    #?(:clj [:div]
-       :cljs
-       (reify
-         om/IDidMount
-         (did-mount [_]
-           (confetti/burst (om/get-ref owner "qualified-banner-confetti")))
-         om/IRender
-         (render [_]
-           (component/html
-            [:div.flex.items-center.bold
-             {:data-test "qualified-banner"
-              :style     {:height              "246px"
-                          :padding-top         "43px"
-                          :background-size     "cover"
-                          :background-position "center 30%"
-                          :background-image    "url('//ucarecdn.com/97d80a16-1f48-467a-b8e2-fb16b532b75e/-/format/auto/-/quality/normal/aladdinMatchingCelebratoryOverlayImagePurpleR203Lm3x')"}
-              :on-click (fn [_]
-                          (when @burstable?
-                            (reset! burstable? false)
-                            (.then (confetti/burst (om/get-ref owner "qualified-banner-confetti"))
-                                   #(reset! burstable? true))))}
-             [:div.col.col-12.center.white
-              [:div.absolute
-               {:ref   "qualified-banner-confetti"
-                :style {:left  "50%"
-                        :right "50%"
-                        :top   "25%"}}]
-              [:div.h5.light "This order qualifies for a"]
-              [:div.h1.shout "free install"]
-              [:div.h5.light "from a Mayvenn Stylist near you"]]]))))))
+(let [burstable? (atom true)]
+  (defdynamic-component qualified-banner-component
+    [_ _ _]
+    (constructor [this props]
+                 (component/create-ref! this "qualified-banner-confetti")
+                 (reset! burstable? true)
+                 nil)
+    (did-mount [this] #?(:cljs (when-let [node (component/get-ref this "qualified-banner-confetti")]
+                                 (confetti/burst node))))
+    (render [this]
+            (component/html
+             [:div.flex.items-center.bold
+              {:data-test "qualified-banner"
+               :style     {:height              "246px"
+                           :padding-top         "43px"
+                           :background-size     "cover"
+                           :background-position "center 30%"
+                           :background-image    "url('//ucarecdn.com/97d80a16-1f48-467a-b8e2-fb16b532b75e/-/format/auto/-/quality/normal/aladdinMatchingCelebratoryOverlayImagePurpleR203Lm3x')"}
+               :on-click (fn [_]
+                           #?(:cljs
+                              (when @burstable?
+                                (reset! burstable? false)
+                                (.then (confetti/burst (component/get-ref this "qualified-banner-confetti"))
+                                       #(reset! burstable? true)))))}
+              [:div.col.col-12.center.white
+               [:div.absolute
+                {:ref   (component/use-ref this "qualified-banner-confetti")
+                 :style {:left  "50%"
+                         :right "50%"
+                         :top   "25%"}}]
+               [:div.h5.light "This order qualifies for a"]
+               [:div.h1.shout "free install"]
+               [:div.h5.light "from a Mayvenn Stylist near you"]]]))))
 
 (def or-separator
   [:div.h5.black.py1.flex.items-center
@@ -90,26 +90,25 @@
    [:div.mx2 "or"]
    [:div.flex-grow-1.border-bottom.border-light-gray]])
 
-(defn full-component
-  [{:keys [applied?
-           call-out
-           cart-items
-           cart-summary
-           checkout-caption-copy
-           checkout-disabled?
-           entered?
-           locked?
-           promo-banner
-           quantity-remaining
-           redirecting-to-paypal?
-           remove-freeinstall-event
-           requesting-shared-cart?
-           servicing-stylist-portrait-url
-           share-carts?
-           show-browser-pay?
-           suggestions] :as queried-data} owner _]
-  (component/create
-   [:div.container.px2
+(defcomponent full-component
+  [{:keys                             [applied?
+                                       call-out
+                                       cart-items
+                                       cart-summary
+                                       checkout-caption-copy
+                                       checkout-disabled?
+                                       entered?
+                                       locked?
+                                       promo-banner
+                                       quantity-remaining
+                                       redirecting-to-paypal?
+                                       remove-freeinstall-event
+                                       requesting-shared-cart?
+                                       servicing-stylist-portrait-url
+                                       share-carts?
+                                       show-browser-pay?
+                                       suggestions] :as queried-data} owner _]
+  [:div.container.px2
     (component/build promo-banner/sticky-organism promo-banner nil)
 
     (component/build call-out/component call-out nil)
@@ -129,7 +128,8 @@
         (fn [index cart-item]
           (component/build cart-item/organism {:cart-item   cart-item
                                                :suggestions (when (zero? index)
-                                                              suggestions)}))
+                                                              suggestions)}
+                           {:key (str index)}))
         cart-items))]
 
      [:div.col-on-tb-dt.col-6-on-tb-dt
