@@ -286,12 +286,14 @@
                                    :retina-quality  "better"
                                    :default-quality "better"}
                                   "9e2a48b3-9811-46d2-840b-31c9f85670ad")]]])])])
-(defn- slide-animate [& content]
+(defn- slide-animate [content]
+  content
+  #_
   (css-transitions/transition-element
-   {:transitionName         "picker"
-    :key                    "picker"
-    :transitionEnterTimeout 0
-    :transitionLeaveTimeout 0}
+   {:classNames "picker"
+    :key        "picker"
+    :in         (boolean content)
+    :timeout    0}
    content))
 
 (defn picker-dialog

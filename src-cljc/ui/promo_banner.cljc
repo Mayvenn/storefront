@@ -24,7 +24,7 @@
   [_ _ _]
   [:div])
 
-(defmethod component :adventure-freeinstall/applied
+(defmethod component :adventure-freeinstall/applied adventure-freeinstall-applied
   [_ _ _]
   [:a.white.center.p2.bg-teal.mbnp5.h6.bold.flex.items-center.justify-center
    {:on-click  (utils/send-event-callback events/popup-show-adventure-free-install)
@@ -35,14 +35,14 @@
    [:div.pointer "CONGRATS — Your next install is FREE! "
     [:span.underline "More info"]]])
 
-(defmethod component :v2-freeinstall/eligible
+(defmethod component :v2-freeinstall/eligible v2-freeinstall-eligible
   [_ _ _]
   [:a {:on-click  (utils/send-event-callback events/popup-show-v2-homepage)
        :data-test "v2-free-install-promo-banner"}
    [:div.white.center.pp5.bg-teal.h5.bold.pointer
     "Mayvenn will pay for your install! " [:span.underline "Learn more"]]])
 
-(defmethod component :v2-freeinstall/applied
+(defmethod component :v2-freeinstall/applied v2-freeinstall-applied
   [_ _ _]
   [:a.white.center.p2.bg-teal.mbnp5.h6.bold.flex.items-center.justify-center
    {:on-click  (utils/send-event-callback events/popup-show-v2-homepage)
@@ -53,7 +53,7 @@
    [:div.pointer "CONGRATS — Your next install is FREE! "
     [:span.underline "More info"]]])
 
-(defmethod component :shop/freeinstall
+(defmethod component :shop/freeinstall shop-freeinstall
   [_ _ _]
   [:a.block.white.p2.bg-lavender.flex.justify-center
    {:on-click  (utils/send-event-callback events/popup-show-consolidated-cart-free-install)
@@ -65,7 +65,7 @@
     [:span.bold.underline
      "Mayvenn" ui/nbsp "Install"]]])
 
-(defmethod component :basic
+(defmethod component :basic basic
   [{:keys [promo]} _ _]
   [:div.white.center.pp5.bg-teal.h5.bold
    {:data-test "promo-banner"}
@@ -160,18 +160,11 @@
         (handle-scroll [_]
           #?(:cljs
              (this-as this
-               (component/set-state! this :show? (< (header-height-magic-number) (.-y (goog.dom/getDocumentScroll)))))))
-        (set-height []
-          #?(:cljs
-             (this-as this
-               (component/set-state! this :banner-height (some-> (component/get-ref this "banner")
-                                                                 goog.style/getSize
-                                                                 .-height)))))]
-  (defdynamic-component sticky-organism []
+               (component/set-state! this :show? (< (header-height-magic-number) (.-y (goog.dom/getDocumentScroll)))))))]
+  (defdynamic-component sticky-organism [_ _ _]
     (constructor [this props]
                  (component/create-ref! this "banner")
                  (set! (.-handle-scroll this) (.bind handle-scroll this))
-                 (set! (.-set-height this) (.bind set-height this))
                  {:show?              false
                   :description-length (-> this component/get-props :promo :description count)})
     (did-mount [this]
@@ -196,7 +189,7 @@
                   {:class "hide"
                    :style {:margin-top (str "-" banner-height "px")}})
                 [:div {:ref (component/use-ref this "banner")}
-                 (component data opts)]])))))
+                 (component data nil opts)]])))))
 
 (defn built-sticky-organism
   [app-state opts]
@@ -205,4 +198,4 @@
 
 (defn built-static-organism
   [app-state opts]
-  (component (query app-state) opts))
+  (component (query app-state) nil opts))
