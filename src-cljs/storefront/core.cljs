@@ -84,7 +84,6 @@
      (try
        (let [app-state-before @app-state]
          (swap! app-state #(msg-transition % message))
-         #_(om/transact! (om/root-cursor app-state) #(msg-transition % message))
          (effects app-state-before @app-state message))
        (track @app-state message)
        (catch :default e

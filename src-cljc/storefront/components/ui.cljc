@@ -1007,49 +1007,7 @@
                                          (assoc data
                                                 :screen/seen? seen?
                                                 :screen/visible? visible?)
-                                         (merge {:key "embed"} opts))]))))
-     #_(reify
-         om/IInitState
-             (init-state [this]
-               {:seen?    false
-                :visible? nil})
-
-             om/IDidMount
-             (did-mount [this]
-               (if (.hasOwnProperty js/window "IntersectionObserver")
-                 (let [target   (om/get-ref owner "trigger")
-                       observer (js/IntersectionObserver.
-                                 (fn [entries observer]
-                                   (doseq [entry entries]
-                                     (when (= (.-target entry) target)
-                                       (if (.-isIntersecting entry)
-                                         (do
-                                           (om/set-state! owner :seen? true)
-                                           (om/set-state! owner :visible? true))
-                                         (om/set-state! owner :visible? false)))))
-                                 #js {:rootMargin (or root-margin "25px")})]
-                   (.observe observer target)
-                   (om/set-state! owner :observer observer))
-                 (do
-                   ;; No API, lie about it
-                   (om/set-state! owner :seen? true)
-                   (om/set-state! owner :visible? true))))
-             om/IWillUnmount
-             (will-unmount [_]
-               (let [observer (:observer (om/get-state owner))
-                     element  (om/get-ref owner "trigger")]
-                 (when (and observer element)
-                   (.unobserve observer element)
-                   (.disconnect observer))))
-             om/IRenderState
-         (render-state [this {:keys [seen? visible?]}]
-           (component/html [:div {:ref "trigger"}
-                            (when-not seen? nbsp)  ; When the content has no height, isIntersecting is always false.
-                                (component/build embed
-                                                 (assoc data
-                                                        :screen/seen? seen?
-                                                        :screen/visible? visible?)
-                                                 opts)])))))
+                                         (merge {:key "embed"} opts))]))))))
 
 (defn screen-aware
   "A decorator around component/build that sets the screen information data to
