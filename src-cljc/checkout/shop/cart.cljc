@@ -24,7 +24,7 @@
    [storefront.accessors.products :as products]
    [storefront.accessors.promos :as promos]
    [storefront.accessors.stylists :as stylists]
-   [storefront.component :as component]
+   [storefront.component :as component :refer [defcomponent defdynamic-component]]
    [storefront.components.checkout-delivery :as checkout-delivery]
    [storefront.components.flash :as flash]
    [storefront.components.footer :as storefront.footer]
