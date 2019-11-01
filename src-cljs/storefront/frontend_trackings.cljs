@@ -137,6 +137,10 @@
 (defmethod perform-track events/api-success-add-sku-to-bag
   [_ _ {:keys [quantity sku order] :as args} app-state]
   (when sku
+    (google-tag-manager/track-add-to-cart {:number           (:number order)
+                                           :line-item-skuers [{:catalog/sku-id (:catalog/sku-id sku)
+                                                               :item/quantity  quantity
+                                                               :sku/price      (:sku/price sku)}]} )
     (let [line-item-skuers (waiter-line-items->line-item-skuer
                             (get-in app-state keypaths/v2-skus)
                             (orders/product-items order))
@@ -181,6 +185,8 @@
     (facebook-analytics/track-event "AddToCart" {:content_type "product"
                                                  :content_ids  (map :catalog/sku-id line-item-skuers)
                                                  :num_items    (->> line-item-skuers (map :item/quantity) (reduce + 0))})
+    (google-tag-manager/track-add-to-cart {:number           (:number order)
+                                           :line-item-skuers line-item-skuers} )
     (stringer/track-event "bulk_add_to_cart" (merge {:shared_cart_id shared-cart-id
                                                      :store_experience (get-in app-state keypaths/store-experience)
                                                      :order_number   (:number order)
@@ -280,7 +286,9 @@
 
     (convert/track-conversion "place-order")
     (convert/track-revenue (convert-revenue order))
-    (google-tag-manager/track-placed-order order)))
+    (google-tag-manager/track-placed-order {:total            (:total order)
+                                            :number           (:number order)
+                                            :line-item-skuers line-item-skuers})))
 
 (defmethod perform-track events/api-success-auth [_ event args app-state]
   (stringer/identify (get-in app-state keypaths/user)
@@ -308,6 +316,7 @@
                          :test-variations  (get-in app-state keypaths/features)
                          :store-slug       (get-in app-state keypaths/store-slug)
                          :store-experience (get-in app-state keypaths/store-experience)})
+  (google-tag-manager/track-email-capture-capture {:email email})
   (pinterest/track-event "Signup"))
 
 (defmethod perform-track events/control-email-captured-submit [_ event _ app-state]
@@ -326,9 +335,11 @@
   (stringer/track-event "email_capture-dismiss" {}))
 
 (defn- checkout-initiate [app-state flow]
-  (stringer/track-event "checkout-initiate" {:flow flow
-                                             :order_number (get-in app-state keypaths/order-number)})
-  (facebook-analytics/track-event "InitiateCheckout"))
+  (let [order-number (get-in app-state keypaths/order-number)]
+    (stringer/track-event "checkout-initiate" {:flow flow
+                                               :order_number order-number})
+    (google-tag-manager/track-checkout-initiate {:number order-number})
+    (facebook-analytics/track-event "InitiateCheckout")))
 
 (defmethod perform-track events/control-checkout-cart-submit [_ event args app-state]
   (checkout-initiate app-state "mayvenn")

@@ -140,27 +140,27 @@
 (defn storeback-api-req [method path req-key request-opts]
   (api-request method (str api-base-url path) req-key request-opts))
 
-(defn fetch-cms-data
-  [{:keys [slices ugc-collections]}]
-  (api-request GET "/cms" request-keys/fetch-cms-data
-               {:params    {:slices          slices
-                            :ugc-collections ugc-collections}
-                :handler #(messages/handle-message events/api-success-fetch-cms-data %)}))
+(defn fetch-cms-keypath
+  [keypath]
+  (let [uri-path (str "/cms/" (clojure.string/join "/" (map name keypath)))]
+    (api-request GET uri-path
+                 request-keys/fetch-cms-keypath
+                 {:handler #(messages/handle-message events/api-success-fetch-cms-keypath %)})))
 
 (defn cache-req
-  [cache method path req-key {:keys [handler params] :as request-opts}]
+  [cache method path req-key {:keys [handler params cache/bypass?] :as request-opts}]
   (let [key (c/cache-key [path params])
         res (cache key)]
-    (if res
+    (if (and res (not bypass?))
       (handler res)
       (storeback-api-req method
-               path
-               req-key
-               (merge request-opts
-                      {:handler
-                       (fn [result]
-                         (messages/handle-message events/api-success-cache {key result})
-                         (handler result))})))))
+                         path
+                         req-key
+                         (merge request-opts
+                                {:handler
+                                 (fn [result]
+                                   (messages/handle-message events/api-success-cache {key result})
+                                   (handler result))})))))
 
 (defn get-promotions [cache promo-code]
   (cache-req
@@ -953,7 +953,7 @@
     :handler handler}))
 
 (defn remove-servicing-stylist
-  [servicing-stylist-id number token handler]
+  [servicing-stylist-id number token]
   (storeback-api-req
    POST
    "/v2/remove-servicing-stylist"
@@ -961,7 +961,9 @@
    {:params {:servicing-stylist-id servicing-stylist-id
              :number               number
              :token                token}
-    :handler handler}))
+    :handler  #(messages/handle-message
+                events/api-success-remove-servicing-stylist
+                {:order %})}))
 
 (defn- static-content-req [method path req-key {:keys [handler] :as request-opts}]
   (let [req-id       (str (random-uuid))
@@ -1023,14 +1025,19 @@
    {:params  params
     :handler handler}))
 
-(defn fetch-matched-stylist [cache stylist-id]
-  (cache-req
-   cache
-   GET
-   "/v1/stylist/matched-by-id"
-   request-keys/fetch-matched-stylist
-   {:params  {:stylist-id stylist-id}
-    :handler #(messages/handle-message events/api-success-fetch-matched-stylist %)}))
+(defn fetch-matched-stylist
+  ([cache stylist-id]
+   (fetch-matched-stylist cache stylist-id nil))
+  ([cache stylist-id {:keys [error-handler cache/bypass?]}]
+   (cache-req
+    cache
+    GET
+    "/v1/stylist/matched-by-id"
+    request-keys/fetch-matched-stylist
+    {:params        {:stylist-id stylist-id}
+     :handler       #(messages/handle-message events/api-success-fetch-matched-stylist %)
+     :error-handler error-handler
+     :cache/bypass? bypass?})))
 
 (defn fetch-matched-stylists [cache stylist-ids handler]
   (cache-req

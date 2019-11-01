@@ -19,6 +19,8 @@
                                    (.-pathname location)))
     opts))
 
+(def first-nav-state? (atom true))
+
 (defn ^:private make-history
   [callback]
   (doto (Html5History. nil non-search-preserving-history-transformer)
@@ -26,7 +28,8 @@
     (.setPathPrefix "")
     (.setEnabled true)
     (goog.events/listen EventType/NAVIGATE
-                        (fn [e] (callback (.-isNavigation e))))))
+                        (fn [e]
+                          (callback first-nav-state? (.-isNavigation e))))))
 
 (def app-history)
 
@@ -45,15 +48,22 @@
      :subdomain (->subdomain (:host uri))}))
 
 (defn set-current-page
-  [browser-nav?]
+  [first-nav? browser-nav?]
   (let [{:keys [subdomain query path]} (current-uri)
         event                          (if browser-nav?
                                          events/browser-navigate
-                                         events/control-navigate)]
-    (->> {:navigation-message (routes/navigation-message-for path
-                                                             query
-                                                             subdomain)}
-         (messages/handle-message event))))
+                                         events/control-navigate)
+        first-nav-val?                 @first-nav?
+        [navigation-event navigation-args]
+        (routes/navigation-message-for path
+                                       query
+                                       subdomain)]
+    (messages/handle-message event {:navigation-message
+                                    [navigation-event
+                                     (merge navigation-args
+                                            (when first-nav-val?
+                                              {:navigate/caused-by :first-nav}))]})
+    (reset! first-nav? false)))
 
 (defn start-history []
   (set! app-history (make-history set-current-page)))

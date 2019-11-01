@@ -7,10 +7,7 @@
             [storefront.events :as events]
             [storefront.components.ui :as ui]
             [storefront.keypaths :as keypaths]
-            [storefront.transitions :as transitions]
-            [storefront.platform.messages :as messages]
             [storefront.platform.component-utils :as utils]))
-
 
 (defn hero-image
   [{:as hero-map :keys [desktop mobile alt]}]
@@ -27,26 +24,10 @@
                                  :type    img-type})))
            [:img.block.col-12 {:src mobile-url :alt alt}])]))
 
-(defn simple-widget-component
-  [data owner opts]
-  #?(:cljs (reify
-             om/IRender
-             (render [_]
-               (component/html [:div]))
-
-             om/IDidMount
-             (did-mount [this]
-               (messages/handle-message events/mayvenn-made-gallery-displayed)))))
-
 (defn component [{:keys [image/hero]} owner opts]
   (component/create
    [:div
-    [:section (hero-image hero)]
-    [:section [:h1.p8.bold.shout.center "Recently submitted looks"]]
-    [:section
-     [:div#pixlee_container]
-     #?(:cljs (om/build simple-widget-component {}))]]))
-
+    [:section (hero-image hero)]]))
 
 (defn query
   [data]
@@ -64,12 +45,8 @@
   [_ _ _ _ app-state]
   #?(:cljs
      (do
-       (effects/fetch-cms-data app-state {:slices [:mayvennMadePage]})
+       (effects/fetch-cms-keypath app-state [:mayvennMadePage])
        (pixlee/insert))))
-
-(defmethod effects/perform-effects events/mayvenn-made-gallery-displayed
-  [_ _ _ _ _]
-  #?(:cljs (pixlee/add-simple-widget)))
 
 (defmethod effects/perform-effects events/inserted-pixlee
   [_ _ _ _ _]

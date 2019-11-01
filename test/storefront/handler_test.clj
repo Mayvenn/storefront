@@ -1,6 +1,7 @@
 (ns storefront.handler-test
   (:require [cheshire.core :refer [generate-string parse-string]]
             [clojure.edn :as edn]
+            [cemerick.url :as cemerick-url]
             [clojure.string :as string]
             [clojure.test :refer [are deftest is testing]]
             [compojure.core :refer [GET POST routes]]
@@ -8,6 +9,7 @@
             [ring.mock.request :as mock]
             [ring.util.codec :as codec]
             [ring.util.response :refer [content-type response status]]
+            [spice.maps :as maps]
             [standalone-test-server.core
              :refer
              [txfm-request txfm-requests with-requests-chan]]
@@ -15,11 +17,7 @@
              :as
              common
              :refer
-             [with-handler with-services]]
-            [ajax.json :as json]
-            [storefront.routes :as routes]
-            [storefront.events :as events]
-            [com.stuartsierra.component :as component]))
+             [with-handler with-services]]))
 
 (defn set-cookies [req cookies]
   (update req :headers assoc "cookie" (string/join "; " (map (fn [[k v]] (str k "=" v)) cookies))))
@@ -137,22 +135,6 @@
      (is (= 200 (:status resp)))
      (is (.contains (first (get-in resp [:headers "Set-Cookie"])) "preferred-store-slug=bob;")))))
 
-(defmacro has-canonized-link [handler url]
-  `(let [handler#       ~handler
-         url#           ~url
-         canonized-url# (-> (uri/uri url#)
-                            (assoc :host "shop.mayvenn.com"
-                                   :scheme "https"))
-         link-url#      (some->> (mock/request :get (str "https:" url#))
-                             handler#
-                             :body
-                             (re-find #"<link[^>]+rel=\"canonical[^>]+>")
-                             (re-find #"href=\"[^\"]+\"")
-                             (re-find #"\"[^\"]+\"")
-                             (re-find #"[^\"]+")
-                             uri/uri)]
-     (is (= canonized-url# link-url#))))
-
 (deftest server-properly-encodes-data
   (testing "properly encoding query-params as edn without error"
     (with-services {}
@@ -163,6 +145,22 @@
           (is (edn/read-string (parse-string data-edn))
               (format "Invalid EDN read-string: " (pr-str data-edn)))
           (is (= 200 (:status resp))))))))
+
+(defmacro has-canonized-link [handler url]
+  `(let [handler#       ~handler
+         url#           ~url
+         canonized-url# (-> (uri/uri url#)
+                            (assoc :host "shop.mayvenn.com"
+                                   :scheme "https"))
+         link-url#      (some->> (mock/request :get (str "https:" url#))
+                                 handler#
+                                 :body
+                                 (re-find #"<link[^>]+rel=\"canonical[^>]+>")
+                                 (re-find #"href=\"[^\"]+\"")
+                                 (re-find #"\"[^\"]+\"")
+                                 (re-find #"[^\"]+")
+                                 uri/uri)]
+     (is (= canonized-url# link-url#))))
 
 (deftest server-side-renders-product-details-page
   (testing "when the product does not exist storefront returns 404"
@@ -192,7 +190,6 @@
   (testing "when the product exists"
     (let [[_ storeback-handler]
           (with-requests-chan (routes
-                               common/default-storeback-handler
                                (GET "/v2/orders/:number" req {:status 404
                                                               :body   "{}"})
                                (GET "/v2/products" req
@@ -261,10 +258,11 @@
                                                                            :legacy/product-name          "A balloon"
                                                                            :legacy/product-id            133
                                                                            :legacy/variant-id            641
-                                                                           :promo.triple-bundle/eligible true}]})})))]
+                                                                           :promo.triple-bundle/eligible true}]})})
+                               common/default-storeback-handler))]
       (with-services {:storeback-handler storeback-handler}
         (with-handler handler
-          (has-canonized-link handler "//bob.mayvenn.com/products/67-peruvian-water-wave-lace-closures?SKU=PWWLC10")
+          (has-canonized-link handler "//bob.mayvenn.com/products/67-peruvian-water-wave-lace-closures")
           (has-canonized-link handler "//bob.mayvenn.com/categories/10-virgin-360-frontals")
           (has-canonized-link handler "//bob.mayvenn.com/our-hair")
           (has-canonized-link handler "//bob.mayvenn.com/"))))))
@@ -494,7 +492,64 @@
                          (set-cookies {"number"  "W123456"
                                        "token"   "order-token"
                                        "expires" "Sat, 03 May 2025 17:44:22 GMT"})
-                         handler)]
-            (is (= 200 (:status resp))
-                (get-in resp [:headers "Location"]))
-            (is (= 1 (count (txfm-requests storeback-requests identity))))))))))
+                         handler)
+                requests (txfm-requests storeback-requests
+                                        (comp
+                                         (map :uri)
+                                         (filter #(string/starts-with? % "/v2/orders"))))]
+            (is (= 200 (:status resp)) (get-in resp [:headers "Location"]))
+            (is (= 1 (count requests)))))))))
+
+(defn parse-canonical-uri
+  [body]
+  (some->> body
+           (re-find #"<link[^>]+rel=\"canonical[^>]+>")
+           (re-find #"href=\"[^\"]+\"")
+           (re-find #"\"[^\"]+\"")
+           (re-find #"[^\"]+")
+           (#(string/replace % #"&amp;" "&"))
+           uri/uri))
+
+(defn response->query-param-map
+  [resp]
+  (->> (:body resp)
+       parse-canonical-uri
+       :query
+       cemerick-url/query->map
+       (maps/map-keys keyword)))
+
+(deftest canonical-uris-query-params
+  (with-services {}
+    (with-handler handler
+      (testing "category page"
+        (testing "with allowed and extraneous query params"
+          (let [resp (->> "https://shop.mayvenn.com/categories/7-Virgin-water-wave?base-material=lace&origin=peruvian&foo=bar"
+                          (mock/request :get)
+                          handler)]
+            (is (= 200 (:status resp)))
+            (is (= {:origin "peruvian" :base-material "lace"} (response->query-param-map resp)))))
+        (testing "with one query param"
+          (let [resp (->> "https://shop.mayvenn.com/categories/7-Virgin-water-wave?origin=peruvian"
+                          (mock/request :get)
+                          handler)]
+            (is (= 200 (:status resp)))
+            (is (= {:origin "peruvian"} (response->query-param-map resp)))))
+        (testing "without query params"
+          (let [resp (->> "https://shop.mayvenn.com/categories/7-Virgin-water-wave"
+                          (mock/request :get)
+                          handler)]
+            (is (= 200 (:status resp)))
+            (is (= {} (response->query-param-map resp))))))
+      (testing "non category page"
+        (testing "without query params"
+          (let [resp (->> "https://shop.mayvenn.com"
+                          (mock/request :get)
+                          handler)]
+            (is (= 200 (:status resp)))
+            (is (= {} (response->query-param-map resp)))))
+        (testing "with query params"
+          (let [resp (->> "https://shop.mayvenn.com?utm_something=deal_with_it"
+                          (mock/request :get)
+                          handler)]
+            (is (= 200 (:status resp)))
+            (is (= {} (response->query-param-map resp)))))))))

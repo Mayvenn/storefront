@@ -83,11 +83,6 @@
   [data]
   (display-feature? data "stylist-profiles"))
 
-;; TODO(jjh): When this experiment is removed, refactor cart-item-floating-box to only take data as input
-(defn line-items-discounts?
-  [data]
-  (display-feature? data "line-items-discounts"))
-
 (defn stylist-results-updated?
   [data]
   (display-feature? data "stylist-results-updated"))
@@ -95,7 +90,3 @@
 (defn blog?
   [data]
   (display-feature? data "blog"))
-
-(defn pick-stylist?
-  [data]
-  (display-feature? data "pick-stylist"))

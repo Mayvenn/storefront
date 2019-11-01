@@ -1,12 +1,14 @@
 (ns storefront.seo-tags
   (:require [storefront.assets :as assets]
             [storefront.keypaths :as keypaths]
+            [cemerick.url :as cemerick-url]
             [catalog.keypaths :as k]
             [storefront.events :as events]
             [catalog.categories :as categories]
             [catalog.products :as products]
             [spice.selector :as selector]
             [storefront.ugc :as ugc]
+            [storefront.utils :as utils]
             [clojure.string :as string]
             #?@(:clj [[cheshire.core :as json]
                       [storefront.safe-hiccup :as safe-hiccup]])))
@@ -63,12 +65,34 @@
      [:meta {:property "og:image" :content (str "http:" (:url image))}]
      [:meta {:property "og:description" :content (:opengraph/description product)}]]))
 
+(def allowed-category-page-query-params
+  #{"base-material"
+    "family"
+    "origin"
+    "weight"
+    "texture"
+    "color"})
+
+(defn filter-seo-query-params
+  [nav-event query]
+  (when (= events/navigate-category nav-event)
+    #?(:clj (-> query ;; string in clj
+                cemerick-url/query->map
+                (select-keys allowed-category-page-query-params)
+                cemerick-url/map->query
+                not-empty)
+       :cljs (-> query ;; map in cljs
+                 (select-keys allowed-category-page-query-params)
+                 not-empty))))
+
 (defn canonical-uri
-  [{:as data :keys [store]}]
-  (some-> (get-in data keypaths/navigation-uri)
-          (update :host string/replace #"^[^.]+" "shop")
-          (assoc :scheme (get-in data keypaths/scheme))
-          str))
+  [data]
+  (let [nav-event (get-in data keypaths/navigation-event)]
+    (some-> (get-in data keypaths/navigation-uri)
+            (utils/?update :query (partial filter-seo-query-params nav-event))
+            (update :host string/replace #"^[^.]+" "shop")
+            (assoc :scheme (get-in data keypaths/scheme))
+            str)))
 
 (defn canonical-link-tag [data]
   (when-let [canonical-href (canonical-uri data)]

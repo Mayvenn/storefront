@@ -64,11 +64,29 @@
     (when (and user-id user-token)
       (api/get-account user-id user-token))))
 
+(def ^:private unavailable-servicing-stylist-msg
+  "Your previously selected stylist selected is no longer eligible for Mayvenn Install and has been removed from your order.")
+
+(defn refresh-servicing-stylist [app-state]
+  (let [order                (get-in app-state keypaths/order)
+        servicing-stylist-id (:servicing-stylist-id order)]
+
+    (when servicing-stylist-id
+      (api/fetch-matched-stylist
+       (get-in app-state keypaths/api-cache)
+       servicing-stylist-id
+       {:error-handler #(when (<= 400 (:status %) 499)
+                          (api/remove-servicing-stylist servicing-stylist-id
+                                                        (:number order)
+                                                        (:token order))
+                          (messages/handle-message events/flash-show-failure
+                                                   {:message unavailable-servicing-stylist-msg}))
+        :cache/bypass? true}))))
+
 (defn refresh-current-order [app-state]
   (let [user-id      (get-in app-state keypaths/user-id)
         user-token   (get-in app-state keypaths/user-token)
         stylist-id   (get-in app-state keypaths/store-stylist-id)
-        order        (get-in app-state keypaths/order)
         order-number (get-in app-state keypaths/order-number)
         order-token  (get-in app-state keypaths/order-token)]
     (cond
@@ -180,7 +198,8 @@
                                                       (assoc :final-scroll js/window.scrollY)))
   (apply messages/handle-message navigation-message))
 
-(defmethod effects/perform-effects events/browser-navigate [_ _ {:keys [navigation-message]} _ app-state]
+(defmethod effects/perform-effects events/browser-navigate
+  [_ _ {:keys [navigation-message]} _ app-state]
   ;; A user has clicked the forward/back button, or maybe a special link that
   ;; simulates the back button (utils/route-back). The browser already knows
   ;; about the URL, so all we have to do is manipulate the undo/redo stacks and
@@ -214,12 +233,14 @@
                              :promo-code         pending-promo-code
                              :allow-dormant?     true})))
 
-(defmethod effects/perform-effects events/navigate [_ event {:keys [navigate/caused-by query-params nav-stack-item]} prev-app-state app-state]
+(defmethod effects/perform-effects events/navigate
+  [_ event {:keys [navigate/caused-by query-params nav-stack-item]} prev-app-state app-state]
   (let [freeinstall?      (= "freeinstall" (get-in app-state keypaths/store-slug))
         new-nav-event?    (not= (get-in prev-app-state keypaths/navigation-event)
                                 (get-in app-state keypaths/navigation-event))
         new-query-params? (not= (not-empty (dissoc (get-in prev-app-state keypaths/navigation-args) :query-params))
-                                (not-empty (dissoc (get-in app-state keypaths/navigation-args) :query-params)))]
+                                (not-empty (dissoc (get-in app-state keypaths/navigation-args) :query-params)))
+        module-load?      (= caused-by :module-load)]
 
     (messages/handle-message events/control-menu-collapse-all)
     (messages/handle-message events/save-order {:order (get-in app-state keypaths/order)})
@@ -227,10 +248,12 @@
     (cookie-jar/save-user (get-in app-state keypaths/cookie)
                           (get-in app-state keypaths/user))
     (refresh-account app-state)
-    (api/get-promotions (get-in app-state keypaths/api-cache)
-                        (or
-                         (first (get-in app-state keypaths/order-promotion-codes))
-                         (get-in app-state keypaths/pending-promo-code)))
+
+    (when-not (or module-load? (#{:first-nav} caused-by))
+      (api/get-promotions (get-in app-state keypaths/api-cache)
+                          (or
+                           (first (get-in app-state keypaths/order-promotion-codes))
+                           (get-in app-state keypaths/pending-promo-code))))
 
     (seo/set-tags app-state)
     (when (or new-nav-event? new-query-params?)
@@ -255,7 +278,7 @@
     (when (boolean (:em_hash query-params))
       (messages/handle-message events/adventure-visitor-identified))
 
-    (when-not (= caused-by :module-load)
+    (when-not module-load?
       (when (get-in app-state keypaths/popup)
         (messages/handle-message events/popup-hide))
       (quadpay/hide-modal))
@@ -285,17 +308,19 @@
 
 (defmethod effects/perform-effects events/navigate-home
   [_ _ _ _ app-state]
-  (effects/fetch-cms-data app-state
-   (case (determine-site app-state)
-     :shop    {:slices          [:advertisedPromo :homepage]
-               :ugc-collections [:free-install-mayvenn]}
-     :aladdin {:slices          [:advertisedPromo :homepage]
-               :ugc-collections [:sleek-and-straight
-                                 :waves-and-curly
-                                 :free-install-mayvenn]}
-     :classic {:slices [:advertisedPromo :homepage]})))
+  (let [keypaths (into [[:advertisedPromo]
+                        [:homepage]]
+                       (case (determine-site app-state)
+                         :shop    [[:ugc-collection :free-install-mayvenn]]
+                         :aladdin [[:ugc-collection :sleek-and-straight]
+                                   [:ugc-collection :waves-and-curly]
+                                   [:ugc-collection :free-install-mayvenn]]
+                         nil))]
+    (doseq [keypath keypaths]
+      (effects/fetch-cms-keypath app-state keypath))))
 
-(defmethod effects/perform-effects events/navigate-content [_ [_ _ & static-content-id :as event] _ _ app-state]
+(defmethod effects/perform-effects events/navigate-content
+  [_ [_ _ & static-content-id :as event] _ _ app-state]
   (when-not (= static-content-id
                (get-in app-state keypaths/static-id))
     (api/get-static-content event)))
@@ -323,13 +348,13 @@
       (effects/page-not-found)
 
       :else
-      (effects/fetch-cms-data app-state {:ugc-collections [actual-album-kw]}))))
+      (effects/fetch-cms-keypath app-state [:ugc-collection actual-album-kw]))))
 
 (defmethod effects/perform-effects events/navigate-shop-by-look-details [_ event {:keys [album-keyword]} _ app-state]
   (let [actual-album-kw (ugc/determine-look-album app-state album-keyword)]
     (if-let [shared-cart-id (contentful/shared-cart-id (contentful/selected-look app-state))]
       (do
-        (effects/fetch-cms-data app-state {:ugc-collections [actual-album-kw]})
+        (effects/fetch-cms-keypath app-state [:ugc-collection actual-album-kw])
         (reviews/insert-reviews)
         (api/fetch-shared-cart shared-cart-id))
       (effects/redirect events/navigate-shop-by-look {:album-keyword album-keyword}))))
@@ -379,6 +404,7 @@
   (stripe/insert)
   (quadpay/insert)
   (refresh-current-order app-state)
+  (refresh-servicing-stylist app-state)
   (when-let [error-msg (-> args :query-params :error cart-error-codes)]
     (messages/handle-message events/flash-show-failure {:message error-msg})))
 
@@ -690,7 +716,6 @@
 
           (when servicing-stylist-not-loaded?
             (api/fetch-matched-stylist (get-in app-state keypaths/api-cache) servicing-stylist-id))
-
           (cookie-jar/save-order (get-in app-state keypaths/cookie) order)
           (add-pending-promo-code app-state order))
         (messages/handle-message events/clear-order))))

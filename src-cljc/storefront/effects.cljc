@@ -24,23 +24,18 @@
 (defn page-not-found
   []
   (redirect events/navigate-home)
-  (messages/handle-message events/flash-later-show-failure {:message "Page not found"}))
+  (messages/handle-message events/flash-later-show-failure
+                           {:message "Page not found"}))
 
-(defn conditionally-fetch-cms-data
+(defn need-cms-keypath?
   [app-state keypath]
   (->> keypath
        (into keypaths/cms)
        (get-in app-state)
        empty?))
 
-(defn fetch-cms-data
-  [app-state {:keys [slices ugc-collections]}]
-  (let [c?  (partial conditionally-fetch-cms-data app-state)
-        ugc (partial conj [:ugc-collection])
-        s   (filter (comp c? vector) slices)
-        u   (filter (comp c? ugc) ugc-collections)]
-    (when (or (seq s) (seq u))
-      #?(:cljs (api/fetch-cms-data
-                (merge
-                 (when (seq s) {:slices s})
-                 (when (seq u) {:ugc-collections u})))))))
+(defn fetch-cms-keypath
+  [app-state keypath]
+  #?(:cljs
+     (when (need-cms-keypath? app-state keypath)
+       (api/fetch-cms-keypath keypath))))

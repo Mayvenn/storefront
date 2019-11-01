@@ -209,6 +209,10 @@
 (def default-storeback-handler
   (routes
    (GET "/store" req storeback-stylist-response)
+   (GET "/promotions" req {:status 200
+                           :body   "{}"})
+   (GET "/v2/products" req {:status 200
+                            :body   "{}"})
    (GET "/v2/facets" req {:status 200
                           :body   "{}"})))
 
@@ -254,7 +258,7 @@
 
        component/stop
        (do
-         (-> sys# :contentful :cache spice.core/spy (reset! ~cms-overrides))
+         (-> sys# :contentful :cache (reset! ~cms-overrides))
          ~@body))))
 
 (defn assert-request [req storeback-resp asserter]

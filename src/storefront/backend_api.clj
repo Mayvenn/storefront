@@ -128,3 +128,10 @@
                                                                    :stylist-id     stylist-id}})]
     (when (<= 200 status 299)
       body)))
+
+(defn get-promotions [storeback-config promo-code]
+  (let [{:keys [status body]} (storeback-fetch storeback-config
+                                               "/promotions"
+                                               {:query-params {:additional-promo-code promo-code}})]
+    (when (<= 200 status 299)
+      (:promotions body))) )

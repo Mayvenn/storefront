@@ -18,7 +18,7 @@
       (handle-message events/checkout-address-component-mounted {:address-elem    id
                                                                  :address-keypath address-keypath})))
   (render [this]
-    (let [{:keys [focused id keypath value data-test errors]} (component/get-props this)]
+    (let [{:keys [focused id keypath value data-test errors max-length]} (component/get-props this)]
       (component/html
         (ui/text-field {:data-test   data-test
                         :errors      errors
@@ -30,6 +30,7 @@
                         :on-key-down utils/suppress-return-key
                         :required    true
                         :type        "text"
+                        :max-length  max-length
                         :value       value})))))
 
 (defn ^:private shipping-address-component
@@ -45,6 +46,7 @@
         :keypath       keypaths/checkout-shipping-address-first-name
         :focused       focused
         :value         (:first-name shipping-address)
+        :max-length    24
         :errors        (get field-errors ["shipping-address" "first-name"])
         :name          "shipping-first-name"
         :data-test     "shipping-first-name"
@@ -56,6 +58,7 @@
         :keypath       keypaths/checkout-shipping-address-last-name
         :focused       focused
         :value         (:last-name shipping-address)
+        :max-length    25
         :errors        (get field-errors ["shipping-address" "last-name"])
         :name          "shipping-last-name"
         :id            "shipping-last-name"
@@ -94,7 +97,8 @@
                                    :focused         focused
                                    :errors          (get field-errors ["shipping-address" "address1"])
                                    :auto-complete   "shipping address-line1"
-                                   :value           (:address1 shipping-address)}))
+                                   :value           (:address1 shipping-address)
+                                   :max-length      100}))
 
      [:.flex.flex-column.items-center.col-12
       [:.col-12
@@ -108,7 +112,8 @@
          :name          "shipping-address2"
          :type          "text"
          :auto-complete "shipping address-line2"
-         :value         (:address2 shipping-address)}
+         :value         (:address2 shipping-address)
+         :max-length    100}
         {:data-test     "shipping-zip"
          :errors        (get field-errors ["shipping-address" "zipcode"])
          :id            "shipping-zip"

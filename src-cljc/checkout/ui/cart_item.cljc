@@ -1,19 +1,21 @@
 (ns checkout.ui.cart-item
   (:require [checkout.suggestions :as suggestions]
             [storefront.component :as component]
-            [storefront.components.money-formatters :as mf]
+            [storefront.events :as events]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.css-transitions :as css-transitions]
             [storefront.platform.component-utils :as utils]
-            ui.molecules))
+            ui.molecules
+            [storefront.platform.messages :as messages]))
 
 (defn cart-item-floating-box-molecule
   [{:cart-item-floating-box/keys [id value]}]
   (when id
-    [:div.right.right-align
-     {:key   id
-      :style {:height "100%"}}
+    [:div.right.right-align.medium.h6
+     {:key       id
+      :data-test id
+      :style     {:height "100%"}}
      value]))
 
 (defn cart-item-copy-molecule
@@ -25,13 +27,10 @@
   [{:cart-item-title/keys [id primary secondary]}]
   (when (and id primary)
     [:div
-     [:div
-      [:a.medium.titleize.h5
-       {:data-test id}
-       primary]]
-     [:div
-      [:a.h6
-       secondary]]]))
+     [:div.medium.titleize.h5
+      {:data-test id}
+      primary]
+     [:div.h6 secondary]]))
 
 (defn completed-progress-circle-atom
   [i _]
@@ -77,8 +76,8 @@
                                  :data-test id)
                           action-label)])])))
 
-(defn cart-item-square-thumbnail-molecule
-  [{:cart-item-square-thumbnail/keys
+(defn cart-item-squircle-thumbnail-molecule
+  [{:cart-item-squircle-thumbnail/keys
     [id ucare-id sku-id sticker-label highlighted?]}]
   (when id
     (let [sticker-id (str "line-item-length-" sku-id)]
@@ -100,44 +99,45 @@
          highlighted?
          {:style     {:height "50px"
                       :width  "54px"}
-          :key       (str "cart-item-square-thumbnail-" sku-id)
+          :key       (str "cart-item-squircle-thumbnail-" sku-id)
           :data-test (str "line-item-img-" sku-id)})
         (ui/ucare-img {:width 48
                        :class "block rounded border border-light-gray"}
                       ucare-id)]])))
 
-(defn cart-item-thumbnail-molecule
-  [{:cart-item-thumbnail/keys [id highlighted? value locked? image-url]}]
+(defn confetti-handler
+  [mode]
+  (when (= mode "ready")
+    (messages/handle-message events/set-confetti-mode {:mode "firing"})))
+
+(defn cart-item-service-thumbnail-molecule
+  [{confetti-mode :confetti-mode
+    :cart-item-service-thumbnail/keys [id highlighted? image-url locked?]}]
   (when id
-    (let [diameter                  50             ; Stylist portrait / Generic stylist image
-          lock-circle-diameter      (- diameter 4) ; Overlay lock scrim
-          highlight-circle-diameter (+ diameter 6)] ; highlight
-      [:div.flex.justify-center.items-center
-       (css-transitions/background-fade
-        highlighted?
-        {:style {:border-radius "50%"
-                 :width         (str highlight-circle-diameter "px")
-                 :height        (str highlight-circle-diameter "px")}})
-       value
-       [:div.relative
-        (when locked?
+    (css-transitions/transition-background-color
+     highlighted?
+     [:div.flex.justify-center.mtn2
+      (css-transitions/background-fade
+       highlighted?
+       {:style {:border-radius "50%"
+                :width         "56px"
+                :height        "56px"}
+        ;; QUESTION(jeff): is this an appropriate place for click handler inside css-transition?
+        :on-click #(confetti-handler confetti-mode)})
+
+      [:div.relative
+       (if locked?
+         [:div
           [:div.absolute.z1.col-12.flex.items-center.justify-center
            {:style {:height "100%"}}
-
-           [:div {:class "absolute z1 block"
-                  :style {:background    "#ffffffdd"
-                          :width         (str lock-circle-diameter "px")
-                          :height        (str lock-circle-diameter "px")
-                          :border-radius "50%"}}]
            [:div.absolute.z2.col-12.flex.items-center.justify-center
             {:style {:height "100%"}}
-            (svg/lock {:style {:width  "17px"
-                               :height "23px"}})]])
-        (ui/circle-picture
-         {:width diameter}
-         ;; Note: We are not using ucare-id because stylist portraits may have
-         ;; ucarecdn crop parameters saved into the url
-         (ui/square-image {:resizable-url image-url} diameter))]])))
+            (svg/lock {:style {:width   "17px"
+                               :height  "23px"
+                               :opacity ".75"}})]]
+          (ui/ucare-img {:width "50px"
+                         :style {:filter "contrast(0.1) brightness(1.75)"}} image-url)]
+         (ui/ucare-img {:width "50px"} image-url))]])))
 
 (defn cart-item-remove-action-molecule
   [{:cart-item-remove-action/keys [id target spinning?]}]
@@ -146,7 +146,7 @@
       [:div.h3
        {:style {:width "1.2em"}}
        ui/spinner]
-      [:div 
+      [:div
        [:a.gray.medium.m1
         (merge {:data-test (str "line-item-remove-" id)}
                (apply utils/fake-href target))
@@ -194,10 +194,10 @@
       [:div.pt1.pb2.ml2.flex
        {:key react-key}
        ;; image group
-       [:div.relative.justify-middle.pt3
+       [:div.relative.pt3
         {:style {:min-width "78px"}}
-        (cart-item-square-thumbnail-molecule cart-item)
-        (cart-item-thumbnail-molecule cart-item)]
+        (cart-item-squircle-thumbnail-molecule cart-item)
+        (cart-item-service-thumbnail-molecule cart-item)]
 
        ;; info group
        [:div.flex-grow-1
@@ -212,7 +212,7 @@
            (cart-item-pick-stylist-molecule cart-item)]]
 
          ;; price group
-         [:div.right.right-align.h6.pt1
+         [:div.right.right-align.h6.pt1.flex.flex-column
           {:style {:min-width "67px"}}
           (cart-item-remove-action-molecule cart-item)
           (cart-item-swap-action-molecule cart-item)

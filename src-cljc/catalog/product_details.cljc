@@ -617,12 +617,12 @@
                             :page/slug          slug
                             :query-params       {:SKU (:catalog/sku-id selected-sku)}})
          (do
-           (effects/fetch-cms-data app-state
-                                   {:ugc-collection (some->> (conj keypaths/v2-products
-                                                                   product-id
-                                                                   :legacy/named-search-slug)
-                                                         (get-in app-state)
-                                                         keyword)})
+           (when-let [album-keyword (some->> (conj keypaths/v2-products
+                                                   product-id
+                                                   :legacy/named-search-slug)
+                                             (get-in app-state)
+                                             keyword)]
+             (effects/fetch-cms-keypath app-state [:ugc-collection album-keyword]))
            (fetch-product-details app-state product-id))))))
 
 #?(:cljs

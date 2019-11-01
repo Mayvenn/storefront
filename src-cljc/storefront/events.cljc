@@ -133,6 +133,8 @@
 (defpath menu-home)
 (defpath menu-list)
 
+(defpath set-confetti-mode)
+
 (defpath navigation-save)
 (defpath navigation-undo)
 (defpath navigation-redo)
@@ -308,7 +310,7 @@
 (defpath api-success-fetch-stylists-within-radius-pre-purchase)
 (defpath api-success-fetch-stylists-within-radius-post-purchase)
 
-(defpath api-success-fetch-cms-data)
+(defpath api-success-fetch-cms-keypath)
 
 (defpath api-success-add-to-bag)
 (defpath api-success-add-sku-to-bag)
@@ -417,8 +419,6 @@
 (defpath uploadcare-api-success-upload-gallery)
 
 (defpath uploadcare-api-failure)
-
-(defpath mayvenn-made-gallery-displayed)
 
 (defpath video-component-mounted)
 (defpath video-component-unmounted)
@@ -552,8 +552,7 @@
 (defpath adventure-fetch-matched-products)
 (defpath api-success-adventure-fetch-products)
 
-(defpath adventure-clear-servicing-stylist)
-(defpath api-success-adventure-cleared-servicing-stylist)
+(defpath api-success-remove-servicing-stylist)
 
 (defpath api-shipping-address-geo-lookup)
 (defpath api-success-shipping-address-geo-lookup)

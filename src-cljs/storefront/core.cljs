@@ -90,7 +90,7 @@
     (react-dom/render (react/createElement (partial app-template app-state)) element))
   (set! messages/handle-message (partial handle-message app-state)) ;; in case it has changed
   (handle-message app-state events/app-start)
-  (history/set-current-page true))
+  (history/set-current-page (atom true) true))
 
 (defn dom-ready [f]
   (if (not= (.-readyState js/document)

@@ -288,12 +288,6 @@
          (= "affiliate" experience)
          (assoc-in-req-state keypaths/return-navigation-message [events/navigate-stylist-account-profile {}])))))
 
-;; Home - UGC, homepage, advertisedPromo
-;; Look - UGC, advertisedPromo
-;; look-detail - UGC, advertisedPromo
-;; PDP - UGC, advertisedPromo (use keyword determined by pdp query)
-;; MayvennMade - MayvennMadePage, UGC?, advertisedPromo
-
 (defn copy-cms-to-data
   ([cms-data data] data)
   ([cms-data data keypath]
@@ -424,16 +418,28 @@
       (h (cond-> req
            (and order-number
                 order-token
-                (= :adventure (second nav-event)) ;; Only used for stylist matching
+                (or (= :adventure (second nav-event)) ;; for stylist matching
+                    (= events/navigate-order-complete nav-event)) ;; for stylist-matched checkout complete
                 (not (get-in-req-state req keypaths/completed-order)))
            (assoc-in-req-state keypaths/completed-order (api/get-order storeback-config order-number order-token)))))))
 
 (defn wrap-fetch-servicing-stylist-for-order
   [h storeback-config]
-  (fn [{:as req :keys [nav-message]}]
-    (let [{:as order :keys [servicing-stylist-id]} (get-in-req-state req keypaths/order)]
+  (fn [req]
+    (let [{:keys [servicing-stylist-id]} (get-in-req-state req keypaths/order)]
       (h (cond-> req
            servicing-stylist-id
+           (assoc-in-req-state adventure.keypaths/adventure-servicing-stylist
+                               (api/get-servicing-stylist storeback-config
+                                                          servicing-stylist-id)))))))
+
+(defn wrap-fetch-servicing-stylist-for-completed-order
+  [h storeback-config]
+  (fn [req]
+    (let [servicing-stylist-id (get-in-req-state req keypaths/completed-order-servicing-stylist-id)]
+      (h (cond-> req
+           (and servicing-stylist-id
+                (= events/navigate-order-complete (-> req :nav-message first)))
            (assoc-in-req-state adventure.keypaths/adventure-servicing-stylist
                                (api/get-servicing-stylist storeback-config
                                                           servicing-stylist-id)))))))
@@ -478,10 +484,20 @@
            (assoc-in-req-state keypaths/user-stylist-experience (cookies/get req "stylist-experience"))
            (assoc-in-req-state keypaths/user-email (cookies/get-and-attempt-parsing-poorly-encoded req "email"))))))
 
+(defn wrap-fetch-promotions
+  [h storeback-config]
+  (fn [req]
+    (h (assoc-in-req-state req keypaths/promotions
+                           (api/get-promotions
+                            storeback-config
+                            (or (first (get-in-req-state req keypaths/order-promotion-codes))
+                                (get-in-req-state req keypaths/pending-promo-code)))))))
+
 ;;TODO Have all of these middleswarez perform event transitions, just like the frontend
 (defn wrap-state [routes {:keys [storeback-config welcome-config contentful environment]}]
   (-> routes
       (wrap-set-cms-cache contentful)
+      (wrap-fetch-promotions storeback-config)
       (wrap-fetch-catalog storeback-config)
       (wrap-set-user)
       (wrap-set-welcome-url welcome-config)
@@ -567,13 +583,14 @@
     (util.response/redirect (path-for req events/navigate-home) :moved-permanently)
     (let [categories (get-in data keypaths/categories)]
       (when-let [category (categories/id->category category-id categories)]
-        (if (not= slug (:page/slug category))
-          (-> (path-for req events/navigate-category category)
-              (util.response/redirect :moved-permanently))
-          (->> (assoc-in data
-                         keypaths/current-category-id
-                         (:catalog/category-id category))
-               (html-response render-ctx)))))))
+        (cond
+          (not= slug (:page/slug category)) (-> (path-for req events/navigate-category category)
+                                                (util.response/redirect :moved-permanently))
+          (:page/redirect? category)        (util.response/redirect (path-for req events/navigate-home) :moved-permanently)
+          :else                             (->> (assoc-in data
+                                                           keypaths/current-category-id
+                                                           (:catalog/category-id category))
+                                                 (html-response render-ctx)))))))
 
 (defn render-product-details [{:keys [environment] :as render-ctx}
                               data
@@ -868,6 +885,7 @@
       (wrap-fetch-stylist-profile ctx)
       (wrap-fetch-servicing-stylist-for-order (:storeback-config ctx))
       (wrap-fetch-order (:storeback-config ctx))
+      (wrap-fetch-servicing-stylist-for-completed-order (:storeback-config ctx))
       (wrap-fetch-completed-order (:storeback-config ctx))
       (wrap-adventure-route-params)
       (wrap-cookies (storefront-site-defaults (:environment ctx)))))
@@ -941,6 +959,14 @@
                (GET "/products/:id-and-slug/:sku" req (redirect-to-product-details environment req))
                (GET "/install" req (util.response/redirect (store-homepage "freeinstall" environment req)))
                (GET "/adv/home" req (util.response/redirect (store-homepage "freeinstall" environment req) :moved-permanently))
+               (GET "/cms/*" {uri :uri}
+                    (let [keypath (->> #"/" (clojure.string/split uri) (drop 2) (map keyword))]
+                      (-> (contentful/read-cache contentful)
+                          (get-in keypath)
+                          ((partial assoc-in {} keypath))
+                          json/generate-string
+                          util.response/response
+                          (util.response/content-type "application/json"))))
                (GET "/cms" req
                  (let [{:keys [slices ugc-collections]}
                        (prepare-cms-query-params (:query-params req))

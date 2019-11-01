@@ -6,24 +6,22 @@
             [storefront.components.video :as video]
             [storefront.events :as events]
             [storefront.platform.component-utils :as utils]
-            #?@(:cljs [[om.core :as om]
-                       [goog.events.EventType :as EventType]
-                       goog.dom
+            #?@(:cljs [goog.dom
                        goog.style
-                       goog.events
-                       [storefront.browser.scroll :as scroll]])
+                       goog.events])
             [ui.molecules :as ui.M]))
 
 (defcomponent layer-hero
-  [data owner opts]
+  [data _ opts]
   [:div.mx-auto.relative {:style {:min-height "300px"}}
    (let [{:photo/keys [mob-uuid dsk-uuid file-name alt]} data]
      (component/build ui.M/hero
                       {:mob-uuid    mob-uuid
                        :dsk-uuid    dsk-uuid
                        :file-name   file-name
-                       :alt         alt}
-                      {:opts {:link-attrs {:style {:min-height "300px"}}}}))
+                       :alt         alt
+                       :opts      {:class "block"
+                                   :style {:min-height "300px"}}}))
    (when-let [buttons (:buttons data)]
      [:div.relative.flex.justify-center
       [:div.absolute.bottom-0.col-6-on-tb-dt.col-12.pb2.mb3-on-dt

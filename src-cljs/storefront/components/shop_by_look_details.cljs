@@ -113,8 +113,8 @@
 
 (defn look-details-body
   [{:keys [creating-order? sold-out? look shared-cart skus fetching-shared-cart?
-           shared-cart-type-copy above-button-copy base-price discounted-price
-           quadpay-loaded? discount-text desktop-two-column? yotpo-data-attributes]}]
+           shared-cart-type-copy base-price discounted-price quadpay-loaded?
+           discount-text desktop-two-column? yotpo-data-attributes]}]
   [:div.clearfix
    (when look
      [:div
@@ -158,8 +158,6 @@
            (when-not (= discounted-price base-price)
              [:div.strike.dark-gray.h6 (mf/as-money base-price)])
            [:div.h2.bold (mf/as-money discounted-price)]]
-          (when above-button-copy
-            [:div.center.teal.medium.mt2 above-button-copy])
           [:div.mt2.col-11.mx-auto
            (add-to-cart-button sold-out? creating-order? look shared-cart)]
           (component/build quadpay/component
@@ -244,9 +242,6 @@
             :skus                       skus
             :sold-out?                  (not-every? :inventory/in-stock? (:line-items shared-cart-with-skus))
             :fetching-shared-cart?      (or (not look) (utils/requesting? data request-keys/fetch-shared-cart))
-            :above-button-copy          (if-not (:discount-text discount)
-                                          "*Discounts applied at check out"
-                                          (:above-button-copy album-copy))
             :shared-cart-type-copy      (:short-name album-copy)
             :look-detail-price?         (not= album-keyword :deals)
             :base-price                 base-price
@@ -286,7 +281,6 @@
             :back                  (first (get-in data keypaths/navigation-undo-stack))
             :back-event            (:default-back-event album-copy)
             :back-copy             (:back-copy album-copy)
-            :above-button-copy     (:above-button-copy album-copy)
             :shared-cart-type-copy (if (str/includes? (some-> album-keyword name str) "bundle-set")
                                      "bundle set"
                                      "look")
