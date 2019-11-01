@@ -57,10 +57,7 @@
            attrs)]))
 
 (defn built-loading-component [data opts]
-  (component/build (fn c [data owner opts]
-                     (component/create (large-spinner {:style {:height "6em"}})))
-                   data
-                   opts))
+  (large-spinner {:style {:height "6em"}}))
 
 (defn lazy-load-component
   "Lazily loads a given component in a different google closure module. Server-side render is unchanged.
