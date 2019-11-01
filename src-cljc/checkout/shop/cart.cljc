@@ -71,7 +71,6 @@
                         :height "21px"})]]))
 
 (defdynamic-component ^:private confetti-spout
-  [_ _ _]
   (constructor [this props]
                (component/create-ref! this "confetti-spout")
                nil)

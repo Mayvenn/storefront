@@ -288,5 +288,5 @@
              args docstring?]
          `(defn ~name ~args (create ~name ~@body))))))
 
-(defmacro ^{:style/indent :defn} defdynamic-component [name args & methods]
+(defmacro ^{:style/indent :defn} defdynamic-component [name & methods]
   `(def ~name (create-dynamic ~name ~@methods)))

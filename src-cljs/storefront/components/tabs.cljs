@@ -33,7 +33,7 @@
                       :width width})))))
         (cache-tab-bounds [c] (component/set-state! c :tab-bounds (tab-bounds c)))
         (handle-resize-event [c e] (cache-tab-bounds c))]
-  (defdynamic-component component [_ _ _]
+  (defdynamic-component component
     (constructor [this props]
                  (component/create-ref! this "tabs")
                  (let [{:keys [tab-refs]} (component/get-opts this)]

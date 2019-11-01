@@ -34,7 +34,6 @@
   (.toFixed (/ full-amount 4) 2))
 
 (defdynamic-component widget-component
-  [_ owner opts]
   (did-mount [_] (browser.events/invoke-late-ready-state-listeners))
   (render [this] (let [{:keys [full-amount]} (component/get-props this)]
                    (component/html

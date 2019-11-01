@@ -35,7 +35,6 @@
   (assoc-in app-state keypaths/spreedly-frame frame))
 
 (defdynamic-component credit-card-fields
-  [data owner opts]
   (constructor [_ props] {:ready? false})
   (did-mount [_] (handle-message events/spreedly-did-mount))
   (will-unmount [_] (handle-message events/spreedly-did-unmount))

@@ -7,7 +7,6 @@
             [storefront.routes :as routes]))
 
 (defdynamic-component ^:private reviews-component-inner
-  [{:keys [loaded? yotpo-data-attributes]} owner opts]
   (did-mount [_] (handle-message events/reviews-component-mounted))
   (will-unmount [_] (handle-message events/reviews-component-will-unmount))
   (render [this]
@@ -25,7 +24,6 @@
    (component/build reviews-component-inner queried-data opts)])
 
 (defdynamic-component ^:private reviews-summary-component-inner
-  [{:keys [loaded? yotpo-data-attributes]} owner opts]
   (did-mount [_] (handle-message events/reviews-component-mounted))
   (will-unmount [_] (handle-message events/reviews-component-will-unmount))
   (render [this]
@@ -45,7 +43,6 @@
 
 
 (defdynamic-component ^:private reviews-summary-component-dropdown-experiment-inner
-  [_ _ _]
   (did-mount [_] (handle-message events/reviews-component-mounted))
   (will-unmount [_] (handle-message events/reviews-component-will-unmount))
   (render [this]

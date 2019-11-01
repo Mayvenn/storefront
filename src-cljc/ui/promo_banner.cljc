@@ -160,7 +160,7 @@
           #?(:cljs
              (this-as this
                (component/set-state! this :show? (< (header-height-magic-number) (.-y (goog.dom/getDocumentScroll)))))))]
-  (defdynamic-component sticky-organism [_ _ _]
+  (defdynamic-component sticky-organism
     (constructor [this props]
                  (component/create-ref! this "banner")
                  (set! (.-handle-scroll this) (.bind handle-scroll this))

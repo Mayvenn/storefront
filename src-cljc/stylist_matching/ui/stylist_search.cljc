@@ -51,7 +51,6 @@
       [:div.h5.my2.light secondary]])))
 
 (defdynamic-component organism
-  [data _ _]
   (did-mount [_]
    (messages/handle-message events/adventure-address-component-mounted
                             {:address-elem    "stylist-match-address"

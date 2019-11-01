@@ -130,7 +130,6 @@
   (messages/handle-message events/voucher-camera-permission-denied))
 
 (defdynamic-component component
-  [data owner _]
   (constructor [this props]
                (component/create-ref! this "qr-canvas")
                (set! (.-qr-canvas this) (component/use-ref this "qr-canvas"))

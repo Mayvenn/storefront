@@ -9,7 +9,6 @@
             [storefront.platform.messages :refer [handle-message]]))
 
 (defdynamic-component component
-  [data owner opts]
   (did-mount [this]
              (let [{:keys [selector widget-config on-success resizable-url]} (component/get-props this)]
                (handle-message events/image-picker-component-mounted

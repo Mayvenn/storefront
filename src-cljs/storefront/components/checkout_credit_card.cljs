@@ -17,7 +17,6 @@
       (utils/requesting? data request-keys/update-cart-payments)))
 
 (defdynamic-component ^:private new-card-component
-  [data owner opts]
   (did-mount [_]
     (messages/handle-message events/stripe-component-mounted
                              {:card-element (stripe/card-element "#card-element")}))

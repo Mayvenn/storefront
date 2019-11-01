@@ -28,7 +28,6 @@
 
 ;; TODO: Make this work nicely when the slides change
 (defdynamic-component inner-component
-  [_ _ _]
   (constructor [this _]
     (component/create-ref! this "container")
     (component/create-ref! this "prev-button")

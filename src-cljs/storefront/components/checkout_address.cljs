@@ -12,7 +12,6 @@
             [storefront.request-keys :as request-keys]))
 
 (defdynamic-component ^:private places-component
-  [data owner opts]
   (did-mount [this]
     (let [{:keys [address-keypath id]} (component/get-props this)]
       (handle-message events/checkout-address-component-mounted {:address-elem    id

@@ -24,7 +24,6 @@
                      (some? longitude))}))
 
 (defdynamic-component inner-component
-  [data owner opts]
   (did-mount [this]
     (let [{:keys [latitude longitude]} (component/get-props this)]
       (maps/attach-map latitude longitude "stylist-profile-map")))

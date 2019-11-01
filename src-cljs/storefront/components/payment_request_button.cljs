@@ -21,7 +21,7 @@
                                (get-in app-state keypaths/states)
                                (get-in app-state keypaths/shipping-methods)))
 
-(defdynamic-component component [data owner opts]
+(defdynamic-component component
   (constructor [_ _] {})
   (did-mount [_] (handle-message events/stripe-payment-request-button-inserted))
   (will-unmount [_] (handle-message events/stripe-payment-request-button-removed))

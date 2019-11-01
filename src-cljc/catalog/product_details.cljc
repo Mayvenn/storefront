@@ -99,7 +99,6 @@
                                                                       .-height))))
 
 (defdynamic-component ^:private sticky-add-component
-  [_ _ _]
   (constructor [c props]
                (component/create-ref! c "add-button")
                (set! (.-handle-scroll c) (partial handle-scroll c))
