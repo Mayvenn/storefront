@@ -4,7 +4,7 @@
             [catalog.products :as products]
             [clojure.string :as string]
             [spice.core :as spice]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.css-transitions :as css-transitions]
@@ -319,7 +319,7 @@
       [:div.h6 lead-in]
       [:div.h4.medium.mt2 [:a.teal.underline link-attrs link-text]]])])
 
-(defn component
+(defcomponent component
   [{:keys [navigation-event
            selected-picker
            facets
@@ -328,47 +328,46 @@
            sku-quantity
            product-alternative]
     :as   data} owner _]
-  (component/create
-   [:div {:key "picker-body"}
-    (slide-animate
-     (when (seq options)
-       (condp = selected-picker
-         :hair/color    (picker-dialog {:title               (get-in facets [selected-picker :facet/name])
-                                        :items               (sort-by :option/order (get options selected-picker))
-                                        :cell-component-fn   (fn [item]
-                                                               (color-option
-                                                                {:key              (str "color-" (:option/name item))
-                                                                 :selected-picker  selected-picker
-                                                                 :navigation-event navigation-event
-                                                                 :color            item
-                                                                 :checked?         (= (:hair/color selections)
-                                                                                      (:option/slug item))
-                                                                 :sku-image        (:option/sku-swatch item)}))
-                                        :product-alternative product-alternative})
-         :hair/length   (picker-dialog {:title               (get-in facets [selected-picker :facet/name])
-                                        :items               (sort-by :option/order (get options selected-picker))
-                                        :cell-component-fn   (fn [item]
-                                                               (length-option
-                                                                {:key              (str "length-" (:option/name item))
-                                                                 :primary-label    (:option/name item)
-                                                                 :navigation-event navigation-event
-                                                                 :checked?         (= (:hair/length selections)
-                                                                                      (:option/slug item))
-                                                                 :selected-picker  selected-picker
-                                                                 :item             item}))
-                                        :product-alternative product-alternative})
-         :item/quantity (picker-dialog {:title               "Quantity"
-                                        :items               (range 1 11)
-                                        :cell-component-fn   (fn [quantity]
-                                                               (quantity-option
-                                                                {:key           (str "quantity-" quantity)
-                                                                 :primary-label (str quantity)
-                                                                 :checked?      (= quantity sku-quantity)
-                                                                 :quantity      quantity}))
-                                        :product-alternative product-alternative})
-         nil)))
+  [:div
+   (slide-animate
     (when (seq options)
-      (picker-rows data))]))
+      (condp = selected-picker
+        :hair/color    (picker-dialog {:title               (get-in facets [selected-picker :facet/name])
+                                       :items               (sort-by :option/order (get options selected-picker))
+                                       :cell-component-fn   (fn [item]
+                                                              (color-option
+                                                               {:key              (str "color-" (:option/name item))
+                                                                :selected-picker  selected-picker
+                                                                :navigation-event navigation-event
+                                                                :color            item
+                                                                :checked?         (= (:hair/color selections)
+                                                                                     (:option/slug item))
+                                                                :sku-image        (:option/sku-swatch item)}))
+                                       :product-alternative product-alternative})
+        :hair/length   (picker-dialog {:title               (get-in facets [selected-picker :facet/name])
+                                       :items               (sort-by :option/order (get options selected-picker))
+                                       :cell-component-fn   (fn [item]
+                                                              (length-option
+                                                               {:key              (str "length-" (:option/name item))
+                                                                :primary-label    (:option/name item)
+                                                                :navigation-event navigation-event
+                                                                :checked?         (= (:hair/length selections)
+                                                                                     (:option/slug item))
+                                                                :selected-picker  selected-picker
+                                                                :item             item}))
+                                       :product-alternative product-alternative})
+        :item/quantity (picker-dialog {:title               "Quantity"
+                                       :items               (range 1 11)
+                                       :cell-component-fn   (fn [quantity]
+                                                              (quantity-option
+                                                               {:key           (str "quantity-" quantity)
+                                                                :primary-label (str quantity)
+                                                                :checked?      (= quantity sku-quantity)
+                                                                :quantity      quantity}))
+                                       :product-alternative product-alternative})
+        nil)))
+   (when (seq options)
+     (picker-rows data))])
 
 (defn query
   [data]
