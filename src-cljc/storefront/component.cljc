@@ -178,7 +178,7 @@
                                        (js/console.log "Failed when rendering: " name error error-info))})))
 
 (defn create-dynamic* [name ctor methods]
-  #?(:clj [:div {:data-type "dynamic"}]
+  #?(:clj (fn create-dynamic [_ _ _] [:div {:data-type "dynamic"}])
      :cljs (do
              ;; in dev mode: assert proper usage
              (when ^boolean goog/DEBUG

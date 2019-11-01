@@ -91,9 +91,7 @@
                   "Unavailable"))
 
 (defn ^:private handle-scroll [component e]
-  #?(:cljs (do
-             (js/console.log component)
-             (component/set-state! component :show? (< 866 (.-y (goog.dom/getDocumentScroll)))))))
+  #?(:cljs (component/set-state! component :show? (< 866 (.-y (goog.dom/getDocumentScroll))))))
 
 (defn ^:private set-height [component]
   #?(:cljs (component/set-state! component :add-button-height (some-> (component/get-ref component "add-button")

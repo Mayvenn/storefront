@@ -136,8 +136,9 @@
 
 (defn sticky-promo-bar
   [data]
-  (when-not (= events/navigate-category (get-in data keypaths/navigation-event))
-    (component/build promo-banner/sticky-organism (promo-banner/query data) nil)))
+  (component/html
+   (when-not (= events/navigate-category (get-in data keypaths/navigation-event))
+     (component/build promo-banner/sticky-organism (promo-banner/query data) nil))))
 
 (defn main-layout
   [data nav-event]

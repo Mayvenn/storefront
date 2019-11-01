@@ -1,12 +1,10 @@
 (ns storefront.platform.reviews
   (:require [catalog.products :as products]
-            [om.core :as om]
             [storefront.component :as component :refer [defcomponent defdynamic-component]]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.messages :refer [handle-message]]
-            [storefront.routes :as routes]
-            ))
+            [storefront.routes :as routes]))
 
 (defdynamic-component ^:private reviews-component-inner
   [{:keys [loaded? yotpo-data-attributes]} owner opts]
@@ -47,16 +45,17 @@
 
 
 (defdynamic-component ^:private reviews-summary-component-dropdown-experiment-inner
-  [{:keys [loaded? yotpo-data-attributes]} owner opts]
+  [_ _ _]
   (did-mount [_] (handle-message events/reviews-component-mounted))
   (will-unmount [_] (handle-message events/reviews-component-will-unmount))
   (render [this]
-    (let [{:keys [yotpo-data-attributes loaded?]} (component/get-props this)]
-      [:div
-      (when loaded?
-        [:div.clearfix.flex.justify-start.flex-wrap.my1
-          [:.yotpo.bottomLine.mr2 yotpo-data-attributes]
-          [:.yotpo.QABottomLine yotpo-data-attributes]])])))
+    (component/html
+     (let [{:keys [yotpo-data-attributes loaded?]} (component/get-props this)]
+       [:div
+        (when loaded?
+          [:div.clearfix.flex.justify-start.flex-wrap.my1
+           [:.yotpo.bottomLine.mr2 yotpo-data-attributes]
+           [:.yotpo.QABottomLine yotpo-data-attributes]])]))))
 
 (defcomponent reviews-summary-dropdown-experiment-component
   "Yotpo summary reviews component"
