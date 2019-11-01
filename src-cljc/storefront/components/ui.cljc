@@ -793,7 +793,8 @@
     (when disabled?
       {:data-test-disabled "disabled"}))
    [:div.absolute.overlay.rounded-0.border.border-gray]
-   content])
+   (for [[i c] (map-indexed vector content)]
+     [:div {:key (str i)} c])])
 
 (def header-image-size 36)
 

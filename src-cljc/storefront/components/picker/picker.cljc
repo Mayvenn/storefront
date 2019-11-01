@@ -233,10 +233,12 @@
                 (simple-content-layer
                  (list
                   [:div.col-2
-                   (when label-style
-                     {:class label-style})
+                   {:key "primary-label"
+                    :class (str label-style)}
                    primary-label]
-                  [:div.gray.flex-auto secondary-label]))
+                  [:div.gray.flex-auto
+                   {:key "secondary-label"}
+                   secondary-label]))
                 [:div
                  (when disabled?
                    (simple-sold-out-layer "Sold Out"))
