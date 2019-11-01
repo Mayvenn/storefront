@@ -114,30 +114,28 @@
   [{confetti-mode :confetti-mode
     :cart-item-service-thumbnail/keys [id highlighted? image-url locked?]}]
   (when id
-    (css-transitions/transition-background-color
-     highlighted?
-     [:div.flex.justify-center.mtn2
-      (css-transitions/background-fade
-       highlighted?
-       {:style {:border-radius "50%"
-                :width         "56px"
-                :height        "56px"}
-        ;; QUESTION(jeff): is this an appropriate place for click handler inside css-transition?
-        :on-click #(confetti-handler confetti-mode)})
+    [:div.flex.justify-center.mtn2
+     (css-transitions/background-fade
+      highlighted?
+      {:style {:border-radius "50%"
+               :width         "56px"
+               :height        "56px"}
+       ;; QUESTION(jeff): is this an appropriate place for click handler inside css-transition?
+       :on-click #(confetti-handler confetti-mode)})
 
-      [:div.relative
-       (if locked?
-         [:div
-          [:div.absolute.z1.col-12.flex.items-center.justify-center
+     [:div.relative
+      (if locked?
+        [:div
+         [:div.absolute.z1.col-12.flex.items-center.justify-center
+          {:style {:height "100%"}}
+          [:div.absolute.z2.col-12.flex.items-center.justify-center
            {:style {:height "100%"}}
-           [:div.absolute.z2.col-12.flex.items-center.justify-center
-            {:style {:height "100%"}}
-            (svg/lock {:style {:width   "17px"
-                               :height  "23px"
-                               :opacity ".75"}})]]
-          (ui/ucare-img {:width "50px"
-                         :style {:filter "contrast(0.1) brightness(1.75)"}} image-url)]
-         (ui/ucare-img {:width "50px"} image-url))]])))
+           (svg/lock {:style {:width   "17px"
+                              :height  "23px"
+                              :opacity ".75"}})]]
+         (ui/ucare-img {:width "50px"
+                        :style {:filter "contrast(0.1) brightness(1.75)"}} image-url)]
+        (ui/ucare-img {:width "50px"} image-url))]]))
 
 (defn cart-item-remove-action-molecule
   [{:cart-item-remove-action/keys [id target spinning?]}]

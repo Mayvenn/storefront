@@ -180,6 +180,7 @@
 (defn section-details-molecule
   [{:section-details/keys [title content]}]
   [:div.medium.h5.py3
+   {:key title}
    title
    [:div.mt1.h6.regular
     (if (string? content)

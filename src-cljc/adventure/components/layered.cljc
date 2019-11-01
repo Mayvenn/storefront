@@ -6,10 +6,13 @@
             [storefront.components.video :as video]
             [storefront.events :as events]
             [storefront.platform.component-utils :as utils]
-            #?@(:cljs [goog.dom
+            #?@(:cljs [[goog.events.EventType :as EventType]
+                       goog.dom
                        goog.style
                        goog.events])
-            [ui.molecules :as ui.M]))
+            [ui.molecules :as ui.M]
+            
+            ))
 
 (defcomponent layer-hero
   [data _ opts]

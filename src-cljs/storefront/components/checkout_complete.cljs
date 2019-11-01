@@ -62,8 +62,8 @@
 
 (defn servicing-stylist-card-title-molecule
   [{:stylist-card.title/keys [id primary secondary]}]
-  (when id
-    (component/html
+  (component/html
+   (when id
      (list
       [:div.h6.dark-gray.mbn1 secondary]
       [:div.h3
@@ -73,8 +73,8 @@
 (defn servicing-stylist-card-thumbnail-molecule
   "We want ucare-ids here but we do not have them"
   [{:stylist-card.thumbnail/keys [id ucare-id]}]
-  (when id
-    (component/html
+  (component/html
+   (when id
      (ui/circle-picture
       {:width "72px"}
       (ui/square-image {:resizable-url ucare-id} 72)))))
