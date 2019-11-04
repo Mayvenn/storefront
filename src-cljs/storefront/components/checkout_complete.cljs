@@ -63,13 +63,14 @@
 (defn servicing-stylist-card-title-molecule
   [{:stylist-card.title/keys [id primary secondary]}]
   (component/html
-   (when id
-     (list
-      [:div.h6.dark-gray.mbn1 {:key secondary} secondary]
-      [:div.h3
-       {:data-test id
-        :key       primary}
-       primary]))))
+   [:div
+    (when id
+      (list
+       [:div.h6.dark-gray.mbn1 {:key secondary} secondary]
+       [:div.h3
+        {:data-test id
+         :key       primary}
+        primary]))]))
 
 (defn servicing-stylist-card-thumbnail-molecule
   "We want ucare-ids here but we do not have them"
