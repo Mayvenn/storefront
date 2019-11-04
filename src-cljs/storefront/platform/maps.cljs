@@ -7,6 +7,8 @@
             [storefront.keypaths]
             [storefront.components.ui :as ui]
             [stylist-directory.stylists :as stylists]
+            
+            [storefront.component :as component :refer [defcomponent]]
             ))
 
 (defn map-query [data]
@@ -32,10 +34,9 @@
       [:div {:id    "stylist-profile-map"
             :style {:height "250px"}}])))
 
-(defn component
+(defcomponent component
   [{:keys [loaded? salon] :as data} owner opts]
-  (component/create
-   [:div.mb3
+  [:div.mb3
     (if loaded?
       (component/build inner-component data)
       [:div.flex.items-center {:style {:height "250px"}} ui/spinner])
@@ -48,4 +49,4 @@
          (string/join ", " (filter identity [address-1 address-2 city state zipcode]))]]
        [:a.self-center.navy.h6.medium
         {:href (str "https://www.google.com/maps/dir/?api=1&destination=" latitude "," longitude)}
-        "DIRECTIONS"]])]))
+        "DIRECTIONS"]])])

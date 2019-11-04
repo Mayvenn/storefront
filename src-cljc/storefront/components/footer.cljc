@@ -11,7 +11,9 @@
             [storefront.keypaths :as keypaths]
             [catalog.categories :as categories]
             [storefront.platform.component-utils :as utils]
-            [storefront.platform.numbers :as numbers]))
+            [storefront.platform.numbers :as numbers]
+            
+            ))
 
 (defn phone-uri [tel-num]
   (apply str "tel://+" (numbers/digits-only tel-num)))
@@ -96,10 +98,9 @@
       [:div {:style {:width "22px" :height "22px"}}
        ^:inline (svg/mayvenn-on-pinterest)]]]]))
 
-(defn full-component
+(defcomponent full-component
   [{:keys [contacts categories]} owner opts]
-  (component/create
-   [:div.h5.border-top.border-gray.bg-light-gray
+  [:div.h5.border-top.border-gray.bg-light-gray
     [:div.container
      [:div.col-12.clearfix
       [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
@@ -112,7 +113,7 @@
     [:div.mt3.bg-dark-gray.white.py1.px3.clearfix.h8
      [:div
       {:style {:margin-bottom "90px"}}
-      (component/build footer-links/component {:minimal? false} nil)]]]))
+      (component/build footer-links/component {:minimal? false} nil)]]])
 
 (defn contacts-query
   [data]

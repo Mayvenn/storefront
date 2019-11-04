@@ -9,11 +9,13 @@
             [storefront.transitions :as transitions]
             [storefront.events :as events]
             [storefront.effects :as effects]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.keypaths :as keypaths]
             [adventure.keypaths :as adventure-keypaths]
             [spice.date :as date]
-            [adventure.keypaths :as adventure.keypaths]))
+            [adventure.keypaths :as adventure.keypaths]
+            
+            ))
 
 (defn ^:private ms-to-wait [app-state]
   (max 0

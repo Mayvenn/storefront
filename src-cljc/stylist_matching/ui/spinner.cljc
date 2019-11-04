@@ -1,5 +1,7 @@
 (ns stylist-matching.ui.spinner
-  (:require [storefront.component :as component :refer [defcomponent]]))
+  (:require [storefront.component :as component :refer [defcomponent]]
+            
+            ))
 
 (defn spinner-molecule [{:spinner/keys [id]}]
   (when id

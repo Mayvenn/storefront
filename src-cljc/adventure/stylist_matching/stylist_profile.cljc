@@ -20,7 +20,11 @@
             [storefront.transitions :as transitions]
             [stylist-directory.stylists :as stylists]
             [spice.core :as spice]
-            [stylist-matching.ui.header :as header-org]))
+            [stylist-matching.ui.header :as header-org]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
 (defn transposed-title-molecule
   [{:transposed-title/keys [id primary secondary]}]
@@ -52,16 +56,15 @@
 (defn circle-portrait-molecule  [{:circle-portrait/keys [portrait-url]}]
   [:div.mr2 (ui/circle-picture {:width "72px"} portrait-url)])
 
-(defn stylist-profile-card-component
+(defcomponent stylist-profile-card-component
   [query _ _]
-  (component/create
-   [:div.flex.bg-white.px1.mxn2.rounded.py3
+  [:div.flex.bg-white.px1.mxn2.rounded.py3
     ;; TODO: image-url should be format/auto?
     (circle-portrait-molecule query)
     [:div.flex-grow-1.left-align.dark-gray.h6.line-height-2
      (transposed-title-molecule query)
      (stars-rating-molecule query)
-     (stylist-phone-molecule query)]]))
+     (stylist-phone-molecule query)]])
 
 (defn checks-or-x
   [specialty specialize?]
@@ -214,18 +217,16 @@
                (apply utils/fake-href target)))
       [:span.medium.dark-gray.border-bottom.border-teal label])]) )
 
-(defn footer [data _ _]
-  (component/create
-   (when (seq data)
+(defcomponent footer [data _ _]
+  (when (seq data)
      [:div.mt6.border-top.border-fate-white.border-width-2
       [:div.py5.center
        (footer-body-molecule data)
-       (footer-cta-molecule data)]])))
+       (footer-cta-molecule data)]]))
 
-(defn component
+(defcomponent component
   [{:keys [header-data footer-data google-map-data] :as query} owner opts]
-  (component/create
-   [:div.col-12.bg-white.mb6 {:style {:min-height    "100vh"
+  [:div.col-12.bg-white.mb6 {:style {:min-height    "100vh"
                                       :margin-bottom "-1px"}}
     [:div.white (component/build header-org/organism header-data nil)]
     [:main
@@ -243,7 +244,7 @@
         (section-details-molecule section-details))]
      [:div.clearfix]]
 
-    [:footer (component/build footer footer-data nil)]]))
+    [:footer (component/build footer footer-data nil)]])
 
 (defn built-component
   [data opts]

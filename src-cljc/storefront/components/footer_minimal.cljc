@@ -1,12 +1,15 @@
 (ns storefront.components.footer-minimal
-  (:require [storefront.component :as component]
+  (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.components.footer-links :as footer-links]
-            [storefront.components.ui :as ui]))
+            [storefront.components.ui :as ui]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
-(defn component
+(defcomponent component
   [{:keys [call-number]} owner opts]
-  (component/create
-   [:div.border-top.border-gray.bg-white
+  [:div.border-top.border-gray.bg-white
     [:div.container
      [:div.center.px3.my2
       [:div.my1.medium.dark-gray "Need Help?"]
@@ -17,7 +20,7 @@
         (ui/link :link/phone :a.dark-gray {} call-number)]
        " | 8am-5pm PST M-F"]
       [:div.my1.silver.h6
-       (component/build footer-links/component {:minimal? true} nil)]]]]))
+       (component/build footer-links/component {:minimal? true} nil)]]]])
 
 (defn query
   [data]

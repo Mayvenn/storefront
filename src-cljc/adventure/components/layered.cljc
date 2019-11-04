@@ -12,6 +12,8 @@
                        goog.events])
             [ui.molecules :as ui.M]
             
+            
+            
             ))
 
 (defcomponent layer-hero
@@ -89,9 +91,8 @@
                                    :height "14px"
                                    :width  "14px"})]]])
 
-(defn hero-image-component [{:screen/keys [seen?] :as data} owner opts]
-  (component/create
-   [:div (component/build ui.M/hero (merge data {:off-screen? (not seen?)}) nil)]))
+(defcomponent hero-image-component [{:screen/keys [seen?] :as data} owner opts]
+  [:div (component/build ui.M/hero (merge data {:off-screen? (not seen?)}) nil)])
 
 (defcomponent image-block
   [{:photo/keys [mob-uuid
@@ -216,14 +217,13 @@
      [:div.center.pt3
       (cta-with-chevron data)]]))
 
-(defn ^:private ugc-image [{:screen/keys [seen?] :keys [image-url]} owner opts]
-  (component/create
-   (ui/aspect-ratio
+(defcomponent ^:private ugc-image [{:screen/keys [seen?] :keys [image-url]} owner opts]
+  (ui/aspect-ratio
     1 1
     (cond
       seen?          [:img {:class "col-12"
                             :src   image-url}]
-      :else          [:div.col-12 " "]))))
+      :else          [:div.col-12 " "])))
 
 (defcomponent ugc
   [data owner opts]

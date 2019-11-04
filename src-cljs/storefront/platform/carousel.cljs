@@ -2,7 +2,11 @@
   (:require [sablono.core :refer [html]]
             [storefront.component :as component :refer [defdynamic-component defcomponent]]
             ;;react-slick
-            ))
+            
+            [storefront.component :as component :refer [defcomponent]]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]))
 
 (defn safely-destroy [carousel]
   (when (some-> carousel .-destroy fn?)

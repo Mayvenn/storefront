@@ -1,8 +1,12 @@
 (ns storefront.components.flash
-  (:require [storefront.component :as component]
+  (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
-            [storefront.keypaths :as keypaths]))
+            [storefront.keypaths :as keypaths]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
 (defn success-img []
   (svg/circled-check {:class "stroke-teal"
@@ -24,9 +28,8 @@
     [:div.right.ml1 ^:inline (error-img)]
     [:div.overflow-hidden body]]])
 
-(defn component [{:keys [success failure errors]} _ _]
-  (component/create
-   (when (or success failure (and (seq (:error-message errors)) (seq errors)))
+(defcomponent component [{:keys [success failure errors]} _ _]
+  (when (or success failure (and (seq (:error-message errors)) (seq errors)))
      (ui/narrow-container
       [:div.p2
        (cond
@@ -38,7 +41,7 @@
          success
          (success-box
           {:data-test "flash-success"}
-          [:div.px2 success]))]))))
+          [:div.px2 success]))])))
 
 (defn query [data]
   {:success (get-in data keypaths/flash-now-success-message)

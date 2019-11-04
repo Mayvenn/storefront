@@ -4,7 +4,9 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.messages :refer [handle-message]]
-            [storefront.routes :as routes]))
+            [storefront.routes :as routes]
+            [storefront.component :as component :refer [defcomponent]]
+            ))
 
 (defdynamic-component ^:private reviews-component-inner
   (did-mount [_] (handle-message events/reviews-component-mounted))

@@ -22,7 +22,11 @@
             [storefront.platform.component-utils :as utils]
             [storefront.platform.reviews :as reviews]
             [storefront.request-keys :as request-keys]
-            [ui.molecules :as ui-molecules]))
+            [ui.molecules :as ui-molecules]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
 (defn add-to-cart-button
   [sold-out? creating-order? look {:keys [number]}]
@@ -165,24 +169,20 @@
                             :quadpay/order-total discounted-price
                             :quadpay/directive   :just-select}
                            nil)
-          (om/build reviews/reviews-component {:yotpo-data-attributes yotpo-data-attributes} nil)])))])
+          (component/build reviews/reviews-component {:yotpo-data-attributes yotpo-data-attributes} nil)])))])
 
-(defn component
+(defcomponent component
   [queried-data owner opts]
-  (om/component
-   (html
-    [:div.container.mb4
+  [:div.container.mb4
      [:div.clearfix
       [:div.col-6-on-tb-dt.p2
        (ui-molecules/return-link queried-data)]]
-     (look-details-body queried-data)])))
+     (look-details-body queried-data)])
 
-(defn adventure-component
+(defcomponent adventure-component
   [look-details owner opts]
-  (om/component
-   (html
-    [:div.container.mb4
-     (look-details-body look-details)])))
+  [:div.container.mb4
+     (look-details-body look-details)])
 
 (defn put-skus-on-shared-cart [shared-cart skus]
   (let [shared-cart-variant-ids (into #{}
@@ -292,4 +292,4 @@
            (reviews/query-look-detail shared-cart-with-skus data))))
 
 (defn ^:export built-component [data opts]
-  (om/build component (query data) opts))
+  (component/build component (query data) opts))

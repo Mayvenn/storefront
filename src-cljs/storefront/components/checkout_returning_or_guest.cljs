@@ -2,7 +2,7 @@
   (:require [om.core :as om]
             [adventure.checkout.returning-or-guest :as adventure-returning-or-guest]
             [sablono.core :refer [html]]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.facebook :as facebook]
             [storefront.components.checkout-address :as checkout-address]
             [storefront.components.ui :as ui]
@@ -10,12 +10,12 @@
             [storefront.events :as events]
             [storefront.platform.component-utils :as utils]
             [storefront.keypaths :as keypaths]
-            [storefront.accessors.auth :as auth]))
+            [storefront.accessors.auth :as auth]
+            
+            ))
 
-(defn component [{:keys [facebook-loaded? address promo-banner]} owner]
-  (om/component
-   (html
-    [:div
+(defcomponent component [{:keys [facebook-loaded? address promo-banner]} owner _]
+  [:div
      [:div.container ;; Tries to match what's going on in checkout-address/component
       [:div
        (component/build promo-banner/sticky-organism promo-banner nil)
@@ -38,7 +38,7 @@
             (facebook/narrow-sign-in-button facebook-loaded?)]]]]]
 
        [:h2.mt1.center "Checkout as a guest"]]]
-     (om/build checkout-address/component address)])))
+     (component/build checkout-address/component address)])
 
 (defn query [data]
   {:facebook-loaded? (get-in data keypaths/loaded-facebook)
@@ -49,7 +49,7 @@
 (defn ^:export built-component [data opts]
   (if (= "freeinstall" (get-in data keypaths/store-slug))
     (adventure-returning-or-guest/built-component data opts)
-    (om/build component (query data) opts)))
+    (component/build component (query data) opts)))
 
 (defn requires-sign-in-or-initiated-guest-checkout [authorized-component data opts]
   (if (auth/signed-in-or-initiated-guest-checkout? data)

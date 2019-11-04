@@ -1,15 +1,18 @@
 (ns storefront.components.shop-by-look
-  (:require [storefront.component :as component]
+  (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.accessors.contentful :as contentful]
             [storefront.components.ugc :as component-ugc]
             [storefront.keypaths :as keypaths]
             [storefront.components.ui :as ui]
             [spice.maps :as maps]
-            [storefront.ugc :as ugc]))
+            [storefront.ugc :as ugc]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
-(defn component [{:keys [looks deals? copy spinning?]} owner opts]
-  (component/create
-   (if spinning?
+(defcomponent component [{:keys [looks deals? copy spinning?]} owner opts]
+  (if spinning?
      (ui/large-spinner {:style {:height "4em"}})
      [:div
       [:div.center.bg-white.py3
@@ -24,7 +27,7 @@
       [:div.flex.flex-wrap.mbn2.justify-center.justify-start-on-tb-dt.bg-light-gray.py2-on-tb-dt.px1-on-tb-dt
        (for [look looks]
          (component/build component-ugc/social-image-card-component look {:opts {:copy copy}
-                                                                          :key  (str (:id look))}))]])))
+                                                                          :key  (str (:id look))}))]]))
 
 (defn query [data]
   (let [navigation-event  (get-in data keypaths/navigation-event)

@@ -2,12 +2,16 @@
   (:require #?@(:cljs [[storefront.hooks.pixlee :as pixlee]
                        [storefront.api :as api]
                        [om.core :as om]])
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.components.ui :as ui]
             [storefront.keypaths :as keypaths]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
 (defn hero-image
   [{:as hero-map :keys [desktop mobile alt]}]
@@ -24,10 +28,9 @@
                                  :type    img-type})))
            [:img.block.col-12 {:src mobile-url :alt alt}])]))
 
-(defn component [{:keys [image/hero]} owner opts]
-  (component/create
-   [:div
-    [:section (hero-image hero)]]))
+(defcomponent component [{:keys [image/hero]} owner opts]
+  [:div
+    [:section (hero-image hero)]])
 
 (defn query
   [data]

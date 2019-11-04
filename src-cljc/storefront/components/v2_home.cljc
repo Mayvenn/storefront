@@ -13,7 +13,11 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.carousel :as carousel]
-            [ui.molecules :as ui.M]))
+            [ui.molecules :as ui.M]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
 (defcomponent free-shipping-banner [_ _ _]
   [:div {:style {:height "3em"}}

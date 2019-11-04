@@ -38,7 +38,11 @@
             [storefront.transitions :as transitions]
             [catalog.ui.add-to-cart :as add-to-cart]
             [catalog.ui.freeinstall-banner :as freeinstall-banner]
-            [catalog.keypaths :as catalog.keypaths]))
+            [catalog.keypaths :as catalog.keypaths]
+            [storefront.component :as component :refer [defcomponent]]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]))
 
 (defn item-price [price]
   (when price
@@ -226,17 +230,16 @@
    {}
    (keys selections)))
 
-(defn organism
+(defcomponent organism
   "Product Details organism"
   [data _ _]
-  (component/create
-   [:div.mt3.mx3
+  [:div.mt3.mx3
     (catalog.M/product-title data)
     [:div.flex.justify-between
      (catalog.M/yotpo-reviews-summary data)
-     (catalog.M/price-block data)]]))
+     (catalog.M/price-block data)]])
 
-(defn component
+(defcomponent component
   [{:keys [adding-to-bag?
            carousel-images
            product
@@ -251,8 +254,7 @@
            ugc] :as data} owner opts]
   (let [unavailable? (not (seq selected-sku))
         sold-out?    (not (:inventory/in-stock? selected-sku))]
-    (component/create
-      (if-not product
+    (if-not product
         [:div.flex.h2.p1.m1.items-center.justify-center
          {:style {:height "25em"}}
          (ui/large-spinner {:style {:height "4em"}})]
@@ -307,7 +309,7 @@
                               :sold-out?        sold-out?
                               :unavailable?     (empty? selected-sku)
                               :selected-options selected-options
-                              :quantity         sku-quantity} {})])]))))
+                              :quantity         sku-quantity} {})])])))
 
 (defn min-of-maps
   ([k] {})

@@ -1,25 +1,28 @@
 (ns storefront.components.account
-  (:require [storefront.component :as component]
+  (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.request-keys :as request-keys]
             [storefront.components.ui :as ui]
             [storefront.components.tabs :as tabs]
             [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
-            [storefront.keypaths :as keypaths]))
+            [storefront.keypaths :as keypaths]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
 (defn store-credit [available-credit]
   [:div.my3
    [:div.medium.mb1 "Store Credit"]
    [:div.teal.h0 (ui/big-money available-credit)]])
 
-(defn profile-component [{:keys [focused
+(defcomponent profile-component [{:keys [focused
                                  saving?
                                  email
                                  field-errors
                                  password
                                  show-password?]} owner opts]
-  (component/create
-   [:form {:on-submit
+  [:form {:on-submit
            (utils/send-event-callback events/control-account-profile-submit)}
     [:h1.h3.light.my3.center.col.col-12.col-6-on-tb-dt "Update your info"]
 
@@ -56,7 +59,7 @@
      [:div.border-light-gray.border-top.hide-on-mb.mb3]
      [:div.col-12.col-5-on-tb-dt.mx-auto
       (ui/submit-button "Update" {:spinning? saving?
-                                  :data-test "account-form-submit"})]]]))
+                                  :data-test "account-form-submit"})]]])
 
 (defn profile-query [data]
   {:saving?        (utils/requesting? data request-keys/update-account-profile)
@@ -66,12 +69,11 @@
    :field-errors   (get-in data keypaths/field-errors)
    :focused       (get-in data keypaths/ui-focus)})
 
-(defn component [{:keys [current-nav-event
+(defcomponent component [{:keys [current-nav-event
                          available-credit
                          fetching?
                          profile]} owner opts]
-  (component/create
-   [:div.container.bg-white.dark-gray
+  [:div.container.bg-white.dark-gray
     [:div.p2.m-auto.overflow-hidden
      [:div.flex.justify-center.items-center.center
       [:div.ml3
@@ -90,7 +92,7 @@
          events/navigate-account-manage
          (component/build profile-component profile opts)
 
-         nil)])]]))
+         nil)])]])
 
 (defn query [data]
   {:fetching?         (utils/requesting? data request-keys/get-account)

@@ -11,7 +11,7 @@
                        storefront.components.stylist.order-details
                        storefront.components.stylist.portrait
                        storefront.components.stylist.share-your-store])
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             stylist.dashboard-stats
             stylist.dashboard-orders-tab
             stylist.dashboard-payments-tab
@@ -22,7 +22,11 @@
             [storefront.platform.messages :as messages]
             [storefront.request-keys :as request-keys]
             [voucher.keypaths :as voucher-keypaths]
-            [storefront.accessors.auth :as auth]))
+            [storefront.accessors.auth :as auth]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
 (def tabs
   [{:id :orders
@@ -49,14 +53,13 @@
    [:h4.gray.bold.p1 empty-title]
    [:h6.dark-gray.col-5.mx-auto.line-height-2 empty-copy]])
 
-(defn component
+(defcomponent component
   [{:keys [stats-cards activity-ledger-tab
            balance-transfers balance-transfers-pagination fetching-balance-transfers?
            pending-voucher service-menu
            orders-data] :as data} owner opts]
   (let [{:keys [active-tab-name]} activity-ledger-tab]
-    (component/create
-     [:div.col-6-on-dt.col-9-on-tb.mx-auto
+    [:div.col-6-on-dt.col-9-on-tb.mx-auto
       (component/build stylist.dashboard-stats/component stats-cards nil)
       (ledger-tabs active-tab-name)
 
@@ -65,7 +68,7 @@
         (stylist.dashboard-payments-tab/payments-table pending-voucher service-menu balance-transfers balance-transfers-pagination fetching-balance-transfers?)
 
         :orders
-        (component/build stylist.dashboard-orders-tab/component orders-data nil))])))
+        (component/build stylist.dashboard-orders-tab/component orders-data nil))]))
 
 (def determine-active-tab
   {events/navigate-v2-stylist-dashboard-payments {:active-tab-name :payments

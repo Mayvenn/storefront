@@ -1,7 +1,9 @@
 (ns catalog.ui.freeinstall-banner
   (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ui :as ui]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            
+            ))
 
 ;; MOLECULES
 

@@ -5,12 +5,14 @@
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
-            [storefront.keypaths :as keypaths]))
+            [storefront.keypaths :as keypaths]
+            [storefront.component :as component :refer [defcomponent]]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]))
 
-(defn component [{:keys [focused reset-password show-password? loaded-facebook? field-errors]} owner]
-  (om/component
-   (html
-    (ui/narrow-container
+(defcomponent component [{:keys [focused reset-password show-password? loaded-facebook? field-errors]} owner _]
+  (ui/narrow-container
      [:div.p2
       [:h2.center.my2.navy.mb3 "Reset Your Password"]
       [:form.col-12
@@ -37,7 +39,7 @@
       [:.h5.center.dark-gray.light.my2 "OR"]
 
       [:div.col-12.col-6-on-tb-dt.mx-auto
-       (facebook/reset-button loaded-facebook?)]]))))
+       (facebook/reset-button loaded-facebook?)]]))
 
 (defn query [data]
   {:reset-password   (get-in data keypaths/reset-password-password)
@@ -47,4 +49,4 @@
    :focused          (get-in data keypaths/ui-focus)})
 
 (defn built-component [data opts]
-  (om/build component (query data) opts))
+  (component/build component (query data) opts))

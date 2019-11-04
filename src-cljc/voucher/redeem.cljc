@@ -9,7 +9,7 @@
                        ;; before the set-load! call at the bottom of this file.
                        [voucher.redeemed :as _]])
             [storefront.accessors.experiments :as experiments]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
             [storefront.events :as events]
@@ -18,7 +18,11 @@
             [voucher.keypaths :as voucher-keypaths]
             [storefront.keypaths :as keypaths]
             [storefront.request-keys :as request-keys]
-            [storefront.transitions :as transitions]))
+            [storefront.transitions :as transitions]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
 (defn ^:private divider []
   (component/build
@@ -99,10 +103,9 @@
 (def ^:private spinner
   [:div.mt8 (ui/large-spinner {:style {:height "6em"}})])
 
-(defn ^:private component
+(defcomponent ^:private component
   [{:keys [service-menu-fetching? service-menu-missing?] :as data} owner opts]
-  (component/create
-   [:div.bg-light-silver
+  [:div.bg-light-silver
     (cond service-menu-fetching?
           spinner
 
@@ -110,7 +113,7 @@
           missing-service-menu
 
           :default
-          (primary-component data))]))
+          (primary-component data))])
 
 (defn ^:private query [data]
   (let [service-menu-required? (experiments/dashboard-with-vouchers? data)

@@ -2,7 +2,7 @@
   (:require [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.carousel :as carousel]
-            [storefront.component :as component]))
+            [storefront.component :as component :refer [defcomponent]]))
 
 
 (defn ucare-img-slide [ucare-id]

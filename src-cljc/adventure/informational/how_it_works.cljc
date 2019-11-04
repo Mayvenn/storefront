@@ -1,10 +1,12 @@
 (ns adventure.informational.how-it-works
   (:require storefront.keypaths
             [storefront.accessors.contentful :as contentful]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.events :as events]
             [adventure.faq :as faq]
-            [adventure.components.layered :as layered]))
+            [adventure.components.layered :as layered]
+            
+            ))
 
 (defn query
   [data]

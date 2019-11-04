@@ -6,7 +6,11 @@
             [storefront.keypaths :as keypaths]
             [spice.date :as date]
             [storefront.platform.component-utils :as utils]
-            [storefront.routes :as routes]))
+            [storefront.routes :as routes]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
 (defcomponent component [{:keys [minimal?]} owner opts]
   [:div.center

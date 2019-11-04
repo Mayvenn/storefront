@@ -7,12 +7,14 @@
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
-(defn component [{:keys [facebook-loaded? address promo-banner]} owner]
-  (om/component
-   (html
-    [:div
+(defcomponent component [{:keys [facebook-loaded? address promo-banner]} owner _]
+  [:div
      [:div.container ;; Tries to match what's going on in checkout-address/component
       [:div
        (component/build promo-banner/sticky-organism promo-banner nil)
@@ -35,7 +37,7 @@
             (facebook/narrow-sign-in-button facebook-loaded?)]]]]]
 
        [:h2.mt1.center "Checkout as a guest"]]]
-     (om/build checkout-address/component address)])))
+     (component/build checkout-address/component address)])
 
 (defn query [data]
   {:facebook-loaded?   (get-in data keypaths/loaded-facebook)
@@ -44,7 +46,7 @@
                            (assoc-in [:shipping-address-data :become-guest?] true))})
 
 (defn ^:export built-component [data opts]
-  (om/build component (query data) opts))
+  (component/build component (query data) opts))
 
 (defn ^:export requires-sign-in-or-initiated-guest-checkout [authorized-component data opts]
   (if (auth/signed-in-or-initiated-guest-checkout? data)

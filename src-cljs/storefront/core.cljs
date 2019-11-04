@@ -4,7 +4,7 @@
             [storefront.state :as state]
             [storefront.keypaths :as keypaths]
             [storefront.events :as events]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.top-level :refer [top-level-component]]
             [storefront.history :as history]
             [storefront.hooks.exception-handler :as exception-handler]

@@ -1,9 +1,13 @@
 (ns design-system.adventure
   (:require [adventure.organisms.call-out-center :as call-out-center]
             [adventure.stylist-matching.stylist-profile :as stylist-profile]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [design-system.organisms :as organisms]
-            [storefront.events :as events]))
+            [storefront.events :as events]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
 ;; - Atom is ui at the level of the browser
 ;; - Molecule is an element that has a meaning... a contract
@@ -50,15 +54,14 @@
                                                                                  :specialty-sew-in-closure     true
                                                                                  :specialty-sew-in-frontal     false}}]}}])
 
-(defn component
+(defcomponent component
   [data owner opts]
-  (component/create
-   [:div.py3
+  [:div.py3
     [:div.h1 "Adventure Template"]
     [:section
      [:div.h2 "Organisms"]
      [:section
-      (organisms/demo organisms)]]]))
+      (organisms/demo organisms)]]])
 
 (defn built-component
   [data opts]

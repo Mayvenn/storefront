@@ -1,14 +1,17 @@
 (ns storefront.components.forgot-password
-  (:require [storefront.component :as component]
+  (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.components.facebook :as facebook]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
-(defn component [{:keys [email facebook-loaded? field-errors focused]} owner opts]
-  (component/create
-   (ui/narrow-container
+(defcomponent component [{:keys [email facebook-loaded? field-errors focused]} owner opts]
+  (ui/narrow-container
     [:div.p2
      [:h1.h2.center.my2.navy.mb3 "Reset your password"]
 
@@ -30,7 +33,7 @@
      [:div.h5.center.dark-gray.light.my2 "OR"]
 
      [:div.col-12.col-6-on-tb-dt.mx-auto
-      (facebook/sign-in-button facebook-loaded?)]])))
+      (facebook/sign-in-button facebook-loaded?)]]))
 
 (defn query [data]
   {:facebook-loaded? (get-in data keypaths/loaded-facebook)

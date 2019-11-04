@@ -2,11 +2,13 @@
   (:require [adventure.components.header :as header]
             [spice.maps :as maps]
             [storefront.events :as events]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
-            [spice.core :as spice]))
+            [spice.core :as spice]
+            
+            ))
 
 (def rect-button-attrs
   {:height-class "py6"
@@ -18,12 +20,11 @@
 (defn white-rect-button [attrs & content]
   (ui/white-button (maps/deep-merge rect-button-attrs attrs) content))
 
-(defn ^:private content-component
+(defcomponent ^:private content-component
   [{:keys [input-data header-data prompt-image prompt mini-prompt on-submit title-image-uuid title-image-alt]}
    owner
    {:keys [text-style desktop-header-dt]}]
-  (component/create
-   [:div
+  [:div
     (when header-data
       [:div.mx-auto {:style {:height "100px"}}
        (cond-> header-data
@@ -53,12 +54,11 @@
                         :autoFocus true})]
        [:div.pt3.col-9.col-7-on-tb-dt.mx-auto
         (ui/submit-button "Get Started"
-                          {:data-test (str id "-input-submit" desktop-header-dt)})]])]))
+                          {:data-test (str id "-input-submit" desktop-header-dt)})]])])
 
-(defn component
+(defcomponent component
   [{:keys [input-data header-data prompt-image prompt-desktop-image prompt mini-prompt on-submit] :as data} owner _]
-  (component/create
-   [:div
+  [:div
     [:div.z5.bg-lavender.white.center.fixed.overlay.bg-contain.bg-no-repeat.max-580.mx-auto.bg-contain.hide-on-mb
      {:style {:background-position "123px bottom"
               :background-size     "80%"
@@ -73,5 +73,5 @@
               :background-position "right top 34px"
               :background-size     "90vw auto"
               :background-image    (str "url('" prompt-image "')")}}
-     (component/build content-component data nil)]]))
+     (component/build content-component data nil)]])
 

@@ -1,6 +1,10 @@
 (ns storefront.components.stylist.line-items
-  (:require [storefront.component :as component]
-            [storefront.components.money-formatters :as mf]))
+  (:require [storefront.component :as component :refer [defcomponent]]
+            [storefront.components.money-formatters :as mf]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
 (defn ^:private returned-quantity-element [shipment-count sku qt returned-qt]
   (let [base-dt (str "shipment-" shipment-count "-line-item-" sku)]
@@ -29,10 +33,9 @@
          (returned-quantity-element shipment-count sku quantity returned-quantity)
          [:span "(Qty: " quantity ")"])]])))
 
-(defn component [{:keys [line-items shipment-count show-price?]} owner opts]
-  (component/create
-   [:div (for [line-item line-items]
-           (display-line-item shipment-count line-item show-price?))]))
+(defcomponent component [{:keys [line-items shipment-count show-price?]} owner opts]
+  [:div (for [line-item line-items]
+           (display-line-item shipment-count line-item show-price?))])
 
 (defn built-component [data opts]
   (component/build component data opts))

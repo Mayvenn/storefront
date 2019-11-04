@@ -1,11 +1,13 @@
 (ns storefront.components.friend-referrals
   (:require [om.core :as om]
-            [sablono.core :refer [html]]))
+            [sablono.core :refer [html]]
+            [storefront.component :as component :refer [defcomponent]]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]))
 
-(defn component [data owner]
-  (om/component
-   (html
-    [:div#talkable-referrals])))
+(defcomponent component [data owner _]
+  [:div#talkable-referrals])
 
 (defn built-component [data opts]
-  (om/build component nil nil))
+  (component/build component nil nil))

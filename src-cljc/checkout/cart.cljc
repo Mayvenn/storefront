@@ -24,7 +24,7 @@
    [storefront.accessors.products :as products]
    [storefront.accessors.promos :as promos]
    [storefront.accessors.stylists :as stylists]
-   [storefront.component :as component]
+   [storefront.component :as component :refer [defcomponent]]
    [storefront.components.flash :as flash]
    [storefront.components.footer :as storefront.footer]
    [storefront.components.money-formatters :as mf]
@@ -38,7 +38,11 @@
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
    [storefront.platform.messages :as messages]
-   [storefront.request-keys :as request-keys]))
+   [storefront.request-keys :as request-keys]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
 (defn display-adjustable-line-items
   [recently-added-skus line-items skus update-line-item-requests delete-line-item-requests]
@@ -139,7 +143,7 @@
                                    :class  "stroke-dark-gray"})])]]
      [:div.h5.right {:data-test (str "line-item-price-ea-" id)} (some-> price mf/as-money)]]]])
 
-(defn full-component [{:keys [order
+(defcomponent full-component [{:keys [order
                               skus
                               promo-banner
                               call-out
@@ -157,8 +161,7 @@
                               freeinstall-just-added?
                               loaded-quadpay?
                               cart-summary]} owner _]
-  (component/create
-   [:div.container.p2
+  [:div.container.p2
     (component/build promo-banner/sticky-organism promo-banner nil)
 
     (component/build call-out/component call-out nil)
@@ -219,11 +222,10 @@
                            (svg/share-arrow {:class  "stroke-navy mr1 fill-navy"
                                              :width  "24px"
                                              :height "24px"})
-                           "Share your bag"])])]]]))
+                           "Share your bag"])])]]])
 
-(defn empty-component [{:keys [promotions aladdin?]} owner _]
-  (component/create
-   (ui/narrow-container
+(defcomponent empty-component [{:keys [promotions aladdin?]} owner _]
+  (ui/narrow-container
     [:div.p2
      [:.center {:data-test "empty-cart"}
       [:div.m2 ^:inline (svg/bag {:style {:height "70px" :width "70px"}
@@ -238,7 +240,7 @@
                :else    promos/bundle-discount-description))]]
 
      (ui/teal-button (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
-                     "Shop Our Looks")])))
+                     "Shop Our Looks")]))
 
 (defn ^:private variants-requests [data request-key variant-ids]
   (->> variant-ids
@@ -419,18 +421,17 @@
   {:promotions (get-in data keypaths/promotions)
    :aladdin?   (experiments/aladdin-experience? data)})
 
-(defn component
+(defcomponent component
   [{:keys [fetching-order?
            item-count
            empty-cart
            full-cart]} owner opts]
-  (component/create
-   (if fetching-order?
+  (if fetching-order?
      [:div.py3.h2 ui/spinner]
      [:div.col-7-on-dt.mx-auto
       (if (zero? item-count)
         (component/build empty-component empty-cart opts)
-        (component/build full-component full-cart opts))])))
+        (component/build full-component full-cart opts))]))
 
 (defn query [data]
   {:fetching-order? (utils/requesting? data request-keys/get-order)

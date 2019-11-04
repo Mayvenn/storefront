@@ -1,9 +1,13 @@
 (ns adventure.stylist-matching.let-mayvenn-match
   (:require [adventure.keypaths :as adv-keypaths]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ui :as ui]
             [storefront.keypaths :as keypaths]
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
 (defn copy [& sentences]
   (string/join " " sentences))
@@ -17,10 +21,9 @@
                      :class "bold"}
                     "View #MayvennFreeInstall")]])
 
-(defn component
+(defcomponent component
   [_ _ _]
-  (component/create
-   [:div.bg-lavender.white {:style {:min-height "95vh"}}
+  [:div.bg-lavender.white {:style {:min-height "95vh"}}
     (ui/narrow-container
      [:div.center
       [:div.col-11.mx-auto.py4
@@ -36,7 +39,7 @@
                 ["Licensed Salon Stylist"
                  "Mayvenn Certified"
                  "In your area"])]]
-        get-inspired-cta]]])]))
+        get-inspired-cta]]])])
 
 (defn built-component
   [data opts]

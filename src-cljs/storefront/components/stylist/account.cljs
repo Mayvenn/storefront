@@ -1,7 +1,7 @@
 (ns storefront.components.stylist.account
   (:require [clojure.string :as string]
             [spice.maps :as maps]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.stylist.account.payout :as account.payout]
             [storefront.components.stylist.account.password :as account.password]
             [storefront.components.stylist.account.profile :as account.profile]
@@ -21,7 +21,11 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]
-            [adventure.keypaths :as adv-keypaths]))
+            [adventure.keypaths :as adv-keypaths]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
 (defn uploadcare-photo [{:keys [status] :as portrait} saving?]
   [:a.navy
@@ -50,7 +54,7 @@
    [:div.teal.h0 (when available-credit (ui/big-money available-credit))]
    [:div.mb1 ui/nbsp]])
 
-(defn component [{:keys [fetching?
+(defcomponent component [{:keys [fetching?
                          portrait-saving?
                          current-nav-event
                          portrait
@@ -60,8 +64,7 @@
                          commission
                          social
                          loaded-uploadcare?]} owner opts]
-  (component/create
-   [:div.bg-white.dark-gray
+  [:div.bg-white.dark-gray
     [:div.container.p2.m-auto.overflow-hidden
      [:div.flex.justify-center.items-center.center
       [:div
@@ -96,7 +99,7 @@
           events/navigate-stylist-account-social
           (component/build account.social/component social opts)
 
-          nil)])]]))
+          nil)])]])
 
 (defn query [data]
   {:fetching?           (utils/requesting? data request-keys/get-stylist-account)

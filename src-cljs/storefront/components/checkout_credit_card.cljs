@@ -10,7 +10,11 @@
             [storefront.events :as events]
             [storefront.platform.messages :as messages]
             [storefront.component :as component :refer [defcomponent defdynamic-component]]
-            ))
+            
+            [storefront.component :as component :refer [defcomponent]]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]))
 
 (defn saving-card? [data]
   (or (utils/requesting? data request-keys/stripe-create-token)

@@ -1,5 +1,5 @@
 (ns stylist-matching.match-success
-  (:require [storefront.component :as component]
+  (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.events :as events]
             adventure.keypaths
             api.orders
@@ -15,7 +15,9 @@
             [stylist-matching.ui.stylist-cards :as stylist-cards]
             [stylist-matching.ui.matched-stylist :as matched-stylist]
             [adventure.keypaths :as adventure.keypaths]
-            [storefront.keypaths :as storefront.keypaths]))
+            [storefront.keypaths :as storefront.keypaths]
+            
+            ))
 
 (defn header-query
   [{:order.items/keys [quantity]
@@ -175,14 +177,13 @@
 
 (def post-purchase? #{events/navigate-adventure-match-success-post-purchase})
 
-(defn template
+(defcomponent template
   [{:keys [header shopping-method-choice matched-stylist]} _ _]
-  (component/create
-   [:div.bg-lavender.white.center.flex.flex-auto.flex-column
+  [:div.bg-lavender.white.center.flex.flex-auto.flex-column
     stylist-matching.A/bottom-right-party-background
     (component/build header/organism header nil)
     (component/build shopping-method-choice/organism shopping-method-choice nil)
-    (component/build matched-stylist/organism matched-stylist nil)]))
+    (component/build matched-stylist/organism matched-stylist nil)])
 
 (defn page
   [app-state]

@@ -12,7 +12,9 @@
             [storefront.platform.component-utils :as utils]
             [storefront.routes :as routes]
             adventure.shop-home
-            [ui.molecules :as ui.M]))
+            [ui.molecules :as ui.M]
+            
+            ))
 
 (defn product-image
   [{:keys [resizable_url resizable_filename alt]}]

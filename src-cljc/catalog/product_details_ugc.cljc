@@ -6,7 +6,11 @@
             [storefront.platform.component-utils :as util]
             [storefront.events :as events]
             [storefront.platform.carousel :as carousel]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
 (defn ^:private carousel-slide
   [destination-event product-id page-slug sku-id dt-prefix idx

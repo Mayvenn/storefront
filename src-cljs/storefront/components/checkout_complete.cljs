@@ -9,7 +9,7 @@
             [storefront.transitions :as transitions]
             [storefront.events :as events]
             [storefront.effects :as effects]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.checkout-returning-or-guest :as checkout-returning-or-guest]
             [storefront.components.formatters :as formatters]
             [storefront.components.facebook :as facebook]
@@ -19,15 +19,16 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             ui.molecules
-            [clojure.string :as string]))
+            [clojure.string :as string]
+            
+            ))
 
 (defn copy [& sentences]
   (string/join " " sentences))
 
-(defn component
+(defcomponent component
   [{:keys [guest? sign-up-data]} _ _]
-  (component/create
-   (ui/narrow-container
+  (ui/narrow-container
     [:div.p3
      [:section.mx4-on-tb-dt.center
       (ui/ucare-img {:class "mx-auto"
@@ -58,7 +59,7 @@
          [:p.h5.py4
           "Or create a Mayvenn.com account"]
          (sign-up/form sign-up-data
-                       {:sign-up-text "Create my account"})]])])))
+                       {:sign-up-text "Create my account"})]])]))
 
 (defn servicing-stylist-card-title-molecule
   [{:stylist-card.title/keys [id primary secondary]}]
@@ -134,11 +135,10 @@
                 {:data-test id}) label)]))])
 
 
-(defn adventure-component
+(defcomponent adventure-component
   [{:keys              [sign-up-data guest?] :as data
     matched-component? :matched-component.message/id} _ _]
-  (component/create
-   (ui/narrow-container
+  (ui/narrow-container
     [:div.p3 {:style {:min-height "95vh"}}
      [:div.center
       [:div.mt5.h1.mb2 {:data-test "checkout-success-message"}
@@ -170,7 +170,7 @@
          [:p.h5.py4
           "Or create a Mayvenn.com account"]
          (sign-up/form sign-up-data
-                       {:sign-up-text "Create my account"})]])])))
+                       {:sign-up-text "Create my account"})]])]))
 
 
 (defn query

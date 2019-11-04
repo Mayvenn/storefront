@@ -1,13 +1,17 @@
 (ns checkout.header
   (:require [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.header :as storefront-header]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
+            [storefront.component :as component :refer [defcomponent]]))
 
 (defn desktop-header [{:keys [store user cart signed-in vouchers?]}]
   [:div.hide-on-mb.relative
@@ -25,13 +29,12 @@
                                     :data-test "desktop-header-logo"
                                     :height "60px"})]]]]])
 
-(defn component
+(defcomponent component
   [{:keys [desktop-header-data
            item-count
            hide-back-to-shopping-link?
            back]} _ _]
-  (component/create
-   (let [close-cart-route (utils/route-back-or-to back events/navigate-home)]
+  (let [close-cart-route (utils/route-back-or-to back events/navigate-home)]
      [:div
       (desktop-header desktop-header-data)
 
@@ -53,7 +56,7 @@
        [:div.col-1.hide-on-dt
         [:a.h3.pointer.flex.items-center (merge close-cart-route
                                                 {:data-test "cart-close" :title "Close"})
-         (svg/close-x {:class "stroke-dark-gray fill-none"})]]]])))
+         (svg/close-x {:class "stroke-dark-gray fill-none"})]]]]))
 
 (defn query [data]
   (let [shop? (= "shop" (get-in data keypaths/store-slug))]

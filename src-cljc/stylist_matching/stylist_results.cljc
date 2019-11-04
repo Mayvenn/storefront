@@ -5,7 +5,7 @@
             [clojure.string :as string]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.stylists :as stylists]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.events :as events]
             [stylist-matching.ui.header :as header]
             [stylist-matching.ui.stylist-cards :as stylist-cards]
@@ -15,7 +15,9 @@
             [storefront.platform.component-utils :as utils]
             [storefront.components.formatters :as formatters]
             [storefront.components.ui :as ui]
-            [spice.date :as date]))
+            [spice.date :as date]
+            
+            ))
 
 (defn header-query
   [{:order.items/keys [quantity]}
@@ -187,17 +189,16 @@
      :gallery-modal/ucare-image-urls gallery-images
      :gallery-modal/initial-index    index }))
 
-(defn template
+(defcomponent template
   [{:keys [gallery-modal header list/results]} _ _]
-  (component/create
-   [:div.bg-fate-white.black.center.flex.flex-auto.flex-column
+  [:div.bg-fate-white.black.center.flex.flex-auto.flex-column
     (component/build gallery-modal/organism gallery-modal nil)
     (component/build header/organism header nil)
     [:div
      (display-list {:call-out                call-out-center/organism
                     :control-stylist-card    stylist-cards/control-organism
                     :experiment-stylist-card stylist-cards/experiment-organism}
-                   results)]]))
+                   results)]])
 
 (def post-purchase? #{events/navigate-adventure-stylist-results-post-purchase})
 

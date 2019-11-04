@@ -37,7 +37,11 @@
    [storefront.platform.component-utils :as utils]
    [storefront.request-keys :as request-keys]
    [ui.molecules :as ui-molecules]
-   [ui.promo-banner :as promo-banner]))
+   [ui.promo-banner :as promo-banner]
+            [storefront.component :as component :refer [defcomponent]]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]))
 
 (defmethod effects/perform-effects events/control-cart-add-freeinstall-coupon
   [_ _ _ _ app-state]
@@ -226,9 +230,8 @@
      [:div.col-10.mx-auto.m2.mb3.h5.dark-gray
       secondary]]))
 
-(defn empty-component [queried-data _ _]
-  (component/create
-   (ui/narrow-container
+(defcomponent empty-component [queried-data _ _]
+  (ui/narrow-container
     [:div
      [:div.center {:data-test "empty-cart"}
       [:div.px4.my2 (ui-molecules/return-link queried-data)]
@@ -238,7 +241,7 @@
       (empty-cart-body-molecule queried-data)
 
      [:div.col-9.mx-auto
-      (empty-cta-molecule queried-data)]]])))
+      (empty-cta-molecule queried-data)]]]))
 
 (defn empty-cart-query
   [data]
@@ -574,19 +577,18 @@
           (merge {:confetti-spout/mode (get-in data keypaths/confetti-mode)
                   :confetti-spout/id   "confetti-spout"}))))
 
-(defn cart-component
+(defcomponent cart-component
   [{:keys [fetching-order?
            item-count
            empty-cart
            full-cart]} owner opts]
-  (component/create
-   (if fetching-order?
+  (if fetching-order?
      [:div.py3.h2 ui/spinner]
      [:div.col-7-on-dt.mx-auto
       (if (and (zero? item-count)
                (not (:entered? full-cart)))
         (component/build empty-component empty-cart opts)
-        (component/build full-component full-cart opts))])))
+        (component/build full-component full-cart opts))]))
 
 (defn query [data]
   {:fetching-order? (utils/requesting? data request-keys/get-order)
@@ -594,10 +596,9 @@
    :empty-cart      (empty-cart-query data)
    :full-cart       (full-cart-query data)})
 
-(defn template
-  [{:keys [header footer popup promo-banner flash cart data nav-event]}]
-   (component/create
-    [:div.flex.flex-column {:style {:min-height    "100vh"
+(defcomponent template
+  [{:keys [header footer popup promo-banner flash cart data nav-event]} _ _]
+   [:div.flex.flex-column {:style {:min-height    "100vh"
                                     :margin-bottom "-1px"}}
      #?(:cljs (popup/built-component popup nil))
 
@@ -611,7 +612,7 @@
        (component/build cart-component cart nil)]
 
       [:footer
-       (storefront.footer/built-component footer nil)]]]))
+       (storefront.footer/built-component footer nil)]]])
 
 (defn page
   [app-state nav-event]

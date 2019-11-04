@@ -7,7 +7,7 @@
             #?@(:cljs
                [[storefront.api :as api]
                 [storefront.components.stylist.pagination :as pagination]])
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.formatters :as f]
             [storefront.components.ui :as ui]
             [storefront.effects :as effects]
@@ -17,7 +17,9 @@
             [storefront.platform.messages :as messages]
             [storefront.request-keys :as request-keys]
             [storefront.transitions :as transitions]
-            [storefront.accessors.experiments :as experiments]))
+            [storefront.accessors.experiments :as experiments]
+            
+            ))
 
 (defn status-cell [[span classes] text]
   [:td.p2.h8.center.medium {:col-span span}
@@ -62,10 +64,9 @@
    [:div.center.my2.h6
     [:a.dark-gray (utils/route-to events/navigate-content-program-terms) "Mayvenn Program Terms"]]])
 
-(defn component
-  [{:keys [sales-ui pagination-ui fetching-data? header-ui]}]
-  (component/create
-   (cond
+(defcomponent component
+  [{:keys [sales-ui pagination-ui fetching-data? header-ui]} _ _]
+  (cond
      sales-ui
      [:div
       {:data-test "orders-tab"}
@@ -79,7 +80,7 @@
      fetching-data?
      [:div.my2.h2 ui/spinner]
 
-     :else empty-ledger)))
+     :else empty-ledger))
 
 (defn sale-row [{:keys [order order-number id order-updated-at] :as sale}]
   [:tr.border-bottom.border-gray.py2.pointer.fate-white-hover

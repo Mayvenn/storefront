@@ -12,7 +12,9 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :refer [handle-message]]
-            [storefront.request-keys :as request-keys]))
+            [storefront.request-keys :as request-keys]
+            [storefront.component :as component :refer [defcomponent]]
+            ))
 
 (defmethod transitions/transition-state events/spreedly-did-mount
   [_ _ _ app-state]
@@ -67,11 +69,10 @@
      :new-card-entry?  (or (empty? card-last-4)
                            (= "replace-card" card-selected-id))}))
 
-(defn green-dot-component
+(defcomponent green-dot-component
   [{:keys [green-dot focused field-errors]} owner opts]
   (let [{:keys [first-name last-name card-number card-last-4 expiration-date card-selected-id payout-timeframe postalcode spreedly-ready?]} green-dot]
-    (component/create
-     [:div
+    [:div
       (when card-last-4
         (let [card-options [[(str "xxxx-xxxx-xxxx-" card-last-4) card-last-4] ["Replace Card" "replace-card"]]]
           (ui/select-field {:data-test "green-dot-saved-card"
@@ -103,7 +104,7 @@
                                :name      "green-dot-last-name"
                                :required  true
                                :value     last-name})
-         (om/build credit-card-fields {:ready? spreedly-ready?} nil)
+         (component/build credit-card-fields {:ready? spreedly-ready?} nil)
          (ui/field-error-message (first (get field-errors ["payout-method" "base"])) "payout-method-error")
          (ui/text-field-group
           {:data-test     "green-dot-expiration-date"
@@ -138,9 +139,9 @@
         (case payout-timeframe
           "next_business_day"         "NOTE: Funds paid out to this card will become available the next business day."
           "two_to_five_business_days" "NOTE: Funds paid out to this card will become available two to five business days later."
-          nil)]]])))
+          nil)]]]))
 
-(defn component [{:keys [focused
+(defcomponent component [{:keys [focused
                          spinning?
                          payout-method
                          payout-methods
@@ -156,8 +157,7 @@
                          phone
                          field-errors
                          disabled?]} owner opts]
-  (component/create
-   [:form
+  [:form
     {:on-submit
      (utils/send-event-callback events/control-stylist-account-commission-submit)}
     [:div.clearfix
@@ -286,7 +286,7 @@
      [:div.border-light-gray.border-top.hide-on-mb.mb3]
      [:div.col-12.col-5-on-tb-dt.mx-auto
       (ui/submit-button "Update" {:spinning? spinning?
-                                  :data-test "account-form-submit"})]]]))
+                                  :data-test "account-form-submit"})]]])
 
 (defn payout-methods [original-payout-method]
   (cond-> [["Venmo" "venmo"]

@@ -11,6 +11,10 @@
             [storefront.api :as api]
             [storefront.effects :as effects]
             [storefront.request-keys :as request-keys]
+            [storefront.component :as component :refer [defcomponent]]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.component :as component :refer [defcomponent]]))
 
 (defcomponent component [{:keys [amount payout-method cash-out-pending? cashing-out?]} owner opts]
@@ -48,7 +52,7 @@
      :cashing-out?      (utils/requesting? data request-keys/cash-out-commit)}))
 
 (defn ^:export built-component [data opts]
-  (om/build component (query data) opts))
+  (component/build component (query data) opts))
 
 (defn ^:private should-redirect? [next-payout]
   (cond

@@ -9,10 +9,12 @@
                        goog.style
                        goog.events
                        [storefront.browser.scroll :as scroll]])
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.events :as events]
             [storefront.platform.messages :as messages]
-            [storefront.effects :as effects]))
+            [storefront.effects :as effects]
+            
+            ))
 
 (defn query
   [data]

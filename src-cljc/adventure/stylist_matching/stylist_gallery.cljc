@@ -19,7 +19,11 @@
             storefront.keypaths
             [storefront.platform.component-utils :as utils]
             [storefront.transitions :as transitions]
-            [stylist-directory.stylists :as stylists]))
+            [stylist-directory.stylists :as stylists]
+            [storefront.component :as component :refer [defcomponent]]
+            
+            
+            [storefront.component :as component :refer [defcomponent]]))
 
 (defn query
   [data]

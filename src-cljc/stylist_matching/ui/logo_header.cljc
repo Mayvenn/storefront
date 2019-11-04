@@ -1,8 +1,10 @@
 (ns stylist-matching.ui.logo-header
-  (:require [storefront.component :as component]
+  (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]
-            [storefront.events :as events]))
+            [storefront.events :as events]
+            
+            ))
 
 (defn logo-header-logo-molecule
   [{:logo-header.logo/keys [id]}]
@@ -13,9 +15,8 @@
              {:data-test id})
       (ui/ucare-img {:width "140"} "1970d88b-3798-4914-8a91-74288b09cc77")])))
 
-(defn organism
+(defcomponent organism
   [data _ _]
-  (component/create
-   [:div#header
+  [:div#header
     [:div.flex.items-center.justify-center
-     (logo-header-logo-molecule data)]]))
+     (logo-header-logo-molecule data)]])

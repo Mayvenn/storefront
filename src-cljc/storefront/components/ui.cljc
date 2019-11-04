@@ -13,7 +13,9 @@
             [storefront.platform.images :as images]
             [spice.core :as spice]
             [storefront.platform.messages :refer [handle-message]]
-            [storefront.platform.numbers :as numbers]))
+            [storefront.platform.numbers :as numbers]
+            
+            ))
 
 (defn narrow-container
   "A container that is 480px wide on desktop and tablet, but squishes on mobile"

@@ -3,7 +3,7 @@
             [sablono.core :refer [html]]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.checkout-credit-card :as cc]
             [storefront.components.checkout-returning-or-guest :as checkout-returning-or-guest]
             [storefront.components.checkout-steps :as checkout-steps]
@@ -21,7 +21,9 @@
             [storefront.frontend-effects :refer [create-stripe-token]]
             [storefront.request-keys :as request-keys]
             [clojure.set :as set]
-            [storefront.components.svg :as svg]))
+            [storefront.components.svg :as svg]
+            
+            ))
 
 (defmethod effects/perform-effects events/control-checkout-choose-payment-method-submit [_ event _ _ app-state]
   (handle-message events/flash-dismiss)
@@ -55,7 +57,7 @@
                                                     (get-in app-state keypaths/user))
               :quadpay {:quadpay {}})))
 
-(defn component
+(defcomponent component
   [{:keys [step-bar
            saving?
            disabled?
@@ -69,12 +71,10 @@
            can-use-store-credit?
            applied-install-promotion
            promo-banner]}
-   owner]
-  (om/component
-   (html
-    [:div.container.p2
+   owner _]
+  [:div.container.p2
      (component/build promo-banner/sticky-organism promo-banner nil)
-     (om/build checkout-steps/component step-bar)
+     (component/build checkout-steps/component step-bar)
 
      (ui/narrow-container
       [:div.m2
@@ -130,7 +130,7 @@
                          "To use store credit, please remove promo code " [:span.shout applied-install-promotion] " from your bag."]])))
 
                   [:div
-                   (om/build cc/component
+                   (component/build cc/component
                              {:credit-card  credit-card
                               :field-errors field-errors})
                    [:div.h5
@@ -166,9 +166,9 @@
           [:div.my4.col-6-on-tb-dt.mx-auto
            (ui/submit-button "Review Order" {:spinning? saving?
                                              :disabled? disabled?
-                                             :data-test "payment-form-submit"})])]])])))
+                                             :data-test "payment-form-submit"})])]])])
 
-(defn adventure-component
+(defcomponent adventure-component
   [{:keys [step-bar
            saving?
            disabled?
@@ -182,12 +182,10 @@
            can-use-store-credit?
            loaded-quadpay?
            promo-banner]}
-   owner]
-  (om/component
-   (html
-    [:div.container.p2
+   owner _]
+  [:div.container.p2
      (component/build promo-banner/sticky-organism promo-banner nil)
-     (om/build checkout-steps/component step-bar)
+     (component/build checkout-steps/component step-bar)
 
      (ui/narrow-container
       [:div.m2
@@ -243,7 +241,7 @@
                          "To use store credit, please remove promo code " [:span.shout applied-install-promotion] " from your bag."]])))
 
                   [:div
-                   (om/build cc/component
+                   (component/build cc/component
                              {:credit-card  credit-card
                               :field-errors field-errors})
                    [:div.h5
@@ -279,7 +277,7 @@
           [:div.my4.col-6-on-tb-dt.mx-auto
            (ui/submit-button "Review Order" {:spinning? saving?
                                              :disabled? disabled?
-                                             :data-test "payment-form-submit"})])]])])))
+                                             :data-test "payment-form-submit"})])]])])
 
 (defn query [data]
   (let [available-store-credit    (get-in data keypaths/user-total-available-store-credit)
@@ -315,8 +313,8 @@
 
 (defn ^:private built-non-auth-component [data opts]
   (if (= "freeinstall" (get-in data keypaths/store-slug))
-    (om/build adventure-component (query data) opts)
-    (om/build component (query data) opts)))
+    (component/build adventure-component (query data) opts)
+    (component/build component (query data) opts)))
 
 (defn ^:export built-component [data opts]
   (checkout-returning-or-guest/requires-sign-in-or-initiated-guest-checkout

@@ -1,13 +1,15 @@
 (ns checkout.ui.cart-item
   (:require [checkout.suggestions :as suggestions]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.events :as events]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.css-transitions :as css-transitions]
             [storefront.platform.component-utils :as utils]
             ui.molecules
-            [storefront.platform.messages :as messages]))
+            [storefront.platform.messages :as messages]
+            
+            ))
 
 (defn cart-item-floating-box-molecule
   [{:cart-item-floating-box/keys [id value]}]
@@ -184,10 +186,9 @@
                                   (apply utils/route-to target))
                            content)]))
 
-(defn organism
+(defcomponent organism
   [{:keys [cart-item suggestions]} _ _]
-  (component/create
-   [:div
+  [:div
     (when-let [react-key (:react/key cart-item)]
       [:div.pt1.pb2.ml2.flex
        {:key react-key}
@@ -218,4 +219,4 @@
 
         (cart-item-steps-to-complete-molecule cart-item)
 
-        (component/build suggestions/consolidated-component suggestions nil)]])]))
+        (component/build suggestions/consolidated-component suggestions nil)]])])

@@ -10,6 +10,8 @@
             [storefront.transitions :as transitions]
             [storefront.effects :as effects]
             [storefront.component :as component :refer [defcomponent defdynamic-component]]
+            
+            [storefront.component :as component :refer [defcomponent]]
             ))
 
 

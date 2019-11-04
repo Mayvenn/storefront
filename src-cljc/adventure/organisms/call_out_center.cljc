@@ -1,8 +1,10 @@
 (ns adventure.organisms.call-out-center
   (:require [clojure.spec.alpha :as s]
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ui :as ui]
-            [storefront.platform.component-utils :as utils]))
+            [storefront.platform.component-utils :as utils]
+            
+            ))
 
 (defn ^:private cta-molecule
   [{:cta/keys [id label target]}]
@@ -14,10 +16,9 @@
                    (apply utils/fake-href target)))
           (ui/teal-button [:div.flex.items-center.justify-center.inherit-color label])))))
 
-(defn organism
+(defcomponent organism
   [{:call-out-center/keys [bg-class bg-ucare-id title subtitle] react-key :react/key :as query} _ _]
-  (component/create
-   [:div.p8
+  [:div.p8
     (merge
      (when react-key {:key react-key})
      (when bg-class  {:class bg-class})
@@ -33,7 +34,7 @@
      (when subtitle
        [:div.p3.white subtitle])]
     [:div.col-9.mx-auto
-     (cta-molecule query)]]))
+     (cta-molecule query)]])
 
 (comment
 

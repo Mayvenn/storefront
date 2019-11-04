@@ -4,7 +4,7 @@
             #?@(:cljs
                 [[storefront.api :as api]
                  [storefront.history :as history]])
-            [storefront.component :as component]
+            [storefront.component :as component :refer [defcomponent]]
             [storefront.components.money-formatters :as mf]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
@@ -14,7 +14,9 @@
             [storefront.platform.component-utils :as utils]
             [storefront.platform.numbers :as numbers]
             [storefront.request-keys :as request-keys]
-            [storefront.transitions :as transitions]))
+            [storefront.transitions :as transitions]
+            
+            ))
 
 (defn earnings-count [title value]
   [:div.dark-gray.letter-spacing-0
@@ -129,17 +131,16 @@
     (progress-indicator {:value   (- total-eligible-sales previous-level)
                          :maximum (- next-level previous-level)})]])
 
-(defn component
+(defcomponent component
   [{:keys [cash-balance-section-expanded? store-credit-balance-section-expanded? stats total-available-store-credit payout-method cashing-out? fetching-stats? dashboard-with-vouchers?]} owner opts]
   (let [{:keys [bonuses earnings services]} stats
         {:keys [lifetime-earned]}           bonuses]
-    (component/create
-     (if (and (not lifetime-earned) fetching-stats?)
+    (if (and (not lifetime-earned) fetching-stats?)
        [:div.my2.h2 ui/spinner]
        [:div.p2
         (cash-balance-card payout-method cash-balance-section-expanded? cashing-out? earnings services)
         [:div.mt2 (store-credit-balance-card total-available-store-credit lifetime-earned store-credit-balance-section-expanded?)]
-        (sales-bonus-progress bonuses dashboard-with-vouchers?)]))))
+        (sales-bonus-progress bonuses dashboard-with-vouchers?)])))
 
 (def not-reimbursed-for-services? (complement experiments/dashboard-with-vouchers?))
 
