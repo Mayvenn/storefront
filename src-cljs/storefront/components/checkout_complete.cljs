@@ -58,7 +58,7 @@
          [:p.h5.py4
           "Or create a Mayvenn.com account"]
          (sign-up/form sign-up-data
-                       {:sign-up-text "Create my account"})]])]))
+                       {:sign-up-text "Create my account"})]])])))
 
 (defn servicing-stylist-card-title-molecule
   [{:stylist-card.title/keys [id primary secondary]}]
