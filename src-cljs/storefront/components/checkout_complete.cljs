@@ -58,16 +58,17 @@
          [:p.h5.py4
           "Or create a Mayvenn.com account"]
          (sign-up/form sign-up-data
-                       {:sign-up-text "Create my account"})]])])))
+                       {:sign-up-text "Create my account"})]])]))
 
 (defn servicing-stylist-card-title-molecule
   [{:stylist-card.title/keys [id primary secondary]}]
   (component/html
    (when id
      (list
-      [:div.h6.dark-gray.mbn1 secondary]
+      [:div.h6.dark-gray.mbn1 {:key secondary} secondary]
       [:div.h3
-       {:data-test id}
+       {:data-test id
+        :key       primary}
        primary]))))
 
 (defn servicing-stylist-card-thumbnail-molecule

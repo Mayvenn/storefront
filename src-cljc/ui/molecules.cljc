@@ -78,8 +78,7 @@
            :data-test      id
            :class          "dark-gray flex medium not-rounded items-center justify-center"}
           (utils/fake-href target))
-   (svg/forward-arrow {:disabled? disabled?
-                       :style     {:width  "14px"
+   (svg/forward-arrow {:style     {:width  "14px"
                                    :height "14px"}})))
 
 (defn input-group-field-and-button-molecule
