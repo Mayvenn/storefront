@@ -58,7 +58,7 @@
       :cta/button-type        :underline-button
       :cta/navigation-message [events/navigate-shop-by-look-details
                                {:album-keyword album-keyword
-                                :look-id       id}]})) )
+                                :look-id       id}]})))
 
 (defn look->look-detail-social-card
   ([nav-event album-keyword look]

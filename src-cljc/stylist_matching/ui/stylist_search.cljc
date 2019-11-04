@@ -52,16 +52,16 @@
 
 (defdynamic-component organism
   (did-mount [_]
-   (messages/handle-message events/adventure-address-component-mounted
-                            {:address-elem    "stylist-match-address"
-                             :address-keypath adventure.keypaths/adventure-stylist-match-location}))
+             (messages/handle-message events/adventure-address-component-mounted
+                                      {:address-elem    "stylist-match-address"
+                                       :address-keypath adventure.keypaths/adventure-stylist-match-location}))
   (render [this]
-    (let [data (component/get-props this)]
-      (component/html
-        [:div.m5
-        [:div.mb4
-          (stylist-search-title-molecule data)]
-        [:div.mb3
-          (stylist-search-location-search-box data)]
-        [:div
-          (stylist-search-button data)]]))))
+          (let [data (component/get-props this)]
+            (component/html
+             [:div.m5
+              [:div.mb4
+               (stylist-search-title-molecule data)]
+              [:div.mb3
+               (stylist-search-location-search-box data)]
+              [:div
+               (stylist-search-button data)]]))))

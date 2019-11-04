@@ -283,7 +283,7 @@
   (fn [{{experience :experience} :store
         :as                      req}]
     (h (cond->
-         req
+        req
 
          (= "affiliate" experience)
          (assoc-in-req-state keypaths/return-navigation-message [events/navigate-stylist-account-profile {}])))))
@@ -765,19 +765,19 @@
 
 (defn paypal-routes [{:keys [storeback-config]}]
   (GET "/orders/:order-number/paypal/:order-token" [order-number order-token :as request]
-       (let [order          (get-in-req-state request keypaths/order)]
-         (cond
-           (or (nil? order)
-               (not= (:number order) order-number)
-               (not= (:token order) order-token)
-               (not (#{"cart" "submitted"} (:state order))))
-           (util.response/redirect "/cart?error=bad-request")
+    (let [order          (get-in-req-state request keypaths/order)]
+      (cond
+        (or (nil? order)
+            (not= (:number order) order-number)
+            (not= (:token order) order-token)
+            (not (#{"cart" "submitted"} (:state order))))
+        (util.response/redirect "/cart?error=bad-request")
 
-           (= "cart" (:state order))
-           (util.response/redirect "/checkout/processing")
+        (= "cart" (:state order))
+        (util.response/redirect "/checkout/processing")
 
-           (= "submitted" (:state order))
-           (util.response/redirect (str "/orders/" (:number order) "/complete"))))))
+        (= "submitted" (:state order))
+        (util.response/redirect (str "/orders/" (:number order) "/complete"))))))
 
 (defn quadpay-routes [ctx]
   (GET "/orders/:order-number/quadpay" [order-number :as request]
@@ -846,17 +846,17 @@
 
 (defn shared-cart-routes [ctx]
   (GET "/create-cart-from/:shared-cart-id" req
-       (let [cookie-options {:http-only false
-                             :max-age   (cookies/days 28)}
-             order          (api/create-order-from-shared-cart (:storeback-config ctx)
-                                                               (get-in-req-state req keypaths/session-id)
-                                                               (:shared-cart-id (:params req))
-                                                               (get-in-req-state req keypaths/user-id)
-                                                               (get-in-req-state req keypaths/user-token)
-                                                               (get-in-req-state req keypaths/store-stylist-id))]
-         (-> (util.response/redirect (str "/cart" (query-string req)))
-             (cookies/set (:environment ctx) :number (:number order) cookie-options)
-             (cookies/set (:environment ctx) :token (:token order) cookie-options)))))
+    (let [cookie-options {:http-only false
+                          :max-age   (cookies/days 28)}
+          order          (api/create-order-from-shared-cart (:storeback-config ctx)
+                                                            (get-in-req-state req keypaths/session-id)
+                                                            (:shared-cart-id (:params req))
+                                                            (get-in-req-state req keypaths/user-id)
+                                                            (get-in-req-state req keypaths/user-token)
+                                                            (get-in-req-state req keypaths/store-stylist-id))]
+      (-> (util.response/redirect (str "/cart" (query-string req)))
+          (cookies/set (:environment ctx) :number (:number order) cookie-options)
+          (cookies/set (:environment ctx) :token (:token order) cookie-options)))))
 
 (defn wrap-fetch-stylist-profile [h ctx]
   (fn [{:keys [subdomains uri query-params] :as req}]
@@ -960,13 +960,13 @@
                (GET "/install" req (util.response/redirect (store-homepage "freeinstall" environment req)))
                (GET "/adv/home" req (util.response/redirect (store-homepage "freeinstall" environment req) :moved-permanently))
                (GET "/cms/*" {uri :uri}
-                    (let [keypath (->> #"/" (clojure.string/split uri) (drop 2) (map keyword))]
-                      (-> (contentful/read-cache contentful)
-                          (get-in keypath)
-                          ((partial assoc-in {} keypath))
-                          json/generate-string
-                          util.response/response
-                          (util.response/content-type "application/json"))))
+                 (let [keypath (->> #"/" (clojure.string/split uri) (drop 2) (map keyword))]
+                   (-> (contentful/read-cache contentful)
+                       (get-in keypath)
+                       ((partial assoc-in {} keypath))
+                       json/generate-string
+                       util.response/response
+                       (util.response/content-type "application/json"))))
                (GET "/cms" req
                  (let [{:keys [slices ugc-collections]}
                        (prepare-cms-query-params (:query-params req))

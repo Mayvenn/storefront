@@ -23,8 +23,7 @@
             [storefront.request-keys :as request-keys]
             [voucher.keypaths :as voucher-keypaths]
             [storefront.accessors.auth :as auth]
-            
-            
+
             [storefront.component :as component :refer [defcomponent]]
             [storefront.component :as component :refer [defcomponent]]))
 
@@ -60,15 +59,15 @@
            orders-data] :as data} owner opts]
   (let [{:keys [active-tab-name]} activity-ledger-tab]
     [:div.col-6-on-dt.col-9-on-tb.mx-auto
-      (component/build stylist.dashboard-stats/component stats-cards nil)
-      (ledger-tabs active-tab-name)
+     (component/build stylist.dashboard-stats/component stats-cards nil)
+     (ledger-tabs active-tab-name)
 
-      (case active-tab-name
-        :payments
-        (stylist.dashboard-payments-tab/payments-table pending-voucher service-menu balance-transfers balance-transfers-pagination fetching-balance-transfers?)
+     (case active-tab-name
+       :payments
+       (stylist.dashboard-payments-tab/payments-table pending-voucher service-menu balance-transfers balance-transfers-pagination fetching-balance-transfers?)
 
-        :orders
-        (component/build stylist.dashboard-orders-tab/component orders-data nil))]))
+       :orders
+       (component/build stylist.dashboard-orders-tab/component orders-data nil))]))
 
 (def determine-active-tab
   {events/navigate-v2-stylist-dashboard-payments {:active-tab-name :payments

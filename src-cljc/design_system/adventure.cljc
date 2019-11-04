@@ -4,8 +4,7 @@
             [storefront.component :as component :refer [defcomponent]]
             [design-system.organisms :as organisms]
             [storefront.events :as events]
-            
-            
+
             [storefront.component :as component :refer [defcomponent]]
             [storefront.component :as component :refer [defcomponent]]))
 
@@ -57,11 +56,11 @@
 (defcomponent component
   [data owner opts]
   [:div.py3
-    [:div.h1 "Adventure Template"]
+   [:div.h1 "Adventure Template"]
+   [:section
+    [:div.h2 "Organisms"]
     [:section
-     [:div.h2 "Organisms"]
-     [:section
-      (organisms/demo organisms)]]])
+     (organisms/demo organisms)]]])
 
 (defn built-component
   [data opts]

@@ -2,9 +2,7 @@
   (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.events :as events]
             [storefront.platform.component-utils :as utils]
-            [storefront.components.svg :as svg]
-            
-            ))
+            [storefront.components.svg :as svg]))
 
 (defn header-back-navigation-molecule
   [{:header.back-navigation/keys [id back target]}]
@@ -43,11 +41,11 @@
 (defcomponent organism
   [data _ _]
   [:div#header
-    [:div.flex.items-center.justify-between.bg-lavender-dark.white
-     [:div.col-1
-      (header-back-navigation-molecule data)]
-     [:div
-      (header-title-molecule data)]
-     [:div.col-1.mr2
-      (header-cart-molecule data)]]])
+   [:div.flex.items-center.justify-between.bg-lavender-dark.white
+    [:div.col-1
+     (header-back-navigation-molecule data)]
+    [:div
+     (header-title-molecule data)]
+    [:div.col-1.mr2
+     (header-cart-molecule data)]]])
 

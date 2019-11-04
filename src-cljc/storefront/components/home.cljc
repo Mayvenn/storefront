@@ -12,9 +12,7 @@
             [storefront.platform.component-utils :as utils]
             [storefront.routes :as routes]
             adventure.shop-home
-            [ui.molecules :as ui.M]
-            
-            ))
+            [ui.molecules :as ui.M]))
 
 (defn product-image
   [{:keys [resizable_url resizable_filename alt]}]
@@ -79,7 +77,7 @@
     (let [{:keys [mobile desktop alt path]} hero-data
           mobile-url                        (-> mobile :file :url)
           desktop-url                       (-> desktop :file :url)
-          [event args :as routed-path]      (routes/navigation-message-for path) ]
+          [event args :as routed-path]      (routes/navigation-message-for path)]
       [:h1.h2
        [:a (assoc (if-not (= events/navigate-not-found event)
                     (apply utils/route-to routed-path)

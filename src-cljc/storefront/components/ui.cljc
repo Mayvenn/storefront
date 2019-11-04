@@ -13,9 +13,7 @@
             [storefront.platform.images :as images]
             [spice.core :as spice]
             [storefront.platform.messages :refer [handle-message]]
-            [storefront.platform.numbers :as numbers]
-            
-            ))
+            [storefront.platform.numbers :as numbers]))
 
 (defn narrow-container
   "A container that is 480px wide on desktop and tablet, but squishes on mobile"
@@ -95,12 +93,12 @@
   ([x y content]
    (component/html
     [:div.relative.overflow-hidden
-     {:style {:padding-top (-> y (/ x) (* 100) float (str "%")) }}
+     {:style {:padding-top (-> y (/ x) (* 100) float (str "%"))}}
      [:div.absolute.overlay content]]))
   ([x y attrs content]
    (component/html
     [:div.relative.overflow-hidden
-     {:style {:padding-top (-> y (/ x) (* 100) float (str "%")) }}
+     {:style {:padding-top (-> y (/ x) (* 100) float (str "%"))}}
      [:div.absolute.overlay attrs content]])))
 
 (defn button
@@ -647,14 +645,14 @@
 
 ;; GROT: Will be rendered useless post consolidated-cart
 (defn auto-complete-counter [{:keys [data-test spinning?]} value dec-fn inc-fn]
-   [:div.medium
-    (counter-button spinning? (str "quantity-dec-" data-test) dec-fn
-                    (svg/minus-sign {:height "28px"
+  [:div.medium
+   (counter-button spinning? (str "quantity-dec-" data-test) dec-fn
+                   (svg/minus-sign {:height "28px"
                                     :width  "30px"}))
-    (counter-value spinning? value)
-    (counter-button spinning? (str "quantity-inc-" data-test) inc-fn
-                    (svg/plus-sign {:height "28px"
-                                    :width  "30px"}))])
+   (counter-value spinning? value)
+   (counter-button spinning? (str "quantity-inc-" data-test) inc-fn
+                   (svg/plus-sign {:height "28px"
+                                   :width  "30px"}))])
 
 (defn ^:private consolidated-cart-counter-button [spinning? data-test f content]
   [:a.col.inherit-color.flex.items-center
@@ -824,7 +822,6 @@
 (def light-forward-arrow-uuid
   "f6d9ea1b-5a27-4582-a422-f25a1e5ba22e")
 
-
 (defn forward-arrow [attrs]
   (ucare-img (merge {:width "24"}
                     (dissoc attrs :disabled?))
@@ -890,7 +887,6 @@
   (apply phone-link tag attrs body))
 (defmethod link :link/sms [link-type tag attrs & body]
   (apply sms-link tag attrs body))
-
 
 (defn ^:private star [type index]
   [:span.mrp1

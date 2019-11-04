@@ -5,9 +5,7 @@
             [storefront.effects :as effects]
             [storefront.events :as events]
             [adventure.components.layered :as layered]
-            [adventure.faq :as faq]
-            
-            ))
+            [adventure.faq :as faq]))
 
 (defn query
   [data]

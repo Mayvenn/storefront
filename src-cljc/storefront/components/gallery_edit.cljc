@@ -13,11 +13,9 @@
             [storefront.request-keys :as request-keys]
             [storefront.routes :as routes]
             [storefront.transitions :as transitions]
-            
-            
+
             [storefront.component :as component :refer [defcomponent]]
             [storefront.component :as component :refer [defcomponent]]))
-
 
 (def title
   [:div.p2.center
@@ -65,9 +63,9 @@
 
 (defcomponent component [{:keys [editing? adding-photo? gallery]} owner opts]
   [:div.container
-    title
-    (manage-section gallery editing? adding-photo?)
-    (images editing? gallery)])
+   title
+   (manage-section gallery editing? adding-photo?)
+   (images editing? gallery)])
 
 (defn query [data]
   {:editing?      (get-in data keypaths/editing-gallery?)

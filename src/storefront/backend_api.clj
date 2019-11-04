@@ -134,4 +134,4 @@
                                                "/promotions"
                                                {:query-params {:additional-promo-code promo-code}})]
     (when (<= 200 status 299)
-      (:promotions body))) )
+      (:promotions body))))

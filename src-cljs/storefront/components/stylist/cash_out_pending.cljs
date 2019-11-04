@@ -12,15 +12,14 @@
             [storefront.platform.messages :as messages]
             [storefront.platform.component-utils :as utils]
             [storefront.component :as component :refer [defcomponent]]
-            
-            
+
             [storefront.component :as component :refer [defcomponent]]))
 
 (defcomponent component [_ owner opts]
   [:div.container.p4.center
-     (ui/large-spinner {:style {:height "6em"}})
-     [:h2.my3 "Transfer in progress"]
-     [:p "We are currently transferring your funds. Please stay on this page until the transfer completes."]])
+   (ui/large-spinner {:style {:height "6em"}})
+   [:h2.my3 "Transfer in progress"]
+   [:p "We are currently transferring your funds. Please stay on this page until the transfer completes."]])
 
 (defn query [data]
   {})

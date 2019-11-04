@@ -5,8 +5,8 @@
             [storefront.accessors.orders :as orders]
             [storefront.accessors.sales :as sales]
             #?@(:cljs
-               [[storefront.api :as api]
-                [storefront.components.stylist.pagination :as pagination]])
+                [[storefront.api :as api]
+                 [storefront.components.stylist.pagination :as pagination]])
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.formatters :as f]
             [storefront.components.ui :as ui]
@@ -17,9 +17,7 @@
             [storefront.platform.messages :as messages]
             [storefront.request-keys :as request-keys]
             [storefront.transitions :as transitions]
-            [storefront.accessors.experiments :as experiments]
-            
-            ))
+            [storefront.accessors.experiments :as experiments]))
 
 (defn status-cell [[span classes] text]
   [:td.p2.h8.center.medium {:col-span span}
@@ -27,7 +25,7 @@
 
 (defn status->appearance [status]
   (case status
-    :sale/shipped     [1 ["titleize" "teal"] ]
+    :sale/shipped     [1 ["titleize" "teal"]]
     :sale/returned    [2 ["shout"    "error"]]
     :sale/pending     [2 ["shout"    "yellow"]]
     :sale/unknown     [2 ["shout"    "error"]]
@@ -67,20 +65,20 @@
 (defcomponent component
   [{:keys [sales-ui pagination-ui fetching-data? header-ui]} _ _]
   (cond
-     sales-ui
-     [:div
-      {:data-test "orders-tab"}
-      [:table.col-12 {:style {:border-collapse "collapse"}}
-       header-ui
-       [:tbody
-        sales-ui]]
-      pagination-ui
-      show-program-terms]
+    sales-ui
+    [:div
+     {:data-test "orders-tab"}
+     [:table.col-12 {:style {:border-collapse "collapse"}}
+      header-ui
+      [:tbody
+       sales-ui]]
+     pagination-ui
+     show-program-terms]
 
-     fetching-data?
-     [:div.my2.h2 ui/spinner]
+    fetching-data?
+    [:div.my2.h2 ui/spinner]
 
-     :else empty-ledger))
+    :else empty-ledger))
 
 (defn sale-row [{:keys [order order-number id order-updated-at] :as sale}]
   [:tr.border-bottom.border-gray.py2.pointer.fate-white-hover

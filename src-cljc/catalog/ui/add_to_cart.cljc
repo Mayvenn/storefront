@@ -2,9 +2,7 @@
   (:require #?@(:cljs [[storefront.hooks.quadpay :as quadpay]])
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ui :as ui]
-            [storefront.platform.component-utils :as utils]
-            
-            ))
+            [storefront.platform.component-utils :as utils]))
 
 (defn cta-molecule
   [{:cta/keys [id label target spinning? disabled?]}]
@@ -14,7 +12,7 @@
              :spinning? (boolean spinning?)
              :disabled? (boolean disabled?)}
             (apply utils/fake-href target))
-     [:div.flex.items-center.justify-center.inherit-color label]) ))
+     [:div.flex.items-center.justify-center.inherit-color label])))
 
 (defn add-to-cart-incentive-block-molecule
   [{:add-to-cart.incentive-block/keys [id message link-label link-target footnote icon]}]
@@ -41,13 +39,13 @@
   "Add to Cart organism"
   [data _ _]
   [:div.px3.pt3.pb1
-    (add-to-cart-background-atom (:add-to-cart.background/color data))
-    (add-to-cart-incentive-block-molecule data)
-    (cta-molecule data)
-    #?(:cljs
-       [:div
-        (component/build quadpay/component
-                         {:quadpay/order-total (:quadpay/price data)
-                          :quadpay/show?       (:quadpay/loaded? data)
-                          :quadpay/directive   :just-select}
-                         nil)])])
+   (add-to-cart-background-atom (:add-to-cart.background/color data))
+   (add-to-cart-incentive-block-molecule data)
+   (cta-molecule data)
+   #?(:cljs
+      [:div
+       (component/build quadpay/component
+                        {:quadpay/order-total (:quadpay/price data)
+                         :quadpay/show?       (:quadpay/loaded? data)
+                         :quadpay/directive   :just-select}
+                        nil)])])

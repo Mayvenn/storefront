@@ -1,8 +1,7 @@
 (ns storefront.components.stylist.line-items
   (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.components.money-formatters :as mf]
-            
-            
+
             [storefront.component :as component :refer [defcomponent]]
             [storefront.component :as component :refer [defcomponent]]))
 
@@ -27,15 +26,15 @@
         [:div {:data-test (str base-dt "-price-ea")} "Price: " (mf/as-money-without-cents unit-price) " ea"])
       [:div
        (when-let [length (:length variant-attrs)]
-         [:span {:data-test (str base-dt "-length")} length "” " ])
-       [:span {:data-test (str base-dt "-quantity")} ]
+         [:span {:data-test (str base-dt "-length")} length "” "])
+       [:span {:data-test (str base-dt "-quantity")}]
        (if (pos? (or returned-quantity 0))
          (returned-quantity-element shipment-count sku quantity returned-quantity)
          [:span "(Qty: " quantity ")"])]])))
 
 (defcomponent component [{:keys [line-items shipment-count show-price?]} owner opts]
   [:div (for [line-item line-items]
-           (display-line-item shipment-count line-item show-price?))])
+          (display-line-item shipment-count line-item show-price?))])
 
 (defn built-component [data opts]
   (component/build component data opts))

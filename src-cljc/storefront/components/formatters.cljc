@@ -39,7 +39,6 @@
                "Fri"
                "Sat"])
 
-
 (defn day->day-abbr [date]
   ;; This is actually the recommended way to do this in JavaScript.
   ;; The other option is to use a time library, but goog.i18n adds 500K to the
@@ -53,12 +52,13 @@
 
 
 ;; TODO: perhaps we should make this work with clojure as well
+
+
 (do
   #?@(:cljs
       [(defn short-date [date-like]
          (when-let [date (date/to-datetime date-like)]
            (goog.string/format "%d/%d/%d" (inc (.getMonth date)) (.getDate date) (.getFullYear date))))
-
 
        (defn less-year-more-day-date [date-like]
          (when-let [date (date/to-datetime date-like)]
@@ -107,4 +107,4 @@
         (-> phone
             phone-number
             (string/split #"-" 3))]
-    (str "(" area-code ") - " first-group " - " second-group )))
+    (str "(" area-code ") - " first-group " - " second-group)))

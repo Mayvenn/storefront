@@ -15,8 +15,7 @@
             [clojure.string :as string]
             [storefront.components.svg :as svg]
             [storefront.components.picker.picker :as picker]
-            
-            
+
             [storefront.component :as component :refer [defcomponent]]
             [storefront.component :as component :refer [defcomponent]]))
 
@@ -171,8 +170,8 @@
         ":height-class "
         [:select
          {:on-change #(handle-message events/control-change-state
-                                       {:keypath [:design-system :buttons :height-class]
-                                        :value   (keyword (.. % -target -value))})}
+                                      {:keypath [:design-system :buttons :height-class]
+                                       :value   (keyword (.. % -target -value))})}
          (for [option [:small :medium :large]]
            [:option {:value (name option)
                      :selected (= option (get-in data [:design-system :buttons :height-class]))}
@@ -185,49 +184,49 @@
         ":spinner? "
         (if (get-in data [:design-system :buttons :spinning?]) "true" "false")]
        [:br]
-        (if (get-in data [:design-system :buttons :spinning?]) "true" "false")]
-       [:label
-        [:input.mr1.ml2 {:type      "checkbox"
-                         :checked   (get-in data [:design-system :buttons :disabled?])
-                         :on-change (partial toggle-state [:design-system :buttons :disabled?])}]
-        ":disabled? "
-        (if (get-in data [:design-system :buttons :disabled?]) "true" "false")]
-       "}"]]
-     [:div.h6.dark-gray
-      "Not every button state is used everywhere (eg - spinners are only used if the action may take some time and we would like feedback. Eg - a button to an external site will not spin)"]
-     [:div.clearfix.mxn1
-      (when-let [bg (get-in data [:design-system :buttons-bg])]
-        {:class (str bg)})
-      [:div.col.col-6.p1 (ui/teal-button button-attrs "ui/teal-button")]
-      [:div.col.col-6.p1 (ui/navy-button button-attrs "ui/navy-button")]
-      [:div.col.col-6.p1 (ui/aqua-button button-attrs "ui/aqua-button")]
-      [:div.col.col-6.p1 (ui/dark-gray-button button-attrs "ui/dark-gray-button")]
-      [:div.col.col-6.p1 (ui/facebook-button button-attrs "ui/facebook-button")]
+       (if (get-in data [:design-system :buttons :spinning?]) "true" "false")]
+      [:label
+       [:input.mr1.ml2 {:type      "checkbox"
+                        :checked   (get-in data [:design-system :buttons :disabled?])
+                        :on-change (partial toggle-state [:design-system :buttons :disabled?])}]
+       ":disabled? "
+       (if (get-in data [:design-system :buttons :disabled?]) "true" "false")]
+      "}"]]
+    [:div.h6.dark-gray
+     "Not every button state is used everywhere (eg - spinners are only used if the action may take some time and we would like feedback. Eg - a button to an external site will not spin)"]
+    [:div.clearfix.mxn1
+     (when-let [bg (get-in data [:design-system :buttons-bg])]
+       {:class (str bg)})
+     [:div.col.col-6.p1 (ui/teal-button button-attrs "ui/teal-button")]
+     [:div.col.col-6.p1 (ui/navy-button button-attrs "ui/navy-button")]
+     [:div.col.col-6.p1 (ui/aqua-button button-attrs "ui/aqua-button")]
+     [:div.col.col-6.p1 (ui/dark-gray-button button-attrs "ui/dark-gray-button")]
+     [:div.col.col-6.p1 (ui/facebook-button button-attrs "ui/facebook-button")]
 
-      [:div.col.col-6.p1 (ui/ghost-button button-attrs "ui/ghost-button")]
-      [:div.col.col-6.p1 (ui/navy-ghost-button button-attrs "ui/navy-ghost-button")]
-      [:div.col.col-6.p1 (ui/light-ghost-button button-attrs "ui/light-ghost-button")]
-      [:div.col.col-6.p1 (ui/teal-ghost-button button-attrs "ui/teal-ghost-button")]
+     [:div.col.col-6.p1 (ui/ghost-button button-attrs "ui/ghost-button")]
+     [:div.col.col-6.p1 (ui/navy-ghost-button button-attrs "ui/navy-ghost-button")]
+     [:div.col.col-6.p1 (ui/light-ghost-button button-attrs "ui/light-ghost-button")]
+     [:div.col.col-6.p1 (ui/teal-ghost-button button-attrs "ui/teal-ghost-button")]
 
-      [:div.col.col-6.p1 (ui/underline-button button-attrs "ui/underline-button")]
-      [:div.col.col-12.p1 (ui/teal-button button-attrs
-                                          [:div "col-12 with styled "
-                                           [:span.medium.italic.underline "SPAN™"]
-                                           " and svg "
-                                           ^:inline (svg/dropdown-arrow {:class  "stroke-white"
-                                                                         :width  "12px"
-                                                                         :height "10px"
-                                                                         :style  {:transform "rotate(-90deg)"}})])]
-      [:div.col.col-12.p1 (ui/input-group
-                           {:type          "text"
-                            :wrapper-class "col-7 pl3 flex items-center bg-white circled-item"
-                            :placeholder   "Text"
-                            :focused       false}
-                           {:ui-element ui/teal-button
-                            :content    "Button"
-                            :args       (merge button-attrs
-                                               {:class       "flex justify-center items-center circled-item"
-                                                :width-class "col-5"})})]]))
+     [:div.col.col-6.p1 (ui/underline-button button-attrs "ui/underline-button")]
+     [:div.col.col-12.p1 (ui/teal-button button-attrs
+                                         [:div "col-12 with styled "
+                                          [:span.medium.italic.underline "SPAN™"]
+                                          " and svg "
+                                          ^:inline (svg/dropdown-arrow {:class  "stroke-white"
+                                                                        :width  "12px"
+                                                                        :height "10px"
+                                                                        :style  {:transform "rotate(-90deg)"}})])]
+     [:div.col.col-12.p1 (ui/input-group
+                          {:type          "text"
+                           :wrapper-class "col-7 pl3 flex items-center bg-white circled-item"
+                           :placeholder   "Text"
+                           :focused       false}
+                          {:ui-element ui/teal-button
+                           :content    "Button"
+                           :args       (merge button-attrs
+                                              {:class       "flex justify-center items-center circled-item"
+                                               :width-class "col-5"})})]]))
 
 (def ^:private increment->size
   {1 "5px"
@@ -237,14 +236,14 @@
 
 (def ^:private spacing
   (let [box (fn [class px]
-             [:div {:key (str class "-" px)}
-              [:div.m1
-               [:div.border-dashed.border-gray.inline-block.center
-                [:div.border.border-teal.inline-block {:class class}
-                 [:div.border.border-gray.inline-block.bg-light-gray
-                  [:div
-                   [:p.h6 (str "." class)]
-                   [:p.h6 px]]]]]]])
+              [:div {:key (str class "-" px)}
+               [:div.m1
+                [:div.border-dashed.border-gray.inline-block.center
+                 [:div.border.border-teal.inline-block {:class class}
+                  [:div.border.border-gray.inline-block.bg-light-gray
+                   [:div
+                    [:p.h6 (str "." class)]
+                    [:p.h6 px]]]]]]])
         subsection (fn [text body]
                      [:div.my2
                       [:div.center.h3.light.my1 text]
@@ -334,54 +333,54 @@
       [:div "#" dark-hex]]]]])
 
 (def ^:private colors
- [:section
-  (header "Palette")
+  [:section
+   (header "Palette")
 
-  (subheader "Primary")
-  [:div.flex.flex-wrap.mxn1.mb4
-   (color-swatch "too-light-teal" "f5fcfb")
-   (color-swatch "light-teal" "9fe5d5")
-   (color-swatch "teal" "40cbac")]
+   (subheader "Primary")
+   [:div.flex.flex-wrap.mxn1.mb4
+    (color-swatch "too-light-teal" "f5fcfb")
+    (color-swatch "light-teal" "9fe5d5")
+    (color-swatch "teal" "40cbac")]
 
-  (subheader "Grays")
-  [:div.flex.flex-wrap.mxn1.mb4
-   (color-swatch "black" "000000")
-   (color-swatch "dark-gray" "666666")
-   (color-swatch "dark-silver" "aaaaaa")
-   (color-swatch "gray" "cccccc")
-   (color-swatch "silver" "dadada")
-   (color-swatch "light-gray" "ebebeb")
-   (color-swatch "fate-white" "f8f8f8")
-   (color-swatch "white" "ffffff")]
+   (subheader "Grays")
+   [:div.flex.flex-wrap.mxn1.mb4
+    (color-swatch "black" "000000")
+    (color-swatch "dark-gray" "666666")
+    (color-swatch "dark-silver" "aaaaaa")
+    (color-swatch "gray" "cccccc")
+    (color-swatch "silver" "dadada")
+    (color-swatch "light-gray" "ebebeb")
+    (color-swatch "fate-white" "f8f8f8")
+    (color-swatch "white" "ffffff")]
 
-  (subheader "Success dialog and error handling")
-  [:div.flex.flex-wrap.mxn1.mb4
-   (color-swatch "green" "00cc00")
-   (color-swatch "error" "ff004f")]
+   (subheader "Success dialog and error handling")
+   [:div.flex.flex-wrap.mxn1.mb4
+    (color-swatch "green" "00cc00")
+    (color-swatch "error" "ff004f")]
 
-  (subheader "Flourishes")
-  [:div.flex.flex-wrap.mxn1.mb4
-   (color-swatch "light-orange" "fff8e5")
-   (color-swatch "orange" "ffc520")
-   (color-swatch "transparent-light-teal" "9fe5d5cc")
-   (color-swatch "hover-only-teal-gray" "e5eeec")
-   (color-swatch "purple" "7e006d")]
+   (subheader "Flourishes")
+   [:div.flex.flex-wrap.mxn1.mb4
+    (color-swatch "light-orange" "fff8e5")
+    (color-swatch "orange" "ffc520")
+    (color-swatch "transparent-light-teal" "9fe5d5cc")
+    (color-swatch "hover-only-teal-gray" "e5eeec")
+    (color-swatch "purple" "7e006d")]
 
-  (subheader "Adventure Flow")
-  [:div.flex.flex-wrap.mxn1.mb4
-   (color-swatch "lavender" "af9fc4")
-   (color-swatch "light-lavender" "cab6d7")
-   (color-swatch "too-light-lavender" "efebf5")
-   (color-gradient-swatch "Lavender-gradient" "cdB8d9" "9a8fb4")
-   (color-swatch "lavender-gradient-light" "cdB8d9")
-   (color-swatch "lavender-gradient-dark" "9a8fb4")]
+   (subheader "Adventure Flow")
+   [:div.flex.flex-wrap.mxn1.mb4
+    (color-swatch "lavender" "af9fc4")
+    (color-swatch "light-lavender" "cab6d7")
+    (color-swatch "too-light-lavender" "efebf5")
+    (color-gradient-swatch "Lavender-gradient" "cdB8d9" "9a8fb4")
+    (color-swatch "lavender-gradient-light" "cdB8d9")
+    (color-swatch "lavender-gradient-dark" "9a8fb4")]
 
-  (subheader "Third party")
-  [:div.flex.flex-wrap.mxn1.mb4
-   (color-swatch "fb-blue" "3b5998")
-   (color-swatch "quadpay-blue" "1d73ec")
-   (color-swatch "twitter-blue" "00aced")
-   (color-swatch "sms-green" "1fcc23")]])
+   (subheader "Third party")
+   [:div.flex.flex-wrap.mxn1.mb4
+    (color-swatch "fb-blue" "3b5998")
+    (color-swatch "quadpay-blue" "1d73ec")
+    (color-swatch "twitter-blue" "00aced")
+    (color-swatch "sms-green" "1fcc23")]])
 
 (defn ^:private form [data]
   [:div
@@ -471,7 +470,7 @@
      :value         (get-in data [:design-system :form :pill-phone])
      :errors        (if (= (get-in data [:design-system :form :pill-phone]) "wrong")
                       [{:long-message "wrong"}]
-                      [])} 
+                      [])}
     {:ui-element ui/teal-button
      :content    "Get Survey"
      :args       {:class          "flex justify-center medium items-center circled-item"
@@ -490,7 +489,7 @@
      :value         (get-in data [:design-system :form :pill-phone-2])
      :errors        (if (= (get-in data [:design-system :form :pill-phone-2]) "wrong")
                       [{:long-message "wrong"}]
-                      [])} 
+                      [])}
     {:ui-element ui/teal-button
      :content    "Get Survey"
      :args       {:class        "flex justify-center medium items-center circled-item"
@@ -506,71 +505,71 @@
 
 (defcomponent ^:private navigation [data _ _]
   [:section
-    (header "Navigation")
-    [:.dark-gray
-     [:div.bg-light-gray
-      [:div.col-6-on-tb-dt.mx-auto
-       #?(:cljs
-          (component/build tabs/component
-                           {:selected-tab (get-in data keypaths/navigation-event)}
-                           {:opts {:tab-refs ["one" "two" "three"]
-                                   :labels   ["One" "Two" "Three"]
-                                   :tabs     [events/navigate-design-system-navigation-tab1
-                                              events/navigate-design-system-navigation
-                                              events/navigate-design-system-navigation-tab3]}}))]]]])
+   (header "Navigation")
+   [:.dark-gray
+    [:div.bg-light-gray
+     [:div.col-6-on-tb-dt.mx-auto
+      #?(:cljs
+         (component/build tabs/component
+                          {:selected-tab (get-in data keypaths/navigation-event)}
+                          {:opts {:tab-refs ["one" "two" "three"]
+                                  :labels   ["One" "Two" "Three"]
+                                  :tabs     [events/navigate-design-system-navigation-tab1
+                                             events/navigate-design-system-navigation
+                                             events/navigate-design-system-navigation-tab3]}}))]]]])
 
 (defcomponent ^:private progress [data _ _]
   [:section
-    (header "Progress Indicator")
-    [:.dark-gray
-     [:div.bg-white
-      [:div.col-6-on-tb-dt.mx-auto
-       (ui/progress-indicator {:value 0 :maximum 100})
-       (ui/progress-indicator {:value 50 :maximum 100})
-       (ui/progress-indicator {:value 5 :maximum 7})
-       (ui/progress-indicator {:value 100 :maximum 100})]]]])
+   (header "Progress Indicator")
+   [:.dark-gray
+    [:div.bg-white
+     [:div.col-6-on-tb-dt.mx-auto
+      (ui/progress-indicator {:value 0 :maximum 100})
+      (ui/progress-indicator {:value 50 :maximum 100})
+      (ui/progress-indicator {:value 5 :maximum 7})
+      (ui/progress-indicator {:value 100 :maximum 100})]]]])
 
 (defcomponent ^:private carousel [data _ _]
   [:section
-    (header "Carousels")
-    [:div.flex.items-center.col-12
-     [:div.col-4
-      (component/build carousel/component
-                       {:slides [[:img.mx-auto {:src "http://lorempixel.com/200/200/cats/1"}]
-                                 [:img.mx-auto {:src "http://lorempixel.com/200/200/cats/2"}]
-                                 [:img.mx-auto {:src "http://lorempixel.com/200/200/cats/3"}]
-                                 [:img.mx-auto {:src "http://lorempixel.com/200/200/cats/4"}]]
-                        :settings {:swipe true
-                                   :arrows true
-                                   :dots true}}
-                       {})]
-
-     [:div.col-4
-      (component/build carousel/component
-                       {:slides [[:img.mx-auto {:src "http://lorempixel.com/200/200/cats/5"}]
-                                 [:img.mx-auto {:src "http://lorempixel.com/200/200/cats/6"}]
-                                 [:img.mx-auto {:src "http://lorempixel.com/200/200/cats/7"}]
-                                 [:img.mx-auto {:src "http://lorempixel.com/200/200/cats/8"}]]
-                        :settings {:swipe true
-                                   :arrows true}}
-                       {})]
-
-     [:div.col-4
-      (component/build carousel/component
-                       {:slides [[:img.mx-auto {:src "http://lorempixel.com/200/200/cats/9"}]]
-                        :settings {:swipe true
-                                   :arrows false}}
-                       {})]]
-
-    [:div.mt1
+   (header "Carousels")
+   [:div.flex.items-center.col-12
+    [:div.col-4
      (component/build carousel/component
-                      {:slides (for [i (range 12)]
-                                 [:img.mx-auto {:src (str "http://lorempixel.com/200/200/animals/" i)}])
+                      {:slides [[:img.mx-auto {:src "http://lorempixel.com/200/200/cats/1"}]
+                                [:img.mx-auto {:src "http://lorempixel.com/200/200/cats/2"}]
+                                [:img.mx-auto {:src "http://lorempixel.com/200/200/cats/3"}]
+                                [:img.mx-auto {:src "http://lorempixel.com/200/200/cats/4"}]]
                        :settings {:swipe true
-                                  :slidesToShow 3
                                   :arrows true
                                   :dots true}}
-                      {})]])
+                      {})]
+
+    [:div.col-4
+     (component/build carousel/component
+                      {:slides [[:img.mx-auto {:src "http://lorempixel.com/200/200/cats/5"}]
+                                [:img.mx-auto {:src "http://lorempixel.com/200/200/cats/6"}]
+                                [:img.mx-auto {:src "http://lorempixel.com/200/200/cats/7"}]
+                                [:img.mx-auto {:src "http://lorempixel.com/200/200/cats/8"}]]
+                       :settings {:swipe true
+                                  :arrows true}}
+                      {})]
+
+    [:div.col-4
+     (component/build carousel/component
+                      {:slides [[:img.mx-auto {:src "http://lorempixel.com/200/200/cats/9"}]]
+                       :settings {:swipe true
+                                  :arrows false}}
+                      {})]]
+
+   [:div.mt1
+    (component/build carousel/component
+                     {:slides (for [i (range 12)]
+                                [:img.mx-auto {:src (str "http://lorempixel.com/200/200/animals/" i)}])
+                      :settings {:swipe true
+                                 :slidesToShow 3
+                                 :arrows true
+                                 :dots true}}
+                     {})]])
 
 (def model-img
   "http://ucarecdn.com/1a3ce0a2-d8a4-4c72-b20b-62b5ff445096/-/format/auto/-/resize/110x/")
@@ -660,36 +659,36 @@
 
 (defcomponent component [data owner opts]
   [:div
-    [:div.mx3
-     [:div.container
-      [:div {:style {:margin "50px 0"}}
-       [:h1.mb4 "Mayvenn Style Guide"]
-       (subheader
-        [:span.hide-on-tb-dt "mobile"]
-        [:span.hide-on-mb.hide-on-dt "tablet"]
-        [:span.hide-on-mb-tb "desktop"]
-        " breakpoint")]
+   [:div.mx3
+    [:div.container
+     [:div {:style {:margin "50px 0"}}
+      [:h1.mb4 "Mayvenn Style Guide"]
+      (subheader
+       [:span.hide-on-tb-dt "mobile"]
+       [:span.hide-on-mb.hide-on-dt "tablet"]
+       [:span.hide-on-mb-tb "desktop"]
+       " breakpoint")]
 
-      (compression data)
-      colors
-      typography
-      (form-fields data)
-      (buttons data)
+     (compression data)
+     colors
+     typography
+     (form-fields data)
+     (buttons data)
 
-      #_simple-custom-options
-      #_swatch-custom-options
+     #_simple-custom-options
+     #_swatch-custom-options
 
-      #_(condp = (get-in data keypaths/navigation-event)
-          events/navigate-design-system                 typography
-          events/navigate-design-system-color           colors
-          events/navigate-design-system-buttons         buttons
-          events/navigate-design-system-spacing         spacing
-          events/navigate-design-system-form-fields     (form-fields data)
-          events/navigate-design-system-navigation      (component/build navigation data opts)
-          events/navigate-design-system-navigation-tab1 (component/build navigation data opts)
-          events/navigate-design-system-navigation-tab3 (component/build navigation data opts)
-          events/navigate-design-system-progress        (component/build progress data opts)
-          events/navigate-design-system-carousel        (component/build carousel data opts))]]])
+     #_(condp = (get-in data keypaths/navigation-event)
+         events/navigate-design-system                 typography
+         events/navigate-design-system-color           colors
+         events/navigate-design-system-buttons         buttons
+         events/navigate-design-system-spacing         spacing
+         events/navigate-design-system-form-fields     (form-fields data)
+         events/navigate-design-system-navigation      (component/build navigation data opts)
+         events/navigate-design-system-navigation-tab1 (component/build navigation data opts)
+         events/navigate-design-system-navigation-tab3 (component/build navigation data opts)
+         events/navigate-design-system-progress        (component/build progress data opts)
+         events/navigate-design-system-carousel        (component/build carousel data opts))]]])
 
 (defn ^:export built-component [data opts]
   (component/build component data opts))

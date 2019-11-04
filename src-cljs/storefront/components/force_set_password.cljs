@@ -8,38 +8,37 @@
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
             [storefront.transitions :as transitions]
-            
-            
+
             [storefront.component :as component :refer [defcomponent]]
             [storefront.component :as component :refer [defcomponent]]))
 
 (defcomponent component
   [{:keys [focused password show-password? loaded-facebook? field-errors]} owner _]
   (ui/narrow-container
-    [:div.p2
-     [:h2.center.my2.navy.mb3
-      "Please set your password"]
-     [:form.col-12
-      {:on-submit (utils/send-event-callback events/control-force-set-password-submit)}
-      (ui/text-field {:errors     (get field-errors ["password"])
-                      :data-test  "force-set-password-password"
-                      :keypath    keypaths/force-set-password-password
-                      :focused    focused
-                      :label      "New Password"
-                      :min-length 6
-                      :required   true
-                      :type       "password"
-                      :value      password
-                      :hint       (when show-password? password)})
-      [:div.dark-gray.col-12.left
-       (ui/check-box {:label   "Show password"
-                      :keypath keypaths/account-show-password?
-                      :focused focused
-                      :value   show-password?})]
+   [:div.p2
+    [:h2.center.my2.navy.mb3
+     "Please set your password"]
+    [:form.col-12
+     {:on-submit (utils/send-event-callback events/control-force-set-password-submit)}
+     (ui/text-field {:errors     (get field-errors ["password"])
+                     :data-test  "force-set-password-password"
+                     :keypath    keypaths/force-set-password-password
+                     :focused    focused
+                     :label      "New Password"
+                     :min-length 6
+                     :required   true
+                     :type       "password"
+                     :value      password
+                     :hint       (when show-password? password)})
+     [:div.dark-gray.col-12.left
+      (ui/check-box {:label   "Show password"
+                     :keypath keypaths/account-show-password?
+                     :focused focused
+                     :value   show-password?})]
 
-      [:div.col-12.col-6-on-tb-dt.mx-auto
-       (ui/submit-button "Save & Continue"
-                         {:data-test "force-set-password-submit"})]]]))
+     [:div.col-12.col-6-on-tb-dt.mx-auto
+      (ui/submit-button "Save & Continue"
+                        {:data-test "force-set-password-submit"})]]]))
 
 (defn query
   [data]

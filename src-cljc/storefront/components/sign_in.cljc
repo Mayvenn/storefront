@@ -5,71 +5,70 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            
-            
+
             [storefront.component :as component :refer [defcomponent]]
             [storefront.component :as component :refer [defcomponent]]))
 
 (defcomponent password-component [{:keys [email
-                                  password
-                                  focused
-                                  show-password?
-                                  field-errors]} _ _]
+                                          password
+                                          focused
+                                          show-password?
+                                          field-errors]} _ _]
   [:form.col-12.flex.flex-column.items-center
-    {:on-submit (utils/send-event-callback events/control-sign-in-submit)}
+   {:on-submit (utils/send-event-callback events/control-sign-in-submit)}
 
-    (ui/text-field {:data-test  "user-email"
-                    :errors     (get field-errors ["email"])
-                    :keypath    keypaths/sign-in-email
-                    :focused    focused
-                    :label      "Email"
-                    :name       "email"
-                    :required   true
-                    :type       "email"
-                    :value      email})
+   (ui/text-field {:data-test  "user-email"
+                   :errors     (get field-errors ["email"])
+                   :keypath    keypaths/sign-in-email
+                   :focused    focused
+                   :label      "Email"
+                   :name       "email"
+                   :required   true
+                   :type       "email"
+                   :value      email})
 
-    (ui/text-field {:data-test "user-password"
-                    :errors    (get field-errors ["password"])
-                    :keypath   keypaths/sign-in-password
-                    :focused   focused
-                    :label     "Password"
-                    :name      "password"
-                    :required  true
-                    :hint      (when show-password? password)
-                    :type      "password"
-                    :value     password})
+   (ui/text-field {:data-test "user-password"
+                   :errors    (get field-errors ["password"])
+                   :keypath   keypaths/sign-in-password
+                   :focused   focused
+                   :label     "Password"
+                   :name      "password"
+                   :required  true
+                   :hint      (when show-password? password)
+                   :type      "password"
+                   :value     password})
 
-    [:div.col-12.mt2
-     [:div.left.col-6
-      (ui/check-box {:label   "Show password"
-                     :keypath keypaths/account-show-password?
-                     :value   show-password?})]
+   [:div.col-12.mt2
+    [:div.left.col-6
+     (ui/check-box {:label   "Show password"
+                    :keypath keypaths/account-show-password?
+                    :value   show-password?})]
 
-     [:div.right.col-6.right-align
-      [:a.dark-gray
-       (merge {:data-test "forgot-password"}
-              (utils/route-to events/navigate-forgot-password)) "Forgot Password?"]]]
-    [:div.col-12.col-6-on-tb-dt
-     (ui/submit-button "Sign In"
-                       {:data-test "user-submit"})]])
+    [:div.right.col-6.right-align
+     [:a.dark-gray
+      (merge {:data-test "forgot-password"}
+             (utils/route-to events/navigate-forgot-password)) "Forgot Password?"]]]
+   [:div.col-12.col-6-on-tb-dt
+    (ui/submit-button "Sign In"
+                      {:data-test "user-submit"})]])
 
 (defcomponent form-component
   [{:keys [facebook-loaded?] :as data} _ _]
   [:div.flex.flex-column.items-center.dark-gray.col-12.mt1
 
-    [:div.col-12.col-6-on-tb-dt (facebook/sign-in-button facebook-loaded?)]
-    [:div.h5.dark-gray.light.my2 "OR"]
+   [:div.col-12.col-6-on-tb-dt (facebook/sign-in-button facebook-loaded?)]
+   [:div.h5.dark-gray.light.my2 "OR"]
 
-    (component/build password-component data nil)
+   (component/build password-component data nil)
 
-    [:div.clearfix.center.dark-gray.my2 "Don't have an account? "
-     [:a.teal (utils/route-to events/navigate-sign-up) "Register Here"]]])
+   [:div.clearfix.center.dark-gray.my2 "Don't have an account? "
+    [:a.teal (utils/route-to events/navigate-sign-up) "Register Here"]]])
 
 (defcomponent component [form-data owner opts]
   (ui/narrow-container
-    [:div.p2
-     [:h1.h2.center.my2.mb3.navy "Sign in to your account"]
-     (component/build form-component form-data nil)]))
+   [:div.p2
+    [:h1.h2.center.my2.mb3.navy "Sign in to your account"]
+    (component/build form-component form-data nil)]))
 
 (defn query [data]
   {:email                   (get-in data keypaths/sign-in-email)

@@ -1,9 +1,7 @@
 (ns stylist-matching.ui.matched-stylist
   (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ui :as ui]
-            [stylist-matching.ui.stylist-cards :as stylist-cards]
-            
-            ))
+            [stylist-matching.ui.stylist-cards :as stylist-cards]))
 
 (defn matched-stylist-title-molecule
   [{:matched-stylist.title/keys [id primary secondary]}]
@@ -29,8 +27,8 @@
 (defcomponent organism
   [data _ _]
   [:div.col-10.mx-auto
-    {:key (:react/key data)}
-    (matched-stylist-title-molecule data)
-    [:div.bg-white.rounded.left-align.black.my3
-     (stylist-cards/control-stylist-card-header-molecule data)]
-    (matched-stylist-card-cta-molecule data)])
+   {:key (:react/key data)}
+   (matched-stylist-title-molecule data)
+   [:div.bg-white.rounded.left-align.black.my3
+    (stylist-cards/control-stylist-card-header-molecule data)]
+   (matched-stylist-card-cta-molecule data)])

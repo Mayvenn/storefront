@@ -14,8 +14,7 @@
             [storefront.platform.component-utils :as utils]
             [storefront.platform.carousel :as carousel]
             [ui.molecules :as ui.M]
-            
-            
+
             [storefront.component :as component :refer [defcomponent]]
             [storefront.component :as component :refer [defcomponent]]))
 

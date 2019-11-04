@@ -15,9 +15,7 @@
             [stylist-matching.ui.stylist-cards :as stylist-cards]
             [stylist-matching.ui.matched-stylist :as matched-stylist]
             [adventure.keypaths :as adventure.keypaths]
-            [storefront.keypaths :as storefront.keypaths]
-            
-            ))
+            [storefront.keypaths :as storefront.keypaths]))
 
 (defn header-query
   [{:order.items/keys [quantity]
@@ -122,7 +120,7 @@
               :stylist-card.address-marker/value (string/join " "
                                                               [(string/join ", "
                                                                             [address-1 address-2 city state])
-                                                               zipcode ])}))))
+                                                               zipcode])}))))
 
 (defn matched-stylist-query
   [servicing-stylist {:order/keys [submitted?] :order.shipping/keys [phone]} post-purchase?]
@@ -180,10 +178,10 @@
 (defcomponent template
   [{:keys [header shopping-method-choice matched-stylist]} _ _]
   [:div.bg-lavender.white.center.flex.flex-auto.flex-column
-    stylist-matching.A/bottom-right-party-background
-    (component/build header/organism header nil)
-    (component/build shopping-method-choice/organism shopping-method-choice nil)
-    (component/build matched-stylist/organism matched-stylist nil)])
+   stylist-matching.A/bottom-right-party-background
+   (component/build header/organism header nil)
+   (component/build shopping-method-choice/organism shopping-method-choice nil)
+   (component/build matched-stylist/organism matched-stylist nil)])
 
 (defn page
   [app-state]

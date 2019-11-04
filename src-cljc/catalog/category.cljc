@@ -21,10 +21,9 @@
    [clojure.set :as set]
    [clojure.string :as string]
    [catalog.ui.product-card :as product-card]
-            
-            
-            [storefront.component :as component :refer [defcomponent]]
-            [storefront.component :as component :refer [defcomponent]]))
+
+   [storefront.component :as component :refer [defcomponent]]
+   [storefront.component :as component :refer [defcomponent]]))
 
 (def ^:private query-param-separator "~")
 
@@ -222,30 +221,30 @@
            all-product-cards
            subsections]} owner opts]
   [:div
-    (hero-section category)
-    [:div.max-960.col-12.mx-auto.px2-on-mb.px2-on-tb
-     (copy-section category)
-     [:div.bg-white.sticky.z1
+   (hero-section category)
+   [:div.max-960.col-12.mx-auto.px2-on-mb.px2-on-tb
+    (copy-section category)
+    [:div.bg-white.sticky.z1
       ;; The -5px prevents a sliver of the background from being visible above the filters
       ;; (when sticky) on android (and sometimes desktop chrome when using the inspector)
-      {:style {:top "-5px"}}
-      (if open-panel
-        [:div
-         [:div.hide-on-dt.px2.z4.fixed.overlay.overflow-auto.bg-white
-          (filter-tabs category facets all-product-cards selections open-panel)
-          (filter-panel facets represented-options selections open-panel)]
-         [:div.hide-on-mb-tb
-          (filter-tabs category facets all-product-cards selections open-panel)
-          (filter-panel facets represented-options selections open-panel)]]
-        [:div
-         [:div.hide-on-dt
-          (filter-tabs category facets all-product-cards selections open-panel)]
-         [:div.hide-on-mb-tb.pb6
-          (filter-tabs category facets all-product-cards selections open-panel)]])]
-     [:div.flex.flex-wrap
-      (if (empty? all-product-cards)
-        (product-cards-empty-state loading-products?)
-        (map subsection-component subsections))]]])
+     {:style {:top "-5px"}}
+     (if open-panel
+       [:div
+        [:div.hide-on-dt.px2.z4.fixed.overlay.overflow-auto.bg-white
+         (filter-tabs category facets all-product-cards selections open-panel)
+         (filter-panel facets represented-options selections open-panel)]
+        [:div.hide-on-mb-tb
+         (filter-tabs category facets all-product-cards selections open-panel)
+         (filter-panel facets represented-options selections open-panel)]]
+       [:div
+        [:div.hide-on-dt
+         (filter-tabs category facets all-product-cards selections open-panel)]
+        [:div.hide-on-mb-tb.pb6
+         (filter-tabs category facets all-product-cards selections open-panel)]])]
+    [:div.flex.flex-wrap
+     (if (empty? all-product-cards)
+       (product-cards-empty-state loading-products?)
+       (map subsection-component subsections))]]])
 
 (defn subsections-query
   [{:keys [catalog/category-id subsections]}
@@ -267,7 +266,7 @@
 (defn ^:private query
   [data]
   (let [category                   (categories/current-category data)
-        selections                 (get-in data catalog.keypaths/category-selections )
+        selections                 (get-in data catalog.keypaths/category-selections)
         products-matching-category (selector/match-all {:selector/strict? true}
                                                        (skuers/essentials category)
                                                        (vals (get-in data keypaths/v2-products)))

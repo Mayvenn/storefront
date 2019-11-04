@@ -4,7 +4,6 @@
             [storefront.platform.messages :refer [handle-message]]
             [storefront.events :as events]))
 
-
 (def ^:private browser-event-listener js/HTMLElement.prototype.addEventListener)
 (def ^:private callbacks-for-ready-state
   (atom []))

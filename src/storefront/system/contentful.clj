@@ -54,7 +54,6 @@
       (update-in [:includes :Asset]
                  extract-latest-by :content/id)))
 
-
 (defn ^:private link->value [includes link]
   (let [id        (some-> link :sys :id)
         link-type (some-> link :sys :link-type keyword)]

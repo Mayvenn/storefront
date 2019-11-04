@@ -5,8 +5,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.routes :as routes]
-            
-            
+
             [storefront.component :as component :refer [defcomponent]]
             [storefront.component :as component :refer [defcomponent]]))
 
@@ -47,50 +46,50 @@
 
 (defcomponent component [{:keys [store-slug host utm-campaign]} _ _]
   (let [store-link        (str store-slug "." host)
-         share-url         (-> (url/url (str "https://" store-link))
-                               (assoc :query {:utm_campaign utm-campaign}))
-         phone-image-width "336px"]
-     [:div.center.px3.py6.container
-      (constrain-copy-width
-       [:h2 {:data-ref "share-store-section"} [:a {:name "share-store-section"} "Share your store"]]
-       [:p "This unique store name is all yours. Use the buttons below for quick and easy sharing across your networks."]
-       [:div.relative.mx-auto
-        {:style {:width phone-image-width}}
-        [:img.py6.mx-auto.block {:style {:width phone-image-width}
-                                 :src   "//ucarecdn.com/da5ab6ed-d0ad-4063-a620-d933f11e0525/-/format/auto/storenameindevice.jpg"}]
-        [:div.absolute.truncate
-         {:style {:font-size   "14px"
-                  :line-height "16px"
-                  :top         "137px"
-                  :left        "28px"
-                  :right       "28px"}}
-         [:span.bold store-slug] "." host]])
-      [:h3.h5 "Share your store link"]
-      [:div.col-12.col-6-on-tb.col-4-on-dt.mx-auto
-       (social-button
-        {:class  "bg-fb-blue"
-         :target "_blank"
-         :href   (facebook-link share-url)}
-        "//ucarecdn.com/f9ab7fce-d25f-4854-b405-0e0c83684388/-/format/auto/fb"
-        "Share on Facebook")
-       (social-button
-        {:class  "bg-twitter-blue"
-         :target "_blank"
-         :href   (twitter-link share-url)}
-        "//ucarecdn.com/cb22b91e-5e62-47e2-a513-23435084a02b/-/format/auto/twitter"
-        "Tweet your store link")
-       (social-button
-        {:class  "hide-on-dt bg-sms-green"
-         :target "_blank"
-         :href   (sms-link share-url)}
-        "//ucarecdn.com/0bb20f76-52b6-4ad5-b094-a292352473b1/-/format/auto/sms"
-        "Send a text")
-       [:div.h5.my4 "Tap to select, copy and share"]
-       [:input.border.border-gray.rounded.pl1.py1.bg-white.teal.col-12.center
-        {:type     "text"
-         :value    store-link
-         :on-click utils/select-all-text
-         :data-test "store-link"}]]]))
+        share-url         (-> (url/url (str "https://" store-link))
+                              (assoc :query {:utm_campaign utm-campaign}))
+        phone-image-width "336px"]
+    [:div.center.px3.py6.container
+     (constrain-copy-width
+      [:h2 {:data-ref "share-store-section"} [:a {:name "share-store-section"} "Share your store"]]
+      [:p "This unique store name is all yours. Use the buttons below for quick and easy sharing across your networks."]
+      [:div.relative.mx-auto
+       {:style {:width phone-image-width}}
+       [:img.py6.mx-auto.block {:style {:width phone-image-width}
+                                :src   "//ucarecdn.com/da5ab6ed-d0ad-4063-a620-d933f11e0525/-/format/auto/storenameindevice.jpg"}]
+       [:div.absolute.truncate
+        {:style {:font-size   "14px"
+                 :line-height "16px"
+                 :top         "137px"
+                 :left        "28px"
+                 :right       "28px"}}
+        [:span.bold store-slug] "." host]])
+     [:h3.h5 "Share your store link"]
+     [:div.col-12.col-6-on-tb.col-4-on-dt.mx-auto
+      (social-button
+       {:class  "bg-fb-blue"
+        :target "_blank"
+        :href   (facebook-link share-url)}
+       "//ucarecdn.com/f9ab7fce-d25f-4854-b405-0e0c83684388/-/format/auto/fb"
+       "Share on Facebook")
+      (social-button
+       {:class  "bg-twitter-blue"
+        :target "_blank"
+        :href   (twitter-link share-url)}
+       "//ucarecdn.com/cb22b91e-5e62-47e2-a513-23435084a02b/-/format/auto/twitter"
+       "Tweet your store link")
+      (social-button
+       {:class  "hide-on-dt bg-sms-green"
+        :target "_blank"
+        :href   (sms-link share-url)}
+       "//ucarecdn.com/0bb20f76-52b6-4ad5-b094-a292352473b1/-/format/auto/sms"
+       "Send a text")
+      [:div.h5.my4 "Tap to select, copy and share"]
+      [:input.border.border-gray.rounded.pl1.py1.bg-white.teal.col-12.center
+       {:type     "text"
+        :value    store-link
+        :on-click utils/select-all-text
+        :data-test "store-link"}]]]))
 
 (defn query [data]
   {:host         (routes/environment->hostname (get-in data keypaths/environment))

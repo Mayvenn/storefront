@@ -5,7 +5,7 @@
 
 (defn- insert-before-selector [selector tag]
   (let [first-tag (.querySelector js/document selector)]
-     (.insertBefore (.-parentNode first-tag) tag first-tag)))
+    (.insertBefore (.-parentNode first-tag) tag first-tag)))
 
 (defn insert-body-bottom [tag]
   (.appendChild js/document.body tag))

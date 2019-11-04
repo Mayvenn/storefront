@@ -8,8 +8,7 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            
-            
+
             [storefront.component :as component :refer [defcomponent]]
             [storefront.component :as component :refer [defcomponent]]))
 
@@ -35,28 +34,28 @@
            hide-back-to-shopping-link?
            back]} _ _]
   (let [close-cart-route (utils/route-back-or-to back events/navigate-home)]
-     [:div
-      (desktop-header desktop-header-data)
+    [:div
+     (desktop-header desktop-header-data)
 
-      [:div.col-7-on-dt.container.mx-auto.border-bottom.border-light-gray.flex.items-center
-       [:div.col-3.hide-on-mb-tb
-        (when-not hide-back-to-shopping-link?
-          [:a.h5.black.pointer.flex.justify-start.items-center close-cart-route
-           (svg/left-caret {:class "stroke-dark-gray"
-                            :height "18px" :width "18px"}) "Back to Shopping"])]
+     [:div.col-7-on-dt.container.mx-auto.border-bottom.border-light-gray.flex.items-center
+      [:div.col-3.hide-on-mb-tb
+       (when-not hide-back-to-shopping-link?
+         [:a.h5.black.pointer.flex.justify-start.items-center close-cart-route
+          (svg/left-caret {:class "stroke-dark-gray"
+                           :height "18px" :width "18px"}) "Back to Shopping"])]
 
-       [:div.col-1.hide-on-dt]
+      [:div.col-1.hide-on-dt]
 
-       [:div.flex-auto.py4.center.dark-gray
-        {:data-test "mobile-cart"}
-        "Shopping Cart - " (ui/pluralize-with-amount item-count "item")]
+      [:div.flex-auto.py4.center.dark-gray
+       {:data-test "mobile-cart"}
+       "Shopping Cart - " (ui/pluralize-with-amount item-count "item")]
 
-       [:div.col-2.hide-on-mb-tb]
+      [:div.col-2.hide-on-mb-tb]
 
-       [:div.col-1.hide-on-dt
-        [:a.h3.pointer.flex.items-center (merge close-cart-route
-                                                {:data-test "cart-close" :title "Close"})
-         (svg/close-x {:class "stroke-dark-gray fill-none"})]]]]))
+      [:div.col-1.hide-on-dt
+       [:a.h3.pointer.flex.items-center (merge close-cart-route
+                                               {:data-test "cart-close" :title "Close"})
+        (svg/close-x {:class "stroke-dark-gray fill-none"})]]]]))
 
 (defn query [data]
   (let [shop? (= "shop" (get-in data keypaths/store-slug))]

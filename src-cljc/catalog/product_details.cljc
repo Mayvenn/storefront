@@ -40,8 +40,7 @@
             [catalog.ui.freeinstall-banner :as freeinstall-banner]
             [catalog.keypaths :as catalog.keypaths]
             [storefront.component :as component :refer [defcomponent]]
-            
-            
+
             [storefront.component :as component :refer [defcomponent]]))
 
 (defn item-price [price]
@@ -160,10 +159,10 @@
 
 (def checkout-button
   (component/html
-    [:div
-     {:data-test "cart-button"
-      :data-ref "cart-button"}
-     (ui/teal-button (utils/route-to events/navigate-cart) "Check out")]))
+   [:div
+    {:data-test "cart-button"
+     :data-ref "cart-button"}
+    (ui/teal-button (utils/route-to events/navigate-cart) "Check out")]))
 
 (defn- hacky-fix-of-bad-slugs-on-facets [slug]
   (string/replace (str slug) #"#" ""))
@@ -179,10 +178,10 @@
 (defn sku-summary [{:keys [sku sku-quantity]}]
   (let [{:keys [inventory/in-stock? sku/price]} sku]
     (summary-structure
-      (some-> sku :sku/title string/upper-case)
-      (quantity-and-price-structure
-        (counter-or-out-of-stock in-stock? sku-quantity)
-        (item-price price)))))
+     (some-> sku :sku/title string/upper-case)
+     (quantity-and-price-structure
+      (counter-or-out-of-stock in-stock? sku-quantity)
+      (item-price price)))))
 
 (def triple-bundle-upsell
   [:p.center.h6.flex.items-center.justify-center
@@ -194,15 +193,15 @@
 
 (def shipping-and-guarantee
   (component/html
-    [:div.border-top.border-bottom.border-gray.p2.my2.center.navy.shout.medium.h6
-     "Free shipping & 30 day guarantee"]))
+   [:div.border-top.border-bottom.border-gray.p2.my2.center.navy.shout.medium.h6
+    "Free shipping & 30 day guarantee"]))
 
 (defn image-body [{:keys [filename url alt]}]
   (ui/aspect-ratio
-    640 580
-    [:img.col-12
-     {:src (str url "-/format/auto/-/resize/640x/" filename)
-      :alt alt}]))
+   640 580
+   [:img.col-12
+    {:src (str url "-/format/auto/-/resize/640x/" filename)
+     :alt alt}]))
 
 (defn carousel [images {:keys [slug]}]
   (let [items (mapv (fn [image]
@@ -234,10 +233,10 @@
   "Product Details organism"
   [data _ _]
   [:div.mt3.mx3
-    (catalog.M/product-title data)
-    [:div.flex.justify-between
-     (catalog.M/yotpo-reviews-summary data)
-     (catalog.M/price-block data)]])
+   (catalog.M/product-title data)
+   [:div.flex.justify-between
+    (catalog.M/yotpo-reviews-summary data)
+    (catalog.M/price-block data)]])
 
 (defcomponent component
   [{:keys [adding-to-bag?
@@ -255,61 +254,61 @@
   (let [unavailable? (not (seq selected-sku))
         sold-out?    (not (:inventory/in-stock? selected-sku))]
     (if-not product
-        [:div.flex.h2.p1.m1.items-center.justify-center
-         {:style {:height "25em"}}
-         (ui/large-spinner {:style {:height "4em"}})]
+      [:div.flex.h2.p1.m1.items-center.justify-center
+       {:style {:height "25em"}}
+       (ui/large-spinner {:style {:height "4em"}})]
+      [:div
+       [:div.container
+        (when (:offset ugc)
+          [:div.absolute.overlay.z4.overflow-auto
+           (component/build ugc/popup-component ugc opts)])
         [:div
-         [:div.container
-          (when (:offset ugc)
-            [:div.absolute.overlay.z4.overflow-auto
-             (component/build ugc/popup-component ugc opts)])
+         (page
           [:div
-           (page
-            [:div
-             (carousel carousel-images product)
-             [:div.hide-on-mb (component/build ugc/component ugc opts)]]
-            [:div
-             [:div
-              [:meta {:item-prop "image"
-                      :content   (:url (first carousel-images))}]
-              (full-bleed-narrow (carousel carousel-images product))]
-             (component/build organism data)
-             [:div.px2
-              (component/build picker/component picker-data opts)]
-             [:div
-              (cond
-                unavailable? unavailable-button
-                sold-out?    sold-out-button
-                :else        (component/build add-to-cart/organism data))]
-             (when (products/stylist-only? product)
-               shipping-and-guarantee)
-             (component/build catalog.M/product-description data opts)
-             (component/build freeinstall-banner/organism data opts)
-             [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])]]
-         (when aladdin?
-           [:div.py10.bg-transparent-teal.col-on-tb-dt.mt4
-            (component/build v2/get-a-free-install get-a-free-install-section-data)])
-         (when (seq reviews)
-           [:div.container.col-7-on-tb-dt.px2
-            (component/build review-component/reviews-component reviews opts)])
-         (when (and (nil? (:offset ugc))
-                    (not (products/stylist-only? product)))
+           (carousel carousel-images product)
+           [:div.hide-on-mb (component/build ugc/component ugc opts)]]
+          [:div
+           [:div
+            [:meta {:item-prop "image"
+                    :content   (:url (first carousel-images))}]
+            (full-bleed-narrow (carousel carousel-images product))]
+           (component/build organism data)
+           [:div.px2
+            (component/build picker/component picker-data opts)]
+           [:div
+            (cond
+              unavailable? unavailable-button
+              sold-out?    sold-out-button
+              :else        (component/build add-to-cart/organism data))]
+           (when (products/stylist-only? product)
+             shipping-and-guarantee)
+           (component/build catalog.M/product-description data opts)
+           (component/build freeinstall-banner/organism data opts)
+           [:div.hide-on-tb-dt.mxn2.mb3 (component/build ugc/component ugc opts)]])]]
+       (when aladdin?
+         [:div.py10.bg-transparent-teal.col-on-tb-dt.mt4
+          (component/build v2/get-a-free-install get-a-free-install-section-data)])
+       (when (seq reviews)
+         [:div.container.col-7-on-tb-dt.px2
+          (component/build review-component/reviews-component reviews opts)])
+       (when (and (nil? (:offset ugc))
+                  (not (products/stylist-only? product)))
            ;; We use visibility:hidden rather than display:none so that this component has a height.
            ;; We use the height on mobile view to slide it on/off the bottom of the page.
-           [:div.invisible-on-tb-dt
-            (component/build sticky-add-component
-                             {:image            (->> options
-                                                     :hair/color
-                                                     (filter #(= (first (:hair/color selected-sku))
-                                                                 (:option/slug %)))
-                                                     first
-                                                     :option/rectangle-swatch)
-                              :adding-to-bag?   adding-to-bag?
-                              :sku              selected-sku
-                              :sold-out?        sold-out?
-                              :unavailable?     (empty? selected-sku)
-                              :selected-options selected-options
-                              :quantity         sku-quantity} {})])])))
+         [:div.invisible-on-tb-dt
+          (component/build sticky-add-component
+                           {:image            (->> options
+                                                   :hair/color
+                                                   (filter #(= (first (:hair/color selected-sku))
+                                                               (:option/slug %)))
+                                                   first
+                                                   :option/rectangle-swatch)
+                            :adding-to-bag?   adding-to-bag?
+                            :sku              selected-sku
+                            :sold-out?        sold-out?
+                            :unavailable?     (empty? selected-sku)
+                            :selected-options selected-options
+                            :quantity         sku-quantity} {})])])))
 
 (defn min-of-maps
   ([k] {})
@@ -576,7 +575,7 @@
   [_ event {:keys [selection value navigation-event]} _ app-state]
   (let [sku-id-for-selection (-> app-state
                                  (get-in catalog.keypaths/detailed-product-selected-sku)
-                                  :catalog/sku-id)
+                                 :catalog/sku-id)
         params-with-sku-id   (-> app-state
                                  products/current-product
                                  (select-keys [:catalog/product-id :page/slug])

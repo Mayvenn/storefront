@@ -17,7 +17,7 @@
 
 (defn identify
   ([args]
-   (identify args nil ))
+   (identify args nil))
   ([{:keys [id email]} callback-event]
    (when (.hasOwnProperty js/window "stringer")
      (.identify js/stringer email id)

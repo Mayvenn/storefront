@@ -4,8 +4,7 @@
             [storefront.components.ui :as ui]
             [storefront.keypaths :as keypaths]
             [clojure.string :as string]
-            
-            
+
             [storefront.component :as component :refer [defcomponent]]
             [storefront.component :as component :refer [defcomponent]]))
 
@@ -24,22 +23,22 @@
 (defcomponent component
   [_ _ _]
   [:div.bg-lavender.white {:style {:min-height "95vh"}}
-    (ui/narrow-container
-     [:div.center
-      [:div.col-11.mx-auto.py4
+   (ui/narrow-container
+    [:div.center
+     [:div.col-11.mx-auto.py4
+      [:div
+       [:div.py4.h3.bold
+        "Let's match you with a Certified Mayvenn Stylist!"]
+       [:div.h5.line-height-3
+        (copy "A Mayvenn representative will contact you soon to help select a"
+              "Certified Mayvenn Stylist with the following criteria:")]
        [:div
-        [:div.py4.h3.bold
-         "Let's match you with a Certified Mayvenn Stylist!"]
-        [:div.h5.line-height-3
-         (copy "A Mayvenn representative will contact you soon to help select a"
-               "Certified Mayvenn Stylist with the following criteria:")]
-        [:div
-         [:ul.col-10.h6.list-img-purple-checkmark.py4.left-align.mx6
-          (mapv (fn [txt] [:li.pl1.mb1 txt])
-                ["Licensed Salon Stylist"
-                 "Mayvenn Certified"
-                 "In your area"])]]
-        get-inspired-cta]]])])
+        [:ul.col-10.h6.list-img-purple-checkmark.py4.left-align.mx6
+         (mapv (fn [txt] [:li.pl1.mb1 txt])
+               ["Licensed Salon Stylist"
+                "Mayvenn Certified"
+                "In your area"])]]
+       get-inspired-cta]]])])
 
 (defn built-component
   [data opts]

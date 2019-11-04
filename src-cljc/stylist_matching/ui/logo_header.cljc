@@ -2,9 +2,7 @@
   (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]
-            [storefront.events :as events]
-            
-            ))
+            [storefront.events :as events]))
 
 (defn logo-header-logo-molecule
   [{:logo-header.logo/keys [id]}]
@@ -18,5 +16,5 @@
 (defcomponent organism
   [data _ _]
   [:div#header
-    [:div.flex.items-center.justify-center
-     (logo-header-logo-molecule data)]])
+   [:div.flex.items-center.justify-center
+    (logo-header-logo-molecule data)]])

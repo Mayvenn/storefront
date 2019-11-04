@@ -4,8 +4,7 @@
             [storefront.component :as component :refer [defcomponent]]
             [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
-            
-            
+
             [storefront.component :as component :refer [defcomponent]]
             [storefront.component :as component :refer [defcomponent]]))
 
@@ -35,7 +34,7 @@
 (defcomponent component
   [{:keys [v2-experience? show-green-banner?]} _ _]
   [:div
-    (when v2-experience? (v2-cart-promo show-green-banner?))])
+   (when v2-experience? (v2-cart-promo show-green-banner?))])
 
 (defn query
   [data]

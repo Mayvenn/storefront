@@ -11,17 +11,16 @@
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.platform.messages :as messages]
-            
-            
+
             [storefront.component :as component :refer [defcomponent]]
             [storefront.component :as component :refer [defcomponent]]))
 
 (defcomponent component
   [{:keys []} _ _]
   (ui/narrow-container
-    [:div.py6.h2
-     [:div.py4 (ui/large-spinner {:style {:height "6em"}})]
-     [:h2.center.navy "Processing your order..."]]))
+   [:div.py6.h2
+    [:div.py4 (ui/large-spinner {:style {:height "6em"}})]
+    [:h2.center.navy "Processing your order..."]]))
 
 (defn query [data] {})
 

@@ -151,9 +151,9 @@
           [:script {:type "text/javascript"} (raw prefetch-script)]
 
           ;; Quadpay Widget -- TODO: can we move this below our app scripts in prod?
-         #_ [:script {:type  "text/javascript"
-                    :src   "https://widgets.quadpay.com/mayvenn/quadpay-widget-2.2.1.js"
-                    :defer true}]
+          #_[:script {:type  "text/javascript"
+                      :src   "https://widgets.quadpay.com/mayvenn/quadpay-widget-2.2.1.js"
+                      :defer true}]
 
           ;; Talkable -- TODO: try to move below app scripts (in prod)
           [:script {:type  "text/javascript"
@@ -219,6 +219,8 @@ new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 
           ;; inline styles in production because our css file is so small and it avoids another round
           ;; trip request. At time of writing this greatly includes our pagespeed score
+
+
           (if (#{"development" "test"} environment)
             (page/include-css (assets/path "/css/app.css"))
             [:style (raw (css-styles))])]

@@ -70,7 +70,6 @@
    {:data-test "promo-banner"}
    (:description promo)])
 
-
 (defn ^:private promotion-to-advertise
   [data]
   (let [promotion-db (get-in data keypaths/promotions)
@@ -159,7 +158,7 @@
         (handle-scroll [_]
           #?(:cljs
              (this-as this
-               (component/set-state! this :show? (< (header-height-magic-number) (.-y (goog.dom/getDocumentScroll)))))))]
+                      (component/set-state! this :show? (< (header-height-magic-number) (.-y (goog.dom/getDocumentScroll)))))))]
   (defdynamic-component sticky-organism
     (constructor [this props]
                  (component/create-ref! this "banner")

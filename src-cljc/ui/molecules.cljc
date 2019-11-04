@@ -2,9 +2,7 @@
   (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
-            [storefront.platform.component-utils :as utils]
-            
-            ))
+            [storefront.platform.component-utils :as utils]))
 
 (defn return-link
   [{:return-link/keys [copy id back]

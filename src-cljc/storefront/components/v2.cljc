@@ -8,12 +8,7 @@
             [storefront.transitions :as transitions]
             [storefront.platform.component-utils :as utils]
             [storefront.components.accordion :as accordion]
-            
-            
-            
-            
-            
-            
+
             [storefront.component :as component :refer [defcomponent]]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.component :as component :refer [defcomponent]]

@@ -12,9 +12,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
-            [storefront.accessors.experiments :as experiments]
-            
-            ))
+            [storefront.accessors.experiments :as experiments]))
 
 (defn simple-selected-layer []
   [:div.absolute.border.border-width-3.rounded-0.border-light-teal.overlay.flex
@@ -176,7 +174,7 @@
      [:span (merge
              {:data-test (str "picker-selected-color-" (hacky-fix-of-bad-slugs-on-facets (:option/slug selected-color)))}
              product-sold-out-style)
-      (:option/name selected-color)]))] )
+      (:option/name selected-color)]))])
 
 (defn picker-rows
   "individual elements as in: https://app.zeplin.io/project/5a9f159069d48a4c15497a49/screen/5b21aa0352b1d5e31a32ac53"
@@ -292,13 +290,12 @@
                                   "9e2a48b3-9811-46d2-840b-31c9f85670ad")]]])])])
 (defn- slide-animate [content]
   content
-  #_
-  (css-transitions/transition-element
-   {:classNames "picker"
-    :key        "picker"
-    :in         (boolean content)
-    :timeout    0}
-   content))
+  #_(css-transitions/transition-element
+     {:classNames "picker"
+      :key        "picker"
+      :in         (boolean content)
+      :timeout    0}
+     content))
 
 (defn picker-dialog
   "picker dialog as in https://app.zeplin.io/project/5a9f159069d48a4c15497a49/screen/5b15c08f4819592903cb1348"

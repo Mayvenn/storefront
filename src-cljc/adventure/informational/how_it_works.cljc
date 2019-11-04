@@ -4,9 +4,7 @@
             [storefront.component :as component :refer [defcomponent]]
             [storefront.events :as events]
             [adventure.faq :as faq]
-            [adventure.components.layered :as layered]
-            
-            ))
+            [adventure.components.layered :as layered]))
 
 (defn query
   [data]

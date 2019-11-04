@@ -33,8 +33,7 @@
             [spice.date :as date]
             [ui.promo-banner :as promo-banner]
             [ui.molecules :as ui-molecules]
-            
-            
+
             [storefront.component :as component :refer [defcomponent]]
             [storefront.component :as component :refer [defcomponent]]))
 
@@ -91,7 +90,7 @@
                                                   (str "?affiliate-stylist-id=" affiliate-stylist-id)))
                                :return-url
                                (str (assoc current-uri
-                                           :path (str "/orders/" order-number "/quadpay" )
+                                           :path (str "/orders/" order-number "/quadpay")
                                            :query {:order-token order-token}))
                                :cancel-url (str (assoc current-uri :path "/cart?error=quadpay"))}}}}
      (fn [order]
@@ -141,53 +140,53 @@
            freeinstall-cart-item]}
    owner _]
   [:div.container.p2
-    (component/build promo-banner/sticky-organism promo-banner nil)
-    (component/build checkout-steps/component checkout-steps nil)
-    (if order
-      [:form
-       {:on-submit
-        (when-not (or (:disabled? checkout-button-data) (:spinning? checkout-button-data))
-          (if selected-quadpay?
-            (utils/send-event-callback events/control-checkout-quadpay-confirmation-submit)
-            (utils/send-event-callback events/control-checkout-confirmation-submit
-                                       {:place-order? requires-additional-payment?})))}
-       [:.clearfix.mxn3
-        (servicing-stylist-banner-component queried-data)
-        [:.col-on-tb-dt.col-6-on-tb-dt.px3
-         [:.h3.left-align "Order Summary"]
+   (component/build promo-banner/sticky-organism promo-banner nil)
+   (component/build checkout-steps/component checkout-steps nil)
+   (if order
+     [:form
+      {:on-submit
+       (when-not (or (:disabled? checkout-button-data) (:spinning? checkout-button-data))
+         (if selected-quadpay?
+           (utils/send-event-callback events/control-checkout-quadpay-confirmation-submit)
+           (utils/send-event-callback events/control-checkout-confirmation-submit
+                                      {:place-order? requires-additional-payment?})))}
+      [:.clearfix.mxn3
+       (servicing-stylist-banner-component queried-data)
+       [:.col-on-tb-dt.col-6-on-tb-dt.px3
+        [:.h3.left-align "Order Summary"]
 
-         [:div.my2
-          {:data-test "confirmation-line-items"}
-          (component/build item-card/component items nil)
-          (when freeinstall-cart-item
-            (component/build cart-item/organism freeinstall-cart-item nil))]]
+        [:div.my2
+         {:data-test "confirmation-line-items"}
+         (component/build item-card/component items nil)
+         (when freeinstall-cart-item
+           (component/build cart-item/organism freeinstall-cart-item nil))]]
 
-        [:div.col-on-tb-dt.col-6-on-tb-dt.px3
-         (component/build checkout-delivery/component delivery nil)
-         (when requires-additional-payment?
-           [:div
-            (ui/note-box
-             {:color     "teal"
-              :data-test "additional-payment-required-note"}
-             [:.p2.navy
-              "Please enter an additional payment method below for the remaining total on your order."])
-            (component/build checkout-credit-card/component payment nil)])
-         (component/build cart-summary/organism cart-summary nil)
-         (component/build quadpay/component
-                          {:quadpay/show?       (and selected-quadpay? loaded-quadpay?)
-                           :quadpay/order-total (:total order)
-                           :quadpay/directive   :continue-with}
-                          nil)
-         (when free-install-applied?
-           [:div.h5.my4.center.col-10.mx-auto.line-height-3
-            (if-let [servicing-stylist-name (stylists/->display-name servicing-stylist)]
-              (str "After your order ships, you’ll be connected with " servicing-stylist-name " over SMS to make an appointment.")
-              "You’ll be able to select your Certified Mayvenn Stylist after checkout.")])
-         [:div.col-12.mx-auto.mt4
-          (checkout-button selected-quadpay? checkout-button-data)]]]]
-      [:div.py6.h2
-       [:div.py4 (ui/large-spinner {:style {:height "6em"}})]
-       [:h2.center.navy "Processing your order..."]])])
+       [:div.col-on-tb-dt.col-6-on-tb-dt.px3
+        (component/build checkout-delivery/component delivery nil)
+        (when requires-additional-payment?
+          [:div
+           (ui/note-box
+            {:color     "teal"
+             :data-test "additional-payment-required-note"}
+            [:.p2.navy
+             "Please enter an additional payment method below for the remaining total on your order."])
+           (component/build checkout-credit-card/component payment nil)])
+        (component/build cart-summary/organism cart-summary nil)
+        (component/build quadpay/component
+                         {:quadpay/show?       (and selected-quadpay? loaded-quadpay?)
+                          :quadpay/order-total (:total order)
+                          :quadpay/directive   :continue-with}
+                         nil)
+        (when free-install-applied?
+          [:div.h5.my4.center.col-10.mx-auto.line-height-3
+           (if-let [servicing-stylist-name (stylists/->display-name servicing-stylist)]
+             (str "After your order ships, you’ll be connected with " servicing-stylist-name " over SMS to make an appointment.")
+             "You’ll be able to select your Certified Mayvenn Stylist after checkout.")])
+        [:div.col-12.mx-auto.mt4
+         (checkout-button selected-quadpay? checkout-button-data)]]]]
+     [:div.py6.h2
+      [:div.py4 (ui/large-spinner {:style {:height "6em"}})]
+      [:h2.center.navy "Processing your order..."]])])
 
 (defn item-card-query
   [data]
@@ -321,21 +320,21 @@
          :as                   mayvenn-install} (mayvenn-install/mayvenn-install data)
         user                                    (get-in data keypaths/user)]
     (cond->
-        {:order                        order
-         :store-slug                   (get-in data keypaths/store-slug)
-         :requires-additional-payment? (requires-additional-payment? data)
-         :promo-banner                 (promo-banner/query data)
-         :checkout-steps               (checkout-steps/query data)
-         :products                     (get-in data keypaths/v2-products)
-         :payment                      (checkout-credit-card/query data)
-         :delivery                     (checkout-delivery/query data)
-         :free-install-applied?        applied?
-         :checkout-button-data         (checkout-button-query data)
-         :selected-quadpay?            selected-quadpay?
-         :loaded-quadpay?              (get-in data keypaths/loaded-quadpay)
-         :servicing-stylist            stylist
-         :items                        (item-card-query data)
-         :cart-summary                 (cart-summary-query order mayvenn-install (orders/available-store-credit order user))}
+     {:order                        order
+      :store-slug                   (get-in data keypaths/store-slug)
+      :requires-additional-payment? (requires-additional-payment? data)
+      :promo-banner                 (promo-banner/query data)
+      :checkout-steps               (checkout-steps/query data)
+      :products                     (get-in data keypaths/v2-products)
+      :payment                      (checkout-credit-card/query data)
+      :delivery                     (checkout-delivery/query data)
+      :free-install-applied?        applied?
+      :checkout-button-data         (checkout-button-query data)
+      :selected-quadpay?            selected-quadpay?
+      :loaded-quadpay?              (get-in data keypaths/loaded-quadpay)
+      :servicing-stylist            stylist
+      :items                        (item-card-query data)
+      :cart-summary                 (cart-summary-query order mayvenn-install (orders/available-store-credit order user))}
 
       applied?
       (spice.maps/deep-merge

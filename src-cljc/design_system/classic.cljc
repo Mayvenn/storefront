@@ -12,8 +12,7 @@
             #?(:cljs [storefront.hooks.reviews :as reviews])
             [storefront.platform.component-utils :as utils]
             [ui.molecules :as ui.M]
-            
-            
+
             [storefront.component :as component :refer [defcomponent]]
             [storefront.component :as component :refer [defcomponent]]))
 
@@ -102,20 +101,18 @@
                          :dsk-uuid  "f423c9d9-1073-4b0c-86a5-dc810e18e505",
                          :alt       "Use code FREEINSTALL when you buy 3 bundles or more"}}])
 
-
-
 (defcomponent component
   [data owner opts]
   [:div.py3
-    [:div.h1 "Classic Template"]
-    [:section
-     [:div.h2 "Organisms"]
-     [:section.p4
-      (organisms/demo organisms (:organisms data))]]
-    [:section
-     [:div.h2 "Molecules"]
-     [:section.p4
-      (molecules/demo molecules)]]])
+   [:div.h1 "Classic Template"]
+   [:section
+    [:div.h2 "Organisms"]
+    [:section.p4
+     (organisms/demo organisms (:organisms data))]]
+   [:section
+    [:div.h2 "Molecules"]
+    [:section.p4
+     (molecules/demo molecules)]]])
 
 (defn built-component
   [{:keys [design-system]} opts]

@@ -7,8 +7,7 @@
             [spice.date :as date]
             [storefront.platform.component-utils :as utils]
             [storefront.routes :as routes]
-            
-            
+
             [storefront.component :as component :refer [defcomponent]]
             [storefront.component :as component :refer [defcomponent]]))
 

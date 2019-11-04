@@ -14,8 +14,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
-            
-            
+
             [storefront.component :as component :refer [defcomponent]]
             [storefront.component :as component :refer [defcomponent]]))
 
@@ -113,8 +112,8 @@
   (component/html
    (marquee-row
     (ui/underline-button (assoc (utils/route-to events/navigate-sign-in)
-                            :data-test "sign-in")
-                     "Sign in")
+                                :data-test "sign-in")
+                         "Sign in")
     [:div.h6.col-12.center.dark-gray
      [:div "No account?"]
      [:a.inherit-color.underline
@@ -165,7 +164,7 @@
          :content    [[:span.medium.flex-auto "Shop Bundle Sets"]
                       caret]}])
 
-      [{:link-attrs (utils/fake-href events/menu-list
+     [{:link-attrs (utils/fake-href events/menu-list
                                     {:page/slug           "virgin-hair"
                                      :catalog/category-id "15"})
        :data-test  "menu-shop-virgin-hair"
@@ -274,11 +273,11 @@
    owner
    opts]
   [:div
-    [:div.top-0.sticky.z4
-     (burger-header cart)]
-    (if on-taxon?
-      (component/build menu/component menu-data nil)
-      (component/build root-menu data nil))])
+   [:div.top-0.sticky.z4
+    (burger-header cart)]
+   (if on-taxon?
+     (component/build menu/component menu-data nil)
+     (component/build root-menu data nil))])
 
 (defn determine-site
   [app-state]

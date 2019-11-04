@@ -10,11 +10,7 @@
                        goog.dom
                        goog.style
                        goog.events])
-            [ui.molecules :as ui.M]
-            
-            
-            
-            ))
+            [ui.molecules :as ui.M]))
 
 (defcomponent layer-hero
   [data _ opts]
@@ -219,11 +215,11 @@
 
 (defcomponent ^:private ugc-image [{:screen/keys [seen?] :keys [image-url]} owner opts]
   (ui/aspect-ratio
-    1 1
-    (cond
-      seen?          [:img {:class "col-12"
-                            :src   image-url}]
-      :else          [:div.col-12 " "])))
+   1 1
+   (cond
+     seen?          [:img {:class "col-12"
+                           :src   image-url}]
+     :else          [:div.col-12 " "])))
 
 (defcomponent ugc
   [data owner opts]

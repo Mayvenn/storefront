@@ -5,8 +5,7 @@
             [ui.product-list-header :as product-list-header]
             [design-system.organisms :as organisms]
             [storefront.events :as events]
-            
-            
+
             [storefront.component :as component :refer [defcomponent]]
             [storefront.component :as component :refer [defcomponent]]))
 
@@ -69,11 +68,11 @@
 (defcomponent component
   [data owner opts]
   [:div.py3
-    [:div.h1 "Common UI"]
+   [:div.h1 "Common UI"]
+   [:section
+    [:div.h2 "Organisms"]
     [:section
-     [:div.h2 "Organisms"]
-     [:section
-      (organisms/demo organisms)]]])
+     (organisms/demo organisms)]]])
 
 (defn built-component
   [data opts]

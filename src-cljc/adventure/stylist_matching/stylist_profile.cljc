@@ -21,8 +21,7 @@
             [stylist-directory.stylists :as stylists]
             [spice.core :as spice]
             [stylist-matching.ui.header :as header-org]
-            
-            
+
             [storefront.component :as component :refer [defcomponent]]
             [storefront.component :as component :refer [defcomponent]]))
 
@@ -60,11 +59,11 @@
   [query _ _]
   [:div.flex.bg-white.px1.mxn2.rounded.py3
     ;; TODO: image-url should be format/auto?
-    (circle-portrait-molecule query)
-    [:div.flex-grow-1.left-align.dark-gray.h6.line-height-2
-     (transposed-title-molecule query)
-     (stars-rating-molecule query)
-     (stylist-phone-molecule query)]])
+   (circle-portrait-molecule query)
+   [:div.flex-grow-1.left-align.dark-gray.h6.line-height-2
+    (transposed-title-molecule query)
+    (stars-rating-molecule query)
+    (stylist-phone-molecule query)]])
 
 (defn checks-or-x
   [specialty specialize?]
@@ -178,7 +177,7 @@
   (when (and id label target)
     (ui/teal-button
      (merge {:data-test id} (apply utils/fake-href target))
-     [:div.flex.items-center.justify-center.inherit-color label]) ))
+     [:div.flex.items-center.justify-center.inherit-color label])))
 
 (defn section-details-molecule
   [{:section-details/keys [title content]}]
@@ -194,14 +193,14 @@
         (checks-or-x "360" (:specialty-sew-in-360-frontal content))]
        [:div.col-4.col
         (checks-or-x "Closure" (:specialty-sew-in-closure content))
-        (checks-or-x "Frontal" (:specialty-sew-in-frontal content))]])]] )
+        (checks-or-x "Frontal" (:specialty-sew-in-frontal content))]])]])
 
 (defn footer-body-molecule
   [{:footer/keys [copy id]}]
   (when id
     [:div.dark-gray.h5.mb2
      {:data-test id}
-     copy]) )
+     copy]))
 
 (defn footer-cta-molecule
   [{:cta/keys [id label]
@@ -215,36 +214,35 @@
              (if (= :navigate (first event))
                (apply utils/route-to target)
                (apply utils/fake-href target)))
-      [:span.medium.dark-gray.border-bottom.border-teal label])]) )
+      [:span.medium.dark-gray.border-bottom.border-teal label])]))
 
 (defcomponent footer [data _ _]
   (when (seq data)
-     [:div.mt6.border-top.border-fate-white.border-width-2
-      [:div.py5.center
-       (footer-body-molecule data)
-       (footer-cta-molecule data)]]))
+    [:div.mt6.border-top.border-fate-white.border-width-2
+     [:div.py5.center
+      (footer-body-molecule data)
+      (footer-cta-molecule data)]]))
 
 (defcomponent component
   [{:keys [header-data footer-data google-map-data] :as query} owner opts]
   [:div.col-12.bg-white.mb6 {:style {:min-height    "100vh"
-                                      :margin-bottom "-1px"}}
-    [:div.white (component/build header-org/organism header-data nil)]
-    [:main
-     [:div.px3 (component/build stylist-profile-card-component query nil)]
+                                     :margin-bottom "-1px"}}
+   [:div.white (component/build header-org/organism header-data nil)]
+   [:main
+    [:div.px3 (component/build stylist-profile-card-component query nil)]
 
-     #?(:cljs (component/build maps/component google-map-data))
+    #?(:cljs (component/build maps/component google-map-data))
 
+    [:div.my2.m1-on-tb-dt.mb2-on-tb-dt.px3
+     [:div.mb3 (cta-molecule query)]
 
-     [:div.my2.m1-on-tb-dt.mb2-on-tb-dt.px3
-      [:div.mb3 (cta-molecule query)]
+     (carousel-molecule query)
 
-      (carousel-molecule query)
+     (for [section-details (:details query)]
+       (section-details-molecule section-details))]
+    [:div.clearfix]]
 
-      (for [section-details (:details query)]
-        (section-details-molecule section-details))]
-     [:div.clearfix]]
-
-    [:footer (component/build footer footer-data nil)]])
+   [:footer (component/build footer footer-data nil)]])
 
 (defn built-component
   [data opts]

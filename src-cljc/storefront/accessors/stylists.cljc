@@ -19,7 +19,6 @@
       (str (:firstname address) " " (:lastname address))
       store-nickname)))
 
-
 (defn retrieve-parsed-affiliate-id [app-state]
   #?(:cljs (and
             (contains? #{"shop" "freeinstall"} (get-in app-state keypaths/store-slug))

@@ -10,9 +10,7 @@
             [storefront.platform.component-utils :as utils]
             [voucher.keypaths :as voucher-keypaths]
             [storefront.keypaths :as keypaths]
-            [storefront.request-keys :as request-keys]
-            
-            ))
+            [storefront.request-keys :as request-keys]))
 
 (def unit-type->menu-kw-suffix
   {"with Closure" "sew-in-closure"
@@ -62,7 +60,7 @@
       primary]
      (when secondary-id
        (into [:div.h8.center
-              {:data-test secondary-id}] secondary))]) )
+              {:data-test secondary-id}] secondary))]))
 
 (defn cta-with-secondary-molecule
   [{:cta/keys [id copy target
@@ -82,21 +80,21 @@
 
 (defcomponent spinner-molecule [_ _ _]
   [:div.mt8
-    (ui/large-spinner {:style {:height "6em"}})])
+   (ui/large-spinner {:style {:height "6em"}})])
 
 (defcomponent ^:private component
   [queried-data owner opts]
   [:div.flex.flex-column.items-center.m4
-    (notification-molecule queried-data)
+   (notification-molecule queried-data)
 
-    icon-molecule
+   icon-molecule
 
-    (informational-molecule queried-data)
+   (informational-molecule queried-data)
 
-    [:div.mt6
-     (cta-with-secondary-molecule queried-data)]
+   [:div.mt6
+    (cta-with-secondary-molecule queried-data)]
 
-    (fine-print-molecule queried-data)])
+   (fine-print-molecule queried-data)])
 
 (defn ^:private query [app-state]
   (let [voucher                   (get-in app-state voucher-keypaths/voucher-response)
@@ -112,17 +110,17 @@
         install-type-display-name (get unit-type->display-name parsed-install-type)
         payout-equals-advertised? (= payout-amount advertised-amount)]
     (cond->
-      {:spinning?                (utils/requesting? app-state request-keys/fetch-user-stylist-service-menu)
-       :notification/id          (str "voucher-redeemed-" install-type-display-name)
-       :notification/content     [:div "Voucher Redeemed:" [:span.pl1.bold install-type-display-name]]
-       :cta/id                   "view-earnings"
-       :cta/target               [events/navigate-v2-stylist-dashboard-payments]
-       :cta/copy                 [:span.bold "View Earnings"]
-       :cta/secondary-id         "redeem-voucher"
-       :cta/secondary-target     [events/navigate-voucher-redeem]
-       :cta/secondary-copy       "Redeem Another Voucher"
-       :informational/primary-id "redemption-amount"
-       :informational/primary    (str payout-amount " has been added to your earnings")}
+     {:spinning?                (utils/requesting? app-state request-keys/fetch-user-stylist-service-menu)
+      :notification/id          (str "voucher-redeemed-" install-type-display-name)
+      :notification/content     [:div "Voucher Redeemed:" [:span.pl1.bold install-type-display-name]]
+      :cta/id                   "view-earnings"
+      :cta/target               [events/navigate-v2-stylist-dashboard-payments]
+      :cta/copy                 [:span.bold "View Earnings"]
+      :cta/secondary-id         "redeem-voucher"
+      :cta/secondary-target     [events/navigate-voucher-redeem]
+      :cta/secondary-copy       "Redeem Another Voucher"
+      :informational/primary-id "redemption-amount"
+      :informational/primary    (str payout-amount " has been added to your earnings")}
 
       (not payout-equals-advertised?)
       (merge {:fine-print/id              "fine-print"

@@ -15,9 +15,7 @@
             [storefront.platform.component-utils :as utils]
             [storefront.components.formatters :as formatters]
             [storefront.components.ui :as ui]
-            [spice.date :as date]
-            
-            ))
+            [spice.date :as date]))
 
 (defn header-query
   [{:order.items/keys [quantity]}
@@ -52,7 +50,7 @@
                                                 [events/navigate-adventure-stylist-profile-post-purchase {:stylist-id stylist-id
                                                                                                           :store-slug store-slug}]
                                                 [events/navigate-adventure-stylist-profile {:stylist-id stylist-id
-                                                                                           :store-slug store-slug}])
+                                                                                            :store-slug store-slug}])
              :stylist-card/id                 (str "stylist-card-" store-slug)
              :stylist-card.thumbnail/id       (str "stylist-card-thumbnail-" store-slug)
              :stylist-card.thumbnail/ucare-id (-> stylist :portrait :resizable-url)
@@ -150,7 +148,7 @@
               :stylist-card.address-marker/value (string/join " "
                                                               [(string/join ", "
                                                                             [address-1 address-2 city state])
-                                                               zipcode ])}))))
+                                                               zipcode])}))))
 
 (defn stylist-cards-query
   [stylist-profiles? post-purchase? stylists]
@@ -187,18 +185,18 @@
         index          (get-in app-state adventure.keypaths/adventure-stylist-gallery-image-index)]
     {:gallery-modal/target           [events/control-adventure-stylist-gallery-close]
      :gallery-modal/ucare-image-urls gallery-images
-     :gallery-modal/initial-index    index }))
+     :gallery-modal/initial-index    index}))
 
 (defcomponent template
   [{:keys [gallery-modal header list/results]} _ _]
   [:div.bg-fate-white.black.center.flex.flex-auto.flex-column
-    (component/build gallery-modal/organism gallery-modal nil)
-    (component/build header/organism header nil)
-    [:div
-     (display-list {:call-out                call-out-center/organism
-                    :control-stylist-card    stylist-cards/control-organism
-                    :experiment-stylist-card stylist-cards/experiment-organism}
-                   results)]])
+   (component/build gallery-modal/organism gallery-modal nil)
+   (component/build header/organism header nil)
+   [:div
+    (display-list {:call-out                call-out-center/organism
+                   :control-stylist-card    stylist-cards/control-organism
+                   :experiment-stylist-card stylist-cards/experiment-organism}
+                  results)]])
 
 (def post-purchase? #{events/navigate-adventure-stylist-results-post-purchase})
 
@@ -211,12 +209,12 @@
         spinning?              (or (get-in app-state adventure.keypaths/adventure-stylist-results-delaying?)
                                    (empty? stylist-search-results))]
     (if spinning?
-            (component/build wait-spinner/component app-state)
-            (component/build template
-                             {:gallery-modal (gallery-modal-query app-state)
-                              :header        (header-query current-order (first (get-in app-state storefront.keypaths/navigation-undo-stack)) post-purchase?)
-                              :list/results  (insert-at-pos 3
-                                                            call-out-query
-                                                            (stylist-cards-query (experiments/stylist-profiles? app-state)
-                                                                                 post-purchase?
-                                                                                 stylist-search-results))}))))
+      (component/build wait-spinner/component app-state)
+      (component/build template
+                       {:gallery-modal (gallery-modal-query app-state)
+                        :header        (header-query current-order (first (get-in app-state storefront.keypaths/navigation-undo-stack)) post-purchase?)
+                        :list/results  (insert-at-pos 3
+                                                      call-out-query
+                                                      (stylist-cards-query (experiments/stylist-profiles? app-state)
+                                                                           post-purchase?
+                                                                           stylist-search-results))}))))

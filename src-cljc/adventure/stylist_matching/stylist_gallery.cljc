@@ -21,8 +21,7 @@
             [storefront.transitions :as transitions]
             [stylist-directory.stylists :as stylists]
             [storefront.component :as component :refer [defcomponent]]
-            
-            
+
             [storefront.component :as component :refer [defcomponent]]))
 
 (defn query
@@ -33,7 +32,7 @@
     (when stylist
       ;; TODO: Use new header
       {:header-data {:subtitle     [:div.h4.medium
-                                    (str (stylists/->display-name stylist) "'s Recent work" )]
+                                    (str (stylists/->display-name stylist) "'s Recent work")]
                      :header-attrs {:class "bg-too-light-lavender black"}
                      :right-corner {:id    "close-stylist-gallery"
                                     :opts (utils/route-back-or-to back
@@ -65,15 +64,15 @@
 (defcomponent component
   [{:keys [header-data gallery]} owner opts]
   [:div.col-12.bg-white
-    (when header-data
-      [:div.fixed.z4.top-0.left-0.right-0
-       (header/built-component header-data nil)])
-    [:div {:style {:height "72px"}}]
-    (map-indexed (fn [ix image-id]
-                   (ui/ucare-img {:class    "col-12 block"
-                                  :width    580
-                                  :data-ref (str "offset-" ix)} image-id))
-                 gallery)])
+   (when header-data
+     [:div.fixed.z4.top-0.left-0.right-0
+      (header/built-component header-data nil)])
+   [:div {:style {:height "72px"}}]
+   (map-indexed (fn [ix image-id]
+                  (ui/ucare-img {:class    "col-12 block"
+                                 :width    580
+                                 :data-ref (str "offset-" ix)} image-id))
+                gallery)])
 
 (defmethod effects/perform-effects events/navigate-adventure-stylist-gallery
   [dispatch event {:keys [stylist-id query-params] :as args} prev-app-state app-state]

@@ -3,9 +3,7 @@
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.platform.carousel :as carousel]
-            [storefront.platform.component-utils :as utils]
-            
-            ))
+            [storefront.platform.component-utils :as utils]))
 
 (defn ^:private star [index type]
   [:span.mrp1
@@ -210,19 +208,19 @@
 (defcomponent control-organism
   [data _ _]
   [:div.flex.flex-column.left-align.mx3.my3
-    {:key (:react/key data)}
-    (control-stylist-card-header-molecule data)
-    [:div.col-12
-     (control-stylist-card-gallery-molecule data)]
-    [:div.col-12.p2
-     (control-stylist-card-cta-molecule data)]])
+   {:key (:react/key data)}
+   (control-stylist-card-header-molecule data)
+   [:div.col-12
+    (control-stylist-card-gallery-molecule data)]
+   [:div.col-12.p2
+    (control-stylist-card-cta-molecule data)]])
 
 (defcomponent experiment-organism
   [data _ _]
   [:div.flex.flex-column.left-align.rounded.border.border-light-gray.mx3.my3.bg-white
-    {:key (:react/key data)}
-    (stylist-card-header-molecule data)
-    [:div.col-12
-     (stylist-card-gallery-molecule data)]
-    [:div.col-12.p2
-     (stylist-card-cta-molecule data)]])
+   {:key (:react/key data)}
+   (stylist-card-header-molecule data)
+   [:div.col-12
+    (stylist-card-gallery-molecule data)]
+   [:div.col-12.p2
+    (stylist-card-cta-molecule data)]])

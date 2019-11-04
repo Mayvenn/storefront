@@ -10,10 +10,8 @@
             [storefront.transitions :as transitions]
             [storefront.effects :as effects]
             [storefront.component :as component :refer [defcomponent defdynamic-component]]
-            
-            [storefront.component :as component :refer [defcomponent]]
-            ))
 
+            [storefront.component :as component :refer [defcomponent]]))
 
 (defmethod effects/perform-effects events/stripe-payment-request-button-inserted
   [_ event {:keys []} _ app-state]

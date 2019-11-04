@@ -9,7 +9,6 @@
             [clojure.string :as string]
             [storefront.keypaths :as keypaths]))
 
-
 (defn ^:private product-items->browser-pay-line-items [order]
   (map (fn [{:keys [quantity unit-price] :as item}]
          {:label (str (products/product-title item) " - QTY " quantity)
@@ -26,7 +25,7 @@
 (defn ^:private shipping->browser-pay-line-item [order]
   (let [{:keys [quantity unit-price]} (orders/shipping-item order)]
     (adjustment->browser-pay-line-item {:name "Shipping"
-                                  :price (int (* quantity unit-price))})))
+                                        :price (int (* quantity unit-price))})))
 
 (defn ^:private tax->browser-pay-line-item [order]
   (adjustment->browser-pay-line-item (orders/tax-adjustment order)))
@@ -99,7 +98,7 @@
     "invalid_payer_email"
 
     :else
-    "fail") )
+    "fail"))
 
 (defn ^:private waiter->browser-pay-shipping-method [{:keys [name price sku]}]
   {:label name

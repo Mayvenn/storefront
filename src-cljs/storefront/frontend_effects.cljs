@@ -365,7 +365,7 @@
 
 (defmethod effects/perform-effects events/navigate-stylist [_ event args _ app-state]
   (when (not (and (get-in app-state keypaths/user-token)
-                (get-in app-state keypaths/user-store-id)))
+                  (get-in app-state keypaths/user-store-id)))
     (effects/redirect events/navigate-sign-in)))
 
 (defmethod effects/perform-effects events/control [_ _ args _ app-state]
@@ -506,7 +506,7 @@
       (do
         (redirect-to-return-navigation app-state)
         (messages/handle-message events/flash-later-show-success
-                        {:message "You are already signed in."})))))
+                                 {:message "You are already signed in."})))))
 
 (defmethod effects/perform-effects events/navigate-sign-in [_ event args _ app-state]
   (facebook/insert)
@@ -530,7 +530,7 @@
 
 (defmethod effects/perform-effects events/navigate-not-found [_ event args _ app-state]
   (messages/handle-message events/flash-show-failure
-                  {:message "The page you were looking for could not be found."}))
+                           {:message "The page you were looking for could not be found."}))
 
 (defmethod effects/perform-effects events/control-sign-in-submit [_ event args _ app-state]
   (api/sign-in (get-in app-state keypaths/session-id)
@@ -571,11 +571,11 @@
 
 (defmethod effects/perform-effects events/facebook-failure-sign-in [_ _ args _ app-state]
   (messages/handle-message events/flash-show-failure
-                  {:message "Could not sign in with Facebook.  Please try again, or sign in with email and password."}))
+                           {:message "Could not sign in with Facebook.  Please try again, or sign in with email and password."}))
 
 (defmethod effects/perform-effects events/facebook-email-denied [_ _ args _ app-state]
   (messages/handle-message events/flash-show-failure
-                  {:message "We need your Facebook email address to communicate with you about your orders. Please try again."}))
+                           {:message "We need your Facebook email address to communicate with you about your orders. Please try again."}))
 
 (defn- abort-pending-requests [requests]
   (doseq [{xhr :xhr} requests] (when xhr (ajax/abort xhr))))
@@ -683,9 +683,9 @@
    (get-in app-state keypaths/order)
    code
    #(messages/handle-message events/api-success-update-order-remove-promotion-code
-                    {:order        %
-                     :hide-success hide-success
-                     :promo-code   code})))
+                             {:order        %
+                              :hide-success hide-success
+                              :promo-code   code})))
 
 (defmethod effects/perform-effects events/control-checkout-remove-promotion [_ _ args _ app-state]
   (messages/handle-message events/order-remove-promotion args))
@@ -709,16 +709,16 @@
                                             (-> app-state
                                                 (get-in adventure.keypaths/adventure-servicing-stylist)
                                                 :stylist-id)))]
-      (if incomplete-order?
-        (do
-          (when-let [sku-ids (->> order orders/product-items (map :sku) seq)]
-            (messages/handle-message events/ensure-sku-ids {:sku-ids sku-ids}))
+    (if incomplete-order?
+      (do
+        (when-let [sku-ids (->> order orders/product-items (map :sku) seq)]
+          (messages/handle-message events/ensure-sku-ids {:sku-ids sku-ids}))
 
-          (when servicing-stylist-not-loaded?
-            (api/fetch-matched-stylist (get-in app-state keypaths/api-cache) servicing-stylist-id))
-          (cookie-jar/save-order (get-in app-state keypaths/cookie) order)
-          (add-pending-promo-code app-state order))
-        (messages/handle-message events/clear-order))))
+        (when servicing-stylist-not-loaded?
+          (api/fetch-matched-stylist (get-in app-state keypaths/api-cache) servicing-stylist-id))
+        (cookie-jar/save-order (get-in app-state keypaths/cookie) order)
+        (add-pending-promo-code app-state order))
+      (messages/handle-message events/clear-order))))
 
 (defmethod effects/perform-effects events/clear-order [_ _ _ _ app-state]
   (cookie-jar/clear-order (get-in app-state keypaths/cookie)))
@@ -734,7 +734,7 @@
   (if (get-in app-state keypaths/telligent-community-url)
     (community/redirect-to-telligent-as-user app-state)
     (messages/handle-message events/flash-later-show-success
-                    {:message "Logged in successfully"})))
+                             {:message "Logged in successfully"})))
 
 (defmethod effects/perform-effects events/api-success-auth-sign-up [dispatch event args _ app-state]
   (messages/handle-message events/flash-later-show-success {:message "Welcome! You have signed up successfully."}))
@@ -882,8 +882,8 @@
                                                                (get-in app-state keypaths/order)
                                                                "freeinstall"
                                                                #(messages/handle-message events/api-success-update-order
-                                                                                {:order      %
-                                                                                 :promo-code "freeinstall"}))
+                                                                                         {:order      %
+                                                                                          :promo-code "freeinstall"}))
                                     (effects/redirect events/navigate-cart)
                                     (messages/handle-later events/api-failure-errors errors)
                                     (scroll/snap-to-top))
@@ -920,7 +920,7 @@
   [_ _ {:keys [hide-success]} _ app-state]
   (when-not hide-success
     (messages/handle-message events/flash-show-success {:message "The coupon code was successfully removed from your order."
-                                               :scroll? false})))
+                                                        :scroll? false})))
 
 (defmethod effects/perform-effects events/api-success-update-order-add-promotion-code
   [_ _ {:keys [promo-code allow-dormant?]} _ app-state]
@@ -967,8 +967,6 @@
                                        {:user-id    (get-in app-state keypaths/user-id)
                                         :user-token (get-in app-state keypaths/user-token)
                                         :stylist-id (get-in app-state keypaths/user-store-id)}))
-
-
 
 (defmethod effects/perform-effects events/module-loaded [_ _ {:keys [module-name for-navigation-event]} app-state-before app-state]
   (let [already-loaded-module? (= (get-in app-state-before keypaths/modules)

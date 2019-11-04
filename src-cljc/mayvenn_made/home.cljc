@@ -8,8 +8,7 @@
             [storefront.components.ui :as ui]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            
-            
+
             [storefront.component :as component :refer [defcomponent]]
             [storefront.component :as component :refer [defcomponent]]))
 
@@ -19,18 +18,18 @@
         desktop-url (-> desktop :file :url)]
     [:a (utils/fake-href events/control-mayvenn-made-hero-clicked)
      (conj (into [:picture]
-                   (for [img-type    ["webp" "jpg"]
-                         [url media] [[desktop-url "(min-width: 750px)"]
-                                      [mobile-url nil]]]
-                     (ui/source url
-                                {:media   media
-                                 :src-set {"1x" {}}
-                                 :type    img-type})))
+                 (for [img-type    ["webp" "jpg"]
+                       [url media] [[desktop-url "(min-width: 750px)"]
+                                    [mobile-url nil]]]
+                   (ui/source url
+                              {:media   media
+                               :src-set {"1x" {}}
+                               :type    img-type})))
            [:img.block.col-12 {:src mobile-url :alt alt}])]))
 
 (defcomponent component [{:keys [image/hero]} owner opts]
   [:div
-    [:section (hero-image hero)]])
+   [:section (hero-image hero)]])
 
 (defn query
   [data]

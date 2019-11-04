@@ -23,8 +23,7 @@
             [storefront.platform.reviews :as reviews]
             [storefront.request-keys :as request-keys]
             [ui.molecules :as ui-molecules]
-            
-            
+
             [storefront.component :as component :refer [defcomponent]]
             [storefront.component :as component :refer [defcomponent]]))
 
@@ -174,15 +173,15 @@
 (defcomponent component
   [queried-data owner opts]
   [:div.container.mb4
-     [:div.clearfix
-      [:div.col-6-on-tb-dt.p2
-       (ui-molecules/return-link queried-data)]]
-     (look-details-body queried-data)])
+   [:div.clearfix
+    [:div.col-6-on-tb-dt.p2
+     (ui-molecules/return-link queried-data)]]
+   (look-details-body queried-data)])
 
 (defcomponent adventure-component
   [look-details owner opts]
   [:div.container.mb4
-     (look-details-body look-details)])
+   (look-details-body look-details)])
 
 (defn put-skus-on-shared-cart [shared-cart skus]
   (let [shared-cart-variant-ids (into #{}
@@ -209,11 +208,11 @@
       {:discount-text    (some-> promotion% (str "% + 10% Bundle Discount"))
        :discounted-price (or
                           (some->> promotion%
-                                  spice/parse-int
-                                  (* 0.01)
-                                  (+ 0.10) ;; bundle-discount
-                                  (- 1.0)  ;; 100% - discount %
-                                  (* price))
+                                   spice/parse-int
+                                   (* 0.01)
+                                   (+ 0.10) ;; bundle-discount
+                                   (- 1.0)  ;; 100% - discount %
+                                   (* price))
                           price)}))) ;; discounted price was unparsable
 
 (defn query [data]

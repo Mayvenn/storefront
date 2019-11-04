@@ -81,7 +81,6 @@
 (defn add-rounded-floats [a b]
   (/ (.toFixed (+ (* 100.0 a) (* 100.0 b)) 0) 100.0))
 
-
 (defn line-item-subtotal [{:keys [quantity unit-price]}]
   (* quantity unit-price))
 

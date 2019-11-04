@@ -91,9 +91,9 @@
                              (GET "/v2/orders/:number" req {:status 404
                                                             :body   "{}"})
                              (GET "/v2/products" req
-                                  {:status 200
-                                   :body   (generate-string {:products [{:catalog/product-id "33"
-                                                                         :page/slug          "brazilian-loose-wave-lace-closures"}]})})
+                               {:status 200
+                                :body   (generate-string {:products [{:catalog/product-id "33"
+                                                                      :page/slug          "brazilian-loose-wave-lace-closures"}]})})
                              (GET "/store" req common/storeback-stylist-response)))]
     (with-services {:storeback-handler storeback-handler}
       (with-handler handler
@@ -361,12 +361,12 @@
 
 (deftest redirects-stylist-profile-to-correct-store-slug-in-url
   (let [stylist-not-found-handler (GET "/v1/stylist/matched-by-id" req
-                                       {:status 404
-                                        :body   (generate-string {})})
+                                    {:status 404
+                                     :body   (generate-string {})})
         stylist-found-handler     (GET "/v1/stylist/matched-by-id" req
-                                       {:status 200
-                                        :body   (generate-string {:stylist {:stylist-id "9"
-                                                                            :store-slug "thebestmatch"}})})]
+                                    {:status 200
+                                     :body   (generate-string {:stylist {:stylist-id "9"
+                                                                         :store-slug "thebestmatch"}})})]
     (testing "when loading the stylist profile page"
       (testing "when the stylist is found"
         (let [[_ storeback-handler]
@@ -407,7 +407,7 @@
               (let [resp (handler (mock/request :get "https://shop.mayvenn.com/stylist/9-foo/gallery"))]
                 (is (= 302 (:status resp)) (pr-str resp))
                 (is (= "/adv/find-your-stylist?error=stylist-not-found"
-                       (get-in resp [:headers "Location"])))))))))) )
+                       (get-in resp [:headers "Location"])))))))))))
 
 (defn is-redirected-from-freeinstall-to-shop [source-path dest-path]
   (with-handler handler

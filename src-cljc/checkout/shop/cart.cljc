@@ -38,10 +38,9 @@
    [storefront.request-keys :as request-keys]
    [ui.molecules :as ui-molecules]
    [ui.promo-banner :as promo-banner]
-            [storefront.component :as component :refer [defcomponent]]
-            
-            
-            [storefront.component :as component :refer [defcomponent]]))
+   [storefront.component :as component :refer [defcomponent]]
+
+   [storefront.component :as component :refer [defcomponent]]))
 
 (defmethod effects/perform-effects events/control-cart-add-freeinstall-coupon
   [_ _ _ _ app-state]
@@ -94,7 +93,7 @@
   (render [this]
           (component/html
            [:div#confetti-spout.fixed.top-0.mx-auto
-            {:style {:right "50%"} }
+            {:style {:right "50%"}}
             [:div.mx-auto {:style {:width "100%"}
                            :ref   (component/use-ref this "confetti-spout")}]])))
 
@@ -217,7 +216,7 @@
   (when (and id label target)
     (ui/teal-button
      (merge {:data-test id} (apply utils/fake-href target))
-     [:div.flex.items-center.justify-center.inherit-color label]) ))
+     [:div.flex.items-center.justify-center.inherit-color label])))
 
 (defn empty-cart-body-molecule
   [{:empty-cart-body/keys [id primary secondary image-id]}]
@@ -232,13 +231,13 @@
 
 (defcomponent empty-component [queried-data _ _]
   (ui/narrow-container
-    [:div
-     [:div.center {:data-test "empty-cart"}
-      [:div.px4.my2 (ui-molecules/return-link queried-data)]
+   [:div
+    [:div.center {:data-test "empty-cart"}
+     [:div.px4.my2 (ui-molecules/return-link queried-data)]
 
-      [:div.col-12.border-bottom.border-light-silver.mb4]
+     [:div.col-12.border-bottom.border-light-silver.mb4]
 
-      (empty-cart-body-molecule queried-data)
+     (empty-cart-body-molecule queried-data)
 
      [:div.col-9.mx-auto
       (empty-cta-molecule queried-data)]]]))
@@ -293,6 +292,8 @@
 
 
 ;; TODO: suggestions should be paired with appropriate cart item here
+
+
 (defn cart-items-query
   [app-state
    {:mayvenn-install/keys
@@ -388,7 +389,7 @@
 (defn coupon-code->remove-promo-action [coupon-code]
   {:cart-summary-line/action-id     "cart-remove-promo"
    :cart-summary-line/action-icon   (svg/close-x {:class "stroke-white fill-gray"})
-   :cart-summary-line/action-target [events/control-checkout-remove-promotion {:code coupon-code}]} )
+   :cart-summary-line/action-target [events/control-checkout-remove-promotion {:code coupon-code}]})
 
 (defn cart-summary-query
   [{:as order :keys [adjustments]}
@@ -526,56 +527,56 @@
                                                 :catalog/category-id "23"}
                                                (when last-texture-added
                                                  {:query-params {:subsection last-texture-added}}))]]
-        (cond-> {:suggestions                        (suggestions/consolidated-query data)
-                 :line-items                         line-items
-                 :skus                               skus
-                 :products                           products
-                 :promo-banner                       (when (zero? (orders/product-quantity order))
-                                                       (promo-banner/query data))
-                 :call-out                           (call-out/query data)
-                 :checkout-disabled?                 (or freeinstall-entered-cart-incomplete?
-                                                         (update-pending? data))
-                 :redirecting-to-paypal?             (get-in data keypaths/cart-paypal-redirect)
-                 :share-carts?                       (stylists/own-store? data)
-                 :requesting-shared-cart?            (utils/requesting? data request-keys/create-shared-cart)
-                 :show-browser-pay?                  (and (get-in data keypaths/loaded-stripe)
-                                                          (experiments/browser-pay? data)
-                                                          (seq (get-in data keypaths/shipping-methods))
-                                                          (seq (get-in data keypaths/states)))
-                 :recently-added-skus                recently-added-sku-ids
-                 :return-link/id                     "continue-shopping"
-                 :return-link/copy                   "Continue Shopping"
-                 :return-link/event-message          add-items-action
-                 :quantity-remaining                 (:mayvenn-install/quantity-remaining mayvenn-install)
-                 :locked?                            locked?
-                 :entered?                           entered?
-                 :applied?                           (:mayvenn-install/applied? mayvenn-install)
-                 :remove-freeinstall-event           [events/control-checkout-remove-promotion {:code "freeinstall"}]
-                 :cart-summary                       (merge
-                                                      (cart-summary-query order mayvenn-install)
-                                                      (when (and (orders/no-applied-promo? order)
-                                                                 (not entered?))
-                                                        {:promo-field-data (promo-input-query data)}))
-                 :cart-items                         (cart-items-query data mayvenn-install line-items skus add-items-action)
-                 :quadpay/order-total                (when-not locked? (:total order))
-                 :quadpay/show?                      (get-in data keypaths/loaded-quadpay)
-                 :quadpay/directive                  (if locked? :no-total :just-select)}
+    (cond-> {:suggestions                        (suggestions/consolidated-query data)
+             :line-items                         line-items
+             :skus                               skus
+             :products                           products
+             :promo-banner                       (when (zero? (orders/product-quantity order))
+                                                   (promo-banner/query data))
+             :call-out                           (call-out/query data)
+             :checkout-disabled?                 (or freeinstall-entered-cart-incomplete?
+                                                     (update-pending? data))
+             :redirecting-to-paypal?             (get-in data keypaths/cart-paypal-redirect)
+             :share-carts?                       (stylists/own-store? data)
+             :requesting-shared-cart?            (utils/requesting? data request-keys/create-shared-cart)
+             :show-browser-pay?                  (and (get-in data keypaths/loaded-stripe)
+                                                      (experiments/browser-pay? data)
+                                                      (seq (get-in data keypaths/shipping-methods))
+                                                      (seq (get-in data keypaths/states)))
+             :recently-added-skus                recently-added-sku-ids
+             :return-link/id                     "continue-shopping"
+             :return-link/copy                   "Continue Shopping"
+             :return-link/event-message          add-items-action
+             :quantity-remaining                 (:mayvenn-install/quantity-remaining mayvenn-install)
+             :locked?                            locked?
+             :entered?                           entered?
+             :applied?                           (:mayvenn-install/applied? mayvenn-install)
+             :remove-freeinstall-event           [events/control-checkout-remove-promotion {:code "freeinstall"}]
+             :cart-summary                       (merge
+                                                  (cart-summary-query order mayvenn-install)
+                                                  (when (and (orders/no-applied-promo? order)
+                                                             (not entered?))
+                                                    {:promo-field-data (promo-input-query data)}))
+             :cart-items                         (cart-items-query data mayvenn-install line-items skus add-items-action)
+             :quadpay/order-total                (when-not locked? (:total order))
+             :quadpay/show?                      (get-in data keypaths/loaded-quadpay)
+             :quadpay/directive                  (if locked? :no-total :just-select)}
 
-          entered?
-          (merge {:checkout-caption-copy          "You'll be able to select your Mayvenn Certified Stylist after checkout."
-                  :servicing-stylist-portrait-url "//ucarecdn.com/bc776b8a-595d-46ef-820e-04915478ffe8/"})
+      entered?
+      (merge {:checkout-caption-copy          "You'll be able to select your Mayvenn Certified Stylist after checkout."
+              :servicing-stylist-portrait-url "//ucarecdn.com/bc776b8a-595d-46ef-820e-04915478ffe8/"})
 
-          (and entered? servicing-stylist)
-          (merge {:checkout-caption-copy              (str "After your order ships, you'll be connected with " (stylists/->display-name servicing-stylist) " over SMS to make an appointment.")
-                  :servicing-stylist-banner/id        "servicing-stylist-banner"
-                  :servicing-stylist-banner/name      (stylists/->display-name servicing-stylist)
-                  :servicing-stylist-banner/rating    {:rating/value (:rating servicing-stylist)}
-                  :servicing-stylist-banner/image-url (some-> servicing-stylist :portrait :resizable-url)
-                  :servicing-stylist-portrait-url     (-> servicing-stylist :portrait :resizable-url)})
+      (and entered? servicing-stylist)
+      (merge {:checkout-caption-copy              (str "After your order ships, you'll be connected with " (stylists/->display-name servicing-stylist) " over SMS to make an appointment.")
+              :servicing-stylist-banner/id        "servicing-stylist-banner"
+              :servicing-stylist-banner/name      (stylists/->display-name servicing-stylist)
+              :servicing-stylist-banner/rating    {:rating/value (:rating servicing-stylist)}
+              :servicing-stylist-banner/image-url (some-> servicing-stylist :portrait :resizable-url)
+              :servicing-stylist-portrait-url     (-> servicing-stylist :portrait :resizable-url)})
 
-          applied?
-          (merge {:confetti-spout/mode (get-in data keypaths/confetti-mode)
-                  :confetti-spout/id   "confetti-spout"}))))
+      applied?
+      (merge {:confetti-spout/mode (get-in data keypaths/confetti-mode)
+              :confetti-spout/id   "confetti-spout"}))))
 
 (defcomponent cart-component
   [{:keys [fetching-order?
@@ -583,12 +584,12 @@
            empty-cart
            full-cart]} owner opts]
   (if fetching-order?
-     [:div.py3.h2 ui/spinner]
-     [:div.col-7-on-dt.mx-auto
-      (if (and (zero? item-count)
-               (not (:entered? full-cart)))
-        (component/build empty-component empty-cart opts)
-        (component/build full-component full-cart opts))]))
+    [:div.py3.h2 ui/spinner]
+    [:div.col-7-on-dt.mx-auto
+     (if (and (zero? item-count)
+              (not (:entered? full-cart)))
+       (component/build empty-component empty-cart opts)
+       (component/build full-component full-cart opts))]))
 
 (defn query [data]
   {:fetching-order? (utils/requesting? data request-keys/get-order)
@@ -598,21 +599,21 @@
 
 (defcomponent template
   [{:keys [header footer popup promo-banner flash cart data nav-event]} _ _]
-   [:div.flex.flex-column {:style {:min-height    "100vh"
-                                    :margin-bottom "-1px"}}
-     #?(:cljs (popup/built-component popup nil))
+  [:div.flex.flex-column {:style {:min-height    "100vh"
+                                  :margin-bottom "-1px"}}
+   #?(:cljs (popup/built-component popup nil))
 
-     (header/built-component header nil)
-     (when promo-banner
-       (promo-banner/built-static-organism promo-banner nil))
-     [:div.relative.flex.flex-column.flex-auto
-      (flash/built-component flash nil)
+   (header/built-component header nil)
+   (when promo-banner
+     (promo-banner/built-static-organism promo-banner nil))
+   [:div.relative.flex.flex-column.flex-auto
+    (flash/built-component flash nil)
 
-      [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
-       (component/build cart-component cart nil)]
+    [:main.bg-white.flex-auto {:data-test (keypaths/->component-str nav-event)}
+     (component/build cart-component cart nil)]
 
-      [:footer
-       (storefront.footer/built-component footer nil)]]])
+    [:footer
+     (storefront.footer/built-component footer nil)]]])
 
 (defn page
   [app-state nav-event]

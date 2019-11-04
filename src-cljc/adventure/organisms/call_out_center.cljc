@@ -2,9 +2,7 @@
   (:require [clojure.spec.alpha :as s]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ui :as ui]
-            [storefront.platform.component-utils :as utils]
-            
-            ))
+            [storefront.platform.component-utils :as utils]))
 
 (defn ^:private cta-molecule
   [{:cta/keys [id label target]}]
@@ -19,22 +17,22 @@
 (defcomponent organism
   [{:call-out-center/keys [bg-class bg-ucare-id title subtitle] react-key :react/key :as query} _ _]
   [:div.p8
-    (merge
-     (when react-key {:key react-key})
-     (when bg-class  {:class bg-class})
-     (when bg-ucare-id
-       (let [bg-image-url (str "url('//ucarecdn.com/" bg-ucare-id "/-/format/auto/')")]
-         {:style {:background-position "right center"
-                  :background-repeat   "no-repeat"
-                  :background-size     "contain"
-                  :background-image    bg-image-url}})))
-    [:div.center.col-12
-     (when title
-       [:div.h1.white title])
-     (when subtitle
-       [:div.p3.white subtitle])]
-    [:div.col-9.mx-auto
-     (cta-molecule query)]])
+   (merge
+    (when react-key {:key react-key})
+    (when bg-class  {:class bg-class})
+    (when bg-ucare-id
+      (let [bg-image-url (str "url('//ucarecdn.com/" bg-ucare-id "/-/format/auto/')")]
+        {:style {:background-position "right center"
+                 :background-repeat   "no-repeat"
+                 :background-size     "contain"
+                 :background-image    bg-image-url}})))
+   [:div.center.col-12
+    (when title
+      [:div.h1.white title])
+    (when subtitle
+      [:div.p3.white subtitle])]
+   [:div.col-9.mx-auto
+    (cta-molecule query)]])
 
 (comment
 

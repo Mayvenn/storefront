@@ -7,8 +7,7 @@
             [storefront.events :as events]
             [storefront.transitions :as transitions]
             [storefront.keypaths :as keypaths]
-            
-            
+
             [storefront.component :as component :refer [defcomponent]]
             [storefront.component :as component :refer [defcomponent]]))
 
@@ -38,8 +37,8 @@
 
 (defcomponent component [{:keys [store]} owner opts]
   [:div.container
-    (title store)
-    (images store)])
+   (title store)
+   (images store)])
 
 (defn query [data]
   {:store (get-in data keypaths/store)})
@@ -50,6 +49,6 @@
 (defmethod effects/perform-effects events/navigate-store-gallery [_ event args _ app-state]
   #?(:cljs (api/get-store-gallery {:stylist-id (get-in app-state keypaths/store-stylist-id)})))
 
-(defmethod effects/perform-effects events/api-success-store-gallery-fetch [ _ event args _ app-state]
+(defmethod effects/perform-effects events/api-success-store-gallery-fetch [_ event args _ app-state]
   (when (empty? (get-in app-state keypaths/store-gallery-images))
     (effects/page-not-found)))

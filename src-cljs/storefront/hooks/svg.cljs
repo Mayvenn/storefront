@@ -10,6 +10,6 @@
                     (.setAttribute div-tag "class" "hide")
                     (tags/insert-body-bottom div-tag)))]
     (GET (assets/path "/images/sprites.svg")
-         {:format :raw
-          :handler handler
-          :response-format (raw-response-format)})))
+      {:format :raw
+       :handler handler
+       :response-format (raw-response-format)})))

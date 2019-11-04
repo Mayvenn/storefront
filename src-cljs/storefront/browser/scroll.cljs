@@ -60,11 +60,11 @@
 
 (defn scroll-to-elem [el]
   (let [scroll-top (.. (scroll-target) -scrollTop)
-         el-bottom (object/get (.getBoundingClientRect el) "bottom")
-         window-height js/window.innerHeight]
-     (when (> el-bottom window-height)
-       (scroll-to (- (+ scroll-top el-bottom scroll-padding)
-                     window-height)))))
+        el-bottom (object/get (.getBoundingClientRect el) "bottom")
+        window-height js/window.innerHeight]
+    (when (> el-bottom window-height)
+      (scroll-to (- (+ scroll-top el-bottom scroll-padding)
+                    window-height)))))
 (defn scroll-elem-to-top [el]
   (let [el-top (object/get (.getBoundingClientRect el) "top")
         scroll-top     (.. (scroll-target) -scrollTop)]
@@ -77,6 +77,6 @@
 (defn scroll-to-selector
   [selector]
   (when-let [el (.querySelector js/document selector)]
-   (scroll-to-elem el)))
+    (scroll-to-elem el)))
 
 ;; END ATTN:

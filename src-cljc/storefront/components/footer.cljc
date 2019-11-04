@@ -11,9 +11,7 @@
             [storefront.keypaths :as keypaths]
             [catalog.categories :as categories]
             [storefront.platform.component-utils :as utils]
-            [storefront.platform.numbers :as numbers]
-            
-            ))
+            [storefront.platform.numbers :as numbers]))
 
 (defn phone-uri [tel-num]
   (apply str "tel://+" (numbers/digits-only tel-num)))
@@ -101,19 +99,19 @@
 (defcomponent full-component
   [{:keys [contacts categories]} owner opts]
   [:div.h5.border-top.border-gray.bg-light-gray
-    [:div.container
-     [:div.col-12.clearfix
-      [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
-       ^:inline (shop-section {:partition-count 10 :categories categories})]
-      [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
-       ^:inline (contacts-section contacts)]
-      [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
-       ^:inline (social-section)]]]
+   [:div.container
+    [:div.col-12.clearfix
+     [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
+      ^:inline (shop-section {:partition-count 10 :categories categories})]
+     [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
+      ^:inline (contacts-section contacts)]
+     [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
+      ^:inline (social-section)]]]
 
-    [:div.mt3.bg-dark-gray.white.py1.px3.clearfix.h8
-     [:div
-      {:style {:margin-bottom "90px"}}
-      (component/build footer-links/component {:minimal? false} nil)]]])
+   [:div.mt3.bg-dark-gray.white.py1.px3.clearfix.h8
+    [:div
+     {:style {:margin-bottom "90px"}}
+     (component/build footer-links/component {:minimal? false} nil)]]])
 
 (defn contacts-query
   [data]

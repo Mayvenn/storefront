@@ -133,8 +133,8 @@
   (constructor [this props]
                (component/create-ref! this "qr-canvas")
                (set! (.-qr-canvas this) (component/use-ref this "qr-canvas"))
-              {:control (atom {})
-               :stream  (atom nil)})
+               {:control (atom {})
+                :stream  (atom nil)})
   (did-mount [this]
              (let [video        (js/document.createElement "video")
                    canvas       (component/get-ref this "qr-canvas")

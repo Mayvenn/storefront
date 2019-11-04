@@ -29,12 +29,12 @@
        (messages/handle-message events/clear-selected-location))))
 
 #?(:cljs
-  (defmethod transitions/transition-state events/control-adventure-location-submit
-    [_ event _ app-state]
-    (-> app-state
-        (assoc-in adventure.keypaths/adventure-matched-stylists nil)
-        (assoc-in adventure.keypaths/adventure-stylist-match-address
-                  (.-value (.getElementById js/document "stylist-match-address"))))))
+   (defmethod transitions/transition-state events/control-adventure-location-submit
+     [_ event _ app-state]
+     (-> app-state
+         (assoc-in adventure.keypaths/adventure-matched-stylists nil)
+         (assoc-in adventure.keypaths/adventure-stylist-match-address
+                   (.-value (.getElementById js/document "stylist-match-address"))))))
 
 #?(:cljs
    (defmethod effects/perform-effects events/control-adventure-location-submit

@@ -20,8 +20,7 @@
             [clojure.string :as string]
             [spice.core :as spice]
             [ui.molecules :as ui-molecules]
-            
-            
+
             [storefront.component :as component :refer [defcomponent]]
             [storefront.component :as component :refer [defcomponent]]))
 
@@ -62,10 +61,10 @@
    [:div.align-top.mb2
     [:span.dark-gray.shout "order details"]
     (component/build line-items/component
-                       {:line-items     line-items
-                        :shipment-count shipment-count
-                        :show-price?    false}
-                       {})]])
+                     {:line-items     line-items
+                      :shipment-count shipment-count
+                      :show-price?    false}
+                     {})]])
 
 (defn ^:private get-user-info [app-state]
   {:user-id    (get-in app-state keypaths/user-id)
@@ -79,9 +78,9 @@
 
 (defn voucher-status [sale balance-transfer-id popup-visible?]
   (let [set-popup-visible #(utils/send-event-callback
-                             events/control-v2-stylist-dashboard-balance-transfers-voucher-popup-set-visible
-                             {:value %1}
-                             %2)
+                            events/control-v2-stylist-dashboard-balance-transfers-voucher-popup-set-visible
+                            {:value %1}
+                            %2)
         voucher-status (-> sale sales/voucher-status)
         tooltip-text (sales/voucher-status->description voucher-status)]
     [:div
@@ -94,8 +93,8 @@
      (when (and balance-transfer-id (= :voucher/redeemed voucher-status))
        [:a.teal.ml1
         (utils/route-to
-          events/navigate-stylist-dashboard-balance-transfer-details
-          {:balance-transfer-id balance-transfer-id}) "View"])
+         events/navigate-stylist-dashboard-balance-transfer-details
+         {:balance-transfer-id balance-transfer-id}) "View"])
 
      (when tooltip-text
        [:div.border.border-teal.circle.teal.center.inline-block.ml1
@@ -118,55 +117,54 @@
         shipments                     (-> sale :order :shipments reverse)
         shipment-count                (-> shipments count fmt-with-leading-zero)]
     (if (or (not order-number) loading?)
-        [:div.my6.h2 ui/spinner]
-        [:div.container.mb4.px3
-         {:style {:display               :grid
-                  :grid-template-columns "2em 1fr"
-                  :grid-template-areas   (str "'back-btn back-btn'"
-                                              "'type-icon title'"
-                                              "'spacer fields'")}}
-         [:div {:style {:grid-area "back-btn"}}
-          [:div.py2.pl (ui-molecules/return-link queried-data)]]
-         [:div {:style {:grid-area "type-icon"}}
-          ^:inline (svg/box-package {:height 18
-                                     :width  25})]
-         [:div
-          {:style {:grid-area "title"}}
-          [:h4.medium (orders/first-name-plus-last-name-initial order)]]
-         [:div {:style {:grid-area "fields"}}
-          (if (seq voucher)
-            (info-columns
-             ["order number" order-number]
-             ["voucher type" (get voucher :campaign-name "--")])
-            (info-block "order number" order-number))
-          (if (seq voucher)
-            (info-columns
-             ["order date" (some-> placed-at f/long-date)]
-             ["voucher status" (voucher-status sale balance-transfer-id popup-visible?)])
-            (info-block "order date" (some-> placed-at f/long-date)))
-          [:div.col.col-12.pt4
-           (for [shipment shipments]
-             (let [nth-shipment (some-> shipment :number (subs 1) spice/parse-int fmt-with-leading-zero)]
-               [:div.pt3.h6
-                {:data-test (str "shipment-" nth-shipment)}
-                [:span.bold.shout (when (= nth-shipment shipment-count) "Latest ") "Shipment "]
-                [:span nth-shipment
-                 " of "
-                 shipment-count]
-                (shipment-details shipment nth-shipment)]))]]])))
+      [:div.my6.h2 ui/spinner]
+      [:div.container.mb4.px3
+       {:style {:display               :grid
+                :grid-template-columns "2em 1fr"
+                :grid-template-areas   (str "'back-btn back-btn'"
+                                            "'type-icon title'"
+                                            "'spacer fields'")}}
+       [:div {:style {:grid-area "back-btn"}}
+        [:div.py2.pl (ui-molecules/return-link queried-data)]]
+       [:div {:style {:grid-area "type-icon"}}
+        ^:inline (svg/box-package {:height 18
+                                   :width  25})]
+       [:div
+        {:style {:grid-area "title"}}
+        [:h4.medium (orders/first-name-plus-last-name-initial order)]]
+       [:div {:style {:grid-area "fields"}}
+        (if (seq voucher)
+          (info-columns
+           ["order number" order-number]
+           ["voucher type" (get voucher :campaign-name "--")])
+          (info-block "order number" order-number))
+        (if (seq voucher)
+          (info-columns
+           ["order date" (some-> placed-at f/long-date)]
+           ["voucher status" (voucher-status sale balance-transfer-id popup-visible?)])
+          (info-block "order date" (some-> placed-at f/long-date)))
+        [:div.col.col-12.pt4
+         (for [shipment shipments]
+           (let [nth-shipment (some-> shipment :number (subs 1) spice/parse-int fmt-with-leading-zero)]
+             [:div.pt3.h6
+              {:data-test (str "shipment-" nth-shipment)}
+              [:span.bold.shout (when (= nth-shipment shipment-count) "Latest ") "Shipment "]
+              [:span nth-shipment
+               " of "
+               shipment-count]
+              (shipment-details shipment nth-shipment)]))]]])))
 
 (defn initialize-shipments-for-returns [shipments]
   (for [shipment shipments]
     (assoc shipment :line-items
            (mapv (merge {:quantity-returned 0})
-                (:line-items shipment) ))))
+                 (:line-items shipment)))))
 
 (defn allocate-returned-quantity [returned-quantities {:as line-item :keys [id quantity]}]
   (assoc line-item
          :returned-quantity
          (min quantity
               (get returned-quantities id 0))))
-
 
 (defn subtract-allocated-returns [returned-line-items returned-quantities]
   (let [indexed-returned-line-items (->> returned-line-items

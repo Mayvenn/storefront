@@ -32,13 +32,13 @@
 (defmethod transitions/transition-state events/navigate-adventure-stylist-results-pre-purchase
   [_ _ args app-state]
   (let [{:keys [lat long]} (:query-params args)]
-        (cond-> app-state
-          (and lat long)
-          (assoc-in adventure.keypaths/adventure-stylist-match-location {:latitude  (spice/parse-double lat)
-                                                                         :longitude (spice/parse-double long)})
+    (cond-> app-state
+      (and lat long)
+      (assoc-in adventure.keypaths/adventure-stylist-match-location {:latitude  (spice/parse-double lat)
+                                                                     :longitude (spice/parse-double long)})
 
-          (nil? (get-in app-state adventure.keypaths/adventure-matched-stylists))
-          (assoc-in adventure.keypaths/adventure-stylist-results-delaying? true))))
+      (nil? (get-in app-state adventure.keypaths/adventure-matched-stylists))
+      (assoc-in adventure.keypaths/adventure-stylist-results-delaying? true))))
 
 (defmethod effects/perform-effects events/navigate-adventure-stylist-results-pre-purchase
   [_ _ {:keys [query-params]} _ app-state]

@@ -11,9 +11,7 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.request-keys :as request-keys]
-            
-            ))
+            [storefront.request-keys :as request-keys]))
 
 (defn ^:private text->data-test-name [name]
   (-> name
@@ -89,45 +87,45 @@
            subtotal] :as data} owner _]
 
   [:div {:data-test "cart-order-summary"}
-    [:div.hide-on-dt.border-top.border-light-gray]
-    [:div.py1.border-bottom.border-light-gray
-     [:table.col-12
-      [:tbody
-       (summary-row {:class     "black"
-                     :data-test "subtotal"} "Subtotal" subtotal)
-       (when shipping-cost
-         (summary-row {:class "black"} "Shipping" shipping-cost))
+   [:div.hide-on-dt.border-top.border-light-gray]
+   [:div.py1.border-bottom.border-light-gray
+    [:table.col-12
+     [:tbody
+      (summary-row {:class     "black"
+                    :data-test "subtotal"} "Subtotal" subtotal)
+      (when shipping-cost
+        (summary-row {:class "black"} "Shipping" shipping-cost))
 
-       (when (orders/no-applied-promo? order)
-         [:tr.h5
-          [:td
-           {:col-span "2"}
-           (promo-entry promo-data)]])
+      (when (orders/no-applied-promo? order)
+        [:tr.h5
+         [:td
+          {:col-span "2"}
+          (promo-entry promo-data)]])
 
-       (for [[i {:keys [name price coupon-code] :as adjustment}] (map-indexed vector adjustments-including-tax)]
-         (when (adjustments/non-zero-adjustment? adjustment)
-           (summary-row
-            {:key       (str i "-" name)
-             :data-test (text->data-test-name name)}
-            [:div.flex.items-center.align-middle
-             (when (= "Bundle Discount" name)
-               (svg/discount-tag {:class  "mxnp6"
-                                  :height "2em" :width "2em"}))
-             (orders/display-adjustment-name name)
-             (when coupon-code
-               [:a.ml1.h6.gray.flex.items-center
-                (merge {:data-test "cart-remove-promo"}
-                       (utils/fake-href events/control-checkout-remove-promotion
-                                        {:code coupon-code}))
-                (svg/close-x {:class "stroke-white fill-gray"})])]
-            (if (and freeinstall-line-item-data
-                     (= "freeinstall" coupon-code))
-              (- 0 (:price freeinstall-line-item-data))
-              price))))
+      (for [[i {:keys [name price coupon-code] :as adjustment}] (map-indexed vector adjustments-including-tax)]
+        (when (adjustments/non-zero-adjustment? adjustment)
+          (summary-row
+           {:key       (str i "-" name)
+            :data-test (text->data-test-name name)}
+           [:div.flex.items-center.align-middle
+            (when (= "Bundle Discount" name)
+              (svg/discount-tag {:class  "mxnp6"
+                                 :height "2em" :width "2em"}))
+            (orders/display-adjustment-name name)
+            (when coupon-code
+              [:a.ml1.h6.gray.flex.items-center
+               (merge {:data-test "cart-remove-promo"}
+                      (utils/fake-href events/control-checkout-remove-promotion
+                                       {:code coupon-code}))
+               (svg/close-x {:class "stroke-white fill-gray"})])]
+           (if (and freeinstall-line-item-data
+                    (= "freeinstall" coupon-code))
+             (- 0 (:price freeinstall-line-item-data))
+             price))))
 
-       (when (pos? store-credit)
-         (summary-row "Store Credit" (- store-credit)))]]]
-    (summary-total-section data)])
+      (when (pos? store-credit)
+        (summary-row "Store Credit" (- store-credit)))]]]
+   (summary-total-section data)])
 
 (defn query [data]
   (let [order                      (get-in data keypaths/order)

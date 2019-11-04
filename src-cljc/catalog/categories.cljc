@@ -651,7 +651,7 @@
     :page.meta/description
     (copy "Get the hair of your dreams in an instant with our seamless clip-in extensions."
           "Featuring a thin, polyurethane (PU) weft that flawlessly blends with your own hair."
-          "Free shipping. Free 30 day returns.""Made with 100% human hair extensions.")
+          "Free shipping. Free 30 day returns." "Made with 100% human hair extensions.")
 
     :opengraph/title       "Mayvenn Clip-In Hair Extensions - Free shipping. Free 30 day returns. Made with 100% human hair extensions."
     :opengraph/description "Blending flawlessly with your own hair and backed by our 30 Day Quality Guarantee, our seamless clip-in extensions are the best quality products on the market and ships free!"

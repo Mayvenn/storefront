@@ -17,8 +17,7 @@
             [storefront.effects :as effects]
             [storefront.request-keys :as request-keys]
             [storefront.api :as api]
-            
-            
+
             [storefront.component :as component :refer [defcomponent]]
             [storefront.component :as component :refer [defcomponent]]))
 
@@ -46,7 +45,7 @@
       [:div {:data-test (str "line-item-price-ea-" sku)} "Price: " (mf/as-money-without-cents unit-price) " ea"])
     [:div
      (when-let [length (:length variant-attrs)]
-       [:span {:data-test (str "line-item-length-" sku)} length "” " ])
+       [:span {:data-test (str "line-item-length-" sku)} length "” "])
      [:span {:data-test (str "line-item-quantity-" sku)} "(Qty: " quantity ")"]]]))
 
 (defn ^:private summary-row
@@ -77,7 +76,6 @@
        (summary-row "Shipping" shipping-total))
 
      (summary-row "Total" commissionable-amount)]))
-
 
 (defn ^:private commission-component
   [{:keys [balance-transfer fetching? line-items] :as queried-data}]
@@ -127,24 +125,24 @@
 (defn ^:private instapay-payout-details [date-string payout-method]
   [:div
    (info-columns
-     ["Date Sent" date-string]
-     ["Estimated Arrival" (estimated-arrival payout-method)])
+    ["Date Sent" date-string]
+    ["Estimated Arrival" (estimated-arrival payout-method)])
    (info-block
-     "Card" (str "xxxx-xxxx-xxxx-" (or (:last-4 payout-method)
-                                       "????")))])
+    "Card" (str "xxxx-xxxx-xxxx-" (or (:last-4 payout-method)
+                                      "????")))])
 
 (defn ^:private paypal-payout-details [date-string payout-method]
   [:div
    (info-columns
-     ["Date Sent" date-string]
-     ["Estimated Arrival" "Instant"])
+    ["Date Sent" date-string]
+    ["Estimated Arrival" "Instant"])
    (info-block "Paypal Email Address" (:email payout-method))])
 
 (defn ^:private check-payout-details [date-string payout-method]
   [:div
    (info-columns
-     ["Date Sent" date-string]
-     ["Estimated Arrival" "7-10 Business Days"])
+    ["Date Sent" date-string]
+    ["Estimated Arrival" "7-10 Business Days"])
    (info-block  "Mailing Address " [:div
                                     [:div (-> payout-method :address :address1)]
                                     [:div (-> payout-method :address :address2)]
@@ -158,8 +156,8 @@
 (defn ^:private venmo-payout-details [date-string payout-method]
   [:div
    (info-columns
-     ["Date Sent" date-string]
-     ["Estimated Arrival" "Instant"])
+    ["Date Sent" date-string]
+    ["Estimated Arrival" "Instant"])
    (info-block "Venmo Phone" (:phone payout-method))])
 
 (defn ^:private payout-method-details [date-string payout-method]
@@ -239,10 +237,9 @@
                          events/navigate-stylist-dashboard-order-details
                          {:order-number order-number}))
                        order-number
-                       [:span.teal " View" ]]))]]
+                       [:span.teal " View"]]))]]
       [:div.col.col-2.mtp1.right-align
        [:div.h5.medium.green (mf/as-money amount)]]]]))
-
 
 (defn query [data]
   (let [balance-transfer-id (get-in data keypaths/stylist-earnings-balance-transfer-details-id)
@@ -266,13 +263,13 @@
 
 (defcomponent component [{:keys [fetching? balance-transfer] :as data} owner opts]
   (if (and fetching? (not balance-transfer))
-     [:div.my2.h2 ui/spinner]
-     (when balance-transfer
-       (case (:type balance-transfer)
-         "payout"        (payout-component data)
-         "commission"    (commission-component data)
-         "award"         (award-component data)
-         "voucher_award" (voucher-award-component data)))))
+    [:div.my2.h2 ui/spinner]
+    (when balance-transfer
+      (case (:type balance-transfer)
+        "payout"        (payout-component data)
+        "commission"    (commission-component data)
+        "award"         (award-component data)
+        "voucher_award" (voucher-award-component data)))))
 
 (defn ^:export built-component [data opts]
   (component/build component (query data) opts))

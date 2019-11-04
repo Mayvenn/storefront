@@ -12,8 +12,7 @@
             [storefront.effects :as effects]
             [storefront.request-keys :as request-keys]
             [storefront.component :as component :refer [defcomponent]]
-            
-            
+
             [storefront.component :as component :refer [defcomponent]]
             [storefront.component :as component :refer [defcomponent]]))
 

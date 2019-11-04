@@ -167,11 +167,11 @@
     (let [[_ storeback-handler] (with-requests-chan (routes
                                                      common/default-storeback-handler
                                                      (GET "/v2/orders/:number"
-                                                          req {:status 404
-                                                               :body   "{}"})
+                                                       req {:status 404
+                                                            :body   "{}"})
                                                      (GET "/v2/products" req
-                                                          {:status 200
-                                                           :body   (generate-string {:products []})})))]
+                                                       {:status 200
+                                                        :body   (generate-string {:products []})})))]
       (with-services {:storeback-handler storeback-handler}
         (with-handler handler
           (let [resp (handler (mock/request :get "https://bob.mayvenn.com/products/99-red-balloons"))]
@@ -180,9 +180,9 @@
     (let [[_ storeback-handler] (with-requests-chan (routes
                                                      common/default-storeback-handler
                                                      (GET "/v2/products" req
-                                                          {:status 200
-                                                           :body   (generate-string {:products []
-                                                                                     :skus     []})})))]
+                                                       {:status 200
+                                                        :body   (generate-string {:products []
+                                                                                  :skus     []})})))]
       (with-services {:storeback-handler storeback-handler}
         (with-handler handler
           (let [resp (handler (mock/request :get "https://bob.mayvenn.com/products/104-dyed-100-human-hair-brazilian-loose-wave-bundle?SKU=BLWLR1JB1"))]
@@ -193,72 +193,72 @@
                                (GET "/v2/orders/:number" req {:status 404
                                                               :body   "{}"})
                                (GET "/v2/products" req
-                                    {:status 200
-                                     :body   (generate-string {:products [{:catalog/product-id  "67"
-                                                                           :catalog/department  #{"hair"}
-                                                                           :selector/skus       ["PWWLC18"]
-                                                                           :selector/sku-ids    ["PWWLC18"]
-                                                                           :hair/base-material  #{"lace"}
-                                                                           :hair/color.process  #{"natural"}
-                                                                           :hair/family         #{"closures"}
-                                                                           :hair/grade          #{"6a"}
-                                                                           :hair/origin         #{"peruvian"}
-                                                                           :hair/source         #{"virgin"}
-                                                                           :hair/texture        #{"water-wave"}
-                                                                           :selector/electives  [:hair/color :hair/length]
-                                                                           :selector/essentials [:catalog/department
-                                                                                                 :hair/grade
-                                                                                                 :hair/origin
-                                                                                                 :hair/texture
-                                                                                                 :hair/base-material
-                                                                                                 :hair/family
-                                                                                                 :hair/color.process
-                                                                                                 :hair/source]
-                                                                           :page/slug           "peruvian-water-wave-lace-closures"}]
-                                                               :skus     [{:catalog/sku-id               "PWWLC18"
-                                                                           :catalog/stylist-only?        false
-                                                                           :catalog/launched-at          "2016-01-01T00:00:00.000Z"
-                                                                           :catalog/department           #{"hair"}
-                                                                           :selector/essentials          [:hair/family
-                                                                                                          :hair/color
-                                                                                                          :hair/origin
-                                                                                                          :hair/base-material
-                                                                                                          :hair/length
-                                                                                                          :catalog/department
-                                                                                                          :hair/color.process
-                                                                                                          :hair/grade
-                                                                                                          :hair/texture
-                                                                                                          :hair/source]
-                                                                           :selector/electives           []
-                                                                           :hair/base-material           #{"lace"}
-                                                                           :hair/color.process           #{"natural"}
-                                                                           :hair/family                  #{"closures"}
-                                                                           :hair/grade                   #{"6a"}
-                                                                           :hair/origin                  #{"peruvian"}
-                                                                           :hair/source                  #{"virgin"}
-                                                                           :hair/texture                 #{"water-wave"}
-                                                                           :hair/color                   #{"black"}
-                                                                           :selector/images              [{:filename  "Water-Wave-Bundle.jpg"
-                                                                                                           :url       "//ucarecdn.com/5f6c669f-8274-4bef-afa9-3c08813842f6/"
-                                                                                                           :use-cases {:seo      {:alt ""}
-                                                                                                                       :carousel {:alt   ""
-                                                                                                                                  :order 5}
-                                                                                                                       :catalog  {:alt ""}}
-                                                                                                           :criteria/attributes
-                                                                                                           {:catalog/department "hair"
-                                                                                                            :image/of           "product"
-                                                                                                            :hair/grade         "6a"
-                                                                                                            :hair/texture       "water-wave"
-                                                                                                            :hair/color         "black"
-                                                                                                            :hair/family        "bundles"}}]
-                                                                           :selector/from-products       ["67"]
-                                                                           :inventory/in-stock?          true
-                                                                           :sku/price                    104.0
-                                                                           :sku/title                    "A balloon"
-                                                                           :legacy/product-name          "A balloon"
-                                                                           :legacy/product-id            133
-                                                                           :legacy/variant-id            641
-                                                                           :promo.triple-bundle/eligible true}]})})
+                                 {:status 200
+                                  :body   (generate-string {:products [{:catalog/product-id  "67"
+                                                                        :catalog/department  #{"hair"}
+                                                                        :selector/skus       ["PWWLC18"]
+                                                                        :selector/sku-ids    ["PWWLC18"]
+                                                                        :hair/base-material  #{"lace"}
+                                                                        :hair/color.process  #{"natural"}
+                                                                        :hair/family         #{"closures"}
+                                                                        :hair/grade          #{"6a"}
+                                                                        :hair/origin         #{"peruvian"}
+                                                                        :hair/source         #{"virgin"}
+                                                                        :hair/texture        #{"water-wave"}
+                                                                        :selector/electives  [:hair/color :hair/length]
+                                                                        :selector/essentials [:catalog/department
+                                                                                              :hair/grade
+                                                                                              :hair/origin
+                                                                                              :hair/texture
+                                                                                              :hair/base-material
+                                                                                              :hair/family
+                                                                                              :hair/color.process
+                                                                                              :hair/source]
+                                                                        :page/slug           "peruvian-water-wave-lace-closures"}]
+                                                            :skus     [{:catalog/sku-id               "PWWLC18"
+                                                                        :catalog/stylist-only?        false
+                                                                        :catalog/launched-at          "2016-01-01T00:00:00.000Z"
+                                                                        :catalog/department           #{"hair"}
+                                                                        :selector/essentials          [:hair/family
+                                                                                                       :hair/color
+                                                                                                       :hair/origin
+                                                                                                       :hair/base-material
+                                                                                                       :hair/length
+                                                                                                       :catalog/department
+                                                                                                       :hair/color.process
+                                                                                                       :hair/grade
+                                                                                                       :hair/texture
+                                                                                                       :hair/source]
+                                                                        :selector/electives           []
+                                                                        :hair/base-material           #{"lace"}
+                                                                        :hair/color.process           #{"natural"}
+                                                                        :hair/family                  #{"closures"}
+                                                                        :hair/grade                   #{"6a"}
+                                                                        :hair/origin                  #{"peruvian"}
+                                                                        :hair/source                  #{"virgin"}
+                                                                        :hair/texture                 #{"water-wave"}
+                                                                        :hair/color                   #{"black"}
+                                                                        :selector/images              [{:filename  "Water-Wave-Bundle.jpg"
+                                                                                                        :url       "//ucarecdn.com/5f6c669f-8274-4bef-afa9-3c08813842f6/"
+                                                                                                        :use-cases {:seo      {:alt ""}
+                                                                                                                    :carousel {:alt   ""
+                                                                                                                               :order 5}
+                                                                                                                    :catalog  {:alt ""}}
+                                                                                                        :criteria/attributes
+                                                                                                        {:catalog/department "hair"
+                                                                                                         :image/of           "product"
+                                                                                                         :hair/grade         "6a"
+                                                                                                         :hair/texture       "water-wave"
+                                                                                                         :hair/color         "black"
+                                                                                                         :hair/family        "bundles"}}]
+                                                                        :selector/from-products       ["67"]
+                                                                        :inventory/in-stock?          true
+                                                                        :sku/price                    104.0
+                                                                        :sku/title                    "A balloon"
+                                                                        :legacy/product-name          "A balloon"
+                                                                        :legacy/product-id            133
+                                                                        :legacy/variant-id            641
+                                                                        :promo.triple-bundle/eligible true}]})})
                                common/default-storeback-handler))]
       (with-services {:storeback-handler storeback-handler}
         (with-handler handler
@@ -334,8 +334,8 @@
   (testing "transforming content"
     (testing "transforming 'latest' content"
       (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
-                                                                              {:status 200
-                                                                               :body   (generate-string (:body common/contentful-response))}))]
+                                                                           {:status 200
+                                                                            :body   (generate-string (:body common/contentful-response))}))]
         (with-services {:contentful-handler contentful-handler}
           (with-handler handler
             (let [responses (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
@@ -360,80 +360,80 @@
                        :homepage))))))))
     (testing "transforming ugc-collections"
       (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
-                                                                              {:status 200
-                                                                               :body   (generate-string (:body common/contentful-ugc-collection-response))}))]
+                                                                           {:status 200
+                                                                            :body   (generate-string (:body common/contentful-ugc-collection-response))}))]
         (with-services {:contentful-handler contentful-handler}
-            (with-handler handler
-              (let [responses (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
-                    requests  (txfm-requests contentful-requests identity)
-                    look-1    {:content/type          "look"
-                               :content/id            "2zSbLYFcRYjVoEMMlsWLsJ"
-                               :content/updated-at    1558565998189
-                               :title                 "Acceptance Virgin Peruvian Deep Wave 16 18 20 "
-                               :texture               "Deep Wave"
-                               :color                 "Natural Black"
-                               :description           "16\" + 18\" + 20\" "
-                               :shared-cart-url       "https://shop.mayvenn.com/c/XFoCrXR7Yx"
-                               :photo-url             "https://static.pixlee.com/photos/235267317/original/bundle-deal-template-f-r1-01-lm.jpg"
-                               :social-media-handle   "@mayvennhair"
-                               :social-media-platform "instagram"}
-                    look-2    {:content/type          "look"
-                               :content/id            "48c3sCi06BHRRMKJxmM4u3"
-                               :content/updated-at    1558571902078
-                               :title                 "BDW 12\" 12\" 12\""
-                               :texture               "Deep Wave"
-                               :color                 "Natural Black"
-                               :description           "12\" 12\" 12\""
-                               :shared-cart-url       "https://shop.mayvenn.com/c/nAOHqCV5Es"
-                               :photo-url             "https://static.pixlee.com/photos/270470339/original/Screen_Shot_2019-03-08_at_9.44.00_AM.png"
-                               :social-media-handle   "@enevicky"
-                               :social-media-platform "instagram"}]
-                (is (= {:all-looks {(keyword "2zSbLYFcRYjVoEMMlsWLsJ") look-1
-                                    (keyword "48c3sCi06BHRRMKJxmM4u3") look-2}
-                        :deals     {:content/id         "2dZTVOLLqkNS9EoUJ1t6qn"
-                                    :content/type       "ugc-collection"
-                                    :content/updated-at 1558631120329
-                                    :slug               "deals"
-                                    :name               "Mayvenn Classic - Deals Page"
-                                    :looks              [look-1 look-2]}
-                        :acceptance-deals
-                        {:slug               "acceptance-deals"
-                         :name               "[ACCEPTANCE] Mayvenn Classic - Deals Page"
-                         :content/updated-at 1558472526413
-                         :content/type       "ugc-collection"
-                         :content/id         "6Za8EE8Kpn8NeoJciqN3uA"}
-                        :shop-by-look-straight
-                        {:slug               "shop-by-look-straight",
-                         :name               "Adventure Shop By Look Straight",
-                         :content/updated-at 1558567963380,
-                         :content/type       "ugc-collection",
-                         :content/id         "4NNviXNUw1odQtzXOdHaNY",
-                         :looks              [look-1]}
-                        :bundle-sets-straight
-                        {:slug               "bundle-sets-straight",
-                         :name               "Adventure  Bundle Sets Straight",
-                         :content/updated-at 1558568668793,
-                         :content/type       "ugc-collection",
-                         :content/id         "4GfFV6dC7KjLhUxNDKvguP",
-                         :looks              [look-1]}
-                        :look
-                        {:slug               "look"
-                         :name               "Mayvenn Classic - Shop By Look "
-                         :content/updated-at 1558567374792
-                         :content/type       "ugc-collection"
-                         :content/id         "5vqi7q9EeO1ULNjQ1Q4DEp"
-                         :looks              [look-1]}}
-                       (-> (mock/request :get "https://bob.mayvenn.com/cms")
-                           handler
-                           :body
-                           (parse-string true)
-                           :ugc-collection)))))))))
+          (with-handler handler
+            (let [responses (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
+                  requests  (txfm-requests contentful-requests identity)
+                  look-1    {:content/type          "look"
+                             :content/id            "2zSbLYFcRYjVoEMMlsWLsJ"
+                             :content/updated-at    1558565998189
+                             :title                 "Acceptance Virgin Peruvian Deep Wave 16 18 20 "
+                             :texture               "Deep Wave"
+                             :color                 "Natural Black"
+                             :description           "16\" + 18\" + 20\" "
+                             :shared-cart-url       "https://shop.mayvenn.com/c/XFoCrXR7Yx"
+                             :photo-url             "https://static.pixlee.com/photos/235267317/original/bundle-deal-template-f-r1-01-lm.jpg"
+                             :social-media-handle   "@mayvennhair"
+                             :social-media-platform "instagram"}
+                  look-2    {:content/type          "look"
+                             :content/id            "48c3sCi06BHRRMKJxmM4u3"
+                             :content/updated-at    1558571902078
+                             :title                 "BDW 12\" 12\" 12\""
+                             :texture               "Deep Wave"
+                             :color                 "Natural Black"
+                             :description           "12\" 12\" 12\""
+                             :shared-cart-url       "https://shop.mayvenn.com/c/nAOHqCV5Es"
+                             :photo-url             "https://static.pixlee.com/photos/270470339/original/Screen_Shot_2019-03-08_at_9.44.00_AM.png"
+                             :social-media-handle   "@enevicky"
+                             :social-media-platform "instagram"}]
+              (is (= {:all-looks {(keyword "2zSbLYFcRYjVoEMMlsWLsJ") look-1
+                                  (keyword "48c3sCi06BHRRMKJxmM4u3") look-2}
+                      :deals     {:content/id         "2dZTVOLLqkNS9EoUJ1t6qn"
+                                  :content/type       "ugc-collection"
+                                  :content/updated-at 1558631120329
+                                  :slug               "deals"
+                                  :name               "Mayvenn Classic - Deals Page"
+                                  :looks              [look-1 look-2]}
+                      :acceptance-deals
+                      {:slug               "acceptance-deals"
+                       :name               "[ACCEPTANCE] Mayvenn Classic - Deals Page"
+                       :content/updated-at 1558472526413
+                       :content/type       "ugc-collection"
+                       :content/id         "6Za8EE8Kpn8NeoJciqN3uA"}
+                      :shop-by-look-straight
+                      {:slug               "shop-by-look-straight",
+                       :name               "Adventure Shop By Look Straight",
+                       :content/updated-at 1558567963380,
+                       :content/type       "ugc-collection",
+                       :content/id         "4NNviXNUw1odQtzXOdHaNY",
+                       :looks              [look-1]}
+                      :bundle-sets-straight
+                      {:slug               "bundle-sets-straight",
+                       :name               "Adventure  Bundle Sets Straight",
+                       :content/updated-at 1558568668793,
+                       :content/type       "ugc-collection",
+                       :content/id         "4GfFV6dC7KjLhUxNDKvguP",
+                       :looks              [look-1]}
+                      :look
+                      {:slug               "look"
+                       :name               "Mayvenn Classic - Shop By Look "
+                       :content/updated-at 1558567374792
+                       :content/type       "ugc-collection"
+                       :content/id         "5vqi7q9EeO1ULNjQ1Q4DEp"
+                       :looks              [look-1]}}
+                     (-> (mock/request :get "https://bob.mayvenn.com/cms")
+                         handler
+                         :body
+                         (parse-string true)
+                         :ugc-collection)))))))))
 
   (let [number-of-contentful-entities-to-fetch 4]
     (testing "caching content"
       (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
-                                                                              {:status 200
-                                                                               :body   (generate-string (:body common/contentful-response))}))]
+                                                                           {:status 200
+                                                                            :body   (generate-string (:body common/contentful-response))}))]
         (with-services {:contentful-handler contentful-handler}
           (with-handler handler
             (let [responses (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
@@ -443,16 +443,16 @@
 
     (testing "fetches data on system start"
       (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
-                                                                              {:status 200
-                                                                               :body   (generate-string (:body common/contentful-response))}))]
+                                                                           {:status 200
+                                                                            :body   (generate-string (:body common/contentful-response))}))]
         (with-services {:contentful-handler contentful-handler}
           (with-handler handler
             (is (= number-of-contentful-entities-to-fetch (count (txfm-requests contentful-requests identity))))))))
 
     (testing "attempts-to-retry-fetch-from-contentful"
       (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
-                                                                              {:status 500
-                                                                               :body   "{}"}))]
+                                                                           {:status 500
+                                                                            :body   "{}"}))]
         (with-services {:contentful-handler contentful-handler}
           (with-handler handler
             (let [responses (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
@@ -469,11 +469,10 @@
                                                                  :curly {}
                                                                  :look  {}}}
       (is (= {:mayvennMadePage {} :ugc-collection {:all-looks {} :deals {} :curly {}}}
-           (-> (mock/request :get "https://bob.mayvenn.com/cms?slices=mayvennMadePage&ugc-collections=deals&ugc-collections=curly")
-               handler
-               :body
-               (parse-string true)))))))
-
+             (-> (mock/request :get "https://bob.mayvenn.com/cms?slices=mayvennMadePage&ugc-collections=deals&ugc-collections=curly")
+                 handler
+                 :body
+                 (parse-string true)))))))
 
 (deftest we-do-not-ask-waiter-more-than-once-for-the-order
   (testing "Fetching normal pages fetches order once"

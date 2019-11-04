@@ -218,9 +218,9 @@
 
 (def default-contentful-handler
   (routes
-    (GET "/spaces/fake-space-id/entries" req
-         {:status 200
-          :body   (generate-string (:body contentful-response))})))
+   (GET "/spaces/fake-space-id/entries" req
+     {:status 200
+      :body   (generate-string (:body contentful-response))})))
 
 (defmacro with-resource
   [bindings close-fn & body]

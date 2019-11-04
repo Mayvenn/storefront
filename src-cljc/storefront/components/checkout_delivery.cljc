@@ -8,9 +8,7 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.component :as component :refer [defcomponent]]
-            
-            ))
+            [storefront.component :as component :refer [defcomponent]]))
 
 (defn ^:private select-shipping-method
   [shipping-method]
@@ -20,21 +18,21 @@
 (defcomponent component
   [{:keys [shipping-methods selected-sku]} owner _]
   [:div
-    [:.h3 "Shipping Method"]
-    [:.py1
-     (for [{:keys [sku name price] :as shipping-method} shipping-methods]
-       (ui/radio-section
-        (merge {:key          sku
-                :name         "shipping-method"
-                :id           (str "shipping-method-" sku)
-                :data-test    "shipping-method"
-                :data-test-id sku
-                :on-click     (select-shipping-method shipping-method)}
-               (when (= selected-sku sku) {:checked "checked"}))
-        [:.right.ml1.medium {:class (if (pos? price) "black" "purple")} (mf/as-money-without-cents-or-free price)]
-        [:.overflow-hidden
-         [:div (when (= selected-sku sku) {:data-test "selected-shipping-method"}) name]
-         [:.h6 (or (shipping/timeframe sku) "")]]))]])
+   [:.h3 "Shipping Method"]
+   [:.py1
+    (for [{:keys [sku name price] :as shipping-method} shipping-methods]
+      (ui/radio-section
+       (merge {:key          sku
+               :name         "shipping-method"
+               :id           (str "shipping-method-" sku)
+               :data-test    "shipping-method"
+               :data-test-id sku
+               :on-click     (select-shipping-method shipping-method)}
+              (when (= selected-sku sku) {:checked "checked"}))
+       [:.right.ml1.medium {:class (if (pos? price) "black" "purple")} (mf/as-money-without-cents-or-free price)]
+       [:.overflow-hidden
+        [:div (when (= selected-sku sku) {:data-test "selected-shipping-method"}) name]
+        [:.h6 (or (shipping/timeframe sku) "")]]))]])
 
 (defn day-with-month
   [date]

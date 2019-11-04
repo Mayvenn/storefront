@@ -11,9 +11,7 @@
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.platform.component-utils :as utils]
-            
-            ))
+            [storefront.platform.component-utils :as utils]))
 
 (def hamburger
   (component/html

@@ -77,7 +77,7 @@
 (defmethod transitions/transition-state events/api-success-fetch-stylists-within-radius
   [_ _ {:keys [stylists query]} app-state]
   (cond->
-      (assoc-in app-state adventure.keypaths/adventure-matched-stylists stylists)
+   (assoc-in app-state adventure.keypaths/adventure-matched-stylists stylists)
 
     (seq query)
     (assoc-in adventure.keypaths/adventure-stylist-match-location
@@ -140,9 +140,9 @@
      (messages/handle-message events/save-order {:order order})))
 
 (defmethod transitions/transition-state events/navigate-adventure-match-success-post-purchase
-     [_ _ _ {:keys [completed-order] :as app-state}]
-     #?(:cljs
-        (assoc-in app-state storefront.keypaths/pending-talkable-order (talkable/completed-order completed-order))))
+  [_ _ _ {:keys [completed-order] :as app-state}]
+  #?(:cljs
+     (assoc-in app-state storefront.keypaths/pending-talkable-order (talkable/completed-order completed-order))))
 
 (defmethod effects/perform-effects events/navigate-adventure-match-success-post-purchase [_ _ _ _ app-state]
   #?(:cljs

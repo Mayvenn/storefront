@@ -13,9 +13,7 @@
             [storefront.platform.messages :as messages]
             [storefront.request-keys :as request-keys]
             [storefront.css-transitions :as css-transitions]
-            [catalog.images :as catalog-images]
-            
-            ))
+            [catalog.images :as catalog-images]))
 
 (defn suggest-bundles
   [data products skus items]
@@ -98,10 +96,10 @@
 (defcomponent component
   [{:keys [suggestions]} _ _]
   (when (seq suggestions)
-     [:div.mb4.px1.col-12.mx-auto.bg-light-orange
-      {:style     {:height "135px"}
-       :data-test "auto-complete"}
-      [:div.flex.justify-center (map suggested-bundles suggestions)]]))
+    [:div.mb4.px1.col-12.mx-auto.bg-light-orange
+     {:style     {:height "135px"}
+      :data-test "auto-complete"}
+     [:div.flex.justify-center (map suggested-bundles suggestions)]]))
 
 (defn query
   [data]
@@ -164,13 +162,13 @@
 (defcomponent consolidated-component
   [{:keys [suggestions]} _ _]
   (when (seq suggestions)
-     [:div {:data-test "auto-complete"}
-      [:div.flex.items-center
-       ^:inline (svg/angle-arrow {:style {:width  "13px"
-                                          :height "13px"}
-                                  :class "teal"})
-       [:div.h6.dark-gray.pl1 "Bundles often bought together"]]
-      (map ->consolidated-suggested-bundles suggestions)]))
+    [:div {:data-test "auto-complete"}
+     [:div.flex.items-center
+      ^:inline (svg/angle-arrow {:style {:width  "13px"
+                                         :height "13px"}
+                                 :class "teal"})
+      [:div.h6.dark-gray.pl1 "Bundles often bought together"]]
+     (map ->consolidated-suggested-bundles suggestions)]))
 
 (defn consolidated-query
   [data]

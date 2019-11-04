@@ -3,9 +3,7 @@
             [storefront.events :as events]
             api.orders
             [stylist-matching.ui.header :as header]
-            [stylist-matching.ui.shopping-method-choice :as shopping-method-choice]
-            
-            ))
+            [stylist-matching.ui.shopping-method-choice :as shopping-method-choice]))
 
 (defn header-query
   [{:order.items/keys [quantity]}]
@@ -44,8 +42,8 @@
 (defcomponent template
   [{:keys [header shopping-method-choice]} _ _]
   [:div.dark-gray.bg-white.center.flex.flex-auto.flex-column
-    (component/build header/organism header nil)
-    (component/build shopping-method-choice/organism shopping-method-choice nil)])
+   (component/build header/organism header nil)
+   (component/build shopping-method-choice/organism shopping-method-choice nil)])
 
 (defn page
   [app-state]

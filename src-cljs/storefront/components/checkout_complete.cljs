@@ -19,9 +19,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             ui.molecules
-            [clojure.string :as string]
-            
-            ))
+            [clojure.string :as string]))
 
 (defn copy [& sentences]
   (string/join " " sentences))
@@ -29,37 +27,37 @@
 (defcomponent component
   [{:keys [guest? sign-up-data]} _ _]
   (ui/narrow-container
-    [:div.p3
-     [:section.mx4-on-tb-dt.center
-      (ui/ucare-img {:class "mx-auto"
-                     :height "55px"
-                     :width  "55px"} "a0520c74-b76d-4c4e-97f5-791c9e4ae213")
-      [:h1
-       {:data-test "checkout-success-message"}
-       "Thank you for your order!"]
-      [:p
-       (copy "We've received your order and will be processing it right away."
-             "Once your order ships we will send you an email confirmation.")]]
-     (when guest?
-       [:div.mt3
-        [:section.center
-         (ui/ucare-img {:class "mx-auto"
-                        :height "55px"
-                        :width  "55px"} "962e39be-3d22-4f23-a9b3-d1623ac7c1d7")
-         [:h1
-          "Create an account"]
-         [:p.h5
-          "Take advantage of express checkout, order tracking, and more when you sign up."]
+   [:div.p3
+    [:section.mx4-on-tb-dt.center
+     (ui/ucare-img {:class "mx-auto"
+                    :height "55px"
+                    :width  "55px"} "a0520c74-b76d-4c4e-97f5-791c9e4ae213")
+     [:h1
+      {:data-test "checkout-success-message"}
+      "Thank you for your order!"]
+     [:p
+      (copy "We've received your order and will be processing it right away."
+            "Once your order ships we will send you an email confirmation.")]]
+    (when guest?
+      [:div.mt3
+       [:section.center
+        (ui/ucare-img {:class "mx-auto"
+                       :height "55px"
+                       :width  "55px"} "962e39be-3d22-4f23-a9b3-d1623ac7c1d7")
+        [:h1
+         "Create an account"]
+        [:p.h5
+         "Take advantage of express checkout, order tracking, and more when you sign up."]
 
-         [:p.h5.py2
-          "Sign in with Facebook to link your account."]
-         [:div.col-12.col-6-on-tb-dt.mx-auto
-          (facebook/narrow-sign-in-button (:facebook-loaded? sign-up-data))]
+        [:p.h5.py2
+         "Sign in with Facebook to link your account."]
+        [:div.col-12.col-6-on-tb-dt.mx-auto
+         (facebook/narrow-sign-in-button (:facebook-loaded? sign-up-data))]
 
-         [:p.h5.py4
-          "Or create a Mayvenn.com account"]
-         (sign-up/form sign-up-data
-                       {:sign-up-text "Create my account"})]])]))
+        [:p.h5.py4
+         "Or create a Mayvenn.com account"]
+        (sign-up/form sign-up-data
+                      {:sign-up-text "Create my account"})]])]))
 
 (defn servicing-stylist-card-title-molecule
   [{:stylist-card.title/keys [id primary secondary]}]
@@ -134,44 +132,42 @@
          (merge (apply utils/route-to target)
                 {:data-test id}) label)]))])
 
-
 (defcomponent adventure-component
   [{:keys              [sign-up-data guest?] :as data
     matched-component? :matched-component.message/id} _ _]
   (ui/narrow-container
-    [:div.p3 {:style {:min-height "95vh"}}
-     [:div.center
-      [:div.mt5.h1.mb2 {:data-test "checkout-success-message"}
-       "Thank you for your order!"]
-      [:div.h5.dark-gray.col-10.mx-auto
-       (copy "We've received your order and will contact you as soon as your package is shipped.")]]
+   [:div.p3 {:style {:min-height "95vh"}}
+    [:div.center
+     [:div.mt5.h1.mb2 {:data-test "checkout-success-message"}
+      "Thank you for your order!"]
+     [:div.h5.dark-gray.col-10.mx-auto
+      (copy "We've received your order and will contact you as soon as your package is shipped.")]]
 
-     [:div.py2.mx-auto.white.border-bottom
-      {:style {:border-width "0.5px"}}]
-     (if matched-component?
-       (matched-with-servicing-stylist-component data)
-       get-inspired-cta)
-     (when guest?
-       [:div.mt3
-        [:section.center
-         [:img {:src    "//ucarecdn.com/962e39be-3d22-4f23-a9b3-d1623ac7c1d7/-/format/auto/profile"
-                :height "55px"
-                :width  "55px"}]
-         [:h1
-          "Create an account"]
-         [:p.h5
-          "Take advantage of express checkout, order tracking, and more when you sign up."]
+    [:div.py2.mx-auto.white.border-bottom
+     {:style {:border-width "0.5px"}}]
+    (if matched-component?
+      (matched-with-servicing-stylist-component data)
+      get-inspired-cta)
+    (when guest?
+      [:div.mt3
+       [:section.center
+        [:img {:src    "//ucarecdn.com/962e39be-3d22-4f23-a9b3-d1623ac7c1d7/-/format/auto/profile"
+               :height "55px"
+               :width  "55px"}]
+        [:h1
+         "Create an account"]
+        [:p.h5
+         "Take advantage of express checkout, order tracking, and more when you sign up."]
 
-         [:p.h5.py2
-          "Sign in with Facebook to link your account."]
-         [:div.col-12.col-6-on-tb-dt.mx-auto
-          (facebook/narrow-sign-in-button (:facebook-loaded? sign-up-data))]
+        [:p.h5.py2
+         "Sign in with Facebook to link your account."]
+        [:div.col-12.col-6-on-tb-dt.mx-auto
+         (facebook/narrow-sign-in-button (:facebook-loaded? sign-up-data))]
 
-         [:p.h5.py4
-          "Or create a Mayvenn.com account"]
-         (sign-up/form sign-up-data
-                       {:sign-up-text "Create my account"})]])]))
-
+        [:p.h5.py4
+         "Or create a Mayvenn.com account"]
+        (sign-up/form sign-up-data
+                      {:sign-up-text "Create my account"})]])]))
 
 (defn query
   [data]

@@ -13,9 +13,7 @@
             [storefront.keypaths :as keypaths]
             [adventure.keypaths :as adventure-keypaths]
             [spice.date :as date]
-            [adventure.keypaths :as adventure.keypaths]
-            
-            ))
+            [adventure.keypaths :as adventure.keypaths]))
 
 (defn ^:private ms-to-wait [app-state]
   (max 0
@@ -27,7 +25,7 @@
 (defmethod effects/perform-effects events/api-success-fetch-stylists-within-radius-pre-purchase [_ event _ _ app-state]
   #?(:cljs
      (when-not (get-in app-state adventure.keypaths/adventure-stylist-results-delaying?)
-               (handle-message events/adventure-stylist-results-wait-resolved))))
+       (handle-message events/adventure-stylist-results-wait-resolved))))
 
 ;; POST-PURCHASE FLOW
 

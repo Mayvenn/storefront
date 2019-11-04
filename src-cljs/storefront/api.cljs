@@ -596,14 +596,14 @@
 (defn get-stylist-dashboard-sale
   [{:keys [stylist-id user-id user-token order-number handler]}]
   (storeback-api-req
-    GET
-    "/v2/stylist/sale"
-    request-keys/get-stylist-dashboard-sale
-    {:params {:stylist-id stylist-id
-              :user-id    user-id
-              :user-token user-token
-              :order-number order-number}
-     :handler handler}))
+   GET
+   "/v2/stylist/sale"
+   request-keys/get-stylist-dashboard-sale
+   {:params {:stylist-id stylist-id
+             :user-id    user-id
+             :user-token user-token
+             :order-number order-number}
+    :handler handler}))
 
 (defn cash-out-commit
   [user-id user-token stylist-id]
@@ -666,7 +666,6 @@
                                {:stylist-id affiliate-stylist-id}))
        :handler       (or success-handler default-success-handler)
        :error-handler (or error-handler default-error-handler)}))))
-
 
 (defn ^:private remove-from-bag [request-key session-id {:keys [variant-id number token quantity]} handler]
   (storeback-api-req
@@ -732,11 +731,11 @@
 
 (defn browser-pay-estimate [params successful-estimate failed-to-estimate]
   (POST
-   (str api-base-url "/apple-pay-estimate")
-   (merge default-req-opts
-          {:params  params
-           :handler (comp successful-estimate :body)
-           :error-handler failed-to-estimate})))
+    (str api-base-url "/apple-pay-estimate")
+    (merge default-req-opts
+           {:params  params
+            :handler (comp successful-estimate :body)
+            :error-handler failed-to-estimate})))
 
 (defn checkout [params successful-checkout failed-checkout]
   (storeback-api-req

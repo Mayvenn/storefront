@@ -14,9 +14,7 @@
             [storefront.platform.component-utils :as utils]
             [storefront.platform.numbers :as numbers]
             [storefront.request-keys :as request-keys]
-            [storefront.transitions :as transitions]
-            
-            ))
+            [storefront.transitions :as transitions]))
 
 (defn earnings-count [title value]
   [:div.dark-gray.letter-spacing-0
@@ -113,8 +111,7 @@
                         "Shop"])]]
      [:div.flex.pt2 {:class (when-not expanded? "hide")}
       [:div.col-7
-       (earnings-count "Lifetime Bonuses" (mf/as-money lifetime-earned))]]]
-    ))
+       (earnings-count "Lifetime Bonuses" (mf/as-money lifetime-earned))]]]))
 
 (defn ^:private sales-bonus-progress [{:keys [previous-level next-level award-for-next-level total-eligible-sales]} dashboard-with-vouchers?]
   [:div.p2
@@ -136,11 +133,11 @@
   (let [{:keys [bonuses earnings services]} stats
         {:keys [lifetime-earned]}           bonuses]
     (if (and (not lifetime-earned) fetching-stats?)
-       [:div.my2.h2 ui/spinner]
-       [:div.p2
-        (cash-balance-card payout-method cash-balance-section-expanded? cashing-out? earnings services)
-        [:div.mt2 (store-credit-balance-card total-available-store-credit lifetime-earned store-credit-balance-section-expanded?)]
-        (sales-bonus-progress bonuses dashboard-with-vouchers?)])))
+      [:div.my2.h2 ui/spinner]
+      [:div.p2
+       (cash-balance-card payout-method cash-balance-section-expanded? cashing-out? earnings services)
+       [:div.mt2 (store-credit-balance-card total-available-store-credit lifetime-earned store-credit-balance-section-expanded?)]
+       (sales-bonus-progress bonuses dashboard-with-vouchers?)])))
 
 (def not-reimbursed-for-services? (complement experiments/dashboard-with-vouchers?))
 

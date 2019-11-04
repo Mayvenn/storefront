@@ -1,13 +1,13 @@
 (ns catalog.ui.freeinstall-banner
   (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ui :as ui]
-            [storefront.platform.component-utils :as utils]
-            
-            ))
+            [storefront.platform.component-utils :as utils]))
 
 ;; MOLECULES
 
 ;; ORGANISM
+
+
 (defcomponent organism
   [{:freeinstall-banner/keys [show? title subtitle image-ucare-id button-id button-copy nav-event]} _ _]
   (when show?

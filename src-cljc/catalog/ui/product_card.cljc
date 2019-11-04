@@ -75,8 +75,8 @@
                                      :page/slug          product-slug
                                      :query-params       {:SKU (:catalog/sku-id
                                                                 (sku-best-matching-selections product-detail-selections
-                                                                                                           skus
-                                                                                                           color-order-map))}}]
+                                                                                              skus
+                                                                                              color-order-map))}}]
      :product-card-details/id      (str "product-card-details-" product-slug)
      :product-card-details/content (if (empty? in-stock-skus)
                                      ["Out of stock"]

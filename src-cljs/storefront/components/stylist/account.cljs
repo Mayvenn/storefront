@@ -22,8 +22,7 @@
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]
             [adventure.keypaths :as adv-keypaths]
-            
-            
+
             [storefront.component :as component :refer [defcomponent]]
             [storefront.component :as component :refer [defcomponent]]))
 
@@ -55,51 +54,51 @@
    [:div.mb1 ui/nbsp]])
 
 (defcomponent component [{:keys [fetching?
-                         portrait-saving?
-                         current-nav-event
-                         portrait
-                         available-credit
-                         profile
-                         password
-                         commission
-                         social
-                         loaded-uploadcare?]} owner opts]
+                                 portrait-saving?
+                                 current-nav-event
+                                 portrait
+                                 available-credit
+                                 profile
+                                 password
+                                 commission
+                                 social
+                                 loaded-uploadcare?]} owner opts]
   [:div.bg-white.dark-gray
-    [:div.container.p2.m-auto.overflow-hidden
-     [:div.flex.justify-center.items-center.center
-      [:div
-       (when loaded-uploadcare?
-         (uploadcare-photo portrait portrait-saving?))]
+   [:div.container.p2.m-auto.overflow-hidden
+    [:div.flex.justify-center.items-center.center
+     [:div
+      (when loaded-uploadcare?
+        (uploadcare-photo portrait portrait-saving?))]
 
-      [:div.ml3
-       (store-credit available-credit)]]
+     [:div.ml3
+      (store-credit available-credit)]]
 
-     [:div.bg-light-gray.mt3.mxn2 ;; Oppose padding on page
-      (component/build tabs/component {:selected-tab current-nav-event}
-                       {:opts {:tab-refs ["profile" "password" "payout" "social"]
-                               :labels   ["Profile" "Password" "Payout" "Social"]
-                               :tabs     [events/navigate-stylist-account-profile
-                                          events/navigate-stylist-account-password
-                                          events/navigate-stylist-account-payout
-                                          events/navigate-stylist-account-social]}})]
+    [:div.bg-light-gray.mt3.mxn2 ;; Oppose padding on page
+     (component/build tabs/component {:selected-tab current-nav-event}
+                      {:opts {:tab-refs ["profile" "password" "payout" "social"]
+                              :labels   ["Profile" "Password" "Payout" "Social"]
+                              :tabs     [events/navigate-stylist-account-profile
+                                         events/navigate-stylist-account-password
+                                         events/navigate-stylist-account-payout
+                                         events/navigate-stylist-account-social]}})]
 
-     (if fetching?
-       [:div.my3.h2 ui/spinner]
-       [:div.my3
-        (condp = current-nav-event
-          events/navigate-stylist-account-profile
-          (component/build account.profile/component profile opts)
+    (if fetching?
+      [:div.my3.h2 ui/spinner]
+      [:div.my3
+       (condp = current-nav-event
+         events/navigate-stylist-account-profile
+         (component/build account.profile/component profile opts)
 
-          events/navigate-stylist-account-password
-          (component/build account.password/component password opts)
+         events/navigate-stylist-account-password
+         (component/build account.password/component password opts)
 
-          events/navigate-stylist-account-payout
-          (component/build account.payout/component commission opts)
+         events/navigate-stylist-account-payout
+         (component/build account.payout/component commission opts)
 
-          events/navigate-stylist-account-social
-          (component/build account.social/component social opts)
+         events/navigate-stylist-account-social
+         (component/build account.social/component social opts)
 
-          nil)])]])
+         nil)])]])
 
 (defn query [data]
   {:fetching?           (utils/requesting? data request-keys/get-stylist-account)

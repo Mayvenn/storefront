@@ -39,10 +39,9 @@
    [storefront.platform.component-utils :as utils]
    [storefront.platform.messages :as messages]
    [storefront.request-keys :as request-keys]
-            
-            
-            [storefront.component :as component :refer [defcomponent]]
-            [storefront.component :as component :refer [defcomponent]]))
+
+   [storefront.component :as component :refer [defcomponent]]
+   [storefront.component :as component :refer [defcomponent]]))
 
 (defn display-adjustable-line-items
   [recently-added-skus line-items skus update-line-item-requests delete-line-item-requests]
@@ -144,103 +143,103 @@
      [:div.h5.right {:data-test (str "line-item-price-ea-" id)} (some-> price mf/as-money)]]]])
 
 (defcomponent full-component [{:keys [order
-                              skus
-                              promo-banner
-                              call-out
-                              updating?
-                              redirecting-to-paypal?
-                              share-carts?
-                              requesting-shared-cart?
-                              suggestions
-                              line-items
-                              update-line-item-requests
-                              show-browser-pay?
-                              recently-added-skus
-                              delete-line-item-requests
-                              freeinstall-line-item-data
-                              freeinstall-just-added?
-                              loaded-quadpay?
-                              cart-summary]} owner _]
+                                      skus
+                                      promo-banner
+                                      call-out
+                                      updating?
+                                      redirecting-to-paypal?
+                                      share-carts?
+                                      requesting-shared-cart?
+                                      suggestions
+                                      line-items
+                                      update-line-item-requests
+                                      show-browser-pay?
+                                      recently-added-skus
+                                      delete-line-item-requests
+                                      freeinstall-line-item-data
+                                      freeinstall-just-added?
+                                      loaded-quadpay?
+                                      cart-summary]} owner _]
   [:div.container.p2
-    (component/build promo-banner/sticky-organism promo-banner nil)
+   (component/build promo-banner/sticky-organism promo-banner nil)
 
-    (component/build call-out/component call-out nil)
+   (component/build call-out/component call-out nil)
 
-    [:div.clearfix.mxn3
-     [:div.col-on-tb-dt.col-6-on-tb-dt.px3
-      {:data-test "cart-line-items"}
-      (display-adjustable-line-items recently-added-skus
-                                     line-items
-                                     skus
-                                     update-line-item-requests
-                                     delete-line-item-requests)
-      (when freeinstall-line-item-data
-        (non-adjustable-line-item freeinstall-just-added? freeinstall-line-item-data))
+   [:div.clearfix.mxn3
+    [:div.col-on-tb-dt.col-6-on-tb-dt.px3
+     {:data-test "cart-line-items"}
+     (display-adjustable-line-items recently-added-skus
+                                    line-items
+                                    skus
+                                    update-line-item-requests
+                                    delete-line-item-requests)
+     (when freeinstall-line-item-data
+       (non-adjustable-line-item freeinstall-just-added? freeinstall-line-item-data))
 
-      (component/build suggestions/component suggestions nil)]
+     (component/build suggestions/component suggestions nil)]
 
-     [:div.col-on-tb-dt.col-6-on-tb-dt.px3
+    [:div.col-on-tb-dt.col-6-on-tb-dt.px3
 
-      (component/build cart-summary/component cart-summary nil)
+     (component/build cart-summary/component cart-summary nil)
 
-      #?@(:cljs
-          [(component/build quadpay/component
-                            {:quadpay/order-total (:total order)
-                             :quadpay/show?       loaded-quadpay?
-                             :quadpay/directive   :just-select}
-                            nil)])
-      (ui/teal-button {:spinning? false
+     #?@(:cljs
+         [(component/build quadpay/component
+                           {:quadpay/order-total (:total order)
+                            :quadpay/show?       loaded-quadpay?
+                            :quadpay/directive   :just-select}
+                           nil)])
+     (ui/teal-button {:spinning? false
+                      :disabled? updating?
+                      :on-click  (utils/send-event-callback events/control-checkout-cart-submit)
+                      :data-test "start-checkout-button"}
+                     [:div "Check out"])
+
+     [:div.h5.black.center.py1.flex.justify-around.items-center
+      [:div.flex-grow-1.border-bottom.border-light-gray]
+      [:div.mx2 "or"]
+      [:div.flex-grow-1.border-bottom.border-light-gray]]
+
+     [:div.pb2
+      (ui/aqua-button {:on-click  (utils/send-event-callback events/control-checkout-cart-paypal-setup)
+                       :spinning? redirecting-to-paypal?
                        :disabled? updating?
-                       :on-click  (utils/send-event-callback events/control-checkout-cart-submit)
-                       :data-test "start-checkout-button"}
-                      [:div "Check out"])
+                       :data-test "paypal-checkout"}
+                      [:div
+                       "Check out with "
+                       [:span.medium.italic "PayPal™"]])]
 
-      [:div.h5.black.center.py1.flex.justify-around.items-center
-       [:div.flex-grow-1.border-bottom.border-light-gray]
-       [:div.mx2 "or"]
-       [:div.flex-grow-1.border-bottom.border-light-gray]]
+     #?@(:cljs [(when show-browser-pay? (payment-request-button/built-component nil {}))])
 
-      [:div.pb2
-       (ui/aqua-button {:on-click  (utils/send-event-callback events/control-checkout-cart-paypal-setup)
-                        :spinning? redirecting-to-paypal?
-                        :disabled? updating?
-                        :data-test "paypal-checkout"}
-                       [:div
-                        "Check out with "
-                        [:span.medium.italic "PayPal™"]])]
-
-      #?@(:cljs [(when show-browser-pay? (payment-request-button/built-component nil {}))])
-
-      (when share-carts?
-        [:div.py2
-         [:div.h6.center.pt2.black.bold "Is this bag for a customer?"]
-         (ui/navy-ghost-button {:on-click  (utils/send-event-callback events/control-cart-share-show)
-                                :class     "border-width-2 border-navy"
-                                :spinning? requesting-shared-cart?
-                                :data-test "share-cart"}
-                          [:div.flex.items-center.justify-center.bold
-                           (svg/share-arrow {:class  "stroke-navy mr1 fill-navy"
-                                             :width  "24px"
-                                             :height "24px"})
-                           "Share your bag"])])]]])
+     (when share-carts?
+       [:div.py2
+        [:div.h6.center.pt2.black.bold "Is this bag for a customer?"]
+        (ui/navy-ghost-button {:on-click  (utils/send-event-callback events/control-cart-share-show)
+                               :class     "border-width-2 border-navy"
+                               :spinning? requesting-shared-cart?
+                               :data-test "share-cart"}
+                              [:div.flex.items-center.justify-center.bold
+                               (svg/share-arrow {:class  "stroke-navy mr1 fill-navy"
+                                                 :width  "24px"
+                                                 :height "24px"})
+                               "Share your bag"])])]]])
 
 (defcomponent empty-component [{:keys [promotions aladdin?]} owner _]
   (ui/narrow-container
-    [:div.p2
-     [:.center {:data-test "empty-cart"}
-      [:div.m2 ^:inline (svg/bag {:style {:height "70px" :width "70px"}
-                                  :class "fill-black"})]
+   [:div.p2
+    [:.center {:data-test "empty-cart"}
+     [:div.m2 ^:inline (svg/bag {:style {:height "70px" :width "70px"}
+                                 :class "fill-black"})]
 
-      [:p.m2.h2.light "Your bag is empty."]
+     [:p.m2.h2.light "Your bag is empty."]
 
-      [:div.m2
-       (let [promo (promos/default-advertised-promotion promotions)]
-         (cond aladdin? promos/freeinstall-description
-               promo    (:description promo)
-               :else    promos/bundle-discount-description))]]
+     [:div.m2
+      (let [promo (promos/default-advertised-promotion promotions)]
+        (cond aladdin? promos/freeinstall-description
+              promo    (:description promo)
+              :else    promos/bundle-discount-description))]]
 
-     (ui/teal-button (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
-                     "Shop Our Looks")]))
+    (ui/teal-button (utils/route-to events/navigate-shop-by-look {:album-keyword :look})
+                    "Shop Our Looks")]))
 
 (defn ^:private variants-requests [data request-key variant-ids]
   (->> variant-ids
@@ -254,8 +253,6 @@
           [request-keys/add-promotion-code
            [request-key-prefix request-keys/update-line-item]
            [request-key-prefix request-keys/delete-line-item]])))
-
-
 
 #?(:cljs
    (defn- order-has-inapplicable-freeinstall-promo?
@@ -321,9 +318,9 @@
                             :number   (:number order)
                             :quantity quantity}
                            #(messages/handle-message events/api-success-add-sku-to-bag
-                                            {:order    %
-                                             :quantity quantity
-                                             :sku      sku})))))
+                                                     {:order    %
+                                                      :quantity quantity
+                                                      :sku      sku})))))
 
 (defmethod effects/perform-effects events/control-cart-line-item-dec
   [_ event {:keys [variant]} _ app-state]
@@ -427,11 +424,11 @@
            empty-cart
            full-cart]} owner opts]
   (if fetching-order?
-     [:div.py3.h2 ui/spinner]
-     [:div.col-7-on-dt.mx-auto
-      (if (zero? item-count)
-        (component/build empty-component empty-cart opts)
-        (component/build full-component full-cart opts))]))
+    [:div.py3.h2 ui/spinner]
+    [:div.col-7-on-dt.mx-auto
+     (if (zero? item-count)
+       (component/build empty-component empty-cart opts)
+       (component/build full-component full-cart opts))]))
 
 (defn query [data]
   {:fetching-order? (utils/requesting? data request-keys/get-order)

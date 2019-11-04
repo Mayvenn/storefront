@@ -25,7 +25,6 @@
            (some-> component-instance (gobj/get "props") .-options))
    :clj (defn get-opts [component-instance]))
 
-
 #?(:cljs (defn set-state! [component-instance & key-values]
            ;; NOTE: using gobj/get for react properies, and .- for our own
            ;; TODO(jeff): EXTERNS
@@ -196,15 +195,15 @@
 
 (defmacro html [content]
   `(if-cljs
-       (let [c# (sablono.core/html (or ~content [:span]))]
-         (when ^boolean goog/DEBUG
-           (assert (js/React.isValidElement c#)
-                   (str "Did not receive a valid element "
-                        ~(:file (meta &form))
-                        ":"
-                        ~(:line (meta &form)))))
-         c#)
-     ~content))
+    (let [c# (sablono.core/html (or ~content [:span]))]
+      (when ^boolean goog/DEBUG
+        (assert (js/React.isValidElement c#)
+                (str "Did not receive a valid element "
+                     ~(:file (meta &form))
+                     ":"
+                     ~(:line (meta &form)))))
+      c#)
+    ~content))
 
 (defmacro create
   "Creates a React.PureComponent (on the client) / simple html rendering (on the server)
@@ -279,14 +278,12 @@
         `(let [~body-fn (fn ~args (html ~body))]
            ~(if (cljs-env? &env)
               (defcomponent-cljs component-name (meta &form) docstring? body-fn)
-              (defcomponent-clj component-name (meta &form) docstring? body-fn)))
-        ))
-     #_
-     (if (string? docstring?)
-       `(def ~component-name ~docstring? (create ~(str *ns* "/" (name component-name)) ~@body))
-       (let [body (conj body args)
-             args docstring?]
-         `(defn ~name ~args (create ~name ~@body))))))
+              (defcomponent-clj component-name (meta &form) docstring? body-fn)))))
+     #_(if (string? docstring?)
+         `(def ~component-name ~docstring? (create ~(str *ns* "/" (name component-name)) ~@body))
+         (let [body (conj body args)
+               args docstring?]
+           `(defn ~name ~args (create ~name ~@body))))))
 
 (defmacro ^{:style/indent :defn} defdynamic-component [name & methods]
   `(def ~name (create-dynamic ~name ~@methods)))

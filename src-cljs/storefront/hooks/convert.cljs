@@ -15,7 +15,7 @@
   (ensure-queue)
   (tags/insert-tag-with-callback (tags/src-tag (str "https://cdn-3.convertexperiments.com/js/"
                                                     config/convert-project-id
-                                                    ".js" )
+                                                    ".js")
                                                "convert")
                                  #(m/handle-message events/inserted-convert))
   (js/setTimeout #(m/handle-message events/inserted-convert) 15000))

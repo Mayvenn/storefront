@@ -1,19 +1,19 @@
 (ns storefront.accessors.experiments
   (:require [storefront.keypaths :as keypaths]))
 
-#_ (defn bucketing-example
-  [data]
-  (let [stylist-id    (get-in data keypaths/store-stylist-id)
-        store-slug    (get-in data keypaths/store-slug)
-        bucket-offset (mod stylist-id 3)]
-    (assoc-in data
-              keypaths/features
-              (cond
-                (= store-slug "shop")  #{"kinky-straight-2-control"}
-                (= store-slug "store") #{"kinky-straight-2-control"}
-                (= bucket-offset 0)    #{"kinky-straight-2"}
-                (= bucket-offset 1)    #{"kinky-straight-2-curly-move"}
-                (= bucket-offset 2)    #{"kinky-straight-2-control"}))))
+#_(defn bucketing-example
+    [data]
+    (let [stylist-id    (get-in data keypaths/store-stylist-id)
+          store-slug    (get-in data keypaths/store-slug)
+          bucket-offset (mod stylist-id 3)]
+      (assoc-in data
+                keypaths/features
+                (cond
+                  (= store-slug "shop")  #{"kinky-straight-2-control"}
+                  (= store-slug "store") #{"kinky-straight-2-control"}
+                  (= bucket-offset 0)    #{"kinky-straight-2"}
+                  (= bucket-offset 1)    #{"kinky-straight-2-curly-move"}
+                  (= bucket-offset 2)    #{"kinky-straight-2-control"}))))
 
 (defn determine-features [data]
   #_(bucketing-example data)

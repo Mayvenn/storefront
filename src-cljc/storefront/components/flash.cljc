@@ -3,8 +3,7 @@
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
             [storefront.keypaths :as keypaths]
-            
-            
+
             [storefront.component :as component :refer [defcomponent]]
             [storefront.component :as component :refer [defcomponent]]))
 
@@ -30,18 +29,18 @@
 
 (defcomponent component [{:keys [success failure errors]} _ _]
   (when (or success failure (and (seq (:error-message errors)) (seq errors)))
-     (ui/narrow-container
-      [:div.p2
-       (cond
-         (or failure (seq errors))
-         (error-box
-          {:data-test "flash-error"}
-          [:div.px2 (or failure (get errors :error-message))])
+    (ui/narrow-container
+     [:div.p2
+      (cond
+        (or failure (seq errors))
+        (error-box
+         {:data-test "flash-error"}
+         [:div.px2 (or failure (get errors :error-message))])
 
-         success
-         (success-box
-          {:data-test "flash-success"}
-          [:div.px2 success]))])))
+        success
+        (success-box
+         {:data-test "flash-success"}
+         [:div.px2 success]))])))
 
 (defn query [data]
   {:success (get-in data keypaths/flash-now-success-message)

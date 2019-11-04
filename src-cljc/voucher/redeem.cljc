@@ -19,8 +19,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.request-keys :as request-keys]
             [storefront.transitions :as transitions]
-            
-            
+
             [storefront.component :as component :refer [defcomponent]]
             [storefront.component :as component :refer [defcomponent]]))
 
@@ -66,7 +65,7 @@
      [:span.h6.px2 "or"]
      ^:inline (divider)]]
    [:div.p4.col-4-on-tb-dt.center.mx-auto
-    [:div.hide-on-mb-tb.py4 ]
+    [:div.hide-on-mb-tb.py4]
     [:h3.pb4 "Enter the 8-digit code"]
     [:form
      {:on-submit (utils/send-event-callback events/control-voucher-redeem {:code code})}
@@ -106,14 +105,14 @@
 (defcomponent ^:private component
   [{:keys [service-menu-fetching? service-menu-missing?] :as data} owner opts]
   [:div.bg-light-silver
-    (cond service-menu-fetching?
-          spinner
+   (cond service-menu-fetching?
+         spinner
 
-          service-menu-missing?
-          missing-service-menu
+         service-menu-missing?
+         missing-service-menu
 
-          :default
-          (primary-component data))])
+         :default
+         (primary-component data))])
 
 (defn ^:private query [data]
   (let [service-menu-required? (experiments/dashboard-with-vouchers? data)

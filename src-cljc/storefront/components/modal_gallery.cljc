@@ -4,7 +4,6 @@
             [storefront.platform.carousel :as carousel]
             [storefront.component :as component :refer [defcomponent]]))
 
-
 (defn ucare-img-slide [ucare-id]
   [:div (ui/aspect-ratio 1 1
                          (ui/ucare-img {:class "col-12"} ucare-id))])

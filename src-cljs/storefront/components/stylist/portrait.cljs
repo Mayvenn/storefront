@@ -5,15 +5,14 @@
             [storefront.components.image-picker :as image-picker]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            
-            
+
             [storefront.component :as component :refer [defcomponent]]
             [storefront.component :as component :refer [defcomponent]]))
 
 (defcomponent component [{:keys [loaded-uploadcare?] :as args} owner opts]
   [:div
-     (when loaded-uploadcare?
-       (component/build image-picker/component args opts))])
+   (when loaded-uploadcare?
+     (component/build image-picker/component args opts))])
 
 (defn query [data]
   {:loaded-uploadcare? (get-in data keypaths/loaded-uploadcare)

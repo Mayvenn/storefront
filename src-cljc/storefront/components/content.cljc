@@ -1,8 +1,7 @@
 (ns storefront.components.content
   (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.keypaths :as keypaths]
-            
-            
+
             [storefront.component :as component :refer [defcomponent]]
             [storefront.component :as component :refer [defcomponent]]))
 
