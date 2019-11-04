@@ -85,7 +85,8 @@
                      (messages/handle-message events/set-confetti-mode {:mode "fired"})
                      (.then (confetti/burst (component/get-ref this "confetti-spout"))
                             #(messages/handle-message events/set-confetti-mode {:mode "ready"}))))))
-  (will-unmount [this] (messages/handle-message events/set-confetti-mode {:mode "ready"}))
+  (will-unmount [this]
+                #?(:cljs (messages/handle-message events/set-confetti-mode {:mode "ready"})))
   (render [this]
           (component/html
            [:div#confetti-spout.fixed.top-0.mx-auto
