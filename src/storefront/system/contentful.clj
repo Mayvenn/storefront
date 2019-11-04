@@ -135,18 +135,8 @@
                                         (str "fields." env-param "[lte]") (date/to-iso (date/now))})))]
          (if (and status (<= 200 status 299))
            (swap! cache merge
-                  (cond
-                    latest?
+                  (if latest?
                     (some-> body extract resolve-all walk/keywordize-keys (select-keys [content-type]))
-
-                    (= :homepage content-type)
-                    (some->> body
-                             resolve-all-collection
-                             (mapv extract-fields)
-                             walk/keywordize-keys
-                             (assoc {} content-type))
-
-                    :else
                     (some->> body
                              resolve-all-collection
                              (mapv extract-fields)
@@ -176,7 +166,7 @@
                         "production"
                         "acceptance")]
       (doseq [content-params [{:content-type :homepage
-                               :latest?      false}
+                               :latest?      true}
                               {:content-type :mayvennMadePage
                                :latest?      true}
                               {:content-type :advertisedPromo
