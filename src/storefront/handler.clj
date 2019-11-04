@@ -303,12 +303,6 @@
                  (mapcat :looks)
                  (maps/index-by (comp keyword :content/id)))))
 
-(defn copy-cms-homepage-data
-  [cms-data experience]
-  (let [homepage-data       (copy-cms-to-data cms-data {} [:homepage])
-        homepage-experience (first (filter #(= experience (:experience %)) (:homepage homepage-data)))]
-    {:homepage homepage-experience}))
-
 (defn wrap-set-cms-cache
   [h contentful]
   (fn [req]
@@ -317,8 +311,7 @@
           [nav-event
            {album-keyword :album-keyword
             product-id    :catalog/product-id}] (:nav-message req)
-          cms-data                              @(:cache contentful)
-          update-data                           (partial copy-cms-to-data cms-data)]
+          update-data                           (partial copy-cms-to-data @(:cache contentful))]
       (h (update-in-req-state req keypaths/cms merge
                               (update-data {} [:advertisedPromo])
                               (cond shop?
@@ -327,7 +320,8 @@
                                               (update-data [:mayvennMadePage]))
 
                                           (= events/navigate-home nav-event)
-                                          (-> (copy-cms-homepage-data cms-data "shop")
+                                          (-> {}
+                                              (update-data [:homepage])
                                               (update-data [:ugc-collection :free-install-mayvenn])
                                               derive-all-looks)
 
@@ -352,7 +346,8 @@
                                               (update-data [:mayvennMadePage]))
 
                                           (= events/navigate-home nav-event)
-                                          (-> (copy-cms-homepage-data cms-data "aladdin")
+                                          (-> {}
+                                              (update-data [:homepage])
                                               (update-data [:ugc-collection :sleek-and-straight])
                                               (update-data [:ugc-collection :waves-and-curly])
                                               (update-data [:ugc-collection :free-install-mayvenn])
@@ -379,7 +374,8 @@
                                               (update-data [:mayvennMadePage]))
 
                                           (= events/navigate-home nav-event)
-                                          (copy-cms-homepage-data cms-data "classic")
+                                          (-> {}
+                                              (update-data [:homepage]))
 
                                           (contains? #{events/navigate-shop-by-look events/navigate-shop-by-look-details} nav-event)
                                           (-> {}
