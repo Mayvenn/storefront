@@ -114,13 +114,18 @@
         app-state-value (gobj/get (aget tup 0) "state")
         setter          (aget tup 1)
         template        (component/build top-level-component app-state-value)]
-    (add-watch app-state :renderer (fn [key ref old-value new-value]
-                                     (when (not= old-value new-value)
-                                       (setter #js{:state new-value})
-                                       (when render-timer
-                                         (js/clearTimeout render-timer))
-                                       (set! render-timer (js/setTimeout #(setter #js{:state new-value})
-                                                                         render-delay)))))
+    (react/useEffect
+     (fn []
+       (add-watch app-state :renderer (fn [key ref old-value new-value]
+                                        (when (not= old-value new-value)
+                                          (setter #js{:state new-value})
+                                          (when render-timer
+                                            (js/clearTimeout render-timer))
+                                          (set! render-timer (js/setTimeout #(setter #js{:state new-value})
+                                                                            render-delay)))))
+       (setter #js{:state @app-state})
+       js/undefined)
+     #js[])
     template))
 
 (defn main- [app-state]
