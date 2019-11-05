@@ -236,15 +236,12 @@
                                     (vals allowed-methods)))))
 
 (defmacro build
-  ([component] (let [metadata (meta &form)
-                     key (name (gensym))]
-                 `(build* ~component nil {:key ~key} ~metadata)))
-  ([component data] (let [metadata (meta &form)
-                          key (name (gensym))]
-                      `(build* ~component ~data {:key ~key} ~metadata)))
-  ([component data opts] (let [metadata (meta &form)
-                               key (name (gensym))]
-                           `(build* ~component ~data (merge {:key ~key} ~opts) ~metadata))))
+  ([component] (let [metadata (meta &form)]
+                 `(build* ~component nil nil ~metadata)))
+  ([component data] (let [metadata (meta &form)]
+                      `(build* ~component ~data nil ~metadata)))
+  ([component data opts] (let [metadata (meta &form)]
+                           `(build* ~component ~data ~opts ~metadata))))
 
 (def create-pure-component #?(:cljs utils/create-pure-component))
 
