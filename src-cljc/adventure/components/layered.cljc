@@ -15,12 +15,14 @@
 (defcomponent layer-hero
   [data _ opts]
   [:div.mx-auto.relative {:style {:min-height "300px"}}
-   (let [{:photo/keys [mob-uuid dsk-uuid file-name alt]} data]
+   (let [{:photo/keys [mob-uuid mob-url dsk-uuid dsk-url file-name alt]} data]
      (component/build ui.M/hero
-                      {:mob-uuid    mob-uuid
-                       :dsk-uuid    dsk-uuid
-                       :file-name   file-name
-                       :alt         alt
+                      {:mob-uuid  mob-uuid
+                       :mob-url   mob-url
+                       :dsk-uuid  dsk-uuid
+                       :dsk-url   dsk-url
+                       :file-name file-name
+                       :alt       alt
                        :opts      {:class "block"
                                    :style {:min-height "300px"}}}))
    (when-let [buttons (:buttons data)]

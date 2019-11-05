@@ -24,32 +24,67 @@
        partial-star
        empty-stars])))
 
-(defcomponent hero
-  [{:keys [dsk-uuid mob-uuid file-name alt opts off-screen?]
-    :or   {file-name "hero-image"}
-    :as   data} _ options]
+(defn ^:private ucare-hero
+  [mob-uuid dsk-uuid file-name alt]
   (let [mobile-url  (str "//ucarecdn.com/" mob-uuid "/-/format/auto/-/")
         desktop-url (str "//ucarecdn.com/" (or dsk-uuid mob-uuid) "/-/format/auto/-/")]
-    [:a
-     opts
-     (if off-screen?
-       [:div.col-12]
-       ;; ON-SCREEN
-       [:picture
-        ;; Tablet/Desktop
-        [:source {:media   "(min-width: 750px)"
-                  :src-set (str desktop-url "quality/best/-/resize/1440x/" file-name " 1x")}]
-        ;; Mobile
-        [:source {:media   "(min-width: 426px)"
-                  :src-set (str mobile-url "quality/lightest/-/resize/2250x/" file-name " 3x, "
-                                mobile-url "quality/lightest/-/resize/1500x/" file-name " 2x, "
-                                mobile-url "quality/normal/-/resize/750x/" file-name " 1x ")}]
-        [:source {:src-set (str mobile-url "quality/lightest/-/resize/1275x/" file-name " 3x, "
-                                mobile-url "quality/lightest/-/resize/850x/" file-name " 2x, "
-                                mobile-url "quality/normal/-/resize/425x/" file-name " 1x ")}]
-        ;; mobile
-        [:img.block.col-12 {:src (str mobile-url "quality/normal/-/resize/750x/" file-name)
-                            :alt (str alt)}]])]))
+    [:picture
+     ;; Tablet/Desktop
+     [:source {:media   "(min-width: 750px)"
+               :src-set (str desktop-url "quality/best/-/resize/1440x/" file-name " 1x")}]
+     ;; Mobile
+     [:source {:media   "(min-width: 426px)"
+               :src-set (str mobile-url "quality/lightest/-/resize/2250x/" file-name " 3x, "
+                             mobile-url "quality/lightest/-/resize/1500x/" file-name " 2x, "
+                             mobile-url "quality/normal/-/resize/750x/" file-name " 1x ")}]
+     [:source {:src-set (str mobile-url "quality/lightest/-/resize/1275x/" file-name " 3x, "
+                             mobile-url "quality/lightest/-/resize/850x/" file-name " 2x, "
+                             mobile-url "quality/normal/-/resize/425x/" file-name " 1x ")}]
+     ;; mobile
+     [:img.block.col-12 {:src (str mobile-url "quality/normal/-/resize/750x/" file-name)
+                         :alt (str alt)}]]))
+
+(defn ^:private image-hero
+  [dsk-url mob-url alt]
+  [:picture
+   ;; Tablet/Desktop
+   (for [img-type ["webp" "jpg"]]
+     [(ui/source dsk-url
+                 {:media   "(min-width: 750px)"
+                  :src-set {"1x" {:w "1600"
+                                  :q "75"}}
+                  :type    img-type})
+      (ui/source mob-url
+                 {:media   "(min-width: 426px)"
+                  :src-set {"1x" {:w "750"
+                                  :q "75"}
+                            "2x" {:w "1500"
+                                  :q "50"}}
+                  :type    img-type})
+      (ui/source mob-url
+                 {:media   "(min-width: 321px)"
+                  :src-set {"1x" {:w "425"
+                                  :q "75"}
+                            "2x" {:w "850"
+                                  :q "50"}}
+                  :type    img-type})
+      (ui/source mob-url
+                 {:src-set {"1x" {:w "320"
+                                  :q "75"}
+                            "2x" {:w "640"
+                                  :q "50"}}
+                  :type    img-type})])
+   [:img.block.col-12 {:src mob-url
+                       :alt alt}]])
+
+(defcomponent hero
+  [{:keys [dsk-uuid dsk-url mob-uuid mob-url file-name alt opts off-screen?]
+    :or   {file-name "hero-image"}} _ _]
+  (let [ucare? (boolean mob-uuid)]
+    [:a opts (cond
+               off-screen? [:div.col-12]
+               ucare?      (ucare-hero mob-uuid dsk-uuid file-name alt)
+               :else       (image-hero mob-url dsk-url alt))]))
 
 (defn labeled-input-molecule
   [{:labeled-input/keys [id label value on-change]}]
