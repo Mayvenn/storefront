@@ -26,7 +26,7 @@
 (defmethod query :default [_] nil)
 
 (defmulti component (fn [query-data _ _] (:popup-type query-data)))
-(defmethod component :default [_ _ _] (component/html [:div]))
+(defmethod component :default [_ _ _] [:div])
 
 (defn query-with-popup-type [data]
   (assoc (query data)
@@ -37,7 +37,6 @@
   (component/html
    (let [query-data (query-with-popup-type data)]
      (component query-data
-                nil
                 {:close-attrs (utils/fake-href events/control-popup-hide)}))))
 
 (defn determine-site

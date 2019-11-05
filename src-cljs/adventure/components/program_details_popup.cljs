@@ -77,40 +77,39 @@
 
 (defmethod popup/component :adventure-free-install
   [{:keys [footer-data faq-data]} owner _]
-  (component/html
-   (ui/modal {:col-class "col-12 col-6-on-tb col-6-on-dt my8-on-tb-dt flex justify-center"
-              :close-attrs (utils/fake-href events/control-adventure-free-install-dismiss)
-              :bg-class  "bg-darken-4"}
-             [:div.bg-white
-              {:style {:max-width "400px"}}
-              [:div.col-12.clearfix.pt1.pk2
-               [:div.right.pt2.pr2.pointer
-                (svg/simple-x
-                 (merge (utils/fake-href events/control-adventure-free-install-dismiss)
-                        {:data-test    "adventure-popup-dismiss"
-                         :height       "27px"
-                         :width        "27px"
-                         :class        "black"}))]
-               [:div.flex.justify-center.pb2
-                [:div.col-6
-                 (ui/clickable-logo {:class "col-12 mx4"
-                                     :style {:height "40px"}})]]]
-              [:div.flex.flex-column
-               [:div.center
-                [:div  ;; Body
-                 [:h1.h3.bold.white.bg-teal.p3
-                  "Get a FREE install when you"
-                  [:br]
-                  "buy 3 bundles or more"]]]
-               [:div.mt10.mb6 get-a-free-install]
+  (ui/modal {:col-class "col-12 col-6-on-tb col-6-on-dt my8-on-tb-dt flex justify-center"
+             :close-attrs (utils/fake-href events/control-adventure-free-install-dismiss)
+             :bg-class  "bg-darken-4"}
+            [:div.bg-white
+             {:style {:max-width "400px"}}
+             [:div.col-12.clearfix.pt1.pk2
+              [:div.right.pt2.pr2.pointer
+               (svg/simple-x
+                (merge (utils/fake-href events/control-adventure-free-install-dismiss)
+                       {:data-test    "adventure-popup-dismiss"
+                        :height       "27px"
+                        :width        "27px"
+                        :class        "black"}))]
+              [:div.flex.justify-center.pb2
+               [:div.col-6
+                (ui/clickable-logo {:class "col-12 mx4"
+                                    :style {:height "40px"}})]]]
+             [:div.flex.flex-column
+              [:div.center
+               [:div  ;; Body
+                [:h1.h3.bold.white.bg-teal.p3
+                 "Get a FREE install when you"
+                 [:br]
+                 "buy 3 bundles or more"]]]
+              [:div.mt10.mb6 get-a-free-install]
 
-               why-mayvenn-is-right-for-you
+              why-mayvenn-is-right-for-you
 
-               [:div.mt10
-                (faq/component (assoc faq-data :modal? true))]
+              [:div.mt10
+               (faq/component (assoc faq-data :modal? true))]
 
-               [:div.hide-on-tb-dt.pt3 ;; Footer
-                (component/build footer-modal/component footer-data nil)]]])))
+              [:div.hide-on-tb-dt.pt3 ;; Footer
+               (component/build footer-modal/component footer-data nil)]]]))
 
 (defmethod popup/query :adventure-free-install
   [data]
@@ -201,38 +200,37 @@
 
 (defmethod popup/component :consolidated-cart-free-install
   [{:keys [footer-data faq-data] :as queried-data} owner _]
-  (component/create
-   (ui/modal {:col-class   "col-12 col-6-on-tb col-6-on-dt my8-on-tb-dt flex justify-center"
-              :close-attrs (utils/fake-href events/control-consolidated-cart-free-install-dismiss)
-              :bg-class    "bg-darken-4"}
-             [:div.bg-white
-              {:style {:max-width "400px"}}
-              [:div.col-12.clearfix.pt1.pk2.bg-lavender.white
-               [:div.right.pt2.pr2.pointer
-                (svg/simple-x
-                 (merge (utils/fake-href events/control-consolidated-cart-free-install-dismiss)
-                        {:data-test "consolidated-cart-free-install-popup-dismiss"
-                         :height    "20px"
-                         :width     "20px"
-                         :class     "white"}))]
-               [:div.py2.center.col-8.bold.mx-auto
-                "Buy 3 items and receive your free Mayvenn Install"]]
+  (ui/modal {:col-class   "col-12 col-6-on-tb col-6-on-dt my8-on-tb-dt flex justify-center"
+             :close-attrs (utils/fake-href events/control-consolidated-cart-free-install-dismiss)
+             :bg-class    "bg-darken-4"}
+            [:div.bg-white
+             {:style {:max-width "400px"}}
+             [:div.col-12.clearfix.pt1.pk2.bg-lavender.white
+              [:div.right.pt2.pr2.pointer
+               (svg/simple-x
+                (merge (utils/fake-href events/control-consolidated-cart-free-install-dismiss)
+                       {:data-test "consolidated-cart-free-install-popup-dismiss"
+                        :height    "20px"
+                        :width     "20px"
+                        :class     "white"}))]
+              [:div.py2.center.col-8.bold.mx-auto
+               "Buy 3 items and receive your free Mayvenn Install"]]
 
-              [:div.flex.flex-column
-               [:div.mt10.mb6
-                get-a-mayvenn-install
+             [:div.flex.flex-column
+              [:div.mt10.mb6
+               get-a-mayvenn-install
 
-                [:div.col-8.mx-auto.mt5
-                 (cta-molecule queried-data)]]
+               [:div.col-8.mx-auto.mt5
+                (cta-molecule queried-data)]]
 
-               mayvenn-is-more-than-a-hair-company
-               [:div.my8
-                (faq/component (assoc faq-data :modal? true))]
+              mayvenn-is-more-than-a-hair-company
+              [:div.my8
+               (faq/component (assoc faq-data :modal? true))]
 
-               (component/build call-out-center/organism queried-data nil)
+              (component/build call-out-center/organism queried-data nil)
 
-               [:div.hide-on-tb-dt ;; Footer
-                (component/build footer-modal/component footer-data nil)]]])))
+              [:div.hide-on-tb-dt ;; Footer
+               (component/build footer-modal/component footer-data nil)]]]))
 
 (defmethod transitions/transition-state events/popup-show-consolidated-cart-free-install
   [_ event args app-state]

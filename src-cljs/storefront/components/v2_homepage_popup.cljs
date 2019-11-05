@@ -18,65 +18,64 @@
 
 (defmethod popup/component :v2-homepage
   [{:keys [footer-data faq-data store gallery-ucare-ids stylist-gallery-open?]} _ _]
-  (component/html
-   (ui/modal {:col-class "col-12 col-6-on-tb col-6-on-dt my8-on-tb-dt flex justify-center"
-              :bg-class  "bg-darken-4"}
-             [:div.bg-white
-              {:style {:max-width "400px"}}
-              [:div.col-12.clearfix.pt1.pb2
-               [:div.right.pt2.pr2.pointer
-                (svg/simple-x
-                 (merge (utils/fake-href events/control-v2-homepage-popup-dismiss)
-                        {:data-test    "v2-homepage-popup-dismiss"
-                         :height       "27px"
-                         :width        "27px"
-                         :class        "black"}))]
-               [:div.flex.justify-center.pb2
-                [:div.col-6
-                 (ui/clickable-logo {:class "col-12 mx4"
-                                     :style {:height "40px"}})]]]
-              [:div.flex.flex-column
-               [:div.center
-                [:div  ;; Body
-                 [:h1.h3.bold.white.bg-teal.p3
-                  "Get a FREE install when you"
-                  [:br]
-                  "buy 3 bundles or more"]]]
-               [:div.my10
-                (component/build v2/get-a-free-install {:store                 store
-                                                        :gallery-ucare-ids     gallery-ucare-ids
-                                                        :stylist-portrait      (:portrait store)
-                                                        :stylist-name          (:store-nickname store)
-                                                        :modal?                true
-                                                        :stylist-gallery-open? stylist-gallery-open?})]
-               [:div.mb3.px2
+  (ui/modal {:col-class "col-12 col-6-on-tb col-6-on-dt my8-on-tb-dt flex justify-center"
+             :bg-class  "bg-darken-4"}
+            [:div.bg-white
+             {:style {:max-width "400px"}}
+             [:div.col-12.clearfix.pt1.pb2
+              [:div.right.pt2.pr2.pointer
+               (svg/simple-x
+                (merge (utils/fake-href events/control-v2-homepage-popup-dismiss)
+                       {:data-test    "v2-homepage-popup-dismiss"
+                        :height       "27px"
+                        :width        "27px"
+                        :class        "black"}))]
+              [:div.flex.justify-center.pb2
+               [:div.col-6
+                (ui/clickable-logo {:class "col-12 mx4"
+                                    :style {:height "40px"}})]]]
+             [:div.flex.flex-column
+              [:div.center
+               [:div  ;; Body
+                [:h1.h3.bold.white.bg-teal.p3
+                 "Get a FREE install when you"
+                 [:br]
+                 "buy 3 bundles or more"]]]
+              [:div.my10
+               (component/build v2/get-a-free-install {:store                 store
+                                                       :gallery-ucare-ids     gallery-ucare-ids
+                                                       :stylist-portrait      (:portrait store)
+                                                       :stylist-name          (:store-nickname store)
+                                                       :modal?                true
+                                                       :stylist-gallery-open? stylist-gallery-open?})]
+              [:div.mb3.px2
 
-                [:h6.bold.col-12.center.mb2 "Just check out with promo code: FREEINSTALL"]
-                [:div.col-11.mx-auto
-                 (ui/teal-button (merge
-                                  {:height-class "py2"}
-                                  (utils/route-to events/navigate-shop-by-look {:album-keyword :look
-                                                                                :query-params {:sha "freeinstall"}}))
-                                 [:span "Shop looks"])]]
+               [:h6.bold.col-12.center.mb2 "Just check out with promo code: FREEINSTALL"]
+               [:div.col-11.mx-auto
+                (ui/teal-button (merge
+                                 {:height-class "py2"}
+                                 (utils/route-to events/navigate-shop-by-look {:album-keyword :look
+                                                                               :query-params {:sha "freeinstall"}}))
+                                [:span "Shop looks"])]]
 
-               (v2/why-mayvenn-is-right-for-you true)
+              (v2/why-mayvenn-is-right-for-you true)
 
-               [:div.bg-black.white.p4.flex.h6.medium.items-center
-                [:span.col-7.mr2 "Buy 3 bundles or more and get a FREE install!"]
-                [:div.col-5.flex.justify-end
-                 [:div.col-9
-                  (ui/teal-button
-                   (merge (utils/route-to events/navigate-shop-by-look {:album-keyword :look
-                                                                        :query-params {:sha "freeinstall"}})
-                          {:data-test    "v2-homepage-popup-shop"
-                           :height-class "py1"})
-                   [:span.h6 "Shop"])]]]
+              [:div.bg-black.white.p4.flex.h6.medium.items-center
+               [:span.col-7.mr2 "Buy 3 bundles or more and get a FREE install!"]
+               [:div.col-5.flex.justify-end
+                [:div.col-9
+                 (ui/teal-button
+                  (merge (utils/route-to events/navigate-shop-by-look {:album-keyword :look
+                                                                       :query-params {:sha "freeinstall"}})
+                         {:data-test    "v2-homepage-popup-shop"
+                          :height-class "py1"})
+                  [:span.h6 "Shop"])]]]
 
-               [:div.mt10
-                (component/build v2/faq (assoc faq-data :modal? true))]
+              [:div.mt10
+               (component/build v2/faq (assoc faq-data :modal? true))]
 
-               [:div.hide-on-tb-dt.pt3 ;; Footer
-                (component/build footer-modal/component footer-data nil)]]])))
+              [:div.hide-on-tb-dt.pt3 ;; Footer
+               (component/build footer-modal/component footer-data nil)]]]))
 
 (defn faq-query
   [data]

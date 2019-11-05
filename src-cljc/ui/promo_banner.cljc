@@ -196,4 +196,5 @@
 
 (defn built-static-organism
   [app-state opts]
-  (component (query app-state) nil opts))
+  (component/html
+   (component (query app-state) nil opts)))
