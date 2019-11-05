@@ -138,7 +138,7 @@
              (cond
                (gobj/get component "isNewStyleComponent" false)
                (react/createElement component
-                                    #js{:props               data
+                                    #js{:props               #js{:props data}
                                         :options             (:opts opts)
                                         :key                 (:key opts)
                                         :isNewStyleComponent true})

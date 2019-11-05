@@ -24,10 +24,10 @@
                  (gobj/remove this "options")
 
                  ;; call super()
-                 (.call super-class this #js{:props props})
+                 (.call super-class this props)
 
                  (when init-fn
-                   (set! (.-state this) #js {:state ((.bind init-fn this) this props)}))
+                   (set! (.-state this) #js {:state ((.bind init-fn this) this (.-props props))}))
                  this))]
     ;; set static properties on prototype
     (goog/inherits ctor super-class)

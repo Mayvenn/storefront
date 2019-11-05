@@ -49,52 +49,50 @@
                [:span.teal "NEW "])
              title])])]])))
 
-(defn contacts-section [{:keys [call-number sms-number contact-email]}]
-  (component/html
-   [:div
-    [:div.medium.border-bottom.border-gray.mb1 "Contact"]
-    [:div.dark-gray.light
-     [:div.py1
-      [:span.hide-on-tb-dt (ui/link :link/phone :a.dark-gray {} call-number)] ;; mobile
-      [:span.hide-on-mb call-number] ;; desktop
-      " | 8am-5pm PST M-F"]
-     (ui/link :link/email :a.block.py1.dark-gray {} contact-email)]
+(defcomponent contacts-section [{:keys [call-number sms-number contact-email]} _ _]
+  [:div
+   [:div.medium.border-bottom.border-gray.mb1 "Contact"]
+   [:div.dark-gray.light
+    [:div.py1
+     [:span.hide-on-tb-dt (ui/link :link/phone :a.dark-gray {} call-number)] ;; mobile
+     [:span.hide-on-mb call-number] ;; desktop
+     " | 8am-5pm PST M-F"]
+    (ui/link :link/email :a.block.py1.dark-gray {} contact-email)]
 
-    [:div.py1.hide-on-tb-dt
-     (ui/ghost-button {:href (phone-uri call-number)
-                       :class "my1"}
-                      [:div.flex.items-center.justify-center
-                       ^:inline (svg/phone-ringing {:class "stroke-teal"})
-                       [:div.ml1.left-align "Call Now"]])
-     (ui/ghost-button {:href (str "sms:" sms-number)
-                       :class "my1"}
-                      [:div.flex.items-center.justify-center
-                       ^:inline (svg/message-bubble {:class "stroke-teal"})
-                       [:div.ml1.left-align "Send Message"]])
-     (ui/ghost-button {:href (str "mailto:" contact-email)
-                       :class "my1"}
-                      [:div.flex.items-center.justify-center
-                       ^:inline (svg/mail-envelope {:class "stroke-teal"})
-                       [:div.ml1.left-align "Send Email"]])]]))
+   [:div.py1.hide-on-tb-dt
+    (ui/ghost-button {:href (phone-uri call-number)
+                      :class "my1"}
+                     [:div.flex.items-center.justify-center
+                      ^:inline (svg/phone-ringing {:class "stroke-teal"})
+                      [:div.ml1.left-align "Call Now"]])
+    (ui/ghost-button {:href (str "sms:" sms-number)
+                      :class "my1"}
+                     [:div.flex.items-center.justify-center
+                      ^:inline (svg/message-bubble {:class "stroke-teal"})
+                      [:div.ml1.left-align "Send Message"]])
+    (ui/ghost-button {:href (str "mailto:" contact-email)
+                      :class "my1"}
+                     [:div.flex.items-center.justify-center
+                      ^:inline (svg/mail-envelope {:class "stroke-teal"})
+                      [:div.ml1.left-align "Send Email"]])]])
 
-(defn social-section []
-  (component/html
-   [:div
-    [:div.medium.border-bottom.border-gray
-     [:div.hide-on-mb ui/nbsp]]
-    [:div.border-bottom.border-gray.p1.flex.items-center.justify-around.py2
-     [:a.block {:href "https://www.facebook.com/MayvennHair"}
-      [:div {:style {:width "22px" :height "22px"}}
-       ^:inline (svg/mayvenn-on-facebook)]]
-     [:a.block {:href "http://instagram.com/mayvennhair"}
-      [:div {:style {:width "22px" :height "22px"}}
-       ^:inline (svg/mayvenn-on-instagram)]]
-     [:a.block {:href "https://twitter.com/MayvennHair"}
-      [:div {:style {:width "22px" :height "22px"}}
-       ^:inline (svg/mayvenn-on-twitter)]]
-     [:a.block {:href "http://www.pinterest.com/mayvennhair/"}
-      [:div {:style {:width "22px" :height "22px"}}
-       ^:inline (svg/mayvenn-on-pinterest)]]]]))
+(defcomponent social-section [_ _ _]
+  [:div
+   [:div.medium.border-bottom.border-gray
+    [:div.hide-on-mb ui/nbsp]]
+   [:div.border-bottom.border-gray.p1.flex.items-center.justify-around.py2
+    [:a.block {:href "https://www.facebook.com/MayvennHair"}
+     [:div {:style {:width "22px" :height "22px"}}
+      ^:inline (svg/mayvenn-on-facebook)]]
+    [:a.block {:href "http://instagram.com/mayvennhair"}
+     [:div {:style {:width "22px" :height "22px"}}
+      ^:inline (svg/mayvenn-on-instagram)]]
+    [:a.block {:href "https://twitter.com/MayvennHair"}
+     [:div {:style {:width "22px" :height "22px"}}
+      ^:inline (svg/mayvenn-on-twitter)]]
+    [:a.block {:href "http://www.pinterest.com/mayvennhair/"}
+     [:div {:style {:width "22px" :height "22px"}}
+      ^:inline (svg/mayvenn-on-pinterest)]]]])
 
 (defcomponent full-component
   [{:keys [contacts categories]} owner opts]
@@ -104,9 +102,9 @@
      [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
       ^:inline (shop-section {:partition-count 10 :categories categories})]
      [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
-      ^:inline (contacts-section contacts)]
+      ^:inline (component/build contacts-section contacts)]
      [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
-      ^:inline (social-section)]]]
+      ^:inline (component/build social-section)]]]
 
    [:div.mt3.bg-dark-gray.white.py1.px3.clearfix.h8
     [:div
@@ -136,25 +134,22 @@
       [:span.teal "NEW "])
     (str title)]))
 
-(defn dtc-shop-section [categories partition-count]
-  (component/html
-   (let [links                          (mapv category->link categories)
-         [column-1-links rest-of-links] (split-at partition-count links)]
-     [:div.col-12
-      [:div.medium.border-bottom.border-gray.mb1 "Shop"]
-      [:nav.clearfix {:aria-label "Shop Products"}
-       [:div.col.col-6
-        [:a.block.py1.dark-gray.light.titleize
-         (assoc (utils/route-to events/navigate-adventure-match-stylist)
-                :data-test "freeinstall-footer-link")
-         [:span.teal "NEW "]
-         "Mayvenn Install"]
-        (for [link column-1-links]
-          (dtc-link link))]
-       (for [link-column (partition-all partition-count rest-of-links)]
-         [:div.col.col-6 {:key (str "footer-column-" (-> link-column first :slug))}
-          (for [link link-column]
-            (dtc-link link))])]])))
+(defcomponent dtc-shop-section [{:keys [categories partition-count]} _ _]
+  (let [links                          (mapv category->link categories)
+        [column-1-links rest-of-links] (split-at partition-count links)]
+    [:div.col-12
+     [:div.medium.border-bottom.border-gray.mb1 "Shop"]
+     [:nav.clearfix {:aria-label "Shop Products"}
+      [:div.col.col-6
+       [:a.block.py1.dark-gray.light.titleize
+        (assoc (utils/route-to events/navigate-adventure-match-stylist)
+               :data-test "freeinstall-footer-link")
+        [:span.teal "NEW "]
+        "Mayvenn Install"]
+       (map dtc-link column-1-links)]
+      (for [link-column (partition-all partition-count rest-of-links)]
+        [:div.col.col-6 {:key (str "footer-column-" (-> link-column first :slug))}
+         (map dtc-link link-column)])]]))
 
 (defcomponent dtc-full-component
   [{:keys [contacts categories]} owner opts]
@@ -162,11 +157,12 @@
    [:div.container
     [:div.col-12.clearfix
      [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
-      ^:inline (dtc-shop-section categories 5)]
+      ^:inline (component/build dtc-shop-section {:categories categories
+                                                  :partition-count 5})]
      [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
-      ^:inline (contacts-section contacts)]
+      ^:inline (component/build contacts-section contacts)]
      [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
-      ^:inline (social-section)]]]
+      ^:inline (component/build social-section)]]]
 
    [:div.mt3.bg-dark-gray.white.py1.px3.clearfix.h8
     [:div

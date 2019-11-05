@@ -80,6 +80,8 @@
 
 (defmulti account-info (fn [signed-in _ _ _] (::auth/as signed-in)))
 
+(defmethod account-info nil [_ _ _ _] [:div])
+
 (defmethod account-info :user [_ {:keys [email expanded?]} _ _]
   (ui/drop-down
    expanded?

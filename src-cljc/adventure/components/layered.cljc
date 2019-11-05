@@ -181,37 +181,34 @@
        [:div.col-10.my2.h5.dark-gray value]))
    (cta-with-chevron data)])
 
-(defcomponent bulleted-explainer
-  [data owner opts]
-  (let [step (fn [width-class
-                  {:as point
-                   :keys [icon/uuid icon/width]}]
-               (component/html
-                [:div.mt2.center.px1
-                 {:class width-class}
-                 [:div.flex.justify-center.items-end.my2
-                  {:style {:height "39px"}}
-                  (ui/defer-ucare-img {:alt (:header/title point) :width width} uuid)]
-                 [:div.h5.medium (:header/value point)]
-                 [:p.h6.mx-auto.dark-gray (:body/value point)]
-                 (cta-with-chevron point)]))]
-
+(letfn [(step [width-class
+               {:as point
+                :keys [icon/uuid icon/width]}]
+          (component/html
+           [:div.mt2.center.px1
+            {:class width-class}
+            [:div.flex.justify-center.items-end.my2
+             {:style {:height "39px"}}
+             (ui/defer-ucare-img {:alt (:header/title point) :width width} uuid)]
+            [:div.h5.medium (:header/value point)]
+            [:p.h6.mx-auto.dark-gray (:body/value point)]
+            ^:inline (cta-with-chevron point)]))]
+  (defcomponent bulleted-explainer
+    [{:keys [bullets] :as data} owner opts]
     [:div.col-12.py10.bg-transparent-teal
      [:div.mt2.flex.flex-column.items-center
       (let [{:header/keys [value]} data]
         [:h2.center value])
       (let [{:subheader/keys [value]} data]
         [:div.h6.dark-gray value])]
-     (into
-      [:div.col-12.flex.flex-column.items-center.hide-on-dt]
-      (comp (map (partial step "col-10")))
-      (:bullets data))
-     (into
-      [:div.mx-auto.col-11.flex.justify-center.hide-on-mb-tb]
-      (comp (map (partial step "col-3")))
-      (:bullets data))
+     [:div.col-12.flex.flex-column.items-center.hide-on-dt
+      (map (partial step "col-10")
+           bullets)]
+     [:div.mx-auto.col-11.flex.justify-center.hide-on-mb-tb
+      (map (partial step "col-3")
+           bullets)]
      [:div.center.pt3
-      (cta-with-chevron data)]]))
+      ^:inline (cta-with-chevron data)]]))
 
 (defcomponent ^:private ugc-image [{:screen/keys [seen?] :keys [image-url]} owner opts]
   (ui/aspect-ratio
