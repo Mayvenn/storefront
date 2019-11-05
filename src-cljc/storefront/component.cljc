@@ -138,10 +138,10 @@
              (cond
                (gobj/get component "isNewStyleComponent" false)
                (react/createElement component
-                                    #js{:props               data
-                                        :options             (:opts opts)
-                                        :key                 (:key opts)
-                                        :isNewStyleComponent true})
+                                    (cond-> #js{:props               data
+                                                :options             (:opts opts)
+                                                :isNewStyleComponent true}
+                                      (:key opts) (doto (gobj/set "key" (:key opts)))))
 
                (gobj/get component "displayName" false) ;; secondary legacy
                (react/createElement component
@@ -170,6 +170,7 @@
             nil
             {"displayName" name}
             {"render"                (fn render [this] (f))
+             "shouldComponentUpdate" should-update
              "componentDidCatch"     (fn [this error error-info]
                                        (js/console.log "Failed when rendering: " name error error-info))})))
 
