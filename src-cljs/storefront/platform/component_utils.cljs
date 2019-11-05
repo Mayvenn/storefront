@@ -27,7 +27,7 @@
                  (.call super-class this props)
 
                  (when init-fn
-                   (set! (.-state this) #js {:state ((.bind init-fn this) this (.-props props))}))
+                   (set! (.-state this) #js {:state ((.bind init-fn this) this props)}))
                  this))]
     ;; set static properties on prototype
     (goog/inherits ctor super-class)

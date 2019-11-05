@@ -138,7 +138,7 @@
              (cond
                (gobj/get component "isNewStyleComponent" false)
                (react/createElement component
-                                    #js{:props               #js{:props data}
+                                    #js{:props               data
                                         :options             (:opts opts)
                                         :key                 (:key opts)
                                         :isNewStyleComponent true})
@@ -271,12 +271,8 @@
         `(let [~body-fn (fn ~args (html ~body))]
            ~(if (cljs-env? &env)
               (defcomponent-cljs component-name (meta &form) docstring? body-fn)
-              (defcomponent-clj component-name (meta &form) docstring? body-fn)))))
-     #_(if (string? docstring?)
-         `(def ~component-name ~docstring? (create ~(str *ns* "/" (name component-name)) ~@body))
-         (let [body (conj body args)
-               args docstring?]
-           `(defn ~name ~args (create ~name ~@body))))))
+              (defcomponent-clj component-name (meta &form) docstring? body-fn)))))))
 
 (defmacro ^{:style/indent :defn} defdynamic-component [name & methods]
   `(def ~name (create-dynamic ~name ~@methods)))
+
