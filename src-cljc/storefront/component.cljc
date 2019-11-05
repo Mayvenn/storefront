@@ -160,13 +160,9 @@
   #?(:cljs
      (let [props         (get-props this)
            state         (get-state this)
-           next-children (. next-props -children)
-           next-props    (.props next-props)]
+           next-props    (.-props next-props)]
        (or (not= props next-props)
-           (and state
-                (not= state next-state))
-           (not= (.. this -props -children)
-                 next-children)))))
+           (and state (not= state next-state))))))
 
 (defn create* [name f]
   #?(:clj (f)
@@ -174,7 +170,6 @@
             nil
             {"displayName" name}
             {"render"                (fn render [this] (f))
-             "shouldComponentUpdate" should-update
              "componentDidCatch"     (fn [this error error-info]
                                        (js/console.log "Failed when rendering: " name error error-info))})))
 
@@ -187,12 +182,12 @@
                        (str "render method missing for " name (pr-str (keys methods)))))
              (utils/create-component
               ctor
-              {"displayName"           name
-               "isNewStyleComponent"   true}
-              (merge {"componentDidCatch" (fn [this error error-info]
-                                            (js/console.log "Failed when rendering: " name error error-info))}
-                     methods
-                     {"shouldComponentUpdate" (constantly false)})))))
+              {"displayName"         name
+               "isNewStyleComponent" true}
+              (merge {"componentDidCatch"     (fn [this error error-info]
+                                                (js/console.log "Failed when rendering: " name error error-info))
+                      "shouldComponentUpdate" should-update}
+                     methods)))))
 
 (defmacro html [content]
   `(if-cljs

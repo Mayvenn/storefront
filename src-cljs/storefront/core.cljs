@@ -103,7 +103,7 @@
 ;; Choosen by anecdotally to try and minimize the number of time we tell react
 ;; to render. There isn't any reason to have react do a lot of work when we know
 ;; our application tends to churn through app state in quick succession.
-(def ^:private render-delay 5)
+(def ^:private render-delay 30)
 
 ;; timer until React.render is called used in the function below
 (def ^:private render-timer)
@@ -118,12 +118,11 @@
      (fn []
        (add-watch app-state :renderer (fn [key ref old-value new-value]
                                         (when (not= old-value new-value)
-                                          (setter #js{:state new-value})
                                           (when render-timer
                                             (js/clearTimeout render-timer))
                                           (set! render-timer (js/setTimeout #(setter #js{:state new-value})
                                                                             render-delay)))))
-       (setter #js{:state @app-state})
+       (set! render-timer (js/setTimeout #(setter #js{:state @app-state}) render-delay))
        js/undefined)
      #js[])
     template))
