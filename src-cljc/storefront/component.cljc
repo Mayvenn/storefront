@@ -158,11 +158,11 @@
 
 (defn should-update [this next-props next-state]
   #?(:cljs
-     (let [props         (get-props this)
-           state         (get-state this)
-           next-props    (.-props next-props)]
+     (let [props                 (get-props this)
+           state                 (get-state this)
+           next-props            (.-props next-props)]
        (or (not= props next-props)
-           (and state (not= state next-state))))))
+           (and state (not= state (.-state next-state)))))))
 
 (defn create* [name f]
   #?(:clj (f)
