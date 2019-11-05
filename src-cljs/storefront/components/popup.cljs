@@ -38,7 +38,7 @@
    (let [query-data (query-with-popup-type data)]
      (component query-data
                 nil
-                {:opts {:close-attrs (utils/fake-href events/control-popup-hide)}}))))
+                {:close-attrs (utils/fake-href events/control-popup-hide)}))))
 
 (defn determine-site
   [app-state]
