@@ -187,11 +187,12 @@
                        (str "render method missing for " name (pr-str (keys methods)))))
              (utils/create-component
               ctor
-              {"displayName"         name
-               "isNewStyleComponent" true}
+              {"displayName"           name
+               "isNewStyleComponent"   true}
               (merge {"componentDidCatch" (fn [this error error-info]
                                             (js/console.log "Failed when rendering: " name error error-info))}
-                     methods)))))
+                     methods
+                     {"shouldComponentUpdate" (constantly false)})))))
 
 (defmacro html [content]
   `(if-cljs
