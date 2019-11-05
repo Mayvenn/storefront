@@ -8,3 +8,4 @@ FB.api = function () {};
 FB.logout = function () {};
 
 var fbq = function () {};
+var O = function () {};
