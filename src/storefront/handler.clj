@@ -967,14 +967,6 @@
                        json/generate-string
                        util.response/response
                        (util.response/content-type "application/json"))))
-               (GET "/cms" req
-                 (let [{:keys [slices ugc-collections]}
-                       (prepare-cms-query-params (:query-params req))
-                       cms-data (contentful/read-cache contentful)]
-                   (-> (prepare-cms-data cms-data slices ugc-collections)
-                       json/generate-string
-                       util.response/response
-                       (util.response/content-type "application/json"))))
                (GET "/marketing-site" req
                  (contentful/marketing-site-redirect req))
                (-> (routes (static-routes ctx)

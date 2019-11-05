@@ -350,14 +350,16 @@
 
 (defn query
   [data]
-  (let [cms-data (get-in data keypaths/cms-homepage)]
+  (when-let [homepage (some-> data
+                              (get-in keypaths/cms-homepage)
+                              :classic)]
     {:store                   (marquee/query data)
      :signed-in               (auth/signed-in data)
      :categories              (->> (get-in data keypaths/categories)
                                    (filter :home/order)
                                    (sort-by :home/order))
-     :component/hero-cms-data (:hero cms-data)
-     :component/features      (select-keys cms-data [:feature-1 :feature-2 :feature-3])}))
+     :component/hero-cms-data (:hero homepage)
+     :component/features      (select-keys homepage [:feature-1 :feature-2 :feature-3])}))
 
 (defn built-component [data opts]
   (cond

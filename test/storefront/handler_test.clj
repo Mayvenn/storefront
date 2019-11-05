@@ -332,36 +332,34 @@
 
 (deftest fetches-data-from-contentful
   (testing "transforming content"
-    (testing "transforming 'latest' content"
+    (testing "transforming 'homepage' content"
       (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
-                                                                           {:status 200
-                                                                            :body   (generate-string (:body common/contentful-response))}))]
+                                                                              {:status 200
+                                                                               :body   (generate-string (:body common/contentful-response))}))]
         (with-services {:contentful-handler contentful-handler}
           (with-handler handler
-            (let [responses (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
-                  requests  (txfm-requests contentful-requests identity)]
+            (let [responses                         (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
+                  requests                          (txfm-requests contentful-requests identity)
+                  {:keys [hero feature-1
+                          feature-2 feature-3]
+                   :as   classic-homepage-response} (-> (mock/request :get "https://bob.mayvenn.com/cms/homepage")
+                                                        handler
+                                                        :body
+                                                        (parse-string true)
+                                                        :homepage
+                                                        :classic)]
               (is (every? #(= 200 (:status %)) responses))
               (is (=
-                   {:left-feature-block-file-name   "Left",
-                    :hero-image-mobile-uuid         "666b02ba-26f2-4349-aa98-1d251edc701c",
-                    :hero-image-desktop-uuid        "8cb671b1-33b8-496b-a77b-7281ac72c571",
-                    :right-feature-block-file-name  "Right",
-                    :hero-image-file-name           "Hair-Always-On-Beat.jpg",
-                    :hero-image-alt-text
-                    "Hair always on beat! 15% off everything! Shop looks!",
-                    :content/type                   "homepage",
-                    :content/updated-at             1522792187237,
-                    :middle-feature-block-file-name "Middle",
-                    :content/id                     "7kFmCirU3uO2w6ykgAQ4gY"}
-                   (-> (mock/request :get "https://bob.mayvenn.com/cms")
-                       handler
-                       :body
-                       (parse-string true)
-                       :homepage))))))))
+                   #{:title :alt :desktop :mobile :path}
+                   (set (keys feature-1))
+                   (set (keys feature-2))
+                   (set (keys feature-3))
+                   (set (keys hero)))))))))
+
     (testing "transforming ugc-collections"
       (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
-                                                                           {:status 200
-                                                                            :body   (generate-string (:body common/contentful-ugc-collection-response))}))]
+                                                                              {:status 200
+                                                                               :body   (generate-string (:body common/contentful-ugc-collection-response))}))]
         (with-services {:contentful-handler contentful-handler}
           (with-handler handler
             (let [responses (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
@@ -423,7 +421,7 @@
                        :content/type       "ugc-collection"
                        :content/id         "5vqi7q9EeO1ULNjQ1Q4DEp"
                        :looks              [look-1]}}
-                     (-> (mock/request :get "https://bob.mayvenn.com/cms")
+                     (-> (mock/request :get "https://bob.mayvenn.com/cms/ugc-collection")
                          handler
                          :body
                          (parse-string true)
@@ -432,8 +430,8 @@
   (let [number-of-contentful-entities-to-fetch 4]
     (testing "caching content"
       (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
-                                                                           {:status 200
-                                                                            :body   (generate-string (:body common/contentful-response))}))]
+                                                                              {:status 200
+                                                                               :body   (generate-string (:body common/contentful-response))}))]
         (with-services {:contentful-handler contentful-handler}
           (with-handler handler
             (let [responses (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
@@ -443,36 +441,22 @@
 
     (testing "fetches data on system start"
       (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
-                                                                           {:status 200
-                                                                            :body   (generate-string (:body common/contentful-response))}))]
+                                                                              {:status 200
+                                                                               :body   (generate-string (:body common/contentful-response))}))]
         (with-services {:contentful-handler contentful-handler}
           (with-handler handler
             (is (= number-of-contentful-entities-to-fetch (count (txfm-requests contentful-requests identity))))))))
 
     (testing "attempts-to-retry-fetch-from-contentful"
       (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
-                                                                           {:status 500
-                                                                            :body   "{}"}))]
+                                                                              {:status 500
+                                                                               :body   "{}"}))]
         (with-services {:contentful-handler contentful-handler}
           (with-handler handler
             (let [responses (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
                   requests  (txfm-requests contentful-requests identity)]
               (is (every? #(= 200 (:status %)) responses))
               (is (= (* 2 number-of-contentful-entities-to-fetch) (count requests))))))))))
-
-(deftest slices-of-cms-data-can-be-fetched
-  (testing "fetching subslices of cms data"
-    (common/with-handler-and-cms-data handler {:mayvennMadePage {}
-                                               :homepage        {}
-                                               :advertisedPromo {}
-                                               :ugc-collection  {:deals {}
-                                                                 :curly {}
-                                                                 :look  {}}}
-      (is (= {:mayvennMadePage {} :ugc-collection {:all-looks {} :deals {} :curly {}}}
-             (-> (mock/request :get "https://bob.mayvenn.com/cms?slices=mayvennMadePage&ugc-collections=deals&ugc-collections=curly")
-                 handler
-                 :body
-                 (parse-string true)))))))
 
 (deftest we-do-not-ask-waiter-more-than-once-for-the-order
   (testing "Fetching normal pages fetches order once"

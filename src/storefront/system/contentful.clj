@@ -88,6 +88,8 @@
   "Resolves Assets under Entries within items."
   [{:keys [items includes]}]
   (let [resolved-includes (-> includes
+                              (update :Asset (partial mapv (partial resolve-children includes)))
+                              (update :Asset (partial maps/index-by (comp :id :sys)))
                               (update :Entry (partial mapv (partial resolve-children includes)))
                               (update :Entry (partial maps/index-by (comp :id :sys))))]
     (walk/postwalk
@@ -99,6 +101,32 @@
            form)
          form))
      items)))
+
+;; Used for homepage
+
+(defn ^:private condense
+  [data]
+  (->> data
+       (mapv (fn [asset] [(-> asset :sys :id) (-> asset :fields)]))
+       (into {})))
+
+(defn ^:private replace-data [lookup-table]
+  (fn [form]
+    (if (and (map? form)
+             (-> form :sys :type (= "Link")))
+      (if-let [value (get lookup-table (-> form :sys :id))]
+        value
+        form)
+      form)))
+
+(defn condense-items-with-includes
+  [{:keys [items includes]}]
+  (let [assets  (condense (:Asset includes))
+        entries (condense (:Entry includes))]
+    (->> items
+         (walk/postwalk (replace-data entries))
+         (walk/postwalk (replace-data assets))
+         (mapv (comp maps/kebabify :fields)))))
 
 (defn do-fetch-entries
   ([contentful content-params]
@@ -134,8 +162,28 @@
                                         (str "fields." env-param "[lte]") (date/to-iso (date/now))})))]
          (if (and status (<= 200 status 299))
            (swap! cache merge
-                  (if latest?
+                  (cond
+                    (contains? #{:mayvennMadePage :advertisedPromo} content-type)
                     (some-> body extract resolve-all walk/keywordize-keys (select-keys [content-type]))
+
+                    (= :homepage content-type)
+                    (some->> body
+                             condense-items-with-includes
+                             walk/keywordize-keys
+                             (maps/index-by primary-key-fn)
+                             (assoc {} content-type))
+
+                    (= :ugc-collection content-type)
+                    (some->> body
+                             resolve-all-collection
+                             (mapv extract-fields)
+                             walk/keywordize-keys
+                             (mapv item-tx-fn)
+                             (maps/index-by primary-key-fn)
+                             collection-tx-fn
+                             (assoc {} content-type))
+
+                    :else
                     (some->> body
                              resolve-all-collection
                              (mapv extract-fields)
@@ -164,8 +212,11 @@
           env-param   (if production?
                         "production"
                         "acceptance")]
-      (doseq [content-params [{:content-type :homepage
-                               :latest?      true}
+      (doseq [content-params [{:content-type     :homepage
+                               :latest?          false
+                               :primary-key-fn   (comp keyword :experience)
+                               :item-tx-fn       identity
+                               :collection-tx-fn identity}
                               {:content-type :mayvennMadePage
                                :latest?      true}
                               {:content-type :advertisedPromo
