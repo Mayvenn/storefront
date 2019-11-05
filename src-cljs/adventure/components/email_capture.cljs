@@ -55,7 +55,7 @@
 
 (defmethod popup/component :pick-a-stylist-email-capture
   [queried-data owner _]
-  (component/create
+  (component/html
    [:div
     (component/build adventure.components.answer-prompt/component queried-data nil)]))
 

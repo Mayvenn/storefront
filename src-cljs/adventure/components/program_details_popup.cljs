@@ -77,7 +77,7 @@
 
 (defmethod popup/component :adventure-free-install
   [{:keys [footer-data faq-data]} owner _]
-  (component/create
+  (component/html
    (ui/modal {:col-class "col-12 col-6-on-tb col-6-on-dt my8-on-tb-dt flex justify-center"
               :close-attrs (utils/fake-href events/control-adventure-free-install-dismiss)
               :bg-class  "bg-darken-4"}

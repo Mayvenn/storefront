@@ -40,7 +40,7 @@ Thanks,
 
 (defmethod popup/component :share-cart
   [{:keys [share-url utm-url store-nickname]} _ {:keys [close-attrs]}]
-  (component/create
+  (component/html
    (ui/modal {:close-attrs close-attrs}
              [:div.bg-white.rounded.p4.center
               (ui/modal-close {:close-attrs close-attrs :data-test "share-url-close"})

@@ -40,7 +40,7 @@
 
 (defmethod popup/component :email-capture
   [{:capture/keys [call-to-action email] :form/keys [errors focused]} _ _]
-  (component/create
+  (component/html
    (ui/modal
     {:close-attrs close-dialog-href
      :col-class   "col-11 col-5-on-tb col-4-on-dt flex justify-center"
@@ -103,7 +103,6 @@
 
 (defmethod popup/component :email-capture-quadpay
   [query-data _ _]
-  (component/create
-   "popup.component:email-capture-quadpay"
+  (component/html
    [:div.quadpay-popup
     (component/build popup.organisms/organism query-data _)]))

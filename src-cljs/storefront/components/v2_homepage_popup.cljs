@@ -18,7 +18,7 @@
 
 (defmethod popup/component :v2-homepage
   [{:keys [footer-data faq-data store gallery-ucare-ids stylist-gallery-open?]} _ _]
-  (component/create
+  (component/html
    (ui/modal {:col-class "col-12 col-6-on-tb col-6-on-dt my8-on-tb-dt flex justify-center"
               :bg-class  "bg-darken-4"}
              [:div.bg-white
