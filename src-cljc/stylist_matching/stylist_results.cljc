@@ -175,9 +175,10 @@
   "TODO this needs to be refined"
   [dispatches items & fall-back]
   (for [{:keys [element/type react/key] :as item} items
-        :let [component (get dispatches type fall-back)]
-        :when component]
-    [:div {:key key}
+        :let                                      [component (get dispatches type fall-back)]
+        :when                                     component]
+    [:div {:key   key
+           :style {:min-height "400px"}}
      (ui/screen-aware component item)]))
 
 (defn gallery-modal-query
