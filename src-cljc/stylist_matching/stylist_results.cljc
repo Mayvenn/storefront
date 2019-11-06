@@ -174,10 +174,11 @@
 (defn ^:private display-list
   "TODO this needs to be refined"
   [dispatches items & fall-back]
-  (for [{:keys [element/type] :as item} items]
-    (when-let [component (get dispatches type fall-back)]
-      [:div {:key (str type)}
-       (ui/screen-aware component item)])))
+  (for [{:keys [element/type react/key] :as item} items
+        :let [component (get dispatches type fall-back)]
+        :when component]
+    [:div {:key key}
+     (ui/screen-aware component item)]))
 
 (defn gallery-modal-query
   [app-state]

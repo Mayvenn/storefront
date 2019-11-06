@@ -208,7 +208,6 @@
 (defcomponent control-organism
   [data _ _]
   [:div.flex.flex-column.left-align.mx3.my3
-   {:key (:react/key data)}
    (control-stylist-card-header-molecule data)
    [:div.col-12
     (control-stylist-card-gallery-molecule data)]
