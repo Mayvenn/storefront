@@ -349,14 +349,7 @@
        :close-message [events/navigate-product-details
                        {:catalog/product-id (:catalog/product-id product)
                         :page/slug          (:page/slug product)
-                        :query-params       {:SKU (:catalog/sku-id sku)}}]
-       ;;TODO GROT:
-       ;; This is to force UGC to re-render after Slick's initial render
-       ;; Slick has a bug when before 485px width where it shows a sliver
-       ;; of the next image on the right.
-       ;; This ugly terrible hack gets it to re-evaluate its width
-       ;; The correct solution is to get rid of/fix slick
-       :now           (date/now)})))
+                        :query-params       {:SKU (:catalog/sku-id sku)}}]})))
 
 (defn find-carousel-images [product product-skus selected-sku]
   (->> (selector/match-all {}
