@@ -55,7 +55,7 @@
                           ;; line item.  The actual SKU will be calculated by waiter on every cart modification.
                           :sku        {:catalog/sku-id "SRV-LBI-000"}
                           :quantity   1}
-                         #(messages/handle-message api-success-update-order-add-service-line-item
+                         #(messages/handle-message events/api-success-update-order-add-service-line-item
                                                    {:order %}))))
 
 (def or-separator
