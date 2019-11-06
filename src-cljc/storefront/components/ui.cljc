@@ -949,8 +949,6 @@
                          (component/create-ref! this "trigger")
                          {:seen?    false
                           :visible? nil})
-            (should-update [this next-props next-state]
-                           (not= (component/get-state this) (.-state next-state)))
             (did-mount [this]
                        (if (.hasOwnProperty js/window "IntersectionObserver")
                          (when-let [ref (component/get-ref this "trigger")]
