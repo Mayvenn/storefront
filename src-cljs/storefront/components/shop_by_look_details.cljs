@@ -123,7 +123,8 @@
      [:div
       (when desktop-two-column?
         {:class "col-on-tb-dt col-6-on-tb-dt px3-on-tb-dt"})
-      (carousel (imgs look shared-cart))
+      (when shared-cart
+        (carousel (imgs look shared-cart)))
       [:div.px3.pt2.bg-white
        [:div.flex.items-center
         [:div.flex-auto.medium {:style {:word-break "break-all"}}
