@@ -242,6 +242,11 @@
 ;; defcomponent-cljs cannot refer to namespaced symbols that are conditionally included
 (def create-pure-component #?(:cljs utils/create-component))
 
+(defn should-update-if-props-changed [this next-props next-state]
+  (let [props      (get-props this)
+        next-props (.-props next-props)]
+    (not= props next-props)))
+
 #?(:clj
    (defn- defcomponent-cljs [component-name meta docstring body-fn]
      `(def ~component-name
@@ -251,10 +256,7 @@
          {"displayName"         ~(str *ns* "/" (or (name component-name)
                                                    (str "UnnamedComponent@" (:line meta))))
           "isNewStyleComponent" true}
-         {"shouldComponentUpdate" (fn [this# next-props# next-state#]
-                                    (let [props#      (get-props this#)
-                                          next-props# (.-props next-props#)]
-                                      (not= props# next-props#)))
+         {"shouldComponentUpdate" should-update-if-props-changed
           "render"                (fn render# [this#]
                                     (~body-fn (get-props this#) this# (get-opts this#)))}))))
 #?(:clj
