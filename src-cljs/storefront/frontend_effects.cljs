@@ -919,41 +919,22 @@
 (defmethod effects/perform-effects events/api-success-update-order-remove-promotion-code
   [_ _ {:keys [hide-success]} _ app-state]
   (when-not hide-success
-    (messages/handle-message events/flash-show-success {:message "The coupon code was successfully removed from your order."
-                                                        :scroll? false})))
+    (messages/handle-message events/flash-show-success
+                             {:message "The coupon code was successfully removed from your order."
+                              :scroll? false})))
 
 (defmethod effects/perform-effects events/api-success-update-order-add-promotion-code
-  [_ _ {:keys [promo-code allow-dormant?]} _ app-state]
-  (cond
-    (and (= "shop" (get-in app-state keypaths/store-slug))
-         (= "freeinstall" (-> promo-code str string/lower-case)))
-    (messages/handle-message events/flash-dismiss)
-
-    allow-dormant?
-    nil
-
-    :else
+  [_ _ {:keys [allow-dormant?]} _ app-state]
+  (when-not allow-dormant?
     (messages/handle-message events/flash-show-success
                              {:message "The coupon code was successfully applied to your order."
                               :scroll? false}))
   (api/get-promotions (get-in app-state keypaths/api-cache)
                       (first (get-in app-state keypaths/order-promotion-codes))))
 
-;; TODO: remove freeinstall specific stuff.
 (defmethod effects/perform-effects events/api-success-update-order-add-service-line-item
-  [_ _ {:keys [promo-code allow-dormant?]} _ app-state]
-  (cond
-    (and (= "shop" (get-in app-state keypaths/store-slug))
-         (= "freeinstall" (-> promo-code str string/lower-case)))
-    (messages/handle-message events/flash-dismiss)
-
-    allow-dormant?
-    nil
-
-    :else
-    (messages/handle-message events/flash-show-success
-                             {:message "The coupon code was successfully applied to your order."
-                              :scroll? false}))
+  [_ _ _ _ app-state]
+  (messages/handle-message events/flash-dismiss)
   (api/get-promotions (get-in app-state keypaths/api-cache)
                       (first (get-in app-state keypaths/order-promotion-codes))))
 
