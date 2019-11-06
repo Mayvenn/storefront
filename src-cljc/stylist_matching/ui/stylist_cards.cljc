@@ -207,12 +207,13 @@
 
 (defcomponent control-organism
   [data _ _]
-  [:div.flex.flex-column.left-align.mx3.my3
-   (control-stylist-card-header-molecule data)
-   [:div.col-12
-    (control-stylist-card-gallery-molecule data)]
-   [:div.col-12.p2
-    (control-stylist-card-cta-molecule data)]])
+  (when (:screen/seen? data)
+    [:div.flex.flex-column.left-align.mx3.my3
+     (control-stylist-card-header-molecule data)
+     [:div.col-12
+      (control-stylist-card-gallery-molecule data)]
+     [:div.col-12.p2
+      (control-stylist-card-cta-molecule data)]]))
 
 (defcomponent experiment-organism
   [data _ _]
