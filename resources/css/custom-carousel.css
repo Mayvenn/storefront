@@ -1,3 +1,5 @@
+/* custom styling of dots and controls for carousel */
+
 .tns-outer {
     position: relative;
 }
@@ -17,95 +19,123 @@
     border: 0;
     opacity: 0.623529;
 }
-.tns-nav > .tns-nav-active { background: #999; }
-
-/* Taken from slick.css */
-
-.faded-inactive-slides-carousel .slick-slide {
-    opacity: 0.40;
-    transition-duration: 0.5s;
-}
-
-.faded-inactive-slides-carousel .slick-center {
-    opacity: 1;
-    transition-duration: 0.5s;
-}
-
-.slick-slider {
-   margin-bottom: 0;
-}
-
-.carousel-dots {
-    position: absolute;
-    bottom: 0.75rem;
-    list-style: none;
-    display: inline-block;
-    text-align: center;
-    padding: 0;
-    width: 100%;
-}
-.carousel-dots li {
-    position: relative;
-    display: inline-block;
-    margin: 0;
-}
-.carousel-dots li a {
-    background: transparent;
-    display: block;
-    outline: none;
-    padding: 5px;
-    cursor: pointer;
-}
-.carousel-dots li a div {
-    background-color: var(--white);
-    font-size: 0;
-    padding: 3px;
-    border-radius: 50%;
-    border: 1px solid var(--dark-gray);
-    opacity: 0.623529;
-}
-.carousel-dots li.slick-active a div {
-    background-color: var(--gray);
-    opacity: 1;
-}
-.carousel-dots li a:hover div,
-.carousel-dots li a:focus div {
-    outline: none;
-}
-.carousel-dots li a:hover:before div,
-.carousel-dots li a:focus:before div {
-    opacity: 1;
+.tns-nav>.tns-nav-active {
+    background: #999;
 }
 
 /* Carousel Arrows */
+/* Adapted from Slick css*/
+.carousel-prev, .carousel-next {
+    position: absolute;
+    display: block;
+    height: 20px;
+    width: 20px;
+    line-height: 0;
+    font-size: 0;
+    cursor: pointer;
+    background: transparent;
+    color: transparent;
+    top: 50%;
+    margin-top: -10px;
+    padding: 0;
+    border: none;
+    outline: none;
+}
 
-/* TODO: genericize away from slick names */
+.carousel-prev:hover, .carousel-prev:focus, .carousel-next:hover, .carousel-next:focus {
+    outline: none;
+    background: transparent;
+    color: transparent;
+}
 
-.slick-prev { left: 0; z-index: 2; }
-.slick-next { right: 0; }
-.slick-next, .slick-prev { margin-top: -25px; }
-.slick-arrow {
+.carousel-prev:hover:before, .carousel-prev:focus:before, .carousel-next:hover:before, .carousel-next:focus:before {
+    opacity: 1;
+}
+
+.carousel-prev.carousel-disabled:before, .carousel-next.carousel-disabled:before {
+    opacity: 0.25;
+}
+
+.carousel-prev:before, .carousel-next:before {
+    font-family: "carousel";
+    font-size: 20px;
+    line-height: 1;
+    color: white;
+    opacity: 0.75;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.carousel-prev {
+    left: -25px;
+}
+
+[dir="rtl"] .carousel-prev {
+    left: auto;
+    right: -25px;
+}
+
+.carousel-prev:before {
+    content: "←";
+}
+
+[dir="rtl"] .carousel-prev:before {
+    content: "→";
+}
+
+.carousel-next {
+    right: -25px;
+}
+
+[dir="rtl"] .carousel-next {
+    left: -25px;
+    right: auto;
+}
+
+.carousel-next:before {
+    content: "→";
+}
+
+[dir="rtl"] .carousel-next:before {
+    content: "←";
+}
+
+
+.carousel-prev {
+    left: 0;
+    z-index: 2;
+}
+
+.carousel-next {
+    right: 0;
+}
+
+.carousel-next,
+.carousel-prev {
+    margin-top: -25px;
+}
+
+.carousel-arrow {
     height: 50px;
     width: 50px;
 }
-
-.slick-prev, .slick-next, .slick-prev:hover, .slick-prev:focus, .slick-next:hover, .slick-next:focus  {
+.carousel-prev, .carousel-next, .carousel-prev:hover, .carousel-prev:focus, .carousel-next:hover, .carousel-next:focus  {
     background-image: url("/images/icons/carousel-arrow.svg");
     background-repeat: no-repeat;
     background-position: center;
 }
 
-.slick-prev:before,
-.slick-next:before {
+.carousel-prev:before,
+.carousel-next:before {
     color: var(--dark-gray);
     font-family: sans-serif;
     content: "";
 }
-.slick-prev {
+.carousel-prev {
     transform: rotate(180deg);
 }
 
-.slick-disabled {
+.carousel-disabled {
     visibility: hidden;
 }
 

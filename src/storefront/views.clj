@@ -120,6 +120,7 @@
             [:link {:rel "preconnect" :href "http://byliner.localhost"}])
           [:link {:rel "preconnect" :href "https://t.mayvenn.com"}]
           [:link {:rel "preconnect" :href "https://ucarecdn.com"}]
+          [:link {:rel "preconnect" :href "https://cdnjs.cloudflare.com"}]
           [:link {:rel "preconnect" :href "https://www.facebook.com"}]
           [:link {:rel "preconnect" :href "https://analytics.twitter.com"}]
           [:link {:rel "preconnect" :href "https://t.co"}]
@@ -140,9 +141,9 @@
           [:link {:rel "preconnect" :href "https://googleads.g.doubleclick.net"}]
           [:link {:rel "preconnect" :href "https://d10lpsik1i8c69.cloudfront.net"}] ;; luckyorange
 
-          [:script {:type "text/javascript"
-                    :src "https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.2/min/tiny-slider.js"}]
-          [:link {:rel "stylesheet" :href "https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.2/tiny-slider.css"}] ;; tiny-slider
+          [:script {:defer true
+                    :type  "text/javascript"
+                    :src   "https://cdnjs.cloudflare.com/ajax/libs/tiny-slider/2.9.2/min/tiny-slider.js"}]
 
           (when-not (config/development? environment)
             (for [n js-files]

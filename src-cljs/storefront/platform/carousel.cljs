@@ -1,11 +1,5 @@
 (ns storefront.platform.carousel
-  (:require [sablono.core :refer [html]]
-            [storefront.component :as component :refer [defdynamic-component defcomponent]]
-            ;;react-slick
-
-            [storefront.component :as component :refer [defcomponent]]
-
-            [storefront.component :as component :refer [defcomponent]]))
+  (:require [storefront.component :as component :refer [defdynamic-component defcomponent]]))
 
 (defn safely-destroy [carousel]
   (when (some-> carousel .-destroy fn?)
@@ -47,15 +41,15 @@
                  {:keys [controls] :or {controls true}} settings]
              [:div.relative
               (when controls
-                [:div.z2.slick-prev {:style {:height "50px" :width "50px"}
+                [:div.z2.carousel-prev {:style {:height "50px" :width "50px"}
                                      :ref   (component/use-ref this "prev-button")}])
               (when controls
-                [:div.z2.slick-next {:style {:height "50px" :width "50px"}
+                [:div.z2.carousel-next {:style {:height "50px" :width "50px"}
                                      :ref   (component/use-ref this "next-button")}])
               [:div.slides {:ref (component/use-ref this "container")}
                (for [[idx slide] (map-indexed vector slides)]
-           ;; Wrapping div allows slider.js to attach
-           ;; click handlers without overwriting ours
+                 ;; Wrapping div allows slider.js to attach
+                 ;; click handlers without overwriting ours
                  [:div {:key (str idx)} slide])]]))))
 
 (defcomponent component [{:keys [slides] :as data} owner _]
