@@ -239,7 +239,8 @@
   ([component data opts] (let [metadata (meta &form)]
                            `(build* ~component ~data ~opts ~metadata))))
 
-(def create-pure-component #?(:cljs utils/create-pure-component))
+;; defcomponent-cljs cannot refer to namespaced symbols that are conditionally included
+(def create-pure-component #?(:cljs utils/create-component))
 
 #?(:clj
    (defn- defcomponent-cljs [component-name meta docstring body-fn]
@@ -250,8 +251,12 @@
          {"displayName"         ~(str *ns* "/" (or (name component-name)
                                                    (str "UnnamedComponent@" (:line meta))))
           "isNewStyleComponent" true}
-         {"render" (fn render# [this#]
-                     (~body-fn (get-props this#) this# (get-opts this#)))}))))
+         {"shouldComponentUpdate" (fn [this# next-props# next-state#]
+                                    (let [props#      (get-props this#)
+                                          next-props# (.-props next-props#)]
+                                      (not= props# next-props#)))
+          "render"                (fn render# [this#]
+                                    (~body-fn (get-props this#) this# (get-opts this#)))}))))
 #?(:clj
    (defn- defcomponent-clj [component-name meta docstring body-fn]
      `(defn ~component-name ~@docstring [data# owner# opts#]
