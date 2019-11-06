@@ -27,8 +27,6 @@
  :install-deps     false
  :foreign-libs     [{:file     "src-cljs/storefront/jsQR.js"
                      :provides ["jsQR"]}
-                    {:file     "src-cljs/storefront/react-slick.js"
-                     :provides ["react-slick"]}
                     {:file     "src-cljs/storefront/bugsnag-2.5.0.js"
                      :provides ["bugsnag"]}]
  :externs          ["externs/luckyorange.js"
@@ -39,7 +37,6 @@
                     "externs/google_maps.js"
                     "externs/pixlee.js"
                     "externs/quadpay.js"
-                    "externs/react-slick.js"
                     "externs/riskified.js"
                     "externs/spreedly.js"
                     "externs/stringer.js"

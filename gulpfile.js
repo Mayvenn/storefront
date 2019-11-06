@@ -124,7 +124,6 @@ exports.default = css;
 exports['refresh-deps'] = function refreshDeps(cb) {
   run([
     "cp",
-    "./node_modules/react-slick/dist/react-slick.js",
     "./node_modules/jsqr/dist/jsQR.js",
     "src-cljs/storefront/"].join(" "), cb);
 }

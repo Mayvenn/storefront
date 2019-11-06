@@ -108,9 +108,6 @@
                         :foreign-libs     [{:file     "src-cljs/storefront/jsQR.js"
                                             :file-min "target/min-js/jsQR.js"
                                             :provides ["jsQR"]}
-                                           {:file     "src-cljs/storefront/react-slick.js"
-                                            :file-min "target/min-js/react-slick.js" ;; created by gulp
-                                            :provides ["react-slick"]}
                                            {:file     "src-cljs/storefront/bugsnag-2.5.0.js"
                                             :file-min "target/min-js/bugsnag-2.5.0.js"
                                             :provides ["bugsnag"]}]
@@ -122,7 +119,6 @@
                                            "externs/google_maps.js"
                                            "externs/pixlee.js"
                                            "externs/quadpay.js"
-                                           "externs/react-slick.js"
                                            "externs/riskified.js"
                                            "externs/spreedly.js"
                                            "externs/stringer.js"
