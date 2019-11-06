@@ -45,12 +45,18 @@
 (defmethod effects/perform-effects events/control-cart-add-freeinstall-coupon
   [_ _ _ _ app-state]
   #?(:cljs
-     (api/add-promotion-code {:shop?              (= "shop" (get-in app-state keypaths/store-slug))
-                              :session-id         (get-in app-state keypaths/session-id)
-                              :number             (get-in app-state keypaths/order-number)
-                              :token              (get-in app-state keypaths/order-token)
-                              :promo-code         "freeinstall"
-                              :allow-dormant?     false})))
+     (api/add-sku-to-bag (get-in app-state keypaths/session-id)
+                         {:token      (get-in app-state keypaths/order-token)
+                          :number     (get-in app-state keypaths/order-number)
+                          :stylist-id (get-in app-state keypaths/store-stylist-id)
+                          :user-id    (get-in app-state keypaths/user-id)
+                          :user-token (get-in app-state keypaths/user-token)
+                          ;; Not necessarily an actual leave-out service, just need to use any install service
+                          ;; line item.  The actual SKU will be calculated by waiter on every cart modification.
+                          :sku        {:catalog/sku-id "SRV-LBI-000"}
+                          :quantity   1}
+                         #(messages/handle-message api-success-update-order-add-service-line-item
+                                                   {:order %}))))
 
 (def or-separator
   [:div.h5.black.py1.flex.items-center

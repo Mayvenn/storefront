@@ -483,6 +483,12 @@
       (assoc-in keypaths/cart-coupon-code "")
       (assoc-in keypaths/pending-promo-code nil)))
 
+(defmethod transition-state events/api-success-update-order-add-service-line-item [_ event args app-state]
+  (-> app-state
+      clear-field-errors
+      (assoc-in keypaths/cart-coupon-code "")
+      (assoc-in keypaths/pending-promo-code nil)))
+
 (defmethod transition-state events/api-success-update-order-remove-promotion-code [_ event args app-state]
   (-> app-state
       clear-field-errors
