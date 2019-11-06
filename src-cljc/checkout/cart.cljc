@@ -287,12 +287,28 @@
   #?(:cljs
      (let [coupon-code (get-in app-state keypaths/cart-coupon-code)]
        (when-not (empty? coupon-code)
-         (api/add-promotion-code {:shop?              (= "shop" (get-in app-state keypaths/store-slug))
-                                  :session-id         (get-in app-state keypaths/session-id)
-                                  :number             (get-in app-state keypaths/order-number)
-                                  :token              (get-in app-state keypaths/order-token)
-                                  :promo-code         coupon-code
-                                  :allow-dormant?     false})))))
+         (if (-> coupon-code
+                 clojure.string/lower-case
+                 clojure.string/trim
+                 (= "freeinstall"))
+           (api/add-sku-to-bag (get-in app-state keypaths/session-id)
+                               {:token      (get-in app-state keypaths/order-token)
+                                :number     (get-in app-state keypaths/order-number)
+                                :stylist-id (get-in app-state keypaths/store-stylist-id)
+                                :user-id    (get-in app-state keypaths/user-id)
+                                :user-token (get-in app-state keypaths/user-token)
+                                ;; Not necessarily an actual leave-out service, just need to use any install service
+                                ;; line item.  The actual SKU will be calculated by waiter on every cart modification.
+                                :sku        {:catalog/sku-id "SRV-LBI-000"}
+                                :quantity   1}
+                               #(messages/handle-message events/api-success-update-order-add-service-line-item
+                                                         {:order %}))
+           (api/add-promotion-code {:shop?              (= "shop" (get-in app-state keypaths/store-slug))
+                                    :session-id         (get-in app-state keypaths/session-id)
+                                    :number             (get-in app-state keypaths/order-number)
+                                    :token              (get-in app-state keypaths/order-token)
+                                    :promo-code         coupon-code
+                                    :allow-dormant?     false}))))))
 
 (defmethod effects/perform-effects events/control-cart-share-show
   [_ _ _ _ app-state]

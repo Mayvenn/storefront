@@ -335,6 +335,7 @@
 (defpath api-success-update-order-update-cart-payments)
 (defpath api-success-update-order-update-shipping-method)
 (defpath api-success-update-order-add-promotion-code)
+(defpath api-success-update-order-add-service-line-item)
 (defpath api-success-update-order-remove-promotion-code)
 (defpath api-success-update-order-place-order)
 (defpath api-success-update-order-proceed-to-quadpay)
