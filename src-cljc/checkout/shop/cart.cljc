@@ -56,7 +56,8 @@
                           :sku        {:catalog/sku-id "SRV-LBI-000"}
                           :quantity   1}
                          #(messages/handle-message events/api-success-update-order-add-service-line-item
-                                                   {:order %}))))
+                                                   {:order %
+                                                    :shop? (get-in app-state keypaths/store-slug)}))))
 
 (def or-separator
   [:div.h5.black.py1.flex.items-center

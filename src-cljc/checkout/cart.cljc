@@ -285,7 +285,8 @@
 (defmethod effects/perform-effects events/control-cart-update-coupon
   [_ _ _ _ app-state]
   #?(:cljs
-     (let [coupon-code (get-in app-state keypaths/cart-coupon-code)]
+     (let [coupon-code (get-in app-state keypaths/cart-coupon-code)
+           shop?       (= "shop" (get-in app-state keypaths/store-slug))]
        (when-not (empty? coupon-code)
          (if (-> coupon-code
                  clojure.string/lower-case
@@ -302,13 +303,14 @@
                                 :sku        {:catalog/sku-id "SRV-LBI-000"}
                                 :quantity   1}
                                #(messages/handle-message events/api-success-update-order-add-service-line-item
-                                                         {:order %}))
-           (api/add-promotion-code {:shop?              (= "shop" (get-in app-state keypaths/store-slug))
-                                    :session-id         (get-in app-state keypaths/session-id)
-                                    :number             (get-in app-state keypaths/order-number)
-                                    :token              (get-in app-state keypaths/order-token)
-                                    :promo-code         coupon-code
-                                    :allow-dormant?     false}))))))
+                                                         {:order %
+                                                          :shop? shop?}))
+           (api/add-promotion-code {:shop?          shop?
+                                    :session-id     (get-in app-state keypaths/session-id)
+                                    :number         (get-in app-state keypaths/order-number)
+                                    :token          (get-in app-state keypaths/order-token)
+                                    :promo-code     coupon-code
+                                    :allow-dormant? false}))))))
 
 (defmethod effects/perform-effects events/control-cart-share-show
   [_ _ _ _ app-state]
