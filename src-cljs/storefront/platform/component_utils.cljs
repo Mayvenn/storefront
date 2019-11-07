@@ -38,13 +38,6 @@
 (defn create-component [init-fn static-properties method-names]
   (create-class react/Component init-fn static-properties method-names))
 
-(defn create-pure-component [init-fn static-properties method-names]
-  (create-class react/PureComponent init-fn static-properties method-names))
-
-(def create-context
-  "Just react/createContext"
-  react/createContext)
-
 (defn position [pred coll]
   (first (keep-indexed #(when (pred %2) %1)
                        coll)))

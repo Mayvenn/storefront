@@ -240,7 +240,7 @@
                            `(build* ~component ~data ~opts ~metadata))))
 
 ;; defcomponent-cljs cannot refer to namespaced symbols that are conditionally included
-(def create-pure-component #?(:cljs utils/create-component))
+(def create-component #?(:cljs utils/create-component))
 
 (defn should-update-if-props-changed [this next-props next-state]
   (let [props      (get-props this)
@@ -251,7 +251,7 @@
    (defn- defcomponent-cljs [component-name meta docstring body-fn]
      `(def ~component-name
         ~@docstring
-        (create-pure-component
+        (create-component
          nil
          {"displayName"         ~(str *ns* "/" (or (name component-name)
                                                    (str "UnnamedComponent@" (:line meta))))
