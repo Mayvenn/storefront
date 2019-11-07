@@ -26,7 +26,7 @@
        (svg/bag {:class (str "fill-" color)})
        (when value
          [:div.absolute.top-0.left-0.right-0.bottom-0.flex.items-end.justify-center.h7
-          {:data-test (str id "-populated")
+          {:data-test id
            :class     color}
           value])]])))
 

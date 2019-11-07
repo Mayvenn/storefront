@@ -714,7 +714,7 @@
                                    (if (pos? quantity) "fill-navy" "fill-black"))})
     (when (pos? quantity)
       [:div.absolute.overlay.m-auto {:style {:height "9px"}}
-       [:div.center.navy.h6.line-height-1 {:data-test (-> opts :data-test (str  "-populated"))} quantity]])]))
+       [:div.center.navy.h6.line-height-1 {:data-test (:data-test opts)} quantity]])]))
 
 (defn lqip
   "Generates a Low Quality Image Placeholder.
