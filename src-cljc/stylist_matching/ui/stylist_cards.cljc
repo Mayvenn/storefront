@@ -171,12 +171,14 @@
 
 (defn control-stylist-card-thumbnail-molecule
   "We want ucare-ids here but we do not have them"
-  [{:stylist-card.thumbnail/keys [id ucare-id]}]
+  [{:stylist-card.thumbnail/keys [id ucare-id] :as data}]
   (when id
     (component/html
-     (ui/circle-picture {:width "104px"}
-                        (ui/square-image {:resizable-url ucare-id}
-                                         72)))))
+     (if (:screen/seen? data)
+       (ui/circle-picture {:width "104px"}
+                          (ui/square-image {:resizable-url ucare-id}
+                                           72))
+       [:div {:style {:height "104px" :width "104px"}}]))))
 
 (defn stylist-card-header-molecule
   [{:stylist-card/keys [target id] :as data}]
@@ -207,13 +209,14 @@
 
 (defcomponent control-organism
   [data _ _]
-  (when (:screen/seen? data)
-    [:div.flex.flex-column.left-align.mx3.my3
-     (control-stylist-card-header-molecule data)
-     [:div.col-12
-      (control-stylist-card-gallery-molecule data)]
-     [:div.col-12.p2
-      (control-stylist-card-cta-molecule data)]]))
+  [:div.flex.flex-column.left-align.mx3.my3
+   (control-stylist-card-header-molecule data)
+   [:div.col-12
+    (if (:screen/seen? data)
+      (control-stylist-card-gallery-molecule data)
+      (ui/aspect-ratio 548 183 [:div]))]
+   [:div.col-12.p2
+    (control-stylist-card-cta-molecule data)]])
 
 (defcomponent experiment-organism
   [data _ _]

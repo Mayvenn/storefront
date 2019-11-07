@@ -166,7 +166,7 @@
    :react/key                   :recommend-stylist})
 
 (defn ^:private insert-at-pos
-  "TODO this needs to be refine"
+  "TODO this needs to be refined"
   [position i coll]
   (let [[h & r] (partition-all position coll)]
     (flatten (into [h] (concat [i] r)))))
@@ -174,11 +174,10 @@
 (defn ^:private display-list
   "TODO this needs to be refined"
   [dispatches items & fall-back]
-  (for [{:keys [element/type react/key] :as item} items
-        :let                                      [component (get dispatches type fall-back)]
-        :when                                     component]
-    [:div {:key   key
-           :style {:min-height "400px"}}
+  (for [item  items
+        :let  [component (get dispatches (:element/type item) fall-back)]
+        :when component]
+    [:div {:key (:react/key item)}
      (ui/screen-aware component item)]))
 
 (defn gallery-modal-query
