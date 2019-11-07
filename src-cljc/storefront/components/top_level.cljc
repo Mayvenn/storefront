@@ -52,86 +52,88 @@
             [storefront.routes :as routes]
             [checkout.shop.cart :as shop-cart]))
 
+
+(def nav-table
+  {#?@(:cljs
+       [events/navigate-reset-password                             (constantly reset-password/built-component)
+        events/navigate-force-set-password                         (constantly force-set-password/built-component)
+        events/navigate-shop-by-look                               #(ui/lazy-load-component :catalog 'storefront.components.shop-by-look/built-component
+                                                                                            events/navigate-shop-by-look)
+        events/navigate-shop-by-look-details                       #(ui/lazy-load-component :catalog 'storefront.components.shop-by-look-details/built-component
+                                                                                            events/navigate-shop-by-look-details)
+        events/navigate-stylist-dashboard-balance-transfer-details #(ui/lazy-load-component :dashboard 'storefront.components.stylist.balance-transfer-details/built-component
+                                                                                            events/navigate-stylist-dashboard-balance-transfer-details)
+        events/navigate-stylist-dashboard-order-details            #(ui/lazy-load-component :dashboard 'storefront.components.stylist.order-details/built-component events/navigate-stylist-dashboard-order-details)
+        events/navigate-stylist-dashboard-cash-out-begin           #(ui/lazy-load-component :dashboard 'storefront.components.stylist.cash-out/built-component events/navigate-stylist-dashboard-cash-out-begin)
+        events/navigate-stylist-dashboard-cash-out-pending         #(ui/lazy-load-component :dashboard 'storefront.components.stylist.cash-out-pending/built-component events/navigate-stylist-dashboard-cash-out-pending)
+        events/navigate-stylist-dashboard-cash-out-success         #(ui/lazy-load-component :dashboard 'storefront.components.stylist.cash-out-success/built-component events/navigate-stylist-dashboard-cash-out-success)
+        events/navigate-stylist-share-your-store                   #(ui/lazy-load-component :dashboard 'storefront.components.stylist.share-your-store/built-component events/navigate-stylist-share-your-store)
+        events/navigate-stylist-account-profile                    #(ui/lazy-load-component :dashboard 'storefront.components.stylist.account/built-component events/navigate-stylist-account-profile)
+        events/navigate-stylist-account-portrait                   #(ui/lazy-load-component :dashboard 'storefront.components.stylist.portrait/built-component events/navigate-stylist-account-portrait)
+        events/navigate-stylist-account-password                   #(ui/lazy-load-component :dashboard 'storefront.components.stylist.account/built-component events/navigate-stylist-account-password)
+        events/navigate-stylist-account-payout                     #(ui/lazy-load-component :dashboard 'storefront.components.stylist.account/built-component events/navigate-stylist-account-payout)
+        events/navigate-stylist-account-social                     #(ui/lazy-load-component :dashboard 'storefront.components.stylist.account/built-component events/navigate-stylist-account-social)
+        events/navigate-v2-stylist-dashboard-payments              #(ui/lazy-load-component :dashboard 'stylist.dashboard/built-component events/navigate-v2-stylist-dashboard-payments)
+        events/navigate-v2-stylist-dashboard-orders                #(ui/lazy-load-component :dashboard 'stylist.dashboard/built-component events/navigate-v2-stylist-dashboard-orders)
+        events/navigate-gallery-image-picker                       #(ui/lazy-load-component :dashboard 'storefront.components.stylist.gallery-image-picker/built-component events/navigate-gallery-image-picker)
+        events/navigate-account-manage                             #(partial sign-in/requires-sign-in account/built-component)
+        events/navigate-account-referrals                          #(partial sign-in/requires-sign-in friend-referrals/built-component)
+        events/navigate-friend-referrals-freeinstall               (constantly friend-referrals/built-component)
+        events/navigate-friend-referrals                           (constantly friend-referrals/built-component)
+        events/navigate-checkout-returning-or-guest                #(ui/lazy-load-component :checkout 'storefront.components.checkout-returning-or-guest/built-component events/navigate-checkout-returning-or-guest)
+        events/navigate-checkout-sign-in                           #(ui/lazy-load-component :checkout 'storefront.components.checkout-sign-in/built-component events/navigate-checkout-sign-in)
+        events/navigate-checkout-address                           #(ui/lazy-load-component :checkout 'storefront.components.checkout-address-auth-required/built-component events/navigate-checkout-address)
+        events/navigate-checkout-payment                           #(ui/lazy-load-component :checkout 'storefront.components.checkout-payment/built-component events/navigate-checkout-payment)
+        events/navigate-checkout-confirmation                      #(ui/lazy-load-component :checkout 'checkout.confirmation/built-component events/navigate-checkout-confirmation)
+        events/navigate-order-complete                             #(ui/lazy-load-component :checkout 'storefront.components.checkout-complete/built-component events/navigate-order-complete)
+        events/navigate-need-match-order-complete                  #(ui/lazy-load-component :checkout 'storefront.components.checkout-complete/built-component events/navigate-need-match-order-complete)])
+
+   events/navigate-home                    (constantly home/built-component)
+   events/navigate-category                #(ui/lazy-load-component :catalog 'catalog.category/built-component events/navigate-category)
+   events/navigate-product-details         #(ui/lazy-load-component :catalog 'catalog.product-details/built-component events/navigate-product-details)
+   events/navigate-shared-cart             #(ui/lazy-load-component :catalog 'storefront.components.shared-cart/built-component events/navigate-shared-cart)
+   events/navigate-checkout-processing     #(ui/lazy-load-component :checkout 'checkout.processing/built-component events/navigate-checkout-processing)
+   events/navigate-cart                    #(ui/lazy-load-component :catalog 'checkout.cart/built-component events/navigate-cart)
+   events/navigate-voucher-redeem          #(ui/lazy-load-component :redeem 'voucher.redeem/built-component events/navigate-voucher-redeem)
+   events/navigate-voucher-redeemed        #(ui/lazy-load-component :redeem 'voucher.redeemed/built-component events/navigate-voucher-redeemed)
+   events/navigate-mayvenn-made            (constantly mayvenn-made.home/built-component)
+   events/navigate-content-guarantee       (constantly content/built-component)
+   events/navigate-content-help            (constantly content/built-component)
+   events/navigate-content-privacy         (constantly content/built-component)
+   events/navigate-content-tos             (constantly content/built-component)
+   events/navigate-content-about-us        (constantly content/built-component)
+   events/navigate-content-ugc-usage-terms (constantly content/built-component)
+   events/navigate-content-voucher-terms   (constantly content/built-component)
+   events/navigate-content-program-terms   (constantly content/built-component)
+   events/navigate-content-our-hair        (constantly content/built-component)
+   events/navigate-sign-in                 (constantly sign-in/built-component)
+   events/navigate-sign-up                 (constantly sign-up/built-component)
+   events/navigate-forgot-password         (constantly forgot-password/built-component)
+   events/navigate-store-gallery           (constantly gallery/built-component)
+   events/navigate-gallery-edit            (constantly gallery-edit/built-component)
+
+   events/navigate-info-certified-stylists (constantly adventure.informational.certified-stylists/built-component)
+   events/navigate-info-about-our-hair     (constantly adventure.informational.about-our-hair/built-component)
+   events/navigate-info-how-it-works       (constantly adventure.informational.how-it-works/built-component)
+
+   events/navigate-adventure-product-details                     #(ui/lazy-load-component :catalog 'adventure.a-la-carte.product-details/built-component events/navigate-adventure-product-details)
+
+   events/navigate-adventure-match-stylist                       (constantly stylist-matching.match-stylist/page)
+   events/navigate-adventure-find-your-stylist                   (constantly stylist-matching.find-your-stylist/page)
+   events/navigate-adventure-matching-stylist-wait-post-purchase (constantly adventure.stylist-matching.matching-stylist-wait/built-component)
+   events/navigate-adventure-stylist-results-pre-purchase        (constantly stylist-matching.stylist-results/page)
+   events/navigate-adventure-stylist-results-post-purchase       (constantly stylist-matching.stylist-results/page)
+   events/navigate-adventure-out-of-area                         (constantly stylist-matching.out-of-area/page)
+   events/navigate-adventure-match-success-pre-purchase          (constantly stylist-matching.match-success/page)
+   events/navigate-adventure-match-success-post-purchase         (constantly stylist-matching.match-success/page)
+   events/navigate-adventure-checkout-wait                       #(ui/lazy-load-component :checkout 'adventure.checkout.wait/built-component events/navigate-adventure-checkout-wait)
+   events/navigate-adventure-let-mayvenn-match                   (constantly adventure.stylist-matching.let-mayvenn-match/built-component)
+   events/navigate-adventure-stylist-profile                     (constantly adventure.stylist-matching.stylist-profile/built-component)
+   events/navigate-adventure-stylist-profile-post-purchase       (constantly adventure.stylist-matching.stylist-profile/built-component)
+   events/navigate-adventure-stylist-gallery                     (constantly adventure.stylist-matching.stylist-gallery/built-component)})
+
 (defn main-component [nav-event]
-  (doto (condp = nav-event
-          #?@(:cljs
-              [events/navigate-reset-password                             reset-password/built-component
-               events/navigate-force-set-password                         force-set-password/built-component
-               events/navigate-shop-by-look                               (ui/lazy-load-component :catalog 'storefront.components.shop-by-look/built-component
-                                                                                                  events/navigate-shop-by-look)
-               events/navigate-shop-by-look-details                       (ui/lazy-load-component :catalog 'storefront.components.shop-by-look-details/built-component
-                                                                                                  events/navigate-shop-by-look-details)
-               events/navigate-stylist-dashboard-balance-transfer-details (ui/lazy-load-component :dashboard 'storefront.components.stylist.balance-transfer-details/built-component
-                                                                                                  events/navigate-stylist-dashboard-balance-transfer-details)
-               events/navigate-stylist-dashboard-order-details            (ui/lazy-load-component :dashboard 'storefront.components.stylist.order-details/built-component events/navigate-stylist-dashboard-order-details)
-               events/navigate-stylist-dashboard-cash-out-begin           (ui/lazy-load-component :dashboard 'storefront.components.stylist.cash-out/built-component events/navigate-stylist-dashboard-cash-out-begin)
-               events/navigate-stylist-dashboard-cash-out-pending         (ui/lazy-load-component :dashboard 'storefront.components.stylist.cash-out-pending/built-component events/navigate-stylist-dashboard-cash-out-pending)
-               events/navigate-stylist-dashboard-cash-out-success         (ui/lazy-load-component :dashboard 'storefront.components.stylist.cash-out-success/built-component events/navigate-stylist-dashboard-cash-out-success)
-               events/navigate-stylist-share-your-store                   (ui/lazy-load-component :dashboard 'storefront.components.stylist.share-your-store/built-component events/navigate-stylist-share-your-store)
-               events/navigate-stylist-account-profile                    (ui/lazy-load-component :dashboard 'storefront.components.stylist.account/built-component events/navigate-stylist-account-profile)
-               events/navigate-stylist-account-portrait                   (ui/lazy-load-component :dashboard 'storefront.components.stylist.portrait/built-component events/navigate-stylist-account-portrait)
-               events/navigate-stylist-account-password                   (ui/lazy-load-component :dashboard 'storefront.components.stylist.account/built-component events/navigate-stylist-account-password)
-               events/navigate-stylist-account-payout                     (ui/lazy-load-component :dashboard 'storefront.components.stylist.account/built-component events/navigate-stylist-account-payout)
-               events/navigate-stylist-account-social                     (ui/lazy-load-component :dashboard 'storefront.components.stylist.account/built-component events/navigate-stylist-account-social)
-               events/navigate-v2-stylist-dashboard-payments              (ui/lazy-load-component :dashboard 'stylist.dashboard/built-component events/navigate-v2-stylist-dashboard-payments)
-               events/navigate-v2-stylist-dashboard-orders                (ui/lazy-load-component :dashboard 'stylist.dashboard/built-component events/navigate-v2-stylist-dashboard-orders)
-               events/navigate-gallery-image-picker                       (ui/lazy-load-component :dashboard 'storefront.components.stylist.gallery-image-picker/built-component events/navigate-gallery-image-picker)
-               events/navigate-account-manage                             (partial sign-in/requires-sign-in account/built-component)
-               events/navigate-account-referrals                          (partial sign-in/requires-sign-in friend-referrals/built-component)
-               events/navigate-friend-referrals-freeinstall               friend-referrals/built-component
-               events/navigate-friend-referrals                           friend-referrals/built-component
-               events/navigate-checkout-returning-or-guest                (ui/lazy-load-component :checkout 'storefront.components.checkout-returning-or-guest/built-component events/navigate-checkout-returning-or-guest)
-               events/navigate-checkout-sign-in                           (ui/lazy-load-component :checkout 'storefront.components.checkout-sign-in/built-component events/navigate-checkout-sign-in)
-               events/navigate-checkout-address                           (ui/lazy-load-component :checkout 'storefront.components.checkout-address-auth-required/built-component events/navigate-checkout-address)
-               events/navigate-checkout-payment                           (ui/lazy-load-component :checkout 'storefront.components.checkout-payment/built-component events/navigate-checkout-payment)
-               events/navigate-checkout-confirmation                      (ui/lazy-load-component :checkout 'checkout.confirmation/built-component events/navigate-checkout-confirmation)
-               events/navigate-order-complete                             (ui/lazy-load-component :checkout 'storefront.components.checkout-complete/built-component events/navigate-order-complete)
-               events/navigate-need-match-order-complete                  (ui/lazy-load-component :checkout 'storefront.components.checkout-complete/built-component events/navigate-need-match-order-complete)])
-
-          events/navigate-home                    home/built-component
-          events/navigate-category                (ui/lazy-load-component :catalog 'catalog.category/built-component events/navigate-category)
-          events/navigate-product-details         (ui/lazy-load-component :catalog 'catalog.product-details/built-component events/navigate-product-details)
-          events/navigate-shared-cart             (ui/lazy-load-component :catalog 'storefront.components.shared-cart/built-component events/navigate-shared-cart)
-          events/navigate-checkout-processing     (ui/lazy-load-component :checkout 'checkout.processing/built-component events/navigate-checkout-processing)
-          events/navigate-cart                    (ui/lazy-load-component :catalog 'checkout.cart/built-component events/navigate-cart)
-          events/navigate-voucher-redeem          (ui/lazy-load-component :redeem 'voucher.redeem/built-component events/navigate-voucher-redeem)
-          events/navigate-voucher-redeemed        (ui/lazy-load-component :redeem 'voucher.redeemed/built-component events/navigate-voucher-redeemed)
-          events/navigate-mayvenn-made            mayvenn-made.home/built-component
-          events/navigate-content-guarantee       content/built-component
-          events/navigate-content-help            content/built-component
-          events/navigate-content-privacy         content/built-component
-          events/navigate-content-tos             content/built-component
-          events/navigate-content-about-us        content/built-component
-          events/navigate-content-ugc-usage-terms content/built-component
-          events/navigate-content-voucher-terms   content/built-component
-          events/navigate-content-program-terms   content/built-component
-          events/navigate-content-our-hair        content/built-component
-          events/navigate-sign-in                 sign-in/built-component
-          events/navigate-sign-up                 sign-up/built-component
-          events/navigate-forgot-password         forgot-password/built-component
-          events/navigate-store-gallery           gallery/built-component
-          events/navigate-gallery-edit            gallery-edit/built-component
-
-          events/navigate-info-certified-stylists adventure.informational.certified-stylists/built-component
-          events/navigate-info-about-our-hair     adventure.informational.about-our-hair/built-component
-          events/navigate-info-how-it-works       adventure.informational.how-it-works/built-component
-
-          events/navigate-adventure-product-details                     (ui/lazy-load-component :catalog 'adventure.a-la-carte.product-details/built-component events/navigate-adventure-product-details)
-
-          events/navigate-adventure-match-stylist                       stylist-matching.match-stylist/page
-          events/navigate-adventure-find-your-stylist                   stylist-matching.find-your-stylist/page
-          events/navigate-adventure-matching-stylist-wait-post-purchase adventure.stylist-matching.matching-stylist-wait/built-component
-          events/navigate-adventure-stylist-results-pre-purchase        stylist-matching.stylist-results/page
-          events/navigate-adventure-stylist-results-post-purchase       stylist-matching.stylist-results/page
-          events/navigate-adventure-out-of-area                         stylist-matching.out-of-area/page
-          events/navigate-adventure-match-success-pre-purchase          stylist-matching.match-success/page
-          events/navigate-adventure-match-success-post-purchase         stylist-matching.match-success/page
-          events/navigate-adventure-checkout-wait                       (ui/lazy-load-component :checkout 'adventure.checkout.wait/built-component events/navigate-adventure-checkout-wait)
-          events/navigate-adventure-let-mayvenn-match                   adventure.stylist-matching.let-mayvenn-match/built-component
-          events/navigate-adventure-stylist-profile                     adventure.stylist-matching.stylist-profile/built-component
-          events/navigate-adventure-stylist-profile-post-purchase       adventure.stylist-matching.stylist-profile/built-component
-          events/navigate-adventure-stylist-gallery                     adventure.stylist-matching.stylist-gallery/built-component
-          home/built-component)
+  (doto ((nav-table nav-event (constantly home/built-component)))
     (assert (str "Expected main-component to return a component, but did not: " (pr-str nav-event)))))
 
 (defn sticky-promo-bar
