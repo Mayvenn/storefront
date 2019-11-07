@@ -40,11 +40,13 @@
           (reductions conj [] event)))
 
 (defn- effects [app-state-before-transition app-state-after-transition [event args]]
-  (doseq [event-fragment (rest (reductions conj [] event))]
+  (doseq [event-fragment (reductions conj [] event)
+          :when (pos? (count event-fragment))]
     (perform-effects event-fragment event args app-state-before-transition app-state-after-transition)))
 
 (defn- track [app-state [event args]]
-  (doseq [event-fragment (rest (reductions conj [] event))]
+  (doseq [event-fragment (reductions conj [] event)
+          :when (pos? (count event-fragment))]
     (perform-track event-fragment event args app-state)))
 
 (defn- log-deltas [old-app-state new-app-state [event args]]
