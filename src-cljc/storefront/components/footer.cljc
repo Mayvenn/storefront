@@ -121,8 +121,10 @@
   [data]
   {:contacts   (contacts-query data)
    :categories (->> (get-in data keypaths/categories)
-                    (filter :footer/order)
-                    (filter (partial auth/permitted-category? data))
+                    (into []
+                          (comp
+                           (filter :footer/order)
+                           (filter (partial auth/permitted-category? data))))
                     (sort-by :footer/order))})
 
 (defn dtc-link [{:keys [title new-category? nav-message slug]}]
