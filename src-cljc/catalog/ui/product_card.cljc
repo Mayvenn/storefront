@@ -98,14 +98,29 @@
      :card-image/src               (str (:url image) "-/format/auto/" (:filename image))
      :card-image/alt               (:alt image)}))
 
-(defn card-image-molecule
-  [{:card-image/keys [src alt]}]
+(defcomponent card-image-molecule
+  [{:keys [card-image/src card-image/alt screen/seen?]} _ _]
   ;; TODO: when adding aspect ratio, also use srcset/sizes to scale these images.
-  (ui/aspect-ratio 1 1 (ui/defer-ucare-img
-                         {:class "block col-12 container-height"
-                          :style {:border-radius "5px 5px 0 0"}
-                          :alt   alt}
-                         src)))
+  (cond
+    (nil? seen?) [:noscript
+                  (ui/aspect-ratio
+                   640 580
+                   (ui/ucare-img
+                    {:class "block col-12 container-height"
+                     :style {:border-radius "5px 5px 0 0"}
+                     :alt   alt}
+                    src))]
+    seen?        (ui/aspect-ratio
+                  640 580
+                  (ui/ucare-img
+                   {:class "block col-12 container-height"
+                    :style {:border-radius "5px 5px 0 0"}
+                    :alt   alt}
+                   src))
+    :else        (ui/aspect-ratio
+                  640 580
+                  [:div.col-12.container-height
+                   {:style {:height "100%"}}])))
 
 (defn product-card-title-molecule
   [{:product-card-title/keys [id primary]}]
@@ -130,7 +145,7 @@
            {:key       react-key
             :data-test react-key})
     [:div.border.border-light-silver.rounded.container-height.center
-     (card-image-molecule data)
+     (ui/screen-aware card-image-molecule data)
      (product-card-title-molecule data)
      (product-card-details-molecule data)]]))
 
