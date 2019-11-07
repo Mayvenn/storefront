@@ -1001,8 +1001,6 @@
 
    :screen/seen? (bool) if the user's screen has this element on the screen at
       least once
-   :screen/visible? (bool) if the user's screen currently has this element on
-      the screen.
 
   If :screen/seen? and :screen/visible? is nil, then the component is under a
   server-side render.
