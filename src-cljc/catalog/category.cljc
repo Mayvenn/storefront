@@ -38,6 +38,22 @@
    :length        :hair/length
    :color.process :hair/color.process})
 
+(def category-query-params-ordering
+  {"origin"        0
+   "texture"       1
+   "base-material" 2
+   "color"         3
+   "family"        4
+   "weight"        5})
+
+(defn sort-query-params
+  [params]
+  (into (sorted-map-by
+         (fn [key1 key2]
+           (compare (get category-query-params-ordering key1 100)
+                    (get category-query-params-ordering key2 100))))
+        params))
+
 (def ^:private facet-slugs->query-params
   (set/map-invert query-params->facet-slugs))
 
@@ -348,7 +364,8 @@
      (let [{:keys [catalog/category-id page/slug]} (categories/current-category app-state)]
        (->> (get-in app-state catalog.keypaths/category-selections)
             (maps/map-values (fn [s] (string/join query-param-separator s)))
-            (maps/map-keys facet-slugs->query-params)
+            (maps/map-keys (comp name facet-slugs->query-params))
+            sort-query-params
             (assoc {:catalog/category-id category-id
                     :page/slug           slug}
                    :query-params)

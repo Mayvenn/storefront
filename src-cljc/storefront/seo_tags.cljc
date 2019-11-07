@@ -5,13 +5,15 @@
             [catalog.keypaths :as k]
             [storefront.events :as events]
             [catalog.categories :as categories]
+            [catalog.category :as category]
             [catalog.products :as products]
             [spice.selector :as selector]
             [storefront.ugc :as ugc]
             [storefront.utils :as utils]
             [clojure.string :as string]
             #?@(:clj [[cheshire.core :as json]
-                      [storefront.safe-hiccup :as safe-hiccup]])))
+                      [storefront.safe-hiccup :as safe-hiccup]])
+            [clojure.set :as set]))
 
 (defn- use-case-then-order-key [img]
   [(condp = (:use-case img)
@@ -65,31 +67,33 @@
      [:meta {:property "og:image" :content (str "http:" (:url image))}]
      [:meta {:property "og:description" :content (:opengraph/description product)}]]))
 
-(def allowed-category-page-query-params
-  #{"base-material"
-    "family"
-    "origin"
-    "weight"
+(def ^:private allowed-category-page-query-params
+  #{"origin"
     "texture"
-    "color"})
+    "base-material"
+    "color"
+    "family"
+    "weight"})
 
-(defn filter-seo-query-params
+(defn filter-and-sort-seo-query-params
   [nav-event query]
   (when (= events/navigate-category nav-event)
     #?(:clj (-> query ;; string in clj
                 cemerick-url/query->map
                 (select-keys allowed-category-page-query-params)
-                cemerick-url/map->query
+                category/sort-query-params
+                uri/map->query
                 not-empty)
        :cljs (-> query ;; map in cljs
                  (select-keys allowed-category-page-query-params)
+                 category/sort-query-params
                  not-empty))))
 
 (defn canonical-uri
   [data]
   (let [nav-event (get-in data keypaths/navigation-event)]
     (some-> (get-in data keypaths/navigation-uri)
-            (utils/?update :query (partial filter-seo-query-params nav-event))
+            (utils/?update :query (partial filter-and-sort-seo-query-params nav-event))
             (update :host string/replace #"^[^.]+" "shop")
             (assoc :scheme (get-in data keypaths/scheme))
             str)))

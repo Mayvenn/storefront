@@ -493,13 +493,11 @@
            (#(string/replace % #"&amp;" "&"))
            uri/uri))
 
-(defn response->query-param-map
+(defn response->canonical-uri-query-string
   [resp]
   (->> (:body resp)
        parse-canonical-uri
-       :query
-       cemerick-url/query->map
-       (maps/map-keys keyword)))
+       :query))
 
 (deftest canonical-uris-query-params
   (with-services {}
@@ -510,29 +508,29 @@
                           (mock/request :get)
                           handler)]
             (is (= 200 (:status resp)))
-            (is (= {:origin "peruvian" :base-material "lace"} (response->query-param-map resp)))))
+            (is (= "origin=peruvian&base-material=lace" (response->canonical-uri-query-string resp)))))
         (testing "with one query param"
           (let [resp (->> "https://shop.mayvenn.com/categories/7-Virgin-water-wave?origin=peruvian"
                           (mock/request :get)
                           handler)]
             (is (= 200 (:status resp)))
-            (is (= {:origin "peruvian"} (response->query-param-map resp)))))
+            (is (= "origin=peruvian" (response->canonical-uri-query-string resp)))))
         (testing "without query params"
           (let [resp (->> "https://shop.mayvenn.com/categories/7-Virgin-water-wave"
                           (mock/request :get)
                           handler)]
             (is (= 200 (:status resp)))
-            (is (= {} (response->query-param-map resp))))))
+            (is (= nil (response->canonical-uri-query-string resp))))))
       (testing "non category page"
         (testing "without query params"
           (let [resp (->> "https://shop.mayvenn.com"
                           (mock/request :get)
                           handler)]
             (is (= 200 (:status resp)))
-            (is (= {} (response->query-param-map resp)))))
+            (is (= nil (response->canonical-uri-query-string resp)))))
         (testing "with query params"
           (let [resp (->> "https://shop.mayvenn.com?utm_something=deal_with_it"
                           (mock/request :get)
                           handler)]
             (is (= 200 (:status resp)))
-            (is (= {} (response->query-param-map resp)))))))))
+            (is (= nil (response->canonical-uri-query-string resp)))))))))
