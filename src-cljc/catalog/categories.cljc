@@ -48,10 +48,11 @@
                                              :mobile-url  "//ucarecdn.com/dbae573e-9757-46cb-b42b-8a8159f9e12c/",
                                              :alt         "Virgin Closures"}}}
           (category->seo "Closures"
-                         (copy "Lace Closures in Brazilian Straight, Malaysian Body Wave,"
-                               "Peruvian Straight, Peruvian Body Wave,"
-                               "Peruvian Yaki Straight, Indian Straight Lace and more.")
-                         "//ucarecdn.com/12e8ebfe-06cd-411a-a6fb-909041723333/"))
+                         (copy "Mayvenn’s virgin hair closures allow you to close off"
+                               "any unit or install and come in a variety of different"
+                               "combinations. Shop now to create your look.")
+                         "//ucarecdn.com/12e8ebfe-06cd-411a-a6fb-909041723333/")
+          {:page/title "Virgin Hair Closures: Human Hair Closures | Mayvenn"})
    (merge {:catalog/category-id      "10"
            :copy/title               "Virgin 360 Frontals"
            :page/slug                "virgin-360-frontals"
@@ -76,10 +77,11 @@
            :header/order     1
            :header/group     1}
           (category->seo "360 Frontals"
-                         (copy "Mayvenn’s bundles and extensions with a naturally flawless look."
-                               "These are our 360 Lace Frontals - Brazilian, Peruvian and Malaysian,"
-                               "as Body, Straight and Loose Wave.")
-                         "//ucarecdn.com/7837332a-2ca5-40dd-aa0e-86a2417cd723/"))
+                         (copy "Mayvenn’s virgin hair 360 frontals got you covered and come in"
+                               "different variations such as Brazilian, Malaysian, straight, "
+                               "and deep wave. Order today.")
+                         "//ucarecdn.com/7837332a-2ca5-40dd-aa0e-86a2417cd723/")
+          {:page/title "360 Lace Frontals: Virgin Hair 360 Frontals | Mayvenn"})
    (merge {:catalog/category-id      "1"
            :copy/title               "Virgin Frontals"
            :page/slug                "virgin-frontals"
@@ -102,9 +104,12 @@
                                         :mobile-url  "//ucarecdn.com/158461f7-e264-4d58-974a-59abf5b18c3a/",
                                         :alt         "Virgin Frontals"}}}
           (category->seo "Frontals"
-                         (copy "Brazilian, Peruvian, Indian and Malaysian hair frontals."
-                               "Choose from popular textures such as Deep Wave," "Yaki Straight, Water Wave, Straight and more.")
-                         "//ucarecdn.com/0c7d94c3-c00e-4812-9526-7bd669ac679c/"))
+                         (copy "Mayvenn’s virgin hair frontals blend in seamlessly"
+                               "with our bundles and come in a variety of different"
+                               "combinations. Shop now to create your look.")
+                         "//ucarecdn.com/0c7d94c3-c00e-4812-9526-7bd669ac679c/")
+          {:page/title "Virgin Hair Frontals: Virgin Hair Lace Frontals | Mayvenn"})
+
    (merge {:catalog/category-id      "17"
            :copy/title               "Dyed Virgin Closures"
            :page/slug                "dyed-virgin-closures"
@@ -127,11 +132,11 @@
                                              :mobile-url  "//ucarecdn.com/b9b70ce1-57c3-4376-b341-aff6c165c706/",
                                              :alt         "Dyed Vigin Closures"}}}
           (category->seo "Dyed Virgin Closures"
-                         (copy "Save time and skip the hassle of fussing with toner"
-                               "and bleach for the convenience of pre-dyed Closures."
-                               "Free shipping. Free 30 day returns. Made with 100% dyed"
-                               "virgin human hair extensions.")
-                         "//ucarecdn.com/7082d52d-3a68-422c-9a81-47fba51c1c55/"))
+                         (copy "Mayvenn’s dyed virgin hair closures allow you to"
+                               "close off any unit or install and come in a variety of"
+                               "different combinations. Shop now to create your look.")
+                         "//ucarecdn.com/7082d52d-3a68-422c-9a81-47fba51c1c55/")
+          {:page/title "Dyed Virgin Closures: Human Hair Closures | Mayvenn"})
    (merge {:catalog/category-id      "18"
            :copy/title               "Dyed Virgin Frontals"
            :page/slug                "dyed-virgin-frontals"
@@ -153,11 +158,11 @@
                                              :mobile-url  "//ucarecdn.com/ac0cda32-5258-43bf-82d5-1928537bec8c/",
                                              :alt         "Dyed Virgin Frontals"}}}
           (category->seo "Dyed Virgin Frontals"
-                         (copy "Save time and skip the hassle of fussing with toner"
-                               "and bleach for the convenience of pre-dyed Frontals."
-                               "Free shipping. Free 30 day returns. Made with 100% dyed"
-                               "virgin human hair extensions.")
-                         "//ucarecdn.com/e014902e-3fdb-46ba-ad63-581a4caa8ab0/"))])
+                         (copy "Mayvenn’s dyed virgin hair frontals blend in seamlessly with"
+                               "our bundles and come in a variety of different combinations."
+                               "Shop now to create your look.")
+                         "//ucarecdn.com/e014902e-3fdb-46ba-ad63-581a4caa8ab0/")
+          {:page/title "Dyed Virgin Frontals: Human Hair Lace Frontals | Mayvenn"})])
 
 (def virgin-hair
   [(merge {:catalog/category-id      "2"
@@ -417,11 +422,12 @@
            :hair/family           #{"360-wigs" "lace-front-wigs" "ready-wigs"}
            :selector/essentials   [:hair/family :catalog/department]
            :selector/electives    [:hair/family :hair/texture :hair/origin :hair/color]
-           :page/title            "Human Hair Wigs | Mayvenn"
+           :page/title            "Human Hair Wigs: Natural Hair Lace Wigs | Mayvenn"
            :opengraph/title       (copy "Mayvenn 360 and Lace Frontal Wigs - Free shipping."
                                         "Free 30 day returns. Made with 100% virgin human hair.")
-           :page.meta/description (copy "Mayvenn’s Natural Lace Front Wigs and 360 Wigs."
-                                        "Comes in different variations such as Brazilian and Malaysian, straight, deep wave and loose wave.")
+           :page.meta/description (copy "Mayvenn’s virgin human hair wigs allow you to achieve a new look in minutes"
+                                        "& come in different variations such as Brazilian, Malaysian, straight,"
+                                        "& deep wave.")
            :opengraph/description (copy "100% virgin human hair, machine-wefted and backed by our"
                                         "30 Day Quality Guarantee, our Wigs can be customized to fit"
                                         "your unique look using the built-in combs and adjustable strap.")
@@ -646,12 +652,10 @@
                             "Featuring a thin, polyurethane (PU) weft that flawlessly blends with your own hair."
                             "Ditch the tracks for a clip-in experience that is truly seamless.")
 
-    :page/title "Clip-In Hair Extensions | Mayvenn"
+    :page/title "Clip-In Extensions: Human Hair Clip-In Extensions | Mayvenn"
     :page/slug  "seamless-clip-ins"
-    :page.meta/description
-    (copy "Get the hair of your dreams in an instant with our seamless clip-in extensions."
-          "Featuring a thin, polyurethane (PU) weft that flawlessly blends with your own hair."
-          "Free shipping. Free 30 day returns." "Made with 100% human hair extensions.")
+    :page.meta/description (copy "Get the hair of your dreams with our seamless clip-in hair extensions."
+                                 "Featuring a thin, polyurethane (PU) weft that flawlessly blends with your own hair.")
 
     :opengraph/title       "Mayvenn Clip-In Hair Extensions - Free shipping. Free 30 day returns. Made with 100% human hair extensions."
     :opengraph/description "Blending flawlessly with your own hair and backed by our 30 Day Quality Guarantee, our seamless clip-in extensions are the best quality products on the market and ships free!"
