@@ -934,7 +934,8 @@
 
 (defmethod effects/perform-effects events/api-success-update-order-add-service-line-item
   [_ _ _ _ app-state]
-  (messages/handle-message events/flash-dismiss)
+  (when (= "shop" (get-in app-state keypaths/store-slug))
+    (messages/handle-message events/flash-dismiss))
   (api/get-promotions (get-in app-state keypaths/api-cache)
                       (first (get-in app-state keypaths/order-promotion-codes))))
 
