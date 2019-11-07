@@ -131,7 +131,14 @@
   (component/html
    [:a.block.py1.dark-gray.light.titleize
     (merge {:key (str "footer-link-" slug)}
-           (apply utils/route-to nav-message))
+           ;; be super specific so we can utilize the routing fast path
+           (utils/route-to (first nav-message)
+                           (select-keys (second nav-message)
+                                        [:catalog/category-id
+                                         :page/slug
+                                         :catalog/product-id
+                                         :named-search-slug
+                                         :legacy/product-slug])))
     (when new-category?
       [:span.teal "NEW "])
     (str title)]))

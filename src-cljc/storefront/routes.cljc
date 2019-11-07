@@ -1,6 +1,7 @@
 (ns storefront.routes
   (:require [bidi.bidi :as bidi]
             [clojure.walk :refer [keywordize-keys]]
+            [catalog.categories :as categories]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.uri :as uri]
@@ -62,6 +63,7 @@
    "/how-it-works"                                                     (edn->bidi events/navigate-info-how-it-works)})
 
 (def catalog-routes
+  ;; NOTE: if you update category url, don't forget to update the fast-inverse-catalog-routes below
   {["/categories/" [#"\d+" :catalog/category-id] "-" :page/slug]
    (edn->bidi events/navigate-category)
 
@@ -76,7 +78,22 @@
    ["/products/" [#"[^\d].*" :legacy/product-slug]]
    (edn->bidi events/navigate-legacy-product-page)})
 
+;; provide fast urls resolution for urls in the footer
+(def fast-inverse-catalog-routes
+  (into {}
+        (map (fn [category]
+               [[(edn->bidi events/navigate-category)
+                 {:catalog/category-id (:catalog/category-id category)
+                  :page/slug           (:page/slug category)}]
+                (str "/categories/" (:catalog/category-id category) "-" (:page/slug category))]))
+        categories/initial-categories))
+
 (def shop? (partial contains? #{"shop"}))
+
+(def ^:private sign-in-routes
+  {"/login"  (edn->bidi events/navigate-sign-in)
+   "/logout" (edn->bidi events/navigate-sign-out)
+   "/signup" (edn->bidi events/navigate-sign-up)})
 
 (def app-routes
   ["" (merge static-page-routes
@@ -84,18 +101,16 @@
              catalog-routes
              {"/" (edn->bidi events/navigate-home)}
              {{:subdomain shop?} stylist-matching-routes}
-             {"/login"                                            (edn->bidi events/navigate-sign-in)
-              "/logout"                                           (edn->bidi events/navigate-sign-out)
-              "/signup"                                           (edn->bidi events/navigate-sign-up)
-              "/password/recover"                                 (edn->bidi events/navigate-forgot-password)
+             sign-in-routes
+             {"/password/recover"                                 (edn->bidi events/navigate-forgot-password)
               "/password/set"                                     (edn->bidi events/navigate-force-set-password)
               ["/m/" :reset-token]                                (edn->bidi events/navigate-reset-password)
               ["/c/" :shared-cart-id]                             (edn->bidi events/navigate-shared-cart)
               "/account/edit"                                     (edn->bidi events/navigate-account-manage)
               "/account/referrals"                                (edn->bidi events/navigate-account-referrals)
               "/cart"                                             (edn->bidi events/navigate-cart)
-              ["/shop/" [keyword :album-keyword]]               (edn->bidi events/navigate-shop-by-look)
-              ["/shop/" [keyword :album-keyword] "/" :look-id]  (edn->bidi events/navigate-shop-by-look-details)
+              ["/shop/" [keyword :album-keyword]]                 (edn->bidi events/navigate-shop-by-look)
+              ["/shop/" [keyword :album-keyword] "/" :look-id]    (edn->bidi events/navigate-shop-by-look-details)
               "/stylist/cash-out-now"                             (edn->bidi events/navigate-stylist-dashboard-cash-out-begin)
               ["/stylist/cash-out-pending/" :status-id]           (edn->bidi events/navigate-stylist-dashboard-cash-out-pending)
               ["/stylist/cash-out-success/" :balance-transfer-id] (edn->bidi events/navigate-stylist-dashboard-cash-out-success)
@@ -132,16 +147,27 @@
               ["/orders/" :number "/complete"]            (edn->bidi events/navigate-order-complete)
               ["/orders/" :number "/complete-need-match"] (edn->bidi events/navigate-need-match-order-complete)})])
 
+;; provide fast urls resolution for urls in the footer
+(def ^:private fast-inverse-path-for
+  (into fast-inverse-catalog-routes
+        (map (fn [[path event]] [[event nil] path]))
+        (merge static-page-routes stylist-matching-routes sign-in-routes)))
+
 ;; TODO(jeff,corey): history/path-for should support domains like navigation-message-for
-(defn path-for* [navigation-event & [args]]
-  (let [query-params (:query-params args)
-        args         (dissoc args :query-params)
-        path         (apply bidi/path-for
-                            app-routes
-                            (edn->bidi navigation-event)
-                            (apply concat (seq args)))]
-    (when path
-      (uri/set-query-string path query-params))))
+(defn path-for*
+  ([navigation-event]
+   (let [encoded-navigation-event (edn->bidi navigation-event)]
+     (or (fast-inverse-path-for [encoded-navigation-event nil])
+         (bidi/path-for app-routes encoded-navigation-event))))
+  ([navigation-event args]
+   (let [encoded-navigation-event (edn->bidi navigation-event)]
+     (or
+      (fast-inverse-path-for [encoded-navigation-event (not-empty args)])
+      (let [query-params (:query-params args)
+            args         (dissoc args :query-params)
+            path         (apply bidi/path-for app-routes encoded-navigation-event (apply concat (seq args)))]
+        (when path
+          (uri/set-query-string path query-params)))))))
 
 (def path-for (memoize path-for*))
 
