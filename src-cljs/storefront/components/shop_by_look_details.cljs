@@ -269,39 +269,5 @@
             :return-link/back          back}
            (reviews/query-look-detail shared-cart-with-skus data))))
 
-(defn adventure-query [data]
-  (let [skus (get-in data keypaths/v2-skus)
-
-        shared-cart-with-skus (some-> (get-in data keypaths/shared-cart-current)
-                                      (put-skus-on-shared-cart skus))
-
-        navigation-event (get-in data keypaths/navigation-event)
-        album-keyword    (get-in data keypaths/selected-album-keyword)
-        look             (contentful/look->look-detail-social-card navigation-event album-keyword (contentful/selected-look data))
-        album-copy       (get ugc/album-copy album-keyword)
-        base-price       (apply + (map (fn [line-item]
-                                         (* (:item/quantity line-item)
-                                            (:sku/price line-item)))
-                                       (:line-items shared-cart-with-skus)))]
-    (merge {:shared-cart           shared-cart-with-skus
-            :album-keyword         album-keyword
-            :look                  look
-            :creating-order?       (utils/requesting? data request-keys/create-order-from-shared-cart)
-            :skus                  skus
-            :sold-out?             (not-every? :inventory/in-stock? (:line-items shared-cart-with-skus))
-            :fetching-shared-cart? (or (not look) (utils/requesting? data request-keys/fetch-shared-cart))
-            :back                  (first (get-in data keypaths/navigation-undo-stack))
-            :back-event            (:default-back-event album-copy)
-            :back-copy             (:back-copy album-copy)
-            :shared-cart-type-copy (if (str/includes? (some-> album-keyword name str) "bundle-set")
-                                     "bundle set"
-                                     "look")
-            :base-price            base-price
-            :discounted-price      (* 0.90 base-price)
-            :quadpay-loaded?       (get-in data keypaths/loaded-quadpay)
-            :desktop-two-column?   false
-            :discount-text         "10% OFF + FREE Install"}
-           (reviews/query-look-detail shared-cart-with-skus data))))
-
 (defn ^:export built-component [data opts]
   (component/build component (query data) opts))
