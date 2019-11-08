@@ -168,12 +168,14 @@
 
 (defn stylist-card-thumbnail-molecule
   "We want ucare-ids here but we do not have them"
-  [{:stylist-card.thumbnail/keys [id ucare-id]}]
+  [{:stylist-card.thumbnail/keys [id ucare-id] :as data}]
   (when id
     (component/html
-     (ui/circle-picture {:width "72px"}
-                        (ui/square-image {:resizable-url ucare-id}
-                                         72)))))
+     (if (:screen/seen? data)
+       (ui/circle-picture {:width "72px"}
+                          (ui/square-image {:resizable-url ucare-id}
+                                           72))
+       [:div {:style {:height "72px" :width "72px"}}]))))
 
 (defn control-stylist-card-thumbnail-molecule
   "We want ucare-ids here but we do not have them"
@@ -230,6 +232,8 @@
    {:key (:react/key data)}
    (stylist-card-header-molecule data)
    [:div.col-12
-    (stylist-card-gallery-molecule data)]
+    (if (:screen/seen? data)
+      (stylist-card-gallery-molecule data)
+      (ui/aspect-ratio 426 105 [:div]))]
    [:div.col-12.p2
     (stylist-card-cta-molecule data)]])
