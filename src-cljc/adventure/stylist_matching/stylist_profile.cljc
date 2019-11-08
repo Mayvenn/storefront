@@ -150,7 +150,6 @@
                    {:section-details/title   "Specialties"
                     :section-details/content (:service-menu stylist)})]})))
 
-;; TODO: determine if this should cycle (new carousel doesn't by default)
 (defn carousel-molecule
   [{:carousel/keys [items]}]
   (when (seq items)
@@ -169,7 +168,10 @@
                      items)
       :settings {:controls true
                  :nav      false
-                 :items    3}}
+                 :items    3
+                 ;; setting this to true causes some of our event listeners to
+                 ;; get dropped by tiny-slider.
+                 :loop     false}}
      {})))
 
 (defn cta-molecule

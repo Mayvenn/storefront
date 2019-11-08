@@ -6,10 +6,7 @@
             [storefront.platform.component-utils :as util]
             [storefront.events :as events]
             [storefront.platform.carousel :as carousel]
-            [clojure.string :as str]
-
-            [storefront.component :as component :refer [defcomponent]]
-            [storefront.component :as component :refer [defcomponent]]))
+            [clojure.string :as str]))
 
 (defn ^:private carousel-slide
   [destination-event product-id page-slug sku-id dt-prefix idx
@@ -54,12 +51,14 @@
                   (partial carousel-slide destination-event product-id page-slug sku-id "mayvenn-made-slide-")
                   social-cards)
        :settings {:nav        false
-                   ;; The breakpoints are mobile-first. That is, the
-                   ;; default values apply to the smallest screens, and
-                   ;; 1000 means 1000 and above.
+                  ;; setting this to true causes some of our event listeners to
+                  ;; get dropped by tiny-slider.
+                  :loop       false
+                  ;; The breakpoints are mobile-first. That is, the
+                  ;; default values apply to the smallest screens, and
+                  ;; 1000 means 1000 and above.
                   :items      2
-                  :responsive {1000 {:items  3
-                                     :center true}}}}
+                  :responsive {1000 {:items 3}}}}
       opts)
      [:p.center.dark-gray.m2
       "Want to show up on our homepage? "

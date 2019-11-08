@@ -91,15 +91,13 @@
 (defn aspect-ratio
   "Refer to https://css-tricks.com/snippets/sass/maintain-aspect-ratio-mixin/. This is a slight modification, adapted from the wistia player."
   ([x y content]
-   (component/html
-    [:div.relative.overflow-hidden
-     {:style {:padding-top (-> y (/ x) (* 100) float (str "%"))}}
-     [:div.absolute.overlay content]]))
+   [:div.relative.overflow-hidden
+    {:style {:padding-top (-> y (/ x) (* 100) float (str "%"))}}
+    [:div.absolute.overlay content]])
   ([x y attrs content]
-   (component/html
-    [:div.relative.overflow-hidden
-     {:style {:padding-top (-> y (/ x) (* 100) float (str "%"))}}
-     [:div.absolute.overlay attrs content]])))
+   [:div.relative.overflow-hidden
+    {:style {:padding-top (-> y (/ x) (* 100) float (str "%"))}}
+    [:div.absolute.overlay attrs content]]))
 
 (defn button
   [{:keys [disabled? disabled-class spinning? navigation-message href]

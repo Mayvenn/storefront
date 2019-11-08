@@ -114,8 +114,11 @@
      [:div.px2
       (component/build carousel/component
                        {:slides   (map stylist-card-gallery-item-molecule items)
-                        :settings {:nav       false
-                                   :items     3}}
+                        :settings {:nav   false
+                                   :items 3
+                                   ;; setting this to true causes some of our event listeners to
+                                   ;; get dropped by tiny-slider.
+                                   :loop  false}}
                        {})])))
 
 (defn control-stylist-card-gallery-item-molecule
@@ -139,7 +142,10 @@
       (component/build carousel/component
                        {:slides   (map control-stylist-card-gallery-item-molecule items)
                         :settings {:nav   false
-                                   :items 3}}
+                                   :items 3
+                                   ;; setting this to true causes some of our event listeners to
+                                   ;; get dropped by tiny-slider.
+                                   :loop  false}}
                        {})])))
 
 (defn stylist-card-cta-molecule

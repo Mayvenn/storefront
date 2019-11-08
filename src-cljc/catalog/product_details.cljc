@@ -261,8 +261,10 @@
        [:div.container
         (when (:offset ugc)
           [:div.absolute.overlay.z4.overflow-auto
+           {:key "popup-ugc"}
            (component/build ugc/popup-component ugc opts)])
         [:div
+         {:key "page"}
          (page
           [:div
            (carousel carousel-images product)
