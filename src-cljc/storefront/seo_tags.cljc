@@ -10,6 +10,7 @@
             [spice.selector :as selector]
             [storefront.ugc :as ugc]
             [storefront.utils :as utils]
+            [storefront.uri :as uri]
             [clojure.string :as string]
             #?@(:clj [[cheshire.core :as json]
                       [storefront.safe-hiccup :as safe-hiccup]])
