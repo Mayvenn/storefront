@@ -45,7 +45,7 @@
                          :alt (str alt)}]]))
 
 (defn ^:private image-hero
-  [dsk-url mob-url alt]
+  [mob-url dsk-url alt]
   [:picture
    ;; Tablet/Desktop
    (for [img-type ["webp" "jpg"]]

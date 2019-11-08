@@ -17,6 +17,7 @@
 (defn query
   [data]
   (let [shop?              (= "shop" (get-in data storefront.keypaths/store-slug))
+        cms-homepage-hero  (some-> data (get-in storefront.keypaths/cms-homepage) :shop :hero)
         cms-ugc-collection (get-in data storefront.keypaths/cms-ugc-collection)
         current-nav-event  (get-in data storefront.keypaths/navigation-event)]
     {:layers
@@ -26,8 +27,9 @@
                                   :data-test          "adventure-home-choice-get-started"
                                   :height-class       "py2"}
                                  "Browse Stylists"]]}
-             {:photo/mob-uuid "7edde421-146c-407f-be8b-87db0c81ae54"
-              :photo/dsk-uuid "41adade2-0987-4f8f-9bed-99d9586fead3"})
+             {:photo/alt     (-> cms-homepage-hero :alt)
+              :photo/mob-url (-> cms-homepage-hero :mobile :file :url)
+              :photo/dsk-url (-> cms-homepage-hero :desktop :file :url)})
       {:layer/type :free-standard-shipping-bar}
       {:layer/type   :text-block
        :header/value "We're paying for your next hair appointment"
