@@ -400,7 +400,8 @@
 
 (defn cart-summary-query
   [{:as order :keys [adjustments]}
-   {:mayvenn-install/keys [entered? locked? applied? service-discount quantity-remaining]}]
+   {:mayvenn-install/keys [entered? locked? applied? service-discount quantity-remaining]}
+   black-friday-time?]
   (let [total              (:total order)
         tax                (:tax-total order)
         subtotal           (orders/products-subtotal order)
@@ -417,6 +418,7 @@
 
         total-savings (- (+ adjustment service-discount))]
     {:cart-summary/id                 "cart-summary"
+     :black-friday-time?              black-friday-time?
      :freeinstall-informational/value (not entered?)
      :cart-summary-total-line/id      "total"
      :cart-summary-total-line/label   (if applied? "Hair + Install Total" "Total")
@@ -523,6 +525,7 @@
         locked?                              (:mayvenn-install/locked? mayvenn-install)
         skus                                 (get-in data keypaths/v2-skus)
         recently-added-sku-ids               (get-in data keypaths/cart-recently-added-skus)
+        black-friday-time?                   (experiments/black-friday-time? data)
         last-texture-added                   (->> recently-added-sku-ids
                                                   last
                                                   (get skus)
@@ -560,7 +563,7 @@
              :applied?                           (:mayvenn-install/applied? mayvenn-install)
              :remove-freeinstall-event           [events/control-checkout-remove-promotion {:code "freeinstall"}]
              :cart-summary                       (merge
-                                                  (cart-summary-query order mayvenn-install)
+                                                  (cart-summary-query order mayvenn-install black-friday-time?)
                                                   (when (and (orders/no-applied-promo? order)
                                                              (not entered?))
                                                     {:promo-field-data (promo-input-query data)}))

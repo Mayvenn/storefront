@@ -58,7 +58,8 @@
      [:div.flex-auto label]
      [:div.right-align value]]))
 
-(def freeinstall-informational
+(defn freeinstall-informational
+  [black-friday-time?]
   [:div.flex.py2
    "✋"
    [:div.flex.flex-column.pl1
@@ -67,7 +68,9 @@
      [:span.bold
       "free Mayvenn Install"]]
     [:div.h6
-     "Save 10% & get a free install by a licensed stylist when you add a Mayvenn Install to your cart below."]
+     (if black-friday-time?
+       "Save 25% & get a free install by a licensed stylist when you add a Mayvenn Install to your cart below."
+       "Save 10% & get a free install by a licensed stylist when you add a Mayvenn Install to your cart below.")]
     [:div.flex.justify-left.py1
      [:div (ui/teal-button {:height-class :small
                             :class        "bold"

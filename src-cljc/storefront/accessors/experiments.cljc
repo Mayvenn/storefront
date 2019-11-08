@@ -1,5 +1,6 @@
 (ns storefront.accessors.experiments
-  (:require [storefront.keypaths :as keypaths]))
+  (:require [storefront.keypaths :as keypaths]
+            [spice.date :as date]))
 
 #_(defn bucketing-example
     [data]
@@ -90,3 +91,9 @@
 (defn blog?
   [data]
   (display-feature? data "blog"))
+
+(defn black-friday-time?
+  [data]
+  (or (display-feature? data "black-friday-time")
+      (date/after? (date/now)
+                   (date/date-time 2019 11 29 5 0 0))))

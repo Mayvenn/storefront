@@ -6,6 +6,7 @@
             [sablono.core :refer [html]]
             [storefront.accessors.images :as images]
             [storefront.accessors.contentful :as contentful]
+            [storefront.accessors.experiments :as experiments]
             [storefront.accessors.products :as products]
             [storefront.components.money-formatters :as mf]
             [storefront.components.ui :as ui]
@@ -22,10 +23,7 @@
             [storefront.platform.component-utils :as utils]
             [storefront.platform.reviews :as reviews]
             [storefront.request-keys :as request-keys]
-            [ui.molecules :as ui-molecules]
-
-            [storefront.component :as component :refer [defcomponent]]
-            [storefront.component :as component :refer [defcomponent]]))
+            [ui.molecules :as ui-molecules]))
 
 (defn add-to-cart-button
   [sold-out? creating-order? look {:keys [number]}]
@@ -196,25 +194,38 @@
                        {:legacy/variant-id :legacy/variant-id}))))
 
 (defn shared-cart-promo->discount
-  [promotions price shared-cart-promo]
-  (if (= "freeinstall" shared-cart-promo)
-    {:discount-text    "10% OFF + FREE Install"
-     :discounted-price (* 0.90 price)}
-    (let [promotion% (some->> promotions
-                              (filter (comp #{shared-cart-promo} str/lower-case :code))
-                              first
-                              :description
-                              (re-find #"\b(\d\d?\d?)%")
-                              second)]
-      {:discount-text    (some-> promotion% (str "% + 10% Bundle Discount"))
-       :discounted-price (or
-                          (some->> promotion%
-                                   spice/parse-int
-                                   (* 0.01)
-                                   (+ 0.10) ;; bundle-discount
-                                   (- 1.0)  ;; 100% - discount %
-                                   (* price))
-                          price)}))) ;; discounted price was unparsable
+  [promotions price shared-cart-promo data]
+  (let [black-friday-time? (experiments/black-friday-time? data)]
+    (if (= "freeinstall" shared-cart-promo)
+      {:discount-text    (if black-friday-time?
+                           "25% OFF + FREE Install"
+                           "10% OFF + FREE Install")
+       :discounted-price (if black-friday-time?
+                           (* 0.75 price)
+                           (* 0.90 price))}
+      (let [promotion% (some->> promotions
+                                (filter (comp #{shared-cart-promo} str/lower-case :code))
+                                first
+                                :description
+                                (re-find #"\b(\d\d?\d?)%")
+                                second)]
+        {:discount-text    (if black-friday-time?
+                             (some-> promotion% (str "% OFF"))
+                             (some-> promotion% (str "% + 10% Bundle Discount")))
+         :discounted-price (or
+                            (if black-friday-time?
+                              (some->> promotion%
+                                       spice/parse-int
+                                       (* 0.01)
+                                       (- 1.0)  ;; 100% - discount %
+                                       (* price))
+                              (some->> promotion%
+                                       spice/parse-int
+                                       (* 0.01)
+                                       (+ 0.10) ;; bundle-discount
+                                       (- 1.0)  ;; 100% - discount %
+                                       (* price)))
+                            price)})))) ;; discounted price was unparsable
 
 (defn query [data]
   (let [skus                  (get-in data keypaths/v2-skus)
@@ -232,7 +243,8 @@
         shared-cart-promo (some-> shared-cart-with-skus :promotion-codes first str/lower-case)
         discount          (shared-cart-promo->discount (get-in data keypaths/promotions)
                                                        base-price
-                                                       shared-cart-promo)
+                                                       shared-cart-promo
+                                                       data)
         back              (first (get-in data keypaths/navigation-undo-stack))
         back-event        (:default-back-event album-copy)]
     (merge {:shared-cart                shared-cart-with-skus
