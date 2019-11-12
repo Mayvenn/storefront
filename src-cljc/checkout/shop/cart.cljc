@@ -496,8 +496,8 @@
 
 (defn promo-input-query
   [data order entered? black-friday-time?]
-  (when (and (orders/no-applied-promo? order)
-           (not entered?))
+  (when (or black-friday-time?
+            (and (orders/no-applied-promo? order) (not entered?)))
     (let [keypath keypaths/cart-coupon-code
           value   (get-in data keypath)]
       {:labeled-input/label     "enter promocode"
