@@ -8,6 +8,7 @@
             [storefront.components.money-formatters :as mf]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
+            [storefront.accessors.experiments :as experiments]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
@@ -83,6 +84,7 @@
            store-credit
            shipping-cost
            adjustments-including-tax
+           black-friday-time?
            promo-data
            subtotal] :as data} owner _]
 
@@ -96,7 +98,8 @@
       (when shipping-cost
         (summary-row {:class "black"} "Shipping" shipping-cost))
 
-      (when (orders/no-applied-promo? order)
+      (when (or black-friday-time?
+                (orders/no-applied-promo? order))
         [:tr.h5
          [:td
           {:col-span "2"}
@@ -135,6 +138,7 @@
      :order                      order
      :shipping-cost              (* (:quantity shipping-item) (:unit-price shipping-item))
      :adjustments-including-tax  (orders/all-order-adjustments order)
+     :black-friday-time?         (experiments/black-friday-time? data)
      :promo-data                 {:coupon-code   (get-in data keypaths/cart-coupon-code)
                                   :applying?     (utils/requesting? data request-keys/add-promotion-code)
                                   :focused       (get-in data keypaths/ui-focus)
