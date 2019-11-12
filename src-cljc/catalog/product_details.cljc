@@ -378,26 +378,30 @@
 
 (defn add-to-cart-query
   [data selected-sku sku-price]
-  (cond-> {:cta/id          "add-to-cart"
-           :cta/label       "Add to Cart"
-           :cta/target      [events/control-add-sku-to-bag
-                             {:sku      selected-sku
-                              :quantity (get-in data keypaths/browse-sku-quantity 1)}]
-           :cta/spinning?   (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
-           :cta/disabled?   (not (:inventory/in-stock? selected-sku))
-           :quadpay/loaded? (get-in data keypaths/loaded-quadpay)
-           :quadpay/price   sku-price}
+  (let [shop? (= "shop" (get-in data keypaths/store-slug))]
+    (cond-> {:cta/id          "add-to-cart"
+             :cta/label       "Add to Cart"
+             :cta/target      [events/control-add-sku-to-bag
+                               {:sku      selected-sku
+                                :quantity (get-in data keypaths/browse-sku-quantity 1)}]
+             :cta/spinning?   (utils/requesting? data (conj request-keys/add-to-bag (:catalog/sku-id selected-sku)))
+             :cta/disabled?   (not (:inventory/in-stock? selected-sku))
+             :quadpay/loaded? (get-in data keypaths/loaded-quadpay)
+             :quadpay/price   sku-price}
 
-    (= "shop" (get-in data keypaths/store-slug))
-    (merge {:add-to-cart.background/color            "bg-fate-white"
-            :add-to-cart.incentive-block/id          "add-to-cart-incentive-block"
-            :add-to-cart.incentive-block/footnote    "*Mayvenn Install cannot be combined with other promo codes."
-            :add-to-cart.incentive-block/icon        "d7fbb4a1-6ad7-4122-b737-ade7dec8dfd3"
-            :add-to-cart.incentive-block/link-label  "Learn more"
-            :add-to-cart.incentive-block/link-target [events/popup-show-consolidated-cart-free-install]
-            :add-to-cart.incentive-block/message     (if (experiments/black-friday-time? data)
-                                                       "Save 25% & get a free Mayvenn Install when you purchase 3 bundles, closure, or frontals.* "
-                                                       "Save 10% & get a free Mayvenn Install when you purchase 3 bundles, closure, or frontals.* ")})))
+      shop?
+      (merge {:add-to-cart.background/color            "bg-fate-white"
+              :add-to-cart.incentive-block/id          "add-to-cart-incentive-block"
+              :add-to-cart.incentive-block/footnote    "*Mayvenn Install cannot be combined with other promo codes."
+              :add-to-cart.incentive-block/icon        "d7fbb4a1-6ad7-4122-b737-ade7dec8dfd3"
+              :add-to-cart.incentive-block/link-label  "Learn more"
+              :add-to-cart.incentive-block/link-target [events/popup-show-consolidated-cart-free-install]
+              :add-to-cart.incentive-block/message     (if (experiments/black-friday-time? data)
+                                                         "Save 25% & get a free Mayvenn Install when you purchase 3 bundles, closure, or frontals.* "
+                                                         "Save 10% & get a free Mayvenn Install when you purchase 3 bundles, closure, or frontals.* ")})
+
+      (and shop? (experiments/black-friday-time? data))
+      (merge {:add-to-cart.incentive-block/footnote ""}))))
 
 (defn query [data]
   (let [selected-sku    (get-in data catalog.keypaths/detailed-product-selected-sku)

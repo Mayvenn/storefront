@@ -80,5 +80,6 @@
       {:data-test "cart-learn-more"}
       (ui/button {:class    "inherit-color px4 py1 medium"
                   :on-click (utils/send-event-callback events/popup-show-consolidated-cart-free-install)} "learn more")]]
-    [:div.h8.dark-gray
-     "*Mayvenn Install cannot be combined with other promo codes."]]])
+    (when-not black-friday-time?
+      [:div.h8.dark-gray
+       "*Mayvenn Install cannot be combined with other promo codes."])]])
