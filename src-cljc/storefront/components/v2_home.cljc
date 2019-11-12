@@ -13,10 +13,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.carousel :as carousel]
-            [ui.molecules :as ui.M]
-
-            [storefront.component :as component :refer [defcomponent]]
-            [storefront.component :as component :refer [defcomponent]]))
+            [ui.molecules :as ui.M]))
 
 (defcomponent free-shipping-banner [_ _ _]
   [:div {:style {:height "3em"}}
@@ -280,7 +277,6 @@
           ^:inline (teal-play-video-desktop)]]]]]]))
 
 (defcomponent component [{:keys [signed-in
-                                 homepage-data
                                  store
                                  categories
                                  stylist-gallery-open?
@@ -324,7 +320,7 @@
    [:section ^:inline (component/build our-story)]])
 
 (defn query [data]
-  (let [homepage-data      (get-in data keypaths/cms-homepage)
+  (let [cms-homepage-hero  (some-> data (get-in storefront.keypaths/cms-homepage) :aladdin :hero)
         store              (marquee/query data)
         cms-ugc-collection (get-in data keypaths/cms-ugc-collection)
         current-nav-event  (get-in data keypaths/navigation-event)]
@@ -347,12 +343,10 @@
      :free-install-mayvenn-ugc {:images        (contentful/album-kw->homepage-social-cards cms-ugc-collection current-nav-event :free-install-mayvenn)
                                 :album-keyword :free-install-mayvenn}
      :stylist-gallery-open?    (get-in data keypaths/carousel-stylist-gallery-open?)
-     :homepage-data            homepage-data
-     :hero-data                {:opts      (utils/scroll-href "mayvenn-free-install-video")
-                                :file-name "free-install-hero"
-                                :mob-uuid  "841c504e-fce9-404d-9652-a66b0af86057"
-                                :dsk-uuid  "f423c9d9-1073-4b0c-86a5-dc810e18e505"
-                                :alt       "Use code FREEINSTALL when you buy 3 bundles or more"}}))
+     :hero-data                {:opts    (utils/scroll-href "mayvenn-free-install-video")
+                                :alt     (-> cms-homepage-hero :alt)
+                                :mob-url (-> cms-homepage-hero :mobile :file :url)
+                                :dsk-url (-> cms-homepage-hero :desktop :file :url)}}))
 
 (defn built-component [data opts]
   (component/build component (query data) opts))
