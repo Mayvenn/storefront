@@ -1,7 +1,5 @@
 (ns design-system.molecules
   (:require [storefront.component :as component :refer [defcomponent]]
-            [storefront.components.ui :as ui]
-            [storefront.platform.component-utils :as utils]
             [clojure.pprint :as pprint]))
 
 (defcomponent demo-component

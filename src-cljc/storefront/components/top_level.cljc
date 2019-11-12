@@ -208,10 +208,10 @@
     (cond ; Design System
       (routes/sub-page? [nav-event] [events/navigate-design-system])
       #?(:clj
-         (design-system.home/top-level data nil)
+         (design-system.home/built-top-level data nil)
          :cljs
          ((ui/lazy-load-component :design-system
-                                  'design-system.home/top-level
+                                  'design-system.home/built-top-level
                                   (get-in data keypaths/navigation-event))
           data nil))
 

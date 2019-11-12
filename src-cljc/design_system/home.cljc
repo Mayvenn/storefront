@@ -693,27 +693,12 @@
 (defn ^:export built-component [data opts]
   (component/build component data opts))
 
-(defn ^:export top-level
+(defcomponent top-level
+  [data owner opts]
+  (built-component data opts))
+
+(defn ^:export built-top-level
   [data opts]
-  (let [routed-component
-        (condp = (get-in data keypaths/navigation-event)
-          events/navigate-design-system-adventure adventure/built-component
-          events/navigate-design-system-classic   classic/built-component
-          events/navigate-design-system-ui        common/built-component
-          built-component)]
-    (component/build
-     #(component/create
-       [:div
-        [:div
-         [:a.h1 (utils/route-to events/navigate-design-system) "Design System"]
-         " - "
-         [:a.h2 (utils/route-to events/navigate-design-system-classic) "Classic"]
-         " - "
-         [:a.h2 (utils/route-to events/navigate-design-system-adventure) "Adventure"]
-         " - "
-         [:a.h2 (utils/route-to events/navigate-design-system-ui) "Common"]]
-        (routed-component %1 %3)])
-     data
-     opts)))
+  (component/build top-level data opts))
 
 #?(:cljs (loader/set-loaded! :design-system))
