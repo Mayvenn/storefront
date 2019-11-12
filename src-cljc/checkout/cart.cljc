@@ -38,10 +38,7 @@
    [storefront.keypaths :as keypaths]
    [storefront.platform.component-utils :as utils]
    [storefront.platform.messages :as messages]
-   [storefront.request-keys :as request-keys]
-
-   [storefront.component :as component :refer [defcomponent]]
-   [storefront.component :as component :refer [defcomponent]]))
+   [storefront.request-keys :as request-keys]))
 
 (defn display-adjustable-line-items
   [recently-added-skus line-items skus update-line-item-requests delete-line-item-requests]
