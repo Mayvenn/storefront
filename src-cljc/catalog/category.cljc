@@ -20,12 +20,9 @@
    [spice.selector :as selector]
    [clojure.set :as set]
    [clojure.string :as string]
-   [catalog.ui.product-card :as product-card]
+   [catalog.ui.product-card :as product-card]))
 
-   [storefront.component :as component :refer [defcomponent]]
-   [storefront.component :as component :refer [defcomponent]]))
-
-(def ^:private query-param-separator "~")
+(def query-param-separator "~")
 
 (def ^:private query-params->facet-slugs
   {:grade         :hair/grade
@@ -41,10 +38,10 @@
 (def category-query-params-ordering
   {"origin"        0
    "texture"       1
-   "base-material" 2
-   "color"         3
-   "family"        4
-   "weight"        5})
+   "color"         2
+   "base-material" 3
+   "weight"        4
+   "family"        5})
 
 (defn sort-query-params
   [params]
@@ -56,6 +53,9 @@
 
 (def ^:private facet-slugs->query-params
   (set/map-invert query-params->facet-slugs))
+
+(def allowed-query-params
+  (vals facet-slugs->query-params))
 
 (defn filter-tabs [{:keys [selector/essentials selector/electives]}
                    facets

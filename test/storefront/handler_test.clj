@@ -334,8 +334,8 @@
   (testing "transforming content"
     (testing "transforming 'homepage' content"
       (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
-                                                                              {:status 200
-                                                                               :body   (generate-string (:body common/contentful-response))}))]
+                                                                           {:status 200
+                                                                            :body   (generate-string (:body common/contentful-response))}))]
         (with-services {:contentful-handler contentful-handler}
           (with-handler handler
             (let [responses                         (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
@@ -358,8 +358,8 @@
 
     (testing "transforming ugc-collections"
       (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
-                                                                              {:status 200
-                                                                               :body   (generate-string (:body common/contentful-ugc-collection-response))}))]
+                                                                           {:status 200
+                                                                            :body   (generate-string (:body common/contentful-ugc-collection-response))}))]
         (with-services {:contentful-handler contentful-handler}
           (with-handler handler
             (let [responses (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
@@ -430,8 +430,8 @@
   (let [number-of-contentful-entities-to-fetch 4]
     (testing "caching content"
       (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
-                                                                              {:status 200
-                                                                               :body   (generate-string (:body common/contentful-response))}))]
+                                                                           {:status 200
+                                                                            :body   (generate-string (:body common/contentful-response))}))]
         (with-services {:contentful-handler contentful-handler}
           (with-handler handler
             (let [responses (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
@@ -441,16 +441,16 @@
 
     (testing "fetches data on system start"
       (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
-                                                                              {:status 200
-                                                                               :body   (generate-string (:body common/contentful-response))}))]
+                                                                           {:status 200
+                                                                            :body   (generate-string (:body common/contentful-response))}))]
         (with-services {:contentful-handler contentful-handler}
           (with-handler handler
             (is (= number-of-contentful-entities-to-fetch (count (txfm-requests contentful-requests identity))))))))
 
     (testing "attempts-to-retry-fetch-from-contentful"
       (let [[contentful-requests contentful-handler] (with-requests-chan (GET "/spaces/fake-space-id/entries" req
-                                                                              {:status 500
-                                                                               :body   "{}"}))]
+                                                                           {:status 500
+                                                                            :body   "{}"}))]
         (with-services {:contentful-handler contentful-handler}
           (with-handler handler
             (let [responses (repeatedly 5 (partial handler (mock/request :get "https://bob.mayvenn.com/")))
@@ -498,7 +498,6 @@
   (->> (:body resp)
        parse-canonical-uri
        :query))
-
 (deftest canonical-uris-query-params
   (with-services {}
     (with-handler handler
@@ -534,3 +533,81 @@
                           handler)]
             (is (= 200 (:status resp)))
             (is (= nil (response->canonical-uri-query-string resp)))))))))
+
+(defn parse-meta-tag-content [body name]
+  (some->> body
+           (re-find (re-pattern (format "<meta[^>]+name=\"%s\"[^>]*>" name)))
+           (re-find #"content=\"[^\"]+\"")
+           (re-find #"\"[^\"]+\"")
+           (re-find #"[^\"]+")
+           (#(string/replace % #"&amp;" "&"))
+           (#(string/replace % #"&apos;" "'"))))
+
+(defn parse-title [body]
+  (some->> body
+           (re-find #"<title[^>]*>(.+)</title>")
+           second))
+
+(deftest category-page-title-and-description-templates
+  (with-services {}
+    (with-handler handler
+      (testing "a category page has a template"
+        (testing "when one facet is selected"
+          (let [resp (->> "https://shop.mayvenn.com/categories/17-dyed-virgin-closures?origin=indian"
+                          (mock/request :get)
+                          handler)]
+            (is (= 200 (:status resp)))
+            (is (= "Mayvenn's Indian Dyed Virgin Closures are beautifully crafted and provide a realistic part to close off any unit or install."
+                   (parse-meta-tag-content (:body resp) "description")))
+            (is (= "Indian Dyed Virgin Closures | Mayvenn"
+                   (parse-title (:body resp))))))
+
+        (testing "two options are selected"
+          (let [resp (->> "https://shop.mayvenn.com/categories/17-dyed-virgin-closures?texture=loose-wave&base-material=lace"
+                          (mock/request :get)
+                          handler)]
+            (is (= 200 (:status resp)))
+            (is (= "Mayvenn's Loose Wave Lace Dyed Virgin Closures are beautifully crafted and provide a realistic part to close off any unit or install."
+                   (parse-meta-tag-content (:body resp) "description")))
+            (is (= "Loose Wave Lace Dyed Virgin Closures | Mayvenn"
+                   (parse-title (:body resp))))))
+
+        (testing "three options are selected"
+          (let [resp (->> "https://shop.mayvenn.com/categories/17-dyed-virgin-closures?texture=loose-wave&base-material=lace&color=%232-chocolate-brown"
+                          (mock/request :get)
+                          handler)]
+            (is (= 200 (:status resp)))
+            (is (= "Mayvenn's Loose Wave #2 Chocolate Brown Lace Dyed Virgin Closures are beautifully crafted and provide a realistic part to close off any unit or install."
+                   (parse-meta-tag-content (:body resp) "description")))
+            (is (= "Loose Wave #2 Chocolate Brown Lace Dyed Virgin Closures | Mayvenn"
+                   (parse-title (:body resp))))))
+
+        (testing "Four options from four facets are selected we get generic description"
+          (let [resp (->> "https://shop.mayvenn.com/categories/17-dyed-virgin-closures?origin=indian&texture=loose-wave&base-material=lace&color=%232-chocolate-brown"
+                          (mock/request :get)
+                          handler)]
+            (is (= 200 (:status resp)))
+            (is (= "Mayvenn’s dyed virgin hair closures allow you to close off any unit or install and come in a variety of different combinations. Shop now to create your look."
+                   (parse-meta-tag-content (:body resp) "description")))
+            (is (= "Dyed Virgin Closures: Human Hair Closures | Mayvenn"
+                   (parse-title (:body resp))))))
+
+        (testing "two options from the same facet are selected we get a generic description"
+          (let [resp (->> "https://shop.mayvenn.com/categories/17-dyed-virgin-closures?origin=indian~brazilian"
+                          (mock/request :get)
+                          handler)]
+            (is (= 200 (:status resp)))
+            (is (= "Mayvenn’s dyed virgin hair closures allow you to close off any unit or install and come in a variety of different combinations. Shop now to create your look."
+                   (parse-meta-tag-content (:body resp) "description")))
+            (is (= "Dyed Virgin Closures: Human Hair Closures | Mayvenn"
+                   (parse-title (:body resp)))))))
+
+      (testing "when a category page does not have a template and has selections"
+        (let [resp (->> "https://shop.mayvenn.com/categories/2-virgin-straight?origin=indian"
+                        (mock/request :get)
+                        handler)]
+          (is (= 200 (:status resp)))
+          (is (= "Straight Brazilian weave, straight Indian hair and straight Peruvian hair. Our straight bundles are sleek from root to tip."
+                 (parse-meta-tag-content (:body resp) "description")))
+          (is (= "Natural Straight Extensions | Mayvenn"
+                 (parse-title (:body resp)))))))))

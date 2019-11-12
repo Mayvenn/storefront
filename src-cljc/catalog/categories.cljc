@@ -1,7 +1,5 @@
 (ns catalog.categories
   (:require [clojure.string :as string]
-            [spice.maps :as maps]
-            [spice.core :as spice]
             [storefront.keypaths :as keypaths]
             [catalog.keypaths]
             [storefront.events :as events]))
@@ -25,6 +23,30 @@
    ;; TODO make this a proper image and place under :selector/images
    :category/image-url    image-url
    :seo/sitemap           true})
+
+(def clip-in-tape-in-templates
+  {:page/title-template "%s Virgin %s | Mayvenn"
+   :page.meta/description-template
+   (copy "Get the hair of your dreams with our %s %s. Featuring a thin, polyurethane"
+         "weft that flawlessly blends with your own hair.")})
+
+(def closures-templates
+  {:page/title-template "%s %s | Mayvenn"
+   :page.meta/description-template
+   (copy "Mayvenn's %s %s are beautifully crafted and provide a realistic part to"
+         "close off any unit or install.")})
+
+(def frontals-templates
+  {:page/title-template "%s %s | Mayvenn"
+   :page.meta/description-template
+   (copy "Mayvenn's %s %s mimic a natural hairline and offer versatile parting options"
+         "to achieve your desired look.")})
+
+(def wig-templates
+  {:page/title-template "%s %s | Mayvenn"
+   :page.meta/description-template
+   (copy "Mayvenn’s %s %s allow you to change up and achieve your desired look."
+         "Shop our collection of virgin hair wigs today.")})
 
 (def closures
   [(merge {:catalog/category-id      "0"
@@ -52,7 +74,8 @@
                                "any unit or install and come in a variety of different"
                                "combinations. Shop now to create your look.")
                          "//ucarecdn.com/12e8ebfe-06cd-411a-a6fb-909041723333/")
-          {:page/title "Virgin Hair Closures: Human Hair Closures | Mayvenn"})
+          {:page/title "Virgin Hair Closures: Human Hair Closures | Mayvenn"}
+          closures-templates)
    (merge {:catalog/category-id      "10"
            :copy/title               "Virgin 360 Frontals"
            :page/slug                "virgin-360-frontals"
@@ -81,7 +104,8 @@
                                "different variations such as Brazilian, Malaysian, straight, "
                                "and deep wave. Order today.")
                          "//ucarecdn.com/7837332a-2ca5-40dd-aa0e-86a2417cd723/")
-          {:page/title "360 Lace Frontals: Virgin Hair 360 Frontals | Mayvenn"})
+          {:page/title "360 Lace Frontals: Virgin Hair 360 Frontals | Mayvenn"}
+          frontals-templates)
    (merge {:catalog/category-id      "1"
            :copy/title               "Virgin Frontals"
            :page/slug                "virgin-frontals"
@@ -108,7 +132,8 @@
                                "with our bundles and come in a variety of different"
                                "combinations. Shop now to create your look.")
                          "//ucarecdn.com/0c7d94c3-c00e-4812-9526-7bd669ac679c/")
-          {:page/title "Virgin Hair Frontals: Virgin Hair Lace Frontals | Mayvenn"})
+          {:page/title "Virgin Hair Frontals: Virgin Hair Lace Frontals | Mayvenn"}
+          frontals-templates)
 
    (merge {:catalog/category-id      "17"
            :copy/title               "Dyed Virgin Closures"
@@ -136,7 +161,8 @@
                                "close off any unit or install and come in a variety of"
                                "different combinations. Shop now to create your look.")
                          "//ucarecdn.com/7082d52d-3a68-422c-9a81-47fba51c1c55/")
-          {:page/title "Dyed Virgin Closures: Human Hair Closures | Mayvenn"})
+          {:page/title "Dyed Virgin Closures: Human Hair Closures | Mayvenn"}
+          closures-templates)
    (merge {:catalog/category-id      "18"
            :copy/title               "Dyed Virgin Frontals"
            :page/slug                "dyed-virgin-frontals"
@@ -162,7 +188,8 @@
                                "our bundles and come in a variety of different combinations."
                                "Shop now to create your look.")
                          "//ucarecdn.com/e014902e-3fdb-46ba-ad63-581a4caa8ab0/")
-          {:page/title "Dyed Virgin Frontals: Human Hair Lace Frontals | Mayvenn"})])
+          {:page/title "Dyed Virgin Frontals: Human Hair Lace Frontals | Mayvenn"}
+          frontals-templates)])
 
 (def virgin-hair
   [(merge {:catalog/category-id      "2"
@@ -452,7 +479,8 @@
                                                       :copy          (copy "Available in a variety of styles,"
                                                                            "these 100% human hair units will be"
                                                                            "your favorite option for a quick,"
-                                                                           "convenient switch-up on the go.")}}})])
+                                                                           "convenient switch-up on the go.")}}}
+          wig-templates)])
 
 (def mayvenn-install-eligible
   [{:catalog/category-id            "23"
@@ -639,60 +667,63 @@
            :seo/sitemap         false})])
 
 (def seamless-clip-ins-category
-  [{:catalog/category-id "21"
-    :catalog/department  #{"hair"}
-    :category/new?       false
+  [(merge
+    {:catalog/category-id "21"
+     :catalog/department  #{"hair"}
+     :category/new?       false
 
-    :hair/family         #{"seamless-clip-ins"}
-    :selector/electives  [:hair/weight :hair/texture :hair/color]
-    :selector/essentials [:catalog/department :hair/family]
+     :hair/family         #{"seamless-clip-ins"}
+     :selector/electives  [:hair/weight :hair/texture :hair/color]
+     :selector/essentials [:catalog/department :hair/family]
 
-    :copy/title       "Clip-Ins"
-    :copy/description (copy "Get the hair of your dreams in an instant with our seamless clip-in extensions."
-                            "Featuring a thin, polyurethane (PU) weft that flawlessly blends with your own hair."
-                            "Ditch the tracks for a clip-in experience that is truly seamless.")
+     :copy/title       "Clip-Ins"
+     :copy/description (copy "Get the hair of your dreams in an instant with our seamless clip-in extensions."
+                             "Featuring a thin, polyurethane (PU) weft that flawlessly blends with your own hair."
+                             "Ditch the tracks for a clip-in experience that is truly seamless.")
 
-    :page/title "Clip-In Extensions: Human Hair Clip-In Extensions | Mayvenn"
-    :page/slug  "seamless-clip-ins"
-    :page.meta/description (copy "Get the hair of your dreams with our seamless clip-in hair extensions."
-                                 "Featuring a thin, polyurethane (PU) weft that flawlessly blends with your own hair.")
+     :page/title "Clip-In Extensions: Human Hair Clip-In Extensions | Mayvenn"
+     :page/slug  "seamless-clip-ins"
+     :page.meta/description (copy "Get the hair of your dreams with our seamless clip-in hair extensions."
+                                  "Featuring a thin, polyurethane (PU) weft that flawlessly blends with your own hair.")
 
-    :opengraph/title       "Mayvenn Clip-In Hair Extensions - Free shipping. Free 30 day returns. Made with 100% human hair extensions."
-    :opengraph/description "Blending flawlessly with your own hair and backed by our 30 Day Quality Guarantee, our seamless clip-in extensions are the best quality products on the market and ships free!"
+     :opengraph/title       "Mayvenn Clip-In Hair Extensions - Free shipping. Free 30 day returns. Made with 100% human hair extensions."
+     :opengraph/description "Blending flawlessly with your own hair and backed by our 30 Day Quality Guarantee, our seamless clip-in extensions are the best quality products on the market and ships free!"
 
-    :images {:hero {:filename    "categories-header-clip"
-                    :desktop-url "//ucarecdn.com/96b65a4b-34d5-4b45-b5a7-cf4156d355c0/"
-                    :mobile-url  "//ucarecdn.com/be8b83db-370f-45f9-bc37-4f674abbd718/"
-                    :alt         "Clip-Ins"}}
+     :images {:hero {:filename    "categories-header-clip"
+                     :desktop-url "//ucarecdn.com/96b65a4b-34d5-4b45-b5a7-cf4156d355c0/"
+                     :mobile-url  "//ucarecdn.com/be8b83db-370f-45f9-bc37-4f674abbd718/"
+                     :alt         "Clip-Ins"}}
 
-    :footer/order     40
-    :dtc-footer/order 8
-    :header/group     2
-    :header/order     4
-    :seo/sitemap      true}])
+     :footer/order     40
+     :dtc-footer/order 8
+     :header/group     2
+     :header/order     4
+     :seo/sitemap      true}
+    clip-in-tape-in-templates)])
 
 (def tape-ins-category
-  [{:catalog/category-id "22"
-    :catalog/department  #{"hair"}
-    :category/new?       false
+  [(merge {:catalog/category-id "22"
+           :catalog/department  #{"hair"}
+           :category/new?       false
 
-    :hair/family         #{"tape-ins"}
-    :selector/electives  [:hair/color :hair/weight :hair/length]
-    :selector/essentials [:catalog/department :hair/family]
+           :hair/family         #{"tape-ins"}
+           :selector/electives  [:hair/color :hair/weight :hair/length]
+           :selector/essentials [:catalog/department :hair/family]
 
-    :copy/title "Tape-Ins"
+           :copy/title "Tape-Ins"
 
-    :page/slug "tape-ins"
+           :page/slug "tape-ins"
 
-    :direct-to-details/id   "111"
-    :direct-to-details/slug "50g-straight-tape-ins"
+           :direct-to-details/id   "111"
+           :direct-to-details/slug "50g-straight-tape-ins"
 
-    :footer/order     50
-    :dtc-footer/order 9
-    :header/group     2
-    :header/order     5
-    :page/redirect?   true
-    :seo/sitemap      false}])
+           :footer/order     50
+           :dtc-footer/order 9
+           :header/group     2
+           :header/order     5
+           :page/redirect?   true
+           :seo/sitemap      false}
+          clip-in-tape-in-templates)])
 
 (def menu-categories
   (concat virgin-hair

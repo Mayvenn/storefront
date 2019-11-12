@@ -493,6 +493,47 @@
          :contentType "image/jpeg"}}}]}}
    :status 200})
 
+(def facets-body
+  {:facets [{:facet/slug   "hair/origin",
+             :facet/name   "Origin",
+             :filter/order 3,
+             :facet/options
+             [{:option/slug  "brazilian",
+               :option/name  "Brazilian hair",
+               :sku/name     "Brazilian",
+               :filter/order 0}
+              {:option/slug  "indian",
+               :option/name  "Indian hair",
+               :sku/name     "Indian",
+               :filter/order 3}]}
+            {:facet/slug   "hair/base-material",
+             :facet/name   "Material",
+             :filter/order 5,
+             :facet/options
+             [{:option/slug  "lace",
+               :option/name  "Lace",
+               :filter/order 0}]}
+            {:facet/slug   "hair/texture",
+             :facet/name   "Texture",
+             :filter/order 4,
+             :facet/options
+             [{:option/slug    "loose-wave",
+               :option/name    "Loose Wave",
+               :adventure/name "Loose Wave",
+               :filter/order   4}]}
+            {:facet/slug   "hair/color",
+             :facet/name   "Color",
+             :filter/order 6,
+             :facet/options
+             [{:option/slug             "#2-chocolate-brown",
+               :option/name             "#2 Chocolate Brown",
+               :adventure/name          "#2 Chocolate Brown",
+               :sku/name                "#2 Chocolate Brown",
+               :option/image            "chocolate-brown.jpg",
+               :option/circle-swatch    "chocolate-brown-circle.jpg",
+               :option/rectangle-swatch "chocolate-brown-rectangle.jpg",
+               :filter/order            4}]}]})
+
 (def default-storeback-handler
   (routes
    (GET "/store" req storeback-stylist-response)
@@ -501,7 +542,7 @@
    (GET "/v2/products" req {:status 200
                             :body   "{}"})
    (GET "/v2/facets" req {:status 200
-                          :body   "{}"})))
+                          :body   (generate-string facets-body)})))
 
 (def default-contentful-handler
   (routes

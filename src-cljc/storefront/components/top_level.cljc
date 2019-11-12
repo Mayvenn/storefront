@@ -52,7 +52,6 @@
             [storefront.routes :as routes]
             [checkout.shop.cart :as shop-cart]))
 
-
 (def nav-table
   {#?@(:cljs
        [events/navigate-reset-password                             (constantly reset-password/built-component)

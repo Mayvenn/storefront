@@ -3,6 +3,7 @@
             [storefront.keypaths :as keypaths]
             [cemerick.url :as cemerick-url]
             [catalog.keypaths :as k]
+            [catalog.facets :as facets]
             [storefront.events :as events]
             [catalog.categories :as categories]
             [catalog.category :as category]
@@ -10,11 +11,11 @@
             [spice.selector :as selector]
             [storefront.ugc :as ugc]
             [storefront.utils :as utils]
+            [storefront.platform.strings :as strings]
             [storefront.uri :as uri]
             [clojure.string :as string]
             #?@(:clj [[cheshire.core :as json]
-                      [storefront.safe-hiccup :as safe-hiccup]])
-            [clojure.set :as set]))
+                      [storefront.safe-hiccup :as safe-hiccup]])))
 
 (defn- use-case-then-order-key [img]
   [(condp = (:use-case img)
@@ -48,15 +49,6 @@
    [:meta {:property "og:description"
            :content "Mayvenn is the recommended and trusted source for quality hair by 100,000 stylists across the country. Mayvenn's 100% virgin human hair is backed by a 30 Day Quality Guarantee & includes FREE shipping!"}]])
 
-(defn category-tags [data]
-  (let [category (categories/current-category data)]
-    [[:title {} (:page/title category)]
-     [:meta {:name "description" :content (:page.meta/description category)}]
-     [:meta {:property "og:title" :content (:opengraph/title category)}]
-     [:meta {:property "og:type" :content "product"}]
-     [:meta {:property "og:image" :content (str "http:" (:category/image-url category))}]
-     [:meta {:property "og:description" :content (:opengraph/description category)}]]))
-
 (defn product-details-tags [data]
   (let [product (products/current-product data)
         sku     (get-in data k/detailed-product-selected-sku)
@@ -68,7 +60,7 @@
      [:meta {:property "og:image" :content (str "http:" (:url image))}]
      [:meta {:property "og:description" :content (:opengraph/description product)}]]))
 
-(def ^:private allowed-category-page-query-params
+(def ^:private allowed-category-page-query-params-for-canonical-uri
   #{"origin"
     "texture"
     "base-material"
@@ -76,17 +68,59 @@
     "family"
     "weight"})
 
+(defn ^:private facet-option->option-name
+  ;; For origin and color, the sku/name is more appropriate than the option name
+  ;; #169613608
+  [facets [facet-slug option-slug :as selection]]
+  (let [name-key (if (#{"origin" "color"} facet-slug) :sku/name :option/name)]
+    (get-in facets [(keyword "hair" facet-slug) :facet/options option-slug name-key])))
+
+(defn category-tags [data]
+  (let [category              (categories/current-category data)
+        facets                (facets/by-slug data)
+        uri-query             (-> data (get-in keypaths/navigation-uri) :query)
+        selected-options      (cond-> uri-query
+                                (string? uri-query) cemerick-url/query->map
+                                :always             (select-keys (mapv name category/allowed-query-params))
+                                :always             category/sort-query-params)
+        can-use-seo-template? (and (not-empty selected-options)
+                                   (:page/title-template category)
+                                   (:page.meta/description-template category)
+                                   (not-any? #(string/includes? % category/query-param-separator)
+                                             (vals selected-options))
+                                   (<= (count selected-options) 3))
+        selected-facet-string (->> selected-options
+                                   (mapv (partial facet-option->option-name facets))
+                                   (string/join " "))
+
+        {category-name :copy/title
+         :keys         [page/title-template
+                        page.meta/description-template]} category
+
+        page-title            (if can-use-seo-template?
+                                (strings/format title-template selected-facet-string category-name)
+                                (:page/title category))
+        page-meta-description (if can-use-seo-template?
+                                (strings/format description-template selected-facet-string category-name)
+                                (:page.meta/description category))]
+    [[:title {} page-title]
+     [:meta {:name "description" :content page-meta-description}]
+     [:meta {:property "og:title" :content (:opengraph/title category)}]
+     [:meta {:property "og:type" :content "product"}]
+     [:meta {:property "og:image" :content (str "http:" (:category/image-url category))}]
+     [:meta {:property "og:description" :content (:opengraph/description category)}]]))
+
 (defn filter-and-sort-seo-query-params
   [nav-event query]
   (when (= events/navigate-category nav-event)
     #?(:clj (-> query ;; string in clj
                 cemerick-url/query->map
-                (select-keys allowed-category-page-query-params)
+                (select-keys allowed-category-page-query-params-for-canonical-uri)
                 category/sort-query-params
                 uri/map->query
                 not-empty)
        :cljs (-> query ;; map in cljs
-                 (select-keys allowed-category-page-query-params)
+                 (select-keys allowed-category-page-query-params-for-canonical-uri)
                  category/sort-query-params
                  not-empty))))
 
