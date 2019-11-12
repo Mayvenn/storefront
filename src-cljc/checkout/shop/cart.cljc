@@ -495,20 +495,22 @@
                                      :cart-summary-line/value (mf/as-money tax)}]))}))
 
 (defn promo-input-query
-  [data]
-  (let [keypath keypaths/cart-coupon-code
-        value   (get-in data keypath)]
-    {:labeled-input/label     "enter promocode"
-     :labeled-input/id        "promo-code"
-     :labeled-input/value     value
-     :labeled-input/on-change #?(:clj (fn [_e] nil)
-                                 :cljs (fn [^js/Event e]
-                                         (messages/handle-message events/control-change-state
-                                                                  {:keypath keypath
-                                                                   :value   (.. e -target -value)})))
-     :submit-button/disabled? (empty? value)
-     :submit-button/id        "cart-apply-promo"
-     :submit-button/target    events/control-cart-update-coupon}))
+  [data order entered? black-friday-time?]
+  (when (and (orders/no-applied-promo? order)
+           (not entered?))
+    (let [keypath keypaths/cart-coupon-code
+          value   (get-in data keypath)]
+      {:labeled-input/label     "enter promocode"
+       :labeled-input/id        "promo-code"
+       :labeled-input/value     value
+       :labeled-input/on-change #?(:clj (fn [_e] nil)
+                                   :cljs (fn [^js/Event e]
+                                           (messages/handle-message events/control-change-state
+                                                                    {:keypath keypath
+                                                                     :value   (.. e -target -value)})))
+       :submit-button/disabled? (empty? value)
+       :submit-button/id        "cart-apply-promo"
+       :submit-button/target    events/control-cart-update-coupon})))
 
 (defn full-cart-query [data]
   (let [order                                (get-in data keypaths/order)
@@ -564,9 +566,7 @@
              :remove-freeinstall-event           [events/control-checkout-remove-promotion {:code "freeinstall"}]
              :cart-summary                       (merge
                                                   (cart-summary-query order mayvenn-install black-friday-time?)
-                                                  (when (and (orders/no-applied-promo? order)
-                                                             (not entered?))
-                                                    {:promo-field-data (promo-input-query data)}))
+                                                  {:promo-field-data (promo-input-query data order entered? black-friday-time?)})
              :cart-items                         (cart-items-query data mayvenn-install line-items skus add-items-action)
              :quadpay/order-total                (when-not locked? (:total order))
              :quadpay/show?                      (get-in data keypaths/loaded-quadpay)
