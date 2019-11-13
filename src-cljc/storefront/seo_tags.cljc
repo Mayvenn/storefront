@@ -63,7 +63,6 @@
 (def ^:private allowed-category-page-query-params-for-canonical-uri
   #{"origin"
     "texture"
-    "base-material"
     "color"
     "family"
     "weight"})
@@ -88,12 +87,13 @@
                                    (:page.meta/description-template category)
                                    (not-any? #(string/includes? % category/query-param-separator)
                                              (vals selected-options))
-                                   (<= (count selected-options) 3))
+                                   (<= (count selected-options) 3)
+                                   (not (contains? selected-options "base-material")))
         selected-facet-string (->> selected-options
                                    (mapv (partial facet-option->option-name facets))
                                    (string/join " "))
 
-        {category-name :copy/title
+        {category-name :seo/title
          :keys         [page/title-template
                         page.meta/description-template]} category
 

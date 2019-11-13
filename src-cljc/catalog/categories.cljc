@@ -43,15 +43,16 @@
          "to achieve your desired look.")})
 
 (def wig-templates
-  {:page/title-template "%s %s | Mayvenn"
+  {:page/title-template "%s | Mayvenn%.0s"
    :page.meta/description-template
-   (copy "Mayvenn’s %s %s allow you to change up and achieve your desired look."
-         "Shop our collection of virgin hair wigs today.")})
+   (copy "Mayvenn’s %s allow you to change up and achieve your desired look."
+         "Shop our collection of virgin hair wigs today.%.0s")})
 
 (def closures
   [(merge {:catalog/category-id      "0"
            :copy/title               "Virgin Closures"
            :page/slug                "virgin-closures"
+           :seo/title                "Virgin Hair Closures"
            :legacy/named-search-slug "closures"
            :catalog/department       #{"hair"}
            :hair/family              #{"closures"}
@@ -79,6 +80,7 @@
    (merge {:catalog/category-id      "10"
            :copy/title               "Virgin 360 Frontals"
            :page/slug                "virgin-360-frontals"
+           :seo/title                "Virgin 360 Frontals"
            :legacy/named-search-slug "360-frontals"
 
            :catalog/department  #{"hair"}
@@ -109,6 +111,7 @@
    (merge {:catalog/category-id      "1"
            :copy/title               "Virgin Frontals"
            :page/slug                "virgin-frontals"
+           :seo/title                "Virgin Frontals"
            :legacy/named-search-slug "frontals"
 
            :catalog/department  #{"hair"}
@@ -138,6 +141,7 @@
    (merge {:catalog/category-id      "17"
            :copy/title               "Dyed Virgin Closures"
            :page/slug                "dyed-virgin-closures"
+           :seo/title                "Dyed Virgin Hair Closures"
            :legacy/named-search-slug "closures"
            :category/new?            false
            :catalog/department       #{"hair"}
@@ -166,6 +170,7 @@
    (merge {:catalog/category-id      "18"
            :copy/title               "Dyed Virgin Frontals"
            :page/slug                "dyed-virgin-frontals"
+           :seo/title                "Dyed Virgin Hair Frontals"
            :legacy/named-search-slug "frontals"
            :category/new?            false
            :catalog/department       #{"hair"}
@@ -434,8 +439,10 @@
 
            :category/new? true
 
-           :copy/title       "Wigs"
-           :page/slug        "wigs"
+           :copy/title "Wigs"
+           :page/slug  "wigs"
+           :seo/title  "Wigs"
+
            :copy/description (copy "These units will be your go-to protective style"
                                    "for achieving a brand new look."
                                    "With options ranging from 360 to Ready to Wear,"
@@ -685,6 +692,7 @@
      :page/slug  "seamless-clip-ins"
      :page.meta/description (copy "Get the hair of your dreams with our seamless clip-in hair extensions."
                                   "Featuring a thin, polyurethane (PU) weft that flawlessly blends with your own hair.")
+     :seo/title "Clip-In Hair Extensions"
 
      :opengraph/title       "Mayvenn Clip-In Hair Extensions - Free shipping. Free 30 day returns. Made with 100% human hair extensions."
      :opengraph/description "Blending flawlessly with your own hair and backed by our 30 Day Quality Guarantee, our seamless clip-in extensions are the best quality products on the market and ships free!"
