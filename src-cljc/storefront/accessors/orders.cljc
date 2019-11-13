@@ -104,11 +104,6 @@
 (defn tax-adjustment [order]
   {:name "Tax (Estimated)" :price (:tax-total order 0.0)})
 
-(defn bundle-discount? [order]
-  (->> (:adjustments order)
-       (map :name)
-       (some #{"Bundle Discount"})))
-
 (defn all-order-adjustments [order]
   (conj (:adjustments order)
         (tax-adjustment order)))
@@ -125,13 +120,11 @@
 
 (defn freeinstall-applied?
   [{:as order :keys [promotion-codes]}]
-  (and (bundle-discount? order)
-       (contains? (all-applied-promo-codes order) "freeinstall")))
+  (contains? (all-applied-promo-codes order) "freeinstall"))
 
 (defn freeinstall-included?
   [order]
-  (and (bundle-discount? order)
-       (:install-type order)))
+  (:install-type order))
 
 (defn applied-install-promotion
   [{:as order :keys [promotion-codes]}]
