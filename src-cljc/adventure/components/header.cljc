@@ -3,10 +3,7 @@
   (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ui :as ui]
             [storefront.events :as events]
-            [storefront.platform.component-utils :as utils]
-
-            [storefront.component :as component :refer [defcomponent]]
-            [storefront.component :as component :refer [defcomponent]]))
+            [storefront.platform.component-utils :as utils]))
 
 (defn calculate-width [number-of-steps]
   (reduce

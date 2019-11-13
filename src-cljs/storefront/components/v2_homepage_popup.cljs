@@ -1,6 +1,5 @@
 (ns storefront.components.v2-homepage-popup
-  (:require [sablono.core :refer [html]]
-            [storefront.api :as api]
+  (:require [storefront.api :as api]
             [storefront.browser.cookie-jar :as cookie-jar]
             [storefront.browser.scroll :as scroll]
             [storefront.component :as component :refer [defcomponent]]

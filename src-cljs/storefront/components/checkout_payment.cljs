@@ -1,7 +1,5 @@
 (ns storefront.components.checkout-payment
-  (:require [om.core :as om]
-            [sablono.core :refer [html]]
-            [storefront.accessors.experiments :as experiments]
+  (:require [storefront.accessors.experiments :as experiments]
             [storefront.accessors.orders :as orders]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.checkout-credit-card :as cc]

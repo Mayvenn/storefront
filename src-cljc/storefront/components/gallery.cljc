@@ -6,10 +6,7 @@
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.transitions :as transitions]
-            [storefront.keypaths :as keypaths]
-
-            [storefront.component :as component :refer [defcomponent]]
-            [storefront.component :as component :refer [defcomponent]]))
+            [storefront.keypaths :as keypaths]))
 
 (defn title [{:keys [store-nickname]}]
   [:div.p2.center

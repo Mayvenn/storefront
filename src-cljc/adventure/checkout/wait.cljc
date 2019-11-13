@@ -10,10 +10,7 @@
             [storefront.transitions :as transitions]
             [storefront.effects :as effects]
             [storefront.events :as events]
-            [storefront.platform.messages :as messages]
-
-            [storefront.component :as component :refer [defcomponent]]
-            [storefront.component :as component :refer [defcomponent]]))
+            [storefront.platform.messages :as messages]))
 
 (defcomponent component
   [{:keys []} _ _]

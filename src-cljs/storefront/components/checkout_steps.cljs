@@ -1,7 +1,5 @@
 (ns storefront.components.checkout-steps
-  (:require [om.core :as om]
-            [sablono.core :refer [html]]
-            [storefront.platform.component-utils :refer [route-to]]
+  (:require [storefront.platform.component-utils :refer [route-to]]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.component :as component :refer [defcomponent]]))

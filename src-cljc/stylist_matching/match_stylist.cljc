@@ -3,10 +3,7 @@
             [storefront.events :as events]
             [stylist-matching.ui.atoms :as stylist-matching.A]
             [stylist-matching.ui.logo-header :as logo-header]
-            [stylist-matching.ui.match-stylist :as match-stylist]
-
-            [storefront.component :as component :refer [defcomponent]]
-            [storefront.component :as component :refer [defcomponent]]))
+            [stylist-matching.ui.match-stylist :as match-stylist]))
 
 (def logo-header-query
   {:logo-header.logo/id "adventure-logo"})

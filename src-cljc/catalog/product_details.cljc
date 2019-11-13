@@ -38,10 +38,7 @@
             [storefront.transitions :as transitions]
             [catalog.ui.add-to-cart :as add-to-cart]
             [catalog.ui.freeinstall-banner :as freeinstall-banner]
-            [catalog.keypaths :as catalog.keypaths]
-            [storefront.component :as component :refer [defcomponent]]
-
-            [storefront.component :as component :refer [defcomponent]]))
+            [catalog.keypaths :as catalog.keypaths]))
 
 (defn item-price [price]
   (when price

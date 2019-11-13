@@ -1,6 +1,5 @@
 (ns storefront.platform.images
-  (:require [sablono.core :refer [html]]
-            [storefront.css-transitions :as css-transitions]))
+  (:require [storefront.css-transitions :as css-transitions]))
 
 (defn platform-hq-image [attrs]
   (css-transitions/transition-group

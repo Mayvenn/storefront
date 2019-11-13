@@ -31,7 +31,6 @@
                  [cljsjs/react-transition-group "4.2.1-0"]
                  ;; polyfill react 15 methods
                  [cljsjs/create-react-class "15.5.3-0"]
-                 [org.omcljs/om "1.0.0-beta4" :exclusions [cljsjs/react com.cognitect/transit-cljs]]
                  [org.clojure/core.async "0.3.443"]
                  [cljs-ajax "0.7.3" :exclusions [org.apache.httpcomponents/httpclient]]
                  [comb "0.1.1"]

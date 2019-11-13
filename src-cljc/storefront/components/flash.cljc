@@ -2,10 +2,7 @@
   (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.components.svg :as svg]
             [storefront.components.ui :as ui]
-            [storefront.keypaths :as keypaths]
-
-            [storefront.component :as component :refer [defcomponent]]
-            [storefront.component :as component :refer [defcomponent]]))
+            [storefront.keypaths :as keypaths]))
 
 (defn success-img []
   (svg/circled-check {:class "stroke-teal"

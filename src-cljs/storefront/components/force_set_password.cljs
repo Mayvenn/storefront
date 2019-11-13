@@ -7,10 +7,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :as messages]
-            [storefront.transitions :as transitions]
-
-            [storefront.component :as component :refer [defcomponent]]
-            [storefront.component :as component :refer [defcomponent]]))
+            [storefront.transitions :as transitions]))
 
 (defcomponent component
   [{:keys [focused password show-password? loaded-facebook? field-errors]} owner _]

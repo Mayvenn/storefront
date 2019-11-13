@@ -1,9 +1,6 @@
 (ns storefront.components.stylist.line-items
   (:require [storefront.component :as component :refer [defcomponent]]
-            [storefront.components.money-formatters :as mf]
-
-            [storefront.component :as component :refer [defcomponent]]
-            [storefront.component :as component :refer [defcomponent]]))
+            [storefront.components.money-formatters :as mf]))
 
 (defn ^:private returned-quantity-element [shipment-count sku qt returned-qt]
   (let [base-dt (str "shipment-" shipment-count "-line-item-" sku)]

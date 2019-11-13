@@ -1,7 +1,5 @@
 (ns storefront.components.stylist.account.payout
-  (:require [om.core :as om]
-            [sablono.core :refer-macros [html]]
-            [storefront.accessors.credit-cards :as cc]
+  (:require [storefront.accessors.credit-cards :as cc]
             [storefront.component :as component :refer [defcomponent defdynamic-component]]
             [storefront.components.ui :as ui]
             [storefront.hooks.spreedly :as spreedly]
@@ -12,8 +10,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.platform.messages :refer [handle-message]]
-            [storefront.request-keys :as request-keys]
-            [storefront.component :as component :refer [defcomponent]]))
+            [storefront.request-keys :as request-keys]))
 
 (defmethod transitions/transition-state events/spreedly-did-mount
   [_ _ _ app-state]

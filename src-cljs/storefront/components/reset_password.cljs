@@ -1,13 +1,9 @@
 (ns storefront.components.reset-password
-  (:require [om.core :as om]
-            [sablono.core :refer [html]]
-            [storefront.components.facebook :as facebook]
+  (:require [storefront.components.facebook :as facebook]
             [storefront.components.ui :as ui]
             [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.component :as component :refer [defcomponent]]
-
             [storefront.component :as component :refer [defcomponent]]))
 
 (defcomponent component [{:keys [focused reset-password show-password? loaded-facebook? field-errors]} owner _]
@@ -17,7 +13,7 @@
     [:form.col-12
      {:on-submit (utils/send-event-callback events/control-reset-password-submit)}
      (ui/text-field {:errors     (get field-errors ["password"])
-                     :data-test "reset-password-password"
+                     :data-test  "reset-password-password"
                      :keypath    keypaths/reset-password-password
                      :focused    focused
                      :label      "New Password"

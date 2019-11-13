@@ -4,10 +4,7 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.components.facebook :as facebook]
-
-            [storefront.component :as component :refer [defcomponent]]
-            [storefront.component :as component :refer [defcomponent]]))
+            [storefront.components.facebook :as facebook]))
 
 (defcomponent password-component [{:keys [email
                                           password

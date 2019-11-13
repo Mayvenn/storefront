@@ -1,14 +1,6 @@
 (ns storefront.components.video
-  (:require [sablono.core :refer [html]]
-            [storefront.component :as component :refer [defcomponent]]
-            [storefront.components.ui :as ui]
-            [storefront.platform.component-utils :as utils]
-            [storefront.events :as events]
-            [storefront.keypaths :as keypaths]
-            [storefront.transitions :as transitions]
-
-            [storefront.component :as component :refer [defcomponent]]
-            [storefront.component :as component :refer [defcomponent]]))
+  (:require [storefront.component :as component :refer [defcomponent]]
+            [storefront.components.ui :as ui]))
 
 (defcomponent component [{:keys [youtube-id]} owner {:keys [close-attrs]}]
   (ui/modal {:col-class "col-12 col-6-on-tb col-6-on-dt my8-on-tb-dt flex justify-center"

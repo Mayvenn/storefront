@@ -7,10 +7,7 @@
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.platform.component-utils :as utils]
-
-            [storefront.component :as component :refer [defcomponent]]
-            [storefront.component :as component :refer [defcomponent]]))
+            [storefront.platform.component-utils :as utils]))
 
 (defn desktop-header [{:keys [store user cart signed-in vouchers?]}]
   [:div.hide-on-mb.relative

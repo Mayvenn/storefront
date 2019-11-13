@@ -5,10 +5,7 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.effects :as effects]
-            [storefront.hooks.uploadcare :as uploadcare]
-
-            [storefront.component :as component :refer [defcomponent]]
-            [storefront.component :as component :refer [defcomponent]]))
+            [storefront.hooks.uploadcare :as uploadcare]))
 
 (defcomponent component [{:keys [loaded-uploadcare?] :as args} owner opts]
   [:div

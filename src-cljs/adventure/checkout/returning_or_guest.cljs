@@ -7,10 +7,7 @@
             [storefront.components.ui :as ui]
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
-            [storefront.platform.component-utils :as utils]
-
-            [storefront.component :as component :refer [defcomponent]]
-            [storefront.component :as component :refer [defcomponent]]))
+            [storefront.platform.component-utils :as utils]))
 
 (defcomponent component [{:keys [facebook-loaded? address promo-banner]} owner _]
   [:div

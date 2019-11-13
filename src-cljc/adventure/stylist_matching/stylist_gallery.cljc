@@ -4,7 +4,6 @@
                  [goog.events.EventType :as EventType]
                  [goog.events]
                  [goog.style]
-                 [om.core :as om]
                  [storefront.api :as api]
                  [storefront.browser.scroll :as scroll]
                  [storefront.platform.messages :as messages]])
@@ -19,10 +18,7 @@
             storefront.keypaths
             [storefront.platform.component-utils :as utils]
             [storefront.transitions :as transitions]
-            [stylist-directory.stylists :as stylists]
-            [storefront.component :as component :refer [defcomponent]]
-
-            [storefront.component :as component :refer [defcomponent]]))
+            [stylist-directory.stylists :as stylists]))
 
 (defn query
   [data]

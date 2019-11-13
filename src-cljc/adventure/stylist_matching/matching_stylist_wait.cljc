@@ -1,6 +1,5 @@
 (ns adventure.stylist-matching.matching-stylist-wait
-  (:require #?@(:cljs [[om.core :as om]
-                       [storefront.api :as api]
+  (:require #?@(:cljs [[storefront.api :as api]
                        [storefront.components.ugc :as ugc]
                        [storefront.history :as history]
                        [storefront.config :as config]
@@ -11,13 +10,12 @@
             [storefront.effects :as effects]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.keypaths :as keypaths]
-            [adventure.keypaths :as adventure-keypaths]
             [spice.date :as date]
             [adventure.keypaths :as adventure.keypaths]))
 
 (defn ^:private ms-to-wait [app-state]
   (max 0
-       (- (date/to-millis (get-in app-state adventure-keypaths/adventure-matching-stylists-timer))
+       (- (date/to-millis (get-in app-state adventure.keypaths/adventure-matching-stylists-timer))
           (date/to-millis (date/now)))))
 
 ;; PRE-PURCHASE FLOW

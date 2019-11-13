@@ -1,13 +1,9 @@
 (ns storefront.components.stylist.cash-out-success
-  (:require [om.core :as om]
-            [sablono.core :refer [html]]
-            [storefront.events :as events]
+  (:require [storefront.events :as events]
             [storefront.platform.component-utils :as utils]
             [storefront.components.ui :as ui]
             [storefront.keypaths :as keypaths]
             [storefront.components.svg :as svg]
-            [storefront.component :as component :refer [defcomponent]]
-
             [storefront.component :as component :refer [defcomponent]]))
 
 (defn query [data]

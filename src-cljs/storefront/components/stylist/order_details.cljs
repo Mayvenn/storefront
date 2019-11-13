@@ -19,10 +19,7 @@
             [storefront.api :as api]
             [clojure.string :as string]
             [spice.core :as spice]
-            [ui.molecules :as ui-molecules]
-
-            [storefront.component :as component :refer [defcomponent]]
-            [storefront.component :as component :refer [defcomponent]]))
+            [ui.molecules :as ui-molecules]))
 
 ;; TODO Remove handling of underscored keys after storeback has been deployed.
 

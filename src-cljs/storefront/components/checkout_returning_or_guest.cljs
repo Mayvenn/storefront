@@ -1,7 +1,5 @@
 (ns storefront.components.checkout-returning-or-guest
-  (:require [om.core :as om]
-            [adventure.checkout.returning-or-guest :as adventure-returning-or-guest]
-            [sablono.core :refer [html]]
+  (:require [adventure.checkout.returning-or-guest :as adventure-returning-or-guest]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.components.facebook :as facebook]
             [storefront.components.checkout-address :as checkout-address]

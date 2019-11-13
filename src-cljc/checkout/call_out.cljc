@@ -3,10 +3,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.component :as component :refer [defcomponent]]
             [storefront.accessors.experiments :as experiments]
-            [storefront.accessors.orders :as orders]
-
-            [storefront.component :as component :refer [defcomponent]]
-            [storefront.component :as component :refer [defcomponent]]))
+            [storefront.accessors.orders :as orders]))
 
 ;; TODO this should be a generalized call-out for the cart
 ;; The template should be made to be presentation focused

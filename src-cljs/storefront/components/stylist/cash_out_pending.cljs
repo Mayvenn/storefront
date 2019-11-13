@@ -1,7 +1,5 @@
 (ns storefront.components.stylist.cash-out-pending
-  (:require [om.core :as om]
-            [sablono.core :refer [html]]
-            [storefront.events :as events]
+  (:require [storefront.events :as events]
             [storefront.components.money-formatters :as mf]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
@@ -10,9 +8,6 @@
             [storefront.api :as api]
             [storefront.effects :as effects]
             [storefront.platform.messages :as messages]
-            [storefront.platform.component-utils :as utils]
-            [storefront.component :as component :refer [defcomponent]]
-
             [storefront.component :as component :refer [defcomponent]]))
 
 (defcomponent component [_ owner opts]

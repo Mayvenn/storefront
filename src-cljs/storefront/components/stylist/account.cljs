@@ -21,10 +21,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]
-            [adventure.keypaths :as adv-keypaths]
-
-            [storefront.component :as component :refer [defcomponent]]
-            [storefront.component :as component :refer [defcomponent]]))
+            [adventure.keypaths :as adv-keypaths]))
 
 (defn uploadcare-photo [{:keys [status] :as portrait} saving?]
   [:a.navy

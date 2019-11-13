@@ -32,10 +32,7 @@
             [storefront.platform.messages :as messages]
             [spice.date :as date]
             [ui.promo-banner :as promo-banner]
-            [ui.molecules :as ui-molecules]
-
-            [storefront.component :as component :refer [defcomponent]]
-            [storefront.component :as component :refer [defcomponent]]))
+            [ui.molecules :as ui-molecules]))
 
 (defn requires-additional-payment?
   [data]

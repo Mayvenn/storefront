@@ -1,7 +1,6 @@
 (ns storefront.components.tabs
   (:require [storefront.component :as component :refer [defcomponent defdynamic-component]]
-            [storefront.platform.component-utils :as utils]
-            [storefront.component :as component :refer [defcomponent]]))
+            [storefront.platform.component-utils :as utils]))
 
 (defn tab-link [event id ref label]
   [:a.dark-gray.center.pt2

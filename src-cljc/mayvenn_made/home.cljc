@@ -1,16 +1,12 @@
 (ns mayvenn-made.home
   (:require #?@(:cljs [[storefront.hooks.pixlee :as pixlee]
-                       [storefront.api :as api]
-                       [om.core :as om]])
+                       [storefront.api :as api]])
             [storefront.component :as component :refer [defcomponent]]
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.components.ui :as ui]
             [storefront.keypaths :as keypaths]
-            [storefront.platform.component-utils :as utils]
-
-            [storefront.component :as component :refer [defcomponent]]
-            [storefront.component :as component :refer [defcomponent]]))
+            [storefront.platform.component-utils :as utils]))
 
 (defn hero-image
   [{:as hero-map :keys [desktop mobile alt]}]

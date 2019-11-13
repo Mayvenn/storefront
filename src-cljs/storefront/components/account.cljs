@@ -5,10 +5,7 @@
             [storefront.components.tabs :as tabs]
             [storefront.platform.component-utils :as utils]
             [storefront.events :as events]
-            [storefront.keypaths :as keypaths]
-
-            [storefront.component :as component :refer [defcomponent]]
-            [storefront.component :as component :refer [defcomponent]]))
+            [storefront.keypaths :as keypaths]))
 
 (defn store-credit [available-credit]
   [:div.my3

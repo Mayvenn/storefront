@@ -1,13 +1,8 @@
 (ns storefront.components.stylist.portrait
-  (:require [om.core :as om]
-            [sablono.core :refer [html]]
-            [storefront.component :as component :refer [defcomponent]]
+  (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.components.image-picker :as image-picker]
             [storefront.events :as events]
-            [storefront.keypaths :as keypaths]
-
-            [storefront.component :as component :refer [defcomponent]]
-            [storefront.component :as component :refer [defcomponent]]))
+            [storefront.keypaths :as keypaths]))
 
 (defcomponent component [{:keys [loaded-uploadcare?] :as args} owner opts]
   [:div

@@ -1,7 +1,5 @@
 (ns storefront.components.checkout-address
-  (:require [om.core :as om]
-            [sablono.core :refer [html]]
-            [storefront.component :as component :refer [defcomponent defdynamic-component]]
+  (:require [storefront.component :as component :refer [defcomponent defdynamic-component]]
             [storefront.components.checkout-steps :as checkout-steps]
             [storefront.components.ui :as ui]
             [ui.promo-banner :as promo-banner]
@@ -9,10 +7,7 @@
             [storefront.events :as events]
             [storefront.keypaths :as keypaths]
             [storefront.platform.messages :refer [handle-message]]
-            [storefront.request-keys :as request-keys]
-            [storefront.component :as component :refer [defcomponent]]
-
-            [storefront.component :as component :refer [defcomponent]]))
+            [storefront.request-keys :as request-keys]))
 
 (defdynamic-component ^:private places-component
   (did-mount [this]

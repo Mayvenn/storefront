@@ -16,10 +16,7 @@
             [storefront.transitions :as transitions]
             [storefront.effects :as effects]
             [storefront.request-keys :as request-keys]
-            [storefront.api :as api]
-
-            [storefront.component :as component :refer [defcomponent]]
-            [storefront.component :as component :refer [defcomponent]]))
+            [storefront.api :as api]))
 
 ;; TODO Remove handling of underscored keys after storeback has been deployed.
 

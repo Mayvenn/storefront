@@ -9,10 +9,7 @@
             [storefront.effects :as effects]
             [storefront.events :as events]
             [storefront.platform.messages :as messages]
-            [storefront.accessors.stylists :as stylists]
-
-            [storefront.component :as component :refer [defcomponent]]
-            [storefront.component :as component :refer [defcomponent]]))
+            [storefront.accessors.stylists :as stylists]))
 
 (defcomponent component
   [{:keys []} _ _]

@@ -1,6 +1,5 @@
 (ns stylist-matching.ui.stylist-search
-  (:require #?(:cljs [om.core :as om])
-            [storefront.events :as events]
+  (:require [storefront.events :as events]
             adventure.keypaths
             [storefront.component :as component :refer [defcomponent defdynamic-component]]
             [storefront.platform.messages :as messages]

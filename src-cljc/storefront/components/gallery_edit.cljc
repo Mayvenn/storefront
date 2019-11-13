@@ -12,10 +12,7 @@
             [storefront.platform.messages :as messages]
             [storefront.request-keys :as request-keys]
             [storefront.routes :as routes]
-            [storefront.transitions :as transitions]
-
-            [storefront.component :as component :refer [defcomponent]]
-            [storefront.component :as component :refer [defcomponent]]))
+            [storefront.transitions :as transitions]))
 
 (def title
   [:div.p2.center

@@ -2,10 +2,7 @@
   (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.components.ui :as ui]
             [storefront.keypaths :as keypaths]
-            [storefront.components.footer-links :as footer-links]
-
-            [storefront.component :as component :refer [defcomponent]]
-            [storefront.component :as component :refer [defcomponent]]))
+            [storefront.components.footer-links :as footer-links]))
 
 (defcomponent component
   [{:keys [call-number]} owner opts]

@@ -1,7 +1,5 @@
 (ns storefront.components.checkout-credit-card
-  (:require [om.core :as om]
-            [sablono.core :refer [html]]
-            [storefront.accessors.credit-cards :as cc]
+  (:require [storefront.accessors.credit-cards :as cc]
             [storefront.components.ui :as ui]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
@@ -9,11 +7,7 @@
             [storefront.hooks.stripe :as stripe]
             [storefront.events :as events]
             [storefront.platform.messages :as messages]
-            [storefront.component :as component :refer [defcomponent defdynamic-component]]
-
-            [storefront.component :as component :refer [defcomponent]]
-
-            [storefront.component :as component :refer [defcomponent]]))
+            [storefront.component :as component :refer [defcomponent defdynamic-component]]))
 
 (defn saving-card? [data]
   (or (utils/requesting? data request-keys/stripe-create-token)

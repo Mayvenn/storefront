@@ -10,10 +10,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
             [storefront.request-keys :as request-keys]
-            [storefront.transitions :as transitions]
-
-            [storefront.component :as component :refer [defcomponent]]
-            [storefront.component :as component :refer [defcomponent]]))
+            [storefront.transitions :as transitions]))
 
 (defcomponent component
   [{:keys [shared-cart-id shared-cart-promotion store fetching-products? creating-cart? advertised-promo]}

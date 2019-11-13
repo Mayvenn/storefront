@@ -1,10 +1,7 @@
 (ns storefront.components.footer-minimal
   (:require [storefront.component :as component :refer [defcomponent]]
             [storefront.components.footer-links :as footer-links]
-            [storefront.components.ui :as ui]
-
-            [storefront.component :as component :refer [defcomponent]]
-            [storefront.component :as component :refer [defcomponent]]))
+            [storefront.components.ui :as ui]))
 
 (defcomponent component
   [{:keys [call-number]} owner opts]

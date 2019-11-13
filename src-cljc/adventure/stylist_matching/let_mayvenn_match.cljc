@@ -1,12 +1,7 @@
 (ns adventure.stylist-matching.let-mayvenn-match
-  (:require [adventure.keypaths :as adv-keypaths]
+  (:require [clojure.string :as string]
             [storefront.component :as component :refer [defcomponent]]
-            [storefront.components.ui :as ui]
-            [storefront.keypaths :as keypaths]
-            [clojure.string :as string]
-
-            [storefront.component :as component :refer [defcomponent]]
-            [storefront.component :as component :refer [defcomponent]]))
+            [storefront.components.ui :as ui]))
 
 (defn copy [& sentences]
   (string/join " " sentences))

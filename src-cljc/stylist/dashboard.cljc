@@ -22,10 +22,7 @@
             [storefront.platform.messages :as messages]
             [storefront.request-keys :as request-keys]
             [voucher.keypaths :as voucher-keypaths]
-            [storefront.accessors.auth :as auth]
-
-            [storefront.component :as component :refer [defcomponent]]
-            [storefront.component :as component :refer [defcomponent]]))
+            [storefront.accessors.auth :as auth]))
 
 (def tabs
   [{:id :orders

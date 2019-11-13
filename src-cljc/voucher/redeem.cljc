@@ -18,10 +18,7 @@
             [voucher.keypaths :as voucher-keypaths]
             [storefront.keypaths :as keypaths]
             [storefront.request-keys :as request-keys]
-            [storefront.transitions :as transitions]
-
-            [storefront.component :as component :refer [defcomponent]]
-            [storefront.component :as component :refer [defcomponent]]))
+            [storefront.transitions :as transitions]))
 
 (defn ^:private divider []
   (component/html

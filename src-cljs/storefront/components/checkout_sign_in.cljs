@@ -1,7 +1,5 @@
 (ns storefront.components.checkout-sign-in
-  (:require [om.core :as om]
-            [sablono.core :refer [html]]
-            [adventure.checkout.sign-in :as adventure-sign-in]
+  (:require [adventure.checkout.sign-in :as adventure-sign-in]
             [storefront.components.sign-in :as sign-in]
             [storefront.components.ui :as ui]
             [storefront.components.facebook :as facebook]

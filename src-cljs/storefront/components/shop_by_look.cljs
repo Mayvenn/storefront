@@ -5,10 +5,7 @@
             [storefront.keypaths :as keypaths]
             [storefront.components.ui :as ui]
             [spice.maps :as maps]
-            [storefront.ugc :as ugc]
-
-            [storefront.component :as component :refer [defcomponent]]
-            [storefront.component :as component :refer [defcomponent]]))
+            [storefront.ugc :as ugc]))
 
 (defcomponent component [{:keys [looks deals? copy spinning?]} owner opts]
   (if spinning?

@@ -14,10 +14,7 @@
             [storefront.events :as events]
             [clojure.string :as string]
             [storefront.components.svg :as svg]
-            [storefront.components.picker.picker :as picker]
-
-            [storefront.component :as component :refer [defcomponent]]
-            [storefront.component :as component :refer [defcomponent]]))
+            [storefront.components.picker.picker :as picker]))
 
 (defn- header [name]
   [:h2.h3.py1.my3.shout.medium.border-bottom [:a {:name (string/lower-case name)} name]])

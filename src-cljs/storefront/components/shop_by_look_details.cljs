@@ -1,9 +1,7 @@
 (ns storefront.components.shop-by-look-details
-  (:require [om.core :as om]
-            [clojure.set :as set]
+  (:require [clojure.set :as set]
             [clojure.string :as str]
             [spice.core :as spice]
-            [sablono.core :refer [html]]
             [storefront.accessors.images :as images]
             [storefront.accessors.contentful :as contentful]
             [storefront.accessors.experiments :as experiments]

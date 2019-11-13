@@ -6,9 +6,7 @@
             [storefront.hooks.google-maps :as maps]
             [storefront.keypaths]
             [storefront.components.ui :as ui]
-            [stylist-directory.stylists :as stylists]
-
-            [storefront.component :as component :refer [defcomponent]]))
+            [stylist-directory.stylists :as stylists]))
 
 (defn map-query [data]
   (let [loaded-google-maps? (get-in data storefront.keypaths/loaded-google-maps)

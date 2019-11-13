@@ -20,10 +20,7 @@
             [storefront.transitions :as transitions]
             [stylist-directory.stylists :as stylists]
             [spice.core :as spice]
-            [stylist-matching.ui.header :as header-org]
-
-            [storefront.component :as component :refer [defcomponent]]
-            [storefront.component :as component :refer [defcomponent]]))
+            [stylist-matching.ui.header :as header-org]))
 
 (defn transposed-title-molecule
   [{:transposed-title/keys [id primary secondary]}]

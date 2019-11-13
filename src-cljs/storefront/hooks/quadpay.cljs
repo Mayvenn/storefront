@@ -4,10 +4,7 @@
             [storefront.component :as component :refer [defcomponent defdynamic-component]]
             [storefront.components.svg :as svg]
             [storefront.platform.messages :refer [handle-message]]
-            [storefront.events :as events]
-            [sablono.core :refer [html]]
-            [om.core :as om]
-            [storefront.component :as component :refer [defcomponent]]))
+            [storefront.events :as events]))
 
 (def uri "https://widgets.quadpay.com/mayvenn/quadpay-widget-2.2.1.js")
 

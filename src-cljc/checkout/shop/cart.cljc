@@ -1,7 +1,6 @@
 (ns checkout.shop.cart
   (:require
-   #?@(:cljs [[om.core :as om]
-              [storefront.api :as api]
+   #?@(:cljs [[storefront.api :as api]
               [storefront.components.payment-request-button :as payment-request-button]
               [storefront.components.popup :as popup]
               [storefront.confetti :as confetti]
@@ -37,10 +36,7 @@
    [storefront.platform.component-utils :as utils]
    [storefront.request-keys :as request-keys]
    [ui.molecules :as ui-molecules]
-   [ui.promo-banner :as promo-banner]
-   [storefront.component :as component :refer [defcomponent]]
-
-   [storefront.component :as component :refer [defcomponent]]))
+   [ui.promo-banner :as promo-banner]))
 
 (defmethod effects/perform-effects events/control-cart-add-freeinstall-coupon
   [_ _ _ _ app-state]

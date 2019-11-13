@@ -1,7 +1,5 @@
 (ns storefront.components.image-picker
-  (:require [om.core :as om]
-            [sablono.core :refer [html]]
-            [storefront.components.ui :as ui]
+  (:require [storefront.components.ui :as ui]
             [storefront.component :as component :refer [defdynamic-component]]
             [storefront.events :as events]
             [storefront.assets :as assets]

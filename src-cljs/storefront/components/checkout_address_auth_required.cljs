@@ -1,6 +1,5 @@
 (ns storefront.components.checkout-address-auth-required
-  (:require [om.core :as om]
-            [storefront.components.checkout-returning-or-guest :as checkout-returning-or-guest]
+  (:require [storefront.components.checkout-returning-or-guest :as checkout-returning-or-guest]
             [storefront.components.checkout-address :as checkout-address]))
 
 (defn ^:export built-component [data opts]

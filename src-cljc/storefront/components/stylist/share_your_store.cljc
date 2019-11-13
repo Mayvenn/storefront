@@ -4,10 +4,7 @@
             [storefront.components.share-links :as share-links]
             [storefront.keypaths :as keypaths]
             [storefront.platform.component-utils :as utils]
-            [storefront.routes :as routes]
-
-            [storefront.component :as component :refer [defcomponent]]
-            [storefront.component :as component :refer [defcomponent]]))
+            [storefront.routes :as routes]))
 
 (defn facebook-link [share-url]
   (share-links/facebook-link (share-links/with-utm-medium share-url "facebook")))
