@@ -257,7 +257,7 @@
          (filter-tabs category facets all-product-cards selections open-panel)]
         [:div.hide-on-mb-tb.pb6
          (filter-tabs category facets all-product-cards selections open-panel)]])]
-    [:div.flex.flex-wrap
+    [:div
      (if (empty? all-product-cards)
        (product-cards-empty-state loading-products?)
        (map subsection-component subsections))]]])
