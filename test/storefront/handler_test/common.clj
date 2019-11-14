@@ -521,6 +521,15 @@
                :option/name    "Loose Wave",
                :adventure/name "Loose Wave",
                :filter/order   4}]}
+            {:facet/slug "hair/family",
+             :facet/name "Category",
+             :filter/order 2,
+             :facet/options
+             [{:option/slug "360-wigs",
+               :option/name "360 Wigs",
+               :sku/name "360 Wig",
+               :filter/order 7}]}
+
             {:facet/slug   "hair/color",
              :facet/name   "Color",
              :filter/order 6,
