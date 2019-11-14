@@ -95,7 +95,7 @@
       ^:inline (svg/mayvenn-on-pinterest)]]]])
 
 (defcomponent full-component
-  [{:keys [contacts categories]} owner opts]
+  [{:keys [contacts categories essence-copy]} owner opts]
   [:div.h5.border-top.border-gray.bg-light-gray
    [:div.container
     [:div.col-12.clearfix
@@ -104,7 +104,10 @@
      [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
       ^:inline (component/build contacts-section contacts)]
      [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
-      ^:inline (component/build social-section)]]]
+      ^:inline (component/build social-section)]
+     (when essence-copy
+       [:div.col-on-tb-dt.cold-4-on-tb-dt.px4.pt3.pb2.dark-gray.h8.center.line-height-4
+        essence-copy])]]
 
    [:div.mt3.bg-dark-gray.white.py1.px3.clearfix.h8
     [:div
@@ -119,13 +122,14 @@
 
 (defn query
   [data]
-  {:contacts   (contacts-query data)
-   :categories (->> (get-in data keypaths/categories)
-                    (into []
-                          (comp
-                           (filter :footer/order)
-                           (filter (partial auth/permitted-category? data))))
-                    (sort-by :footer/order))})
+  {:contacts     (contacts-query data)
+   :categories   (->> (get-in data keypaths/categories)
+                      (into []
+                            (comp
+                             (filter :footer/order)
+                             (filter (partial auth/permitted-category? data))))
+                      (sort-by :footer/order))
+   :essence-copy "Included is a one year subscription to ESSENCE Magazine - a $12 value! Offer and refund details will be included with your confirmation."})
 
 (defn dtc-link [{:keys [title new-category? nav-message slug]}]
   (component/html
@@ -161,17 +165,20 @@
          (map dtc-link link-column)])]]))
 
 (defcomponent dtc-full-component
-  [{:keys [contacts categories]} owner opts]
+  [{:keys [contacts categories essence-copy]} owner opts]
   [:div.h5.border-top.border-gray.bg-light-gray
    [:div.container
     [:div.col-12.clearfix
      [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
-      ^:inline (component/build dtc-shop-section {:categories categories
+      ^:inline (component/build dtc-shop-section {:categories      categories
                                                   :partition-count 5})]
      [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
       ^:inline (component/build contacts-section contacts)]
      [:div.col-on-tb-dt.col-4-on-tb-dt.px3.my2
-      ^:inline (component/build social-section)]]]
+      ^:inline (component/build social-section)]
+     (when essence-copy
+       [:div.col-on-tb-dt.cold-4-on-tb-dt.px4.pt3.pb2.dark-gray.h8.center.line-height-4
+       essence-copy])]]
 
    [:div.mt3.bg-dark-gray.white.py1.px3.clearfix.h8
     [:div
@@ -180,12 +187,13 @@
 
 (defn dtc-query
   [data]
-  {:contacts   (contacts-query data)
-   :categories (->> (get-in data keypaths/categories)
-                    (into []
-                          (comp (filter :dtc-footer/order)
-                                (filter (partial auth/permitted-category? data))))
-                    (sort-by :dtc-footer/order))})
+  {:contacts     (contacts-query data)
+   :categories   (->> (get-in data keypaths/categories)
+                      (into []
+                            (comp (filter :dtc-footer/order)
+                                  (filter (partial auth/permitted-category? data))))
+                      (sort-by :dtc-footer/order))
+   :essence-copy "Included is a one year subscription to ESSENCE Magazine - a $12 value! Offer and refund details will be included with your confirmation."})
 
 (defn built-component
   [data opts]
