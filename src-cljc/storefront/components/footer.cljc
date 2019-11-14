@@ -122,14 +122,22 @@
 
 (defn query
   [data]
-  {:contacts     (contacts-query data)
-   :categories   (->> (get-in data keypaths/categories)
-                      (into []
-                            (comp
-                             (filter :footer/order)
-                             (filter (partial auth/permitted-category? data))))
-                      (sort-by :footer/order))
-   :essence-copy "Included is a one year subscription to ESSENCE Magazine - a $12 value! Offer and refund details will be included with your confirmation."})
+  (let [shop? (= (get-in data keypaths/store-slug) "shop")]
+    {:contacts     (contacts-query data)
+     :categories   (if shop?
+                     (->> (get-in data keypaths/categories)
+                          (into []
+                                (comp (filter :dtc-footer/order)
+                                      (filter (partial auth/permitted-category? data))))
+                          (sort-by :dtc-footer/order))
+                     (->> (get-in data keypaths/categories)
+                          (into []
+                                (comp
+                                 (filter :footer/order)
+                                 (filter (partial auth/permitted-category? data))))
+                          (sort-by :footer/order)))
+     :essence-copy (str "Included is a one year subscription to ESSENCE Magazine - a $12 value! "
+                        "Offer and refund details will be included with your confirmation.")}))
 
 (defn dtc-link [{:keys [title new-category? nav-message slug]}]
   (component/html
@@ -185,16 +193,6 @@
      {:style {:margin-bottom "90px"}}
      (component/build footer-links/component {:minimal? false} nil)]]])
 
-(defn dtc-query
-  [data]
-  {:contacts     (contacts-query data)
-   :categories   (->> (get-in data keypaths/categories)
-                      (into []
-                            (comp (filter :dtc-footer/order)
-                                  (filter (partial auth/permitted-category? data))))
-                      (sort-by :dtc-footer/order))
-   :essence-copy "Included is a one year subscription to ESSENCE Magazine - a $12 value! Offer and refund details will be included with your confirmation."})
-
 (defn built-component
   [data opts]
   (let [nav-event (get-in data keypaths/navigation-event)]
@@ -206,7 +204,7 @@
       [:div {:style {:height "85px"}}]
 
       (= (get-in data keypaths/store-slug) "shop")
-      (component/build dtc-full-component (dtc-query data) {:key "dtc-full-footer"})
+      (component/build dtc-full-component (query data) {:key "dtc-full-footer"})
 
       :else
       (component/build full-component (query data) nil))))
