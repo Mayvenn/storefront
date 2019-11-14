@@ -687,8 +687,13 @@
                               :hide-success hide-success
                               :promo-code   code})))
 
-(defmethod effects/perform-effects events/control-checkout-remove-promotion [_ _ args _ app-state]
-  (messages/handle-message events/order-remove-promotion args))
+(defmethod effects/perform-effects events/order-remove-freeinstall-line-item [_ _ _ _ app-state]
+  (api/remove-freeinstall-line-item (get-in app-state keypaths/session-id) (get-in app-state keypaths/order)))
+
+(defmethod effects/perform-effects events/control-checkout-remove-promotion [_ _ {:as args :keys [code]} _ app-state]
+  (if (= code "freeinstall")
+    (messages/handle-message events/order-remove-freeinstall-line-item)
+    (messages/handle-message events/order-remove-promotion args)))
 
 (defmethod effects/perform-effects events/control-checkout-confirmation-submit [_ event {:keys [place-order?] :as args} _ app-state]
   (let [order (get-in app-state keypaths/order)]

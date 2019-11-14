@@ -10,6 +10,7 @@
 (defpath order-placed)
 
 (defpath order-remove-promotion)
+(defpath order-remove-freeinstall-line-item)
 
 (defpath external-redirect-welcome)
 (defpath external-redirect-freeinstall)

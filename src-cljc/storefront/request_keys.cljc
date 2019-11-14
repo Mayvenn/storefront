@@ -45,6 +45,7 @@
 (def update-cart [:update-cart])
 (def update-line-item [:update-line-item])
 (def delete-line-item [:delete-line-item])
+(def remove-freeinstall-line-item [:remove-freeinstall-line-item])
 (def update-order [:update-order])
 (def update-addresses [:update-addresses])
 (def update-shipping-method [:update-shipping-method])

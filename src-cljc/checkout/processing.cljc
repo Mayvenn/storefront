@@ -31,9 +31,7 @@
                       (stylists/retrieve-parsed-affiliate-id app-state)
                       {:error-handler #(let [{:keys [error-code error-message]} (-> % :response :body)]
                                          (when (= error-code "ineligible-for-free-install")
-                                           (messages/handle-message events/order-remove-promotion
-                                                                    {:code         "freeinstall"
-                                                                     :hide-success true}))
+                                           (messages/handle-message events/order-remove-freeinstall-line-item))
                                          (if (= error-code "quadpay-failed-to-capture-payment")
                                            (do
                                              (history/enqueue-navigate events/navigate-checkout-payment

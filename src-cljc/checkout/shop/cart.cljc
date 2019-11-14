@@ -354,7 +354,7 @@
                  :cart-item-floating-box/id                "line-item-freeinstall-price"
                  :cart-item-floating-box/value             (some-> service-discount - mf/as-money)
                  :cart-item-remove-action/id               "line-item-remove-freeinstall"
-                 :cart-item-remove-action/spinning?        (utils/requesting? app-state request-keys/remove-promotion-code)
+                 :cart-item-remove-action/spinning?        (utils/requesting? app-state request-keys/remove-freeinstall-line-item)
                  :cart-item-remove-action/target           [events/control-checkout-remove-promotion {:code "freeinstall"}]
                  :cart-item-service-thumbnail/id           "freeinstall"
                  :cart-item-service-thumbnail/image-url    "//ucarecdn.com/3a25c870-fac1-4809-b575-2b130625d22a/"

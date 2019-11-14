@@ -688,6 +688,22 @@
                :quantity 1}
    handler))
 
+(def freeinstall-line-item-name->variant-id
+  {"leave-out"   1036
+   "closure"     1037
+   "frontal"     1038
+   "three-sixty" 1039})
+
+(defn remove-freeinstall-line-item [session-id {:keys [install-type number token]}]
+  (let [variant-id (get freeinstall-line-item-name->variant-id install-type)]
+    (remove-from-bag
+     request-keys/remove-freeinstall-line-item
+     session-id {:variant-id variant-id
+                 :number     number
+                 :token      token
+                 :quantity   1}
+     #(messages/handle-message events/api-success-remove-from-bag {:order %}))))
+
 (defn delete-line-item [session-id order variant-id]
   (remove-from-bag
    (conj request-keys/delete-line-item variant-id)
