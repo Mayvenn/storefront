@@ -517,10 +517,10 @@
              :facet/name   "Texture",
              :filter/order 4,
              :facet/options
-             [({:option/slug    "loose-wave",
-                :option/name    "Loose Wave",
-                :adventure/name "Loose Wave",
-                :filter/order   4})]}
+             [{:option/slug    "loose-wave",
+               :option/name    "Loose Wave",
+               :adventure/name "Loose Wave",
+               :filter/order   4}]}
             {:facet/slug   "hair/color",
              :facet/name   "Color",
              :filter/order 6,
@@ -532,15 +532,7 @@
                :option/image            "chocolate-brown.jpg",
                :option/circle-swatch    "chocolate-brown-circle.jpg",
                :option/rectangle-swatch "chocolate-brown-rectangle.jpg",
-               :filter/order            4}]}
-            {:facet/slug "hair/family",
-             :facet/name "Category",
-             :filter/order 2,
-             :facet/options
-             [{:option/slug "360-wigs",
-               :option/name "360 Wigs",
-               :sku/name "360 Wig",
-               :filter/order 7}]}]})
+               :filter/order            4}]}]})
 
 (def default-storeback-handler
   (routes
