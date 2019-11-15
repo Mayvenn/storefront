@@ -82,13 +82,14 @@
                                 (string? uri-query) cemerick-url/query->map
                                 :always             (select-keys (mapv name category/allowed-query-params))
                                 :always             category/sort-query-params)
+        indexable?             (and
+                                (not-any? #(string/includes? % category/query-param-separator)
+                                          (vals selected-options))
+                                (<= (count selected-options) 3))
         can-use-seo-template? (and (not-empty selected-options)
                                    (:page/title-template category)
                                    (:page.meta/description-template category)
-                                   (not-any? #(string/includes? % category/query-param-separator)
-                                             (vals selected-options))
-                                   (<= (count selected-options) 3)
-                                   (not (contains? selected-options "base-material")))
+                                   indexable?)
         selected-facet-string (->> selected-options
                                    (mapv (partial facet-option->option-name facets))
                                    (string/join " "))

@@ -612,18 +612,6 @@
             (is (= "360 Wigs | Mayvenn"
                    (parse-title (:body resp))))))
 
-        (testing "option selected is a base-material"
-          (let [resp (->> "https://shop.mayvenn.com/categories/13-wigs?base-material=lace&color=black"
-                          (mock/request :get)
-                          handler)]
-            (is (= 200 (:status resp)))
-            (is (= (str "Mayvenn’s virgin human hair wigs allow you to achieve a new look in minutes "
-                        "& come in different variations such as Brazilian, Malaysian, straight, "
-                        "& deep wave.")
-                   (parse-meta-tag-content (:body resp) "description")))
-            (is (= "Human Hair Wigs: Natural Hair Lace Wigs | Mayvenn"
-                   (parse-title (:body resp))))))
-
         (testing "no options are selected we get generic description"
           (let [resp (->> "https://shop.mayvenn.com/categories/13-wigs"
                           (mock/request :get)
