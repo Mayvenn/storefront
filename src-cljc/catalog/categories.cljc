@@ -43,10 +43,11 @@
          "to achieve your desired look.")})
 
 (def wig-templates
-  {:page/title-template "%s | Mayvenn%.0s"
+  {:page/title-template "%s | Mayvenn"
    :page.meta/description-template
    (copy "Mayvenn’s %s allow you to change up and achieve your desired look."
-         "Shop our collection of virgin hair wigs today.%.0s")})
+         "Shop our collection of virgin hair wigs today.")})
+
 
 (def closures
   [(merge {:catalog/category-id      "0"
