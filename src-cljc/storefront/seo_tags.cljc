@@ -104,13 +104,14 @@
         page-meta-description (if can-use-seo-template?
                                 (strings/format description-template selected-facet-string category-name)
                                 (:page.meta/description category))]
-    [[:title {} page-title]
-     [:meta {:name "description" :content page-meta-description}]
-     [:meta {:property "og:title" :content (:opengraph/title category)}]
-     [:meta {:property "og:type" :content "product"}]
-     [:meta {:property "og:image" :content (str "http:" (:category/image-url category))}]
-     [:meta {:property "og:description" :content (:opengraph/description category)}]
-     (when-not indexable?  [:meta {:name "robots" :content "noindex"}])]))
+    (cond-> [[:title {} page-title]
+         [:meta {:name "description" :content page-meta-description}]
+         [:meta {:property "og:title" :content (:opengraph/title category)}]
+         [:meta {:property "og:type" :content "product"}]
+         [:meta {:property "og:image" :content (str "http:" (:category/image-url category))}]
+             [:meta {:property "og:description" :content (:opengraph/description category)}]]
+      (not indexable?)
+      (conj [:meta {:name "robots" :content "noindex"}]))))
 
 (defn filter-and-sort-seo-query-params
   [nav-event query]
