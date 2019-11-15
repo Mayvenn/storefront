@@ -82,10 +82,10 @@
                                 (string? uri-query) cemerick-url/query->map
                                 :always             (select-keys (mapv name category/allowed-query-params))
                                 :always             category/sort-query-params)
-        indexable?             (and
-                                (not-any? #(string/includes? % category/query-param-separator)
-                                          (vals selected-options))
-                                (<= (count selected-options) 3))
+        indexable?            (and
+                               (not-any? #(string/includes? % category/query-param-separator)
+                                         (vals selected-options))
+                               (<= (count selected-options) 3))
         can-use-seo-template? (and (not-empty selected-options)
                                    (:page/title-template category)
                                    (:page.meta/description-template category)
@@ -109,7 +109,8 @@
      [:meta {:property "og:title" :content (:opengraph/title category)}]
      [:meta {:property "og:type" :content "product"}]
      [:meta {:property "og:image" :content (str "http:" (:category/image-url category))}]
-     [:meta {:property "og:description" :content (:opengraph/description category)}]]))
+     [:meta {:property "og:description" :content (:opengraph/description category)}]
+     (when-not indexable?  [:meta {:name "robots" :content "noindex"}])]))
 
 (defn filter-and-sort-seo-query-params
   [nav-event query]
