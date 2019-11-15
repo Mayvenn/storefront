@@ -625,11 +625,12 @@
                    (parse-title (:body resp)))))))
 
       (testing "when a category page does not have a template and has selections"
-        (let [resp (->> "https://shop.mayvenn.com/categories/2-virgin-straight?origin=indian"
+        (let [resp (->> "https://shop.mayvenn.com/categories/16-dyed-virgin-hair?origin=indian"
                         (mock/request :get)
                         handler)]
           (is (= 200 (:status resp)))
-          (is (= "Straight Brazilian weave, straight Indian hair and straight Peruvian hair. Our straight bundles are sleek from root to tip."
+          (is (= (str "When natural brown isn’t cutting it, find your true color match with our Dyed Virgin Hair. Free shipping. "
+                      "Free 30 day returns. Made with 100% dyed virgin human hair extensions.")
                  (parse-meta-tag-content (:body resp) "description")))
-          (is (= "Natural Straight Extensions | Mayvenn"
+          (is (= "Dyed Virgin Hair Extensions | Mayvenn"
                  (parse-title (:body resp)))))))))

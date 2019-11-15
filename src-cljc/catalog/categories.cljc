@@ -48,6 +48,11 @@
    (copy "Mayvenn’s %s allow you to change up and achieve your desired look."
          "Shop our collection of virgin hair wigs today.")})
 
+(def texture-templates
+  {:page/title-template "%s %s | Mayvenn"
+   :page.meta/description-template
+   (copy "Mayvenn's %s human %s are machine-wefted and made with virgin"
+         "hair for unbeatable quality. Shop to achieve your desired look!")})
 
 (def closures
   [(merge {:catalog/category-id      "0"
@@ -200,6 +205,7 @@
 (def virgin-hair
   [(merge {:catalog/category-id      "2"
            :copy/title               "Virgin Straight"
+           :seo/title                "Virgin Straight Hair Extensions"
            :page/slug                "virgin-straight"
            :legacy/named-search-slug "straight"
 
@@ -228,9 +234,11 @@
           (category->seo "Natural Straight Extensions"
                          (copy "Straight Brazilian weave, straight Indian hair and straight Peruvian hair."
                                "Our straight bundles are sleek from root to tip.")
-                         "//ucarecdn.com/61662cc7-59f5-454b-8031-538516557eb0/"))
+                         "//ucarecdn.com/61662cc7-59f5-454b-8031-538516557eb0/")
+          texture-templates)
    (merge {:catalog/category-id      "3"
            :copy/title               "Virgin Yaki Straight"
+           :seo/title                "Virgin Yaki Straight Hair Extensions"
            :page/slug                "virgin-yaki-straight"
            :legacy/named-search-slug "yaki-straight"
 
@@ -261,9 +269,11 @@
           (category->seo "Yaki Straight Extensions"
                          (copy "Our Yaki Straight hair collection features both Peruvian and Brazilian straight hair bundles."
                                "With Lace Closure or Lace Frontals in different lengths.")
-                         "//ucarecdn.com/98e8b217-73ee-475a-8f5e-2c3aaa56af42/"))
+                         "//ucarecdn.com/98e8b217-73ee-475a-8f5e-2c3aaa56af42/")
+          texture-templates)
    (merge {:catalog/category-id      "4"
            :copy/title               "Virgin Kinky Straight"
+           :seo/title                "Virgin Kinky Straight Hair Extensions"
            :page/slug                "virgin-kinky-straight"
            :legacy/named-search-slug "kinky-straight"
            :catalog/department       #{"hair"}
@@ -287,9 +297,11 @@
           (category->seo "Kinky Straight Extensions"
                          (copy "100% human hair bundles and extensions from Mayvenn."
                                "Peruvian and Brazilian Kinky Straight Lace Closures and Frontals.")
-                         "//ucarecdn.com/7fe5f90f-4dad-454a-aa4b-b453fc4da3c4/"))
+                         "//ucarecdn.com/7fe5f90f-4dad-454a-aa4b-b453fc4da3c4/")
+          texture-templates)
    (merge {:catalog/category-id      "5"
            :copy/title               "Virgin Body Wave"
+           :seo/title                "Virgin Body Wave Hair Extensions"
            :page/slug                "virgin-body-wave"
            :legacy/named-search-slug "body-wave"
            :catalog/department       #{"hair"}
@@ -315,9 +327,11 @@
           (category->seo "Body Wave Extensions"
                          (copy "Malaysian and Peruvian body wave silk, lace and 360 frontal bundles."
                                "Unbelievably soft and goes from straight to wavy and back again.")
-                         "//ucarecdn.com/445c53df-f369-4ca6-a554-c9668c8968f1/"))
+                         "//ucarecdn.com/445c53df-f369-4ca6-a554-c9668c8968f1/")
+          texture-templates)
    (merge {:catalog/category-id      "6"
            :copy/title               "Virgin Loose Wave"
+           :seo/title                "Virgin Loose Wave Hair Extensions"
            :page/slug                "virgin-loose-wave"
            :legacy/named-search-slug "loose-wave"
            :catalog/department       #{"hair"}
@@ -345,9 +359,11 @@
           (category->seo "Loose Wave Extensions"
                          (copy "Mayvenn’s Brazilian, Peruvian and Indian loose wave bundles."
                                "Also includes loose wave lace closures. All are 100% virgin Loose Wave hair.")
-                         "//ucarecdn.com/31be9341-a688-4f03-b754-a22a0a1f267e/"))
+                         "//ucarecdn.com/31be9341-a688-4f03-b754-a22a0a1f267e/")
+          texture-templates)
    (merge {:catalog/category-id      "7"
            :copy/title               "Virgin Water Wave"
+           :seo/title                "Virgin Water Wave Hair Extensions"
            :page/slug                "Virgin-water-wave"
            :legacy/named-search-slug "water-wave"
            :catalog/department       #{"hair"}
@@ -372,9 +388,11 @@
                          (copy "Water Wave Bundles, Closures, and Frontals."
                                "Peruvian and Brazilian bundles."
                                "Mayvenn has hair extensions, bundles, closures, and frontals.")
-                         "//ucarecdn.com/5f6c669f-8274-4bef-afa9-3c08813842f6/"))
+                         "//ucarecdn.com/5f6c669f-8274-4bef-afa9-3c08813842f6/")
+          texture-templates)
    (merge {:catalog/category-id      "8"
            :copy/title               "Virgin Deep Wave"
+           :seo/title                "Virgin Deep Wave Hair Extensions"
            :page/slug                "virgin-deep-wave"
            :legacy/named-search-slug "deep-wave"
            :catalog/department       #{"hair"}
@@ -401,9 +419,11 @@
           (category->seo "Deep Wave Extensions"
                          (copy "Deep Wave bundles and closures, including Brazilian, Peruvian and Indian Deep Wave."
                                "Soft, spiral wave full of body and bounce.")
-                         "//ucarecdn.com/49cc5837-8321-4331-9cec-d299d0de1887/"))
+                         "//ucarecdn.com/49cc5837-8321-4331-9cec-d299d0de1887/")
+          texture-templates)
    (merge {:catalog/category-id      "9"
            :copy/title               "Virgin Curly"
+           :seo/title                "Virgin Curly Hair Extensions"
            :page/slug                "virgin-curly"
            :legacy/named-search-slug "curly"
            :catalog/department       #{"hair"}
@@ -425,7 +445,8 @@
                          (copy "Shop our Brazilian curly bundle, Peruvian Curly Bundle,"
                                "Peruvian Curly Lace closures and Curly Lace frontals."
                                "Perfect for creating voluminous coily styles.")
-                         "//ucarecdn.com/128b68e2-bf3a-4d72-8e39-0c71662f9c86/"))])
+                         "//ucarecdn.com/128b68e2-bf3a-4d72-8e39-0c71662f9c86/")
+          texture-templates)])
 
 (def category-id->subsection-fn
   {"13" (comp first :hair/family)
