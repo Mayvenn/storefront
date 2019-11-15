@@ -256,9 +256,9 @@
      "A small hack to prevent classic orders from being placed with the freeinstall
         promo.  A full solution would be implemented in waiter."
      [app-state]
-     (let [promotion-codes  (get-in app-state keypaths/order-promotion-codes)
+     (let [order            (get-in app-state keypaths/order)
            store-experience (get-in app-state keypaths/store-experience)]
-       (and (some #(= "freeinstall" %) promotion-codes)
+       (and (orders/freeinstall-entered? order)
             (= "mayvenn-classic" store-experience)))))
 
 #?(:cljs

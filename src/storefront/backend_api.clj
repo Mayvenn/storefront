@@ -1,5 +1,6 @@
 (ns storefront.backend-api
   (:require [spice.maps :as maps]
+            [storefront.accessors.orders :as orders]
             [tugboat.core :as tugboat]))
 
 (defn storeback-fetch [storeback-config path params]
@@ -81,7 +82,7 @@
     (let [response (storeback-fetch storeback-config (str "/v2/orders/" order-number)
                                     {:query-params {:token order-token}})]
       (when (not-404 response)
-        (:body response)))))
+        (orders/TEMP-pretend-service-items-do-not-exist (:body response))))))
 
 (defn get-servicing-stylist [storeback-config servicing-stylist-id]
   (when servicing-stylist-id

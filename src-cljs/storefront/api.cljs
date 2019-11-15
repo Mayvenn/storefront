@@ -264,7 +264,7 @@
      :order-token  order-token}
     :handler
     #(messages/handle-message events/api-success-auth-sign-in
-                              (-> %
+                              (-> (update % :order orders/TEMP-pretend-service-items-do-not-exist)
                                   select-auth-keys
                                   (assoc :flow "email-password")))}))
 
@@ -283,7 +283,9 @@
      :order-token order-token}
     :handler
     (fn [response]
-      (let [auth-keys (-> (select-auth-keys response)
+      (let [auth-keys (-> response
+                          (update :order orders/TEMP-pretend-service-items-do-not-exist)
+                          select-auth-keys
                           (assoc :flow "facebook"))
             ;; Since we use facebook sign-in for both sign-in and sign-up, we
             ;; need to trigger the appropriate event. Diva tells us when this
@@ -308,6 +310,7 @@
     :handler
     #(messages/handle-message events/api-success-auth-sign-up
                               (-> %
+                                  (update :order orders/TEMP-pretend-service-items-do-not-exist)
                                   select-auth-keys
                                   (assoc :flow "email-password")))}))
 
@@ -327,6 +330,7 @@
     :handler
     #(messages/handle-message events/api-success-auth-reset-password
                               (-> %
+                                  (update :order orders/TEMP-pretend-service-items-do-not-exist)
                                   select-auth-keys
                                   (assoc :flow "email-password")))}))
 
@@ -347,6 +351,7 @@
     :handler
     #(messages/handle-message events/api-success-auth-reset-password
                               (-> %
+                                  (update :order orders/TEMP-pretend-service-items-do-not-exist)
                                   select-auth-keys
                                   (assoc :flow "facebook")))}))
 
@@ -664,7 +669,7 @@
                               :utm-params utm-params}
                              (when affiliate-stylist-id
                                {:stylist-id affiliate-stylist-id}))
-       :handler       (or success-handler default-success-handler)
+       :handler       (comp (or success-handler default-success-handler) orders/TEMP-pretend-service-items-do-not-exist)
        :error-handler (or error-handler default-error-handler)}))))
 
 (defn ^:private remove-from-bag [request-key session-id {:keys [variant-id number token quantity]} handler]
@@ -677,7 +682,7 @@
              :variant-id variant-id
              :number number
              :token token}
-    :handler handler}))
+    :handler (comp handler orders/TEMP-pretend-service-items-do-not-exist)}))
 
 (defn remove-line-item [session-id {:keys [variant-id number token sku-code]} handler]
   (remove-from-bag
@@ -728,7 +733,7 @@
                 (update :billing-address dissoc :latitude :longitude)
                 (assoc :session-id session-id))
     :handler #(messages/handle-message events/api-success-update-order-update-address
-                                       {:order %
+                                       {:order (orders/TEMP-pretend-service-items-do-not-exist %)
                                         :navigate events/navigate-checkout-payment})}))
 
 (defn guest-update-addresses [session-id order]
@@ -742,7 +747,7 @@
                 (update :billing-address dissoc :latitude :longitude)
                 (assoc :session-id session-id))
     :handler #(messages/handle-message events/api-success-update-order-update-guest-address
-                                       {:order %
+                                       {:order (orders/TEMP-pretend-service-items-do-not-exist %)
                                         :navigate events/navigate-checkout-payment})}))
 
 (defn browser-pay-estimate [params successful-estimate failed-to-estimate]
@@ -750,7 +755,7 @@
     (str api-base-url "/apple-pay-estimate")
     (merge default-req-opts
            {:params  params
-            :handler (comp successful-estimate :body)
+            :handler (comp successful-estimate orders/TEMP-pretend-service-items-do-not-exist :body)
             :error-handler failed-to-estimate})))
 
 (defn checkout [params successful-checkout failed-checkout]
@@ -760,7 +765,7 @@
    request-keys/checkout
    {:params  params
     :handler (juxt successful-checkout #(messages/handle-message events/api-success-update-order-place-order
-                                                                 {:order %}))
+                                                                 {:order (orders/TEMP-pretend-service-items-do-not-exist %)}))
     :error-handler (juxt failed-checkout default-error-handler)}))
 
 (defn update-shipping-method [session-id order]
@@ -772,15 +777,13 @@
                 (select-keys [:number :token :shipping-method-sku])
                 (assoc :session-id session-id))
     :handler #(messages/handle-message events/api-success-update-order-update-shipping-method
-                                       {:order %})}))
+                                       {:order (orders/TEMP-pretend-service-items-do-not-exist %)})}))
 
 ;;TODO This needs some reworking, it has an awkward api
 (defn update-cart-payments
   ([session-id {:keys [order] :as args}]
-   (update-cart-payments session-id
-                         args
-                         #(messages/handle-message events/api-success-update-order-update-cart-payments
-                                                   (merge args {:order %}))))
+   (update-cart-payments session-id args #(messages/handle-message events/api-success-update-order-update-cart-payments
+                                                                   (merge args {:order %}))))
   ([session-id {:keys [order] :as args} success-handler]
    (storeback-api-req
     POST
@@ -789,7 +792,7 @@
     {:params (-> order
                  (select-keys [:number :token :cart-payments])
                  (assoc :session-id session-id))
-     :handler success-handler})))
+     :handler (comp success-handler orders/TEMP-pretend-service-items-do-not-exist)})))
 
 (defn get-order [number token]
   (storeback-api-req
@@ -799,7 +802,7 @@
    {:params
     {:token token}
     :handler
-    #(messages/handle-message events/api-success-get-order %)}))
+    #(messages/handle-message events/api-success-get-order (orders/TEMP-pretend-service-items-do-not-exist %))}))
 
 (defn confirm-order-was-placed
   [session-id order utm-params success-handler error-handler]
@@ -810,7 +813,7 @@
    {:params        (merge (select-keys order [:number :token])
                           {:session-id session-id
                            :utm-params utm-params})
-    :handler       success-handler
+    :handler       (comp success-handler orders/TEMP-pretend-service-items-do-not-exist)
     :error-handler (or error-handler default-error-handler)}))
 
 (defn poll-order
@@ -818,7 +821,7 @@
   (storeback-api-req GET (str "/v2/orders/" number)
                      request-keys/get-order
                      {:params  {:token token}
-                      :handler handler}))
+                      :handler (comp handler orders/TEMP-pretend-service-items-do-not-exist)}))
 
 (defn get-completed-order [number token]
   (storeback-api-req
@@ -828,7 +831,8 @@
    {:params
     {:token token}
     :handler
-    #(messages/handle-message events/api-success-get-completed-order %)}))
+    #(messages/handle-message events/api-success-get-completed-order
+                              (orders/TEMP-pretend-service-items-do-not-exist %))}))
 
 (defn get-current-order [user-id user-token store-stylist-id]
   (storeback-api-req
@@ -839,7 +843,7 @@
     {:user-id user-id
      :user-token user-token
      :store-stylist-id store-stylist-id}
-    :handler #(messages/handle-message events/api-success-get-order %)
+    :handler #(messages/handle-message events/api-success-get-order (orders/TEMP-pretend-service-items-do-not-exist %))
     :error-handler (constantly nil)}))
 
 ;; HACK: Move to backend
@@ -867,7 +871,7 @@
                       :allow-dormant allow-dormant?
                       :add-silently? allow-without-eligibility?}
       :handler       #(messages/handle-message events/api-success-update-order-add-promotion-code
-                                               {:order          %
+                                               {:order          (orders/TEMP-pretend-service-items-do-not-exist %)
                                                 :promo-code     promo-code
                                                 :allow-dormant? allow-dormant?})
       :error-handler #(if allow-dormant?
@@ -888,7 +892,7 @@
                    {:session-id session-id
                     :sku (:catalog/sku-id sku)}
                    (when (and token number) {:token token :number number}))
-    :handler handler}))
+    :handler (comp handler orders/TEMP-pretend-service-items-do-not-exist)}))
 
 (defn add-skus-to-bag [session-id {:keys [token number sku-id->quantity] :as params} handler]
   (storeback-api-req
@@ -899,7 +903,7 @@
                      :sku-id->quantity sku-id->quantity}
                     (when (and token number) {:token token :number number}))
     :handler (fn [order]
-               (handler {:order            order
+               (handler {:order            (orders/TEMP-pretend-service-items-do-not-exist order)
                          :sku-id->quantity sku-id->quantity}))}))
 
 (defn remove-promotion-code [session-id {:keys [token number]} promo-code handler]
@@ -909,7 +913,7 @@
    request-keys/remove-promotion-code
    {:params {:session-id session-id
              :number number :token token :code promo-code}
-    :handler handler}))
+    :handler (comp handler orders/TEMP-pretend-service-items-do-not-exist)}))
 
 (defn create-shared-cart [session-id order-number order-token]
   (storeback-api-req
@@ -945,7 +949,7 @@
                     :stylist-id           stylist-id
                     :servicing-stylist-id servicing-stylist-id}
     :handler       #(messages/handle-message events/api-success-update-order-from-shared-cart
-                                             {:order          %
+                                             {:order          (orders/TEMP-pretend-service-items-do-not-exist %)
                                               :look-id        look-id
                                               :shared-cart-id shared-cart-id
                                               :navigate       events/navigate-cart})
@@ -965,7 +969,7 @@
               :servicing-stylist-id servicing-stylist-id
               :number               number
               :token                token}
-    :handler handler}))
+    :handler (comp handler orders/TEMP-pretend-service-items-do-not-exist)}))
 
 (defn remove-servicing-stylist
   [servicing-stylist-id number token]
@@ -978,7 +982,7 @@
              :token                token}
     :handler  #(messages/handle-message
                 events/api-success-remove-servicing-stylist
-                {:order %})}))
+                {:order (orders/TEMP-pretend-service-items-do-not-exist %)})}))
 
 (defn- static-content-req [method path req-key {:keys [handler] :as request-opts}]
   (let [req-id       (str (random-uuid))

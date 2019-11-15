@@ -1,7 +1,10 @@
 (ns storefront.accessors.orders
   (:require [clojure.set :as set]
+            [clojure.string :as string]
             [spice.core :as spice]
-            [storefront.platform.numbers :as numbers]))
+            [storefront.accessors.line-items :as line-items]
+            [storefront.platform.numbers :as numbers]
+            [storefront.utils :as utils]))
 
 (defn incomplete? [order]
   (and (-> order :state #{"cart"} boolean)
@@ -33,18 +36,10 @@
        (filter (comp #{variant-id} :id))
        first))
 
-(defn shipping-method?
-  [{:keys [id]}]
-  (= -1 id))
-
-(defn ^:private product?
-  [{:keys [id] :as line-item}]
-  (pos? id))
-
 (defn product-items-for-shipment [shipment]
   (->> shipment
        :line-items
-       (filter product?)))
+       (filter line-items/product?)))
 
 (defn first-commissioned-shipment [order]
   (->> order
@@ -56,14 +51,14 @@
   "Returns cart items from an order hashmap.
    Takes into account *ALL* shipments on the order "
   [order]
-  (->> order all-line-items (filter product?)))
+  (->> order all-line-items (filter line-items/product?)))
 
 (defn product-items
   "Returns cart items from an order hashmap.
   Cart line-items are added as the first shipment.
   Line-items are from first shipment as it is the user created shipment."
   [order]
-  (->> order line-items (filter product?)))
+  (->> order line-items (filter line-items/product?)))
 
 (defn shipping-item
   "Returns the first shipping line-item from an order hashmap.
@@ -71,7 +66,7 @@
   Shipping items are added as the first shipment.
   Line-items are from first shipment as it is the user created shipment."
   [order]
-  (->> order line-items (filter shipping-method?) first))
+  (->> order line-items (filter line-items/shipping-method?) first))
 
 (defn shipping-method-details [shipping-methods shipping-item]
   (->> shipping-methods
@@ -115,24 +110,36 @@
 
 (defn no-applied-promo?
   [order]
-  (or (empty? (all-applied-promo-codes order))
-      (= 0 (product-quantity order))))
+  (boolean
+   (or (empty? (all-applied-promo-codes order))
+       (= 0 (product-quantity order)))))
+
+(defn service-line-items [order]
+  (->> order
+       :shipments
+       last
+       :storefront/all-line-items
+       (filter line-items/service?)))
+
+(defn freeinstall-promotion? [{:keys [name coupon-code]}]
+  (boolean
+   (or (#{"FREEINSTALL"} name)
+       (#{"freeinstall"} coupon-code))))
 
 (defn freeinstall-applied?
-  [{:as order :keys [promotion-codes]}]
-  (contains? (all-applied-promo-codes order) "freeinstall"))
-
-(defn freeinstall-included?
   [order]
-  (:install-type order))
-
-(defn applied-install-promotion
-  [{:as order :keys [promotion-codes]}]
-  (some #{"freeinstall" "install"} (all-applied-promo-codes order)))
+  (boolean
+   (or
+    (some (comp freeinstall-promotion? :promotion)
+          (mapcat :applied-promotions (service-line-items order)))
+    (contains? (all-applied-promo-codes order) "freeinstall"))))
 
 (defn freeinstall-entered?
   [{:as order :keys [promotion-codes]}]
-  (= #{"freeinstall"} (set promotion-codes)))
+  (boolean
+   (or
+    (seq (service-line-items order))
+    (= #{"freeinstall"} (set promotion-codes)))))
 
 (defn non-store-credit-payment-amount [order]
   (->> order
@@ -161,10 +168,9 @@
 (defn form-payment-methods [order user]
   (let [order-total       (:total order)
         store-credit      (:total-available-store-credit user)
-        promotions        (all-applied-promo-codes order)
         store-credit-used (min order-total store-credit)]
     (cond-> {}
-      (or (some #{"freeinstall"} promotions)
+      (or (freeinstall-applied? order)
           (> order-total store-credit-used)) (assoc :stripe {})
       (can-use-store-credit? order user)     (assoc :store-credit {}))))
 
@@ -172,8 +178,10 @@
   (cond
     (= name "Bundle Discount")
     "10% Bundle Discount"
-    (= name "Free Install")
+
+    (#{"Free Install" "FREEINSTALL"} name)
     "Free Mayvenn Install"
+
     :else name))
 
 (defn- line-item-tuples [order]
@@ -220,3 +228,12 @@
        (map (comp numbers/abs :price))
        (reduce + 0)
        ((fnil + 0) (numbers/abs (spice/parse-double service-price)))))
+
+(defn TEMP-pretend-service-items-do-not-exist [order]
+  (utils/?update order :shipments
+                 (partial map
+                          (fn [{:keys [line-items storefront/all-line-items] :as shipment}]
+                            (cond-> shipment
+                              (nil? all-line-items)
+                              (assoc :storefront/all-line-items line-items
+                                     :line-items (remove line-items/service? line-items)))))))

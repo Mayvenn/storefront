@@ -284,9 +284,9 @@
                                    :cart-summary-line/label    "Shipping"
                                    :cart-summary-line/sublabel shipping-timeframe
                                    :cart-summary-line/value    (mf/as-money-or-free shipping-cost)}]
-                                 (for [{:keys [name price coupon-code]}
+                                 (for [{:keys [name price] :as adjustment}
                                        (filter adjustments/non-zero-adjustment? adjustments)
-                                       :let [install-summary-line? (= "freeinstall" coupon-code)]]
+                                       :let [install-summary-line? (orders/freeinstall-promotion? adjustment)]]
                                    (cond-> {:cart-summary-line/id    (text->data-test-name name)
                                             :cart-summary-line/icon  (svg/discount-tag {:class  "mxnp6 fill-gray pr1"
                                                                                         :height "2em" :width "2em"})
@@ -309,8 +309,8 @@
 
 (defn query
   [data]
-  (let [order                                   (get-in data keypaths/order)
-        selected-quadpay?                       (-> (get-in data keypaths/order) :cart-payments :quadpay)
+  (let [order             (get-in data keypaths/order)
+        selected-quadpay? (-> (get-in data keypaths/order) :cart-payments :quadpay)
         {:mayvenn-install/keys [service-discount
                                 applied?
                                 stylist]

@@ -121,13 +121,6 @@
       shop?
       :shop/freeinstall
 
-      ;; GROT: freeinstall-applied? when adventure orders using freeinstall promo code are no longer relevant
-      (and
-       (or (orders/freeinstall-applied? (get-in data keypaths/order))
-           (orders/freeinstall-included? (get-in data keypaths/order)))
-       (= "freeinstall" (get-in data keypaths/store-slug)))
-      :adventure-freeinstall/applied
-
       (and
        (orders/freeinstall-applied? (get-in data keypaths/order))
        (experiments/aladdin-experience? data))

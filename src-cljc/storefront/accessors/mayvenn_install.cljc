@@ -3,15 +3,18 @@
    [adventure.keypaths :as adventure-keypaths]
    [checkout.accessors.vouchers :as vouchers]
    [storefront.accessors.orders :as orders]
+   [storefront.accessors.line-items :as line-items]
    [storefront.keypaths :as keypaths]
    [storefront.accessors.service-menu :as service-menu]
    [spice.core :as spice]
    [storefront.keypaths :as storefront.keypaths]))
 
+;; TODO: consider unifying this with api.orders/mayvenn-install
 (defn mayvenn-install
   "This is the 'Mayvenn Install' model that is used to build queries for views"
   [app-state]
   (let [order                       (get-in app-state keypaths/order)
+        service-line-item           (first (orders/service-line-items order))
         freeinstall-entered?        (boolean (orders/freeinstall-entered? order))
         install-items-required      3
         sku-catalog                 (get-in app-state keypaths/v2-skus)
@@ -43,19 +46,17 @@
     {:mayvenn-install/entered?           freeinstall-entered?
      :mayvenn-install/locked?            (and freeinstall-entered?
                                               (pos? items-remaining-for-install))
-     :mayvenn-install/applied?           (and freeinstall-entered?
-                                              ;; TODO should we consider the following that checks line-items for promos
-                                              ;; (boolean (orders/applied-install-promotion order))
-                                              ;; (orders/freeinstall-applied? order)
-                                              (zero? items-remaining-for-install))
+     :mayvenn-install/applied?           (orders/freeinstall-applied? order)
      :mayvenn-install/quantity-required  install-items-required
      :mayvenn-install/quantity-remaining (- install-items-required items-added-for-install)
      :mayvenn-install/quantity-added     items-added-for-install
      :mayvenn-install/stylist            servicing-stylist
      :mayvenn-install/service-type       service-type
-     :mayvenn-install/service-discount   (some-> service-menu
-                                                 ;; If the menu does not provide the service matching the
-                                                 ;; cart contents, use the leave out price
-                                                 (get service-type (:advertised-sew-in-leave-out service-menu))
-                                                 spice/parse-double
-                                                 -)}))
+     :mayvenn-install/service-discount   (- 0
+                                            (or
+                                             (line-items/service-line-item-price service-line-item)
+                                             (some-> service-menu
+                                                     ;; If the menu does not provide the service matching the
+                                                     ;; cart contents, use the leave out price
+                                                     (get service-type (:advertised-sew-in-leave-out service-menu))
+                                                     spice/parse-double)))}))

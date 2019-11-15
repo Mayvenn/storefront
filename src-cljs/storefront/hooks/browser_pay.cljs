@@ -7,7 +7,8 @@
             [storefront.request-keys :as request-keys]
             [storefront.events :as events]
             [clojure.string :as string]
-            [storefront.keypaths :as keypaths]))
+            [storefront.keypaths :as keypaths]
+            [storefront.accessors.line-items :as line-items]))
 
 (defn ^:private product-items->browser-pay-line-items [order]
   (map (fn [{:keys [quantity unit-price] :as item}]
@@ -146,7 +147,7 @@
 (defn locally-switch-shipment-line [shipment selected-shipping-method]
   (assoc shipment :line-items
          (conj (orders/product-items-for-shipment shipment)
-               (merge (->> shipment :line-items (filter orders/shipping-method?) first)
+               (merge (->> shipment :line-items (filter line-items/shipping-method?) first)
                       {:product-name (:name selected-shipping-method)
                        :sku          (:sku selected-shipping-method)
                        :unit-price   (:price selected-shipping-method)

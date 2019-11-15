@@ -469,9 +469,9 @@
                                      :cart-summary-line/action-icon   (svg/close-x {:class "stroke-white fill-gray"})
                                      :cart-summary-line/action-target [events/control-checkout-remove-promotion {:code "freeinstall"}]}])
 
-                                 (for [{:keys [name price coupon-code]}
+                                 (for [{:keys [name price coupon-code] :as adjustment}
                                        (filter adjustments/non-zero-adjustment? adjustments)
-                                       :let [install-summary-line? (= "freeinstall" coupon-code)]]
+                                       :let [install-summary-line? (orders/freeinstall-promotion? adjustment)]]
                                    (cond-> {:cart-summary-line/id    (text->data-test-name name)
                                             :cart-summary-line/icon  (svg/discount-tag {:class  "mxnp6 fill-gray pr1"
                                                                                         :height "2em" :width "2em"})

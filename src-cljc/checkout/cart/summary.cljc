@@ -122,7 +122,7 @@
                                        {:code coupon-code}))
                (svg/close-x {:class "stroke-white fill-gray"})])]
            (if (and freeinstall-line-item-data
-                    (= "freeinstall" coupon-code))
+                    (orders/freeinstall-promotion? adjustment))
              (- 0 (:price freeinstall-line-item-data))
              price))))
 
