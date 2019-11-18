@@ -105,8 +105,7 @@
           (promo-entry promo-data)]])
 
       (for [[i {:keys [name price coupon-code] :as adjustment}] (map-indexed vector adjustments-including-tax)]
-        (let [freeinstall-adjustment? (and freeinstall-line-item-data
-                                           (orders/freeinstall-promotion? adjustment))]
+        (let [freeinstall-adjustment? (orders/freeinstall-promotion? adjustment)]
           (when (adjustments/non-zero-adjustment? adjustment)
             (summary-row
              {:key       (str i "-" name)
@@ -128,7 +127,7 @@
                         (utils/fake-href events/control-checkout-remove-promotion
                                          {:code "freeinstall"}))
                  (svg/close-x {:class "stroke-white fill-gray"})])]
-             (if freeinstall-adjustment?
+             (if (and freeinstall-line-item-data freeinstall-adjustment?)
                (- 0 (:price freeinstall-line-item-data))
                price)))))
 
